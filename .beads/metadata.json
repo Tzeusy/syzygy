@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "syzygy",
+  "project_id": "79eed21e-19ea-40c4-bcb2-9bd42a9a0bc2"
+}
