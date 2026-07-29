@@ -151,6 +151,7 @@ bd close <id>         # Complete work
 
 # Notes to self
 
-- The bootstrap pack was generated 2026-07-26 against pinned `th-projects` blob SHAs (`_bootstrap/source-alignment/TH_PROJECTS_ALIGNMENT.md`). If the installed `/th-projects` skill has materially changed, surface the conflict and follow the newer skill unless the owner chooses otherwise.
+- The bootstrap pack was generated 2026-07-26 against pinned `th-projects` blob SHAs (`_bootstrap/source-alignment/TH_PROJECTS_ALIGNMENT.md`). If the installed `/th-projects` skill has materially changed, surface the conflict and follow the newer skill unless the owner chooses otherwise. **Known deliberate divergence (2026-07-30, owner-directed, OQ-009):** `shape-scan.sh`, `shape-init.sh`, `self-test.sh`, project-shape `SKILL.md`, and `validate-th-projects.sh` were patched so the optional `.syzygy` canon (doctrine `.syzygy/governance/doctrine/`; contracts/policies/map as detection candidates) is recognized alongside `about/**` — follow the patched versions.
+- Doctrine is **adopted** (2026-07-30): VIS-1…7 / SEC-1…5 live at `.syzygy/governance/doctrine/` (commit `9bdfe98`, tag `doctrine-adopted-2026-07-30`). Cite doctrine from there, not from `_bootstrap/drafts/`. The repo intentionally has no `about/**` — never scaffold one here (one pillar, one home).
 - `_bootstrap/templates/` holds blank copies of the `state/` files; `state/` holds the live ones. Never edit templates to record state.
 - Naming is provisional everywhere: Syzygy, Polaris (intent), Trajectory (convergence work), Orrery (project twin), Ephemeris (temporal graph), Genesis (regeneration). Use poetic names only with literal subtitles; keep technical domain names in APIs/schemas/RFCs.
