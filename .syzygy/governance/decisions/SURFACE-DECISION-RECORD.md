@@ -48,7 +48,10 @@ doctrine-text implication — adding **"historical"** to the `map/` definition i
 architecture.md ("observed, intended, and proposed" state) — is drafted as a
 minimal amendment packet (`_bootstrap/rfc-phase/DOCTRINE-AMENDMENT-MAP-HISTORICAL.md`)
 and binds nothing until the owner adopts it. Adopted doctrine is not modified
-by this record.
+by this record. **[Update, 2026-08-01: the owner ratified that packet as
+amendment D1; architecture.md now carries "historical" at both sites, and the
+doctrine README's amendment log records it. This paragraph is preserved as
+written for the historical record.]**
 
 ## 3. Owner rulings (SDR-1 … SDR-33)
 

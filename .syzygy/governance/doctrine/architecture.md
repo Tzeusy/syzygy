@@ -52,7 +52,7 @@ governance_root/
     ├── intent/          # intent surface artifacts        (UI codename: Polaris)
     ├── work/            # work/convergence surface state  (UI codename: Trajectory)
     ├── map/             # semantic/spatial representation of observed, intended,
-    │                    #   and proposed system state     (UI codename: Orrery)
+    │                    #   proposed, and historical system state (UI codename: Orrery)
     ├── cache/           # derived, rebuildable projections (VIS-6)
     └── local/           # personal presentation state (VIS-6a; never truth-bearing)
 ```
@@ -269,8 +269,9 @@ founder decision; revisiting it is a doctrine amendment).
 - **`intent/`** — the intent and comprehension surface (UI codename Polaris),
 - **`work/`** — the gaps, work, and convergence surface (UI codename
   Trajectory),
-- **`map/`** — the semantic/spatial representation of observed, intended, and
-  proposed system state, including the spatial view (UI codename Orrery).
+- **`map/`** — the semantic/spatial representation of observed, intended,
+  proposed, and historical system state, including the spatial view
+  (UI codename Orrery).
 
 Surfaces are independently testable, navigable, feature-plannable, and — later,
 if useful — deployable; they are projections over the one shared kernel.
