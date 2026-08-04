@@ -42,7 +42,7 @@ per-task cost) remain part of P-1's knowing acceptance.
 
 | # | Decision | Owning record |
 |---|---|---|
-| P-11 | Install the proposed public front door (README, AGENTS.md replacement, PROJECT-STATUS, CONTRIBUTING, SECURITY, `.gitignore` additions) once the current revision round closes | drafts in `_bootstrap/knowledge-refactor/drafts/` |
+| P-11 | Install the proposed public front door (README, AGENTS.md replacement, PROJECT-STATUS, CONTRIBUTING, SECURITY) once the current revision round closes. The `.gitignore` additions piece is already installed at commit `829e753` (recorded there as owner-approved 2026-08-04); the five document drafts remain pending | drafts in `_bootstrap/knowledge-refactor/drafts/` |
 | P-12 | The knowledge-hygiene craft policy addition (own `CONFIRM CRAFT AMENDMENT` act required) | `_bootstrap/knowledge-refactor/CRAFT-KNOWLEDGE-HYGIENE-POLICY-DRAFT.md` |
 | P-13 | The overview refactor proposal (§17) — untouched because it couples to act 4's digest | parked with the team lead |
 | P-14 | License choice (four candidates; three [Unknown]s including copyleft reach into governed repositories — wants qualified legal review) | `_bootstrap/knowledge-refactor/LICENSE-DECISION-PACKET.md` |
