@@ -9,3 +9,6 @@
 
 # Personal/local state — not shared, not governed
 .syzygy/local/
+
+# Bootstrap process record — founder-local, never committed (FD-021, reaffirmed 2026-08-04)
+_bootstrap/
