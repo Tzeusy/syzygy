@@ -3,3 +3,9 @@
 .dolt/
 *.db
 .beads-credential-key
+
+# Rebuildable projections — never a source of truth (VIS-6)
+.syzygy/cache/
+
+# Personal/local state — not shared, not governed
+.syzygy/local/
