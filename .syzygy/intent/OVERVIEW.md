@@ -1,193 +1,193 @@
-> **Reviewed presentation draft — grounded in proposed foundational
-> contracts; adopted only by its own owner act, `ADOPT PROJECT OVERVIEW:
-> <digest>`, binding this file's exact content digest — never implicitly on
-> the RFC gate (RFC3-16: this stamp is a self-declaration; effective status
-> lives in the owner-act record).**
-> This is the first Polaris-style overview, written as a dogfood of the
-> intent surface's own rules: every factual claim below is anchored to an
-> adopted doctrine rule, an owner decision, or a proposed RFC clause, and
-> where the ground is a *proposed* contract the anchor says so. Nothing
-> here may be cited as authority (RFC7-3's rule, applied to itself).
+> **Reviewed presentation draft — adopted only by its own owner act,
+> `ADOPT PROJECT OVERVIEW: <digest>`, binding this file's exact content
+> digest — never implicitly on any other gate (RFC3-16: this stamp is a
+> self-declaration; effective status lives in the owner-act record).**
+> This overview is a governed presentation artifact and may never be cited
+> in place of doctrine, contracts, specifications, policy, or topology
+> (RFC7-3's rule, applied to itself). Current project status is read from
+> `PROJECT-STATUS.md` and the owner-act records, never from this page.
+> Source anchors sit at the end of each claim block; the drill-down table
+> in Layer 4 is the full source drawer. Anchors marked *candidate* cite
+> contract clauses that bind nothing until owner acceptance.
 
 # Syzygy — what it is, in one reading
 
-*(Syzygy is a provisional codename; poetic names carry literal subtitles —
-AGENTS.md naming rule.)*
+*(Syzygy, Polaris, Trajectory, Orrery, and Mission Control are working
+codenames; poetic names always carry literal subtitles.)*
 
-## 1. The product thesis
+## Layer 1 — the 30-second thesis
 
-A single owner runs fleets of AI agents against their own projects. The
-day that motivates everything: the owner dispatches a fleet, gets oversized
-diffs and scattered completions, and has no evidence-linked account of what
-changed, under whose authority, or whether any of it satisfied the intent
-[Observed: vision.md — "a day of orchestration yields oversized diffs and
-scattered completions with no coherent account"].
+**Humans define what should be true. Evidence shows what is true. Agents do
+work to close the difference. Syzygy explains all three — and lets humans
+govern bounded missions instead of micromanaging tasks.**
 
-Syzygy's answer is a **specification-driven control plane** built on one
-discipline:
+No evidence means **Unknown** — never green, never zero. Doing the work is
+never proof the intent was satisfied.
 
-- human-readable **specifications define desired state**;
-- **code and evidence define observed state**;
-- fleet activity is **execution state** — a third thing, never either of
-  the other two;
-- the computed difference is **reconciliation work**;
-- agent fleets are **actuators** — and **doing the work is never proof the
-  intent was satisfied** [Observed: vision.md three-state thesis; VIS-2;
-  proposed: RFC1-22 "work is never proof"].
+## Layer 2 — the five-minute argument
+
+**The problem is the owner's.** A single owner runs fleets of AI agents
+against a portfolio of projects. The day that motivates everything: the
+owner dispatches a fleet, gets oversized diffs and scattered completions,
+and has no evidence-linked account of what changed, under whose authority,
+or whether any of it satisfied the intent. Underspecification surfaces at
+the most expensive moment — after deployment.
+*Sources: vision.md (owner transformation; the human problem).*
+
+**Three kinds of state, kept semantically distinct.** Human-readable
+specifications define **desired state**. Code, tests, CI, and runtime
+evidence define **observed state**. Fleet activity — runs, merges, work
+lifecycle — is **execution state**, a third thing that never substitutes
+for either of the others: scheduled, completed, or merged work is never
+proof that the implementation satisfies intent. The computed difference
+becomes **reconciliation work**, and agent fleets are the actuators that
+perform it.
+*Sources: vision.md (three-state thesis); candidate: RFC1-22.*
 
 ```mermaid
 flowchart LR
-    Desired["Desired state<br/>(specs, declarations — openspec/**, .syzygy/governance/)"]
+    Desired["Desired state<br/>(specs, declarations)"]
     Observed["Observed state<br/>(code + captured evidence)"]
-    Exec["Execution state<br/>(runs, merges, work lifecycle —<br/>may never satisfy a desired-state claim)"]
-    Diff["Reconciliation work<br/>(gaps, computed at an identified evaluation)"]
-    Fleet["Agent fleets<br/>(actuators, untrusted)"]
+    Exec["Execution state<br/>(runs, merges, work lifecycle)"]
+    Diff["Reconciliation work"]
+    Fleet["Agent fleets (actuators)"]
     Desired --> Diff
     Observed --> Diff
-    Diff -->|"warranted work"| Fleet
-    Fleet -->|"acts recorded as"| Exec
+    Diff -->|warranted work| Fleet
+    Fleet -->|recorded as| Exec
     Exec -->|"merged changes — evidence, never proof"| Observed
 ```
 
-## 2. Authority and state planes
+**One kernel, four experiences.** A single semantic kernel — a temporal
+project graph plus an evaluation engine — computes every truth exactly
+once. Three project surfaces and a machine query plane of equal standing
+project it; none is independently authoritative:
 
-There is no single universal source of truth. Each question has exactly one
-typed authority [Observed: architecture.md typed-authority table], and every
-source-state assertion in the project graph lives on one of six state
-planes [proposed:
-RFC1-22]: **desired / proposed / observed / inferred / execution /
-historical** — while relation edges and kernel-derived objects occupy no
-plane, each edge instead carrying a semantic class naming what it derives
-from [proposed: RFC1-25]. Conflicts between authorities surface as contradictions routed
-to the owner — never auto-resolved [Observed: architecture.md contradiction
-rule; proposed detail: RFC1-21, RFC2-15].
+- **Polaris** (the intent surface) — what is this project supposed to be?
+- **Trajectory** (the work surface) — what remains, what runs, what merged
+  *without yet being reconciled*?
+- **Orrery** (the map surface) — a spatial view over capability identities
+  where Unknown is a first-class color; historical state included by
+  adopted amendment D1.
+- **Mission Control** (the workspace operator surface) — what bounded,
+  delegated missions are running across projects? Workspace-level, not a
+  fourth project truth surface; defined by candidate contract RFC-0010 and
+  pending doctrine amendment D3.
 
-```mermaid
-flowchart TB
-    subgraph Authorities["Typed authorities — one per question"]
-        Doc["Doctrine — why the project exists"]
-        Spec["openspec/** — required behavior"]
-        Code["Code, tests, CI, runtime — what exists"]
-        Sched["Scheduler — work lifecycle"]
-    end
-    subgraph Planes["Six state planes (proposed: RFC1-22)"]
-        P1["desired · proposed · observed<br/>inferred · execution · historical"]
-    end
-    Authorities --> Planes
-    Planes -->|"conflict = contradiction → owner adjudicates"| Owner["Owner"]
-```
+*Sources: architecture.md (one kernel, three surfaces); SDR §1–2;
+candidate: RFC6-13, RFC-0010.*
 
-The epistemic floor beneath all of it [Observed: trust-and-evidence.md;
-VIS-1/2]: claims are **Observed, Inferred, or Unknown**; no evidence means
-**Unknown with a reason**, never green and never zero; inference (AI) can
-**challenge but never confirm**; and between evaluations claims can only
-degrade — improvement needs new evidence, a decision, or an adopted change
-[proposed: RFC2-4].
+**The north star, honestly labeled.** The long-range ideal is that a
+project's complete normative corpus (its **Project Genome**) could regenerate
+the codebase, with code as a replaceable realization. Doctrine names this a
+**north star, not present doctrine and never a current capability claim**; a
+separate standing mandate is live fleet observability — watching agent fleets
+work, deferred until there is observed truth to annotate.
 
-## 3. One kernel, three surfaces
+**What exists today.** Adopted doctrine, owner-approved engineering policy,
+and a candidate contract corpus awaiting owner acceptance. **Nothing is
+implemented** — no daemon, no UI, no store, no endpoints, no chosen stack.
+This overview describes intended shape, not current capability.
+*Sources: PROJECT-STATUS.md (gate table); VIS-2 forbids implying more.*
 
-One semantic kernel — a temporal project graph plus an evaluation engine —
-computes every truth exactly once. Three human surfaces and a machine query
-plane of equal standing — "one truth, two consumers" [proposed: RFC6-13] —
-*project* it; none is independently authoritative
-[Observed: architecture.md "one kernel, three surfaces"; SDR §1–2]:
+Foundational terms used so far: desired / observed / execution state,
+reconciliation work, kernel, surface, capability, Unknown, mission, owner —
+the full vocabulary lives in the term registry.
 
-- **Polaris** (`.syzygy/intent/`) — the intent surface: a progressively
-  disclosed argument for what the project is, down to verbatim requirement
-  text. *(This document is its first draft artifact.)*
-- **Trajectory** (`.syzygy/work/`) — the work surface: what remains, what
-  runs, what merged — and what merged *without yet being reconciled*.
-- **Orrery** (`.syzygy/map/`) — the map surface: a spatial city-view over
-  capability identities where Unknown is a first-class color; historical
-  state is in scope by adopted amendment D1.
+## Layer 3 — the technical model
 
-```mermaid
-flowchart TB
-    Kernel["Shared kernel — temporal project graph + evaluation engine<br/>evaluation = (source snapshot, as-of instant) [proposed: RFC2-3]"]
-    Drawer["One evidence drawer fact set per selection [proposed: RFC6-18]"]
-    Kernel --> Drawer
-    Drawer --> Polaris["Polaris — intent/"]
-    Drawer --> Trajectory["Trajectory — work/"]
-    Drawer --> Orrery["Orrery — map/"]
-    Drawer --> API["Machine query plane — equal standing (RFC6-13)"]
-```
+**Typed authority.** There is no single universal source of truth; each
+question has exactly one owning authority: doctrine answers *why*; accepted
+contracts answer *load-bearing how*; `openspec/**` answers *required
+observable behavior*; topology answers *intended placement*; craft-and-care
+answers *the engineering and evidence bar*; code and captured evidence
+answer *what exists*; the work scheduler answers *work lifecycle*; Syzygy
+itself displays rebuildable projections. Conflicts between authorities
+surface as **contradictions** routed to the owner — never auto-resolved by
+precedence, and never silently scheduled into work.
+*Sources: architecture.md (typed authority; contradiction rule);
+candidate: RFC1-21, RFC2-15.*
 
-Same facts, same labels, same provenance on every surface; two surfaces
-disagreeing over one selection is a kernel defect, not a UI quirk
-[proposed: RFC6-18/22/23].
+**Evidence and Unknown.** Claims are **Observed, Inferred, or Unknown**.
+Evidence is a durable, identified, integrity-verifiable artifact; no
+evidence means Unknown with a reason. Inference (AI) may *challenge* a
+positive claim but may never establish one. Every status is computed at an
+identified evaluation — (source snapshot, as-of instant) — and between
+evaluations claims can only degrade; improvement requires new evidence, a
+decision, or an adopted change through a new evaluation.
+*Sources: trust-and-evidence.md; VIS-1, VIS-2; architecture.md (snapshots
+and the loop); candidate: RFC2-3, RFC2-4.*
 
-## 4. The reconciliation lifecycle
+**Reconciliation.** Every merged change enters a reconciliation chain and
+stays visibly **reconciliation-pending** until checked against the exact
+intent revision that warranted it. The terminal answers — reconciled-with-
+evidence, Unknown(reason), unsatisfied, contradiction-raised — are four
+different answers that never share a rendering. A wall of pending states on
+a fleet-built project is *correct output*, not failure. Positive status
+flows only through gate-backed evidence whose provenance is verified and
+captured inside snapshot identity.
+*Sources: candidate: RFC2-17…21, RFC4-13, RFC8-28.*
 
 ```mermaid
 flowchart LR
-    Intent["Approved intent<br/>(warrant)"] --> Work["Materialized work<br/>(scheduler)"]
-    Work --> Merged["Merged change<br/>reconciliation-pending — the honest<br/>default of all merged work (RFC2-18)"]
-    Merged --> Eval["Identified evaluation<br/>against the exact intent revision"]
-    Eval -->|"gate-backed evidence"| Rec["reconciled@E"]
-    Eval -->|"evidence insufficient"| Unk["Unknown(reason)"]
-    Eval -->|"evaluated: intent<br/>not satisfied"| Unsat["unsatisfied"]
-    Eval -->|"authoritative claims<br/>conflict"| Con["contradiction raised<br/>→ owner adjudicates"]
+    Intent["Approved intent (warrant)"] --> Work["Materialized work (scheduler)"]
+    Work --> Merged["Merged change — reconciliation-pending"]
+    Merged --> Eval["Identified evaluation vs the exact intent revision"]
+    Eval -->|gate-backed evidence| Rec["reconciled@E"]
+    Eval -->|evidence insufficient| Unk["Unknown(reason)"]
+    Eval -->|intent not satisfied| Unsat["unsatisfied"]
+    Eval -->|authoritative conflict| Con["contradiction → owner"]
 ```
 
-Every change enters a reconciliation chain and stays visibly
-"reconciliation-pending" until checked against the intent revision that
-warranted it — and V0 spends most of its life there: a wall of such
-pending states on a fleet-built project is *correct output*, not failure
-[proposed: RFC2-17…21; RFC2-19]. The four terminal answers in the diagram —
-reconciled at E with evidence; merged, not yet evaluated; evaluated and
-unsatisfied; evaluated, contradiction raised — are **four different answers
-that never share a rendering**: an unadjudicated contradiction is never
-routed into work as if it were an ordinary gap [proposed: RFC2-17, RFC8-28].
-Positive status flows only through
-`gate-backed` evidence whose provenance is verified — including external CI
-confirmations, which are **captured at observation time inside snapshot
-identity**, so a provider expiring its records never rewrites history
-[proposed: RFC4-13, RFC4-13(a)].
+**Governance and write boundaries.** Syzygy's direct project-content writes
+are confined to exactly two namespaces — `openspec/**` and `.syzygy/**`;
+everything else is read-only or reached through typed, explicitly
+authorized adapters. Syzygy never writes implementation code. Fleet workers
+are untrusted even inside the writable plane, which forces the corpus's
+most consequential rule: anything that *authorizes* an effect is honored
+only with owner-act provenance the repository itself cannot forge; until
+that mechanism ships, every authorization gate renders its gap honestly —
+"owner-adopted (bootstrap, uncorrelated)", never "verified".
+*Sources: VIS-5, VIS-6; SEC-3; candidate: RFC3-3, RFC3-16(a)/(b), RFC5-25.*
 
-## 5. Write and trust boundaries
+**Bounded autonomy.** Humans govern high-level intent, guardrails, risk,
+and budgets; agents perform detailed work inside an explicitly approved
+**Mission envelope** — objective, permissions, budget, time, evidence bar,
+stop and escalation conditions. The human is interrupted for declared
+exceptions (**attention items**), not routine steps. The loop stays
+human-triggered: autonomy beyond doctrine's stated bounds is licensed only
+through the mechanism doctrine itself names (VIS-4), never by
+reinterpretation. Whether the proposed bounded-Mission amendment (D3) plus
+the candidate Mission contract satisfy that mechanism is an open owner
+question, not a settled one — see the D3 packet and the acceptance record's
+owner-attention items.
+*Sources: vision.md ("Not autonomous"; VIS-4); candidate: RFC10-1…16;
+proposed: doctrine amendment D3.*
 
-Syzygy writes exactly two namespaces — `openspec/**` and `.syzygy/**` — and
-touches everything else read-only or through typed, authorized, audited
-adapters [Observed: VIS-5; proposed: RFC3-3, RFC4-2]. Fleet workers are
-**untrusted even inside the writable plane** [Inferred — SEC-3 declares the
-executed-code actor class untrusted regardless of project ownership;
-extending that classification to what those workers *commit* follows from
-architecture.md's worker-materialization model and is stated as an explicit
-inference at RFC3-16(a)], which forces
-the package's most consequential rule: anything that *authorizes* is honored
-only with owner-act provenance the repository itself cannot forge
-[proposed: RFC3-16(a)/(b)]. Until that mechanism ships (the committed first
-implementation slice), every authorization gate renders its gap honestly.
+## Layer 4 — exact authority drill-down
 
-```mermaid
-flowchart TB
-    Worker["Fleet worker<br/>(untrusted writer — inference stated at RFC3-16(a))"]
-    subgraph Plane["The writable plane — openspec/** + .syzygy/** (VIS-5)"]
-        Auth["Authorization-bearing artifacts<br/>(consents, decisions, policies, registries)"]
-        Recs["Recorded facts (records/)<br/>assert a submission occurred — authorize nothing"]
-    end
-    Worker -->|"can commit either"| Plane
-    Trail["Owner-ceremony audit trail<br/>outside .syzygy/**, outside untrusted write reach<br/>[proposed: RFC5-25]"]
-    Auth -->|"provenance verifies against the trail"| Gate["Consuming gate — honors the artifact<br/>[proposed: RFC3-16(a)/(b)]"]
-    Trail --> Gate
-    Auth -.->|"provenance unverifiable → effect blocked,<br/>artifact renders Unknown, contradiction minted —<br/>never silently honored, never silently deleted"| Blocked["Blocked effect"]
-```
+| Concept in this overview | Owning authority | Status |
+|---|---|---|
+| Non-negotiable rules VIS-1…7 | `.syzygy/governance/doctrine/vision.md` | Adopted |
+| Security rules SEC-1…5 | `.syzygy/governance/doctrine/security.md` | Adopted |
+| Typed authority; snapshots; kernel definitions | `.syzygy/governance/doctrine/architecture.md` | Adopted (amendment D1 in force) |
+| Evidence, claims, staleness, trust floor | `.syzygy/governance/doctrine/trust-and-evidence.md` | Adopted |
+| V0/V1 scope and success tests | `.syzygy/governance/doctrine/v1.md` | Adopted |
+| Surface charter, SDR-1…33 | `.syzygy/governance/decisions/SURFACE-DECISION-RECORD.md` | Recorded |
+| State planes, graph identity | RFC-0001 | Candidate |
+| Evaluation, reconciliation chain | RFC-0002 | Candidate |
+| Namespaces, governance homes, owner acts | RFC-0003 | Candidate |
+| Evidence adapters and admission routes | RFC-0004 | Candidate |
+| AuthN, consent, execution profiles | RFC-0005 | Candidate |
+| Selection, query, evidence drawer | RFC-0006 | Candidate |
+| Polaris / Trajectory / Orrery contracts | RFC-0007 / 0008 / 0009 | Candidate |
+| Mission Control and autonomy envelopes | RFC-0010 | Candidate |
+| Context compilation | RFC-0011 | Candidate |
+| Engineering and evidence bar (CC-*) | `.syzygy/governance/policies/craft-and-care/` | Owner-approved (D2) |
+| Vocabulary | term registry, `contracts/candidates/policy-candidates/` | Candidate |
+| Current gate state | `PROJECT-STATUS.md` + acceptance record | — |
 
-## Where this stands
-
-*(This section is an authoring-time record, written 2026-08-02; it states
-what was true when this overview's digest was fixed, not current status —
-current effective status is read from the owner-act records, never from
-any artifact's own text, this page included: RFC3-16.)*
-
-As of this overview's authoring: doctrine (VIS-1…7, SEC-1…5) was adopted,
-with one owner-ratified amendment (D1) [Observed:
-`.syzygy/governance/doctrine/README.md`, adoption stamp and amendment
-log]. The owner-decision ledger held **36 recorded identifiers** — A1–A9,
-B1–B22, D1–D4, N1 — of which **34 were in force**: B16 retired, N1
-superseded [Observed: OWNER-ANSWERS.md decision ledger]. The nine
-foundational RFCs stood at the owner's acceptance gate [Observed:
-`_bootstrap/rfc-phase/FOUNDATIONAL-RFC-ACCEPTANCE-RECORD.md`, the
-gate-defining manifest — not the RFCs' own headers, which are untrusted
-self-declarations under RFC3-16]. This overview binds nothing and is
-superseded by any clause it summarizes.
+Candidate modules live under `.syzygy/governance/contracts/candidates/`;
+their exact digests live in `ACTIVE-CONTRACT-MANIFEST.txt`, and the act
+phrases in the acceptance record beside it. This overview binds nothing and
+is superseded by any clause it summarizes.

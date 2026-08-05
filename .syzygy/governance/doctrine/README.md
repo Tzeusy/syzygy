@@ -6,7 +6,7 @@
 
 | Id | Date | What changed | Authority |
 |---|---|---|---|
-| D1 | 2026-08-01 | `architecture.md`, two sites (layout comment; `map/` definition bullet): the map's scope now reads "observed, intended, proposed, and historical system state" — historical rendering added unconditionally. | Owner decision D1, ratifying the packet at `_bootstrap/rfc-phase/DOCTRINE-AMENDMENT-MAP-HISTORICAL.md`; scope made unconditional by rev7 rework directive item A2 (not owner decision A2) |
+| D1 | 2026-08-01 | `architecture.md`, two sites (layout comment; `map/` definition bullet): the map's scope now reads "observed, intended, proposed, and historical system state" — historical rendering added unconditionally. | Owner decision D1, ratifying the packet at `../decisions/DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md` (extracted under FD-037; original authored in the bootstrap record); scope made unconditional by rev7 rework directive item A2 (not owner decision A2) |
 
 This folder answers **WHY** Syzygy exists, what it believes, what it refuses to
 be, and which constraints bind every downstream decision. It is constitutional,

@@ -46,7 +46,7 @@ from evidence.
 *Doctrine note:* this charter is decision-layer, not doctrine. Its one
 doctrine-text implication — adding **"historical"** to the `map/` definition in
 architecture.md ("observed, intended, and proposed" state) — is drafted as a
-minimal amendment packet (`_bootstrap/rfc-phase/DOCTRINE-AMENDMENT-MAP-HISTORICAL.md`)
+minimal amendment packet (`DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md`, this directory — extracted under FD-037)
 and binds nothing until the owner adopts it. Adopted doctrine is not modified
 by this record. **[Update, 2026-08-01: the owner ratified that packet as
 amendment D1; architecture.md now carries "historical" at both sites, and the

@@ -1,0 +1,40 @@
+# Documentation and governance checks only.
+#
+# This repository is pre-specification: there is no application code, no
+# toolchain manifest, and no product tooling to run. This workflow therefore
+# installs nothing beyond a Python interpreter and runs the three read-only
+# checkers that already exist. Adding a linter, a build, or a dependency step
+# here would be a stack choice, which requires an accepted contract.
+name: governance-docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Repository-wide governance checks: links, retired tokens, candidate
+      # banners, manifest digests, context budgets, authority homes.
+      - name: check_governance
+        run: python3 scripts/check_governance.py
+
+      # Candidate contract package: clause continuity, citations, ceilings.
+      - name: verify_final_prespec
+        run: python3 .syzygy/governance/contracts/candidates/scripts/verify_final_prespec.py
+
+      # Contract index drift: the generated index must match regeneration.
+      - name: build_contract_index --check
+        run: python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --check

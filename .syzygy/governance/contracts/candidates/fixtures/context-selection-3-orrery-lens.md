@@ -1,0 +1,63 @@
+# Context-selection fixture 3 — Orrery architecture-lens change
+
+**Objective.** A governed work item: draft the specification delta for a
+change to an Orrery lens (adjusting what an existing V0 lens encodes on a
+reserved channel). Risk class: encoding-meaning change — touches the
+channel registry class (RFC9-26, an RFC3-16(a) artifact by example list),
+but this task drafts the proposal; no adoption act occurs inside it.
+
+**Selection rule trace (RFC11-4).** Warrant names the lens →
+`applies_to: orrery`, module `visual-grammar-and-lenses` + package README
+(lens contract RFC9-31..35, channel contract RFC9-24..30). Lenses render
+claim/Unknown states → RFC-0002 `rendering-vocabularies` + README. The
+map's doctrine posture (VIS-7 trust floor, map scope amendment D1) →
+`architecture.md`.
+
+## Required context (mandatory, deterministic)
+
+```
+scripts/context_load.py rfcs/RFC-0009/README.md \
+  rfcs/RFC-0009/visual-grammar-and-lenses.md rfcs/RFC-0002/README.md \
+  rfcs/RFC-0002/rendering-vocabularies.md doctrine:architecture.md
+```
+
+Measured: **14,134 words ≈ 19,080 estimated tokens** — inside the 15–20k
+working target.
+
+## Omitted applicable candidates, with reasons
+
+- RFC-0009 `semantic-geography` — geography/anchoring/layout are
+  untouched by a channel-encoding change; its clauses are not in the
+  warrant's set. `interaction-parity-and-release` — parity obligations
+  bind the implementation phase; the drafted delta must route through
+  OpenSpec anyway (RFC9-52, restated in the README the packet carries).
+- RFC-0002 core/challenge/reconciliation — rendering vocabulary suffices;
+  evaluation machinery is pinned by the packet's as-of.
+- RFC-0003 governance-homes — the proposal does not perform the
+  registry's owner act; when the adoption ceremony becomes the task, that
+  packet loads it (fixture 4's shape).
+- RFC-0001/0004/0005/0006/0007/0008/0010/0011, `security.md`, craft — no
+  kernel, evidence, client, or work surface touched.
+
+## Why no applicable constraint was lost
+
+The channel contract, reserved palette, lens conformance clauses, and the
+package phase rule are all in the mandatory set; the registry's
+authorization-bearing character is stated inside RFC9-26 itself
+(carried), with the deeper RFC3-16(a) machinery deferred to the adoption
+task by the phase rule. Performance and motion bounds (RFC9-49..51)
+live in the omitted module 3 and load on demand (the README's package map
+names RFC9-49's rule; RFC9-50..51 sit beside it) — the omission is safe
+because the fixture's warrant does not alter frame or motion budgets.
+
+## Suggested inferred additions (provenance: index adjacency)
+
+RFC-0009 `interaction-parity-and-release` (non-3D equivalence for the
+changed encoding — needed at surface-spec authoring); RFC-0006 (drawer
+disclosure of encoded facts).
+
+## Packet digest
+
+sha256 over the mandatory files concatenated in listed order:
+`2e408eaf40278ca7…`. Compiler: `context_load.py`, selection rules
+rev10-fixtures.

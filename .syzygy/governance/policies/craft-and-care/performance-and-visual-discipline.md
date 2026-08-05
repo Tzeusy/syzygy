@@ -1,4 +1,4 @@
-> **Approved** — owner decision D2 (2026-08-01), amendment B21 applied where noted. Canonical home: `.syzygy/governance/policies/craft-and-care/`; this copy is the bootstrap-phase record. Binding force on implementation work begins with foundational-RFC acceptance (the policies cite RFC clauses that bind nothing until then).
+> **Approved** — owner decision D2 (2026-08-01), amendment B21 applied where noted. **This directory (`.syzygy/governance/policies/craft-and-care/`) is the canonical home of these policies.** The bootstrap-phase copy is preserved separately as historical review evidence. Binding force on implementation work begins with the owner's digest-bound acceptance of the foundational design contracts (the act defined in the active acceptance record; the policies cite RFC clauses that bind nothing until then).
 
 # Performance and visual discipline
 
