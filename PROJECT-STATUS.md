@@ -104,8 +104,15 @@ because regenerating a knowingly-broken graph reproduces the same
 knowingly-broken file.
 
 Current results (2026-08-05b): packet verifier PASS; both index builders report
-no drift; `check_governance.py` **20 OK, 9 WARN, 0 FAIL over 30 checks**;
-`--selftest` 10 fixtures, 0 failing. The nine WARNs are declared-by-design
+no drift; `check_governance.py` **24 OK, 8 WARN, 0 FAIL over 32 checks**;
+`--selftest` 19 fixtures, 0 failing. The eight WARNs are declared-by-design
 (forward references, frozen-packet pointers, report-only budget triggers,
 allowlists) and each prints its rationale. **Read the output, not the exit
 code** — a PASS over zero examined items verified nothing.
+
+Run it in a **clone**, not only here. At one commit this round the two
+disagreed — 0 FAIL in the working tree, 1 FAIL in a clone — because CG-14
+asked the local filesystem whether a git-excluded directory existed, and the
+founder machine has one. That divergence is the whole failure mode this
+repository keeps re-acquiring, and it is invisible from the machine that has
+the directory.

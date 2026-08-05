@@ -103,7 +103,7 @@ act 1's digest set.
 | Act correctly without reading the whole corpus | **Met at the measured tasks.** Eight fixtures land at 10.8k–22.2k words against a ~121k whole-corpus path |
 | …without thirty terms up front | **Partly.** The two-tier split exists; the registry defining it is a candidate with no owner act, and eight public terms have no adopted definition anywhere (P-17) |
 | …without contradictory metadata | **Met, newly.** The dependency graph's two halves can no longer disagree; three derived views now recompute under checks |
-| …without founder-local history | **Met.** No live artifact directs a reader to a founder-only path; the 31 remaining mentions are enumerated in `PUBLIC-CLONE-VERIFICATION-REPORT.md`, each a record of history or evidence |
+| …without founder-local history | **Met.** No live artifact directs a reader to a founder-only path; the 35 remaining mentions are enumerated by class in `PUBLIC-CLONE-VERIFICATION-REPORT.md` — 34 records of history or evidence, and one deliberate provenance line that is immediately followed by the public substrate pin |
 
 **Four met, three partly.** None of the three is met by writing more prose —
 each needs an owner act (the term registry), a phase this project has not

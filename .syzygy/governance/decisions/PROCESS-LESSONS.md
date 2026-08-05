@@ -187,3 +187,31 @@ and carries every phase-specific and machine-specific detail.
   When CG-14 could not tell a bare `topology/` destination from a bare
   `topology/` source, the fix was to write the destination as its full path,
   not to add a fourth heuristic.
+
+- **Run the checks in a clone, not only in the working tree.** At one commit
+  this round `check_governance.py` reported 0 FAIL here and 1 FAIL inside a
+  clone of the same commit. CG-14 asked the filesystem whether `_bootstrap/`
+  existed; the founder machine has it, so a ceremony step depending on a
+  git-excluded directory read as executable. Every check that resolves a path
+  should answer from the tracked corpus or from `.gitignore` — never from
+  local disk — or it verifies the machine rather than the repository.
+
+- **A clone report is valid only for the commit it was run at.** The previous
+  `PUBLIC-CLONE-VERIFICATION-REPORT.md` said "clone of commit 864718c" and
+  carried an act-1 digest that had been edited into it after the manifest
+  moved: a report describing one commit while quoting another. Re-run it;
+  never patch its figures.
+
+- **A whole-line exemption test is blind to wrapped prose.** CG-14's
+  correction-marker regex matched per line, so a retraction paragraph whose
+  "previously" and whose `_bootstrap/` landed on different wrapped lines read
+  as a live instruction. CG-15 had already paid for this exact shape. The
+  window has to be at least the neighbouring lines.
+
+- **The pass that corrects defects introduces them.** The confirming review
+  over the final bytes found three, all in this round's own corrective work: a
+  clause written to close an escape that left one open, twenty-one stale
+  derived values in the commit whose message said it had corrected every stale
+  derived value, and a report misdescribing four of the seams it claimed to
+  close. Commission the confirming review over the *exact bytes*, after the
+  corrections, or it confirms something nobody is being asked to accept.

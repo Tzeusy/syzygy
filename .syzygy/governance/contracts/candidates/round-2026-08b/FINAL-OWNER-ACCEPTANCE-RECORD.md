@@ -115,7 +115,7 @@ first run — one by 1,738 words.
 
 ```sh
 python3 scripts/check_governance.py                    # 32 checks, denominators printed
-python3 scripts/check_governance.py --selftest         # 17 fixtures; each check shown able to fail
+python3 scripts/check_governance.py --selftest         # 19 fixtures; each check shown able to fail
 python3 .syzygy/governance/contracts/candidates/scripts/verify_final_prespec.py
 python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --check
 python3 .syzygy/governance/contracts/candidates/scripts/build_dependency_index.py --check

@@ -64,6 +64,7 @@ Load the minimum for one correct decision. Never "read everything."
 | A contract question | `contracts/candidates/06-CONTEXT-LOAD-MAP.md`, or compute the load with `scripts/context_load.py` |
 | "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until OpenSpec exists |
 | Current status | `PROJECT-STATUS.md` |
+| "Is this ready for OpenSpec?" | `round-2026-08b/FINAL-PRE-SPECIFICATION-READINESS-REPORT.md` — the answer is **not ready**, with the two unmet criteria named |
 | Open owner questions | `decisions/PENDING-OWNER-DECISIONS.md` |
 | What a term means | doctrine's glossary, `governance/doctrine/README.md`; then the candidate `policy-candidates/TERM-REGISTRY.md` |
 | Maintenance, review, or avoiding a repeat mistake | `decisions/PROCESS-LESSONS.md` — **not default context** |
@@ -116,6 +117,12 @@ Each was paid for by a recorded incident (`decisions/PROCESS-LESSONS.md`):
 6. **Before writing a new check, decide what would make it fail** — then make
    it fail. `--selftest` holds one fixture per check for this reason. Two
    checks in this repository reported OK over **zero** examined items.
+7. **Run the battery in a clone before claiming it is green.** The working
+   tree has the git-excluded `_bootstrap/`, absent from every clone. A check
+   that resolves paths against local disk verifies the machine, not the
+   repository — one did, and read a founder-only ceremony step as executable.
+   Clone reports are valid only for the commit they were run at; re-run them,
+   never patch their figures.
 
 ## Validation
 

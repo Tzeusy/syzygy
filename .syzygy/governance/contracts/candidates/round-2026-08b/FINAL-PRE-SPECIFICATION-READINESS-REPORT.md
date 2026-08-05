@@ -28,7 +28,7 @@ question asked for a state, not a trend, and the state is not ready.
 | 4 | RFC / OpenSpec routing complete | **Met** | CG-17 examines 199 surface clauses and finds each routed exactly once across the four categories. The check catches routed-but-undeclared as well as declared-but-unrouted; it was hardened in this session after it missed the first direction |
 | 5 | Context packets complete and **automatic** | **Unmet, and unmeetable in this phase** | See below |
 | 6 | Mission-safety seams closed | **Partly** | Seven of RC-7's eleven blocking seams close fully by clause text, two partly, one is an owner ruling (P-24), one was a record correction. Three residual escapes are named in `MISSION-SAFETY-CLOSURE-REPORT.md` rather than rounded away |
-| 7 | Acceptance record clone-executable | **Met** | `PUBLIC-CLONE-VERIFICATION-REPORT.md` recomputes all five act arguments inside a real clone at the offered commit, with `_bootstrap/` absent. CG-14 classifies every ceremony install path by declared role — it found a live unexecutable step the day it was written |
+| 7 | Acceptance record clone-executable | **Met** | `PUBLIC-CLONE-VERIFICATION-REPORT.md` recomputes all five act arguments inside a real clone at the offered commit, with `_bootstrap/` absent, and the clone's battery now matches the working tree's check for check. It did not one commit earlier: CG-14 answered from the local filesystem and read a `_bootstrap/`-dependent ceremony step as executable. Both the step and the check are fixed |
 | 8 | The exact package passes a fresh semantic review | **Unmet** | See below |
 
 ## Criterion 5 — there is no compiler
@@ -109,7 +109,7 @@ All read-only. Read each check's **output**, not its exit code.
 
 ```sh
 python3 scripts/check_governance.py            # 32 checks, denominators printed
-python3 scripts/check_governance.py --selftest # 17 fixtures, each check shown able to fail
+python3 scripts/check_governance.py --selftest # 19 fixtures, each check shown able to fail
 CS=.syzygy/governance/contracts/candidates/scripts
 python3 $CS/verify_final_prespec.py
 python3 $CS/build_contract_index.py --check
