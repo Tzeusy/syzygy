@@ -143,3 +143,47 @@ and carries every phase-specific and machine-specific detail.
   it justifies routinely land on opposite sides of a line wrap in prose;
   a line-based matcher then manufactures findings. Same root cause as the
   recorded anchor-breaks-on-wrap lesson for batch replacement.
+
+## Round 2026-08b — checks, and what they cost to get right
+
+- **A citation is not a reliance.** A dependency sweep that asked "does the
+  target cite the source's clauses" added four wrong edges, because two
+  citation shapes are not reliances: the boilerplate `RFC3-16` status banner
+  every module carries (RFC-0001 carries it too, and declares
+  `depends_on: []`), and the `(Shape-parallel with RFC6-28, …)` parenthetical,
+  which says two clauses have the same *shape* — the opposite of consuming
+  one. The decisive test a reviewer used: RFC7-38 appears in the same
+  parenthetical on the same line, yet RFC-0007 does not declare the edge.
+  Identical evidence, opposite treatment, so the evidence was never doing the
+  work.
+
+- **Two checks reported OK over zero examined items.** CG-14's first version
+  regex-matched an install-route arrow form the record does not use; CG-18's
+  first version anchored on a `(recompute` suffix and silently examined 4 of
+  8 fixtures while printing a count. Both printed a truthful denominator that
+  nobody read. `--selftest` exists because of this: one synthetic failing
+  fixture per check, run in the same command.
+
+- **A derived view that goes stale spends the reader's trust in everything
+  near it.** A fresh engineer found two stale rows in the context-load map by
+  hand, and correctly stopped believing the file. Eleven of eleven rows were
+  stale. The map's own sentence said "all figures below are its output,
+  re-runnable from this packet."
+
+- **A published finding can be false, and false findings propagate.** "Adopted
+  doctrine cites a README glossary that does not exist" reached five tracked
+  artifacts. The glossary exists. The real defect — doctrine does not say
+  *which* README, and the root one has none — is narrower and had been stated
+  correctly by the original reviewer. The summary lost the qualifier, and the
+  summary is what got copied.
+
+- **Check the allowlist as carefully as the check.** A link-checker allowlist
+  written for stale *history* references (`^(\.\./)*(topology|history|…)/`)
+  silently absorbed a live *instruction* — an act's install source naming a
+  directory that has never existed. The check reported "714 references
+  examined, 0 findings" and was not wrong; it was blind.
+
+- **Prefer disambiguating the artifact to teaching the checker to guess.**
+  When CG-14 could not tell a bare `topology/` destination from a bare
+  `topology/` source, the fix was to write the destination as its full path,
+  not to add a fourth heuristic.

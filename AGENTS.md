@@ -109,6 +109,13 @@ Each was paid for by a recorded incident (`decisions/PROCESS-LESSONS.md`):
 4. **Read a check's *output*, not its exit code.** A PASS over zero examined
    items verified nothing — and a green drift check can sit over a knowingly
    inconsistent graph.
+5. **A citation is not a reliance.** Two shapes look like dependencies and
+   are not: the boilerplate `RFC3-16` status banner every module carries, and
+   the `(Shape-parallel with …)` parenthetical. Both fooled a dependency
+   sweep here; four wrong edges shipped before a reviewer caught them.
+6. **Before writing a new check, decide what would make it fail** — then make
+   it fail. `--selftest` holds one fixture per check for this reason. Two
+   checks in this repository reported OK over **zero** examined items.
 
 ## Validation
 
@@ -116,6 +123,7 @@ All read-only; run before claiming anything is clean.
 
 ```sh
 python3 scripts/check_governance.py                       # repo-wide
+python3 scripts/check_governance.py --selftest            # each check shown able to fail
 CS=.syzygy/governance/contracts/candidates/scripts
 python3 $CS/verify_final_prespec.py                       # clauses, citations, ceilings
 python3 $CS/build_contract_index.py --check               # index drift
