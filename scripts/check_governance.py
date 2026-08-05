@@ -615,6 +615,13 @@ ACT_SUBJECTS = (
      re.compile(r"ACCEPT TOPOLOGY:\s*`?([0-9a-f]{64})")),
     ("ADOPT PROJECT OVERVIEW", ".syzygy/intent/OVERVIEW.md",
      re.compile(r"ADOPT PROJECT OVERVIEW:\s*`?([0-9a-f]{64})")),
+    # Act 5 needs no phrase — VIS-4 adoption is the owner's own words. The
+    # round charter offers a phrase form anyway, so it is made available and
+    # checked; an optional act with an unchecked digest would be the same
+    # defect as the four this check exists for.
+    ("ADOPT DOCTRINE AMENDMENT: D3",
+     f"{CANDIDATES}/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md",
+     re.compile(r"ADOPT DOCTRINE AMENDMENT:\s*D3@([0-9a-f]{64})")),
 )
 
 #: Files that quote a stale act argument *as* a retired value, on purpose —
@@ -838,6 +845,7 @@ BOOTSTRAP_ABSENCE_MARKERS = (
     "without _bootstrap", "-free clone", "remove access",
     "no access", "did not read", "does not read", "cannot read",
     "no hidden semantic dependency", "nothing under `_bootstrap",
+    "absent", "is not present", "excluded from clones",
 )
 
 MARKER_WINDOW = 2

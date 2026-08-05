@@ -210,3 +210,13 @@ quoted in the acceptance record are the post-batch ones.
 - **Degraded mode:** without git the checker walks the filesystem and runs
   every check, reporting CG-11 as Unknown rather than silently passing. It
   previously printed one WARN and exited.
+- **Act 5 phrase form offered.** The D3 packet specifies VIS-4 adoption in the
+  owner's own words with no magic phrase, and that remains sufficient. The
+  round charter §19 also offers `ADOPT DOCTRINE AMENDMENT: D3@<digest>`, so
+  that form is now made available *and* added to CG-7d's subject table — an
+  optional act carrying an unchecked digest would be the same defect this
+  round exists to have caught.
+- **Absence markers.** CG-12 now recognizes that a sentence saying the
+  excluded tree is *not* present, *not* read, or deliberately removed is not a
+  citation of it, and its marker windows are whitespace-normalized so a marker
+  and its pointer on opposite sides of a line wrap still match.

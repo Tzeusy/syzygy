@@ -105,16 +105,25 @@ increment to `build_contract_index.py`.
 
 ## Test D — clone equality
 
-**PASS.** `[Observed]` Re-run 2026-08-05 at final bytes against a simulated
-clone built from every tracked and to-be-tracked file — 190 files, **no
-`_bootstrap/`**. Results in `FINAL-OWNER-ACCEPTANCE-RECORD.md` §5:
+**PASS.** `[Observed]` Verified twice: first against a simulated clone at
+final bytes, then against a **real `git clone` of the pushed remote** at commit
+`f2d202c` — 190 tracked files, `_bootstrap/` absent, in a directory that never
+held the authoring session. Full evidence in
+[`PUBLIC-CLONE-VERIFICATION-REPORT.md`](PUBLIC-CLONE-VERIFICATION-REPORT.md);
+summary in `FINAL-OWNER-ACCEPTANCE-RECORD.md` §5:
 
 - All four act digests recompute from clone bytes and match what is offered.
 - `sha256sum -c ACTIVE-CONTRACT-MANIFEST.txt` — 32/32 OK.
 - Topology member digests vs `BUNDLE-MANIFEST.md` — 9/9 OK.
 - `build_contract_index.py --check`, `build_dependency_index.py --check` — no
   drift. `verify_final_prespec.py` — PASS.
-- `check_governance.py` — 14 OK, 8 WARN, 0 FAIL over 22 checks.
+- `check_governance.py` — **15 OK, 7 WARN, 0 FAIL** over 22 checks from the
+  real clone, identical to the working tree. (The earlier filesystem-copy
+  simulation reported 14 OK / 8 WARN, the difference being CG-11 correctly
+  Unknown where git was unavailable.)
+- `context_load.py` resolves its `doctrine:` and `craft:` prefixes to
+  canonical homes from clone bytes — 5,256 words / 7,095 est. tokens on the
+  documented example.
 
 **One portability defect found and fixed by this test** `[Observed]`:
 `check_governance.py` previously aborted after a single WARN when `git` was
@@ -140,7 +149,7 @@ shell `grep`, per the recorded ugrep hazard):
 - RB-8's mid-round sweep: 61 files, 166 occurrences; 60 of 61 files properly
   marked historical or unavailable.
 - This report's final-bytes sweep of the clone simulation: **74 files, 209
-  occurrences**, classified by `check_governance.py` CG-12 as **33 citations
+  occurrences**, classified by `check_governance.py` CG-12 as **38 citations
   examined, 0 findings** — no `_bootstrap/` path is cited as a *required*
   source anywhere. CG-12b lists the 50 allowlisted files with the reason each
   is exempt.

@@ -22,12 +22,13 @@
 | File | Content |
 |---|---|
 | `OWNER-ROUND-CHARTER.md` | The owner's round prompt, byte-verbatim. Relocated here from the repository root after review (see below) |
+| `PUBLIC-CLONE-VERIFICATION-REPORT.md` | What a real `git clone` contains, what reproduces from it, and what a clone still cannot do |
 | `REFRACTOR-PREFLIGHT-REPORT.md` | Repository state at round start |
 | `PUBLIC-CLONE-AUTHORITY-MATRIX.md` | What a clone can and cannot read, per authority layer |
 | `ACTIVE-AUTHORITY-MAP.md` | Which artifact owns which decision today |
 | `ARTIFACT-INVENTORY.md` | Shape record of the tree (a shape, not a live total) |
 | `HISTORICAL-ARCHIVE-INDEX.md` | Where superseded material went and why it is not authority |
-| `SEMANTIC-DELTAS-THIS-ROUND.md` | SD-1…SD-11 — every normative or authority-adjacent edit, classified |
+| `SEMANTIC-DELTAS-THIS-ROUND.md` | SD-1…SD-12 — every normative or authority-adjacent edit, classified |
 | `TERM-MIGRATION-REPORT.md` | Term registry derivation, plus contradictions C-1…C-6 |
 | `CONTEXT-COMPILER-FIXTURE-REPORT.md` | The eight selection fixtures and their measurements |
 | `MISSION-CONTROL-REVIEW.md` | Bounded-Mission and autonomy-envelope assessment |

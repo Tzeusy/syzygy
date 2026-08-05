@@ -113,8 +113,14 @@ ADOPT PROJECT OVERVIEW: ce7794fd8c0e528ae50434f5c63ce27df998441cdd07b20a903627ec
 
 ### Act 5 — optional: doctrine amendment D3 (bounded mission)
 
-No magic phrase. VIS-4 owner adoption in the owner's own words: **adopt**,
-**amend**, or **decline**.
+VIS-4 owner adoption in the owner's own words — **adopt**, **amend**, or
+**decline** — is sufficient and is what the D3 packet itself specifies. The
+round charter also offers a digest-bound phrase form; it is available, not
+required, and is machine-checked (CG-7d) if used:
+
+```text
+ADOPT DOCTRINE AMENDMENT: D3@0328cb379cab1ffa462cc5bf2205241b96dec21b0917d485b0906d4fe7dcd96c
+```
 
 - **Covers exactly:** `../DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (**rev1**,
   2026-08-05) and its two verbatim doctrine insertions. Rev1 supersedes
@@ -133,6 +139,15 @@ No magic phrase. VIS-4 owner adoption in the owner's own words: **adopt**,
 only in an unaccepted contract. Acts 2, 3 and 4 are order-independent.
 
 ---
+
+**One deviation from the charter's suggested phrasing, disclosed.** The
+charter writes act 2 as `CONFIRM CRAFT AMENDMENT: <policy IDs>@<bundle
+digest>`. The form offered above binds the amended **file's** digest rather
+than a cluster-bundle digest, because that is what the pre-existing acceptance
+record and `INSTALL-RECORD.md` already define and what CC-TEST-2 actually
+amends. Substituting a bundle digest now would retire a third act argument
+mid-round. If you prefer the charter's form, say so and it will be regenerated
+before any act.
 
 ## 2. The ceremony — five steps, per act, unchanged
 

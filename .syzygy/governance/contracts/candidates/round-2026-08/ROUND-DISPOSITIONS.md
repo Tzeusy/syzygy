@@ -70,6 +70,9 @@ document that offers the acts.
 | 20 | `check_governance.py` gained **CG-7d**, which checks every act digest quoted *anywhere*, not only in the acceptance record; it found a fifth stale copy on its first run (craft `INSTALL-RECORD.md:51`) that no reviewer reported, now marked historical (SD-12) | lead, from the §2 row-1 convergence |
 | 21 | `check_governance.py` no longer aborts outside a git checkout: it degrades to a filesystem walk, runs all checks, and reports CG-11 as Unknown rather than passed (SD-12) | Test D re-run at final bytes |
 
+| 22 | `PUBLIC-CLONE-VERIFICATION-REPORT.md` written — the one charter §20 required output that had no artifact; its content existed only scattered across RB-8, the readiness report and the acceptance record. Verified against a **real `git clone` of the pushed remote**, not a filesystem copy | charter §20 |
+| 23 | Act 5's optional digest-bound phrase form (`ADOPT DOCTRINE AMENDMENT: D3@…`, charter §19) offered and added to CG-7d's subject table; the act-2 phrasing deviation from the charter disclosed in the acceptance record §1 | charter §19 |
+
 All four manifests were regenerated **by script** after this batch. The
 resulting act arguments are the ones in the acceptance record §1 and in
 `FINAL-OWNER-ACCEPTANCE-RECORD.md`.
