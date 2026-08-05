@@ -1,6 +1,6 @@
 # Project status
 
-> **As-of: 2026-08-05** (the commit introducing this revision of this file —
+> **As-of: 2026-08-05b** (the commit introducing this revision of this file —
 > `git log -1 --format=%h PROJECT-STATUS.md`). This file is a hand-authored
 > pointer page with an as-of revision: it **must not be the sole source** for
 > any fact it states — each row cites the owning record, and where they
@@ -38,7 +38,8 @@ The full open-decision queue is
 `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`. The owner-facing
 offering for gates 4–8 — exact phrases, what each act covers, what is
 knowingly imperfect inside each — is
-`.syzygy/governance/contracts/candidates/round-2026-08/FINAL-OWNER-ACCEPTANCE-RECORD.md`.
+`.syzygy/governance/contracts/candidates/round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md`
+(the `round-2026-08/` one is superseded and banner-marked).
 
 ## What exists in this repository
 
@@ -63,11 +64,20 @@ not perform that act", never as a formatting nit. Non-blocking
 knowing-acceptance items travel with the acceptance record's owner-attention
 section, not this file.
 
-**One residual, disclosed rather than fixed:** no fresh-context review has
-been run over the current bytes. The round's eight reviews drove the fix batch
-that changed three of the four digests, so all of them predate what is now
-offered, and the planned ninth review over the exact final manifest was never
-run. See `round-2026-08/FINAL-OWNER-ACCEPTANCE-RECORD.md` §4 before act 1.
+**One residual, disclosed rather than fixed:** no confirming review is bound
+to the bytes now offered. The last CONFIRM (2026-08-03) named a manifest digest
+that has since been superseded twice — first by RFC-0010's correction plane and
+the `provides_to` removal, then by the RC-4 dependency corrections. The
+2026-08-05b review battery (RC-1…RC-10) read the corpus and drove those very
+changes, so with one exception each of them predates what is now offered.
+Read `round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md` "Read this first"
+before act 1.
+
+**Two things this project does not have, stated plainly:** there is no
+mechanical task-to-context-packet compiler — `context_load.py` measures a
+selection you have already made, and every fixture's selection is
+hand-authored. And the *evidence-adapter* fixture class has no fixture; the
+set is seven-for-eight with one double-count.
 
 ## Next lifecycle step
 
@@ -86,8 +96,16 @@ python3 scripts/check_governance.py
 git tag --list 'doctrine-*'
 ```
 
-Current results (2026-08-05): packet verifier PASS; both index builders report
-no drift; `check_governance.py` 15 OK, 7 WARN, 0 FAIL over 22 checks. The
-seven WARNs are declared-by-design (forward references, frozen-packet
-pointers, report-only budget triggers, allowlists) and each prints its
-rationale.
+Also run `python3 scripts/check_governance.py --selftest`, which puts each
+check against a synthetic failing input. It exists because this repository has
+shipped a validator that could not fail: the dependency index reported 20
+asymmetric edges at every generation while its own drift check reported clean,
+because regenerating a knowingly-broken graph reproduces the same
+knowingly-broken file.
+
+Current results (2026-08-05b): packet verifier PASS; both index builders report
+no drift; `check_governance.py` **20 OK, 9 WARN, 0 FAIL over 30 checks**;
+`--selftest` 10 fixtures, 0 failing. The nine WARNs are declared-by-design
+(forward references, frozen-packet pointers, report-only budget triggers,
+allowlists) and each prints its rationale. **Read the output, not the exit
+code** — a PASS over zero examined items verified nothing.

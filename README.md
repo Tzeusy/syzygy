@@ -89,6 +89,11 @@ authority and are never themselves authoritative.
 
 ## Start here
 
+**Unfamiliar word?**
+[`.syzygy/governance/doctrine/README.md`](.syzygy/governance/doctrine/README.md#glossary-read-first)
+holds the glossary — the only one in this repository, and the one doctrine
+means when it says "README glossary". This file has none.
+
 1. [`.syzygy/intent/OVERVIEW.md`](.syzygy/intent/OVERVIEW.md) — the project
    argument, 30 seconds to full depth (draft; adoption pending).
 2. [`.syzygy/governance/doctrine/vision.md`](.syzygy/governance/doctrine/vision.md)

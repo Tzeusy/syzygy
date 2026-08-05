@@ -13,7 +13,7 @@
 # WHAT THIS IS NOT. This file is a **record, not authority**. It adopts
 # nothing, changes no policy, and cannot widen what the owner approved. Where
 # it disagrees with an owner-approved policy, the policy wins and this file is
-# stale. It is checked by `scripts/check_governance.py` (CG-13).
+# stale. It is checked by `scripts/check_governance.py` (CG-19).
 #
 # DIGEST CONVENTION. Two independent kinds appear, both recomputable:
 #   git_tree   — the git tree object id of a directory at the named commit.

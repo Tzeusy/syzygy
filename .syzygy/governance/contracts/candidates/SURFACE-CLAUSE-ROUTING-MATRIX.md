@@ -305,8 +305,7 @@ consideration is auditable rather than invisible.*
 ## RFC-0007 — Polaris (Intent Surface)
 
 
-**Enumeration method:** run from
-`/home/tze/GitHub/syzygy/.syzygy/governance/contracts/candidates/rfcs/` over
+**Enumeration method:** run from the package's `rfcs/` over
 `RFC-0007/README.md`, `RFC-0007/narrative-contract.md`,
 `RFC-0007/rendering-and-surface.md` with Python `re` (not shell grep — grep on
 this machine is ugrep):
@@ -468,8 +467,7 @@ RFC7-32, RFC7-33, RFC7-34, RFC7-35, RFC7-36, RFC7-37, RFC7-38
 ## RFC-0008 — Trajectory (Work Surface)
 
 
-**Enumeration method:** run from
-`/home/tze/GitHub/syzygy/.syzygy/governance/contracts/candidates/rfcs/` with
+**Enumeration method:** run from the package's `rfcs/` with
 `python3` (no shell `grep`; `grep` on this machine is ugrep and mismatches
 bracket classes). Definition-site regex, applied with `re.M` over each of the
 four package files (`RFC-0008/README.md`,
@@ -910,8 +908,7 @@ which is the definition of a specifiable behavior.
 ## RFC-0011 — Context Compiler and Governed Context Packets
 
 
-**Enumeration method:** run over
-`/home/tze/GitHub/syzygy/.syzygy/governance/contracts/candidates/rfcs/RFC-0011-context-compiler.md`
+**Enumeration method:** run over the package's `rfcs/RFC-0011-context-compiler.md`
 with the same corrected Python `re` pattern, adapted to the namespace:
 
 ```python

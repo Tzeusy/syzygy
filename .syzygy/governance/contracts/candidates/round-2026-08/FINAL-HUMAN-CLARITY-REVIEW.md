@@ -46,7 +46,7 @@ What changed to make that true:
 
 **Residual human load**, all recorded rather than smoothed:
 
-- Adopted doctrine cites a README glossary that does not exist (P-20).
+- Adopted doctrine cites a README glossary ambiguously (P-20). **Correction 2026-08-05b:** the glossary **exists**, at `.syzygy/governance/doctrine/README.md:15` (`## Glossary (read first)`). The real defect is narrower: adopted doctrine says "README glossary" without saying *which* README, and the root `README.md` — the one a reader is holding — has none. See P-20 as amended.
 - The craft cluster's engineering bar is adopted by reference to a
   machine-local skill tree a clone cannot read (P-20) — a gate-approved
   authority that is, from a clone, unreadable.

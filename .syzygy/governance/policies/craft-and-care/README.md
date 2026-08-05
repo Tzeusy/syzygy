@@ -15,9 +15,17 @@ This cluster **adopts the canonical engineering bar by reference**: the
 `th-engineering` skill package — specifically its `engineering-bar` subskill
 (default biases 1–9 and its Definition of Done), its `test-rigor` bar (rules
 1–8), and its `dependency-hygiene` bar (rules 1–7) — is Syzygy's baseline
-engineering standard. [Observed — `~/.claude/skills/th-engineering/subskills/`;
-the bar itself states that project craft-and-care pillars adopt it by
-reference and override individual biases.]
+engineering standard. [Observed — read at
+`~/.claude/skills/th-engineering/subskills/` on the founder machine; the bar
+itself states that project craft-and-care pillars adopt it by reference and
+override individual biases.]
+
+**That path resolves from a clone.** The machine path above is where the text
+was read, not where a reader must go: `../GOVERNANCE-SUBSTRATE-LOCK.yaml`
+pins the same material to a public repository, an exact commit, exact paths,
+and recomputable digests. Read the lock, not the path. The lock also records
+an **open, unabsorbed drift** — the installed tree has moved past the commit
+D2 approved — which bears on act 2.
 
 The cluster **does not restate** the canonical bar. Every file below records
 only Syzygy-specific **overrides and additions**. Where a file is silent, the

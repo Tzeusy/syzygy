@@ -122,7 +122,7 @@ a verification report.
   therefore unreadable from a clone. Repairing it means either importing
   external text into the craft cluster or amending an owner-approved policy —
   both owner acts. Register item P-20.
-- **Adopted doctrine cites a "README glossary" that does not exist.**
+- **Adopted doctrine cites a "README glossary" ambiguously.** **Correction 2026-08-05b:** the glossary **exists**, at `.syzygy/governance/doctrine/README.md:15` (`## Glossary (read first)`). The real defect is narrower: adopted doctrine says "README glossary" without saying *which* README, and the root `README.md` — the one a reader is holding — has none. See P-20 as amended.
   `[Observed]` The citation sites are inside adopted doctrine, so the repair
   is a doctrine amendment. P-20.
 - **Founder decision log (FD-n) is founder-local** while FD identifiers are

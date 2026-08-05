@@ -39,7 +39,7 @@ verification-hazard list. Measured by `wc -w` and reported by
 rather than a failure. The next addition to that file must remove something.
 
 **Gap accepted knowingly** `[Observed]`: adopted doctrine cites a "README
-glossary" that does not exist (RB-1 F6). The citation sites are inside
+glossary" ambiguously (RB-1 F6). **Correction 2026-08-05b:** the glossary **exists**, at `.syzygy/governance/doctrine/README.md:15` (`## Glossary (read first)`). The real defect is narrower: adopted doctrine says "README glossary" without saying *which* README, and the root `README.md` — the one a reader is holding — has none. See P-20 as amended. The citation sites are inside
 adopted doctrine, so repairing them is a doctrine amendment, not a round fix
 — register item P-20.
 
