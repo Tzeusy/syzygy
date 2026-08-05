@@ -83,11 +83,25 @@ acts 1, 3, 4 or 5.
 
 ## What is now mechanical
 
-`scripts/check_governance.py` **CG-19** examines each locked substrate and
-reports two things: whether it names a publicly resolvable source, and whether
-a declared drift carries a disposition status. Current result: **5 pins
-examined, 0 findings.** Its self-test constructs a founder-local pin
-(`source: /home/someone/local`) and confirms the check reports it.
+`scripts/check_governance.py` **CG-19** parses the lock and evaluates eight
+predicate families against every pin: population integrity, pin kind and its
+required field set, object-id well-formedness, per-file digests and path
+sanity, locator hygiene, forge-URL grammar, declared visibility, and drift
+derived from the two revision groups and then compared against what the lock
+asserts. Current result: **61 predicate evaluations, 0 findings**, with the
+classified population printed separately as CG-19b so a pin cannot leave the
+denominator quietly. Twenty-eight self-test fixtures cover it, four of them
+negative.
+
+**Its first version was very much weaker than this paragraph used to claim.**
+It ran two predicates — "some URL-shaped token appears somewhere in the block"
+and "if a `drift:` line exists, a status token appears somewhere in the pin" —
+and a mutation sweep run against it returned `OK, 5 pins, 0 findings` with
+every commit deleted, every digest deleted, a garbage commit id, a private
+`visibility`, and a host rewritten to `.invalid`. It caught 2 of 13 defect
+classes and both catches were defeatable. That is recorded here rather than
+quietly fixed, because the check was cited as evidence in three artifacts
+while it was near-inert (RC10-P).
 
 `craft-and-care/README.md` now carries the machine path as *provenance for
 where the text was read*, followed by a pointer to the lock — and states that
@@ -98,12 +112,20 @@ the lock records an open drift bearing on act 2.
 - **The lock does not adopt anything.** It is a record. It cannot widen what
   the owner approved, and where it disagrees with an owner-approved policy the
   policy wins.
-- **CG-19 does not fetch.** It checks that a pin *names* a public source and
-  that declared drift carries a disposition. It cannot confirm the commit
-  still exists upstream, or that its content matches the recorded digests —
-  that needs network access, which these checks deliberately do not use.
-  Verifying a pin against upstream is a human step:
+- **CG-19 does not fetch, and its name no longer says it does.** It was
+  called *"substrate pins publicly resolvable"* — a claim about the world that
+  an offline check cannot make. It is now *"substrate pins complete and
+  well-formed; drift consistent"*, which is a claim about the file. The
+  identifier is unchanged: identifiers are amended in place, never renumbered.
+  **A pin to a deleted repository at a fabricated commit passes by design**,
+  and fixture `F6e` is kept in `--selftest` for the sole purpose of keeping
+  that boundary executable rather than only written down. Verifying a pin
+  against upstream remains a human step:
   `git cat-file blob <commit>:<path> | sha256sum`.
+- **Seven of thirteen defect classes are now fully closed, four partly, one
+  conditionally, and one is permanently out of reach offline** (whether the
+  recorded digests match the bytes upstream). The partials are all the same
+  shape: well-formedness and grammar are decidable offline, existence is not.
 - **Drift detection is not continuous.** This drift was found by looking. The
   check will report a drift that has been *declared*; nothing yet notices one
   that has not.

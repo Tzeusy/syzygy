@@ -99,7 +99,7 @@ the classification below accounts for every line:
 | Round records describing the defect, including this file | 6 | 3 | Correct — naming the bad path is how the report says it was bad |
 | The substrate lock explaining the problem it solves | 3 | 1 | Correct — the lock names the unresolvable path in order to replace it |
 | The rev9 adversarial findings file | 1 | 1 | Correct — it records a defect that existed |
-| The checker's own selftest fixture | 1 | 1 | Correct — it constructs a founder-local pin to prove CG-19 detects one |
+| The checker's own selftest fixtures | 1 | 1 | Correct — they construct founder-local locators to prove CG-19 detects them |
 | `craft-and-care/README.md:19` | 1 | 1 | **Retained deliberately**, as provenance for *where the text was read*, immediately followed by a pointer to `GOVERNANCE-SUBSTRATE-LOCK.yaml`, which pins the same material to a public repository, commit, and per-file digests |
 
 [Observed] **No live artifact directs a reader to a path only the founder

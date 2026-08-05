@@ -215,3 +215,23 @@ and carries every phase-specific and machine-specific detail.
   derived value, and a report misdescribing four of the seams it claimed to
   close. Commission the confirming review over the *exact bytes*, after the
   corrections, or it confirms something nobody is being asked to accept.
+
+- **A real denominator is not evidence that a check checks anything.** CG-19
+  reported "5 pins examined, 0 findings" — a true count over a real
+  population — while running two predicates so weak that deleting every
+  commit, deleting every digest, setting a garbage commit id, setting
+  `visibility: private`, and rewriting the host to `.invalid` all still
+  returned OK. It caught 2 of 13 defect classes. The repository's existing
+  rule ("a PASS over zero examined items verified nothing") does not reach
+  this case, and three artifacts cited the check as evidence while it was
+  near-inert. **Mutate the input and confirm the check fails** — the fixture
+  bar is per predicate, not per check.
+
+- **Name a check for what it establishes, not for what you wish it did.**
+  CG-19 was called "substrate pins publicly resolvable". An offline check
+  cannot establish that anything resolves; it can only read the file. The name
+  did the overclaiming, and every artifact that cited it inherited the
+  overclaim. Renamed to "complete and well-formed; drift consistent", with a
+  **negative** fixture (`F6e`, a well-formed pin to a nonexistent repository
+  that must pass) kept in `--selftest` so the residual limit is executable
+  rather than merely written in a docstring.

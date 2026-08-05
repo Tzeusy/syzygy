@@ -104,8 +104,8 @@ because regenerating a knowingly-broken graph reproduces the same
 knowingly-broken file.
 
 Current results (2026-08-05b): packet verifier PASS; both index builders report
-no drift; `check_governance.py` **24 OK, 8 WARN, 0 FAIL over 32 checks**;
-`--selftest` 19 fixtures, 0 failing. The eight WARNs are declared-by-design
+no drift; `check_governance.py` **24 OK, 9 WARN, 0 FAIL over 33 checks**;
+`--selftest` 46 fixtures, 0 failing. The nine WARNs are declared-by-design
 (forward references, frozen-packet pointers, report-only budget triggers,
 allowlists) and each prints its rationale. **Read the output, not the exit
 code** — a PASS over zero examined items verified nothing.

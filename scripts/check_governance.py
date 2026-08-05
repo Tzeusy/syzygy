@@ -1483,42 +1483,384 @@ def cg18_fixture_freshness(res, fixtures=None):
             details=findings)
 
 
-def cg19_substrate_lock(res, body=None):
-    """Every substrate pin resolves publicly, and drift is declared.
+#: Metadata scalars and declared non-pin sections. Both are enumerated and
+#: printed rather than pattern-matched: a rule broad enough to infer them
+#: would also let a pin leave the population unnoticed (defect class 11).
+LOCK_META_KEYS = ("version", "as_of", "recomputed_in_session")
+LOCK_NONPIN_SECTIONS = ("not_locked", "verification")
+#: Adding a forge is a deliberate edit, never a silent widening.
+LOCK_FORGE_ALLOW = ("github.com",)
+LOCK_LOCATOR_FIELDS = ("repository", "source", "url", "root_path")
+LOCK_DISPOSITIONS = ("open", "absorbed", "declined", "superseded", "surfaced")
+SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+#: A locator that only resolves on one machine. `%USERPROFILE%` is included
+#: because the rule is about machine-locality, not about POSIX.
+LOCAL_LOCATOR = re.compile(r"^(/|~|\./|\.\./)|^file://|/home/|/Users/|%USERPROFILE%")
+GITHUB_PATH_SEG = r"[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?"
 
-    The engineering substrate this project's craft policy came from was
-    pinned to a founder-machine path. Nothing mechanical could see it, so
-    the pin's own drift rule was due to fire and did not — the installed
-    tree had moved two commits past what the owner approved. A pin that
-    cannot be checked from a clone is not a pin.
+
+def _yaml_lite(text):
+    """Indentation parser for exactly the YAML subset the substrate lock uses.
+
+    Not a YAML implementation, and not trying to be: it handles `key: value`,
+    `key:` opening a nested block, `- key: value` opening a list item, and the
+    `>-` / `|` block scalars. Anything it cannot classify is returned as a
+    parse error rather than skipped — a silent skip is how CG-18 examined four
+    of eight fixtures while printing a denominator of eight.
+
+    Returns (data, errors).
     """
+    rows = []
+    for n, raw in enumerate(text.splitlines(), 1):
+        if not raw.strip() or raw.lstrip().startswith("#"):
+            continue
+        rows.append([n, len(raw) - len(raw.lstrip()), raw.strip()])
+    errors = []
+    kv = re.compile(r"^([A-Za-z_][\w.\-]*):\s*(.*)$")
+
+    def parse(pos, indent):
+        if pos >= len(rows) or rows[pos][1] < indent:
+            return {}, pos
+        if rows[pos][2].startswith("- "):
+            out = []
+            while (pos < len(rows) and rows[pos][1] == indent
+                   and rows[pos][2].startswith("- ")):
+                n, ind, s = rows[pos]
+                inner, rest = ind + 2, s[2:]
+                # A sequence entry is either a mapping (`- path: x`) or a
+                # plain scalar (`- "git clone …"`, as the lock's verification
+                # commands are). Treating the second as the first is what made
+                # three shell commands read as unparseable lines.
+                if not kv.match(rest):
+                    out.append(rest.strip('"'))
+                    pos += 1
+                    continue
+                rows[pos] = [n, inner, rest]   # the item's first key
+                item, pos = parse(pos, inner)
+                out.append(item)
+            return out, pos
+        out = {}
+        while pos < len(rows) and rows[pos][1] == indent:
+            n, _, s = rows[pos]
+            if s.startswith("- "):
+                break
+            m = kv.match(s)
+            if not m:
+                errors.append(f"line {n}: unparseable — {s[:60]}")
+                pos += 1
+                continue
+            key, val = m.group(1), m.group(2).strip()
+            pos += 1
+            if val in (">-", ">", ">+", "|", "|-", "|+"):
+                buf = []
+                while pos < len(rows) and rows[pos][1] > indent:
+                    buf.append(rows[pos][2])
+                    pos += 1
+                out[key] = " ".join(buf)
+            elif val == "":
+                if pos < len(rows) and rows[pos][1] > indent:
+                    out[key], pos = parse(pos, rows[pos][1])
+                else:
+                    out[key] = {}
+            else:
+                out[key] = val.strip('"')
+        return out, pos
+
+    data, end = parse(0, 0)
+    if end < len(rows):
+        errors.append(f"line {rows[end][0]}: parse stopped early — "
+                      f"{rows[end][2][:60]}")
+    return data, errors
+
+
+def _lock_revision_groups(name, pin):
+    """The (label, group) pairs a git-pinned substrate declares.
+
+    `th_engineering` nests `adopted:` and `installed:`; the other two carry
+    their revision fields at pin level. Both shapes are real, so the check
+    reads the shape rather than assuming one.
+    """
+    groups = [(f"{name}.{k}", v) for k, v in pin.items()
+              if isinstance(v, dict) and "commit" in v]
+    if groups:
+        return groups
+    return [(name, pin)] if "commit" in pin else []
+
+
+def cg19_substrate_lock(res, body=None, policy=None):
+    """Substrate pins are complete, well-formed, and internally consistent.
+
+    The engineering substrate this project's craft policy came from was pinned
+    to a founder-machine path. Nothing mechanical could see it, so the pin's
+    own drift rule was due to fire and did not — the installed tree had moved
+    two commits past what the owner approved.
+
+    **RESIDUAL LIMIT — what this check does not establish.** It makes no
+    network call and resolves nothing upstream. It establishes that each pin
+    carries a complete, well-formed, non-machine-local locator that a human
+    with network access can verify in one step, and that the lock is
+    internally consistent. It does **not** and cannot establish that the named
+    repository exists, that the named commit is reachable in it, that the
+    repository is still public, or that the recorded digests match the bytes
+    upstream. **A pin to a deleted repository at a fabricated commit passes
+    this check by design** — fixture `F6e` is kept in `--selftest` for the sole
+    purpose of keeping that boundary executable rather than merely written
+    down. Upstream agreement is established only by the human step the lock
+    records under `verification:`, and claimed only by a dated clone report.
+
+    The earlier name, *"substrate pins publicly resolvable"*, asserted the half
+    it cannot do. It was renamed for that reason (RC10-P). The identifier is
+    unchanged: identifiers are amended in place, never renumbered.
+    """
+    label = "CG-19  substrate pins complete and well-formed; drift consistent"
     text = body if body is not None else read(SUBSTRATE_LOCK)
     if not text:
-        res.add("WARN", "CG-19  substrate pins publicly resolvable", 0, 0,
-                "pin", note=f"{SUBSTRATE_LOCK} unreadable")
+        res.add("WARN", label, 0, 0, "check",
+                note=f"{SUBSTRATE_LOCK} unreadable")
         return
-    findings, examined = [], 0
-    blocks = re.split(r"\n(?=\w[\w_]*:\s*(?:#.*)?$)", text, flags=re.M)
-    for b in blocks:
-        name = re.match(r"(\w[\w_]*):\s*(?:#.*)?$", b.split("\n")[0])
-        if not name:
-            continue
-        if not re.search(r"^\s*(repository|source|url|package):", b, re.M):
-            continue
+    data, parse_errors = _yaml_lite(text)
+    findings = [f"lock does not parse — {e}" for e in parse_errors]
+    examined = 0
+    population = []
+
+    # P1 — every top-level key is classified. A pin cannot leave the
+    # denominator quietly by being renamed or demoted.
+    pins = {}
+    for key, val in data.items():
         examined += 1
-        if not re.search(r"(https?://|npm:|pypi:|npm registry)", b):
-            findings.append(f"`{name.group(1)}` — no public source URL; a "
-                            f"reader outside this machine cannot resolve it")
-        if re.search(r"^\s*drift:", b, re.M) and not re.search(
-                r"status:\s*\"?(open|OPEN|absorbed|declined|surfaced)", b):
-            findings.append(f"`{name.group(1)}` — declares drift with no "
-                            f"disposition status; silent drift is the defect "
-                            f"this lock exists to prevent")
-    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
-            "CG-19  substrate pins publicly resolvable", examined,
-            len(findings), "pin",
-            note=None if examined else "no pinned substrates declared",
+        if key in LOCK_META_KEYS or key in LOCK_NONPIN_SECTIONS:
+            continue
+        if not isinstance(val, dict):
+            findings.append(f"`{key}` — top-level key is neither a declared "
+                            f"metadata scalar {LOCK_META_KEYS}, a declared "
+                            f"non-pin section {LOCK_NONPIN_SECTIONS}, nor a "
+                            f"pin block; unclassified is unverified")
+            continue
+        pins[key] = val
+
+    for name, pin in pins.items():
+        groups = _lock_revision_groups(name, pin)
+        version_declared = "installed_version" in pin
+        # P2 — a pin declares a kind and carries that kind's full field set.
+        # A pin this check cannot classify is unverified, not passing.
+        examined += 1
+        if not groups and not version_declared:
+            findings.append(f"`{name}` — declares neither a `commit` "
+                            f"(git-pinned) nor an `installed_version` "
+                            f"(version-declared); unclassifiable pins are "
+                            f"unverified, not passing")
+            continue
+        population.append(f"{name} — {'git-pinned' if groups else 'version-declared'}, "
+                          f"{len(pin)} field(s)")
+        if version_declared and not groups:
+            examined += 1
+            if not pin.get("digest_or_lock_reference"):
+                findings.append(f"`{name}` — version-declared with no "
+                                f"`digest_or_lock_reference` saying why "
+                                f"nothing is pinned")
+        # P7 — visibility is declared, and public, for git-pinned substrates.
+        # Undeclared is Unknown, and Unknown is not public (VIS-2).
+        if groups:
+            examined += 1
+            vis = pin.get("visibility")
+            if vis is None:
+                findings.append(f"`{name}` — git-pinned with no `visibility`; "
+                                f"undeclared is Unknown, and Unknown is not "
+                                f"public")
+            elif vis != "public":
+                findings.append(f"`{name}` — `visibility: {vis}`; a "
+                                f"non-public substrate is not resolvable from "
+                                f"a clone")
+        # P5/P6 — locator hygiene and forge grammar, read from the *value of
+        # the locator field*, never from prose elsewhere in the block.
+        # A flat git-pin is its own revision group, so `[(name, pin)] + groups`
+        # would scan the same mapping twice and report every locator finding
+        # in it twice. Dedupe by identity, not by name.
+        holders, seen_ids = [], set()
+        for owner, holder in [(name, pin)] + groups:
+            if id(holder) in seen_ids:
+                continue
+            seen_ids.add(id(holder))
+            holders.append((owner, holder))
+        for field in LOCATOR_SCAN_FIELDS:
+            for owner, holder in holders:
+                val = holder.get(field)
+                if not isinstance(val, str):
+                    continue
+                examined += 1
+                if LOCAL_LOCATOR.search(val):
+                    findings.append(
+                        f"`{owner}.{field}` — `{val}` is machine-local; a "
+                        f"public URL elsewhere in the block does not make the "
+                        f"locator resolvable")
+                elif field != "root_path" and "://" in val:
+                    findings.extend(_lock_url_findings(owner, field, val))
+        # P3/P4 — object ids and per-file digests.
+        for gname, g in groups:
+            examined += 1
+            missing = [f for f in ("root_path", "git_tree", "relevant_paths")
+                       if not g.get(f)]
+            if missing:
+                findings.append(f"`{gname}` — git-pinned revision group "
+                                f"missing {', '.join(missing)}")
+            for field, rx, kind in (("commit", SHA1_RE, "git object id"),
+                                    ("git_tree", SHA1_RE, "git object id")):
+                val = g.get(field)
+                if val is None:
+                    continue
+                examined += 1
+                if not rx.match(str(val)):
+                    findings.append(
+                        f"`{gname}.{field}` — `{val}` is not a full "
+                        f"lowercase 40-hex {kind}; an abbreviation that is "
+                        f"unambiguous today can collide later")
+            root = g.get("root_path") or ""
+            for entry in g.get("relevant_paths") or []:
+                if not isinstance(entry, dict):
+                    continue
+                examined += 1
+                p, digest = entry.get("path"), entry.get("sha256")
+                if not digest:
+                    findings.append(f"`{gname}` — listed path `{p}` carries "
+                                    f"no `sha256`; an unpinned file inside a "
+                                    f"pinned tree is unverifiable")
+                elif not SHA256_RE.match(str(digest)):
+                    findings.append(f"`{gname}` — `{p}` has `sha256: "
+                                    f"{digest}`, not 64 lowercase hex")
+                if p and LOCAL_LOCATOR.search(p):
+                    findings.append(f"`{gname}` — path `{p}` is machine-local; "
+                                    f"a valid digest does not launder it")
+                elif p and root and not p.startswith(root.rstrip("/") + "/") \
+                        and p != root:
+                    findings.append(f"`{gname}` — path `{p}` is outside the "
+                                    f"group's `root_path: {root}`")
+        # P8 — drift is derived from the two groups, then compared against
+        # what the lock asserts. Today the assertion is checked by nothing.
+        findings.extend(_lock_drift_findings(name, pin, groups))
+        examined += 1
+
+    status = "FAIL" if findings else ("OK" if examined else "WARN")
+    res.add(status, label, examined, len(findings), "predicate evaluation",
+            note=None if examined else "no pins classified",
             details=findings)
+    res.add("WARN", "CG-19b substrate pin population", len(population), 0,
+            "pin", note="report-only — a pin leaving this list is visible "
+                        "here even when CG-19 stays green",
+            details=sorted(population))
+
+
+LOCATOR_SCAN_FIELDS = LOCK_LOCATOR_FIELDS
+
+
+def _lock_url_findings(owner, field, val):
+    """Forge grammar, against a printed allowlist. Closes the malformed and
+    non-forge halves of "nonexistent host/repo" — never the existence half."""
+    m = re.match(r"^(\w+)://([^/]+)(/.*)?$", val)
+    if not m:
+        return [f"`{owner}.{field}` — `{val}` is not a parseable URL"]
+    scheme, host, path = m.group(1), m.group(2), m.group(3) or ""
+    out = []
+    if scheme != "https":
+        out.append(f"`{owner}.{field}` — scheme `{scheme}`; only `https` is "
+                   f"resolvable without credentials")
+    if "@" in host or ":" in host:
+        out.append(f"`{owner}.{field}` — host `{host}` carries userinfo or a "
+                   f"port; a pin must be a plain public locator")
+    if host not in LOCK_FORGE_ALLOW:
+        out.append(f"`{owner}.{field}` — host `{host}` is outside the forge "
+                   f"allowlist {LOCK_FORGE_ALLOW}; adding a forge is a "
+                   f"deliberate edit, never a silent widening")
+        return out
+    segs = [s for s in path.split("/") if s]
+    if len(segs) != 2:
+        out.append(f"`{owner}.{field}` — `{path or '/'}` is not `owner/repo` "
+                   f"({len(segs)} segment(s)); a tree or blob URL is not a "
+                   f"repository locator")
+    elif not all(re.fullmatch(GITHUB_PATH_SEG, s) for s in segs):
+        out.append(f"`{owner}.{field}` — `{path}` is not a valid owner/repo "
+                   f"pair for {host}")
+    elif path.endswith("/") or segs[-1].endswith(".git"):
+        out.append(f"`{owner}.{field}` — `{path}` carries a `.git` suffix or "
+                   f"trailing slash; pin the canonical form")
+    return out
+
+
+def _lock_drift_findings(name, pin, groups):
+    """Derive drift from adopted-vs-installed, then check the assertion.
+
+    The old check asked only whether a `status:` token appeared *somewhere in
+    the pin*. That is defeated by any unrelated `..._status: open` key, and it
+    never compared the two revision groups it was sitting on top of — so a
+    deleted `drift:` block over genuinely drifted content read as clean.
+    """
+    named = {k.rsplit(".", 1)[-1]: g for k, g in groups}
+    adopted, installed = named.get("adopted"), named.get("installed")
+    drift = pin.get("drift") if isinstance(pin.get("drift"), dict) else None
+    if not (adopted and installed):
+        return []
+
+    def digests(g):
+        return {e.get("path"): e.get("sha256")
+                for e in (g.get("relevant_paths") or [])
+                if isinstance(e, dict) and e.get("path")}
+
+    a, i = digests(adopted), digests(installed)
+    shared = set(a) & set(i)
+    differing = {p for p in shared if a[p] != i[p]}
+    only_one = (set(a) ^ set(i))
+    derived = bool(differing) or adopted.get("commit") != installed.get("commit")
+    out = []
+    if only_one:
+        out.append(f"`{name}` — {len(only_one)} path(s) present in one "
+                   f"revision group and absent from the other "
+                   f"({', '.join(sorted(only_one))}); an added or removed file "
+                   f"is drift this table's shape cannot describe")
+    if derived and not drift:
+        out.append(f"`{name}` — adopted and installed differ, and the pin "
+                   f"declares no `drift:` group; silent drift is the defect "
+                   f"this lock exists to prevent")
+        return out
+    if not drift:
+        return out
+    asserted = str(drift.get("detected", "")).lower() == "true"
+    if asserted != derived:
+        out.append(f"`{name}` — `drift.detected: {drift.get('detected')}` but "
+                   f"the recorded digests and commits say "
+                   f"{'differ' if derived else 'agree'}")
+    listed = {}
+    for e in drift.get("changed_paths") or []:
+        if isinstance(e, dict) and e.get("path"):
+            listed[e["path"]] = e
+    for p in sorted(differing):
+        if not any(p.endswith(q) or q.endswith(p) for q in listed):
+            out.append(f"`{name}` — `{p}` differs between the two revision "
+                       f"groups and is absent from `drift.changed_paths`")
+    for q, e in sorted(listed.items()):
+        match = [p for p in shared if p.endswith(q) or q.endswith(p)]
+        if not match:
+            continue
+        claimed = str(e.get("material", "")).lower() == "true"
+        actually = match[0] in differing
+        if claimed and not actually:
+            out.append(f"`{name}` — `{q}` is marked `material: true` but is "
+                       f"byte-identical in both revision groups; a "
+                       f"materiality claim over identical content is a false "
+                       f"record")
+        if not claimed and actually:
+            out.append(f"`{name}` — `{q}` is marked `material: false` but its "
+                       f"digests differ between the two groups")
+    # Read the disposition from *inside* the drift group. The old block-scoped
+    # test was defeated by any unrelated `..._status:` key in the same pin.
+    status = str(drift.get("status", "")).strip()
+    first = re.split(r"[\s—:,-]", status, 1)[0].lower() if status else ""
+    if not status:
+        out.append(f"`{name}` — declares drift with no `status`; silent drift "
+                   f"is the defect this lock exists to prevent")
+    elif first not in LOCK_DISPOSITIONS:
+        out.append(f"`{name}` — `drift.status: {status}` does not open with a "
+                   f"disposition from {LOCK_DISPOSITIONS}")
+    return out
 
 
 # --------------------------------------------------------- self-test
@@ -1641,9 +1983,136 @@ def selftest():
     cases.append(("CG-18 unreproducible fixture detected",
                   c.rows[0][0] == "FAIL"))
 
-    c = Cap()
-    cg19_substrate_lock(c, body="th_x:\n  source: /home/someone/local\n")
-    cases.append(("CG-19 founder-local pin detected", c.rows[0][0] == "FAIL"))
+    # ---- CG-19, P1..P8. Every fixture marked "passes today" reproduces a
+    # mutation that the pre-RC10-P check returned OK on. The four negatives
+    # assert the check does NOT fire where it must not — F6e most of all,
+    # which keeps the residual limit executable instead of only documented.
+    H40, H40B, H64, H64B = "a" * 40, "b" * 40, "c" * 64, "d" * 64
+
+    def cg19(body):
+        cap = Cap()
+        cg19_substrate_lock(cap, body=body)
+        return cap.rows[0]
+
+    def gitpin(name="th_x", repo="https://github.com/o/r", vis="public",
+               commit=H40, tree=H40B, root="skills/th", paths=None, extra=""):
+        rows = paths if paths is not None else [(f"{root}/SKILL.md", H64)]
+        body = (f"{name}:\n  repository: {repo}\n  visibility: {vis}\n"
+                f"  commit: {commit}\n  root_path: {root}\n"
+                f"  git_tree: {tree}\n  relevant_paths:\n")
+        for p, d in rows:
+            body += f"    - path: {p}\n"
+            if d is not None:
+                body += f"      sha256: {d}\n"
+        return body + extra
+
+    F = [
+        # P1 — population integrity
+        ("F1a CG-19 unclassified top-level key detected",
+         "version: 1\nmystery_substrate:\n  note: hi\n", "FAIL"),
+        ("F1b CG-19 empty lock warns, never passes",
+         "# only a comment\n", "WARN"),
+        # P2 — kind and required fields
+        ("F2a CG-19 git-pin missing git_tree/relevant_paths detected",
+         f"th_x:\n  repository: https://github.com/o/r\n  visibility: public\n"
+         f"  commit: {H40}\n  root_path: a/b\n", "FAIL"),
+        ("F2b CG-19 version-declared with no digest reference detected",
+         'th_x:\n  repository: https://github.com/o/r\n'
+         '  installed_version: "1.0"\n', "FAIL"),
+        ("F2c CG-19 (negative) real version-declared pin accepted",
+         'openspec:\n  distribution: "npm: @x/y"\n'
+         '  repository: https://github.com/Fission-AI/OpenSpec\n'
+         '  installed_version: "1.3.1"\n'
+         '  digest_or_lock_reference: >-\n    None pinned; nothing is\n'
+         '    generated from it yet.\n', "OK"),
+        # P3 — object id well-formedness
+        ("F3a CG-19 abbreviated commit detected",
+         gitpin(commit="61bd8fa"), "FAIL"),
+        ("F3b CG-19 non-hex git_tree detected", gitpin(tree="HEAD"), "FAIL"),
+        ("F3c CG-19 uppercase sha256 detected",
+         gitpin(paths=[("skills/th/SKILL.md", "C" * 64)]), "FAIL"),
+        ("F3d CG-19 40-char non-hex commit detected",
+         gitpin(commit="a" * 39 + "z"), "FAIL"),
+        # P4 — per-file digests and path sanity
+        ("F4a CG-19 listed path with no sha256 detected",
+         gitpin(paths=[("skills/th/SKILL.md", None)]), "FAIL"),
+        ("F4b CG-19 machine-local path with valid digest detected",
+         gitpin(paths=[("/home/tze/.claude/skills/th/SKILL.md", H64)]), "FAIL"),
+        ("F4c CG-19 path outside its root_path detected",
+         gitpin(paths=[("skills/other/thing.md", H64)]), "FAIL"),
+        # P5 — locator hygiene (both passed the old check)
+        ("F5a CG-19 local repository with URL in prose detected",
+         gitpin(repo="/home/tze/.dotfiles/ai-bootstrap",
+                extra="  note: see https://example.com/x\n"), "FAIL"),
+        ("F5b CG-19 machine-local root_path with real repo URL detected",
+         gitpin(root="~/.claude/skills/th",
+                paths=[("~/.claude/skills/th/SKILL.md", H64)]), "FAIL"),
+        ("F5c CG-19 (negative) real lock's prose `~/` mentions not flagged",
+         read(SUBSTRATE_LOCK), "OK"),
+        # P6 — forge grammar
+        ("F6a CG-19 one-segment repository URL detected",
+         gitpin(repo="https://github.com/Tzeusy"), "FAIL"),
+        ("F6b CG-19 tree URL as repository locator detected",
+         gitpin(repo="https://github.com/o/r/tree/main/skills"), "FAIL"),
+        ("F6c CG-19 non-https scheme detected",
+         gitpin(repo="ssh://git@github.com/o/r"), "FAIL"),
+        ("F6d CG-19 host outside the forge allowlist detected",
+         gitpin(repo="https://not-a-real-host.invalid/o/r"), "FAIL"),
+        ("F6e CG-19 (negative) well-formed pin to a nonexistent repo passes "
+         "— the residual limit, kept executable",
+         gitpin(repo="https://github.com/NoSuchOrg9/no-such-repo-9"), "OK"),
+        # P7 — visibility
+        ("F7a CG-19 private substrate detected", gitpin(vis="private"), "FAIL"),
+        ("F7b CG-19 undeclared visibility detected",
+         gitpin().replace("  visibility: public\n", ""), "FAIL"),
+    ]
+
+    def drift(a_commit=H40, i_commit=H40B, a_sha=H64, i_sha=H64B,
+              drift_block=None, listed_material="true", extra=""):
+        d = drift_block if drift_block is not None else (
+            f"  drift:\n    detected: true\n    status: OPEN — surfaced\n"
+            f"    changed_paths:\n      - path: skills/th/bar.md\n"
+            f"        material: {listed_material}\n"
+            f"        change: whatever\n")
+        return (f"th_e:\n  repository: https://github.com/o/r\n"
+                f"  visibility: public\n"
+                f"  adopted:\n    commit: {a_commit}\n"
+                f"    root_path: skills/th\n    git_tree: {H40}\n"
+                f"    relevant_paths:\n      - path: skills/th/bar.md\n"
+                f"        sha256: {a_sha}\n"
+                f"  installed:\n    commit: {i_commit}\n"
+                f"    root_path: skills/th\n    git_tree: {H40B}\n"
+                f"    relevant_paths:\n      - path: skills/th/bar.md\n"
+                f"        sha256: {i_sha}\n" + d + extra)
+
+    F += [
+        ("F8a CG-19 undeclared drift over differing digests detected",
+         drift(drift_block=""), "FAIL"),
+        ("F8b CG-19 differing path absent from changed_paths detected",
+         drift(drift_block="  drift:\n    detected: true\n"
+                           "    status: OPEN\n    changed_paths:\n"
+                           "      - path: skills/th/other.md\n"
+                           "        material: true\n"), "FAIL"),
+        ("F8c CG-19 materiality claimed over identical content detected",
+         drift(i_sha=H64, i_commit=H40B, listed_material="true"), "FAIL"),
+        ("F8d CG-19 drift.detected false while commits differ detected",
+         drift(drift_block="  drift:\n    detected: false\n"
+                           "    status: OPEN\n"), "FAIL"),
+        ("F8e CG-19 drift status read from inside the drift group",
+         drift(drift_block="  drift:\n    detected: true\n"
+                           "    status: resolved\n    changed_paths:\n"
+                           "      - path: skills/th/bar.md\n"
+                           "        material: true\n",
+               extra="  build_status: open\n"), "FAIL"),
+        ("F8f CG-19 path present in one revision group only detected",
+         drift().replace("  installed:\n    commit: " + H40B,
+                         "  installed:\n    commit: " + H40B, 1)
+         .replace("      - path: skills/th/bar.md\n        sha256: " + H64B,
+                  "      - path: skills/th/added.md\n        sha256: " + H64B),
+         "FAIL"),
+    ]
+    for label, body, want in F:
+        cases.append((label, cg19(body)[0] == want))
 
     c = Cap()
     cg20_load_map_figures(
