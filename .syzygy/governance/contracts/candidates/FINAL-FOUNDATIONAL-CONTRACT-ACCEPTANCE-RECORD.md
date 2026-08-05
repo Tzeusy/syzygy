@@ -116,9 +116,16 @@ Each act is a chat-phrase ceremony executed in five steps:
    `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` (created at
    the first act) — committed and clone-visible.
 5. **One commit and an annotated tag** containing the installed content
-   and the act record; the SHA is mirrored afterwards to
+   and the act record. This is the last *required* step: after it, the act
+   is complete and fully recorded in the tracked tree.
+
+   On the founder machine only, the SHA is then mirrored to
    `_bootstrap/state/FOUNDER_DECISION_LOG.md` (process mirror only —
-   CT-027's rule).
+   CT-027's rule). **That mirror is not part of the ceremony.**
+   `_bootstrap/` is git-excluded and absent from every clone, so a step
+   that required it would make the ceremony unexecutable by anyone but the
+   founder — which is the defect this round exists to remove. Skipping it
+   loses nothing an act depends on.
 
 **What that record is, and is not (RFC3-16(c) — the two-state model).**
 The committed act record establishes an **owner-adopted bootstrap act**: a

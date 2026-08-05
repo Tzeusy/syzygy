@@ -1053,6 +1053,27 @@ def _dir_exists(d, all_paths):
                for p in all_paths)
 
 
+def _git_excluded_roots():
+    """Top-level directories `.gitignore` excludes, read rather than assumed.
+
+    A ceremony step that names one of these is executable on the machine that
+    happens to have the directory and nowhere else — the founder-local
+    dependency this repository keeps re-acquiring. Hardcoding the list would
+    make the check go stale the moment `.gitignore` changed, so it is parsed.
+    """
+    roots = set()
+    for line in (read(".gitignore") or "").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or line.startswith("!"):
+            continue
+        if any(c in line for c in "*?[]"):
+            continue
+        seg = line.strip("/").split("/")[0]
+        if seg and not seg.startswith("."):
+            roots.add(seg)
+    return roots
+
+
 def cg14_install_routes(res, record=None, all_paths=()):
     """Every path the acceptance ceremony names is valid for its role.
 
@@ -1065,7 +1086,12 @@ def cg14_install_routes(res, record=None, all_paths=()):
 
     Roles are decided by the forward-reference declaration, not by guessing:
     a path declared as act-created must be **absent**, and every other path
-    the ceremony names must be **present**.
+    the ceremony names must be **present** — and **present in a clone**, not
+    merely on the machine running the check. A git-excluded location is
+    treated as absent everywhere, because it is: the founder's copy of
+    `_bootstrap/` made a step read as executable here that failed the moment
+    the same check ran inside a clone, which is precisely the divergence a
+    clone-executable ceremony must not have.
     """
     body = record if record is not None else read(ACCEPTANCE_RECORD)
     if not body:
@@ -1080,15 +1106,23 @@ def cg14_install_routes(res, record=None, all_paths=()):
     if nxt:
         scope = scope[:nxt.start()]
     #: A ceremony that records its own past defect names the bad path in
-    #: order to say it was bad. Skip those lines, or the correction becomes
-    #: a permanent finding and the check trains its reader to ignore it.
+    #: order to say it was bad, and one that disclaims a founder-local mirror
+    #: names it in order to exclude it. Both are the opposite of an
+    #: instruction. The window is the line **and its two neighbours**: a
+    #: wrapped paragraph puts the marker and the path on different lines, and
+    #: a line-only test read the retraction paragraph's `_bootstrap/` as live.
     corrected = re.compile(r"\b(previously|never existed|exists in no clone|"
-                           r"corrected|unexecutable|was wrong|no longer)\b",
+                           r"corrected|unexecutable|was wrong|no longer|"
+                           r"git-excluded|not part of the ceremony|"
+                           r"founder machine only|absent from every clone)\b",
                            re.I)
+    excluded_roots = _git_excluded_roots()
     findings, examined = [], 0
     seen = set()
-    for line_no, line in enumerate(scope.splitlines(), 1):
-        if corrected.search(line):
+    lines = scope.splitlines()
+    for line_no, line in enumerate(lines, 1):
+        window = "\n".join(lines[max(0, line_no - 2):line_no + 1])
+        if corrected.search(window):
             continue
         for pm in re.finditer(r"`([A-Za-z0-9_.\-/]*/)`", line):
             path = pm.group(1)
@@ -1096,6 +1130,16 @@ def cg14_install_routes(res, record=None, all_paths=()):
                 continue
             seen.add(path)
             examined += 1
+            # A git-excluded root is absent in every clone. Answer from
+            # `.gitignore`, never from the local filesystem, so the founder
+            # machine and a fresh clone reach the same verdict.
+            if path.strip("/").split("/")[0] in excluded_roots:
+                findings.append(
+                    f"`{path}` — named by the ceremony as a location, but it "
+                    f"is git-excluded and therefore absent from every clone; "
+                    f"the step is executable only where the directory "
+                    f"already happens to exist")
+                continue
             # Resolve the way every other path reference here is written:
             # relative to the citing record, to the repo root, or as a
             # suffix. `topology-candidates/` cited from the record's own
@@ -1517,6 +1561,25 @@ def selftest():
         all_paths=(".syzygy/map/topology/keep.md",))
     cases.append(("CG-14 act-created home that already exists detected",
                   c.rows[0][0] == "FAIL"))
+
+    # The founder-machine divergence: `_bootstrap/` exists here and in no
+    # clone, so a filesystem answer passes locally and fails inside a clone.
+    # `all_paths` deliberately *contains* the directory — the fixture only
+    # fails if the check refuses the local answer and consults `.gitignore`.
+    c = Cap()
+    cg14_install_routes(c, record=(
+        "## 2. Ceremony\nmirror the SHA to `_bootstrap/state/`\n## 3. Next\n"),
+        all_paths=("_bootstrap/state/FOUNDER_DECISION_LOG.md",))
+    cases.append(("CG-14 git-excluded ceremony location detected",
+                  c.rows[0][0] == "FAIL"
+                  and "_bootstrap" in (c.rows[0][4] or [""])[0]))
+
+    c = Cap()
+    cg14_install_routes(c, record=(
+        "## 2. Ceremony\nthe git-excluded `_bootstrap/state/` is not part of "
+        "the ceremony\n## 3. Next\n"), all_paths=())
+    cases.append(("CG-14 disclaimed git-excluded mention exempted",
+                  c.rows[0][0] != "FAIL"))
 
     c = Cap()
     cg15_truncated_digests([], c, corpus=[("f.md", "digest `deadbeefcafe…`")])
