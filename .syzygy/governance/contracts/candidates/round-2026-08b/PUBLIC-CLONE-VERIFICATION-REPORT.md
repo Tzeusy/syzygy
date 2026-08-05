@@ -9,11 +9,11 @@
 ## Method
 
 ```sh
-git clone <repo> <scratch>/clone4
-cd <scratch>/clone4
+git clone <repo> <scratch>/clone6
+cd <scratch>/clone6
 ```
 
-Clone of commit `d8eec68`. The owner's working tree was not read from inside
+Clone of commit `c4f54e6`. The owner's working tree was not read from inside
 the clone; every command below ran with the clone as its working directory.
 Environment: Python 3.10.12, stdlib only, no network. `grep` on this machine
 is **ugrep 7.5.0**, so every load-bearing sweep used Python `re`.
@@ -33,14 +33,15 @@ it" rule meaningful rather than decorative.
 
 ## The clone found a defect the working tree could not
 
-[Observed] At the preceding commit the battery **diverged**: `check_governance.py`
-reported 0 FAIL in the working tree and 1 FAIL in the clone. CG-14 found that
+[Observed] At an earlier commit this round the battery **diverged**:
+`check_governance.py` reported 0 FAIL in the working tree and 1 FAIL in the
+clone. CG-14 found that
 the acceptance ceremony's step 5 named `_bootstrap/` as a location — which
 exists on the founder machine and in no clone — and the check had answered
 from the local filesystem, so it read the step as executable here and
 unexecutable there.
 
-Both halves are fixed at `d8eec68`. The ceremony's step 5 now ends at the
+Both halves are fixed. The ceremony's step 5 now ends at the
 commit and tag, with the mirror stated as founder-machine-only and explicitly
 outside the ceremony. CG-14 now parses git-excluded roots from `.gitignore`
 and treats them as absent on every machine, with a selftest fixture that
@@ -71,8 +72,8 @@ FAILED** — 32 of 32 entries.
 
 | Command | Result |
 |---|---|
-| `scripts/check_governance.py` | 24 OK, 8 WARN, **0 FAIL** over 32 checks |
-| `scripts/check_governance.py --selftest` | 19 fixtures, 0 failing |
+| `scripts/check_governance.py` | 24 OK, 9 WARN, **0 FAIL** over 33 checks |
+| `scripts/check_governance.py --selftest` | 46 fixtures, 0 failing |
 | `candidates/scripts/verify_final_prespec.py` | PASS |
 | `candidates/scripts/build_contract_index.py --check` | no drift |
 | `candidates/scripts/build_dependency_index.py --check` | no drift |
@@ -87,19 +88,19 @@ matching the figure the fixture records — and CG-18 recomputes that from the
 declared set rather than trusting it, over 16 measurements across all eight
 fixtures.
 
-## Founder-machine paths — 35 lines, enumerated rather than rounded
+## Founder-machine paths — 37 lines, enumerated rather than rounded
 
 A Python `re` sweep for `/home/<user>/` and `~/.claude/` across all 219
-tracked files found **35 lines in 16 files**. They are not one population, and
+tracked files found **37 lines in 16 files**. They are not one population, and
 the classification below accounts for every line:
 
 | Class | Lines | Files | Disposition |
 |---|---|---|---|
 | Raw reviewer output, stored verbatim | 23 | 9 | **Correct as-is.** A reviewer recording the path they ran from is evidence. Editing it would destroy the record the allowlist exists to protect |
-| Round records describing the defect, including this file | 6 | 3 | Correct — naming the bad path is how the report says it was bad |
+| Round records describing the defect, including this file | 5 | 3 | Correct — naming the bad path is how the report says it was bad |
+| The checker's own selftest fixtures | 4 | 1 | Correct — they construct founder-local locators (`/home/tze/…`, `~/.claude/…`) as inputs the check must reject. Three of the four are new this commit: CG-19 previously detected only the *absence* of a URL, so a machine path sitting beside a real repository URL passed |
 | The substrate lock explaining the problem it solves | 3 | 1 | Correct — the lock names the unresolvable path in order to replace it |
 | The rev9 adversarial findings file | 1 | 1 | Correct — it records a defect that existed |
-| The checker's own selftest fixtures | 1 | 1 | Correct — they construct founder-local locators to prove CG-19 detects them |
 | `craft-and-care/README.md:19` | 1 | 1 | **Retained deliberately**, as provenance for *where the text was read*, immediately followed by a pointer to `GOVERNANCE-SUBSTRATE-LOCK.yaml`, which pins the same material to a public repository, commit, and per-file digests |
 
 [Observed] **No live artifact directs a reader to a path only the founder
@@ -107,10 +108,13 @@ machine has.** The routing matrix and its working parts, which held five such
 lines earlier in this round, now hold zero — confirmed by this sweep's file
 list, which does not include them.
 
-The count differs from the 37 this file previously reported. That figure was
-taken over 211 tracked files at an earlier commit, before the routing-matrix
-and craft-README fixes landed and before this round's last three records were
-written. Both numbers were correct for their commit; neither transfers.
+The count has moved twice this round — 37 over 211 tracked files, then 35,
+now 37 again over 219. Each figure was correct for its commit and none
+transfers. The movement is not drift: the routing-matrix and craft-README
+fixes removed six, and the CG-19 rebuild added three *deliberately*, as
+fixtures that feed the check a founder-local locator to prove it rejects one.
+A sweep total is a measurement, not a target, and a falling number is not by
+itself the goal.
 
 ## What this report does not establish
 
