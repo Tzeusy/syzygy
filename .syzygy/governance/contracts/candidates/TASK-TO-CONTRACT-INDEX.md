@@ -40,14 +40,14 @@ where 06 names them.
 
 | Task class | `applies_to` | Modules to load (per 06) | Measured |
 |---|---|---|---|
-| Kernel implementer | `kernel` | `rfcs/RFC-0001-project-graph-identity-state-planes.md` · `rfcs/RFC-0002/snapshot-and-evaluation-core.md` · `rfcs/RFC-0002/challenge-lifecycle.md` · `rfcs/RFC-0002/reconciliation-chain.md` · `rfcs/RFC-0003/governance-homes-and-owner-acts.md` | 19,439 w ≈ 26,242 tok |
-| Surface implementer — Polaris | `polaris` | `rfcs/RFC-0007/` (README + narrative-contract + rendering-and-surface) · `rfcs/RFC-0002/rendering-vocabularies.md` · `rfcs/RFC-0006-cross-surface-selection-query-drawer.md` | 17,207 w ≈ 23,229 tok |
-| Surface implementer — Trajectory | `trajectory` | `rfcs/RFC-0008/` (README + identity-authority-materialization + state-vocabulary-and-cost + accounting-reconciliation-and-release) · `rfcs/RFC-0002/rendering-vocabularies.md` · `rfcs/RFC-0006-…` | 17,741 w ≈ 23,950 tok |
-| Surface implementer — Orrery | `orrery` | `rfcs/RFC-0009/` (README + semantic-geography + visual-grammar-and-lenses + interaction-parity-and-release) · `rfcs/RFC-0002/rendering-vocabularies.md` · `rfcs/RFC-0006-…` | 24,166 w ≈ 32,624 tok |
-| Adapter author | `kernel`, `trajectory`, `orrery` | `rfcs/RFC-0004/general-contract.md` · `rfcs/RFC-0004/named-adapters.md` · `rfcs/RFC-0008/state-vocabulary-and-cost.md` · `rfcs/RFC-0003/governance-homes-and-owner-acts.md` | 13,286 w ≈ 17,936 tok |
-| Security / execution-profile work | `kernel`, `machine-clients` | the relevant `rfcs/RFC-0005/` module · `rfcs/RFC-0003/governance-homes-and-owner-acts.md` · `doctrine:security.md` · `craft:security-and-secrets.md` | 7,968 w ≈ 10,756 tok (with `execution-profiles.md` as the relevant module) |
-| Mission Control / CLI / MCP spec author | `mission-control`, `machine-clients` | `rfcs/RFC-0010-mission-control-autonomy.md` · `rfcs/RFC-0011-context-compiler.md` · `rfcs/RFC-0005/admission-and-boundary.md` · `rfcs/RFC-0006-…` · `rfcs/RFC-0003/governance-homes-and-owner-acts.md` | 17,584 w ≈ 23,738 tok |
-| Narrative author | `polaris` | `rfcs/RFC-0007/README.md` · `rfcs/RFC-0007/narrative-contract.md` · `rfcs/RFC-0002/rendering-vocabularies.md` · `doctrine:vision.md` | 12,046 w ≈ 16,262 tok |
+| Kernel implementer | `kernel` | `rfcs/RFC-0001-project-graph-identity-state-planes.md` · `rfcs/RFC-0002/snapshot-and-evaluation-core.md` · `rfcs/RFC-0002/challenge-lifecycle.md` · `rfcs/RFC-0002/reconciliation-chain.md` · `rfcs/RFC-0003/governance-homes-and-owner-acts.md` | 19,399 w ≈ 26,189 tok |
+| Surface implementer — Polaris | `polaris` | `rfcs/RFC-0007/` (README + narrative-contract + rendering-and-surface) · `rfcs/RFC-0002/rendering-vocabularies.md` · `rfcs/RFC-0006-cross-surface-selection-query-drawer.md` | 17,186 w ≈ 23,201 tok |
+| Surface implementer — Trajectory | `trajectory` | `rfcs/RFC-0008/` (README + identity-authority-materialization + state-vocabulary-and-cost + accounting-reconciliation-and-release) · `rfcs/RFC-0002/rendering-vocabularies.md` · `rfcs/RFC-0006-…` | 17,712 w ≈ 23,911 tok |
+| Surface implementer — Orrery | `orrery` | `rfcs/RFC-0009/` (README + semantic-geography + visual-grammar-and-lenses + interaction-parity-and-release) · `rfcs/RFC-0002/rendering-vocabularies.md` · `rfcs/RFC-0006-…` | 24,137 w ≈ 32,585 tok |
+| Adapter author | `kernel`, `trajectory`, `orrery` | `rfcs/RFC-0004/general-contract.md` · `rfcs/RFC-0004/named-adapters.md` · **`rfcs/RFC-0002/rendering-vocabularies.md`** · **`rfcs/RFC-0005/execution-profiles.md`** · `rfcs/RFC-0003/governance-homes-and-owner-acts.md` | 14,346 w ≈ 19,367 tok |
+| Security / execution-profile work | `kernel`, `machine-clients` | the relevant `rfcs/RFC-0005/` module · `rfcs/RFC-0003/governance-homes-and-owner-acts.md` · `doctrine:security.md` · `craft:security-and-secrets.md` | 7,956 w ≈ 10,741 tok (with `execution-profiles.md` as the relevant module) |
+| Mission Control / CLI / MCP spec author | `mission-control`, `machine-clients` | `rfcs/RFC-0010-mission-control-autonomy.md` · `rfcs/RFC-0011-context-compiler.md` · `rfcs/RFC-0005/admission-and-boundary.md` · `rfcs/RFC-0006-…` · `rfcs/RFC-0003/governance-homes-and-owner-acts.md` | 19,314 w ≈ 26,074 tok |
+| Narrative author | `polaris` | `rfcs/RFC-0007/README.md` · `rfcs/RFC-0007/narrative-contract.md` · `rfcs/RFC-0002/rendering-vocabularies.md` · `doctrine:vision.md` | 12,033 w ≈ 16,245 tok |
 
 **A reader-map row is a role's orientation, not a task packet.** Five of the
 eight rows exceed the charter's 20,000-token decomposition trigger (§11.4);
@@ -94,20 +94,38 @@ index's authorization.
   `05-CONTRACT-INDEX.yaml` and `CONTRACT-DEPENDENCY-INDEX.md` can. Adding
   those fields is a change to files inside act 1's digest set and is not
   made here.
-- **T-2 — three fixture totals are stale by exactly the edits made since
-  they were measured.** Fixtures 2 and 5 are +13 words (the RFC-0003
-  `governance-homes-and-owner-acts.md` retired-phrase fix, 4,401 → 4,414 w);
-  fixture 4 is +39 (that +13 plus +26 from this round's edits to
-  `craft:security-and-secrets.md`, 820 → 846 w). No selection changed —
-  only the measured size of an already-selected file.
-- **T-3 — the reader-map rows are role-scoped and five of eight exceed the
-  §11.4 20,000-token decomposition trigger.** Kernel implementer 26,242,
-  Orrery surface 32,624, Trajectory surface 23,950, Mission Control 23,738,
-  Polaris surface 23,229. 06 makes no token claim for the reader map, so
-  this contradicts nothing — but a packet compiled from a role row rather
-  than from a warrant will trip §11.4, and the routing should say so where
-  the reader map is used as a selection input.
-- **T-4 — `06-CONTEXT-LOAD-MAP.md` line 16 carries a stale module figure:**
-  RFC-0003 governance-homes **4,401 w**, actual **4,414 w** as of
-  2026-08-05. The rest of 06's per-module table reproduces exactly
-  (`wc -w`, all 32 modules, same date).
+- **T-2 — RETIRED 2026-08-05b, and it was wrong when written.** It named
+  three fixture totals as stale. All **eight** were stale, and the fix is
+  now mechanical: `check_governance.py` CG-18 recomputes every fixture's
+  digest and word count from its declared mandatory set, and all eight were
+  corrected. See `round-2026-08b/FINAL-CONTEXT-COMPILER-FIXTURE-REPORT.md`.
+- **T-3 — still true, and worse.** The reader-map rows are role-scoped and
+  **six of eight** now exceed the §11.4 20,000-token decomposition trigger:
+  Orrery surface 32,585, Kernel implementer 26,189, Mission Control 26,074
+  (was 23,738 — RFC-0010's correction plane), Trajectory surface 23,911,
+  Polaris surface 23,201, and Adapter author is now 19,367, just under. 06
+  makes no token claim for the reader map, so this contradicts nothing — but
+  a packet compiled from a role row rather than from a warrant will trip
+  §11.4, and the routing should say so where the reader map is a selection
+  input.
+- **T-4 — RETIRED 2026-08-05b, and it was wrong when written.** It named one
+  stale figure in `06-CONTEXT-LOAD-MAP.md` and asserted "the rest of 06's
+  per-module table reproduces exactly (all 32 modules)". **Eleven of eleven
+  contract rows were stale**, one by 1,745 words. The universal claim was
+  written without the sweep it describes. All rows are regenerated, and
+  CG-20 now recomputes every figure in that table against its module.
+- **T-5 — the Adapter-author row was wrong in both directions, corrected
+  2026-08-05b.** It omitted `RFC-0002/rendering-vocabularies.md`, which owns
+  RFC2-25 — the tier registry defining `gate-backed` / `report-fact` /
+  `asserted-by-worker`, the vocabulary RFC4-13 emits and cites five times —
+  and `RFC-0005/execution-profiles.md`, which owns RFC5-21, the profiled run
+  that *is* `gate-backed` route 1. It carried `RFC-0008/state-vocabulary-and-cost.md`,
+  which is in RFC-0004's derived `provides_to`, not its `depends_on`. A
+  packet compiled from the old row was incomplete against the package's own
+  declared dependencies, which RFC11-6 makes Unknown and blocks launch on.
+  Found by a fresh-engineer review attempting the task, not by a check.
+- **T-6 — this index is still hand-maintained, and that is the root cause of
+  T-2 through T-5.** Every defect above is a derived figure that drifted
+  because nothing recomputed it. Two of them now have checks (CG-18, CG-20);
+  the reader-map totals in this file do not, because the row *membership* is
+  editorial and cannot be derived until T-1's task metadata exists.

@@ -93,7 +93,7 @@ Each act is a chat-phrase ceremony executed in five steps:
    every clone — to `.syzygy/map/topology/`, verified by the bundle
    manifest's own `sha256sum -c` block run from the installed directory.
    (`.syzygy/map/` already exists as the candidates' parent; act 3 creates
-   the `topology/` home inside it, and does **not** delete
+   the `.syzygy/map/topology/` home inside it, and does **not** delete
    `topology-candidates/` — retirement of the candidate home is a separate,
    later cleanup, so a failed act leaves the source intact.) Installation is
    a copy, never an edit. **Corrected 2026-08-05:** this step previously

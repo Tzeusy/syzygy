@@ -44,6 +44,7 @@ Checks
   CG-17  every RFC 0006-0011 clause is routed exactly once
   CG-18  context fixtures still recompute (digest and word count)
   CG-19  substrate pins resolve publicly, and drift carries a disposition
+  CG-20  the context-load map's word figures still recompute
 
 `--selftest` runs every check above against a synthetic failing input. A
 validator that has never been shown to fail is indistinguishable from a
@@ -189,6 +190,8 @@ EXTERNAL = ("http://", "https://", "mailto:", "ftp://")
 FORWARD_REFS = (
     ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",  # created by act 1
     ".syzygy/governance/contracts/rfcs/",                     # act-1 install home
+    ".syzygy/governance/contracts/history/",                  # act-1 companion
+    ".syzygy/governance/contracts/matrix-rows/",              # act-1 companion
     ".syzygy/map/topology/",                                  # act-3 install home
     ".syzygy/project.yaml",                                   # no governed project yet
     "openspec/",                                              # does not exist yet
@@ -955,6 +958,7 @@ def cg12_bootstrap_sources(paths, res):
 RFCS_DIR = f"{CANDIDATES}/rfcs"
 DEPENDS_RE = re.compile(r"^depends_on:\s*\[(.*?)\]\s*$", re.M)
 ROUTING_MATRIX = f"{CANDIDATES}/SURFACE-CLAUSE-ROUTING-MATRIX.md"
+LOAD_MAP = f"{CANDIDATES}/06-CONTEXT-LOAD-MAP.md"
 FIXTURES_DIR = f"{CANDIDATES}/fixtures"
 SUBSTRATE_LOCK = ".syzygy/governance/policies/GOVERNANCE-SUBSTRATE-LOCK.yaml"
 TERM_REGISTRY = f"{CANDIDATES}/policy-candidates/TERM-REGISTRY.md"
@@ -1032,45 +1036,90 @@ def cg13_dependency_graph(res, modules=None):
             details=findings)
 
 
-def cg14_install_routes(res, record=None):
-    """Every install source/destination the acceptance record names is valid.
+def _dir_exists(d, all_paths):
+    """A directory reference resolves if it names a real directory, whether
+    written from the repo root, from the acceptance record's own directory,
+    or as a suffix of one. Directories are not in the file corpus, so the
+    file resolver cannot answer this — asking it reported four real
+    directories as missing."""
+    d = d.strip("/")
+    if not d:
+        return True
+    for base in (ROOT, os.path.join(ROOT, os.path.dirname(ACCEPTANCE_RECORD))):
+        if os.path.isdir(os.path.normpath(os.path.join(base, d))):
+            return True
+    return any(p == d or p.startswith(d + "/") or ("/" + d + "/") in p
+               for p in all_paths)
+
+
+def cg14_install_routes(res, record=None, all_paths=()):
+    """Every path the acceptance ceremony names is valid for its role.
 
     An act that installs candidate material states where it reads from and
     where it writes to. A wrong source silently installs the wrong bytes; a
-    destination that is not a declared act-created home means either the
-    home already exists (the act is not an act) or the path is a typo that
-    surfaces only mid-ceremony. Both were live: act 3's install source named
-    a directory that had been renamed.
+    destination that already exists means the act is not an act. Both were
+    live: act 3's install step named `topology/`, a directory that has never
+    existed, and the link checker could not see it because an allowlist
+    written for stale *history* references was absorbing a live *instruction*.
+
+    Roles are decided by the forward-reference declaration, not by guessing:
+    a path declared as act-created must be **absent**, and every other path
+    the ceremony names must be **present**.
     """
     body = record if record is not None else read(ACCEPTANCE_RECORD)
     if not body:
         res.add("WARN", "CG-14  acceptance install routes valid", 0, 0,
                 "route", note=f"{ACCEPTANCE_RECORD} unreadable")
         return
-    pat = re.compile(r"`(?P<src>[A-Za-z0-9_.\-/]+/)`\s*(?:→|->)\s*"
-                     r"`(?P<dst>[A-Za-z0-9_.\-/]+/)`")
+    # The ceremony is section 2. Scope to it so ordinary prose citations
+    # elsewhere in the record are not mistaken for install instructions.
+    m = re.search(r"^##\s*2\..*$", body, re.M)
+    scope = body[m.start():] if m else body
+    nxt = re.search(r"^##\s*3\.", scope, re.M)
+    if nxt:
+        scope = scope[:nxt.start()]
+    #: A ceremony that records its own past defect names the bad path in
+    #: order to say it was bad. Skip those lines, or the correction becomes
+    #: a permanent finding and the check trains its reader to ignore it.
+    corrected = re.compile(r"\b(previously|never existed|exists in no clone|"
+                           r"corrected|unexecutable|was wrong|no longer)\b",
+                           re.I)
     findings, examined = [], 0
-    for line_no, line in enumerate(body.splitlines(), 1):
-        for m in pat.finditer(line):
+    seen = set()
+    for line_no, line in enumerate(scope.splitlines(), 1):
+        if corrected.search(line):
+            continue
+        for pm in re.finditer(r"`([A-Za-z0-9_.\-/]*/)`", line):
+            path = pm.group(1)
+            if path in seen or path in ("./", "/"):
+                continue
+            seen.add(path)
             examined += 1
-            src, dst = m.group("src"), m.group("dst")
-            if not os.path.isdir(os.path.join(ROOT, src.rstrip("/"))):
-                findings.append(f"line {line_no} — install source `{src}` "
-                                f"does not exist; the act would read nothing")
-            if os.path.exists(os.path.join(ROOT, dst.rstrip("/"))):
-                findings.append(f"line {line_no} — install destination "
-                                f"`{dst}` already exists; an act that creates "
-                                f"it cannot be unperformed")
-            elif not _forward_declared(dst):
-                findings.append(f"line {line_no} — install destination "
-                                f"`{dst}` is neither present nor a declared "
-                                f"forward reference; it is a typo or an "
-                                f"undeclared home")
+            # Resolve the way every other path reference here is written:
+            # relative to the citing record, to the repo root, or as a
+            # suffix. `topology-candidates/` cited from the record's own
+            # directory is not a missing directory.
+            exists = _dir_exists(path.rstrip("/"), all_paths)
+            # A *bare* directory name (`history/`) is a source relative to
+            # the record; an act-created home is always written as a full
+            # path. Without this, suffix matching classified the candidate
+            # package's own `history/` as the act-1 destination of the same
+            # name and demanded it not exist.
+            if "/" in path.strip("/") and _is_forward(path):
+                if exists:
+                    findings.append(
+                        f"`{path}` — declared as created by an act, but it "
+                        f"already exists; the act cannot be performed")
+            elif not exists:
+                findings.append(
+                    f"`{path}` — named by the ceremony as an existing "
+                    f"location, but it does not exist; the step cannot be "
+                    f"executed as written")
     res.add("FAIL" if findings else ("OK" if examined else "WARN"),
             "CG-14  acceptance install routes valid", examined,
-            len(findings), "route",
-            note=None if examined else "no `source/ → destination/` pairs "
-                                       "found in the acceptance record",
+            len(findings), "path",
+            note=None if examined else "no directory paths found in the "
+                                       "acceptance record's ceremony section",
             details=findings)
 
 
@@ -1417,9 +1466,19 @@ def selftest():
     cases[-1] = ("CG-13 dangling edge detected",
                  _selftest_dangling())
 
-    c = Cap(); cg14_install_routes(c, record="install `no-such-dir/` → `scripts/`")
-    cases.append(("CG-14 bad source and existing destination detected",
-                  c.rows[0][0] == "FAIL" and len(c.rows[0][4]) == 2))
+    c = Cap()
+    cg14_install_routes(c, record=(
+        "## 2. Ceremony\ncopy from `no-such-dir/` to "
+        "`.syzygy/governance/contracts/rfcs/`\n## 3. Next\n"), all_paths=())
+    cases.append(("CG-14 nonexistent install source detected",
+                  c.rows[0][0] == "FAIL" and len(c.rows[0][4]) == 1))
+
+    c = Cap()
+    cg14_install_routes(c, record=(
+        "## 2. Ceremony\ncreates `.syzygy/map/topology/`\n## 3. Next\n"),
+        all_paths=(".syzygy/map/topology/keep.md",))
+    cases.append(("CG-14 act-created home that already exists detected",
+                  c.rows[0][0] == "FAIL"))
 
     c = Cap()
     cg15_truncated_digests([], c, corpus=[("f.md", "digest `deadbeefcafe…`")])
@@ -1459,6 +1518,13 @@ def selftest():
     cg19_substrate_lock(c, body="th_x:\n  source: /home/someone/local\n")
     cases.append(("CG-19 founder-local pin detected", c.rows[0][0] == "FAIL"))
 
+    c = Cap()
+    cg20_load_map_figures(
+        c, body="| RFC-0001 | single, 99,999 |",
+        modules=[f"{RFCS_DIR}/RFC-0001-project-graph-identity-state-planes.md"])
+    cases.append(("CG-20 stale load-map figure detected",
+                  c.rows[0][0] == "FAIL"))
+
     width = max(len(n) for n, _ in cases)
     bad = 0
     for name, ok in cases:
@@ -1489,6 +1555,61 @@ def _selftest_dangling():
             return c.rows[0][0] == "FAIL"
         finally:
             ROOT = keep
+
+
+def cg20_load_map_figures(res, body=None, modules=None):
+    """The context-load map's per-module word figures still recompute.
+
+    The map says outright that "all figures below are its output,
+    re-runnable from this packet." They were not: eleven of eleven contract
+    rows were stale, one of them by 1,745 words. A fresh engineer caught two
+    of the eleven by hand and, having caught them, correctly stopped
+    trusting the file — which is the real cost of a stale derived view. It
+    does not merely mislead; it spends the reader's trust in everything
+    around it.
+
+    Matching is by figure, not by short name: the map abbreviates module
+    names (`identity/materialization`, `consent-egress`) and a name table
+    would be one more thing to keep in step. Every number in a contract's
+    row must be some module of that contract's actual word count, and the
+    row must carry one number per module.
+    """
+    text = body if body is not None else read(LOAD_MAP)
+    if not text:
+        res.add("WARN", "CG-20  load-map figures recompute", 0, 0, "figure",
+                note=f"{LOAD_MAP} unreadable")
+        return
+    mods = modules if modules is not None else _rfc_modules()
+    actual = {}
+    for rel in mods:
+        m = re.search(r"RFC-\d{4}", rel)
+        if m:
+            actual.setdefault(m.group(0), []).append(
+                len(read(rel).split()))
+    findings, examined = [], 0
+    for line in text.splitlines():
+        m = re.match(r"\|\s*(RFC-\d{4})\s*\|\s*(.+?)\s*\|\s*$", line)
+        if not m or m.group(1) not in actual:
+            continue
+        rfc, cell = m.group(1), m.group(2)
+        figs = [int(x.replace(",", "")) for x in re.findall(r"\b(\d[\d,]{2,})\b", cell)]
+        pool = list(actual[rfc])
+        for f in figs:
+            examined += 1
+            if f in pool:
+                pool.remove(f)
+            else:
+                findings.append(f"{rfc} — the map states {f:,} words; no "
+                                f"module of {rfc} has that count "
+                                f"(actual: {sorted(actual[rfc])})")
+        if len(figs) != len(actual[rfc]):
+            findings.append(f"{rfc} — the map lists {len(figs)} figure(s) "
+                            f"for {len(actual[rfc])} module(s)")
+    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+            "CG-20  load-map figures recompute", examined, len(findings),
+            "figure",
+            note=None if examined else "no contract rows found in the load map",
+            details=findings)
 
 
 # --------------------------------------------------------------- main
@@ -1546,12 +1667,13 @@ def main():
                      "not clean; re-run inside a git checkout")
     cg12_bootstrap_sources(existing, res)
     cg13_dependency_graph(res)
-    cg14_install_routes(res)
+    cg14_install_routes(res, all_paths=existing)
     cg15_truncated_digests(existing, res)
     cg16_term_registry_status(existing, res)
     cg17_routing_completeness(res)
     cg18_fixture_freshness(res)
     cg19_substrate_lock(res)
+    cg20_load_map_figures(res)
     res.report()
     return 1 if res.failed() else 0
 

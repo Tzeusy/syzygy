@@ -21,17 +21,17 @@ output, re-runnable from this packet.
 
 | Contract | Modules (words) |
 |---|---|
-| RFC-0001 | single, 8,353 (justified oversize — dictionary; see 03 report) |
-| RFC-0002 | core 1,964 · challenge 2,231 · reconciliation 2,477 · rendering 2,397 · README 1,818 |
-| RFC-0003 | manifests 4,824 · governance-homes 4,414 · README 920 |
-| RFC-0004 | general 1,680 · adapters 3,685 · execution-record 1,775 · fidelity 1,742 · README 1,676 |
-| RFC-0005 | admission 3,643 · consent-egress 2,351 · profiles 2,197 · README 2,005 |
-| RFC-0006 | single, 4,174 |
-| RFC-0007 | narrative 5,167 · rendering 3,143 · README 2,326 |
-| RFC-0008 | identity/materialization 2,686 · state/cost 3,507 · accounting 3,055 · README 1,922 |
-| RFC-0009 | geography 6,999 · grammar/lenses 5,540 · parity/release 3,027 · README 2,029 |
-| RFC-0010 | single, 3,096 |
-| RFC-0011 | single, 2,257 |
+| RFC-0001 | single, 8,342 (justified oversize — dictionary; see 03 report) |
+| RFC-0002 | core 1,955 · challenge 2,225 · reconciliation 2,470 · rendering 2,388 · README 1,809 |
+| RFC-0003 | manifests 4,819 · governance-homes 4,407 · README 913 |
+| RFC-0004 | general 1,677 · adapters 3,682 · execution-record 1,770 · fidelity 1,737 · README 1,670 |
+| RFC-0005 | admission 3,635 · consent-egress 2,343 · profiles 2,192 · README 1,997 |
+| RFC-0006 | single, 4,167 |
+| RFC-0007 | narrative 5,165 · rendering 3,142 · README 2,324 |
+| RFC-0008 | identity/materialization 2,684 · state/cost 3,504 · accounting 3,051 · README 1,918 |
+| RFC-0009 | geography 6,996 · grammar/lenses 5,538 · parity/release 3,023 · README 2,025 |
+| RFC-0010 | single, 4,841 |
+| RFC-0011 | single, 2,264 |
 
 ## Reader map — who loads what
 
