@@ -27,7 +27,7 @@ reading it" rule meaningful rather than decorative.
 
 | Act | Subject | Argument as computed in the clone |
 |---|---|---|
-| 1 | `ACTIVE-CONTRACT-MANIFEST.txt` | `718fe095192a415fe7300b039e887b4d286bbb3d06b45e0f823cfb1ce6d4724f` |
+| 1 | `ACTIVE-CONTRACT-MANIFEST.txt` | `ac07a06497cd72b8dd10a9a42776a6a41d7c45740ffec7905d4c27fbe7146b4f` |
 | 2 | `craft-and-care/testing-and-verification.md` | `3858820f64768ef20e6514fe8adb28076263f071ac77e66a5520a612f3bcb26d` |
 | 3 | `topology-candidates/BUNDLE-MANIFEST.md` | `7a3b22494a08d888901c1f0cec76833dc926e89b6f510b5abf8963071fbaeb45` |
 | 4 | `intent/OVERVIEW.md` | `01d629515993188338f6a0e2d84d67543d8569003759a7c8f571a90b129c7cd1` |

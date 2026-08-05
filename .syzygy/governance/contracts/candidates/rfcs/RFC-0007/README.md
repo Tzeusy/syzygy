@@ -38,13 +38,13 @@ namespace, no duplicated normative clauses, no renumbering.
 
 | Module | File | Clauses | Words |
 |---|---|---|---|
-| 1 — the curated narrative contract | `narrative-contract.md` | RFC7-1..RFC7-25, incl. RFC7-2(a)-(c), RFC7-9(a)-(c), RFC7-11(a) | 5,167 |
-| 2 — rendering and surface | `rendering-and-surface.md` | RFC7-26..RFC7-38 | 3,143 |
+| 1 — the curated narrative contract | `narrative-contract.md` | RFC7-1..RFC7-25, incl. RFC7-2(a)-(c), RFC7-9(a)-(c), RFC7-11(a) | 5,165 |
+| 2 — rendering and surface | `rendering-and-surface.md` | RFC7-26..RFC7-38 | 3,142 |
 
 Counts are `wc -w` at the rev10 compaction; neither module approaches the
-~7,000 ceiling, and this index is 2,326. Package union: 10,636 words, of which
-the default reading path for one task is this index plus one module — 7,493
-(module 1) or 5,469 (module 2), against the pre-split single file's mandatory
+~7,000 ceiling, and this index is 2,324. Package union: 10,631 words, of which
+the default reading path for one task is this index plus one module — 7,489
+(module 1) or 5,466 (module 2), against the pre-split single file's mandatory
 8,006.
 
 **Lookup rule (deterministic).** For any citation `RFC7-n`, read `n` as an

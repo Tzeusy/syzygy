@@ -134,7 +134,7 @@ identity change alters what a challenge or reconciliation chain resolves to.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`9d7419a0e5708899…` (recompute: `cat <mandatory files> | sha256sum`).
+`27955fccd11d8b63…` (recompute: `cat <mandatory files> | sha256sum`).
 Compiler: `context_load.py`, selection rules rev10-fixtures.
 
 **Digest-source pinning.** This digest and the totals above are computed over

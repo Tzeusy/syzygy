@@ -1,4 +1,4 @@
-# Human clarity — what nine independent reviews found, and what changed
+# Human clarity — what ten independent reviews found, and what changed
 
 > **Non-authoritative round record.** The raw reviews in `reviews/` are the
 > authority for what each reviewer said; verdict words below are **copied,
@@ -11,8 +11,10 @@
 > whole corpus, learning thirty terms up front, resolving contradictory
 > metadata, or relying on founder-local history.
 
-Nine fresh-context sessions were commissioned, each given the artifacts and
-the acceptance criteria and none given the authoring conversation.
+Ten fresh-context sessions were commissioned, each given the artifacts and
+the acceptance criteria and none given the authoring conversation. Nine ran
+against the corpus as it stood; the tenth, RC-10, was commissioned last and
+given the exact bytes act 1 would bind.
 
 ## The verdicts, copied
 
@@ -27,10 +29,12 @@ the acceptance criteria and none given the authoring conversation.
 | RC-7 | Mission-safety adversarial | 11 blocking seams; per-attack verdicts |
 | RC-8 | Evidence and security | **EXCEPTIONS** |
 | RC-9 | Public clone | **EXCEPTIONS** |
+| RC-10 | Confirming review over the final bytes | **REVISE** |
 
 **Not one CONFIRM.** That is the headline and it should not be softened: the
-round asked nine independent readers whether this corpus is clear and correct,
-and none of them said yes without qualification. Six said REVISE.
+round asked ten independent readers whether this corpus is clear and correct,
+and none of them said yes without qualification. Seven said REVISE — including
+the one commissioned specifically to confirm.
 
 The corpus is materially better than it was — the section below is not short.
 But "improved" and "clear" are different claims, and only the first is
@@ -49,10 +53,13 @@ established.
 | The adapter-author routing row is wrong in both directions and yields a packet incomplete against the package's own declared dependencies | RC-1 | Row corrected; recorded as T-5 |
 | The dependency graph reported 20 asymmetric edges at every generation under a green drift check | RC-4 | `provides_to` derived from `depends_on`; asymmetry is now unrepresentable. **CG-13** checks dangling edges and the README-union invariant |
 | Four dependency edges added on evidence that was not evidence — a boilerplate banner and a shape-parallel parenthetical read as reliances | RC-4 | All four reverted after independent re-verification |
-| Mission Control has a prevention plane and no correction plane | RC-7 | RFC10-17…22 added; nine of eleven blocking seams closed by clause text |
+| Mission Control has a prevention plane and no correction plane | RC-7 | RFC10-17…22 added; nine of eleven blocking seams addressed by clause text — seven fully, two partly, each unclosed part named in `MISSION-SAFETY-CLOSURE-REPORT.md` |
 | The §14 coverage review's stated digest names a value RFC-0010 has never carried | RC-7 | Independently re-verified and corrected on the review, with the wrong value left visible |
 | All eight context fixtures had drifted; two caught by hand | RC-6 | **CG-18** recomputes all eight, every run |
-| `missing-declaration` cited as RFC2-24 #4 where #4 is `stale-beyond-currency-bound` | RC-4 | Corrected to #1; all 13 ordinal citations swept |
+| `missing-declaration` cited as RFC2-24 #4 where #4 is `stale-beyond-currency-bound` | RC-4 | Corrected to #1; all 13 ordinal citations in the 32 contract modules swept, and the 20 across all candidate material outside `history/` and `reviews/` |
+| RFC10-18 forbade only `completed`, so an executing party could avoid adjudication by parking in `blocked` indefinitely | RC-10 | Fixed at rev11a: the reached state now depends on whether effects have been applied — `blocked` with no applied effects, **`failed`** with them, so RFC10-19's duties fire |
+| Twenty-one derived word counts inside act 1's digest set were stale — in the commit whose message said it corrected every stale derived value | RC-10 | Nineteen module rows and two prose figures corrected. **CG-21** now recomputes every package README row |
+| The mission-safety closure report misdescribed four of the nine seams it reported closed, including a carve-out that occurs zero times in RFC-0010 | RC-10 | All four rows rewritten from the clause text; two seams restated as *partly* closed with the unclosed part named |
 
 ### Open, and honestly so
 
@@ -68,16 +75,23 @@ established.
 
 ## The one thing that did not get better
 
-**No confirming review is bound to the bytes now offered.** The reviews above
-drove the changes; the changes moved the manifest twice; so with one exception
-every review predates what an owner would accept. The exception is the review
-commissioned over the final bytes, whose verdict is recorded in
-`FINAL-PRE-SPECIFICATION-READINESS-REPORT.md`.
+**The confirming review did not confirm.** RC-10 was commissioned over the
+exact bytes act 1 binds — the one gap every earlier review left open — and
+returned **REVISE**, with findings that landed on this round's own work rather
+than on inherited material: a live escape in a clause written *this round* to
+close an escape, twenty-one stale derived values inside act 1's digest set,
+and four misdescribed seams in the report that claimed the seams were closed.
 
-This is not a process nicety. Six clauses of the Mission contract — the ones
-that answer what happens after an agent has already done something
-irreversible — were written in response to a review and have not been read by
-one.
+All three are fixed and each fix carries a check. But the shape of the result
+is what matters: **every one of those defects was introduced by the pass that
+was correcting defects.** The corpus is not converging because it is being
+reviewed once more; it is converging because each finding leaves behind a
+mechanical check. There are eleven of those now (CG-11…CG-21) that did not
+exist a round ago.
+
+The residual is unchanged in kind, only smaller: the fixes RC-10 prompted have
+themselves been read by no reviewer, and one of them edits a contract inside
+act 1's digest set.
 
 ## Assessment against the standard
 

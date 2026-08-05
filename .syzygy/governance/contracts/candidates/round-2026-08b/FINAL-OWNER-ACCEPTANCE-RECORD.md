@@ -12,14 +12,22 @@
 
 ## Read this first
 
-**One thing changed that matters more than the rest.** The contract corpus
-moved twice on 2026-08-05b, and **no confirming review is bound to the bytes
-you would be accepting.** The last CONFIRM (2026-08-03) named a manifest
-digest that has since been superseded twice. Six new clauses (RFC10-17…22)
-and a corrected dependency graph sit inside act 1's digest set, read by the
-round's own reviewers but by no review bound to the final argument.
+**One thing changed that matters more than the rest.** A confirming review
+was commissioned over the exact bytes act 1 binds — closing the gap every
+earlier round left open — and it returned **REVISE**, not CONFIRM.
 
-That is the round's principal residual. Everything else below is smaller.
+RC-10 found three defects that this round's own corrective work had
+introduced: a live escape in RFC10-18, a clause written *this round* to close
+an escape; twenty-one stale derived word counts inside act 1's digest set, in
+the commit whose message said it had corrected every stale derived value; and
+four misdescribed seams in the report asserting those seams were closed. All
+three are fixed, each with a mechanical check behind it. **Those fixes have in
+turn been read by no reviewer**, and one of them edits a contract inside act
+1's digest set.
+
+That is the round's principal residual, and it is now a smaller one of the
+same kind rather than a different one. Everything else below is smaller
+still.
 
 ## 1. The five acts, at their current arguments
 
@@ -28,7 +36,7 @@ through CG-7d. A CG-7 failure means **do not perform that act**.
 
 | Act | Argument (verify, never transcribe) | Changed this round? |
 |---|---|---|
-| 1 — foundational contracts | `718fe095192a415fe7300b039e887b4d286bbb3d06b45e0f823cfb1ce6d4724f` | **Yes, twice** |
+| 1 — foundational contracts | `ac07a06497cd72b8dd10a9a42776a6a41d7c45740ffec7905d4c27fbe7146b4f` | **Yes, twice** |
 | 2 — craft amendment CC-TEST-2 | `3858820f64768ef20e6514fe8adb28076263f071ac77e66a5520a612f3bcb26d` | No |
 | 3 — topology bundle | `7a3b22494a08d888901c1f0cec76833dc926e89b6f510b5abf8963071fbaeb45` | No |
 | 4 — project overview | `01d629515993188338f6a0e2d84d67543d8569003759a7c8f571a90b129c7cd1` | No |
@@ -44,12 +52,14 @@ depending on how you rule D4.
 review RC-7 found the contract had a prevention plane and no correction
 plane: thorough about stopping an agent acquiring authority it was not
 granted, nearly silent about what happens after something goes wrong inside a
-grant that was legitimate. Nine of its eleven blocking seams are closed by
+grant that was legitimate. Nine of its eleven blocking seams are addressed by
 clause text — budget reservation at dispatch, completion adjudication by
 someone other than the executing party, effect reversibility and recovery
 ownership, stop guarantees over in-flight work, cross-project consent
-selection, and attention-queue bounds. Details and the two seams that are
-*not* closed by text: `MISSION-SAFETY-CLOSURE-REPORT.md`.
+selection, and attention-queue bounds. Seven of those nine close fully; two
+close partly, and the closure report names the part each leaves open rather
+than rounding it up. Details, and the two seams *not* addressed by text at
+all: `MISSION-SAFETY-CLOSURE-REPORT.md`.
 
 **A dependency graph whose two halves can no longer disagree.** `provides_to`
 was removed from all 32 modules and is now derived by reversing `depends_on`,
@@ -66,20 +76,25 @@ than quietly applied, because the mistake is the more useful record.
 **One wrong value in a closed vocabulary.** `missing-declaration` was cited
 as RFC2-24 #4 where #4 is `stale-beyond-currency-bound` — in a vocabulary
 RFC6-14 requires emitted verbatim, and one you ruled on directly. Corrected;
-all 13 ordinal citations now agree with the table.
+the 13 ordinal citations inside the 32 contract modules now agree with the
+table, as do the 20 across all candidate material outside `history/` and
+`reviews/`. Both denominators are stated because a bare "all 13" invites the
+reader to assume the sweep covered the corpus, and it covered the act.
 
 ## 3. What is knowingly imperfect inside the acts
 
 | # | Inside act | What is wrong with it |
 |---|---|---|
-| 1 | act 1 | **No confirming review reaches the current bytes.** See "Read this first" |
+| 1 | act 1 | **The confirming review returned REVISE, and its own repairs are unreviewed.** See "Read this first" |
 | 2 | act 1 | RFC-0001 is 8,342 words against a 7,000 ceiling — justified as a dictionary-shaped kernel contract, not fixed |
-| 3 | act 1 | The corpus is 100,673 words against a 35–50k target band. Nine compaction passes each hit a floor at −12…−22%. What was optimized instead is the per-task load |
+| 3 | act 1 | The corpus is 100,862 words against a 35–50k target band (recompute with `verify_final_prespec.py`; the figure moves whenever a module does). Nine compaction passes each hit a floor at −12…−22%. What was optimized instead is the per-task load |
 | 4 | act 1 | Two one-way constraint relations (RFC-0006→RFC-0005, RFC8-9/RFC7-24) are stated in one contract, acknowledged by no clause in the other, enforced by neither — **P-21** |
 | 5 | act 1 | RFC9-8(a) and RFC3-10/11/21 disagree about which plane an owner-gated registry belongs to. The corpus contains both the error and RFC10-15's remedy — **P-22** |
 | 6 | act 1 | RFC9-32 cites `RFC 0008 §5` — a navigational section — as authority |
 | 7 | act 5 | The D3 `vision.md` insertion settles open question **D4** by stipulation. Now disclosed at D3 §6 with a reviewer alternative; neither is adopted — **P-24** |
 | 8 | act 5 | The `architecture.md` floor as drafted omits any maximum autonomy level, moving "how autonomous may a mission be" permanently out of doctrine |
+| 9 | act 1 | RFC10-20 stops runs and their descendants, but **not child missions**; RFC10-19 does not state the failed-run / completed-sibling relationship. Both are RC-10 findings left open by text, not closed |
+| 10 | act 1 | The RFC10-18 repair RC-10 prompted is inside act 1's digest set and **has been read by no reviewer** |
 
 ## 4. What this round did *not* do, and cannot
 
@@ -99,8 +114,8 @@ first run — one by 1,738 words.
 ## 5. Evidence you can reproduce
 
 ```sh
-python3 scripts/check_governance.py                    # 30 checks, denominators printed
-python3 scripts/check_governance.py --selftest         # each check shown able to fail
+python3 scripts/check_governance.py                    # 32 checks, denominators printed
+python3 scripts/check_governance.py --selftest         # 17 fixtures; each check shown able to fail
 python3 .syzygy/governance/contracts/candidates/scripts/verify_final_prespec.py
 python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --check
 python3 .syzygy/governance/contracts/candidates/scripts/build_dependency_index.py --check
@@ -116,6 +131,9 @@ same knowingly-broken file.
 
 Act 1 installs the 32 modules to `.syzygy/governance/contracts/rfcs/` and
 creates `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md`, which does
-not exist yet — its absence is the correct current state. The ceremony is
+not exist yet — its absence is the correct current state. Whether the acts
+*should* be performed now is answered, with its reasoning, in
+`FINAL-PRE-SPECIFICATION-READINESS-REPORT.md`; the short form is that act 1 is
+the one whose residual is live, and the other four are not waiting on it. The ceremony is
 `../FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md` §2, five steps, per
 act. Nothing here is self-executing.

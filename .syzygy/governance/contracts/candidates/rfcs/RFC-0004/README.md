@@ -41,10 +41,10 @@ namespace, no duplicated normative clauses, no renumbering.
 
 | Module | File | Clauses | Words |
 |---|---|---|---|
-| 1 — general contract | `general-contract.md` | RFC4-1..RFC4-9 | 1,680 |
-| 2 — named adapters | `named-adapters.md` | RFC4-10..RFC4-17, incl. RFC4-13(a), RFC4-13(b) | 3,685 |
-| 3 — execution record | `execution-record.md` | RFC4-18..RFC4-21 | 1,775 |
-| 4 — fidelity, joins, mappings | `fidelity-joins-and-mappings.md` | RFC4-22..RFC4-29 | 1,742 |
+| 1 — general contract | `general-contract.md` | RFC4-1..RFC4-9 | 1,677 |
+| 2 — named adapters | `named-adapters.md` | RFC4-10..RFC4-17, incl. RFC4-13(a), RFC4-13(b) | 3,682 |
+| 3 — execution record | `execution-record.md` | RFC4-18..RFC4-21 | 1,770 |
+| 4 — fidelity, joins, mappings | `fidelity-joins-and-mappings.md` | RFC4-22..RFC4-29 | 1,737 |
 
 Counts are `wc -w` at the rev10 compaction; no module approaches the ~7,000
 ceiling.

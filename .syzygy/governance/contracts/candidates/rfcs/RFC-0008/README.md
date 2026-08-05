@@ -40,9 +40,9 @@ namespace, no duplicated normative clauses, no renumbering.
 
 | Module | File | Clauses | Words |
 |---|---|---|---|
-| 1 — identity, authority, materialization | `identity-authority-materialization.md` | RFC8-1..RFC8-11 | 2,686 |
-| 2 — state vocabulary, liveness, cost | `state-vocabulary-and-cost.md` | RFC8-12..RFC8-20 | 3,507 |
-| 3 — accounting, reconciliation, release | `accounting-reconciliation-and-release.md` | RFC8-21..RFC8-32 | 3,055 |
+| 1 — identity, authority, materialization | `identity-authority-materialization.md` | RFC8-1..RFC8-11 | 2,684 |
+| 2 — state vocabulary, liveness, cost | `state-vocabulary-and-cost.md` | RFC8-12..RFC8-20 | 3,504 |
+| 3 — accounting, reconciliation, release | `accounting-reconciliation-and-release.md` | RFC8-21..RFC8-32 | 3,051 |
 
 Counts are `wc -w` at the rev10 compaction; no module approaches the ~7,000
 ceiling.

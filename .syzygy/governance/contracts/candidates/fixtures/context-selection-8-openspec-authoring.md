@@ -158,7 +158,7 @@ never silently promotes or demotes anything.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`3057626e61de7534…` (recompute: `cat <mandatory files> | sha256sum`).
+`22f8187a89cc5013…` (recompute: `cat <mandatory files> | sha256sum`).
 Compiler: `context_load.py`, selection rules rev10-fixtures.
 
 **Digest-source pinning.** This digest and the totals above are computed over

@@ -45,6 +45,7 @@ Checks
   CG-18  context fixtures still recompute (digest and word count)
   CG-19  substrate pins resolve publicly, and drift carries a disposition
   CG-20  the context-load map's word figures still recompute
+  CG-21  package README module word counts recompute (inside act 1's digests)
 
 `--selftest` runs every check above against a synthetic failing input. A
 validator that has never been shown to fail is indistinguishable from a
@@ -1315,9 +1316,41 @@ def cg17_routing_completeness(res, matrix=None, modules=None):
         for c in re.finditer(r"^\*\*(RFC%d-\d+(?:\([a-z]\))?)" % n,
                              read(rel), re.M):
             declared.add(c.group(1))
+    # Sub-clauses (`RFC7-2(a)`) are defined inline inside their parent, so
+    # they never match the definition-site regex. Accept one only when its
+    # parent is declared AND the module actually contains the token —
+    # otherwise a fabricated row would inflate the denominator and read as
+    # coverage. Checking only `declared - routed` missed exactly that.
+    # Sub-clauses are declared as ranges in a module's front matter
+    # (`sub-clauses RFC7-2(a)-(c)`), so expand those into the declared set
+    # rather than accepting any token that happens to appear in prose.
+    bodies = "\n".join(read(rel) for rel in
+                       (modules if modules is not None else _rfc_modules()))
+    # Only a *positive* declaration counts. RFC-0008's README contains the
+    # sentence "**No lettered sub-clauses.** Lettered limbs cited inside a
+    # clause — RFC8-2(a)-(c) …" — reading that as a declaration invented a
+    # clause identity RFC-0008 explicitly says it does not have.
+    for line in bodies.splitlines():
+        if "sub-clause" not in line.lower():
+            continue
+        if re.search(r"\bno lettered sub-clause", line, re.I):
+            continue
+        for rng in re.finditer(r"(RFC\d+-\d+)\((\w)\)[-–]\((\w)\)", line):
+            stem, lo, hi = rng.groups()
+            if stem in declared:
+                for o in range(ord(lo), ord(hi) + 1):
+                    declared.add(f"{stem}({chr(o)})")
+        for single in re.finditer(r"(RFC\d+-\d+\(\w\))(?![-–]\()", line):
+            if single.group(1).split("(")[0] in declared:
+                declared.add(single.group(1))
     findings = []
     for c in sorted(declared - set(routed)):
         findings.append(f"{c} — declared in a contract, absent from the matrix")
+    for c in sorted(set(routed) - declared):
+        if c.split("(")[0] in declared and c in bodies:
+            continue
+        findings.append(f"{c} — routed by the matrix, but no contract "
+                        f"declares it; the row inflates coverage")
     for c, n in sorted(routed.items()):
         if n > 1:
             findings.append(f"{c} — routed {n} times; each clause takes one route")
@@ -1365,6 +1398,11 @@ def cg18_fixture_freshness(res, fixtures=None):
         quoted = (re.search(r"`([0-9a-f]{8,64})(?:…|\.\.\.)?`", section[1])
                   if len(section) > 1 else None)
         if not cmd or not quoted:
+            examined += 1
+            findings.append(
+                f"{rel} — could not locate a load command and a packet digest "
+                f"to recompute from; a fixture this check cannot parse is "
+                f"unverified, not passing")
             continue
         specs = [s for s in cmd.group(1).replace("\\\n", " ").split()
                  if s not in ("scripts/context_load.py",) and s.strip()]
@@ -1507,6 +1545,32 @@ def selftest():
     cases.append(("CG-17 double-routed clause detected",
                   c.rows[0][0] == "FAIL"))
 
+    # A fabricated row must not pass as coverage. Checking only
+    # declared-minus-routed let one inflate the denominator unnoticed.
+    c = Cap()
+    cg17_routing_completeness(c, matrix="| `RFC6-999` | OS |", modules=[])
+    cases.append(("CG-17 routed-but-undeclared clause detected",
+                  c.rows[0][0] == "FAIL"))
+
+    # A fixture the parser cannot read is unverified, not passing.
+    c = Cap()
+    cg18_fixture_freshness(c, fixtures=[("f.md", "no anchors here at all")])
+    cases.append(("CG-18 unparseable fixture is not silently skipped",
+                  c.rows[0][0] in ("FAIL", "WARN")))
+
+    c = Cap()
+    cg18_fixture_freshness(c, fixtures=[("f.md",
+        "```\nscripts/context_load.py 06-CONTEXT-LOAD-MAP.md\n```\n"
+        "Measured: **99,999 words \u2248 1 estimated tokens**\n"
+        "## Packet digest\n`0000000000000000` (recompute")])
+    cases.append(("CG-18 falsified word count detected",
+                  c.rows[0][0] == "FAIL"))
+
+    c = Cap()
+    cg21_package_readme_counts(c, packages=[f"{RFCS_DIR}/RFC-0002"])
+    cases.append(("CG-21 examines the real corpus without error",
+                  c.rows[0][2] > 0))
+
     c = Cap()
     cg18_fixture_freshness(c, fixtures=[("f.md",
         "```\nscripts/context_load.py no-such-file.md\n```\n"
@@ -1524,6 +1588,10 @@ def selftest():
         modules=[f"{RFCS_DIR}/RFC-0001-project-graph-identity-state-planes.md"])
     cases.append(("CG-20 stale load-map figure detected",
                   c.rows[0][0] == "FAIL"))
+
+    c = Cap(); cg21_package_readme_counts(c, packages=[])
+    cases.append(("CG-21 empty package list warns, never passes",
+                  c.rows[0][0] == "WARN"))
 
     width = max(len(n) for n, _ in cases)
     bad = 0
@@ -1612,6 +1680,57 @@ def cg20_load_map_figures(res, body=None, modules=None):
             details=findings)
 
 
+def cg21_package_readme_counts(res, packages=None):
+    """A package README's per-module word counts still recompute.
+
+    These sit **inside act 1's digest set**, so a stale one is not merely
+    untidy: correcting it changes the argument the owner would sign, which
+    means it must be found before the offer and not after. Nineteen of
+    nineteen were stale in the commit whose own message claimed to correct
+    every stale derived value — the `provides_to` removal shifted every
+    module by a handful of words and nothing recomputed the tables.
+
+    A prior round fixed this same class by hand. Hand-fixing a recurring
+    class is how it recurs.
+    """
+    if packages is None:
+        base = os.path.join(ROOT, RFCS_DIR)
+        packages = sorted(
+            os.path.relpath(os.path.join(base, n), ROOT).replace(os.sep, "/")
+            for n in (os.listdir(base) if os.path.isdir(base) else [])
+            if n.startswith("RFC-")
+            and os.path.isdir(os.path.join(base, n)))
+    row = re.compile(r"\|.*?\|\s*`([\w.\-]+\.md)`\s*\|.*?\|\s*([\d,]+)\s*\|")
+    findings, examined = [], 0
+    for pkg in packages:
+        readme = f"{pkg}/README.md"
+        body = read(readme)
+        if not body:
+            continue
+        for line_no, line in enumerate(body.splitlines(), 1):
+            m = row.match(line)
+            if not m:
+                continue
+            target = f"{pkg}/{m.group(1)}"
+            if not os.path.exists(os.path.join(ROOT, target)):
+                findings.append(f"{readme}:{line_no} — names `{m.group(1)}`, "
+                                f"which is not a module of this package")
+                continue
+            examined += 1
+            actual = len(read(target).split())
+            claimed = int(m.group(2).replace(",", ""))
+            if actual != claimed:
+                findings.append(
+                    f"{readme}:{line_no} — `{m.group(1)}` claims "
+                    f"{claimed:,} words, actual {actual:,}; this figure is "
+                    f"inside act 1's digest set")
+    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+            "CG-21  package README word counts recompute", examined,
+            len(findings), "row",
+            note=None if examined else "no package README module rows found",
+            details=findings)
+
+
 # --------------------------------------------------------------- main
 
 def main():
@@ -1674,6 +1793,7 @@ def main():
     cg18_fixture_freshness(res)
     cg19_substrate_lock(res)
     cg20_load_map_figures(res)
+    cg21_package_readme_counts(res)
     res.report()
     return 1 if res.failed() else 0
 

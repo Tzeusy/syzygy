@@ -46,9 +46,9 @@ concepts live in exactly one module and are cited from the others by clause ID.
 
 | Module | File | Clauses | Words |
 |---|---|---|---|
-| 1 — semantic geography | `semantic-geography.md` | RFC9-1..RFC9-23, incl. RFC9-8(a), RFC9-9(a), RFC9-9(b), RFC9-13(a), RFC9-14(a), RFC9-15(b), RFC9-16(d) | 6,999 |
-| 2 — visual grammar and lenses | `visual-grammar-and-lenses.md` | RFC9-24..RFC9-45 | 5,540 |
-| 3 — interaction parity and release | `interaction-parity-and-release.md` | RFC9-46..RFC9-52, incl. RFC9-47(a) | 3,027 |
+| 1 — semantic geography | `semantic-geography.md` | RFC9-1..RFC9-23, incl. RFC9-8(a), RFC9-9(a), RFC9-9(b), RFC9-13(a), RFC9-14(a), RFC9-15(b), RFC9-16(d) | 6,996 |
+| 2 — visual grammar and lenses | `visual-grammar-and-lenses.md` | RFC9-24..RFC9-45 | 5,538 |
+| 3 — interaction parity and release | `interaction-parity-and-release.md` | RFC9-46..RFC9-52, incl. RFC9-47(a) | 3,023 |
 
 Counts are whole-file `wc -w` at the rev10 compaction. See **Word accounting**.
 
@@ -221,7 +221,7 @@ text is deliberately small — the clause bodies are 14,305 of the source's 19,2
 words and are near-continuous obligation: closed vocabularies copied not
 paraphrased, multi-part binding rules, and nine owner decisions.
 
-**Module 1 sits at 6,999 against the ~7,000 ceiling — that is its floor, not a
+**Module 1 sits at 6,996 against the ~7,000 ceiling — that is its floor, not a
 coincidence.** Its range is 7,184 source words; everything remaining is a rule, a
 closed vocabulary, an owner decision, or a load-bearing distinction. Further
 headroom requires splitting the range (a natural seam exists at RFC9-1..13 /

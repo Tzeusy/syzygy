@@ -59,7 +59,7 @@ context is in scope); RFC-0002 `rendering-vocabularies`
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`39c6b21ccdb9ad52…`. Compiler: `context_load.py`, selection rules
+`ecda3b07013a7fb8…`. Compiler: `context_load.py`, selection rules
 rev10-fixtures.
 
 *Re-measured 2026-08-05 (refactor round): figures and packet digest refreshed after this round's recorded corrections to RFC-0003 governance-homes (P-6, +13 w) and the craft banners (P-7, security policy +26 w); selection unchanged. Prior figures/digest are in git history.*

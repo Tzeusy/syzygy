@@ -62,7 +62,7 @@ authoring-strength restatements suffice for this edit; loading them adds
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`f29f7014accd8832…` (recompute:
+`397ff4a12fccd9a8…` (recompute:
 `cat <mandatory files> | sha256sum`). Compiler: `context_load.py`,
 selection rules rev10-fixtures.
 

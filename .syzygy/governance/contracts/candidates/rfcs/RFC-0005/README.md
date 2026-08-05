@@ -40,9 +40,9 @@ no duplicated normative clauses, no renumbering.
 
 | Module | File | Clauses | Words |
 |---|---|---|---|
-| 1 — admission and boundary | `admission-and-boundary.md` | RFC5-1..RFC5-11, RFC5-24..RFC5-26 | 3,643 |
-| 2 — consent, egress, secrets | `consent-egress-secrets.md` | RFC5-12..RFC5-17 | 2,351 |
-| 3 — execution profiles | `execution-profiles.md` | RFC5-18..RFC5-23 | 2,197 |
+| 1 — admission and boundary | `admission-and-boundary.md` | RFC5-1..RFC5-11, RFC5-24..RFC5-26 | 3,635 |
+| 2 — consent, egress, secrets | `consent-egress-secrets.md` | RFC5-12..RFC5-17 | 2,343 |
+| 3 — execution profiles | `execution-profiles.md` | RFC5-18..RFC5-23 | 2,192 |
 
 Counts are `wc -w` at the rev10 compaction; no module approaches the ~7,000
 ceiling.

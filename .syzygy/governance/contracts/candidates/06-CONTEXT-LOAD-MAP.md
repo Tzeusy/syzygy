@@ -30,7 +30,7 @@ output, re-runnable from this packet.
 | RFC-0007 | narrative 5,165 · rendering 3,142 · README 2,324 |
 | RFC-0008 | identity/materialization 2,684 · state/cost 3,504 · accounting 3,051 · README 1,918 |
 | RFC-0009 | geography 6,996 · grammar/lenses 5,538 · parity/release 3,023 · README 2,025 |
-| RFC-0010 | single, 4,841 |
+| RFC-0010 | single, 5,030 |
 | RFC-0011 | single, 2,264 |
 
 ## Reader map — who loads what

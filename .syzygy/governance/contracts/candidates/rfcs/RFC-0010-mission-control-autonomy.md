@@ -392,8 +392,14 @@ principal routed. A mission's terminal state is an **authorization-bearing
 determination** under RFC3-16(a) where it discharges an owner act's
 objective. Where no independent establisher is available for a mission's
 objective class — including wherever RFC2-19 leaves reconciliation
-uncomputed — the mission terminates as `blocked` with an Attention Item,
-never as `completed`. An unstated minimum evidence tier means `gate-backed`;
+uncomputed — the mission **never reaches `completed`**. Which state it does
+reach depends on whether effects have been applied: with no applied effects
+it enters `blocked` with an Attention Item, awaiting the human resolution act
+RFC10-5 requires; **with effects already applied it enters `failed`**, so
+that RFC10-19's compensation, enumeration and disposition duties fire. Those
+duties are keyed to `failed`, `cancelled` and `expired`, and RFC10-19 states
+that `blocked` discharges none of them — so routing an effect-bearing mission
+to `blocked` would place it outside the correction plane entirely. An unstated minimum evidence tier means `gate-backed`;
 "the strongest applicable tier" (RFC10-6) is never a judgment the executing
 principal makes for itself.
 
@@ -555,6 +561,18 @@ retired. Three of the added seams — reservation, adjudication, stop — bite
 money, still declares itself complete, and still could not be reliably
 stopped. The prior round's disposition of these as "inert until the cap
 lifts" did not hold, and is recorded here rather than quietly dropped.
+
+**rev11a (2026-08-05b) — RFC10-18 amended in place.** The confirming review
+over the rev11 bytes constructed an escape the correction plane did not
+close: RFC10-18 as first written routed a mission with no independent
+establisher to `blocked` and called that terminating. But RFC10-5 defines
+`blocked` as **non-terminal**, and RFC10-19 states in terms that `blocked`
+discharges none of its compensation duties — so an effect-bearing mission
+routed there sat outside the correction plane the same amendment had just
+built. RFC10-18 now separates the two cases: no applied effects enters
+`blocked` awaiting human resolution; applied effects enters `failed`, which
+is where RFC10-19's duties are keyed. The rule that a mission never reaches
+`completed` on its own authority is unchanged.
 
 ## 6. Alternatives considered (summary; this contract is new at rev10 and has no history file)
 

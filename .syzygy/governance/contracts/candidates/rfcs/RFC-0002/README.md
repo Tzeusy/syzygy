@@ -40,10 +40,10 @@ namespace, no duplicated normative clauses, no renumbering.
 
 | Module | File | Clauses | Words |
 |---|---|---|---|
-| 1 — snapshot and evaluation core | `snapshot-and-evaluation-core.md` | RFC2-1..RFC2-11 | 1,964 |
-| 2 — challenge lifecycle | `challenge-lifecycle.md` | RFC2-12..RFC2-14 | 2,231 |
-| 3 — reconciliation chain | `reconciliation-chain.md` | RFC2-15..RFC2-22 | 2,477 |
-| 4 — rendering vocabularies | `rendering-vocabularies.md` | RFC2-23..RFC2-25 | 2,397 |
+| 1 — snapshot and evaluation core | `snapshot-and-evaluation-core.md` | RFC2-1..RFC2-11 | 1,955 |
+| 2 — challenge lifecycle | `challenge-lifecycle.md` | RFC2-12..RFC2-14 | 2,225 |
+| 3 — reconciliation chain | `reconciliation-chain.md` | RFC2-15..RFC2-22 | 2,470 |
+| 4 — rendering vocabularies | `rendering-vocabularies.md` | RFC2-23..RFC2-25 | 2,388 |
 
 Counts are `wc -w` at the rev10 compaction; no module approaches the ~7,000
 ceiling.

@@ -2,7 +2,7 @@
 # sha256 per active module; regenerate: (cd .syzygy/governance/contracts/candidates && find rfcs -name '*.md' | sort | xargs sha256sum)
 92dc9c93eb12d796ad85740ef0795c615c956f1af4d1a5ef085b1cf575c4852e  rfcs/RFC-0001-project-graph-identity-state-planes.md
 ffafd0528a3ef06c76a47c5137fe0c9cd5e80c3b8e1742d44a065f88f828ddf4  rfcs/RFC-0002/challenge-lifecycle.md
-d16070b8c2110c5f6bb8544a949c885ada13cc6ea7c75f7f4f4321ef96bc3aa7  rfcs/RFC-0002/README.md
+69cd8bbec5c8d5e2ab576e33b35b44d196a55f02c4bd516bd4f7d5600448e81b  rfcs/RFC-0002/README.md
 f5dda2dc47809a6c8b19022e2e5a485575ec18ac95249c7f519e41415804b328  rfcs/RFC-0002/reconciliation-chain.md
 fe519c2032761406c29e90b40d8216cb4c91a59f195c1a11da3bb8b4a1f002d2  rfcs/RFC-0002/rendering-vocabularies.md
 306107acd2863482ba1781dc18f6536e8095b09bfe00e898037d1761030fc6b9  rfcs/RFC-0002/snapshot-and-evaluation-core.md
@@ -13,22 +13,22 @@ d1113097782ab390686deb28eb1d166cd39e85335445264ebeb30793ebcc2a17  rfcs/RFC-0003/
 e48c1cf57b873167ecf5a9e0103f734d0515adff7501e9c4a01b4b6b0e1be79d  rfcs/RFC-0004/fidelity-joins-and-mappings.md
 2b5072a2b718e4609b279b130ef39daeb49fc6079c8da9c01e14aa12021149d4  rfcs/RFC-0004/general-contract.md
 ee719c7d82f68923c8471ddd45a6726a148400010e20ab4b9235cd6fca14417b  rfcs/RFC-0004/named-adapters.md
-42e99e039437fdf87028e2ae4e4ebb9211cf161c8a7e1bd1af029b14e44e02fa  rfcs/RFC-0004/README.md
+ed3e2a0bdf51be964b6eba43df06674ee96678cf29d9121482ffc5ccb241d82c  rfcs/RFC-0004/README.md
 71ecc2b536cc311f94d9aa36dfb9a9e7f71f7e4fc01903f043c06ed558e4565d  rfcs/RFC-0005/admission-and-boundary.md
 cdbeb638bbdd47fada153dad6d9334803c3c54e45408fb54b39c5c9d4fb59f69  rfcs/RFC-0005/consent-egress-secrets.md
 877dda98c189505d015ae0a39df0bda12c5cdd3157f9396255a5d1de8488fcc9  rfcs/RFC-0005/execution-profiles.md
-9c761c3397feef9bd273b3ab3675033788951c3a535300b693cd9d68db9a8edb  rfcs/RFC-0005/README.md
+8a6bec35b5b1496e80a1d8d5db785eb5614a5919b77fc9b0b0da00c88149b12a  rfcs/RFC-0005/README.md
 4252caaa61e5ec13e66bfff06d1150df85f550d23c346c83cf87702c91e8abc2  rfcs/RFC-0006-cross-surface-selection-query-drawer.md
 6d2964cd3aba777b6c69e64156b64183256c5fb261b9abb737441512f4eb71fe  rfcs/RFC-0007/narrative-contract.md
-01139dd396ec9bde86cbb0e3d54b4a470a42b76088ea6e51fee66a638a6b99ce  rfcs/RFC-0007/README.md
+7d6fd89ad6f09d2a8d0da5f41d85e35e59ae13080a64ecb2e6914a308c21f8e3  rfcs/RFC-0007/README.md
 5b755c17579acf2d6aa91a6e39ef718069192151d04b57726d58f037bc18fdf9  rfcs/RFC-0007/rendering-and-surface.md
 9bd90273a5c4c0fbe7f8e30ea8c075244a1dbf866f03412659d76e8598d8e369  rfcs/RFC-0008/accounting-reconciliation-and-release.md
 37ccbfba674b49ea6cd86afc41312c274548e331fa9e539223ad216d10b0520f  rfcs/RFC-0008/identity-authority-materialization.md
-dbe74759518396d69254caa8944a5d5f2df69fa63d70b5a0509ec81656f3ff5a  rfcs/RFC-0008/README.md
+bb232815824ca587767c396717bf38e596b434108a536b565591f54b07ba7800  rfcs/RFC-0008/README.md
 caccbbe67a4fe3e5711aa14e0dcc96830343ce42e9b3eb8852a49ceef6292e01  rfcs/RFC-0008/state-vocabulary-and-cost.md
 0ffae10696c3b3c3b9aaad917b1bfc625c5952c93e23a1c5e175b0bd067fee02  rfcs/RFC-0009/interaction-parity-and-release.md
-e743dc3aa07ed5a0522a11cc281400a7a99a76bac3976ae5f0fcf6497ee49825  rfcs/RFC-0009/README.md
+ff406f07dc36191458ce0112fa210ef4f37c1e5930625442428011cdddd35d20  rfcs/RFC-0009/README.md
 f21348ed54e2b58bc2d940a9bcaa693fc00e7ac2e9f8760d146aec813e29edfc  rfcs/RFC-0009/semantic-geography.md
 8e15b6b9a6beccbdd0a22688f18fe79ebd6eb2dbbbc29de8ed20c97227625309  rfcs/RFC-0009/visual-grammar-and-lenses.md
-8a340058c34e27c115ec1096e730d3b5869950a906636f0fb4e2933b38f725ca  rfcs/RFC-0010-mission-control-autonomy.md
+8ed470af00b29288212ad9e66b91d74aceafdf0e9fe4688748c7b390290d6c77  rfcs/RFC-0010-mission-control-autonomy.md
 c061c7028632f8cd4c7617f476b9c647dee5886a49fe4a87ff515b078ccdaf7f  rfcs/RFC-0011-context-compiler.md
