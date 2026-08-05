@@ -38,3 +38,7 @@ jobs:
       # Contract index drift: the generated index must match regeneration.
       - name: build_contract_index --check
         run: python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --check
+
+      # Dependency index drift: same guard, for the declared edges.
+      - name: build_dependency_index --check
+        run: python3 .syzygy/governance/contracts/candidates/scripts/build_dependency_index.py --check
