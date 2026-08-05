@@ -1,3 +1,9 @@
+> # Historical — round record, not a current offering
+>
+> **Do not read a digest here as an act argument.** Its term inventory and contradiction list C-1…C-6 are round 2026-08's; the digests it quotes are that round's. Current arguments
+> come from `ACTIVE-CONTRACT-MANIFEST.txt` and
+> `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`, never from a round record.
+
 # Term migration report — human-clarity refactor round, 2026-08-05
 
 Companion to `../policy-candidates/TERM-REGISTRY.md` (candidate, binds

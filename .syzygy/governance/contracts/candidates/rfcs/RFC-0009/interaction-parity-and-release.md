@@ -6,8 +6,7 @@ module: interaction-parity-and-release
 clauses: RFC9-46..RFC9-52 (sub-clause RFC9-47(a); no gaps, no retirements)
 governs: [non-3d-equivalence, accessibility-parity, release-gate, gate-registry-maintenance, performance-budget, declared-scope-narrowing, motion, illumination, openspec-phase-boundary]
 applies_to: [orrery, machine-clients]
-depends_on: [RFC-0002, RFC-0006, RFC-0008]
-provides_to: [RFC-0007, RFC-0008, RFC-0010, RFC-0011]
+depends_on: [RFC-0002, RFC-0006, RFC-0007, RFC-0008]
 tags: [surface, equivalence, accessibility, release-gate, sdr-26, sdr-27, vis-1, vis-7]
 ---
 

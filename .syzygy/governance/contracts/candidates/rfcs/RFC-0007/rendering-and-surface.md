@@ -6,8 +6,7 @@ module: rendering-and-surface
 clauses: RFC7-26..RFC7-38 (no sub-clauses, no gaps, no retirements, no merges)
 governs: [reading-mode, proposed-scenario-rendering, curated-diagram, authority-boundary, comprehension-test, walkthrough-record, machine-parity, non-visual-recoverability, portfolio-narrative, subproject-navigation]
 applies_to: [polaris]
-depends_on: [RFC-0001, RFC-0003, RFC-0006]
-provides_to: [RFC-0009]
+depends_on: [RFC-0001, RFC-0003, RFC-0006, RFC-0009]
 tags: [presentation, proposed-scenario, comprehension-test, verdict-unlawful, machine-parity, non-visual, reachability, portfolio, phase-boundary]
 ---
 

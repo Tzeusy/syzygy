@@ -34,8 +34,11 @@ JUSTIFIED_OVERSIZE = {
 # Rev9 baseline: authoritative numbered-clause ends per RFC (frozen facts;
 # see FOUNDATIONAL-RFC-ACCEPTANCE-RECORD.md §3 of the rev9 package).
 REV9_ENDS = {1: 32, 2: 25, 3: 32, 4: 29, 5: 26, 6: 28, 7: 38, 8: 32, 9: 52}
-# Rev10 new contracts and their expected ends.
-REV10_ENDS = {10: 16, 11: 12}
+# Rev10 new contracts and their expected ends. RFC-0010 extended to 22 at
+# rev11: the correction plane (RFC10-17..22) closing the post-failure seams
+# an adversarial safety review found open. Nothing was renumbered or retired,
+# so the range only grows — see RFC-0010 §5a.
+REV10_ENDS = {10: 22, 11: 12}
 
 # Packages (split RFCs) are discovered as rfcs/RFC-00NN/ directories; clause
 # ownership is validated from actual definitions per module (each clause in

@@ -22,7 +22,7 @@ scripts/context_load.py rfcs/RFC-0004/README.md \
   doctrine:security.md
 ```
 
-Measured: **18,315 words ≈ 24,725 estimated tokens** — **above the
+Measured: **18,282 words ≈ 24,681 estimated tokens** — **above the
 15–20k working target, disclosed as a risk-class exception** (RFC11-11):
 an authorization-bearing change may not shed its authorization contract
 (RFC3-16(a) module) or the mapping's consuming vocabulary (RFC8-12/13
@@ -63,7 +63,9 @@ scope.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`a398a06362074451…`. Compiler: `context_load.py`, selection rules
+`614823e0930f2c88…`. Compiler: `context_load.py`, selection rules
 rev10-fixtures.
 
 *Re-measured 2026-08-05 (refactor round): figures and packet digest refreshed after this round's recorded corrections to RFC-0003 governance-homes (P-6, +13 w) and the craft banners (P-7, security policy +26 w); selection unchanged. Prior figures/digest are in git history.*
+
+*Re-measured 2026-08-05b by `scripts/check_governance.py` CG-18, which recomputes the digest and the word count from the declared mandatory set rather than trusting the recorded figures. Previous: 18,315 words, digest `a398a06362074451…`. Selection unchanged; the movement is contract edits landing under a fixture that had no mechanical freshness check until now.*

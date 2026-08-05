@@ -8,7 +8,6 @@ clauses: RFC4-1..RFC4-29 (sub-clauses RFC4-13(a), RFC4-13(b); no gaps, no retire
 governs: [observation-sources, observers, adapters, evidence, execution-records, trusted-external-oracles, governed-checkers, fidelity-labels, provenance-joins, code-mappings]
 applies_to: [kernel, trajectory, orrery]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0005]
-provides_to: [RFC-0003, RFC-0005, RFC-0008, RFC-0009, RFC-0011]
 tags: [observation, provenance, gate-tiering, unknown-never-zero, liveness, reduced-fidelity, capture-before-horizon]
 ---
 

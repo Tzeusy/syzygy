@@ -37,6 +37,17 @@ Checks
   CG-10  pending-decision register as-of line reported
   CG-11  `.syzygy/cache/` and `.syzygy/local/` are git-ignored
   CG-12  no active artifact cites a `_bootstrap/` path as a required source
+  CG-13  dependency edges resolve; a package README equals its module union
+  CG-14  acceptance-record install sources and destinations are valid
+  CG-15  truncated digest quotes still prefix a current argument
+  CG-16  the term registry is never described as accepted
+  CG-17  every RFC 0006-0011 clause is routed exactly once
+  CG-18  context fixtures still recompute (digest and word count)
+  CG-19  substrate pins resolve publicly, and drift carries a disposition
+
+`--selftest` runs every check above against a synthetic failing input. A
+validator that has never been shown to fail is indistinguishable from a
+no-op, and this repository has shipped one (charter §18).
 
 Status vocabulary: OK (examined > 0, no findings) · WARN (nothing examined, or
 a report-only observation) · FAIL (findings that fail the run).
@@ -202,7 +213,13 @@ HISTORICAL_PACKET_TARGET = (
 
 
 def _is_forward(target):
-    return any(f in target for f in FORWARD_REFS)
+    # Match both directions. A forward ref is stored as a repo-root path, but
+    # it is *cited* the way every other path reference is written here — as a
+    # suffix (`decisions/ACCEPTANCE-ACT-RECORD.md`). Testing only `f in target`
+    # sees the root-path form and misses every suffix citation of the same
+    # artifact, which is how a by-design absence gets reported as a broken link.
+    return any(f in target or f.endswith("/" + target) or f == target
+               for f in FORWARD_REFS)
 
 
 def _is_historical_packet(target):
@@ -305,6 +322,9 @@ RETIRED_PHRASE_ALLOW = (
      "the acceptance record that retires it"),
     (f"{DECISIONS}/OWNER-ANSWERS-2026-08-01.md",
      "owner ruling that the phrase was not performed"),
+    (f"{DECISIONS}/PROCESS-LESSONS.md",
+     "records the acceptance-authority migration, of which the phrase's "
+     "unconditional retirement is one step"),
     ("AGENTS.md", "states the phrase is retired and satisfies nothing"),
     (f"{CANDIDATES}/round-2026-08/OWNER-ROUND-CHARTER.md",
      "owner-supplied round charter; quotes the phrase as a search token"),
@@ -630,6 +650,7 @@ ACT_SUBJECTS = (
 #: Raw reviewer output is never edited, so it is exempt by construction.
 ACT_QUOTE_EXEMPT = (
     f"{CANDIDATES}/round-2026-08/reviews/",
+    f"{CANDIDATES}/round-2026-08b/reviews/",
     f"{CANDIDATES}/reviews/",
     f"{CANDIDATES}/history/",
     f"{CANDIDATES}/fixtures/",
@@ -877,6 +898,10 @@ BOOTSTRAP_ALLOW_PREFIX = (
      "raw reviewer output, stored verbatim — never edited, so a reviewer's "
      "own mention of the excluded tree (usually to record that they did not "
      "read it) is evidence, not an active citation"),
+    (f"{CANDIDATES}/round-2026-08b/reviews/",
+     "raw reviewer output, stored verbatim — same rule as the prior round; "
+     "each round's review directory is allowlisted explicitly when opened, "
+     "never by a `round-*/` glob, so opening one is a deliberate act"),
     (f"{CANDIDATES}/matrix-rows/", "per-RFC clause-migration provenance rows"),
     (f"{CANDIDATES}/04-CLAUSE-MIGRATION-MATRIX.md",
      "clause-migration provenance, cites frozen rev9 sources by construction"),
@@ -925,6 +950,547 @@ def cg12_bootstrap_sources(paths, res):
             details=sorted(allowed_files))
 
 
+# ------------------------------------------------- CG-13..CG-19 (round 08b)
+
+RFCS_DIR = f"{CANDIDATES}/rfcs"
+DEPENDS_RE = re.compile(r"^depends_on:\s*\[(.*?)\]\s*$", re.M)
+ROUTING_MATRIX = f"{CANDIDATES}/SURFACE-CLAUSE-ROUTING-MATRIX.md"
+FIXTURES_DIR = f"{CANDIDATES}/fixtures"
+SUBSTRATE_LOCK = ".syzygy/governance/policies/GOVERNANCE-SUBSTRATE-LOCK.yaml"
+TERM_REGISTRY = f"{CANDIDATES}/policy-candidates/TERM-REGISTRY.md"
+
+
+def _module_deps(rel):
+    m = DEPENDS_RE.search(read(rel))
+    if not m:
+        return None
+    return set(x.strip() for x in m.group(1).split(",") if x.strip())
+
+
+def _rfc_modules():
+    """Every contract module, repo-relative, sorted."""
+    out = []
+    base = os.path.join(ROOT, RFCS_DIR)
+    for dirpath, _, names in os.walk(base):
+        for n in sorted(names):
+            if n.endswith(".md"):
+                out.append(os.path.relpath(os.path.join(dirpath, n),
+                                           ROOT).replace(os.sep, "/"))
+    return sorted(out)
+
+
+def cg13_dependency_graph(res, modules=None):
+    """`depends_on` resolves, and a package README equals its modules' union.
+
+    Two defects this makes unrepresentable-by-report rather than merely
+    absent. **Dangling**: a dependency naming a contract with no module in
+    the package — the graph's only remaining asymmetry class now that
+    `provides_to` is derived. **README drift**: a package README's
+    dependency row is the package-level view, so it must be exactly the
+    union of its modules' rows. When round 08b added module-level edges,
+    two READMEs silently stopped matching their own packages; nothing
+    reported it, because regenerating a knowingly-drifted index reproduces
+    the drift.
+    """
+    modules = modules if modules is not None else _rfc_modules()
+    known = set()
+    for rel in modules:
+        m = re.search(r"(RFC-\d{4})", os.path.basename(rel)) or \
+            re.search(r"(RFC-\d{4})", rel)
+        if m:
+            known.add(m.group(1))
+    findings, examined = [], 0
+    packages = {}
+    for rel in modules:
+        deps = _module_deps(rel)
+        if deps is None:
+            continue
+        for d in sorted(deps):
+            examined += 1
+            if d not in known:
+                findings.append(f"{rel} — depends_on `{d}`, which has no "
+                                f"module in the package (dangling)")
+        parent = os.path.dirname(rel)
+        if os.path.basename(parent).startswith("RFC-"):
+            packages.setdefault(parent, {})[os.path.basename(rel)] = deps
+    for pkg, mods in sorted(packages.items()):
+        if "README.md" not in mods:
+            continue
+        readme = mods["README.md"]
+        union = set().union(*[v for k, v in mods.items()
+                              if k != "README.md"]) if len(mods) > 1 else set()
+        examined += 1
+        if readme != union:
+            findings.append(
+                f"{pkg}/README.md — depends_on is not the union of its "
+                f"modules': extra {sorted(readme - union) or '[]'}, "
+                f"missing {sorted(union - readme) or '[]'}")
+    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+            "CG-13  dependency edges resolve; README = module union",
+            examined, len(findings), "edge",
+            note=None if examined else "no depends_on rows found",
+            details=findings)
+
+
+def cg14_install_routes(res, record=None):
+    """Every install source/destination the acceptance record names is valid.
+
+    An act that installs candidate material states where it reads from and
+    where it writes to. A wrong source silently installs the wrong bytes; a
+    destination that is not a declared act-created home means either the
+    home already exists (the act is not an act) or the path is a typo that
+    surfaces only mid-ceremony. Both were live: act 3's install source named
+    a directory that had been renamed.
+    """
+    body = record if record is not None else read(ACCEPTANCE_RECORD)
+    if not body:
+        res.add("WARN", "CG-14  acceptance install routes valid", 0, 0,
+                "route", note=f"{ACCEPTANCE_RECORD} unreadable")
+        return
+    pat = re.compile(r"`(?P<src>[A-Za-z0-9_.\-/]+/)`\s*(?:→|->)\s*"
+                     r"`(?P<dst>[A-Za-z0-9_.\-/]+/)`")
+    findings, examined = [], 0
+    for line_no, line in enumerate(body.splitlines(), 1):
+        for m in pat.finditer(line):
+            examined += 1
+            src, dst = m.group("src"), m.group("dst")
+            if not os.path.isdir(os.path.join(ROOT, src.rstrip("/"))):
+                findings.append(f"line {line_no} — install source `{src}` "
+                                f"does not exist; the act would read nothing")
+            if os.path.exists(os.path.join(ROOT, dst.rstrip("/"))):
+                findings.append(f"line {line_no} — install destination "
+                                f"`{dst}` already exists; an act that creates "
+                                f"it cannot be unperformed")
+            elif not _forward_declared(dst):
+                findings.append(f"line {line_no} — install destination "
+                                f"`{dst}` is neither present nor a declared "
+                                f"forward reference; it is a typo or an "
+                                f"undeclared home")
+    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+            "CG-14  acceptance install routes valid", examined,
+            len(findings), "route",
+            note=None if examined else "no `source/ → destination/` pairs "
+                                       "found in the acceptance record",
+            details=findings)
+
+
+#: Sources whose text is evidence rather than assertion: raw reviewer output
+#: stored verbatim (never edited — editing it destroys what the allowlist
+#: exists to protect), owner-supplied charters quoted as given, and the
+#: frozen history. A reviewer quoting a digest is recording what they read,
+#: and a reviewer calling the term registry "canonical" is reporting how the
+#: corpus reads to them — which is the finding, not a defect to correct.
+VERBATIM_SOURCES = (
+    f"{CANDIDATES}/reviews/",
+    f"{CANDIDATES}/round-2026-08/reviews/",
+    f"{CANDIDATES}/round-2026-08b/reviews/",
+    f"{CANDIDATES}/history/",
+    f"{CANDIDATES}/round-2026-08/OWNER-ROUND-CHARTER.md",
+    SELF_REL,
+)
+
+
+#: Files whose digests name artifacts outside the act/manifest population —
+#: so "prefixes no current act argument" is true and not a defect. Declared
+#: rather than pattern-matched, because a rule broad enough to infer this
+#: would also excuse a genuinely stale act quote.
+DIGEST_SCOPE_EXEMPT = (
+    (f"{DECISIONS}/LICENSE-DECISION-PACKET.md",
+     "cites the digest of the founder-local directive that commissioned it, "
+     "not an act argument"),
+)
+
+
+TRUNC_DIGEST = re.compile(r"`?\b(?P<d>[0-9a-f]{8,63})(?:…|\.\.\.)")
+
+
+def cg15_truncated_digests(paths, res, corpus=None):
+    """Truncated digest quotes must still prefix a current act argument.
+
+    CG-7d is structurally blind to these: it matches a full 64-hex digest
+    beside an act phrase, so `08793ddf70f3…` — no phrase, 12 characters —
+    passes it unseen. Two such quotes sat stale in the artifact inventory
+    while CG-7d reported zero findings over eight quotations, and a review
+    that searched the way CG-7d searches concluded there were none. A
+    convenience truncation is still a promise.
+    """
+    current = set()
+    for label, rel, _pat in ACT_SUBJECTS:
+        full = os.path.join(ROOT, rel)
+        if os.path.exists(full):
+            current.add(sha256_file(full))
+    d3 = os.path.join(ROOT, CANDIDATES,
+                      "DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md")
+    if os.path.exists(d3):
+        current.add(sha256_file(d3))
+    manifest = os.path.join(ROOT, CANDIDATES, "ACTIVE-CONTRACT-MANIFEST.txt")
+    if os.path.exists(manifest):
+        current.add(sha256_file(manifest))
+        for line in read(f"{CANDIDATES}/ACTIVE-CONTRACT-MANIFEST.txt").splitlines():
+            if line and line[0] in "0123456789abcdef":
+                current.add(line.split()[0])
+    #: Unlike CG-7d, the marker may sit anywhere on the line. CG-7d needs a
+    #: strict lookbehind because it matches full 64-hex act *arguments*, and a
+    #: row that offers the current one while noting the old one is stale must
+    #: stay checked. A truncated digest is never an act argument — CG-7b/c
+    #: require the full 64 — so a whole-line marker cannot excuse a live offer
+    #: here, and demanding a lookbehind would instead flag every honest
+    #: "…is stale and satisfies nothing" row in the acceptance record.
+    retired = re.compile(r"\b(retired|stale|superseded|pre-amendment|"
+                         r"historical|no longer|prior|previous|mismatch|"
+                         r"never carried|satisfies nothing)\b", re.I)
+    #: A whole file may be historical — but only when it *says so as a
+    #: banner*, not merely because the word appears in its prose. The loose
+    #: form of this test exempted 49 files including the live routing matrix,
+    #: which is the silent-exemption failure this checker exists to prevent.
+    #: Required: a bolded or blockquoted opening line whose first words mark
+    #: the whole artifact superseded or historical.
+    superseded_banner = re.compile(
+        r"^>?\s*[#*\s]*(SUPERSEDED|Superseded|Historical|RETIRED|Retired)\b",
+        re.M)
+    items = corpus if corpus is not None else [
+        (rel, read(rel)) for rel in paths
+        if rel.endswith(".md") and not any(
+            rel.startswith(x) or rel == x for x in ACT_QUOTE_EXEMPT)]
+    findings, examined, historical_files = [], 0, []
+    for rel, body in items:
+        if _allow_hit(rel, DIGEST_SCOPE_EXEMPT):
+            continue
+        lines = body.splitlines()
+        if superseded_banner.search("\n".join(lines[:12])):
+            historical_files.append(rel)
+            continue
+        for line_no, line in enumerate(lines, 1):
+            for m in TRUNC_DIGEST.finditer(line):
+                d = m.group("d")
+                if len(d) < 8:
+                    continue
+                # Also the line before: a wrapped sentence puts "now retired"
+                # on one line and the digest on the next, and a per-line test
+                # would report the honest half of a two-line disclosure.
+                prev = lines[line_no - 2] if line_no >= 2 else ""
+                if retired.search(line) or retired.search(prev):
+                    continue
+                # A table column headed "prior/retired" marks its whole body.
+                header = next((h for h in reversed(lines[:line_no - 1])
+                               if h.startswith("|")
+                               and not set(h) <= set("|- :")), "")
+                if retired.search(header):
+                    continue
+                examined += 1
+                if not any(c.startswith(d) for c in current):
+                    findings.append(
+                        f"{rel}:{line_no} — `{d}…` prefixes no current act "
+                        f"argument or manifest entry; the quote is stale or "
+                        f"names an artifact state that no longer exists")
+    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+            "CG-15  truncated digest quotes still current", examined,
+            len(findings), "quotation",
+            note=None if examined else "no truncated digest quotations found",
+            details=findings)
+    res.add("WARN", "CG-15b superseded records holding old digests",
+            len(historical_files), 0, "file",
+            note="carry a SUPERSEDED/Historical banner; their digests record "
+                 "what was offered, not what is",
+            details=sorted(historical_files))
+
+
+def cg16_term_registry_status(paths, res, corpus=None):
+    """Nothing may describe the term registry as accepted, adopted, or binding.
+
+    It is candidate material with no owner act. The failure mode is not a
+    lie but a drift: a summary calls it "the vocabulary", a later reader
+    reads that as settled, and an unaccepted registry acquires authority by
+    citation. Checked over every file that names it.
+    """
+    claim = re.compile(r"\b(adopted|accepted|approved|binding|authoritative|"
+                       r"canonical)\b", re.I)
+    items = corpus if corpus is not None else [
+        (rel, read(rel)) for rel in paths if rel.endswith(".md")
+        and not any(rel.startswith(x) or rel == x for x in VERBATIM_SOURCES)]
+    findings, examined = [], 0
+    for rel, body in items:
+        if rel.endswith("TERM-REGISTRY.md"):
+            continue
+        for line_no, line in enumerate(body.splitlines(), 1):
+            low = line.lower()
+            at = low.find("term registry")
+            if at < 0:
+                at = line.find("TERM-REGISTRY")
+            if at < 0:
+                continue
+            examined += 1
+            # The claim word must sit next to the mention. Scanning the whole
+            # line flagged a register row where "adopted" described doctrine's
+            # three-state thesis two clauses away — a check that reports a
+            # defect for an unrelated word is a check nobody will keep.
+            window = line[max(0, at - 60):at + 90]
+            m = claim.search(window)
+            if m and not re.search(r"\b(not|never|un|no|candidate)\b\W{0,14}" +
+                                   re.escape(m.group(0)), window, re.I):
+                findings.append(f"{rel}:{line_no} — calls the term registry "
+                                f"`{m.group(0)}`; it is candidate material "
+                                f"with no owner act")
+    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+            "CG-16  term registry never described as accepted", examined,
+            len(findings), "mention",
+            note=None if examined else "term registry not mentioned anywhere",
+            details=findings)
+
+
+def cg17_routing_completeness(res, matrix=None, modules=None):
+    """Every clause of RFC 0006-0011 is routed exactly once.
+
+    The six phase rules are only as good as the enumeration behind them.
+    The rev10 matrix classified 150 of 322 clauses, routed RFC-0006 not at
+    all, and was cited as though it covered everything — a coverage claim
+    resting on an enumeration that did not exist.
+    """
+    body = matrix if matrix is not None else read(ROUTING_MATRIX)
+    if not body:
+        res.add("WARN", "CG-17  surface clauses routed exactly once", 0, 0,
+                "clause", note=f"{ROUTING_MATRIX} unreadable")
+        return
+    routed = {}
+    for line in body.splitlines():
+        m = re.match(r"\|\s*`?(RFC(?:6|7|8|9|10|11)-\d+(?:\([a-z]\))?)`?\s*\|",
+                     line)
+        if m:
+            routed[m.group(1)] = routed.get(m.group(1), 0) + 1
+    declared = set()
+    for rel in (modules if modules is not None else _rfc_modules()):
+        m = re.search(r"RFC-00(0[6-9]|1[01])", rel)
+        if not m:
+            continue
+        n = int(m.group(0)[4:])
+        for c in re.finditer(r"^\*\*(RFC%d-\d+(?:\([a-z]\))?)" % n,
+                             read(rel), re.M):
+            declared.add(c.group(1))
+    findings = []
+    for c in sorted(declared - set(routed)):
+        findings.append(f"{c} — declared in a contract, absent from the matrix")
+    for c, n in sorted(routed.items()):
+        if n > 1:
+            findings.append(f"{c} — routed {n} times; each clause takes one route")
+    examined = len(declared | set(routed))
+    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+            "CG-17  surface clauses routed exactly once", examined,
+            len(findings), "clause",
+            note=None if examined else "no clause identities found",
+            details=findings)
+
+
+def _resolve_load_spec(spec):
+    prefixes = {"doctrine:": DOCTRINE, "craft:": CRAFT}
+    for pfx, home in prefixes.items():
+        if spec.startswith(pfx):
+            return os.path.join(home, spec[len(pfx):])
+    return os.path.join(CANDIDATES, spec)
+
+
+def cg18_fixture_freshness(res, fixtures=None):
+    """Each context fixture's packet digest and word count still recompute.
+
+    A fixture is the project's only measured evidence that one task can be
+    given complete governed context without loading the corpus. When a
+    contract module is edited the fixture's digest goes stale silently, and
+    a stale fixture reads exactly like a fresh one.
+    """
+    items = fixtures
+    if items is None:
+        base = os.path.join(ROOT, FIXTURES_DIR)
+        items = []
+        if os.path.isdir(base):
+            for n in sorted(os.listdir(base)):
+                if n.startswith("context-selection-") and n.endswith(".md"):
+                    items.append((f"{FIXTURES_DIR}/{n}",
+                                  read(f"{FIXTURES_DIR}/{n}")))
+    findings, examined = [], 0
+    for rel, body in items:
+        cmd = re.search(r"```\s*\n(scripts/context_load\.py[\s\S]*?)\n```", body)
+        # The digest is the first hex quotation after the "Packet digest"
+        # heading. Anchoring on the "(recompute" suffix instead silently
+        # skipped the two fixtures that word-wrap before it — a parser that
+        # examines 4 of 8 while reporting a count is the failure mode here.
+        section = body.split("## Packet digest", 1)
+        quoted = (re.search(r"`([0-9a-f]{8,64})(?:…|\.\.\.)?`", section[1])
+                  if len(section) > 1 else None)
+        if not cmd or not quoted:
+            continue
+        specs = [s for s in cmd.group(1).replace("\\\n", " ").split()
+                 if s not in ("scripts/context_load.py",) and s.strip()]
+        blob, words, missing = b"", 0, []
+        for s in specs:
+            path = os.path.join(ROOT, _resolve_load_spec(s))
+            if not os.path.exists(path):
+                missing.append(s)
+                continue
+            data = open(path, "rb").read()
+            blob += data
+            words += len(data.decode("utf-8", "replace").split())
+        examined += 1
+        if missing:
+            findings.append(f"{rel} — mandatory load names {missing}, which "
+                            f"do not exist; the fixture cannot be reproduced")
+            continue
+        actual = hashlib.sha256(blob).hexdigest()
+        q = quoted.group(1)
+        if not actual.startswith(q):
+            findings.append(f"{rel} — packet digest `{q}…` but the declared "
+                            f"mandatory set hashes to `{actual[:len(q)]}…`")
+        claimed = re.search(r"Measured:\s*\*\*([\d,]+)\s*words", body)
+        if claimed:
+            examined += 1
+            c = int(claimed.group(1).replace(",", ""))
+            if c != words:
+                findings.append(f"{rel} — claims {c:,} words; the declared "
+                                f"mandatory set is {words:,}")
+    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+            "CG-18  context fixtures recompute", examined, len(findings),
+            "measurement",
+            note=None if examined else "no reproducible fixtures found",
+            details=findings)
+
+
+def cg19_substrate_lock(res, body=None):
+    """Every substrate pin resolves publicly, and drift is declared.
+
+    The engineering substrate this project's craft policy came from was
+    pinned to a founder-machine path. Nothing mechanical could see it, so
+    the pin's own drift rule was due to fire and did not — the installed
+    tree had moved two commits past what the owner approved. A pin that
+    cannot be checked from a clone is not a pin.
+    """
+    text = body if body is not None else read(SUBSTRATE_LOCK)
+    if not text:
+        res.add("WARN", "CG-19  substrate pins publicly resolvable", 0, 0,
+                "pin", note=f"{SUBSTRATE_LOCK} unreadable")
+        return
+    findings, examined = [], 0
+    blocks = re.split(r"\n(?=\w[\w_]*:\s*(?:#.*)?$)", text, flags=re.M)
+    for b in blocks:
+        name = re.match(r"(\w[\w_]*):\s*(?:#.*)?$", b.split("\n")[0])
+        if not name:
+            continue
+        if not re.search(r"^\s*(repository|source|url|package):", b, re.M):
+            continue
+        examined += 1
+        if not re.search(r"(https?://|npm:|pypi:|npm registry)", b):
+            findings.append(f"`{name.group(1)}` — no public source URL; a "
+                            f"reader outside this machine cannot resolve it")
+        if re.search(r"^\s*drift:", b, re.M) and not re.search(
+                r"status:\s*\"?(open|OPEN|absorbed|declined|surfaced)", b):
+            findings.append(f"`{name.group(1)}` — declares drift with no "
+                            f"disposition status; silent drift is the defect "
+                            f"this lock exists to prevent")
+    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+            "CG-19  substrate pins publicly resolvable", examined,
+            len(findings), "pin",
+            note=None if examined else "no pinned substrates declared",
+            details=findings)
+
+
+# --------------------------------------------------------- self-test
+
+def selftest():
+    """Prove each new check can fail. A validator with no failing fixture is
+    indistinguishable from a no-op, and this repository has shipped one.
+
+    Each fixture below is a synthetic input crafted to trip exactly one
+    check. The test asserts the check reports at least one finding on it —
+    not that the repository is clean.
+    """
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, status, name, examined, n, unit, note=None, details=None):
+            self.rows.append((status, name, examined, n, details or []))
+
+    cases = []
+
+    c = Cap(); cg13_dependency_graph(c, modules=[])
+    cases.append(("CG-13 empty corpus warns, never passes",
+                  c.rows[0][0] == "WARN"))
+
+    c = Cap()
+    fake = ".syzygy/governance/contracts/candidates/rfcs/RFC-0001-x.md"
+    cases.append(("CG-13 dangling edge detected", None))
+    cases[-1] = ("CG-13 dangling edge detected",
+                 _selftest_dangling())
+
+    c = Cap(); cg14_install_routes(c, record="install `no-such-dir/` → `scripts/`")
+    cases.append(("CG-14 bad source and existing destination detected",
+                  c.rows[0][0] == "FAIL" and len(c.rows[0][4]) == 2))
+
+    c = Cap()
+    cg15_truncated_digests([], c, corpus=[("f.md", "digest `deadbeefcafe…`")])
+    cases.append(("CG-15 stale truncated digest detected",
+                  c.rows[0][0] == "FAIL"))
+
+    c = Cap()
+    cg15_truncated_digests([], c, corpus=[("f.md", "the retired `deadbeefcafe…`")])
+    cases.append(("CG-15 retired-marked quote exempted",
+                  c.rows[0][0] == "WARN"))
+
+    c = Cap()
+    cg16_term_registry_status([], c,
+                              corpus=[("f.md", "the adopted term registry")])
+    cases.append(("CG-16 'adopted term registry' detected",
+                  c.rows[0][0] == "FAIL"))
+
+    c = Cap()
+    cg16_term_registry_status([], c,
+                              corpus=[("f.md", "the term registry is not adopted")])
+    cases.append(("CG-16 negated claim exempted", c.rows[0][0] == "OK"))
+
+    c = Cap()
+    cg17_routing_completeness(c, matrix="| `RFC6-1` | OS |\n| `RFC6-1` | OS |",
+                              modules=[])
+    cases.append(("CG-17 double-routed clause detected",
+                  c.rows[0][0] == "FAIL"))
+
+    c = Cap()
+    cg18_fixture_freshness(c, fixtures=[("f.md",
+        "```\nscripts/context_load.py no-such-file.md\n```\n"
+        "## Packet digest\n`0000000000000000` (recompute")])
+    cases.append(("CG-18 unreproducible fixture detected",
+                  c.rows[0][0] == "FAIL"))
+
+    c = Cap()
+    cg19_substrate_lock(c, body="th_x:\n  source: /home/someone/local\n")
+    cases.append(("CG-19 founder-local pin detected", c.rows[0][0] == "FAIL"))
+
+    width = max(len(n) for n, _ in cases)
+    bad = 0
+    for name, ok in cases:
+        print(f"  {'pass' if ok else 'FAIL'}  {name.ljust(width)}")
+        bad += 0 if ok else 1
+    print(f"\n{len(cases)} fixtures, {bad} failing — a check that cannot fail "
+          f"is not a check")
+    return 1 if bad else 0
+
+
+def _selftest_dangling():
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, status, name, examined, n, unit, note=None, details=None):
+            self.rows.append((status, name, examined, n, details or []))
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        pkg = os.path.join(d, RFCS_DIR)
+        os.makedirs(pkg)
+        rel = f"{RFCS_DIR}/RFC-0001-kernel.md"
+        with open(os.path.join(d, rel), "w") as fh:
+            fh.write("---\ndepends_on: [RFC-0099]\n---\n")
+        global ROOT
+        keep, ROOT = ROOT, d
+        try:
+            c = Cap()
+            cg13_dependency_graph(c, modules=[rel])
+            return c.rows[0][0] == "FAIL"
+        finally:
+            ROOT = keep
+
+
 # --------------------------------------------------------------- main
 
 def main():
@@ -934,7 +1500,15 @@ def main():
                     help="clone (default): tracked files plus untracked files "
                          "git does not ignore — what a clone will contain once "
                          "committed. tracked: `git ls-files` only.")
+    ap.add_argument("--selftest", action="store_true",
+                    help="run each check against a synthetic failing input "
+                         "and report whether it detects the defect. Proves "
+                         "the checks are not no-ops; examines no repository "
+                         "file.")
     args = ap.parse_args()
+
+    if args.selftest:
+        return selftest()
 
     paths, tracked, source = corpus_paths(args.scope)
 
@@ -971,6 +1545,13 @@ def main():
                 note="git unavailable — ignore status is Unknown, "
                      "not clean; re-run inside a git checkout")
     cg12_bootstrap_sources(existing, res)
+    cg13_dependency_graph(res)
+    cg14_install_routes(res)
+    cg15_truncated_digests(existing, res)
+    cg16_term_registry_status(existing, res)
+    cg17_routing_completeness(res)
+    cg18_fixture_freshness(res)
+    cg19_substrate_lock(res)
     res.report()
     return 1 if res.failed() else 0
 

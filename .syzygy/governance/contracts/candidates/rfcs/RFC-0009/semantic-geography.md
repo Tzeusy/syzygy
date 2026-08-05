@@ -7,7 +7,6 @@ clauses: RFC9-1..RFC9-23 (sub-clauses RFC9-8(a), RFC9-9(a), RFC9-9(b), RFC9-13(a
 governs: [map-surface-identity, home-geography, analytical-plane, anchoring, layout-version, layout-baseline, append-stability, relocation-trigger, placement, shared-component, identity-counting, repository-overlay, authority-overlay]
 applies_to: [orrery, machine-clients]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0006]
-provides_to: [RFC-0007, RFC-0008]
 tags: [surface, spatial, determinism, sdr-21, sdr-22, sdr-23, vis-7, sec-2, sec-3, sec-5]
 ---
 
@@ -268,7 +267,7 @@ like any other channel:
 - **Unknown value** — required by RFC9-27 and non-hypothetical: an edge with an
   endpoint that has no home placement (unmapped district, RFC9-44) has no
   adjacency to evaluate. It renders the reserved Unknown treatment with reason
-  `missing-declaration` (RFC2-24 #4) where the placement declaration is absent,
+  `missing-declaration` (RFC2-24 #1) where the placement declaration is absent,
   and it is **not** counted in either partition of the RFC9-15(b) part 4 backlog
   — an Unknown is not a not-honored edge, and folding it into the
   refresh-clearable count would put a number in front of the owner that a refresh

@@ -4,10 +4,16 @@ contract modules' YAML front matter. The index is a rebuildable projection,
 never a second truth store (RFC11-7): every row restates what a module already
 declares, and the module wins wherever they disagree.
 
-Edges are read, never inferred. Where `depends_on` and `provides_to` disagree
-about the same pair, the disagreement is reported as an asymmetry — this script
-does not repair the graph, because both fields are authored metadata and only
-their owner may change them.
+**`depends_on` is the single authored direction.** `provides_to` is
+**derived** here by reversing it, and is deliberately absent from module front
+matter. Two independently authored views of one edge set can disagree, and
+did — 20 asymmetric edges at rev10 — which made the graph unusable as a
+routing input for the Context Compiler. One authored direction cannot
+disagree with itself. Each of those 20 was dispositioned before the switch:
+11 were confirmed by the target module's own clause citations and became
+`depends_on` edges; 3 were dropped as unsupported (no citation either way);
+6 were reverse halves that this derivation now supplies automatically. See
+`round-2026-08b/DEPENDENCY-CLOSURE-REPORT.md`.
 
 Usage: build_dependency_index.py [--root DIR] [--check]
   --check: regenerate and diff against the committed index; nonzero exit on drift.
@@ -16,7 +22,7 @@ import argparse
 import sys
 from pathlib import Path
 
-LIST_KEYS = ("governs", "applies_to", "depends_on", "provides_to", "tags")
+LIST_KEYS = ("governs", "applies_to", "depends_on", "tags")
 
 
 def parse_front_matter(text):
@@ -58,7 +64,6 @@ def collect(root):
             "id": cid,
             "title": fm.get("title", ""),
             "depends_on": [x for x in fm.get("depends_on", [])],
-            "provides_to": [x for x in fm.get("provides_to", [])],
             "applies_to": [x for x in fm.get("applies_to", [])],
         }
         modules.append(rec)
@@ -67,26 +72,34 @@ def collect(root):
                                        "applies_to": set()})
         c["modules"].append(rec["file"])
         c["depends_on"] |= set(rec["depends_on"])
-        c["provides_to"] |= set(rec["provides_to"])
         c["applies_to"] |= set(rec["applies_to"])
         if not c["title"]:
             c["title"] = rec["title"]
+    # Derive provides_to by reversing depends_on — contract level, then
+    # module level. A module "provides to" every contract that declares a
+    # dependency on the contract this module belongs to.
+    for cid, c in contracts.items():
+        c["provides_to"] = {o for o, oc in contracts.items()
+                            if cid in oc["depends_on"]}
+    for rec in modules:
+        rec["provides_to"] = sorted(contracts[rec["id"]]["provides_to"])
     return modules, contracts
 
 
 def asymmetries(contracts):
+    """Dangling edges only.
+
+    Asymmetry between the two directions is now unrepresentable: `provides_to`
+    is derived from `depends_on`, so the two cannot disagree. What remains
+    checkable is whether a declared dependency names a contract that exists.
+    """
     out = []
     for a in sorted(contracts):
         for b in sorted(contracts[a]["depends_on"]):
             if b not in contracts:
-                out.append((a, b, "dangling", "`depends_on` names a contract with no module in this package"))
-            elif a not in contracts[b]["provides_to"]:
-                out.append((a, b, "depends_on", f"`{a}.depends_on` names {b}, but `{b}.provides_to` does not name {a}"))
-        for b in sorted(contracts[a]["provides_to"]):
-            if b not in contracts:
-                out.append((a, b, "dangling", "`provides_to` names a contract with no module in this package"))
-            elif a not in contracts[b]["depends_on"]:
-                out.append((a, b, "provides_to", f"`{a}.provides_to` names {b}, but `{b}.depends_on` does not name {a}"))
+                out.append((a, b, "dangling",
+                            "`depends_on` names a contract with no module "
+                            "in this package"))
     return out
 
 
@@ -99,12 +112,14 @@ def emit(root):
     add("")
     add("**Generated projection.** Rebuild with")
     add("`python3 scripts/build_dependency_index.py`; check for drift with")
-    add("`--check`. Every row restates the `depends_on` / `provides_to` /")
-    add("`applies_to` front matter of the active contract modules under `rfcs/`.")
-    add("**The modules win over this file, always.** Nothing here is a clause,")
-    add("nothing here may be cited as authority, and no edge appears here that a")
-    add("module does not declare — the generator reads edges, it never infers")
-    add("them (charter §11.5; RFC11-7 rebuildable-projection rule).")
+    add("`--check`. Every `depends_on` and `applies_to` cell restates the")
+    add("front matter of the active contract modules under `rfcs/`; every")
+    add("`provides_to` cell is **derived** by reversing `depends_on`.")
+    add("**The modules win over this file, always.** Nothing here is a clause")
+    add("and nothing here may be cited as authority. No `depends_on` edge")
+    add("appears that a module does not declare, and no `provides_to` edge")
+    add("appears that is not the exact reverse of one (charter §11.5; RFC11-7")
+    add("rebuildable-projection rule).")
     add("")
     add(f"Coverage: **{len(modules)} modules** across **{len(contracts)} contracts**.")
     add("")
@@ -138,23 +153,28 @@ def emit(root):
     add("")
     add("## Graph consistency")
     add("")
-    add("`depends_on` and `provides_to` are two independently authored views of")
-    add("the same edge set, so they can disagree. Each disagreement below is")
-    add("**reported, not repaired**: adding the missing half would be inventing")
-    add("an edge no module declares, and removing the stated half would delete")
-    add("one. Resolving them is an edit to the modules' front matter, and")
-    add("belongs to whoever owns those modules.")
+    add("**The graph is closed by construction.** `depends_on` is the single")
+    add("authored direction; `provides_to` is derived by reversing it and")
+    add("appears in no module's front matter. The two therefore cannot")
+    add("disagree — the 20 asymmetric edges this section used to report were")
+    add("not a data-entry problem but a consequence of maintaining both")
+    add("directions by hand. Their per-edge dispositions are recorded in")
+    add("`round-2026-08b/DEPENDENCY-CLOSURE-REPORT.md`.")
+    add("")
+    add("What remains checkable is **dangling** edges: a declared dependency")
+    add("on a contract with no module in this package.")
     add("")
     if asym:
-        add(f"**{len(asym)} asymmetric or dangling edges** at generation:")
+        add(f"**{len(asym)} dangling edge(s)** at generation:")
         add("")
-        add("| From | To | Declared on | Disagreement |")
+        add("| From | To | Kind | Problem |")
         add("|---|---|---|---|")
         for a, b, kind, why in asym:
             add(f"| `{a}` | `{b}` | `{kind}` | {why} |")
     else:
-        add("**No asymmetric or dangling edges** at generation: every declared")
-        add("`depends_on` has a matching `provides_to` and vice versa.")
+        add("**No dangling edges** at generation: every contract named by a")
+        add(f"`depends_on` has at least one module in this package "
+            f"({len(contracts)} contracts resolved).")
     add("")
     add("The contract graph is **not acyclic** — mutual edges between kernel")
     add("contracts are declared deliberately (a contract can both rely on and")

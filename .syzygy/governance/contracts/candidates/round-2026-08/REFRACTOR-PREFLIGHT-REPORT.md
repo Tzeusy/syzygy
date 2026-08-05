@@ -1,3 +1,9 @@
+> # Historical — round record, not a current offering
+>
+> **Do not read a digest here as an act argument.** The preflight state it records is round 2026-08's. The equivalent for the following round is `../round-2026-08b/CURRENT-REFRACTOR-PREFLIGHT.md`. Current arguments
+> come from `ACTIVE-CONTRACT-MANIFEST.txt` and
+> `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`, never from a round record.
+
 # Refactor preflight report — human-clarity refactor round
 
 **Round:** human-clarity refactor, public-clone normalization, final

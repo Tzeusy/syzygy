@@ -5,8 +5,7 @@ status_source: owner-act-record
 clauses: "RFC11-1..RFC11-12"
 governs: [context-packets, context-selection, governed-memory, agent-profiles]
 applies_to: [mission-control, context, all-surfaces, machine-clients]
-depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0010]
-provides_to: []
+depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008, RFC-0010]
 tags: [context, provenance, memory, selection, agents]
 ---
 

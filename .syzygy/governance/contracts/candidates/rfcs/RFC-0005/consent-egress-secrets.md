@@ -7,7 +7,6 @@ clauses: RFC5-12..RFC5-17 (no gaps, no retirements, no merges)
 governs: [consent-classes, consent-records, egress, content-classes, model-providers, secret-screening, ingest-boundaries, exclusions, redaction-classes]
 applies_to: [kernel, all-surfaces]
 depends_on: [RFC-0001, RFC-0002, RFC-0003]
-provides_to: [RFC-0002, RFC-0003, RFC-0004, RFC-0006, RFC-0008, RFC-0010, RFC-0011]
 tags: [sec-2, sec-5, vis-1, egress-choke-point, fail-closed, hash-not-body, rfc3-16a-gate]
 ---
 

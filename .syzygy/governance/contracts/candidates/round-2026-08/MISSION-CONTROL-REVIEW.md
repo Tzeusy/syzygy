@@ -1,5 +1,32 @@
 # MISSION-CONTROL-REVIEW — charter §14 assessment of the Mission/Autonomy material
 
+> **Correction, 2026-08-05b — this review's stated reading-basis does not
+> verify, and its coverage totals should be cited only with this note.**
+>
+> The digest table below records the reviewed `RFC-0010-mission-control-autonomy.md`
+> as `8481335836115c5ec0316f62fd229177f17292e35cc1d71e9d48d0445c3574c6`, and
+> then asserts `[Observed]` that this equals the manifest entry. Both claims
+> are false. Independently re-verified in the session writing this note: the
+> only commit that has ever contained the file (`f2d202c`) carries
+> `dfcedbbf187cfcc30d05d1a23806c0efd4f30efc96b005ff34771b04710364c7`, and
+> `8481335836…` is a value **the file has never carried in this repository's
+> history**. Either the review read a byte-sequence whose identity can no
+> longer be established, or an `[Observed]` equality was recorded without the
+> comparison being run — the repository's own hazard list names both.
+>
+> The finding is RC-7's (`round-2026-08b/reviews/RC-7-mission-safety-RAW.md`
+> §0.1), and RC-7 also re-derived this review's field-by-field marks against
+> the live file and **agreed with them**. So the totals are substantively
+> right while the evidence for them is not sound, and those are different
+> things. The wrong value is corrected here rather than in place because the
+> table records what the review claims to have read; overwriting it would
+> destroy the finding.
+>
+> The contract has since moved anyway: RFC-0010 gained RFC10-17…RFC10-22 on
+> 2026-08-05b. Neither this review nor RC-7's coverage re-derivation has read
+> those six clauses. Current digests come from `ACTIVE-CONTRACT-MANIFEST.txt`,
+> never from this table.
+
 **What this is.** A review artifact produced in the human-clarity refactor
 round (charter §14, required output listed at §20). It is **not authority**,
 accepts nothing, and adopts nothing. It proposes no edit to any artifact

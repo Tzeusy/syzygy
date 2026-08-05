@@ -7,7 +7,6 @@ clauses: RFC2-12..RFC2-14 (no gaps, no retirements, no merges)
 governs: [challenge-admissibility, challenge-states, admission-authority, challenge-pending, conservative-suspension, resolution-authority, expiry-eligibility, sweep-policy]
 applies_to: [kernel, all-surfaces]
 depends_on: [RFC-0001, RFC-0003, RFC-0005]
-provides_to: [RFC-0003, RFC-0006, RFC-0007, RFC-0008, RFC-0009]
 tags: [foundational, epistemic, inference, challenge, fail-closed, owner-act-predicate, vis-4, sec-3]
 ---
 

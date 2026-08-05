@@ -1,3 +1,9 @@
+> # Historical — round record, not a current offering
+>
+> **Do not read a digest here as an act argument.** Its act arguments are round 2026-08's and three of the five have changed since. Successor: `../round-2026-08b/PUBLIC-CLONE-VERIFICATION-REPORT.md`. Current arguments
+> come from `ACTIVE-CONTRACT-MANIFEST.txt` and
+> `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`, never from a round record.
+
 # Public-clone verification report — 2026-08-05
 
 > Non-authoritative round record. It reports what a clone contains and what

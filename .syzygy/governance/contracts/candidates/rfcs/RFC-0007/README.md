@@ -7,8 +7,7 @@ modules: [narrative-contract, rendering-and-surface]
 clauses: RFC7-1..RFC7-38 (sub-clauses RFC7-2(a)-(c), RFC7-9(a)-(c), RFC7-11(a); no gaps, no retired numbers, no merges)
 governs: [intent, narrative, section, claim-block, source-anchor, reading-order, citation-graph, curated-diagram, editorial-draft, portfolio-narrative]
 applies_to: [polaris]
-depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006]
-provides_to: [RFC-0008, RFC-0009]
+depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0009]
 tags: [presentation, non-authoritative, progressive-disclosure, comprehension-test, machine-parity, editorial-draft, target-state-drift]
 ---
 

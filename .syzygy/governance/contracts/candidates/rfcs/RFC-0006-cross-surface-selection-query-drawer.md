@@ -6,7 +6,6 @@ clauses: "RFC6-1..RFC6-28 (no gaps; none retired, merged, or renumbered)"
 governs: [selection-reference, url-identity, resolution-outcome, evidence-drawer, query-answer, label-parity, scenario-context]
 applies_to: [all-surfaces, kernel, machine-clients]
 depends_on: [RFC-0001, RFC-0002]
-provides_to: [RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011]
 tags: [selection, urls, queries, drawer, machine-endpoints, equivalence, scenario, consent, secrets]
 ---
 

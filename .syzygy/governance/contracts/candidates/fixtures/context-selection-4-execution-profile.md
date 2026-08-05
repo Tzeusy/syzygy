@@ -23,7 +23,7 @@ scripts/context_load.py rfcs/RFC-0005/README.md \
   craft:security-and-secrets.md
 ```
 
-Measured: **10,893 words ≈ 14,705 estimated tokens** — inside the 15–20k
+Measured: **10,866 words ≈ 14,669 estimated tokens** — inside the 15–20k
 working target with room.
 
 ## Omitted applicable candidates, with reasons
@@ -59,7 +59,9 @@ context is in scope); RFC-0002 `rendering-vocabularies`
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`a56fb116fa588b9b…`. Compiler: `context_load.py`, selection rules
+`39c6b21ccdb9ad52…`. Compiler: `context_load.py`, selection rules
 rev10-fixtures.
 
 *Re-measured 2026-08-05 (refactor round): figures and packet digest refreshed after this round's recorded corrections to RFC-0003 governance-homes (P-6, +13 w) and the craft banners (P-7, security policy +26 w); selection unchanged. Prior figures/digest are in git history.*
+
+*Re-measured 2026-08-05b by `scripts/check_governance.py` CG-18, which recomputes the digest and the word count from the declared mandatory set rather than trusting the recorded figures. Previous: 10,893 words, digest `a56fb116fa588b9b…`. Selection unchanged; the movement is contract edits landing under a fixture that had no mechanical freshness check until now.*

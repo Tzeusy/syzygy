@@ -1,12 +1,29 @@
-# Historical process record — lessons and incidents (non-default context)
+# Process lessons and incidents (non-default context)
 
-**Provenance:** migrated 2026-08-05 from the former `AGENTS.md` "Notes to
-self" appendix (human-clarity refactor round, front-door rewrite). This file
-is a historical process record: it is tracked so clones can read the history,
-but it is **not** default agent context and is **never** authority. The
-current operational rules distilled from these incidents live in
-`AGENTS.md` ("Verification hazards"); this file carries the incidents and
-the phase-specific detail.
+> **Never authority, never default context.** This file is tracked so a clone
+> can read the history behind the repository's operating rules. It binds
+> nothing. Load it deliberately — for maintenance or review work, or when
+> about to repeat something listed here — never as background reading.
+
+**Provenance and home.** Migrated 2026-08-05 from the former `AGENTS.md`
+"Notes to self" appendix, and relocated the same day from
+`contracts/candidates/round-2026-08/` to this durable home: process lessons
+outlive the round that discovers them, and a round record is the wrong place
+for a rule that should still apply in a year. `AGENTS.md` keeps only the four
+compressed **verification rules**; this file is their single incident record
+and carries every phase-specific and machine-specific detail.
+
+## Shell and tooling hazards (this machine)
+
+- **Interactive aliases hang agents.** `cp`, `mv`, and `rm` are aliased to
+  their `-i` forms; an agent's non-TTY shell waits forever on the prompt.
+  Always pass `-f`.
+- **Bash `cwd` persists across tool calls, but a subshell's does not.** A
+  bare relative `>> FILE.md` after a `cd` into a git-excluded tree writes a
+  file `git status` cannot see. Absolute paths under `_bootstrap/**`.
+- **Never edit stored raw reviewer output.** When a checker flags a line
+  inside a verbatim report, allowlist the file in the checker; changing the
+  report destroys the evidence the allowlist exists to protect.
 
 ## Incident-backed rules
 

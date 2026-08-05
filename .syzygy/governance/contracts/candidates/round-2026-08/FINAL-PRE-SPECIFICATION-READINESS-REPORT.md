@@ -1,3 +1,9 @@
+> # Historical — round record, not a current offering
+>
+> **Do not read a digest here as an act argument.** Its readiness answer is round 2026-08's, given over a corpus that has since changed twice. Successor: `../round-2026-08b/FINAL-PRE-SPECIFICATION-READINESS-REPORT.md`. Current arguments
+> come from `ACTIVE-CONTRACT-MANIFEST.txt` and
+> `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`, never from a round record.
+
 # Final pre-specification readiness report — 2026-08-05
 
 Answers the round charter's five completion tests with evidence, then states

@@ -7,7 +7,6 @@ clauses: RFC4-22..RFC4-29 (no gaps, no retirements, no merges)
 governs: [provenance-joins, join-basis, worker-liveness, reduced-fidelity-labels, degradation-mapping, code-mappings, code-markers, mapping-coverage, derivation-first, enrichment-roadmap]
 applies_to: [kernel, trajectory, orrery]
 depends_on: [RFC-0001, RFC-0002, RFC-0003]
-provides_to: [RFC-0003, RFC-0008, RFC-0009, RFC-0011]
 tags: [provenance, liveness, reduced-fidelity, coverage, derivation-first, sdr-3, sdr-4, sdr-31, sdr-33, vis-1, vis-2]
 ---
 

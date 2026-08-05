@@ -7,7 +7,6 @@ clauses: RFC2-1..RFC2-11 (no gaps, no retirements, no merges)
 governs: [source-snapshot, snapshot-inputs, evaluation-identity, degradation-only-rule, claim-identity, observation-record, inference-overlay, currency-bound, freshness, evidence-revision-binding]
 applies_to: [kernel, all-surfaces]
 depends_on: [RFC-0001, RFC-0003, RFC-0005]
-provides_to: [RFC-0003, RFC-0004, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011]
 tags: [foundational, temporal, epistemic, determinism, vis-7, vis-2, vis-6, sdr-2]
 ---
 

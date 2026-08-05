@@ -7,7 +7,6 @@ clauses: RFC4-10..RFC4-17 (sub-clauses RFC4-13(a), RFC4-13(b); no gaps, no retir
 governs: [openspec-adapter, vcs-adapter, hosting-sub-adapter, code-structure-observer, gate-observers, trusted-external-oracles, governed-checkers, runtime-observer, scheduler-adapter, capture-before-horizon, warrant-pointer]
 applies_to: [kernel, trajectory, orrery]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0005]
-provides_to: [RFC-0008, RFC-0011]
 tags: [adapters, gate-tiering, provenance, capture-before-horizon, anchors, sdr-3, sdr-7, sdr-9, sdr-32, sdr-33, sec-3, sec-5]
 ---
 

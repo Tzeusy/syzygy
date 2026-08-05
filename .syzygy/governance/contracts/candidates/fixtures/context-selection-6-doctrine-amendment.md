@@ -32,7 +32,7 @@ scripts/context_load.py doctrine:vision.md doctrine:v1.md \
   rfcs/RFC-0003/README.md rfcs/RFC-0003/governance-homes-and-owner-acts.md
 ```
 
-Measured: **11,537 words ≈ 15,574 estimated tokens** — just above the
+Measured: **11,523 words ≈ 15,556 estimated tokens** — just above the
 5,000–15,000-token default packet band, well below the 20,000-token
 justification trigger (charter §11.4 context-budget table; the table's home
 is the candidate knowledge-hygiene craft policy, which is not yet installed
@@ -116,7 +116,7 @@ trigger grain the amendment clarifies.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`958090be70dd525b…` (recompute: `cat <mandatory files> | sha256sum`).
+`e4e186b76b6ec14e…` (recompute: `cat <mandatory files> | sha256sum`).
 Compiler: `context_load.py`, selection rules rev10-fixtures.
 
 **Digest-source pinning.** This digest and the measured totals above are
@@ -151,3 +151,5 @@ stated digests after the P-6 and P-7 fixes — see the fixture report.)
       the script.* The fixture names files; nothing checks that a consumer
       read the clause rather than an index or its own summary. See the
       fixture report's §5.
+
+*Re-measured 2026-08-05b by `scripts/check_governance.py` CG-18, which recomputes the digest and the word count from the declared mandatory set rather than trusting the recorded figures. Previous: 11,537 words, digest `958090be70dd525b…`. Selection unchanged; the movement is contract edits landing under a fixture that had no mechanical freshness check until now.*

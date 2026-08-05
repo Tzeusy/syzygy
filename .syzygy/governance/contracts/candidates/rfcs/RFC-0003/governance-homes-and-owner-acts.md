@@ -6,8 +6,7 @@ status_source: owner-act-record
 clauses: "RFC3-15, RFC3-15(a), RFC3-16, RFC3-16(a), RFC3-16(b), RFC3-16(c), RFC3-17, RFC3-17(a) (every other RFC3-n lives in manifests-and-namespace.md)"
 governs: [governance-homes, lifecycles, owner-acts, provenance, challenge-records]
 applies_to: [kernel, workspace, all-surfaces]
-depends_on: [RFC-0001, RFC-0002]
-provides_to: [RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011]
+depends_on: [RFC-0001, RFC-0002, RFC-0004, RFC-0005]
 tags: [governance-categories, owner-act-provenance, adoption-lifecycle, kernel-records, bootstrap-correlation]
 ---
 

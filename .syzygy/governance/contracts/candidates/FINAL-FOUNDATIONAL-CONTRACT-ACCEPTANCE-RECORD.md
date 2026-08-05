@@ -12,10 +12,10 @@ gate. Until an act is performed, every artifact here binds nothing
 
 | # | Act (exact phrase) | Accepts exactly |
 |---|---|---|
-| 1 | `ACCEPT COMPACTED FOUNDATIONAL RFCS: f2914fc56cd2aa069b952747b9c78b00dc41d908830887ecd2f1addd37e61fc4` | The 32 active contract modules (RFC 0001–0011) at the per-module sha256 digests in `ACTIVE-CONTRACT-MANIFEST.txt`, whose own digest is the act's argument. Nothing else — not history/, not fixtures/, not the reports |
+| 1 | `ACCEPT COMPACTED FOUNDATIONAL RFCS: 718fe095192a415fe7300b039e887b4d286bbb3d06b45e0f823cfb1ce6d4724f` | The 32 active contract modules (RFC 0001–0011) at the per-module sha256 digests in `ACTIVE-CONTRACT-MANIFEST.txt`, whose own digest is the act's argument. Nothing else — not history/, not fixtures/, not the reports. **Digest re-quoted twice on 2026-08-05b.** First: RFC-0010 gained six clauses (RFC10-17..22, the correction plane) and all 32 modules dropped the derived `provides_to` front-matter key. Then, after review RC-4 refuted four of the dependency edges added in that same pass, the edges were reverted, one wrong vocabulary ordinal was corrected, and the manifest was regenerated again (see `round-2026-08b/DEPENDENCY-CLOSURE-REPORT.md` §"Correction after RC-4"). The prior arguments `f2914fc5…` and `41195c81…` are both retired and satisfy nothing |
 | 2 | `CONFIRM CRAFT AMENDMENT: CC-TEST-2@3858820f64768ef20e6514fe8adb28076263f071ac77e66a5520a612f3bcb26d` | The craft cluster is committed and owner-approved (D2); only this amendment needs confirming. **Digest re-quoted 2026-08-05** — the nine canonical files' banners were corrected (P-7/SD-3, rule text byte-unchanged), so the rev9 argument `aa2d6353…` is stale and satisfies nothing |
 | 3 | `ACCEPT TOPOLOGY: 7a3b22494a08d888901c1f0cec76833dc926e89b6f510b5abf8963071fbaeb45` | The nine topology files at the per-member digests in `../../../map/topology-candidates/BUNDLE-MANIFEST.md`, whose own digest is the act's argument. **Digest re-quoted 2026-08-05** — topology `README.md` lost the retired acceptance phrase and its draft/proposed vocabulary (SD-2, SD-10); the other eight members are byte-unchanged from rev9, and the rev9 argument `0d34d1b5…` is stale and satisfies nothing |
-| 4 | `ADOPT PROJECT OVERVIEW: ce7794fd8c0e528ae50434f5c63ce27df998441cdd07b20a903627ecaf885b06` | `.syzygy/intent/OVERVIEW.md` at that digest. **Digest re-quoted 2026-08-05** — the overview was refactored to four-layer progressive disclosure and its authoring-time status section removed (P-13/SD-9); the rev9 argument `42de2eb1…` is stale and satisfies nothing |
+| 4 | `ADOPT PROJECT OVERVIEW: 01d629515993188338f6a0e2d84d67543d8569003759a7c8f571a90b129c7cd1` | `.syzygy/intent/OVERVIEW.md` at that digest. **Digest re-quoted 2026-08-05** — the overview was refactored to four-layer progressive disclosure and its authoring-time status section removed (P-13/SD-9); the rev9 argument `42de2eb1…` is stale and satisfies nothing. **Re-quoted again 2026-08-05b** — the overview was rebuilt to a default layer plus two collapsed drawers, the frozen gate-state table was removed in favour of a pointer to `PROJECT-STATUS.md`, and the machine query plane was restored to the consumer list; the retired argument `ce7794fd…` satisfies nothing |
 | 5 | Doctrine amendment **D3** (bounded mission) — VIS-4 owner adoption, no magic phrase | `DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (**rev1**, 2026-08-05) and its two verbatim insertions. Rev1 supersedes `…-DRAFT.md`, whose `vision.md` insertion cannot be applied as written (SD-8). **Optional**: RFC-0010/0011 do not depend on it. Recommended ordering: perform act 1 before act 5 |
 
 **Acceptance schedules no implementation.** Accepting these contracts
@@ -88,11 +88,20 @@ Each act is a chat-phrase ceremony executed in five steps:
    RFC3-15 `contracts/` home, created at this step. The copy is
    digest-verified by running `sha256sum -c ACTIVE-CONTRACT-MANIFEST.txt`
    **from `.syzygy/governance/contracts/`**. Acts 2/4 bind content already
-   committed at canonical homes; act 3 installs the bundle (shipped in
-   this packet at `topology/`) to `.syzygy/map/topology/` — creating
-   `.syzygy/map/`, an RFC3-18 surface-namespace home, at this step —
-   verified by the bundle manifest's own `sha256sum -c` block run from
-   the installed directory. Installation is a copy, never an edit.
+   committed at canonical homes; act 3 copies the nine bundle members from
+   **`.syzygy/map/topology-candidates/`** — their tracked home, present in
+   every clone — to `.syzygy/map/topology/`, verified by the bundle
+   manifest's own `sha256sum -c` block run from the installed directory.
+   (`.syzygy/map/` already exists as the candidates' parent; act 3 creates
+   the `topology/` home inside it, and does **not** delete
+   `topology-candidates/` — retirement of the candidate home is a separate,
+   later cleanup, so a failed act leaves the source intact.) Installation is
+   a copy, never an edit. **Corrected 2026-08-05:** this step previously
+   named a source path `topology/` that exists in no clone and never
+   existed in the tracked package; the ceremony was unexecutable as
+   written. `check_governance.py` CG-14 now resolves every act's install
+   source and destination so this class of defect fails a check rather than
+   waiting for a reader.
    **Companion material, installed but not accepted:** act 1's install
    also copies `history/` and `matrix-rows/` to
    `.syzygy/governance/contracts/history/` and `…/matrix-rows/` so the
@@ -139,15 +148,25 @@ state** — it is evidence within a record, never the mechanism. Artifacts
 are never edited after an act; an artifact edited after its act is, for
 the record, an artifact with no act (RFC3-16(b) item 3).
 
-**Retention before the act, stated honestly.** Until an act fires, the
-package lives in the deliberately git-excluded `_bootstrap/` working tree
-plus the delivered review packet; step 2 makes tampering detectable, not
-recoverable from this repository alone. From step 5 onward the accepted
-content is committed, tagged, and clone-visible.
+**Retention before the act, stated honestly.** The package is **tracked**
+and present in every clone, at `.syzygy/governance/contracts/candidates/`
+(contracts, manifest, scripts, fixtures, reviews) and
+`.syzygy/map/topology-candidates/` (the bundle). Nothing the ceremony needs
+lives outside the clone: a collaborator with only `git clone` can recompute
+every act digest and run every validation. Step 2 makes tampering
+detectable, not recoverable, from this repository alone. From step 5 onward
+the accepted content additionally sits at its governed home, tagged.
+
+**Corrected 2026-08-05.** This paragraph previously stated that the package
+"lives in the deliberately git-excluded `_bootstrap/` working tree plus the
+delivered review packet". That was true when it was written and became
+false when the package was tracked; it survived because nothing checked it.
+The claim is retired rather than deleted, because a reader who saw the old
+text needs to know it was wrong, not merely that it is gone.
 
 ## 3. Package identity
 
-**Manifest digest (act 1's argument):** `f2914fc56cd2aa069b952747b9c78b00…`
+**Manifest digest (act 1's argument):** `718fe095192a415fe7300b039e887b4d…`
 — sha256 of `ACTIVE-CONTRACT-MANIFEST.txt`, which lists the sha256 of
 each of the **32 active modules**. The manifest is regenerated by script
 only; per-module digests are never hand-transcribed. (Regenerated after
@@ -242,9 +261,14 @@ implementation, not specification — accepting with it open is a
      fixed (the RFC3-16 relaxation now stated plainly in the migration
      matrix; constraint/authorization split carried into RFC3-16(b)/(c)).
   After the consolidated fix batch, the §1 act-1 digest was regenerated
-  (`f2914fc5…`).
-- **Final confirming review (2026-08-03): CONFIRM at manifest digest
+  to the now-retired `f2914fc5…`.
+- **Final confirming review (2026-08-03): CONFIRM at the then-current,
+  now retired manifest digest
   `f2914fc56cd2aa069b952747b9c78b00dc41d908830887ecd2f1addd37e61fc4`**
+  — **this CONFIRM does not reach the corpus the owner would accept today.**
+  The manifest has been regenerated twice since (RFC-0010's correction plane;
+  the dependency-direction change and its RC-4 correction). No confirming
+  review is bound to the current argument
   (raw report verbatim at `reviews/rev10-confirming-review.md`). It
   re-ran every mechanical check (all 32 manifest lines OK; verifier
   PASS; index no-drift), verified every spot-checked disposition in the

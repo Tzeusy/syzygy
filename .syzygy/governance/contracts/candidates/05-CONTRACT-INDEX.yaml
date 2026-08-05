@@ -7,7 +7,6 @@ contracts:
     governs: [entities, relations, identities, state-planes, evaluation-identity, claims, gaps, contradictions, proposals, lifecycles]
     applies_to: [kernel, all-surfaces]
     depends_on: []
-    provides_to: [RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011]
     tags: [foundational, kernel, closed-vocabulary, identity, state-planes, semantic-relation-class]
     modules: [RFC-0001-project-graph-identity-state-planes.md]
     clauses:
@@ -55,7 +54,6 @@ contracts:
     governs: [source-snapshot, evaluation-identity, observation-record, inference-overlay, currency, staleness, challenge, contradiction, gap, aligned, converged, reconciliation-chain, failure-states, unknown-reason, rendering-tier]
     applies_to: [kernel, all-surfaces]
     depends_on: [RFC-0001, RFC-0003, RFC-0004, RFC-0005]
-    provides_to: [RFC-0003, RFC-0004, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011]
     tags: [foundational, temporal, epistemic, evidence, closed-vocabulary, v0-v1-staging]
     modules: [RFC-0002/README.md, RFC-0002/challenge-lifecycle.md, RFC-0002/reconciliation-chain.md, RFC-0002/rendering-vocabularies.md, RFC-0002/snapshot-and-evaluation-core.md]
     module_ranges:
@@ -94,8 +92,7 @@ contracts:
     status_source: owner-act-record
     governs: [manifests, governance-homes, lifecycles, owner-acts, workspace]
     applies_to: [kernel, workspace, all-surfaces]
-    depends_on: [RFC-0001, RFC-0002]
-    provides_to: [RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011]
+    depends_on: [RFC-0001, RFC-0002, RFC-0004, RFC-0005]
     tags: [project-declaration, consent, governance-plane, owner-act-provenance, schema-migration, nesting]
     modules: [RFC-0003/README.md, RFC-0003/governance-homes-and-owner-acts.md, RFC-0003/manifests-and-namespace.md]
     module_ranges:
@@ -145,7 +142,6 @@ contracts:
     governs: [observation-sources, observers, adapters, evidence, execution-records, trusted-external-oracles, governed-checkers, fidelity-labels, provenance-joins, code-mappings]
     applies_to: [kernel, trajectory, orrery]
     depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0005]
-    provides_to: [RFC-0003, RFC-0005, RFC-0008, RFC-0009, RFC-0011]
     tags: [observation, provenance, gate-tiering, unknown-never-zero, liveness, reduced-fidelity, capture-before-horizon]
     modules: [RFC-0004/README.md, RFC-0004/execution-record.md, RFC-0004/fidelity-joins-and-mappings.md, RFC-0004/general-contract.md, RFC-0004/named-adapters.md]
     module_ranges:
@@ -191,7 +187,6 @@ contracts:
     governs: [principals, sessions, machine-credentials, client-classes, exposure-modes, consent, egress, secrets, execution-profiles, adapter-credentials, audit, revocation]
     applies_to: [kernel, all-surfaces, machine-clients]
     depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004]
-    provides_to: [RFC-0002, RFC-0003, RFC-0004, RFC-0006, RFC-0008, RFC-0010, RFC-0011]
     tags: [security-boundary, sec-1, sec-2, sec-3, sec-4, sec-5, blocking, execution-gate, client-classes]
     modules: [RFC-0005/README.md, RFC-0005/admission-and-boundary.md, RFC-0005/consent-egress-secrets.md, RFC-0005/execution-profiles.md]
     module_ranges:
@@ -231,7 +226,6 @@ contracts:
     governs: [selection-reference, url-identity, resolution-outcome, evidence-drawer, query-answer, label-parity, scenario-context]
     applies_to: [all-surfaces, kernel, machine-clients]
     depends_on: [RFC-0001, RFC-0002]
-    provides_to: [RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011]
     tags: [selection, urls, queries, drawer, machine-endpoints, equivalence, scenario, consent, secrets]
     modules: [RFC-0006-cross-surface-selection-query-drawer.md]
     clauses:
@@ -268,8 +262,7 @@ contracts:
     status_source: owner-act-record
     governs: [intent, narrative, section, claim-block, source-anchor, reading-order, citation-graph, curated-diagram, editorial-draft, portfolio-narrative]
     applies_to: [polaris]
-    depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006]
-    provides_to: [RFC-0008, RFC-0009]
+    depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0009]
     tags: [presentation, non-authoritative, progressive-disclosure, comprehension-test, machine-parity, editorial-draft, target-state-drift]
     modules: [RFC-0007/README.md, RFC-0007/narrative-contract.md, RFC-0007/rendering-and-surface.md]
     module_ranges:
@@ -320,8 +313,7 @@ contracts:
     status_source: owner-act-record
     governs: [work, work-states, dispatch, execution-records, trajectory-surface, materialization-records, change-accounting-chain, reconciliation-chain-state, cost-measures, provenance]
     applies_to: [trajectory]
-    depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006]
-    provides_to: [RFC-0007, RFC-0009, RFC-0010, RFC-0011]
+    depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007]
     tags: [work-state-vocabulary, reconciliation-chain, cost, provenance, compaction, phase-boundary, anti-thesis, closure-fallacy, substrate]
     modules: [RFC-0008/README.md, RFC-0008/accounting-reconciliation-and-release.md, RFC-0008/identity-authority-materialization.md, RFC-0008/state-vocabulary-and-cost.md]
     module_ranges:
@@ -366,8 +358,7 @@ contracts:
     status_source: owner-act-record
     governs: [map-surface, home-geography, analytical-planes, layout-determinism, placement, identity-counting, reserved-palette, channel-registry, lenses, scene-profiles, scenarios, aggregation, unmapped-code, non-3d-equivalence, release-gates, motion]
     applies_to: [orrery, machine-clients]
-    depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008]
-    provides_to: [RFC-0007, RFC-0008, RFC-0010, RFC-0011]
+    depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008]
     tags: [surface, spatial, legend-fidelity, unknown, determinism, sdr-19, sdr-20, sdr-21, sdr-22, sdr-23, sdr-24, sdr-25, sdr-26, sdr-27, vis-1, vis-7, sec-2, sec-3, sec-5]
     modules: [RFC-0009/README.md, RFC-0009/interaction-parity-and-release.md, RFC-0009/semantic-geography.md, RFC-0009/visual-grammar-and-lenses.md]
     module_ranges:
@@ -441,7 +432,6 @@ contracts:
     governs: [missions, autonomy-envelopes, guardrails, attention-items, workspace-governance, service-boundary]
     applies_to: [mission-control, workspace, all-surfaces, machine-clients]
     depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0005, RFC-0006, RFC-0008]
-    provides_to: [RFC-0011]
     tags: [autonomy, human-control, budgets, escalation, platform]
     modules: [RFC-0010-mission-control-autonomy.md]
     clauses:
@@ -460,14 +450,19 @@ contracts:
       - {id: RFC10-13, module: RFC-0010-mission-control-autonomy.md, kind: normative}
       - {id: RFC10-14, module: RFC-0010-mission-control-autonomy.md, kind: normative}
       - {id: RFC10-15, module: RFC-0010-mission-control-autonomy.md, kind: normative}
+      - {id: RFC10-17, module: RFC-0010-mission-control-autonomy.md, kind: normative}
+      - {id: RFC10-18, module: RFC-0010-mission-control-autonomy.md, kind: normative}
+      - {id: RFC10-19, module: RFC-0010-mission-control-autonomy.md, kind: normative}
+      - {id: RFC10-20, module: RFC-0010-mission-control-autonomy.md, kind: normative}
+      - {id: RFC10-21, module: RFC-0010-mission-control-autonomy.md, kind: normative}
+      - {id: RFC10-22, module: RFC-0010-mission-control-autonomy.md, kind: normative}
       - {id: RFC10-16, module: RFC-0010-mission-control-autonomy.md, kind: phase-rule}
   - id: RFC-0011
     title: Context Compiler and Governed Context Packets
     status_source: owner-act-record
     governs: [context-packets, context-selection, governed-memory, agent-profiles]
     applies_to: [mission-control, context, all-surfaces, machine-clients]
-    depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0010]
-    provides_to: []
+    depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008, RFC-0010]
     tags: [context, provenance, memory, selection, agents]
     modules: [RFC-0011-context-compiler.md]
     clauses:

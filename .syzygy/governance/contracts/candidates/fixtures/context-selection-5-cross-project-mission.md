@@ -20,7 +20,7 @@ scripts/context_load.py rfcs/RFC-0010-mission-control-autonomy.md \
   rfcs/RFC-0003/governance-homes-and-owner-acts.md doctrine:vision.md
 ```
 
-Measured: **12,843 words ≈ 17,338 estimated tokens** — inside the 15–20k
+Measured: **14,581 words ≈ 19,684 estimated tokens** — inside the 15–20k
 working target.
 
 ## Omitted applicable candidates, with reasons
@@ -60,7 +60,9 @@ acts (RFC10-3) are being set in the same draft.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`c92c6f8a936b12b0…`. Compiler: `context_load.py`, selection rules
+`a8821dee92c4629c…`. Compiler: `context_load.py`, selection rules
 rev10-fixtures.
 
 *Re-measured 2026-08-05 (refactor round): figures and packet digest refreshed after this round's recorded corrections to RFC-0003 governance-homes (P-6, +13 w) and the craft banners (P-7, security policy +26 w); selection unchanged. Prior figures/digest are in git history.*
+
+*Re-measured 2026-08-05b by `scripts/check_governance.py` CG-18, which recomputes the digest and the word count from the declared mandatory set rather than trusting the recorded figures. Previous: 12,843 words, digest `c92c6f8a936b12b0…`. Selection unchanged; the movement is contract edits landing under a fixture that had no mechanical freshness check until now.*

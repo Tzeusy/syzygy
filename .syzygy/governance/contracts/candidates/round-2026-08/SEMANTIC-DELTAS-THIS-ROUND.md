@@ -1,3 +1,9 @@
+> # Historical — round record, not a current offering
+>
+> **Do not read a digest here as an act argument.** The deltas SD-1…SD-10 are round 2026-08's and remain an accurate record of that round; the act digests they cite have since been superseded twice. Current arguments
+> come from `ACTIVE-CONTRACT-MANIFEST.txt` and
+> `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`, never from a round record.
+
 # Semantic-delta register — human-clarity refactor round, 2026-08-05
 
 Every normative or authority-adjacent edit this round travels as a recorded

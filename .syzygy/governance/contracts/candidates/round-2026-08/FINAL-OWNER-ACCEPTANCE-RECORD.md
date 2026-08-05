@@ -1,3 +1,17 @@
+> # SUPERSEDED — 2026-08-05b
+>
+> **Do not act from this file.** The current owner-facing offering is
+> [`../round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md`](../round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md).
+> A second round of work changed the act-1 and act-4 arguments (RFC-0010
+> gained six clauses; every module's `provides_to` front matter was removed
+> as derived; the overview was rebuilt). The two act phrases quoted below are
+> **retired** and satisfy nothing. Acts 2, 3 and 5 are unchanged, but read
+> them from the current offering so that all five come from one place.
+>
+> This file is kept because its §4 residual and its per-act "what is
+> knowingly imperfect" sections are the honest record of what the previous
+> round offered and why.
+
 # Final owner acceptance record — human-clarity refactor round, 2026-08-05
 
 > **This record offers. It does not accept.** Nothing below has been
@@ -31,8 +45,10 @@ registry, or a license.
 
 ### Act 1 — accept the compacted foundational contracts
 
+The following argument is **retired** and satisfies nothing:
+
 ```text
-ACCEPT COMPACTED FOUNDATIONAL RFCS: f2914fc56cd2aa069b952747b9c78b00dc41d908830887ecd2f1addd37e61fc4
+RETIRED — ACCEPT COMPACTED FOUNDATIONAL RFCS: f2914fc56cd2aa069b952747b9c78b00dc41d908830887ecd2f1addd37e61fc4
 ```
 
 - **Covers exactly:** the 32 active contract modules of RFC 0001–0011 at the
@@ -95,8 +111,10 @@ ACCEPT TOPOLOGY: 7a3b22494a08d888901c1f0cec76833dc926e89b6f510b5abf8963071fbaeb4
 
 ### Act 4 — adopt the project overview
 
+The following argument is **retired** and satisfies nothing:
+
 ```text
-ADOPT PROJECT OVERVIEW: ce7794fd8c0e528ae50434f5c63ce27df998441cdd07b20a903627ecaf885b06
+RETIRED — ADOPT PROJECT OVERVIEW: ce7794fd8c0e528ae50434f5c63ce27df998441cdd07b20a903627ecaf885b06
 ```
 
 - **Covers exactly:** `.syzygy/intent/OVERVIEW.md` at that digest.
@@ -119,7 +137,7 @@ round charter also offers a digest-bound phrase form; it is available, not
 required, and is machine-checked (CG-7d) if used:
 
 ```text
-ADOPT DOCTRINE AMENDMENT: D3@0328cb379cab1ffa462cc5bf2205241b96dec21b0917d485b0906d4fe7dcd96c
+RETIRED — ADOPT DOCTRINE AMENDMENT: D3@0328cb379cab1ffa462cc5bf2205241b96dec21b0917d485b0906d4fe7dcd96c
 ```
 
 - **Covers exactly:** `../DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (**rev1**,

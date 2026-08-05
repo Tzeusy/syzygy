@@ -8,7 +8,6 @@ clauses: RFC5-1..RFC5-26 (no gaps, no retired numbers, no merges; no lettered su
 governs: [principals, sessions, machine-credentials, client-classes, exposure-modes, consent, egress, secrets, execution-profiles, adapter-credentials, audit, revocation]
 applies_to: [kernel, all-surfaces, machine-clients]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004]
-provides_to: [RFC-0002, RFC-0003, RFC-0004, RFC-0006, RFC-0008, RFC-0010, RFC-0011]
 tags: [security-boundary, sec-1, sec-2, sec-3, sec-4, sec-5, blocking, execution-gate, client-classes]
 ---
 

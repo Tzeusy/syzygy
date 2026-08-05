@@ -8,7 +8,6 @@ clauses: RFC2-1..RFC2-25 (contiguous; no sub-clauses, no gaps, no retired number
 governs: [source-snapshot, evaluation-identity, observation-record, inference-overlay, currency, staleness, challenge, contradiction, gap, aligned, converged, reconciliation-chain, failure-states, unknown-reason, rendering-tier]
 applies_to: [kernel, all-surfaces]
 depends_on: [RFC-0001, RFC-0003, RFC-0004, RFC-0005]
-provides_to: [RFC-0003, RFC-0004, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011]
 tags: [foundational, temporal, epistemic, evidence, closed-vocabulary, v0-v1-staging]
 ---
 

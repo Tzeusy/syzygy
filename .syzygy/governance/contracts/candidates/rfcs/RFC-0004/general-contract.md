@@ -7,7 +7,6 @@ clauses: RFC4-1..RFC4-9 (no gaps, no retirements, no merges)
 governs: [observers, adapters, declaration-set, emission-obligations, adapter-registry, version-skew, substitution]
 applies_to: [kernel, trajectory, orrery]
 depends_on: [RFC-0002, RFC-0003]
-provides_to: [RFC-0003, RFC-0011]
 tags: [observation, adapters, registry, determinism-class, sdr-6, vis-5, vis-7, sec-5]
 ---
 

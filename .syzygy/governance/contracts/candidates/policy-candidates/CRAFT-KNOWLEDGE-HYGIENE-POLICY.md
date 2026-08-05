@@ -114,7 +114,7 @@ the new one has no owner.
 
 ### CC-KNOW-6 — New vocabulary enters through the term registry; replacement needs a migration report
 
-The canonical **term registry** — offered as a sibling candidate in this
+The candidate **term registry** — offered as a sibling candidate in this
 directory, and itself a derived record rather than an authority — is the
 admission mechanism: a term used
 normatively in an active artifact without a registry entry is an unadmitted

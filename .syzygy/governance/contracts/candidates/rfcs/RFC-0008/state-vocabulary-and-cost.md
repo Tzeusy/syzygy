@@ -7,7 +7,6 @@ clauses: RFC8-12..RFC8-20 (no gaps, no retirements, no merges)
 governs: [work-states, normalized-state-vocabulary, state-derivations, liveness, blocked-causes, cost-measures, telemetry]
 applies_to: [trajectory]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0006]
-provides_to: [RFC-0009, RFC-0010]
 tags: [closed-vocabulary, state-machine, honest-absence, unknown-never-zero, no-effort-score, staleness-bound, sdr-5, sdr-6, sdr-11]
 ---
 

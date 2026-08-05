@@ -7,8 +7,7 @@ modules: [identity-authority-materialization, state-vocabulary-and-cost, account
 clauses: RFC8-1..RFC8-32 (no gaps, no retired numbers, no merges; no lettered sub-clauses — see the lookup rule)
 governs: [work, work-states, dispatch, execution-records, trajectory-surface, materialization-records, change-accounting-chain, reconciliation-chain-state, cost-measures, provenance]
 applies_to: [trajectory]
-depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006]
-provides_to: [RFC-0007, RFC-0009, RFC-0010, RFC-0011]
+depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007]
 tags: [work-state-vocabulary, reconciliation-chain, cost, provenance, compaction, phase-boundary, anti-thesis, closure-fallacy, substrate]
 ---
 

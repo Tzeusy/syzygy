@@ -36,7 +36,7 @@ scripts/context_load.py rfcs/RFC-0001-project-graph-identity-state-planes.md \
   doctrine:architecture.md craft:engineering-bar.md
 ```
 
-Measured: **15,767 words ≈ 21,285 estimated tokens.**
+Measured: **15,738 words ≈ 21,246 estimated tokens.**
 
 ## ⚠️ Above the justification trigger — disclosed, not trimmed
 
@@ -134,7 +134,7 @@ identity change alters what a challenge or reconciliation chain resolves to.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`4de5ebff52463686…` (recompute: `cat <mandatory files> | sha256sum`).
+`9d7419a0e5708899…` (recompute: `cat <mandatory files> | sha256sum`).
 Compiler: `context_load.py`, selection rules rev10-fixtures.
 
 **Digest-source pinning.** This digest and the totals above are computed over
@@ -178,3 +178,5 @@ records none). Any task touching identity therefore starts at ~11,300
 estimated tokens before a second module loads. That is a **structural
 property of the corpus**, not a selection defect — and it is why the floor
 text, at 1,282 words, is what tips this packet over a line.
+
+*Re-measured 2026-08-05b by `scripts/check_governance.py` CG-18, which recomputes the digest and the word count from the declared mandatory set rather than trusting the recorded figures. Previous: 15,767 words, digest `4de5ebff52463686…`. Selection unchanged; the movement is contract edits landing under a fixture that had no mechanical freshness check until now.*

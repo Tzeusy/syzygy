@@ -1,3 +1,22 @@
+> # SUPERSEDED — 2026-08-05b
+>
+> **This revision is retained as history and must not be used to decide
+> whether anything may be implemented.** It is replaced by
+> [`SURFACE-CLAUSE-ROUTING-MATRIX.md`](SURFACE-CLAUSE-ROUTING-MATRIX.md),
+> which routes all **199** clause identities of RFC 0006–0011 into the four
+> routes (OS / N/A / CR / IR), one route each.
+>
+> Why it was replaced, in one line: this file used `DESIGN-INVARIANT (DI)` as
+> though it were a routing decision. It is not — it answers *does this stay in
+> the RFC?*, not *does this have behavior a spec must pin?* — so 129 DI rows
+> here carry **no routing decision at all**, RFC-0006 has **zero** rows, and
+> RFC-0007 is enumerated at 39 rows against 45 declared clause identities.
+> Re-deciding those DI rows on the merits moved 47 of RFC-0009's 50 to OS.
+>
+> Nothing in this file is wrong about *what a clause says*; its rationale
+> column was a useful input to the replacement. It is wrong about *coverage*,
+> and coverage is what it was consulted for.
+
 # Surface-clause routing matrix — rev10 regeneration (directive §10)
 
 **Regenerated at the rev10 compaction.** All rev9 clause identities and

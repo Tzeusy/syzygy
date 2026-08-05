@@ -1,6 +1,12 @@
-# Term registry — Syzygy's canonical public vocabulary
+# Working term registry — candidate
 
 > **Status: CANDIDATE. This file binds nothing.**
+>
+> **Renamed 2026-08-05b.** This file was titled "Syzygy's canonical public
+> vocabulary". A candidate has no canon, and a title that says otherwise is
+> read before the status banner that corrects it — an artifact must not
+> contradict itself in the first line and the third. It becomes a canonical
+> vocabulary if and when an owner act accepts it, and not before.
 > It is a candidate policy artifact produced in the 2026-08 human-clarity
 > refactor round. No owner act has accepted it, and none of its 30 entries
 > acquires force from appearing here.
@@ -12,6 +18,72 @@
 >
 > Companion: `../round-2026-08/TERM-MIGRATION-REPORT.md` (occurrence sweeps,
 > deprecated-synonym findings, what was deliberately not changed).
+
+## Two tiers: what the public path needs, and what it does not
+
+A reader arriving at `README.md` and `intent/OVERVIEW.md` must not have to
+learn thirty terms. **The default public path is bounded to the twelve core
+terms below.** Everything else is advanced vocabulary: real, needed, and
+reachable in one action — but never a prerequisite for understanding what
+Syzygy is.
+
+**Core — the twelve.** Sufficient, and required, for the default path:
+
+| Term | ID | One line |
+|---|---|---|
+| Project | T-01 | the governed unit, with exactly one governance root |
+| Capability | T-04 | a named thing the project is supposed to be able to do |
+| Desired state | T-07 | what should be true, per human-approved intent |
+| Observed state | T-09 | what is true, per captured evidence |
+| Execution state | T-11 | what was *done* — runs, merges, work lifecycle |
+| Claim | T-13 | an assertion about state, always carrying a label |
+| Evidence | T-14 | a durable, identified artifact that supports a claim |
+| Unknown | T-15 | no evidence — never green, never zero |
+| Gap | T-20 | something intended and absent |
+| Contradiction | T-19 | two authorities that cannot both be satisfied |
+| Reconciliation | T-26 | checking a merged change against the intent that warranted it |
+| Mission | T-27 | a bounded envelope of delegated authority |
+
+**Advanced — provenance and mechanism.** Everything a reader needs only once
+they are working *inside* the model: source snapshot, evaluation, observation
+record, challenge, warrant, rendering tier (T-16), autonomy envelope,
+attention item, execution profile, and the remaining entries below.
+
+**The bound is testable, and currently fails.** A sweep of the default path
+(`README.md` plus `OVERVIEW.md`'s pre-drawer content) must use no term outside
+the core twelve without defining it in place. At the time of writing, the
+default path additionally leans on *kernel*, *surface*, *evidence*,
+*workspace*, and *actuator* — of which **`workspace` has zero occurrences in
+the entire adopted doctrine tree** and `actuator` has no entry here. Those are
+**findings, not exemptions**: either the term earns an entry and an owning
+authority, or the default path stops using it. Tracked in
+`PENDING-OWNER-DECISIONS.md`; enforced mechanically by `check_governance.py`
+CG-17 once the core set is owner-accepted, and reported until then.
+
+**Two things this tiering does not do.** It does not rank terms by importance
+— `rendering tier` is more load-bearing to a kernel implementer than `Gap`.
+And it does not license vagueness on the default path: a core term used
+loosely is worse than an advanced term used precisely.
+
+## Admitting a new public term
+
+Scarcity is the point. A new term is admitted only when **all five** hold —
+any one failing is a rejection, not a discussion:
+
+1. **No existing term is adequate.** Name the nearest existing term and say
+   what it cannot express.
+2. **The distinction is operationally meaningful** — something in the system
+   behaves differently depending on which side of it you are on. A
+   distinction that changes only emphasis is a sentence, not a term.
+3. **It has an identified owning authority and a lifecycle** — which artifact
+   defines it, and what would retire it.
+4. **It has a one-sentence plain-language explanation** a competent engineer
+   unfamiliar with Syzygy understands without a second term.
+5. **It passes a fresh-reader distinction test**: a reader given only the two
+   definitions places five real examples correctly, without coaching.
+
+Retiring is cheaper than renaming: retire the term, keep the ID, never reuse
+it.
 
 ## How to read an entry
 
@@ -69,7 +141,7 @@ in the corpus this registry was built from:
 
 ---
 
-## 2. The six-plane state model (canonical)
+## 2. The six-plane state model (candidate — RFC-0001, unaccepted)
 
 **Six state planes, and only six**: desired, proposed, observed, inferred,
 execution, historical (RFC1-22, candidate). Every *source-state assertion* —
@@ -658,10 +730,22 @@ disclosed, each expandable.
 
 ---
 
-#### T-16 · Evidence tier
+#### T-16 · Rendering tier (also called "evidence tier")
 
 **Plain language.** How strong a claim's backing is — six closed values, each
 living inside one of the three labels.
+
+> **Naming conflict, recorded not resolved (2026-08-05b).** RFC2-25 — the
+> owning clause — calls this a **rendering tier**, and so do RFC-0001,
+> RFC-0002 (×2), RFC-0006 and RFC-0008: five uses. RFC-0005's
+> `execution-profiles.md` and RFC-0010 call it an **evidence tier**: two uses.
+> This registry previously carried only the minority name, which made a
+> restatement look like a rename of the term its own owning clause defines.
+> The registry does not get to choose: the majority name leads here, the
+> minority name is recorded as a synonym, and **which one the corpus adopts is
+> an open question for the owner** — see `PENDING-OWNER-DECISIONS.md`. Both
+> names denote exactly the same six closed values; no reader is at risk of
+> meaning-drift, only of thinking one of the two is wrong.
 
 **Formal definition.** Six tiers, closed, each inside exactly one parent label.
 A tier qualifies how a claim renders and may only **restrict** its parent

@@ -7,7 +7,6 @@ clauses: RFC4-18..RFC4-21 (no gaps, no retirements, no merges)
 governs: [execution-record, run-envelope, run-identity, derivation-collision, enrichment, cost-and-token-semantics, partial-aggregates]
 applies_to: [kernel, trajectory]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0005]
-provides_to: [RFC-0003, RFC-0005, RFC-0008, RFC-0011]
 tags: [evidence, execution-plane, run-envelope, unknown-never-zero, sdr-5, sdr-6, sdr-8, sdr-31, sdr-32]
 ---
 

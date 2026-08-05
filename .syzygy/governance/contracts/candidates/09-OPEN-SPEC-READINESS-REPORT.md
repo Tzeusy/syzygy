@@ -10,7 +10,7 @@ authored in this phase** (hard boundary; six phase-rule clauses).
 |---|---|
 | Governing contracts stable and identifiable | 11 contracts, 322 clauses, exact digests at the gate; clause identities frozen (amend-in-place discipline) |
 | RFC/OpenSpec boundary binding | Six shape-parallel phase-rule clauses (RFC6-28/7-38/8-32/9-52/10-16/11-12); no observable behavior schedulable from RFC prose |
-| Routing prepared | `SURFACE-CLAUSE-ROUTING-MATRIX-REV10.md` + coverage skeleton; 8 future-spec domains named (provisional) |
+| Routing prepared | `SURFACE-CLAUSE-ROUTING-MATRIX.md` — all **199** clause identities of RFC 0006–0011 routed, one route each (OS 182 · N/A 4 · CR 13 · IR 0); 8 future-spec domains named (provisional), a 9th proposed. **Supersedes `…-REV10.md`, which routed 150 of 322 clauses and left RFC-0006 entirely unrouted** |
 | Context governance | Deterministic selection metadata (`05-CONTRACT-INDEX.yaml`), measured per-task loads (fixtures 1–5), packet contract (RFC-0011) |
 | Machine-client contract | Closed at requirement level (RFC5-3/5/6); mechanism choice explicitly blocks V0 implementation, not specification |
 | Acceptance semantics | Two-state model (RFC3-16(c)); honest bootstrap-vs-verified status in the final record |

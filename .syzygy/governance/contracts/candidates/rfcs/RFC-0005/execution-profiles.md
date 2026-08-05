@@ -7,7 +7,6 @@ clauses: RFC5-18..RFC5-23 (no gaps, no retirements, no merges)
 governs: [execution-profiles, execution-gate, isolation-classes, credential-injection, network-policy, resource-limits, destructive-operation-gates, profile-lifecycle]
 applies_to: [kernel, machine-clients]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004]
-provides_to: [RFC-0002, RFC-0003, RFC-0004, RFC-0010]
 tags: [sec-3, vis-4, vis-7, blocking, execution-blocked, no-none-class, fail-closed, rfc3-16a-gate]
 ---
 

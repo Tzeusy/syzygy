@@ -6,8 +6,7 @@ module: identity-authority-materialization
 clauses: RFC8-1..RFC8-11 (no gaps, no retirements, no merges)
 governs: [work, trajectory-surface, plane-discipline, work-ontology, pre-materialization-authority, materialization-records, orphaned-work, exclusivity]
 applies_to: [trajectory]
-depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0006]
-provides_to: [RFC-0007, RFC-0010]
+depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0006, RFC-0007]
 tags: [anti-thesis, rebuildable-projection, one-way-door, orphaned-work-contradiction, candidate-futures, sdr-7, sdr-18]
 ---
 

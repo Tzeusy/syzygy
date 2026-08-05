@@ -7,7 +7,6 @@ clauses: RFC2-15..RFC2-22 (no gaps, no retirements, no merges)
 governs: [contradiction, gap, gap-exits, dismissal, aligned, converged, word-reservation, reconciliation-chain, chain-verdicts, closure-fallacy, no-gap, fixed-point]
 applies_to: [kernel, all-surfaces]
 depends_on: [RFC-0001, RFC-0004]
-provides_to: [RFC-0003, RFC-0004, RFC-0008, RFC-0009, RFC-0010, RFC-0011]
 tags: [foundational, reconciliation, contradiction, gap, v0-v1-staging, sdr-12, sdr-7]
 ---
 

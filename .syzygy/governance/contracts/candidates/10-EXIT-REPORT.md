@@ -72,10 +72,21 @@
 7. **Does every user-observable future behavior still route through
    OpenSpec?** Yes. [Observed] Six shape-parallel phase-rule clauses
    (RFC6-28, RFC7-38, RFC8-32, RFC9-52, RFC10-16, RFC11-12), each with
-   the four limbs; the routing matrix classifies all 322 clauses
-   (DI/OS/CR/IR/DI+OS) with a coverage skeleton; RFC11-4 forces the
-   governing phase rule into every packet; the index marks the six
-   clauses `kind: phase-rule`. No OpenSpec changeset was created.
+   the four limbs; RFC11-4 forces the governing phase rule into every
+   packet; the index marks the six clauses `kind: phase-rule`. No OpenSpec
+   changeset was created.
+
+   > **Correction, 2026-08-05b.** This answer originally read "the routing
+   > matrix classifies all 322 clauses (DI/OS/CR/IR/DI+OS) with a coverage
+   > skeleton." **That was false.** The rev10 matrix classified 150 of 322
+   > (46.6%), routed RFC-0006 not at all, and used `DI` — 129 rows of it — as
+   > though it were a routing decision when it is not. The "Yes" above was
+   > therefore resting on an enumeration that did not exist. It is now true,
+   > but for a different reason: `SURFACE-CLAUSE-ROUTING-MATRIX.md` routes all
+   > **199** clause identities of RFC 0006–0011, one route each. The
+   > correction is recorded rather than the sentence quietly rewritten,
+   > because a readiness answer that was wrong is more useful to a later
+   > reader than one that was always right.
 
 8. **Can a fresh reviewer reproduce every mechanical claim on another
    machine?** Yes, demonstrated twice. [Observed] The portability review

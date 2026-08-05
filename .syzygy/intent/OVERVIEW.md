@@ -1,48 +1,50 @@
-> **Reviewed presentation draft — adopted only by its own owner act,
-> `ADOPT PROJECT OVERVIEW: <digest>`, binding this file's exact content
-> digest — never implicitly on any other gate (RFC3-16: this stamp is a
-> self-declaration; effective status lives in the owner-act record).**
-> This overview is a governed presentation artifact and may never be cited
-> in place of doctrine, contracts, specifications, policy, or topology
-> (RFC7-3's rule, applied to itself). Current project status is read from
-> `PROJECT-STATUS.md` and the owner-act records, never from this page.
-> Source anchors sit at the end of each claim block; the drill-down table
-> in Layer 4 is the full source drawer. Anchors marked *candidate* cite
-> contract clauses that bind nothing until owner acceptance.
-
 # Syzygy — what it is, in one reading
+
+> **Governed presentation, never authority.** This page explains; it decides
+> nothing. Any clause it summarizes overrides it. Current gate state is read
+> from [`PROJECT-STATUS.md`](../../PROJECT-STATUS.md), never from here.
+> Adopted by its own owner act (`ADOPT PROJECT OVERVIEW: <digest>`), which
+> binds this file's exact bytes and nothing else.
 
 *(Syzygy, Polaris, Trajectory, Orrery, and Mission Control are working
 codenames; poetic names always carry literal subtitles.)*
 
-## Layer 1 — the 30-second thesis
+---
+
+## The thesis, in 30 seconds
 
 **Humans define what should be true. Evidence shows what is true. Agents do
-work to close the difference. Syzygy explains all three — and lets humans
-govern bounded missions instead of micromanaging tasks.**
+work to close the difference. Syzygy explains all three — honestly, including
+when it does not know.**
 
-No evidence means **Unknown** — never green, never zero. Doing the work is
-never proof the intent was satisfied.
+Two rules everything else follows from:
 
-## Layer 2 — the five-minute argument
+- **No evidence means Unknown** — never green, never zero.
+- **Doing the work is never proof the intent was satisfied.** Scheduled,
+  completed, and merged are facts about *activity*, not about *intent*.
 
-**The problem is the owner's.** A single owner runs fleets of AI agents
-against a portfolio of projects. The day that motivates everything: the
-owner dispatches a fleet, gets oversized diffs and scattered completions,
-and has no evidence-linked account of what changed, under whose authority,
-or whether any of it satisfied the intent. Underspecification surfaces at
-the most expensive moment — after deployment.
-*Sources: vision.md (owner transformation; the human problem).*
+## The problem this exists to solve
 
-**Three kinds of state, kept semantically distinct.** Human-readable
-specifications define **desired state**. Code, tests, CI, and runtime
-evidence define **observed state**. Fleet activity — runs, merges, work
-lifecycle — is **execution state**, a third thing that never substitutes
-for either of the others: scheduled, completed, or merged work is never
-proof that the implementation satisfies intent. The computed difference
-becomes **reconciliation work**, and agent fleets are the actuators that
-perform it.
-*Sources: vision.md (three-state thesis); candidate: RFC1-22.*
+A single owner runs fleets of AI agents across a portfolio of projects. The
+day that motivates everything: the owner dispatches a fleet, gets oversized
+diffs and scattered completions, and has no evidence-linked account of what
+changed, under whose authority, or whether any of it satisfied the intent.
+Underspecification surfaces at the most expensive moment — after deployment.
+Project knowledge lives in READMEs and ad-hoc investigation.
+
+## Three kinds of state, kept apart
+
+This is the whole idea. Most tools collapse these three; Syzygy refuses to.
+
+| | What it is | Where it comes from |
+|---|---|---|
+| **Desired state** | what should be true | human-approved specifications and doctrine |
+| **Observed state** | what is true | code, tests, CI, runtime — captured as **evidence** |
+| **Execution state** | what was *done* | runs, merges, work lifecycle |
+
+Execution state never substitutes for either of the others. The computed
+difference between desired and observed becomes **reconciliation work**, and
+agent fleets are the actuators that perform it.
 
 ```mermaid
 flowchart LR
@@ -58,75 +60,128 @@ flowchart LR
     Exec -->|"merged changes — evidence, never proof"| Observed
 ```
 
-**One kernel, four experiences.** A single semantic kernel — a temporal
-project graph plus an evaluation engine — computes every truth exactly
-once. Three project surfaces and a machine query plane of equal standing
-project it; none is independently authoritative:
+## One kernel, and what looks at it
 
-- **Polaris** (the intent surface) — what is this project supposed to be?
-- **Trajectory** (the work surface) — what remains, what runs, what merged
-  *without yet being reconciled*?
-- **Orrery** (the map surface) — a spatial view over capability identities
-  where Unknown is a first-class color; historical state included by
-  adopted amendment D1.
-- **Mission Control** (the workspace operator surface) — what bounded,
-  delegated missions are running across projects? Workspace-level, not a
-  fourth project truth surface; defined by candidate contract RFC-0010 and
-  pending doctrine amendment D3.
+A single semantic **kernel** — a temporal project graph plus an evaluation
+engine — computes every truth exactly once. Everything else is a projection
+of it, and none of them is independently authoritative.
 
-*Sources: architecture.md (one kernel, three surfaces); SDR §1–2;
-candidate: RFC6-13, RFC-0010.*
+Doctrine commits Syzygy to **two first-class consumers from day one**:
 
-**The north star, honestly labeled.** The long-range ideal is that a
-project's complete normative corpus (its **Project Genome**) could regenerate
-the codebase, with code as a replaceable realization. Doctrine names this a
-**north star, not present doctrine and never a current capability claim**; a
-separate standing mandate is live fleet observability — watching agent fleets
-work, deferred until there is observed truth to annotate.
+- **the owner**, served spatially and visually, through three project
+  **surfaces**;
+- **agents**, served through machine-queryable endpoints — a co-equal plane,
+  not an export. Scraping a human-rendered table is never a conforming
+  integration.
 
-**What exists today.** Adopted doctrine, owner-approved engineering policy,
-and a candidate contract corpus awaiting owner acceptance. **Nothing is
-implemented** — no daemon, no UI, no store, no endpoints, no chosen stack.
-This overview describes intended shape, not current capability.
-*Sources: PROJECT-STATUS.md (gate table); VIS-2 forbids implying more.*
+The three project surfaces:
 
-Foundational terms used so far: desired / observed / execution state,
-reconciliation work, kernel, surface, capability, Unknown, mission, owner —
-the full vocabulary lives in the term registry.
+| Surface | Literal subtitle | Answers |
+|---|---|---|
+| **Polaris** | the intent surface | What is this project supposed to be? |
+| **Trajectory** | the work surface | What remains, what runs, what merged *without yet being reconciled*? |
+| **Orrery** | the map surface | Where does everything live, and in what state? Unknown is a first-class colour |
 
-## Layer 3 — the technical model
+And one thing that is *not* a surface: **Mission Control**, a
+**workspace-level operator capability** spanning projects — what bounded,
+delegated missions are running. It mints no project truth. It rests on a
+candidate contract and a proposed doctrine amendment, neither accepted.
 
-**Typed authority.** There is no single universal source of truth; each
-question has exactly one owning authority: doctrine answers *why*; accepted
-contracts answer *load-bearing how*; `openspec/**` answers *required
-observable behavior*; topology answers *intended placement*; craft-and-care
-answers *the engineering and evidence bar*; code and captured evidence
-answer *what exists*; the work scheduler answers *work lifecycle*; Syzygy
-itself displays rebuildable projections. Conflicts between authorities
-surface as **contradictions** routed to the owner — never auto-resolved by
-precedence, and never silently scheduled into work.
-*Sources: architecture.md (typed authority; contradiction rule);
-candidate: RFC1-21, RFC2-15.*
+## What the owner actually approves
 
-**Evidence and Unknown.** Claims are **Observed, Inferred, or Unknown**.
-Evidence is a durable, identified, integrity-verifiable artifact; no
-evidence means Unknown with a reason. Inference (AI) may *challenge* a
-positive claim but may never establish one. Every status is computed at an
-identified evaluation — (source snapshot, as-of instant) — and between
-evaluations claims can only degrade; improvement requires new evidence, a
-decision, or an adopted change through a new evaluation.
-*Sources: trust-and-evidence.md; VIS-1, VIS-2; architecture.md (snapshots
-and the loop); candidate: RFC2-3, RFC2-4.*
+Humans govern intent, guardrails, risk, and budgets. Agents do detailed work
+inside an explicitly approved **Mission** envelope — objective, permissions,
+budget, time, evidence bar, stop and escalation conditions — which they can
+never widen. The human is interrupted for declared exceptions, not routine
+steps.
 
-**Reconciliation.** Every merged change enters a reconciliation chain and
-stays visibly **reconciliation-pending** until checked against the exact
-intent revision that warranted it. The terminal answers — reconciled-with-
-evidence, Unknown(reason), unsatisfied, contradiction-raised — are four
-different answers that never share a rendering. A wall of pending states on
-a fleet-built project is *correct output*, not failure. Positive status
-flows only through gate-backed evidence whose provenance is verified and
-captured inside snapshot identity.
-*Sources: candidate: RFC2-17…21, RFC4-13, RFC8-28.*
+The loop stays human-triggered. Autonomy beyond doctrine's stated bounds is
+licensed only through the mechanism doctrine itself names — never by
+reinterpretation.
+
+## The north star, honestly labelled
+
+The long-range ideal: a project's complete normative corpus — its **Project
+Genome** — could regenerate the codebase, with code as a replaceable
+realization.
+
+Doctrine names this a **north star, not present doctrine, and never a current
+capability claim**. It exerts direction rather than obligation, with one
+operative rule: **a decision that materially forecloses the ideal must record
+that foreclosure — the unrecorded foreclosure is the violation.**
+
+## What exists today
+
+**Nothing is implemented** — no daemon, no UI, no store, no endpoints, no
+chosen language, framework, or database. This page describes intended shape,
+not current capability.
+
+What the repository *does* contain — adopted doctrine, owner-approved
+engineering policy, a candidate contract corpus, and which owner gates remain
+open — is stated once, in
+[`PROJECT-STATUS.md`](../../PROJECT-STATUS.md). It is deliberately **not
+restated here**: this file's bytes are frozen by an owner act, and a
+gate table frozen inside it would go quietly false the first time a gate
+fired.
+
+## Where to read next
+
+| You want | Go to |
+|---|---|
+| Exact current gate state | [`PROJECT-STATUS.md`](../../PROJECT-STATUS.md) |
+| The non-negotiable rules | [`doctrine/vision.md`](../governance/doctrine/vision.md) |
+| What the words mean | [`doctrine/README.md`](../governance/doctrine/README.md) — the glossary, read first |
+| Scope: what V0 ships vs V1 | [`doctrine/v1.md`](../governance/doctrine/v1.md) |
+| The technical model | the two drawers below |
+
+---
+
+You have the argument. **Everything past this point is optional
+drill-down** — open a drawer when you need it, and nothing below changes any
+claim above.
+
+<details>
+<summary><b>Drawer 1 — the technical model</b> (typed authority; evidence and
+Unknown; reconciliation; write boundaries)</summary>
+
+### Typed authority
+
+There is no single universal source of truth. Each question has exactly one
+owning authority: doctrine answers *why*; accepted contracts answer
+*load-bearing how*; `openspec/**` answers *required observable behavior*;
+topology answers *intended placement*; craft-and-care answers *the
+engineering and evidence bar*; code and captured evidence answer *what
+exists*; the work scheduler answers *work lifecycle*; Syzygy itself displays
+rebuildable projections.
+
+Conflicts between authorities surface as **contradictions** routed to the
+owner — never auto-resolved by precedence, and never silently scheduled into
+work. A **gap** (something missing) and a **contradiction** (two authorities
+disagreeing) are different findings with different remedies.
+
+### Evidence, claims, and Unknown
+
+Claims carry one of three epistemic labels — **Observed**, **Inferred**, or
+**Unknown**. Evidence is a durable, identified, integrity-verifiable
+artifact; no evidence means Unknown *with a reason*. Inference (AI) may
+**challenge** a positive claim but may never **establish** one.
+
+Every status is computed at an identified **evaluation** — a (source
+snapshot, as-of instant) pair. Between evaluations claims can only degrade;
+improvement requires new evidence, a decision, or an adopted change, through
+a new evaluation.
+
+### Reconciliation
+
+Every merged change enters a reconciliation chain and stays visibly
+**reconciliation-pending** until checked against the exact intent revision
+that warranted it. The terminal answers — reconciled-with-evidence,
+Unknown(reason), unsatisfied, contradiction-raised — are four different
+answers that never share a rendering.
+
+A wall of pending states on a fleet-built project is *correct output*, not
+failure. Positive status flows only through gate-backed evidence whose
+provenance is verified and captured inside snapshot identity.
 
 ```mermaid
 flowchart LR
@@ -139,55 +194,58 @@ flowchart LR
     Eval -->|authoritative conflict| Con["contradiction → owner"]
 ```
 
-**Governance and write boundaries.** Syzygy's direct project-content writes
-are confined to exactly two namespaces — `openspec/**` and `.syzygy/**`;
-everything else is read-only or reached through typed, explicitly
-authorized adapters. Syzygy never writes implementation code. Fleet workers
-are untrusted even inside the writable plane, which forces the corpus's
-most consequential rule: anything that *authorizes* an effect is honored
-only with owner-act provenance the repository itself cannot forge; until
-that mechanism ships, every authorization gate renders its gap honestly —
-"owner-adopted (bootstrap, uncorrelated)", never "verified".
-*Sources: VIS-5, VIS-6; SEC-3; candidate: RFC3-3, RFC3-16(a)/(b), RFC5-25.*
+### Write and trust boundaries
 
-**Bounded autonomy.** Humans govern high-level intent, guardrails, risk,
-and budgets; agents perform detailed work inside an explicitly approved
-**Mission envelope** — objective, permissions, budget, time, evidence bar,
-stop and escalation conditions. The human is interrupted for declared
-exceptions (**attention items**), not routine steps. The loop stays
-human-triggered: autonomy beyond doctrine's stated bounds is licensed only
-through the mechanism doctrine itself names (VIS-4), never by
-reinterpretation. Whether the proposed bounded-Mission amendment (D3) plus
-the candidate Mission contract satisfy that mechanism is an open owner
-question, not a settled one — see the D3 packet and the acceptance record's
-owner-attention items.
-*Sources: vision.md ("Not autonomous"; VIS-4); candidate: RFC10-1…16;
-proposed: doctrine amendment D3.*
+Syzygy's direct project-content writes are confined to exactly two
+namespaces — `openspec/**` and `.syzygy/**`. Everything else is read-only or
+reached through typed, explicitly authorized adapters. Syzygy never writes
+implementation code.
 
-## Layer 4 — exact authority drill-down
+Fleet workers are untrusted **even inside** the writable plane. That forces
+the corpus's most consequential rule: anything that *authorizes* an effect is
+honored only with owner-act provenance the repository itself cannot forge.
+Until that mechanism ships, every authorization gate renders its gap
+honestly — "owner-adopted (bootstrap, uncorrelated)", never "verified".
 
-| Concept in this overview | Owning authority | Status |
+</details>
+
+<details>
+<summary><b>Drawer 2 — exact sources</b> (which authority owns each claim
+above)</summary>
+
+Adopted doctrine and recorded decisions are binding. Contract clauses marked
+*candidate* bind **nothing** until an owner acceptance act; they are listed
+so a reader can find the mechanism, not so it can be relied on.
+
+| Claim on this page | Owning authority | Kind |
 |---|---|---|
-| Non-negotiable rules VIS-1…7 | `.syzygy/governance/doctrine/vision.md` | Adopted |
-| Security rules SEC-1…5 | `.syzygy/governance/doctrine/security.md` | Adopted |
-| Typed authority; snapshots; kernel definitions | `.syzygy/governance/doctrine/architecture.md` | Adopted (amendment D1 in force) |
-| Evidence, claims, staleness, trust floor | `.syzygy/governance/doctrine/trust-and-evidence.md` | Adopted |
-| V0/V1 scope and success tests | `.syzygy/governance/doctrine/v1.md` | Adopted |
-| Surface charter, SDR-1…33 | `.syzygy/governance/decisions/SURFACE-DECISION-RECORD.md` | Recorded |
-| State planes, graph identity | RFC-0001 | Candidate |
-| Evaluation, reconciliation chain | RFC-0002 | Candidate |
-| Namespaces, governance homes, owner acts | RFC-0003 | Candidate |
-| Evidence adapters and admission routes | RFC-0004 | Candidate |
-| AuthN, consent, execution profiles | RFC-0005 | Candidate |
-| Selection, query, evidence drawer | RFC-0006 | Candidate |
-| Polaris / Trajectory / Orrery contracts | RFC-0007 / 0008 / 0009 | Candidate |
-| Mission Control and autonomy envelopes | RFC-0010 | Candidate |
-| Context compilation | RFC-0011 | Candidate |
-| Engineering and evidence bar (CC-*) | `.syzygy/governance/policies/craft-and-care/` | Owner-approved (D2) |
-| Vocabulary | term registry, `contracts/candidates/policy-candidates/` | Candidate |
-| Current gate state | `PROJECT-STATUS.md` + acceptance record | — |
+| The two rules; Unknown never zero | `doctrine/vision.md` (VIS-1, VIS-2) | Adopted |
+| The owner's problem; the motivating day | `doctrine/vision.md` | Adopted |
+| Three-state thesis | `doctrine/vision.md` | Adopted |
+| Six-plane state model behind it | RFC-0001 (RFC1-22) | Candidate |
+| One kernel; surfaces are projections | `doctrine/architecture.md` | Adopted (D1 in force) |
+| Two first-class consumers (owner, agents) | `doctrine/vision.md` | Adopted |
+| Machine/human answer parity | RFC-0006 (RFC6-13, RFC6-14) | Candidate |
+| Surface charter; Polaris/Trajectory/Orrery | `decisions/SURFACE-DECISION-RECORD.md` (SDR-1…2) | Recorded |
+| Orrery renders historical state | doctrine amendment D1 | Adopted |
+| Mission Control is not a fourth surface | RFC-0010 (RFC10-1) | Candidate |
+| Mission envelope; no self-widening | RFC-0010 (RFC10-7, RFC10-8) | Candidate |
+| Autonomy licensed only by doctrine's own mechanism | `doctrine/vision.md` (VIS-4) | Adopted |
+| Whether D3 + RFC-0010 satisfy VIS-4 | **open owner question** | Proposed |
+| North star; the unrecorded-foreclosure rule | `doctrine/vision.md` | Adopted |
+| Typed authority; contradictions vs gaps | `doctrine/architecture.md`; RFC-0001, RFC-0002 | Adopted / candidate |
+| Evidence, epistemic labels, staleness | `doctrine/trust-and-evidence.md`; RFC-0002 (RFC2-3, RFC2-4) | Adopted / candidate |
+| Reconciliation chain and its four answers | RFC-0002 (RFC2-17…21), RFC-0004, RFC-0008 | Candidate |
+| Two-namespace write boundary | `doctrine/vision.md` (VIS-5, VIS-6) | Adopted |
+| Untrusted workers; unforgeable owner acts | `doctrine/security.md` (SEC-3); RFC-0003 (RFC3-3, RFC3-16), RFC-0005 (RFC5-25) | Adopted / candidate |
+| Engineering and evidence bar | `policies/craft-and-care/` (CC-*) | Owner-approved (D2) |
+| Vocabulary | `contracts/candidates/policy-candidates/TERM-REGISTRY.md` | Candidate — a working registry, not a settled vocabulary |
 
 Candidate modules live under `.syzygy/governance/contracts/candidates/`;
 their exact digests live in `ACTIVE-CONTRACT-MANIFEST.txt`, and the act
-phrases in the acceptance record beside it. This overview binds nothing and
-is superseded by any clause it summarizes.
+phrases in the acceptance record beside it. **Which of these have been
+accepted is not stated here** — that is
+[`PROJECT-STATUS.md`](../../PROJECT-STATUS.md)'s job, and duplicating it
+would create a second answer that goes stale.
+
+</details>

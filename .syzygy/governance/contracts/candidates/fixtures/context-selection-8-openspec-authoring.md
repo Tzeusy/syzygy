@@ -42,7 +42,7 @@ scripts/context_load.py rfcs/RFC-0001-project-graph-identity-state-planes.md \
   craft:testing-and-verification.md
 ```
 
-Measured: **22,258 words ≈ 30,048 estimated tokens.**
+Measured: **22,242 words ≈ 30,027 estimated tokens.**
 
 ## ⚠️ Budget breach — waiver
 
@@ -158,7 +158,7 @@ never silently promotes or demotes anything.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`36be8f90fa12a01d…` (recompute: `cat <mandatory files> | sha256sum`).
+`3057626e61de7534…` (recompute: `cat <mandatory files> | sha256sum`).
 Compiler: `context_load.py`, selection rules rev10-fixtures.
 
 **Digest-source pinning.** This digest and the totals above are computed over
@@ -198,3 +198,5 @@ digests after the P-6 and P-7 fixes — see the fixture report.)
       is the concrete instance of that gap: its pre-repair draft loaded a
       README whose phase-rule text is a restatement pointing elsewhere, and
       no mechanical check caught it. See the fixture report's §5.
+
+*Re-measured 2026-08-05b by `scripts/check_governance.py` CG-18, which recomputes the digest and the word count from the declared mandatory set rather than trusting the recorded figures. Previous: 22,258 words, digest `36be8f90fa12a01d…`. Selection unchanged; the movement is contract edits landing under a fixture that had no mechanical freshness check until now.*

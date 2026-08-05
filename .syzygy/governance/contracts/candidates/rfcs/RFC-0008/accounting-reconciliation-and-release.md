@@ -7,7 +7,6 @@ clauses: RFC8-21..RFC8-32 (no gaps, no retirements, no merges)
 governs: [change-accounting-chain, provenance, unknown-provenance, inherited-mutations, compaction, retention, reconciliation-chain-state, closure-fallacy, endpoints, phase-boundary]
 applies_to: [trajectory]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006]
-provides_to: [RFC-0009, RFC-0010, RFC-0011]
 tags: [broken-joins, unknown-provenance, warrant-coverage, fail-closed, expired-detail, chain-state, closure-fallacy, sdr-10, sdr-11, sdr-12, phase-rule]
 ---
 

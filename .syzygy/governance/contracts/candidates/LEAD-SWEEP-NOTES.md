@@ -1,3 +1,9 @@
+> # Historical — round record, not a current offering
+>
+> **Do not read a digest here as an act argument.** Working notes from the rev10/round-2026-08 leads. Every digest in this file is that round's and none is a current act argument. Current arguments
+> come from `ACTIVE-CONTRACT-MANIFEST.txt` and
+> `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`, never from a round record.
+
 # Lead's final-sweep obligations (working notes, non-normative)
 
 Accumulated from compaction-worker reports; each must be discharged before

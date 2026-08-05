@@ -211,3 +211,60 @@ it is not a Syzygy-verified effective act, and must not be rendered as one.
 **Digest of this packet:** compute at act time; it is not restated here, since
 any edit to this file after a digest is stated would produce an artifact whose
 act binds a digest it no longer has.
+
+## 6. A disclosed objection to §1.2, raised after this packet was written
+
+**Read this before adopting §1.2.** Adversarial review RC-7
+(`round-2026-08b/reviews/RC-7-mission-safety-RAW.md`, finding F10, judged
+*blocking*) holds that the §1.2 insertion **pre-answers open question D4**
+rather than leaving it to the owner, and that the packet does not say so.
+
+**The objection.** The insertion places a bounded mission inside VIS-4's bounds
+by declaring it a species of human trigger. It does that inside the one
+sentence whose second half exists to foreclose exactly that move — a point
+this packet makes itself at §2. The packet *argues* the classification, at
+§1's rationale, and the argument may well be right; but the argument is packet
+prose that adoption does not carry, while the conclusion is doctrine text that
+adoption does carry. An owner who adopts §1.2 to settle the mission question
+would also, silently, have settled D4.
+
+**What this means procedurally.** RC-7's disposition is that F10 "closes by an
+owner ruling, not only by text": rule D4 first, then adopt whichever text the
+ruling implies. If D4 is ruled the other way — that a bounded mission *is*
+autonomy beyond VIS-4's stated bounds — then no `vision.md` insertion is lawful
+without an accepted adjudication RFC (`doctrine/vision.md:127-131`), and act 1
+precedes act 5 as a requirement rather than a recommendation.
+
+**Reviewer-proposed alternative for §1.2, if D4 is ruled "inside the bounds".**
+Unadopted, offered for comparison with §1.2's text, not a replacement of it:
+
+> - **Not autonomous.** The loop is human-triggered — a trigger may authorize
+>   one propagate/sync pass or one bounded, envelope-limited mission
+>   (architecture.md). Either grain is a deliberate human act; a mission is
+>   authority to proceed inside every gate and never to skip one; and expiry or
+>   exhaustion of a mission's envelope halts, never extends, its authority.
+>   **A mission delegates execution and never adoption, approval, envelope
+>   widening, or any always-human class, and is for that reason inside VIS-4's
+>   stated bounds rather than an exception to them.** Autonomy beyond VIS-4's
+>   stated bounds is licensed only through the mechanism VIS-4 names, never by
+>   reinterpretation.
+
+The difference is one clause: it states the *reason* the classification holds
+instead of assuming it, so a fresh reader can see it is an argued position and
+can see what would falsify it.
+
+**A second, separable point on §1.1.** RC-7 also observes that the
+`architecture.md` floor requires objective, resource and time bounds, risk
+limits, untouchable surfaces, and stop and completion conditions — but **not a
+maximum autonomy level**. Adopting the floor as written therefore moves "how
+autonomous may a mission be" permanently out of doctrine and into contract.
+Its proposed one-clause addition, also unadopted:
+
+> …the exact envelope fields are contract material, not doctrine — **except
+> that an envelope always states a maximum autonomy level, and raising the
+> level at which merges or deployments may occur without a human act is itself
+> a doctrine amendment event.**
+
+**Nothing here is adopted, and this section changes no proposed text.** It
+exists so that adopting §1 is a knowing act. Recorded as owner item P-24 in
+`../../decisions/PENDING-OWNER-DECISIONS.md`.

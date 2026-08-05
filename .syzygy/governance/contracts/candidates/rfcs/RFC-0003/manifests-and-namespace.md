@@ -6,8 +6,7 @@ status_source: owner-act-record
 clauses: "RFC3-1..RFC3-14 and RFC3-18..RFC3-32 (no retired or merged numbers; RFC3-15..RFC3-17 and all lettered sub-clauses live in governance-homes-and-owner-acts.md)"
 governs: [manifests, project-declaration, consent, workspace, namespaces, migration]
 applies_to: [kernel, workspace, all-surfaces]
-depends_on: [RFC-0001, RFC-0002]
-provides_to: [RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009]
+depends_on: [RFC-0001, RFC-0002, RFC-0004, RFC-0005]
 tags: [project-declaration, consent, workspace-manifest, schema-migration, openspec-boundary, nesting]
 ---
 

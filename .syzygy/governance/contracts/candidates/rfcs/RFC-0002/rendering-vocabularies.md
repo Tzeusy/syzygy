@@ -7,7 +7,6 @@ clauses: RFC2-23..RFC2-25 (no gaps, no retirements, no merges)
 governs: [failure-states, degradation-states, unknown-reason-vocabulary, secondary-annotation, rendering-tier-registry, sibling-surface-states]
 applies_to: [kernel, all-surfaces]
 depends_on: [RFC-0001, RFC-0005]
-provides_to: [RFC-0003, RFC-0004, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011]
 tags: [foundational, closed-vocabulary, unknown, rendering-tier, unknown-never-zero, vis-1, sdr-6, sdr-33]
 ---
 

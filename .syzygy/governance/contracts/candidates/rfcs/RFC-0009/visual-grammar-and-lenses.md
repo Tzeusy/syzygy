@@ -6,8 +6,7 @@ module: visual-grammar-and-lenses
 clauses: RFC9-24..RFC9-45 (no lettered sub-clauses; no gaps, no retirements)
 governs: [reserved-palette, reserved-channel, channel-registry, unknown-rendering, height, text-channel, lens, overlay, scene-profile, scenario, evaluation-scene, aggregation, semantic-zoom, unmapped-district, comprehension-walkthrough]
 applies_to: [orrery, machine-clients]
-depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008]
-provides_to: [RFC-0007, RFC-0008]
+depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008]
 tags: [surface, legend-fidelity, unknown, sdr-19, sdr-20, sdr-24, sdr-25, sdr-26, vis-1, vis-7, sec-2, sec-3, sec-5]
 ---
 

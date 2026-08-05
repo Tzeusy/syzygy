@@ -2,11 +2,10 @@
 id: RFC-0010
 title: Mission Control and Autonomy Envelopes
 status_source: owner-act-record
-clauses: "RFC10-1..RFC10-16"
+clauses: "RFC10-1..RFC10-22"
 governs: [missions, autonomy-envelopes, guardrails, attention-items, workspace-governance, service-boundary]
 applies_to: [mission-control, workspace, all-surfaces, machine-clients]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0005, RFC-0006, RFC-0008]
-provides_to: [RFC-0011]
 tags: [autonomy, human-control, budgets, escalation, platform]
 ---
 
@@ -45,7 +44,12 @@ autonomy envelope and the no-self-widening rule (RFC10-7..9); the guardrail
 runtime as distinct from semantic correctness (RFC10-10..11); attention and
 escalation (RFC10-12..13); project-bound versus portfolio missions and the
 workspace governance store (RFC10-14..15); and the OpenSpec phase rule
-(RFC10-16). Autonomy level enumerations, lifecycle freeze, store schema, and
+(RFC10-16). A **correction plane** is added beside the prevention plane:
+budget reservation (RFC10-17), independent completion adjudication
+(RFC10-18), effect reversibility and recovery (RFC10-19), what stop
+guarantees (RFC10-20), cross-project consent composition (RFC10-21), and
+attention-queue bounds (RFC10-22).
+Autonomy level enumerations, lifecycle freeze, store schema, and
 all transport/language/packaging choices are explicitly deferred (§7, §8).
 
 ## 2. Motivation and doctrine grounding
@@ -151,6 +155,16 @@ tier), and the completion render discloses the tier actually achieved
 (VIS-2) — "all work items closed" or worker assertion alone never
 satisfies a conforming predicate.
 
+Where two or more admitted evidence artifacts bearing on one completion
+predicate support opposing conclusions, **the predicate is not satisfied**:
+the disagreement is recorded as evidence, the predicate's conclusion renders
+Unknown, and the condition is an escalation trigger under RFC10-13. It is
+never resolved by recency, by tier where the tiers are equal, by the
+executing principal's selection among sources, or by any precedence rule.
+Where the disagreeing artifacts support co-unsatisfiable authoritative
+claims, RFC2-15's Contradiction machinery governs and owner adjudication is
+the only exit.
+
 ### 3.3 The autonomy envelope
 
 **RFC10-7.** Every approved mission carries an **autonomy envelope** that
@@ -176,6 +190,33 @@ autonomy-level vocabulary is enumerated by owner act (§8 q2), the maximum
 autonomy level of every envelope is capped at **propose-only**: a stated
 higher level has no enumerated vocabulary to bind to and does not take
 effect.
+
+The narrowest-reading rule applies to grants and obligations **in opposite
+directions and to the same effect**: an unstated *grant* is the narrowest
+grant; an unstated *obligation* is the strictest obligation. Absence of a
+declared gate set means every otherwise-applicable gate is required; absence
+of declared checkpoint and recovery obligations means no effect outside
+`.syzygy/**` and `openspec/**` is authorized until they are declared; absence
+of declared escalation triggers means RFC10-13's minimum set binds in full.
+No field's absence ever relaxes a duty. (Both worked examples above are
+grants; read alone they would have let every obligation-shaped envelope field
+fail open, which is the reading a self-interested fleet prefers.)
+
+**`propose-only`, defined.** Until the autonomy-level vocabulary is
+enumerated by owner act, `propose-only` means exactly: a mission may read
+consented sources, compile context packets, run agents within its reserved
+budget (RFC10-17), and author drafts, proposals, and submissions into
+`.syzygy/**` and `openspec/**` rendered unadopted (RFC3-16). It may **not**
+cause any effect outside those two namespaces: no version-control push or
+pull request, no merge, no deploy, no package or artifact publication, no
+mutation of an external service or database, and no RFC5-22
+destructive-operation class **whether or not the granted execution profile
+standing-approved it**. Egress to a model provider remains permitted only
+under an RFC5-14 consent record naming the provider and content classes. A
+level above `propose-only` is inoperative until both the vocabulary is
+enumerated and each level's permitted effect set is stated. Because this cap
+is what makes several other deferrals safe, it may not be read as
+provisional: a cap binding to an undefined term is not a cap.
 
 **RFC10-8.** **No self-widening — the load-bearing rule.** No agent, fleet,
 worker, or Mission Control component may widen any bound of the envelope it
@@ -251,7 +292,10 @@ execution under that mission — transition to `paused` or `blocked` with an
 Attention Item — and never silently raises the bound, borrows against
 another mission, or downgrades the required gate set. Partial work already
 lawfully dispatched completes or checkpoints per the envelope's recovery
-obligations.
+obligations, **strictly within the budget reserved for it at dispatch
+(RFC10-17): completion headroom is reserved in advance or the work is
+checkpointed and halted, never funded by spending past the exhausted
+bound.**
 
 ### 3.5 Human attention and escalation
 
@@ -311,19 +355,128 @@ deferred (§8 q3) — and minting the store is an authority-plane widening
 that requires an RFC3-15-style recorded owner widening, not merely a
 schema decision.
 
-### 3.7 Authority boundary at the OpenSpec seam (binding phase rule)
+### 3.7 The correction plane — what happens after something goes wrong
+
+RFC10-1..RFC10-16 are a **prevention** plane: they make out-of-envelope acts
+impossible at Syzygy's choke points. Prevention is not enough, because
+prevention only ever addresses the *future*. These six clauses address the
+*past*: work already dispatched, money already spent, effects already
+applied, and a human who needs to be able to stop all of it. Pause is not
+rollback; refusing the next act does not undo the last one.
+
+**RFC10-17. Budget is reserved, not merely observed.** Every budget in an
+envelope is accounted in five distinct quantities: **authorized** (the owner
+act's figure), **reserved** (committed at dispatch to work not yet complete),
+**spent** (measured consumption), **released** (reserved-but-unspent,
+returned on completion or termination), and **overrun** (spend exceeding
+authorized). **No work is dispatched without reserving its declared maximum
+cost against the envelope at dispatch time**, and reserved + spent never
+exceeds authorized — the sibling-sum invariant RFC10-8 states for child
+missions, applied to every dispatch. Work whose maximum cost cannot be
+declared is not dispatchable under that budget. **Where measured spend
+against a bound is Unknown (RFC8-19, RFC2-23), the bound is treated as
+reached**: the mission transitions per RFC10-11 and an Attention Item states
+the measurement gap — Unknown spend is never read as zero spend. Any overrun
+is recorded as attributable evidence against the mission and mints its own
+Attention Item; a mission record showing a respected bound with unrecorded
+overrun is a violation of this clause.
+
+**RFC10-18. Completion is reported by the executor and established by
+another.** A mission's executing agents, fleets, and workers **may report**
+that the completion predicate is satisfied and **may never establish it**.
+The `running → completed` transition is taken only by (a) an owner act, or
+(b) a declared, owner-approved evaluation independent of the executing
+principal and whose supporting evidence is `gate-backed` (RFC2-25) — never by
+the principal that performed the work, and never by a principal that
+principal routed. A mission's terminal state is an **authorization-bearing
+determination** under RFC3-16(a) where it discharges an owner act's
+objective. Where no independent establisher is available for a mission's
+objective class — including wherever RFC2-19 leaves reconciliation
+uncomputed — the mission terminates as `blocked` with an Attention Item,
+never as `completed`. An unstated minimum evidence tier means `gate-backed`;
+"the strongest applicable tier" (RFC10-6) is never a judgment the executing
+principal makes for itself.
+
+**RFC10-19. Effects are classified before they are authorized.** Every effect
+class an envelope permits is declared **reversible**, **compensatable** (with
+the compensating action named), or **irreversible**. An effect class not so
+classified is not authorized — RFC10-7's unstated-is-narrowest rule applied
+to effects. An envelope permitting any irreversible class states that class
+explicitly on its own face; **a destructive-operation class reaches a mission
+only where the envelope names it, never by inheritance from an execution
+profile's standing approval (RFC5-22)**. Where a mission enters `failed`,
+`cancelled`, or `expired` with effects already applied: every compensatable
+effect's compensating action is attempted and its outcome recorded as
+evidence; every irreversible effect is enumerated in a single Attention Item
+naming what cannot be undone; and the mission's terminal reason (RFC10-5)
+states the reversibility disposition of every applied effect. **Pause is not
+rollback**: transitioning to `paused` or `blocked` discharges no obligation
+under this clause. A **named recovery owner** — the owner, or a principal the
+envelope designates — is bound at approval time, and resumption from `paused`
+re-verifies the pinned inputs (RFC10-4), the remaining reserved budget
+(RFC10-17), and the envelope's continued act provenance (RFC10-9) before any
+dispatch.
+
+**RFC10-20. What stop guarantees.** A human stop, cancellation, or expiry of
+a mission (RFC10-5) has three effects, all immediate at the act: **(a)** no
+further work is dispatched and no further Syzygy-mediated act is admitted
+under that mission; **(b)** every run Syzygy launched under the mission is
+terminated together with its descendants, through the kill switch RFC5-21
+requires of every isolation class — a stop that leaves Syzygy-launched runs
+executing does not conform; **(c)** each terminated run's partial state is
+checkpointed and recorded as evidence, and any effect already applied is
+classified and dispositioned under RFC10-19. The envelope declares a
+**maximum stop latency**; an undeclared latency means stop is synchronous —
+the act does not return until (a) and (b) hold. Effects produced outside
+Syzygy's mediation by externally-granted credentials are **not** covered by
+(b); the mission's stop record states that boundary explicitly rather than
+implying a completeness the runtime cannot deliver (RFC10-10).
+
+**RFC10-21. Cross-project composites carry every embedded project's consent
+requirement.** A context packet, prompt, summary, embedding, or any other
+composite assembled under a mission spanning more than one project is
+subject, at the RFC5-15 choke point, to the egress-consent record of **every
+project whose content it embeds** — not one of them, and never the project
+the composing step names for itself. A composite embedding content from a
+project for which the naming (project, provider) consent is absent, not in
+force, or of unverifiable provenance **fails closed and the refusal renders**,
+exactly as an undeterminable content class does (RFC5-14). Evidence gathered
+within one project never satisfies a completion predicate scoped to another.
+Where the workspace governance store's per-project budget and an envelope's
+budget both bind (RFC10-15, RFC10-7), **the lesser binds**, and a portfolio
+mission's spend against a project is debited from that project's budget as
+well as the mission's.
+
+**RFC10-22. The attention queue is bounded.** Every Attention Item
+additionally carries an **urgency class** from a closed vocabulary fixed at
+surface specification, and the **envelope bound, gate, or protected surface
+it implicates** where one exists. Every envelope declares a **maximum
+outstanding attention count** and a **maximum item rate** for the missions
+under it; an undeclared maximum means one outstanding item — the narrowest
+reading (RFC10-7). **On reaching either bound the mission pauses rather than
+enqueueing further items**: a mission may not convert the owner's finite
+attention into throughput. Items presenting the same decision are
+deduplicated into one item recording its multiplicity. Every item's expiry
+falls within a declared maximum beyond which its stated default is no longer
+presumed safe; an item whose expiry exceeds that maximum is not well-formed.
+RFC10-13's anti-streaming rule bounds *granularity*; this clause bounds
+*volume*, and without both, denial of owner attention is reachable without
+widening anything.
+
+### 3.8 Authority boundary at the OpenSpec seam (binding phase rule)
 
 **RFC10-16.** This contract schedules nothing: **it is not a specification
 of record from which implementation work may be scheduled**. No
 implementation work for user-observable Mission Control behavior — mission
 creation/approval flows, lifecycle displays, envelope editing, attention
 queue rendering, CLI commands, API endpoints and their answers,
-MCP-or-equivalent tools — may be scheduled solely from this RFC. Before
+MCP-or-equivalent tools — may be scheduled solely from this RFC — including everything RFC10-17..22
+requires of a runtime. Before
 implementation, every observable consequence either maps to an approved
 OpenSpec requirement and scenario in the governance root's `openspec/**`
 plane, or carries a reviewed N/A judgment proving it purely structural
 with no independently testable behavior. At surface specification a
-clause-to-requirement coverage matrix over RFC10-1..RFC10-16 is produced —
+clause-to-requirement coverage matrix over RFC10-1..RFC10-22 is produced —
 **that matrix is review material, never authority**. This clause creates
 no OpenSpec content now (none may exist during bootstrap). (Shape-parallel
 with RFC6-28, RFC7-38, RFC8-32, RFC9-52.)
@@ -346,6 +499,22 @@ with RFC6-28, RFC7-38, RFC8-32, RFC9-52.)
    priority, overriding the project's own Polaris intent.
 7. *(RFC10-2)* An agent integration parses the Mission Control web UI's
    HTML table because "the API lacked that column."
+8. *(RFC10-17)* Five workers dispatch concurrently against one budget with
+   nothing reserved; the fourth's spend is what discovers the bound. Or: cost
+   telemetry is unavailable, the runtime reads the missing figure as zero,
+   and the mission runs on.
+9. *(RFC10-18)* The fleet that did the work declares the objective met and
+   the mission closes on its own report.
+10. *(RFC10-19)* A mission fails after publishing a package. It transitions
+    to `failed`, halts cleanly, and no record says the package is still
+    published or who owns undoing it.
+11. *(RFC10-20)* The owner hits stop; dispatch ceases; the twelve agent runs
+    already executing keep running to completion.
+12. *(RFC10-21)* A portfolio mission summarizes projects A and B into one
+    prompt and ships it under A's model-provider consent; B never consented.
+13. *(RFC10-22)* Overnight, a mission mints 400 individually well-formed
+    Attention Items. Each expires safely; the owner's morning is gone and the
+    envelope was never widened.
 
 ## 5. Integration
 
@@ -370,6 +539,22 @@ with RFC6-28, RFC7-38, RFC8-32, RFC9-52.)
   complete.
 - **RFC 0011:** every mission-spawned agent run receives a governed context
   packet; the envelope is a mandatory packet input.
+
+## 5a. Amendment log
+
+**rev11 (2026-08-05) — the correction plane.** An adversarial safety review
+found that RFC10-1..16 closed every *authority-widening* route it constructed
+and left every *post-failure* question unanswered: `rollback`, `compensat`,
+`revert`, `irreversib`, `resume`, `reserve` and `atomic` were all
+zero-occurrence in this file. Six clauses were added (RFC10-17..22) and three
+existing clauses amended in place — RFC10-6 (disagreeing evidence), RFC10-7
+(`propose-only` defined; obligations fail closed), RFC10-11 (in-flight
+completion funded from reservation). No existing clause was renumbered or
+retired. Three of the added seams — reservation, adjudication, stop — bite
+**today, under the propose-only cap**: a propose-only mission still spends
+money, still declares itself complete, and still could not be reliably
+stopped. The prior round's disposition of these as "inert until the cap
+lifts" did not hold, and is recorded here rather than quietly dropped.
 
 ## 6. Alternatives considered (summary; this contract is new at rev10 and has no history file)
 
@@ -400,4 +585,4 @@ scheduling algorithms; all transport/language/packaging choices.
 
 ---
 
-*End of contract. Clauses RFC10-1..RFC10-16; no gaps, no retired numbers.*
+*End of contract. Clauses RFC10-1..RFC10-22; no gaps, no retired numbers.*

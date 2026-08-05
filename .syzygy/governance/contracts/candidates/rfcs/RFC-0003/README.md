@@ -7,8 +7,7 @@ status_source: owner-act-record
 clauses: "RFC3-1..RFC3-32 (no retired or merged numbers; sub-clauses RFC3-15(a), RFC3-16(a), RFC3-16(b), RFC3-16(c), RFC3-17(a))"
 governs: [manifests, governance-homes, lifecycles, owner-acts, workspace]
 applies_to: [kernel, workspace, all-surfaces]
-depends_on: [RFC-0001, RFC-0002]
-provides_to: [RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011]
+depends_on: [RFC-0001, RFC-0002, RFC-0004, RFC-0005]
 tags: [project-declaration, consent, governance-plane, owner-act-provenance, schema-migration, nesting]
 ---
 

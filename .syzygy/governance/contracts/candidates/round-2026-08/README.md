@@ -34,7 +34,7 @@
 | `MISSION-CONTROL-REVIEW.md` | Bounded-Mission and autonomy-envelope assessment |
 | `KNOWLEDGE-HEALTH-BRIEF.md` | Corpus size, budgets, and rot risk |
 | `COMPACTION-EQUIVALENCE-REPORT.md` | Semantic-preservation evidence for the compaction |
-| `PROCESS-LESSONS.md` | Generalizable lessons, including the verification hazards |
+| `PROCESS-LESSONS.md` | **Moved 2026-08-05** to `.syzygy/governance/decisions/PROCESS-LESSONS.md` — process lessons outlive the round that finds them, so they now have one durable home instead of a per-round one |
 
 ## Two notes a later reader will need
 

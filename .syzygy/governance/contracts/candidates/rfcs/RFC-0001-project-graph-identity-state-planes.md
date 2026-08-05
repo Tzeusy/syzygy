@@ -6,7 +6,6 @@ clauses: "RFC1-1..RFC1-32, plus sub-clauses RFC1-18(a), RFC1-18(b), RFC1-25(a)â€
 governs: [entities, relations, identities, state-planes, evaluation-identity, claims, gaps, contradictions, proposals, lifecycles]
 applies_to: [kernel, all-surfaces]
 depends_on: []
-provides_to: [RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011]
 tags: [foundational, kernel, closed-vocabulary, identity, state-planes, semantic-relation-class]
 ---
 

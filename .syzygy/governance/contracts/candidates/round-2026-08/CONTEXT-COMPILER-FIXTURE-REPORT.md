@@ -1,3 +1,9 @@
+> # Historical — round record, not a current offering
+>
+> **Do not read a digest here as an act argument.** Its fixture digests and word counts are those of round 2026-08. All eight fixtures were re-measured on 2026-08-05b and every figure moved; the fixtures themselves are current, this report is not. Successor: `../round-2026-08b/FINAL-CONTEXT-COMPILER-FIXTURE-REPORT.md`. Current arguments
+> come from `ACTIVE-CONTRACT-MANIFEST.txt` and
+> `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`, never from a round record.
+
 # Context Compiler fixture report — round 2026-08
 
 **Status:** working report of a candidate package. **Not authority.** It
