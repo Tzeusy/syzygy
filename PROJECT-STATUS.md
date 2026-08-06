@@ -73,11 +73,12 @@ changes, so with one exception each of them predates what is now offered.
 Read `round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md` "Read this first"
 before act 1.
 
-**Two things this project does not have, stated plainly:** there is no
+**One thing this project does not have, stated plainly:** there is no
 mechanical task-to-context-packet compiler — `context_load.py` measures a
 selection you have already made, and every fixture's selection is
-hand-authored. And the *evidence-adapter* fixture class has no fixture; the
-set is seven-for-eight with one double-count.
+hand-authored. The *evidence-adapter* coverage gap that stood beside it is
+closed as of 2026-08-06 by fixture 9, which is eight-for-eight on the required
+classes but lands outside the budget band and says so.
 
 ## Next lifecycle step
 

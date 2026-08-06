@@ -88,7 +88,7 @@ predicate families against every pin: population integrity, pin kind and its
 required field set, object-id well-formedness, per-file digests and path
 sanity, locator hygiene, forge-URL grammar, declared visibility, and drift
 derived from the two revision groups and then compared against what the lock
-asserts. Current result: **61 predicate evaluations, 0 findings**, with the
+asserts. Current result: **57 predicate evaluations, 0 findings** (recompute — the figure moves when either the pin set or the predicate set moves), with the
 classified population printed separately as CG-19b so a pin cannot leave the
 denominator quietly. Twenty-eight self-test fixtures cover it, four of them
 negative.

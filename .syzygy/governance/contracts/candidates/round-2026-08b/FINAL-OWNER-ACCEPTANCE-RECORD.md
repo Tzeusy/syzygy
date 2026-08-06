@@ -109,7 +109,9 @@ and budgeted but not yet *compiled*, and the honest form of that claim is in
 
 The fixtures now at least go stale loudly: CG-18 recomputes each one's digest
 and word count from its declared mandatory set. It found all eight stale on
-first run — one by 1,738 words.
+first run — one by 1,738 words. A ninth was added on 2026-08-06 for the
+evidence-adapter class, which had none; it is outside act 1's digest set, so it
+changes no act argument.
 
 ## 5. Evidence you can reproduce
 

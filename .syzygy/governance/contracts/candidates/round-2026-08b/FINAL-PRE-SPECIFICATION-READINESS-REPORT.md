@@ -26,7 +26,7 @@ question asked for a state, not a trend, and the state is not ready.
 | 2 | Public vocabulary bounded | **Met as a boundary, unmet as a definition** | The two-tier split exists and `TERM-REGISTRY.md` draws it. But the registry is a candidate with no owner act, and **eight public terms have no adopted definition anywhere** — P-17. A reader can find out which words are public; for eight of them, finding out what they mean is not yet possible |
 | 3 | Contract dependencies closed | **Met** | `provides_to` is derived by reversing `depends_on`, so the 20-edge asymmetry class is unrepresentable rather than merely absent. CG-13 examines 146 edges for dangling targets and checks the package-README-equals-module-union invariant every run |
 | 4 | RFC / OpenSpec routing complete | **Met** | CG-17 examines 199 surface clauses and finds each routed exactly once across the four categories. The check catches routed-but-undeclared as well as declared-but-unrouted; it was hardened in this session after it missed the first direction |
-| 5 | Context packets complete and **automatic** | **Unmet, and unmeetable in this phase** | See below |
+| 5 | Context packets complete and **automatic** | **Complete as of 2026-08-06; still not automatic, and unmeetable in this phase** | The class map is now eight-for-eight (fixture 9). "Automatic" is the half that cannot be met here — see below |
 | 6 | Mission-safety seams closed | **Partly** | Seven of RC-7's eleven blocking seams close fully by clause text, two partly, one is an owner ruling (P-24), one was a record correction. Three residual escapes are named in `MISSION-SAFETY-CLOSURE-REPORT.md` rather than rounded away |
 | 7 | Acceptance record clone-executable | **Met** | `PUBLIC-CLONE-VERIFICATION-REPORT.md` recomputes all five act arguments inside a real clone at the offered commit, with `_bootstrap/` absent, and the clone's battery now matches the working tree's check for check. It did not one commit earlier: CG-14 answered from the local filesystem and read a `_bootstrap/`-dependent ceremony step as executable. Both the step and the check are fixed |
 | 8 | The exact package passes a fresh semantic review | **Unmet** | See below |
@@ -44,10 +44,16 @@ until OpenSpec exists — which is the very thing this report is assessing
 readiness *for*. So criterion 5 is unmet by construction, and it stays unmet
 until the phase after this one.
 
-What the phase *could* do was done: CG-18 recomputes each fixture's digest and
-word count from its declared mandatory set, over 16 measurements. It found all
-eight fixtures stale on its first run, one by 1,738 words. The packets are
-governed, budgeted, and now loudly perishable. They are not compiled.
+What the phase *could* do was done. CG-18 recomputes each fixture's digest and
+word count from its declared mandatory set, over 18 measurements across nine
+fixtures; it found all eight stale on its first run, one by 1,738 words. And
+the ninth fixture — the evidence-adapter class, which had none — was written
+and placed on 2026-08-06, making the class map eight-for-eight without a
+double-count. It records no `Compiler:` line, because there is no compiler and
+the eight before it said there was.
+
+The packets are governed, budgeted, and now loudly perishable. They are not
+compiled, and one fixture more does not change that.
 
 The honest form of this claim, with the evidence, is
 `FINAL-CONTEXT-COMPILER-FIXTURE-REPORT.md`.

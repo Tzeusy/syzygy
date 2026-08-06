@@ -107,11 +107,33 @@ Counting fixture 2 twice made an eight-for-eight map look complete when it is
 eight fixtures without mapping them to the required classes at all, which is
 how the gap survived.
 
-**This is disclosed, not closed.** Writing a ninth fixture would be
-straightforward, and it is not done here: the fixture would measure a
-hand-authored selection, so it would inherit the limitation above and add one
-more unverified selection to the set. The gap is recorded so that the
-readiness answer carries it rather than rounding it away.
+**Closed on 2026-08-06 by fixture 9**, `context-selection-9-evidence-adapter.md`
+— an evidence-adapter change amending the test/CI/gate observer (RFC4-13) and
+its registry entry for a new external CI provider. The class map is now
+eight-for-eight without a double-count.
+
+Three things about it are worth carrying, because none of them is flattering:
+
+- **It does not fit the budget.** 24,025 words ≈ 32,433 estimated tokens — the
+  largest packet in the set, above the 20,000-token decomposition trigger by
+  either heuristic. The fixture states this and names a lawful shard (the
+  fidelity-labeling half, 10,350 w ≈ 13,972 tokens, inside the band) rather
+  than trimming the selection to flatter the figure. The tiering half is not
+  rescuable.
+- **It inherits every limitation above.** The selection is hand-authored;
+  there is still no compiler. The fixture therefore records **no** `Compiler:`
+  line and no selection-rule version — the eight before it claimed
+  `Compiler: context_load.py`, which was the misdescription RC-6 found, and
+  `rev10-fixtures` resolves to nothing anywhere in the repository.
+- **One declared dependency edge is left open, not hidden.** Eight of the nine
+  loaded modules declare `depends_on: RFC-0001`, and the packet does not carry
+  it. The fixture tabulates all twelve cited RFC1-n identities, marks which
+  five are restated at binding strength inside loaded clauses and which seven
+  are citation rather than reliance, names three triggers that would promote
+  RFC-0001 to mandatory, and measures the cost of closing it mechanically:
+  32,367 w ≈ 43,695 tokens.
+
+The gap this section recorded is closed. The limitation it recorded is not.
 
 ## The two shapes the hand-authored selections get wrong
 
