@@ -240,6 +240,27 @@ def _is_historical_packet(target):
     return any(p.match(target) for p in HISTORICAL_PACKET_TARGET)
 
 
+#: Raw reviewer output is stored verbatim and never edited — the repository's
+#: strongest evidence rule, and the reason `EXCEPTIONS` never becomes "pass
+#: with findings". A reviewer writing `craft/engineering-bar.md` for a file
+#: this tree keeps at `policies/craft-and-care/engineering-bar.md` has written
+#: their own shorthand, not a repository pointer, and the only ways to make
+#: CG-1b green over it are to edit their words or to stop reading their file.
+#: Both are worse than the finding. So these are **classified, not silenced**:
+#: counted in CG-1b's denominator, reported in full under CG-1f, and never
+#: allowed to fail a check whose subject is the active corpus's own links.
+RAW_REVIEW_DIRS = (
+    f"{CANDIDATES}/reviews/",
+    f"{CANDIDATES}/round-2026-08/reviews/",
+    f"{CANDIDATES}/round-2026-08b/reviews/",
+    f"{CANDIDATES}/round-2026-08c/reviews/",
+)
+
+
+def _is_raw_review(rel):
+    return any(rel.startswith(d) for d in RAW_REVIEW_DIRS)
+
+
 #: Cited descriptively by `craft-and-care/testing-and-verification.md`
 #: CC-TEST-7: the upstream `th-engineering` package's own internal
 #: cross-reference (tier definitions for test-rigor bars 9-10), naming a file
@@ -281,8 +302,8 @@ def _resolve(citing, target, all_paths):
 def cg1_links(paths, res):
     all_paths = set(paths)
     n_links = n_paths = 0
-    broken_links, broken_paths, forward, historical, vendor_gap = \
-        [], [], set(), [], []
+    broken_links, broken_paths, forward, historical, vendor_gap, reviewer = \
+        [], [], set(), [], [], []
     for rel in md_files(paths):
         txt = read(rel)
         for m in MD_LINK.finditer(txt):
@@ -314,6 +335,8 @@ def cg1_links(paths, res):
                     vendor_gap.append(f"{rel} -> {t}")
                 elif _is_historical_packet(t):
                     historical.append(f"{rel} -> {t}")
+                elif _is_raw_review(rel):
+                    reviewer.append(f"{rel} -> {t}")
                 else:
                     broken_paths.append(f"{rel} -> {t}")
 
@@ -341,6 +364,12 @@ def cg1_links(paths, res):
             note="unresolvable in a clone by construction — the rev9 working "
                  "packet lived under the git-excluded `_bootstrap/`",
             details=uniq_hist)
+    uniq_rev = sorted(set(reviewer))
+    res.add("WARN", "CG-1f  raw-review path shorthand", len(uniq_rev), 0,
+            "reference",
+            note="a reviewer's own shorthand inside verbatim output — never "
+                 "edited, so classified and printed rather than failed",
+            details=uniq_rev)
     uniq_gap = sorted(set(vendor_gap))
     res.add("WARN", "CG-1e  vendored-substrate scope gaps", len(uniq_gap), 0,
             "reference",

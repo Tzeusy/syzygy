@@ -86,12 +86,30 @@ edit it, and this brief does not propose an exception. The two-root boundary
 is not a rule with a discoverability carve-out; a carve-out is how a write
 boundary stops being one.
 
-So the gap is **rendered, not closed**:
+So the gap is **rendered, not closed** — and it is rendered **once per declared
+repository entry**, not once per project:
 
 ```text
-repository front door links to the Syzygy project entry:
-    yes / no / Unknown
+for each repository entry declared under RFC3-6:
+    front door links to the Syzygy project entry:
+        yes / no / Unknown
 ```
+
+**Per-repository is a correction, and the singular version was a real hole.**
+RFC3-29 upholds *"One plane per repository; one root per Project … A repository
+carries at most one `.syzygy/` plane, at its root."* RFC3-30 makes an observing
+project's read of another repository **read-only**: *"A's direct-write universe
+is A's own governance root's two namespaces and nothing else (VIS-5); A never
+writes, migrates, or 'repairs' B's plane."*
+
+So for a project with N repositories, **exactly one can hold an entry point,
+and Syzygy may not create one in the other N−1.** A singular finding answers
+for that one repository and says nothing about the rest — which means the
+problem this brief opens with was *unsolved for every repository but one, and
+the design could not even render that it was unsolved.* Review RD-2 found it.
+The fix costs nothing: RFC3-6 already owns repository entries, this brief
+already routed the finding there, and making the answer per-entry converts a
+silent hole into a rendered one, which is the whole thesis.
 
 - **`yes`** — the root `README.md` (or the forge's configured front page)
   contains a resolvable link to `.syzygy/intent/OVERVIEW.md`.
@@ -114,9 +132,26 @@ repository front door links to the Syzygy project entry:
    different facts, and conflating them would make the whole facet model a
    badge again at its very first row.
 
-**This finding is not a facet.** It is a *detail of the Registered facet*,
-because promoting it would make eight facets where seven is already at the
-edge of what a reader holds at once. It is queryable in its own right.
+**This finding is not a facet.** It is a *detail* of one, because promoting it
+would make eight facets where seven is already at the edge of what a reader
+holds at once. It is queryable in its own right.
+
+**Which facet owns it is open, and review RD-2 argues the current answer is
+wrong.** This brief placed it under **Registered**. RD-2's counter:
+
+> That is a presentation argument applied to a placement decision.
+> Discoverability is *about* whether a human can find the project —
+> Human-understandable's exact subject, and RFC7-30's first clause is
+> *"entering at the primary narrative"*, which presupposes the reader got
+> there. Under Registered, a project renders `Registered: true` with
+> `discoverable: no` buried in a drawer, while the facet a newcomer would
+> actually consult about human comprehension is silent on whether a human can
+> reach the door at all.
+
+That is the stronger argument, and it is **recommended but not applied** —
+which facet owns a finding is a design decision inside owner **packet 6**, and
+applying it here would settle a question the packet exists to ask. Recorded
+either way: the finding is per-repository, queryable, and never a write.
 
 ## 5. Registration is not certification
 
@@ -131,6 +166,28 @@ The sentence names the six other facets on purpose. A reader who has just seen
 `Registered: true` is exactly the reader most likely to conclude something
 stronger, and the correction belongs next to the claim rather than in a
 footnote.
+
+**"Machine-queryable" is not "attached", and an earlier revision of this
+section confused them.** Review RD-2:
+
+> An agent that queries the Registered facet gets `true` and nothing else.
+
+RFC6-14 binds *labels* to travel with every machine answer; a prose disclaimer
+is not a label, and no clause makes it accompany a `Registered: true` response.
+A sentence a consumer must go and fetch separately is a sentence most consumers
+will not fetch.
+
+**So the requirement is stated as a field, not a paragraph:** the Registered
+facet's answer carries a **required non-certification field** — the sentence
+above, or a stable identifier resolving to it — in the same envelope as the
+value, wherever that value is served. If the sentence is load-bearing it needs
+a home that travels; if it is not load-bearing it should not be in this brief
+at all.
+
+**[Unknown]** which clause makes that field required. RFC6-14's parity rule
+governs labels, not per-facet envelope fields, so this is a **specification
+obligation on OpenSpec Capability 1** rather than a contract gap — recorded as
+such, and not smuggled into RFC-0006 here.
 
 ## 6. What this costs, honestly
 
@@ -148,6 +205,15 @@ footnote.
   proposes the fix; nothing makes anyone apply it. That is the correct
   consequence of the write boundary and it should not be softened into a
   nudge that eventually becomes a write.
+- **N−1 of a project's N repositories can never have an entry point, and this
+  is the largest cost on the list.** RFC3-29 allows one `.syzygy/` plane per
+  repository at its root, and RFC3-30 makes every other repository read-only
+  to the observing project. The per-repository discoverability finding (§4)
+  renders the hole; it does not close it, and nothing in this design can. An
+  engineer opening observed-source repository #4 of 5 has no path in — the
+  best available outcome is that the *project's* entry point can now say so,
+  repository by repository, instead of answering for one and staying silent
+  about four. **[Observed]**, and it went unlisted until review RD-2 named it.
 
 ## 7. Routing
 

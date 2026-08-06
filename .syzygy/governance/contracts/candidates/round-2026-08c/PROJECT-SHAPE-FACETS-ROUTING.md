@@ -30,9 +30,21 @@ OpenSpec, which is the correct place and does not exist yet).
 | **Owning contract** | **RFC-0003** `manifests-and-namespace` |
 | **Inputs, by clause** | RFC3-4 (location is designation — the declaration lives at exactly one governance root); RFC3-5 (the closed top-level field set); RFC3-6 (repository entries and declared repository identity); RFC3-7 (consent records as governance acts); RFC3-8 (revocation and withdrawal) |
 | **How it computes** | Does `.syzygy/project.yaml` exist at one governance root, parse against RFC3-5's closed field set, name an owner, declare ≥1 repository per RFC3-6, and carry an in-force RFC3-7 consent record for every declared source that requires one? |
-| **Unknown reasons available** | RFC3-4's own rule already supplies the sharpest one: *"a missing or invalid `project.yaml` renders every dependent claim Unknown"* — the contract says the fail-closed direction outright |
+| **Unknown reasons available** | From RFC2-24's closed twelve: **#1 `missing-declaration`** (no `project.yaml` at any governance root) and **#2 `missing-evidence`** (declaration present, a required consent record absent). The fail-closed direction for the *unreadable* case is stated by **RFC3-9**: *"An unparseable or invalid `project.yaml` renders every dependent claim Unknown"* |
 | **What is missing** | **Nothing at contract level.** Every input is a declared clause today |
 | **Gap class** | **Specification** — the facet's rendering and API shape route to OpenSpec Capability 1 |
+
+**Correction, recorded rather than quietly applied.** An earlier revision of
+this row attributed to **RFC3-4** the sentence *"a missing or invalid
+`project.yaml` renders every dependent claim Unknown"*. **That sentence does
+not exist.** The real sentence is RFC3-9's, it reads **"unparseable or
+invalid"**, and it says nothing about the *missing* case — which RFC3-9 routes
+to first-pass drafting instead. Review RD-2 found it: a wrong clause number, a
+changed word, and a case the clause does not cover, in a routing table whose
+entire purpose is to show that each facet's inputs are real clauses. It is the
+same class as review RD-4's F-1 — evidence read from the neighbourhood of a
+clause rather than from the clause — appearing in a different document in the
+same round.
 
 **Note on the honest edge.** RFC3-4 governs the *contradiction* case (two
 repositories each claiming to be the same project's root) by routing it to
@@ -65,15 +77,39 @@ absent* interchangeable. They are not.
 |---|---|
 | **Owning contract** | **RFC-0007** `narrative-contract` |
 | **Inputs, by clause** | RFC7-6 (**one primary narrative** — a governed project has at most one); RFC7-9 (granularity, covering, minimality, bounding of source anchors); RFC7-10 (anchor form — machine-readable and typed); RFC7-11 (**broken anchors render Unknown, never silent**); RFC7-11(a) (anchors whose target changed render as *drifted*); RFC7-13 (progressive disclosure and the V0 default path) |
-| **How it computes** | Two halves. **Mechanical:** a primary narrative is declared (RFC7-6), and its anchors resolve rather than rendering Unknown or drifted (RFC7-10/11/11(a)). **Judged:** a fresh reader answered the project's comprehension questions, and the answer was recorded as evidence |
-| **What is missing** | **A contract gap, and it is real.** No clause defines a *fresh-reader evaluation* as an evidence-producing act. RFC7-13 states the progressive-disclosure obligation; nothing states who tests it, at what tier the result is admitted, or when it expires |
-| **Gap class** | **Contract** — and it should be filled at *surface specification*, not now. The reason: the missing piece is an evidence-production rule, and RFC2-25's tier registry is the right home for how such a judgment is admitted. Drafting it here would put an evidence rule in a narrative contract |
+| **Inputs, by clause (2)** | **RFC7-30** (the cold-open comprehension walkthrough — the acceptance test, its six prompts, and the non-visual/keyboard-only run per release milestone); **RFC7-31** (verdict discipline, the two record homes, and the two release-blocking floors); **RFC7-32** (when it runs — material narrative changes and release milestones, SDR-14) |
+| **How it computes** | Two halves. **Mechanical:** a primary narrative is declared (RFC7-6), and its anchors resolve rather than rendering Unknown or drifted (RFC7-10/11/11(a)). **Judged:** an RFC7-30 walkthrough ran, its execution record exists in `.syzygy/governance/records/` and its verdict in `.syzygy/governance/decisions/` (RFC7-31) |
+| **Unknown reasons available** | **#2 `missing-evidence`** — RFC7-30's own outcome, in its own words: *"absent its record, the test renders Unknown, never met."* Also **#11 `reference-unresolvable`** for the broken-anchor limb (RFC7-11) |
+| **How it can be `false`** | **RFC7-31's two floors**, neither a judgment call: *"a dangling internal link on the walkthrough path fails (trust floor, release-blocking); a confident wrong answer attributable to what the surface rendered fails"* |
+| **What is missing** | **Narrower than an earlier revision of this row claimed.** Two things, both small: at what **tier** an RFC7-31 verdict is admitted into RFC2-25's registry, and when a verdict **expires** (RFC7-32 gives a cadence for running the test, not a currency bound for its result — so `stale-beyond-currency-bound` has no bound to exceed) |
+| **Gap class** | **Contract**, and the home is **RFC2-25's tier registry** — the admission question is an evidence rule, not a narrative one. Not drafted here |
+
+**Correction, recorded rather than quietly applied.** An earlier revision of
+this row read *"A contract gap, and it is real. No clause defines a
+fresh-reader evaluation as an evidence-producing act."* **That was false.**
+RFC7-30, RFC7-31 and RFC7-32 define exactly that — the test, its independence
+standard, its two record homes, its two release-blocking floors, its
+`verdict-unlawful` failure mode, and its cadence. Review RD-2 named the cause
+precisely: **RFC-0007 module 2 went unread.** The routing document asserted a
+gap in a contract it had not finished reading, which is worse than missing a
+clause — it is a claim of absence with no sweep behind it, and VIS-2's rule
+about absence applies to a reviewer's own claims first.
+
+**Reconciling two lists of questions.** The entry-point brief names **eight**
+things a reader must be able to learn; RFC7-30 names **six** prompts a
+walkthrough reader must answer. They are not the same list and neither
+supersedes the other: RFC7-30's six are the **acceptance test** for the
+narrative surface, and the entry point's eight are the **content obligation**
+of one page. Five overlap. The entry point's rows 5 (where work lives), 6
+(the system map) and 7 (the programmatic query path) have no RFC7-30
+counterpart, because they are not narrative comprehension. **Whether the two
+lists should be unified is not settled here** — `[Unknown]`, and named so that
+an implementer does not silently pick one.
 
 **This is the facet most likely to be quietly faked**, because the mechanical
-half is easy and the judged half is not. The brief states plainly that its
-evidence is a recorded human judgment. Absent that judgment the answer is
-`Unknown — no-evaluation-performed`, and a project whose anchors all resolve
-is **not** thereby Human-understandable.
+half is easy and the judged half is not. Absent the RFC7-31 record the answer
+is `Unknown — missing-evidence`, and a project whose anchors all resolve is
+**not** thereby Human-understandable.
 
 ---
 
@@ -183,16 +219,32 @@ brief's rule 5. The facets inherit it rather than restating it, which is what
 |---|---|---|---|
 | Registered | — | Capability 1 | — |
 | Shape present | — | Capability 1 | — |
-| Human-understandable | **yes** — no clause defines a fresh-reader evaluation as an evidence-producing act; home is RFC2-25's tier registry, at surface specification | Capability 1 + 3 | — |
+| Human-understandable | **yes**, and narrow — at what tier an RFC7-31 verdict is admitted, and when it expires. Home: RFC2-25's tier registry | Capability 1 + 3 | — |
 | Observable | — | Capability 1 | — |
 | Traceable | — | Capability 1 | — |
-| Mission-ready | — | Capability 2 | **act 1, and the D4 ruling (P-24)** |
+| Mission-ready | — | Capability 2 | **act 1, and the D4 ruling (P-24)**; see also **P-28** |
 | Reconciled | — | later than Capability 1 | — |
 
-**Six of seven facets need no new clause.** That is the result this document
-was written to establish, and it is the argument that the facet model is a
-projection of the corpus rather than an addition to it. The seventh names its
-gap, names the right home for it, and does not fill it here.
+**Six of seven facets need no new clause, on the corrected reading — and the
+earlier revision of this table reached the same number by two errors that
+happened to cancel.** It overstated Human-understandable's gap (asserting that
+no clause defines a fresh-reader evaluation, when RFC7-30/31/32 do) and
+understated three others to `—` while the brief was emitting Unknown reasons
+that **RFC2-24's closed twelve do not contain** — which by RFC2-24's own
+closure rule would have required an amendment to RFC-0002 for
+Human-understandable, Mission-ready and Reconciled alike.
+
+**Both errors are now repaired at the source**, so the count is a result rather
+than a coincidence: every Unknown reason in the brief and in this document is
+one of RFC2-24's twelve, verified this session by enumerating every
+hyphenated backticked token in both files against the vocabulary; and
+Human-understandable's gap is narrowed to what is genuinely missing. Review
+RD-2 found both, and its summary is the one to keep: *the model is right, the
+routing evidence offered for it was not.*
+
+**A number that survives two cancelling errors is not evidence**, and this
+table's earlier revision is the demonstration. The claim now rests on the
+per-row citations, each spot-checkable, rather than on the total.
 
 **No facet introduces a record type, a store, or an authority.** Verified by
 walking each row's inputs: every one is a claim computed at an evaluation over
