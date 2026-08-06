@@ -63,7 +63,7 @@ Load the minimum for one correct decision. Never "read everything."
 | A contract question | `contracts/candidates/06-CONTEXT-LOAD-MAP.md`, or compute the load with `scripts/context_load.py` |
 | "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until OpenSpec exists |
 | Current status | `PROJECT-STATUS.md` |
-| "Is this ready for OpenSpec?" | `round-2026-08b/FINAL-PRE-SPECIFICATION-READINESS-REPORT.md` — the answer is **not ready**, with the two unmet criteria named |
+| "Is this ready for OpenSpec?" | `round-2026-08c/FINAL-PRE-SPECIFICATION-READINESS-REPORT.md` — the answer is **not ready**: nine of twelve criteria met, three named with the review finding that blocks each |
 | Open owner questions | `decisions/PENDING-OWNER-DECISIONS.md` |
 | What a term means | doctrine's glossary, `governance/doctrine/README.md`; then the candidate `policy-candidates/TERM-REGISTRY.md` |
 | Maintenance, review, or avoiding a repeat mistake | `decisions/PROCESS-LESSONS.md` — **not default context** |
@@ -97,7 +97,7 @@ Store raw reviewer output verbatim and **copy verdict words exactly**
 
 ## Verification rules
 
-Seven rules, each paid for by a recorded incident. The incidents — and why
+Ten rules, each paid for by a recorded incident. The incidents — and why
 each rule is shaped the way it is — are in `decisions/PROCESS-LESSONS.md`;
 read them before writing or trusting a check.
 
@@ -115,6 +115,21 @@ read them before writing or trusting a check.
    trusting it. `--selftest` holds the fixtures.
 7. **Run the battery in a clone** before calling it green; a clone report is
    valid only for the commit it was run at.
+8. **Anchor a claim about a contract to a *defined clause*, and quote it.**
+   Section prose near a clause is not the clause. Two reviewers found the same
+   defect in one week — an edge justified by prose fifty lines past the last
+   clause, and a sentence attributed to RFC3-4 that exists nowhere.
+9. **A claim of absence needs a sweep with a denominator.** "No clause defines
+   X" is a measurement, and one such claim was false because a module went
+   unread. VIS-2 applies to your own claims first.
+10. **Freeze the bytes a review is bound to.** A review names a digest; editing
+    the subject afterwards makes the review worth nothing, however small the
+    edit. Batch the fix into the next pass.
+
+**A generator that quotes prose has re-opened the door it closed.** Owning a
+measurement means nothing inside the generated file was copied — twice this
+round a generated artifact contradicted itself because it transcribed a figure
+from something else.
 
 ## Validation
 
@@ -127,6 +142,7 @@ CS=.syzygy/governance/contracts/candidates/scripts
 python3 $CS/verify_final_prespec.py                       # clauses, citations, ceilings
 python3 $CS/build_contract_index.py --check               # index drift
 python3 $CS/build_dependency_index.py --check             # dependency-edge drift
+python3 $CS/build_budget_report.py --check                # every volatile measurement
 python3 $CS/context_load.py rfcs/RFC-0002/README.md doctrine:vision.md
 ```
 
