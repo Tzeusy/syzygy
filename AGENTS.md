@@ -47,7 +47,11 @@ digest.
 | 5 (optional) | Doctrine amendment D3 — bounded missions | none — VIS-4 adoption of the D3 packet, rev1 |
 
 The owner-facing offering is
-`contracts/candidates/round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md`.
+`contracts/candidates/round-2026-08c/FINAL-OWNER-ACCEPTANCE-PACKET.md` — it
+states every act's imperfections **before** its phrase. The round-2026-08b
+record it supersedes still verifies its five arguments but its defect
+inventory is two rounds stale; review RD-8 called routing an owner there *"the
+finding that converts act 1 from a knowing act into a surprised one."*
 `decisions/ACCEPTANCE-ACT-RECORD.md` is created by the first act; its absence
 is correct. **Never edit an artifact after an act has bound its digest.** The
 rev9 phrase `ACCEPT FOUNDATIONAL RFCS` is retired and satisfies nothing.
@@ -63,7 +67,7 @@ Load the minimum for one correct decision. Never "read everything."
 | A contract question | `contracts/candidates/06-CONTEXT-LOAD-MAP.md`, or compute the load with `scripts/context_load.py` |
 | "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until OpenSpec exists |
 | Current status | `PROJECT-STATUS.md` |
-| "Is this ready for OpenSpec?" | `round-2026-08c/FINAL-PRE-SPECIFICATION-READINESS-REPORT.md` — the answer is **not ready**: nine of twelve criteria met, three named with the review finding that blocks each |
+| "Is this ready for OpenSpec?" | `round-2026-08c/FINAL-PRE-SPECIFICATION-READINESS-REPORT.md` — the answer is **not ready**: eight of twelve met, one met with its bound stated, one `EXCEPTIONS`, three named with the review finding that blocks each |
 | Open owner questions | `decisions/PENDING-OWNER-DECISIONS.md` |
 | What a term means | doctrine's glossary, `governance/doctrine/README.md`; then the candidate `policy-candidates/TERM-REGISTRY.md` |
 | Maintenance, review, or avoiding a repeat mistake | `decisions/PROCESS-LESSONS.md` — **not default context** |

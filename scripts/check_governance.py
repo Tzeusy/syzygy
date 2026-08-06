@@ -220,6 +220,10 @@ FORWARD_REFS = (
 HISTORICAL_PACKET_TARGET = (
     re.compile(r"^(\.\./)*final-prespec/"),
     re.compile(r"^(\.\./)*rfcs/RFC-\d{4}-[a-z0-9-]+\.md$"),
+    # The rev9 matrix also cites the *nested* package layout relatively
+    # (`../rfcs/RFC-0003/README.md`). Same frozen tree, same by-construction
+    # unresolvability; surfaced only once `_resolve` stopped discarding `../`.
+    re.compile(r"^(\.\./)*rfcs/RFC-\d{4}/[A-Za-z0-9._-]+$"),
     re.compile(r"^(\.\./)*(topology|history|matrix-rows)/"),
     re.compile(r"^(\.\./)*reviews/\d{2}-"),
     re.compile(r"^(\.\./)*scripts/verify_(rfcs|rev7)\.(py|sh)$"),
@@ -261,6 +265,20 @@ def _is_raw_review(rel):
     return any(rel.startswith(d) for d in RAW_REVIEW_DIRS)
 
 
+#: Superseded round records, banner-marked and frozen. They cite paths that
+#: were correct at the depth they were written and are not corrected, for the
+#: same reason raw reviewer output is not: a frozen record edited to please a
+#: check is no longer the record. Classified into CG-1f alongside raw review.
+SUPERSEDED_ROUND_DIRS = (
+    f"{CANDIDATES}/round-2026-08/",
+)
+
+
+def _is_frozen_lane(rel):
+    return _is_raw_review(rel) or any(rel.startswith(d)
+                                      for d in SUPERSEDED_ROUND_DIRS)
+
+
 #: Cited descriptively by `craft-and-care/testing-and-verification.md`
 #: CC-TEST-7: the upstream `th-engineering` package's own internal
 #: cross-reference (tier definitions for test-rigor bars 9-10), naming a file
@@ -287,14 +305,31 @@ def _resolve(citing, target, all_paths):
     cited from a package report means the module of that name, wherever the
     package keeps it — so suffix matching models how they are actually
     written. Anything resolving only by suffix still resolves in a clone.
+
+    **The suffix fallback is refused for a target that states its own depth.**
+    An author writing `../../history/RFC-0010-history.md` has made a claim
+    about where the file sits relative to theirs, and a wrong claim must fail
+    rather than be rescued by a filename match somewhere else in the tree.
+
+    An earlier revision used `str.lstrip("./")` on the normalized target,
+    which strips *characters*, not a prefix — so every `../` was discarded and
+    **no wrong-depth path could fail**. Review RD-7 mutation-proved it with a
+    link seven levels up, pointing outside the repository, over which the
+    battery reported `0 findings` while the denominator incremented. It was
+    also the reason a genuinely broken pointer inside act 1's digest set had
+    gone unreported (RD-7 finding E-2).
     """
     for cand in (os.path.join(os.path.dirname(citing), target),
                  os.path.join(ROOT, target)):
         if os.path.exists(os.path.normpath(os.path.join(ROOT, cand)
                                            if not os.path.isabs(cand) else cand)):
             return True
-    t = os.path.normpath(target).replace(os.sep, "/").lstrip("./")
-    if not t:
+    if target.startswith("../") or "/../" in target:
+        return False
+    t = os.path.normpath(target).replace(os.sep, "/")
+    while t.startswith("./"):
+        t = t[2:]
+    if not t or t.startswith("../"):
         return False
     return any(p == t or p.endswith("/" + t) for p in all_paths)
 
@@ -317,6 +352,13 @@ def cg1_links(paths, res):
             if not _resolve(rel, t, all_paths):
                 if _is_vendored_gap(rel, t):
                     vendor_gap.append(f"{rel} -> {t}")
+                elif _is_historical_packet(t):
+                    historical.append(f"{rel} -> {t}")
+                elif _is_frozen_lane(rel):
+                    # CG-1a had no frozen-lane branch at all; these passed
+                    # only because `_resolve` absorbed them (review RD-7,
+                    # finding E-1). Now classified explicitly, like CG-1b's.
+                    reviewer.append(f"{rel} -> {t}")
                 else:
                     broken_links.append(f"{rel} -> {t}")
         for m in CODE_PATH.finditer(txt):
@@ -335,7 +377,7 @@ def cg1_links(paths, res):
                     vendor_gap.append(f"{rel} -> {t}")
                 elif _is_historical_packet(t):
                     historical.append(f"{rel} -> {t}")
-                elif _is_raw_review(rel):
+                elif _is_frozen_lane(rel):
                     reviewer.append(f"{rel} -> {t}")
                 else:
                     broken_paths.append(f"{rel} -> {t}")
@@ -365,9 +407,9 @@ def cg1_links(paths, res):
                  "packet lived under the git-excluded `_bootstrap/`",
             details=uniq_hist)
     uniq_rev = sorted(set(reviewer))
-    res.add("WARN", "CG-1f  raw-review path shorthand", len(uniq_rev), 0,
+    res.add("WARN", "CG-1f  frozen-lane path references", len(uniq_rev), 0,
             "reference",
-            note="a reviewer's own shorthand inside verbatim output — never "
+            note="raw reviewer output and superseded round records — never "
                  "edited, so classified and printed rather than failed",
             details=uniq_rev)
     uniq_gap = sorted(set(vendor_gap))

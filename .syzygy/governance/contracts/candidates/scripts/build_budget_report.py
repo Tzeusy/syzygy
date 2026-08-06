@@ -133,6 +133,26 @@ PROSE_MEASUREMENT = re.compile(
 REDACTION = "[figure removed — see §3]"
 
 
+#: A relative path inside a transcribed field. The fixtures live one level
+#: below this report (`candidates/fixtures/` → `candidates/`), so a `../x`
+#: written correctly *there* is broken *here* — four copies of
+#: `../round-2026-08b/reviews/RC-12-budget-waiver-RAW.md` pointed one level
+#: above the package (review RD-7, and it was invisible until the link
+#: checker stopped discarding `../` traversal). This is the measurement
+#: defect in a different currency: a value correct in its own frame,
+#: transcribed into a frame where it is false. One leading `../` is stripped;
+#: a deeper traversal is left alone and will fail the link check loudly,
+#: because guessing at it would be the same mistake with more steps.
+PROSE_RELPATH = re.compile(r"`\.\./(?!\.)([^`]+)`")
+
+
+def reparent_paths(text, counter):
+    def sub(m):
+        counter.append(m.group(0).strip("`"))
+        return f"`{m.group(1)}`"
+    return PROSE_RELPATH.sub(sub, text)
+
+
 def redact_measurements(text, counter):
     """Replace transcribed measurement figures with a pointer to §3."""
     def sub(m):
@@ -141,7 +161,7 @@ def redact_measurements(text, counter):
     return PROSE_MEASUREMENT.sub(sub, text)
 
 
-def waiver_fields(body, counter):
+def waiver_fields(body, counter, path_counter):
     """Pull the waiver/justification table rows a fixture declares.
 
     Parsed rather than kept in a table here: a second copy of the reviewer,
@@ -158,7 +178,8 @@ def waiver_fields(body, counter):
         k = key.strip().lower()
         if k in ("reason", "scope", "reviewer", "expiry / revisit trigger",
                  "decomposition reviewed", "artifact", "correction"):
-            out[k] = redact_measurements(value.strip(), counter)
+            out[k] = reparent_paths(
+                redact_measurements(value.strip(), counter), path_counter)
     return out
 
 
@@ -276,7 +297,7 @@ def render_report(measures):
     a(f"**{len(breaches)} of {len(measures)} fixtures are above the proposed "
       f"20,000-token trigger.**")
     a("")
-    redacted = []
+    redacted, reparented = [], []
     a("## 2. Candidate budget exceptions — one row per breaching fixture")
     a("")
     a("Fields are read out of each fixture's own declaration. A missing field")
@@ -300,7 +321,7 @@ def render_report(measures):
     a("RD-5). The count of redactions is printed at the foot of \u00a75.")
     a("")
     for m in breaches:
-        w = waiver_fields(m["body"], redacted)
+        w = waiver_fields(m["body"], redacted, reparented)
         a(f"### `{m['name']}`")
         a("")
         over = ((m["tokens"] - PROPOSED_TRIGGER_TOKENS)
@@ -354,6 +375,17 @@ def render_report(measures):
     a("")
     for r in sorted(set(redacted)):
         a(f"- `{r}`")
+    a("")
+    a(f"**Re-parented relative paths:** {len(reparented)}. A fixture lives one")
+    a("level below this report, so a `../x` correct in a fixture is broken")
+    a("here. One leading `../` is stripped; anything deeper is left to fail")
+    a("the link check loudly rather than guessed at. Rewritten, verbatim —")
+    a("printed without code spans, because an earlier revision printed the")
+    a("*original* path in a backtick span and the audit trail became the")
+    a("broken reference it was auditing:")
+    a("")
+    for r in sorted(set(reparented)):
+        a(f"- {r} → {r[3:]}")
     a("")
     return "\n".join(lines) + "\n"
 

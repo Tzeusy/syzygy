@@ -21,7 +21,7 @@ are authored and approved.
 | 2 | Craft-and-care approval | ✅ **Approved** (owner decision D2) | `.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md` |
 | 3 | Surface decisions | ✅ **Recorded** SDR-1…33 | `.syzygy/governance/decisions/SURFACE-DECISION-RECORD.md` |
 | 4 | Foundational contracts (act 1) | ⏳ **Candidate — no act performed** | acceptance record + `ACTIVE-CONTRACT-MANIFEST.txt`, `.syzygy/governance/contracts/candidates/` |
-| 5 | Craft amendment CC-TEST-2 (act 2) | ⏳ **Awaiting confirmation** at the current digest | `INSTALL-RECORD.md` correction block, 2026-08-05 |
+| 5 | Craft amendment CC-TEST-2 (act 2) | ⏳ **Awaiting confirmation** at the current digest | `INSTALL-RECORD.md` **2026-08-06** correction block — the 2026-08-05 block holds the retired `3858820f…` argument (review RD-8, finding S11) |
 | 6 | Topology (act 3) | ⏳ **Candidate — no act performed** | `.syzygy/map/topology-candidates/BUNDLE-MANIFEST.md` |
 | 7 | Project overview (act 4) | ⏳ **Draft — refactored, awaiting adoption** | `.syzygy/intent/OVERVIEW.md` header |
 | 8 | Doctrine amendment D3 — bounded missions (act 5, optional) | ⏳ **Proposed** — adopt, amend, or decline | `.syzygy/governance/contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1; supersedes the original `…-DRAFT.md`) |
@@ -36,10 +36,13 @@ which is the correct state — it is created by the first act.
 
 The full open-decision queue is
 `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`. The owner-facing
-offering for gates 4–8 — exact phrases, what each act covers, what is
-knowingly imperfect inside each — is
-`.syzygy/governance/contracts/candidates/round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md`
-(the `round-2026-08/` one is superseded and banner-marked).
+offering for gates 4–8 — what each act covers, what is knowingly imperfect
+inside each, stated **before** the phrase — is
+`.syzygy/governance/contracts/candidates/round-2026-08c/FINAL-OWNER-ACCEPTANCE-PACKET.md`.
+The exact phrases and the five-step ceremony live in
+`.syzygy/governance/contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`,
+which wins over any offering. The `round-2026-08b/` and `round-2026-08/`
+records are superseded and banner-marked.
 
 ## What exists in this repository
 

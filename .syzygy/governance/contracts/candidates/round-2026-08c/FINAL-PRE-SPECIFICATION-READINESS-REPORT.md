@@ -13,9 +13,10 @@
 
 **No — and it is closer, in a specific and stateable way.**
 
-**Nine of twelve criteria are met. Three are not**, and each unmet one is named
-with the exact finding that blocks it, by a reviewer who did not write the
-thing they blocked.
+**Eight of twelve criteria are met. One is met with its bound stated. One ran
+and returned `EXCEPTIONS`. Three are not met** — and each of those three is
+named with the exact finding that blocks it, by a reviewer who did not write
+the thing they blocked.
 
 **The three unmet criteria do not block the five acceptance acts.** They are
 candidate-corpus defects an act would bind **knowingly**, and the acceptance
@@ -38,17 +39,17 @@ holds a measurement, and where that measurement is a sweep, its denominator.
 | # | Criterion | Status |
 |---|---|---|
 | 1 | North star discoverable | **Met** |
-| 2 | Default narrative understandable without advanced terminology | **Met, with the bound stated** |
+| 2 | Default narrative understandable without advanced terminology | **Met** |
 | 3 | Project-shape facets defined independently and source-backed | **Met** |
 | 4 | Fixed human entry point defined for every governed project | **Met** |
 | 5 | Typed authority and contract relations closed | **Met — or owner-ruled** |
-| 6 | Public vocabulary bounded and internally consistent | **Bounded, not internally consistent** |
+| 6 | Public vocabulary bounded and internally consistent | **Met, with the bound stated** — bounded; not internally consistent |
 | 7 | RFC/OpenSpec routing complete | **Met** |
 | 8 | Context-selection contract and metadata complete | **NOT MET** |
 | 9 | Golden selections complete, current, independently reviewed, and budgeted | **NOT MET** |
 | 10 | Mission safety contract semantically closed | **NOT MET** |
-| 11 | Acceptance ceremony executable from a clean clone | *(pending RD-7)* |
-| 12 | Exact final package passes a fresh semantic review | *(pending RD-8)* |
+| 11 | Acceptance ceremony executable from a clean clone | **Met** |
+| 12 | Exact final package passes a fresh semantic review | **Ran, `EXCEPTIONS` — not met and not failed** |
 
 ---
 
@@ -133,7 +134,11 @@ the anchor predicate is **mutation-tested in an isolated clone**.
 **Owner-ruled, not agent-closed:** **RFC11-4 does not name `constrains`**, so a
 conformant compiler reads none of it. **P-21(c).** Eleven `depends_on` edges
 carry zero clause evidence — **P-21(b)**. Completeness is **`[Unknown]`**: the
-population came from a sweep by the party that authored the wrong edges.
+population came from a sweep by the party that authored the wrong edges — and
+review **RD-8** (S8) sharpens that from `[Unknown]` to **`[Observed]`
+incomplete**: RFC7-3 constrains *"anywhere in Syzygy"* and its list names four;
+RFC5-3 binds *"all present and future clients"* and its list names four of six
+later contracts. Nothing validates completeness.
 
 Evidence: `CONTRACT-RELATION-CLOSURE-REPORT.md`, `RELATION-MODEL-DECISION.md`.
 
@@ -281,20 +286,81 @@ bound to those bytes.
 Evidence: `MISSION-SAFETY-CLOSURE-REPORT-vNEXT.md`;
 `reviews/RD-1-…`, `RD-1b-…`, `RD-1b-…-confirming-RAW.md`.
 
-### 11 · Acceptance ceremony executable from a clean clone
+### 11 · Acceptance ceremony executable from a clean clone — **Met**
 
-*Pending review RD-7 — a clone taken from HEAD, with the full battery run
-inside it and each of the five acts attempted from what git tracks. Recorded
-here as `[Unknown]` until that review returns; a criterion answered by the
-machine that has the founder's working tree is the one failure mode this
-repository keeps re-acquiring.*
+An independent reviewer cloned the repository and ran everything inside it.
+**`VERDICT: EXCEPTIONS`**, and on this criterion:
 
-### 12 · Exact final package passes a fresh semantic review
+> **5 of 5 acts performable from a fresh clone.** All five arguments recompute
+> from clone bytes; all 32 module digests match; both `sha256sum -c` ceremony
+> steps execute as written; the battery is clone-identical, fails when it
+> should, degrades honestly without git, and writes nothing.
 
-*Pending review RD-8 — an independent semantic confirmation over the exact
-bytes of all five act subjects, answering whether an owner performing the acts
-would be surprised by anything they had bound. Recorded here as `[Unknown]`
-until it returns.*
+**The review also found a defect in the instrument, and it is the reason this
+criterion nearly went unmeasured.** `_resolve`'s suffix fallback ended with
+`str.lstrip("./")` — which strips **characters, not a prefix** — so every `../`
+was discarded and **no wrong-depth path could ever fail**. Mutation-proved with
+a link seven levels up, pointing outside the repository, over which the battery
+reported `0 findings`.
+
+**Fixed and mutation-tested both ways this session.** The fix surfaced fifteen
+previously-invisible references: most classified into a widened frozen lane,
+one genuinely broken inside a generated report — **transcribed out of a
+fixture, where its relative depth was correct** — and one genuinely broken
+inside act 1's digest set.
+
+**Three exceptions remain open**, all disclosed in the acceptance packet:
+RFC-0010's history pointer is dead at four lines inside frozen bytes; **act 1's
+install leaves eight dead pointers in the accepted tree**, and the record's
+claim that it fixes them is corrected; and act 5's phrase form has a **zero
+live denominator** in CG-7d.
+
+Evidence: `FINAL-PUBLIC-CLONE-REPORT.md`; `reviews/RD-7-public-clone-RAW.md`.
+
+### 12 · Exact final package passes a fresh semantic review — **Ran, `EXCEPTIONS`-grade**
+
+**`VERDICT: REVISE`**, on the question *would an owner be surprised by anything
+they had just bound?*
+
+> **Yes. Twelve surprises, and one of them means the act would not be a knowing
+> act at all.**
+
+**The reviewer's division is the result:** the subjects are sound — all 32
+digests recompute, the manifest's population is exactly the module set in both
+directions, no volatile artifact is inside the digest set, front matter is
+consistent, and the four contract sections read in full are restatable by a
+cold reader. *"What is not sound is the owner-facing offering."*
+
+**The sharpest finding was a routing failure, and it was this round''s.**
+`PROJECT-STATUS.md` said the acceptance packet stated the two blocking defects
+before the act phrases; `AGENTS.md` routed the owner to a *different*
+document, in which `RFC10-10` and `RFC11-4` each have **zero hits**. The packet
+that does state them was written in the same session and **nothing pointed at
+it.** Closed three ways — both routing files corrected, and the superseded
+offering banner-marked with both defects stated in full.
+
+Also closed: the acceptance record understated act 1 by **six clauses** under
+the label *script-verified*; two of its derived figures and its re-quote count
+were stale three ways; an owner-attention item survived its own fix and would
+have had an owner *"commission a review cycle for a string that is not in the
+corpus"*; and two disclosed imperfections described defects already closed.
+
+**Four subject-side findings stay open**, all now stated in the packet before
+the phrases: **RFC11-4 names `provides_to`, which no module carries**; act 2''s
+digest binds a file that adopts two external bars its phrase does not mention;
+**both `constrains` lists are under-inclusive against their own source clause**
+— sharpening the index''s `[Unknown]` into an `[Observed]` incompleteness; and
+act 1 binds text naming `FD-009` as *"binding provenance"* where no clone
+reader can discover what it says.
+
+**Why this criterion is not marked met.** The corrections were made **after**
+RD-8 returned, by the session that wrote the defects. **No independent reviewer
+has read the corrected routing, the corrected acceptance record, or the new
+packet.** A repair pass may not be its own confirming reviewer, and marking
+criterion 12 met on the strength of unchecked repairs is the move this whole
+round exists to refuse.
+
+Evidence: `FINAL-EXACT-MANIFEST-REVIEW.md`; `reviews/RD-8-exact-manifest-RAW.md`.
 
 ---
 

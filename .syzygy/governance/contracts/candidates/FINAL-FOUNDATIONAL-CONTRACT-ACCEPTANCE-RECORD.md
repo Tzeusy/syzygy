@@ -111,6 +111,28 @@ Each act is a chat-phrase ceremony executed in five steps:
    binds"), sit outside the act's accepted digest set, and carry no
    authority — the act binds exactly the 32 manifest entries, nothing
    else.
+
+   **The install nonetheless breaks eight pointers, and this paragraph used
+   to imply the opposite.** Review **RD-7** simulated the install exactly as
+   documented and swept the installed modules: **81 relative backlinks
+   examined, 12 unresolved, of which 8 break as a direct consequence of the
+   act.** Six package READMEs point two levels up at the context budget
+   report, and one points two levels up at the 03 compaction report. Both
+   resolve today, where two levels up is the candidates package, and stop
+   resolving after the act, where two levels up is `governance/` — because
+   the install copies `history/` and `matrix-rows/` and **not** the
+   package-level reports those pointers name. *(Written without code spans on
+   purpose: quoting the two broken pointers verbatim made this paragraph fail
+   the link check, which is the check working.)*
+
+   **Nothing is repaired here.** The pointers live inside act 1's digest set,
+   frozen against two reviews bound to the current argument, and the targets
+   are non-normative generated reports. **The owner should know that
+   performing act 1 leaves eight dead pointers in the accepted tree**, and
+   that closing them means either copying those two reports at install time
+   or re-pointing the READMEs in a later re-quote. `CG-14` checks install
+   *routes*, not installed content's internal links — RD-7 recommends a
+   post-install resolution pass, and that check does not exist yet.
 4. **The owner-act record.** A dated entry quoting the exact phrase and
    digest is appended to
    `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` (created at
@@ -182,23 +204,39 @@ to the 32 modules invalidate the digest; fixes to this record, the
 reports, or the rev9 record do not churn it. The phrase in §1 always
 carries the current manifest digest.)
 
-**Clause inventory (script-verified, `scripts/verify_final_prespec.py`):**
-**322 numbered clauses** — RFC1-1..32, RFC2-1..25, RFC3-1..32 (+5
-lettered, incl. new **RFC3-16(c)**), RFC4-1..29 (+2), RFC5-1..26,
-RFC6-1..28, RFC7-1..38 (+7), RFC8-1..32, RFC9-1..52 (+8),
-**RFC10-1..16, RFC11-1..12** (new contracts). Zero rev9 clauses merged,
-retired, renumbered, or routed out (04-CLAUSE-MIGRATION-MATRIX). Seven
-contracts are packages (0002 ×4, 0003 ×2, 0004 ×4, 0005 ×3, 0007 ×2,
-0008 ×3, 0009 ×3 modules + README each); RFC-0001 and RFC-0006 are single
-files; RFC-0001 is the one justified-oversize module (8,353 words,
-dictionary-shaped — justification in the 03 report and printed by the
-verifier).
+**Clause inventory — read it from the verifier, never from here.**
+`python3 scripts/verify_final_prespec.py` prints the count and every
+per-module figure; **as of 2026-08-07 it reports 328 numbered clauses**, and
+that line is the authority, not this one. The ranges are RFC1-1..32,
+RFC2-1..25, RFC3-1..32 (+5 lettered, incl. **RFC3-16(c)**), RFC4-1..29 (+2),
+RFC5-1..26, RFC6-1..28, RFC7-1..38 (+7), RFC8-1..32, RFC9-1..52 (+8),
+**RFC10-1..22** (+3 lettered: RFC10-17(a), RFC10-18(a), RFC10-19(a)),
+**RFC11-1..12**. Zero rev9 clauses merged, retired, renumbered, or routed out
+(04-CLAUSE-MIGRATION-MATRIX). Seven contracts are packages (0002 ×4, 0003 ×2,
+0004 ×4, 0005 ×3, 0007 ×2, 0008 ×3, 0009 ×3 modules + README each); RFC-0001
+and RFC-0006 are single files; RFC-0001 is the one justified-oversize module
+(dictionary-shaped — justification in the 03 report, current word count in
+`CONTEXT-BUDGET-REPORT.md`, both printed by the verifier).
+
+> **Correction, 2026-08-07 (review RD-8, finding S2).** This paragraph said
+> **322 numbered clauses** and **RFC10-1..16**, under the label
+> *script-verified* — while the script reported **328** and RFC10 ran to
+> **22**. The gap was exactly the six correction-plane clauses RFC10-17..22.
+> §1's act-1 row narrated their addition; §3 — *the section a reader consults
+> to learn what the package is* — was never swept. Two derived figures in the
+> same section were stale the same way, and both are now replaced by pointers
+> rather than refreshed: **a figure quoted outside its owning artifact goes
+> stale silently**, which is this repository's third verification rule, broken
+> here in the record that governs its own acceptance.
 
 **Word accounting (03 report, honest form):** rev9 normative corpus
-90,410 words, one mandatory reading path. Rev10: compacted normative text
-73,685 (−18.5%) + package scaffolding 7,333 + READMEs 12,696 + new
-contracts 5,353 = 99,067 on disk (post-review fix batch); Tier 2 history
-27,521 extracted.
+90,410 words, one mandatory reading path — a historical baseline, fixed.
+**Every current figure lives in `CONTEXT-BUDGET-REPORT.md` and in
+`verify_final_prespec.py`'s output; none is restated here.** The shape of the
+rev10 change is: compacted normative text, plus package scaffolding, plus
+READMEs, plus two new contracts, with Tier 2 history extracted. *(The "99,067
+on disk" total this paragraph used to carry was stale against the verifier's
+own figure — RD-8 finding S2, same class as the clause count above.)*
 **The owner's 35–50k corpus band was not reached** — nine independent
 passes each hit an incompressibility floor at −12…−22% (arithmetic in
 `WORKER-REPORT-DIGEST.md`). The optimization target it served instead:
@@ -273,9 +311,13 @@ implementation, not specification — accepting with it open is a
   now retired manifest digest
   `f2914fc56cd2aa069b952747b9c78b00dc41d908830887ecd2f1addd37e61fc4`**
   — **this CONFIRM does not reach the corpus the owner would accept today.**
-  The manifest has been regenerated twice since (RFC-0010's correction plane;
-  the dependency-direction change and its RC-4 correction). No confirming
-  review is bound to the current argument
+  **The manifest has been re-quoted six times since; §1's act-1 row is the
+  count of record.** *(This sentence said "twice", and `PROJECT-STATUS.md`
+  said "three times" — three incompatible counts across two files, one of
+  them the acceptance authority. RD-8 finding S2. A count of one's own
+  history is a derived value like any other, and it now has one home.)*
+  **No CONFIRM verdict is bound to the current argument** — eight independent
+  reviews ran on 2026-08-07 and every verdict was `REVISE`
   (raw report verbatim at `reviews/rev10-confirming-review.md`). It
   re-ran every mechanical check (all 32 manifest lines OK; verifier
   PASS; index no-drift), verified every spot-checked disposition in the
@@ -331,14 +373,17 @@ implementation, not specification — accepting with it open is a
    were deliberately not added (nine-contract churn for redundancy); the
    corpus relies on RFC10-15/RFC11-4 loading rules to carry the
    prohibition into every mission context.
-10. **R1 — one stale navigation count inside the accepted digest set**
-    (confirming review): `rfcs/RFC-0007/README.md` line 46 states its own
-    size as 2,268 words and derives package-union figures 10,578 / 7,435
-    / 5,411 from it; the actual post-fix-batch count is **2,326** (the
-    58-word "Phase boundary" section postdates the figures; true unions
-    10,636 / 7,493 / 5,469). No clause, obligation, or external artifact
-    depends on the figure — the 06 map and index carry the correct
-    2,326. Fixing it would churn the manifest digest and force another
-    confirming cycle. The owner chooses knowingly: **accept as-is** (the
-    correction rides the first genuine RFC-0007 amendment), or direct a
-    fix + digest regeneration + one more digest-binding review.
+10. **R1 — CLOSED, and the item outlived its defect.** This item asked the
+    owner to rule on a stale navigation count in `rfcs/RFC-0007/README.md`
+    line 46, offering "accept as-is, or direct a fix + digest regeneration +
+    one more digest-binding review." **The figure no longer exists.** The
+    fourth re-quote removed every volatile measurement from six package
+    READMEs; that line now says module sizes are deliberately not stated and
+    points at `CONTEXT-BUDGET-REPORT.md`, and `2,268` and `10,578` each have
+    **zero hits** across `rfcs/`. Review **RD-8** (finding S4) found the item
+    still standing and named the shape of the harm precisely: an owner who
+    chose the second branch **would have commissioned a review cycle over a
+    string that is not in the corpus.** Retained, struck through, rather than
+    deleted — an owner-attention item that was live and is not is part of this
+    record's history, and silently removing it would leave a reader of an
+    earlier revision unable to find out what happened to it.

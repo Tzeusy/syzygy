@@ -44,7 +44,7 @@ Two rules everything else follows from:
 | **Polaris** | the intent surface | What is this project supposed to be? |
 | **Trajectory** | the work surface | What is being done, by whom, under what authority? |
 | **Orrery** | the map surface | Where does everything live, and in what state? |
-| **Mission Control** | workspace operator surface | What bounded, delegated missions are running across projects? |
+| **Mission Control** | workspace-level operator capability — **not a fourth surface** | What bounded, delegated missions are running across projects? |
 
 Polaris, Trajectory, and Orrery are **projections over one shared kernel**,
 never independent truth stores. Mission Control is a workspace-level operator
