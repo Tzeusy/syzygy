@@ -201,17 +201,17 @@ never reaches a reader as an unlegended edge.
 | | Words |
 |---|---|
 | rev9 monolith (frozen source) | 19,269 |
-| module 1 | 6,999 |
-| module 2 | 5,540 |
-| module 3 | 3,027 |
-| **modules total (active contract)** | **15,566** |
-| package index (this file, navigational) | 2,029 |
+| module 1 | 6,996 |
+| module 2 | 5,538 |
+| module 3 | 3,023 |
+| **modules total (active contract)** | **15,557** |
+| package index (this file, navigational) | 2,025 |
 
 The package is **above the ~9,500 target**. Per the charter's word-target rule
 and lead ruling 5, this pass stopped at the smallest faithful size rather than
 reaching the number by deleting constraints.
 
-Where the −3,703 words went: roughly **4,500 words of rev9 material moved to
+Where the −3,712 words went: roughly **4,500 words of rev9 material moved to
 Tier 2** (all 20 `*(History: …)*` parentheticals, §6 alternatives, §7's full
 text, §0/§1/§2, and the answered §8 question text), offset by roughly **+1,580
 words of new per-module scaffolding** the monolith never carried (three sets of
@@ -228,8 +228,8 @@ headroom requires splitting the range (a natural seam exists at RFC9-1..13 /
 RFC9-14..23), not deleting rules — an owner/lead call, not this pass's.
 
 **Selective loading is the point of the split.** "May this move?" loads module 1
-alone (6,999); "what does this colour mean?" module 2 alone (5,540); "what does
-release check?" module 3 alone (3,027) — against 19,269 for any question before
+alone (6,996); "what does this colour mean?" module 2 alone (5,538); "what does
+release check?" module 3 alone (3,023) — against 19,269 for any question before
 the split.
 
 ---

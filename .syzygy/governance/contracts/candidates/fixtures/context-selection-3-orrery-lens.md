@@ -59,7 +59,8 @@ disclosure of encoded facts).
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`d513d1a1d3a51db2…`. Compiler: `context_load.py`, selection rules
-rev10-fixtures.
+`fbf30c733d467061…`.
+
+*Re-measured 2026-08-06 by `scripts/check_governance.py` CG-18. Word count unchanged at 14,110; digest moved from `d513d1a1d3a51db2…` because `RFC-0009/README.md` was corrected for nine stale derived word counts (review RC-11), which changes its bytes without changing this packet's size. The `Compiler:`/`selection rules` line was dropped rather than carried forward: there is no compiler, and `rev10-fixtures` resolves to nothing in this repository — a version identifier that names nothing is worse than none (the convention fixture 9 set).*
 
 *Re-measured 2026-08-05b by `scripts/check_governance.py` CG-18, which recomputes the digest and the word count from the declared mandatory set rather than trusting the recorded figures. Previous: 14,134 words, digest `2e408eaf40278ca7…`. Selection unchanged; the movement is contract edits landing under a fixture that had no mechanical freshness check until now.*

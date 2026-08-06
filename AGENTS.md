@@ -122,7 +122,7 @@ All read-only; run before claiming anything is clean.
 
 ```sh
 python3 scripts/check_governance.py                       # repo-wide
-python3 scripts/check_governance.py --selftest            # each check shown able to fail
+python3 scripts/check_governance.py --selftest            # fixtures; CG-24 prints their coverage
 CS=.syzygy/governance/contracts/candidates/scripts
 python3 $CS/verify_final_prespec.py                       # clauses, citations, ceilings
 python3 $CS/build_contract_index.py --check               # index drift

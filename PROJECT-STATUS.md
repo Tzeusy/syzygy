@@ -97,18 +97,23 @@ python3 scripts/check_governance.py
 git tag --list 'doctrine-*'
 ```
 
-Also run `python3 scripts/check_governance.py --selftest`, which puts each
-check against a synthetic failing input. It exists because this repository has
-shipped a validator that could not fail: the dependency index reported 20
+Also run `python3 scripts/check_governance.py --selftest`, which puts a
+synthetic failing input against **the checks that have a fixture** — not every
+check. **CG-24 computes which families are covered and prints the figure every
+run**; quote that, never "each check shown able to fail", which two independent
+reviews found false while it sat beside a fixture count. The selftest exists
+because this repository has shipped a validator that could not fail: the dependency index reported 20
 asymmetric edges at every generation while its own drift check reported clean,
 because regenerating a knowingly-broken graph reproduces the same
 knowingly-broken file.
 
-Current results (2026-08-05b): packet verifier PASS; both index builders report
-no drift; `check_governance.py` **24 OK, 9 WARN, 0 FAIL over 33 checks**;
-`--selftest` 46 fixtures, 0 failing. The nine WARNs are declared-by-design
-(forward references, frozen-packet pointers, report-only budget triggers,
-allowlists) and each prints its rationale. **Read the output, not the exit
+**The result figures that used to sit here are withdrawn.** They were correct
+when written and stale within two commits, twice, in the two documents an owner
+is sent to for evidence — the exact failure the battery was built to catch,
+recurring in the description of the battery. Run the commands; every check
+prints its own denominator and its own rationale, and the WARNs are
+declared-by-design (forward references, frozen-packet pointers, report-only
+budget and default-load figures, allowlists). **Read the output, not the exit
 code** — a PASS over zero examined items verified nothing.
 
 Run it in a **clone**, not only here. At one commit this round the two

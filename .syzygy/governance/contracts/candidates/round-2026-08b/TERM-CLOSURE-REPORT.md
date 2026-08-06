@@ -206,7 +206,7 @@ All read-only. Read each check's **output**, not its exit code.
 
 ```sh
 python3 scripts/check_governance.py            # CG-16, CG-22, CG-22b, CG-23
-python3 scripts/check_governance.py --selftest # each check shown able to fail
+python3 scripts/check_governance.py --selftest # fixture results; CG-24 prints the coverage
 ```
 
 Figures in this report were produced by those two commands in the session that

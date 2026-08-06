@@ -51,10 +51,14 @@ Checks
   CG-22  no unqualified `status` in the active lane — the term registry's
          five-dimension rule, made executable (charter §9.4)
   CG-23  advanced vocabulary on the default public path, reported (§9.3)
+  CG-24  which check families have a `--selftest` fixture, computed
 
-`--selftest` runs every check above against a synthetic failing input. A
-validator that has never been shown to fail is indistinguishable from a
-no-op, and this repository has shipped one (charter §18).
+`--selftest` runs a synthetic failing input against the checks that have a
+fixture — **not against every check above**. That distinction is the point:
+a validator never shown to fail is indistinguishable from a no-op, and this
+repository has shipped one (charter §18). CG-24 computes which families are
+covered and prints the denominator every run, so the claim cannot drift from
+the fixture set the way a sentence does.
 
 Status vocabulary: OK (examined > 0, no findings) · WARN (nothing examined, or
 a report-only observation) · FAIL (findings that fail the run).
@@ -2308,6 +2312,33 @@ def selftest():
                   c.rows[0][2] == 0 and "changed shape" in str(c.rows[0])
                   or c.rows[0][2] == 0))
 
+    # CG-24 exists because a prose coverage claim drifts. Its own failure mode
+    # is a regex that reads the battery's check names as if they were fixture
+    # names, which would make every check appear to cover itself.
+    c = Cap()
+    cg24_selftest_coverage(c, source='cases.append(("CG-13 x detected",',
+                           reported=["CG-13  deps", "CG-99  invented"])
+    cases.append(("CG-24 uncovered check family detected",
+                  any("CG-99" in d for d in c.rows[0][4])))
+
+    c = Cap()
+    cg24_selftest_coverage(c, source='("F8a CG-19 y detected",',
+                           reported=["CG-19  substrate"])
+    cases.append(("CG-24 F-prefixed fixture name credited",
+                  not c.rows[0][4]))
+
+    c = Cap()
+    cg24_selftest_coverage(c, source='res.add(status, "CG-13  deps resolve",',
+                           reported=["CG-13  deps resolve"])
+    cases.append(("CG-24 a check's own name is not a fixture for it",
+                  any("CG-13" in d for d in c.rows[0][4])))
+
+    c = Cap()
+    cg24_selftest_coverage(c, source='cases.append(("CG-77 z detected",',
+                           reported=["CG-13  deps"])
+    cases.append(("CG-24 fixture naming an unreported check detected",
+                  any("did not report" in d for d in c.rows[0][4])))
+
     c = Cap(); cg21_package_readme_counts(c, packages=[])
     cases.append(("CG-21 empty package list warns, never passes",
                   c.rows[0][0] == "WARN"))
@@ -2399,6 +2430,32 @@ def cg20_load_map_figures(res, body=None, modules=None):
             details=findings)
 
 
+#: A figure that describes the pre-compaction monolith cannot be recomputed
+#: from the package, and is not a defect. It must say so on its own line —
+#: the marker is the disclosure, exactly as CG-7d requires of a historical
+#: digest quotation. A figure with no marker and no current referent is
+#: assumed stale, which is the fail-closed direction.
+#: Two marker classes, deliberately scoped differently — a single window for
+#: both let a `~9,500 target` two lines away exempt a stale `2,029` index
+#: count, which is the allowlist-wider-than-the-check failure this repository
+#: has already paid for once.
+#:
+#: A **threshold** is a policy number: nothing's word count by design, always
+#: written inline ("the ~7,000 ceiling"). Windowed at ±1 line — the same
+#: sentence, never the same section: at ±2 a "~9,500 target" exempted a
+#: stale index count two lines above it.
+THRESHOLD_MARKERS = ("ceiling", "target", "budget")
+THRESHOLD_WINDOW = 1
+#: A **frozen-source** figure describes the pre-compaction monolith and cannot
+#: be recomputed from the package. Prose wraps, so the marker and the figure it
+#: licenses routinely land on opposite sides of a line break: windowed.
+FROZEN_FIGURE_MARKERS = ("frozen", "rev9", "monolith", "source words",
+                         "source's", "pre-split", "before the split",
+                         "moved to tier 2", "scaffolding")
+FIGURE = re.compile(r"\b\d{1,2},\d{3}\b")
+FIGURE_WINDOW = 2
+
+
 def cg21_package_readme_counts(res, packages=None):
     """A package README's per-module word counts still recompute.
 
@@ -2411,6 +2468,18 @@ def cg21_package_readme_counts(res, packages=None):
 
     A prior round fixed this same class by hand. Hand-fixing a recurring
     class is how it recurs.
+
+    **Two passes, because one row shape was not the class.** The first
+    version matched only rows carrying a backticked module filename, and a
+    review mutation-tested it: a value of `111,111` in
+    `RFC-0009/README.md:204` — a `| module 1 | 6,999 |` row, no filename —
+    passed at `0 FAIL` while nine real stale values sat under it. Pass B
+    therefore examines *every* comma-formatted figure in a package README
+    and requires each to equal a quantity recomputable from the package
+    right now, unless its own line marks it as describing a frozen
+    pre-compaction source. "Caught in one artifact class, uncaught in
+    another" is the diagnosis this check was written for; it applied to the
+    check itself.
     """
     if packages is None:
         base = os.path.join(ROOT, RFCS_DIR)
@@ -2443,9 +2512,46 @@ def cg21_package_readme_counts(res, packages=None):
                     f"{readme}:{line_no} — `{m.group(1)}` claims "
                     f"{claimed:,} words, actual {actual:,}; this figure is "
                     f"inside act 1's digest set")
+
+        # Pass B — every other derived figure in the same file. "Recomputable
+        # from the package" is not only a module's own count: these indexes
+        # legitimately state the package union and the index-plus-one-module
+        # reading paths, which are what selective loading actually costs.
+        mods = sorted(f"{pkg}/{n}" for n in os.listdir(os.path.join(ROOT, pkg))
+                      if n.endswith(".md") and n != "README.md")
+        counts = [len(read(m).split()) for m in mods]
+        idx = len(body.split())
+        legitimate = (set(counts) | {sum(counts), idx, idx + sum(counts)}
+                      | {idx + c for c in counts})
+        lines = body.splitlines()
+        for line_no, line in enumerate(lines, 1):
+            # Whitespace-normalized window, not the line: a figure and the
+            # "pre-split" that licenses it routinely land on opposite sides of
+            # a wrap, and a line matcher manufactures findings there.
+            lo = max(0, line_no - 1 - FIGURE_WINDOW)
+            window = " ".join(
+                " ".join(lines[lo:line_no + FIGURE_WINDOW]).split()).lower()
+            if any(mk in window for mk in FROZEN_FIGURE_MARKERS):
+                continue
+            tlo = max(0, line_no - 1 - THRESHOLD_WINDOW)
+            near = " ".join(" ".join(
+                lines[tlo:line_no + THRESHOLD_WINDOW]).split()).lower()
+            if any(mk in near for mk in THRESHOLD_MARKERS):
+                continue
+            for tok in FIGURE.findall(line):
+                v = int(tok.replace(",", ""))
+                if not 900 <= v <= 26000 or v in legitimate:
+                    continue
+                examined += 1
+                findings.append(
+                    f"{readme}:{line_no} — the figure {tok} is recomputable "
+                    f"from nothing in this package "
+                    f"({', '.join(f'{c:,}' for c in sorted(legitimate))}) "
+                    f"and its window names no frozen source or threshold; "
+                    f"inside act 1's digest set")
     res.add("FAIL" if findings else ("OK" if examined else "WARN"),
             "CG-21  package README word counts recompute", examined,
-            len(findings), "row",
+            len(findings), "figure",
             note=None if examined else "no package README module rows found",
             details=findings)
 
@@ -2615,6 +2721,68 @@ def cg23_default_path_vocabulary(res, registry=None, default_path=None):
             details=findings)
 
 
+# --------------------------------------------------------------- CG-24
+
+#: "`--selftest` runs every check above against a synthetic failing input."
+#: That sentence has been false for as long as it has been written, and two
+#: independent reviews (RC-10 §7.2 vi, RC-11 RC11-G) raised it. The first
+#: repair added twenty-nine fixtures — all clustered in the range that already
+#: had coverage — which made the sentence *less* true as a proportion while
+#: looking like a fix.
+#:
+#: A prose correction goes stale the next time a check is added. So the
+#: denominator is computed instead: CG-24 reads the fixture names out of this
+#: file's own `selftest()` and compares them against the identifiers the
+#: battery actually reported this run. Adding a check with no fixture now
+#: shows up here on the same run.
+#: Fixture names read `"CG-19 private substrate detected"` or `"F8g CG-19 …"`;
+#: the battery's own check names read `"CG-19  substrate pins …"` with two
+#: spaces. The single-space lookahead is what separates a fixture from the
+#: check it tests — without it every check would appear to cover itself.
+CASE_NAME = re.compile(r'"(?:F\d+[a-z]?\s+)?(CG-\d+) (?! )')
+CHECK_ID = re.compile(r"^(CG-\d+)")
+
+
+def cg24_selftest_coverage(res, source=None, reported=None):
+    if source is not None:
+        src = source
+    else:
+        # CG-24's own fixtures pass synthetic sources containing invented
+        # identifiers; reading them back out of this file would report them as
+        # real. Drop the lines that construct them.
+        src = "\n".join(ln for ln in read(SELF_REL).splitlines()
+                         if "cg24_selftest_coverage(" not in ln)
+    covered = set(CASE_NAME.findall(src))
+    if reported is None:
+        # CG-24 runs last and has not added its own row yet; include it, or it
+        # reports itself as a check the battery never ran.
+        reported = [s[1] for s in res.summaries] + ["CG-24  self"]
+    families, seen = [], set()
+    for name in reported:
+        m = CHECK_ID.match(name.strip())
+        # Sub-checks (CG-7a..d, CG-22b) roll up to their family: a fixture for
+        # CG-7a is not a fixture for CG-7d, but the coarser claim is the one
+        # the prose makes, and overstating coverage here would repeat the
+        # defect.
+        if m and m.group(1) not in seen:
+            seen.add(m.group(1))
+            families.append(m.group(1))
+    uncovered = [f for f in families if f not in covered]
+    orphan = sorted(covered - set(families))
+    details = []
+    if uncovered:
+        details.append(f"no `--selftest` fixture: {', '.join(uncovered)}")
+    if orphan:
+        details.append(f"fixtures naming a check the battery did not report: "
+                       f"{', '.join(orphan)}")
+    res.add("WARN", "CG-24  selftest coverage reported", len(families),
+            len(details), "check family",
+            note=(f"{len(families) - len(uncovered)} of {len(families)} check "
+                  f"families have at least one fixture — quote this figure, "
+                  f"never 'every check'" if families else "nothing examined"),
+            details=details)
+
+
 # --------------------------------------------------------------- main
 
 def main():
@@ -2680,6 +2848,7 @@ def main():
     cg21_package_readme_counts(res)
     cg22_ambiguous_status(existing, res)
     cg23_default_path_vocabulary(res)
+    cg24_selftest_coverage(res)
     res.report()
     return 1 if res.failed() else 0
 

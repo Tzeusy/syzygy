@@ -27,7 +27,7 @@ cdbeb638bbdd47fada153dad6d9334803c3c54e45408fb54b39c5c9d4fb59f69  rfcs/RFC-0005/
 bb232815824ca587767c396717bf38e596b434108a536b565591f54b07ba7800  rfcs/RFC-0008/README.md
 caccbbe67a4fe3e5711aa14e0dcc96830343ce42e9b3eb8852a49ceef6292e01  rfcs/RFC-0008/state-vocabulary-and-cost.md
 0ffae10696c3b3c3b9aaad917b1bfc625c5952c93e23a1c5e175b0bd067fee02  rfcs/RFC-0009/interaction-parity-and-release.md
-ff406f07dc36191458ce0112fa210ef4f37c1e5930625442428011cdddd35d20  rfcs/RFC-0009/README.md
+825dcdcc17f920e03b4d82668262f3c92d86525ad16561b92ced992c5c7b8503  rfcs/RFC-0009/README.md
 f21348ed54e2b58bc2d940a9bcaa693fc00e7ac2e9f8760d146aec813e29edfc  rfcs/RFC-0009/semantic-geography.md
 8e15b6b9a6beccbdd0a22688f18fe79ebd6eb2dbbbc29de8ed20c97227625309  rfcs/RFC-0009/visual-grammar-and-lenses.md
 8ed470af00b29288212ad9e66b91d74aceafdf0e9fe4688748c7b390290d6c77  rfcs/RFC-0010-mission-control-autonomy.md

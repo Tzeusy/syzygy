@@ -95,9 +95,9 @@ RFC11-5 forbids dropping mandatory context to improve a number.
 |---|---|
 | **Artifact** | This fixture's mandatory selection |
 | **Reason** | The evidence plane is the corpus's widest authorization surface. RFC-0004 gates six clauses across three of its modules under RFC3-16(a) (`RFC-0004/README.md:142-147`), so an authorization-bearing change here needs the whole four-module package, the tier vocabulary it emits into, the profile contract that defines its one self-sufficient route, and the act machinery that makes any of it honored |
-| **Scope** | Evidence-adapter changes touching gate provenance, capture cadence, or fidelity labels |
-| **Reviewer** | **Unassigned — this justification has not been reviewed.** Stated as empty rather than implied complete |
-| **Expiry / revisit trigger** | The first real evidence-adapter work item; also retired by the two-shard split below if the owner accepts it as the default shape |
+| **Scope** | Evidence-adapter changes touching gate provenance (RFC4-13 routes), capture cadence or retention (RFC4-16), or fidelity labels (RFC4-24/25), **where the warrant spans the retention × cause coupling** — i.e. where a `reduced-fidelity` cause depends on a retention-horizon fact. A warrant touching **labels only**, with no RFC4-16 dependency, is **out of scope** and takes the smaller shard instead. Does not cover changes that also touch work-state rendering (fixture 2's class), or that add prose fields to a record, which pulls `RFC-0005/consent-egress-secrets` (scope tightened by RC-12) |
+| **Reviewer** | **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `../round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed |
+| **Expiry / revisit trigger** | The **earlier** of (a) the first real evidence-adapter work item, or (b) **owner act 2**. RC-12 holds (b) mandatory rather than optional: CC-TEST-2 is in this packet and is act 2's subject, so every conclusion the packet supports from CC-TEST-2 is provisional until the act lands. Also retired by the two-shard split below if the owner accepts it as the default shape |
 
 **Decomposition review, conducted and measured.** Every figure is
 `context_load.py` output, not arithmetic on this page.

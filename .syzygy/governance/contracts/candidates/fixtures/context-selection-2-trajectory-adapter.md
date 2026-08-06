@@ -22,14 +22,34 @@ scripts/context_load.py rfcs/RFC-0004/README.md \
   doctrine:security.md
 ```
 
-Measured: **18,282 words ≈ 24,681 estimated tokens** — **above the
-15–20k working target, disclosed as a risk-class exception** (RFC11-11):
-an authorization-bearing change may not shed its authorization contract
-(RFC3-16(a) module) or the mapping's consuming vocabulary (RFC8-12/13
-tables), and RFC11-5 forbids trimming mandatory context to fit a budget.
-The lawful alternatives — sharding the task (mapping edit vs approval
-ceremony as two packets) — are noted in the warrant; this fixture shows
-the undivided form with the exception stated rather than hidden.
+Measured: **18,282 words ≈ 24,681 estimated tokens** — **23.4% above the
+20,000-token decomposition trigger**, and above the 15–20k working target,
+disclosed as a risk-class exception (RFC11-11): an authorization-bearing
+change may not shed its authorization contract (RFC3-16(a) module) or the
+mapping's consuming vocabulary (RFC8-12/13 tables), and RFC11-5 forbids
+trimming mandatory context to fit a budget. The lawful alternatives —
+sharding the task (mapping edit vs approval ceremony as two packets) — are
+noted in the warrant; this fixture shows the undivided form with the
+exception stated rather than hidden.
+
+**Correction, 2026-08-06 (RC-12 finding F-1).** The sentence above previously
+named only the 15–20k *working target* and never the 20,000-token
+*decomposition trigger* it actually crossed. A reader checking this fixture
+against §11.4 found no acknowledgment that §11.4 had been crossed at all —
+and this was the only fixture in the breach set that did not name the line it
+crossed, while being the only one in the *accepted* set. The trigger is now
+named first.
+
+## Budget waiver — reviewed
+
+| Field | Value |
+|---|---|
+| **Artifact** | This fixture's mandatory selection — 8 files, 18,282 words |
+| **Reason** | An authorization-bearing derivation-mapping edit cannot shed (i) the act contract that makes the edited artifact honored — RFC3-16(a)/(b)/(c), whose smallest load unit is a 4,407-word module; (ii) the consuming state vocabulary the mapping projects into (RFC8-12/13, tables read verbatim); (iii) the adapter contract bounding what the adapter may write; or (iv) the SEC-3 premise that makes (i) necessary. The only measured configuration under the trigger (17,498) is reached by dropping (i), which RFC11-5 forbids and which this fixture's own reasoning refuses |
+| **Scope** | Work-provider adapter changes that edit an **RFC3-16(a) authorization-bearing** derivation mapping. Does **not** cover: the approval ceremony for such a mapping (a separate, smaller packet); mapping edits that are not authorization-bearing; adapter changes touching execution-record capture or fidelity joins, which is fixture 9's class |
+| **Reviewer** | **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `../round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed |
+| **Expiry / revisit trigger** | The **earlier** of (a) the first real work-provider adapter mapping change, or (b) **owner act 1**, which binds the digests of every RFC module in this set. Re-review is mandatory at expiry; this waiver does not auto-renew |
+| **Early-revisit conditions** | (i) If the strict RFC11-4 reading is adopted (RC-12 finding F-3), the packet becomes 28,799 and this reason no longer covers it — re-measure before relying on it. (ii) If `RFC-0003/governance-homes-and-owner-acts.md` is ever split, a smaller load unit exists and the "smallest load unit" reason is void. (iii) If a budget rule is installed whose number is not 20,000 |
 
 ## Omitted applicable candidates, with reasons
 

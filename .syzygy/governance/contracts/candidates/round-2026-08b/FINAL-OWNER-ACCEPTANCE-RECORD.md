@@ -36,7 +36,7 @@ through CG-7d. A CG-7 failure means **do not perform that act**.
 
 | Act | Argument (verify, never transcribe) | Changed this round? |
 |---|---|---|
-| 1 — foundational contracts | `ac07a06497cd72b8dd10a9a42776a6a41d7c45740ffec7905d4c27fbe7146b4f` | **Yes, twice** |
+| 1 — foundational contracts | `2922de1c21354ad3a804acebcfdf665d9a8986d4fa8b3df42c62169f207ed98d` | **Yes, three times** — most recently 2026-08-06, for RC-11's nine stale word counts in `RFC-0009/README.md` |
 | 2 — craft amendment CC-TEST-2 | `3858820f64768ef20e6514fe8adb28076263f071ac77e66a5520a612f3bcb26d` | No |
 | 3 — topology bundle | `7a3b22494a08d888901c1f0cec76833dc926e89b6f510b5abf8963071fbaeb45` | No |
 | 4 — project overview | `01d629515993188338f6a0e2d84d67543d8569003759a7c8f571a90b129c7cd1` | No |
@@ -75,11 +75,23 @@ than quietly applied, because the mistake is the more useful record.
 
 **One wrong value in a closed vocabulary.** `missing-declaration` was cited
 as RFC2-24 #4 where #4 is `stale-beyond-currency-bound` — in a vocabulary
-RFC6-14 requires emitted verbatim, and one you ruled on directly. Corrected;
-the 13 ordinal citations inside the 32 contract modules now agree with the
-table, as do the 20 across all candidate material outside `history/` and
-`reviews/`. Both denominators are stated because a bare "all 13" invites the
-reader to assume the sweep covered the corpus, and it covered the act.
+RFC6-14 requires emitted verbatim, and one you ruled on directly. Corrected,
+and every `RFC2-24 #N` ordinal that any sweep finds inside the 32 contract
+modules agrees with the table.
+
+**The counts that used to sit in this paragraph are withdrawn, 2026-08-06.**
+It read "the 13 ordinal citations inside the 32 contract modules … as do the
+20 across all candidate material." Review RC-10 flagged 13 as unreproducible;
+the repair kept it and attached a *narrower* scope to it, plus a second figure.
+Review RC-11 then swept both populations by two methods and got 15/16 and 28;
+a third sweep in the following session got 17/14 and 31/21. **No definition of
+"an ordinal citation" yet proposed yields a stable number** — the count moves
+with how much text may sit between `RFC2-24` and `#N`, and with whether the
+round's own reports are inside the population. What is stable, and is the
+claim that matters, is the property: **no ordinal disagrees with the table**,
+under every sweep run so far. The count is [Unknown] and is stated as Unknown
+rather than picked. A figure a reviewer has called unreproducible is not
+repaired by giving it a more specific scope.
 
 ## 3. What is knowingly imperfect inside the acts
 
@@ -116,8 +128,8 @@ changes no act argument.
 ## 5. Evidence you can reproduce
 
 ```sh
-python3 scripts/check_governance.py                    # 32 checks, denominators printed
-python3 scripts/check_governance.py --selftest         # 19 fixtures; each check shown able to fail
+python3 scripts/check_governance.py                    # denominators printed per check
+python3 scripts/check_governance.py --selftest         # fixture results; CG-24 prints the coverage
 python3 .syzygy/governance/contracts/candidates/scripts/verify_final_prespec.py
 python3 .syzygy/governance/contracts/candidates/scripts/build_contract_index.py --check
 python3 .syzygy/governance/contracts/candidates/scripts/build_dependency_index.py --check
