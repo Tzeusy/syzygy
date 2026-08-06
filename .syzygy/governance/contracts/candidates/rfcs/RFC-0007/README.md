@@ -36,16 +36,17 @@ Polaris portion of SDR §5 question 10.
 **Every clause identity appears in exactly one module.** One `RFC7-n`
 namespace, no duplicated normative clauses, no renumbering.
 
-| Module | File | Clauses | Words |
-|---|---|---|---|
-| 1 — the curated narrative contract | `narrative-contract.md` | RFC7-1..RFC7-25, incl. RFC7-2(a)-(c), RFC7-9(a)-(c), RFC7-11(a) | 5,165 |
-| 2 — rendering and surface | `rendering-and-surface.md` | RFC7-26..RFC7-38 | 3,142 |
+| Module | File | Clauses |
+|---|---|---|
+| 1 — the curated narrative contract | `narrative-contract.md` | RFC7-1..RFC7-25, incl. RFC7-2(a)-(c), RFC7-9(a)-(c), RFC7-11(a) |
+| 2 — rendering and surface | `rendering-and-surface.md` | RFC7-26..RFC7-38 |
 
-Counts are `wc -w` at the rev10 compaction; neither module approaches the
-~7,000 ceiling, and this index is 2,324. Package union: 10,631 words, of which
-the default reading path for one task is this index plus one module — 7,489
-(module 1) or 5,466 (module 2), against the pre-split single file's mandatory
-8,006.
+Module sizes are deliberately **not stated here**. A measurement copied into
+contract prose goes stale the moment any module moves, and moves this
+package's content digest for a reason that has nothing to do with what the
+package says. This artifact is governed by the applicable context-budget
+policy; the current measurement lives in the generated budget report
+`../../CONTEXT-BUDGET-REPORT.md`, which is regenerated, never transcribed.
 
 **Lookup rule (deterministic).** For any citation `RFC7-n`, read `n` as an
 integer: `n ≤ 25` → module 1; `n ≥ 26` → module 2. Every lettered sub-clause

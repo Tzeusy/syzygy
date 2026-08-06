@@ -39,15 +39,19 @@ SDR-8, SDR-9, SDR-10, SDR-31, SDR-32, SDR-33, and resolves SDR §5 question 7
 **Every clause identity appears in exactly one module.** One `RFC4-n`
 namespace, no duplicated normative clauses, no renumbering.
 
-| Module | File | Clauses | Words |
-|---|---|---|---|
-| 1 — general contract | `general-contract.md` | RFC4-1..RFC4-9 | 1,677 |
-| 2 — named adapters | `named-adapters.md` | RFC4-10..RFC4-17, incl. RFC4-13(a), RFC4-13(b) | 3,682 |
-| 3 — execution record | `execution-record.md` | RFC4-18..RFC4-21 | 1,770 |
-| 4 — fidelity, joins, mappings | `fidelity-joins-and-mappings.md` | RFC4-22..RFC4-29 | 1,737 |
+| Module | File | Clauses |
+|---|---|---|
+| 1 — general contract | `general-contract.md` | RFC4-1..RFC4-9 |
+| 2 — named adapters | `named-adapters.md` | RFC4-10..RFC4-17, incl. RFC4-13(a), RFC4-13(b) |
+| 3 — execution record | `execution-record.md` | RFC4-18..RFC4-21 |
+| 4 — fidelity, joins, mappings | `fidelity-joins-and-mappings.md` | RFC4-22..RFC4-29 |
 
-Counts are `wc -w` at the rev10 compaction; no module approaches the ~7,000
-ceiling.
+Module sizes are deliberately **not stated here**. A measurement copied into
+contract prose goes stale the moment any module moves, and moves this
+package's content digest for a reason that has nothing to do with what the
+package says. This artifact is governed by the applicable context-budget
+policy; the current measurement lives in the generated budget report
+`../../CONTEXT-BUDGET-REPORT.md`, which is regenerated, never transcribed.
 
 **Lookup rule (deterministic).** For any citation `RFC4-n`, read `n` as an
 integer and take the first row whose range contains it; a lettered sub-clause

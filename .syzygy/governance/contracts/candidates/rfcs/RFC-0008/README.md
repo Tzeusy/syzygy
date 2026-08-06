@@ -8,6 +8,7 @@ clauses: RFC8-1..RFC8-32 (no gaps, no retired numbers, no merges; no lettered su
 governs: [work, work-states, dispatch, execution-records, trajectory-surface, materialization-records, change-accounting-chain, reconciliation-chain-state, cost-measures, provenance]
 applies_to: [trajectory]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007]
+constrains: [RFC-0007]
 tags: [work-state-vocabulary, reconciliation-chain, cost, provenance, compaction, phase-boundary, anti-thesis, closure-fallacy, substrate]
 ---
 
@@ -38,14 +39,18 @@ resolves the work-ontology portion of SDR §5 question 10.
 **Every clause identity appears in exactly one module.** One `RFC8-n`
 namespace, no duplicated normative clauses, no renumbering.
 
-| Module | File | Clauses | Words |
-|---|---|---|---|
-| 1 — identity, authority, materialization | `identity-authority-materialization.md` | RFC8-1..RFC8-11 | 2,684 |
-| 2 — state vocabulary, liveness, cost | `state-vocabulary-and-cost.md` | RFC8-12..RFC8-20 | 3,504 |
-| 3 — accounting, reconciliation, release | `accounting-reconciliation-and-release.md` | RFC8-21..RFC8-32 | 3,051 |
+| Module | File | Clauses |
+|---|---|---|
+| 1 — identity, authority, materialization | `identity-authority-materialization.md` | RFC8-1..RFC8-11 |
+| 2 — state vocabulary, liveness, cost | `state-vocabulary-and-cost.md` | RFC8-12..RFC8-20 |
+| 3 — accounting, reconciliation, release | `accounting-reconciliation-and-release.md` | RFC8-21..RFC8-32 |
 
-Counts are `wc -w` at the rev10 compaction; no module approaches the ~7,000
-ceiling.
+Module sizes are deliberately **not stated here**. A measurement copied into
+contract prose goes stale the moment any module moves, and moves this
+package's content digest for a reason that has nothing to do with what the
+package says. This artifact is governed by the applicable context-budget
+policy; the current measurement lives in the generated budget report
+`../../CONTEXT-BUDGET-REPORT.md`, which is regenerated, never transcribed.
 
 **Lookup rule (deterministic).** For any citation `RFC8-n`, read `n` as an
 integer and take the first row whose range contains it. The three ranges are

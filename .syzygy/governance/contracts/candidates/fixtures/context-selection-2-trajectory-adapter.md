@@ -22,7 +22,7 @@ scripts/context_load.py rfcs/RFC-0004/README.md \
   doctrine:security.md
 ```
 
-Measured: **18,282 words ≈ 24,681 estimated tokens** — **23.4% above the
+Measured: **18,364 words ≈ 24,791 estimated tokens** — **23.4% above the
 20,000-token decomposition trigger**, and above the 15–20k working target,
 disclosed as a risk-class exception (RFC11-11): an authorization-bearing
 change may not shed its authorization contract (RFC3-16(a) module) or the
@@ -83,7 +83,7 @@ scope.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`8e6399be638c2dc2…`. Compiler: `context_load.py`, selection rules
+`08aa7269e92c377b…`. Compiler: `context_load.py`, selection rules
 rev10-fixtures.
 
 *Re-measured 2026-08-05 (refactor round): figures and packet digest refreshed after this round's recorded corrections to RFC-0003 governance-homes (P-6, +13 w) and the craft banners (P-7, security policy +26 w); selection unchanged. Prior figures/digest are in git history.*

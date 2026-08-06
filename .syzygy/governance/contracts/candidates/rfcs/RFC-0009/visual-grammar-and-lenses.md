@@ -206,7 +206,7 @@ by open-work-item count would be a measured binding and is therefore forbidden t
 an overlay.
 
 The declared work state is consumed **verbatim from RFC 0008, and it is two
-orthogonal fields, not one** (RFC8-12; RFC8-28; RFC 0008 §5). The overlay
+orthogonal fields, not one** (RFC8-12; RFC8-28). The overlay
 consumes and renders both:
 
 - the **normalized work state** — RFC8-12/13's closed vocabulary, whose values
@@ -235,7 +235,8 @@ consumes and renders both:
 
 Neither field's vocabulary is fixed by this clause: the overlay consumes whatever
 values each field currently carries, and a value it cannot render is a defect
-here, never grounds to fold that value into a neighbouring one (RFC 0008 §5).
+here, never grounds to fold that value into a neighbouring one (RFC8-13,
+RFC8-28).
 [Inferred — composition of RFC 0008's two-field handoff with RFC6-6's rule that
 non-claim absence values are separately counted, RFC2-17's reservation, and
 RFC9-43's aggregate-composition obligation.]

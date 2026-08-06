@@ -113,3 +113,56 @@ rewritten to look cleaner.
    link away.
 3. RFC-0001's 8,353 words remain a single mandatory load for kernel
    tasks; accepted as the honest floor of a dictionary contract.
+
+## RFC-0009 word accounting
+
+**Moved here 2026-08-06 from `rfcs/RFC-0009/README.md`**, which is inside act
+1's digest set. Every figure in this section is a measurement **at the rev10
+compaction** and is not maintained against the current corpus — that is the
+point of moving it. For current measurement read the generated
+`CONTEXT-BUDGET-REPORT.md`; the two will disagree, and this section is the one
+that is allowed to.
+
+| | Words at rev10 |
+|---|---|
+| rev9 monolith (frozen source) | 19,269 |
+| module 1 `semantic-geography.md` | 6,996 |
+| module 2 `visual-grammar-and-lenses.md` | 5,538 |
+| module 3 `interaction-parity-and-release.md` | 3,023 |
+| **modules total (active contract)** | **15,557** |
+| package index `README.md` (navigational) | 2,025 |
+
+The package finished **above the ~9,500 target**. Per the charter's word-target
+rule and lead ruling 5, the pass stopped at the smallest faithful size rather
+than reaching the number by deleting constraints.
+
+Where the −3,712 words went: roughly **4,500 words of rev9 material moved to
+Tier 2** (all 20 `*(History: …)*` parentheticals, §6 alternatives, §7's full
+text, §0/§1/§2, and the answered §8 question text), offset by roughly **+1,580
+words of new per-module scaffolding** the monolith never carried (three sets of
+front matter, status blocks, package pointers, reader maps and end markers).
+Net **−19.2%** against the monolith. Prose compression *within* retained clause
+text was deliberately small — the clause bodies are 14,305 of the source's
+19,269 words and are near-continuous obligation: closed vocabularies copied not
+paraphrased, multi-part binding rules, and nine owner decisions.
+
+**Module 1 sat at 6,996 against the ~7,000 ceiling — that was its floor, not a
+coincidence.** Its range is 7,184 source words; everything remaining is a rule,
+a closed vocabulary, an owner decision, or a load-bearing distinction. Further
+headroom requires splitting the range (a natural seam exists at RFC9-1..13 /
+RFC9-14..23), not deleting rules — an owner/lead call, not that pass's.
+
+**Selective loading is the point of the split.** "May this move?" loads module 1
+alone; "what does this colour mean?" module 2 alone; "what does release check?"
+module 3 alone — against 19,269 words for any question before the split.
+
+## Currency of every figure in this report
+
+**This whole report is a rev10 measurement and is not refreshed.** It records
+what a compaction pass did, which is a historical fact and stays true. Two
+figures in it are known to disagree with the corpus as it now stands — RFC-0001
+is recorded as 8,353 words here and measures 8,342 today, and the §"Risks
+accepted" entry repeats the same figure. Neither is corrected, because
+correcting them would restart the transcription loop this report is now the
+archive for. Current measurement has exactly one home:
+`CONTEXT-BUDGET-REPORT.md`, generated.

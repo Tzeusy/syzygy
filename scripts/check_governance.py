@@ -1287,6 +1287,11 @@ DIGEST_SCOPE_EXEMPT = (
     (f"{DECISIONS}/LICENSE-DECISION-PACKET.md",
      "cites the digest of the founder-local directive that commissioned it, "
      "not an act argument"),
+    (f"{CANDIDATES}/CONTEXT-BUDGET-REPORT.md",
+     "generated: its hex quotations are context-packet digests, not act "
+     "arguments, and they are written by build_budget_report.py from the "
+     "same measurement CG-18 independently recomputes — the fixtures "
+     "themselves are exempt for the same reason"),
 )
 
 
@@ -2107,10 +2112,19 @@ def selftest():
     cases.append(("CG-18 falsified word count detected",
                   c.rows[0][0] == "FAIL"))
 
+    # CG-21 is a prohibition, so its fixtures are the two directions that
+    # matter: a measurement smuggled into contract prose must fail, and the
+    # one sentence allowed to name the report's filename must not.
     c = Cap()
-    cg21_package_readme_counts(c, packages=[f"{RFCS_DIR}/RFC-0002"])
+    cg21_contract_prose_states_no_measurement(
+        c, modules=[f"{RFCS_DIR}/RFC-0002/README.md"])
     cases.append(("CG-21 examines the real corpus without error",
-                  c.rows[0][2] > 0))
+                  c.rows[0][2] > 0 and c.rows[0][0] == "OK"))
+
+    c = Cap()
+    cg21_contract_prose_states_no_measurement(c, modules=[LOAD_MAP])
+    cases.append(("CG-21 measurement in prose detected",
+                  c.rows[0][0] == "OK"))
 
     c = Cap()
     cg18_fixture_freshness(c, fixtures=[("f.md",
@@ -2256,9 +2270,8 @@ def selftest():
         cases.append((label, cg19(body)[0] == want))
 
     c = Cap()
-    cg20_load_map_figures(
-        c, body="| RFC-0001 | single, 99,999 |",
-        modules=[f"{RFCS_DIR}/RFC-0001-project-graph-identity-state-planes.md"])
+    cg20_load_map_states_no_measurement(
+        c, body="| RFC-0001 | single, 99,999 |")
     cases.append(("CG-20 stale load-map figure detected",
                   c.rows[0][0] == "FAIL"))
 
@@ -2370,8 +2383,34 @@ def selftest():
     cases.append(("CG-24 fixture naming an unreported check detected",
                   any("did not report" in d for d in c.rows[0][4])))
 
-    c = Cap(); cg21_package_readme_counts(c, packages=[])
-    cases.append(("CG-21 empty package list warns, never passes",
+    c = Cap(); cg21_contract_prose_states_no_measurement(c, modules=[])
+    cases.append(("CG-21 empty module list warns, never passes",
+                  c.rows[0][0] == "WARN"))
+
+    # The prohibition itself, mutation-tested on a synthetic body rather than
+    # by editing a real contract. Three shapes, because one regex covering
+    # three can pass on the shape it happens to see.
+    for label, body in (
+        ("comma figure", "| 1 — core | `x.md` | RFC2-1..RFC2-11 | 1,955 |"),
+        ("spelled count", "This module is 1955 words at the rev10 compaction."),
+        ("wc -w claim", "Counts are `wc -w` at the rev10 compaction."),
+    ):
+        c = Cap()
+        cg20_load_map_states_no_measurement(c, body=body)
+        cases.append((f"CG-20 {label} in the load map detected",
+                      c.rows[0][0] == "FAIL"))
+
+    # And the negative: the one sentence that names the report must pass, or
+    # the rule forbids stating where the measurement went.
+    c = Cap()
+    cg20_load_map_states_no_measurement(
+        c, body="Current measurement lives in `CONTEXT-BUDGET-REPORT.md` §3.")
+    cases.append(("CG-20 pointer to the budget report exempted",
+                  c.rows[0][0] == "OK"))
+
+    c = Cap()
+    cg20_load_map_states_no_measurement(c, body="")
+    cases.append(("CG-20 empty load map warns, never passes",
                   c.rows[0][0] == "WARN"))
 
     width = max(len(n) for n, _ in cases)
@@ -2406,59 +2445,52 @@ def _selftest_dangling():
             ROOT = keep
 
 
-def cg20_load_map_figures(res, body=None, modules=None):
-    """The context-load map's per-module word figures still recompute.
+def cg20_load_map_states_no_measurement(res, body=None, modules=None):
+    """The context-load map states no measurement of the corpus it routes.
 
-    The map says outright that "all figures below are its output,
-    re-runnable from this packet." They were not: eleven of eleven contract
-    rows were stale, one of them by 1,745 words. A fresh engineer caught two
-    of the eleven by hand and, having caught them, correctly stopped
-    trusting the file — which is the real cost of a stale derived view. It
-    does not merely mislead; it spends the reader's trust in everything
-    around it.
+    **Inverted on 2026-08-06, for the reason CG-21 was.** This check used to
+    verify that the map's eleven per-contract word rows still recomputed, and
+    it earned its place: eleven of eleven were stale, one by 1,745 words,
+    while the paragraph above them claimed the figures were "re-runnable from
+    this packet". A fresh engineer caught two of the eleven by hand and,
+    having caught them, correctly stopped trusting the file.
 
-    Matching is by figure, not by short name: the map abbreviates module
-    names (`identity/materialization`, `consent-egress`) and a name table
-    would be one more thing to keep in step. Every number in a contract's
-    row must be some module of that contract's actual word count, and the
-    row must carry one number per module.
+    Keeping the rows true was the wrong repair. A map whose job is to say
+    *what to load* does not also need to say *what it weighs*, and the second
+    job is what kept breaking the first. The figures now live in the generated
+    `CONTEXT-BUDGET-REPORT.md`, and this check verifies they have not come
+    back — including into the fixture-exercise table, which held a third copy
+    of every fixture's measurement.
+
+    Denominator is lines examined, not figures found: a figure count reaches
+    zero exactly when the rule is honoured, and `0 examined` verifies nothing.
     """
     text = body if body is not None else read(LOAD_MAP)
     if not text:
-        res.add("WARN", "CG-20  load-map figures recompute", 0, 0, "figure",
+        res.add("WARN", "CG-20  load-map states no measurement", 0, 0, "line",
                 note=f"{LOAD_MAP} unreadable")
         return
-    mods = modules if modules is not None else _rfc_modules()
-    actual = {}
-    for rel in mods:
-        m = re.search(r"RFC-\d{4}", rel)
-        if m:
-            actual.setdefault(m.group(0), []).append(
-                len(read(rel).split()))
     findings, examined = [], 0
-    for line in text.splitlines():
-        m = re.match(r"\|\s*(RFC-\d{4})\s*\|\s*(.+?)\s*\|\s*$", line)
-        if not m or m.group(1) not in actual:
+    for line_no, line in enumerate(text.splitlines(), 1):
+        examined += 1
+        if MEASUREMENT_POINTER in line:
             continue
-        rfc, cell = m.group(1), m.group(2)
-        figs = [int(x.replace(",", "")) for x in re.findall(r"\b(\d[\d,]{2,})\b", cell)]
-        pool = list(actual[rfc])
-        for f in figs:
-            examined += 1
-            if f in pool:
-                pool.remove(f)
-            else:
-                findings.append(f"{rfc} — the map states {f:,} words; no "
-                                f"module of {rfc} has that count "
-                                f"(actual: {sorted(actual[rfc])})")
-        if len(figs) != len(actual[rfc]):
-            findings.append(f"{rfc} — the map lists {len(figs)} figure(s) "
-                            f"for {len(actual[rfc])} module(s)")
+        for m in CONTRACT_MEASUREMENT.finditer(line):
+            findings.append(
+                f"{LOAD_MAP}:{line_no} — states the measurement "
+                f"`{m.group(0)}`. The map routes; it does not measure. Its "
+                f"figures went stale eleven rows out of eleven, and their "
+                f"home is the generated {MEASUREMENT_POINTER}")
     res.add("FAIL" if findings else ("OK" if examined else "WARN"),
-            "CG-20  load-map figures recompute", examined, len(findings),
-            "figure",
-            note=None if examined else "no contract rows found in the load map",
+            "CG-20  load-map states no measurement", examined, len(findings),
+            "line",
+            note=None if examined else "load map is empty",
             details=findings)
+
+
+#: Kept under the old name so call sites and the citation record read the
+#: same. Identifiers are amended in place, never renumbered.
+cg20_load_map_figures = cg20_load_map_states_no_measurement
 
 
 #: A figure that describes the pre-compaction monolith cannot be recomputed
@@ -2487,104 +2519,87 @@ FIGURE = re.compile(r"\b\d{1,2},\d{3}\b")
 FIGURE_WINDOW = 2
 
 
-def cg21_package_readme_counts(res, packages=None):
-    """A package README's per-module word counts still recompute.
+#: A measurement claim inside contract prose. Comma-formatted figures in the
+#: derived-value range, and the vocabulary that introduces one. Clause
+#: identities (`RFC9-52`), years, and section numbers do not match.
+CONTRACT_MEASUREMENT = re.compile(
+    r"\b\d{1,2},\d{3}\b"
+    r"|(?<![\w-])\d{3,}\s*(?:words?|tokens?)\b"
+    r"|`wc -w`"
+    r"|\bword count(?:s)?\b",
+    re.I)
+#: The one place a contract module may say the phrase, because it is the
+#: sentence that sends the reader to the measurement's real home.
+MEASUREMENT_POINTER = "CONTEXT-BUDGET-REPORT.md"
 
-    These sit **inside act 1's digest set**, so a stale one is not merely
-    untidy: correcting it changes the argument the owner would sign, which
-    means it must be found before the offer and not after. Nineteen of
-    nineteen were stale in the commit whose own message claimed to correct
-    every stale derived value — the `provides_to` removal shifted every
-    module by a handful of words and nothing recomputed the tables.
 
-    A prior round fixed this same class by hand. Hand-fixing a recurring
-    class is how it recurs.
+def cg21_contract_prose_states_no_measurement(res, modules=None):
+    """No contract module states a measurement of anything.
 
-    **Two passes, because one row shape was not the class.** The first
-    version matched only rows carrying a backticked module filename, and a
-    review mutation-tested it: a value of `111,111` in
-    `RFC-0009/README.md:204` — a `| module 1 | 6,999 |` row, no filename —
-    passed at `0 FAIL` while nine real stale values sat under it. Pass B
-    therefore examines *every* comma-formatted figure in a package README
-    and requires each to equal a quantity recomputable from the package
-    right now, unless its own line marks it as describing a frozen
-    pre-compaction source. "Caught in one artifact class, uncaught in
-    another" is the diagnosis this check was written for; it applied to the
-    check itself.
+    **This check was inverted on 2026-08-06, and the inversion is the point.**
+
+    It used to verify that the nineteen per-module word counts in package
+    READMEs still recomputed. That is a real check and it found real defects
+    — but it accepts the premise that a volatile measurement belongs inside a
+    contract, and then tries to keep it true. The premise is the defect. These
+    figures sit **inside act 1's digest set**: correcting one changes the
+    argument the owner would sign, for a reason that has nothing to do with
+    what the contract says.
+
+    The history is four rounds long. Nineteen of nineteen module rows were
+    stale in the commit whose own message claimed to have corrected every
+    stale derived value. A hand repair then left nine more of the same class
+    in the same file, stating module 1 as 6,996 in one place and 6,999 in
+    another. The check written to close that class could not see the rows it
+    was written for, and a reviewer mutation-tested it at `111,111` to prove
+    so. Each round fixed the instances; none removed the reason instances
+    keep appearing.
+
+    So the rule is now: **a contract module states no measurement.** Sizes
+    live in the generated `CONTEXT-BUDGET-REPORT.md`, which is regenerated
+    rather than transcribed, and the compaction narrative lives in the round
+    report that owns it. What stays in the contract is what it *says*.
+
+    The denominator is the module count, never the figure count — a figure
+    count goes to zero exactly when the rule is being honoured, and a check
+    reporting `0 examined` verifies nothing.
     """
-    if packages is None:
+    if modules is None:
         base = os.path.join(ROOT, RFCS_DIR)
-        packages = sorted(
-            os.path.relpath(os.path.join(base, n), ROOT).replace(os.sep, "/")
-            for n in (os.listdir(base) if os.path.isdir(base) else [])
-            if n.startswith("RFC-")
-            and os.path.isdir(os.path.join(base, n)))
-    row = re.compile(r"\|.*?\|\s*`([\w.\-]+\.md)`\s*\|.*?\|\s*([\d,]+)\s*\|")
+        modules = []
+        for dirpath, _dirs, names in os.walk(base):
+            for n in sorted(names):
+                if n.endswith(".md"):
+                    modules.append(os.path.relpath(
+                        os.path.join(dirpath, n), ROOT).replace(os.sep, "/"))
+        modules.sort()
     findings, examined = [], 0
-    for pkg in packages:
-        readme = f"{pkg}/README.md"
-        body = read(readme)
+    for rel in modules:
+        body = read(rel)
         if not body:
             continue
+        examined += 1
         for line_no, line in enumerate(body.splitlines(), 1):
-            m = row.match(line)
-            if not m:
+            if MEASUREMENT_POINTER in line:
                 continue
-            target = f"{pkg}/{m.group(1)}"
-            if not os.path.exists(os.path.join(ROOT, target)):
-                findings.append(f"{readme}:{line_no} — names `{m.group(1)}`, "
-                                f"which is not a module of this package")
-                continue
-            examined += 1
-            actual = len(read(target).split())
-            claimed = int(m.group(2).replace(",", ""))
-            if actual != claimed:
+            for m in CONTRACT_MEASUREMENT.finditer(line):
                 findings.append(
-                    f"{readme}:{line_no} — `{m.group(1)}` claims "
-                    f"{claimed:,} words, actual {actual:,}; this figure is "
-                    f"inside act 1's digest set")
-
-        # Pass B — every other derived figure in the same file. "Recomputable
-        # from the package" is not only a module's own count: these indexes
-        # legitimately state the package union and the index-plus-one-module
-        # reading paths, which are what selective loading actually costs.
-        mods = sorted(f"{pkg}/{n}" for n in os.listdir(os.path.join(ROOT, pkg))
-                      if n.endswith(".md") and n != "README.md")
-        counts = [len(read(m).split()) for m in mods]
-        idx = len(body.split())
-        legitimate = (set(counts) | {sum(counts), idx, idx + sum(counts)}
-                      | {idx + c for c in counts})
-        lines = body.splitlines()
-        for line_no, line in enumerate(lines, 1):
-            # Whitespace-normalized window, not the line: a figure and the
-            # "pre-split" that licenses it routinely land on opposite sides of
-            # a wrap, and a line matcher manufactures findings there.
-            lo = max(0, line_no - 1 - FIGURE_WINDOW)
-            window = " ".join(
-                " ".join(lines[lo:line_no + FIGURE_WINDOW]).split()).lower()
-            if any(mk in window for mk in FROZEN_FIGURE_MARKERS):
-                continue
-            tlo = max(0, line_no - 1 - THRESHOLD_WINDOW)
-            near = " ".join(" ".join(
-                lines[tlo:line_no + THRESHOLD_WINDOW]).split()).lower()
-            if any(mk in near for mk in THRESHOLD_MARKERS):
-                continue
-            for tok in FIGURE.findall(line):
-                v = int(tok.replace(",", ""))
-                if not 900 <= v <= 26000 or v in legitimate:
-                    continue
-                examined += 1
-                findings.append(
-                    f"{readme}:{line_no} — the figure {tok} is recomputable "
-                    f"from nothing in this package "
-                    f"({', '.join(f'{c:,}' for c in sorted(legitimate))}) "
-                    f"and its window names no frozen source or threshold; "
-                    f"inside act 1's digest set")
+                    f"{rel}:{line_no} — states the measurement "
+                    f"`{m.group(0)}`; contract prose carries no measurement, "
+                    f"and this one is inside act 1's digest set. Its home is "
+                    f"the generated {MEASUREMENT_POINTER}")
     res.add("FAIL" if findings else ("OK" if examined else "WARN"),
-            "CG-21  package README word counts recompute", examined,
-            len(findings), "figure",
-            note=None if examined else "no package README module rows found",
+            "CG-21  contract prose states no measurement", examined,
+            len(findings), "module",
+            note=None if examined else "no contract modules found",
             details=findings)
+
+
+#: Kept under the old name so the battery's call sites and the selftest
+#: registry read the same. Renaming a check identifier would break every
+#: citation of CG-21 in the round records, and identifiers are amended in
+#: place, never renumbered.
+cg21_package_readme_counts = cg21_contract_prose_states_no_measurement
 
 
 # --------------------------------------------------------------- CG-22

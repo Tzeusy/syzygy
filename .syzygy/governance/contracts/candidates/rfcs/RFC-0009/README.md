@@ -44,13 +44,18 @@ candidate bundle behind its own owner approval (RFC9-41).
 `RFC9-n` namespace, no duplicated normative clauses, no renumbering. Shared
 concepts live in exactly one module and are cited from the others by clause ID.
 
-| Module | File | Clauses | Words |
-|---|---|---|---|
-| 1 — semantic geography | `semantic-geography.md` | RFC9-1..RFC9-23, incl. RFC9-8(a), RFC9-9(a), RFC9-9(b), RFC9-13(a), RFC9-14(a), RFC9-15(b), RFC9-16(d) | 6,996 |
-| 2 — visual grammar and lenses | `visual-grammar-and-lenses.md` | RFC9-24..RFC9-45 | 5,538 |
-| 3 — interaction parity and release | `interaction-parity-and-release.md` | RFC9-46..RFC9-52, incl. RFC9-47(a) | 3,023 |
+| Module | File | Clauses |
+|---|---|---|
+| 1 — semantic geography | `semantic-geography.md` | RFC9-1..RFC9-23, incl. RFC9-8(a), RFC9-9(a), RFC9-9(b), RFC9-13(a), RFC9-14(a), RFC9-15(b), RFC9-16(d) |
+| 2 — visual grammar and lenses | `visual-grammar-and-lenses.md` | RFC9-24..RFC9-45 |
+| 3 — interaction parity and release | `interaction-parity-and-release.md` | RFC9-46..RFC9-52, incl. RFC9-47(a) |
 
-Counts are whole-file `wc -w` at the rev10 compaction. See **Word accounting**.
+Module sizes are deliberately **not stated here**. A measurement copied into
+contract prose goes stale the moment any module moves, and moves this
+package's content digest for a reason that has nothing to do with what the
+package says. This artifact is governed by the applicable context-budget
+policy; the current measurement lives in the generated budget report
+`../../CONTEXT-BUDGET-REPORT.md`, which is regenerated, never transcribed.
 
 **Lookup rule (deterministic).** For any citation `RFC9-n`, read `n` as an
 integer and take the row whose stated range contains it. The three ranges are
@@ -196,41 +201,19 @@ in **module 1 §10**; recorded in history §8. The surface is safe under either
 answer meanwhile: an unregistered profile relation fails closed under RFC9-26 and
 never reaches a reader as an unlegended edge.
 
-## Word accounting (rev10 compaction)
+## Word accounting
 
-| | Words |
-|---|---|
-| rev9 monolith (frozen source) | 19,269 |
-| module 1 | 6,996 |
-| module 2 | 5,538 |
-| module 3 | 3,023 |
-| **modules total (active contract)** | **15,557** |
-| package index (this file, navigational) | 2,025 |
+**Moved out of this file.** The rev10 compaction arithmetic — what the monolith
+weighed, where the reduction came from, why module 1 sits at its floor rather
+than at a target, and what selective loading buys — lives in
+`../../03-ACTIVE-CONTRACT-COMPACTION-REPORT.md` §"RFC-0009 word accounting".
 
-The package is **above the ~9,500 target**. Per the charter's word-target rule
-and lead ruling 5, this pass stopped at the smallest faithful size rather than
-reaching the number by deleting constraints.
-
-Where the −3,712 words went: roughly **4,500 words of rev9 material moved to
-Tier 2** (all 20 `*(History: …)*` parentheticals, §6 alternatives, §7's full
-text, §0/§1/§2, and the answered §8 question text), offset by roughly **+1,580
-words of new per-module scaffolding** the monolith never carried (three sets of
-front matter, status blocks, package pointers, reader maps and end markers).
-Net **−19.2%** against the monolith. Prose compression *within* retained clause
-text is deliberately small — the clause bodies are 14,305 of the source's 19,269
-words and are near-continuous obligation: closed vocabularies copied not
-paraphrased, multi-part binding rules, and nine owner decisions.
-
-**Module 1 sits at 6,996 against the ~7,000 ceiling — that is its floor, not a
-coincidence.** Its range is 7,184 source words; everything remaining is a rule, a
-closed vocabulary, an owner decision, or a load-bearing distinction. Further
-headroom requires splitting the range (a natural seam exists at RFC9-1..13 /
-RFC9-14..23), not deleting rules — an owner/lead call, not this pass's.
-
-**Selective loading is the point of the split.** "May this move?" loads module 1
-alone (6,996); "what does this colour mean?" module 2 alone (5,538); "what does
-release check?" module 3 alone (3,023) — against 19,269 for any question before
-the split.
+It was here, and every figure in it went stale twice: ten derived values in
+this one file disagreed with each other and with the modules they described,
+inside act 1's digest set, in two consecutive rounds (reviews RC-10 and RC-11).
+Measuring the package is not the mistake. Recording the measurement *here* is,
+because a contract's content digest then moves whenever the measurement does.
+Current measurement: `../../CONTEXT-BUDGET-REPORT.md`, generated.
 
 ---
 

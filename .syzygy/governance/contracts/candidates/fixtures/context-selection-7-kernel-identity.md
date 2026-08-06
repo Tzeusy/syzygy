@@ -36,7 +36,7 @@ scripts/context_load.py rfcs/RFC-0001-project-graph-identity-state-planes.md \
   doctrine:architecture.md craft:engineering-bar.md
 ```
 
-Measured: **15,738 words ≈ 21,246 estimated tokens.**
+Measured: **15,823 words ≈ 21,361 estimated tokens.**
 
 ## ⚠️ Above the justification trigger — disclosed, not trimmed
 
@@ -134,7 +134,7 @@ identity change alters what a challenge or reconciliation chain resolves to.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`27955fccd11d8b63…` (recompute: `cat <mandatory files> | sha256sum`).
+`994da8548bb350dc…` (recompute: `cat <mandatory files> | sha256sum`).
 Compiler: `context_load.py`, selection rules rev10-fixtures.
 
 **Digest-source pinning.** This digest and the totals above are computed over

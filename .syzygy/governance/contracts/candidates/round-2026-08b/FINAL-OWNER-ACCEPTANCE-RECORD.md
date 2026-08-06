@@ -36,7 +36,7 @@ through CG-7d. A CG-7 failure means **do not perform that act**.
 
 | Act | Argument (verify, never transcribe) | Changed this round? |
 |---|---|---|
-| 1 — foundational contracts | `2922de1c21354ad3a804acebcfdf665d9a8986d4fa8b3df42c62169f207ed98d` | **Yes, three times** — most recently 2026-08-06, for RC-11's nine stale word counts in `RFC-0009/README.md` |
+| 1 — foundational contracts | `9fac6b787eb39b3ce4346590fbf2098c4b4fec24f457c7a114b0b2ba383f2e68` | **Yes, four times** — most recently 2026-08-06 for the rev11b correction-plane repairs; superseded by the 2026-08-06 closure round's owner acceptance packet |
 | 2 — craft amendment CC-TEST-2 | `3858820f64768ef20e6514fe8adb28076263f071ac77e66a5520a612f3bcb26d` | No |
 | 3 — topology bundle | `7a3b22494a08d888901c1f0cec76833dc926e89b6f510b5abf8963071fbaeb45` | No |
 | 4 — project overview | `01d629515993188338f6a0e2d84d67543d8569003759a7c8f571a90b129c7cd1` | No |

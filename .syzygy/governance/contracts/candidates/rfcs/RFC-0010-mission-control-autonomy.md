@@ -2,7 +2,7 @@
 id: RFC-0010
 title: Mission Control and Autonomy Envelopes
 status_source: owner-act-record
-clauses: "RFC10-1..RFC10-22"
+clauses: "RFC10-1..RFC10-22 (sub-clauses RFC10-17(a), RFC10-18(a), RFC10-19(a); no gaps, no retired numbers)"
 governs: [missions, autonomy-envelopes, guardrails, attention-items, workspace-governance, service-boundary]
 applies_to: [mission-control, workspace, all-surfaces, machine-clients]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0005, RFC-0006, RFC-0008]
@@ -22,7 +22,8 @@ contract binds nothing.
 authorization), SEC-1..SEC-5; owner direction OD-R10-1/OD-R10-2
 (recorded in the rev10 owner-direction record, a bootstrap process
 artifact retained with the delivery packet). New at rev10 — no rev9
-predecessor.
+predecessor. **Amendment history and rationale:**
+`../../history/RFC-0010-history.md` (non-normative).
 
 ## 0. Reader's summary (non-normative)
 
@@ -45,9 +46,11 @@ runtime as distinct from semantic correctness (RFC10-10..11); attention and
 escalation (RFC10-12..13); project-bound versus portfolio missions and the
 workspace governance store (RFC10-14..15); and the OpenSpec phase rule
 (RFC10-16). A **correction plane** is added beside the prevention plane:
-budget reservation (RFC10-17), independent completion adjudication
-(RFC10-18), effect reversibility and recovery (RFC10-19), what stop
-guarantees (RFC10-20), cross-project consent composition (RFC10-21), and
+budget reservation and release (RFC10-17, RFC10-17(a)), independent completion
+adjudication and the independently established effects-applied determination
+(RFC10-18, RFC10-18(a)), effect reversibility, recovery and sibling
+disposition (RFC10-19, RFC10-19(a)), what stop guarantees (RFC10-20),
+cross-project consent composition (RFC10-21), and
 attention-queue bounds (RFC10-22).
 Autonomy level enumerations, lifecycle freeze, store schema, and
 all transport/language/packaging choices are explicitly deferred (§7, §8).
@@ -127,7 +130,7 @@ re-approval against the new inputs.
 ```text
 draft → awaiting-approval → approved → running
 running ⇄ paused
-running → blocked (→ running on unblock)
+running → blocked (→ running on unblock, or → expired on park expiry)
 running → completed | failed | cancelled | expired
 ```
 
@@ -140,6 +143,21 @@ fixed now: every terminal state is recorded with its reason; `expired` and
 the envelope; and exit from `blocked` where the block arose under RFC10-8
 or RFC10-11 is a **human resolution act** — an agent's "condition cleared"
 assertion never takes that transition.
+
+**No block is indefinite, whatever gave rise to it.** Every `blocked` state
+carries a **maximum park duration**, declared by the envelope; where none is
+declared the maximum is the expiry of the Attention Item the block minted
+(RFC10-12), so silence cannot buy an unbounded park. At the maximum the
+mission transitions **`blocked` → `expired`**, a terminal state whose reason
+is recorded. The rule is stated here, at lifecycle level, and holds for
+**every** class of block — RFC10-8, RFC10-11 and RFC10-18 alike — because the
+defect is a lifecycle defect and not a property of any one source: `blocked`
+is non-terminal, and RFC10-17 releases a reservation only on completion or
+termination, so an indefinite park is a way to hold budget that no clause
+elsewhere reaches. Expiry from `blocked` is a **termination, never a
+resolution**: it widens nothing (RFC10-12), does not substitute for the human
+resolution act where the paragraph above owes one, and does not mark the
+condition cleared. It ends the mission and fires RFC10-19's duties.
 
 **RFC10-6.** **A mission is not work, and work is never proof.** Missions
 authorize the *materialization* of work items; the work items themselves,
@@ -381,6 +399,39 @@ is recorded as attributable evidence against the mission and mints its own
 Attention Item; a mission record showing a respected bound with unrecorded
 overrun is a violation of this clause.
 
+**Who measures, and who sizes.** `spent` is admitted from the execution
+record of a Syzygy-launched profiled run (RFC5-21, RFC4-18..RFC4-21) or from
+an adapter-backed provider record (RFC 0004) — **never from a self-report by
+the principal whose spend it is**, on the same independence rule RFC10-18
+states for completion. A principal's own figure is evidence, never the
+measurement: the Unknown rule above closes *absent* telemetry, and this limb
+closes *false* telemetry. The **declared maximum cost** sizing a reservation
+is declared by the envelope or by the dispatching authority, never by the
+worker being dispatched; chronic under-declaration renders as a recorded
+pattern of overrun attributable to that authority.
+
+**RFC10-17(a). Every reservation has a stated release point.** Reserved
+budget is *released* — returned to the envelope's available headroom, and for
+a child mission to the parent's remaining envelope (RFC10-8) — at the points
+below, and each release is recorded as attributable evidence stating the
+quantity returned.
+
+| The mission reaches | Reservation disposition |
+|---|---|
+| `completed` | released in full at the terminal record |
+| `failed` | released in full **after** RFC10-19's compensating actions are attempted — their own cost is reserved *before* they run, so recovery is never funded past an exhausted bound |
+| `cancelled` | as `failed` |
+| `expired` | as `failed` |
+| `blocked`, no applied effects | **held**, for no longer than RFC10-5's maximum park duration; released at the resulting transition to `expired` |
+| `blocked` after its Attention Item expires | the item's expiry releases nothing — an item's expiry resolves the item, not the mission's state. The park duration is what ends the hold |
+| unrecoverable stop — RFC10-20 limb (b) not achieved | released at the stop record **except** for the runs that did not terminate, whose reservations are retained and **named individually**: a reservation may not be returned while the work it funds may still spend |
+
+**No non-terminal park holds a reservation indefinitely.** A runtime holding
+reservation past RFC10-5's maximum violates this clause, and so does a mission
+record showing headroom that reserved work still holds. An indefinite park is
+reachable only as an explicit, owner-visible envelope declaration with its own
+act — never by silence.
+
 **RFC10-18. Completion is reported by the executor and established by
 another.** A mission's executing agents, fleets, and workers **may report**
 that the completion predicate is satisfied and **may never establish it**.
@@ -388,20 +439,78 @@ The `running → completed` transition is taken only by (a) an owner act, or
 (b) a declared, owner-approved evaluation independent of the executing
 principal and whose supporting evidence is `gate-backed` (RFC2-25) — never by
 the principal that performed the work, and never by a principal that
-principal routed. A mission's terminal state is an **authorization-bearing
-determination** under RFC3-16(a) where it discharges an owner act's
-objective. Where no independent establisher is available for a mission's
-objective class — including wherever RFC2-19 leaves reconciliation
-uncomputed — the mission **never reaches `completed`**. Which state it does
-reach depends on whether effects have been applied: with no applied effects
-it enters `blocked` with an Attention Item, awaiting the human resolution act
-RFC10-5 requires; **with effects already applied it enters `failed`**, so
-that RFC10-19's compensation, enumeration and disposition duties fire. Those
-duties are keyed to `failed`, `cancelled` and `expired`, and RFC10-19 states
-that `blocked` discharges none of them — so routing an effect-bearing mission
-to `blocked` would place it outside the correction plane entirely. An unstated minimum evidence tier means `gate-backed`;
+principal routed. **Independence is transitive, and established rather than
+asserted:** a principal routed by the executing principal at *any* depth is
+not independent, and the establisher is named in the envelope at approval
+time (RFC10-9), so independence is a property of the approved envelope rather
+than a runtime selection. An establisher chosen after the fact by the party
+whose work it adjudicates is not independent, whatever relation it declares.
+
+A mission's terminal state is an **authorization-bearing
+determination** under RFC3-16(a) where it discharges an owner act's objective.
+Where no independent establisher exists for a mission's objective class —
+including wherever RFC2-19 leaves reconciliation uncomputed — the mission
+**never reaches `completed`**. Which state it does
+reach depends on whether effects have been applied — **as established under
+RFC10-18(a), never as asserted by the executing principal**:
+
+- **With effects already applied it enters `failed`**, so that RFC10-19's
+  compensation, enumeration and disposition duties fire. Those duties are
+  keyed to `failed`, `cancelled` and `expired`, and RFC10-19 states that
+  `blocked` discharges none of them — so routing an effect-bearing mission to
+  `blocked` would place it outside the correction plane entirely.
+- **With no applied effects it enters `blocked`** with an Attention Item.
+  **No human resolution act is owed for this block, and this clause says so
+  rather than implying one.** RFC10-5's human-resolution rule is scoped to
+  blocks arising under RFC10-8 or RFC10-11; an RFC10-18-sourced block arises
+  under neither, and an earlier revision cited RFC10-5 for an obligation
+  RFC10-5's own scope excludes. What bounds this park is RFC10-5's **maximum
+  park duration**, which holds for every block class: at the maximum the
+  mission transitions to `expired`, RFC10-19's duties fire, and RFC10-17(a)
+  releases the reservation. A human resolution act stays *available* and is
+  the better exit; it is simply not owed.
+
+An unstated minimum evidence tier means `gate-backed`;
 "the strongest applicable tier" (RFC10-6) is never a judgment the executing
 principal makes for itself.
+
+**RFC10-18(a). Whether effects were applied is established, not asserted.**
+The branch above turns on one predicate — *have effects outside `.syzygy/**`
+and `openspec/**` been applied under this mission?* — and it decides whether
+the correction plane engages at all. The executing principal **may report** on
+it and **may never establish** it, on the terms RFC10-18 sets for completion.
+A branch selector chosen by the party it routes is not a determination, so
+this one carries all four of completion's requirements:
+
+- **Evaluator.** The same class of party RFC10-18 requires for `running →
+  completed`: an owner act, or a declared, owner-approved evaluation
+  independent — transitively — of the executing principal and of every
+  principal it routed.
+- **Evidence.** The mission's guardrail decision record (RFC10-10), each run's
+  execution record (RFC4-18..RFC4-21), and the envelope's declared effect
+  classification (RFC10-19), retained for the mission's full retention horizon.
+  A determination whose evidence has aged out is Unknown, not negative.
+- **Minimum evidence tier.** `gate-backed` (RFC2-25). A `report-fact`
+  assertion by the executor is admissible as evidence and is never the
+  determination.
+- **Externally mediated and externally credentialed effects.** An effect
+  reachable outside Syzygy's mediation is representable only as a declared,
+  named **unmediated effect surface** on the envelope — the boundary RFC10-10
+  draws for enforcement and RFC10-20 for stop. Syzygy's records cannot
+  establish that an unmediated effect did *not* occur, so where the envelope
+  names any such surface this predicate resolves **Unknown** unless an
+  independent adapter-backed observation (RFC 0004) covers it.
+
+**Unknown fails closed: where whether effects were applied is Unknown, effects
+are treated as applied** — for recovery, for reservation, and for
+human-attention purposes — until evidence establishes otherwise. The mission
+enters `failed`, RFC10-19's duties fire, and the Attention Item states that the
+disposition rests on an unresolved determination rather than on an observed
+effect, so a compensation record never implies an effect was seen. This is
+RFC10-17's Unknown-spend rule applied to the predicate that routes the whole
+correction plane: **Unknown effects are never read as no effects.** The cost of
+that reading is a compensation attempted needlessly; the cost of the other is
+an applied effect nobody is told about.
 
 **RFC10-19. Effects are classified before they are authorized.** Every effect
 class an envelope permits is declared **reversible**, **compensatable** (with
@@ -423,30 +532,102 @@ re-verifies the pinned inputs (RFC10-4), the remaining reserved budget
 (RFC10-17), and the envelope's continued act provenance (RFC10-9) before any
 dispatch.
 
+**A compensating action that fails is not discharged by having been
+attempted.** The effect is **reclassified as irreversible for this mission**,
+joins the single Attention Item naming what cannot be undone, and is stated as
+*uncompensated* in the terminal reason. An effect declared `compensatable`
+whose compensation failed, and which the record shows only as an attempted
+action, violates this clause: the declaration said it could be undone, the
+attempt established it could not, and the record must carry the second fact
+too. Where compensation succeeds for some effects and fails for others the
+outcome is recorded **per effect**; a partially compensated mission is never
+rendered as compensated.
+
+**RFC10-19(a). Sibling disposition after a partial failure is a declared
+policy input, never an inference.** Where one run or child mission fails
+after applying effects while its siblings have completed successfully or
+remain active, nothing in this contract decides for the siblings, and nothing
+should: whether one sibling's failure invalidates another is a property of
+the work, not of the mission machinery. The envelope therefore declares a
+**sibling disposition on partial failure** from a closed set fixed at surface
+specification, whose minimum members are:
+
+```text
+independent     a sibling's outcome is unaffected — completed siblings'
+                effects stand, active siblings continue
+halt-siblings   active siblings stop under RFC10-20; completed siblings'
+                effects stand
+compensate-all  active siblings stop, and every completed sibling's effects
+                are dispositioned under this clause as if that sibling had
+                failed
+```
+
+**Unstated is not `independent`.** Under RFC10-7's obligation limb an
+undeclared disposition takes its strictest reading: `compensate-all` where
+every applied effect class is reversible or compensatable, and otherwise an
+escalation (RFC10-13) before any further dispatch — because the narrow reading
+of an undeclared *obligation* is the one that does not silently let partial
+output stand.
+
+Two assumptions this clause refuses, because making either is the common
+error: **one failure does not automatically invalidate a sibling** — outputs
+may be genuinely independent, and forcing compensation destroys correct work;
+and **a completed sibling is not automatically still valid** — it may have
+consumed the failed sibling's partial output. The declared policy is what
+decides between them.
+
 **RFC10-20. What stop guarantees.** A human stop, cancellation, or expiry of
 a mission (RFC10-5) has three effects, all immediate at the act: **(a)** no
 further work is dispatched and no further Syzygy-mediated act is admitted
 under that mission; **(b)** every run Syzygy launched under the mission is
 terminated together with its descendants, through the kill switch RFC5-21
 requires of every isolation class — a stop that leaves Syzygy-launched runs
-executing does not conform; **(c)** each terminated run's partial state is
+executing does not conform — **and the stop propagates transitively to every
+child mission derived from it (RFC10-8) and to their descendants**: a
+descendant mission is stopped as if the act had named it, its own runs
+terminated under this same limb, and its reservation dispositioned under
+RFC10-17(a). A stop record reporting (a) and (b) complete while any descendant
+mission may still dispatch does not conform, and the **enumeration of the
+descendant missions reached** is part of the record. RFC10-8 makes child missions
+reservations against the parent; without this limb a parent stop left the
+children it authorized dispatching; **(c)** each terminated run's partial state is
 checkpointed and recorded as evidence, and any effect already applied is
-classified and dispositioned under RFC10-19. The envelope declares a
-**maximum stop latency**; an undeclared latency means stop is synchronous —
-the act does not return until (a) and (b) hold. Effects produced outside
+classified and dispositioned under RFC10-19. Effects produced outside
 Syzygy's mediation by externally-granted credentials are **not** covered by
 (b); the mission's stop record states that boundary explicitly rather than
 implying a completeness the runtime cannot deliver (RFC10-10).
 
+**(d) A stop that cannot complete is an outcome, not a wait.** The envelope
+declares a **maximum stop latency**; an undeclared latency means the act is
+synchronous — it does not return until (a) and (b) hold. Synchronous is not
+unbounded. Where the RFC5-21 kill switch reports failure for a run, or a
+declared maximum elapses, **the act returns having failed to stop** and says
+so: the mission enters `failed` — never `paused` or `blocked`, which
+discharge none of RFC10-19's duties — an Attention Item enumerates each run
+that did not terminate and each effect surface it may still reach, each such
+run's reservation is retained and named under RFC10-17(a), and the stop record
+states the boundary. An isolation class whose kill switch has no failure
+signal has not satisfied RFC5-21 and is not one a mission may run under: a
+stop with no failure path is an unbounded latency under a different name.
+
 **RFC10-21. Cross-project composites carry every embedded project's consent
 requirement.** A context packet, prompt, summary, embedding, or any other
-composite assembled under a mission spanning more than one project is
+composite assembled **under any mission** is
 subject, at the RFC5-15 choke point, to the egress-consent record of **every
-project whose content it embeds** — not one of them, and never the project
-the composing step names for itself. A composite embedding content from a
+project whose content it embeds** — not one of them, never the project
+the composing step names for itself, and **regardless of how many projects the
+mission's declared target names**. The predicate is a property of the
+*content*, not of the mission's scope declaration: a mission declared against
+project A alone, whose envelope grants a path containing project B's checkout
+and whose composite embeds B's content, is squarely inside this clause. Keying
+the rule on declared scope would let the composing party choose whether the
+rule applies by choosing how to declare its own target — the party the rule
+exists to bind. A composite embedding content from a
 project for which the naming (project, provider) consent is absent, not in
 force, or of unverifiable provenance **fails closed and the refusal renders**,
-exactly as an undeterminable content class does (RFC5-14). Evidence gathered
+exactly as an undeterminable content class does (RFC5-14); so does a composite
+whose embedded content cannot be attributed to a project of origin at all.
+Evidence gathered
 within one project never satisfies a completion predicate scoped to another.
 Where the workspace governance store's per-project budget and an envelope's
 budget both bind (RFC10-15, RFC10-7), **the lesser binds**, and a portfolio
@@ -461,7 +642,17 @@ outstanding attention count** and a **maximum item rate** for the missions
 under it; an undeclared maximum means one outstanding item — the narrowest
 reading (RFC10-7). **On reaching either bound the mission pauses rather than
 enqueueing further items**: a mission may not convert the owner's finite
-attention into throughput. Items presenting the same decision are
+attention into throughput.
+
+**Exactly one class of item is exempt from both bounds: the item reporting
+that a bound was reached, or the resulting state change.** It is minted and
+delivered at the maximum, because a safe behaviour the owner cannot be told
+about is, at the queue, the unsafe one — at the default of one outstanding
+item the mission would otherwise pause and be forbidden to say so. It is
+deduplicated like any other, and it is the **only** exempt class; a second one
+returns the queue to unbounded.
+
+Items presenting the same decision are
 deduplicated into one item recording its multiplicity. Every item's expiry
 falls within a declared maximum beyond which its stated default is no longer
 presumed safe; an item whose expiry exceeds that maximum is not well-formed.
@@ -521,6 +712,35 @@ with RFC6-28, RFC7-38, RFC8-32, RFC9-52.)
 13. *(RFC10-22)* Overnight, a mission mints 400 individually well-formed
     Attention Items. Each expires safely; the owner's morning is gone and the
     envelope was never widened.
+14. *(RFC10-18(a))* A fleet whose objective class has no independent
+    establisher reports that no effects were applied; the runtime takes the
+    report as the determination and routes to `blocked`, so RFC10-19 never
+    fires and the applied effects stand unreported. The escape is not the
+    false report — it is that the reporting party was permitted to establish.
+15. *(RFC10-5, RFC10-17(a))* A mission sits in `blocked` for four months. Its
+    reservation is never released, because `blocked` is neither completion nor
+    termination. Parking became a way to hold budget.
+16. *(RFC10-20(b))* The owner stops a parent mission; its runs die and its
+    three child missions keep dispatching, because their runs were launched
+    under the children.
+17. *(RFC10-20(d))* A stop is issued against a run that will not die. Latency
+    is undeclared, so the act is synchronous — and waits. Nothing times out,
+    no item is minted, and the owner holds a stop that has neither succeeded
+    nor failed.
+18. *(RFC10-19)* A `compensatable` effect's compensating action fails. The
+    failure is recorded; the irreversible-effects item does not mention it,
+    because the effect was never *declared* irreversible.
+19. *(RFC10-19(a))* One of five siblings fails after applying effects. The
+    runtime lets the other four stand — but two consumed the failed sibling's
+    partial output. Or it compensates all five and destroys three correct
+    results. Neither is wrong in general; both are wrong undeclared.
+20. *(RFC10-21)* A mission declared against project A alone is granted a path
+    containing B's checkout, embeds B's content, and ships under A's consent.
+    Under a scope-keyed predicate the clause never engages — and the composing
+    party chose the declaration.
+21. *(RFC10-22)* At the default of one outstanding item, a mission reaches a
+    bound, pauses, and may not enqueue the item saying so. A safe behaviour
+    nobody is told about is, at the queue, the unsafe one.
 
 ## 5. Integration
 
@@ -548,33 +768,11 @@ with RFC6-28, RFC7-38, RFC8-32, RFC9-52.)
 
 ## 5a. Amendment log
 
-**rev11 (2026-08-05) — the correction plane.** An adversarial safety review
-found that RFC10-1..16 closed every *authority-widening* route it constructed
-and left every *post-failure* question unanswered: `rollback`, `compensat`,
-`revert`, `irreversib`, `resume`, `reserve` and `atomic` were all
-zero-occurrence in this file. Six clauses were added (RFC10-17..22) and three
-existing clauses amended in place — RFC10-6 (disagreeing evidence), RFC10-7
-(`propose-only` defined; obligations fail closed), RFC10-11 (in-flight
-completion funded from reservation). No existing clause was renumbered or
-retired. Three of the added seams — reservation, adjudication, stop — bite
-**today, under the propose-only cap**: a propose-only mission still spends
-money, still declares itself complete, and still could not be reliably
-stopped. The prior round's disposition of these as "inert until the cap
-lifts" did not hold, and is recorded here rather than quietly dropped.
+Moved to `../../history/RFC-0010-history.md` (Tier 2, non-normative), which
+holds the rev11, rev11a and rev11b entries in full. An amendment log records
+how the contract got here; it is not part of what the contract says.
 
-**rev11a (2026-08-05b) — RFC10-18 amended in place.** The confirming review
-over the rev11 bytes constructed an escape the correction plane did not
-close: RFC10-18 as first written routed a mission with no independent
-establisher to `blocked` and called that terminating. But RFC10-5 defines
-`blocked` as **non-terminal**, and RFC10-19 states in terms that `blocked`
-discharges none of its compensation duties — so an effect-bearing mission
-routed there sat outside the correction plane the same amendment had just
-built. RFC10-18 now separates the two cases: no applied effects enters
-`blocked` awaiting human resolution; applied effects enters `failed`, which
-is where RFC10-19's duties are keyed. The rule that a mission never reaches
-`completed` on its own authority is unchanged.
-
-## 6. Alternatives considered (summary; this contract is new at rev10 and has no history file)
+## 6. Alternatives considered (summary; full rationale in the history file)
 
 A fourth truth surface ("Missions" beside Polaris/Trajectory/Orrery) —
 rejected: missions are operator authority over the same truth, not a new
@@ -603,4 +801,6 @@ scheduling algorithms; all transport/language/packaging choices.
 
 ---
 
-*End of contract. Clauses RFC10-1..RFC10-22; no gaps, no retired numbers.*
+*End of contract. Clauses RFC10-1..RFC10-22, with sub-clauses RFC10-17(a),
+RFC10-18(a) and RFC10-19(a) living with their parents; no gaps, no retired
+numbers. Rationale and amendment history:* `../../history/RFC-0010-history.md`*.*

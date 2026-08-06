@@ -21,7 +21,7 @@ scripts/context_load.py rfcs/RFC-0007/README.md \
   rfcs/RFC-0002/rendering-vocabularies.md doctrine:vision.md
 ```
 
-Measured: **13,842 words ≈ 18,687 estimated tokens** — inside the
+Measured: **13,885 words ≈ 18,745 estimated tokens** — inside the
 15–20k working target. (Rev9 equivalent: whole corpus, ~121k words.)
 
 ## Omitted applicable candidates, with reasons
@@ -62,7 +62,7 @@ authoring-strength restatements suffice for this edit; loading them adds
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`397ff4a12fccd9a8…` (recompute:
+`54d040821bfbe338…` (recompute:
 `cat <mandatory files> | sha256sum`). Compiler: `context_load.py`,
 selection rules rev10-fixtures.
 

@@ -38,15 +38,19 @@ and the closed rendering-tier registry).
 **Every clause identity appears in exactly one module.** One `RFC2-n`
 namespace, no duplicated normative clauses, no renumbering.
 
-| Module | File | Clauses | Words |
-|---|---|---|---|
-| 1 — snapshot and evaluation core | `snapshot-and-evaluation-core.md` | RFC2-1..RFC2-11 | 1,955 |
-| 2 — challenge lifecycle | `challenge-lifecycle.md` | RFC2-12..RFC2-14 | 2,225 |
-| 3 — reconciliation chain | `reconciliation-chain.md` | RFC2-15..RFC2-22 | 2,470 |
-| 4 — rendering vocabularies | `rendering-vocabularies.md` | RFC2-23..RFC2-25 | 2,388 |
+| Module | File | Clauses |
+|---|---|---|
+| 1 — snapshot and evaluation core | `snapshot-and-evaluation-core.md` | RFC2-1..RFC2-11 |
+| 2 — challenge lifecycle | `challenge-lifecycle.md` | RFC2-12..RFC2-14 |
+| 3 — reconciliation chain | `reconciliation-chain.md` | RFC2-15..RFC2-22 |
+| 4 — rendering vocabularies | `rendering-vocabularies.md` | RFC2-23..RFC2-25 |
 
-Counts are `wc -w` at the rev10 compaction; no module approaches the ~7,000
-ceiling.
+Module sizes are deliberately **not stated here**. A measurement copied into
+contract prose goes stale the moment any module moves, and moves this
+package's content digest for a reason that has nothing to do with what the
+package says. This artifact is governed by the applicable context-budget
+policy; the current measurement lives in the generated budget report
+`../../CONTEXT-BUDGET-REPORT.md`, which is regenerated, never transcribed.
 
 **Lookup rule (deterministic).** For any citation `RFC2-n`, read `n` as an
 integer and take the first row whose range contains it. RFC 0002 has **no

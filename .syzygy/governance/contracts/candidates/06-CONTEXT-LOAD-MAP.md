@@ -13,25 +13,17 @@
 ## The corpus, as loadable modules
 
 11 contracts → **32 modules** (7 packages + 2 single-file RFCs + RFC-0010 +
-RFC-0011 + 7 package READMEs), mean normative module ~3,500 words. Machine
-lookup: `05-CONTRACT-INDEX.yaml` (regenerable:
-`scripts/build_contract_index.py --check`). Word measurement for any
-selection: `scripts/context_load.py <paths>` — all figures below are its
-output, re-runnable from this packet.
+RFC-0011 + 7 package READMEs). Machine lookup: `05-CONTRACT-INDEX.yaml`
+(regenerable: `scripts/build_contract_index.py --check`).
 
-| Contract | Modules (words) |
-|---|---|
-| RFC-0001 | single, 8,342 (justified oversize — dictionary; see 03 report) |
-| RFC-0002 | core 1,955 · challenge 2,225 · reconciliation 2,470 · rendering 2,388 · README 1,809 |
-| RFC-0003 | manifests 4,819 · governance-homes 4,407 · README 913 |
-| RFC-0004 | general 1,677 · adapters 3,682 · execution-record 1,770 · fidelity 1,737 · README 1,670 |
-| RFC-0005 | admission 3,635 · consent-egress 2,343 · profiles 2,192 · README 1,997 |
-| RFC-0006 | single, 4,167 |
-| RFC-0007 | narrative 5,165 · rendering 3,142 · README 2,324 |
-| RFC-0008 | identity/materialization 2,684 · state/cost 3,504 · accounting 3,051 · README 1,918 |
-| RFC-0009 | geography 6,996 · grammar/lenses 5,538 · parity/release 3,023 · README 2,025 |
-| RFC-0010 | single, 5,030 |
-| RFC-0011 | single, 2,264 |
+**Module sizes are not listed here.** They were, per contract, and eleven of
+eleven rows went stale — one of them badly — while the paragraph above them
+said the figures were "re-runnable from this packet". A fresh engineer caught
+two by hand and then correctly stopped trusting the file, which is the real
+cost of a stale derived view: it does not merely mislead, it spends the
+reader's trust in everything around it. Current per-module measurement lives
+in the generated `CONTEXT-BUDGET-REPORT.md` §3, and the measurement of any
+selection you make is `scripts/context_load.py <paths>`.
 
 ## Reader map — who loads what
 
@@ -50,24 +42,26 @@ output, re-runnable from this packet.
 - Every package README carries the deterministic clause-lookup rule, so a
   cited `RFCn-m` resolves to one module without search.
 
-## Measured context-selection exercises (fixtures/, directive §7)
+## Measured context-selection exercises (fixtures/)
 
-| # | Task | Mandatory load | Tokens (est) | Within 15–20k target |
-|---|---|---|---|---|
-| 1 | Polaris narrative change | 13,864 w | 18,716 | ✓ |
-| 2 | Work-provider adapter mapping change | 18,315 w | 24,725 | **disclosed exception** — authorization-bearing risk class; sharding path stated in fixture |
-| 3 | Orrery lens change | 14,134 w | 19,080 | ✓ |
-| 4 | Execution-profile amendment | 10,893 w | 14,705 | ✓ |
-| 5 | Cross-project Mission draft | 12,843 w | 17,338 | ✓ |
+Nine fixtures live in `fixtures/`. Each states its own mandatory selection,
+its omitted candidates with reasons, and its packet digest; each one's
+measurement is **written by a generator and verified by a second, independent
+one** — `scripts/build_budget_report.py` writes the anchored figure and
+`scripts/check_governance.py` CG-18 recomputes it from the fixture's own
+declared load command.
 
-Baseline displaced: rev9's only safe instruction was whole-corpus loading —
-~123,200 words ≈ 166,300 estimated tokens per task (re-measured 2026-08-05). Median fixture load is
-**~11% of that**. The token heuristic (words × 1.35) is stated in
-`context_load.py`; the acceptance target is a working policy figure, **not
-doctrine** (RFC11-11; RFC 0011 §8 q1 leaves its custody to the owner).
+**The per-fixture figures that used to sit in this table are gone**, for the
+reason above: they were a third copy of a measurement whose first copy is the
+fixture and whose second is now generated. Read
+`CONTEXT-BUDGET-REPORT.md` §1 for all nine, with each one's disposition
+against the proposed decomposition trigger, and §2 for the candidate budget
+exceptions with their reviewer, scope and expiry.
 
-
-> *Figures re-measured 2026-08-05 after this round's recorded P-6/P-7 corrections (see the fixtures' own re-measure notes). This map covers the five accepted-set fixtures; draft fixtures 6–8 are measured in `round-2026-08/CONTEXT-COMPILER-FIXTURE-REPORT.md` and are deliberately not routed from here until reviewed.*
+What the fixture set is *for* survives the deletion and is worth stating
+plainly: **rev9's only safe instruction was to load the whole corpus.** The
+selections below it are a small fraction of that. The exact fraction is a
+measurement and lives with the other measurements.
 
 ## Rules the map rides on
 

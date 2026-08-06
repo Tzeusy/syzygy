@@ -902,6 +902,21 @@ which is the definition of a specifiable behavior.
 
 **Tally:** OS 6 · N/A 0 · CR 0 · IR 0 · total 6 (sums: yes)
 
+### rev11b addition — three sub-clauses
+
+Added 2026-08-06 by the correction plane's second repair pass, each living
+with its parent clause and routed on its own terms. All three are `OS`: each
+names something that either happens or fails to happen at runtime, and each
+one exists because a reviewer constructed the scenario in which it did not.
+
+| Clause | Route | Future spec domain | Retained invariant in the RFC | Justification |
+|---|---|---|---|---|
+| RFC10-17(a) | OS | `spec/mission-control` | Every reservation has a stated release point; no non-terminal park holds one indefinitely | A scenario must assert that a mission parked in `blocked` releases its reservation at the transition to `expired` and not before, and that an unterminated run's reservation is **retained and named** rather than returned |
+| RFC10-18(a) | OS | `spec/mission-control` | The effects-applied determination has an independent evaluator, a `gate-backed` floor, and a fail-closed Unknown rule | A scenario must assert that an executing principal's report of "no effects applied" does **not** route the mission to `blocked`, and that an Unknown determination routes it to `failed` with the Attention Item saying the disposition rests on an unresolved determination |
+| RFC10-19(a) | OS | `spec/mission-control` | Sibling disposition on partial failure is a declared policy input; unstated is the strictest reading | A scenario must assert that an envelope declaring no sibling disposition does **not** default to `independent` — completed siblings' effects are dispositioned, or the mission escalates before further dispatch |
+
+**Tally:** OS 3 · N/A 0 · CR 0 · IR 0 · total 3 (sums: yes)
+
 
 ---
 
