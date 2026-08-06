@@ -235,3 +235,36 @@ and carries every phase-specific and machine-specific detail.
   **negative** fixture (`F6e`, a well-formed pin to a nonexistent repository
   that must pass) kept in `--selftest` so the residual limit is executable
   rather than merely written in a docstring.
+
+## Round 2026-08b close-out (2026-08-06)
+
+- **A required output can be absent while all of its work is done.** Charter
+  §21 named `TERM-CLOSURE-REPORT.md`; the vocabulary work it reports was
+  executed across three artifacts and it was never written. Nothing was
+  missing except the answer — "is §9 closed?" had no readable answer for a
+  day. Check the deliverable list against the filesystem, by name, before
+  claiming a mandate is settled; the work being done is not the same fact as
+  the deliverable existing.
+
+- **A check's own header can name a field correctly while the field is named
+  wrongly.** CG-19's header called the value a *disposition*; the lock's key
+  was `status:` — the one word the term registry §1 forbids, because five
+  closed vocabularies answer to it. Nothing caught it until a check was
+  written for the rule itself (CG-22), and then it was the first and only
+  finding, in this round's own work. When a rule is documented but
+  unenforceable, the first thing enforcement finds is usually the author.
+
+- **A marker-window exemption is a back door unless a fixture proves the
+  window is real.** CG-22 exempts a mention marked "renamed"/"retired", the
+  same shape CG-12 uses. Without a negative fixture placing the marker
+  *outside* the window, any file mentioning a rename anywhere would pass the
+  whole file. The exemption and the fixture that bounds it are one unit of
+  work, never two.
+
+- **Word budgets over a file a tool also writes measure two authors.**
+  `AGENTS.md` read 1,438 words against a 900–1,200 target — 1,143 authored,
+  295 written and rewritten by `bd`. Trimming the router to hit the total
+  would have deleted charter-required content to compensate for a block that
+  is not ours to edit. CG-8 now reports both figures; the target is read
+  against the region it governs, and the whole-file total is never quietly
+  replaced by the smaller number.

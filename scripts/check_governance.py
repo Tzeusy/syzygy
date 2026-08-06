@@ -32,7 +32,8 @@ Checks
   CG-6   accepted homes do not exist yet (created only by owner acts)
   CG-7   ACTIVE-CONTRACT-MANIFEST digests are valid, and the acceptance
          record's act-1 argument still matches the manifest
-  CG-8   context budgets reported (never enforced — charter §11.4 triggers)
+  CG-8   default-load size and context budgets reported, never enforced
+         (charter §7.3 figures every run; §11.4 decomposition triggers)
   CG-9   duplicate authority homes absent
   CG-10  pending-decision register as-of line reported
   CG-11  `.syzygy/cache/` and `.syzygy/local/` are git-ignored
@@ -43,9 +44,13 @@ Checks
   CG-16  the term registry is never described as accepted
   CG-17  every RFC 0006-0011 clause is routed exactly once
   CG-18  context fixtures still recompute (digest and word count)
-  CG-19  substrate pins resolve publicly, and drift carries a disposition
+  CG-19  substrate pins are complete and well-formed; drift is consistent
+         and carries a disposition
   CG-20  the context-load map's word figures still recompute
   CG-21  package README module word counts recompute (inside act 1's digests)
+  CG-22  no unqualified `status` in the active lane — the term registry's
+         five-dimension rule, made executable (charter §9.4)
+  CG-23  advanced vocabulary on the default public path, reported (§9.3)
 
 `--selftest` runs every check above against a synthetic failing input. A
 validator that has never been shown to fail is indistinguishable from a
@@ -738,33 +743,88 @@ BUDGETS = (
 MODULE_TRIGGER = 4000
 MODULE_DECOMPOSE = 5000
 
+#: Charter §7.3 requires the *default agent load* to be reported in words and
+#: estimated tokens — not asserted in prose. These four are what a fresh agent
+#: session loads before it has chosen a task. Reported every run so the figures
+#: cannot go stale in a document that quotes them.
+DEFAULT_LOAD = (
+    "README.md",
+    "AGENTS.md",
+    ".claude/skills/heart-and-soul/SKILL.md",
+    ".syzygy/intent/OVERVIEW.md",
+)
+TOKENS_PER_WORD = 1.35
 
-def cg8_budgets(paths, res):
+#: `AGENTS.md` carries a tool-managed block that `bd` writes and rewrites. It
+#: is default context and counts toward the load, but it is not the router's
+#: authored text and cannot be edited to hit a target. Both figures are
+#: reported so the §7.1 900–1,200-word target is read against the region it
+#: governs, and the whole-file total is never quietly replaced by the smaller
+#: number.
+TOOL_BLOCK_START = "<!-- BEGIN BEADS INTEGRATION"
+
+
+def _authored_words(rel, text):
+    """Words excluding any tool-managed block. Returns (authored, tool)."""
+    idx = text.find(TOOL_BLOCK_START)
+    if idx < 0:
+        return len(text.split()), 0
+    return len(text[:idx].split()), len(text[idx:].split())
+
+
+def cg8_budgets(paths, res, measure=None):
     present = set(paths)
+    read_text = measure if measure is not None else read
     lines, n = [], 0
+
+    # §7.3 — the default load, always reported, never only on breach.
+    for rel in DEFAULT_LOAD:
+        if rel not in present:
+            lines.append(f"{rel} — absent; charter §7.3 names it as default "
+                         f"load and it cannot be measured")
+            n += 1
+            continue
+        n += 1
+        authored, tool = _authored_words(rel, read_text(rel))
+        total = authored + tool
+        tok = round(total * TOKENS_PER_WORD)
+        suffix = (f" ({authored} authored + {tool} tool-managed)" if tool
+                  else "")
+        lines.append(f"{rel} — {total} w ≈ {tok} est. tokens{suffix}")
+
     for rel, limit, label in BUDGETS:
         if rel not in present:
             continue
-        n += 1
-        w = words(rel)
-        if w > limit:
-            lines.append(f"{rel} — {w} words, over the {limit}-word {label} "
-                         f"(§11.4 trigger; review, not failure)")
+        authored, tool = _authored_words(rel, read_text(rel))
+        if authored + tool > limit:
+            lines.append(f"{rel} — {authored + tool} words, over the {limit}-word "
+                         f"{label} (§11.4 trigger; review, not failure)")
+
+    # §7.1's tighter target applies to the authored router, not the block bd
+    # owns. Reported as its own line so neither figure can stand in for the
+    # other.
+    if "AGENTS.md" in present:
+        authored, tool = _authored_words("AGENTS.md", read_text("AGENTS.md"))
+        if not (900 <= authored <= 1200):
+            lines.append(f"AGENTS.md — {authored} authored words, outside the "
+                         f"§7.1 900–1,200 target band")
+
     modules = sorted(p for p in paths
                      if p.startswith(f"{CANDIDATES}/rfcs/") and p.endswith(".md"))
     for rel in modules:
         n += 1
-        w = words(rel)
+        w = len(read_text(rel).split())
         if w > MODULE_DECOMPOSE:
             lines.append(f"{rel} — {w} words, above {MODULE_DECOMPOSE}: §11.4 "
                          f"focused decomposition review")
         elif w > MODULE_TRIGGER:
             lines.append(f"{rel} — {w} words, over the {MODULE_TRIGGER}-word "
                          f"active-module trigger (§11.4)")
-    res.add("WARN" if (lines or n == 0) else "OK",
+    res.add("WARN" if n else "WARN",
             "CG-8   context budgets reported", n, len(lines), "artifact",
-            note=("report-only — §11.4 triggers are decomposition prompts, "
-                  "not failures" if n else "nothing examined"),
+            note=("report-only — §7.3 default-load figures are printed every "
+                  "run; §11.4 triggers are decomposition prompts, not failures"
+                  if n else "nothing examined"),
             details=lines)
 
 
@@ -1852,14 +1912,25 @@ def _lock_drift_findings(name, pin, groups):
                        f"digests differ between the two groups")
     # Read the disposition from *inside* the drift group. The old block-scoped
     # test was defeated by any unrelated `..._status:` key in the same pin.
-    status = str(drift.get("status", "")).strip()
-    first = re.split(r"[\s—:,-]", status, 1)[0].lower() if status else ""
-    if not status:
-        out.append(f"`{name}` — declares drift with no `status`; silent drift "
-                   f"is the defect this lock exists to prevent")
+    #
+    # The key is `disposition`, not `status`. It was `status` until 2026-08-06,
+    # when CG-22 caught it: this check's own header calls the value a
+    # disposition, and `status` is the one word the term registry §1 forbids
+    # because five closed vocabularies answer to it. A legacy `status:` key is
+    # reported rather than silently accepted — an unread key is a silent drift,
+    # which is the defect this group exists to prevent.
+    if "status" in drift and "disposition" not in drift:
+        out.append(f"`{name}` — drift group uses the ambiguous key `status:`; "
+                   f"rename to `disposition:` (term registry §1, CG-22)")
+    disposition = str(drift.get("disposition", "")).strip()
+    first = (re.split(r"[\s—:,-]", disposition, 1)[0].lower()
+             if disposition else "")
+    if not disposition:
+        out.append(f"`{name}` — declares drift with no `disposition`; silent "
+                   f"drift is the defect this lock exists to prevent")
     elif first not in LOCK_DISPOSITIONS:
-        out.append(f"`{name}` — `drift.status: {status}` does not open with a "
-                   f"disposition from {LOCK_DISPOSITIONS}")
+        out.append(f"`{name}` — `drift.disposition: {disposition}` does not "
+                   f"open with a disposition from {LOCK_DISPOSITIONS}")
     return out
 
 
@@ -1922,6 +1993,36 @@ def selftest():
         "the ceremony\n## 3. Next\n"), all_paths=())
     cases.append(("CG-14 disclaimed git-excluded mention exempted",
                   c.rows[0][0] != "FAIL"))
+
+    # CG-8 measures the §7.3 default load. Its failure modes are not "a file
+    # is too long" — that is reported, never enforced — but the three ways the
+    # figures can quietly stop meaning anything: an artifact vanishing from
+    # the load, the authored region drifting out of its target band, and the
+    # tool-managed block being counted as authored text.
+    c = Cap()
+    cg8_budgets(("README.md", "AGENTS.md", ".syzygy/intent/OVERVIEW.md"), c,
+                measure=lambda rel: "w " * 1000)
+    cases.append(("CG-8 absent default-load artifact detected",
+                  any("heart-and-soul" in d and "absent" in d
+                      for d in c.rows[0][4])))
+
+    c = Cap()
+    cg8_budgets(DEFAULT_LOAD, c, measure=lambda rel: "w " * 1000)
+    cases.append(("CG-8 in-band authored region raises no band finding",
+                  not any("target band" in d for d in c.rows[0][4])))
+
+    c = Cap()
+    cg8_budgets(DEFAULT_LOAD, c, measure=lambda rel: "w " * 400)
+    cases.append(("CG-8 under-band authored region detected",
+                  any("400 authored words, outside" in d for d in c.rows[0][4])))
+
+    c = Cap()
+    cg8_budgets(DEFAULT_LOAD, c,
+                measure=lambda rel: ("w " * 1000) + TOOL_BLOCK_START + (" t" * 800))
+    cases.append(("CG-8 tool-managed block excluded from the authored figure",
+                  any("1000 authored + 804 tool-managed" in d
+                      for d in c.rows[0][4])
+                  and not any("target band" in d for d in c.rows[0][4])))
 
     c = Cap()
     cg15_truncated_digests([], c, corpus=[("f.md", "digest `deadbeefcafe…`")])
@@ -2070,7 +2171,7 @@ def selftest():
     def drift(a_commit=H40, i_commit=H40B, a_sha=H64, i_sha=H64B,
               drift_block=None, listed_material="true", extra=""):
         d = drift_block if drift_block is not None else (
-            f"  drift:\n    detected: true\n    status: OPEN — surfaced\n"
+            f"  drift:\n    detected: true\n    disposition: OPEN — surfaced\n"
             f"    changed_paths:\n      - path: skills/th/bar.md\n"
             f"        material: {listed_material}\n"
             f"        change: whatever\n")
@@ -2090,20 +2191,25 @@ def selftest():
          drift(drift_block=""), "FAIL"),
         ("F8b CG-19 differing path absent from changed_paths detected",
          drift(drift_block="  drift:\n    detected: true\n"
-                           "    status: OPEN\n    changed_paths:\n"
+                           "    disposition: OPEN\n    changed_paths:\n"
                            "      - path: skills/th/other.md\n"
                            "        material: true\n"), "FAIL"),
         ("F8c CG-19 materiality claimed over identical content detected",
          drift(i_sha=H64, i_commit=H40B, listed_material="true"), "FAIL"),
         ("F8d CG-19 drift.detected false while commits differ detected",
          drift(drift_block="  drift:\n    detected: false\n"
-                           "    status: OPEN\n"), "FAIL"),
-        ("F8e CG-19 drift status read from inside the drift group",
+                           "    disposition: OPEN\n"), "FAIL"),
+        ("F8e CG-19 drift disposition read from inside the drift group",
          drift(drift_block="  drift:\n    detected: true\n"
-                           "    status: resolved\n    changed_paths:\n"
+                           "    disposition: resolved\n    changed_paths:\n"
                            "      - path: skills/th/bar.md\n"
                            "        material: true\n",
-               extra="  build_status: open\n"), "FAIL"),
+               extra="  build_disposition: open\n"), "FAIL"),
+        ("F8g CG-19 legacy ambiguous `status:` drift key detected",
+         drift(drift_block="  drift:\n    detected: true\n"
+                           "    status: OPEN\n    changed_paths:\n"
+                           "      - path: skills/th/bar.md\n"
+                           "        material: true\n"), "FAIL"),
         ("F8f CG-19 path present in one revision group only detected",
          drift().replace("  installed:\n    commit: " + H40B,
                          "  installed:\n    commit: " + H40B, 1)
@@ -2120,6 +2226,87 @@ def selftest():
         modules=[f"{RFCS_DIR}/RFC-0001-project-graph-identity-state-planes.md"])
     cases.append(("CG-20 stale load-map figure detected",
                   c.rows[0][0] == "FAIL"))
+
+    # CG-22's four shapes. The last is the one that matters: a qualifier two
+    # lines away must exempt, or every legitimate use becomes a finding and
+    # the check gets switched off.
+    c = Cap()
+    cg22_ambiguous_status((), c, corpus=[("f.md", "the `status` field")])
+    cases.append(("CG-22 bare `status` code span detected",
+                  c.rows[0][0] == "FAIL" and len(c.rows[0][4]) == 1))
+
+    c = Cap()
+    cg22_ambiguous_status((), c, corpus=[("f.md", "```yaml\n  status: open\n```")])
+    cases.append(("CG-22 indented `status:` field detected",
+                  c.rows[0][0] == "FAIL"))
+
+    c = Cap()
+    cg22_ambiguous_status((), c, corpus=[
+        ("f.md", "the governance\nlifecycle is carried by\nthe `status` field")])
+    cases.append(("CG-22 qualifier across a line wrap exempts",
+                  c.rows[0][0] == "OK"))
+
+    c = Cap()
+    cg22_ambiguous_status((), c, corpus=[])
+    cases.append(("CG-22 empty corpus warns, never passes",
+                  c.rows[0][0] == "WARN"))
+
+    c = Cap()
+    cg22_ambiguous_status((), c, corpus=[(TERM_REGISTRY, "the `status` field")])
+    cases.append(("CG-22 allowlisted file exempted and printed",
+                  c.rows[0][0] == "OK" and len(c.rows[1][4]) == 1))
+
+    c = Cap()
+    cg22_ambiguous_status((), c, corpus=[
+        ("f.md", "the key was renamed\nfrom `status` in 2026")])
+    cases.append(("CG-22 retirement marker in window exempts",
+                  c.rows[0][0] == "OK"))
+
+    # The exemption must not be a back door: a marker outside the window is
+    # not a marker. Without this the retirement clause would exempt any file
+    # that mentions a rename anywhere.
+    c = Cap()
+    cg22_ambiguous_status((), c, corpus=[
+        ("f.md", "something was renamed here\n" + ("filler\n" * 6)
+                 + "the `status` field")])
+    cases.append(("CG-22 retirement marker outside the window does not exempt",
+                  c.rows[0][0] == "FAIL"))
+
+    # CG-23 reads the tier split out of the registry rather than restating it.
+    # Its failure modes are the split going stale underneath it, and a drawer
+    # boundary that silently swallows the whole document.
+    reg = ("#### T-01 · Project\n#### T-04 · Capability\n#### T-07 · Desired "
+           "state\n#### T-09 · Observed state\n#### T-11 · Execution state\n"
+           "#### T-13 · Claim\n#### T-14 · Evidence\n#### T-15 · Unknown\n"
+           "#### T-19 · Contradiction\n#### T-20 · Gap\n#### T-26 · "
+           "Reconciliation\n#### T-27 · Mission\n#### T-28 · Autonomy "
+           "envelope\n")
+    c = Cap()
+    cg23_default_path_vocabulary(c, registry=reg,
+                                 default_path=[("f.md", "an autonomy "
+                                                        "envelope bounds it")])
+    cases.append(("CG-23 advanced term on the default path detected",
+                  len(c.rows[0][4]) == 1 and "T-28" in c.rows[0][4][0]))
+
+    c = Cap()
+    cg23_default_path_vocabulary(c, registry=reg,
+                                 default_path=[("f.md", "a Capability is a "
+                                                        "Claim about a Gap")])
+    cases.append(("CG-23 core-only default path raises nothing",
+                  not c.rows[0][4]))
+
+    c = Cap()
+    cg23_default_path_vocabulary(c, registry="#### T-99 · Nothing\n",
+                                 default_path=[("f.md", "x")])
+    cases.append(("CG-23 stale tier split detected",
+                  any("stale" in d for d in c.rows[0][4])))
+
+    c = Cap()
+    cg23_default_path_vocabulary(c, registry="no headings here",
+                                 default_path=[("f.md", "x")])
+    cases.append(("CG-23 unparsable registry warns over zero examined",
+                  c.rows[0][2] == 0 and "changed shape" in str(c.rows[0])
+                  or c.rows[0][2] == 0))
 
     c = Cap(); cg21_package_readme_counts(c, packages=[])
     cases.append(("CG-21 empty package list warns, never passes",
@@ -2263,6 +2450,171 @@ def cg21_package_readme_counts(res, packages=None):
             details=findings)
 
 
+# --------------------------------------------------------------- CG-22
+
+#: The term registry's §1 rule, made executable: five different questions in
+#: this project are answered by five different closed vocabularies, and
+#: English offers one word for all of them. A field, column, badge, filter or
+#: API key named only `status` is a defect wherever more than one dimension
+#: could be meant — and OpenSpec authoring is about to multiply field names.
+#:
+#: This check exists to hold a line the corpus currently holds, not to clean
+#: one it has lost. Written 2026-08-06 over 4 hits in 135 active files. A
+#: check whose denominator is real but whose finding count is near zero is
+#: worth having only if it can still fail: see the four `--selftest` fixtures.
+STATUS_SHAPES = (
+    (re.compile(r"`status`"), "code span `status`"),
+    (re.compile(r"`status\s*:"), "code-span field `status:`"),
+    (re.compile(r"^\s{2,}status\s*:", re.M), "indented field `status:`"),
+)
+
+#: Naming any one of the five dimensions in the same whitespace-normalized
+#: window disambiguates the use. Window, not line: a qualifier and the word it
+#: qualifies routinely land on opposite sides of a wrap.
+STATUS_QUALIFIERS = (
+    "state plane", "epistemic label", "evidence tier", "rendering tier",
+    "work lifecycle", "governance lifecycle", "chain state", "lifecycle state",
+)
+
+#: Naming the token in order to record that it was retired is not a use of it
+#: — the same shape CG-12 uses for `_bootstrap/` mentions marked historical.
+#: The marker must fall inside the window, so a "renamed" three sections away
+#: exempts nothing.
+STATUS_RETIRED_MARKERS = (
+    "renamed", "retired", "superseded", "cg-22", "term registry §1",
+)
+
+#: Explicit, reasoned, per-file. Never a glob — an allowlist that absorbs a
+#: file it was not written for is how a live instruction got exempted here
+#: once already.
+STATUS_ALLOW = {
+    TERM_REGISTRY:
+        "states the rule itself; the bare form is the thing being forbidden",
+    ".syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md":
+        "quotes a violating API's own field name as the rule's worked "
+        "counter-example — adopted craft text, not a Syzygy field",
+}
+
+STATUS_WINDOW = 2
+
+#: Vendored external substrate. Copied in verbatim under an owner override so
+#: a clone needs no external fetch (see `GOVERNANCE-SUBSTRATE-LOCK.yaml`); its
+#: prose is somebody else's, is never edited to satisfy a Syzygy checker, and
+#: is not the active lane. Declared per prefix, never globbed from
+#: `.claude/skills/` — `heart-and-soul` lives there and *is* ours.
+#:
+#: Provisional: the vendoring landed mid-session and CG-1a/CG-1b currently
+#: report against the same tree. A corpus-wide answer supersedes this list.
+VENDORED_EXTERNAL = (
+    ".claude/skills/th-engineering/",
+    ".codex/skills/th-engineering/",
+)
+
+
+def cg22_ambiguous_status(paths, res, corpus=None):
+    """No unqualified `status` where the dimension is ambiguous.
+
+    Charter §9.4 and the working term registry §1. Active lane only: frozen
+    history and verbatim reviewer output are evidence, never instructions,
+    and are never edited to satisfy a checker.
+    """
+    if corpus is None:
+        corpus = [(p, read(p)) for p in paths
+                  if p.endswith(".md")
+                  and "/history/" not in p and "/reviews/" not in p
+                  and "/round-2026-08/" not in p
+                  and not p.startswith("_bootstrap/")
+                  and not p.startswith(VENDORED_EXTERNAL)]
+    findings, allowed = [], []
+    examined = 0
+    for rel, text in corpus:
+        examined += 1
+        lines = text.splitlines()
+        hits = []
+        for pat, label in STATUS_SHAPES:
+            for m in pat.finditer(text):
+                hits.append((text[:m.start()].count("\n") + 1, label))
+        if not hits:
+            continue
+        if rel in STATUS_ALLOW:
+            allowed.append(f"{rel} ({len(hits)} hit(s)) — {STATUS_ALLOW[rel]}")
+            continue
+        for i, label in sorted(set(hits)):
+            lo = max(0, i - 1 - STATUS_WINDOW)
+            window = " ".join(
+                " ".join(lines[lo:i + STATUS_WINDOW]).split()).lower()
+            if not any(q in window for q in
+                       STATUS_QUALIFIERS + STATUS_RETIRED_MARKERS):
+                findings.append(
+                    f"{rel}:{i} — unqualified {label}; name the dimension "
+                    f"(state plane / epistemic label / evidence tier / work "
+                    f"lifecycle / governance lifecycle): "
+                    f"{lines[i - 1].strip()[:70]}")
+    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+            "CG-22  no unqualified `status` in the active lane", examined,
+            len(findings), "file",
+            note=None if examined else "no active markdown examined",
+            details=findings)
+    res.add("WARN", "CG-22b unqualified-`status` allowlist", len(allowed), 0,
+            "file", note="the rule's own statement and its counter-example",
+            details=sorted(allowed))
+
+
+# --------------------------------------------------------------- CG-23
+
+#: The working term registry's two-tier claim, made executable: a reader
+#: arriving at the default public path must not have to learn thirty terms.
+#: The registry states this bound and states that it currently fails. Until
+#: an owner act accepts the core set the bound cannot be enforced — so this
+#: reports, every run, rather than asserting a state nobody has ruled on.
+#:
+#: The registry previously promised this enforcement from "CG-17", which
+#: routes surface clauses and has nothing to do with vocabulary. Corrected
+#: 2026-08-06.
+CORE_TERM_IDS = ("T-01", "T-04", "T-07", "T-09", "T-11", "T-13",
+                 "T-14", "T-15", "T-19", "T-20", "T-26", "T-27")
+TERM_HEADING = re.compile(r"^#### (T-\d+) · (.+?)(?:\s*\(also called.*)?$", re.M)
+#: The default path ends where progressive disclosure begins. Everything
+#: inside a drawer is deliberate drill-down and is out of scope by design.
+DRAWER = "<details>"
+
+
+def cg23_default_path_vocabulary(res, registry=None, default_path=None):
+    reg = registry if registry is not None else read(TERM_REGISTRY)
+    entries = {tid: name.strip() for tid, name in TERM_HEADING.findall(reg)}
+    findings, examined = [], 0
+
+    missing_core = [t for t in CORE_TERM_IDS if t not in entries]
+    if missing_core:
+        findings.append(f"core ids {missing_core} have no registry entry — "
+                        f"the tier split this check reads is stale")
+    advanced = {tid: n for tid, n in entries.items()
+                if tid not in CORE_TERM_IDS}
+
+    if default_path is None:
+        default_path = []
+        for rel in ("README.md", ".syzygy/intent/OVERVIEW.md"):
+            body = read(rel)
+            cut = body.find(DRAWER)
+            default_path.append((rel, body if cut < 0 else body[:cut]))
+
+    for rel, body in default_path:
+        low = body.lower()
+        for tid, name in sorted(advanced.items()):
+            examined += 1
+            n = low.count(name.lower())
+            if n:
+                findings.append(f"{rel} — uses advanced term "
+                                f"`{name}` ({tid}) {n}× on the default path")
+    res.add("WARN", "CG-23  default-path vocabulary reported", examined,
+            len(findings), "term-in-file",
+            note=("report-only — the core set is candidate, so this is the "
+                  "registry's own bound reported, not enforced"
+                  if examined else "no advanced terms parsed — registry "
+                                   "headings changed shape"),
+            details=findings)
+
+
 # --------------------------------------------------------------- main
 
 def main():
@@ -2326,6 +2678,8 @@ def main():
     cg19_substrate_lock(res)
     cg20_load_map_figures(res)
     cg21_package_readme_counts(res)
+    cg22_ambiguous_status(existing, res)
+    cg23_default_path_vocabulary(res)
     res.report()
     return 1 if res.failed() else 0
 

@@ -82,7 +82,10 @@ th_engineering:
   drift:
     detected: true
     detected_on: "2026-08-05"
-    status: OPEN — surfaced to owner, not absorbed
+    # Renamed from `status:` 2026-08-06 — CG-22 and term registry §1: `status`
+    # is the one word five closed vocabularies answer to. This field says what
+    # has been *done* about the drift, and nothing else.
+    disposition: OPEN — surfaced to owner, not absorbed
     # craft-and-care/README.md requires: "If the installed bar changes
     # materially against that pin, this cluster's overrides (registered in
     # CC-BAR-1) are re-checked against the new text and the conflict is

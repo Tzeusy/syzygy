@@ -73,7 +73,10 @@ compared against anything, so a drift rule written over it is decorative.
 ## Disposition
 
 The drift is recorded in the lock under `th_engineering.drift` with
-`status: OPEN — surfaced to owner, not absorbed`, and as owner item **P-26**.
+`disposition: OPEN — surfaced to owner, not absorbed`, and as owner item
+**P-26**. (The key was `status:` until 2026-08-06, when CG-22 caught it: this
+check's own header calls the value a disposition, and `status` is the one word
+the term registry §1 forbids because five closed vocabularies answer to it.)
 It is **not** absorbed, and this round did not re-pin. Absorbing it would mean
 an agent deciding that two unapproved engineering rules now bind Syzygy, which
 is the owner's call.

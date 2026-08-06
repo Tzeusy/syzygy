@@ -2,9 +2,9 @@
 
 **Syzygy** (provisional codename) is a specification-driven software control
 plane: specifications define *desired state*, evidence defines *observed
-state*, the difference becomes reconciliation work, and agent fleets are
-actuators that close it. This file is **repository operating procedure** — not
-project truth, and never citable as authority.
+state*, the difference is reconciliation work, and agent fleets close it. This
+file is **repository operating procedure** — never citable as authority. What
+the project *is* lives in `README.md` and `.syzygy/intent/OVERVIEW.md`.
 
 ## Current lifecycle stage: final pre-specification
 
@@ -17,12 +17,12 @@ no `openspec/`, and no implementation backlog** — and none may be created.
 
 | Question | Authority | Path | Binding today? |
 |---|---|---|---|
-| Why — purpose, non-negotiables | Doctrine (VIS-1…7, SEC-1…5) | `.syzygy/governance/doctrine/` | **Yes** — adopted 2026-07-30, tag `doctrine-adopted-2026-07-30`, D1 in force |
+| Why — purpose, non-negotiables | Doctrine (VIS-1…7, SEC-1…5) | `.syzygy/governance/doctrine/` | **Yes** — adopted 2026-07-30, D1 in force |
 | Prior owner rulings | Decisions (SDR-1…33, warrants, pending queue) | `.syzygy/governance/decisions/` | **Yes** |
 | Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | **Owner-approved (D2)**; clause force begins at act 1 |
-| External baselines adopted by reference | Substrate lock | `.syzygy/governance/policies/GOVERNANCE-SUBSTRATE-LOCK.yaml` | Record, never authority |
-| Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/candidates/` | **No — candidate.** `contracts/rfcs/` is created only by act 1 |
-| Intended placement | Topology bundle | `.syzygy/map/topology-candidates/` | **No — candidate.** `map/topology/` is created only by act 3 |
+| External baselines by reference | Substrate lock | `.syzygy/governance/policies/GOVERNANCE-SUBSTRATE-LOCK.yaml` | Record, never authority |
+| Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/candidates/` | **No — candidate.** `contracts/rfcs/` exists only after act 1 |
+| Intended placement | Topology bundle | `.syzygy/map/topology-candidates/` | **No — candidate.** `map/topology/` exists only after act 3 |
 | Public narrative | Overview | `.syzygy/intent/OVERVIEW.md` | Governed presentation — **never authority** |
 | Required observable behavior | OpenSpec | *does not exist yet* | — |
 | What exists | Code, tests, CI, runtime | *none* | — |
@@ -35,8 +35,8 @@ clauses may be discussed, never cited as binding.
 
 Five acts are open; **none has been performed**. The acceptance record owns
 the phrases and the ceremony. Each digest belongs to the artifact it names, so
-any quoted copy is stale the moment it disagrees — verify with
-`check_governance.py` (CG-7) before any act. This file restates no digest.
+verify with `check_governance.py` (CG-7) before any act. This file restates no
+digest.
 
 | Act | Accepts | Digest source |
 |---|---|---|
@@ -48,10 +48,9 @@ any quoted copy is stale the moment it disagrees — verify with
 
 The owner-facing offering is
 `contracts/candidates/round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md`.
-`decisions/ACCEPTANCE-ACT-RECORD.md` does not exist yet — it is created by the
-first act, and its absence is correct. **Never edit an artifact after an act
-has bound its digest.** The rev9 phrase `ACCEPT FOUNDATIONAL RFCS` is retired
-and satisfies nothing.
+`decisions/ACCEPTANCE-ACT-RECORD.md` is created by the first act; its absence
+is correct. **Never edit an artifact after an act has bound its digest.** The
+rev9 phrase `ACCEPT FOUNDATIONAL RFCS` is retired and satisfies nothing.
 
 ## Task routing — context is compiled, never accumulated
 
@@ -92,37 +91,30 @@ them into consensus language.
 Normative edits travel as **semantic deltas**
 (`policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md`); "editorial" and "no
 semantic change" are reviewable claims. Reviews run in fresh-context sessions
-given only the artifact, its governing references, and acceptance criteria —
-never the authoring conversation. Store raw reviewer output verbatim and
-**copy verdict words exactly** (`EXCEPTIONS` never becomes "pass with
-findings").
+given only the artifact, its governing references, and acceptance criteria.
+Store raw reviewer output verbatim and **copy verdict words exactly**
+(`EXCEPTIONS` never becomes "pass with findings").
 
 ## Verification rules
 
-Each was paid for by a recorded incident (`decisions/PROCESS-LESSONS.md`):
+Seven rules, each paid for by a recorded incident. The incidents — and why
+each rule is shaped the way it is — are in `decisions/PROCESS-LESSONS.md`;
+read them before writing or trusting a check.
 
-1. **`grep` here is ugrep** — `[^]]`-style classes silently match nothing. Use
+1. **`grep` here is ugrep.** `[^]]`-style classes silently match nothing. Use
    `grep -F` or Python `re` for anything load-bearing.
-2. **Never write a "zero / all / 100%" claim without running that exact sweep
-   in the same session**, confirmed by a second method. Enumerate remainders.
+2. **No "zero / all / 100%" claim without running that exact sweep this
+   session**, confirmed by a second method. Enumerate remainders.
 3. **Digests are scripted, never transcribed; totals are computed.** A derived
    value quoted outside its owning artifact goes stale silently.
-4. **Read a check's *output*, not its exit code.** A PASS over zero examined
-   items verified nothing — and a green drift check can sit over a knowingly
-   inconsistent graph.
-5. **A citation is not a reliance.** Two shapes look like dependencies and
-   are not: the boilerplate `RFC3-16` status banner every module carries, and
-   the `(Shape-parallel with …)` parenthetical. Both fooled a dependency
-   sweep here; four wrong edges shipped before a reviewer caught them.
-6. **Before writing a new check, decide what would make it fail** — then make
-   it fail. `--selftest` holds one fixture per check for this reason. Two
-   checks in this repository reported OK over **zero** examined items.
-7. **Run the battery in a clone before claiming it is green.** The working
-   tree has the git-excluded `_bootstrap/`, absent from every clone. A check
-   that resolves paths against local disk verifies the machine, not the
-   repository — one did, and read a founder-only ceremony step as executable.
-   Clone reports are valid only for the commit they were run at; re-run them,
-   never patch their figures.
+4. **Read a check's *output*, not its exit code**, and check its denominator
+   against the whole population.
+5. **A citation is not a reliance** — the `RFC3-16` status banner and
+   `(Shape-parallel with …)` are not dependency edges.
+6. **Mutate the input and confirm the check fails**, per predicate, before
+   trusting it. `--selftest` holds the fixtures.
+7. **Run the battery in a clone** before calling it green; a clone report is
+   valid only for the commit it was run at.
 
 ## Validation
 
