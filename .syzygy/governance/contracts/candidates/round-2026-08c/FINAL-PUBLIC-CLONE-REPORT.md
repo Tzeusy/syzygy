@@ -158,3 +158,27 @@ every commit of this round.
 | **E-2** | RFC-0010's history pointer is dead at four lines, inside act 1's digest set | Frozen, disclosed in the acceptance packet, batched with the package split |
 | **E-3** | Act 1's install leaves eight dead pointers in the accepted tree | Claim corrected; pointers frozen. **No post-install link check exists** |
 | **E-4** | Act 5's digest-bound phrase form has a zero live denominator in CG-7d | Carried from RC-9 |
+
+## Clone re-run at the round's close
+
+RD-7's review was performed at `a7b3375`. The repairs above landed after it, so
+the battery was re-run in a **fresh clone taken at `99e141a`** — the commit
+carrying every repair this round made.
+
+```text
+26 OK, 14 WARN, 0 FAIL (40 checks) — counts derived, not asserted
+77 fixtures, 0 failing — a check that cannot fail is not a check
+PASS — all checks clean                       (verify_final_prespec.py)
+index matches regeneration — no drift         (build_contract_index.py --check)
+dependency index matches regeneration         (build_dependency_index.py --check)
+fixture anchors match regeneration            (build_budget_report.py --check)
+CG-7a…CG-7e — all OK, 0 findings
+```
+
+**Clone-identical to the working tree at that commit.** Per verification rule
+7, **this clone report is valid only for `99e141a`** and says nothing about any
+later commit.
+
+**It is not a substitute for RD-7.** A clone run by the session that wrote the
+repairs verifies that the checks pass; it does not verify that the repairs are
+right. The three open exceptions above are unchanged by it.
