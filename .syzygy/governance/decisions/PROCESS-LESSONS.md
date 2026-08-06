@@ -268,3 +268,57 @@ and carries every phase-specific and machine-specific detail.
   is not ours to edit. CG-8 now reports both figures; the target is read
   against the region it governs, and the whole-file total is never quietly
   replaced by the smaller number.
+
+## Round 2026-08b, second close-out (2026-08-06)
+
+- **A repair pass and the review of that pass cannot be the same pass.** RC-10
+  caught defects introduced while correcting other defects. RC-11, commissioned
+  over those repairs, caught defects introduced while correcting *those* — a
+  false citation inside act 1's digest set, nine more stale values of the class
+  the repair had just fixed twenty lines above, and a finding reframed into a
+  closure. The finding count shrinks each round and the *pattern* does not. A
+  session that drafts a fix to its own commissioned review's finding and then
+  declares it closed is running the loop; the fix and its confirmation must sit
+  in different sessions.
+
+- **A check that covers one row shape reads as covering the class.** CG-21's
+  matcher required a backticked module filename, so `| module 1 | 6,999 |`
+  never entered its denominator — while it printed "19 rows examined, 0
+  findings" over a file containing nine wrong values. The reviewer proved it by
+  mutating one to `111,111` and watching the check pass. The generalisation of
+  its own docstring ("hand-fixing a recurring class is how it recurs") is that
+  a check written from one instance inherits that instance's shape.
+
+- **Two marker classes need two windows.** CG-21's frozen-source markers want a
+  ±2-line window because prose wraps; its threshold markers want ±1, because at
+  ±2 a `~9,500 target` exempted a stale index count two lines above it. One
+  window for both is an allowlist wider than the check it guards.
+
+- **When a figure has been called unreproducible, withdraw it — do not
+  re-scope it.** "13 ordinal citations" was flagged by one review; the repair
+  kept the number and attached a *narrower* population to it, then added a
+  second number. The next review swept 15/16 and 28; a third sweep got 17/14
+  and 31/21. No definition yields a stable count, because the count depends on
+  how much text may sit between the identifier and the ordinal. The durable
+  form is the property ("no ordinal disagrees with the table") plus [Unknown]
+  for the count.
+
+- **Prose coverage claims drift; compute the denominator instead.** "Each check
+  shown able to fail" was false for two rounds. The first repair added 29
+  fixtures — all clustered where coverage already existed — which made the
+  sentence *less* true as a proportion while looking like a fix. CG-24 now reads
+  the fixture names out of the checker's own `selftest()` and compares them to
+  the identifiers the battery reported that run.
+
+- **Two sessions editing one acceptance record: stage hunks, never files.**
+  A parallel lead was mid-way through an owner-directed vendoring and re-pin
+  while this session repaired act 1. Both edited
+  `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md` — act 1's row here, act
+  2's there — and `git add` on that path would have committed their unfinished
+  work under this session's message, with a digest pointing at craft text still
+  sitting in the working tree. The technique that works: rebuild the file from
+  `git show HEAD:<path>`, apply only your own substitutions, `git hash-object
+  -w`, then `git update-index --cacheinfo`. Verify what you actually staged by
+  `git checkout-index -a --prefix=<tmp>/` and running the battery *there* — the
+  working tree cannot answer "is my commit green", because it contains
+  somebody else's half-finished work.
