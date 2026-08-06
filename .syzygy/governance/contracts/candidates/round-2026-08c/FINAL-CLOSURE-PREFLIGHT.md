@@ -127,13 +127,26 @@ to read an act argument.
 | Act | Subject | Argument at HEAD |
 |---|---|---|
 | 1 | the 32 contract modules | `2922de1c21354ad3a804acebcfdf665d9a8986d4fa8b3df42c62169f207ed98d` (sha256 of `ACTIVE-CONTRACT-MANIFEST.txt`) |
-| 2 | craft amendment CC-TEST-2 | `3858820f64768ef20e6514fe8adb28076263f071ac77e66a5520a612f3bcb26d` |
+| 2 | craft amendment CC-TEST-2 | `7a716090bc827121b3f70c4f7e252fc5680cd8a56d7b4121b70f3673489690a0` — **corrected 2026-08-06.** This row first recorded `3858820f…`, copied from the owner-facing offering, **which was itself holding a retired argument.** The acceptance record had been re-quoted on 2026-08-06 when `testing-and-verification.md` gained CC-TEST-7; the offering's copy had not, and no check examined it. Found by review RD-6 (H-1) and closed by CG-7e |
 | 3 | topology bundle | `7a3b22494a08d888901c1f0cec76833dc926e89b6f510b5abf8963071fbaeb45` |
 | 4 | project overview | `01d629515993188338f6a0e2d84d67543d8569003759a7c8f571a90b129c7cd1` |
 | 5 | doctrine amendment D3 (optional) | `e973e8e025c93b5d1e59d16d8661b0ae1f9804304c8f8de8957950acf3d8f9c9` |
 
-CG-7a…7d all pass at HEAD, so every quoted copy of these five agrees with its
-subject. That is the state a normative edit breaks and must restore.
+~~CG-7a…7d all pass at HEAD, so every quoted copy of these five agrees with
+its subject.~~ **Withdrawn — this sentence was false when written, and its
+falseness is the round's sharpest finding about its own instruments.**
+CG-7a…7d passed, and act 2's argument in the document `AGENTS.md` names as
+the owner-facing offering was *retired*. CG-7c reads the acceptance
+record's `CC-TEST-2@…` form; a bare 64-hex digest in a table row matched
+neither CG-7c, CG-7d nor CG-15, and a review mutation-proved that
+falsifying **all four** act arguments in that document left the battery at
+`0 findings, exit 0`. Review RD-6, finding H-1. Closed by **CG-7e**, which
+enumerates every file carrying an act-argument copy and the acts each one
+declares, and which fails on that exact mutation five times.
+
+What a green CG-7 means is therefore narrower than it read: the acceptance
+record's own phrase lines agree with their subjects. Whether every *copy*
+agrees is what CG-7e now answers.
 
 ## 5. Raw review verdicts carried in
 

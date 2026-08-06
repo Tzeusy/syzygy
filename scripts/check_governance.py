@@ -206,6 +206,7 @@ FORWARD_REFS = (
     ".syzygy/project.yaml",                                   # no governed project yet
     "openspec/",                                              # does not exist yet
     "RFC-000n",                                               # glob placeholder
+    "RFC-000N",                                               # same, uppercased
 )
 
 
@@ -661,6 +662,7 @@ def cg7_manifest(paths, res):
             details=findings)
 
     cg7d_quoted_elsewhere(paths, res)
+    cg7e_act_digest_copies(paths, res)
 
 
 #: Every act phrase, with the artifact whose sha256 is its only valid
@@ -695,6 +697,7 @@ ACT_SUBJECTS = (
 ACT_QUOTE_EXEMPT = (
     f"{CANDIDATES}/round-2026-08/reviews/",
     f"{CANDIDATES}/round-2026-08b/reviews/",
+    f"{CANDIDATES}/round-2026-08c/reviews/",
     f"{CANDIDATES}/reviews/",
     f"{CANDIDATES}/history/",
     f"{CANDIDATES}/fixtures/",
@@ -703,6 +706,137 @@ ACT_QUOTE_EXEMPT = (
     f"{CANDIDATES}/round-2026-08/OWNER-ROUND-CHARTER.md",
     SELF_REL,
 )
+
+
+#: Every file known to carry a **copy of an act argument** — a current act
+#: subject's digest, quoted for the owner's convenience somewhere other than
+#: the acceptance record's own phrase line. Enumerated, printed on every run,
+#: and self-maintaining: CG-7e fails if a file carries such a copy and is
+#: **not** listed here, so registration cannot be skipped by adding a new copy.
+#:
+#: Review RD-6 finding H-1 is why this exists. CG-7d requires the act *phrase*
+#: and the 64-hex on the same line; CG-15 requires a truncation marker. A full
+#: digest in a table row whose act is named in the row label matched neither.
+#: RD-6 mutation-proved it in a pristine extraction: seven falsified act
+#: arguments — **all four in the document `AGENTS.md` names as the
+#: owner-facing offering**, plus three in the closure preflight — returned
+#: `0 findings` and `exit 0` across the whole battery.
+#: {file: (act labels whose *current* argument the file must carry)}. The act
+#: list per file is enumerated, not inferred: inferring it from "which digests
+#: does the file happen to contain" is circular — a file that dropped a copy
+#: would be read as never having had one, which is the exact failure H-1
+#: describes. A file offering an act and not carrying its current argument
+#: fails; a file carrying a current argument and absent from this table fails
+#: too, so a new copy cannot skip registration.
+#:
+#: A **superseded** file belongs here only for the acts it still offers as
+#: live. `round-2026-08/FINAL-OWNER-ACCEPTANCE-RECORD.md` carries a
+#: `SUPERSEDED — Do not act from this file` banner and is history, so it is
+#: absent: RD-6 noted that a file cannot be history for CG-15b and a live
+#: offer for CG-7d at the same time.
+ACT_DIGEST_COPY_FILES = {
+    f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md":
+        ("ACCEPT COMPACTED FOUNDATIONAL RFCS",
+         "CONFIRM CRAFT AMENDMENT: CC-TEST-2",
+         "ACCEPT TOPOLOGY", "ADOPT PROJECT OVERVIEW"),
+    f"{CANDIDATES}/round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md":
+        ("ACCEPT COMPACTED FOUNDATIONAL RFCS",
+         "CONFIRM CRAFT AMENDMENT: CC-TEST-2",
+         "ACCEPT TOPOLOGY", "ADOPT PROJECT OVERVIEW",
+         "ADOPT DOCTRINE AMENDMENT: D3"),
+    f"{CANDIDATES}/round-2026-08b/PUBLIC-CLONE-VERIFICATION-REPORT.md":
+        ("CONFIRM CRAFT AMENDMENT: CC-TEST-2", "ACCEPT TOPOLOGY",
+         "ADOPT PROJECT OVERVIEW", "ADOPT DOCTRINE AMENDMENT: D3"),
+    f"{CANDIDATES}/round-2026-08c/FINAL-CLOSURE-PREFLIGHT.md":
+        ("CONFIRM CRAFT AMENDMENT: CC-TEST-2", "ACCEPT TOPOLOGY",
+         "ADOPT PROJECT OVERVIEW", "ADOPT DOCTRINE AMENDMENT: D3"),
+    f"{CRAFT}/INSTALL-RECORD.md":
+        ("CONFIRM CRAFT AMENDMENT: CC-TEST-2",),
+}
+
+
+def cg7e_act_digest_copies(paths, res):
+    """Every copy of an act argument is examined, wherever it sits.
+
+    Two predicates, and the second is what keeps the first honest:
+
+    1. **A registered file that names an act carries that act's current
+       argument.** Naming means the act's phrase or its subject path appears
+       in the file. If the copy goes stale, the current digest is simply
+       absent from a file that talks about the act — which is decidable, and
+       does not require guessing whether some other 64-hex token used to be
+       an act argument.
+    2. **A file carrying a current act digest is registered.** An
+       unregistered copy is unchecked from the moment it goes stale, which is
+       exactly how the population escaped CG-7d.
+
+    **Why not the simpler rule.** Review RD-6 (H-1) proposed treating every
+    64-hex token as an act-argument copy. Tried: 47 findings, none of them
+    defects — the corpus legitimately quotes digests of artifacts that are not
+    act subjects (what D3 would amend, a superseded manifest a round record
+    preserves, a per-file craft digest list). A check that cannot tell those
+    from a stale act argument would have to be silenced to be usable, and a
+    silenced check is the thing this battery exists to prevent.
+
+    H-1's own mutation is what this closes: falsifying all four act arguments
+    in the owner-facing offering left the battery at `0 findings, exit 0`.
+    Under predicate 1 it removes four current digests from a file that names
+    all four acts, and fails four times.
+    """
+    current, phrases = {}, []
+    for label, rel, _pat in ACT_SUBJECTS:
+        full = os.path.join(ROOT, rel)
+        if not os.path.exists(full):
+            continue
+        d = sha256_file(full)
+        current[d] = label
+        phrases.append((label, rel, d))
+    findings, examined, registered = [], 0, []
+    for rel in paths:
+        if not rel.endswith((".md", ".txt")):
+            continue
+        if any(rel.startswith(x) or rel == x for x in ACT_QUOTE_EXEMPT):
+            continue
+        if rel == MANIFEST:
+            continue
+        body = read(rel)
+        if not body:
+            continue
+        # A banner-marked historical record may hold whatever digests it held
+        # when it was written; CG-15b owns that population. Registering one
+        # here would make it a live offer and history at once, which review
+        # RD-6 named as its own defect.
+        if re.search(r"^>?\s*[#*\s]*(SUPERSEDED|Superseded|Historical|"
+                     r"RETIRED|Retired)\b", "\n".join(body.splitlines()[:12]),
+                     re.M):
+            continue
+        held = [lab for d, lab in current.items() if d in body]
+        if rel in ACT_DIGEST_COPY_FILES:
+            examined += 1
+            declared = ACT_DIGEST_COPY_FILES[rel]
+            by_label = {lab: d for lab, _sub, d in phrases}
+            missing = [lab for lab in declared
+                       if by_label.get(lab) and by_label[lab] not in body]
+            for lab in missing:
+                findings.append(
+                    f"{rel} — declared to carry act `{lab}` and does not "
+                    f"contain its current argument `{by_label[lab][:12]}…`. "
+                    f"The copy in this file is stale, and this file is one "
+                    f"the owner is sent to")
+            registered.append(
+                f"{rel} — declares {len(declared)} act(s), "
+                f"{len(declared) - len(missing)} current")
+        elif held:
+            examined += 1
+            findings.append(
+                f"{rel} — carries the current argument for {sorted(held)} and "
+                f"is not in ACT_DIGEST_COPY_FILES; an unregistered copy goes "
+                f"unchecked the moment it goes stale")
+    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+            "CG-7e  act-argument copies enumerated and current", examined,
+            len(findings), "file",
+            note=None if examined else "no act-argument copies found",
+            details=findings + [f"[registered] {r}" for r in registered])
 
 
 def cg7d_quoted_elsewhere(paths, res):
@@ -1001,6 +1135,9 @@ BOOTSTRAP_ALLOW_PREFIX = (
      "raw reviewer output, stored verbatim — same rule as the prior round; "
      "each round's review directory is allowlisted explicitly when opened, "
      "never by a `round-*/` glob, so opening one is a deliberate act"),
+    (f"{CANDIDATES}/round-2026-08c/reviews/",
+     "raw reviewer output, stored verbatim — allowlisted explicitly when the "
+     "round opened, on the same terms as its two predecessors"),
     (f"{CANDIDATES}/matrix-rows/", "per-RFC clause-migration provenance rows"),
     (f"{CANDIDATES}/04-CLAUSE-MIGRATION-MATRIX.md",
      "clause-migration provenance, cites frozen rev9 sources by construction"),
@@ -1273,6 +1410,7 @@ VERBATIM_SOURCES = (
     f"{CANDIDATES}/reviews/",
     f"{CANDIDATES}/round-2026-08/reviews/",
     f"{CANDIDATES}/round-2026-08b/reviews/",
+    f"{CANDIDATES}/round-2026-08c/reviews/",
     f"{CANDIDATES}/history/",
     f"{CANDIDATES}/round-2026-08/OWNER-ROUND-CHARTER.md",
     SELF_REL,
@@ -1295,6 +1433,17 @@ DIGEST_SCOPE_EXEMPT = (
 )
 
 
+#: **The cap stays at 63 and the marker stays required, deliberately.** Review
+#: RD-6 (finding H-1) proposed widening this to `{8,64}` with an optional
+#: marker, so that a full digest quoted without its act phrase would be caught.
+#: Tried, and it over-fires: the corpus legitimately quotes 64-hex digests of
+#: things that are *not* act subjects — the artifacts D3 would amend, a
+#: superseded manifest a round record preserves, a review's record of what it
+#: read. Forty-seven such quotations became findings, none of them defects.
+#:
+#: The hole H-1 proved is real and is closed by **CG-7e** instead, which
+#: enumerates the files that carry a copy of an act argument and checks each
+#: one — and which fails if a file acquires a copy without being enumerated.
 TRUNC_DIGEST = re.compile(r"`?\b(?P<d>[0-9a-f]{8,63})(?:…|\.\.\.)")
 
 
@@ -2323,18 +2472,46 @@ def selftest():
     # CG-23 reads the tier split out of the registry rather than restating it.
     # Its failure modes are the split going stale underneath it, and a drawer
     # boundary that silently swallows the whole document.
-    reg = ("#### T-01 · Project\n#### T-04 · Capability\n#### T-07 · Desired "
-           "state\n#### T-09 · Observed state\n#### T-11 · Execution state\n"
-           "#### T-13 · Claim\n#### T-14 · Evidence\n#### T-15 · Unknown\n"
-           "#### T-19 · Contradiction\n#### T-20 · Gap\n#### T-26 · "
-           "Reconciliation\n#### T-27 · Mission\n#### T-28 · Autonomy "
-           "envelope\n")
+    CORE_TBL = ("**Core — the four.**\n\n"
+                "| Term | ID | Plain question |\n|---|---|---|\n"
+                "| Capability | T-04 | x |\n| Claim | T-13 | x |\n"
+                "| Gap | T-20 | x |\n| Mission | T-27 | x |\n\n")
+    reg = (CORE_TBL
+           + "#### T-04 · Capability\n#### T-13 · Claim\n#### T-20 · Gap\n"
+             "#### T-27 · Mission\n#### T-28 · Autonomy envelope\n")
+    # The leaks in this corpus are lowercase running prose, so the fixture is
+    # lowercase. A case-sensitive matcher passed every other fixture here and
+    # found none of the real hits.
     c = Cap()
     cg23_default_path_vocabulary(c, registry=reg,
                                  default_path=[("f.md", "an autonomy "
                                                         "envelope bounds it")])
     cases.append(("CG-23 advanced term on the default path detected",
                   len(c.rows[0][4]) == 1 and "T-28" in c.rows[0][4][0]))
+
+    # A word boundary, not a substring: "enveloped" is not the term, and the
+    # loose form reported a `Warrant` hit on the word "warranted" that no
+    # reader would have called a leak.
+    c = Cap()
+    cg23_default_path_vocabulary(c, registry=reg,
+                                 default_path=[("f.md", "the enveloped case")])
+    cases.append(("CG-23 substring inside a longer word is not a hit",
+                  not c.rows[0][4]))
+
+    # The allowlist exempts and *prints*; it never silences.
+    c = Cap()
+    saved = dict(VOCAB_ORDINARY_USE)
+    VOCAB_ORDINARY_USE[("f.md", "T-28")] = "ordinary English, for the fixture"
+    try:
+        cg23_default_path_vocabulary(
+            c, registry=reg,
+            default_path=[("f.md", "an autonomy envelope bounds it")])
+    finally:
+        VOCAB_ORDINARY_USE.clear()
+        VOCAB_ORDINARY_USE.update(saved)
+    cases.append(("CG-23 ordinary-English exemption is printed, not silent",
+                  any("ordinary-English use, exempt" in d
+                      for d in c.rows[0][4])))
 
     c = Cap()
     cg23_default_path_vocabulary(c, registry=reg,
@@ -2343,11 +2520,28 @@ def selftest():
     cases.append(("CG-23 core-only default path raises nothing",
                   not c.rows[0][4]))
 
+    # The split going stale underneath the check: a core table naming an ID
+    # with no entry of its own. Before the core set was derived this was the
+    # only way the drift could show; it stays fixtured because the derivation
+    # can still read a table whose rows point nowhere.
     c = Cap()
-    cg23_default_path_vocabulary(c, registry="#### T-99 · Nothing\n",
-                                 default_path=[("f.md", "x")])
+    cg23_default_path_vocabulary(
+        c, registry=CORE_TBL + "#### T-99 · Nothing\n",
+        default_path=[("f.md", "x")])
     cases.append(("CG-23 stale tier split detected",
-                  any("stale" in d for d in c.rows[0][4])))
+                  any("no registry entry of their own" in d
+                      for d in c.rows[0][4])))
+
+    # And the failure the derivation introduced: a registry whose core table
+    # does not parse must say so loudly, not silently report every term as
+    # advanced — which would look like a vocabulary catastrophe and be a
+    # parser bug.
+    c = Cap()
+    cg23_default_path_vocabulary(
+        c, registry="#### T-04 · Capability\n",
+        default_path=[("f.md", "a Capability")])
+    cases.append(("CG-23 unparsable core table reported, not silently advanced",
+                  any("core table did not parse" in d for d in c.rows[0][4])))
 
     c = Cap()
     cg23_default_path_vocabulary(c, registry="no headings here",
@@ -2382,6 +2576,27 @@ def selftest():
                            reported=["CG-13  deps"])
     cases.append(("CG-24 fixture naming an unreported check detected",
                   any("did not report" in d for d in c.rows[0][4])))
+
+    # CG-7e — the first fixture the CG-7 family has ever had. Review RD-6
+    # mutation-proved that falsifying every act argument in the owner-facing
+    # offering left the battery green; these two reproduce that mutation and
+    # its inverse, so the closure is executable rather than described.
+    c = Cap()
+    cg7e_act_digest_copies(list(ACT_DIGEST_COPY_FILES), c)
+    cases.append(("CG-7e examines the real act-copy population without error",
+                  c.rows[0][2] > 0))
+
+    c = Cap()
+    saved = dict(ACT_DIGEST_COPY_FILES)
+    ACT_DIGEST_COPY_FILES.clear()
+    ACT_DIGEST_COPY_FILES[LOAD_MAP] = ("ACCEPT TOPOLOGY",)
+    try:
+        cg7e_act_digest_copies([LOAD_MAP], c)
+    finally:
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES.update(saved)
+    cases.append(("CG-7e file declaring an act it does not carry detected",
+                  c.rows[0][0] == "FAIL"))
 
     c = Cap(); cg21_contract_prose_states_no_measurement(c, modules=[])
     cases.append(("CG-21 empty module list warns, never passes",
@@ -2726,25 +2941,50 @@ def cg22_ambiguous_status(paths, res, corpus=None):
 #: The registry previously promised this enforcement from "CG-17", which
 #: routes surface clauses and has nothing to do with vocabulary. Corrected
 #: 2026-08-06.
-CORE_TERM_IDS = ("T-01", "T-04", "T-07", "T-09", "T-11", "T-13",
-                 "T-14", "T-15", "T-19", "T-20", "T-26", "T-27")
+#: The core set is **read out of the registry's own core table**, never listed
+#: here. A hard-coded copy is the transcription class this battery exists to
+#: catch: the list sat here for one round, and the moment the registry moved a
+#: term between tiers the check went on policing the old split while reporting
+#: green. Derived, it cannot disagree with the artifact it checks.
+CORE_TABLE_ROW = re.compile(r"^\|\s*[^|]+?\s*\|\s*(T-\d+)\s*\|", re.M)
+CORE_SECTION = re.compile(r"\*\*Core — the [a-z]+\.\*\*[\s\S]*?\n\n(\|[\s\S]*?)\n\n")
 TERM_HEADING = re.compile(r"^#### (T-\d+) · (.+?)(?:\s*\(also called.*)?$", re.M)
+
+
+def _core_term_ids(reg):
+    m = CORE_SECTION.search(reg)
+    return tuple(CORE_TABLE_ROW.findall(m.group(1))) if m else ()
 #: The default path ends where progressive disclosure begins. Everything
 #: inside a drawer is deliberate drill-down and is out of scope by design.
 DRAWER = "<details>"
+
+#: Ordinary-English uses of a word that is also an advanced term. Enumerated
+#: and printed every run, never pattern-matched away: a rule broad enough to
+#: infer "this one is ordinary English" would also excuse a real leak. Keyed
+#: by (file, term ID) so widening it to a second term in the same file is a
+#: deliberate edit.
+VOCAB_ORDINARY_USE = {
+    ("README.md", "T-13"):
+        "\"No claim of alignment, convergence, or reconciliation\" — the "
+        "ordinary verb-shaped noun, not the kernel's positive-status carrier",
+}
 
 
 def cg23_default_path_vocabulary(res, registry=None, default_path=None):
     reg = registry if registry is not None else read(TERM_REGISTRY)
     entries = {tid: name.strip() for tid, name in TERM_HEADING.findall(reg)}
-    findings, examined = [], 0
+    core = _core_term_ids(reg)
+    findings, examined, exempted = [], 0, []
 
-    missing_core = [t for t in CORE_TERM_IDS if t not in entries]
+    if not core:
+        findings.append("the registry's core table did not parse — the tier "
+                        "split this check reads is unavailable, so every term "
+                        "below is being reported as advanced")
+    missing_core = [t for t in core if t not in entries]
     if missing_core:
-        findings.append(f"core ids {missing_core} have no registry entry — "
-                        f"the tier split this check reads is stale")
-    advanced = {tid: n for tid, n in entries.items()
-                if tid not in CORE_TERM_IDS}
+        findings.append(f"core ids {missing_core} appear in the core table "
+                        f"and have no registry entry of their own")
+    advanced = {tid: n for tid, n in entries.items() if tid not in core}
 
     if default_path is None:
         default_path = []
@@ -2753,21 +2993,37 @@ def cg23_default_path_vocabulary(res, registry=None, default_path=None):
             cut = body.find(DRAWER)
             default_path.append((rel, body if cut < 0 else body[:cut]))
 
+    # Matching is **case-insensitive at word boundaries**, because the real
+    # leaks in this corpus are lowercase running prose — "computed at an
+    # identified evaluation", "the intent that warranted it". A case-sensitive
+    # match on the registry's own capitalisation missed every one of them.
+    #
+    # The cost of matching loosely is ordinary English read as jargon: "no
+    # claim of alignment" is not the term `Claim`. That is handled the way
+    # this battery handles every exemption — an enumerated allowlist, printed
+    # on every run, never a silent widening of the pattern. An entry names the
+    # file, the term, and why the use is ordinary English.
     for rel, body in default_path:
-        low = body.lower()
         for tid, name in sorted(advanced.items()):
             examined += 1
-            n = low.count(name.lower())
-            if n:
-                findings.append(f"{rel} — uses advanced term "
-                                f"`{name}` ({tid}) {n}× on the default path")
+            pat = re.compile(r"\b" + re.escape(name) + r"\b", re.I)
+            hits = len(pat.findall(body))
+            if not hits:
+                continue
+            excuse = VOCAB_ORDINARY_USE.get((rel, tid))
+            if excuse:
+                exempted.append(f"{rel} — `{name}` ({tid}) {hits}× — {excuse}")
+                continue
+            findings.append(f"{rel} — uses advanced term "
+                            f"`{name}` ({tid}) {hits}× on the default path")
     res.add("WARN", "CG-23  default-path vocabulary reported", examined,
             len(findings), "term-in-file",
             note=("report-only — the core set is candidate, so this is the "
                   "registry's own bound reported, not enforced"
                   if examined else "no advanced terms parsed — registry "
                                    "headings changed shape"),
-            details=findings)
+            details=findings + [f"[ordinary-English use, exempt] {e}"
+                                for e in exempted])
 
 
 # --------------------------------------------------------------- CG-24
@@ -2788,7 +3044,11 @@ def cg23_default_path_vocabulary(res, registry=None, default_path=None):
 #: the battery's own check names read `"CG-19  substrate pins …"` with two
 #: spaces. The single-space lookahead is what separates a fixture from the
 #: check it tests — without it every check would appear to cover itself.
-CASE_NAME = re.compile(r'"(?:F\d+[a-z]?\s+)?(CG-\d+) (?! )')
+#: A fixture may name a lettered sub-check (`CG-7e`, `CG-1b`) while the family
+#: this check counts is the numeric stem. Admitting the suffix is what let the
+#: first CG-7 fixture ever written be credited to CG-7; without it the fixture
+#: existed and the coverage figure still reported the family uncovered.
+CASE_NAME = re.compile(r'"(?:F\d+[a-z]?\s+)?(CG-\d+)[a-z]? (?! )')
 CHECK_ID = re.compile(r"^(CG-\d+)")
 
 

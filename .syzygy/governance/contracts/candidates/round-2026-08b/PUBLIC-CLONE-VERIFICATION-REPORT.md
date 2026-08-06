@@ -56,7 +56,7 @@ reproduces what the founder machine already said is not verification.
 | Act | Subject | Argument as computed in the clone |
 |---|---|---|
 | 1 | `ACTIVE-CONTRACT-MANIFEST.txt` | `ac07a06497cd72b8dd10a9a42776a6a41d7c45740ffec7905d4c27fbe7146b4f` |
-| 2 | `craft-and-care/testing-and-verification.md` | `3858820f64768ef20e6514fe8adb28076263f071ac77e66a5520a612f3bcb26d` |
+| 2 | `craft-and-care/testing-and-verification.md` | `7a716090bc827121b3f70c4f7e252fc5680cd8a56d7b4121b70f3673489690a0` *(recomputed 2026-08-06; this row previously held the retired `3858820f…`, which review RD-6 finding H-1 found unexamined by any check)* |
 | 3 | `topology-candidates/BUNDLE-MANIFEST.md` | `7a3b22494a08d888901c1f0cec76833dc926e89b6f510b5abf8963071fbaeb45` |
 | 4 | `intent/OVERVIEW.md` | `01d629515993188338f6a0e2d84d67543d8569003759a7c8f571a90b129c7cd1` |
 | 5 | `DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` | `e973e8e025c93b5d1e59d16d8661b0ae1f9804304c8f8de8957950acf3d8f9c9` |

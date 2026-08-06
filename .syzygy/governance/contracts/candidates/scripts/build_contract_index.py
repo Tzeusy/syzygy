@@ -85,8 +85,19 @@ def emit(root):
         cid = fm.get("id")
         if not cid:
             continue
-        entry = by_id.setdefault(cid, {"fm": fm, "modules": [], "clauses": []})
+        entry = by_id.setdefault(cid, {"fm": fm, "modules": [], "clauses": [],
+                                       "constrains": [], "constrains_source": ""})
         entry["modules"].append(str(f.relative_to(rfcs)))
+        # `constrains` is declared on the module whose clause states the
+        # restriction, never on the package README — a README defines no
+        # clauses, so an anchor declared there cannot be verified. The
+        # contract-level value is therefore the union of its modules', in
+        # declaration order, and is derived here rather than transcribed.
+        for t in fm.get("constrains", []):
+            if t not in entry["constrains"]:
+                entry["constrains"].append(t)
+        if isinstance(fm.get("constrains_source"), str) and fm["constrains_source"]:
+            entry["constrains_source"] = fm["constrains_source"]
         if fm.get("module"):
             entry.setdefault("module_meta", []).append(
                 {"file": str(f.relative_to(rfcs)), "clauses": fm.get("clauses", "")})
@@ -115,10 +126,22 @@ def emit(root):
         if isinstance(fm.get("title"), str):
             lines.append(f"    title: {fm['title']}")
         lines.append("    status_source: owner-act-record")
-        for key in ("governs", "applies_to", "depends_on", "provides_to", "tags"):
+        # `provides_to` is gone from every module's front matter (it is derived
+        # by reversal in build_dependency_index.py) and is kept in this loop's
+        # key list only so that a module re-introducing it by hand is still
+        # projected rather than silently dropped. `constrains` and its clause
+        # anchor are projected because RFC11-4 names this index as a selection
+        # input, and a relation absent from the selector's declared inputs is a
+        # relation no selector reads — review RD-4, finding F-14.
+        for key in ("governs", "applies_to", "depends_on", "provides_to",
+                    "tags"):
             val = fm.get(key)
             if isinstance(val, list):
                 lines.append(f"    {key}: [{', '.join(val)}]")
+        if e["constrains"]:
+            lines.append(f"    constrains: [{', '.join(e['constrains'])}]")
+        if e["constrains_source"]:
+            lines.append(f"    constrains_source: {e['constrains_source']}")
         lines.append(f"    modules: [{', '.join(e['modules'])}]")
         if e.get("module_meta"):
             lines.append("    module_ranges:")

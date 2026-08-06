@@ -21,7 +21,7 @@ scripts/context_load.py rfcs/RFC-0007/README.md \
   rfcs/RFC-0002/rendering-vocabularies.md doctrine:vision.md
 ```
 
-Measured: **13,885 words ≈ 18,745 estimated tokens** — inside the
+Measured: **13,892 words ≈ 18,754 estimated tokens** — inside the
 15–20k working target. (Rev9 equivalent: whole corpus, ~121k words.)
 
 ## Omitted applicable candidates, with reasons
@@ -62,9 +62,17 @@ authoring-strength restatements suffice for this edit; loading them adds
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`54d040821bfbe338…` (recompute:
-`cat <mandatory files> | sha256sum`). Compiler: `context_load.py`,
-selection rules rev10-fixtures.
+`8c0d75e6e2ce3e53…` (recompute: `cat <mandatory files> | sha256sum`).
+
+**Selection: hand-authored golden selection. Measurement: mechanical.
+Compiler implementation: absent.** `scripts/context_load.py` resolves a
+path list it is handed and counts words; it has no notion of a task, a
+warrant, a risk class, an `applies_to` value, or a dependency edge. The
+selection above was made by a human and the trace is the reasoning that
+produced it, written down — not a machine's output narrated afterwards.
+The `Compiler: context_load.py, selection rules rev10-fixtures` line this
+fixture used to carry was removed 2026-08-06: there is no compiler, and
+`rev10-fixtures` resolved to nothing anywhere in the repository.
 
 *Re-measured 2026-08-05 (refactor round): packet digest refreshed after the recorded RFC-0007 README correction (cross-module edge count, word-neutral); word/token figures unchanged; selection unchanged.*
 

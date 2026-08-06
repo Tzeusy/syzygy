@@ -78,3 +78,72 @@ review material and not part of this contract.
 closed: it places none of these clauses at a lifecycle stage (owner item
 **P-23**), and it does not settle whether bounded missions are lawful under
 unamended doctrine (open question **D4**, owner item **P-24**).
+
+
+---
+
+## Violation cases
+
+**Moved here 2026-08-06 from the active contract's §4.** Non-normative:
+every one is a worked example of an escape a clause closes, and none of them
+binds anything. Where a case and a clause disagree, the clause wins.
+
+1. *(RFC10-8)* A worker raises its own retry budget; a planner spawns a child
+   with a wider path grant than the parent's remainder. Both: blocked
+   mission, recorded attempt, Attention Item.
+2. *(RFC10-11)* A budget exhausts and the runtime "helpfully" extends it 10%
+   to complete in-flight planning.
+3. *(RFC10-1)* Mission Control keeps its own copy of requirement states,
+   drifting from kernel answers and consulted as truth.
+4. *(RFC10-13)* An attention item expires and thereby approves the pending
+   deploy (expiry widened authority).
+5. *(RFC10-6)* A mission marks itself completed because all its work items
+   closed, with no evidence satisfying the completion predicate.
+6. *(RFC10-15)* A workspace-store entry sets a project's requirement
+   priority, overriding the project's own Polaris intent.
+7. *(RFC10-2)* An agent integration parses the Mission Control web UI's
+   HTML table because "the API lacked that column."
+8. *(RFC10-17)* Five workers dispatch against one budget with nothing
+   reserved; the fourth's spend discovers the bound. Or: telemetry is
+   unavailable, the missing figure reads as zero, and the mission runs on.
+9. *(RFC10-18)* The fleet that did the work declares the objective met and
+   the mission closes on its own report.
+10. *(RFC10-19)* A mission fails after publishing a package. It transitions
+    to `failed`, halts cleanly, and no record says the package is still
+    published or who owns undoing it.
+11. *(RFC10-20)* The owner hits stop; dispatch ceases; twelve already-running
+    agent runs continue to completion.
+12. *(RFC10-21)* A portfolio mission summarizes projects A and B into one
+    prompt and ships it under A's model-provider consent; B never consented.
+13. *(RFC10-22)* Overnight a mission mints 400 well-formed Attention Items.
+    Each expires safely; the owner's morning is gone, and the envelope was
+    never widened.
+14. *(RFC10-18(a))* A fleet whose objective class has no independent
+    establisher reports that no effects were applied; the runtime takes the
+    report as the determination and routes to `blocked`, so RFC10-19 never
+    fires and the applied effects stand unreported. The escape is not the
+    false report — it is that the reporting party was permitted to establish.
+15. *(RFC10-5, RFC10-17(a))* A mission sits in `blocked` for four months. Its
+    reservation is never released, because `blocked` is neither completion nor
+    termination. Parking became a way to hold budget.
+16. *(RFC10-20(b))* The owner stops a parent mission; its runs die and its
+    three child missions keep dispatching, because their runs were launched
+    under the children.
+17. *(RFC10-20(d))* A stop is issued against a run that will not die. Latency
+    is undeclared, so the act is synchronous — and waits. Nothing times out,
+    no item is minted, and the owner holds a stop that has neither succeeded
+    nor failed.
+18. *(RFC10-19)* A `compensatable` effect's compensating action fails. The
+    failure is recorded; the irreversible-effects item does not mention it,
+    because the effect was never *declared* irreversible.
+19. *(RFC10-19(a))* One of five siblings fails after applying effects. The
+    runtime lets the other four stand — but two consumed the failed sibling's
+    partial output. Or it compensates all five and destroys three correct
+    results. Neither is wrong in general; both are wrong undeclared.
+20. *(RFC10-21)* A mission declared against project A alone is granted a path
+    containing B's checkout, embeds B's content, and ships under A's consent.
+    Under a scope-keyed predicate the clause never engages — and the composing
+    party chose the declaration.
+21. *(RFC10-22)* At the default of one outstanding item, a mission reaches a
+    bound, pauses, and may not enqueue the item saying so. A safe behaviour
+    nobody is told about is, at the queue, the unsafe one.

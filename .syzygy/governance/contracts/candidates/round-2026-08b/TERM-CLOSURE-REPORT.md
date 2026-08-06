@@ -92,12 +92,25 @@ hand-copied list), cuts each default-path document at its first `<details>`
 drawer, and reports every advanced term appearing before that cut. Current
 result: **36 term-in-file pairs examined, 2 findings** —
 
-- `.syzygy/intent/OVERVIEW.md` — `Warrant` (T-17) 1×, as the mermaid edge
-  label `warranted work` (line 58);
+- ~~`.syzygy/intent/OVERVIEW.md` — `Warrant` (T-17) 1×, as the mermaid edge
+  label `warranted work` (line 58);~~ **Withdrawn 2026-08-06 — this finding
+  was false.** CG-23 counted case-insensitive *substrings*, and `warranted` is
+  the ordinary verb, not the term. The report said so in its own words — "as
+  the mermaid edge label `warranted work`" — and recorded it as a finding
+  anyway. A word-boundary sweep of the same pre-drawer text by Python `re`
+  finds **zero** occurrences of `Warrant`. CG-23 now matches at word
+  boundaries. [Observed.]
 - `.syzygy/intent/OVERVIEW.md` — `Evaluation` (T-22) 1×, in the kernel
   sentence at line 65 ("a temporal project graph plus an evaluation …").
+  **Stands** under the word-boundary sweep.
+- **New, and previously invisible:** `Claim` (T-13) 2× on the same default
+  path. It was not reported because `Claim` was a *core* term when this
+  report was written. It moved to advanced on 2026-08-06 (semantic delta
+  SD-11), and the tier change is what made the two uses visible. The uses did
+  not appear; the bound moved.
 
-Both are inside act 4's digest subject, so neither was edited here. They are
+Both surviving findings are inside act 4's digest subject, so neither was
+edited here. They are
 smaller than the registry's own prose predicts, and one part of that prose is
 wrong: it lists *evidence* among the default path's unlicensed leaners, but
 Evidence is **T-14, core**. [Observed.] The registry's other named leaners —

@@ -188,6 +188,8 @@ contracts:
     applies_to: [kernel, all-surfaces, machine-clients]
     depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004]
     tags: [security-boundary, sec-1, sec-2, sec-3, sec-4, sec-5, blocking, execution-gate, client-classes]
+    constrains: [RFC-0006, RFC-0009, RFC-0010, RFC-0011]
+    constrains_source: RFC5-3
     modules: [RFC-0005/README.md, RFC-0005/admission-and-boundary.md, RFC-0005/consent-egress-secrets.md, RFC-0005/execution-profiles.md]
     module_ranges:
       - {file: RFC-0005/admission-and-boundary.md, clauses: "RFC5-1..RFC5-11, RFC5-24..RFC5-26 (no gaps within either run, no retirements, no merges)"}
@@ -264,6 +266,8 @@ contracts:
     applies_to: [polaris]
     depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0009]
     tags: [presentation, non-authoritative, progressive-disclosure, comprehension-test, machine-parity, editorial-draft, target-state-drift]
+    constrains: [RFC-0001, RFC-0002, RFC-0004, RFC-0008]
+    constrains_source: RFC7-3
     modules: [RFC-0007/README.md, RFC-0007/narrative-contract.md, RFC-0007/rendering-and-surface.md]
     module_ranges:
       - {file: RFC-0007/narrative-contract.md, clauses: "RFC7-1..RFC7-25 (sub-clauses RFC7-2(a)-(c), RFC7-9(a)-(c), RFC7-11(a); no gaps, no retirements, no merges)"}

@@ -267,6 +267,13 @@ sha256 over the mandatory files concatenated in listed order:
 `.syzygy/governance/policies/craft-and-care/`). Measured, not compiled, by
 `scripts/context_load.py`.
 
+**Selection: hand-authored golden selection. Measurement: mechanical.
+Compiler implementation: absent.** `scripts/context_load.py` resolves a
+path list it is handed and counts words; it has no notion of a task, a
+warrant, a risk class, an `applies_to` value, or a dependency edge. The
+selection above was made by a human and the trace is the reasoning that
+produced it, written down — not a machine's output narrated afterwards.
+
 **Digest-source pinning.** This digest and the totals above are computed over
 the canonical-home bytes. No packet copies of doctrine or craft exist under this
 root, so there is exactly one resolution and no silent source swap. The digest

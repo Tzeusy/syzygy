@@ -59,8 +59,17 @@ context is in scope); RFC-0002 `rendering-vocabularies`
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`3269ef76c4ae67cd…`. Compiler: `context_load.py`, selection rules
-rev10-fixtures.
+`3269ef76c4ae67cd…`.
+
+**Selection: hand-authored golden selection. Measurement: mechanical.
+Compiler implementation: absent.** `scripts/context_load.py` resolves a
+path list it is handed and counts words; it has no notion of a task, a
+warrant, a risk class, an `applies_to` value, or a dependency edge. The
+selection above was made by a human and the trace is the reasoning that
+produced it, written down — not a machine's output narrated afterwards.
+The `Compiler: context_load.py, selection rules rev10-fixtures` line this
+fixture used to carry was removed 2026-08-06: there is no compiler, and
+`rev10-fixtures` resolved to nothing anywhere in the repository.
 
 *Re-measured 2026-08-05 (refactor round): figures and packet digest refreshed after this round's recorded corrections to RFC-0003 governance-homes (P-6, +13 w) and the craft banners (P-7, security policy +26 w); selection unchanged. Prior figures/digest are in git history.*
 

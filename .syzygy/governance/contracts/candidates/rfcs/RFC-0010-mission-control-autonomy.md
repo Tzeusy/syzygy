@@ -28,14 +28,14 @@ predecessor. **Amendment history and rationale:**
 ## 0. Reader's summary (non-normative)
 
 A human approves one bounded **Mission**; agent fleets then plan, execute,
-verify, re-plan, and recover inside an approved **autonomy envelope** they
-can never widen, until the mission ends or a terminal/escalation condition
-fires. Mission Control is a workspace-level operator domain over the same
-one canonical Syzygy service and semantic API that serves Polaris,
-Trajectory, and Orrery — it is **not** a fourth project truth surface. Human
-attention arrives as decision-ready **Attention Items**, not event streams.
-Portfolio-level authority lives in a typed **workspace governance store**
-that can never override project-internal truth.
+verify, re-plan, and recover inside an approved **autonomy envelope** they can
+never widen, until the mission ends or a terminal condition fires. Mission
+Control is a workspace-level operator domain over the same one canonical
+Syzygy service and semantic API that serves Polaris, Trajectory and Orrery —
+**not** a fourth project truth surface. Human attention arrives as
+decision-ready **Attention Items**, never event streams. Portfolio authority
+lives in a typed **workspace governance store** that can never override
+project-internal truth.
 
 ## 1. Summary
 
@@ -144,20 +144,26 @@ the envelope; and exit from `blocked` where the block arose under RFC10-8
 or RFC10-11 is a **human resolution act** — an agent's "condition cleared"
 assertion never takes that transition.
 
-**No block is indefinite, whatever gave rise to it.** Every `blocked` state
-carries a **maximum park duration**, declared by the envelope; where none is
-declared the maximum is the expiry of the Attention Item the block minted
-(RFC10-12), so silence cannot buy an unbounded park. At the maximum the
-mission transitions **`blocked` → `expired`**, a terminal state whose reason
-is recorded. The rule is stated here, at lifecycle level, and holds for
-**every** class of block — RFC10-8, RFC10-11 and RFC10-18 alike — because the
-defect is a lifecycle defect and not a property of any one source: `blocked`
-is non-terminal, and RFC10-17 releases a reservation only on completion or
-termination, so an indefinite park is a way to hold budget that no clause
-elsewhere reaches. Expiry from `blocked` is a **termination, never a
-resolution**: it widens nothing (RFC10-12), does not substitute for the human
-resolution act where the paragraph above owes one, and does not mark the
-condition cleared. It ends the mission and fires RFC10-19's duties.
+**No park is indefinite — `blocked` or `paused`, whatever gave rise to it.**
+Every non-terminal park carries a **maximum park duration**, declared by the
+envelope; where none is declared the maximum is the expiry of the Attention
+Item that park minted (RFC10-12), and where the park minted none it is the
+envelope's shortest declared maximum. Silence buys no unbounded park in any
+direction. At the maximum the mission transitions to **`expired`**, a terminal
+state whose reason is recorded.
+
+The rule covers **both** non-terminal states and **every** source — RFC10-8,
+RFC10-11's `paused`-or-`blocked` disjunction, RFC10-18, and RFC10-22's
+pause-on-attention-bound — because the defect is a lifecycle defect and not a
+property of any one source: neither state is terminal, RFC10-17 releases a
+reservation only on completion or termination, and a park is therefore a way
+to hold budget that no clause elsewhere reaches. **A rule that bounded
+`blocked` alone would leave `paused` as the park a mission is told to enter**,
+which is what RFC10-11 and RFC10-22 both do. Expiry from a park is a
+**termination, never a resolution**: it widens nothing (RFC10-12), does not
+substitute for the human resolution act where the paragraph above owes one,
+and does not mark the condition cleared. It ends the mission and fires
+RFC10-19's duties.
 
 **RFC10-6.** **A mission is not work, and work is never proof.** Missions
 authorize the *materialization* of work items; the work items themselves,
@@ -422,15 +428,18 @@ quantity returned.
 | `failed` | released in full **after** RFC10-19's compensating actions are attempted — their own cost is reserved *before* they run, so recovery is never funded past an exhausted bound |
 | `cancelled` | as `failed` |
 | `expired` | as `failed` |
-| `blocked`, no applied effects | **held**, for no longer than RFC10-5's maximum park duration; released at the resulting transition to `expired` |
-| `blocked` after its Attention Item expires | the item's expiry releases nothing — an item's expiry resolves the item, not the mission's state. The park duration is what ends the hold |
+| `blocked` or `paused`, no applied effects | **held**, for no longer than RFC10-5's maximum park duration; released at the resulting transition to `expired` |
+| `blocked` or `paused` after its Attention Item expires | the item's expiry releases nothing — an item's expiry resolves the item, not the mission's state. The park duration is what ends the hold |
+| `blocked` **with** applied effects | as above, and RFC10-19's duties fire at the expiry, not at the park |
 | unrecoverable stop — RFC10-20 limb (b) not achieved | released at the stop record **except** for the runs that did not terminate, whose reservations are retained and **named individually**: a reservation may not be returned while the work it funds may still spend |
 
-**No non-terminal park holds a reservation indefinitely.** A runtime holding
-reservation past RFC10-5's maximum violates this clause, and so does a mission
-record showing headroom that reserved work still holds. An indefinite park is
-reachable only as an explicit, owner-visible envelope declaration with its own
-act — never by silence.
+**No non-terminal park holds a reservation indefinitely** — in either park
+state. A runtime holding reservation past RFC10-5's maximum violates this
+clause, and so does a mission record showing headroom that reserved work still
+holds. **Recovery headroom is carved out of `authorized` at approval time and
+held undispatchable**, so that RFC10-19's compensating actions are fundable
+after an RFC10-11 exhaustion; a budget with no declared recovery headroom
+authorizes no effect class that requires compensation.
 
 **RFC10-18. Completion is reported by the executor and established by
 another.** A mission's executing agents, fleets, and workers **may report**
@@ -475,9 +484,14 @@ An unstated minimum evidence tier means `gate-backed`;
 principal makes for itself.
 
 **RFC10-18(a). Whether effects were applied is established, not asserted.**
-The branch above turns on one predicate — *have effects outside `.syzygy/**`
-and `openspec/**` been applied under this mission?* — and it decides whether
-the correction plane engages at all. The executing principal **may report** on
+One predicate — *have effects outside `.syzygy/**` and `openspec/**` been
+applied under this mission?* — decides whether the correction plane engages at
+all. **This sub-clause governs that predicate wherever it appears**, not only
+in the branch above: RFC10-19's `with effects already applied` trigger and
+RFC10-20(c)'s `any effect already applied` are the same determination and are
+subject to every rule below, including the fail-closed Unknown rule. A
+predicate that has an establisher in one clause and none in the two clauses
+that carry its duties is not established. The executing principal **may report** on
 it and **may never establish** it, on the terms RFC10-18 sets for completion.
 A branch selector chosen by the party it routes is not a determination, so
 this one carries all four of completion's requirements:
@@ -532,6 +546,15 @@ re-verifies the pinned inputs (RFC10-4), the remaining reserved budget
 (RFC10-17), and the envelope's continued act provenance (RFC10-9) before any
 dispatch.
 
+**A compensating action that cannot be funded is an escalation, not a
+silence.** Where the reserved recovery headroom (RFC10-17(a)) is insufficient
+to run a compensating action, the mission does not simply omit it: the
+shortfall is an escalation trigger under RFC10-13, every uncompensated effect
+joins the single Attention Item naming what cannot be undone, and the terminal
+reason states it as uncompensated-for-want-of-budget. **This clause imposes no
+duty RFC10-11 can quietly make impossible** — an exhausted bound bounds
+further *work*, never the accounting of what that work already did.
+
 **A compensating action that fails is not discharged by having been
 attempted.** The effect is **reclassified as irreversible for this mission**,
 joins the single Attention Item naming what cannot be undone, and is stated as
@@ -539,18 +562,17 @@ joins the single Attention Item naming what cannot be undone, and is stated as
 whose compensation failed, and which the record shows only as an attempted
 action, violates this clause: the declaration said it could be undone, the
 attempt established it could not, and the record must carry the second fact
-too. Where compensation succeeds for some effects and fails for others the
+too. Where compensation succeeds for some effects and fails for others, the
 outcome is recorded **per effect**; a partially compensated mission is never
 rendered as compensated.
 
 **RFC10-19(a). Sibling disposition after a partial failure is a declared
-policy input, never an inference.** Where one run or child mission fails
-after applying effects while its siblings have completed successfully or
-remain active, nothing in this contract decides for the siblings, and nothing
-should: whether one sibling's failure invalidates another is a property of
-the work, not of the mission machinery. The envelope therefore declares a
-**sibling disposition on partial failure** from a closed set fixed at surface
-specification, whose minimum members are:
+policy input, never an inference.** Where one run or child mission fails after
+applying effects while its siblings completed or remain active, nothing in
+this contract decides for the siblings, and nothing should: whether one
+sibling's failure invalidates another is a property of the work, not of the
+mission machinery. The envelope declares a **sibling disposition on partial
+failure** from a closed set fixed at surface specification, minimum members:
 
 ```text
 independent     a sibling's outcome is unaffected — completed siblings'
@@ -680,67 +702,20 @@ with RFC6-28, RFC7-38, RFC8-32, RFC9-52.)
 
 ## 4. Violation cases
 
-1. *(RFC10-8)* A worker raises its own retry budget "to finish the
-   objective"; a planner spawns a child mission with a wider path grant than
-   the parent's remainder. Both: blocked mission, recorded attempt,
-   Attention Item.
-2. *(RFC10-11)* A budget exhausts and the runtime "helpfully" extends it 10%
-   to complete in-flight planning.
-3. *(RFC10-1)* Mission Control keeps its own copy of requirement states that
-   drifts from kernel answers and is consulted as truth.
-4. *(RFC10-13)* An attention item expires and thereby approves the pending
-   deploy (expiry widened authority).
-5. *(RFC10-6)* A mission marks itself completed because all its work items
-   closed, with no evidence satisfying the completion predicate.
-6. *(RFC10-15)* A workspace-store entry sets a project's requirement
-   priority, overriding the project's own Polaris intent.
-7. *(RFC10-2)* An agent integration parses the Mission Control web UI's
-   HTML table because "the API lacked that column."
-8. *(RFC10-17)* Five workers dispatch concurrently against one budget with
-   nothing reserved; the fourth's spend is what discovers the bound. Or: cost
-   telemetry is unavailable, the runtime reads the missing figure as zero,
-   and the mission runs on.
-9. *(RFC10-18)* The fleet that did the work declares the objective met and
-   the mission closes on its own report.
-10. *(RFC10-19)* A mission fails after publishing a package. It transitions
-    to `failed`, halts cleanly, and no record says the package is still
-    published or who owns undoing it.
-11. *(RFC10-20)* The owner hits stop; dispatch ceases; the twelve agent runs
-    already executing keep running to completion.
-12. *(RFC10-21)* A portfolio mission summarizes projects A and B into one
-    prompt and ships it under A's model-provider consent; B never consented.
-13. *(RFC10-22)* Overnight, a mission mints 400 individually well-formed
-    Attention Items. Each expires safely; the owner's morning is gone and the
-    envelope was never widened.
-14. *(RFC10-18(a))* A fleet whose objective class has no independent
-    establisher reports that no effects were applied; the runtime takes the
-    report as the determination and routes to `blocked`, so RFC10-19 never
-    fires and the applied effects stand unreported. The escape is not the
-    false report — it is that the reporting party was permitted to establish.
-15. *(RFC10-5, RFC10-17(a))* A mission sits in `blocked` for four months. Its
-    reservation is never released, because `blocked` is neither completion nor
-    termination. Parking became a way to hold budget.
-16. *(RFC10-20(b))* The owner stops a parent mission; its runs die and its
-    three child missions keep dispatching, because their runs were launched
-    under the children.
-17. *(RFC10-20(d))* A stop is issued against a run that will not die. Latency
-    is undeclared, so the act is synchronous — and waits. Nothing times out,
-    no item is minted, and the owner holds a stop that has neither succeeded
-    nor failed.
-18. *(RFC10-19)* A `compensatable` effect's compensating action fails. The
-    failure is recorded; the irreversible-effects item does not mention it,
-    because the effect was never *declared* irreversible.
-19. *(RFC10-19(a))* One of five siblings fails after applying effects. The
-    runtime lets the other four stand — but two consumed the failed sibling's
-    partial output. Or it compensates all five and destroys three correct
-    results. Neither is wrong in general; both are wrong undeclared.
-20. *(RFC10-21)* A mission declared against project A alone is granted a path
-    containing B's checkout, embeds B's content, and ships under A's consent.
-    Under a scope-keyed predicate the clause never engages — and the composing
-    party chose the declaration.
-21. *(RFC10-22)* At the default of one outstanding item, a mission reaches a
-    bound, pauses, and may not enqueue the item saying so. A safe behaviour
-    nobody is told about is, at the queue, the unsafe one.
+**Moved to `../../history/RFC-0010-history.md` §"Violation cases"** — twenty-one
+worked scenarios, one per clause, each naming the escape it closes.
+
+They are non-normative teaching examples, and they were the largest block of
+non-normative text in a contract that had reached its per-module word ceiling
+with three required repairs outstanding. **The move is a symptom, and the symptom is
+worth stating rather than absorbing:** this contract now carries a prevention
+plane, a correction plane, twenty-two clauses and three sub-clauses in one
+file, and every future amendment will have to displace something to fit. The
+structural answer is a package split — an index plus `prevention-plane` and
+`correction-plane` modules, the convention seven of eleven contracts already
+follow — and it is **not** done here, because restructuring an artifact
+mid-review-cycle would leave the confirming review reading a differently-shaped
+subject. It is named for the next pass.
 
 ## 5. Integration
 

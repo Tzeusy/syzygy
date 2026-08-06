@@ -22,7 +22,7 @@ scripts/context_load.py rfcs/RFC-0004/README.md \
   doctrine:security.md
 ```
 
-Measured: **18,364 words ≈ 24,791 estimated tokens** — **23.4% above the
+Measured: **18,362 words ≈ 24,789 estimated tokens** — **23.4% above the
 20,000-token decomposition trigger**, and above the 15–20k working target,
 disclosed as a risk-class exception (RFC11-11): an authorization-bearing
 change may not shed its authorization contract (RFC3-16(a) module) or the
@@ -83,8 +83,17 @@ scope.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`08aa7269e92c377b…`. Compiler: `context_load.py`, selection rules
-rev10-fixtures.
+`9a6d500e7dd38a8b…`.
+
+**Selection: hand-authored golden selection. Measurement: mechanical.
+Compiler implementation: absent.** `scripts/context_load.py` resolves a
+path list it is handed and counts words; it has no notion of a task, a
+warrant, a risk class, an `applies_to` value, or a dependency edge. The
+selection above was made by a human and the trace is the reasoning that
+produced it, written down — not a machine's output narrated afterwards.
+The `Compiler: context_load.py, selection rules rev10-fixtures` line this
+fixture used to carry was removed 2026-08-06: there is no compiler, and
+`rev10-fixtures` resolved to nothing anywhere in the repository.
 
 *Re-measured 2026-08-05 (refactor round): figures and packet digest refreshed after this round's recorded corrections to RFC-0003 governance-homes (P-6, +13 w) and the craft banners (P-7, security policy +26 w); selection unchanged. Prior figures/digest are in git history.*
 

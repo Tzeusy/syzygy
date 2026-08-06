@@ -27,38 +27,85 @@ terms below.** Everything else is advanced vocabulary: real, needed, and
 reachable in one action — but never a prerequisite for understanding what
 Syzygy is.
 
-**Core — the twelve.** Sufficient, and required, for the default path:
+**Core — the eleven.** Sufficient, and required, for the default path. Each
+row's right-hand column is the ordinary-language question the term answers,
+because a newcomer meets the question before the term:
 
-| Term | ID | One line |
+| Term | ID | Plain question it answers |
 |---|---|---|
-| Project | T-01 | the governed unit, with exactly one governance root |
-| Capability | T-04 | a named thing the project is supposed to be able to do |
-| Desired state | T-07 | what should be true, per human-approved intent |
-| Observed state | T-09 | what is true, per captured evidence |
-| Execution state | T-11 | what was *done* — runs, merges, work lifecycle |
-| Claim | T-13 | an assertion about state, always carrying a label |
-| Evidence | T-14 | a durable, identified artifact that supports a claim |
-| Unknown | T-15 | no evidence — never green, never zero |
-| Gap | T-20 | something intended and absent |
-| Contradiction | T-19 | two authorities that cannot both be satisfied |
-| Reconciliation | T-26 | checking a merged change against the intent that warranted it |
-| Mission | T-27 | a bounded envelope of delegated authority |
+| Project | T-01 | *what is the governed unit?* — one governance root, one owner |
+| Capability | T-04 | *what is this project supposed to be able to do?* |
+| Desired state | T-07 | *what should be true?* |
+| Observed state | T-09 | *what does evidence say is true?* |
+| Execution state | T-11 | *what did agents and humans actually do?* |
+| Evidence | T-14 | *what backs that up?* — a durable, identified artifact |
+| Unknown | T-31 | *what do we not know?* — never green, never zero |
+| Gap | T-20 | *what is missing?* — intended and absent |
+| Contradiction | T-19 | *where do authorities disagree?* |
+| Reconciliation | T-26 | *did the work actually satisfy the intent?* |
+| Mission | T-27 | *what has an agent been allowed to do, and within what bounds?* |
+
+**Two corrections to this table, 2026-08-06.**
+
+- **`Unknown` was listed as T-15, and T-15 is not `Unknown`.** T-15 is *Claim
+  epistemic label* — the three-value dimension of which `Unknown` is one
+  value. The core set named a value and pointed at its dimension. `Unknown` is
+  the more load-bearing of the two for a newcomer (it is the whole content of
+  VIS-2) and the dimension is not, so `Unknown` now has its own entry, **T-31**,
+  with an **adopted** owning authority; and *Claim epistemic label* is advanced.
+- **`Claim` moved to advanced.** A newcomer does not need the kernel's
+  positive-status carrier to understand what Syzygy is for. Desired state,
+  observed state and the difference between them carry the thesis; `Claim` is
+  the mechanism by which the kernel represents an assertion about them, and
+  that is a thing you need once you are working inside the model.
 
 **Advanced — provenance and mechanism.** Everything a reader needs only once
-they are working *inside* the model: source snapshot, evaluation, observation
-record, challenge, warrant, rendering tier (T-16), autonomy envelope,
-attention item, execution profile, and the remaining entries below.
+they are working *inside* the model: claim (T-13), claim epistemic label
+(T-15), state plane (T-06), proposed / inferred / historical state, source
+snapshot, evaluation, observation record, challenge, warrant, rendering tier
+(T-16), requirement, governance root, Project Genome, autonomy envelope,
+attention item, context packet, execution profile, aligned, converged.
 
-**The bound is testable, and currently fails.** A sweep of the default path
-(`README.md` plus `OVERVIEW.md`'s pre-drawer content) must use no term outside
-the core twelve without defining it in place. At the time of writing, the
-default path additionally leans on *kernel*, *surface*, *evidence*,
-*workspace*, and *actuator* — of which **`workspace` has zero occurrences in
-the entire adopted doctrine tree** and `actuator` has no entry here. Those are
-**findings, not exemptions**: either the term earns an entry and an owning
-authority, or the default path stops using it. Tracked in
-`PENDING-OWNER-DECISIONS.md`; enforced mechanically by `check_governance.py`
-CG-17 once the core set is owner-accepted, and reported until then.
+**Ordinary language first, on the default path.** Where the plain phrasing
+carries the meaning, use it and let the term follow in parentheses — not the
+other way round:
+
+```text
+what should be true            (desired state)
+what evidence says is true     (observed state)
+what agents did                (execution state)
+something missing              (gap)
+authorities disagree           (contradiction)
+check work against intent      (reconciliation)
+```
+
+**The bound is testable, it is tested every run, and it currently fails.** A
+sweep of the default path (`README.md` plus `OVERVIEW.md`'s pre-drawer
+content) must use no term outside the core set without defining it in place.
+`check_governance.py` **CG-23** performs that sweep and prints its findings on
+every run — report-only, because the core set is candidate and a candidate
+bound is reported, never enforced. Read its output rather than this sentence;
+what it finds moves.
+
+Two classes of leak are known and neither is exempted:
+
+- **Advanced terms used on the default path**, which CG-23 names. Both current
+  hits sit inside act 4's digest subject, so neither was edited — correcting
+  an artifact whose digest an unperformed act binds is a worse defect than the
+  one being corrected.
+- **Terms used on the default path with no entry here at all** — *kernel*,
+  *surface*, *workspace*, *actuator*. `actuator` has no owning authority
+  anywhere; `workspace` has **zero occurrences in the adopted doctrine tree**.
+  These are **findings, not exemptions**: either the term earns an entry and an
+  owning authority, or the default path stops using it. §10.2 of the closure
+  charter proposes the plain-language replacement for each, and the proposal
+  is routed to the owner rather than applied here.
+
+For the substitutions this registry recommends on the default path — *shared
+project model* for *kernel*, *view* for *surface*, *portfolio workspace*
+defined inline for *workspace*, *agent workers* for *actuator* — see
+`../round-2026-08c/PUBLIC-VOCABULARY-COMPREHENSION-REPORT.md`. None is applied
+to an artifact inside an unperformed act's digest subject.
 
 **Two things this tiering does not do.** It does not rank terms by importance
 — `rendering tier` is more load-bearing to a kernel implementer than `Gap`.
@@ -67,23 +114,14 @@ loosely is worse than an advanced term used precisely.
 
 ## Admitting a new public term
 
-Scarcity is the point. A new term is admitted only when **all five** hold —
-any one failing is a rejection, not a discussion:
+**The rule lives in one place: §3, below.** This heading used to carry a
+second copy of it, with **five** conditions where §3 carried **four** — two
+statements of one rule, disagreeing about what the rule was, in one file. A
+registry whose own admission rule is ambiguous cannot adjudicate a term.
 
-1. **No existing term is adequate.** Name the nearest existing term and say
-   what it cannot express.
-2. **The distinction is operationally meaningful** — something in the system
-   behaves differently depending on which side of it you are on. A
-   distinction that changes only emphasis is a sentence, not a term.
-3. **It has an identified owning authority and a lifecycle** — which artifact
-   defines it, and what would retire it.
-4. **It has a one-sentence plain-language explanation** a competent engineer
-   unfamiliar with Syzygy understands without a second term.
-5. **It passes a fresh-reader distinction test**: a reader given only the two
-   definitions places five real examples correctly, without coaching.
-
-Retiring is cheaper than renaming: retire the term, keep the ID, never reuse
-it.
+The five-condition form was the stronger and it survives; §3 now states it,
+and this section states nothing. Retiring is cheaper than renaming: retire the
+term, keep the ID, never reuse it.
 
 ## How to read an entry
 
@@ -132,10 +170,24 @@ in the corpus this registry was built from:
 
 - **"Observed" and "Inferred" are each bound twice** — once as a state plane
   (T-09, T-10) and once as a claim epistemic label (T-15). They are two
-  coherent systems sharing two words, not one system used loosely. **On first
-  use in new prose, write "the Observed plane" or "an Observed claim" — never
-  bare "Observed."** An artifact can sit in the Observed plane while a claim
-  about it is labelled Inferred.
+  coherent systems sharing two words, not one system used loosely. An artifact
+  can sit in the Observed plane while a claim about it is labelled Inferred,
+  and both statements are true at once.
+
+  > **First-use rule.** In any new prose, the first use of either word must
+  > name which system it belongs to: *the Observed plane* / *an Observed
+  > claim*, *the Inferred plane* / *an Inferred claim*. Subsequent uses in the
+  > same passage may drop the qualifier. A bare `[Observed]` or `[Inferred]`
+  > **epistemic label marker** is exempt and always was — the bracket is the
+  > qualifier, and it is unambiguous. What the rule catches is running prose:
+  > "the module is Observed" is a sentence with two readings and no way to
+  > choose between them.
+
+  This rule is not currently mechanically checked. That is a stated gap, not
+  a claim of compliance: no sweep in this repository distinguishes a bare
+  running-prose `Observed` from a bracketed marker, and asserting the corpus
+  complies would be the kind of unverified completeness claim VIS-2 forbids.
+  **[Unknown]** — how many bare uses exist.
 - **A tier is not a fourth label** (RFC2-25, candidate). The three-label rule
   is exclusive and exhaustive; a tier only ever *restricts* its parent label.
 
@@ -170,27 +222,53 @@ still what governs.
 
 ## 3. Term-admission rule
 
-> **A new durable term is admitted only when all four hold:**
+**The single admission rule. There is no other, here or elsewhere in this
+file.** Between 2026-08-05b and 2026-08-06 there were two — a five-condition
+form under "Admitting a new public term" and a four-condition form here — and
+they were not the same rule. The four-condition form omitted the fresh-reader
+distinction test, which is the only condition that cannot be satisfied by the
+person proposing the term. The five-condition form is therefore the one that
+survives; the four-condition form is retired, and no condition it carried is
+lost (each of its four maps onto one of the five below).
+
+> **A new durable term is admitted only when all five hold. Any one failing is
+> a rejection, not a discussion.**
 >
-> 1. **no existing term covers it** — check this registry first;
-> 2. **its distinction matters operationally** — something is rendered,
+> 1. **No existing term is adequate.** Name the nearest existing term and say
+>    what it cannot express. Check this registry first.
+> 2. **The distinction is operationally meaningful** — something is rendered,
 >    counted, gated, routed, or refused differently because the distinction
->    exists;
-> 3. **its authority is clear** — exactly one artifact owns the definition,
->    and the term's entry can name it;
-> 4. **a newcomer can explain it after one paragraph.**
+>    exists. A distinction that changes only emphasis is a sentence, not a
+>    term.
+> 3. **It has an identified owning authority and a lifecycle** — exactly one
+>    artifact defines it, the entry names that artifact, and the entry says
+>    what would retire the term.
+> 4. **It has a one-sentence plain-language explanation** a competent engineer
+>    unfamiliar with Syzygy understands **without needing a second Syzygy
+>    term**.
+> 5. **It passes a fresh-reader distinction test**: a reader given only the
+>    two definitions — the new term and its nearest neighbour — places five
+>    real examples correctly, without coaching.
 >
-> A term failing any of the four is a phrase, not vocabulary. Use the existing
+> A term failing any of the five is a phrase, not vocabulary. Use the existing
 > term, or write the sentence out. Terms are scarce on purpose: every admitted
 > term is a thing every future reader must learn.
 
-Corollary, from the corpus: **a distinction that is real is worth a term; a
-distinction that is merely felt is worth a sentence.** Reconciliation (T-26)
-earns its reservation because a substrate uses the same word for a different
-thing and the two must never share a count. "Status" earns no term at all
-because it means five things (§1).
+**Scarcity is the point**, and the corollary from this corpus is:
+**a distinction that is real is worth a term; a distinction that is merely
+felt is worth a sentence.** Reconciliation (T-26) earns its reservation
+because a substrate uses the same word for a different thing and the two must
+never share a count. "Status" earns no term at all because it means five
+things (§1).
 
----
+**Internal metadata is not public vocabulary.** A field name in contract front
+matter, an envelope field, or an index key is not admitted by this rule and
+does not belong in this registry unless a reader on the default path meets it.
+`depends_on`, `constrains` and `cites` are index mechanics; *maximum park
+duration*, *unmediated effect surface* and *sibling disposition on partial
+failure* are envelope fields. All six are deliberately absent from the tiers
+above, and recording that here is what stops the next round admitting them by
+default.
 
 ## 4. The registry
 
@@ -727,6 +805,57 @@ disclosed, each expandable.
 
 **Misuse.** Rendering a region green because its neighbours are green
 (VIS-1 violation); rendering an absent cost as `0` (SDR-6 violation).
+
+---
+
+#### T-31 · Unknown
+
+**Plain language.** *We do not know.* Not zero, not empty, not fine — an
+answer the system is required to give and required to show.
+
+**Formal definition.** A claim that is neither evidence-backed **Observed**
+nor a valid **Inferred** is **Unknown**, including one whose supporting
+evidence is missing, inaccessible, or stale. **No evidence means Unknown,
+never green, never zero.** Missing evidence never renders a claim Inferred —
+absence of evidence does not make a claim probabilistic; it makes it Unknown.
+An absent quantity renders Unknown, never `0`. An Unknown carries a **reason**
+from a closed vocabulary of twelve (RFC2-24, candidate), and a count of
+Unknowns discloses its reason breakdown rather than aggregating them into one
+number.
+
+**Owning authority.** **VIS-2 (adopted)**; `trust-and-evidence.md`, "Status
+claims vs narrative claims" (**adopted**); **SDR-6 (adopted owner ruling)** for
+never-zero. RFC2-24 (candidate) for the twelve closed reasons; RFC2-25
+(candidate) for the two Unknown-parented tiers, `declared-only` and
+`suspended`.
+
+**Lifecycle.** Retired only if VIS-2 is amended, which would be a doctrine
+change. This is the most firmly held term in the registry and the one with the
+strongest adopted backing.
+
+**Permitted aliases.** none. Write `Unknown`.
+
+**Deprecated synonyms.** *N/A*, *TBD*, *not applicable*, *unknown* rendered as
+`0`, *—*, *no data*, *pending*, an empty cell, a grey badge with no reason.
+Every one of these is a way of not saying Unknown, and several of them read as
+a *negative answer* rather than as an absent one.
+
+**Related but distinct.** *Claim epistemic label* (T-15 — `Unknown` is one of
+its three values, and T-15 is the dimension, not the value; the core tier used
+to name this term and point at that ID, which is the mismatch corrected on
+2026-08-06). *Gap* (T-20 — a gap is something intended and **known** to be
+absent; an Unknown is not knowing whether it is absent. Rendering an Unknown
+as a gap manufactures knowledge). *Contradiction* (T-19 — two authorities that
+cannot both hold, which is more information than Unknown, not less).
+
+**Example.** "40 modules Unknown (reason: `missing-evidence` ×31,
+`no-currency-bound-declared` ×9)" — aggregated honestly, reason counts
+disclosed, each expandable. A map that is predominantly grey on an undeclared
+project is **correct output**.
+
+**Misuse.** Rendering a region green because its neighbours are green; showing
+an unmeasured cost as `0`; folding Unknowns of different reasons into one
+count; treating "no evidence found" as "no problem found".
 
 ---
 

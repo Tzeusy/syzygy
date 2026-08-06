@@ -48,6 +48,14 @@ from pathlib import Path
 
 LIST_KEYS = ("governs", "applies_to", "depends_on", "constrains", "tags")
 
+#: A clause definition opener, used to verify that a declared `constrains`
+#: edge is anchored in a numbered clause of the declaring module rather than
+#: in navigational prose. Review RD-4 finding F-1: the first `constrains` edge
+#: ever declared rested on a sentence 50 lines past the last clause, inside a
+#: §5 Integration section — promoting navigational prose to structured
+#: metadata, which makes it read as more load-bearing than its source.
+CLAUSE_DEF = re.compile(r"^\*\*(RFC\d+-\d+)(?:\([a-z]\))?\s*(?:\.|—|-)", re.M)
+
 #: A clause reference. `RFC9-32` is a clause; `RFC 0008 §5` (with a space) is a
 #: navigational section reference and is deliberately not matched — citing a
 #: section as authority is itself a defect (P-21(c)), not an edge to record.
@@ -96,6 +104,8 @@ def collect(root):
             "title": fm.get("title", ""),
             "depends_on": [x for x in fm.get("depends_on", [])],
             "constrains": [x for x in fm.get("constrains", [])],
+            "constrains_source": fm.get("constrains_source", ""),
+            "clause_defs": set(CLAUSE_DEF.findall(body)),
             "applies_to": [x for x in fm.get("applies_to", [])],
             "refs": {f"RFC-{int(n):04d}" for n in CLAUSE_REF.findall(body)},
         }
@@ -104,12 +114,15 @@ def collect(root):
         c = contracts.setdefault(cid, {"title": rec["title"], "modules": [],
                                        "depends_on": set(), "provides_to": set(),
                                        "constrains": set(),
+                                       "constrains_sources": set(),
                                        "constrained_by": set(),
                                        "cites": set(), "cited_by": set(),
                                        "refs": set(), "applies_to": set()})
         c["modules"].append(rec["file"])
         c["depends_on"] |= set(rec["depends_on"])
         c["constrains"] |= set(rec["constrains"])
+        if rec["constrains"]:
+            c["constrains_sources"].add((rec["constrains_source"], rec["file"]))
         c["applies_to"] |= set(rec["applies_to"])
         c["refs"] |= rec["refs"]
         if not c["title"]:
@@ -137,13 +150,31 @@ def collect(root):
     return modules, contracts
 
 
-def asymmetries(contracts):
-    """Dangling edges only.
+def asymmetries(contracts, modules):
+    """Structural defects in the declared edge set.
 
-    Asymmetry between the two directions is now unrepresentable: `provides_to`
-    is derived from `depends_on`, so the two cannot disagree. What remains
-    checkable is whether a declared dependency names a contract that exists.
+    Three predicates, each paid for by a finding:
+
+    * **dangling** — a declared edge names a contract with no module here.
+    * **unanchored `constrains`** — the declaring module does not define the
+      clause its `constrains_source` names, or names none. Review RD-4
+      recommendation 2: a constraint whose source text is not inside a numbered
+      clause of the declaring contract is prose promoted to metadata. This one
+      predicate rejects the first edge ever declared and admits both the
+      reviewer found missing, which is the correct sort on all three.
+    * **`A constrains B` where `A depends_on B`** — reported, because it is the
+      signal that a constraint was read off a dependency rather than found. The
+      earlier form checked only the other direction (`A in B.depends_on`) and
+      therefore did not fire on the one declared edge that turned out to be
+      misdirected (RD-4 finding F-16).
+
+    A `constrains` edge that `B depends_on A` already covers is **not** a
+    defect and is not reported here — B loads A regardless, so the constraint
+    is discharged by the stronger relation. It is annotated in the emitted
+    table instead, so the reader can see which edges are load-covered and which
+    are the whole reason the relation exists.
     """
+    by_file = {m["file"]: m for m in modules}
     out = []
     for a in sorted(contracts):
         for b in sorted(contracts[a]["depends_on"]):
@@ -156,16 +187,41 @@ def asymmetries(contracts):
                 out.append((a, b, "dangling",
                             "`constrains` names a contract with no module "
                             "in this package"))
-            elif a in contracts[b]["depends_on"]:
-                out.append((a, b, "redundant",
-                            "`constrains` where a `depends_on` already binds "
-                            "the pair; the stronger relation covers it"))
+
+        for src, f in sorted(contracts[a]["constrains_sources"]):
+            if not src:
+                out.append((a, "—", "unanchored",
+                            f"`{f}` declares `constrains` with no "
+                            f"`constrains_source`; a constraint with no clause "
+                            f"anchor is prose promoted to metadata"))
+            elif src not in by_file[f]["clause_defs"]:
+                out.append((a, "—", "unanchored",
+                            f"`{f}` names `constrains_source: {src}`, which it "
+                            f"does not define; the anchor must be a clause of "
+                            f"the declaring module"))
     return out
+
+
+def coincident_edges(contracts):
+    """`A constrains B` where `A depends_on B` — reported, never a defect.
+
+    Both relations can be genuinely true of one pair: RFC-0007 needs RFC-0001
+    to know what a claim *is* (`depends_on`), and RFC7-3 restricts what a claim
+    may cite (`constrains`). But the pair is also the exact shape of a
+    constraint read off a dependency rather than found in a clause — which is
+    how the first misdirected edge in this corpus was declared, and RD-4
+    finding F-16 asked for the signal. So it is printed and prompts a
+    re-examination; it does not fail anything.
+    """
+    return [(a, b) for a in sorted(contracts)
+            for b in sorted(contracts[a]["constrains"])
+            if b in contracts[a]["depends_on"]]
 
 
 def emit(root):
     modules, contracts = collect(root)
-    asym = asymmetries(contracts)
+    asym = asymmetries(contracts, modules)
+    coincident = coincident_edges(contracts)
     L = []
     add = L.append
     add("# Contract dependency index — derived, never authority")
@@ -176,13 +232,28 @@ def emit(root):
     add("is a clause and nothing here may be cited as authority (RFC11-7")
     add("rebuildable-projection rule).")
     add("")
-    add("## The three relations, and what a selector does with each")
+    add("## The three relations")
     add("")
-    add("| Relation | Meaning | Source | Context Compiler behaviour |")
-    add("|---|---|---|---|")
-    add("| `depends_on` | A must be loaded to interpret or modify B correctly | **authored** on the dependent | **mandatory load**, transitively |")
-    add("| `constrains` | A restricts something B owns; B stays independently readable | **authored** on the constraining contract | loaded **when the task class crosses the constrained seam** — editing B loads A's constraining clauses; otherwise not |")
-    add("| `cites` | A refers to a clause of B for navigation, comparison, or a forward pointer | **derived** from a clause-reference scan | **never automatic**. Navigational evidence a human or an agent may follow; it enters no packet by itself |")
+    add("| Relation | Meaning | Source of truth |")
+    add("|---|---|---|")
+    add("| `depends_on` | A must be loaded to interpret or modify B correctly | **authored** on the dependent |")
+    add("| `constrains` | A restricts something B owns; B stays independently readable | **authored** on the constraining contract, anchored to a clause of it |")
+    add("| `cites` | A refers to a clause of B for navigation, comparison, or a forward pointer | **derived** from a clause-reference scan |")
+    add("")
+    add("**What a selector should do with each is deliberately not stated")
+    add("here.** An earlier revision of this file carried a \"Context Compiler")
+    add("behaviour\" column — mandatory-load, load-on-seam-crossing,")
+    add("never-automatic — and **no clause states any of it**. A binding")
+    add("selector rule homed in a file whose own banner reads *nothing here may")
+    add("be cited as authority* is the defect this package keeps re-acquiring,")
+    add("appearing inside the repair for it (review RD-4, finding F-15).")
+    add("")
+    add("The proposal lives in `round-2026-08c/RELATION-MODEL-DECISION.md`,")
+    add("marked as a proposal. Its home if adopted is **RFC11-4**, which")
+    add("enumerates the deterministic selection inputs today and names")
+    add("`depends_on` / `provides_to` and clause-level metadata — and does")
+    add("**not** name `constrains`. Until that clause changes, a conformant")
+    add("compiler would not read this relation at all.")
     add("")
     add("`provides_to`, `constrained_by` and `cited_by` are the derived")
     add("inverses of the three and appear in no module's front matter. A")
@@ -207,22 +278,46 @@ def emit(root):
     add("")
     add("## Contract-level graph — semantic constraints")
     add("")
-    add("A one-way restriction one contract places on something another owns.")
-    add("These are the edges `depends_on` could not hold: they drive no load")
-    add("obligation in the general case, and before this relation existed they")
-    add("were stated in one contract, acknowledged by no clause in the other,")
-    add("and enforced by neither (owner item **P-21(a)**).")
+    add("A one-way restriction one contract places on something another owns —")
+    add("**anchored to a clause of the constraining contract**, which is")
+    add("verified below rather than asserted here.")
+    add("")
+    add("These are edges `depends_on` cannot hold: they drive no load")
+    add("obligation in the general case. What they have in common is that the")
+    add("restricting text names what *other* contracts may do, and the")
+    add("constrained contract does not carry it (owner item **P-21(a)**).")
+    add("")
+    add("**Two things this table does not claim.** It does not claim the")
+    add("constrained contract is silent — RFC-0007 states the SDR-18 seam in")
+    add("RFC7-24 from its own authority, and an earlier revision of this")
+    add("sentence generalised across every row and was false for one of them.")
+    add("And it does not claim to be complete: the population was found by two")
+    add("Python `re` sweeps over whole-file text (line-based and")
+    add("whitespace-normalised) for restriction-shaped clause language, and a")
+    add("sweep by the party that authored the edges is the weakest evidence in")
+    add("this repository. **[Unknown]** whether a third edge exists.")
     add("")
     constrained = [cid for cid in sorted(contracts)
                    if contracts[cid]["constrains"] or contracts[cid]["constrained_by"]]
     if constrained:
-        add("| Contract | constrains | constrained_by |")
-        add("|---|---|---|")
+        add("An edge marked **(load-covered)** is one where the constrained")
+        add("contract already declares `depends_on` the constraining one, so it")
+        add("loads it regardless and the constraint is discharged by the")
+        add("stronger relation. The unmarked edges are the whole reason this")
+        add("relation exists.")
+        add("")
+        add("| Contract | constrains | anchored at | constrained_by |")
+        add("|---|---|---|---|")
         for cid in constrained:
             c = contracts[cid]
-            add("| `{}` | {} | {} |".format(
-                cid,
-                ", ".join(sorted(c["constrains"])) or "— (none)",
+            outs = []
+            for b in sorted(c["constrains"]):
+                covered = cid in contracts.get(b, {}).get("depends_on", set())
+                outs.append(f"{b}{' *(load-covered)*' if covered else ''}")
+            src = ", ".join(f"`{s}`" for s, _ in sorted(c["constrains_sources"])
+                            if s) or "—"
+            add("| `{}` | {} | {} | {} |".format(
+                cid, ", ".join(outs) or "— (none)", src,
                 ", ".join(sorted(c["constrained_by"])) or "— (none)"))
     else:
         add("**No `constrains` edge is declared.** That is a claim, not an")
@@ -291,6 +386,18 @@ def emit(root):
         add(f"`depends_on` has at least one module in this package "
             f"({len(contracts)} contracts resolved).")
     add("")
+    if coincident:
+        add("### Reported, not a defect: `A constrains B` where `A depends_on B`")
+        add("")
+        add("Both relations can be genuinely true of one pair. They are also")
+        add("the exact shape of a constraint read off a dependency rather than")
+        add("found in a clause, which is how the first misdirected edge in this")
+        add("corpus was declared. Printed so it is re-examined; it fails")
+        add("nothing.")
+        add("")
+        for a, b in coincident:
+            add(f"- `{a}` constrains `{b}`, and also depends on it")
+        add("")
     add("The contract graph is **not acyclic** — mutual edges between kernel")
     add("contracts are declared deliberately (a contract can both rely on and")
     add("feed another). Read it as a reference graph for context selection, not")

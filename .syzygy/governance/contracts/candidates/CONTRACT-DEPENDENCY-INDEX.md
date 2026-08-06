@@ -6,13 +6,28 @@
 is a clause and nothing here may be cited as authority (RFC11-7
 rebuildable-projection rule).
 
-## The three relations, and what a selector does with each
+## The three relations
 
-| Relation | Meaning | Source | Context Compiler behaviour |
-|---|---|---|---|
-| `depends_on` | A must be loaded to interpret or modify B correctly | **authored** on the dependent | **mandatory load**, transitively |
-| `constrains` | A restricts something B owns; B stays independently readable | **authored** on the constraining contract | loaded **when the task class crosses the constrained seam** — editing B loads A's constraining clauses; otherwise not |
-| `cites` | A refers to a clause of B for navigation, comparison, or a forward pointer | **derived** from a clause-reference scan | **never automatic**. Navigational evidence a human or an agent may follow; it enters no packet by itself |
+| Relation | Meaning | Source of truth |
+|---|---|---|
+| `depends_on` | A must be loaded to interpret or modify B correctly | **authored** on the dependent |
+| `constrains` | A restricts something B owns; B stays independently readable | **authored** on the constraining contract, anchored to a clause of it |
+| `cites` | A refers to a clause of B for navigation, comparison, or a forward pointer | **derived** from a clause-reference scan |
+
+**What a selector should do with each is deliberately not stated
+here.** An earlier revision of this file carried a "Context Compiler
+behaviour" column — mandatory-load, load-on-seam-crossing,
+never-automatic — and **no clause states any of it**. A binding
+selector rule homed in a file whose own banner reads *nothing here may
+be cited as authority* is the defect this package keeps re-acquiring,
+appearing inside the repair for it (review RD-4, finding F-15).
+
+The proposal lives in `round-2026-08c/RELATION-MODEL-DECISION.md`,
+marked as a proposal. Its home if adopted is **RFC11-4**, which
+enumerates the deterministic selection inputs today and names
+`depends_on` / `provides_to` and clause-level metadata — and does
+**not** name `constrains`. Until that clause changes, a conformant
+compiler would not read this relation at all.
 
 `provides_to`, `constrained_by` and `cited_by` are the derived
 inverses of the three and appear in no module's front matter. A
@@ -41,18 +56,43 @@ One row per contract: the union of its modules' declared edges.
 
 ## Contract-level graph — semantic constraints
 
-A one-way restriction one contract places on something another owns.
-These are the edges `depends_on` could not hold: they drive no load
-obligation in the general case, and before this relation existed they
-were stated in one contract, acknowledged by no clause in the other,
-and enforced by neither (owner item **P-21(a)**).
+A one-way restriction one contract places on something another owns —
+**anchored to a clause of the constraining contract**, which is
+verified below rather than asserted here.
 
-| Contract | constrains | constrained_by |
-|---|---|---|
-| `RFC-0005` | — (none) | RFC-0006 |
-| `RFC-0006` | RFC-0005 | — (none) |
-| `RFC-0007` | — (none) | RFC-0008 |
-| `RFC-0008` | RFC-0007 | — (none) |
+These are edges `depends_on` cannot hold: they drive no load
+obligation in the general case. What they have in common is that the
+restricting text names what *other* contracts may do, and the
+constrained contract does not carry it (owner item **P-21(a)**).
+
+**Two things this table does not claim.** It does not claim the
+constrained contract is silent — RFC-0007 states the SDR-18 seam in
+RFC7-24 from its own authority, and an earlier revision of this
+sentence generalised across every row and was false for one of them.
+And it does not claim to be complete: the population was found by two
+Python `re` sweeps over whole-file text (line-based and
+whitespace-normalised) for restriction-shaped clause language, and a
+sweep by the party that authored the edges is the weakest evidence in
+this repository. **[Unknown]** whether a third edge exists.
+
+An edge marked **(load-covered)** is one where the constrained
+contract already declares `depends_on` the constraining one, so it
+loads it regardless and the constraint is discharged by the
+stronger relation. The unmarked edges are the whole reason this
+relation exists.
+
+| Contract | constrains | anchored at | constrained_by |
+|---|---|---|---|
+| `RFC-0001` | — (none) | — | RFC-0007 |
+| `RFC-0002` | — (none) | — | RFC-0007 |
+| `RFC-0004` | — (none) | — | RFC-0007 |
+| `RFC-0005` | RFC-0006, RFC-0009 *(load-covered)*, RFC-0010 *(load-covered)*, RFC-0011 *(load-covered)* | `RFC5-3` | — (none) |
+| `RFC-0006` | — (none) | — | RFC-0005 |
+| `RFC-0007` | RFC-0001, RFC-0002, RFC-0004, RFC-0008 *(load-covered)* | `RFC7-3` | — (none) |
+| `RFC-0008` | — (none) | — | RFC-0007 |
+| `RFC-0009` | — (none) | — | RFC-0005 |
+| `RFC-0010` | — (none) | — | RFC-0005 |
+| `RFC-0011` | — (none) | — | RFC-0005 |
 
 ## Contract-level graph — citations
 
@@ -135,6 +175,18 @@ on a contract with no module in this package.
 
 **No dangling edges** at generation: every contract named by a
 `depends_on` has at least one module in this package (11 contracts resolved).
+
+### Reported, not a defect: `A constrains B` where `A depends_on B`
+
+Both relations can be genuinely true of one pair. They are also
+the exact shape of a constraint read off a dependency rather than
+found in a clause, which is how the first misdirected edge in this
+corpus was declared. Printed so it is re-examined; it fails
+nothing.
+
+- `RFC-0007` constrains `RFC-0001`, and also depends on it
+- `RFC-0007` constrains `RFC-0002`, and also depends on it
+- `RFC-0007` constrains `RFC-0004`, and also depends on it
 
 The contract graph is **not acyclic** — mutual edges between kernel
 contracts are declared deliberately (a contract can both rely on and

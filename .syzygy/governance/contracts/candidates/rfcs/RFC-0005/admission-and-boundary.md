@@ -7,6 +7,8 @@ clauses: RFC5-1..RFC5-11, RFC5-24..RFC5-26 (no gaps within either run, no retire
 governs: [principals, sessions, machine-credentials, client-classes, exposure-modes, adapter-credentials, audit, revocation]
 applies_to: [kernel, all-surfaces, machine-clients]
 depends_on: [RFC-0001, RFC-0002, RFC-0003]
+constrains: [RFC-0006, RFC-0009, RFC-0010, RFC-0011]
+constrains_source: RFC5-3
 tags: [sec-1, sec-4, sec-5, vis-5, client-classes, acts-versus-claims, audit-trail, a1-correlation]
 ---
 

@@ -42,7 +42,7 @@ scripts/context_load.py rfcs/RFC-0001-project-graph-identity-state-planes.md \
   craft:testing-and-verification.md
 ```
 
-Measured: **22,409 words ≈ 30,252 estimated tokens.**
+Measured: **22,416 words ≈ 30,262 estimated tokens.**
 
 ## ⚠️ Budget breach — waiver
 
@@ -158,8 +158,17 @@ never silently promotes or demotes anything.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`4e4349835c643f9c…` (recompute: `cat <mandatory files> | sha256sum`).
-Compiler: `context_load.py`, selection rules rev10-fixtures.
+`9e6afe82d5b66c8e…` (recompute: `cat <mandatory files> | sha256sum`).
+
+**Selection: hand-authored golden selection. Measurement: mechanical.
+Compiler implementation: absent.** `scripts/context_load.py` resolves a
+path list it is handed and counts words; it has no notion of a task, a
+warrant, a risk class, an `applies_to` value, or a dependency edge. The
+selection above was made by a human and the trace is the reasoning that
+produced it, written down — not a machine's output narrated afterwards.
+The `Compiler: context_load.py, selection rules rev10-fixtures` line this
+fixture used to carry was removed 2026-08-06: there is no compiler, and
+`rev10-fixtures` resolved to nothing anywhere in the repository.
 
 **Digest-source pinning.** This digest and the totals above are computed over
 the **canonical-home bytes** as of 2026-08-05: `doctrine:` resolves to

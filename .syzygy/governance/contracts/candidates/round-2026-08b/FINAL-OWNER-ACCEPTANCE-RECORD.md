@@ -36,8 +36,8 @@ through CG-7d. A CG-7 failure means **do not perform that act**.
 
 | Act | Argument (verify, never transcribe) | Changed this round? |
 |---|---|---|
-| 1 — foundational contracts | `9fac6b787eb39b3ce4346590fbf2098c4b4fec24f457c7a114b0b2ba383f2e68` | **Yes, four times** — most recently 2026-08-06 for the rev11b correction-plane repairs; superseded by the 2026-08-06 closure round's owner acceptance packet |
-| 2 — craft amendment CC-TEST-2 | `3858820f64768ef20e6514fe8adb28076263f071ac77e66a5520a612f3bcb26d` | No |
+| 1 — foundational contracts | `2862b2f54e39e6d477129147eb2e1d0cb4ca714c26edabd75505e2e38ff057d7` | **Yes, five times** — most recently 2026-08-06 for the rev11b correction-plane repairs; superseded by the 2026-08-06 closure round's owner acceptance packet |
+| 2 — craft amendment CC-TEST-2 | `7a716090bc827121b3f70c4f7e252fc5680cd8a56d7b4121b70f3673489690a0` | **Yes — and this row was wrong.** It offered `3858820f…` — an argument retired on 2026-08-06 when `th-engineering` was vendored and `testing-and-verification.md` gained CC-TEST-7. The acceptance record was re-quoted then; this copy was not, and **no check examined it**: CG-7c reads the acceptance record's `CC-TEST-2@…` form, and a bare digest in a table row matched neither CG-7c, CG-7d nor CG-15. Found by review RD-6 (finding H-1) and closed by **CG-7e**, which enumerates every file carrying an act-argument copy and the acts each one carries |
 | 3 — topology bundle | `7a3b22494a08d888901c1f0cec76833dc926e89b6f510b5abf8963071fbaeb45` | No |
 | 4 — project overview | `01d629515993188338f6a0e2d84d67543d8569003759a7c8f571a90b129c7cd1` | No |
 | 5 — doctrine amendment D3 *(optional)* | `e973e8e025c93b5d1e59d16d8661b0ae1f9804304c8f8de8957950acf3d8f9c9` | **Yes** — §6 disclosure added |
