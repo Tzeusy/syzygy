@@ -2,12 +2,13 @@
 
 # Testing and verification
 
-Baseline: the canonical `test-rigor` bar (rules 1–8: behavior-focused
+Baseline: the canonical `test-rigor` bar (rules 1–10: behavior-focused
 assertions, regression tests, edge/failure coverage, no tautologies,
 boundary-only mocking, determinism, defect-naming failures, maintained test
-code) applies by reference. This file adds Syzygy's obligations, which mostly
-follow from one fact: for Syzygy, test results are not just development
-feedback — they are **evidence artifacts** the product itself renders.
+code, suite tiering and targetability, governed test growth) applies by
+reference. This file adds Syzygy's obligations, which mostly follow from one
+fact: for Syzygy, test results are not just development feedback — they are
+**evidence artifacts** the product itself renders.
 
 ## CC-TEST-1 — Every defect fix ships a reproducing test; exceptions are rare and recorded
 
@@ -131,3 +132,22 @@ failure mode of the empty branch is *lying*.
 *Violation:* the cost-rollup tests cover one, several, and many runs — but
 not the run whose token counts are absent, which the implementation sums
 as 0.
+
+## CC-TEST-7 — Re-check record: canonical bars 9 and 10 admitted without conflict
+
+When the adopted `test-rigor` pin moved from rules 1–8 to 1–10 (README's
+"Adoption by reference" re-pin, 2026-08-06, closing P-26), this cluster's own
+rule required CC-TEST-1…6 and CC-BAR-1's override register to be re-checked
+against the two new canonical bars — suite tiering/targetability (9) and
+governed test growth (10) — before silently absorbing them. Result: no
+conflict. Neither new bar overrides or is overridden by any rule above;
+CC-BAR-1's three registered overrides (bias 1, canonical rules 2 and 6) are
+unaffected, since bars 9 and 10 are additions, not renumberings of anything
+CC-BAR-1 already overrides. This cluster adopts bars 9 and 10 unmodified, by
+reference, the same as bars 1–8.
+
+*Note:* canonical bars 9 and 10 point readers to
+`subskills/test-rigor/references/suite-discipline.md` for tier definitions,
+run commands, and growth-governance detail. That file is outside this lock's
+vendored scope (`../GOVERNANCE-SUBSTRATE-LOCK.yaml`,
+`th_engineering.vendored.scope_note`) — a known gap, not silently absorbed.

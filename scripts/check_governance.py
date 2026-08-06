@@ -239,6 +239,25 @@ def _is_historical_packet(target):
     return any(p.match(target) for p in HISTORICAL_PACKET_TARGET)
 
 
+#: Cited descriptively by `craft-and-care/testing-and-verification.md`
+#: CC-TEST-7: the upstream `th-engineering` package's own internal
+#: cross-reference (tier definitions for test-rigor bars 9-10), naming a file
+#: outside this lock's vendored scope on purpose
+#: (`GOVERNANCE-SUBSTRATE-LOCK.yaml` th_engineering.vendored.scope_note).
+#: Classified here, not silenced — see CG-1e.
+DECLARED_VENDOR_GAP = (
+    "subskills/test-rigor/references/suite-discipline.md",
+)
+
+
+def _is_vendored_gap(citing, target):
+    """A vendored file's own prose citing an un-vendored sibling, or a
+    Syzygy file citing a upstream path this repo deliberately did not
+    vendor. `VENDORED_EXTERNAL` is defined near `cg22_ambiguous_status`,
+    below — resolved at call time, same as every other module constant."""
+    return citing.startswith(VENDORED_EXTERNAL) or target in DECLARED_VENDOR_GAP
+
+
 def _resolve(citing, target, all_paths):
     """Resolve relative to the citing file, to the repo root, or as a suffix.
 
@@ -261,7 +280,8 @@ def _resolve(citing, target, all_paths):
 def cg1_links(paths, res):
     all_paths = set(paths)
     n_links = n_paths = 0
-    broken_links, broken_paths, forward, historical = [], [], set(), []
+    broken_links, broken_paths, forward, historical, vendor_gap = \
+        [], [], set(), [], []
     for rel in md_files(paths):
         txt = read(rel)
         for m in MD_LINK.finditer(txt):
@@ -273,7 +293,10 @@ def cg1_links(paths, res):
                 forward.add(t)
                 continue
             if not _resolve(rel, t, all_paths):
-                broken_links.append(f"{rel} -> {t}")
+                if _is_vendored_gap(rel, t):
+                    vendor_gap.append(f"{rel} -> {t}")
+                else:
+                    broken_links.append(f"{rel} -> {t}")
         for m in CODE_PATH.finditer(txt):
             t = m.group("t")
             if "/" not in t or t.startswith(EXTERNAL):
@@ -286,7 +309,9 @@ def cg1_links(paths, res):
                 forward.add(t)
                 continue
             if not _resolve(rel, t, all_paths):
-                if _is_historical_packet(t):
+                if _is_vendored_gap(rel, t):
+                    vendor_gap.append(f"{rel} -> {t}")
+                elif _is_historical_packet(t):
                     historical.append(f"{rel} -> {t}")
                 else:
                     broken_paths.append(f"{rel} -> {t}")
@@ -315,6 +340,12 @@ def cg1_links(paths, res):
             note="unresolvable in a clone by construction — the rev9 working "
                  "packet lived under the git-excluded `_bootstrap/`",
             details=uniq_hist)
+    uniq_gap = sorted(set(vendor_gap))
+    res.add("WARN", "CG-1e  vendored-substrate scope gaps", len(uniq_gap), 0,
+            "reference",
+            note="deliberately not vendored — GOVERNANCE-SUBSTRATE-LOCK.yaml "
+                 "th_engineering.vendored.scope_note names the boundary",
+            details=uniq_gap)
 
 
 # --------------------------------------------------------------- CG-2
@@ -2609,8 +2640,11 @@ STATUS_WINDOW = 2
 #: is not the active lane. Declared per prefix, never globbed from
 #: `.claude/skills/` — `heart-and-soul` lives there and *is* ours.
 #:
-#: Provisional: the vendoring landed mid-session and CG-1a/CG-1b currently
-#: report against the same tree. A corpus-wide answer supersedes this list.
+#: CG-1a/CG-1b honor this too (`_is_vendored_gap`, defined beside `cg1_links`
+#: above): a vendored file's own cross-references to un-vendored siblings are
+#: classified under CG-1e, not counted as broken links. Forward-referenced
+#: here because Python resolves module-level names at call time, not
+#: definition time — every `cg1_links` call happens after this line has run.
 VENDORED_EXTERNAL = (
     ".claude/skills/th-engineering/",
     ".codex/skills/th-engineering/",

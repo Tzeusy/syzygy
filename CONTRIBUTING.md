@@ -65,6 +65,19 @@ confirm no active artifact depends on the git-excluded `_bootstrap/**` tree
 for essential meaning (citing it as unavailable history is fine; needing it
 is not).
 
+## Vendored external material
+
+`.claude/skills/th-engineering/` and `.codex/skills/th-engineering/` are a
+byte-identical, MIT-licensed vendored copy of the `engineering-bar`,
+`test-rigor`, and `dependency-hygiene` subskills that
+`.syzygy/governance/policies/craft-and-care/` adopts by reference (owner
+override, 2026-08-06). It is tooling configuration, not application or
+library code, and not authored here — do not edit it to satisfy a local
+checker or to add Syzygy-specific rules; overrides belong in
+`craft-and-care/` instead. Provenance, exact commit, and recomputable
+digests: `.syzygy/governance/policies/GOVERNANCE-SUBSTRATE-LOCK.yaml`
+(`th_engineering`).
+
 ## Where Beads applies
 
 `bd` (Beads) tracks process housekeeping during this phase. It is **not**

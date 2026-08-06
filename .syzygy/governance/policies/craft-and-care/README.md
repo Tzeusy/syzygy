@@ -14,18 +14,20 @@ has been selected (v1.md, "Stack … is not chosen here"). Policies constrain
 This cluster **adopts the canonical engineering bar by reference**: the
 `th-engineering` skill package — specifically its `engineering-bar` subskill
 (default biases 1–9 and its Definition of Done), its `test-rigor` bar (rules
-1–8), and its `dependency-hygiene` bar (rules 1–7) — is Syzygy's baseline
-engineering standard. [Observed — read at
-`~/.claude/skills/th-engineering/subskills/` on the founder machine; the bar
-itself states that project craft-and-care pillars adopt it by reference and
-override individual biases.]
+1–10), and its `dependency-hygiene` bar (rules 1–7) — is Syzygy's baseline
+engineering standard.
 
-**That path resolves from a clone.** The machine path above is where the text
-was read, not where a reader must go: `../GOVERNANCE-SUBSTRATE-LOCK.yaml`
-pins the same material to a public repository, an exact commit, exact paths,
-and recomputable digests. Read the lock, not the path. The lock also records
-an **open, unabsorbed drift** — the installed tree has moved past the commit
-D2 approved — which bears on act 2.
+**Vendored, not read from a founder-machine path.** Owner override,
+2026-08-06: a byte-identical local copy is tracked in this repository at
+`.claude/skills/th-engineering/` and `.codex/skills/th-engineering/`
+(scope: the root `SKILL.md` and these three subskills only — nothing else
+from the upstream package). `../GOVERNANCE-SUBSTRATE-LOCK.yaml` records the
+upstream provenance (public repository, exact commit, exact paths, and
+recomputable digests) that the vendored copy is pinned against; read the
+lock to verify the vendored copy, not a machine path. [Observed — vendored
+files' sha256 matches the lock's `installed.relevant_paths`; the bar itself
+states that project craft-and-care pillars adopt it by reference and
+override individual biases.]
 
 The cluster **does not restate** the canonical bar. Every file below records
 only Syzygy-specific **overrides and additions**. Where a file is silent, the
@@ -42,13 +44,17 @@ canonical bar applies unmodified.
 Within tier 1, **doctrine prevails over the SDRs** on any conflict — the SDR
 itself declares that it modifies no doctrine text. A lower layer can
 strengthen a higher one; it can never weaken it. The adopted baseline is
-**pinned**: the installed `th-engineering` bar as read on 2026-07-30
-(engineering-bar biases 1–9 + Definition of Done; test-rigor rules 1–8;
-dependency-hygiene rules 1–7). If the installed bar changes materially
-against that pin, this cluster's overrides (registered in CC-BAR-1) are
-re-checked against the new text and the conflict is surfaced to the owner,
-not silently absorbed — the pin is what makes that check mechanical rather
-than hopeful.
+**pinned**: the `th-engineering` bar re-pinned 2026-08-06 to commit `f4cf1c7`
+(engineering-bar biases 1–9 + Definition of Done, including "Test delta
+accounted"; test-rigor rules 1–10; dependency-hygiene rules 1–7). This re-pin
+resolved an open drift (the previous 2026-07-30 pin, commit `61bd8fa`, had
+fallen two commits behind what was on the founder machine — tracked as
+`PENDING-OWNER-DECISIONS.md` P-26, now executed): CC-BAR-1 and CC-TEST-* were
+re-checked against test-rigor's two new bars (9: suite tiering and
+targetability; 10: governed test growth) and the new Definition of Done item,
+and no override conflicts were found — see CC-BAR-1's register and
+`testing-and-verification.md`. If the vendored bar is ever updated again,
+this same re-check-before-absorbing discipline applies.
 
 ## Citation convention
 

@@ -78,20 +78,28 @@ RETIRED — ACCEPT COMPACTED FOUNDATIONAL RFCS: f2914fc56cd2aa069b952747b9c78b00
 ### Act 2 — confirm the craft amendment CC-TEST-2
 
 ```text
-CONFIRM CRAFT AMENDMENT: CC-TEST-2@3858820f64768ef20e6514fe8adb28076263f071ac77e66a5520a612f3bcb26d
+CONFIRM CRAFT AMENDMENT: CC-TEST-2@7a716090bc827121b3f70c4f7e252fc5680cd8a56d7b4121b70f3673489690a0
 ```
 
 - **Covers exactly:** `.syzygy/governance/policies/craft-and-care/testing-and-verification.md`
   at that digest. The craft cluster itself is already owner-approved (D2);
   only this one amendment is unconfirmed.
-- **Why the argument changed this round:** the nine canonical craft files
+- **Digest re-quoted 2026-08-06** (superseding the retired, `aa2d6353…`-then-
+  `3858820f…` arguments below): the owner directed `th-engineering` be
+  vendored in-tree and re-pinned to close P-26, so `testing-and-verification.md`
+  gained CC-TEST-7 recording the re-check against test-rigor's two new bars
+  (no conflicts found) — `INSTALL-RECORD.md`'s 2026-08-06 correction.
+- **Why the argument changed on 2026-08-05:** the nine canonical craft files
   carried an opening banner calling the canonical home "the bootstrap-phase
   record" — false, and inverted the authority relation. The banners were
   corrected; **no rule text changed** (SD-3). The rev9 argument `aa2d6353…`
   is retired and satisfies nothing.
-- **Knowingly imperfect:** the cluster's engineering bar is adopted *by
-  reference* to a machine-local skill tree that a clone cannot read
-  (dispositions §4 C, register P-20). Repairing it is itself an owner act.
+- **No longer imperfect (resolved 2026-08-06):** the cluster's engineering
+  bar was adopted *by reference* to a machine-local skill tree that a clone
+  could not read (dispositions §4 C, register P-20). It is now vendored
+  in-tree at `.claude/skills/th-engineering/` and `.codex/skills/th-engineering/`
+  and pinned in `../../policies/GOVERNANCE-SUBSTRATE-LOCK.yaml` — owner
+  override, P-26 executed.
 
 ### Act 3 — accept the topology bundle
 

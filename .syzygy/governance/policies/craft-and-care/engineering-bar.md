@@ -33,6 +33,13 @@ it can find.
 *Violation:* a cleanup pass that renumbers `CC-TEST-*` policies to close a
 gap left by a retired rule, breaking every existing citation.
 
+*Re-check record (2026-08-06):* the 2026-08-06 re-pin (README's "Adoption by
+reference") added canonical engineering-bar's Definition-of-Done item "Test
+delta accounted" to the adopted surface. It does not conflict with, override,
+or get overridden by any override in this register — see
+`testing-and-verification.md` CC-TEST-7 for the accompanying test-rigor
+re-check.
+
 ## CC-BAR-2 — Syzygy definition of done
 
 A non-trivial change is done only when, in addition to the canonical

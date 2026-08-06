@@ -8,7 +8,10 @@
 # (`~/.claude/skills/th-engineering/...`), which no clone can resolve. This
 # file makes every such reference resolvable from a clean clone by naming the
 # public repository, the exact commit, the exact paths, and content digests a
-# reader can recompute.
+# reader can recompute. As of 2026-08-06, `th_engineering` is additionally
+# VENDORED in-tree (owner override — see `th_engineering.vendored` below), so
+# a clone needs no external fetch at all to read the adopted bar; the pin
+# below remains the provenance record.
 #
 # WHAT THIS IS NOT. This file is a **record, not authority**. It adopts
 # nothing, changes no policy, and cannot widen what the owner approved. Where
@@ -20,46 +23,49 @@
 #                Verify: `git rev-parse <commit>:<path>`
 #   sha256     — sha256 of the exact file bytes at the named commit.
 #                Verify: `git cat-file blob <commit>:<path> | sha256sum`
-# Recomputed 2026-08-05 in the same session that wrote them.
+# th_engineering recomputed 2026-08-06 (re-pin to f4cf1c7); the other pins
+# were last recomputed 2026-08-05 in the same session that wrote them.
 
 version: 1
-as_of: "2026-08-05"
+as_of: "2026-08-06"
 recomputed_in_session: true
 
 # ---------------------------------------------------------------------------
 # th_engineering — the baseline ENGINEERING BAR adopted by craft-and-care (D2)
 # ---------------------------------------------------------------------------
-# craft-and-care/README.md pins "the installed th-engineering bar as read on
-# 2026-07-30 (engineering-bar biases 1-9 + Definition of Done; test-rigor
-# rules 1-8; dependency-hygiene rules 1-7)". `adopted` below is that pin,
-# resolved to a public commit. `installed` is what is on the founder machine
-# now. They DIFFER — see `drift`. The pin is what D2 approved; the drift is an
-# open owner item, deliberately not absorbed.
+# craft-and-care/README.md now pins the bar re-pinned 2026-08-06 (engineering-
+# bar biases 1-9 + Definition of Done incl. "Test delta accounted"; test-rigor
+# rules 1-10; dependency-hygiene rules 1-7). `adopted` and `installed` agree
+# as of this re-pin — see `drift` for the resolved history. Owner override,
+# 2026-08-06: the bar is also VENDORED in-tree (see `vendored` below), not
+# read from a founder-machine path.
 th_engineering:
   repository: https://github.com/Tzeusy/ai-bootstrap
   visibility: public
   license: MIT
 
   adopted:
-    # Latest commit on `main` at or before the 2026-07-30 pin date.
-    commit: 61bd8fa63d198e9dc0de04a7b725f48a2d41c16d
-    commit_date: "2026-07-27T00:38:14+08:00"
+    # Re-pinned 2026-08-06 to match `installed`, resolving the P-26 drift.
+    commit: f4cf1c7d7fdcacf61e1325e611a368403f372d74
+    commit_date: "2026-08-02T11:45:12+08:00"
     resolution_rule: >-
-      craft-and-care pins "as read on 2026-07-30". No ai-bootstrap commit
-      lands between 2026-07-27 and 2026-07-31, so the text read on 2026-07-30
-      is exactly the text at this commit. [Inferred — from commit dates; the
-      reading was not itself recorded with a commit id.]
+      Owner decision 2026-08-06: re-pin to the installed commit rather than
+      hold the 2026-07-30 pin, closing P-26. CC-BAR-1 / CC-TEST-* were
+      re-checked against test-rigor rules 9-10 and the new engineering-bar
+      DoD item; no override conflicts found — see
+      craft-and-care/testing-and-verification.md and
+      craft-and-care/README.md.
     root_path: skills/personal/th-engineering
-    git_tree: d0f514ab8187c5dc418b92658602c2c7ab4d32d5
+    git_tree: 2e6983fedc18943559c4b62a76b85842152cb231
     relevant_paths:
       - path: skills/personal/th-engineering/SKILL.md
         sha256: ff57caa0e9ab3f355363d274485a94af87c694c6465fa123c33858fcbd13e92d
       - path: skills/personal/th-engineering/subskills/engineering-bar/SKILL.md
-        sha256: c22c086ec1525e86b2dadcd48de5fe5ffc1ecaf99bbe02f181cea69d2038501c
-        adopted_content: "biases 1-9 + Definition of Done"
+        sha256: e64f1b2802ac31611823363181572cb7e6611cd1f981342d8fad063cf4c6e5a7
+        adopted_content: "biases 1-9 + Definition of Done (incl. 'Test delta accounted')"
       - path: skills/personal/th-engineering/subskills/test-rigor/SKILL.md
-        sha256: 4c2d4d121869cda537b284d49ae7e06df2d34db971b8afca0e7d4dd1fc1783a7
-        adopted_content: "rules 1-8"
+        sha256: c485f7cdbcd4e08e36384840a53fc59b98514efa7f650f5fcaa4b7cbd7ecfc46
+        adopted_content: "rules 1-10"
       - path: skills/personal/th-engineering/subskills/dependency-hygiene/SKILL.md
         sha256: 660546b127f7dc291331cb8f624a4f891d1d877542a835f3bb62b6c2e1744ba6
         adopted_content: "rules 1-7"
@@ -79,52 +85,48 @@ th_engineering:
       - path: skills/personal/th-engineering/subskills/dependency-hygiene/SKILL.md
         sha256: 660546b127f7dc291331cb8f624a4f891d1d877542a835f3bb62b6c2e1744ba6
 
+  # Historical drift (detected 2026-08-05, absorbed 2026-08-06): test-rigor
+  # gained bars 9-10 (suite tiering/targetability; governed test growth) and
+  # engineering-bar's DoD gained "Test delta accounted"; dependency-hygiene
+  # was byte-identical. Full before/after detail: git history of this file
+  # prior to 2026-08-06, and `round-2026-08b/SUBSTRATE-REPRODUCIBILITY-REPORT.md`.
   drift:
-    detected: true
-    detected_on: "2026-08-05"
-    # Renamed from `status:` 2026-08-06 — CG-22 and term registry §1: `status`
-    # is the one word five closed vocabularies answer to. This field says what
-    # has been *done* about the drift, and nothing else.
-    disposition: OPEN — surfaced to owner, not absorbed
-    # craft-and-care/README.md requires: "If the installed bar changes
-    # materially against that pin, this cluster's overrides (registered in
-    # CC-BAR-1) are re-checked against the new text and the conflict is
-    # surfaced to the owner, not silently absorbed."
-    changed_paths:
-      - path: subskills/test-rigor/SKILL.md
-        material: true
-        change: >-
-          Numbered bars went from 1-8 to 1-10. Two new bars: (9) "Suite is
-          tiered and targetable" — every test maps to one tier, network only
-          above unit, enforced mechanically; (10) "Growth is governed" — a
-          test is worth adding only if it catches a bug no existing test
-          catches; reviews state the net test delta. Bars 1, 5 also gained
-          text (spec-derived tests; the mock ladder).
-        why_material: >-
-          craft-and-care adopted "rules 1-8" by number. Two rules now exist
-          that the owner did not approve, and CC-TEST-* overrides were written
-          against an 8-rule baseline. Whether Syzygy adopts 9 and 10 is an
-          owner question.
-      - path: subskills/engineering-bar/SKILL.md
-        material: true
-        change: >-
-          Definition of Done gained one item — "Test delta accounted": added
-          tests pass the worth-adding bar and net suite growth is stated;
-          adds-only growth in a mature area is reviewed. Biases 1-9 are
-          unchanged (verified by diff).
-        why_material: >-
-          The Definition of Done is explicitly named in the pin, so a new DoD
-          item is inside the adopted surface, not outside it.
-      - path: subskills/dependency-hygiene/SKILL.md
-        material: false
-        change: "byte-identical at both commits (rules 1-7 unchanged)"
-    owner_item: >-
-      Re-check CC-BAR-1 / CC-TEST-* against the two new test-rigor bars and
-      the new DoD item, then either re-pin to f4cf1c7 or record a deliberate
-      exception. Tracked in `decisions/PENDING-OWNER-DECISIONS.md`.
-    not_a_blocker_for: >-
-      Acts 1, 3, 4, 5. It bears on act 2 (the craft amendment) because act 2's
-      subject is craft policy text.
+    detected: false
+    disposition: >-
+      ABSORBED — owner decision 2026-08-06 re-pinned `adopted` to f4cf1c7
+      (closing P-26) instead of holding the 2026-07-30 text. CC-BAR-1 /
+      CC-TEST-* were re-checked against the two new test-rigor bars and the
+      new DoD item; no conflicts found, so no override text changed. Tracked
+      in `decisions/PENDING-OWNER-DECISIONS.md` (P-26, now executed).
+
+  # Owner override, 2026-08-06: vendor a local, git-tracked copy instead of
+  # only citing a founder-machine path. Content is byte-identical to
+  # `installed` above (verify by recomputing sha256 at each location).
+  vendored:
+    vendored_on: "2026-08-06"
+    reason: >-
+      Owner override of the PUBLIC-CLONE-AUTHORITY-MATRIX.md disposition
+      ("out of scope for this repo; disclose in CONTRIBUTING, do not
+      import"). That disposition is superseded by this vendoring.
+    locations:
+      - .claude/skills/th-engineering/SKILL.md
+      - .claude/skills/th-engineering/subskills/engineering-bar/SKILL.md
+      - .claude/skills/th-engineering/subskills/test-rigor/SKILL.md
+      - .claude/skills/th-engineering/subskills/dependency-hygiene/SKILL.md
+      - .codex/skills/th-engineering/SKILL.md
+      - .codex/skills/th-engineering/subskills/engineering-bar/SKILL.md
+      - .codex/skills/th-engineering/subskills/test-rigor/SKILL.md
+      - .codex/skills/th-engineering/subskills/dependency-hygiene/SKILL.md
+    scope_note: >-
+      Vendored scope matches `installed.relevant_paths` exactly — the root
+      SKILL.md and the three adopted subskills, nothing else from the
+      upstream th-engineering package (code-readability, diagnosis,
+      documentation, cruft-cleanup, skill-standards, excalidraw-diagram are
+      not adopted and not vendored). Test-rigor bars 9 and 10 cite
+      `subskills/test-rigor/references/suite-discipline.md`, which is
+      likewise NOT vendored — that file was never inside this lock's adopted
+      scope, so the citation is a known dead link in the vendored copy, not
+      an oversight.
 
 # ---------------------------------------------------------------------------
 # th_projects — the project-shaping workflow Syzygy's next phase runs through
@@ -225,7 +227,9 @@ not_locked:
     reason: >-
       Machine-local installation detail. `~/.claude/skills/th-engineering`
       resolves to `~/.dotfiles/ai-bootstrap/skills/personal/th-engineering`;
-      the content is what the lock names, and the symlink is not.
+      the content is what the lock names, and the symlink is not. As of
+      2026-08-06 this repository no longer depends on that symlink at all —
+      see `th_engineering.vendored` for the in-tree copy.
 
 # ---------------------------------------------------------------------------
 # How to verify this file from a clean clone
@@ -233,9 +237,12 @@ not_locked:
 verification:
   commands:
     - "git clone https://github.com/Tzeusy/ai-bootstrap /tmp/aib"
-    - "cd /tmp/aib && git rev-parse 61bd8fa63d198e9dc0de04a7b725f48a2d41c16d:skills/personal/th-engineering"
-    - "cd /tmp/aib && git cat-file blob 61bd8fa63d198e9dc0de04a7b725f48a2d41c16d:skills/personal/th-engineering/subskills/test-rigor/SKILL.md | sha256sum"
+    - "cd /tmp/aib && git rev-parse f4cf1c7d7fdcacf61e1325e611a368403f372d74:skills/personal/th-engineering"
+    - "cd /tmp/aib && git cat-file blob f4cf1c7d7fdcacf61e1325e611a368403f372d74:skills/personal/th-engineering/subskills/test-rigor/SKILL.md | sha256sum"
+    - "sha256sum .claude/skills/th-engineering/subskills/test-rigor/SKILL.md .codex/skills/th-engineering/subskills/test-rigor/SKILL.md  # confirm the vendored copy matches the upstream blob"
   expected: >-
-    The tree id and sha256 values recorded above. Any disagreement means this
-    lock is stale — report it, do not edit the policy to match.
-  report: ".syzygy/governance/contracts/candidates/round-2026-08b/SUBSTRATE-REPRODUCIBILITY-REPORT.md"
+    The tree id and sha256 values recorded above, and the two vendored-copy
+    sha256sums equal to the upstream blob's. Any disagreement means this lock
+    (or the vendored copy) is stale — report it, do not edit either to match
+    the other without checking which one moved.
+  report: ".syzygy/governance/contracts/candidates/round-2026-08b/SUBSTRATE-REPRODUCIBILITY-REPORT.md (superseded 2026-08-06 by this re-pin — a fresh clone report is still owed, see PENDING-OWNER-DECISIONS.md)"

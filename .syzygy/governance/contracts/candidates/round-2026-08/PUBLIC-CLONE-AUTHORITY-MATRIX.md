@@ -32,7 +32,7 @@ adoption or acceptance.
 | Craft-and-care cluster (9 files + INSTALL-RECORD) | mirror | ✔ | ✔ (banners lie) | approved (D2), CC-TEST-2 confirmation pending | authoritative (engineering bar) | P-7 banner fix, P-8 binding fix, regenerate digests, re-offer act 2 |
 | Overview (`intent/OVERVIEW.md`) | mirror | ✔ | ✔ (stale gate prose) | draft offered (act 4) | presentation only, never citable as authority | §9 progressive-disclosure refactor; new digest; re-offer |
 | Installed `AGENTS.md` / one-line `README.md` | — | ✔ | misleads (stale lifecycle, `about/` row, retired phrases) | stale | repo procedure | replace per §8 |
-| th-engineering tier-3 baseline | machine-local | ✘ | ✘ | external skill config | external | out of scope for this repo; disclose in CONTRIBUTING (do not import) |
+| th-engineering tier-3 baseline | mirror (optional; no longer required) | ✔ | ✔ | vendored (owner override, 2026-08-06 — supersedes this row's original "do not import") | external, pinned (`../../policies/GOVERNANCE-SUBSTRATE-LOCK.yaml`) | none — vendored at `.claude/skills/th-engineering/` + `.codex/skills/th-engineering/`, digest-pinned; P-26 executed |
 | Beads DB + hooks | local DB; hooks tracked | partial | hooks visible, uninstalled; no `refs/dolt/data` on remote | process | work lifecycle only | disclose posture in AGENTS/CONTRIBUTING; no product beads |
 
 **Principle applied (round prompt §6):** active authority and active
