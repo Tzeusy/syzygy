@@ -8,7 +8,7 @@
 > contradict itself in the first line and the third. It becomes a canonical
 > vocabulary if and when an owner act accepts it, and not before.
 > It is a candidate policy artifact produced in the 2026-08 human-clarity
-> refactor round. No owner act has accepted it, and none of its 30 entries
+> refactor round. No owner act has accepted it, and none of its 31 entries
 > acquires force from appearing here.
 >
 > **Owning authorities always win over this registry's restatements.** Every
@@ -22,8 +22,8 @@
 ## Two tiers: what the public path needs, and what it does not
 
 A reader arriving at `README.md` and `intent/OVERVIEW.md` must not have to
-learn thirty terms. **The default public path is bounded to the twelve core
-terms below.** Everything else is advanced vocabulary: real, needed, and
+learn thirty-one terms. **The default public path is bounded to the eleven
+core terms below.** Everything else is advanced vocabulary: real, needed, and
 reachable in one action — but never a prerequisite for understanding what
 Syzygy is.
 
@@ -897,8 +897,11 @@ one.
 **Owning authority.** RFC2-25 (candidate); SDR-9 and SDR-33 (**adopted owner
 rulings**) behind `report-fact` and `reduced-fidelity`.
 
-**Permitted aliases.** *rendering tier* (the corpus's own term — see the
-migration report; both spellings are in use).
+**Permitted aliases.** *evidence tier* — the minority name, which this entry's
+own title carries as a parenthetical. (An earlier revision listed *rendering
+tier* here, which is this entry's **own heading**: a term cannot be an alias of
+itself, and listing it as one hid which of the two names the registry had
+actually chosen. Review RD-3, finding F-1.)
 
 **Deprecated synonyms.** *evidence strength*, *confidence tier*, *quality
 level*.
@@ -1505,18 +1508,18 @@ candidate).
 
 ## 5. Authority-coverage summary
 
-Counted by script over the 30 entries above, not by hand.
+Counted by script over the 31 entries above, not by hand.
 
 | Coverage | Terms | Count |
 |---|---|---|
-| Definition anchored in **adopted** doctrine or an owner ruling (candidate clauses add mechanism only) | T-01, T-02, T-03, T-04, T-05\*, T-07, T-09, T-10, T-11, T-13, T-14, T-15, T-17, T-18, T-19, T-20, T-21, T-22, T-23, T-24, T-25, T-26 | 22 |
+| Definition anchored in **adopted** doctrine or an owner ruling (candidate clauses add mechanism only) | T-01, T-02, T-03, T-04, T-05\*, T-07, T-09, T-10, T-11, T-13, T-14, T-15, T-17, T-18, T-19, T-20, T-21, T-22, T-23, T-24, T-25, T-26, **T-31** | 23 |
 | Definition exists **only** in a candidate contract | T-06, T-08, T-12, T-16, T-27, T-28, T-29, T-30 | 8 |
 
 \* T-05's *adopted* anchor is doctrine's typed-authority table routing
 observable behavior to `openspec/`; the reference-not-content rule is
 candidate (RFC1-15).
 
-**What this table means.** Eight of thirty foundational public terms — including
+**What this table means.** Eight of thirty-one foundational public terms — including
 the word "plane" itself — have **no adopted definition anywhere**. They are
 usable vocabulary and unusable authority. Any artifact that must *bind* on
 T-06, T-08, T-12, T-16, T-27, T-28, T-29, or T-30 is waiting on an owner act.
@@ -1526,7 +1529,7 @@ technical nouns for citation in `architecture.md`, "Vocabulary": *project,
 capability, gap, contradiction, evidence, warrant, aligned, converged,
 genome-complete, genome, snapshot, evaluation, observation record*.
 **"Claim" is not among them** — although RFC1-24 makes the Claim the sole
-carrier of all positive status. Eighteen of this registry's thirty terms sit
+carrier of all positive status. Eighteen of this registry's thirty-one terms sit
 outside the frozen list (twelve correspond to a frozen noun: ten by exact
 name plus *Project Genome*→genome and *Source snapshot*→snapshot; the frozen
 *genome-complete* has no registry entry of its own). Their stability today rests on candidate contracts.

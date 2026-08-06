@@ -2965,8 +2965,11 @@ DRAWER = "<details>"
 #: deliberate edit.
 VOCAB_ORDINARY_USE = {
     ("README.md", "T-13"):
-        "\"No claim of alignment, convergence, or reconciliation\" — the "
-        "ordinary verb-shaped noun, not the kernel's positive-status carrier",
+        "\"No claim of alignment, convergence, or regeneration capability\" "
+        "(README.md:118) — the ordinary verb-shaped noun, not the kernel's "
+        "positive-status carrier. An earlier revision of this exemption "
+        "misquoted the very line it exempts; review RD-3 caught it in "
+        "passing, and nothing here verifies the quotation mechanically",
 }
 
 
