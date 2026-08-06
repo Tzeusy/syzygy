@@ -1,6 +1,6 @@
 # Project status
 
-> **As-of: 2026-08-05b** (the commit introducing this revision of this file —
+> **As-of: 2026-08-07** (the commit introducing this revision of this file —
 > `git log -1 --format=%h PROJECT-STATUS.md`). This file is a hand-authored
 > pointer page with an as-of revision: it **must not be the sole source** for
 > any fact it states — each row cites the owning record, and where they
@@ -53,6 +53,31 @@ product CI, no implementation backlog.
 
 ## Known blocking defects
 
+**Two open at the contract level, both found by independent review at the
+2026-08-07 close, and neither repaired:**
+
+1. **Mission safety is not closed.** Asked whether a bounded autonomous Mission
+   can cause an unrecoverable or unauthorized outcome with no owner act, an
+   independent reviewer answered **yes**, by three routes. The largest:
+   RFC10-17's `reserved + spent never exceeds authorized` is stated over the
+   ledger and nothing states it over consumption, while RFC10-10 says Mission
+   Control MUST prevent every mediated act from exceeding the envelope. Both
+   cannot be true as written. Full disposition:
+   `.syzygy/governance/contracts/candidates/round-2026-08c/MISSION-SAFETY-CLOSURE-REPORT-vNEXT.md`.
+   RFC-0010 is **frozen** at sha256 `7f823aa3…` — two reviews are bound to those
+   bytes, and a one-token fix would invalidate both.
+2. **Deterministic context selection is not yet true, and not yet true even for
+   a human.** RFC11-4 requires the phase-rule clause of every selected
+   contract; 6 of 353 clause rows carry that kind and RFC-0001…0005 have none,
+   so a conformant selector fail-closes on all nine golden fixtures. An
+   independent reviewer derived the nine selections and reproduced four —
+   stated as an upper bound. Full disposition:
+   `…/round-2026-08c/FINAL-CONTEXT-SELECTION-REPORT.md`.
+
+These are the two unmet criteria the readiness report names. **Neither blocks
+an acceptance act** — both are candidate-contract defects an act would bind
+knowingly, and the acceptance packet states them before the act phrases.
+
 **One open, and it is the round's own gate-arithmetic:** the acceptance
 record's four digest-bound act arguments were regenerated during this round's
 corrections, so any act phrase must be read from the acceptance record **as
@@ -64,21 +89,26 @@ not perform that act", never as a formatting nit. Non-blocking
 knowing-acceptance items travel with the acceptance record's owner-attention
 section, not this file.
 
-**One residual, disclosed rather than fixed:** no confirming review is bound
-to the bytes now offered. The last CONFIRM (2026-08-03) named a manifest digest
-that has since been superseded twice — first by RFC-0010's correction plane and
-the `provides_to` removal, then by the RC-4 dependency corrections. The
-2026-08-05b review battery (RC-1…RC-10) read the corpus and drove those very
-changes, so with one exception each of them predates what is now offered.
-Read `round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md` "Read this first"
-before act 1.
+**One residual, disclosed rather than fixed:** **no CONFIRM verdict is bound
+to the bytes now offered, and the 2026-08-07 round did not produce one.** Eight
+independent reviews ran; every verdict was `REVISE`. The manifest digest the
+last CONFIRM (2026-08-03) named has been superseded three times. The reviews
+that read the current corpus are the ones that returned REVISE over it, and
+their raw output is at
+`.syzygy/governance/contracts/candidates/round-2026-08c/reviews/` — never
+edited, verdict words copied. Read `round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md`
+"Read this first" before act 1.
 
 **One thing this project does not have, stated plainly:** there is no
 mechanical task-to-context-packet compiler — `context_load.py` measures a
 selection you have already made, and every fixture's selection is
 hand-authored. The *evidence-adapter* coverage gap that stood beside it is
-closed as of 2026-08-06 by fixture 9, which is eight-for-eight on the required
-classes but lands outside the budget band and says so.
+closed as of 2026-08-06 by fixture 9. **The eight-for-eight class-coverage
+claim is withdrawn:** an independent derivation on 2026-08-07 found the adapter
+class double-counted across two required classes and *Trajectory lifecycle*
+covered by a fixture that omits work identity, dispatch, materialization,
+accounting and release. Eight classes are covered by eight fixtures, not nine
+— `…/round-2026-08c/FINAL-CONTEXT-SELECTION-REPORT.md`.
 
 ## Next lifecycle step
 

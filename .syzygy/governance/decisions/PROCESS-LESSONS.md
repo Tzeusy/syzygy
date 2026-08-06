@@ -322,3 +322,142 @@ and carries every phase-specific and machine-specific detail.
   `git checkout-index -a --prefix=<tmp>/` and running the battery *there* — the
   working tree cannot answer "is my commit green", because it contains
   somebody else's half-finished work.
+
+## Round 2026-08c — eight reviews, eight REVISE verdicts (2026-08-07)
+
+The surgical final pre-specification closure round. Every finding below was
+paid for; each is written as the rule it produced rather than as narrative.
+
+### The pattern that cost the most: evidence read from near a clause
+
+Two independent reviewers, working on different documents in the same week,
+found the same failure:
+
+- **RD-4 F-1** — a `constrains` edge justified by RFC-0006's §5 Integration
+  prose, sitting **more than fifty lines past the last clause of the file**,
+  inside a section that defines nothing normative.
+- **RD-2 D-3** — a sentence quoted as RFC3-4's that **exists nowhere**. The
+  real sentence is RFC3-9's, reads *"unparseable"* where the quotation read
+  *"missing"*, and does not cover the case it was cited for.
+
+**The rule:** a claim about what a contract says must be anchored to a
+**defined clause**, and the anchor must be mechanically checkable. This round
+built that check for `constrains` — `build_dependency_index.py`'s *unanchored*
+predicate fails when a module's `constrains_source` names a clause that module
+does not define, mutation-tested in an isolated clone. **Nothing yet checks
+that a quotation matches its source**, and both defects above would have been
+caught by one that did. That check is owed.
+
+### A claim of absence needs a sweep, exactly like any other claim
+
+**RD-2 R2:** the facet routing asserted *"No clause defines a fresh-reader
+evaluation as an evidence-producing act."* RFC7-30, RFC7-31 and RFC7-32 define
+it — test, independence standard, two record homes, two release-blocking
+floors, `verdict-unlawful` failure mode, cadence. **RFC-0007 module 2 went
+unread.**
+
+VIS-2's rule about absence applies to a reviewer's own claims first. *No
+evidence* yields **Unknown**, and "I did not find one" is not evidence of
+absence unless the sweep is stated with its denominator.
+
+### The volatile-value class reappeared twice inside the fix for it
+
+This round removed transcribed measurements from contract prose and built one
+generated report to own them. Then:
+
+1. **The term registry contradicted itself about its own size in four places**
+   — created by this round, by adding T-31 and demoting `Claim` without
+   sweeping the registry's self-descriptions. *A count of one's own contents is
+   a derived value like any other.*
+2. **`CONTEXT-BUDGET-REPORT.md` contradicted itself by eleven words** — §2
+   transcribed a fixture's *"RFC-0001 is indivisible (8,353 w)"* while §3, in
+   the same generated file thirty lines below, computed **8,342** — under its
+   own banner reading *do not copy a figure out of it* (RD-5).
+
+**The rule:** *a generator that quotes prose has re-opened the door it closed.*
+The generator now **redacts every measurement out of the prose it transcribes**
+and prints what it redacted, so the removal is auditable. Generating a file is
+not the same as owning its numbers; owning them means nothing inside it was
+copied.
+
+### A number that survives two cancelling errors is not evidence
+
+The facet routing's headline — *"six of seven facets need no new clause"* — was
+reached by **overstating one gap and understating three**. Corrected, it is
+still six. The claim now rests on the per-row citations, each spot-checkable,
+and the document says so on its face.
+
+**The rule:** when a total is the load-bearing claim, the total is not the
+evidence. Publish the rows.
+
+### At the first contact with a closed vocabulary, we minted three values
+
+**RD-2 D-10:** the facet briefs emitted four Unknown reasons; **three were not
+among RFC2-24's closed twelve** — in the document whose whole claim is to be a
+projection of the corpus rather than an addition to it. Had they stood,
+**RFC6-14 would have become unsatisfiable**, since it requires the reason
+*verbatim* from a vocabulary that would not contain it.
+
+**The rule:** before writing any value into a field a contract closes, read the
+closure and enumerate. RFC2-24 states the correct move for a condition outside
+the list — *"disclosed as a fact of the render … never dressed as a reason"* —
+and it was available the whole time.
+
+### Repair, and the escape moves one step
+
+Three blocking Mission-safety findings were repaired. The confirming review
+found **the same escape one state earlier** (RD1b-A: a child mission's grant is
+debited at grant time), and an independent review found two more classes
+untouched.
+
+**The rule this produced, and it is the round's most useful:** **stop, and say
+so.** A fourth repair-and-review cycle inside one round is recursive churn. The
+word ceiling made it explicit — RFC-0010 sits at **6,749 of 7,000** with its
+amendment log and 21 violation cases already moved to Tier 2. *There is no room
+left to repair in* is a structural signal that the package needs splitting, not
+a formatting inconvenience.
+
+### Freeze the bytes a review is bound to
+
+Both RD-1b reviews found the cheapest fix on the page: **RFC-0004 is a
+substantive reliance and is not in RFC-0010's `depends_on`** — one token, real
+context-load consequence. **It was not applied.** Two reviews are bound to
+sha256 `7f823aa3…`, and a review bound to a digest that no longer exists is
+worth nothing. *The token costs less than the evidence it would destroy.*
+
+### Raw reviewer output is never edited — so checks must classify, not demand
+
+RD-5's raw output cites the craft engineering-bar file by a shortened path of
+the reviewer's own devising, which this tree does not use. CG-1b failed.
+(Naming it here in a code span reproduced the failure in *this* file, which is
+active material and correctly not exempt — so it is named in prose instead.
+The check was right twice.) The only ways to
+make it green were to edit the reviewer's words or to stop reading their file,
+**both worse than the finding**.
+
+**The rule:** where a check meets material that policy forbids changing,
+**classify and print, never silence and never demand**. CG-1f now counts these
+in CG-1b's denominator, reports them in full, and does not fail — and a
+mutation test confirms the same broken reference in an *active* file still
+fails.
+
+### A golden fixture whose question and answer cannot be separated cannot test a selector
+
+RD-5 disqualified part of its own result before stating a finding: each
+fixture's selection-rule trace sits **above** the `## Required context`
+heading, so extracting "objective, warrant, risk class" also extracts the
+answer. *"4 of 9 reproduced"* therefore means **at most** 4 of 9.
+
+**The rule:** a fixture is a test, and a test that hands over its answer with
+its question measures nothing. Fixtures need a `## Task` block with everything
+else below a hard line.
+
+### One arm of a pending decision, installed while the decision was open
+
+**RD-4 F-17:** P-21(a) offered two alternatives; one — the `constrains`
+relation — was **installed into candidate front matter** while the register
+still described the choice as untaken.
+
+**The rule:** implementing one arm of an open owner question is how a pending
+decision becomes a fait accompli. If an arm must be prototyped to be
+evaluated, the register says so in the same change.
