@@ -15,7 +15,7 @@
 > object from a waiver against one that does (review RC-12 §5), and
 > every row below says `candidate budget exception`, never `waiver`.
 
-**As-of commit:** `aee13d563cd9199522fde4297b03c6a8e17fdb79`  *(plus uncommitted working-tree edits at generation time)*
+**As-of commit:** `210ee3abab0b7907dcfddb0545fe61b1c704b32f`  *(plus uncommitted working-tree edits at generation time)*
 
 This file is regenerated in the *same change* that moves any measured
 file. Two independent currency tests exist and neither is this line:
@@ -50,10 +50,26 @@ Fields are read out of each fixture's own declaration. A missing field
 renders `[Unknown]`, never blank and never `none`: an unrecorded
 reviewer is not the same fact as no reviewer being required.
 
+**How dense the redactions are is itself the finding.** Review RD-5
+counted 88 measurement-shaped figures across the nine fixtures and
+found CG-18 covering 18 of them; the rest were transcriptions checked
+by nothing, and at least five contradicted their own fixture's
+headline. A disposition argued against an unchecked number is a
+disposition argued against nothing. Reading these fields with the
+figures removed shows how much of each argument was resting on one.
+
+**Measurement figures inside these transcribed fields are redacted and
+routed to §3**, which measures the files rather than quoting a
+fixture. An earlier revision transcribed them, and two fixtures'
+*"RFC-0001 is indivisible (8,353 w)"* disagreed by eleven words with
+this file's own computed table thirty lines below — a stale figure
+reaching the generated report through the one door left open (review
+RD-5). The count of redactions is printed at the foot of §5.
+
 ### `context-selection-2-trajectory-adapter.md`
 
 - **Measured:** 18,362 words ≈ 24,789 estimated tokens — 23.9% above the proposed trigger.
-- **Reason:** An authorization-bearing derivation-mapping edit cannot shed (i) the act contract that makes the edited artifact honored — RFC3-16(a)/(b)/(c), whose smallest load unit is a 4,407-word module; (ii) the consuming state vocabulary the mapping projects into (RFC8-12/13, tables read verbatim); (iii) the adapter contract bounding what the adapter may write; or (iv) the SEC-3 premise that makes (i) necessary. The only measured configuration under the trigger (17,498) is reached by dropping (i), which RFC11-5 forbids and which this fixture's own reasoning refuses
+- **Reason:** An authorization-bearing derivation-mapping edit cannot shed (i) the act contract that makes the edited artifact honored — RFC3-16(a)/(b)/(c), whose smallest load unit is a [figure removed — see §3]-word module; (ii) the consuming state vocabulary the mapping projects into (RFC8-12/13, tables read verbatim); (iii) the adapter contract bounding what the adapter may write; or (iv) the SEC-3 premise that makes (i) necessary. The only measured configuration under the trigger ([figure removed — see §3]) is reached by dropping (i), which RFC11-5 forbids and which this fixture's own reasoning refuses
 - **Scope:** Work-provider adapter changes that edit an **RFC3-16(a) authorization-bearing** derivation mapping. Does **not** cover: the approval ceremony for such a mapping (a separate, smaller packet); mapping edits that are not authorization-bearing; adapter changes touching execution-record capture or fidelity joins, which is fixture 9's class
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `../round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed
 - **Expiry / revisit trigger:** The **earlier** of (a) the first real work-provider adapter mapping change, or (b) **owner act 1**, which binds the digests of every RFC module in this set. Re-review is mandatory at expiry; this waiver does not auto-renew
@@ -71,16 +87,16 @@ reviewer is not the same fact as no reviewer being required.
 ### `context-selection-7-kernel-identity.md`
 
 - **Measured:** 15,823 words ≈ 21,361 estimated tokens — 6.8% above the proposed trigger.
-- **Reason:** RFC-0001 is indivisible (8,353 w — justified oversize, recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`, *not* in RFC-0001 itself, which records no waiver), and an identity change genuinely needs the minting/continuity scheme (RFC1-11), the evaluation identity a claim resolves against, the constitutional temporal model, and the floor text it may not weaken
+- **Reason:** RFC-0001 is indivisible ([figure removed — see §3] — justified oversize, recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`, *not* in RFC-0001 itself, which records no waiver), and an identity change genuinely needs the minting/continuity scheme (RFC1-11), the evaluation identity a claim resolves against, the constitutional temporal model, and the floor text it may not weaken
 - **Scope:** Kernel identity and continuity changes — minting, successor edges, split/merge, and the continuity links recorded across them — **where CC-BAR-5 floor 7 is the declared classifier**. Does **not** cover: the adoption ceremony for such a change (RFC-0003 stays deferred to that packet, as this fixture already rules); `.syzygy/**` schema migrations that do not alter minting; changes to challenge, reconciliation or rendering semantics, which pull further RFC-0002 modules and must be re-measured (scope tightened by RC-12)
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `../round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed
 - **Expiry / revisit trigger:** The **earlier** of (a) the first real kernel identity work item, or (b) **any change that makes RFC-0001 divisible** — a package split, or the focused decomposition review §11.4 already calls for and CG-8 already reports. RC-12 holds (b) to be the operative condition: 53% of this packet is that one file, so if it becomes divisible the justification is void rather than weakened. Mandatory re-review at expiry; this waiver does not auto-renew. Also reversible by one owner ruling — see the alternative below
-- **Decomposition reviewed:** Two splits examined. (a) Drop `craft:engineering-bar.md` if the owner rules that a floor cited to *classify* a change is not text the implementer must hold: the packet returns to **14,485 w ≈ 19,554 est. tokens**, inside the trigger and 446 tokens under it. (b) Drop `RFC-0002/README.md` (an index): **13,949 w ≈ 18,831**. Neither is proposed as the default — (a) removes the only statement of the obligation the change can violate, and (b) removes the deterministic clause-lookup rule that makes a cited `RFC2-n` resolvable without search
+- **Decomposition reviewed:** Two splits examined. (a) Drop `craft:engineering-bar.md` if the owner rules that a floor cited to *classify* a change is not text the implementer must hold: the packet returns to **[figure removed — see §3] ≈ [figure removed — see §3]**, inside the trigger and 446 tokens under it. (b) Drop `RFC-0002/README.md` (an index): **[figure removed — see §3] ≈ [figure removed — see §3]**. Neither is proposed as the default — (a) removes the only statement of the obligation the change can violate, and (b) removes the deterministic clause-lookup rule that makes a cited `RFC2-n` resolvable without search
 
 ### `context-selection-8-openspec-authoring.md`
 
 - **Measured:** 22,416 words ≈ 30,262 estimated tokens — 51.3% above the proposed trigger.
-- **Reason:** RFC-0001 is indivisible (8,353 w — justified oversize, recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`, *not* in RFC-0001 itself, which records no waiver) and requirement authoring genuinely needs the capability/requirement identity model (RFC1-14/RFC1-15), both modules of the surface contract that makes the behaviour observable (RFC-0007 — including the module carrying its phase rule RFC7-38, which dictates the clause-to-requirement coverage matrix the author must produce), the adoption gate the delta must pass (VIS-3/VIS-4), and the verification bar the requirement must be testable against
+- **Reason:** RFC-0001 is indivisible ([figure removed — see §3] — justified oversize, recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`, *not* in RFC-0001 itself, which records no waiver) and requirement authoring genuinely needs the capability/requirement identity model (RFC1-14/RFC1-15), both modules of the surface contract that makes the behaviour observable (RFC-0007 — including the module carrying its phase rule RFC7-38, which dictates the clause-to-requirement coverage matrix the author must produce), the adoption gate the delta must pass (VIS-3/VIS-4), and the verification bar the requirement must be testable against
 - **Scope:** OpenSpec requirement authoring against an adopted capability **whose surface contract is RFC-0007 (Polaris)**. It does **not** stretch to another surface contract: this fixture names "a capability whose surface contract is smaller" as the narrowing that retires the waiver, so applying it there applies it to the case that voids it. Does not cover review of the authored delta, which pulls `craft:review-and-documentation.md` instead (scope tightened by RC-12)
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `../round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed
 - **Expiry / revisit trigger:** The **earlier** of (a) the first real OpenSpec authoring task, or (b) **unconditionally at the creation of `openspec/**`**. RC-12 added (b): this packet renders the absent house conventions as an RFC11-6 Unknown and proceeds, so the moment conventions exist they become mandatory context, the measured floor changes, and the waiver was computed against a corpus that no longer describes the task. If decomposition proves possible at (a) — authoring against a smaller surface contract — the waiver retires instead
@@ -156,4 +172,18 @@ python3 .syzygy/governance/contracts/candidates/scripts/build_budget_report.py
 python3 .syzygy/governance/contracts/candidates/scripts/build_budget_report.py --check
 python3 scripts/check_governance.py   # CG-18 verifies the anchors independently
 ```
+
+**Redacted transcriptions:** 9. Every measurement figure
+a fixture stated inside a §2 field was replaced with a pointer to
+§3 rather than copied. The redacted strings, verbatim, so the
+redaction is auditable rather than a silent deletion:
+
+- `13,949 w`
+- `14,485 w`
+- `17,498`
+- `18,282 words`
+- `18,831`
+- `19,554 est. tokens`
+- `4,407`
+- `8,353 w`
 

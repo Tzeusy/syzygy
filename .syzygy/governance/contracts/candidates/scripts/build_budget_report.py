@@ -118,20 +118,47 @@ def measure_fixture(path):
     }
 
 
-def waiver_fields(body):
+#: A measurement figure transcribed inside a fixture's prose. §2 quotes that
+#: prose; §3 measures the files. When the two disagree the generated report
+#: contradicts itself under its own do-not-copy-a-figure banner — which is
+#: what happened: fixtures 7 and 8 carry "RFC-0001 is indivisible (8,353 w …)"
+#: while this script's own §3 table computes 8,342 for the same file, eleven
+#: words apart and thirty lines apart in one generated artifact. Review RD-5
+#: found it. The figure is therefore **redacted at transcription** and routed
+#: to the table that measures it, so a stale number in a fixture cannot reach
+#: this report at all. Redactions are counted and printed, never silent.
+PROSE_MEASUREMENT = re.compile(
+    r"\b\d{1,2},\d{3}(?:\s*(?:w\b|words?\b|(?:est\.?|estimated)\s+tokens?\b"
+    r"|tokens?\b))?")
+REDACTION = "[figure removed — see §3]"
+
+
+def redact_measurements(text, counter):
+    """Replace transcribed measurement figures with a pointer to §3."""
+    def sub(m):
+        counter.append(m.group(0))
+        return REDACTION
+    return PROSE_MEASUREMENT.sub(sub, text)
+
+
+def waiver_fields(body, counter):
     """Pull the waiver/justification table rows a fixture declares.
 
     Parsed rather than kept in a table here: a second copy of the reviewer,
     scope and expiry is exactly the duplication this script exists to remove.
     A fixture with no such block reports Unknown, never 'none' — absence of a
     waiver record is not evidence that no waiver is owed (VIS-2).
+
+    Measurement figures inside the transcribed prose are redacted: this file
+    owns every measurement it prints, and a figure it copies is a figure it
+    does not own.
     """
     out = {}
     for key, value in WAIVER_ROW.findall(body):
         k = key.strip().lower()
         if k in ("reason", "scope", "reviewer", "expiry / revisit trigger",
                  "decomposition reviewed", "artifact", "correction"):
-            out[k] = value.strip()
+            out[k] = redact_measurements(value.strip(), counter)
     return out
 
 
@@ -249,14 +276,31 @@ def render_report(measures):
     a(f"**{len(breaches)} of {len(measures)} fixtures are above the proposed "
       f"20,000-token trigger.**")
     a("")
+    redacted = []
     a("## 2. Candidate budget exceptions — one row per breaching fixture")
     a("")
     a("Fields are read out of each fixture's own declaration. A missing field")
     a("renders `[Unknown]`, never blank and never `none`: an unrecorded")
     a("reviewer is not the same fact as no reviewer being required.")
     a("")
+    a("**How dense the redactions are is itself the finding.** Review RD-5")
+    a("counted 88 measurement-shaped figures across the nine fixtures and")
+    a("found CG-18 covering 18 of them; the rest were transcriptions checked")
+    a("by nothing, and at least five contradicted their own fixture's")
+    a("headline. A disposition argued against an unchecked number is a")
+    a("disposition argued against nothing. Reading these fields with the")
+    a("figures removed shows how much of each argument was resting on one.")
+    a("")
+    a("**Measurement figures inside these transcribed fields are redacted and")
+    a("routed to \u00a73**, which measures the files rather than quoting a")
+    a("fixture. An earlier revision transcribed them, and two fixtures'")
+    a("*\"RFC-0001 is indivisible (8,353 w)\"* disagreed by eleven words with")
+    a("this file's own computed table thirty lines below \u2014 a stale figure")
+    a("reaching the generated report through the one door left open (review")
+    a("RD-5). The count of redactions is printed at the foot of \u00a75.")
+    a("")
     for m in breaches:
-        w = waiver_fields(m["body"])
+        w = waiver_fields(m["body"], redacted)
         a(f"### `{m['name']}`")
         a("")
         over = ((m["tokens"] - PROPOSED_TRIGGER_TOKENS)
@@ -302,6 +346,14 @@ def render_report(measures):
     a("python3 .syzygy/governance/contracts/candidates/scripts/build_budget_report.py --check")
     a("python3 scripts/check_governance.py   # CG-18 verifies the anchors independently")
     a("```")
+    a("")
+    a(f"**Redacted transcriptions:** {len(redacted)}. Every measurement figure")
+    a("a fixture stated inside a \u00a72 field was replaced with a pointer to")
+    a("\u00a73 rather than copied. The redacted strings, verbatim, so the")
+    a("redaction is auditable rather than a silent deletion:")
+    a("")
+    for r in sorted(set(redacted)):
+        a(f"- `{r}`")
     a("")
     return "\n".join(lines) + "\n"
 
