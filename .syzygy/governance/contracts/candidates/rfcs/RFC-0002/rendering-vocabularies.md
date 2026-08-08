@@ -3,7 +3,7 @@ id: RFC-0002
 title: Failure States, the Closed Unknown-Reason Vocabulary and the Rendering-Tier Registry
 status_source: owner-act-record
 module: rendering-vocabularies
-clauses: RFC2-23..RFC2-25 (no gaps, no retirements, no merges)
+clauses: RFC2-23..RFC2-26 (no gaps, no retirements, no merges)
 governs: [failure-states, degradation-states, unknown-reason-vocabulary, secondary-annotation, rendering-tier-registry, sibling-surface-states]
 applies_to: [kernel, all-surfaces]
 depends_on: [RFC-0001, RFC-0005]
@@ -183,6 +183,24 @@ rendering, while `challenge-pending` *accompanies* an unchanged one. It is
 neither a tier nor a sibling surface state; look to RFC2-13.
 
 ---
+
+### Authority boundary at the OpenSpec seam (binding phase rule)
+
+**RFC2-26.** This contract schedules nothing: **it is not a specification of
+record from which implementation work may be scheduled**. No implementation
+work for user-observable consequences of this contract — evaluation and
+snapshot displays, claim and challenge rendering, Unknown-reason and
+rendering-tier presentation, reconciliation-chain and gap surfaces, API
+answers over epistemic state — may be scheduled solely from this RFC. Before
+implementation, every observable consequence either maps to an approved
+OpenSpec requirement and scenario in the governance root's `openspec/**`
+plane, or carries a reviewed N/A judgment proving it purely structural with
+no independently testable behavior. At surface specification a
+clause-to-requirement coverage matrix over RFC2-1..RFC2-26 is produced —
+**that matrix is review material, never authority**. This clause creates no
+OpenSpec content now (none may exist during bootstrap). This clause binds the
+whole RFC 0002 package, not this module alone. (Shape-parallel with RFC6-28,
+RFC7-38, RFC8-32, RFC9-52, RFC10-16, RFC11-12.)
 
 ## 4. Violation cases
 

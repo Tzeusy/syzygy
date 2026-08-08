@@ -1,5 +1,13 @@
 # Owner acceptance packet — 2026-08-07
 
+> **SUPERSEDED — historical record.** The round-2026-08d structural
+> closure retired the `ACCEPT COMPACTED FOUNDATIONAL RFCS` phrase this
+> packet offers, split RFC-0010/0011 into packages, repaired the findings
+> this packet asked the owner to accept knowingly, and replaced the single
+> contract act with six wave acts. The live gates are
+> `../FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`; the round-2026-08d
+> offering supersedes this one.
+
 > **This packet performs nothing.** No act has been performed and no agent may
 > perform one (VIS-4). It states what each act would bind, **what is knowingly
 > imperfect inside it**, and then the exact phrase.

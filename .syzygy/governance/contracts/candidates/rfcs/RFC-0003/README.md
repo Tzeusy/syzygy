@@ -4,7 +4,10 @@ title: Project, Workspace and .syzygy/** Manifests — contract package index
 package: RFC-0003
 modules: [manifests-and-namespace, governance-homes-and-owner-acts]
 status_source: owner-act-record
-clauses: "RFC3-1..RFC3-32 (no retired or merged numbers; sub-clauses RFC3-15(a), RFC3-16(a), RFC3-16(b), RFC3-16(c), RFC3-17(a))"
+clauses: "RFC3-1..RFC3-33 (no retired or merged numbers; sub-clauses RFC3-15(a), RFC3-16(a), RFC3-16(b), RFC3-16(c), RFC3-17(a))"
+implementation_boundary:
+  kind: requires-openspec
+  clause: RFC3-33
 governs: [manifests, governance-homes, lifecycles, owner-acts, workspace]
 applies_to: [kernel, workspace, all-surfaces]
 depends_on: [RFC-0001, RFC-0002, RFC-0004, RFC-0005]
@@ -30,7 +33,7 @@ the clause wins.
 
 | Module | Clauses | What it binds |
 |---|---|---|
-| `manifests-and-namespace.md` | **RFC3-1 … RFC3-14** and **RFC3-18 … RFC3-32** | The one-writer rule and write containment; the project declaration `.syzygy/project.yaml` and its closed field set; consent records, revocation and withdrawal; the platform-level workspace manifest and asymmetric cross-project relations; surface namespaces and `work/**` authority; `cache/` and `local/`; schema versioning and identity-preserving migration; the `openspec/**` boundary; nesting as composition by declaration. |
+| `manifests-and-namespace.md` | **RFC3-1 … RFC3-14** and **RFC3-18 … RFC3-33** | The one-writer rule and write containment; the project declaration `.syzygy/project.yaml` and its closed field set; consent records, revocation and withdrawal; the platform-level workspace manifest and asymmetric cross-project relations; surface namespaces and `work/**` authority; `cache/` and `local/`; schema versioning and identity-preserving migration; the `openspec/**` boundary; nesting as composition by declaration. |
 | `governance-homes-and-owner-acts.md` | **RFC3-15, RFC3-15(a), RFC3-16, RFC3-16(a), RFC3-16(b), RFC3-16(c), RFC3-17, RFC3-17(a)** | The five constitutional `governance/` categories; category-appropriate lifecycles; the self-declared stamp versus effective status; the owner-act provenance predicate and what any conforming mechanism must bind; the two provenance states of an owner-act record; the reserved `declarations/` category; the home of challenge submissions and admission records. |
 
 ## Deterministic lookup rule
@@ -42,7 +45,7 @@ without reading either file:
 > **`RFC3-15`, `RFC3-16`, `RFC3-17` and every lettered sub-clause
 > (`RFC3-15(a)`, `RFC3-16(a)`, `RFC3-16(b)`, `RFC3-16(c)`, `RFC3-17(a)`) are
 > in `governance-homes-and-owner-acts.md`. Every other number in
-> RFC3-1 … RFC3-32 is in `manifests-and-namespace.md`.**
+> RFC3-1 … RFC3-33 is in `manifests-and-namespace.md`.**
 
 Equivalently: numeric part in 15–17 → governance-homes; otherwise →
 manifests-and-namespace. There is no third location and no clause appears in
@@ -51,7 +54,7 @@ both files.
 **Clause identity is package-wide, not per-module.** The `RFC3-n` namespace is
 single and authoritative across both modules: numbers are never reused,
 retired, merged, or renumbered, and the split moved no clause identity. The
-range RFC3-1 … RFC3-32 is complete with no gaps. External citations written
+range RFC3-1 … RFC3-33 is complete with no gaps. External citations written
 against the pre-split single file resolve unchanged — cite the clause ID, not
 a file or section number.
 

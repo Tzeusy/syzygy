@@ -5,6 +5,9 @@ status_source: owner-act-record
 package: RFC-0009
 modules: [semantic-geography, visual-grammar-and-lenses, interaction-parity-and-release]
 clauses: RFC9-1..RFC9-52 (sub-clauses RFC9-8(a), RFC9-9(a), RFC9-9(b), RFC9-13(a), RFC9-14(a), RFC9-15(b), RFC9-16(d), RFC9-47(a); no gaps, no retired numbers, no merges)
+implementation_boundary:
+  kind: requires-openspec
+  clause: RFC9-52
 governs: [map-surface, home-geography, analytical-planes, layout-determinism, placement, identity-counting, reserved-palette, channel-registry, lenses, scene-profiles, scenarios, aggregation, unmapped-code, non-3d-equivalence, release-gates, motion]
 applies_to: [orrery, machine-clients]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008]

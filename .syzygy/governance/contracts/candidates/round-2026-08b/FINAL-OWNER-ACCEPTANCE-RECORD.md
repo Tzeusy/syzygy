@@ -1,5 +1,11 @@
 # Final owner acceptance record — contract-closure round, 2026-08-05b
 
+> **SUPERSEDED — historical record.** The round-2026-08d restructure
+> retired the `ACCEPT COMPACTED FOUNDATIONAL RFCS` phrase this file
+> offers and replaced the single contract act with six wave acts; the
+> digests below are the values of their time and satisfy nothing. The
+> live gates are `../FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`.
+
 > **This file offers. It does not accept.** No act below has been performed,
 > and none may be performed by an agent. Where this file and
 > `../FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md` disagree, **that

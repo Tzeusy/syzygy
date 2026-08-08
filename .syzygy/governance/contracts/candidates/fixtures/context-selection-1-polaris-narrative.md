@@ -1,17 +1,46 @@
 # Context-selection fixture 1 — Polaris narrative/requirement change
 
+## Task
+
 **Objective.** A governed work item: revise an adopted Polaris narrative
 section whose claim block cites a requirement whose target anchor changed;
 re-anchor and resubmit for adoption. Risk class: content change on the
 intent surface; no code, no security surface.
 
-**Selection rule trace (RFC11-4).** Warrant names the narrative entity →
-`applies_to: polaris` selects RFC-0007; the affected clause set is the
-narrative model and adoption workflow → module `narrative-contract` +
-package README (lookup + spanning invariants). The claim block renders
-against evaluation vocabularies → RFC-0002 `rendering-vocabularies` +
-package README. Shape-defining adoption gates are doctrine → `vision.md`
-(VIS-3/VIS-4).
+**Warrant.** The named narrative entity and its claim block; the changed
+requirement anchor; the adoption workflow the revision re-enters. Declared
+change class: content change on the intent surface. The task authors no
+OpenSpec requirement and schedules no implementation.
+
+---
+
+*Everything above the rule is the task. Everything below is the recorded
+answer: a blind derivation (the protocol review RD-5 ran) receives the Task
+section and the governed corpus only, derives a selection, and compares it
+against what follows — reading no further until its own selection is
+written down.*
+
+**Selection rule trace (RFC11-4, traversal per RFC11-14).** Warrant names
+the narrative entity → `applies_to: polaris` selects RFC-0007; the affected
+clause set is the narrative model and adoption workflow → module
+`narrative-contract` + package README (lookup + spanning invariants). The
+claim block renders against evaluation vocabularies → RFC-0002
+`rendering-vocabularies` + package README. Shape-defining adoption gates
+are doctrine → `vision.md` (VIS-3/VIS-4).
+
+**Phase-boundary rule, applied (RFC11-4 with RFC11-13).** Both selected
+contracts declare `implementation_boundary: requires-openspec`, naming
+RFC7-38 and RFC2-26; the declarations travel in the two loaded package
+READMEs and are recorded here. The task edits adopted narrative content and
+does **not** sit on the OpenSpec seam — it authors no requirement and
+schedules nothing — so the boundary rule does not force the module defining
+RFC7-38 (`rendering-and-surface`); RFC2-26's defining module
+(`rendering-vocabularies`) is in the packet on its own merits. Contrast
+fixture 8, which sits on the seam and therefore must load the defining
+module. This is the single rule both fixtures apply. The pre-amendment
+drafts of fixtures 1 and 8 read RFC11-4's old parenthetical in opposite
+directions — review RD-5's contradiction finding — and the amended
+RFC11-4/RFC11-13 rule is what closed it.
 
 ## Required context (mandatory, deterministic)
 
@@ -21,13 +50,17 @@ scripts/context_load.py rfcs/RFC-0007/README.md \
   rfcs/RFC-0002/rendering-vocabularies.md doctrine:vision.md
 ```
 
-Measured: **13,892 words ≈ 18,754 estimated tokens** — inside the
-15–20k working target. (Rev9 equivalent: whole corpus, ~121k words.)
+Measured: **14,112 words ≈ 19,051 estimated tokens.** Band position and
+disposition against the proposed (non-installed) budget lines are owned by
+`CONTEXT-BUDGET-REPORT.md` §1, computed from this anchored figure; this
+fixture's prose makes no band claim of its own.
 
 ## Omitted applicable candidates, with reasons
 
 - RFC-0007 `rendering-and-surface` — the task edits content, not surface
-  rendering; its obligations bind the surface implementer, not the author.
+  rendering; its obligations bind the surface implementer, not the author,
+  and the phase-boundary rule does not force it for a task off the seam
+  (see the applied rule above).
 - RFC-0002 core/challenge/reconciliation modules — the claim's evaluation
   is pinned by the packet's as-of; authoring consumes the rendering
   vocabulary only.
@@ -43,26 +76,24 @@ Measured: **13,892 words ≈ 18,754 estimated tokens** — inside the
 Every clause the warrant's entities cite in the index
 (`05-CONTRACT-INDEX.yaml`) resolves into the selected set or into the
 suggested set below; the adoption gate (VIS-4, RFC7-23/24/25) and the
-anchor obligations (RFC7-11(a)) are in the mandatory set. The governing
-phase rule travels with the packet (RFC11-4's mandatory-inclusion rule):
-the selected RFC-0007 README carries the **RFC7-38 restatement** in its
-"Phase boundary" section, and the index marks the clause
-`kind: phase-rule` so a selector can force the full clause text when the
-module carrying it is not otherwise selected. The packet
-would render **incomplete/Unknown** (RFC11-6) if the narrative's pinned
-evaluation were stale — disclosed, not silently proceeded past.
+anchor obligations (RFC7-11(a)) are in the mandatory set. Each selected
+contract's implementation-boundary declaration travels in its loaded README
+and is recorded in the applied-rule paragraph above (RFC11-4's
+mandatory-inclusion rule, consuming RFC11-13). The packet would render
+**incomplete/Unknown** (RFC11-6) if the narrative's pinned evaluation were
+stale — disclosed, not silently proceeded past.
 
 ## Suggested inferred additions (provenance: index adjacency)
 
 RFC-0006 (selection-reference semantics behind RFC7-16); RFC-0001
 clauses RFC1-19/RFC1-25 (anchor identity classes). Suggested because the
-authoring-strength restatements suffice for this edit; loading them adds
-~4,900 words.
+authoring-strength restatements suffice for this edit; the word cost of
+every module is in `CONTEXT-BUDGET-REPORT.md` §3.
 
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`8c0d75e6e2ce3e53…` (recompute: `cat <mandatory files> | sha256sum`).
+`d51b0ec5cdcc216c…` (recompute: `cat <mandatory files> | sha256sum`).
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a
@@ -77,3 +108,10 @@ fixture used to carry was removed 2026-08-06: there is no compiler, and
 *Re-measured 2026-08-05 (refactor round): packet digest refreshed after the recorded RFC-0007 README correction (cross-module edge count, word-neutral); word/token figures unchanged; selection unchanged.*
 
 *Re-measured 2026-08-05b by `scripts/check_governance.py` CG-18, which recomputes the digest and the word count from the declared mandatory set rather than trusting the recorded figures. Previous: 13,864 words, digest `4544d4b27646e905…`. Selection unchanged; the movement is contract edits landing under a fixture that had no mechanical freshness check until now.*
+
+*Restructured 2026-08-08 (round-2026-08d): task/answer boundary added per
+RD-5's blind-derivation protocol; the phase-boundary rule restated under
+amended RFC11-4/RFC11-13, closing the fixture-1-vs-8 contradiction; every
+transcribed measurement removed — the anchored `Measured:` field and the
+packet digest are the only measurements this fixture states, and both are
+machine-written by `build_budget_report.py` and recomputed by CG-18.*

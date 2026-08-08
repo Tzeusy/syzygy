@@ -29,6 +29,12 @@ JUSTIFIED_OVERSIZE = {
         "(entity/plane/relation/four-sense tables); reader groups not "
         "distinct, so no honest split exists; floor established by two "
         "compaction passes (see 03 report)",
+    "rfcs/RFC-0009/semantic-geography.md":
+        "at 6,996 words (99.9% of ceiling) before round-2026-08d; the "
+        "owner-ordered RFC9-8(a) amendment relocating the portfolio layout "
+        "registry to the RFC10-15 workspace governance store, with its "
+        "staged reference, adds the remainder; no further compaction of "
+        "other clauses is available without semantic delta to reviewed text",
 }
 
 # Rev9 baseline: authoritative numbered-clause ends per RFC (frozen facts;
@@ -39,12 +45,21 @@ REV9_ENDS = {1: 32, 2: 25, 3: 32, 4: 29, 5: 26, 6: 28, 7: 38, 8: 32, 9: 52}
 # an adversarial safety review found open. Nothing was renumbered or retired,
 # so the range only grows — see RFC-0010 §5a.
 REV10_ENDS = {10: 22, 11: 12}
+# Round-2026-08d structural closure (owner work order): clauses appended,
+# never renumbered. Phase rules RFC1-33/RFC2-26/RFC3-33/RFC4-30/RFC5-27
+# (RD-5 disposition); RFC7-39/40 (fixed human entry, front-door
+# discoverability); RFC10-23/24 (effect dimensions, D3 operating
+# precondition); RFC11-13..16 (deterministic-selection module).
+ROUND_08D_ENDS = {1: 33, 2: 26, 3: 33, 4: 30, 5: 27, 7: 40, 10: 24, 11: 16}
+ENDS = {**REV9_ENDS, **REV10_ENDS, **ROUND_08D_ENDS}
 
 # Packages (split RFCs) are discovered as rfcs/RFC-00NN/ directories; clause
 # ownership is validated from actual definitions per module (each clause in
 # exactly one module, union complete), with front-matter 'clauses:' declared
 # ranges cross-checked where they parse.
-PHASE_RULE_CLAUSES = ["RFC6-28", "RFC7-38", "RFC8-32", "RFC9-52", "RFC10-16", "RFC11-12"]
+PHASE_RULE_CLAUSES = ["RFC1-33", "RFC2-26", "RFC3-33", "RFC4-30", "RFC5-27",
+                      "RFC6-28", "RFC7-38", "RFC8-32", "RFC9-52", "RFC10-16",
+                      "RFC11-12"]
 OUTCOMES = (
     "retained unchanged",
     "retained with wording sharpened",
@@ -146,7 +161,7 @@ def main():
     if not matrix_text:
         fail("04-CLAUSE-MIGRATION-MATRIX.md missing or empty")
 
-    for rfc_n, end in {**REV9_ENDS, **REV10_ENDS}.items():
+    for rfc_n, end in ENDS.items():
         nums = per_rfc_nums.get(rfc_n, set())
         if not nums:
             fail(f"RFC{rfc_n}: no clauses found in active files")
@@ -168,11 +183,15 @@ def main():
     # Package validation: for each rfcs/RFC-00NN/ directory, every clause of
     # that RFC is defined in exactly one module, the union is complete over
     # 1..end (minus matrix-accounted gaps), and a README with a module map
-    # exists. Declared front-matter ranges are cross-checked where parseable.
+    # exists. Declared front-matter clause sets are cross-checked where
+    # parseable: 'RFCn-a..RFCn-b' ranges plus singleton 'RFCn-m' entries
+    # (non-contiguous module maps, round-2026-08d). A singleton token is any
+    # clause identifier not inside a range match.
     range_pat = re.compile(r"RFC(\d+)-(\d+)\.\.RFC\1-(\d+)")
+    single_pat = re.compile(r"RFC(\d+)-(\d+)")
     for pkg in sorted(p for p in (root / "rfcs").glob("RFC-00*") if p.is_dir()):
         rfc_n = int(pkg.name.split("-")[1])
-        end = {**REV9_ENDS, **REV10_ENDS}.get(rfc_n)
+        end = ENDS.get(rfc_n)
         readme = pkg / "README.md"
         if not readme.exists():
             fail(f"{pkg.name}: package README.md missing")
@@ -183,9 +202,17 @@ def main():
             text = p.read_text(encoding="utf-8")
             fm = parse_front_matter(text, p.relative_to(root))
             declared = set()
-            for mm in range_pat.finditer(fm.get("clauses", "")):
+            clauses_fm = fm.get("clauses", "")
+            range_spans = []
+            for mm in range_pat.finditer(clauses_fm):
+                range_spans.append(mm.span())
                 if int(mm.group(1)) == rfc_n:
                     declared.update(range(int(mm.group(2)), int(mm.group(3)) + 1))
+            for mm in single_pat.finditer(clauses_fm):
+                if any(a <= mm.start() and mm.end() <= b for a, b in range_spans):
+                    continue
+                if int(mm.group(1)) == rfc_n:
+                    declared.add(int(mm.group(2)))
             for m in CLAUSE_DEF.finditer(text):
                 if int(m.group(2)) != rfc_n:
                     continue
@@ -213,7 +240,7 @@ def main():
         rel = f.relative_to(root)
         for m in CLAUSE_REF.finditer(text):
             rfc_n, num = int(m.group(1)), int(m.group(2))
-            if rfc_n not in {**REV9_ENDS, **REV10_ENDS}:
+            if rfc_n not in ENDS:
                 fail(f"{rel}: citation to unknown contract RFC{rfc_n}-{num}")
                 continue
             cid = f"RFC{rfc_n}-{num}"

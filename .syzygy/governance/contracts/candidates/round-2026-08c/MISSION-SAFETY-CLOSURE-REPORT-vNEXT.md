@@ -1,5 +1,13 @@
 # Mission safety — closure report, and it does not close
 
+> **Historical record — superseded at round-2026-08d.** This report
+> describes the pre-split RFC-0010 single file (digest `7f823aa3…`) and the
+> deliberate freeze that kept its findings unrepaired beside the reviews
+> bound to them. Round-2026-08d split the contract into a five-module
+> package and repaired the findings; the digests quoted here are the values
+> of their time and name no current artifact. The repairs await their own
+> fresh review — see the acceptance record's wave-history note.
+
 > **Non-authoritative round record.** The raw reviews are
 > `reviews/RD-1-mission-safety-confirming-RAW.md`,
 > `reviews/RD-1b-mission-safety-confirming-RAW.md` and

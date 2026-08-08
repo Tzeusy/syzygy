@@ -4,7 +4,10 @@ title: Polaris (Intent Surface) — contract package index
 status_source: owner-act-record
 package: RFC-0007
 modules: [narrative-contract, rendering-and-surface]
-clauses: RFC7-1..RFC7-38 (sub-clauses RFC7-2(a)-(c), RFC7-9(a)-(c), RFC7-11(a); no gaps, no retired numbers, no merges)
+clauses: RFC7-1..RFC7-40 (sub-clauses RFC7-2(a)-(c), RFC7-9(a)-(c), RFC7-11(a); no gaps, no retired numbers, no merges)
+implementation_boundary:
+  kind: requires-openspec
+  clause: RFC7-38
 governs: [intent, narrative, section, claim-block, source-anchor, reading-order, citation-graph, curated-diagram, editorial-draft, portfolio-narrative]
 applies_to: [polaris]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0009]
@@ -39,7 +42,7 @@ namespace, no duplicated normative clauses, no renumbering.
 | Module | File | Clauses |
 |---|---|---|
 | 1 — the curated narrative contract | `narrative-contract.md` | RFC7-1..RFC7-25, incl. RFC7-2(a)-(c), RFC7-9(a)-(c), RFC7-11(a) |
-| 2 — rendering and surface | `rendering-and-surface.md` | RFC7-26..RFC7-38 |
+| 2 — rendering and surface | `rendering-and-surface.md` | RFC7-26..RFC7-40 |
 
 Module sizes are deliberately **not stated here**. A measurement copied into
 contract prose goes stale the moment any module moves, and moves this
@@ -52,7 +55,7 @@ policy; the current measurement lives in the generated budget report
 integer: `n ≤ 25` → module 1; `n ≥ 26` → module 2. Every lettered sub-clause
 lives with its parent — `RFC7-2(a)`–`(c)` and `RFC7-9(a)`–`(c)` and
 `RFC7-11(a)` are all in module 1. The two ranges are contiguous and exhaustive
-over RFC7-1…RFC7-38 with no gaps, so the rule never needs a search. Modules are
+over RFC7-1…RFC7-40 with no gaps, so the rule never needs a search. Modules are
 numbered for reading order only — citations name clauses, never modules.
 
 **Reading order for a cold reader:** module 1 → module 2. Module 1 is
@@ -280,7 +283,7 @@ module alone.
 
 ---
 
-*End of RFC 0007 package index. Clauses RFC7-1 … RFC7-38, with lettered
+*End of RFC 0007 package index. Clauses RFC7-1 … RFC7-40, with lettered
 sub-clauses RFC7-2(a)–(c), RFC7-9(a)–(c) and RFC7-11(a), distributed across two
 modules. No retired numbers, no merged numbers, no gaps in the range, and no
 clause identity in more than one module.*

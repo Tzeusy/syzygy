@@ -1,5 +1,10 @@
 # Public clone verification — final report
 
+> **Historical record — superseded at round-2026-08d.** A clone report is
+> valid only for the commit it was run at; the corpus has since been
+> restructured (RFC-0010/0011 package splits, wave manifests) and the
+> digests quoted here name no current artifact.
+
 > **Non-authoritative round record.** The raw review is
 > `reviews/RD-7-public-clone-RAW.md` and is never edited. Where this file and
 > the raw review disagree about what the reviewer found, **the raw review

@@ -989,3 +989,44 @@ RFC11-7, RFC11-8, RFC11-9, RFC11-10, RFC11-11, RFC11-12
    process, which is precisely what the CR class names. Routing them N/A would
    have implied "no requirement needed" for a clause whose entire function is to
    demand that requirements be written.
+
+---
+
+## round-2026-08d addition — structural-closure clauses (RFC7-39/40, RFC10-23/24, RFC11-13..16)
+
+Eight clauses postdate the routing passes above, added by the owner-ordered
+structural closure round; they are routed here, by the same rule and the
+same route vocabulary. Two package facts changed alongside them and are
+recorded so the enumeration prose above is read as the historical method
+statement it is: RFC-0010 and RFC-0011 are now **packages**
+(`rfcs/RFC-0010/`, five modules; `rfcs/RFC-0011/`, two modules — the
+single files the earlier enumeration commands name live on only in git
+history), and **every** active contract now carries a binding phase rule
+(RFC1-33, RFC2-26, RFC3-33, RFC4-30, RFC5-27 joined the six the header
+names; the five kernel-side rules sit outside this matrix's surface
+population and are validated by `verify_final_prespec.py`).
+
+| Clause | Route | Future spec domain | Retained invariant in the RFC | Justification |
+|---|---|---|---|---|
+| RFC7-39 | OS | `spec/polaris` | `.syzygy/intent/OVERVIEW.md` is the fixed, Syzygy-owned human entry point, rendered as governed presentation and **never authority**; a governed project without the file renders the absence, never silently | A scenario must assert that the entry resolves at the fixed path and renders under the narrative rules with its never-authority posture, and that a governed project missing the file surfaces the gap as a finding (absent) or Unknown (unobservable) rather than rendering nothing |
+| RFC7-40 | OS | `spec/polaris` | The repository-front-door link to the project entry is a per-repository kernel finding — `yes / no / Unknown` at the producing evaluation; Syzygy **may propose** the link and **may never write it** (VIS-5) | A scenario must assert the three-valued finding renders per repository, that a declined link renders `no` truthfully and not as an error, and that the only write path Syzygy offers is a Proposal (RFC1-27) — no conforming implementation touches the front door itself |
+| RFC10-23 | OS | `spec/mission-control` | Effect dimensions — project mutation, external-system mutation, external disclosure, resource consumption — are recorded separately; no single predicate collapses them, and `propose-only` is **never rendered as "no effects"** where dimensions (i), (iii) or (iv) are non-empty | A scenario must assert that a mission's terminal record states all four dimensions, that the effects-applied predicate (RFC10-18(a)) engages on dimension (ii) alone, and that a propose-only mission which disclosed content and spent budget renders *which* effects it had, under which authorization — never a bare "no effects" |
+| RFC10-24 | OS | `spec/mission-control` | Until the D3 doctrine amendment (or an owner ruling that unamended doctrine suffices) is recorded, **no mission leaves `awaiting-approval`**; approval ceremonies for operation are inadmissible, and RFC10-16's OpenSpec gate never discharges this precondition or vice versa | A scenario must assert that with no D3 adoption record and no owner ruling on file, an attempted approval-for-operation act is refused with the precondition named, and that a mission already in `awaiting-approval` cannot transition out however complete its envelope and evidence are |
+| RFC11-13 | OS | `spec/context-packets` | Every active contract declares its implementation boundary in its own index front matter — `{kind, clause}` — and the declaration is consumed, never re-derived, inferred, or overridden by a selector | A scenario must assert that a contract with no declaration, or whose named clause does not exist, renders every packet selecting it **incomplete (RFC11-6)** rather than silently complete, and that a selector never searches for a clause class the contract does not claim to have |
+| RFC11-14 | OS | `spec/context-packets` | Dependency traversal is defined, bounded, and recorded: direct `depends_on` only (no silent transitivity), an edge satisfied by loading at least one module of the depended-on contract, unsatisfied edges enumerated clause-by-clause in the omission register, undecidable applicability failing closed | A scenario must assert that a packet leaving a `depends_on` edge unsatisfied enumerates and disposes of every cited clause individually, that `cites` is never traversed automatically, and that a task whose applicability cannot be decided from declared metadata produces an incomplete packet — never a silently thinned one |
+| RFC11-15 | OS | `spec/context-packets` | Doctrine and craft rule ownership is declared metadata (owning artifact, task classes, risk classes), rebuildable and clone-visible; where none is declared, doctrine/craft selection is **not claimed deterministic** and the packet states its actual basis | A scenario must assert that a task class with declared ownership metadata selects deterministically from it, and that one without renders the judgment basis in the packet rather than implying a derivation that did not happen |
+| RFC11-16 | OS | `spec/context-packets` | `constrains` is consumed clause-first: the constraining **clause** enters the mandatory set, not automatically the whole constraining contract, and the packet records why each constraint entered | A scenario must assert that a task touching a declared seam loads the constraining clause with its recorded reason, and that the constraining contract's remaining modules do not ride in on the edge |
+
+**Tally:** OS 8 · N/A 0 · CR 0 · IR 0 · total 8 (sums: yes)
+
+**Notes and doubts (round-2026-08d):**
+
+1. **RFC10-24 could be argued CR** — it gates a ceremony, like the phase
+   rules. It is routed OS because its consequence is a runtime refusal a
+   scenario can drive (an approval act attempted and refused, a lifecycle
+   transition that never fires), where the CR clauses constrain only how
+   specifications come to exist. A reviewer moving it to CR changes the
+   tally to OS 7 / CR 1 and must then say where the refusal scenario lives.
+2. **RFC11-13..16 unbundle RFC11-4's old universal.** Their scenarios
+   overlap RFC11-4's row above; at surface specification the coverage
+   matrix must de-duplicate against it rather than double-count.

@@ -4,7 +4,10 @@ title: Authentication, Consent and Execution Profiles — contract package index
 status_source: owner-act-record
 package: RFC-0005
 modules: [admission-and-boundary, consent-egress-secrets, execution-profiles]
-clauses: RFC5-1..RFC5-26 (no gaps, no retired numbers, no merges; no lettered sub-clauses — RFC5-18(a)–(e) are list items inside RFC5-18)
+clauses: RFC5-1..RFC5-27 (no gaps, no retired numbers, no merges; no lettered sub-clauses — RFC5-18(a)–(e) are list items inside RFC5-18)
+implementation_boundary:
+  kind: requires-openspec
+  clause: RFC5-27
 governs: [principals, sessions, machine-credentials, client-classes, exposure-modes, consent, egress, secrets, execution-profiles, adapter-credentials, audit, revocation]
 applies_to: [kernel, all-surfaces, machine-clients]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004]
@@ -40,7 +43,7 @@ no duplicated normative clauses, no renumbering.
 
 | Module | File | Clauses |
 |---|---|---|
-| 1 — admission and boundary | `admission-and-boundary.md` | RFC5-1..RFC5-11, RFC5-24..RFC5-26 |
+| 1 — admission and boundary | `admission-and-boundary.md` | RFC5-1..RFC5-11, RFC5-24..RFC5-27 |
 | 2 — consent, egress, secrets | `consent-egress-secrets.md` | RFC5-12..RFC5-17 |
 | 3 — execution profiles | `execution-profiles.md` | RFC5-18..RFC5-23 |
 
@@ -53,7 +56,7 @@ policy; the current measurement lives in the generated budget report
 
 **Lookup rule (deterministic).** For any citation `RFC5-n`, read `n` as an
 integer: `1–11` → module 1; `12–17` → module 2; `18–23` → module 3; `24–26` →
-module 1. The four ranges are contiguous and exhaustive over RFC5-1…RFC5-26 with
+module 1. The four ranges are contiguous and exhaustive over RFC5-1…RFC5-27 with
 no gaps, so the rule never needs a search. RFC 0005 has **no lettered
 sub-clauses**: limbs such as RFC5-18(a)–(e) are list items inside one clause
 body and live with their parent. Modules are numbered for reading order only —
@@ -245,6 +248,6 @@ RFC5-5, RFC5-6) is closed. Full text in `admission-and-boundary.md` §8.
 
 ---
 
-*End of RFC 0005 package index. Clauses RFC5-1 … RFC5-26 distributed across
+*End of RFC 0005 package index. Clauses RFC5-1 … RFC5-27 distributed across
 three modules, with no lettered sub-clauses. No retired numbers, no merged
 numbers, no gaps in the range, and no clause identity in more than one module.*

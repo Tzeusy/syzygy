@@ -3,7 +3,7 @@ id: RFC-0003
 title: Project, Workspace and .syzygy/** Manifests — manifests and namespace
 module: manifests-and-namespace
 status_source: owner-act-record
-clauses: "RFC3-1..RFC3-14 and RFC3-18..RFC3-32 (no retired or merged numbers; RFC3-15..RFC3-17 and all lettered sub-clauses live in governance-homes-and-owner-acts.md)"
+clauses: "RFC3-1..RFC3-14 and RFC3-18..RFC3-33 (no retired or merged numbers; RFC3-15..RFC3-17 and all lettered sub-clauses live in governance-homes-and-owner-acts.md)"
 governs: [manifests, project-declaration, consent, workspace, namespaces, migration]
 applies_to: [kernel, workspace, all-surfaces]
 depends_on: [RFC-0001, RFC-0002, RFC-0004, RFC-0005]
@@ -482,6 +482,24 @@ stale. RFC7-37 binds the same obligation on the narrative side.
 
 ---
 
+### 2.9 Authority boundary at the OpenSpec seam (binding phase rule)
+
+**RFC3-33.** This contract schedules nothing: **it is not a specification of
+record from which implementation work may be scheduled**. No implementation
+work for user-observable consequences of this contract — governance-home
+layout behavior, project declaration and manifest validation flows, owner-act
+ceremony surfaces, provenance and effective-status rendering — may be
+scheduled solely from this RFC. Before implementation, every observable
+consequence either maps to an approved OpenSpec requirement and scenario in
+the governance root's `openspec/**` plane, or carries a reviewed N/A judgment
+proving it purely structural with no independently testable behavior. At
+surface specification a clause-to-requirement coverage matrix over
+RFC3-1..RFC3-33 is produced — **that matrix is review material, never
+authority**. This clause creates no OpenSpec content now (none may exist
+during bootstrap). This clause binds the whole RFC 0003 package, not this
+module alone. (Shape-parallel with RFC6-28, RFC7-38, RFC8-32, RFC9-52,
+RFC10-16, RFC11-12.)
+
 ## 3. Violation cases
 
 *(Cases for RFC3-15…RFC3-17(a) are in `governance-homes-and-owner-acts.md` §2.
@@ -601,7 +619,7 @@ exported. Acceptable for owner-first V0, or should saved cross-project *views*
 
 ---
 
-*End of module. Clauses RFC3-1 … RFC3-14 and RFC3-18 … RFC3-32, complete with
+*End of module. Clauses RFC3-1 … RFC3-14 and RFC3-18 … RFC3-33, complete with
 no retired, merged, or unused numbers. RFC3-15, RFC3-15(a), RFC3-16,
 RFC3-16(a), RFC3-16(b), RFC3-16(c), RFC3-17 and RFC3-17(a) are in
 `governance-homes-and-owner-acts.md`.*

@@ -133,12 +133,20 @@ reshuffle of the whole portfolio on every onboarding, and the spatial-memory
 premise applies at portfolio scale exactly as inside a project.
 
 **RFC9-8(a) — The portfolio carries the machinery its obligation requires.** The
-portfolio is not a project — SDR-29 and RFC3-21 put its arrangement in the
-**workspace manifest**, not in any project's `.syzygy/map/**` — so it carries the
+portfolio is not a project — SDR-29 and RFC3-21 put its arrangement at
+**workspace scope**, outside any project's `.syzygy/map/**` — so it carries the
 **same machinery at workspace scope**: a **portfolio layout version** and its
 registry, reorganisation events with recorded rationale, and the RFC9-16(d) owner
-gate, all held in the workspace manifest's governed space (RFC3-21), since no
-project owns the arrangement of its peers. RFC9-15(b) applies unchanged at this
+gate. **This machinery is authority-bearing, and a registry that changes
+authorization, evaluation inputs, stable identity, layout truth, or any other
+project fact belongs in typed governance, never in personal presentation
+state** — so it lives in the typed **workspace governance store** (RFC10-15),
+never in the workspace manifest: the manifest remains personal presentation
+state (RFC3-10, RFC3-11, RFC3-21) and carries at most a non-authoritative
+pointer to the current layout version, since no project owns the arrangement
+of its peers. (Staged reference: until an accepted RFC 0010 mints the store,
+no portfolio re-lay is lawful — the machinery waits with the store, and the
+manifest never substitutes.) RFC9-15(b) applies unchanged at this
 scope: fixed within a version, full regeneration only, order-independent; and
 RFC9-13(a)'s stamp-and-refuse rule covers portfolio-scope saved cameras. Without
 this machinery, append-stability inherited from RFC9-15 leaves **no lawful way

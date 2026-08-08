@@ -3,6 +3,9 @@ id: RFC-0006
 title: Cross-Surface Selection, Query and Evidence Drawer
 status_source: owner-act-record
 clauses: "RFC6-1..RFC6-28 (no gaps; none retired, merged, or renumbered)"
+implementation_boundary:
+  kind: requires-openspec
+  clause: RFC6-28
 governs: [selection-reference, url-identity, resolution-outcome, evidence-drawer, query-answer, label-parity, scenario-context]
 applies_to: [all-surfaces, kernel, machine-clients]
 depends_on: [RFC-0001, RFC-0002]
@@ -98,7 +101,9 @@ a selection identity**. Surfaces may keep private handles for rendering; every
 handle must resolve to a selection reference before it crosses a surface
 boundary, a URL, or an endpoint.
 
-**RFC6-2 — Everything selectable, one way.** Every V0-core entity (RFC1-5) is
+**RFC6-2 — Everything selectable, one way.** Every V0-core entity (RFC1-5),
+and every entity of an extension profile loaded for the project or workspace
+(RFC1-7 — the mission profile's Mission and Attention Item included), is
 selectable by reference. Selection targets the **durable identity level**
 (SDR-2): selecting a claim or gap selects its durable identity; the evaluation
 qualifier picks which instance answers.
@@ -256,13 +261,19 @@ disclosure, SDR-17's minimal-by-default status display — they may **not**
 differ in which facts, labels, or provenance exist: the full fact set is
 reachable from every surface, and two surfaces showing different evidence for
 one selection at one evaluation is a **kernel defect, not a UI
-inconsistency**.
+inconsistency**. The public-facing name of this fact set is **"Why this
+answer?"** — several of its classes are authority, policy, and work, not
+evidence, so "evidence drawer" names the container's dominant class, never
+its extent; both names denote the one fact set and neither adds or subtracts
+a fact. The human and machine paths receive the same facts (RFC6-13).
 
 **RFC6-19 — Drawer content classes.** The fact set contains, per selection:
 
 1. **Identity** — entity kind, durable identity, current label(s), lifecycle
-   state (including *unadopted draft* and *retired with successors*), and
-   succession edges where present.
+   state (including *unadopted draft* and *retired with successors*),
+   succession edges where present, and the **state plane** each rendered
+   fact belongs to (desired, proposed, observed, inferred, execution,
+   historical — RFC1-22's assignment).
 2. **Epistemic state** — label + tier + Unknown reason (verbatim RFC 0002
    vocabulary) and freshness state, for the entity's governing claims at this
    evaluation; open-challenge suspension renders with the deterministic basis
@@ -272,8 +283,10 @@ inconsistency**.
    evidence–revision binding visible (an artifact naming a different revision
    renders stale, RFC2-11).
 4. **Provenance** — the producing evaluation (snapshot + as-of instant), the
-   typed authority that answered each question, and observer/adapter
-   identities and versions.
+   typed authority that answered each question **with the governing
+   normative revision** (the revision or digest identity of the doctrine
+   rule, contract clause, requirement, or policy the answer rests on), and
+   observer/adapter identities and versions.
 5. **Warrant** — the decisions, requirements, and policies that motivate or
    govern the selection; dismissals rendered *dismissed by decision* with
    reason and expiry, never green (RFC1-20).
@@ -287,7 +300,15 @@ inconsistency**.
    flattened: `admitted` suspends the claim (Unknown, `challenge-suspended`,
    `suspended` tier); `challenge-pending` suspends nothing and leaves the
    deterministic status standing.
-7. **Policy visibility** — exclusions (with counts) and consent state (§3.8).
+7. **Policy visibility** — exclusions (with counts), the **coverage
+   boundary** (what the producing evaluation could and could not observe,
+   RFC4-2), and consent state (§3.8).
+8. **Work and reconciliation state** — where work bears on the selection,
+   the relevant items' normalized work state (RFC8-12) and chain state
+   (RFC8-28), carried as two fields, never folded, and never rendered as
+   proof of satisfaction (work is never proof); and the selection's
+   reconciliation state (RFC2-18, RFC2-19) — uncomputed reconciliation
+   renders Unknown, never green.
 
 **RFC6-20 — Drawer links obey the floor.** Every internal link in the fact set
 resolves to its identified target; the kernel does not emit a reference it

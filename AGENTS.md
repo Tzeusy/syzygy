@@ -33,28 +33,35 @@ clauses may be discussed, never cited as binding.
 
 ## Pending owner gates
 
-Five acts are open; **none has been performed**. The acceptance record owns
-the phrases and the ceremony. Each digest belongs to the artifact it names, so
-verify with `check_governance.py` (CG-7) before any act. This file restates no
-digest.
+Ten acts are open; **none has been performed**. Round-2026-08d restructured
+the single foundational-contract act into **six wave acts** (design:
+`contracts/candidates/round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md`). The
+acceptance record owns the phrases and the ceremony. Each digest belongs to
+the artifact it names, so verify with `check_governance.py` (CG-7) before any
+act. This file restates no digest.
 
 | Act | Accepts | Digest source |
 |---|---|---|
-| 1 | The 32 compacted foundational contract modules | `ACTIVE-CONTRACT-MANIFEST.txt` |
-| 2 | Craft amendment CC-TEST-2 | `craft-and-care/INSTALL-RECORD.md` |
-| 3 | The topology bundle | `topology-candidates/BUNDLE-MANIFEST.md` |
-| 4 | The project overview | the acceptance record |
-| 5 (optional) | Doctrine amendment D3 — bounded missions | none — VIS-4 adoption of the D3 packet, rev1 |
+| Wave A | RFC 0001–0006 (19 modules) | `wave-manifests/WAVE-A-MANIFEST.txt` |
+| Wave B | RFC 0007–0009, the three surfaces (11 modules) | `wave-manifests/WAVE-B-MANIFEST.txt` |
+| Waves C1, C2 | RFC-0011 — context packets; selection policy | `WAVE-C1…C2-MANIFEST.txt` |
+| Waves D1, D2 | RFC-0010 — mission prevention; correction plane | `WAVE-D1…D2-MANIFEST.txt` |
+| Craft | Craft amendment CC-TEST-2 | `craft-and-care/INSTALL-RECORD.md` |
+| Topology | The topology bundle | `topology-candidates/BUNDLE-MANIFEST.md` |
+| Overview | The project overview | the acceptance record |
+| D3 (optional) | Doctrine amendment D3 — bounded missions | none — VIS-4 adoption of the D3 packet, rev1 |
 
-The owner-facing offering is
-`contracts/candidates/round-2026-08c/FINAL-OWNER-ACCEPTANCE-PACKET.md` — it
-states every act's imperfections **before** its phrase. The round-2026-08b
-record it supersedes still verifies its five arguments but its defect
-inventory is two rounds stale; review RD-8 called routing an owner there *"the
-finding that converts act 1 from a knowing act into a surprised one."*
+The live gates are `contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`;
+the round-2026-08d owner-facing offering is produced **after** that round's
+fresh-context review pass, and until it exists the acceptance record's
+wave-history note is the statement of what remains unreviewed. The
+round-2026-08b/08c offerings are superseded and banner-marked; review RD-8
+called routing an owner to a stale offering *"the finding that converts act 1
+from a knowing act into a surprised one."*
 `decisions/ACCEPTANCE-ACT-RECORD.md` is created by the first act; its absence
 is correct. **Never edit an artifact after an act has bound its digest.** The
-rev9 phrase `ACCEPT FOUNDATIONAL RFCS` is retired and satisfies nothing.
+rev9 phrase `ACCEPT FOUNDATIONAL RFCS` and the rev10 all-in-one phrase are
+retired and satisfy nothing.
 
 ## Task routing — context is compiled, never accumulated
 
@@ -67,7 +74,7 @@ Load the minimum for one correct decision. Never "read everything."
 | A contract question | `contracts/candidates/06-CONTEXT-LOAD-MAP.md`, or compute the load with `scripts/context_load.py` |
 | "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until OpenSpec exists |
 | Current status | `PROJECT-STATUS.md` |
-| "Is this ready for OpenSpec?" | `round-2026-08c/FINAL-PRE-SPECIFICATION-READINESS-REPORT.md` — the answer is **not ready**: eight of twelve met, one met with its bound stated, one `EXCEPTIONS`, three named with the review finding that blocks each |
+| "Is this ready for OpenSpec?" | the answer is **not ready** — the round-2026-08d repairs are unreviewed and no readiness recompute has run; `PROJECT-STATUS.md` "Open state, honestly" is the current statement. The round-2026-08c readiness report is banner-marked historical |
 | Open owner questions | `decisions/PENDING-OWNER-DECISIONS.md` |
 | What a term means | doctrine's glossary, `governance/doctrine/README.md`; then the candidate `policy-candidates/TERM-REGISTRY.md` |
 | Maintenance, review, or avoiding a repeat mistake | `decisions/PROCESS-LESSONS.md` — **not default context** |

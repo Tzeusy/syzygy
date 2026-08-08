@@ -2,7 +2,10 @@
 id: RFC-0001
 title: Project Graph, Identity and State Planes
 status_source: owner-act-record
-clauses: "RFC1-1..RFC1-32, plus sub-clauses RFC1-18(a), RFC1-18(b), RFC1-25(a)–(d) (no retirements, no merges, no gaps)"
+clauses: "RFC1-1..RFC1-33, plus sub-clauses RFC1-18(a), RFC1-18(b), RFC1-25(a)–(d) (no retirements, no merges, no gaps)"
+implementation_boundary:
+  kind: requires-openspec
+  clause: RFC1-33
 governs: [entities, relations, identities, state-planes, evaluation-identity, claims, gaps, contradictions, proposals, lifecycles]
 applies_to: [kernel, all-surfaces]
 depends_on: []
@@ -197,8 +200,14 @@ layout records), **portfolio** (workspace-manifest concerns per SDR-29/30;
 cross-project relationship entities live here, and an undeclared cross-project
 relation renders unconfirmed/asymmetric, never silently reconciled),
 **annotation/dismissal** (designations, milestones, dismissal application
-machinery). A profile may add vocabulary; it may never alter the semantics of
-a V0-core clause. Profile contents are defined by RFCs 0002–0009.
+machinery), **mission** (Mission and Attention Item identities and their
+relations — mission-targets, attention-blocks; loadable only where the
+Mission contracts (RFC 0010 and successors) are accepted and active for the
+project or workspace, and never part of any project's unconditional V0
+core). A profile may add vocabulary; it may never alter the semantics of
+a V0-core clause. Profile contents are defined by RFCs 0002–0011 and by
+successor RFCs accepted into the contract set; a profile-defining RFC names
+the minting authority of every identity it adds, under RFC1-9's discipline.
 
 **RFC1-8.** **Frozen-noun mapping.** Every doctrine-frozen noun resolves to
 exactly one kernel construct: project, capability, gap, contradiction,
@@ -717,6 +726,23 @@ surface's own contract (RFC 0008). UI prose may say "feature" only where it
 resolves to a Capability identity; no surface, adapter, or profile may mint a
 feature identifier.
 
+### 3.11 Authority boundary at the OpenSpec seam (binding phase rule)
+
+**RFC1-33.** This contract schedules nothing: **it is not a specification of
+record from which implementation work may be scheduled**. No implementation
+work for user-observable consequences of this contract — project
+registration and declaration validation flows, entity and relation rendering,
+lifecycle and succession displays, proposal and materialization surfaces, API
+answers over graph identities — may be scheduled solely from this RFC. Before
+implementation, every observable consequence either maps to an approved
+OpenSpec requirement and scenario in the governance root's `openspec/**`
+plane, or carries a reviewed N/A judgment proving it purely structural with
+no independently testable behavior. At surface specification a
+clause-to-requirement coverage matrix over RFC1-1..RFC1-33 is produced —
+**that matrix is review material, never authority**. This clause creates no
+OpenSpec content now (none may exist during bootstrap). (Shape-parallel with
+RFC6-28, RFC7-38, RFC8-32, RFC9-52, RFC10-16, RFC11-12.)
+
 ---
 
 ## 4. Violation cases
@@ -840,7 +866,7 @@ RFC1-25/RFC1-25(a)–(b).
 
 ---
 
-*End of RFC 0001. Clauses RFC1-1 … RFC1-32, plus sub-clauses RFC1-18(a)
+*End of RFC 0001. Clauses RFC1-1 … RFC1-33, plus sub-clauses RFC1-18(a)
 (declared scope), RFC1-18(b) (contradiction identity), and RFC1-25(a)–(d)
 (owner-minted relations, the dependency anti-conflation invariant, `placed_in`
 cardinality, typed relation identity). No clause is retired, merged, or

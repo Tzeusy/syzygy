@@ -3,7 +3,7 @@ id: RFC-0007
 title: Polaris (Intent Surface) — rendering, the authority boundary, comprehension acceptance, machine parity and navigation
 status_source: owner-act-record
 module: rendering-and-surface
-clauses: RFC7-26..RFC7-38 (no sub-clauses, no gaps, no retirements, no merges)
+clauses: RFC7-26..RFC7-40 (no sub-clauses, no gaps, no retirements, no merges; RFC7-38, the phase rule, is defined before RFC7-39/40 in file order — deliberate)
 governs: [reading-mode, proposed-scenario-rendering, curated-diagram, authority-boundary, comprehension-test, walkthrough-record, machine-parity, non-visual-recoverability, portfolio-narrative, subproject-navigation]
 applies_to: [polaris]
 depends_on: [RFC-0001, RFC-0003, RFC-0006, RFC-0009]
@@ -323,6 +323,34 @@ one.)*
 
 ---
 
+### 3.14 The fixed human entry point, and its discoverability
+
+**RFC7-39 — The fixed human entry point.** For a governed project,
+`.syzygy/intent/OVERVIEW.md` is the **fixed, Syzygy-owned human entry
+point**: the one path a human reader is sent to first, present at the same
+path in every governed project, and rendered as governed presentation under
+this contract's narrative rules. The entry is **governed presentation, never
+authority** — it cites doctrine, contracts, and specifications by identifier
+and asserts nothing they do not; where the overview and an authority
+disagree, the authority wins and the overview is stale. A governed project
+without the file renders the absence as a finding under RFC 0002's
+vocabulary (absent → the gap surfaces; unobservable → Unknown), never
+silently.
+
+**RFC7-40 — Repository-front-door discoverability is a per-repository
+finding.** For every repository of a governed project, the kernel answers:
+*does the repository's front door (its root README or configured landing
+document) link to the Syzygy project entry (RFC7-39)?* — **`yes / no /
+Unknown`**, per repository, at the producing evaluation. Syzygy **may
+propose** the link (a Proposal, RFC1-27) and **may never write it**: the
+repository front door lies outside the two writable namespaces (VIS-5), and
+a repository whose owner declines the link renders `no`, truthfully, not as
+an error. The finding never implies that every observed repository can host
+a `.syzygy/` entry: for repositories without a governance root the finding
+renders the actual limitation — not-applicable with the reason, or Unknown
+where observation cannot establish it — and the multi-repository shape is
+rendered as it is.
+
 ## 4. Violation cases
 
 *Package numbering; cases are distributed across modules, never renumbered.
@@ -374,7 +402,7 @@ verdicts.
 
 ---
 
-*End of module 2 of 2. Clauses RFC7-26 … RFC7-38, no lettered sub-clauses.
+*End of module 2 of 2. Clauses RFC7-26 … RFC7-40, no lettered sub-clauses.
 Contiguous, nothing retired, merged, or renumbered. This module carries no §8
 question — both open package questions own clauses in module 1. Amend in place,
 add lettered sub-clauses, never renumber.*

@@ -3,7 +3,7 @@ id: RFC-0004
 title: Observation Sources and Evidence — provenance joins, fidelity labeling, code mappings, and the derivation-first invariant
 status_source: owner-act-record
 module: fidelity-joins-and-mappings
-clauses: RFC4-22..RFC4-29 (no gaps, no retirements, no merges)
+clauses: RFC4-22..RFC4-30 (no gaps, no retirements, no merges)
 governs: [provenance-joins, join-basis, worker-liveness, reduced-fidelity-labels, degradation-mapping, code-mappings, code-markers, mapping-coverage, derivation-first, enrichment-roadmap]
 applies_to: [kernel, trajectory, orrery]
 depends_on: [RFC-0001, RFC-0002, RFC-0003]
@@ -179,6 +179,24 @@ any Syzygy-authored record placed there is governed by the outward limb
 substrate's store is never the primary home of Syzygy's run records (SDR-8).
 
 ---
+
+### 3.9 Authority boundary at the OpenSpec seam (binding phase rule)
+
+**RFC4-30.** This contract schedules nothing: **it is not a specification of
+record from which implementation work may be scheduled**. No implementation
+work for user-observable consequences of this contract — adapter
+configuration and observation capture behavior, execution-record surfaces,
+fidelity, staleness and degradation rendering, mapping displays — may be
+scheduled solely from this RFC. Before implementation, every observable
+consequence either maps to an approved OpenSpec requirement and scenario in
+the governance root's `openspec/**` plane, or carries a reviewed N/A judgment
+proving it purely structural with no independently testable behavior. At
+surface specification a clause-to-requirement coverage matrix over
+RFC4-1..RFC4-30 is produced — **that matrix is review material, never
+authority**. This clause creates no OpenSpec content now (none may exist
+during bootstrap). This clause binds the whole RFC 0004 package, not this
+module alone. (Shape-parallel with RFC6-28, RFC7-38, RFC8-32, RFC9-52,
+RFC10-16, RFC11-12.)
 
 ## 4. Violation cases
 

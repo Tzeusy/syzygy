@@ -5,6 +5,9 @@ status_source: owner-act-record
 package: RFC-0008
 modules: [identity-authority-materialization, state-vocabulary-and-cost, accounting-reconciliation-and-release]
 clauses: RFC8-1..RFC8-32 (no gaps, no retired numbers, no merges; no lettered sub-clauses — see the lookup rule)
+implementation_boundary:
+  kind: requires-openspec
+  clause: RFC8-32
 governs: [work, work-states, dispatch, execution-records, trajectory-surface, materialization-records, change-accounting-chain, reconciliation-chain-state, cost-measures, provenance]
 applies_to: [trajectory]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007]

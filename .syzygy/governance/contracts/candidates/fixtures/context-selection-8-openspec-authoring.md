@@ -5,33 +5,59 @@ fixture set (fixtures 1–5). Binds nothing. Repaired 2026-08-05 against the
 two stored §20.4 reviews; the repairs are recorded in
 `round-2026-08/CONTEXT-COMPILER-FIXTURE-REPORT.md`.
 
+## Task
+
 **Objective.** A governed task: author the first OpenSpec requirements for an
 adopted Polaris capability — the behaviour a surface clause makes
 user-observable. Risk class: normative behavioural specification; the output
 is an owner-approved spec delta, not code.
 
+**Warrant.** The adopted Polaris capability and the surface clauses that
+make its behaviour observable; the OpenSpec requirements being authored
+against them. Declared change class: normative behavioural specification —
+this task **sits on the OpenSpec seam**. It performs no owner act and
+writes no code.
+
+---
+
+*Everything above the rule is the task. Everything below is the recorded
+answer: a blind derivation (the protocol review RD-5 ran) receives the Task
+section and the governed corpus only, derives a selection, and compares it
+against what follows — reading no further until its own selection is
+written down.*
+
 **Why this fixture matters.** Every phase-rule clause routes user-observable
 behaviour through OpenSpec before implementation is scheduled. This is the
-packet an author receives at that boundary, and it carries **the largest
-budget breach in the eight-fixture set** — a claim now checked against every
-sibling rather than asserted. (It is *not* the first breach: accepted fixture
-2 breached before it and is recorded as a disclosed exception. Fixture 8's
-distinction is size, not precedence.)
+packet an author receives at that boundary, and it carries the largest
+budget breach in the fixture set — a claim checked against every sibling in
+`CONTEXT-BUDGET-REPORT.md` §1 rather than asserted. (It is *not* the first
+breach: accepted fixture 2 breached before it and is recorded as a
+disclosed exception. Fixture 8's distinction is size, not precedence.)
 
-**Selection rule trace (RFC11-4).** The warrant names an adopted Polaris
-capability → `applies_to: polaris` selects RFC-0007, and because the packet
-loads that contract, **its governing phase-rule clause travels with it**:
-RFC7-38 ("This contract schedules nothing") is the boundary rule for the
-OpenSpec seam this task sits on, its clause text lives in
-`rendering-and-surface.md` §3.13, and the README's "Phase boundary" section
-is a restatement pointing there. Authoring a requirement against a
-capability needs the capability/requirement identity model → RFC-0001
-(RFC1-14 capability identity; RFC1-15 "Requirement and Scenario are
-references, not owned content") — a single-file contract with no smaller
-load unit. The output is an owner-approved spec delta, so the adoption gate
-is doctrine → `vision.md` (VIS-3 fresh-reader review; VIS-4's always-human
-spec-adoption class). A requirement must be stated so it can be verified →
-craft `testing-and-verification.md`.
+**Selection rule trace (RFC11-4, traversal per RFC11-14).** The warrant
+names an adopted Polaris capability → `applies_to: polaris` selects
+RFC-0007. Authoring a requirement against a capability needs the
+capability/requirement identity model → RFC-0001 (RFC1-14 capability
+identity; RFC1-15 "Requirement and Scenario are references, not owned
+content") — a single-file contract with no smaller load unit. The output is
+an owner-approved spec delta, so the adoption gate is doctrine →
+`vision.md` (VIS-3 fresh-reader review; VIS-4's always-human spec-adoption
+class). A requirement must be stated so it can be verified → craft
+`testing-and-verification.md`.
+
+**Phase-boundary rule, applied (RFC11-4 with RFC11-13) — the on-seam
+case.** RFC-0007 declares `implementation_boundary: requires-openspec`
+naming RFC7-38, and this task **sits on that boundary**: it authors the
+observable behaviour the phase rule routes. The amended rule therefore
+forces the module *defining* RFC7-38 — `rendering-and-surface.md`, whose
+§3.13 carries the clause text — into the mandatory set; the README's
+"Phase boundary" section is a restatement pointing there, and a
+restatement is never the clause. RFC-0001 carries its own defining phase
+rule (RFC1-33) in the loaded file. This is the same single rule fixture 1
+applies from the other side (off-seam: declaration travels, module not
+forced); the pre-amendment drafts of the two fixtures read the old
+parenthetical in opposite directions, which review RD-5 recorded as a
+contradiction, and the amended RFC11-4/RFC11-13 rule closed it.
 
 ## Required context (mandatory, deterministic)
 
@@ -42,39 +68,42 @@ scripts/context_load.py rfcs/RFC-0001-project-graph-identity-state-planes.md \
   craft:testing-and-verification.md
 ```
 
-Measured: **22,416 words ≈ 30,262 estimated tokens.**
+Measured: **22,904 words ≈ 30,920 estimated tokens.**
 
 ## ⚠️ Budget breach — waiver
 
-**30,048 estimated tokens exceeds the 20,000-token line** at which the
+The anchored figure above exceeds the **20,000-token** line at which the
 charter §11.4 context-budget table requires explicit justification or task
-decomposition, and it is double the 15,000-token top of the default band.
-(§11.4's table is cited directly: its intended home, the candidate
-knowledge-hygiene craft policy, is not installed, and no `CC-BUDGET-*`
-identifier resolves to a governed artifact today.) Recorded as a waiver
-rather than resolved by trimming, because trimming would drop mandatory
-context to make a number look better — the failure RFC11-5 forbids.
+decomposition, and sits well above the top of the proposed default band;
+the percentages are computed in `CONTEXT-BUDGET-REPORT.md` §1–2. (§11.4's
+table is cited directly: its intended home, the candidate knowledge-hygiene
+craft policy, is not installed, and no `CC-BUDGET-*` identifier resolves to
+a governed artifact today.) Recorded as a waiver rather than resolved by
+trimming, because trimming would drop mandatory context to make a number
+look better — the failure RFC11-5 forbids.
 
 | Field | Value |
 |---|---|
-| **Artifact** | This fixture's mandatory selection |
-| **Reason** | RFC-0001 is indivisible (8,353 w — justified oversize, recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`, *not* in RFC-0001 itself, which records no waiver) and requirement authoring genuinely needs the capability/requirement identity model (RFC1-14/RFC1-15), both modules of the surface contract that makes the behaviour observable (RFC-0007 — including the module carrying its phase rule RFC7-38, which dictates the clause-to-requirement coverage matrix the author must produce), the adoption gate the delta must pass (VIS-3/VIS-4), and the verification bar the requirement must be testable against |
+| **Artifact** | This fixture's mandatory selection (the six files in the load command; measured in the anchored field above) |
+| **Reason** | RFC-0001 is indivisible (its justified oversize is recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`, *not* in RFC-0001 itself, which records no waiver) and requirement authoring genuinely needs the capability/requirement identity model (RFC1-14/RFC1-15), both modules of the surface contract that makes the behaviour observable (RFC-0007 — including the module carrying its phase rule RFC7-38, forced by the on-seam rule, which dictates the clause-to-requirement coverage matrix the author must produce), the adoption gate the delta must pass (VIS-3/VIS-4), and the verification bar the requirement must be testable against |
 | **Scope** | OpenSpec requirement authoring against an adopted capability **whose surface contract is RFC-0007 (Polaris)**. It does **not** stretch to another surface contract: this fixture names "a capability whose surface contract is smaller" as the narrowing that retires the waiver, so applying it there applies it to the case that voids it. Does not cover review of the authored delta, which pulls `craft:review-and-documentation.md` instead (scope tightened by RC-12) |
 | **Reviewer** | **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `../round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed |
 | **Expiry / revisit trigger** | The **earlier** of (a) the first real OpenSpec authoring task, or (b) **unconditionally at the creation of `openspec/**`**. RC-12 added (b): this packet renders the absent house conventions as an RFC11-6 Unknown and proceeds, so the moment conventions exist they become mandatory context, the measured floor changes, and the waiver was computed against a corpus that no longer describes the task. If decomposition proves possible at (a) — authoring against a smaller surface contract — the waiver retires instead |
 
-**Decomposition review, honestly conducted.** Three splits measured; none is
-proposed as the default, and the reason differs in each case:
+**Decomposition review, honestly conducted.** Three splits measured (each
+re-measurable from the load command minus the named files; per-module words
+are in `CONTEXT-BUDGET-REPORT.md` §3); none is proposed as the default, and
+the reason differs in each case:
 
-| Candidate split | Measured | Why it is not the default |
-|---|---:|---|
-| Author from RFC-0007's README alone (drop both normative modules) | 13,948 w ≈ **18,829** est. tokens | The README is an **index**; substituting it for the normative clauses in an authoring task is exactly the summary-as-authority substitution the round exists to prevent — and it is where the RFC7-38 miss came from in the pre-repair draft of this fixture |
-| Drop RFC-0001 | 13,905 w ≈ **18,771** | Removes RFC1-14/RFC1-15 — the definition of what a capability identity *is* and the rule that requirements are references, not owned content. An author without them invents identity semantics |
-| Drop `narrative-contract`, keep `rendering-and-surface` | 17,091 w ≈ **23,072** | Still over the trigger, and it drops the clauses that define what the narrative asserts. Buys nothing |
+| Candidate split | Why it is not the default |
+|---|---|
+| Author from RFC-0007's README alone (drop both normative modules) | Measured under the trigger — but the README is an **index**; substituting it for the normative clauses in an authoring task is exactly the summary-as-authority substitution the round exists to prevent, and it is where the RFC7-38 miss came from in the pre-repair draft of this fixture. The on-seam rule now forbids it outright |
+| Drop RFC-0001 | Measured under the trigger — but it removes RFC1-14/RFC1-15, the definition of what a capability identity *is* and the rule that requirements are references, not owned content. An author without them invents identity semantics |
+| Drop `narrative-contract`, keep `rendering-and-surface` | Still measured over the trigger, and it drops the clauses that define what the narrative asserts. Buys nothing |
 
 **The honest finding: no lawful split lands inside the default band.** The
 packet's floor is one indivisible kernel plus one surface package, and that
-floor is above 20,000 tokens on its own. The lawful responses under RFC11-11
+floor is above the trigger on its own. The lawful responses under RFC11-11
 are sharding, narrowing the objective, or escalating — and the only real
 narrowing available (a capability whose surface contract is smaller than
 RFC-0007's) is not available for Polaris. That trade belongs to the owner.
@@ -122,43 +151,44 @@ The capability identity model (RFC1-14) and the reference-not-content rule
 for requirements (RFC1-15) are mandatory-loaded; both RFC-0007 modules are
 present, so the narrative model, the surface obligations, and **the phase
 rule's own clause text** (RFC7-38, `rendering-and-surface.md` §3.13 — not
-merely the README's restatement) travel with the packet, satisfying
-RFC11-4's rule that no lawful packet omits the boundary rule of a contract
-it loads. The adoption gate the delta must pass (VIS-3 fresh-reader review,
-VIS-4's always-human spec class) is in the loaded `vision.md`, and the
-verifiability bar the requirement must meet is in the loaded craft testing
-policy.
+merely the README's restatement) travel with the packet, satisfying the
+on-seam limb of RFC11-4's mandatory-inclusion rule. The adoption gate the
+delta must pass (VIS-3 fresh-reader review, VIS-4's always-human spec
+class) is in the loaded `vision.md`, and the verifiability bar the
+requirement must meet is in the loaded craft testing policy.
 
 **Index cross-check, with its limit stated.** Every RFC clause the warrant
 cites resolves through `05-CONTRACT-INDEX.yaml` into the mandatory or
 suggested set; the index's clause row `{id: RFC7-38, module:
-RFC-0007/rendering-and-surface.md, kind: phase-rule}` is what forces the
-second RFC-0007 module into the mandatory set, and running this cross-check
-is what caught its absence from the pre-repair draft. The index's `governance_sources`
-list was empty when this fixture was first written (it enumerated packet
-copies removed in the tracked-home move); the generator was repointed at the
-canonical homes later in the same round, so the projection now carries the
-doctrine and craft sources and this cross-check resolves against it. The
-doctrine and craft selections above were additionally verified against the
-files directly.
+RFC-0007/rendering-and-surface.md, kind: phase-rule}` is the projection of
+the declaration the on-seam rule consumes, and running this cross-check is
+what caught the defining module's absence from the pre-repair draft. The
+index's `governance_sources` list was empty when this fixture was first
+written (it enumerated packet copies removed in the tracked-home move); the
+generator was repointed at the canonical homes later in the same round, so
+the projection now carries the doctrine and craft sources and this
+cross-check resolves against it. The doctrine and craft selections above
+were additionally verified against the files directly (RFC11-15 basis:
+the adoption gate names its doctrine file; the verifiability duty names
+its owning craft policy).
 
 ## Suggested inferred additions (provenance: index adjacency)
 
-RFC-0002 README + `rendering-vocabularies` (4,215 words) — the claim/Unknown
-vocabulary a requirement's observable outcomes will be stated against, once
-the delta specifies rendered states. RFC-0006 (4,174 words) — the
-cross-surface selection semantics RFC7-16 references, if the authored
-behaviour includes selection or drawer disclosure.
-`craft:review-and-documentation.md` (1,068 words) — for the reviewer of the
+RFC-0002 README + `rendering-vocabularies` — the claim/Unknown vocabulary a
+requirement's observable outcomes will be stated against, once the delta
+specifies rendered states. RFC-0006 — the cross-surface selection semantics
+RFC7-16 references, if the authored behaviour includes selection or drawer
+disclosure. `craft:review-and-documentation.md` — for the reviewer of the
 delta rather than its author. All three are suggested, never mandatory:
-loading them would take an already-waived packet past 40,000 tokens, and
-RFC11-5's mandatory/suggested split exists exactly so that this pressure
-never silently promotes or demotes anything.
+loading them would grow an already-waived packet substantially (word costs:
+`CONTEXT-BUDGET-REPORT.md` §3), and RFC11-5's mandatory/suggested split
+exists exactly so that this pressure never silently promotes or demotes
+anything.
 
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`9e6afe82d5b66c8e…` (recompute: `cat <mandatory files> | sha256sum`).
+`6de11f094a8e7229…` (recompute: `cat <mandatory files> | sha256sum`).
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a
@@ -171,7 +201,7 @@ fixture used to carry was removed 2026-08-06: there is no compiler, and
 `rev10-fixtures` resolved to nothing anywhere in the repository.
 
 **Digest-source pinning.** This digest and the totals above are computed over
-the **canonical-home bytes** as of 2026-08-05: `doctrine:` resolves to
+the **canonical-home bytes** as of the last restamp: `doctrine:` resolves to
 `.syzygy/governance/doctrine/`, `craft:` to
 `.syzygy/governance/policies/craft-and-care/`, `rfcs/` to this package. No
 packet copies of doctrine or craft exist under this root any more, so there
@@ -181,23 +211,20 @@ adoption amending `vision.md`, the CC-TEST-2 craft amendment landing in
 `testing-and-verification.md`, or any corpus edit — **invalidates this packet
 rather than silently changing what it meant**. A stale digest is the correct,
 visible outcome; a packet whose contents drift under a fixed digest is not.
-(Live proof: three accepted-set fixtures no longer reproduce their stated
-digests after the P-6 and P-7 fixes — see the fixture report.)
 
 ## Verification checklist (§15)
 
 - [x] **All mandatory context included** — identity model, both modules of
-      the surface contract including its phase-rule clause text, the
-      adoption gate, and the verification bar
-- [x] **Unrelated modules excluded** — **28 of 32** RFC modules absent
-      (4 loaded; count computed from `05-CONTRACT-INDEX.yaml`'s module list,
-      not estimated)
+      the surface contract including its phase-rule clause text (forced by
+      the on-seam rule), the adoption gate, and the verification bar
+- [x] **Unrelated modules excluded** — every RFC module other than the
+      four loaded RFC files is absent (the module population is
+      `CONTEXT-BUDGET-REPORT.md` §3's table, not an estimate)
 - [x] **Stable output for identical inputs** — same argument list, same
       totals; re-run with arguments reversed returns the same total
-- [x] **Budget respected or waiver emitted** — **not respected: 30,048 est.
-      tokens**, the set's largest breach; waiver emitted above, reviewer
-      unassigned, three decomposition options measured and declined with
-      reasons
+- [x] **Budget respected or waiver emitted** — **not respected**: the
+      anchored figure is the set's largest breach; waiver emitted above,
+      three decomposition options measured and declined with reasons
 - [x] **Omissions recorded** — every applicable candidate above is
       enumerated with a reason, including all doctrine files, all craft
       policies, topology, and the `openspec/**` gap
@@ -206,6 +233,15 @@ digests after the P-6 and P-7 fixes — see the fixture report.)
       read the clause rather than an index or its own summary. This fixture
       is the concrete instance of that gap: its pre-repair draft loaded a
       README whose phase-rule text is a restatement pointing elsewhere, and
-      no mechanical check caught it. See the fixture report's §5.
+      no mechanical check caught it. The on-seam rule now states the
+      obligation; whether a consumer honors it remains reviewable, not
+      checked. See the fixture report's §5.
 
 *Re-measured 2026-08-05b by `scripts/check_governance.py` CG-18, which recomputes the digest and the word count from the declared mandatory set rather than trusting the recorded figures. Previous: 22,258 words, digest `36be8f90fa12a01d…`. Selection unchanged; the movement is contract edits landing under a fixture that had no mechanical freshness check until now.*
+
+*Restructured 2026-08-08 (round-2026-08d): task/answer boundary added per
+RD-5's blind-derivation protocol; the on-seam limb of amended
+RFC11-4/RFC11-13 stated as the rule forcing the defining module, closing
+the fixture-1-vs-8 contradiction; transcribed measurements removed — the
+anchored `Measured:` field and the packet digest are the only measurements
+this fixture states.*

@@ -3,7 +3,7 @@ id: RFC-0005
 title: Admission and the Syzygy Boundary — principals, client classes, credentials, exposure, audit
 status_source: owner-act-record
 module: admission-and-boundary
-clauses: RFC5-1..RFC5-11, RFC5-24..RFC5-26 (no gaps within either run, no retirements, no merges)
+clauses: RFC5-1..RFC5-11, RFC5-24..RFC5-27 (no gaps within either run, no retirements, no merges)
 governs: [principals, sessions, machine-credentials, client-classes, exposure-modes, adapter-credentials, audit, revocation]
 applies_to: [kernel, all-surfaces, machine-clients]
 depends_on: [RFC-0001, RFC-0002, RFC-0003]
@@ -323,6 +323,24 @@ grant with a fresh record.
 
 ---
 
+### 3.12 Authority boundary at the OpenSpec seam (binding phase rule)
+
+**RFC5-27.** This contract schedules nothing: **it is not a specification of
+record from which implementation work may be scheduled**. No implementation
+work for user-observable consequences of this contract — authentication and
+session flows, machine-client admission, consent and egress gate behavior,
+secret-handling behavior, execution-profile effects, audit and revocation
+surfaces — may be scheduled solely from this RFC. Before implementation,
+every observable consequence either maps to an approved OpenSpec requirement
+and scenario in the governance root's `openspec/**` plane, or carries a
+reviewed N/A judgment proving it purely structural with no independently
+testable behavior. At surface specification a clause-to-requirement coverage
+matrix over RFC5-1..RFC5-27 is produced — **that matrix is review material,
+never authority**. This clause creates no OpenSpec content now (none may
+exist during bootstrap). This clause binds the whole RFC 0005 package, not
+this module alone. (Shape-parallel with RFC6-28, RFC7-38, RFC8-32, RFC9-52,
+RFC10-16, RFC11-12.)
+
 ## 4. Violation cases — this module
 
 *Package numbering is stable; cases are distributed across modules, never
@@ -436,5 +454,5 @@ a claim. Binding in RFC5-11. Question as posed and answer verbatim:
 ---
 
 *End of module 1 of the RFC 0005 package. Clauses RFC5-1 … RFC5-11 and
-RFC5-24 … RFC5-26. No retired numbers, no merged numbers, and no clause identity
+RFC5-24 … RFC5-27. No retired numbers, no merged numbers, and no clause identity
 shared with another module.*

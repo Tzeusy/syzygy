@@ -4,7 +4,10 @@ title: Observation, Evaluation and Reconciliation — contract package index
 status_source: owner-act-record
 package: RFC-0002
 modules: [snapshot-and-evaluation-core, challenge-lifecycle, reconciliation-chain, rendering-vocabularies]
-clauses: RFC2-1..RFC2-25 (contiguous; no sub-clauses, no gaps, no retired numbers, no merges)
+clauses: RFC2-1..RFC2-26 (contiguous; no sub-clauses, no gaps, no retired numbers, no merges)
+implementation_boundary:
+  kind: requires-openspec
+  clause: RFC2-26
 governs: [source-snapshot, evaluation-identity, observation-record, inference-overlay, currency, staleness, challenge, contradiction, gap, aligned, converged, reconciliation-chain, failure-states, unknown-reason, rendering-tier]
 applies_to: [kernel, all-surfaces]
 depends_on: [RFC-0001, RFC-0003, RFC-0004, RFC-0005]
@@ -43,7 +46,7 @@ namespace, no duplicated normative clauses, no renumbering.
 | 1 — snapshot and evaluation core | `snapshot-and-evaluation-core.md` | RFC2-1..RFC2-11 |
 | 2 — challenge lifecycle | `challenge-lifecycle.md` | RFC2-12..RFC2-14 |
 | 3 — reconciliation chain | `reconciliation-chain.md` | RFC2-15..RFC2-22 |
-| 4 — rendering vocabularies | `rendering-vocabularies.md` | RFC2-23..RFC2-25 |
+| 4 — rendering vocabularies | `rendering-vocabularies.md` | RFC2-23..RFC2-26 |
 
 Module sizes are deliberately **not stated here**. A measurement copied into
 contract prose goes stale the moment any module moves, and moves this
@@ -56,7 +59,7 @@ policy; the current measurement lives in the generated budget report
 integer and take the first row whose range contains it. RFC 0002 has **no
 lettered sub-clauses** — every `(a)`/`(b)` appearing in its text cites another
 contract — so the integer alone always resolves. The four ranges are contiguous
-and exhaustive over RFC2-1…RFC2-25 with no gaps, so the rule never needs a
+and exhaustive over RFC2-1…RFC2-26 with no gaps, so the rule never needs a
 search. Modules are numbered for reading order only — citations name clauses,
 never modules.
 
@@ -228,7 +231,18 @@ are answered — no open question remains in this package.
 
 ---
 
-*End of RFC 0002 package index. Clauses RFC2-1 … RFC2-25, contiguous and
+## Phase boundary
+
+The phase rule **RFC2-26** binds the whole package: this contract fixes
+evidence, evaluation and rendering semantics and is not a specification of
+record from which implementation work may be scheduled. The clause text is
+in `rendering-vocabularies.md`, and its clause-to-requirement coverage
+matrix must cover **RFC2-1…RFC2-26 across all four modules**, not module 4
+alone.
+
+---
+
+*End of RFC 0002 package index. Clauses RFC2-1 … RFC2-26, contiguous and
 distributed across four modules. No lettered sub-clauses, no retired numbers,
 no merged numbers, no gaps in the range, and no clause identity in more than
 one module. The clause range is closed: amend in place, add lettered

@@ -4,7 +4,10 @@ title: Observation Sources, Evidence, Execution Records and Adapters — contrac
 status_source: owner-act-record
 package: RFC-0004
 modules: [general-contract, named-adapters, execution-record, fidelity-joins-and-mappings]
-clauses: RFC4-1..RFC4-29 (sub-clauses RFC4-13(a), RFC4-13(b); no gaps, no retired numbers, no merges)
+clauses: RFC4-1..RFC4-30 (sub-clauses RFC4-13(a), RFC4-13(b); no gaps, no retired numbers, no merges)
+implementation_boundary:
+  kind: requires-openspec
+  clause: RFC4-30
 governs: [observation-sources, observers, adapters, evidence, execution-records, trusted-external-oracles, governed-checkers, fidelity-labels, provenance-joins, code-mappings]
 applies_to: [kernel, trajectory, orrery]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0005]
@@ -44,7 +47,7 @@ namespace, no duplicated normative clauses, no renumbering.
 | 1 — general contract | `general-contract.md` | RFC4-1..RFC4-9 |
 | 2 — named adapters | `named-adapters.md` | RFC4-10..RFC4-17, incl. RFC4-13(a), RFC4-13(b) |
 | 3 — execution record | `execution-record.md` | RFC4-18..RFC4-21 |
-| 4 — fidelity, joins, mappings | `fidelity-joins-and-mappings.md` | RFC4-22..RFC4-29 |
+| 4 — fidelity, joins, mappings | `fidelity-joins-and-mappings.md` | RFC4-22..RFC4-30 |
 
 Module sizes are deliberately **not stated here**. A measurement copied into
 contract prose goes stale the moment any module moves, and moves this
@@ -56,7 +59,7 @@ policy; the current measurement lives in the generated budget report
 **Lookup rule (deterministic).** For any citation `RFC4-n`, read `n` as an
 integer and take the first row whose range contains it; a lettered sub-clause
 `RFC4-13(a)` / `RFC4-13(b)` lives with its parent RFC4-13, in module 2. The
-four ranges are contiguous and exhaustive over RFC4-1…RFC4-29 with no gaps, so
+four ranges are contiguous and exhaustive over RFC4-1…RFC4-30 with no gaps, so
 the rule never needs a search. Modules are numbered for reading order only —
 citations name clauses, never modules.
 

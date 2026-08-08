@@ -1,6 +1,6 @@
-# Final foundational-contract acceptance record — rev10 (compacted package)
+# Final foundational-contract acceptance record — final pre-specification package
 
-This record defines the owner gates over the rev10 final pre-specification
+This record defines the owner gates over the final pre-specification
 package and, on the owner's act, supersedes
 `_bootstrap/rfc-phase/FOUNDATIONAL-RFC-ACCEPTANCE-RECORD.md` (rev9) as the
 acceptance authority. **Nothing adopts implicitly**: each gate below is
@@ -8,44 +8,82 @@ independent, none implies another, and no artifact rides on another's
 gate. Until an act is performed, every artifact here binds nothing
 (RFC3-16).
 
+**Restructured at round-2026-08d (owner work order §4):** the single act 1
+over the whole contract package is replaced by **six wave acts**, each
+independently acceptable, each binding exactly the modules in its
+generated wave manifest (`wave-manifests/`, written and partition-checked
+by `scripts/build_active_manifest.py`). Design rationale:
+`round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md`. Acts 2–5 are unchanged.
+
 ## 1. The gates — exact scope, exact phrases
 
 | # | Act (exact phrase) | Accepts exactly |
 |---|---|---|
-| 1 | `ACCEPT COMPACTED FOUNDATIONAL RFCS: 2862b2f54e39e6d477129147eb2e1d0cb4ca714c26edabd75505e2e38ff057d7` | The 32 active contract modules (RFC 0001–0011) at the per-module sha256 digests in `ACTIVE-CONTRACT-MANIFEST.txt`, whose own digest is the act's argument. Nothing else — not history/, not fixtures/, not the reports. **Digest re-quoted twice on 2026-08-05b.** First: RFC-0010 gained six clauses (RFC10-17..22, the correction plane) and all 32 modules dropped the derived `provides_to` front-matter key. Then, after review RC-4 refuted four of the dependency edges added in that same pass, the edges were reverted, one wrong vocabulary ordinal was corrected, and the manifest was regenerated again (see `round-2026-08b/DEPENDENCY-CLOSURE-REPORT.md` §"Correction after RC-4"). Re-quoted a third time on 2026-08-06: review RC-11 found nine stale derived word counts in `RFC-0009/README.md`'s word-accounting section, of the same class the 2026-08-05b pass corrected elsewhere in the same file and missed here; correcting them changed that module's digest. **Re-quoted a fourth time on 2026-08-06**, for the rev11b correction-plane repairs: RFC-0010's two open review findings were repaired and five carried ones closed; RFC-0005/0008 gained the new `constrains:` relation key; six package READMEs and RFC-0009's word-accounting section lost every volatile measurement they carried; and RFC-0009's `RFC 0008 §5` section-as-authority citation was replaced with clause identities. **Re-quoted a fifth time on 2026-08-06**, the same day: review RD-4 found both `constrains` edges the fourth re-quote installed to be wrong — one anchored on §5 Integration prose rather than a clause, one misdirected onto a pair whose `depends_on` already carried it. Both were removed and the two clause-borne edges RD-4 found undeclared (RFC5-3's client-class exhaustiveness, RFC7-3's nothing-cites-the-rendering) were declared with clause anchors. **Re-quoted a sixth time on 2026-08-06**: confirming review RD-1 returned `REVISE` over the fifth argument's bytes with three blocking findings, all repaired (`paused` bounded like `blocked`; the unfundable-compensation outcome stated; the effects-applied establisher generalised to every clause carrying its duties). RFC-0010's violation cases moved to Tier 2 to make room, which the contract records as a symptom of needing a package split. **Two independent reviews over these bytes returned on 2026-08-07, and both returned `REVISE`.** They read the identical digest without reading each other and converged on the same structural defect from opposite directions: RFC10-17's budget invariant is stated over the ledger and nothing states it over consumption, while RFC10-10 says Mission Control MUST prevent — both cannot be true as written. **These bytes are not repaired and the digest has not moved**, deliberately: a one-token fix both reviewers named would invalidate two reviews bound to this argument. Full disposition, with every blocking finding stated rather than waived, is `round-2026-08c/MISSION-SAFETY-CLOSURE-REPORT-vNEXT.md`; **accepting act 1 binds RFC-0010 with those findings open, knowingly.** The prior arguments `f2914fc5…`, `41195c81…`, `ac07a064…`, `2922de1c…`, `9fac6b78…` and `559055fb…` are all retired and satisfy nothing |
+| A | `ACCEPT FOUNDATIONAL WAVE A: 8d4f3e723f0ec6a7645cd70abc0d5fe5ebdc6fe1b27e9faa5ad29761613e7816` | The 19 modules of RFC 0001–0006 (kernel, evidence, storage, admission, cross-surface selection) at the per-module sha256 digests in `wave-manifests/WAVE-A-MANIFEST.txt`, whose own digest is the act's argument. Every `depends_on` edge of these contracts stays inside the wave |
+| B | `ACCEPT FOUNDATIONAL WAVE B: daa6a5dd37b7f92ac4ba4fc8a7bb491ecbffc02ba43227448f64f88dc3c3bebb` | The 11 modules of RFC 0007–0009 (Polaris, Trajectory, Orrery) per `wave-manifests/WAVE-B-MANIFEST.txt`. Depends on Wave A; performed first, it binds text whose reliances point at candidate material — lawful only stated at the act |
+| C1 | `ACCEPT FOUNDATIONAL WAVE C1: a5d3ba1f22ad0ff5ff66485b1829e5b2f652a8c7678dcc96699eaca4ac5b2b4d` | RFC-0011 module 1 (packet identity, provenance, memory — RFC11-1..3, 5..10, 12) plus the package index, per `wave-manifests/WAVE-C1-MANIFEST.txt`. Declares `depends_on` RFC-0010 (waves D1/D2): recommended after them |
+| C2 | `ACCEPT FOUNDATIONAL WAVE C2: acd27bb8f9b7be76725057b4280e2dc9fe23f3e9fac17c448542b9cb250d8b1a` | RFC-0011 module 2 (deterministic selection and budget posture — RFC11-4, 11, 13..16), per `wave-manifests/WAVE-C2-MANIFEST.txt`. Carries its own external criterion: acceptable only when its selection rules reproduce the blind golden fixtures (`fixtures/`), a derivation the fixtures' task/answer boundary exists to allow |
+| D1 | `ACCEPT FOUNDATIONAL WAVE D1: 570e617091bb41d8b34ca17b09e12f41d22e4d592a23249c8a737a698f8c0dff` | RFC-0010 modules 1, 2, 3, 5 (mission identity/approval/lifecycle; envelope/attention; budget reservation; portfolio/consent) plus the package index, per `wave-manifests/WAVE-D1-MANIFEST.txt`. Even accepted, RFC10-24 holds every mission in `awaiting-approval` until the D3 question (act 5) is ruled — this act is never an operating license |
+| D2 | `ACCEPT FOUNDATIONAL WAVE D2: ab590e3e553a2f1f2db92d1c676a0fd5c05d2283548163e5c3663df5a31382d8` | RFC-0010 module 4 (effects, recovery, stop — the correction plane), per `wave-manifests/WAVE-D2-MANIFEST.txt`. The plane both 2026-08-07 `REVISE` reviews concentrated on; the round-2026-08d rewrite repairs their findings and awaits its own fresh confirming review — see the wave-history note below |
 | 2 | `CONFIRM CRAFT AMENDMENT: CC-TEST-2@7a716090bc827121b3f70c4f7e252fc5680cd8a56d7b4121b70f3673489690a0` | The craft cluster is committed and owner-approved (D2); only this amendment needs confirming. **Digest re-quoted 2026-08-06** — `th-engineering` was vendored in-tree and re-pinned (owner override, closing P-26), and `testing-and-verification.md` gained CC-TEST-7 recording the resulting re-check (no conflicts found); the retired, `aa2d6353…`-then-`3858820f…` arguments satisfy nothing. Earlier: **re-quoted 2026-08-05** — the nine canonical files' banners were corrected (P-7/SD-3, rule text byte-unchanged), so the rev9 argument `aa2d6353…` was stale and satisfied nothing |
 | 3 | `ACCEPT TOPOLOGY: 7a3b22494a08d888901c1f0cec76833dc926e89b6f510b5abf8963071fbaeb45` | The nine topology files at the per-member digests in `../../../map/topology-candidates/BUNDLE-MANIFEST.md`, whose own digest is the act's argument. **Digest re-quoted 2026-08-05** — topology `README.md` lost the retired acceptance phrase and its draft/proposed vocabulary (SD-2, SD-10); the other eight members are byte-unchanged from rev9, and the rev9 argument `0d34d1b5…` is stale and satisfies nothing |
 | 4 | `ADOPT PROJECT OVERVIEW: 01d629515993188338f6a0e2d84d67543d8569003759a7c8f571a90b129c7cd1` | `.syzygy/intent/OVERVIEW.md` at that digest. **Digest re-quoted 2026-08-05** — the overview was refactored to four-layer progressive disclosure and its authoring-time status section removed (P-13/SD-9); the rev9 argument `42de2eb1…` is stale and satisfies nothing. **Re-quoted again 2026-08-05b** — the overview was rebuilt to a default layer plus two collapsed drawers, the frozen gate-state table was removed in favour of a pointer to `PROJECT-STATUS.md`, and the machine query plane was restored to the consumer list; the retired argument `ce7794fd…` satisfies nothing |
 | 5 | Doctrine amendment **D3** (bounded mission) — VIS-4 owner adoption, no magic phrase | `DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (**rev1**, 2026-08-05) and its two verbatim insertions. Rev1 supersedes `…-DRAFT.md`, whose `vision.md` insertion cannot be applied as written (SD-8). **Optional**: RFC-0010/0011 do not depend on it. Recommended ordering: perform act 1 before act 5 |
 
+**Wave-history note — read before any wave act.** The retired all-in-one
+offer closed with two independent 2026-08-07 reviews returning `REVISE`
+over one shared structural defect (RFC10-17's budget invariant stated over
+the ledger while RFC10-10 demands prevention over consumption), left
+unrepaired then so the reviews stayed bound to their bytes. **Round
+2026-08d performed the repairs**: RFC-0010 was split into the five-module
+package waves D1/D2 now bind, its budget module rewritten (six-quantity
+accounting, enforced-limit admission at the RFC5-21 launch gate and the
+RFC5-15 transmission predicate), the effects/recovery/stop module rebuilt
+against reviews RD-1/RD-1b's blocking findings, and RFC-0011 split and
+amended (RFC11-13..16). Those reviews therefore no longer bind the current
+bytes, and **no confirming review is yet bound to any wave argument
+above** — the round's fresh-context review pass is owed before any wave
+act is performed, and this sentence is deleted only by recording those
+reviews. Semantic deltas of the round:
+`round-2026-08d/` (work order, wave design, and the round's delta record).
+
 **Acceptance schedules no implementation.** Accepting these contracts
-clears specification authoring only: the six phase-rule clauses (RFC6-28,
-RFC7-38, RFC8-32, RFC9-52, RFC10-16, RFC11-12) bind, and every
+clears specification authoring only: every active contract carries a
+binding phase-rule clause (RFC1-33, RFC2-26, RFC3-33, RFC4-30, RFC5-27,
+RFC6-28, RFC7-38, RFC8-32, RFC9-52, RFC10-16, RFC11-12), and every
 user-observable behavior still routes through an owner-approved OpenSpec
 requirement before any implementation work is scheduled.
 
-Rework/rejection of the RFC package:
+Rework/rejection, per wave:
 
 ```text
-REWORK COMPACTED FOUNDATIONAL RFCS: <reason>
-REJECT COMPACTED FOUNDATIONAL RFCS: <reason>
+REWORK FOUNDATIONAL WAVE <A|B|C1|C2|D1|D2>: <reason>
+REJECT FOUNDATIONAL WAVE <A|B|C1|C2|D1|D2>: <reason>
 ```
 
-The rev9 `ACCEPT FOUNDATIONAL RFCS` phrase is **retired unconditionally
-at rev10 delivery** — a retirement notice is written into the rev9 record
-itself, because supersession of an authority must not be conditional on
-exercising the authority that supersedes it, and the rev9 phrase (which
-carries no digest argument) cannot self-identify which corpus it would
-bind. The rev9 corpus is preserved as history (`history/rev9-rfcs/`), not
-offered for acceptance; acts 2–4 continue under this record's §1 rows at
-unchanged digests.
+**Two phrases are retired and satisfy nothing.** The rev9
+`ACCEPT FOUNDATIONAL RFCS` phrase was retired unconditionally at rev10
+delivery — a retirement notice is written into the rev9 record itself,
+because supersession of an authority must not be conditional on exercising
+the authority that supersedes it, and the rev9 phrase (which carries no
+digest argument) cannot self-identify which corpus it would bind. The
+rev10 phrase `ACCEPT COMPACTED FOUNDATIONAL RFCS` (last argument
+`2862b2f5…`, with the six earlier retired arguments its row recorded) is
+**retired at round-2026-08d delivery on the same rule**: the wave acts
+supersede it, and an offer superseded must not remain performable beside
+its successor. The rev9 corpus is preserved as history
+(`history/rev9-rfcs/`), not offered for acceptance; acts 2–4 continue
+under this record's §1 rows at unchanged digests.
 
-## 1a. Revision of 2026-08-05 — read this before acting
+## 1a. Revision of 2026-08-05 — retained as history of the retired offer
 
-This record was authored at rev10 (2026-08-03) and **re-quoted at the close
+*This section describes the retired all-in-one act 1 and its 2026-08-05
+re-quote; it is retained because a reader of an earlier revision needs to
+find what happened, and its digests are all retired values.* This record
+was authored at rev10 (2026-08-03) and **re-quoted at the close
 of the human-clarity refactor round (2026-08-05)**. Every one of the four
-digest-bound arguments in §1 changed during that round, because the round
-corrected defects inside three of the four digest sets:
+digest-bound arguments then in §1 changed during that round, because the
+round corrected defects inside three of the four digest sets:
 
 | Act | Prior argument (retired) | Cause of change |
 |---|---|---|
@@ -64,7 +102,7 @@ dispositions — including what was knowingly *not* fixed — in
 **Before performing any act, verify its argument mechanically:**
 
 ```sh
-python3 scripts/check_governance.py      # checks CG-7a/7b/7c cover all four acts
+python3 scripts/check_governance.py      # CG-7a..7e cover every wave and act
 ```
 
 A CG-7 failure means the artifact moved after this record was written: **do
@@ -78,16 +116,22 @@ Each act is a chat-phrase ceremony executed in five steps:
 
 1. **The phrase.** The owner writes the exact phrase from §1.
 2. **Digest verification, by script.** The lead re-verifies the bound
-   digest(s) against the working tree (`sha256sum -c
-   ACTIVE-CONTRACT-MANIFEST.txt`; then the manifest's own digest). Any
-   mismatch means no act: regenerate, re-review, re-offer.
-3. **Installation, bytes unchanged.** Act 1 installs the 32 modules (with
-   their package directory structure) to `.syzygy/governance/contracts/rfcs/`
-   and `ACTIVE-CONTRACT-MANIFEST.txt` to `.syzygy/governance/contracts/` —
-   one level above, so the manifest's `rfcs/…` entries resolve — the
-   RFC3-15 `contracts/` home, created at this step. The copy is
-   digest-verified by running `sha256sum -c ACTIVE-CONTRACT-MANIFEST.txt`
-   **from `.syzygy/governance/contracts/`**. Acts 2/4 bind content already
+   digest(s) against the working tree: for a wave act, `sha256sum -c
+   wave-manifests/WAVE-<X>-MANIFEST.txt` run from the candidates root,
+   then the wave manifest's own digest against the phrase; additionally
+   `python3 scripts/build_active_manifest.py --check` proves the wave
+   manifests are the generator's current output and still partition the
+   package. Any mismatch means no act: regenerate, re-review, re-offer.
+3. **Installation, bytes unchanged.** A wave act installs its manifest's
+   modules (with their package directory structure) to
+   `.syzygy/governance/contracts/rfcs/` and its wave manifest to
+   `.syzygy/governance/contracts/wave-manifests/` — the RFC3-15
+   `contracts/` home, created at the first wave act; the first wave act
+   also installs `ACTIVE-CONTRACT-MANIFEST.txt` beside it as the package
+   identity record (updated in place by later regenerations only through
+   re-offer, never silently). The copy is digest-verified by running
+   `sha256sum -c wave-manifests/WAVE-<X>-MANIFEST.txt` **from
+   `.syzygy/governance/contracts/`**. Acts 2/4 bind content already
    committed at canonical homes; act 3 copies the nine bundle members from
    **`.syzygy/map/topology-candidates/`** — their tracked home, present in
    every clone — to `.syzygy/map/topology/`, verified by the bundle
@@ -102,37 +146,34 @@ Each act is a chat-phrase ceremony executed in five steps:
    written. `check_governance.py` CG-14 now resolves every act's install
    source and destination so this class of defect fails a check rather than
    waiting for a reader.
-   **Companion material, installed but not accepted:** act 1's install
-   also copies `history/` and `matrix-rows/` to
+   **Companion material, installed but not accepted:** the first wave
+   act's install also copies `history/` and `matrix-rows/` to
    `.syzygy/governance/contracts/history/` and `…/matrix-rows/` so the
-   modules' 68 Tier-2 rationale backlinks and the RFC-0003 README's
+   modules' Tier-2 rationale backlinks and the RFC-0003 README's
    census link resolve from the governed tree. These directories are
    **non-normative** (their own README states "Nothing in this directory
-   binds"), sit outside the act's accepted digest set, and carry no
-   authority — the act binds exactly the 32 manifest entries, nothing
+   binds"), sit outside every act's accepted digest set, and carry no
+   authority — each wave act binds exactly its manifest entries, nothing
    else.
 
-   **The install nonetheless breaks eight pointers, and this paragraph used
-   to imply the opposite.** Review **RD-7** simulated the install exactly as
-   documented and swept the installed modules: **81 relative backlinks
-   examined, 12 unresolved, of which 8 break as a direct consequence of the
-   act.** Six package READMEs point two levels up at the context budget
-   report, and one points two levels up at the 03 compaction report. Both
-   resolve today, where two levels up is the candidates package, and stop
-   resolving after the act, where two levels up is `governance/` — because
-   the install copies `history/` and `matrix-rows/` and **not** the
-   package-level reports those pointers name. *(Written without code spans on
-   purpose: quoting the two broken pointers verbatim made this paragraph fail
-   the link check, which is the check working.)*
-
-   **Nothing is repaired here.** The pointers live inside act 1's digest set,
-   frozen against two reviews bound to the current argument, and the targets
-   are non-normative generated reports. **The owner should know that
-   performing act 1 leaves eight dead pointers in the accepted tree**, and
-   that closing them means either copying those two reports at install time
-   or re-pointing the READMEs in a later re-quote. `CG-14` checks install
-   *routes*, not installed content's internal links — RD-7 recommends a
-   post-install resolution pass, and that check does not exist yet.
+   **The RD-7 pointer finding, and its repair.** Review **RD-7** simulated
+   the rev10 install exactly as documented and swept the installed
+   modules: **81 relative backlinks examined, 12 unresolved, of which 8
+   broke as a direct consequence of the act** — six package READMEs point
+   two levels up at the context budget report, and one points two levels
+   up at the 03 compaction report, targets the install did not copy.
+   **Repaired at round-2026-08d in the ceremony, not the modules**: the
+   first wave act's install additionally copies
+   `CONTEXT-BUDGET-REPORT.md` and
+   `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md` to
+   `.syzygy/governance/contracts/` — both non-normative generated
+   reports, outside every digest set, carrying no authority — so the
+   backlinks resolve where they land. The repair is verified by
+   simulation, not asserted:
+   `round-2026-08d/POST-INSTALL-LINK-REPORT.md` re-runs RD-7's sweep
+   against the current bytes with the copy in place and records the
+   remaining unresolved population with its denominator. `CG-14` still
+   checks install *routes* only.
 4. **The owner-act record.** A dated entry quoting the exact phrase and
    digest is appended to
    `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` (created at
@@ -195,28 +236,32 @@ text needs to know it was wrong, not merely that it is gone.
 
 ## 3. Package identity
 
-**Manifest digest (act 1's argument):** `2862b2f54e39e6d477129147eb2e1d0c…`
-— sha256 of `ACTIVE-CONTRACT-MANIFEST.txt`, which lists the sha256 of
-each of the **32 active modules**. The manifest is regenerated by script
-only; per-module digests are never hand-transcribed. (Regenerated after
-the rev10 confirming review if any fix lands **in `rfcs/`** — only edits
-to the 32 modules invalidate the digest; fixes to this record, the
-reports, or the rev9 record do not churn it. The phrase in §1 always
-carries the current manifest digest.)
+**Package identity.** `ACTIVE-CONTRACT-MANIFEST.txt` lists the sha256 of
+each of the **39 active modules** and is the package's identity record; it
+is **no act's argument** under the wave structure — the six wave manifests
+it partitions into carry the arguments, and their current digests are
+quoted only in §1. All seven manifests are written by
+`scripts/build_active_manifest.py` (partition asserted on every run,
+selftested); per-module digests are never hand-transcribed. Only edits
+under `rfcs/` churn digests; fixes to this record or the reports do not.
+§1 always carries the current wave arguments — `check_governance.py`
+CG-7a/7b fail on any divergence.
 
 **Clause inventory — read it from the verifier, never from here.**
 `python3 scripts/verify_final_prespec.py` prints the count and every
-per-module figure; **as of 2026-08-07 it reports 328 numbered clauses**, and
-that line is the authority, not this one. The ranges are RFC1-1..32,
-RFC2-1..25, RFC3-1..32 (+5 lettered, incl. **RFC3-16(c)**), RFC4-1..29 (+2),
-RFC5-1..26, RFC6-1..28, RFC7-1..38 (+7), RFC8-1..32, RFC9-1..52 (+8),
-**RFC10-1..22** (+3 lettered: RFC10-17(a), RFC10-18(a), RFC10-19(a)),
-**RFC11-1..12**. Zero rev9 clauses merged, retired, renumbered, or routed out
-(04-CLAUSE-MIGRATION-MATRIX). Seven contracts are packages (0002 ×4, 0003 ×2,
-0004 ×4, 0005 ×3, 0007 ×2, 0008 ×3, 0009 ×3 modules + README each); RFC-0001
-and RFC-0006 are single files; RFC-0001 is the one justified-oversize module
-(dictionary-shaped — justification in the 03 report, current word count in
-`CONTEXT-BUDGET-REPORT.md`, both printed by the verifier).
+per-module figure; **as of 2026-08-09 it reports 341 numbered clauses**, and
+that line is the authority, not this one. The ranges are RFC1-1..33,
+RFC2-1..26, RFC3-1..33 (+5 lettered, incl. **RFC3-16(c)**), RFC4-1..30 (+2),
+RFC5-1..27, RFC6-1..28, RFC7-1..40 (+7), RFC8-1..32, RFC9-1..52 (+8),
+**RFC10-1..24** (+3 lettered: RFC10-17(a), RFC10-18(a), RFC10-19(a)),
+**RFC11-1..16**. Zero rev9 clauses merged, retired, renumbered, or routed out
+(04-CLAUSE-MIGRATION-MATRIX). Nine contracts are packages (0002 ×4, 0003 ×2,
+0004 ×4, 0005 ×3, 0007 ×2, 0008 ×3, 0009 ×3, **0010 ×5, 0011 ×2** modules +
+README each); RFC-0001 and RFC-0006 are single files; RFC-0001 and (at
+round-2026-08d, by the margin its owner-ordered RFC9-8(a) amendment added)
+`RFC-0009/semantic-geography.md` are the justified-oversize modules
+(justifications in the 03 report and the verifier's own table; current word
+counts in `CONTEXT-BUDGET-REPORT.md`, both printed by the verifier).
 
 > **Correction, 2026-08-07 (review RD-8, finding S2).** This paragraph said
 > **322 numbered clauses** and **RFC10-1..16**, under the label

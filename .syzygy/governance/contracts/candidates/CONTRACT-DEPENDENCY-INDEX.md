@@ -34,7 +34,7 @@ inverses of the three and appear in no module's front matter. A
 citation that is already a `depends_on` is recorded once, as the
 stronger relation, and does not also appear under `cites`.
 
-Coverage: **32 modules** across **11 contracts**.
+Coverage: **39 modules** across **11 contracts**.
 
 ## Contract-level graph — load obligations
 
@@ -45,14 +45,14 @@ One row per contract: the union of its modules' declared edges.
 | `RFC-0001` | Project Graph, Identity and State Planes | all-surfaces, kernel | — (none) | RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 |
 | `RFC-0002` | Observation, Evaluation and Reconciliation — contract package index | all-surfaces, kernel | RFC-0001, RFC-0003, RFC-0004, RFC-0005 | RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 |
 | `RFC-0003` | Project, Workspace and .syzygy/** Manifests — contract package index | all-surfaces, kernel, workspace | RFC-0001, RFC-0002, RFC-0004, RFC-0005 | RFC-0002, RFC-0004, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 |
-| `RFC-0004` | Observation Sources, Evidence, Execution Records and Adapters — contract package index | kernel, orrery, trajectory | RFC-0001, RFC-0002, RFC-0003, RFC-0005 | RFC-0002, RFC-0003, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0011 |
+| `RFC-0004` | Observation Sources, Evidence, Execution Records and Adapters — contract package index | kernel, orrery, trajectory | RFC-0001, RFC-0002, RFC-0003, RFC-0005 | RFC-0002, RFC-0003, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 |
 | `RFC-0005` | Authentication, Consent and Execution Profiles — contract package index | all-surfaces, kernel, machine-clients | RFC-0001, RFC-0002, RFC-0003, RFC-0004 | RFC-0002, RFC-0003, RFC-0004, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 |
 | `RFC-0006` | Cross-Surface Selection, Query and Evidence Drawer | all-surfaces, kernel, machine-clients | RFC-0001, RFC-0002 | RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 |
 | `RFC-0007` | Polaris (Intent Surface) — contract package index | polaris | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0009 | RFC-0008, RFC-0009 |
 | `RFC-0008` | Trajectory (Work Surface) — contract package index | trajectory | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007 | RFC-0009, RFC-0010, RFC-0011 |
 | `RFC-0009` | Orrery (Map Surface) — contract package index | machine-clients, orrery | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008 | RFC-0007 |
-| `RFC-0010` | Mission Control and Autonomy Envelopes | all-surfaces, machine-clients, mission-control, workspace | RFC-0001, RFC-0002, RFC-0003, RFC-0005, RFC-0006, RFC-0008 | RFC-0011 |
-| `RFC-0011` | Context Compiler and Governed Context Packets | all-surfaces, context, machine-clients, mission-control | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008, RFC-0010 | — (none) |
+| `RFC-0010` | Mission Control and Autonomy Envelopes — contract package index | all-surfaces, machine-clients, mission-control, workspace | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008 | RFC-0011 |
+| `RFC-0011` | Context Compiler and Governed Context Packets — contract package index | all-surfaces, context, machine-clients, mission-control | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008, RFC-0010 | — (none) |
 
 ## Contract-level graph — semantic constraints
 
@@ -106,17 +106,17 @@ missed dependency is owner item **P-21(b)**.
 
 | Contract | cites | cited_by |
 |---|---|---|
-| `RFC-0001` | RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0009 | — (none) |
-| `RFC-0002` | RFC-0006, RFC-0007 | RFC-0001 |
-| `RFC-0003` | RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010 | RFC-0001, RFC-0006 |
-| `RFC-0004` | RFC-0008 | RFC-0001, RFC-0010 |
-| `RFC-0005` | — (none) | RFC-0001 |
-| `RFC-0006` | RFC-0003, RFC-0009 | RFC-0001, RFC-0002, RFC-0003 |
-| `RFC-0007` | — (none) | RFC-0002, RFC-0003, RFC-0010, RFC-0011 |
-| `RFC-0008` | RFC-0009 | RFC-0003, RFC-0004 |
-| `RFC-0009` | — (none) | RFC-0001, RFC-0003, RFC-0006, RFC-0008, RFC-0010, RFC-0011 |
-| `RFC-0010` | RFC-0004, RFC-0007, RFC-0009 | RFC-0003 |
-| `RFC-0011` | RFC-0007, RFC-0009 | — (none) |
+| `RFC-0001` | RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | — (none) |
+| `RFC-0002` | RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0001 |
+| `RFC-0003` | RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0001, RFC-0006 |
+| `RFC-0004` | RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0001, RFC-0006 |
+| `RFC-0005` | RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0001 |
+| `RFC-0006` | RFC-0003, RFC-0004, RFC-0008, RFC-0009 | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005 |
+| `RFC-0007` | — (none) | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0010, RFC-0011 |
+| `RFC-0008` | RFC-0009 | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006 |
+| `RFC-0009` | RFC-0010 | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008, RFC-0010, RFC-0011 |
+| `RFC-0010` | RFC-0007, RFC-0009 | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0009 |
+| `RFC-0011` | RFC-0007, RFC-0009 | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005 |
 
 ## Module-level graph
 
@@ -127,25 +127,23 @@ neither is reconciled here.
 
 | Module | Contract | depends_on | provides_to | cites |
 |---|---|---|---|---|
-| `rfcs/RFC-0001-project-graph-identity-state-planes.md` | `RFC-0001` | — (none) | RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0009 |
-| `rfcs/RFC-0006-cross-surface-selection-query-drawer.md` | `RFC-0006` | RFC-0001, RFC-0002 | RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0003, RFC-0009 |
-| `rfcs/RFC-0010-mission-control-autonomy.md` | `RFC-0010` | RFC-0001, RFC-0002, RFC-0003, RFC-0005, RFC-0006, RFC-0008 | RFC-0011 | RFC-0004, RFC-0007, RFC-0009 |
-| `rfcs/RFC-0011-context-compiler.md` | `RFC-0011` | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008, RFC-0010 | — (none) | RFC-0007, RFC-0009 |
+| `rfcs/RFC-0001-project-graph-identity-state-planes.md` | `RFC-0001` | — (none) | RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 |
+| `rfcs/RFC-0006-cross-surface-selection-query-drawer.md` | `RFC-0006` | RFC-0001, RFC-0002 | RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0003, RFC-0004, RFC-0008, RFC-0009 |
 | `rfcs/RFC-0002/README.md` | `RFC-0002` | RFC-0001, RFC-0003, RFC-0004, RFC-0005 | RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0007 |
 | `rfcs/RFC-0002/challenge-lifecycle.md` | `RFC-0002` | RFC-0001, RFC-0003, RFC-0005 | RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0006 |
 | `rfcs/RFC-0002/reconciliation-chain.md` | `RFC-0002` | RFC-0001, RFC-0004 | RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0006 |
-| `rfcs/RFC-0002/rendering-vocabularies.md` | `RFC-0002` | RFC-0001, RFC-0005 | RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0006, RFC-0007 |
+| `rfcs/RFC-0002/rendering-vocabularies.md` | `RFC-0002` | RFC-0001, RFC-0005 | RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 |
 | `rfcs/RFC-0002/snapshot-and-evaluation-core.md` | `RFC-0002` | RFC-0001, RFC-0003, RFC-0005 | RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | — (none) |
 | `rfcs/RFC-0003/README.md` | `RFC-0003` | RFC-0001, RFC-0002, RFC-0004, RFC-0005 | RFC-0002, RFC-0004, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | — (none) |
 | `rfcs/RFC-0003/governance-homes-and-owner-acts.md` | `RFC-0003` | RFC-0001, RFC-0002, RFC-0004, RFC-0005 | RFC-0002, RFC-0004, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0007, RFC-0008, RFC-0009, RFC-0010 |
-| `rfcs/RFC-0003/manifests-and-namespace.md` | `RFC-0003` | RFC-0001, RFC-0002, RFC-0004, RFC-0005 | RFC-0002, RFC-0004, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0006, RFC-0007 |
-| `rfcs/RFC-0004/README.md` | `RFC-0004` | RFC-0001, RFC-0002, RFC-0003, RFC-0005 | RFC-0002, RFC-0003, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0011 | — (none) |
-| `rfcs/RFC-0004/execution-record.md` | `RFC-0004` | RFC-0001, RFC-0002, RFC-0003, RFC-0005 | RFC-0002, RFC-0003, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0011 | — (none) |
-| `rfcs/RFC-0004/fidelity-joins-and-mappings.md` | `RFC-0004` | RFC-0001, RFC-0002, RFC-0003 | RFC-0002, RFC-0003, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0011 | RFC-0008 |
-| `rfcs/RFC-0004/general-contract.md` | `RFC-0004` | RFC-0002, RFC-0003 | RFC-0002, RFC-0003, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0011 | — (none) |
-| `rfcs/RFC-0004/named-adapters.md` | `RFC-0004` | RFC-0001, RFC-0002, RFC-0003, RFC-0005 | RFC-0002, RFC-0003, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0011 | — (none) |
+| `rfcs/RFC-0003/manifests-and-namespace.md` | `RFC-0003` | RFC-0001, RFC-0002, RFC-0004, RFC-0005 | RFC-0002, RFC-0004, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 |
+| `rfcs/RFC-0004/README.md` | `RFC-0004` | RFC-0001, RFC-0002, RFC-0003, RFC-0005 | RFC-0002, RFC-0003, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | — (none) |
+| `rfcs/RFC-0004/execution-record.md` | `RFC-0004` | RFC-0001, RFC-0002, RFC-0003, RFC-0005 | RFC-0002, RFC-0003, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | — (none) |
+| `rfcs/RFC-0004/fidelity-joins-and-mappings.md` | `RFC-0004` | RFC-0001, RFC-0002, RFC-0003 | RFC-0002, RFC-0003, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 |
+| `rfcs/RFC-0004/general-contract.md` | `RFC-0004` | RFC-0002, RFC-0003 | RFC-0002, RFC-0003, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | — (none) |
+| `rfcs/RFC-0004/named-adapters.md` | `RFC-0004` | RFC-0001, RFC-0002, RFC-0003, RFC-0005 | RFC-0002, RFC-0003, RFC-0005, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | — (none) |
 | `rfcs/RFC-0005/README.md` | `RFC-0005` | RFC-0001, RFC-0002, RFC-0003, RFC-0004 | RFC-0002, RFC-0003, RFC-0004, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | — (none) |
-| `rfcs/RFC-0005/admission-and-boundary.md` | `RFC-0005` | RFC-0001, RFC-0002, RFC-0003 | RFC-0002, RFC-0003, RFC-0004, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | — (none) |
+| `rfcs/RFC-0005/admission-and-boundary.md` | `RFC-0005` | RFC-0001, RFC-0002, RFC-0003 | RFC-0002, RFC-0003, RFC-0004, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | RFC-0006, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 |
 | `rfcs/RFC-0005/consent-egress-secrets.md` | `RFC-0005` | RFC-0001, RFC-0002, RFC-0003 | RFC-0002, RFC-0003, RFC-0004, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | — (none) |
 | `rfcs/RFC-0005/execution-profiles.md` | `RFC-0005` | RFC-0001, RFC-0002, RFC-0003, RFC-0004 | RFC-0002, RFC-0003, RFC-0004, RFC-0007, RFC-0008, RFC-0009, RFC-0010, RFC-0011 | — (none) |
 | `rfcs/RFC-0007/README.md` | `RFC-0007` | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0009 | RFC-0008, RFC-0009 | — (none) |
@@ -157,8 +155,17 @@ neither is reconciled here.
 | `rfcs/RFC-0008/state-vocabulary-and-cost.md` | `RFC-0008` | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0006 | RFC-0009, RFC-0010, RFC-0011 | RFC-0009 |
 | `rfcs/RFC-0009/README.md` | `RFC-0009` | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008 | RFC-0007 | — (none) |
 | `rfcs/RFC-0009/interaction-parity-and-release.md` | `RFC-0009` | RFC-0002, RFC-0006, RFC-0007, RFC-0008 | RFC-0007 | — (none) |
-| `rfcs/RFC-0009/semantic-geography.md` | `RFC-0009` | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0006 | RFC-0007 | — (none) |
+| `rfcs/RFC-0009/semantic-geography.md` | `RFC-0009` | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0006 | RFC-0007 | RFC-0010 |
 | `rfcs/RFC-0009/visual-grammar-and-lenses.md` | `RFC-0009` | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008 | RFC-0007 | — (none) |
+| `rfcs/RFC-0010/README.md` | `RFC-0010` | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008 | RFC-0011 | — (none) |
+| `rfcs/RFC-0010/budget-reservation.md` | `RFC-0010` | RFC-0002, RFC-0004, RFC-0005, RFC-0008 | RFC-0011 | — (none) |
+| `rfcs/RFC-0010/effects-recovery-and-stop.md` | `RFC-0010` | RFC-0002, RFC-0003, RFC-0004, RFC-0005 | RFC-0011 | — (none) |
+| `rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md` | `RFC-0010` | RFC-0001, RFC-0002, RFC-0003, RFC-0005, RFC-0006, RFC-0008 | RFC-0011 | RFC-0007, RFC-0009 |
+| `rfcs/RFC-0010/portfolio-and-cross-project-consent.md` | `RFC-0010` | RFC-0003, RFC-0005 | RFC-0011 | — (none) |
+| `rfcs/RFC-0010/prevention-envelope-and-attention.md` | `RFC-0010` | RFC-0001, RFC-0002, RFC-0003, RFC-0005, RFC-0008 | RFC-0011 | — (none) |
+| `rfcs/RFC-0011/README.md` | `RFC-0011` | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008, RFC-0010 | — (none) | — (none) |
+| `rfcs/RFC-0011/deterministic-selection-and-budget.md` | `RFC-0011` | RFC-0002, RFC-0010 | — (none) | — (none) |
+| `rfcs/RFC-0011/packet-identity-provenance-and-memory.md` | `RFC-0011` | RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008, RFC-0010 | — (none) | RFC-0007, RFC-0009 |
 
 ## Graph consistency
 

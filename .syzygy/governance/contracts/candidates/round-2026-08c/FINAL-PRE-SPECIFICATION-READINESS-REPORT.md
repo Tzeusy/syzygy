@@ -1,5 +1,11 @@
 # Final pre-specification readiness — twelve criteria
 
+> **Historical record — superseded at round-2026-08d.** This readiness
+> answer was computed over the pre-split corpus; the two NOT MET criteria
+> it names were repaired by the round-2026-08d structural closure, and the
+> digests it quotes name no current artifact. The round-2026-08d readiness
+> recompute supersedes this file when it lands.
+
 > **Non-authoritative round record.** It decides nothing and accepts nothing.
 > Every criterion cites the artifact that owns its evidence; where this file
 > and that artifact disagree, the artifact wins and this file is stale.

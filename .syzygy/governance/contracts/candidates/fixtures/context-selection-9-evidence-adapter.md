@@ -6,6 +6,33 @@ gap recorded at `round-2026-08b/FINAL-CONTEXT-COMPILER-FIXTURE-REPORT.md:81-114`
 (*"the evidence-adapter class has no fixture"*), which review RC-6 found and
 which this fixture answers rather than restates.
 
+## Task
+
+**Objective.** A governed work item: amend the test/CI/gate observer (RFC4-13)
+and its adapter registry entry so a newly integrated external CI provider's
+check outcomes can be ingested — declaring the route-2 external-confirmation
+capture artifact (RFC4-13(a)), the observer's degradation mapping (RFC4-25),
+and the `reduced-fidelity` cause emitted when the provider's run records fall
+past the retention horizon (RFC4-24, RFC4-16).
+
+**Warrant.** The named gate observer, its adapter registry entry, the new
+external CI provider, and the retention × cause coupling the declaration
+spans. **Risk class: authorization-bearing *and* tier-widening.** The
+registry entry (RFC4-7), any trusted-external-oracle policy the change
+relies on (RFC4-13 route 3), and the retention bound (RFC4-16) are each
+honored only under RFC3-16(a). Beyond that, the change can move an outcome
+from `report-fact` to `gate-backed` — it can turn something green. The task
+performs no owner act, authors no OpenSpec requirement, and does not touch
+work-state rendering (fixture 2's class).
+
+---
+
+*Everything above the rule is the task. Everything below is the recorded
+answer: a blind derivation (the protocol review RD-5 ran) receives the Task
+section and the governed corpus only, derives a selection, and compares it
+against what follows — reading no further until its own selection is
+written down.*
+
 **What produced this selection: a human, not a compiler.** There is no context
 compiler in this repository. `scripts/context_load.py` takes paths already
 chosen, counts their words, multiplies by 1.35, and prints a total; it has no
@@ -17,30 +44,19 @@ and no selection-rule version: `rev10-fixtures` resolves to nothing anywhere in
 the repository, and a version identifier that names nothing is worse than none.
 
 **What this packet binds: nothing, yet.** Every RFC module in the mandatory set
-below is candidate material pending owner act 1, carrying its own
+below is candidate material pending owner acceptance, carrying its own
 *"Absent such a record, this contract binds nothing"* banner. So is the topology
 bundle this fixture excludes, and so is `CC-BUDGET-1`, cited below for its
-figures. The craft policy is owner-approved (D2) with clause force beginning at
-act 1, and one clause in the mandatory set — CC-TEST-2 — is itself mid-amendment
-under act 2. Doctrine is the only adopted authority here.
+proposed lines. The craft policy is owner-approved (D2) with clause force
+beginning at the first acceptance act, and one clause in the mandatory set —
+CC-TEST-2 — is itself mid-amendment under act 2. Doctrine is the only adopted
+authority here. RFC-0004's package reader map names the failure mode this
+class guards: *"the confident adapter — an integration that silently
+normalizes, silently interpolates, or silently forgets"*
+(`RFC-0004/README.md`).
 
-**Objective.** A governed work item: amend the test/CI/gate observer (RFC4-13)
-and its adapter registry entry so a newly integrated external CI provider's
-check outcomes can be ingested — declaring the route-2 external-confirmation
-capture artifact (RFC4-13(a)), the observer's degradation mapping (RFC4-25),
-and the `reduced-fidelity` cause emitted when the provider's run records fall
-past the retention horizon (RFC4-24, RFC4-16).
-
-**Risk class: authorization-bearing *and* tier-widening.** The registry entry
-(RFC4-7), any trusted-external-oracle policy the change relies on (RFC4-13
-route 3), and the retention bound (RFC4-16) are each honored only under
-RFC3-16(a). Beyond that, the change can move an outcome from `report-fact` to
-`gate-backed` — it can turn something green. RFC-0004's package reader map
-names the failure mode it guards: *"the confident adapter — an integration that
-silently normalizes, silently interpolates, or silently forgets"*
-(`RFC-0004/README.md:117-120`).
-
-**Selection trace (the reasoning, stated as reasoning).**
+**Selection trace (the reasoning, stated as reasoning; traversal per
+RFC11-14).**
 
 1. The warrant names an observer and its registry entry → RFC-0004. The change
    spans all four planes of that package: what may be emitted at all (module 1),
@@ -63,6 +79,20 @@ silently normalizes, silently interpolates, or silently forgets"*
 6. The craft duty the change is measured against → `testing-and-verification.md`
    (CC-TEST-2), which RFC4-13 quotes at binding strength.
 
+**Phase-boundary rule, applied (RFC11-4 with RFC11-13).** RFC-0004 declares
+`implementation_boundary: requires-openspec` naming RFC4-30; its declaration
+travels in the loaded README, and the defining module
+(`fidelity-joins-and-mappings`) is in the packet on its own merits. RFC-0002
+declares RFC2-26 (README loaded; defining module `rendering-vocabularies`
+loaded). RFC-0005 and RFC-0003 are selected **without their indexes** — the
+departures recorded in the omission register — so, per the amended rule,
+their declarations are recorded here verbatim from
+`rfcs/RFC-0005/README.md` and `rfcs/RFC-0003/README.md`:
+`{kind: requires-openspec, clause: RFC5-27}` and
+`{kind: requires-openspec, clause: RFC3-33}`, read at the index bytes the
+packet digest below was stamped against. The task is off the OpenSpec seam,
+so neither defining module is forced.
+
 ## Required context (mandatory, deterministic)
 
 ```
@@ -76,46 +106,36 @@ scripts/context_load.py rfcs/RFC-0004/README.md \
   craft:testing-and-verification.md
 ```
 
-Measured: **24,266 words ≈ 32,759 estimated tokens** (words × 1.35), or
-**43,397 estimated tokens** at chars ÷ 4 over 173,588 characters. Both
-estimates breach the budget; the verdict does not depend on which heuristic is
-chosen, and the second figure is stated so that it cannot.
+Measured: **24,635 words ≈ 33,257 estimated tokens** (words × 1.35), or
+**44,096 estimated tokens** at chars ÷ 4 over 176,384 characters. Both
+estimates breach the proposed trigger; the verdict does not depend on which
+heuristic is chosen, and the second figure is stated so that it cannot.
 
 ## ⚠️ Above the decomposition trigger — disclosed, with a lawful shard named
 
-32,433 estimated tokens is above the **20,000-token** line at which candidate
-`CC-BUDGET-1` (`policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md:288-298`;
+The anchored figure above is over the **20,000-token** line at which candidate
+`CC-BUDGET-1` (`policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md`;
 identically the charter §11.4 table — candidate material, binding nothing) calls
-for justification or task decomposition, and above the 15–20k working target
-`06-CONTEXT-LOAD-MAP.md` grades fixtures against. It is the largest packet in
-the fixture set. Recorded as a disclosure rather than resolved by trimming:
-RFC11-5 forbids dropping mandatory context to improve a number.
+for justification or task decomposition; its rank within the fixture set is
+computed in `CONTEXT-BUDGET-REPORT.md` §1. Recorded as a disclosure rather
+than resolved by trimming: RFC11-5 forbids dropping mandatory context to
+improve a number.
 
 | Field | Value |
 |---|---|
-| **Artifact** | This fixture's mandatory selection |
-| **Reason** | The evidence plane is the corpus's widest authorization surface. RFC-0004 gates six clauses across three of its modules under RFC3-16(a) (`RFC-0004/README.md:142-147`), so an authorization-bearing change here needs the whole four-module package, the tier vocabulary it emits into, the profile contract that defines its one self-sufficient route, and the act machinery that makes any of it honored |
+| **Artifact** | This fixture's mandatory selection (the twelve files in the load command; measured in the anchored field above) |
+| **Reason** | The evidence plane is the corpus's widest authorization surface. RFC-0004 gates six clauses across three of its modules under RFC3-16(a) (see `RFC-0004/README.md`), so an authorization-bearing change here needs the whole four-module package, the tier vocabulary it emits into, the profile contract that defines its one self-sufficient route, and the act machinery that makes any of it honored |
 | **Scope** | Evidence-adapter changes touching gate provenance (RFC4-13 routes), capture cadence or retention (RFC4-16), or fidelity labels (RFC4-24/25), **where the warrant spans the retention × cause coupling** — i.e. where a `reduced-fidelity` cause depends on a retention-horizon fact. A warrant touching **labels only**, with no RFC4-16 dependency, is **out of scope** and takes the smaller shard instead. Does not cover changes that also touch work-state rendering (fixture 2's class), or that add prose fields to a record, which pulls `RFC-0005/consent-egress-secrets` (scope tightened by RC-12) |
 | **Reviewer** | **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `../round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed |
 | **Expiry / revisit trigger** | The **earlier** of (a) the first real evidence-adapter work item, or (b) **owner act 2**. RC-12 holds (b) mandatory rather than optional: CC-TEST-2 is in this packet and is act 2's subject, so every conclusion the packet supports from CC-TEST-2 is provisional until the act lands. Also retired by the two-shard split below if the owner accepts it as the default shape |
-
-**Decomposition review, conducted and measured.** Every figure is
-`context_load.py` output, not arithmetic on this page.
-
-| Candidate split | Load | Why it is or is not the default |
-|---|---:|---|
-| Shard 1 — fidelity/labeling only (modules 1 + 4, tier registry, trust floor) | 10,350 w ≈ 13,972 est. tokens | **Lands inside the 5–15k default band.** A genuine self-contained task: declared join bases, the closed cause list, the degradation mapping |
-| Shard 2 — tiering and records (modules 1–3, tier registry, profiles, act machinery, doctrine, craft) | 22,288 w ≈ 30,088 | Still over. Its floor is irreducible; no further narrowing was found that keeps the four-route predicate evaluable |
-| Drop `RFC-0003/governance-homes-and-owner-acts.md` | 19,618 w ≈ 26,484 | Still over **and** sheds the contract that makes the edited registry entry honored — the shape fixture 2 refuses for the same reason |
-| Drop `RFC-0002/README.md` | 22,216 w ≈ 29,991 | Still over, and removes the lookup rule that makes nine cited `RFC2-n` identities resolvable without search |
-| Add `RFC-0001` to close its dependency edge at module granularity | 32,367 w ≈ 43,695 | More than twice the trigger, for twelve clause citations whose disposition is recorded below |
+| **Decomposition reviewed** | Five alternatives measured (each re-measurable from the load command with the named files removed or added; per-module words: `CONTEXT-BUDGET-REPORT.md` §3). Shard 1 — fidelity/labeling only (modules 1 + 4, tier registry, trust floor) — **lands inside the proposed default band**: a genuine self-contained task covering declared join bases, the closed cause list, the degradation mapping. Shard 2 — tiering and records (modules 1–3, tier registry, profiles, act machinery, doctrine, craft) — still over; its floor is irreducible without dropping the four-route predicate's inputs. Dropping `RFC-0003/governance-homes-and-owner-acts.md` — still over **and** sheds the contract that makes the edited registry entry honored, the shape fixture 2 refuses for the same reason. Dropping `RFC-0002/README.md` — still over, and removes the lookup rule that makes nine cited `RFC2-n` identities resolvable without search. Adding `RFC-0001` to close its dependency edge at module granularity — far above the trigger, for clause citations whose disposition is recorded below |
 
 **The honest finding: a lawful split exists, and only half of it fits.** Unlike
 fixture 8, this task shards cleanly into a labeling packet that lands inside the
-default band and a tiering packet that does not. Whether the undivided form or
-the two-shard form is the default is an owner trade; this fixture shows the
-undivided form with the exception stated, and measures the alternative rather
-than asserting one does not exist.
+proposed default band and a tiering packet that does not. Whether the undivided
+form or the two-shard form is the default is an owner trade; this fixture shows
+the undivided form with the exception stated, and measures the alternative
+rather than asserting one does not exist.
 
 ## Omitted applicable candidates, with reasons
 
@@ -134,12 +154,18 @@ than asserting one does not exist.
   admission, consent class, or egress route changes. RFC5-17's prose-field
   storage authority is cited by RFC4-19's optional prose row, which this change
   does not add; if it did, `consent-egress-secrets` becomes mandatory.
+  (`admission-and-boundary` also defines RFC5-27; the declaration is recorded
+  in the applied-rule paragraph above, and this off-seam task does not force
+  the module.)
 - **RFC-0003** `manifests-and-namespace` — physical schema and namespace, not
-  the act predicate. `RFC-0003/README.md` — deliberately **not** loaded,
+  the act predicate (it defines RFC3-33; declaration recorded above, module
+  not forced off-seam). `RFC-0003/README.md` — deliberately **not** loaded,
   departing from fixtures 2, 4, 5 and 6: the loaded module's own front matter
   resolves every `RFC3-n` deterministically (*"every other RFC3-n lives in
-  manifests-and-namespace.md"*), so the package index would add 913 words and
-  no lookup the packet lacks. Stated as a departure so it is visible.
+  manifests-and-namespace.md"*), so the package index would add words and
+  no lookup the packet lacks; the implementation-boundary declaration it
+  carries is recorded verbatim in the applied-rule paragraph, as the amended
+  RFC11-4 requires of an index-less selection.
 - **RFC-0001** — the one open declared dependency; disposition below under
   *Dependency closure*, not here, because it is a disclosure rather than a
   dismissal.
@@ -193,9 +219,10 @@ those labels enter (RFC2-25) with its Unknown reasons and failure states
 predicate that makes the edited artifacts honored (RFC3-16(a)/(b)/(c)), the
 doctrine floor the change can violate (the trust floor and the status-claim
 rule), the untrusted-actor premise (SEC-3), and the craft clause the contract
-quotes (CC-TEST-2) are all mandatory-loaded. Each loaded contract travels with
-its own boundary rule: RFC-0004's phase and deferral rules are in its README §7,
-RFC-0002's and RFC-0005's in their loaded modules and package README.
+quotes (CC-TEST-2) are all mandatory-loaded. Every selected contract's
+implementation-boundary declaration is in the packet or recorded verbatim in
+the applied-rule paragraph above — no loaded contract's boundary rule is
+missing.
 
 **One clause in the mandatory set is pending, and the packet says so inside the
 selection rather than only beside it.** CC-TEST-2 is the subject of act 2; the
@@ -204,15 +231,16 @@ the clause text in the packet is the pre-amendment text, and any conclusion this
 task draws from CC-TEST-2 is provisional on it — an RFC11-6 staleness
 disclosure, not a footnote.
 
-**Dependency closure, checked and not fully closed.** RFC11-4 names
-`depends_on` a deterministic selection input and states no termination rule, so
-this fixture declares the rule it used: *first-order edges of every loaded
-module, satisfied by loading at least one module of the depended-on contract;
-where an edge is not satisfied, the cited clauses are enumerated and disposed of
-individually.* Under that rule, four of five edges close — RFC-0002, RFC-0003,
-RFC-0004 and RFC-0005 each have at least one module in the packet. **RFC-0001
-does not, and eight of the nine loaded modules declare it.** Its twelve cited
-clause identities:
+**Dependency closure, checked and not fully closed.** The termination rule
+this fixture first declared is now the contract's own: **RFC11-14 rule 2**
+(round-2026-08d lifted it from this fixture verbatim) — *direct `depends_on`
+edges of every loaded module, satisfied by loading at least one module of the
+depended-on contract; where an edge is left unsatisfied, the cited clauses
+are enumerated and disposed of individually in the omission register.* Under
+that rule, four of five edges close — RFC-0002, RFC-0003, RFC-0004 and
+RFC-0005 each have at least one module in the packet. **RFC-0001 does not,
+and eight of the nine loaded modules declare it.** Its twelve cited clause
+identities:
 
 | Clause | Where the packet answers it |
 |---|---|
@@ -229,32 +257,36 @@ warrant — a change to code-element identity minting (RFC4-12's scheme), to the
 materialization/warrant join (RFC4-17, RFC1-29), or to Execution Record run
 identity (RFC4-19's `derived` origin, RFC1-5's licence). If the warrant grows to
 include one, this packet is incomplete under RFC11-6 and the run does not launch
-on it. Loading RFC-0001 to close the edge mechanically was measured at 32,367 w
-≈ 43,695 est. tokens.
+on it. Loading RFC-0001 to close the edge mechanically was measured and is far
+above the trigger (see the decomposition row above).
 
-**Limit of the index cross-check, stated.** Every RFC clause resolves through
-`05-CONTRACT-INDEX.yaml`. The doctrine and craft selections cannot be
-cross-checked that way: `governance_sources` rows carry no clause rows, no
-`governs`, no `applies_to`, and their `rule_ids` are a mention scan, so VIS-2
-resolves to several files of which one is authoritative. Those two selections
-were verified by reading the files.
+**Limit of the index cross-check, stated (RFC11-15).** Every RFC clause
+resolves through `05-CONTRACT-INDEX.yaml`. The doctrine and craft selections
+cannot be cross-checked that way: `governance_sources` rows carry no clause
+rows, no `governs`, no `applies_to`, and their `rule_ids` are a mention scan,
+so VIS-2 resolves to several files of which one is authoritative. RFC11-15
+therefore applies: those two selections are stated as judgment under the
+declared rule ("doctrine travels when a loaded contract relies on a rule
+whose normative statement no loaded artifact carries"), verified by reading
+the files, and **not claimed deterministic**.
 
 ## Suggested inferred additions (provenance: index adjacency and declared edges)
 
-- `RFC-0002/snapshot-and-evaluation-core.md` (1,955 w) — RFC2-1/2-2/2-4/2-6 in
+- `RFC-0002/snapshot-and-evaluation-core.md` — RFC2-1/2-2/2-4/2-6 in
   their own words, the moment the change alters **what a snapshot must contain**
   rather than what the adapter must capture.
-- `craft:agent-provenance-and-execution-evidence.md` (972 w) — CC-PROV-1 and
+- `craft:agent-provenance-and-execution-evidence.md` — CC-PROV-1 and
   CC-PROV-4 for the reviewer of this change, and mandatory if the change extends
   to how Execution Records carry agent provenance.
-- `RFC-0001-project-graph-identity-state-planes.md` (8,342 w) — under any of the
+- `RFC-0001-project-graph-identity-state-planes.md` — under any of the
   three triggers named above.
-- `RFC-0005/consent-egress-secrets.md` (2,343 w) — if the change adds prose
+- `RFC-0005/consent-egress-secrets.md` — if the change adds prose
   fields to a record (RFC5-17, SEC-5 screening).
-- `RFC-0008/state-vocabulary-and-cost.md` (3,504 w) — if the same work item also
+- `RFC-0008/state-vocabulary-and-cost.md` — if the same work item also
   touches how the ingested facts render as work state; that is fixture 2's task,
   and keeping it suggested is what keeps the two fixtures distinct.
 
+Word costs for every module are in `CONTEXT-BUDGET-REPORT.md` §3.
 Suggestion never suppresses (RFC11-5): none of these was demoted to fit the
 budget, and the packet is already over it, so nothing was gained by omitting
 them.
@@ -262,7 +294,7 @@ them.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`1061eb47e9daa844…` (recompute: `cat <mandatory files> | sha256sum`, with
+`8e5105c861383853…` (recompute: `cat <mandatory files> | sha256sum`, with
 `doctrine:` resolved to `.syzygy/governance/doctrine/` and `craft:` to
 `.syzygy/governance/policies/craft-and-care/`). Measured, not compiled, by
 `scripts/context_load.py`.
@@ -278,11 +310,11 @@ produced it, written down — not a machine's output narrated afterwards.
 the canonical-home bytes. No packet copies of doctrine or craft exist under this
 root, so there is exactly one resolution and no silent source swap. The digest
 exists so that a later change — act 2 landing CC-TEST-2's amendment in
-`testing-and-verification.md`, act 1 binding the RFC modules, or any corpus edit
-— **invalidates this packet rather than silently changing what it meant**. A
-stale digest is the correct, visible outcome; `check_governance.py` CG-18
-recomputes it from the declared mandatory set on every run, so staleness is
-detected rather than trusted.
+`testing-and-verification.md`, an acceptance act binding the RFC modules, or
+any corpus edit — **invalidates this packet rather than silently changing what
+it meant**. A stale digest is the correct, visible outcome;
+`check_governance.py` CG-18 recomputes it from the declared mandatory set on
+every run, so staleness is detected rather than trusted.
 
 ## Verification checklist (§15)
 
@@ -290,16 +322,16 @@ detected rather than trusted.
       RFC-0001 edge disclosed as open and its promotion triggers named. If the
       warrant grows to any of those triggers, this item becomes *not* satisfied
       and the run blocks under RFC11-6.
-- [x] **Unrelated modules excluded** — **23 of 32** RFC modules absent (9
-      loaded; count computed from `05-CONTRACT-INDEX.yaml`'s module list, not
-      estimated)
+- [x] **Unrelated modules excluded** — every RFC module other than the nine
+      loaded RFC files is absent (the module population is
+      `CONTEXT-BUDGET-REPORT.md` §3's table, not an estimate)
 - [x] **Stable output for identical inputs** — same argument list, same totals;
       the totals are order-independent, the digest is not, so the listed order
       is part of the declaration
-- [x] **Budget respected or waiver emitted** — **not respected: 32,433 est.
-      tokens (43,228 at chars ÷ 4)**, the set's largest packet; justification
-      emitted above, reviewer unassigned, five alternatives measured, one lawful
-      shard identified as landing inside the default band
+- [x] **Budget respected or waiver emitted** — **not respected**: the anchored
+      figures breach the proposed trigger under both heuristics; justification
+      emitted above, five alternatives measured, one lawful shard identified
+      as landing inside the proposed default band
 - [x] **Omissions recorded** — every RFC, every doctrine file, every craft
       policy, the topology bundle and the historical lane are loaded or named
       with a reason
@@ -317,5 +349,13 @@ detected rather than trusted.
 `scripts/check_governance.py` CG-18, which recomputes the digest and the word
 count from the declared mandatory set rather than trusting the recorded figures.
 No previous figures exist: this fixture is new.*
+
+*Restructured 2026-08-08 (round-2026-08d): task/answer boundary added per
+RD-5's blind-derivation protocol; the termination rule this fixture first
+declared now lives in RFC11-14 rule 2 and is cited from there; the
+index-less RFC-0005/RFC-0003 selections now record their
+implementation-boundary declarations verbatim per amended RFC11-4;
+transcribed measurements removed — the two anchored measurement fields and
+the packet digest are the only measurements this fixture states.*
 
 ---

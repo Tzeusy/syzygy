@@ -199,9 +199,10 @@ EXTERNAL = ("http://", "https://", "mailto:", "ftp://")
 #: one is correct, not broken. Declared, counted, and printed on every run.
 FORWARD_REFS = (
     ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",  # created by act 1
-    ".syzygy/governance/contracts/rfcs/",                     # act-1 install home
-    ".syzygy/governance/contracts/history/",                  # act-1 companion
-    ".syzygy/governance/contracts/matrix-rows/",              # act-1 companion
+    ".syzygy/governance/contracts/rfcs/",                     # wave-act install home
+    ".syzygy/governance/contracts/wave-manifests/",           # wave-act install home
+    ".syzygy/governance/contracts/history/",                  # first-wave companion
+    ".syzygy/governance/contracts/matrix-rows/",              # first-wave companion
     ".syzygy/map/topology/",                                  # act-3 install home
     ".syzygy/project.yaml",                                   # no governed project yet
     "openspec/",                                              # does not exist yet
@@ -634,7 +635,17 @@ DIGEST_ROW = re.compile(r"^(?P<sha>[0-9a-f]{64})\s+(?P<path>\S.*)$")
 #: different hands at different times; nothing but a check keeps them
 #: together.
 ACCEPTANCE_RECORD = f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md"
-ACT1_ARG = re.compile(r"ACCEPT COMPACTED FOUNDATIONAL RFCS:\s*(?P<sha>[0-9a-f]{64})")
+#: Round-2026-08d wave structure: the all-in-one act-1 phrase is retired;
+#: six wave manifests partition the active set and each one's own sha256 is
+#: that wave act's argument (ACCEPTANCE-WAVE-DESIGN.md). The active manifest
+#: remains the package identity and is no act's argument.
+WAVE_IDS = ("A", "B", "C1", "C2", "D1", "D2")
+WAVE_MANIFESTS = {w: f"{CANDIDATES}/wave-manifests/WAVE-{w}-MANIFEST.txt"
+                  for w in WAVE_IDS}
+
+
+def wave_arg_pat(w):
+    return re.compile(rf"ACCEPT FOUNDATIONAL WAVE {w}:\s*`?([0-9a-f]{{64}})")
 
 
 def sha256_file(abspath):
@@ -653,11 +664,13 @@ def cg7_manifest(paths, res):
                 "record", note="no manifest to compare against — nothing examined")
         return
     findings, n = [], 0
+    active_paths = set()
     for i, ln in enumerate(read(MANIFEST).splitlines(), 1):
         m = DIGEST_ROW.match(ln.strip())
         if not m:
             continue
         n += 1
+        active_paths.add(m.group("path").strip())
         target = os.path.join(ROOT, CANDIDATES, m.group("path").strip())
         if not os.path.exists(target):
             findings.append(f"{MANIFEST}:{i} — {m.group('path')} does not exist")
@@ -666,29 +679,76 @@ def cg7_manifest(paths, res):
         if actual != m.group("sha"):
             findings.append(f"{MANIFEST}:{i} — {m.group('path')} digest "
                             f"{actual[:12]}… != manifest {m.group('sha')[:12]}…")
+    # The six wave manifests: every row valid, and together they partition
+    # the active set — no overlap, nothing uncovered, nothing extra. The
+    # generator asserts this too; asserting it here as well means a
+    # hand-edited wave manifest fails a check instead of waiting for a
+    # regeneration to notice.
+    wave_of = {}
+    for w in WAVE_IDS:
+        rel = WAVE_MANIFESTS[w]
+        if rel not in set(paths):
+            findings.append(f"{rel} — wave manifest missing")
+            continue
+        for i, ln in enumerate(read(rel).splitlines(), 1):
+            m = DIGEST_ROW.match(ln.strip())
+            if not m:
+                continue
+            n += 1
+            p = m.group("path").strip()
+            wave_of.setdefault(p, []).append(w)
+            target = os.path.join(ROOT, CANDIDATES, p)
+            if not os.path.exists(target):
+                findings.append(f"{rel}:{i} — {p} does not exist")
+            elif sha256_file(target) != m.group("sha"):
+                findings.append(f"{rel}:{i} — {p} digest != manifest "
+                                f"{m.group('sha')[:12]}…")
+    for p, ws in sorted(wave_of.items()):
+        if len(ws) > 1:
+            findings.append(f"{p} — appears in waves {'/'.join(ws)}; the "
+                            f"partition overlaps")
+    for p in sorted(active_paths - set(wave_of)):
+        findings.append(f"{p} — in the active manifest but in no wave "
+                        f"manifest; the partition is incomplete")
+    for p in sorted(set(wave_of) - active_paths):
+        findings.append(f"{p} — in a wave manifest but not the active "
+                        f"manifest")
     manifest_sha = sha256_file(os.path.join(ROOT, MANIFEST))
     status = "FAIL" if findings else ("OK" if n else "WARN")
-    res.add(status, "CG-7a  manifest digests valid", n, len(findings), "entry",
-            note=(f"manifest sha256 {manifest_sha} (the act-1 argument)"
+    res.add(status, "CG-7a  manifest digests valid; waves partition the set",
+            n, len(findings), "entry",
+            note=(f"active manifest sha256 {manifest_sha} (package identity, "
+                  f"no act's argument)"
                   if n else "no digest rows parsed — nothing examined"),
             details=findings)
 
     if ACCEPTANCE_RECORD not in set(paths):
-        res.add("WARN", "CG-7b  act-1 argument matches the manifest", 0, 0,
-                "record", note=f"{ACCEPTANCE_RECORD} not present — nothing examined")
+        res.add("WARN", "CG-7b  wave-act arguments match the wave manifests",
+                0, 0, "record",
+                note=f"{ACCEPTANCE_RECORD} not present — nothing examined")
         return
-    stated = ACT1_ARG.findall(read(ACCEPTANCE_RECORD))
-    if not stated:
-        res.add("WARN", "CG-7b  act-1 argument matches the manifest", 1, 0,
-                "record", note="no `ACCEPT COMPACTED FOUNDATIONAL RFCS: <sha>` "
-                               "found — nothing compared")
-        return
-    bad = [s for s in set(stated) if s != manifest_sha]
-    res.add("FAIL" if bad else "OK", "CG-7b  act-1 argument matches the manifest",
-            len(set(stated)), len(bad), "argument",
-            details=[f"{ACCEPTANCE_RECORD} offers {s[:12]}… but the manifest "
-                     f"now hashes to {manifest_sha[:12]}… — the act would bind "
-                     f"a package that no longer exists" for s in sorted(bad)])
+    record_text = read(ACCEPTANCE_RECORD)
+    bfind, bexam = [], 0
+    for w in WAVE_IDS:
+        stated = set(wave_arg_pat(w).findall(record_text))
+        full = os.path.join(ROOT, WAVE_MANIFESTS[w])
+        actual = sha256_file(full) if os.path.exists(full) else None
+        if not stated:
+            bexam += 1
+            bfind.append(f"wave {w} — no `ACCEPT FOUNDATIONAL WAVE {w}: "
+                         f"<sha>` found in the record; the act cannot be "
+                         f"performed as written")
+            continue
+        for s in sorted(stated):
+            bexam += 1
+            if s != actual:
+                bfind.append(f"wave {w} — record offers {s[:12]}… but the "
+                             f"wave manifest hashes to "
+                             f"{(actual or 'absent')[:12]}… — the act would "
+                             f"bind a package that no longer exists")
+    res.add("FAIL" if bfind else "OK",
+            "CG-7b  wave-act arguments match the wave manifests",
+            bexam, len(bfind), "argument", details=bfind)
 
     # CG-7c — the other three digest-bound acts. Act 1 alone was checked until
     # 2026-08-05, so a truthful "1 examined" covered a population of 4 and
@@ -742,9 +802,10 @@ def cg7_manifest(paths, res):
 #: stale in the document that offered it (six independent reviewers, RB-1 F1
 #: … RB-8 F1). A digest quoted anywhere is a promise about an artifact; the
 #: artifact is the only thing that can keep it.
-ACT_SUBJECTS = (
-    ("ACCEPT COMPACTED FOUNDATIONAL RFCS", MANIFEST,
-     re.compile(r"ACCEPT COMPACTED FOUNDATIONAL RFCS:\s*`?([0-9a-f]{64})")),
+ACT_SUBJECTS = tuple(
+    (f"ACCEPT FOUNDATIONAL WAVE {w}", WAVE_MANIFESTS[w], wave_arg_pat(w))
+    for w in WAVE_IDS
+) + (
     ("CONFIRM CRAFT AMENDMENT: CC-TEST-2",
      f"{CRAFT}/testing-and-verification.md",
      re.compile(r"CC-TEST-2@([0-9a-f]{64})")),
@@ -807,7 +868,7 @@ ACT_QUOTE_EXEMPT = (
 #: offer for CG-7d at the same time.
 ACT_DIGEST_COPY_FILES = {
     f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md":
-        ("ACCEPT COMPACTED FOUNDATIONAL RFCS",
+        tuple(f"ACCEPT FOUNDATIONAL WAVE {w}" for w in WAVE_IDS) + (
          "CONFIRM CRAFT AMENDMENT: CC-TEST-2",
          "ACCEPT TOPOLOGY", "ADOPT PROJECT OVERVIEW"),
     f"{CANDIDATES}/round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md":
@@ -1221,6 +1282,12 @@ BOOTSTRAP_ALLOW_PREFIX = (
      "the superseded round's own working charter"),
     (f"{CANDIDATES}/round-2026-08/OWNER-ROUND-CHARTER.md",
      "owner-supplied round charter, quoted verbatim"),
+    (f"{CANDIDATES}/round-2026-08d/OWNER-WORK-ORDER.md",
+     "owner-supplied work order, quoted verbatim — its `_bootstrap/` line "
+     "sits inside the prohibition list it orders enforced"),
+    ("syzygy_claude_structural_contract_decomposition_prompt.md",
+     "the owner's working copy of the round-2026-08d work order, untracked "
+     "at repo root; archived verbatim as round-2026-08d/OWNER-WORK-ORDER.md"),
     (SELF_REL, "this checker names the path in order to detect it"),
 )
 
@@ -2933,6 +3000,12 @@ STATUS_RETIRED_MARKERS = (
 STATUS_ALLOW = {
     TERM_REGISTRY:
         "states the rule itself; the bare form is the thing being forbidden",
+    ".syzygy/governance/contracts/candidates/round-2026-08d/OWNER-WORK-ORDER.md":
+        "owner-supplied work order, quoted verbatim — its bare `status` "
+        "spans name the defect it orders fixed",
+    "syzygy_claude_structural_contract_decomposition_prompt.md":
+        "the owner's working copy of the round-2026-08d work order, "
+        "untracked at repo root; same text as the archived copy",
     ".syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md":
         "quotes a violating API's own field name as the rule's worked "
         "counter-example — adopted craft text, not a Syzygy field",
