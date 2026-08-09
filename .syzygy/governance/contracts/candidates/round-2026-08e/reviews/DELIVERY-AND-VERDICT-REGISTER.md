@@ -29,6 +29,7 @@ the owner's direction.
 | RD-30 | Owner-packet reviewer | each launch-critical decision packet, one-sitting test | — | not yet dispatched | — | — |
 | RD-31 | Final Wave A exact-package reviewer | the exact regenerated Wave A argument — no authoring context | — | held until RD-24…RD-30 triage | — | — |
 | RD-32 | Final Wave B exact-package reviewer | the exact regenerated Wave B argument — no authoring context | — | held until RD-24…RD-30 triage | — | — |
+| RD-33 | Instrument re-reviewer (added — the nine are a minimum) | `launch-gate-pre-specifications.md` v1.5, exact bytes — the RD-24 repairs, which this session executed and may not confirm | — | held until the v1.5 repair commit | — | — |
 
 **Ordering note.** RD-31/RD-32 are the offer gates: they bind the exact wave
 arguments, so they run only after RD-24…RD-30 triage is disposed — if that

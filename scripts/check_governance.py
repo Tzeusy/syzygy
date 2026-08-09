@@ -1590,6 +1590,12 @@ ACT_QUOTE_EXEMPT = (
     f"{CANDIDATES}/round-2026-08b/reviews/",
     f"{CANDIDATES}/round-2026-08c/reviews/",
     f"{CANDIDATES}/round-2026-08d/reviews/",
+    #: Raw reviewer output is stored verbatim and never edited; a review
+    #: quotes its subject's digest at the frozen commit, and that quote is
+    #: the review's *binding*, which stays correct precisely because the
+    #: subject moved afterwards. The round's disposition/delivery registers
+    #: live beside the raw files and quote the same frozen digests.
+    f"{CANDIDATES}/round-2026-08e/reviews/",
     f"{CANDIDATES}/reviews/",
     f"{CANDIDATES}/history/",
     f"{CANDIDATES}/fixtures/",

@@ -4,10 +4,10 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.4 (candidate; v1.3 was the pilot-administered version)
+effective_version: v1.5 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
-  administration protocol, verdict vocabulary, verdict formula, results
-  record format, and trend log
+  administration protocol, verdict vocabulary, verdict formula, the
+  launch-scope parameters (§8), results record format, and trend log
 does_not_govern: whether specifications are authored (the owner's launch
   decision); the content of any artifact under judgment; any acceptance,
   adoption, or approval
@@ -96,6 +96,13 @@ Withhold from the reviewer:
   gate (except when answering F1, which needs the trend log).
 - Any summary of "how it's going." The reviewer reads primary artifacts.
 
+The withhold list and the repository read grant reconcile as follows: trees
+holding prior reviews and administrations are in scope as **objects** of the
+F2/F4/C3 sweeps (they are files, and a stale claim in one is a finding) but
+are never **read for content** — their findings, verdicts, and narratives
+must not inform any other question's answer. A reviewer who has read them
+for content records that fact as a materials deviation.
+
 The materials list is fixed by this file plus the parameter block — never
 curated per administration. Any deviation (something added, missing, or
 unreadable) is recorded in the results record.
@@ -115,9 +122,14 @@ support a gate decision):
 
 Rules for the reviewer:
 
-- **Verdict vocabulary is closed:** `Met`, `Not met`, `Unknown(reason)`.
-  Nothing else. No "partially met," no "met with caveats" — a caveat that
-  matters makes it `Not met`; one that doesn't is omitted.
+- **Verdict vocabulary is closed:** `Met`, `Not met`,
+  `Not met (out of launch scope)`, `Unknown(reason)`. Nothing else. No
+  "partially met," no "met with caveats" — a caveat that matters makes it
+  `Not met`; one that doesn't is omitted. The scoped form is lawful only in
+  A–D, only for a defect confined to a deferred wave that meets none of
+  §4's five blocking conditions; it records the counterexample honestly
+  without converting the launch-scope verdict, and both the formula and the
+  record validator read it.
 - **Met requires cited evidence** — file paths and quoted text. An
   unsupported Met is recorded as Unknown.
 - **Not met requires a concrete counterexample** — the artifact and passage
@@ -203,6 +215,10 @@ Administration shape:
 
 ### B. Decomposability and sequencing
 
+*The unit of decomposition — "chunk" throughout this section and in D2's
+seam task — is bound by `CHUNK_UNIT` in the parameter block, never chosen by
+the reviewer or the administering session.*
+
 - **B1 [U]** Does the shape decompose into chunks that are each independently
   understandable, independently acceptable-or-rejectable, and valuable before
   later chunks exist?
@@ -247,6 +263,9 @@ Administration shape:
   *Scope note:* C2 asks whether exactly one owner **exists** (ownership);
   D2 asks whether a reader can **find** it (routing). Evidence for one is
   not evidence for the other.
+  *Population:* the artifact set named by `C2_POPULATION` in the parameter
+  block — a `Met` needs the sweep over that set, with its denominator
+  stated; a partial read cannot support `Met`.
 
 - **C3 [G]** Does the project apply its own epistemics *to itself* — are
   claims about its own state evidence-backed and labeled, with absence of
@@ -265,6 +284,8 @@ Administration shape:
   load-bearing assumption recorded alongside a stated posture if it breaks?
   *Fails when:* an external dependency is treated as guaranteed, or its
   failure would reshape the project and no artifact admits that.
+  *Population:* the assumption registry named by `C5_POPULATION` in the
+  parameter block; an assumption found outside it is itself a finding.
 
 - **C6 [U]** Does required authority scale with irreversibility — are
   hard-to-undo or externally visible actions gated more strongly than
@@ -277,6 +298,8 @@ Administration shape:
   decision was made?
   *Fails when:* any load-bearing rationale exists only outside the
   distributable artifact set.
+  *Population:* the decision record set named by `C7_POPULATION` in the
+  parameter block — "each irreversible decision" quantifies over it.
   *(Added v1.4 from the pilot administration's G1; successor recoverability
   is distinct from F4's abandon-safety — F4 asks whether the corpus lies to
   a reader, C7 asks whether a successor could act on it.)*
@@ -289,8 +312,9 @@ Administration shape:
   *Fails when:* correctness requires archaeology — reading history, resolving
   contradictory metadata, or knowing which documents are stale.
 
-- **D2 [U]** Task-routing test: from the front door, can they reach the
-  *single* rule governing one concrete task without exhaustive reading?
+- **D2 [U]** Task-routing test: from the front door (the `DEFAULT_ROUTE_SET`
+  entry points), can they reach the *single* rule governing one concrete
+  task without exhaustive reading?
   *Administer concretely:* use the tasks fixed in the parameter block —
   chosen before the administration, never by the reviewer or the
   administering session mid-run. At least one task must cross a seam
@@ -300,13 +324,17 @@ Administration shape:
 
 - **D3 [U]** Is invented vocabulary minimal and defined-before-use — does
   each coined term buy clarity ordinary language couldn't?
-  *Fails when:* the default reading path uses a term before defining it, or a
-  coined term shadows an ordinary word's meaning.
+  *Fails when:* the default reading path (`DEFAULT_ROUTE_SET`) uses a term
+  before defining it, or a coined term shadows an ordinary word's meaning.
+  *Population:* the coined-term enumeration named by `D3_POPULATION` in the
+  parameter block; a coined term absent from it is itself a finding.
 
 - **D4 [U]** Do the entry/summary documents make no claim their sources
   don't — is simplification confined to presentation, never meaning?
   *Fails when:* an overview asserts something stronger, softer, or fresher
   than its owning source.
+  *Population:* the entry/summary set is `D4_POPULATION` in the parameter
+  block — the whole set, not only `ENTRY_DOCUMENT`.
 
 ### E. Readiness to author specifications — the gate itself
 
@@ -341,7 +369,9 @@ Administration shape:
   *Administer concretely:* the candidate statements are fixed in the
   parameter block (`E4_CASES`) — the same cases on every administration, so
   E4 verdicts are comparable across the trend log; the reviewer classifies
-  each from its text alone, then compares against the project's own routing.
+  each from its text alone (shape side or spec side — the classification is
+  two-valued), then compares against the project's own routing as recorded
+  in the artifact named by `E4_ROUTING_AUTHORITY` in the parameter block.
   Disagreement with the project's routing is a fail; the project's routing
   disagreeing with itself over parallel cases is a fail.
 
@@ -426,12 +456,17 @@ The gate is administered **against a named launch target** (parameter block:
 
 > **READY FOR `<LAUNCH_TARGET>`** =
 >     every E question `Met` for the named launch target
->     AND no `Not met` in launch-scope A–D
->     AND F1 is not diverging
+>     AND no `Not met` in launch-scope A–D — a
+>         `Not met (out of launch scope)` row does not block
+>     AND F1 is `Met` or `Unknown` — a `Not met` F1 blocks,
+>         whichever of its two limbs failed
 >     AND F3 is `Met`
 >     AND F4 is `Met`
 >     AND (F2 is `Met` OR explicitly owner-deferred with a bounded
 >          reduction plan)
+>
+> Every term of this formula is a predicate over the closed verdict
+> vocabulary — nothing in it requires a word the rows may not contain.
 
 **Launch scope.** A–D questions are answered over the whole repository —
 global source-of-truth and current-path hygiene are never scoped away — but
@@ -445,9 +480,13 @@ the verdict **only if** it:
 - prevents the owner from understanding the launch decision.
 
 A deferred wave's internal defect meeting none of these is recorded in the
-results (it stays a finding) without converting the launch-scope verdict.
-The gate never requires internally unrelated deferred semantics to be
-accepted.
+results (it stays a finding) without converting the launch-scope verdict:
+its question's row takes the verdict `Not met (out of launch scope)`, and
+the defect is listed on the record's deferred-wave findings line. Rendering
+such a defect as a bare `Met` is a false row; rendering it as a bare
+`Not met` blocks a verdict §4 says it must not block — the scoped form is
+the only honest rendering, and the validator counts it separately. The gate
+never requires internally unrelated deferred semantics to be accepted.
 
 Qualifications:
 
@@ -456,10 +495,24 @@ Qualifications:
   accumulate as owner risk, stated in the results.
 - F1/F3/F4 are explicit conjuncts because a project must not launch while
   its owner packet requires archaeology (F3), its default path contains
-  stale claims (F4), or the process loop is visibly diverging (F1). An
-  `Unknown` F1 (no trend yet) does not veto; a diverging F1 does.
+  stale claims (F4), or the process loop has visibly failed to converge
+  (F1). The F1 conjunct is a verdict predicate: `Met` or `Unknown` passes
+  (no trend yet is not a veto), `Not met` blocks — whether it failed by
+  divergence or by the missing stop condition, both of which live in F1's
+  own fails-when.
 - Only the owner may defer F2, and only against a bounded reduction plan
-  (maximum new meta-artifacts, artifacts to retire, stop condition).
+  (maximum new meta-artifacts, artifacts to retire, stop condition). An
+  `Unknown` F2 is deferrable on exactly the same owner-deferral terms as a
+  `Not met` F2 — trend-shaped proxies can be legitimately unknowable at
+  Administration 1, and the deferral discloses that rather than blocking on
+  it.
+- F5 and F6 are recorded and disclosed (§5's family line; the trend row)
+  but are deliberately not conjuncts at Administration 1: both were added
+  from the pilot's G1 and have no baseline yet, and F5's substantive limb
+  is partially satisfied by mechanical checks even under a same-family
+  administration. Promoting F5 to a conjunct is an owner option flagged in
+  the P-34 packet; until taken, a `Not met` F5 or F6 travels as stated
+  owner risk, never silently.
 - The gate can be *passed with enumerated deferrals* only by explicit owner
   decision, never by the reviewer or the administering session.
 - G1 yields no verdict and never blocks, but an administration missing G1
@@ -473,6 +526,8 @@ One record per administration:
 
 ```markdown
 # Launch-gate administration — <date>, commit <sha>
+> This administration record is evidence, never an owner act; its verdict
+> authorizes nothing (instrument preamble; VIS-4).
 Instrument version: <vX.Y>  sha256: <instrument digest at the named commit>
 Parameter block sha256: <digest of §8 as bound for this administration>
 Launch target: <LAUNCH_TARGET, verbatim from the parameter block>
@@ -485,15 +540,32 @@ Operationalization notes: <every judgment call made interpreting a question>
 | Q | Verdict | Evidence / counterexample (paths + quotes) |
 |---|---------|--------------------------------------------|
 | A1 | Met | ... |
+| E1-form | Met | ... |
+| E1-home | Met | ... |
+| E1-granularity | Met | ... |
+| E1-acceptance-authority | Met | ... |
+| E1-change-process | Met | ... |
+| E1 | Met | rollup — Met only when all five sub-rows are Met |
 | ... | | |
+
+## G1 — completeness critic
+<G1 is recorded here as a section, never as a verdict row — it yields no
+Met/Not-met verdict>
 
 E3 reopen-list: <empty | enumerated items>
 Deferred-wave findings recorded outside launch scope: <list | none>
+Deferred count (owner-deferred findings this administration): <n>
+Reopened count (previously recorded resolved, recurred): <n>
 Unknowns and what would settle them: <list>
 Reviewer's falsification notes: <what they tried to break and couldn't>
-Gate verdict per §4: READY FOR <LAUNCH_TARGET> / NOT READY /
-  READY-WITH-DEFERRALS(owner only)
+GATE VERDICT: READY FOR <LAUNCH_TARGET> | NOT READY |
+  READY-WITH-DEFERRALS (owner only)
 ```
+
+The terminal line's `GATE VERDICT:` token is literal — it is the line the
+validator parses and the trend row carries; the `Deferred count:` and
+`Reopened count:` fields are required, and their absence is a validation
+error, never an implicit zero (VIS-2 applies to the gate's own record).
 
 Store the record verbatim in the canonical result home. Never edit a past
 administration; supersede it. `scripts/launch_gate_results.py` validates a
@@ -505,7 +577,9 @@ semantics.
 
 ## 6. Trend log
 
-Append one line per administration; this is F1's evidence.
+Append one line per administration to
+`.syzygy/governance/decisions/launch-gate/TREND-LOG.md`; this is F1's
+evidence.
 
 ```markdown
 | Date | Commit | Not-met | Unknown | Deferred | Reopened | New findings vs prior | Gate verdict |
@@ -528,10 +602,11 @@ instrument was not committed at the administered commit; (2) no instrument
 digest was recorded; (3) no parameter-block digest was recorded; (4) the
 reviewer was from the same model family that authored the corpus. The
 formal trend log begins with the first administration meeting §2's
-integrity requirements ("Administration 1"). At that administration, the
-pilot's corpus-level recurrence note applies: if the retired-phrase defect
-the pilot documented under E6/F1/F3 is still present, it belongs in the
-Reopened column, not the Not-met column alone.
+integrity requirements ("Administration 1"). The pilot's corpus-level
+recurrence instruction is project-specific and therefore lives in the
+parameter block (§8, `PILOT_RECURRENCE_CHECK`), where the defect is
+described in enough detail to be recognized without reading the withheld
+pilot record.
 
 ---
 
@@ -566,9 +641,18 @@ finding about the question — record it upstream, don't fork silently.
 | `CURRENT_STATE` | `PROJECT-STATUS.md` |
 | `SHAPE_CORPUS` | `.syzygy/governance/contracts/candidates/` — **withheld from question derivation; readable for answering** |
 | `SPEC_MEDIUM` | OpenSpec (`openspec/` — does not exist yet; its absence is correct pre-gate) |
-| `FIRST_SPEC_CANDIDATE` | per the current first-OpenSpec-sequence document, if one exists at the administered commit |
+| `FIRST_SPEC_CANDIDATE` | `.syzygy/governance/contracts/candidates/FIRST-OPENSPEC-SEQUENCE.md` (revision 3, which declares itself "the single current first-spec document"). If that file is absent at the administered commit, E2 is `Not met` (nothing identified), never `Unknown` |
 | `HUMAN_DECIDER` | the owner; owner acts per the acceptance record; VIS-4 governs delegation |
 | `EPISTEMIC_LABELS` | Observed / Inferred / Unknown (doctrine trust-and-evidence) |
+| `CHUNK_UNIT` | the six wave acts — A, B, C1, C2, D1, D2. B-section "chunk" = wave; the wave manifests are the chunk boundaries |
+| `E4_ROUTING_AUTHORITY` | `.syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the clause-to-route matrix (candidate, readable for answering); its OS routes are the spec side, all others the shape side |
+| `DEFAULT_ROUTE_SET` | `README.md`, `AGENTS.md`, `.syzygy/intent/OVERVIEW.md`, `PROJECT-STATUS.md`, `.syzygy/governance/doctrine/README.md`, `.syzygy/governance/contracts/candidates/TASK-ROUTER.md` — the default reading and task routes for D2/D3/F4 and §4's blocking condition 1 |
+| `C2_POPULATION` | `README.md`, `AGENTS.md`, and every `.md`/`.yaml` file under `.syzygy/governance/` — the normative and candidate-normative artifact set |
+| `C5_POPULATION` | `.syzygy/governance/policies/GOVERNANCE-SUBSTRATE-LOCK.yaml` — the external-baseline registry; assumptions found outside it are findings |
+| `C7_POPULATION` | `.syzygy/governance/decisions/` — the owner decision records (SDR-*, warrants, pending queue) |
+| `D3_POPULATION` | the term registry `.syzygy/governance/contracts/candidates/policy-candidates/TERM-REGISTRY.md` plus the doctrine glossary in `.syzygy/governance/doctrine/README.md` |
+| `D4_POPULATION` | `README.md`, `.syzygy/intent/OVERVIEW.md`, `PROJECT-STATUS.md`, `AGENTS.md` |
+| `PILOT_RECURRENCE_CHECK` | the pilot (2026-08-09, v1.3) documented under E6/F1/F3 a retired ceremony phrase still standing as the live acceptance gate in two digest-carrying owner documents. At Administration 1: sweep the current bytes for any retired acceptance phrase presented as current (the project's own CG-2a check names the population); if present, it belongs in the Reopened column, not the Not-met column alone |
 | `D2_ROUTINE_TASK` (fixed) | "add an evidence adapter for a new CI system" |
 | `D2_AUTHORITY_TASK` (fixed) | "change what counts as a completed Mission" |
 | `D2_SEAM_TASK` (fixed) | "trace a merged change from its work record to its reconciled status" — crosses the work-surface/evidence seam |
@@ -578,7 +662,12 @@ Launch-scope parameters for the next formal administration:
 
 ```yaml
 LAUNCH_TARGET: >
-    Capability 1 — Project registration and honest shape visibility
+    Capability 1 — Project registration and honest shape visibility.
+    Defined in .syzygy/governance/contracts/candidates/DEFERRED-WAVE-POSTURE.md,
+    whose owner-directed statement reads: "The launch target is Capability 1
+    — Project registration and honest shape visibility, whose contract
+    prerequisite is Waves A + B only." That artifact also states, per
+    deferred wave, why the target does not use it.
 
 REQUIRED_WAVES: [A, B]
 
@@ -592,7 +681,10 @@ DEFERRED_WAVE_POSTURE: >
 ```
 
 `MAJOR_SHAPE_COMMITMENTS` — A5's closed population (never an all-clause
-table):
+table). A5 is answered repository-wide and **wave-blind**: whether a
+commitment's governing semantics sit in a required or a deferred wave does
+not change its row in the two-way table, and A5's fail condition is
+unchanged by launch scope:
 
 ```text
 typed authority
@@ -685,3 +777,26 @@ Notes for administering against Syzygy specifically:
   recorded in `round-2026-08e/LAUNCH-GATE-v1.4-SEMANTIC-DELTA.md`;
   `scripts/launch_gate_results.py` named as the record validator. No
   existing question weakened; no ID renumbered.
+- **v1.5** (2026-08-10, post-RD-24 amendment — the fresh instrument
+  review's 21 findings; candidate, owner approval pending) — verdict
+  formula restated as predicates over the closed vocabulary: the F1
+  conjunct is now `Met`-or-`Unknown` (RD24-09), and the launch-scope rule
+  gained the `Not met (out of launch scope)` row form that the formula and
+  validator both read (RD24-05); §5 template gains a required non-authority
+  banner (RD24-02), the literal `GATE VERDICT:` token, a G1 section slot
+  (RD24-10), explicit `Deferred count:` / `Reopened count:` fields whose
+  absence errors rather than reading zero (RD24-19), and the five E1
+  sub-verdict rows (RD24-21); §2 gains the withhold-versus-read-access
+  reconciliation (RD24-15); B-section "chunk" bound to `CHUNK_UNIT`
+  (RD24-18); C2/C5/C7/D3/D4 populations bound to parameter-block
+  denominators (RD24-20); `LAUNCH_TARGET` cites Capability 1's defining
+  artifact (RD24-06); `DEFAULT_ROUTE_SET` enumerated (RD24-07);
+  `FIRST_SPEC_CANDIDATE` fixed to one path with the absent-case rule
+  (RD24-13); `E4_ROUTING_AUTHORITY` named (RD24-16); the pilot recurrence
+  instruction moved to §8 as `PILOT_RECURRENCE_CHECK` with the defect
+  described in place (RD24-14); §6 names the trend-log path (RD24-17);
+  `governs:` gains the launch-scope parameters (RD24-03); Unknown-F2
+  deferral terms and the deliberate F5/F6 non-conjunct status stated
+  (RD24-11, RD24-12). Semantic delta:
+  `round-2026-08e/LAUNCH-GATE-v1.5-SEMANTIC-DELTA.md`. No existing
+  question weakened; no ID renumbered.
