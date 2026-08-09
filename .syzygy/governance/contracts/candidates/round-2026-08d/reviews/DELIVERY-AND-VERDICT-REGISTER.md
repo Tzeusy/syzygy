@@ -39,13 +39,35 @@ overlap; the RAW file marks the recovered part with a storage note. [Observed]
 **In progress, staggered.** The first launch attempt (all six concurrent,
 2026-08-09 morning) failed on a platform session limit; after the limit
 lifted, the owner directed the six reviewers be dispatched across ~12 hours
-rather than concurrently. RD-18 (Wave A) launched 2026-08-09 13:22 local;
-RD-19, RD-20, RD-21, RD-22, RD-23 are scheduled at roughly two-hour intervals
-through 23:23 local, in ceremony order. Until each wave's review is delivered
-and its verdict stored here, that wave's exact-package review stands
-undischarged and **no wave act may be offered or performed** on the strength
-of the dimension reviews alone: they cover the corpus by subject, not by
-exact per-wave package.
+rather than concurrently. RD-19, RD-20, RD-21, RD-22, RD-23 are scheduled at
+roughly two-hour intervals through 23:23 local 2026-08-09, in ceremony order.
+Until each wave's review is delivered and its verdict stored here, that
+wave's exact-package review stands undischarged and **no wave act may be
+offered or performed** on the strength of the dimension reviews alone: they
+cover the corpus by subject, not by exact per-wave package.
+
+| Review | Wave | Parts stored | Verdict (copied exactly) | Blocking findings |
+|---|---|---|---|---|
+| RD-18 | A — RFC 0001–0006, 19 modules | 3/3 | `VERDICT: REVISE` | B1 — RFC3-15's `contracts/` row names the retired `ACCEPT COMPACTED FOUNDATIONAL RFCS` phrase as the live install gate and describes one act where there are six, inside the Wave A digest; B2 — the Wave A install puts `history/`, `matrix-rows/` and two generated reports inside `contracts/`, against RFC3-15's own "exclusively" |
+| RD-19 | B | — | *scheduled ~15:23* | — |
+| RD-20 | D1 | — | *scheduled ~17:23* | — |
+| RD-21 | D2 | — | *scheduled ~19:23* | — |
+| RD-22 | C1 | — | *scheduled ~21:23* | — |
+| RD-23 | C2 | — | *scheduled ~23:23* | — |
+
+RD-18's mechanical layer was fully clean: all 19 digests verified by two
+methods, the manifest's own sha256 byte-identical to the record's Wave A
+argument, the six wave manifests an exact partition of the 39-row active
+manifest, the clause namespace duplicate-free, all 44 post-install backlinks
+resolving, and the record's `depends_on`-containment claim confirmed. Its
+verdict turns on the two blocking findings above — both defects the act
+cannot repair after binding — plus four majors inside the digest set
+(RFC1-25's `succeeds` row unresolvable under RFC1-25(d); RFC 0005's lookup
+rule omitting RFC5-27; unstaged forward references in RFC 0006 class 8 and
+RFC 0003; the 39-row active manifest installed at act 1 reading as an
+inventory of accepted content). Nine of its twelve findings move the Wave A
+digest; per verification rule 10 they batch into one pass with one manifest
+regeneration and one fresh review of the new bytes.
 
 ## What the delivered reviews establish
 
