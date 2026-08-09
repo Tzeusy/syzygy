@@ -4,8 +4,12 @@
 act (VIS-4; AGENTS.md adoption authority). This packet is a **minimally
 revised** replacement for `DOCTRINE-AMENDMENT-BOUNDED-MISSION-DRAFT.md`
 (sha256 `30efb7c5fc933e18fc5f5e5c3daaab7689881d9e51cb282e997f0a4c450ba173`),
-which is **left untouched** at the owner's gate. The owner may adopt either
-version, amend, or decline; act 5 carries no magic phrase.
+which is **left untouched** at the owner's gate. The owner may adopt this
+rev1 packet, amend, or decline; act 5 carries no magic phrase. (The
+original draft remains readable for comparison, but the acceptance record
+records that its `vision.md` insertion cannot be applied as written —
+SD-8 — which is the defect rev1 exists to remove; adopting it would
+require exactly the unrecorded editorial judgment rev1 eliminates.)
 
 **Why a rev1 exists.** Three defects were found in the original draft during
 the charter §14 review

@@ -4,8 +4,9 @@
 > elsewhere; this file cites the owner and invents nothing. Where this
 > file and an owning source disagree, the source wins and this file is
 > stale. **No specification may be authored yet** — the prerequisites
-> table at the end is the current gate state, and `openspec/` does not
-> exist until the owner authorizes it.
+> table in `FIRST-OPENSPEC-SEQUENCE.md` (routed below at E2) is the
+> current gate state, and `openspec/` does not exist until the owner
+> authorizes it.
 
 ## The five questions and their owners (E1)
 

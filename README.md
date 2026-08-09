@@ -4,7 +4,7 @@
 what should be true, evidence shows what is true, and agent fleets do bounded
 work to close the difference — with the difference always rendered honestly.**
 
-> **Current stage: pre-specification project-shape normalization.**
+> **Current stage: final pre-specification.**
 > This repository contains **no application code, no behavioral
 > specifications, and no implementation backlog — deliberately.** What exists
 > is adopted doctrine, owner-approved engineering policy, and a candidate

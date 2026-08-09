@@ -46,7 +46,7 @@ answer: the generated `TASK-ROUTER.md`.
 | `policy-candidates/` | Candidate policy additions (term registry, knowledge-hygiene policy, semantic-delta workflow) — each needs its own owner act |
 | `round-2026-08/` | The human-clarity refactor round's process records |
 | `00-README.md`, `01`–`10-*`, other top-level reports | The rev10 packet's own delivery reports, kept as packet history |
-| `DOCTRINE-AMENDMENT-BOUNDED-MISSION-DRAFT.md` | The D3 proposal (act 5, optional) |
+| `DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` | The D3 proposal, rev1 — act 5's subject (optional). Supersedes `…-DRAFT.md`, which stays in place, banner-marked, as the original the owner may still compare |
 
 The packet's former `doctrine/` and `craft-and-care/` mirrors are **not**
 tracked here — their canonical homes are `.syzygy/governance/doctrine/` and

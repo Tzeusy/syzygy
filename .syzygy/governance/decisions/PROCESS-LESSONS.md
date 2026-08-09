@@ -9,8 +9,8 @@
 "Notes to self" appendix, and relocated the same day from
 `contracts/candidates/round-2026-08/` to this durable home: process lessons
 outlive the round that discovers them, and a round record is the wrong place
-for a rule that should still apply in a year. `AGENTS.md` keeps only the four
-compressed **verification rules**; this file is their single incident record
+for a rule that should still apply in a year. `AGENTS.md` keeps only the
+compressed **verification rules** (ten at this writing); this file is their single incident record
 and carries every phase-specific and machine-specific detail.
 
 ## Shell and tooling hazards (this machine)

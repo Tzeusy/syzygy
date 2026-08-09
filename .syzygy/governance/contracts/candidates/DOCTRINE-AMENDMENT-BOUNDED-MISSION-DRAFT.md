@@ -1,5 +1,11 @@
 # Doctrine amendment draft — D3 (proposed): human-triggered propagation may authorize a bounded mission
 
+**SUPERSEDED by rev1 (`DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md`), 2026-08-10.**
+The acceptance record's act-5 row names rev1 as the subject: this draft's
+`vision.md` insertion cannot be applied as written (SD-8), and rev1 exists
+to remove that defect. Kept in place, unedited below this banner, as the
+original the owner may compare.
+
 **Status: DRAFT — not applied.** Doctrine amendment is an owner act
 (VIS-4; AGENTS.md adoption authority). This draft exists because owner
 direction OD-R10-2 asked for the minimal clarification *if doctrine needs

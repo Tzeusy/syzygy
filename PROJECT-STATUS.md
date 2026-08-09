@@ -1,6 +1,6 @@
 # Project status
 
-> **As-of: 2026-08-09** (the commit introducing this revision of this file —
+> **As-of: 2026-08-10** (the commit introducing this revision of this file —
 > `git log -1 --format=%h PROJECT-STATUS.md`). This file is a hand-authored
 > pointer page with an as-of revision: it **must not be the sole source** for
 > any fact it states — each row cites the owning record, and where they
@@ -21,6 +21,15 @@ at round-2026-08d** (owner work order; design:
 The rev9 and rev10 all-in-one acceptance phrases are retired and satisfy
 nothing (the acceptance record's retirement paragraph names them).
 
+**Launch scope (owner-directed, 2026-08-10).** The launch target is
+**Capability 1 — Project registration and honest shape visibility**, whose
+contract prerequisite is **Waves A + B only**. Waves C1/C2/D1/D2 — and the
+P-29/P-30/P-32 rulings that gate their repairs — are **visibly deferred**,
+not retired: candidate, not accepted, not used by the launch target, and no
+C/D wave act is offered while that posture stands. The posture and its
+per-wave reasons are
+`.syzygy/governance/contracts/candidates/DEFERRED-WAVE-POSTURE.md`.
+
 | # | Gate | Gate state | Owning record |
 |---|---|---|---|
 | 1 | Doctrine adoption | ✅ **Adopted** 2026-07-30, amendment D1 in force | tag `doctrine-adopted-2026-07-30`; `.syzygy/governance/doctrine/README.md` |
@@ -28,8 +37,8 @@ nothing (the acceptance record's retirement paragraph names them).
 | 3 | Surface decisions | ✅ **Recorded** SDR-1…33 | `.syzygy/governance/decisions/SURFACE-DECISION-RECORD.md` |
 | 4a | Wave A — kernel/evidence/storage/admission/selection (RFC 0001–0006) | ⏳ **Candidate — no act performed** | acceptance record §1 + `wave-manifests/WAVE-A-MANIFEST.txt` |
 | 4b | Wave B — the three surfaces (RFC 0007–0009) | ⏳ **Candidate — no act performed** | acceptance record §1 + `wave-manifests/WAVE-B-MANIFEST.txt` |
-| 4c | Waves C1/C2 — context packets; selection policy (RFC-0011) | ⏳ **Candidate — no act performed** | acceptance record §1 + `wave-manifests/WAVE-C1…C2-MANIFEST.txt` |
-| 4d | Waves D1/D2 — mission prevention; correction plane (RFC-0010) | ⏳ **Candidate — no act performed** | acceptance record §1 + `wave-manifests/WAVE-D1…D2-MANIFEST.txt` |
+| 4c | Waves C1/C2 — context packets; selection policy (RFC-0011) | ⏸️ **Deferred — candidate, no act performed, not offered** while the deferred-wave posture stands | `DEFERRED-WAVE-POSTURE.md`; acceptance record §1 + `wave-manifests/WAVE-C1…C2-MANIFEST.txt` |
+| 4d | Waves D1/D2 — mission prevention; correction plane (RFC-0010) | ⏸️ **Deferred — candidate, no act performed, not offered** while the deferred-wave posture stands | `DEFERRED-WAVE-POSTURE.md`; acceptance record §1 + `wave-manifests/WAVE-D1…D2-MANIFEST.txt` |
 | 5 | Craft amendment CC-TEST-2 (act 2) | ⏳ **Awaiting confirmation** at the current digest | `INSTALL-RECORD.md` **2026-08-06** correction block — the 2026-08-05 block holds the retired `3858820f…` argument (review RD-8, finding S11) |
 | 6 | Topology (act 3) | ⏳ **Candidate — no act performed** | `.syzygy/map/topology-candidates/BUNDLE-MANIFEST.md` |
 | 7 | Project overview (act 4) | ⏳ **Draft — refactored, awaiting adoption** | `.syzygy/intent/OVERVIEW.md` header |
@@ -48,10 +57,11 @@ The full open-decision queue is
 phrases, digest arguments, and the ceremony live in
 `.syzygy/governance/contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`,
 which wins over any offering. The `round-2026-08c/`, `round-2026-08b/` and
-`round-2026-08/` offerings are superseded and banner-marked; the
-round-2026-08d owner-facing offering is produced **after** the round's
-fresh-context review pass, and until it exists the acceptance record's
-wave-history note is the statement of what remains unreviewed.
+`round-2026-08/` offerings are superseded and banner-marked. No Wave A or
+Wave B offer stands yet: each wave's offer waits on its fresh exact-package
+review of the regenerated argument, at the end of the round-2026-08e review
+fleet (the register:
+`.syzygy/governance/contracts/candidates/round-2026-08e/reviews/DELIVERY-AND-VERDICT-REGISTER.md`).
 
 ## What exists in this repository
 
@@ -90,17 +100,27 @@ repaired in the candidate bytes, and the repairs are unreviewed.**
    Class coverage is claimed by construction only — no independent blind
    derivation has run over the restructured fixtures yet.
 
-**No confirming review is bound to any current wave argument.** The
-round-2026-08d fresh-context review pass has now run — fifteen reviews
-(nine dimensions, six exact wave packages), **fifteen `REVISE` verdicts,
-zero `CONFIRM`** — so every wave argument carries a REVISE review, which is
-a verdict against binding, not for it. All 173 findings are disposed in
-`…/round-2026-08d/reviews/DISPOSITION-REGISTER.md`; repairs have not begun.
-Separately, a first administration of the owner's launch-gate instrument
-(`launch-gate-pre-specifications.md` v1.3, at commit `067d8a0`) returned
+**The Wave A and Wave B repairs have landed; no confirming review is bound
+to the regenerated arguments yet.** The round-2026-08d fresh-context review
+pass delivered fifteen reviews — **fifteen `REVISE` verdicts, zero
+`CONFIRM`** — with all 173 findings disposed in
+`…/round-2026-08d/reviews/DISPOSITION-REGISTER.md`. The round-2026-08e
+launch-closure pass then repaired Waves A and B under the owner's
+Capability 1 direction (semantic deltas:
+`…/round-2026-08e/WAVE-A-SEMANTIC-DELTA.md`, `WAVE-B-SEMANTIC-DELTA.md`)
+and regenerated their manifests; the C/D-wave findings remain disposed but
+unrepaired, deliberately, under the deferred-wave posture. The 08e
+fresh-context review fleet is mid-flight (its register is the record of
+which reviews are in); **the wave offers wait on the final exact-package
+reviews**, and until those bind the current arguments, no wave argument
+carries a confirming review. Separately, a pilot administration of the
+owner's launch-gate instrument (v1.3, at commit `067d8a0`) returned
 **GATE VERDICT: NOT READY** — 17 of 31 questions Not met, including all six
 of section E, the OpenSpec-readiness section itself; the raw record is
 `…/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md`.
+The instrument is now **v1.5** (candidate; owner approval prepared as
+P-34), and the formal administration that a launch decision could rely on
+has not yet been run.
 
 **One thing this project does not have, stated plainly:** there is no
 mechanical task-to-context-packet compiler — `context_load.py` measures a
@@ -109,14 +129,17 @@ hand-authored. The fixtures' verification checklists say so per fixture.
 
 ## Next lifecycle step
 
-The round-2026-08d repair batches (P-29/P-30 rulings first for the gated
-waves; scripted manifest regeneration and a fresh confirming review per
-edited wave, per the disposition register's §2 and §7), then the readiness
-recompute and the round's owner-facing offering; then the owner performs
-(or declines) the wave acts. After the
-waves an owner accepts, the first concrete proposal runs through
-`/th-projects project-feature-request` toward an owner-approved OpenSpec
-delta — specification authoring, still no implementation.
+The Capability 1 path, per `DEFERRED-WAVE-POSTURE.md`: finish the
+round-2026-08e fresh-context review fleet, ending with the exact-package
+reviews of the regenerated **Wave A** and **Wave B** arguments; repair
+anything those reviews find and re-bind; then the per-wave owner offers
+(acts on Waves A and B only), the launch-gate formal administration under
+the owner-approved instrument (P-34 first), and the owner's launch
+decision. Waves C1/C2/D1/D2 and the P-29/P-30/P-32 rulings stay deferred
+until the owner lifts that posture. After the waves an owner accepts, the
+first concrete proposal runs through `/th-projects
+project-feature-request` toward an owner-approved OpenSpec delta —
+specification authoring, still no implementation.
 
 ## How to verify this page
 

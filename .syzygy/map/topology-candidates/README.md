@@ -13,8 +13,11 @@ RFCs 0007–0009, which did not yet exist. Less obviously, RFCs 0001–0006
 continued to be amended after these were drawn — closed vocabularies grew and
 clause wording tightened. **Where a diagram and an RFC disagree, the RFC
 governs, including for vocabulary.** Review 07 swept the cluster against the
-current RFC text and repaired the drifts it found
-(`../reviews/07-topology-FIX-REPORT.md`).
+current RFC text and repaired the drifts it found. (Its fix report,
+`07-topology-FIX-REPORT.md`, was a founder-local process record under a
+`reviews/` tree that did not travel into the tracked repository; the
+repairs themselves are in these files' bytes, which the bundle manifest
+binds.)
 
 ## Index
 

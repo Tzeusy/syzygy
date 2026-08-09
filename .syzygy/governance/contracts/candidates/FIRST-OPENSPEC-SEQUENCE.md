@@ -49,7 +49,7 @@ States: `satisfied` / `owner-waived` / `blocking` / `not applicable`.
 | P-38 human entry and discoverability | Owner decision | **blocking** (on the E3 path; Wave B ratifies) |
 | Specification acceptance standard in force | Craft act | **blocking** — candidate exists (`policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`); wants review + its craft act, or the owner knowingly authors against the candidate |
 | P-12 knowledge hygiene (CC-BUDGET-1) | Craft act | **blocking** for Capability 2; for Capability 1 the budget rule is not consumed — **not applicable** to Capability 1's own authoring, listed for visibility |
-| P-34 launch-gate v1.4 authority + formal administration READY | Process | **blocking** for the launch decision (the owner may lawfully decide without it, but this pass's charter treats the formal administration as the evidence bar) |
+| P-34 launch-gate v1.5 authority + formal administration READY | Process | **blocking** for the launch decision (the owner may lawfully decide without it, but this pass's charter treats the formal administration as the evidence bar) |
 | P-14 license | Owner decision | **not applicable** — blocks release, not specification |
 | P-35 operating constraints | Owner decision | **blocking** for the formal administration's A6/F5 verdicts; the spec itself does not consume it |
 | Waves C1/C2/D1/D2, P-29, P-30, P-32, D3/D4 | — | **not applicable** — deferred per `DEFERRED-WAVE-POSTURE.md`; not on Capability 1's path |

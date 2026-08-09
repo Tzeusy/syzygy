@@ -19,7 +19,9 @@ a9aff9170547863be863b0bb4e80c8d34baaad13e855fdc22104e561aaf96590  04-authority-w
 d6712766e58842244c67e9d3e50fca94fd9c59ff838f1b6f6f6cc876e4d6b8ca  06-intent-to-reconciliation-flow.md
 0f6e903a1c72ef1cd6dca906ef5a7d7b04e92a18db0f6d82c2e67cc0fd5947ec  07-client-trust-boundaries.md
 21768048fce64d7f33ff4a4bf9d1e72ed0954c7c359db0aaaf2aba4b7ea700b4  08-adapter-external-systems.md
-a0621a0d20669d25b4382aff0dcfe227d85811cfd4348db211e780c0e6cf7d14  README.md
+40c58ab003e430f02067cf7f72749980021e90f172f05e36f85e30b0aeca6a66  README.md
 ```
 
-Verify anytime with `sha256sum -c` against this block (from `topology/`).
+Verify anytime with `sha256sum -c` against this block — run it from
+`topology-candidates/` (this directory); `topology/` exists only after
+act 3 installs the bundle, and running it there is the post-act check.
