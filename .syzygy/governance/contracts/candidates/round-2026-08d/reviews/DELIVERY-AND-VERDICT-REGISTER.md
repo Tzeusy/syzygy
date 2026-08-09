@@ -39,9 +39,9 @@ overlap; the RAW file marks the recovered part with a storage note. [Observed]
 **In progress, staggered.** The first launch attempt (all six concurrent,
 2026-08-09 morning) failed on a platform session limit; after the limit
 lifted, the owner directed the six reviewers be dispatched across ~12 hours
-rather than concurrently. RD-20 was pulled forward by owner instruction and
-delivered early; RD-21, RD-22, RD-23 remain scheduled at roughly two-hour
-intervals through 23:23 local 2026-08-09, in ceremony order.
+rather than concurrently. RD-20 and RD-21 were pulled forward by owner
+instruction and delivered early; RD-22 and RD-23 remain scheduled through
+23:23 local 2026-08-09, in ceremony order.
 Until each wave's review is delivered and its verdict stored here, that
 wave's exact-package review stands undischarged and **no wave act may be
 offered or performed** on the strength of the dimension reviews alone: they
@@ -52,9 +52,32 @@ cover the corpus by subject, not by exact per-wave package.
 | RD-18 | A — RFC 0001–0006, 19 modules | 3/3 | `VERDICT: REVISE` | B1 — RFC3-15's `contracts/` row names the retired `ACCEPT COMPACTED FOUNDATIONAL RFCS` phrase as the live install gate and describes one act where there are six, inside the Wave A digest; B2 — the Wave A install puts `history/`, `matrix-rows/` and two generated reports inside `contracts/`, against RFC3-15's own "exclusively" |
 | RD-19 | B — RFC 0007–0009, 11 modules | 3/3 | `VERDICT: REVISE` | B1 — the acceptance record's §7 item 9 ("RFC 0001–0009 never cite RFC-0010/0011") is false against the wave's own RFC9-8(a), which relies at clause level on the RFC10-15 workspace governance store — the owner-attention list denies the wave's only forward reliance |
 | RD-20 | D1 — RFC-0010 prevention plane, 5 files | 4/4 | `VERDICT: REVISE` | B1 — the independent-acceptability conditional ("until the correction plane is accepted") appears exactly once in the 1,011 D1 lines, as README index prose; RFC10-7's actual cap-lift condition does not mention Wave D2, so an ordinary owner act (§8 q2 after act 5) lifts the cap with the correction plane unbound; B2 — what a human stop guarantees is entirely in Wave D2, including limb (a) (no further dispatch), which is pure prevention text; no D1 clause makes a cancelled/expired mission cease dispatching or stop its children (62-line sweep); B3 — under D1-only the `running → completed` transition has no gatekeeper; an envelope may name the executing principal as its own completion establisher and no bound clause refuses it |
-| RD-21 | D2 | — | *scheduled ~19:23* | — |
+| RD-21 | D2 — RFC-0010 correction plane, 1 file | 3/3 | `VERDICT: REVISE` | B1 — RFC10-20's trigger set is closed and human-keyed (stop, cancellation, expiry) while D2's own RFC10-18/RFC10-18(a) route missions into `failed` by machine adjudication; no clause in the 6-file package halts dispatch or terminates runs on that transition, so a `failed` mission's compensation runs while its runs keep dispatching and RFC10-17(a) releases their reservation in full |
 | RD-22 | C1 | — | *scheduled ~21:23* | — |
 | RD-23 | C2 | — | *scheduled ~23:23* | — |
+
+RD-21's mechanical layer was the cleanest of the pass: the single-row D2
+manifest matches the record's argument, the D1/D2 partition re-verified from
+the D2 side, the clause namespace confirmed over all 27 identities, and —
+uniquely among the waves reviewed so far — **zero forward reliances**: D2
+cites only Wave A contracts and its `depends_on` is exactly the cited set,
+with every outward citation spot-verified accurate and every extension of a
+bound clause disclaimed on its face. Its seam sweep found 17 of 18
+substantive D1→D2 reliance sites connecting cleanly when D2 binds. Its
+verdict turns on the eighteenth: RFC10-20's containment limbs fire only on
+human acts, while the package's own machinery routes into `failed` by
+machine adjudication (B1), RFC10-17(a)'s parent-terminal row cites
+RFC10-20(b) for a propagation it performs on only 2 of 4 terminal states
+(M1, a dangling reliance from a *bound* D1 clause that only D2's text can
+close), and "a human stop" is a trigger with no lifecycle state, leaving its
+reservation disposition undefined (M2). RD-21 B1 is the complement of RD-20
+B2 — between the two waves, the human stop's guarantee is stranded on the
+unbound side and the bound guarantee is keyed only to human acts. The
+reviewer notes B1, M1, and the `completed` limb all close with a single
+edit inside RFC10-20 — D2's own still-unbound text, needing no amendment to
+any bound artifact. M3 confirms RD-20 M2's stale RFC10-16 range from the
+D2 side. Of its seven findings, B1/M2/m4/m5 sit in the D2 bytes and move
+the Wave D2 digest; M1, M3, and m6 are D1-side or record-level.
 
 RD-20's mechanical layer was clean like its predecessors' — all 5 digests
 verified, the manifest sha256 matching the record's D1 row argument, the
