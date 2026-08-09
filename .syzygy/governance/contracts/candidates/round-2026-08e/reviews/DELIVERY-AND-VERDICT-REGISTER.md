@@ -21,7 +21,7 @@ the owner's direction.
 | Review | Charter role | Subject | Frozen commit | Parts stored | Verdict (copied exactly) | Blocking findings |
 |---|---|---|---|---|---|---|
 | RD-24 | Launch-gate reviewer | `launch-gate-pre-specifications.md` v1.4 — authority, scope, formula, reproducibility, administrability | `e8a4f36` | 1/1 | `VERDICT: REVISE` | RD24-01 — P-34's digest-bound approval and the same-change status edit cannot both hold; RD24-05 — §4 launch-scope rule vs formula unbridged (T1/T2: identical answers, opposite gate outcomes); RD24-09 — "F1 is not diverging" maps to no defined outcome and the named check can never fire (T3/T4) |
-| RD-25 | Active-path truth reviewer | README onward — every default route | — | not yet dispatched | — | — |
+| RD-25 | Active-path truth reviewer | README onward — every default route | `395da99` | 1/1 | `VERDICT: REVISE` | RD25-01 — PROJECT-STATUS routes the owner to the retired 08d/P-29/P-30 plan; RD25-02 — "repairs have not begun" contradicted by four routed documents and the bytes; RD25-04 — candidate README names the superseded, unbannered D3 DRAFT as "The D3 proposal", with no digest for act 5 to fail on |
 | RD-26 | Wave A reviewer | RFC 0001–0006 + launch-critical owner decisions | — | not yet dispatched | — | — |
 | RD-27 | Wave B reviewer | RFC 0007–0009, the three surfaces | — | not yet dispatched | — | — |
 | RD-28 | Specification-authoring reviewer | E1–E6 under the proposed authoring profile and first-spec charter | — | not yet dispatched | — | — |
