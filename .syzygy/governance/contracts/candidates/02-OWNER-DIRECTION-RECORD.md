@@ -91,7 +91,8 @@ groups are genuinely distinct — no ceremonial file multiplication.
 > gates are the six wave acts in
 > `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`.
 
-One final owner gate over the compacted package:
+One final owner gate over the compacted package — the retired phrase, quoted
+as the direction was given:
 `ACCEPT COMPACTED FOUNDATIONAL RFCS: <package-manifest-digest>`, with
 `REWORK COMPACTED FOUNDATIONAL RFCS: <reason>` /
 `REJECT COMPACTED FOUNDATIONAL RFCS: <reason>`. Topology, craft amendment,

@@ -1,9 +1,11 @@
 # Launch-closure preflight — round 2026-08e
 
-> **Non-authoritative round record.** Written before any repair of this pass;
-> every figure below was measured this session at the stated HEAD, by the
-> stated method. Where a later artifact and this file disagree, the later
-> artifact wins and this file is a snapshot.
+> **Historical snapshot — non-authoritative round record.** Written before
+> any repair of this pass; every figure below was measured this session at
+> the stated HEAD, by the stated method. Where a later artifact and this file
+> disagree, the later artifact wins and this file is a snapshot. The act
+> arguments it quotes are the *pre-repair* ones and are quoted as history,
+> never as an offer.
 
 - **Session date:** 2026-08-10
 - **Charter:** `syzygy_fable_launch_gate_capability1_closure_prompt.md`
@@ -21,7 +23,7 @@
 | Branch | `main`, up to date with `origin/main` |
 | HEAD | `e69c9239a95534411a2da6659dbb7cadbfa5f70a` — "governance: the launch-gate instrument itself, committed beside its first answers" |
 | Working tree | clean apart from the untracked charter file |
-| Tracked files | 308 (`git ls-files | wc -l`); 297 texty (`.md/.txt/.yaml/.yml/.py`) |
+| Tracked files | 308 (`git ls-files | wc -l`); 297 texty (extensions `.md`, `.txt`, `.yaml`, `.yml`, `.py`) |
 | Application code | none — `openspec/`, `src/`, `apps/`, `packages/` absent; 0 tracked files with code extensions (`ts/js/go/rs/java/c/cpp/rb`) [Observed] |
 | CI | `.github/workflows/governance-docs.yml` — documentation-only battery |
 | Clone verification | `round-2026-08d/CLONE-VERIFICATION.md`, valid **only for `771965c`** — 4 commits behind HEAD; a fresh clone run is owed before any new "clean" claim |

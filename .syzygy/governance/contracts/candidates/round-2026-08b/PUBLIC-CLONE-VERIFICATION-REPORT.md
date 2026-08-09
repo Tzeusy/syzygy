@@ -1,6 +1,9 @@
 # Public-clone verification — round 2026-08b
 
-> **Non-authoritative round record.** Supersedes
+> **SUPERSEDED — historical round record (marked 2026-08-10).** Later rounds
+> regenerated the topology and overview act arguments, so the digests below
+> record what was verified then, not what is offered now; do not act from
+> this file. It in turn supersedes
 > `../round-2026-08/PUBLIC-CLONE-VERIFICATION-REPORT.md`, which is
 > banner-marked. Every figure below was produced inside a real clone, in the
 > session that wrote this file, and recomputed after the last commit the

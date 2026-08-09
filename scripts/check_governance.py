@@ -1596,6 +1596,15 @@ ACT_QUOTE_EXEMPT = (
     f"{CANDIDATES}/00-README.md",
     f"{CANDIDATES}/10-EXIT-REPORT.md",
     f"{CANDIDATES}/round-2026-08/OWNER-ROUND-CHARTER.md",
+    #: Two SUPERSEDED-bannered offering records whose fenced ceremony blocks
+    #: preserve the acts *as they were offered* — the phrase starts at column
+    #: zero inside a ```text fence, so no per-line lookbehind marker can ever
+    #: precede it. RD-6's rule applies: a banner-marked file is history for
+    #: every quote-currency check, never a live offer. Added 2026-08-10 when
+    #: the round-2026-08e repairs moved the topology and overview arguments
+    #: out from under these records' quotations.
+    f"{CANDIDATES}/round-2026-08/FINAL-OWNER-ACCEPTANCE-RECORD.md",
+    f"{CANDIDATES}/round-2026-08c/FINAL-OWNER-ACCEPTANCE-PACKET.md",
     SELF_REL,
 )
 
@@ -1622,31 +1631,19 @@ ACT_QUOTE_EXEMPT = (
 #: too, so a new copy cannot skip registration.
 #:
 #: A **superseded** file belongs here only for the acts it still offers as
-#: live. `round-2026-08/FINAL-OWNER-ACCEPTANCE-RECORD.md` carries a
-#: `SUPERSEDED — Do not act from this file` banner and is history, so it is
-#: absent: RD-6 noted that a file cannot be history for CG-15b and a live
-#: offer for CG-7d at the same time.
+#: live. A banner-marked file is skipped by CG-7e before this table is
+#: consulted, so registering one is dead weight that misreads as a live
+#: offer: RD-6 noted that a file cannot be history for CG-15b and a live
+#: offer for CG-7d at the same time. On 2026-08-10 every superseded round
+#: record (`round-2026-08/FINAL-OWNER-ACCEPTANCE-RECORD.md` — always absent
+#: here — plus the 08b record, the 08b public-clone report, and the 08c
+#: preflight and packet) carried a qualifying banner, so only the live
+#: offering and the craft install record remain registered.
 ACT_DIGEST_COPY_FILES = {
     f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md":
         tuple(f"ACCEPT FOUNDATIONAL WAVE {w}" for w in WAVE_IDS) + (
          "CONFIRM CRAFT AMENDMENT: CC-TEST-2",
          "ACCEPT TOPOLOGY", "ADOPT PROJECT OVERVIEW"),
-    f"{CANDIDATES}/round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md":
-        ("ACCEPT COMPACTED FOUNDATIONAL RFCS",
-         "CONFIRM CRAFT AMENDMENT: CC-TEST-2",
-         "ACCEPT TOPOLOGY", "ADOPT PROJECT OVERVIEW",
-         "ADOPT DOCTRINE AMENDMENT: D3"),
-    f"{CANDIDATES}/round-2026-08b/PUBLIC-CLONE-VERIFICATION-REPORT.md":
-        ("CONFIRM CRAFT AMENDMENT: CC-TEST-2", "ACCEPT TOPOLOGY",
-         "ADOPT PROJECT OVERVIEW", "ADOPT DOCTRINE AMENDMENT: D3"),
-    f"{CANDIDATES}/round-2026-08c/FINAL-CLOSURE-PREFLIGHT.md":
-        ("CONFIRM CRAFT AMENDMENT: CC-TEST-2", "ACCEPT TOPOLOGY",
-         "ADOPT PROJECT OVERVIEW", "ADOPT DOCTRINE AMENDMENT: D3"),
-    f"{CANDIDATES}/round-2026-08c/FINAL-OWNER-ACCEPTANCE-PACKET.md":
-        ("ACCEPT COMPACTED FOUNDATIONAL RFCS",
-         "CONFIRM CRAFT AMENDMENT: CC-TEST-2",
-         "ACCEPT TOPOLOGY", "ADOPT PROJECT OVERVIEW",
-         "ADOPT DOCTRINE AMENDMENT: D3"),
     f"{CRAFT}/INSTALL-RECORD.md":
         ("CONFIRM CRAFT AMENDMENT: CC-TEST-2",),
 }

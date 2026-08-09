@@ -53,8 +53,9 @@
 | Digest-moving | **yes** |
 
 **Old meaning.** The install gate for the `contracts/` category *was* one
-named ceremony phrase — `ACCEPT COMPACTED FOUNDATIONAL RFCS: <manifest
-digest>` — describing **one** digest-bound act over the foundational set.
+named ceremony phrase — the now-retired `ACCEPT COMPACTED FOUNDATIONAL RFCS:
+<manifest digest>` — describing **one** digest-bound act over the
+foundational set.
 
 **New meaning.** The install gate is *"the digest-bound **acts** defined by the
 active acceptance record — that record owns the acts, their exact phrases, and

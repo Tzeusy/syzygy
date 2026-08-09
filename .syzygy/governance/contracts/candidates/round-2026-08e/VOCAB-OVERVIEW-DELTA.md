@@ -20,8 +20,8 @@ Two files were **created**: `policy-candidates/DOCTRINE-AMENDMENT-ACTUATOR-DEFIN
 and this record. One file received a **two-paragraph cross-reference only**:
 `policy-candidates/DOCTRINE-EDITORIAL-AMENDMENT-GLOSSARY-CITATION.md`.
 
-**On act 4's digest.** RD-16 verified the pre-repair bytes as
-`01d6295159…`, matching the argument the acceptance record quotes. Those
+**On act 4's digest.** RD-16 verified the pre-repair bytes as the now-stale
+`01d6295159…`, matching the argument the acceptance record then quoted. Those
 bytes no longer exist. **This record deliberately states no replacement
 digest** — a digest quoted outside its owning artifact goes stale silently
 (verification rule 3), and the record's generator owns act 4's argument.

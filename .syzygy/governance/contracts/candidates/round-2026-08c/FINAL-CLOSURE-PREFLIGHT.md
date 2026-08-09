@@ -1,9 +1,10 @@
 # Final-closure preflight — the state this round started from
 
-> **Non-authoritative round record.** This file records what was observed at
-> one commit, before any change. It accepts nothing, licenses nothing, and
-> goes stale the moment the round edits anything. Where it and a current
-> artifact disagree, the artifact wins and this file is a historical
+> **SUPERSEDED — historical round record (marked 2026-08-10).** This file
+> records what was observed at one commit, before any change. It accepts
+> nothing, licenses nothing, and went stale the moment the round edited
+> anything; the act arguments it quotes have since moved. Where it and a
+> current artifact disagree, the artifact wins and this file is a historical
 > observation, correctly so.
 
 ## 1. Position

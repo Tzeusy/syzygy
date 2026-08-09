@@ -808,8 +808,9 @@ most of this file's "retained invariant" column agrees with it.
 ## RFC-0010 — Mission Control and Autonomy Envelopes
 
 
-**Enumeration method:** same `python3` run, same definition-site regex applied
-with `re.M` to `rfcs/RFC-0010-mission-control-autonomy.md`:
+**Enumeration method (historical — the run against the pre-split single-file
+RFC-0010 module, since split into the `rfcs/RFC-0010/` package):** same
+`python3` run, same definition-site regex applied with `re.M`:
 
 ```python
 defre = re.compile(r'^\*\*(RFC(?:8|10)-\d+)(\([a-z]\))?(?=[\s.—*])', re.M)
@@ -819,12 +820,17 @@ Contiguity checked by integer set-difference against 1..16: **no gaps, no
 extras**. The lettered-mention sweep
 (`re.compile(r'RFC(?:8|10)-\d+(?:\([a-z0-9]\))?')`) returned **no** lettered
 RFC10 identifiers anywhere in the file — the `(a)`/`(c)` forms present in the
-text belong to RFC3-16, RFC4-13, RFC5-18, not to this contract. So there are
-no lettered sub-clauses to route.
+text belong to RFC3-16, RFC4-13, RFC5-18, not to this contract. So there were,
+at that run, no lettered sub-clauses to route.
 
-**Clauses found:** 16 — RFC10-1, RFC10-2, RFC10-3, RFC10-4, RFC10-5, RFC10-6,
-RFC10-7, RFC10-8, RFC10-9, RFC10-10, RFC10-11, RFC10-12, RFC10-13, RFC10-14,
-RFC10-15, RFC10-16
+**Clauses found by that historical run:** 16 — RFC10-1 through RFC10-16. The
+contract has since grown past that enumeration (the budget-reservation and
+effects-recovery clauses below postdate it, some with lettered sub-clauses);
+the rows are the current population, and that population is recomputed —
+declared identities against routed rows — by CG-17 on every battery run, never
+carried in this note. *Re-run 2026-08-10 against the `rfcs/RFC-0010/` package:
+the same definition-site sweep returns a contiguous clause range with no gaps
+and no extras.*
 
 | Clause | Route | Future spec domain | Retained invariant in the RFC | Justification |
 |---|---|---|---|---|
@@ -937,8 +943,9 @@ one exists because a reviewer constructed the scenario in which it did not.
 ## RFC-0011 — Context Compiler and Governed Context Packets
 
 
-**Enumeration method:** run over the package's `rfcs/RFC-0011-context-compiler.md`
-with the same corrected Python `re` pattern, adapted to the namespace:
+**Enumeration method (historical — the run against the pre-split single-file
+RFC-0011 module, since split into the `rfcs/RFC-0011/` package):** the same
+corrected Python `re` pattern, adapted to the namespace:
 
 ```python
 import re
@@ -948,13 +955,17 @@ ids = set(pat.findall(open('RFC-0011-context-compiler.md').read()))
 
 Confirmed by a second method: a sweep for bold clause declarations
 `\*\*(RFC11-\d+(?:\([a-z]\))?)\.` returns the identical twelve identities, so
-every clause in the file is declared and no identity appears only in
-cross-reference. **No lettered sub-clauses exist in RFC-0011** — the front
-matter declares `RFC11-1..RFC11-12` with no sub-clause list, and the
+every clause in the file was declared and no identity appeared only in
+cross-reference. **No lettered sub-clauses existed in RFC-0011 at that run** —
+the front matter declared `RFC11-1..RFC11-12` with no sub-clause list, and the
 sub-clause branch of the regex matched nothing.
 
-**Clauses found:** 12 — RFC11-1, RFC11-2, RFC11-3, RFC11-4, RFC11-5, RFC11-6,
-RFC11-7, RFC11-8, RFC11-9, RFC11-10, RFC11-11, RFC11-12
+**Clauses found by that historical run:** 12 — RFC11-1 through RFC11-12. The
+contract has since grown past that enumeration; the rows are the current
+population, and that population is recomputed by CG-17 on every battery run,
+never carried in this note. *Re-run 2026-08-10 against the `rfcs/RFC-0011/`
+package: the mention sweep and the bold-declaration sweep return identical
+identity sets.*
 
 | Clause | Route | Future spec domain | Retained invariant in the RFC | Justification |
 |---|---|---|---|---|
