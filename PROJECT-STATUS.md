@@ -90,11 +90,17 @@ repaired in the candidate bytes, and the repairs are unreviewed.**
    Class coverage is claimed by construction only — no independent blind
    derivation has run over the restructured fixtures yet.
 
-**No review verdict of any kind is bound to the current wave arguments.**
-Every prior review read bytes this round has since changed. The
-fresh-context review pass over the six wave manifests is the round's
-remaining obligation before any wave act is performable knowingly; the
-acceptance record's wave-history note states this beside the phrases.
+**No confirming review is bound to any current wave argument.** The
+round-2026-08d fresh-context review pass has now run — fifteen reviews
+(nine dimensions, six exact wave packages), **fifteen `REVISE` verdicts,
+zero `CONFIRM`** — so every wave argument carries a REVISE review, which is
+a verdict against binding, not for it. All 173 findings are disposed in
+`…/round-2026-08d/reviews/DISPOSITION-REGISTER.md`; repairs have not begun.
+Separately, a first administration of the owner's launch-gate instrument
+(`launch-gate-pre-specifications.md` v1.3, at commit `067d8a0`) returned
+**GATE VERDICT: NOT READY** — 17 of 31 questions Not met, including all six
+of section E, the OpenSpec-readiness section itself; the raw record is
+`…/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md`.
 
 **One thing this project does not have, stated plainly:** there is no
 mechanical task-to-context-packet compiler — `context_load.py` measures a
@@ -103,9 +109,11 @@ hand-authored. The fixtures' verification checklists say so per fixture.
 
 ## Next lifecycle step
 
-The round-2026-08d review pass (fresh-context, frozen digests, verdict
-words verbatim), then the readiness recompute and the round's owner-facing
-offering; then the owner performs (or declines) the wave acts. After the
+The round-2026-08d repair batches (P-29/P-30 rulings first for the gated
+waves; scripted manifest regeneration and a fresh confirming review per
+edited wave, per the disposition register's §2 and §7), then the readiness
+recompute and the round's owner-facing offering; then the owner performs
+(or declines) the wave acts. After the
 waves an owner accepts, the first concrete proposal runs through
 `/th-projects project-feature-request` toward an owner-approved OpenSpec
 delta — specification authoring, still no implementation.
