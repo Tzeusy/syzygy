@@ -1,5 +1,12 @@
 # The first specification sequence
 
+> **SUPERSEDED — historical record.** Revision 2 is
+> `../round-2026-08d/FIRST-OPENSPEC-SEQUENCE.md`. Three contract gaps this
+> file reports (the fixed-path clause, the discoverability finding,
+> `constrains` unnamed by RFC11-4) were repaired in candidate bytes at
+> round 2026-08d, the five-act gating became six wave acts, and the nine
+> fixtures became ten with a task/answer boundary.
+
 > **Candidate plan. Binds nothing, and creates nothing.** No OpenSpec
 > changeset exists, no `openspec/` tree exists, and none may be created before
 > the owner acts. This file records **what to specify first, in what order, and

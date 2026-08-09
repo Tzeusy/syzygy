@@ -259,6 +259,7 @@ RAW_REVIEW_DIRS = (
     f"{CANDIDATES}/round-2026-08/reviews/",
     f"{CANDIDATES}/round-2026-08b/reviews/",
     f"{CANDIDATES}/round-2026-08c/reviews/",
+    f"{CANDIDATES}/round-2026-08d/reviews/",
 )
 
 
@@ -830,6 +831,7 @@ ACT_QUOTE_EXEMPT = (
     f"{CANDIDATES}/round-2026-08/reviews/",
     f"{CANDIDATES}/round-2026-08b/reviews/",
     f"{CANDIDATES}/round-2026-08c/reviews/",
+    f"{CANDIDATES}/round-2026-08d/reviews/",
     f"{CANDIDATES}/reviews/",
     f"{CANDIDATES}/history/",
     f"{CANDIDATES}/fixtures/",
@@ -1275,6 +1277,9 @@ BOOTSTRAP_ALLOW_PREFIX = (
     (f"{CANDIDATES}/round-2026-08c/reviews/",
      "raw reviewer output, stored verbatim — allowlisted explicitly when the "
      "round opened, on the same terms as its two predecessors"),
+    (f"{CANDIDATES}/round-2026-08d/reviews/",
+     "raw reviewer output, stored verbatim — allowlisted explicitly when the "
+     "round's review pass opened, on the same terms as its predecessors"),
     (f"{CANDIDATES}/matrix-rows/", "per-RFC clause-migration provenance rows"),
     (f"{CANDIDATES}/04-CLAUSE-MIGRATION-MATRIX.md",
      "clause-migration provenance, cites frozen rev9 sources by construction"),
@@ -1436,6 +1441,13 @@ def _git_excluded_roots():
     dependency this repository keeps re-acquiring. Hardcoding the list would
     make the check go stale the moment `.gitignore` changed, so it is parsed.
     """
+    #: Full excluded path prefixes, not top-level segments only: the first
+    #: version kept `seg.split("/")[0]` and skipped dotted names, which
+    #: dropped `.syzygy/cache/` and `.syzygy/local/` from the set entirely —
+    #: review RD-6, finding D-1 ("the prior round's defect class,
+    #: recurring"). A ceremony step naming either would have been checked
+    #: against the local filesystem, which is exactly the founder-machine
+    #: divergence this helper exists to prevent.
     roots = set()
     for line in (read(".gitignore") or "").splitlines():
         line = line.strip()
@@ -1443,9 +1455,9 @@ def _git_excluded_roots():
             continue
         if any(c in line for c in "*?[]"):
             continue
-        seg = line.strip("/").split("/")[0]
-        if seg and not seg.startswith("."):
-            roots.add(seg)
+        prefix = line.strip("/")
+        if prefix:
+            roots.add(prefix)
     return roots
 
 
@@ -1508,7 +1520,8 @@ def cg14_install_routes(res, record=None, all_paths=()):
             # A git-excluded root is absent in every clone. Answer from
             # `.gitignore`, never from the local filesystem, so the founder
             # machine and a fresh clone reach the same verdict.
-            if path.strip("/").split("/")[0] in excluded_roots:
+            _p = path.strip("/")
+            if any(_p == r or _p.startswith(r + "/") for r in excluded_roots):
                 findings.append(
                     f"`{path}` — named by the ceremony as a location, but it "
                     f"is git-excluded and therefore absent from every clone; "
@@ -1554,6 +1567,7 @@ VERBATIM_SOURCES = (
     f"{CANDIDATES}/round-2026-08/reviews/",
     f"{CANDIDATES}/round-2026-08b/reviews/",
     f"{CANDIDATES}/round-2026-08c/reviews/",
+    f"{CANDIDATES}/round-2026-08d/reviews/",
     f"{CANDIDATES}/history/",
     f"{CANDIDATES}/round-2026-08/OWNER-ROUND-CHARTER.md",
     SELF_REL,
@@ -2325,6 +2339,18 @@ def selftest():
         "the ceremony\n## 3. Next\n"), all_paths=())
     cases.append(("CG-14 disclaimed git-excluded mention exempted",
                   c.rows[0][0] != "FAIL"))
+
+    # RD-6 finding D-1: the excluded-root set must include dotted,
+    # nested prefixes (`.syzygy/cache/`, `.syzygy/local/`), not only
+    # top-level names like `_bootstrap` — the first implementation dropped
+    # both and would have consulted the local filesystem instead.
+    c = Cap()
+    cg14_install_routes(c, record=(
+        "## 2. Ceremony\nmirror the projection to `.syzygy/cache/views/`\n"
+        "## 3. Next\n"), all_paths=(".syzygy/cache/views/x.md",))
+    cases.append(("CG-14 dotted git-excluded root (.syzygy/cache) detected",
+                  c.rows[0][0] == "FAIL"
+                  and "git-excluded" in (c.rows[0][4] or [""])[0]))
 
     # CG-8 measures the §7.3 default load. Its failure modes are not "a file
     # is too long" — that is reported, never enforced — but the three ways the

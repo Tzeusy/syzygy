@@ -1539,13 +1539,13 @@ name plus *Project Genome*→genome and *Source snapshot*→snapshot; the frozen
 ## 6. What this registry does not establish
 
 - **It is not evidence that the vocabulary is coherent.** It records what the
-  30 listed terms mean and who owns each meaning.
+  31 listed terms mean and who owns each meaning.
 - **The corpus was not swept for terms used normatively that are absent from
   this registry entirely.** That is the larger unrun half of a lexical audit,
   and the migration report says so under its own finding.
 - **The admission rule (§3) was applied to no incumbent term.** Every entry is
   vocabulary admitted by prior use. The rule governs what comes next.
-- **No newcomer comprehension test has been run** on any of the 30 entries.
+- **No newcomer comprehension test has been run** on any of the 31 entries.
   VIS-3's fresh-reader review is a separate act, not performed here.
 - **Nothing was renamed, replaced, or migrated anywhere in the repository.**
   Deprecated synonyms above are recommendations pending review; the migration
