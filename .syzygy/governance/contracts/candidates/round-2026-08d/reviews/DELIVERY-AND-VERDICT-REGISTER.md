@@ -49,11 +49,24 @@ cover the corpus by subject, not by exact per-wave package.
 | Review | Wave | Parts stored | Verdict (copied exactly) | Blocking findings |
 |---|---|---|---|---|
 | RD-18 | A — RFC 0001–0006, 19 modules | 3/3 | `VERDICT: REVISE` | B1 — RFC3-15's `contracts/` row names the retired `ACCEPT COMPACTED FOUNDATIONAL RFCS` phrase as the live install gate and describes one act where there are six, inside the Wave A digest; B2 — the Wave A install puts `history/`, `matrix-rows/` and two generated reports inside `contracts/`, against RFC3-15's own "exclusively" |
-| RD-19 | B | — | *scheduled ~15:23* | — |
+| RD-19 | B — RFC 0007–0009, 11 modules | 3/3 | `VERDICT: REVISE` | B1 — the acceptance record's §7 item 9 ("RFC 0001–0009 never cite RFC-0010/0011") is false against the wave's own RFC9-8(a), which relies at clause level on the RFC10-15 workspace governance store — the owner-attention list denies the wave's only forward reliance |
 | RD-20 | D1 | — | *scheduled ~17:23* | — |
 | RD-21 | D2 | — | *scheduled ~19:23* | — |
 | RD-22 | C1 | — | *scheduled ~21:23* | — |
 | RD-23 | C2 | — | *scheduled ~23:23* | — |
+
+RD-19's mechanical layer was as clean as RD-18's — 11/11 digests, the
+manifest sha256 matching the record's row B argument, the file set an exact
+RFC 0007–0009 partition, zero retired-phrase hits in the wave bytes, and the
+clause namespace duplicate-free. Its verdict turns on the record's
+owner-attention list denying the wave's one forward reliance (blocking, but
+digest-stable — §7 sits outside every wave manifest), that reliance being
+invisible to every machine-readable `depends_on` declaration while the
+condition releasing it is itself an open owner question (RFC-0010 §8 q3),
+RFC-0007's index labelling a discharged RFC 0002 defect "Live" against
+already-bound bytes, the RFC9-43/RFC9-46 tuple contradiction, and the
+RFC-0007 seam edge-count wrong for the second time. Seven of its eleven
+findings move the Wave B digest and batch into one pass.
 
 RD-18's mechanical layer was fully clean: all 19 digests verified by two
 methods, the manifest's own sha256 byte-identical to the record's Wave A
