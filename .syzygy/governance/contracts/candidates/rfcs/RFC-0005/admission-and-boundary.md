@@ -156,7 +156,16 @@ machine-client authentication mechanism (SEC-1). There is no anonymous machine
 access on any interface, loopback included; a request with neither session nor
 machine credential may reach only the endpoints an unauthenticated visitor may
 see, and that set is closed: liveness/health and the authentication bootstrap
-itself, neither exposing portfolio data.
+itself, neither exposing portfolio data. **The closed set is
+interface-qualified**, because SEC-1 permits unauthenticated reachability
+**only on the loopback interface**: on a non-loopback serving mode the two
+endpoints are reachable only from behind that mode's device restriction
+(RFC5-9), and **the bootstrap endpoint never issues a credential outside
+RFC5-6's owner-attended ceremony** on either interface. Without the
+qualification a conforming implementation could expose credential bootstrap on
+a LAN address on this clause's plain text, which SEC-1 forbids [Inferred —
+composition with SEC-1, RFC5-6 and RFC5-9; the residual risk was already small,
+the silence was the defect].
 
 **Named machine-class clients** *(rev10 scoping, directive §2 / OD-R10-5).* The
 official `syzygy` CLI, agent-protocol adapters (e.g. MCP), scripts, and fleet
@@ -334,8 +343,20 @@ surfaces — may be scheduled solely from this RFC. Before implementation,
 every observable consequence either maps to an approved OpenSpec requirement
 and scenario in the governance root's `openspec/**` plane, or carries a
 reviewed N/A judgment proving it purely structural with no independently
-testable behavior. At surface specification a clause-to-requirement coverage
-matrix over RFC5-1..RFC5-27 is produced — **that matrix is review material,
+testable behavior. **The reviewed N/A judgment's home and gate.** A reviewed
+N/A judgment is a recorded owner judgment homed in `decisions/` (RFC3-15), and
+it is honored only where its owner-act provenance is verifiable under
+RFC3-16(a). Where that provenance does not verify, the judgment maps nothing:
+the consequence remains unmapped and renders Unknown, never covered
+(RFC3-16(a)'s effect rule; VIS-2).
+
+**Rows are per observable consequence, not per clause.** A clause with five
+observable consequences and one mapped requirement is not covered; the matrix
+discloses the consequences it enumerates for each clause, so a
+complete-looking matrix over under-enumerated consequences is a defect of the
+matrix. At surface specification a
+clause-to-requirement coverage matrix over RFC5-1..RFC5-27 is produced —
+**that matrix is review material,
 never authority**. This clause creates no OpenSpec content now (none may
 exist during bootstrap). This clause binds the whole RFC 0005 package, not
 this module alone. (Shape-parallel with RFC6-28, RFC7-38, RFC8-32, RFC9-52,

@@ -3,7 +3,15 @@
 > **Candidate. Proposed, not performed.** This file changes nothing. Doctrine
 > is adopted, and only the owner amends it (VIS-4). It is drafted here so the
 > owner can approve or decline a fully specified edit rather than a
-> description of one. Owner item **P-25**.
+> description of one. Owner item **P-25(a)**.
+>
+> **Composes with** `DOCTRINE-AMENDMENT-ACTUATOR-DEFINITION.md`
+> (**P-25(c)**, drafted 2026-08-10), which takes up one of the three terms
+> this packet lists below as deliberately not fixed — *actuator* / *actuator
+> toolchain* — and defines it in the same glossary. Neither packet supersedes
+> the other; they may be adopted in either order or independently. The
+> remaining two, *ai-bootstrap toolchain* and the identity of the designated
+> substrate it names, are still proposed by neither.
 
 ## The defect, stated precisely
 
@@ -88,6 +96,13 @@ Qualifying the citation makes these *findable as missing* instead of
 mysterious, which is an improvement and not a fix. Adding definitions is a
 substantive doctrine amendment with its own drafting and its own fresh-reader
 review under VIS-3, and it is not proposed here.
+
+**Update, 2026-08-10.** The first of the three now *is* proposed — separately,
+with its own drafting and its own VIS-3 posture — in
+`DOCTRINE-AMENDMENT-ACTUATOR-DEFINITION.md` (**P-25(c)**), after the
+2026-08-09 launch-gate administration recorded the same defect as finding D3.
+Nothing in this packet changes: it still fixes only the citations, still
+claims editorial, and still defines nothing.
 
 ## If the owner adopts
 

@@ -16,7 +16,10 @@ carry an explicit reviewed judgment that it has no independently testable
 behavior.
 
 That rule is only as good as the enumeration behind it. This matrix is that
-enumeration: **199 clause identities, each routed exactly once.**
+enumeration: **every declared clause identity of RFC 0006–0011, each routed
+exactly once** — a population CG-17 (`scripts/check_governance.py`)
+recomputes against this file's rows every battery run; its printed count,
+not any figure in this file, is the total of record.
 
 ## The four routes
 
@@ -49,7 +52,7 @@ Three consequences, all measured rather than estimated:
   nine resolution outcomes, the drawer, endpoint parity — are the most
   directly user-observable material in the corpus, and it was the domain the
   readiness report sequenced as changeset #1. It now has 28 rows: 27 OS, 1
-  N/A.
+  CR (RFC6-28, re-decided from N/A on 2026-08-10 — note 3 in its section).
 - **RFC-0007 was under-enumerated.** REV10 listed 39 rows; the contract
   declares **45** clause identities. Six sub-clauses (`RFC7-2(b)`, `(c)`,
   `RFC7-9(b)`, `(c)`, and two others) appear only as inline `**(b)` markers
@@ -64,27 +67,30 @@ Three consequences, all measured rather than estimated:
 classified 150 of 322 (46.6%). That claim is retired here rather than
 deleted, because the number was load-bearing for a readiness judgment.
 
-## Totals — counted from the rows below, not carried forward
+## Totals — computed by the battery, never carried in this file
 
-The assembler parses the assembled tables and counts them; each part's own
-tally line was checked against that count and is a claim, not the source.
+A grand-total table used to sit here. Measured this session (2026-08-10),
+it had gone stale against this file's own rows: the table still summed
+**199** while the rows count **210** — the RFC-0010/0011 package-split rows
+landed and the table did not move. That is the transcribed-derived-value
+failure the verification rules name, recurring inside the artifact that
+exists to be an enumeration, so the table is withdrawn rather than patched:
 
-| Contract | OS | N/A | CR | IR | Total |
-|---|---:|---:|---:|---:|---:|
-| RFC-0006 | 27 | 1 | 0 | 0 | **28** |
-| RFC-0007 | 39 | 2 | 4 | 0 | **45** |
-| RFC-0008 | 31 | 0 | 1 | 0 | **32** |
-| RFC-0009 | 53 | 1 | 6 | 0 | **60** |
-| RFC-0010 | 21 | 0 | 1 | 0 | **22** |
-| RFC-0011 | 11 | 0 | 1 | 0 | **12** |
-| **All** | **182** | **4** | **13** | **0** | **199** |
+- **Population and uniqueness:** CG-17 (`scripts/check_governance.py`)
+  recomputes, every run, the declared RFC 0006–0011 clause identities
+  against this file's rows and fails on any clause routed zero times or
+  twice. Its printed examined-count is the total of record.
+- **Per-route split:** each per-contract section carries its tally line
+  beside the rows it counts. Read the split there, next to what it counts —
+  never from a summary at this distance.
 
-**Read the shape honestly.** 182 of 199 route to OpenSpec. Only **four**
-clauses in the whole surface corpus survive as structural N/A. That is the
-correct result for six contracts that exist to describe what a person or an
-agent sees — but it also means the specification phase ahead is large, and
-any plan that assumed most of this was "already settled in the RFCs" was
-working from the previous revision's arithmetic.
+**Read the shape honestly, without the withdrawn arithmetic.** Nearly every
+clause in the surface corpus routes to OpenSpec, and only a handful survive
+as structural N/A. That is the correct result for six contracts that exist
+to describe what a person or an agent sees — but it also means the
+specification phase ahead is large, and any plan that assumed most of this
+was "already settled in the RFCs" was working from the previous revision's
+arithmetic.
 
 **IR is zero by construction, not by finding.** Bracketed
 `[Inferred]`/`[Observed]` passages and §0/§1/§5/§6 prose are informative by
@@ -115,8 +121,12 @@ owner decides whether to mint it or keep those limbs in
 - **RFC-0010's OS rows are additionally gated on doctrine amendment D3.**
   Missions can be *specified* under RFC-0010; they cannot lawfully *operate*
   under unamended doctrine.
-- **The `CR` rows point at a release policy that does not exist yet.** Naming
-  where thirteen obligations belong does not create their home.
+- **The `CR` rows point at homes that are candidates or absent.** The
+  coverage-matrix obligation now has a named candidate home — the
+  specification-acceptance policy candidate, CC-SPEC-8 (approved by no act)
+  — but no release-policy artifact exists at all, and naming where an
+  obligation belongs does not create its home. Count the CR rows from the
+  tallies beside them, not from a figure here.
 - **Routing is a judgment, and judgments carry doubt.** 27 rows were flagged
   doubtful by their authors, with the alternative route and its tally shift
   recorded in the per-contract notes. A reviewer can flip any of them on
@@ -180,20 +190,20 @@ RFC6-24, RFC6-25, RFC6-26, RFC6-27, RFC6-28
 | RFC6-14 | OS | `spec/selection-api` | The vocabulary is RFC 0002's **verbatim** — endpoints may not relabel, coarsen, or invent states; `challenge-pending` (RFC2-13) is neither a tier nor an Unknown reason and travels *beside* the four values, never displacing one | A spec must assert that every entity, claim instance and aggregate in a machine answer carries label, RFC2-25 tier, RFC2-24 reason where applicable and RFC2-10 freshness, plus the three sibling surface states, and that an answer listing entities without labels — or a count folding Unknowns silently into a total — fails |
 | RFC6-15 | OS | `spec/selection-api` | Query answering is inside the deterministic layer (VIS-7, RFC6-7); an answer that cannot name its evaluation is not an answer at all, not a degraded one | A spec must assert that every answer names the evaluation identity (source snapshot + as-of instant), that identical evaluation plus identical filters return an identical answer, and that a mixed-evaluation answer declares its skew per RFC6-3 |
 | RFC6-16 | OS | `spec/selection-api` | The only VIS-1-permitted move is narrowing the **declared** scope, never faking coverage (RFC2-23's partial-snapshot rule applied to queries) | A spec must assert that the answer envelope names the filters applied, and that a filtered or partial result is never presented as full project scope |
-| RFC6-17 | OS | `spec/selection-api` — scene and table aggregates consume it via `spec/map-scenes` and the surface specs | The aggregation obligation is exactly as wide as the RFC6-22 equivalence obligation over the same objects: labels may not be dropped at the moment elements merge | A spec must assert that every aggregate discloses membership count plus per-label, per-tier over **all six** RFC2-25 tiers, per-Unknown-reason, per-freshness and sibling-surface-state composition, and supports expansion to members — "Observed ×30" without the `reduced-fidelity` and stale counts fails the assertion |
+| RFC6-17 | OS | `spec/selection-api` — scene and table aggregates consume it via `spec/map-scenes` and the surface specs | The aggregation obligation is exactly as wide as the RFC6-22 equivalence obligation over the same objects: labels may not be dropped at the moment elements merge | A spec must assert that every aggregate discloses membership count plus per-label, per-tier over **all six** RFC2-25 tiers, per-Unknown-reason (computed over primary reasons only, secondary annotations disclosed separately), per-freshness and sibling-surface-state composition — and, since the 2026-08-10 Wave A repair (RD-9 f5), per-value counts of chain state and normalized work state where carried plus the `challenge-pending` disclosure — and supports expansion to members; "Observed ×30" without the `reduced-fidelity` and stale counts fails the assertion |
 | RFC6-18 | OS | `spec/selection-api` | Two surfaces showing different evidence for one selection at one evaluation is classified a **kernel defect, not a UI inconsistency** — a diagnosis-routing rule that survives whatever requirement is written, since it decides who owns the bug | A spec must assert that the full fact set for a (reference, evaluation, scenario) triple is reachable from every surface and from the endpoints, and that presentation differences — ordering, grouping, progressive disclosure, SDR-17 minimal-by-default — never change which facts, labels, or provenance exist |
-| RFC6-19 | OS | `spec/selection-api` | The seven content classes are the **closed taxonomy** of the fact set, and challenge lifecycle state travels unflattened: `admitted` suspends the claim (Unknown, `challenge-suspended`, `suspended` tier) while `challenge-pending` suspends nothing | A spec must assert, per selection, that the fact set carries all seven classes with their named members — identity and succession edges; label+tier+reason+freshness with suspension basis visible; every evidence artifact as a resolvable link with source, capture time, scope and integrity identity; producing evaluation plus typed authority plus observer/adapter identities and versions; warrants with dismissal reason and expiry; every open challenge with its RFC2-13 state; exclusion counts and consent state |
+| RFC6-19 | OS | `spec/selection-api` | The eight content classes are the **closed taxonomy** of the fact set, and challenge lifecycle state travels unflattened: `admitted` suspends the claim (Unknown, `challenge-suspended`, `suspended` tier) while `challenge-pending` suspends nothing; class 7's coverage boundary is the union of two defined constructs — executed mapping coverage records (RFC4-27, via RFC2-6) and declared captured scope (RFC2-23) — never a free-standing judgment | A spec must assert, per selection, that the fact set carries all eight classes with their named members — identity and succession edges; label+tier+reason+freshness with suspension basis visible; every evidence artifact as a resolvable link with source, capture time, scope and integrity identity; producing evaluation plus typed authority plus observer/adapter identities and versions; warrants with dismissal reason and expiry; every open challenge with its RFC2-13 state; exclusion counts, consent state and the coverage boundary; and, where work bears on the selection, the two-field work-and-reconciliation state — chain state (RFC2-18, read under RFC2-19's V0 staging) and normalized work state (RFC8-12, a staged forward reference, informative until RFC 0008 is accepted) |
 | RFC6-20 | OS | `spec/selection-api` | Doctrine rules and accepted contracts are **not** V0-core graph entities (RFC1-6) and are cited by stable identifier; external URLs are classified external and may be unavailable without falsifying the internal graph | A spec must assert that every internal link in a fact set resolves to its identified target, that the kernel emits no reference it cannot resolve (RFC1-26), and that a `VIS-n` or RFC-clause citation, *if* rendered as a link, resolves to the identified artifact |
 | RFC6-21 | OS | `spec/selection-api` | SDR-17's minimal default is a presentation depth, never a fourth epistemic state alongside Observed/Inferred/Unknown | A spec must assert that disclosing a minimally-rendered status yields the same fact set on every surface, and that endpoints serve the full set regardless of any display-depth parameter a client passes |
-| RFC6-22 | OS | `spec/selection-api` — parity fixtures shared with `spec/map-surface` | Equivalence is over **semantics and query results, never pixels**; no requirement may satisfy it with a visual or screenshot comparison | A spec must assert the field-by-field parity tuple — same evaluation identity, same declared filters, same entities and edges, same label+tier+reason+freshness, same sibling surface states, same scenario context — holds between a 3D scene, a 2D view, a table and a machine answer for every presented element over one declared scope |
-| RFC6-23 | OS | `spec/selection-api` — parity fixtures shared with `spec/map-surface` | Finer detail in a non-3D rendering is permitted (SDR-27) **only** as a disclosed filter/aggregation difference; and any disagreement is release-blocking under the trust floor — a release-gate limb that craft/release policy must also carry (see Notes) | A spec must assert that no pair of equivalent renderings disagrees on an entity's existence, an edge, a label, a tier, a reason, a freshness state, a sibling surface state, a scenario context, or a count over the same declared scope, and that a finer-detail rendering discloses the difference as filter/aggregation per RFC6-16/17 rather than presenting it as a different graph |
+| RFC6-22 | OS | `spec/selection-api` — parity fixtures shared with `spec/map-surface` | Equivalence is over **semantics and query results, never pixels**; no requirement may satisfy it with a visual or screenshot comparison | A spec must assert the field-by-field parity tuple — same evaluation identity, same declared filters, same entities and edges, same label+tier+reason+freshness, same sibling surface states, same scenario context, and (since the 2026-08-10 Wave A repair) same `challenge-pending` disclosure plus same chain state and normalized work state where carried — holds between a 3D scene, a 2D view, a table and a machine answer for every presented element over one declared scope; "a facet outside this tuple is checked by nothing" is now the clause's own stated rationale |
+| RFC6-23 | OS | `spec/selection-api` — parity fixtures shared with `spec/map-surface` | Finer detail in a non-3D rendering is permitted (SDR-27) **only** as a disclosed filter/aggregation difference; and any disagreement is release-blocking under the trust floor — a release-gate limb that craft/release policy must also carry (see Notes) | A spec must assert that no pair of equivalent renderings disagrees on an entity's existence, an edge, a label, a tier, a reason, a freshness state, a sibling surface state, a chain state, a normalized work state, a `challenge-pending` disclosure, a scenario context, or a count over the same declared scope, and that a finer-detail rendering discloses the difference as filter/aggregation per RFC6-16/17 rather than presenting it as a different graph |
 | RFC6-24 | OS | `spec/selection-api` — historical *map* rendering lands in `spec/map-surface` under RFC9-41 | Exactly one context per selection with Base as the default; the three-value context set is closed; Base is distinct from RFC9-14's layout baseline; a Proposed context has **no status authority** — it never turns anything green, closes a gap, or anchors the map | A spec must assert the explicit non-default-revision marker on a Base context over a branch or PR-tree evaluation; the kernel's refusal of a context naming two proposals of one exclusivity group or of undeclared compatibility, returning `incompatible-scenario` and rendering *N candidate futures* selectable one at a time; proposed structure staying visually and queryably distinct in drawer, scene, table and endpoint alike; and Historical resolving against the immutable observation record with staleness visible on the primary surface |
 | RFC6-25 | OS | `spec/selection-api` | A silent context swap is a violation **even when the fact sets overlap** — overlap is never a licence to substitute one context for another | A spec must assert that scenario context travels through cross-surface synchronization, URLs and query answers, and that a base-context selection never renders proposed structure, nor the reverse |
 | RFC6-26 | OS | `spec/selection-api` | The state maps to RFC2-24 reason #6 `unconsented-source-or-provider`, and consent state is itself a drawer fact (RFC6-19 class 7) — a standing policy state, not an incident | A spec must assert that an unconsented source or provider renders Unknown with that reason and its resolution route (record consent) — never a failure, a broken link, or an empty region — while the consented remainder of the fact set renders normally |
 | RFC6-27 | OS | `spec/selection-api` | Unclassifiable content fails closed (SEC-5); a secret in a query answer is identical in gravity to one in a tooltip, so no consumer class earns a weaker rule | A spec must assert that excluded content renders as *excluded* with a count rather than as absent, and that nothing derived from excluded content reaches any surface, drawer or endpoint — including the shape-leaking case of per-file match counts (§4 case 10) |
-| RFC6-28 | N/A | — | The whole clause stays normative: no implementation work for user-observable behavior under RFC6-1…RFC6-27 may be scheduled from this RFC alone; each observable consequence must map to an approved `openspec/**` requirement or carry an explicit, reviewed N/A; the clause-to-requirement coverage matrix is a surface-specification deliverable and is review material, never authority | Its sole addressee is the scheduling boundary between contract prose and the specification plane. Nothing a user of the running system can observe distinguishes a compliant world from a non-compliant one — the difference is visible only in the governance record of *how work was authorized*, and the clause explicitly creates no OpenSpec content ("none may exist during bootstrap"). Every observable consequence it governs already carries its own OS row above, so a requirement written for RFC6-28 itself would only restate this matrix |
+| RFC6-28 | CR | — (phase gate; the coverage-matrix deliverable's named candidate home is the specification-acceptance policy, CC-SPEC-8) | The whole clause stays normative: no implementation work for user-observable behavior under RFC6-1…RFC6-27 may be scheduled from this RFC alone; each observable consequence must map to an approved `openspec/**` requirement or carry a reviewed N/A judgment homed in `decisions/` (RFC3-15) and honored only under verifiable RFC3-16(a) provenance — the clause's own standardized sentence; the coverage matrix is review material, never authority | **Re-decided CR on 2026-08-10** — launch-gate pilot finding E4 required the six shape-parallel phase clauses to route identically, with the value a judgment this repair records. The 2026-08-07 N/A rested on one load-bearing premise: that neither craft-and-care nor any release policy owned specification-phase gating, so the CR route had no home. That premise is dissolved — the candidate specification-acceptance policy's **CC-SPEC-8** owns exactly this clause's deliverable, the clause-to-requirement coverage matrix produced with each spec. Like its five siblings, the clause is a review-and-process obligation on how work comes to be scheduled, invisible to any user of the running system, and a requirement written for it would be circular. The superseded N/A reasoning is preserved in note 3 below |
 
-**Tally:** OS 27 · N/A 1 · CR 0 · IR 0 · total 28 (sums: yes — 27 + 1 + 0 + 0 = 28)
+**Tally:** OS 27 · N/A 0 · CR 1 · IR 0 · total 28 (sums: yes — 27 + 0 + 1 + 0 = 28; RFC6-28 re-decided N/A → CR on 2026-08-10, note 3)
 
 **Notes and doubts:**
 
@@ -232,20 +242,25 @@ consideration is auditable rather than invisible.*
    RFC6-23's release-gate limb explicitly rather than letting the OS row
    absorb it silently.
 
-3. **RFC6-28 — flagged doubt (N/A vs CR).** Routed N/A on the reading that
-   the clause constrains *scheduling*, not the product, and that its subject
-   matter is invisible to any user of the running system. The competing
-   reading is CR: the clause imposes a process obligation (produce a
-   clause-to-requirement coverage matrix as a phase deliverable), and
-   "process obligation" is the CR definition. I did not route CR because the
-   category is defined as belonging to *craft-and-care or release policy*,
-   and this obligation belongs to neither — it is a governance-phase gate
-   over the specification plane itself, which craft-and-care does not own.
-   Note the recursion: this file is a first pass at exactly the artifact
-   RFC6-28 demands, which is itself a reason not to route the clause into a
-   craft policy that has no authority over acceptance sequencing. RC-5
-   independently reached the same N/A judgment; concurrence is not
-   confirmation, since we applied the same four-way scheme.
+3. **RFC6-28 — re-decided N/A → CR, 2026-08-10.** The original routing was
+   N/A, on the reading that the clause constrains *scheduling*, not the
+   product, and that the CR category — defined as belonging to
+   *craft-and-care or release policy* — had no home for a governance-phase
+   gate over the specification plane, which craft-and-care did not own.
+   (RC-5 independently reached the same N/A; concurrence was noted as not
+   confirmation, since both passes applied the same four-way scheme.) The
+   launch-gate pilot's finding E4 then observed the six shape-parallel
+   phase clauses split N/A (this one) vs CR (the other five), and the
+   disposition register ordered them routed identically, the value being a
+   judgment the repair records. The value chosen is **CR**, because the
+   original N/A's load-bearing premise no longer holds: the candidate
+   specification-acceptance policy (CC-SPEC-8,
+   `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`,
+   approved by no act) now owns exactly the coverage-matrix deliverable
+   this clause demands. Had the six been forced to N/A instead, five
+   contracts' matrix deliverables would have lost their only named home.
+   The recursion noted in the original judgment stands: this file is a
+   first pass at the artifact the six clauses demand.
 
 4. **RFC6-1 — considered for N/A, settled OS.** Its first limb ("the kernel
    mints nothing new for selection"; entity kinds and identities are exactly
@@ -263,12 +278,11 @@ consideration is auditable rather than invisible.*
    That is an arithmetic assertion a scenario can make and fail, so it is
    not N/A.
 
-6. **Zero CR and zero IR is a finding, not an oversight.** I checked
-   deliberately. RFC-0006 carries no review-cadence, walkthrough, or
-   release-gate clause of its own — unlike RFC-0007 (RFC7-25/30/31/32) and
-   RFC-0009 (RFC9-45/47/49), which is where the corpus's eight CR rows all
-   live. The only craft-adjacent text in RFC-0006 is RFC6-23's
-   release-blocking limb (item 2). IR is zero because every numbered clause
+6. **One CR and zero IR, checked deliberately.** RFC-0006 carries no
+   review-cadence, walkthrough, or release-gate clause of its own — unlike
+   RFC-0007 (RFC7-25/30/31/32) and RFC-0009 (RFC9-45/47/49). Its single CR
+   row is RFC6-28, the phase gate (re-decided 2026-08-10; note 3); the only
+   other craft-adjacent text is RFC6-23's release-blocking limb (item 2). IR is zero because every numbered clause
    in this contract is normative; the informative material — §0 reader map,
    §2 motivation, §5 integration, §6 alternatives, §7 deferrals, §8 open
    questions, and the bracketed `[Inferred]` passages — carries no clause
@@ -390,7 +404,7 @@ RFC7-32, RFC7-33, RFC7-34, RFC7-35, RFC7-36, RFC7-37, RFC7-38
 | RFC7-35 | OS | `spec/intent-surface` | The multi-project entry arranges from the workspace manifest while every project-internal fact derives from that project's own plane; deleting the manifest changes what is arranged, never what is true | A one-line scenario the clause states outright: an unresolvable workspace entry renders Unknown **with its reason** and is never silently dropped from the entry list. |
 | RFC7-36 | OS | `spec/intent-surface` | The portfolio narrative is owner-workspace content, never project truth; there is no portfolio governance root; the enumerated carry-over of RFC7-2/7/11/11(a)/33/34 out of `.syzygy/intent/**` | Two distinct assertions: the portfolio narrative renders visibly as owner-workspace content and holds no claim block over any project's facts; and — not implied by visible marking — it may not assert that any governed project is converged, aligned, verified or healthy even when perfectly marked, because a sentence doing a badge's work is judged as a badge. Cross-project status renders only as each project's own kernel-computed state. |
 | RFC7-37 | OS | `spec/intent-surface` (aggregation leg: `spec/selection-api`) | RFC3-14's asymmetric relation semantics; child epistemic labels pass through unchanged (RFC3-32); the narrow reading alone is insufficient | A scenario must assert that a one-sided declaration renders **unconfirmed** and the narrative never draws a confirmed edge the declarations do not support, that no child Unknown aggregates into anything green, and that any roll-up over a child's facts discloses RFC6-17's full composition — the equivalence tuple with per-label, per-tier, per-Unknown-reason and per-freshness counts, expandable to members. |
-| RFC7-38 | CR | — (phase gate; feeds the coverage matrix this file serves) | The phase boundary: this contract fixes semantics and is not a specification of record; the coverage matrix is review material, never authority, and must span RFC7-1…RFC7-37 across **both** modules | A process obligation on how implementation work may be scheduled and on a deliverable the surface-specification phase must produce — it constrains the governance process, not any rendered outcome, so it can carry no requirement of its own without circularity. |
+| RFC7-38 | CR | — (phase gate; feeds the coverage matrix this file serves) | The phase boundary: this contract fixes semantics and is not a specification of record; the coverage matrix is review material, never authority, and must span every clause of this contract other than this one, across all of the package's modules | A process obligation on how implementation work may be scheduled and on a deliverable the surface-specification phase must produce — it constrains the governance process, not any rendered outcome, so it can carry no requirement of its own without circularity. |
 
 **Tally:** OS 39 · N/A 2 · CR 4 · IR 0 · total 45 (39 + 2 + 4 + 0 = 45 — sums: **yes**)
 
@@ -530,7 +544,7 @@ RFC8-32
 | RFC8-29 | OS | `spec/work-surface` | V0 renders the absence honestly; nothing in V0 simulates a verdict; a wall of Unknowns is correct output | A scenario must assert every merged-but-unreconciled item renders "reconciliation evidence absent / Unknown" at V0, and the V1 staging: the reconciliation evaluation is computed and its gap rendered as a **navigable object**, not a number. The V0 negative — no simulated, defaulted, or optimistic verdict — is the load-bearing assertion. |
 | RFC8-30 | OS | `spec/work-surface` | The closure fallacy is forbidden, including in prose — a narrative sentence doing a badge's work is judged as a badge | A spec must assert no aggregate, badge, progress bar, or generated sentence renders a `closed` item as done, complete, or satisfied absent a `reconciled@E` verdict with gate-backed evidence, and that every progress aggregate over merged work discloses its reconciliation composition (n reconciled, m pending, k unsatisfied, c contradiction-raised, j Unknown) — a 100% bar over merged-but-unreconciled work is the canonical failure. |
 | RFC8-31 | OS | `spec/selection-api` + `spec/work-surface` | Trajectory adds **no surface-only facts**; every answer is endpoint-answerable at a named evaluation | This is Trajectory's RFC 0006 conformance surface and every limb is assertable: selection by kernel identity only (no work-item row handles crossing boundaries), the single drawer fact set, label parity on machine answers, evaluation stamping, aggregation disclosure, the closed navigation-outcome set including `incompatible-scenario`, and explicit singular scenario context travelling with every URL, cross-surface synchronization, and query answer. Parity scenario: anything rendered (normalized state, blocked cause, chain join, cost measure) is queryable **with identical labels**. |
-| RFC8-32 | CR | — (routes to craft-and-care / release policy) | The whole clause: this contract schedules nothing, and the coverage matrix is review material, never authority | Not user-observable behavior and not a model-shape invariant — it is a **process and release-gate obligation**: it forbids scheduling implementation work from RFC prose and requires, as a surface-specification deliverable, a clause-to-requirement coverage matrix over RFC8-1…RFC8-31 across all three modules with each clause mapped to requirement identities or a reviewed N/A. Specifying it as an OpenSpec requirement would be circular — the clause governs how OpenSpec content comes to exist. This document is a precursor to that deliverable. |
+| RFC8-32 | CR | — (routes to craft-and-care / release policy) | The whole clause: this contract schedules nothing, and the coverage matrix is review material, never authority | Not user-observable behavior and not a model-shape invariant — it is a **process and release-gate obligation**: it forbids scheduling implementation work from RFC prose and requires, as a surface-specification deliverable, a clause-to-requirement coverage matrix over every clause of this contract other than this one, across all of the package's modules, with each clause mapped to requirement identities or a reviewed N/A. Specifying it as an OpenSpec requirement would be circular — the clause governs how OpenSpec content comes to exist. This document is a precursor to that deliverable. |
 
 **Tally:** OS 31 · N/A 0 · CR 1 · IR 0 · total 32 (sums: yes — 31 + 0 + 1 + 0 = 32)
 
@@ -689,7 +703,7 @@ reading order a fresh reader meets.)*
 | RFC9-49 | OS | `spec/map-surface` | Truth is never purchased with frame rate; the permitted currency is VIS-1 rank 4, never rank 1; declaring the budget values before V0 ships is a craft obligation this clause holds open | A scenario must assert that when a budget cannot be met the surface narrows **only to a scope pre-declared beside that scene class's budget**, renders itself as narrowed, applies the identical narrowing to the non-3D view so the equivalence gate sees one scope, and names the selected scope in the answer's envelope as an RFC6-16 declared filter — never improvising a render-time scope from device capability, which would hand two readers different entity sets for the same URL at the same evaluation. Silent decimation, entity dropping, and stripping epistemic carriers are forbidden. |
 | RFC9-50 | OS | `spec/map-surface` | Any later motion inherits RFC9-37's honesty obligations in full | A scenario must assert that at V0 nothing moves without a triggering cause — motion appears only as a labelled transition, an explicitly selected flow, or camera movement — so a static scene is genuinely static and no idle animation implies liveness. |
 | RFC9-51 | OS | `spec/map-surface` | Binding light to a metric would imply liveness the evidence may not support | A scenario must assert that illumination and highlight vary only with interaction state (selection, search hits, cross-surface highlight per RFC6-3), are personal and excluded from truth-bearing encodings, and are legended as interaction state — so a brighter building never reads as a better-evidenced one. |
-| RFC9-52 | CR | — (surface-specification phase deliverable; review material, never authority) | This RFC is not a specification of record and schedules nothing; the phase boundary exists so RFC prose is never quietly treated as an implementable behavioral spec; the clause creates no OpenSpec content now | The obligation is on the specification *process*, not on the product: before implementation every observable consequence of RFC9-1…RFC9-51 must map to an approved OpenSpec requirement or scenario or carry an explicit reviewed N/A, and the phase must deliver a clause-to-requirement coverage matrix for RFC 0009 entire. This present matrix is an input to that deliverable, not a substitute for it. |
+| RFC9-52 | CR | — (surface-specification phase deliverable; review material, never authority) | This RFC is not a specification of record and schedules nothing; the phase boundary exists so RFC prose is never quietly treated as an implementable behavioral spec; the clause creates no OpenSpec content now | The obligation is on the specification *process*, not on the product: before implementation every observable consequence of every clause of this contract other than this one must map to an approved OpenSpec requirement or scenario or carry an explicit reviewed N/A, and the phase must deliver a clause-to-requirement coverage matrix for RFC 0009 entire. This present matrix is an input to that deliverable, not a substitute for it. |
 
 **Tally:** OS 53 · N/A 1 · CR 6 · IR 0 · total 60 (sums: yes — 53 + 1 + 6 + 0 = 60, and 60 matches the enumerated clause count)
 
@@ -829,7 +843,7 @@ RFC10-15, RFC10-16
 | RFC10-13 | OS | `spec/mission-control` | Compression into decision-ready packets is the obligation — streaming every run event is a violation, not a conservative default; items never silently disappear | Assertable queue behavior: every Attention Item terminates in a recorded resolution, an expiry-to-safe-default, or an explicit human dismissal, each attributable and queryable afterwards (no item is ever garbage-collected unresolved); and each of the six minimum escalation triggers fires — bound approach/exhaustion, risk over the delegated threshold, a protected or human-only surface in the proposed path, an unresolved contradiction or genuine product choice, evidence unable to establish progress, unsafe recovery. |
 | RFC10-14 | OS | `spec/mission-control` | The mission home is never a parallel truth store; the in-tree envelope file plus any stamp is never itself the approval | The routed behavior is the approval write and its digest binding: approving a mission appends an act record to `.syzygy/governance/decisions/` binding the envelope's **exact digest** (RFC3-16(b) item 3), so a scenario can assert that an envelope edited after approval is no longer covered by it and its mission may not run — a stale-digest test with a real security consequence. The mission-artifact home under `.syzygy/work/missions/<mission-id>/` with typed, provenance-labeled entries is the weaker limb (see doubts). |
 | RFC10-15 | OS | `spec/mission-control` | The workspace store's writ ends at scheduling, budget, and attention policy; where the writ meets the prohibition, **the prohibition wins**; minting the store requires a recorded owner widening | The prohibition is testable at its sharpest edge: a workspace-store entry that would set a project's requirement priority is refused rather than applied (violation case 6), and pausing a project means **Syzygy refuses to schedule against it and never mutates project-internal state or status** — a scenario asserting the project's own answers are byte-identical before and after the pause. The store's home and schema are deferred (§8 q3), so the spec pins behavior, not layout. |
-| RFC10-16 | CR | — (routes to craft-and-care / release policy) | The whole clause: this contract schedules nothing, and the coverage matrix is review material, never authority | Same shape as RFC8-32 and routed identically: a process and release-gate obligation, not observable behavior and not model shape. It forbids scheduling any user-observable Mission Control implementation work from this RFC alone — naming mission creation/approval flows, lifecycle displays, envelope editing, attention-queue rendering, CLI commands, API endpoints and their answers, and MCP-or-equivalent tools — and requires a clause-to-requirement coverage matrix over RFC10-1..RFC10-16 at surface specification. Specifying a phase rule as a requirement of the phase it gates would be circular. |
+| RFC10-16 | CR | — (routes to craft-and-care / release policy) | The whole clause: this contract schedules nothing, and the coverage matrix is review material, never authority | Same shape as RFC8-32 and routed identically: a process and release-gate obligation, not observable behavior and not model shape. It forbids scheduling any user-observable Mission Control implementation work from this RFC alone — naming mission creation/approval flows, lifecycle displays, envelope editing, attention-queue rendering, CLI commands, API endpoints and their answers, and MCP-or-equivalent tools — and requires a clause-to-requirement coverage matrix over every clause of this contract other than this one at surface specification. Specifying a phase rule as a requirement of the phase it gates would be circular. |
 
 **Tally:** OS 15 · N/A 0 · CR 1 · IR 0 · total 16 (sums: yes — 15 + 0 + 1 + 0 = 16)
 
@@ -955,7 +969,7 @@ RFC11-7, RFC11-8, RFC11-9, RFC11-10, RFC11-11, RFC11-12
 | RFC11-9 | OS | `spec/context-packets` | Governed memory lives in governed homes; a packet is **not a consent loophole**; canonical memory follows its home's lifecycle, never silent deletion | Three testable boundaries: secret material never enters a packet or memory (SEC-5, RFC5-16/17); packet content crossing an egress boundary passes the RFC5-14/15 consent gate — violation case 6, code sent under a metadata-only consent, is the fixture; and deletion of canonical memory follows a recorded lifecycle while retention of non-canonical raw material follows a declared policy. |
 | RFC11-10 | OS | `spec/mission-control` (fail-closed gate leg: `spec/context-packets`) | The profile is optional and minimal, versioned; **no current model or provider name is hard-coded as permanent semantics** — names are data in profile instances; a profile can narrow, never widen an envelope | A spec must pin routing behavior: violation case 7 — a review routed to an agent lacking the independence property its class requires because fallback order ignored it — and the fail-closed rule that a profile field satisfying an envelope-required gate (independence, permissions, risk classes) counts only when backed by owner-act provenance or identified evidence, a self-asserted field leaving the gate unsatisfied. |
 | RFC11-11 | OS | `spec/context-packets` | Exceeding the budget posture is a disclosed, reasoned, owner-visible event, never silent; budget pressure never justifies dropping mandatory context — the lawful responses are sharding, narrowing the objective, or escalating; the numeric target is a policy default and must not be frozen into contract text | A spec must pin that every packet carries a size estimate, that an over-posture packet renders its reasoned exception rather than trimming, and — the sharpest scenario — that **every shard carries the non-shardable core in full**: the envelope, the prohibited and human-only surfaces, the applicable doctrine rules, and the governing phase rules; a shard missing any of these is not a lawful packet. |
-| RFC11-12 | CR | — (phase gate; feeds the coverage matrix this file serves) | This contract schedules nothing; the RFC11-1…RFC11-12 coverage matrix produced at surface specification is review material, never authority; no OpenSpec content may exist during bootstrap | A process obligation on how implementation work may be scheduled and on a surface-specification deliverable — it constrains the governance process rather than any packet, compiler or view behavior, and a requirement derived from it would be circular. |
+| RFC11-12 | CR | — (phase gate; feeds the coverage matrix this file serves) | This contract schedules nothing; the coverage matrix over every clause of this contract other than this one, produced at surface specification, is review material, never authority; no OpenSpec content may exist during bootstrap | A process obligation on how implementation work may be scheduled and on a surface-specification deliverable — it constrains the governance process rather than any packet, compiler or view behavior, and a requirement derived from it would be circular. |
 
 **Tally:** OS 11 · N/A 0 · CR 1 · IR 0 · total 12 (11 + 0 + 1 + 0 = 12 — sums: **yes**)
 

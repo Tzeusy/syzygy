@@ -85,6 +85,12 @@ groups are genuinely distinct — no ceremonial file multiplication.
 
 ## OD-R10-7 — The gate for this package (§12)
 
+> **Historical quotation (2026-08-10 marker).** This ruling is preserved as
+> the owner's rev10-era direction; the single-act gate it names was
+> **retired at round-2026-08d delivery** and satisfies nothing. The live
+> gates are the six wave acts in
+> `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`.
+
 One final owner gate over the compacted package:
 `ACCEPT COMPACTED FOUNDATIONAL RFCS: <package-manifest-digest>`, with
 `REWORK COMPACTED FOUNDATIONAL RFCS: <reason>` /

@@ -8,6 +8,10 @@ contracts:
     applies_to: [kernel, all-surfaces]
     depends_on: []
     tags: [foundational, kernel, closed-vocabulary, identity, state-planes, semantic-relation-class]
+    implementation_boundary:
+      clause: RFC1-33
+      kind: requires-openspec
+      declared_in: RFC-0001-project-graph-identity-state-planes.md
     modules: [RFC-0001-project-graph-identity-state-planes.md]
     clauses:
       - {id: RFC1-1, module: RFC-0001-project-graph-identity-state-planes.md, kind: normative}
@@ -56,6 +60,10 @@ contracts:
     applies_to: [kernel, all-surfaces]
     depends_on: [RFC-0001, RFC-0003, RFC-0004, RFC-0005]
     tags: [foundational, temporal, epistemic, evidence, closed-vocabulary, v0-v1-staging]
+    implementation_boundary:
+      clause: RFC2-26
+      kind: requires-openspec
+      declared_in: RFC-0002/README.md
     modules: [RFC-0002/README.md, RFC-0002/challenge-lifecycle.md, RFC-0002/reconciliation-chain.md, RFC-0002/rendering-vocabularies.md, RFC-0002/snapshot-and-evaluation-core.md]
     module_ranges:
       - {file: RFC-0002/challenge-lifecycle.md, clauses: "RFC2-12..RFC2-14 (no gaps, no retirements, no merges)"}
@@ -96,6 +104,10 @@ contracts:
     applies_to: [kernel, workspace, all-surfaces]
     depends_on: [RFC-0001, RFC-0002, RFC-0004, RFC-0005]
     tags: [project-declaration, consent, governance-plane, owner-act-provenance, schema-migration, nesting]
+    implementation_boundary:
+      clause: RFC3-33
+      kind: requires-openspec
+      declared_in: RFC-0003/README.md
     modules: [RFC-0003/README.md, RFC-0003/governance-homes-and-owner-acts.md, RFC-0003/manifests-and-namespace.md]
     module_ranges:
       - {file: RFC-0003/governance-homes-and-owner-acts.md, clauses: "RFC3-15, RFC3-15(a), RFC3-16, RFC3-16(a), RFC3-16(b), RFC3-16(c), RFC3-17, RFC3-17(a) (every other RFC3-n lives in manifests-and-namespace.md)"}
@@ -146,6 +158,10 @@ contracts:
     applies_to: [kernel, trajectory, orrery]
     depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0005]
     tags: [observation, provenance, gate-tiering, unknown-never-zero, liveness, reduced-fidelity, capture-before-horizon]
+    implementation_boundary:
+      clause: RFC4-30
+      kind: requires-openspec
+      declared_in: RFC-0004/README.md
     modules: [RFC-0004/README.md, RFC-0004/execution-record.md, RFC-0004/fidelity-joins-and-mappings.md, RFC-0004/general-contract.md, RFC-0004/named-adapters.md]
     module_ranges:
       - {file: RFC-0004/execution-record.md, clauses: "RFC4-18..RFC4-21 (no gaps, no retirements, no merges)"}
@@ -194,6 +210,10 @@ contracts:
     tags: [security-boundary, sec-1, sec-2, sec-3, sec-4, sec-5, blocking, execution-gate, client-classes]
     constrains: [RFC-0006, RFC-0009, RFC-0010, RFC-0011]
     constrains_source: RFC5-3
+    implementation_boundary:
+      clause: RFC5-27
+      kind: requires-openspec
+      declared_in: RFC-0005/README.md
     modules: [RFC-0005/README.md, RFC-0005/admission-and-boundary.md, RFC-0005/consent-egress-secrets.md, RFC-0005/execution-profiles.md]
     module_ranges:
       - {file: RFC-0005/admission-and-boundary.md, clauses: "RFC5-1..RFC5-11, RFC5-24..RFC5-27 (no gaps within either run, no retirements, no merges)"}
@@ -232,8 +252,12 @@ contracts:
     status_source: owner-act-record
     governs: [selection-reference, url-identity, resolution-outcome, evidence-drawer, query-answer, label-parity, scenario-context]
     applies_to: [all-surfaces, kernel, machine-clients]
-    depends_on: [RFC-0001, RFC-0002]
+    depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004]
     tags: [selection, urls, queries, drawer, machine-endpoints, equivalence, scenario, consent, secrets]
+    implementation_boundary:
+      clause: RFC6-28
+      kind: requires-openspec
+      declared_in: RFC-0006-cross-surface-selection-query-drawer.md
     modules: [RFC-0006-cross-surface-selection-query-drawer.md]
     clauses:
       - {id: RFC6-1, module: RFC-0006-cross-surface-selection-query-drawer.md, kind: normative}
@@ -267,12 +291,16 @@ contracts:
   - id: RFC-0007
     title: Polaris (Intent Surface) — contract package index
     status_source: owner-act-record
-    governs: [intent, narrative, section, claim-block, source-anchor, reading-order, citation-graph, curated-diagram, editorial-draft, portfolio-narrative]
+    governs: [intent, narrative, section, claim-block, source-anchor, reading-order, citation-graph, curated-diagram, editorial-draft, portfolio-narrative, fixed-human-entry-point, front-door-discoverability]
     applies_to: [polaris]
     depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0009]
-    tags: [presentation, non-authoritative, progressive-disclosure, comprehension-test, machine-parity, editorial-draft, target-state-drift]
+    tags: [presentation, non-authoritative, progressive-disclosure, comprehension-test, machine-parity, editorial-draft, target-state-drift, entry-point, discoverability]
     constrains: [RFC-0001, RFC-0002, RFC-0004, RFC-0008]
     constrains_source: RFC7-3
+    implementation_boundary:
+      clause: RFC7-38
+      kind: requires-openspec
+      declared_in: RFC-0007/README.md
     modules: [RFC-0007/README.md, RFC-0007/narrative-contract.md, RFC-0007/rendering-and-surface.md]
     module_ranges:
       - {file: RFC-0007/narrative-contract.md, clauses: "RFC7-1..RFC7-25 (sub-clauses RFC7-2(a)-(c), RFC7-9(a)-(c), RFC7-11(a); no gaps, no retirements, no merges)"}
@@ -322,10 +350,14 @@ contracts:
   - id: RFC-0008
     title: Trajectory (Work Surface) — contract package index
     status_source: owner-act-record
-    governs: [work, work-states, dispatch, execution-records, trajectory-surface, materialization-records, change-accounting-chain, reconciliation-chain-state, cost-measures, provenance]
+    governs: [work, work-states, dispatch, execution-records, trajectory-surface, materialization-records, change-accounting-chain, reconciliation-chain-state, cost-measures, provenance, non-visual-parity]
     applies_to: [trajectory]
     depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007]
-    tags: [work-state-vocabulary, reconciliation-chain, cost, provenance, compaction, phase-boundary, anti-thesis, closure-fallacy, substrate]
+    tags: [work-state-vocabulary, reconciliation-chain, cost, provenance, compaction, phase-boundary, anti-thesis, closure-fallacy, substrate, non-visual, accessibility]
+    implementation_boundary:
+      clause: RFC8-32
+      kind: requires-openspec
+      declared_in: RFC-0008/README.md
     modules: [RFC-0008/README.md, RFC-0008/accounting-reconciliation-and-release.md, RFC-0008/identity-authority-materialization.md, RFC-0008/state-vocabulary-and-cost.md]
     module_ranges:
       - {file: RFC-0008/accounting-reconciliation-and-release.md, clauses: "RFC8-21..RFC8-32 (no gaps, no retirements, no merges)"}
@@ -367,14 +399,18 @@ contracts:
   - id: RFC-0009
     title: Orrery (Map Surface) — contract package index
     status_source: owner-act-record
-    governs: [map-surface, home-geography, analytical-planes, layout-determinism, placement, identity-counting, reserved-palette, channel-registry, lenses, scene-profiles, scenarios, aggregation, unmapped-code, non-3d-equivalence, release-gates, motion]
+    governs: [map-surface, home-geography, analytical-planes, layout-determinism, placement, portfolio-layout-governance, identity-counting, reserved-palette, channel-registry, lenses, scene-profiles, scenarios, aggregation, unmapped-code, non-3d-equivalence, release-gates, motion]
     applies_to: [orrery, machine-clients]
     depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008]
     tags: [surface, spatial, legend-fidelity, unknown, determinism, sdr-19, sdr-20, sdr-21, sdr-22, sdr-23, sdr-24, sdr-25, sdr-26, sdr-27, vis-1, vis-7, sec-2, sec-3, sec-5]
+    implementation_boundary:
+      clause: RFC9-52
+      kind: requires-openspec
+      declared_in: RFC-0009/README.md
     modules: [RFC-0009/README.md, RFC-0009/interaction-parity-and-release.md, RFC-0009/semantic-geography.md, RFC-0009/visual-grammar-and-lenses.md]
     module_ranges:
       - {file: RFC-0009/interaction-parity-and-release.md, clauses: "RFC9-46..RFC9-52 (sub-clause RFC9-47(a); no gaps, no retirements)"}
-      - {file: RFC-0009/semantic-geography.md, clauses: "RFC9-1..RFC9-23 (sub-clauses RFC9-8(a), RFC9-9(a), RFC9-9(b), RFC9-13(a), RFC9-14(a), RFC9-15(b), RFC9-16(d); no gaps, no retirements)"}
+      - {file: RFC-0009/semantic-geography.md, clauses: "RFC9-1..RFC9-23 (sub-clauses RFC9-8(a), RFC9-9(a), RFC9-9(b), RFC9-13(a), RFC9-14(a), RFC9-15(b), RFC9-16(d); no gaps, no retirements. RFC9-15(b) has no lettered sibling before it — no earlier letter was ever minted for RFC9-15, and none is retired — and it is defined after RFC9-16(d) in file order: both are deliberate. The "no gaps" claim is over the integer range; sub-clause letters are minted as needed and are not a series)"}
       - {file: RFC-0009/visual-grammar-and-lenses.md, clauses: "RFC9-24..RFC9-45 (no lettered sub-clauses; no gaps, no retirements)"}
     clauses:
       - {id: RFC9-46, module: RFC-0009/interaction-parity-and-release.md, kind: normative}
@@ -444,6 +480,10 @@ contracts:
     applies_to: [mission-control, workspace, all-surfaces, machine-clients]
     depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008]
     tags: [autonomy, human-control, budgets, escalation, platform]
+    implementation_boundary:
+      clause: RFC10-16
+      kind: requires-openspec
+      declared_in: RFC-0010/README.md
     modules: [RFC-0010/README.md, RFC-0010/budget-reservation.md, RFC-0010/effects-recovery-and-stop.md, RFC-0010/mission-identity-approval-and-lifecycle.md, RFC-0010/portfolio-and-cross-project-consent.md, RFC-0010/prevention-envelope-and-attention.md]
     module_ranges:
       - {file: RFC-0010/budget-reservation.md, clauses: "RFC10-17 with sub-clause RFC10-17(a) (see the package clause map)"}
@@ -486,6 +526,10 @@ contracts:
     applies_to: [mission-control, context, all-surfaces, machine-clients]
     depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0008, RFC-0010]
     tags: [context, provenance, memory, selection, agents]
+    implementation_boundary:
+      clause: RFC11-12
+      kind: requires-openspec
+      declared_in: RFC-0011/README.md
     modules: [RFC-0011/README.md, RFC-0011/deterministic-selection-and-budget.md, RFC-0011/packet-identity-provenance-and-memory.md]
     module_ranges:
       - {file: RFC-0011/deterministic-selection-and-budget.md, clauses: "RFC11-4, RFC11-11, RFC11-13..RFC11-16 (non-contiguous — see the package clause map)"}
@@ -516,7 +560,7 @@ governance_sources:
   - {file: doctrine/trust-and-evidence.md, role: doctrine, words: 1069, rule_ids: [SEC-5, VIS-1, VIS-2, VIS-6, VIS-7]}
   - {file: doctrine/v1.md, role: doctrine, words: 1056, rule_ids: [SEC-1, SEC-2, SEC-3, VIS-2, VIS-4, VIS-5]}
   - {file: doctrine/vision.md, role: doctrine, words: 2156, rule_ids: [VIS-1, VIS-2, VIS-3, VIS-4, VIS-5, VIS-6, VIS-7]}
-  - {file: craft-and-care/INSTALL-RECORD.md, role: craft-policy, words: 691, rule_ids: [CC-BAR-1, CC-TEST-1, CC-TEST-2, CC-TEST-7, CC-VIZ-5]}
+  - {file: craft-and-care/INSTALL-RECORD.md, role: craft-policy, words: 818, rule_ids: [CC-BAR-1, CC-TEST-1, CC-TEST-2, CC-TEST-7, CC-VIZ-5]}
   - {file: craft-and-care/README.md, role: craft-policy, words: 768, rule_ids: [CC-BAR-1, CC-REV-3, CC-TEST-3, SEC-1, SEC-5, VIS-1, VIS-7]}
   - {file: craft-and-care/agent-provenance-and-execution-evidence.md, role: craft-policy, words: 972, rule_ids: [CC-PROV-1, CC-PROV-2, CC-PROV-3, CC-PROV-4, CC-PROV-5, CC-PROV-6, CC-PROV-7, CC-SEC-6, CC-TEST-2]}
   - {file: craft-and-care/engineering-bar.md, role: craft-policy, words: 1328, rule_ids: [CC-BAR-1, CC-BAR-2, CC-BAR-3, CC-BAR-4, CC-BAR-5, CC-BAR-6, CC-BAR-7, CC-DEP-2, CC-REV-1, CC-REV-2, CC-REV-4, CC-REV-7, CC-TEST-1, CC-TEST-3, CC-TEST-4, CC-TEST-7, SEC-1, SEC-5, VIS-1, VIS-2, VIS-3, VIS-4, VIS-5, VIS-7]}
@@ -534,6 +578,6 @@ governance_sources:
   - {file: topology/06-intent-to-reconciliation-flow.md, role: topology, words: 909, rule_ids: [VIS-4]}
   - {file: topology/07-client-trust-boundaries.md, role: topology, words: 637, rule_ids: [SEC-1, SEC-3]}
   - {file: topology/08-adapter-external-systems.md, role: topology, words: 1017, rule_ids: [SEC-3, SEC-4, SEC-5]}
-  - {file: topology/BUNDLE-MANIFEST.md, role: topology, words: 123}
-  - {file: topology/README.md, role: topology, words: 554}
+  - {file: topology/BUNDLE-MANIFEST.md, role: topology, words: 145}
+  - {file: topology/README.md, role: topology, words: 569}
   - {file: topology/TRACKING-NOTE.md, role: topology, words: 144}

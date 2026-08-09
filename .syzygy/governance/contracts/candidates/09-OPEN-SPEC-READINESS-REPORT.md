@@ -1,4 +1,17 @@
-# OpenSpec readiness report (directive §10/§14)
+# SUPERSEDED — OpenSpec readiness report (directive §10/§14)
+
+> **SUPERSEDED — do not rely on anything below this banner.** This report's
+> verdict, figures, sequencing, and gate are all stale (2026-08-10 banner):
+> the "ready, conditional" verdict is contradicted by the current statement
+> in `PROJECT-STATUS.md` ("not ready") and by the launch-gate pilot
+> administration (`GATE VERDICT: NOT READY`, 2026-08-09); the readiness
+> question is now owned by the launch-gate instrument
+> (`launch-gate-pre-specifications.md`) and its administrations; the
+> first-spec sequencing below is superseded by the current
+> `FIRST-OPENSPEC-SEQUENCE.md`; the "322 clauses"/"199 identities" figures
+> and the quoted acceptance phrase are all retired (the phrase satisfies
+> nothing). Kept verbatim below as history of what the round-2026-08
+> directive produced. No active route may point here except as history.
 
 **Question answered:** is the project genuinely ready to begin its first
 OpenSpec feature changesets — and in what order? **No changeset is

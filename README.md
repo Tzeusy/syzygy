@@ -42,15 +42,16 @@ Two rules everything else follows from:
 | Name | Literal subtitle | Answers |
 |---|---|---|
 | **Polaris** | the intent surface | What is this project supposed to be? |
-| **Trajectory** | the work surface | What is being done, by whom, under what authority? |
+| **Trajectory** | the work surface | What remains, what is running, what changed, what did it cost — and has the result been verified against intent? Never satisfied by an issue list |
 | **Orrery** | the map surface | Where does everything live, and in what state? |
-| **Mission Control** | workspace-level operator capability — **not a fourth surface** | What bounded, delegated missions are running across projects? |
+| **Mission Control** | workspace-level operator domain — **not a fourth project-specific truth surface** | What bounded, delegated missions are running across projects? |
 
-Polaris, Trajectory, and Orrery are **projections over one shared kernel**,
-never independent truth stores. Mission Control is a workspace-level operator
-capability, not a fourth project truth surface; it is defined by candidate
-contract RFC-0010 and a pending doctrine amendment (D3), neither yet
-accepted. All four names are working codenames only.
+Polaris, Trajectory, and Orrery are **projections over one shared project
+model** (the kernel, in the technical contracts), never independent truth
+stores. Mission Control is a workspace-level operator domain, not a fourth
+project-specific truth surface; it is defined by candidate contract
+RFC-0010 and a pending doctrine amendment (D3), neither yet accepted. All
+four names are working codenames only.
 
 ## The core loop
 
@@ -74,7 +75,7 @@ adapters (VIS-5).
 
 Authority is **typed** — each question has one owning home:
 
-| Question | Authority | Status |
+| Question | Authority | Authority state |
 |---|---|---|
 | Why; non-negotiable rules | [`.syzygy/governance/doctrine/`](.syzygy/governance/doctrine/) (VIS-1…7, SEC-1…5) | **Adopted** 2026-07-30 |
 | Prior owner rulings | [`.syzygy/governance/decisions/`](.syzygy/governance/decisions/) | **Recorded** |
@@ -91,8 +92,12 @@ authority and are never themselves authoritative.
 
 **Unfamiliar word?**
 [`.syzygy/governance/doctrine/README.md`](.syzygy/governance/doctrine/README.md#glossary-read-first)
-holds the glossary — the only one in this repository, and the one doctrine
-means when it says "README glossary". This file has none.
+holds the adopted glossary — the one doctrine means when it says "README
+glossary" (seven entries; this file has none). The wider working
+vocabulary, including every term the glossary does not carry, is the
+candidate term registry:
+[`policy-candidates/TERM-REGISTRY.md`](.syzygy/governance/contracts/candidates/policy-candidates/TERM-REGISTRY.md)
+(candidate — approved by no act).
 
 1. [`.syzygy/intent/OVERVIEW.md`](.syzygy/intent/OVERVIEW.md) — the project
    argument, 30 seconds to full depth (draft; adoption pending).

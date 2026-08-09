@@ -42,9 +42,10 @@ current RFC text and repaired the drifts it found
   decisions, the existing `.syzygy/governance/` plane, and the existing
   substrate tools).
 - Draft-RFC clause citations (RFC1-n … RFC6-n) cite candidate contracts that
-  bind nothing until the owner performs the digest-bound acceptance act
-  defined in the active acceptance record (currently `ACCEPT COMPACTED
-  FOUNDATIONAL RFCS: <manifest digest>`).
+  bind nothing until the owner performs the digest-bound acceptance acts
+  defined in the active acceptance record (the wave acts; this file quotes
+  no acceptance phrase, so a phrase retirement cannot silently invalidate
+  this sentence — the record governs).
 
 ## Rendering note
 

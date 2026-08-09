@@ -219,7 +219,9 @@ module owning its clause, and answered items' reasoning is in
 
 ---
 
-*End of RFC 0004 package index. Clauses RFC4-1 … RFC4-29, with sub-clauses
-RFC4-13(a) and RFC4-13(b), distributed across four modules. No retired numbers,
-no merged numbers, no gaps in the range, and no clause identity in more than
-one module.*
+*End of RFC 0004 package index. The package's clauses — the `RFC4-n` range
+declared in this file's front matter and clause map above, with sub-clauses
+RFC4-13(a) and RFC4-13(b) — are distributed across four modules. No retired
+numbers, no merged numbers, no gaps in the range, and no clause identity in
+more than one module. The range is stated once, in the front matter, so no
+restatement of it can go stale against the bytes.*

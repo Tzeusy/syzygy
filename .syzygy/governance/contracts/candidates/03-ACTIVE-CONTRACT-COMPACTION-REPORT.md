@@ -1,5 +1,13 @@
 # Active-contract compaction report (directive §3) — owner-facing
 
+> **As-of 2026-08-03 (rev10 compaction) — historical figures.** The counts
+> and word totals below describe the corpus as compacted then (32 modules);
+> the round-08d RFC-0010/0011 splits later took the module census to the
+> generated `ACTIVE-CONTRACT-MANIFEST.txt`, and every current figure lives
+> in `CONTEXT-BUDGET-REPORT.md` / `verify_final_prespec.py` output. This
+> report stays cited for the compaction rationale and the oversize
+> justifications, never for current counts.
+
 ## What was done
 
 Nine independent compaction passes (one per RFC, fresh-context workers

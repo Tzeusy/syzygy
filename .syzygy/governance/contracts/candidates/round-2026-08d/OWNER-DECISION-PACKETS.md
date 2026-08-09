@@ -7,6 +7,13 @@
 > round changed say so explicitly: several questions now have one arm
 > **already executed in candidate bytes** — that is a drafting posture, not
 > a decision; declining the arm reverts the bytes before any wave act.
+>
+> **Partially superseded 2026-08-10 (launch-closure pass):** packets
+> **2, 7, 8, 10, 11** have current packets in
+> `.syzygy/governance/decisions/` (`UNKNOWNS-AND-GAPS-`,
+> `PROJECT-SHAPE-FACETS-`, `HUMAN-ENTRY-`, `KNOWLEDGE-HYGIENE-`,
+> `OPENSPEC-FORM-AND-VERSION-DECISION.md`) — do not act from the versions
+> below. Packets 1, 3, 4, 5, 6, 9, 12 remain current here.
 
 ## Packet 1 — The acceptance-wave split itself
 

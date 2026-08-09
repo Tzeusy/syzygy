@@ -10,8 +10,19 @@ This directory tracks the final pre-specification candidate package so that
 a fresh clone can read, review, and verify the exact artifacts the owner is
 being asked to accept (clone-visibility ruling P-9 / FD-037 corollary,
 2026-08-05). It was promoted byte-verbatim from the founder-local rev10
-packet, then corrected in this round only as recorded in
-`round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md`.
+packet, then corrected round by round as each round's semantic-delta record
+states (`round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md` through
+`round-2026-08e/`).
+
+**Current state (2026-08-10, launch-closure pass):** the round-2026-08d
+review pass delivered fifteen fresh-context reviews, **all fifteen
+`REVISE`, zero `CONFIRM`** (`round-2026-08d/reviews/`). The owner's launch
+target is **Capability 1 — Project registration and honest shape
+visibility**, prerequisite **Waves A + B**; the Wave A/B repair batches
+landed at round-2026-08e and await fresh exact-package reviews before the
+acts may be offered. **Waves C1/C2/D1/D2 are visibly deferred** —
+`DEFERRED-WAVE-POSTURE.md` is the disclosure. Task routing has one current
+answer: the generated `TASK-ROUTER.md`.
 
 ## Layout
 
@@ -25,7 +36,13 @@ packet, then corrected in this round only as recorded in
 | `fixtures/` | Context-selection fixtures for the RFC-0011 Context Compiler |
 | `reviews/` | Raw review reports and dispositions for this package — stored verbatim, never edited |
 | `scripts/` | Self-rooted, portable verification (`verify_final_prespec.py`, `build_contract_index.py`, `build_dependency_index.py`, `context_load.py`) |
-| `CONTRACT-DEPENDENCY-INDEX.md`, `TASK-TO-CONTRACT-INDEX.md` | Derived module-graph and task-routing indexes (generated/measured; never authority) |
+| `TASK-ROUTER.md` | **The one current task router** — generated navigation by `scripts/build_task_router.py`, never authority; supersedes `TASK-TO-CONTRACT-INDEX.md` (bannered) and the load map's reader table |
+| `CONTRACT-DEPENDENCY-INDEX.md` | Derived module-graph index (generated; never authority) |
+| `DEFERRED-WAVE-POSTURE.md` | Current owner-directed posture of Waves C1/C2/D1/D2 (deferred from the Capability 1 launch) |
+| `FIRST-OPENSPEC-SEQUENCE.md` | The single current first-spec sequence (revision 3) with per-prerequisite states |
+| `HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` | Non-authoritative router to the five spec-authoring authorities (E1) |
+| `HISTORICAL-INDEX.md` | Index of every historical/superseded artifact class |
+| `ACCEPTANCE-PHRASE-REGISTRY.yaml` | Structured census of current and retired acceptance phrases (record, never authority) |
 | `policy-candidates/` | Candidate policy additions (term registry, knowledge-hygiene policy, semantic-delta workflow) — each needs its own owner act |
 | `round-2026-08/` | The human-clarity refactor round's process records |
 | `00-README.md`, `01`–`10-*`, other top-level reports | The rev10 packet's own delivery reports, kept as packet history |

@@ -51,13 +51,15 @@ act. This file restates no digest.
 | Overview | The project overview | the acceptance record |
 | D3 (optional) | Doctrine amendment D3 — bounded missions | none — VIS-4 adoption of the D3 packet, rev1 |
 
-The live gates are `contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`;
-the round-2026-08d owner-facing offering is produced **after** that round's
-fresh-context review pass, and until it exists the acceptance record's
-wave-history note is the statement of what remains unreviewed. The
-round-2026-08b/08c offerings are superseded and banner-marked; review RD-8
-called routing an owner to a stale offering *"the finding that converts act 1
-from a knowing act into a surprised one."*
+The live gates are `contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`.
+The round-2026-08d review pass delivered fifteen reviews, **all `REVISE`**;
+the launch-closure pass (round-2026-08e) repaired Waves A and B under the
+owner's Capability 1 direction — each wave's offer waits on its fresh
+exact-package review of the regenerated argument. Waves C1/C2/D1/D2 are
+deferred (`contracts/candidates/DEFERRED-WAVE-POSTURE.md`). The
+round-2026-08b/08c/08d offerings are superseded where banner-marked; review
+RD-8 called routing an owner to a stale offering *"the finding that
+converts act 1 from a knowing act into a surprised one."*
 `decisions/ACCEPTANCE-ACT-RECORD.md` is created by the first act; its absence
 is correct. **Never edit an artifact after an act has bound its digest.** The
 rev9 phrase `ACCEPT FOUNDATIONAL RFCS` and the rev10 all-in-one phrase are
@@ -71,11 +73,13 @@ Load the minimum for one correct decision. Never "read everything."
 |---|---|
 | A doctrine question | the one doctrine file, via the `heart-and-soul` skill |
 | An engineering-bar question | the one craft policy that owns it |
-| A contract question | `contracts/candidates/06-CONTEXT-LOAD-MAP.md`, or compute the load with `scripts/context_load.py` |
+| A contract question | **`contracts/candidates/TASK-ROUTER.md`** — the one generated router (validated by `scripts/build_task_router.py`); context-budget measurement stays with `06-CONTEXT-LOAD-MAP.md` / `scripts/context_load.py` |
 | "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until OpenSpec exists |
+| "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; authoring stays forbidden until the owner's launch decision |
 | Current status | `PROJECT-STATUS.md` |
-| "Is this ready for OpenSpec?" | the answer is **not ready** — the round-2026-08d repairs are unreviewed and no readiness recompute has run; `PROJECT-STATUS.md` "Open state, honestly" is the current statement. The round-2026-08c readiness report is banner-marked historical |
+| "Is this ready for OpenSpec?" | the answer is **not ready** — the launch-gate pilot administration returned `GATE VERDICT: NOT READY` (2026-08-09) and the readiness question is owned by `launch-gate-pre-specifications.md` + `PROJECT-STATUS.md`. Launch target: **Capability 1**, prerequisite **Waves A+B**; Waves C1/C2/D1/D2 deferred per `contracts/candidates/DEFERRED-WAVE-POSTURE.md` |
 | Open owner questions | `decisions/PENDING-OWNER-DECISIONS.md` |
+| Mission or Context-selection work | `contracts/candidates/DEFERRED-WAVE-POSTURE.md` first — those candidates are visibly deferred and route only through the task router's deferred rows |
 | What a term means | doctrine's glossary, `governance/doctrine/README.md`; then the candidate `policy-candidates/TERM-REGISTRY.md` |
 | Maintenance, review, or avoiding a repeat mistake | `decisions/PROCESS-LESSONS.md` — **not default context** |
 

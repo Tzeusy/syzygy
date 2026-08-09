@@ -8,7 +8,7 @@ clauses: RFC9-1..RFC9-52 (sub-clauses RFC9-8(a), RFC9-9(a), RFC9-9(b), RFC9-13(a
 implementation_boundary:
   kind: requires-openspec
   clause: RFC9-52
-governs: [map-surface, home-geography, analytical-planes, layout-determinism, placement, identity-counting, reserved-palette, channel-registry, lenses, scene-profiles, scenarios, aggregation, unmapped-code, non-3d-equivalence, release-gates, motion]
+governs: [map-surface, home-geography, analytical-planes, layout-determinism, placement, portfolio-layout-governance, identity-counting, reserved-palette, channel-registry, lenses, scene-profiles, scenarios, aggregation, unmapped-code, non-3d-equivalence, release-gates, motion]
 applies_to: [orrery, machine-clients]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008]
 tags: [surface, spatial, legend-fidelity, unknown, determinism, sdr-19, sdr-20, sdr-21, sdr-22, sdr-23, sdr-24, sdr-25, sdr-26, sdr-27, vis-1, vis-7, sec-2, sec-3, sec-5]
@@ -126,9 +126,13 @@ whose owner-act provenance does not verify is treated exactly as an absent one �
 the version is not established, the channel does not render. Each module states
 the rule for its own registry and names the other.
 
-**RFC3-16(a) gates four artifacts across two modules:** those two registries, the
-promotion of lenses/analytical planes/profile relations (RFC9-35), and the
-walkthrough judgment and release policy (RFC9-45).
+**RFC3-16(a) gates artifacts in every module of this package**, without a
+count: those two registries; the **portfolio layout version registry** at
+workspace scope (RFC9-8(a)); the promotion of lenses, analytical planes and
+profile relations (RFC9-35); the **walkthrough judgment** and, separately, the
+**release policy** (RFC9-45); and RFC9-52's reviewed N/A judgment. Each is
+honored only under the predicate, and an artifact whose owner-act provenance
+does not verify is treated exactly as an absent one.
 
 **One package-spanning maintenance obligation.** **RFC9-47(a)** (module 3)
 requires that any amendment creating, removing, or changing a release-blocking
@@ -138,11 +142,24 @@ sections of the monolith: an obligation minted in module 1 or 2 is routed to
 module 3's list, and the same rule binds the craft-and-care release checklist
 that consumes it.
 
-**RFC9-52 binds the package, not one module.** The phase rule names
-"RFC9-1…RFC9-51", spanning all three modules, and the clause-to-requirement
-coverage matrix it mandates is produced for RFC 0009 **entire**. It is
-shape-parallel with RFC6-28, RFC7-38 and RFC8-32; both RFC 0010 and RFC 0011
-cite it.
+**RFC9-52 binds the package, not one module.** Its scope is **every clause of
+this contract other than RFC9-52 itself** — stated without a range so an
+appended clause cannot fall outside it — spanning all three modules, and the
+clause-to-requirement coverage matrix it mandates is produced for RFC 0009
+**entire**. RFC9-52 also fixes the home and the provenance gate of the
+reviewed N/A judgment. It is shape-parallel with RFC6-28, RFC7-38 and RFC8-32;
+both RFC 0010 and RFC 0011 cite it.
+
+**No forward reliance in this package.** Every clause of RFC 0009 is evaluable
+with RFC 0001–RFC 0008 bound. RFC9-8(a) places the portfolio layout version
+registry in a typed, owner-gated governance store defined by RFC 0003's
+governance-home semantics (RFC3-15, RFC3-15(a), RFC3-16(a)) and fail-closes on
+its own — no workspace-scope governance home, no lawful portfolio re-lay. That
+clause names one clause of candidate **RFC 0010** exactly once, as the drafted
+successor path that would become the store's home if and when RFC 0010 is
+accepted; that is a **citation, not a reliance**, and nothing in this package
+is conditional on it. It is the only mention of an unaccepted contract's
+clause anywhere in RFC 0009, and RFC 0011 is cited nowhere.
 
 **Provides to:** **RFC 0007 / RFC 0008** — map-side rendering obligations behind
 cross-surface highlights (same reserved palette semantics for shared states);
@@ -161,9 +178,13 @@ streaming (deferred mandate).
 
 ## Violation cases — distribution
 
-The eleven cases keep their stable package numbering and go to the module owning
-the violated clause. **No case spans modules.** Cases 1, 2, 3, 3a, 4, 5 →
-module 1 §7; cases 6–10 → module 2 §5; case 11 → module 3 §5.
+The violation cases keep their stable package numbering and go to the module
+owning the violated clause. **No case spans modules.** Cases 1, 2, 3, 3a, 4, 5 →
+module 1 §7; cases 6–10 → module 2 §5; case 11 → module 3 §5. No count is
+stated: the routing sentence carries the information, and a self-count in
+contract prose goes stale the moment a case is added (this one did — 3a is a
+separately-headed case, so the enumeration above is twelve items under eleven
+integers).
 
 ## Foundation defects (§5) — all discharged or resolved
 

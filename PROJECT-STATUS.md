@@ -21,7 +21,7 @@ at round-2026-08d** (owner work order; design:
 The rev9 and rev10 all-in-one acceptance phrases are retired and satisfy
 nothing (the acceptance record's retirement paragraph names them).
 
-| # | Gate | Status | Owning record |
+| # | Gate | Gate state | Owning record |
 |---|---|---|---|
 | 1 | Doctrine adoption | ✅ **Adopted** 2026-07-30, amendment D1 in force | tag `doctrine-adopted-2026-07-30`; `.syzygy/governance/doctrine/README.md` |
 | 2 | Craft-and-care approval | ✅ **Approved** (owner decision D2) | `.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md` |

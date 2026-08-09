@@ -123,7 +123,10 @@ retention, never a status claim, and may never alter one (§3.13).
 
 **RFC8-7.** Trajectory renders the approved-Proposal lifecycle **drafted →
 under review → approved → queued-for-materialization → materialized** over the
-RFC1-28 entity, in RFC1-31's own state names.
+RFC1-28 entity, in RFC1-31's state names, **with
+`queued-for-materialization` added as a work-plane fact rather than a kernel
+state** — RFC1-31 does not carry that name, and this package reports the
+omission rather than diverging from it silently (§5, §8 q2).
 `queued-for-materialization` is a **recorded queue act in `.syzygy/work/**` on
 an approved Proposal** — not a new kernel lifecycle state and **never named
 "scheduled"** (scheduling is typed-authority-routed to the work scheduler)

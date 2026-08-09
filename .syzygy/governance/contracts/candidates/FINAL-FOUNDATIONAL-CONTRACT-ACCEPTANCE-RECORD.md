@@ -19,33 +19,43 @@ by `scripts/build_active_manifest.py`). Design rationale:
 
 | # | Act (exact phrase) | Accepts exactly |
 |---|---|---|
-| A | `ACCEPT FOUNDATIONAL WAVE A: 8d4f3e723f0ec6a7645cd70abc0d5fe5ebdc6fe1b27e9faa5ad29761613e7816` | The 19 modules of RFC 0001–0006 (kernel, evidence, storage, admission, cross-surface selection) at the per-module sha256 digests in `wave-manifests/WAVE-A-MANIFEST.txt`, whose own digest is the act's argument. Every `depends_on` edge of these contracts stays inside the wave |
-| B | `ACCEPT FOUNDATIONAL WAVE B: daa6a5dd37b7f92ac4ba4fc8a7bb491ecbffc02ba43227448f64f88dc3c3bebb` | The 11 modules of RFC 0007–0009 (Polaris, Trajectory, Orrery) per `wave-manifests/WAVE-B-MANIFEST.txt`. Depends on Wave A; performed first, it binds text whose reliances point at candidate material — lawful only stated at the act |
-| C1 | `ACCEPT FOUNDATIONAL WAVE C1: a5d3ba1f22ad0ff5ff66485b1829e5b2f652a8c7678dcc96699eaca4ac5b2b4d` | RFC-0011 module 1 (packet identity, provenance, memory — RFC11-1..3, 5..10, 12) plus the package index, per `wave-manifests/WAVE-C1-MANIFEST.txt`. Declares `depends_on` RFC-0010 (waves D1/D2): recommended after them |
-| C2 | `ACCEPT FOUNDATIONAL WAVE C2: acd27bb8f9b7be76725057b4280e2dc9fe23f3e9fac17c448542b9cb250d8b1a` | RFC-0011 module 2 (deterministic selection and budget posture — RFC11-4, 11, 13..16), per `wave-manifests/WAVE-C2-MANIFEST.txt`. Carries its own external criterion: acceptable only when its selection rules reproduce the blind golden fixtures (`fixtures/`), a derivation the fixtures' task/answer boundary exists to allow |
+| A | `ACCEPT FOUNDATIONAL WAVE A: 6b98e0c64f7ffc4f9047faccf2f6a705a79efe2f6a7ceb02915cb160add16b4d` | The 19 modules of RFC 0001–0006 (kernel, evidence, storage, admission, cross-surface selection) at the per-module sha256 digests in `wave-manifests/WAVE-A-MANIFEST.txt`, whose own digest is the act's argument. Every `depends_on` edge of these contracts stays inside the wave |
+| B | `ACCEPT FOUNDATIONAL WAVE B: 2041ad053127cb1fc1022ed3295744e4b3a0053419f1e9945fb787537ab27f8a` | The 11 modules of RFC 0007–0009 (Polaris, Trajectory, Orrery) per `wave-manifests/WAVE-B-MANIFEST.txt`. Depends on Wave A; performed first, it binds text whose reliances point at candidate material — lawful only stated at the act |
+| C1 | `ACCEPT FOUNDATIONAL WAVE C1: a5d3ba1f22ad0ff5ff66485b1829e5b2f652a8c7678dcc96699eaca4ac5b2b4d` | RFC-0011 module 1 (packet identity, provenance, memory — RFC11-1..3, 5..10, 12) plus the package index, per `wave-manifests/WAVE-C1-MANIFEST.txt`. Declares `depends_on` RFC-0010 (waves D1/D2): recommended after them. Module 1 uses *mandatory context* as a primitive whose defining clause is RFC11-4 in Wave C2; performed alone, the packet contract binds identity, immutability, execution-record binding, the fail-closed Unknown rule, governed memory and profiles, while the criterion separating a packet's mandatory core from its suggested additions is not yet fixed — lawful only stated at the act. Performing C2 in the same sitting removes the condition |
+| C2 | `ACCEPT FOUNDATIONAL WAVE C2: acd27bb8f9b7be76725057b4280e2dc9fe23f3e9fac17c448542b9cb250d8b1a` | RFC-0011 module 2 (deterministic selection and budget posture — RFC11-4, 11, 13..16), per `wave-manifests/WAVE-C2-MANIFEST.txt`. Depends on C1 (the module consumes module 1's packet primitives throughout) and declares `depends_on` RFC-0010 (waves D1/D2) in its front matter — performed before them, it binds text whose reliances point at candidate material, lawful only stated at the act. Carries its own external criterion: acceptable only when its selection rules reproduce the blind golden fixtures (`fixtures/`), a derivation the fixtures' task/answer boundary exists to allow — and that criterion's pass/fail standard is itself an open owner question (**P-29**): until it is ruled and the standard exists, this row's condition cannot be discharged |
 | D1 | `ACCEPT FOUNDATIONAL WAVE D1: 570e617091bb41d8b34ca17b09e12f41d22e4d592a23249c8a737a698f8c0dff` | RFC-0010 modules 1, 2, 3, 5 (mission identity/approval/lifecycle; envelope/attention; budget reservation; portfolio/consent) plus the package index, per `wave-manifests/WAVE-D1-MANIFEST.txt`. Even accepted, RFC10-24 holds every mission in `awaiting-approval` until the D3 question (act 5) is ruled — this act is never an operating license |
 | D2 | `ACCEPT FOUNDATIONAL WAVE D2: ab590e3e553a2f1f2db92d1c676a0fd5c05d2283548163e5c3663df5a31382d8` | RFC-0010 module 4 (effects, recovery, stop — the correction plane), per `wave-manifests/WAVE-D2-MANIFEST.txt`. The plane both 2026-08-07 `REVISE` reviews concentrated on; the round-2026-08d rewrite repairs their findings and awaits its own fresh confirming review — see the wave-history note below |
 | 2 | `CONFIRM CRAFT AMENDMENT: CC-TEST-2@7a716090bc827121b3f70c4f7e252fc5680cd8a56d7b4121b70f3673489690a0` | The craft cluster is committed and owner-approved (D2); only this amendment needs confirming. **Digest re-quoted 2026-08-06** — `th-engineering` was vendored in-tree and re-pinned (owner override, closing P-26), and `testing-and-verification.md` gained CC-TEST-7 recording the resulting re-check (no conflicts found); the retired, `aa2d6353…`-then-`3858820f…` arguments satisfy nothing. Earlier: **re-quoted 2026-08-05** — the nine canonical files' banners were corrected (P-7/SD-3, rule text byte-unchanged), so the rev9 argument `aa2d6353…` was stale and satisfied nothing |
-| 3 | `ACCEPT TOPOLOGY: 7a3b22494a08d888901c1f0cec76833dc926e89b6f510b5abf8963071fbaeb45` | The nine topology files at the per-member digests in `../../../map/topology-candidates/BUNDLE-MANIFEST.md`, whose own digest is the act's argument. **Digest re-quoted 2026-08-05** — topology `README.md` lost the retired acceptance phrase and its draft/proposed vocabulary (SD-2, SD-10); the other eight members are byte-unchanged from rev9, and the rev9 argument `0d34d1b5…` is stale and satisfies nothing |
-| 4 | `ADOPT PROJECT OVERVIEW: 01d629515993188338f6a0e2d84d67543d8569003759a7c8f571a90b129c7cd1` | `.syzygy/intent/OVERVIEW.md` at that digest. **Digest re-quoted 2026-08-05** — the overview was refactored to four-layer progressive disclosure and its authoring-time status section removed (P-13/SD-9); the rev9 argument `42de2eb1…` is stale and satisfies nothing. **Re-quoted again 2026-08-05b** — the overview was rebuilt to a default layer plus two collapsed drawers, the frozen gate-state table was removed in favour of a pointer to `PROJECT-STATUS.md`, and the machine query plane was restored to the consumer list; the retired argument `ce7794fd…` satisfies nothing |
-| 5 | Doctrine amendment **D3** (bounded mission) — VIS-4 owner adoption, no magic phrase | `DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (**rev1**, 2026-08-05) and its two verbatim insertions. Rev1 supersedes `…-DRAFT.md`, whose `vision.md` insertion cannot be applied as written (SD-8). **Optional**: RFC-0010/0011 do not depend on it. Recommended ordering: perform act 1 before act 5 |
+| 3 | `ACCEPT TOPOLOGY: 3d8f75daaff57316cad3de6014e21faad9361363ecc8c2ff1e076786be6e46b2` | The nine topology files at the per-member digests in `../../../map/topology-candidates/BUNDLE-MANIFEST.md`, whose own digest is the act's argument. **Digest re-quoted 2026-08-10** — topology `README.md` presented the retired rev10 phrase as the current acceptance gate (launch-gate pilot C1; the same defect class P-6 repaired for the rev9 phrase in this same file); the sentence is now phrase-free so a future retirement cannot recur here. The other eight members are byte-unchanged; the `7a3b2249…` and rev9 `0d34d1b5…` arguments are stale and satisfy nothing. Earlier: **re-quoted 2026-08-05** — the rev9 retired phrase and draft/proposed vocabulary corrected (SD-2, SD-10) |
+| 4 | `ADOPT PROJECT OVERVIEW: e5d6910a6a0f5dc72c280d37382d432ef6b6c05e91b5c24fe0bc1a4e46afc9d8` | `.syzygy/intent/OVERVIEW.md` at that digest. **Digest re-quoted 2026-08-10** — the round-2026-08e vocabulary repair (R-OVW batch: the OVERVIEW's advanced-vocabulary findings from RD-16, verified to zero CG-23 hits over all 20 registry terms) moved the overview's bytes; the retired `01d62951…` argument satisfies nothing. Earlier: **re-quoted 2026-08-05** — the overview was refactored to four-layer progressive disclosure and its authoring-time status section removed (P-13/SD-9); the rev9 argument `42de2eb1…` is stale and satisfies nothing. **Re-quoted again 2026-08-05b** — the overview was rebuilt to a default layer plus two collapsed drawers, the frozen gate-state table was removed in favour of a pointer to `PROJECT-STATUS.md`, and the machine query plane was restored to the consumer list; the retired argument `ce7794fd…` satisfies nothing |
+| 5 | Doctrine amendment **D3** (bounded mission) — VIS-4 owner adoption, no magic phrase | `DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (**rev1**, 2026-08-05) and its two verbatim insertions. Rev1 supersedes `…-DRAFT.md`, whose `vision.md` insertion cannot be applied as written (SD-8). **Optional**: RFC-0010/0011 do not depend on it. Recommended ordering: perform Waves A, B, D1 and D2 before act 5 — Wave A binds the mission extension profile (RFC1-7) and the D waves bind the mission vocabulary D3's terms would otherwise leave defined only in unaccepted contracts *(this guidance previously said "perform act 1 before act 5", naming the retired all-in-one gate — RD-20 M5)* |
 
 **Wave-history note — read before any wave act.** The retired all-in-one
-offer closed with two independent 2026-08-07 reviews returning `REVISE`
-over one shared structural defect (RFC10-17's budget invariant stated over
-the ledger while RFC10-10 demands prevention over consumption), left
+offer closed with the 2026-08-07 review pass — **eight independent
+reviews, every verdict `REVISE`** — two of which concentrated on one
+shared structural defect (RFC10-17's budget invariant stated over the
+ledger while RFC10-10 demands prevention over consumption), left
 unrepaired then so the reviews stayed bound to their bytes. **Round
 2026-08d performed the repairs**: RFC-0010 was split into the five-module
 package waves D1/D2 now bind, its budget module rewritten (six-quantity
 accounting, enforced-limit admission at the RFC5-21 launch gate and the
 RFC5-15 transmission predicate), the effects/recovery/stop module rebuilt
 against reviews RD-1/RD-1b's blocking findings, and RFC-0011 split and
-amended (RFC11-13..16). Those reviews therefore no longer bind the current
-bytes, and **no confirming review is yet bound to any wave argument
-above** — the round's fresh-context review pass is owed before any wave
-act is performed, and this sentence is deleted only by recording those
-reviews. Semantic deltas of the round:
-`round-2026-08d/` (work order, wave design, and the round's delta record).
+amended (RFC11-13..16). **The round-2026-08d fresh-context review pass
+then ran over those bytes (commit `771965c`): fifteen reviews — nine
+dimension, six wave exact-package — and all fifteen returned `REVISE`,
+zero `CONFIRM`** (verdicts:
+`round-2026-08d/reviews/DELIVERY-AND-VERDICT-REGISTER.md`; dispositions:
+`…/DISPOSITION-REGISTER.md`). A `REVISE` review is a verdict against
+binding, not for it: **no wave act may be offered or performed until that
+wave's repairs land, its manifest is regenerated by script, and a fresh
+confirming review is bound to the new argument** — or the owner knowingly
+binds the findings at the act. The round-2026-08e repair pass executes
+the Wave A and Wave B batches under the owner's Capability 1 launch
+direction; Waves C1/C2/D1/D2 are visibly deferred
+(`DEFERRED-WAVE-POSTURE.md`). Semantic deltas:
+`round-2026-08d/` and `round-2026-08e/` (work orders, wave design, and
+the rounds' delta records).
 
 **Acceptance schedules no implementation.** Accepting these contracts
 clears specification authoring only: every active contract carries a
@@ -272,7 +282,12 @@ counts in `CONTEXT-BUDGET-REPORT.md`, both printed by the verifier).
 > same section were stale the same way, and both are now replaced by pointers
 > rather than refreshed: **a figure quoted outside its owning artifact goes
 > stale silently**, which is this repository's third verification rule, broken
-> here in the record that governs its own acceptance.
+> here in the record that governs its own acceptance. *(Label correction,
+> 2026-08-10 — RD-20 m6: this note called RFC10-17..22 "the six
+> correction-plane clauses"; by the package's own clause map RFC10-17 is
+> module 3, RFC10-18..20 module 4, RFC10-21 module 5, RFC10-22 module 2 —
+> only module 4 is the correction plane. They are the six clauses the
+> correction pass added, not six correction-plane clauses.)*
 
 **Word accounting (03 report, honest form):** rev9 normative corpus
 90,410 words, one mandatory reading path — a historical baseline, fixed.
@@ -285,9 +300,13 @@ own figure — RD-8 finding S2, same class as the clause count above.)*
 **The owner's 35–50k corpus band was not reached** — nine independent
 passes each hit an incompressibility floor at −12…−22% (arithmetic in
 `WORKER-REPORT-DIGEST.md`). The optimization target it served instead:
-measured per-task mandatory load **10,854–18,302 words** (five fixtures;
-median ≈ 13,900 ≈ 18.7k est. tokens ≈ 9–15% of the rev9 path), with one
-disclosed risk-class exception (fixture 2).
+measured per-task mandatory loads across the golden fixtures — **every
+current figure lives in `CONTEXT-BUDGET-REPORT.md`, regenerated by its
+script; none is restated here** *(the "10,854–18,302 words across five
+fixtures" range this sentence used to carry was stale by roughly 2×
+against the generated report's ten-fixture figures — RD-23 M3, the same
+transcribed-derived-value class the §3 corrections above record)* — with
+one disclosed risk-class exception (fixture 2).
 
 ## 4. Decisions and directions in force
 
@@ -412,12 +431,29 @@ implementation, not specification — accepting with it open is a
    ceremony is doctrine amending doctrine. The amendment draft states the
    position (it is an owner act like any other, VIS-4-gated) with the
    owner's overrule path; the ruling itself is the owner's.
-9. **Single-source structure, disclosed** (safety review): RFC 0001–0009
-   never cite RFC-0010/0011, so the no-self-widening rule has no
-   redundant restatement inside the nine earlier contracts. Back-citations
-   were deliberately not added (nine-contract churn for redundancy); the
-   corpus relies on RFC10-15/RFC11-4 loading rules to carry the
-   prohibition into every mission context.
+9. **Single-source structure, disclosed** (safety review; rewritten
+   2026-08-10, round-2026-08e — the X3 single rewrite; the previous text's
+   "never cite" was false as worded). The measured position, swept this
+   session over all **30 modules** of RFC 0001–0009 (Python `re`, tokens
+   `RFC10-n`/`RFC11-n` plus the package names): **no clause of
+   RFC 0001–0009 relies on RFC-0010 or RFC-0011.** Twelve citation hits
+   exist, every one a non-reliance under verification rule 5: five phase
+   clauses carry the `(Shape-parallel with …)` sibling list naming
+   RFC10-16 and RFC11-12; RFC 0003's correlation text names RFC10-9 as
+   *"the worked example"*; and RFC9-8(a) names RFC10-15 in a
+   staged-successor parenthetical stating in-clause that it is *"a
+   citation, not a reliance"* — after the round-2026-08e Wave B repair,
+   the portfolio layout registry's home and gate are RFC3-15/RFC3-16(a),
+   fully inside Waves A+B, and the fail-closed bar (no portfolio re-lay
+   while no workspace-scope governance home exists) derives from
+   RFC 0003's own silence plus RFC3-15(a)'s recorded-widening
+   requirement, not from RFC-0010. (RFC-0005's front matter lists
+   RFC-0010/0011 under `constrains:` — an outbound constraint edge, not a
+   reliance.) The no-self-widening rule therefore has no restatement by
+   reliance inside the nine earlier contracts; its reach into mission
+   contexts is carried by RFC10-15/RFC11-4's loading rules when and only
+   when those waves are accepted — until then the earlier contracts stand
+   complete on their own text.
 10. **R1 — CLOSED, and the item outlived its defect.** This item asked the
     owner to rule on a stale navigation count in `rfcs/RFC-0007/README.md`
     line 46, offering "accept as-is, or direct a fix + digest regeneration +

@@ -4,10 +4,10 @@ title: Polaris (Intent Surface) — rendering, the authority boundary, comprehen
 status_source: owner-act-record
 module: rendering-and-surface
 clauses: RFC7-26..RFC7-40 (no sub-clauses, no gaps, no retirements, no merges; RFC7-38, the phase rule, is defined before RFC7-39/40 in file order — deliberate)
-governs: [reading-mode, proposed-scenario-rendering, curated-diagram, authority-boundary, comprehension-test, walkthrough-record, machine-parity, non-visual-recoverability, portfolio-narrative, subproject-navigation]
+governs: [reading-mode, proposed-scenario-rendering, curated-diagram, authority-boundary, comprehension-test, walkthrough-record, machine-parity, non-visual-recoverability, portfolio-narrative, subproject-navigation, fixed-human-entry-point, front-door-discoverability]
 applies_to: [polaris]
-depends_on: [RFC-0001, RFC-0003, RFC-0006, RFC-0009]
-tags: [presentation, proposed-scenario, comprehension-test, verdict-unlawful, machine-parity, non-visual, reachability, portfolio, phase-boundary]
+depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0006, RFC-0009]
+tags: [presentation, proposed-scenario, comprehension-test, verdict-unlawful, machine-parity, non-visual, reachability, portfolio, entry-point, discoverability, phase-boundary]
 ---
 
 **Status:** Proposed foundational contract (self-declaration at authoring
@@ -22,10 +22,12 @@ lookup rule, package-level summary, doctrine grounding, integration,
 alternatives and deferrals: `README.md`. Rationale, amendment history,
 alternatives, and answered §8 questions: `../../history/RFC-0007-history.md`.
 
-**Serves:** VIS-1, VIS-2, VIS-3, VIS-6, VIS-7; SEC-3, SEC-5. Implements **owner
-rulings** SDR-14, SDR-17; honors SDR-27 for non-visual parity and
+**Serves:** VIS-1, VIS-2, VIS-3, VIS-5, VIS-6, VIS-7; SEC-3, SEC-5. Implements
+**owner rulings** SDR-14, SDR-17; honors SDR-27 for non-visual parity and
 SDR-28/29/30 for portfolio rendering; resolves the Polaris portion of SDR §5
-question 10.
+question 10. **VIS-5** is served by RFC7-40, which rests on it expressly: the
+repository front door lies outside the two writable namespaces, so the
+discoverability finding is propose-only.
 
 ---
 
@@ -39,8 +41,11 @@ boundary between what Polaris owns and what it merely composes (RFC7-29), the
 cold-open comprehension walkthrough that is this surface's acceptance test and
 its verdict discipline (RFC7-30…32), the machine-parity and non-visual
 obligations every distinction must satisfy (RFC7-33/34), multi-project and
-subproject navigation including the portfolio narrative (RFC7-35…37), and the
-binding phase rule at the OpenSpec seam (RFC7-38). Read it to answer: *what
+subproject navigation including the portfolio narrative (RFC7-35…37), the
+binding phase rule at the OpenSpec seam (RFC7-38), and the fixed human entry
+point with its repository-front-door discoverability finding (RFC7-39/40,
+§3.14 — defined after the phase rule in file order, deliberately, and inside
+its coverage obligation). Read it to answer: *what
 must a reader — human, agent, or one who cannot see — be able to get out of
 this surface, and what may the surface never let them conclude?*
 
@@ -133,10 +138,18 @@ the project exists; what it promises; what it refuses to be (naming at least
 one non-goal and reaching its rule text); what its major capabilities are and
 how they fit; **where exactness lives** — reaching a verbatim requirement leaf;
 and **one thing the project does not currently know about itself** — an Unknown
-region and how the surface showed it. The last prompt is load-bearing: a
-surface passable only by a uniformly confident read has rendered
-comprehensible fiction (VIS-1). A second phase checks answers against the
-owned artifacts; divergences are recorded as findings.
+region and how the surface showed it; and, for **one rendered fact of the
+reader's choosing, how strongly the surface claims to know it and what would
+make that claim stronger**. The last two prompts are load-bearing and catch
+different failures: the Unknown prompt fails a surface passable only by a
+uniformly confident read (VIS-1); the strength prompt fails a surface that is
+honest in a vocabulary the fresh reader cannot read. At minimal density every
+capability carries four technical carriers — an epistemic label, its RFC2-25
+tier, a freshness state, and an evaluation identity (RFC7-16) — and none of
+the other prompts is failed by a reader who cannot tell `asserted-by-worker`
+from `gate-backed`, which is the VIS-1 rank-2 obligation ("comprehension of
+the truth's presentation") going unmeasured. A second phase checks answers
+against the owned artifacts; divergences are recorded as findings.
 
 **At least one run per release milestone is performed non-visually or
 keyboard-only**, exercising RFC7-34's reachability limb: the walkthrough must
@@ -306,18 +319,46 @@ history.
 of the intent surface; it is **not a specification of record from which
 implementation work may be scheduled**. No implementation work for
 **user-observable Polaris behavior** may be scheduled solely from this RFC:
-before implementation, every observable consequence of RFC7-1…RFC7-37 must
-either **map to an approved OpenSpec requirement or scenario** in the
-governance root's `openspec/**` plane, or carry an **explicit, reviewed N/A
-judgment** recording why that consequence needs no requirement. The surface-
-specification phase must produce, as a deliverable, a **clause-to-
-requirement coverage matrix** for this RFC — every clause mapped to
-requirement identities or to its reviewed N/A — and that matrix is review
-material, never authority. This clause creates no OpenSpec content now (none
-may exist during bootstrap); it binds the phase boundary so RFC prose is
-never quietly treated as an implementable behavioral spec.
+before implementation, every observable consequence of **every clause of this
+contract other than this one** must either **map to an approved OpenSpec
+requirement or scenario** in the governance root's `openspec/**` plane, or
+carry an **explicit, reviewed N/A judgment** recording why that consequence
+needs no requirement. **The
+reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a recorded
+owner judgment homed in `decisions/` (RFC3-15), and it is honored only where
+its owner-act provenance is verifiable under RFC3-16(a). Where that provenance
+does not verify, the judgment maps nothing: the consequence remains unmapped
+and renders Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2). The
+surface-specification phase must produce, as a
+deliverable, a **clause-to-requirement coverage matrix** for this RFC — every
+clause mapped to requirement identities or to its reviewed N/A — and that
+matrix is review material, never authority. This clause creates no OpenSpec
+content now (none may exist during bootstrap); it binds the phase boundary so
+RFC prose is never quietly treated as an implementable behavioral spec.
 
-*(RFC7-38 binds the whole package: RFC7-1…RFC7-37 spans both modules, and the
+**The scope is stated without a range on purpose.** A numeric range copied
+into a clause goes stale the moment a clause is appended, and the appended
+clause is then the one no coverage matrix reaches — which is how RFC7-39 and
+RFC7-40 fell outside this obligation while the general prohibition still
+reached them. "Every clause of this contract other than this one" needs no
+maintenance and covers every future append.
+
+**Rows are per observable consequence, not per clause.** A clause with five
+observable consequences and one mapped requirement is not covered; the matrix
+discloses the consequences it enumerates for each clause, so a
+complete-looking matrix over under-enumerated consequences is a defect of the
+matrix.
+
+**Why the judgment is gated at all.** It *removes* an implementation
+obligation, which makes it authorization-bearing on RFC3-16(a)'s own test —
+the same predicate and the same failure posture RFC7-21, RFC7-25 and RFC7-31
+already invoke on this surface. `.syzygy/governance/**` is writable by the
+untrusted fleet-worker class (SEC-3, as RFC3-16(a) extends it to committed
+artifacts), and an N/A judgment that class could commit is the one artifact
+that turns "this clause needs a requirement" into "this clause needs
+nothing".
+
+*(RFC7-38 binds the whole package: its scope spans both modules, and the
 coverage matrix it requires is a package-level deliverable, not a per-module
 one.)*
 
@@ -337,25 +378,82 @@ without the file renders the absence as a finding under RFC 0002's
 vocabulary (absent → the gap surfaces; unobservable → Unknown), never
 silently.
 
+**The entry is the project's primary narrative (RFC7-6), and RFC7-30 enters
+it.** There are not two front doors: this path is where the RFC7-6 primary
+narrative is published, so the path every human reader is sent to first is
+the path this surface's only acceptance test walks. RFC7-6's "at most one"
+is undisturbed — the fixed entry is that one — and RFC7-5's opacity rule is
+undisturbed too, because **the path is a publication location, never an
+identity**: the narrative's identifier stays opaque and label-independent
+(RFC1-10 discipline), and nothing may cite the path as an identifier. Where
+RFC7-6 permits additional named narratives, they are published elsewhere
+under `.syzygy/intent/**`; none is the fixed entry.
+
+**These obligations follow the entry — stated, not inferred**, in RFC7-36's
+style, because "under this contract's narrative rules" is a blanket phrase
+and the one attribute whose omission is unrecoverable at the consumer must
+be named: **RFC7-2** (every load-bearing claim anchored, marked
+non-normative, or epistemically labeled — including the authoring-act rule);
+**RFC7-5** membership, so the entry is a narrative-model unit and not an
+unclassified file; **RFC7-7** (versioned, attributed, revertible, never
+silently overwritten); **RFC7-11 and RFC7-11(a)** (broken and target-changed
+anchors render, never silently current); and **RFC7-33/34** (machine parity,
+the **`non-citable` / `presentation-artifact`** attribute on every exported,
+embedded, or plain-text rendering, non-visual recoverability and
+reachability). RFC7-3 binds in full: nothing anywhere in Syzygy may cite this
+file as authority, and it is the file external agents are most likely to
+fetch.
+
 **RFC7-40 — Repository-front-door discoverability is a per-repository
 finding.** For every repository of a governed project, the kernel answers:
-*does the repository's front door (its root README or configured landing
-document) link to the Syzygy project entry (RFC7-39)?* — **`yes / no /
-Unknown`**, per repository, at the producing evaluation. Syzygy **may
+*does the repository's root README link to the Syzygy project entry
+(RFC7-39)?* — per repository, at the producing evaluation. Syzygy **may
 propose** the link (a Proposal, RFC1-27) and **may never write it**: the
 repository front door lies outside the two writable namespaces (VIS-5), and
 a repository whose owner declines the link renders `no`, truthfully, not as
 an error. The finding never implies that every observed repository can host
 a `.syzygy/` entry: for repositories without a governance root the finding
-renders the actual limitation — not-applicable with the reason, or Unknown
-where observation cannot establish it — and the multi-repository shape is
-rendered as it is.
+renders the actual limitation rather than a failure, and the
+multi-repository shape is rendered as it is.
+
+**The answer domain is closed at four values** — **`yes` / `no` /
+`not-applicable` / `Unknown`** — stated once, here, and carried **verbatim**
+on every rendering and machine answer (RFC6-14). Closing it is what makes it
+checkable: a value the contract never names can be neither carried verbatim
+under RFC6-14 nor checked for parity, and a spelling disagreement between two
+renderings over one declared scope is release-blocking (RFC6-22/23). `not-applicable` is a
+value of **this finding's own domain** — the repository has no governance
+root and can host no entry — and is **not** RFC6-5's navigation outcome of
+the same spelling; RFC6-6's rule that outcomes are never Unknown reasons is
+untouched, and this value is never stamped with, or counted among, RFC2-24
+Unknown reasons.
+
+**`Unknown` carries its RFC2-24 reason, verbatim, like every other Unknown
+this package renders.** Where the repository's front door could not be read
+at the producing evaluation, the reason is the one the failure actually
+names (`source-uncaptured-or-unreachable` where the content was not
+captured; `missing-declaration` where no declaration establishes the
+repository's membership). **The unconsented-repository branch is answered
+upstream and cited, never restated:** an entry whose consent reference does
+not resolve to an in-force consent record is not observed and renders
+Unknown with reason **#6 `unconsented-source-or-provider`** (RFC3-6;
+RFC2-24). `not-applicable` is not an Unknown and carries no Unknown reason;
+it carries the declared basis for the limitation.
+
+**"Configured landing document" is not an input to this finding.** The
+front door read is the repository's root README. A per-repository
+configurable landing document would be an input with no lawful declaration
+site — RFC3-5's top-level field set is closed and names none — and an input
+with no declared home is unclassified as a snapshot input, which RFC2-2
+makes fatal to a deterministic answer. Widening the input would take an
+RFC3-5 amendment in the same logical change, and this clause makes none.
 
 ## 4. Violation cases
 
 *Package numbering; cases are distributed across modules, never renumbered.
 Cases 1–7, 12 and 14 are in `narrative-contract.md`; cases 10, 13 and 15 span
-both modules and are held in `README.md` §4.*
+both modules and are held in `README.md` §4. Case 16 is module-local, added
+with RFC7-39/40's hygiene pass.*
 
 8. *(RFC7-26/27)* Two exclusive proposals rendered as one merged future; or
    proposed and adopted architecture prose indistinguishable in an endpoint
@@ -366,6 +464,13 @@ both modules and are held in `README.md` §4.*
 11. *(RFC7-36)* The portfolio narrative asserts "project B is converged" as
     workspace prose a reader cannot tell from project truth — or asserts it
     while *perfectly* marked as workspace prose, also forbidden.
+16. *(RFC7-39/40)* The fixed entry is served without the `non-citable` /
+    `presentation-artifact` attribute, and an external agent cites the
+    overview in a work warrant; or a second "front door" is published and the
+    comprehension test enters one while readers are sent to the other; or the
+    discoverability finding renders a fifth value the contract never names, or
+    an `Unknown` with no RFC2-24 reason, or renders `no` for a repository that
+    has no governance root at all.
 
 ---
 
@@ -375,17 +480,31 @@ both modules and are held in `README.md` §4.*
 stay distinct from, and the status routing through it (RFC1-24); the badge rule
 (RFC1-19) behind RFC7-36's status prohibition; the plane rule (RFC1-22) that
 stops proposed material anchoring anything; Proposal exclusivity (RFC1-27)
-behind RFC7-27. **On RFC 0003:** workspace-manifest boundaries (RFC3-10…14) —
-scope, membership, project-plane sourcing, unresolvable entries, and RFC3-14's
-asymmetric relation semantics; governance declarations (RFC3-17) in the
-boundary table; the `kernel-recorded` record home (RFC3-15); the child-label
-pass-through rule (RFC3-32); and the **owner-act provenance predicate
-(RFC3-16(a))**, which gates RFC7-31's verdict exactly as it gates RFC7-25's.
-**On RFC 0006:** the machine-queryable endpoints and label parity
-(RFC6-13/14) that carry RFC7-33's attributes; the aggregation contract
-(RFC6-17) and equivalence tuple (RFC6-22) RFC7-37 cites without restating; the
-drawer handoff (RFC6-18) in RFC7-34's reachability limb; and scenario contexts
-and their URL travel (RFC6-24/25) behind RFC7-26.
+behind RFC7-27 **and behind RFC7-40's propose-only affordance**; the
+opaque-identifier discipline (RFC1-10) behind RFC7-39's path-is-not-identity
+rule. **On RFC 0002:** the closed Unknown-reason registry and its verbatim
+carriage (RFC2-24) behind RFC7-40's Unknown branch, including reason **#6**
+`unconsented-source-or-provider`; the uncaptured-source rule that makes an
+undeclared input fatal to a deterministic answer (RFC2-2). **On RFC 0003:**
+workspace-manifest boundaries (RFC3-10…14) — scope, membership, project-plane
+sourcing, unresolvable entries, and RFC3-14's asymmetric relation semantics;
+governance declarations (RFC3-17) in the boundary table; the `kernel-recorded`
+record home and the `decisions/` home (RFC3-15), the latter behind RFC7-38's
+N/A judgment; the closed project-declaration field set (RFC3-5) that bars an
+undeclared landing-document input at RFC7-40; the unconsented-entry rule
+(RFC3-6) RFC7-40 cites rather than restates; the child-label pass-through rule
+(RFC3-32); and the **owner-act provenance predicate (RFC3-16(a))**, which
+gates RFC7-31's verdict and RFC7-38's N/A judgment exactly as it gates
+RFC7-25's. **On RFC 0006:** the machine-queryable endpoints and label parity
+(RFC6-13/14) that carry RFC7-33's attributes **and RFC7-40's finding value
+verbatim**; the closed navigation-outcome set and the rule that outcomes are
+not Unknown reasons (RFC6-5/6), which RFC7-40's `not-applicable` value is
+deliberately kept apart from; the aggregation contract (RFC6-17) and
+equivalence tuple (RFC6-22) RFC7-37 cites without restating; trust-floor
+parity between two renderings over one declared scope (RFC6-22/23) behind
+RFC7-40's closed domain; the drawer handoff (RFC6-18) in RFC7-34's
+reachability limb; and scenario contexts and their URL travel (RFC6-24/25)
+behind RFC7-26.
 
 **Provides to RFC 0009 (Orrery):** the curated-versus-computed provenance
 attribute (RFC7-28) and the transclusion question (`README.md` §7). RFC7-31 and

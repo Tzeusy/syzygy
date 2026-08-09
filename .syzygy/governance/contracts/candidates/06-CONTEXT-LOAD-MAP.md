@@ -12,8 +12,11 @@
 
 ## The corpus, as loadable modules
 
-11 contracts → **32 modules** (7 packages + 2 single-file RFCs + RFC-0010 +
-RFC-0011 + 7 package READMEs). Machine lookup: `05-CONTRACT-INDEX.yaml`
+11 contracts; **the module count is owned by the generated
+`ACTIVE-CONTRACT-MANIFEST.txt` and `05-CONTRACT-INDEX.yaml`** — this
+sentence previously carried "32 modules" while the manifest held 39 (the
+round-08d RFC-0010/0011 splits), the stale-count class this file's own
+preamble warns about. Machine lookup: `05-CONTRACT-INDEX.yaml`
 (regenerable: `scripts/build_contract_index.py --check`).
 
 **Module sizes are not listed here.** They were, per contract, and eleven of
@@ -27,6 +30,15 @@ selection you make is `scripts/context_load.py <paths>`.
 
 ## Reader map — who loads what
 
+> **Routing authority-of-navigation moved 2026-08-10:** the one current
+> task router is **`TASK-ROUTER.md`** (generated and validated by
+> `scripts/build_task_router.py`); where a row below and the router
+> disagree, the router is current and this table is historical
+> orientation. This map remains the context-budget instrument — the
+> router routes, this map measures. The Adapter-author row below is the
+> one T-5 measured wrong in both directions; the router carries the
+> corrected route.
+
 - **Kernel implementer:** RFC-0001 + RFC-0002 (core, challenge,
   reconciliation) + RFC-0003 governance-homes.
 - **Surface implementer (any):** owning surface package + RFC-0002
@@ -35,8 +47,11 @@ selection you make is `scripts/context_load.py <paths>`.
   + RFC-0003 governance-homes.
 - **Security/profile work:** RFC-0005 (relevant module) + RFC-0003
   governance-homes + doctrine `security.md` + craft security policy.
-- **Mission Control / CLI / MCP spec author:** RFC-0010 + RFC-0011 +
-  RFC-0005 admission + RFC-0006 + RFC-0003 governance-homes.
+- **Mission Control / CLI / MCP spec author:** the RFC-0010 and RFC-0011
+  packages (`rfcs/RFC-0010/`, `rfcs/RFC-0011/` — **deferred-wave
+  candidates**, see `DEFERRED-WAVE-POSTURE.md`) + RFC-0005 admission +
+  RFC-0006 + RFC-0003 governance-homes. *(This row previously pointed at
+  the pre-split single-file paths, which no longer exist.)*
 - **Narrative author:** RFC-0007 (README + narrative) + RFC-0002
   rendering + doctrine `vision.md`.
 - Every package README carries the deterministic clause-lookup rule, so a
@@ -44,7 +59,11 @@ selection you make is `scripts/context_load.py <paths>`.
 
 ## Measured context-selection exercises (fixtures/)
 
-Nine fixtures live in `fixtures/`. Each states its own mandatory selection,
+The fixtures live in `fixtures/` — their count and every figure are owned
+by the generated `CONTEXT-BUDGET-REPORT.md` §1, not restated here (this
+sentence previously said "Nine" while ten existed — the exact stale-count
+class this file's own preamble warns about). Each states its own mandatory
+selection,
 its omitted candidates with reasons, and its packet digest; each one's
 measurement is **written by a generator and verified by a second, independent
 one** — `scripts/build_budget_report.py` writes the anchored figure and
@@ -54,7 +73,7 @@ declared load command.
 **The per-fixture figures that used to sit in this table are gone**, for the
 reason above: they were a third copy of a measurement whose first copy is the
 fixture and whose second is now generated. Read
-`CONTEXT-BUDGET-REPORT.md` §1 for all nine, with each one's disposition
+`CONTEXT-BUDGET-REPORT.md` §1 for every fixture, with each one's disposition
 against the proposed decomposition trigger, and §2 for the candidate budget
 exceptions with their reviewer, scope and expiry.
 

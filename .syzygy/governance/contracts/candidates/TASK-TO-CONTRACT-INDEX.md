@@ -1,4 +1,14 @@
-# Task-to-contract index — derived, never authority
+# SUPERSEDED — Task-to-contract index — derived, never authority
+
+> **SUPERSEDED 2026-08-10** by the one generated task router,
+> `TASK-ROUTER.md` (written and validated by
+> `scripts/build_task_router.py`). This file and the load map's reader
+> table gave competing answers to the same routing questions — the
+> launch-gate pilot's D2 finding ("two routes, two answers, the
+> designated winner wrong"). Do not route from this file; its finding
+> T-5 (below) remains valuable history and is honored in the router's
+> corrected adapter route. Dead module paths in the historical rows below
+> were left as written; every row below is history, not a route.
 
 **Derived index (2026-08-05, human-clarity refactor round).** It answers one
 question — *given a task, which contract modules must be loaded?* — by

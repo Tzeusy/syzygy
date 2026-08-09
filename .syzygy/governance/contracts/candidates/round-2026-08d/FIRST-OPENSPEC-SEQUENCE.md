@@ -1,4 +1,8 @@
-# The first specification sequence — revision 2 (round 2026-08d)
+# SUPERSEDED — The first specification sequence — revision 2 (round 2026-08d)
+
+> **SUPERSEDED 2026-08-10** by revision 3 at
+> `../FIRST-OPENSPEC-SEQUENCE.md` (the candidates root), which is the
+> single current first-spec document. Kept verbatim below as history.
 
 > **Candidate plan. Binds nothing, and creates nothing.** No OpenSpec
 > changeset exists, no `openspec/` tree exists, and none may be created

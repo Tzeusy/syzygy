@@ -190,7 +190,18 @@ fidelity, staleness and degradation rendering, mapping displays — may be
 scheduled solely from this RFC. Before implementation, every observable
 consequence either maps to an approved OpenSpec requirement and scenario in
 the governance root's `openspec/**` plane, or carries a reviewed N/A judgment
-proving it purely structural with no independently testable behavior. At
+proving it purely structural with no independently testable behavior. **The
+reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a recorded
+owner judgment homed in `decisions/` (RFC3-15), and it is honored only where
+its owner-act provenance is verifiable under RFC3-16(a). Where that provenance
+does not verify, the judgment maps nothing: the consequence remains unmapped
+and renders Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2).
+
+**Rows are per observable consequence, not per clause.** A clause with five
+observable consequences and one mapped requirement is not covered; the matrix
+discloses the consequences it enumerates for each clause, so a
+complete-looking matrix over under-enumerated consequences is a defect of the
+matrix. At
 surface specification a clause-to-requirement coverage matrix over
 RFC4-1..RFC4-30 is produced — **that matrix is review material, never
 authority**. This clause creates no OpenSpec content now (none may exist

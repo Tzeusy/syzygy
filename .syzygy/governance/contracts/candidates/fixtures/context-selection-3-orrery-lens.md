@@ -48,7 +48,7 @@ scripts/context_load.py rfcs/RFC-0009/README.md \
   rfcs/RFC-0002/rendering-vocabularies.md doctrine:architecture.md
 ```
 
-Measured: **14,233 words ≈ 19,215 estimated tokens.** Band position is
+Measured: **15,193 words ≈ 20,511 estimated tokens.** Band position is
 owned by `CONTEXT-BUDGET-REPORT.md` §1, computed from this anchored figure;
 this fixture's prose makes no band claim of its own.
 
@@ -89,7 +89,7 @@ facts).
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`8ccb2c3eeefaa11d…`.
+`0a7756d0c5228cdd…`.
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a

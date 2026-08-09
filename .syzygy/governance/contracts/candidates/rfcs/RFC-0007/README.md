@@ -8,10 +8,10 @@ clauses: RFC7-1..RFC7-40 (sub-clauses RFC7-2(a)-(c), RFC7-9(a)-(c), RFC7-11(a); 
 implementation_boundary:
   kind: requires-openspec
   clause: RFC7-38
-governs: [intent, narrative, section, claim-block, source-anchor, reading-order, citation-graph, curated-diagram, editorial-draft, portfolio-narrative]
+governs: [intent, narrative, section, claim-block, source-anchor, reading-order, citation-graph, curated-diagram, editorial-draft, portfolio-narrative, fixed-human-entry-point, front-door-discoverability]
 applies_to: [polaris]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0009]
-tags: [presentation, non-authoritative, progressive-disclosure, comprehension-test, machine-parity, editorial-draft, target-state-drift]
+tags: [presentation, non-authoritative, progressive-disclosure, comprehension-test, machine-parity, editorial-draft, target-state-drift, entry-point, discoverability]
 ---
 
 # RFC 0007 — Polaris (Intent Surface)
@@ -65,12 +65,14 @@ entity model.
 
 **Where the seam falls.** Module 1 answers *may this sentence exist in curated
 narrative, and what act does it take to put it there?* Module 2 answers *what
-must the surface show, prove, and never blur?* No clause spans the seam. Twelve
-citation edges cross it, all resolvable by the lookup rule above: module 1 →
-module 2 at RFC7-6→RFC7-30, RFC7-11/11(a)→RFC7-33, RFC7-14→RFC7-26,
-RFC7-17→RFC7-26/33, RFC7-20/25→RFC7-33; module 2 → module 1 at
-RFC7-26→RFC7-17, RFC7-27→RFC7-2, RFC7-29→RFC7-14/18/23, RFC7-30→RFC7-6,
-RFC7-31/32→RFC7-25, RFC7-33/34→RFC7-5/11/11(a)/13, RFC7-36→RFC7-2/3/7/11/11(a).
+must the surface show, prove, and never blur?* No clause spans the seam.
+Citation edges cross it in both directions and **every one of them resolves by
+the lookup rule above**, which is deterministic over the whole `RFC7-n`
+namespace and needs no enumeration. Neither the edges nor their count is
+listed here: an enumeration and a count are derived measurements, and a
+measurement copied into contract prose goes stale the moment any module moves
+— the same reason module sizes are not stated above. This one already went
+stale twice inside a digest set.
 
 ## Package reader map (non-normative)
 
@@ -148,7 +150,7 @@ authoring/adoption experience.
 
 ## 4. Violation cases — package-spanning
 
-*Cases 1–7, 12 and 14 are in module 1, cases 8, 9 and 11 in module 2.
+*Cases 1–7, 12 and 14 are in module 1, cases 8, 9, 11 and 16 in module 2.
 Numbering is the stable package numbering; cases are distributed, never
 renumbered. Cases 10, 13 and 15 span both modules and are held here: each
 turns on a module-2 encoding or reachability obligation failing in a way that
@@ -184,14 +186,24 @@ operational (RFC2-12) behind RFC7-9; V0 reconciliation staging (RFC2-19); and
 the revision-binding pattern (RFC2-11, RFC2-18), which RFC7-10's target-state
 component **imitates and never extends** — RFC7-11(a) is a Polaris-local
 rendering marker over a resolving anchor and mints no RFC2-24 Unknown reason.
+Two reasons this package's clauses carry by name: **#11
+`reference-unresolvable`**, minted on this package's finding and retained by
+decision A5, which RFC7-11's broken anchor degrades a claim with; and **#6
+`unconsented-source-or-provider`**, which RFC7-40's unconsented branch cites
+through RFC3-6. The uncaptured-source rule (RFC2-2) is what bars an undeclared
+input to RFC7-40's answer.
 **On RFC 0003:** `intent/` as a schema-versioned governed namespace (RFC3-18)
 and its exclusion from cache (RFC3-20); spec anchors (RFC3-28) and the verbatim
-identity scheme (RFC3-27); workspace-manifest boundaries (RFC3-10…14);
-governance declarations (RFC3-17); the `kernel-recorded` record home (RFC3-15);
+identity scheme (RFC3-27); workspace-manifest boundaries (RFC3-10…14); the
+closed project-declaration field set (RFC3-5) and the unconsented-entry rule
+(RFC3-6), both behind RFC7-40;
+governance declarations (RFC3-17); the `kernel-recorded` record home and the
+`decisions/` home (RFC3-15), the latter also behind RFC7-38's N/A judgment;
 child-label pass-through (RFC3-32); local-state rules (RFC3-21); and the
-**owner-act provenance predicate (RFC3-16(a))**, which gates three clauses
+**owner-act provenance predicate (RFC3-16(a))**, which gates four clauses
 across both modules — draft adoption (RFC7-21), the review verdict (RFC7-25),
-and the comprehension-test judgment (RFC7-31). **On RFC 0004:** the OpenSpec
+the comprehension-test judgment (RFC7-31), and RFC7-38's reviewed N/A
+judgment. **On RFC 0004:** the OpenSpec
 adapter's verbatim read and anchor obligations (RFC4-10); the anti-duplication
 invariant (RFC4-5). **On RFC 0005:** the egress choke point (RFC5-14/15) behind
 RFC7-20; act attribution (RFC5-25) behind RFC7-7. **On RFC 0006:** selection
@@ -200,13 +212,13 @@ contract, and scenario contexts — cited throughout, duplicated nowhere.
 
 **Defects reported (not silently diverged from):**
 
-1. **RFC 0002 / RFC 0006 — dangling-anchor vocabulary. Live.** RFC7-11's broken
-   anchors land in RFC6-5's `unresolvable` outcome, but RFC2-24 has no Unknown
-   reason whose resolution route is "repair the reference"; RFC 0006 already
-   reported this, and Polaris is the most exposed surface. This package
-   supports adding `reference-unresolvable` to RFC2-24; RFC 0002 has added it
-   as reason #11 citing this finding, and the owner may still strike it at
-   acceptance.
+1. **RFC 0002 / RFC 0006 — dangling-anchor vocabulary. Discharged, owner
+   decision A5.** RFC7-11's broken anchors land in RFC6-5's `unresolvable`
+   outcome, and the claim they degrade needs an Unknown reason whose
+   resolution route is "repair the reference". RFC 0002 minted
+   `reference-unresolvable` as RFC2-24 reason **#11** on this package's
+   finding, and **decision A5 retained it with the list closed at twelve**;
+   RFC7-11 cites it. **No RFC 0002 change is outstanding.**
 2. **RFC 0002 — RFC2-25 sibling surface states. Discharged, owner decision
    B10** (carried in RFC7-20; report narrative in history).
 3. **RFC 0001 — RFC1-7 vs RFC1-22, personal view state. Resolved**; no RFC 0001
@@ -278,8 +290,10 @@ The phase rule **RFC7-38** binds the whole package: this contract fixes the
 semantics of the intent surface and is not a specification of record from
 which implementation work may be scheduled. The clause text is in
 `rendering-and-surface.md` §3.13, and its clause-to-requirement coverage
-matrix must cover **RFC7-1…RFC7-37 across both modules**, not the rendering
-module alone.
+matrix must cover **every clause of this contract other than RFC7-38 itself,
+across both modules** — not the rendering module alone, and not a range that
+stops moving when a clause is appended. RFC7-38 also fixes the home and the
+provenance gate of the reviewed N/A judgment; the clause states both.
 
 ---
 

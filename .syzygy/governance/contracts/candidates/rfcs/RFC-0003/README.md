@@ -44,8 +44,9 @@ without reading either file:
 
 > **`RFC3-15`, `RFC3-16`, `RFC3-17` and every lettered sub-clause
 > (`RFC3-15(a)`, `RFC3-16(a)`, `RFC3-16(b)`, `RFC3-16(c)`, `RFC3-17(a)`) are
-> in `governance-homes-and-owner-acts.md`. Every other number in
-> RFC3-1 … RFC3-33 is in `manifests-and-namespace.md`.**
+> in `governance-homes-and-owner-acts.md`. Every other `RFC3-n` number —
+> whatever the package's range grows to — is in
+> `manifests-and-namespace.md`.**
 
 Equivalently: numeric part in 15–17 → governance-homes; otherwise →
 manifests-and-namespace. There is no third location and no clause appears in
@@ -98,6 +99,21 @@ module and cited from the other.
   limb sits with RFC3-17(a) in module 2. All other cases sit whole with their
   owning clause. Original numbering (1–14) is preserved package-wide, so the
   case numbers are non-contiguous within each file.
+
+## Forward references are informative (package-level)
+
+Both modules cite sibling contracts that are not yet accepted — RFC 0007–0011
+clause numbers appear in RFC3-16(a)'s example list, in its gate inventory, in
+RFC3-15's `records/` cell, and at RFC3-32's narrative-side parallel. Every such
+citation is **informative until that RFC is accepted**: it names where an
+obligation will be discharged, or illustrates a class, and is never a
+dependency of this package's meaning; a renumbering in a sibling draft changes
+nothing here. Load-bearing citations are those to **adopted doctrine**, to the
+**SDR**, and to the sibling contracts each module's integration section names
+as reliances. This paragraph is navigational like the rest of this index — each
+module states the same rule in its own integration section, and RFC3-15's
+`records/` cell, the one such citation standing inside a normative enumeration,
+states its condition in the cell itself rather than relying on either.
 
 ## Open questions (navigational — numbering is immutable)
 

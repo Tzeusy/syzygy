@@ -6,7 +6,7 @@ status_source: owner-act-record
 clauses: "RFC3-15, RFC3-15(a), RFC3-16, RFC3-16(a), RFC3-16(b), RFC3-16(c), RFC3-17, RFC3-17(a) (every other RFC3-n lives in manifests-and-namespace.md)"
 governs: [governance-homes, lifecycles, owner-acts, provenance, challenge-records]
 applies_to: [kernel, workspace, all-surfaces]
-depends_on: [RFC-0001, RFC-0002, RFC-0004, RFC-0005]
+depends_on: [RFC-0001, RFC-0002, RFC-0005]
 tags: [governance-categories, owner-act-provenance, adoption-lifecycle, kernel-records, bootstrap-correlation]
 ---
 
@@ -83,10 +83,10 @@ exactly these six names and rejects a seventh; neither rejecting
 | Category | May contain | Install gate |
 |---|---|---|
 | `doctrine/` | Adopted doctrine artifacts; Syzygy-drafted doctrine for undeclared projects, stamped unadopted | Owner adoption (`ADOPT DOCTRINE` in this repo's bootstrap; explicit owner adoption generally). Amendment: owner-only (VIS-4) |
-| `contracts/` | Accepted load-bearing contracts (RFCs), including normative data contracts and external service contracts | Owner acceptance (for the foundational set, the digest-bound act defined by the active acceptance record — `ACCEPT COMPACTED FOUNDATIONAL RFCS: <manifest digest>`; owner sign-off per VIS-4 thereafter) |
+| `contracts/` | Accepted load-bearing contracts (RFCs), including normative data contracts and external service contracts | Owner acceptance: for the foundational set, **the digest-bound acts defined by the active acceptance record** — that record owns the acts, their exact phrases, and their arguments, and this clause quotes none of them, so a phrase this clause named could never outlive its retirement; owner sign-off per VIS-4 thereafter |
 | `policies/` | Quality, evidence, and security policies — including currency-bound declarations (RFC2-9), the secret-detection policy (SEC-5), deterministic challenge-resolution policies and challenge sweep policies (RFC2-13) | Owner approval; policy versions are snapshot inputs (RFC2-1 item 7) |
 | `decisions/` | Recorded owner decisions: adoptions, dismissals (reason + expiry), adjudications, consent records (RFC3-7), overrules | Recording by the owner (or attributed on the owner's behalf); a decision is a warrant, never evidence |
-| `records/` | **Kernel-authored durable facts minted on a non-owner actor's submission** (the only minting trigger — see RFC3-2's transition rule; kernel-computed expiry derives at evaluation and mints nothing): **challenge submissions** (RFC1-5, RFC2-12 — the submission is itself a distinct recorded artifact, per RFC3-17(a)), their admission and rejection records and submitted withdrawals (RFC2-13), and **walkthrough execution records** (the fact a comprehension walkthrough ran and what it walked — RFC7-30, RFC9-45). *Never* owner decisions, never policy, never claims — a walkthrough **judgment** (pass/fail and rationale) is an adjudication and lives in `decisions/` | **No install gate — these are recorded facts, not authorizations.** Minted by the kernel under its own rules; the *submission* they record is attributed, and the record itself is neither adopted nor adoptable |
+| `records/` | **Kernel-authored durable facts minted on a non-owner actor's submission** (the only minting trigger — see RFC3-2's transition rule; kernel-computed expiry derives at evaluation and mints nothing): **challenge submissions** (RFC1-5, RFC2-12 — the submission is itself a distinct recorded artifact, per RFC3-17(a)), their admission and rejection records and submitted withdrawals (RFC2-13), and **walkthrough execution records** (the fact a comprehension walkthrough ran and what it walked — RFC7-30, RFC9-45; **this artifact class exists only where those contracts are accepted and active**, so until then the category admits no member of it and a conforming validator rejects one). *Never* owner decisions, never policy, never claims — a walkthrough **judgment** (pass/fail and rationale) is an adjudication and lives in `decisions/` | **No install gate — these are recorded facts, not authorizations.** Minted by the kernel under its own rules; the *submission* they record is attributed, and the record itself is neither adopted nor adoptable |
 
 **RFC3-15(a) — Why `records/` exists** (owner decision **B19**). A challenge
 admission record is an **identity-bearing snapshot input** (RFC2-1 item 9)
@@ -451,12 +451,35 @@ adoption stamps, policy versions and open challenges identity-bearing;
 kernel-fact immutability (RFC2-6); the challenge admission check and
 resolution policy (RFC2-13); the `unadopted-draft` surface state (RFC2-25).
 
+**Relies on RFC 0005:** RFC5-25's out-of-tree location constraint on the audit
+trail, on which RFC3-16(a)'s chosen mechanism class rests — a trail inside
+`.syzygy/**` or inside the untrusted actor class's write reach would make the
+correlation forgeable from within the governed tree, and the predicate would
+prove nothing.
+
 **Relies on the package's other module:** RFC3-2's four write-authority
 classes (the `kernel-recorded` class this module's `records/` category
 pairs with); the consent records stored under `decisions/` (RFC3-7); the
 cache/local bars (RFC3-20/21); the surface namespaces (RFC3-18); and the
 inoperative-field and unauthored-artifact postures RFC3-16(a)'s failure rule
 mirrors (RFC3-3, RFC3-9).
+
+**Not a reliance:** RFC 0004. Every RFC4-n citation in this module sits inside
+RFC3-16(a)'s **non-exhaustive examples** or its gate inventory, both of which
+say so of themselves ("the list below is not [the scope]"; "this list tracks
+the gates; it does not bound them"). They are citations, never dependency
+edges, and this module's front matter says so.
+
+**Forward references are informative.** Where a clause of this module cites a
+not-yet-accepted sibling contract by clause number (RFC7-n, RFC8-n, RFC9-n,
+RFC10-n, RFC11-n), the citation is **informative until that RFC is accepted**:
+it names where an obligation will be discharged or illustrates a class, never a
+dependency of this contract's meaning, and a renumbering in a sibling draft
+changes nothing here. Only citations to **adopted doctrine**, to the **SDR**,
+and to the sibling contracts this section names as reliances are load-bearing.
+Where such a citation appears inside a normative enumeration — RFC3-15's
+`records/` cell is the one instance — the cell states the condition in its own
+text rather than relying on this paragraph.
 
 **Provides to every downstream RFC, 0004–0011:** the owner-act provenance
 predicate **RFC3-16(a)**, its binding set **RFC3-16(b)**, and the two
@@ -502,5 +525,6 @@ either answer should follow.
 ---
 
 *End of module. Clauses RFC3-15, RFC3-15(a), RFC3-16, RFC3-16(a), RFC3-16(b),
-RFC3-16(c), RFC3-17 and RFC3-17(a). Every other number in RFC3-1 … RFC3-32 is
-in `manifests-and-namespace.md`; no number is retired or merged.*
+RFC3-16(c), RFC3-17 and RFC3-17(a). **Every other `RFC3-n` number, whatever the
+package's range grows to, is in `manifests-and-namespace.md`**; no number is
+retired or merged.*

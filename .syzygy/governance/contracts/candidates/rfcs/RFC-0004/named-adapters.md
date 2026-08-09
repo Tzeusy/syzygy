@@ -197,8 +197,9 @@ syntactically valid report naming the exact revision. Craft-and-care states
 the routes-1-and-2 capture side of this rule — "a report the worker itself
 wrote and attached is an emitter-captured **report fact** …
 integrity-verifiability proves non-tampering, not genuineness" (CC-TEST-2,
-amended at the rev7 rework to name routes 3 and 4 as the owner-created
-exceptions with their own guards) — and this clause carries the full
+whose rev7 amendment naming routes 3 and 4 as the owner-created exceptions
+with their own guards is confirmed by its own owner act — until that act,
+CC-TEST-2 stands in its unamended form) — and this clause carries the full
 four-route model. Routes 1 and 2 both amount to **capture by an observer
 distinct from the emitter**; route 3 is the owner's explicit escape hatch for
 oracles Syzygy cannot itself confirm.

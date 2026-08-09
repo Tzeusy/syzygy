@@ -18,10 +18,10 @@ dispositions recorded.
 directory is their canonical home. They **bind implementation work only from
 acceptance of the foundational design contracts**, because they consume RFC
 clause IDs (RFC9-47's gate list, RFC4-13's tiers, RFC2-25's vocabulary) that
-bind nothing until the owner performs the digest-bound acceptance act defined
-in the active acceptance record (currently `ACCEPT COMPACTED FOUNDATIONAL
-RFCS: <manifest digest>`; the rev9 phrase `ACCEPT FOUNDATIONAL RFCS` is
-retired and satisfies nothing). Nothing here is
+bind nothing until the owner performs the digest-bound acceptance acts
+defined in the active acceptance record (the wave acts; every previous
+single-act phrase is retired and satisfies nothing — the record's own
+retirement paragraphs govern). Nothing here is
 retroactively weakened by that sequencing; it is the ordinary
 policy-cites-contract dependency.
 
@@ -110,3 +110,16 @@ The pending craft-confirmation act (act 2) therefore now binds
 (the amended `testing-and-verification.md` above, carrying CC-TEST-7); the
 previously offered, now-stale `CC-TEST-2@3858820f…` argument satisfies
 nothing.
+
+**Correction — 2026-08-10.** The Status paragraph above previously named
+the retired rev10 single-act phrase as "currently" the acceptance act —
+found by the launch-gate pilot administration (2026-08-09, question C1) as
+one of five files presenting a retired phrase as the current gate, in this
+case inside an in-force record. The paragraph now binds craft force
+phrase-free to "the digest-bound acceptance acts defined in the active
+acceptance record", which the round-2026-08d wave restructuring makes the
+six wave acts. This is the same repair shape as the 2026-08-05 P-8
+correction, re-applied because the phrase that correction installed was
+itself later retired; the paragraph now quotes no phrase at all, so a
+future retirement cannot re-create the defect. No rule text, digest, or
+act argument changed in this correction.

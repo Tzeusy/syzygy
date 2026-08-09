@@ -3,8 +3,12 @@
 artifacts (front matter + clause scan). The index is a rebuildable
 projection, never a second truth store (RFC11-7). Review tooling only.
 
-Usage: build_contract_index.py [--root DIR] [--check]
-  --check: regenerate and diff against the committed index; nonzero exit on drift.
+Usage: build_contract_index.py [--root DIR] [--check] [--selftest]
+  --check:    regenerate and diff against the committed index; nonzero exit
+              on drift. States its population — review RD-17 finding 13: a
+              corpus that lost its front matter would regenerate to a
+              smaller index and `--check` would still print "no drift".
+  --selftest: mutate a copy per predicate class and confirm --check fails.
 """
 import argparse
 import re
@@ -44,17 +48,43 @@ GOV_SOURCES = [("../../doctrine", "doctrine", "doctrine"),
                ("../../../map/topology-candidates", "topology", "topology")]
 
 
+#: The one nested block this projection reads. Review RD-12 finding 11:
+#: RFC11-4 names this index as a deterministic *selection input* and says the
+#: mandatory set always includes what a contract's implementation-boundary
+#: declaration names (RFC11-13), "consumed from the contract's own index" —
+#: and the projection carried **0 occurrences** of `implementation_boundary`
+#: across 540 lines. No clause was violated (RFC11-13 locates the
+#: declaration in the governed artifact), but a selector working from the
+#: projection had to open eleven package READMEs for a field the projection
+#: could carry, which is friction pointed straight at the clause with the
+#: least tolerance for it. 11 of 11 contracts declare it.
+NESTED_BLOCKS = ("implementation_boundary",)
+NESTED_KEY = re.compile(r"^\s+([A-Za-z_][\w-]*):\s*(.*)$")
+
+
 def parse_front_matter(text):
     if not text.startswith("---\n"):
         return {}
     end = text.find("\n---\n", 4)
     fm = {}
+    block = None
     for line in text[4:end].splitlines():
+        if block is not None:
+            m = NESTED_KEY.match(line)
+            if m:
+                fm[block][m.group(1)] = m.group(2).strip().strip('"')
+                continue
+            block = None
         if ":" in line and not line.startswith((" ", "-")):
             k, v = line.split(":", 1)
+            k = k.strip()
             v = v.strip().strip('"')
+            if k in NESTED_BLOCKS and not v:
+                fm[k] = {}
+                block = k
+                continue
             m = LIST_VAL.match(v)
-            fm[k.strip()] = [x.strip() for x in m.group(1).split(",") if x.strip()] if m else v
+            fm[k] = [x.strip() for x in m.group(1).split(",") if x.strip()] if m else v
     return fm
 
 
@@ -86,8 +116,16 @@ def emit(root):
         if not cid:
             continue
         entry = by_id.setdefault(cid, {"fm": fm, "modules": [], "clauses": [],
-                                       "constrains": [], "constrains_source": ""})
+                                       "constrains": [], "constrains_source": "",
+                                       "boundary": {}, "boundary_file": ""})
         entry["modules"].append(str(f.relative_to(rfcs)))
+        # Declared on exactly one module per contract (the package index, or
+        # the single file). Projected with the file it was read from, so the
+        # projection points at the governed artifact rather than replacing it.
+        ib = fm.get("implementation_boundary")
+        if isinstance(ib, dict) and ib and not entry["boundary"]:
+            entry["boundary"] = ib
+            entry["boundary_file"] = str(f.relative_to(rfcs))
         # `constrains` is declared on the module whose clause states the
         # restriction, never on the package README — a README defines no
         # clauses, so an anchor declared there cannot be verified. The
@@ -142,6 +180,19 @@ def emit(root):
             lines.append(f"    constrains: [{', '.join(e['constrains'])}]")
         if e["constrains_source"]:
             lines.append(f"    constrains_source: {e['constrains_source']}")
+        if e["boundary"]:
+            b = e["boundary"]
+            lines.append("    implementation_boundary:")
+            for k in sorted(b):
+                lines.append(f"      {k}: {b[k]}")
+            lines.append(f"      declared_in: {e['boundary_file']}")
+        else:
+            # Absence is projected, not omitted: a contract that lost the
+            # declaration RFC11-4 depends on must be visible here as
+            # Unknown, never as a row that simply has one fewer key.
+            lines.append("    implementation_boundary: "
+                         "[Unknown] — no declaration found in this "
+                         "contract's front matter")
         lines.append(f"    modules: [{', '.join(e['modules'])}]")
         if e.get("module_meta"):
             lines.append("    module_ranges:")
@@ -171,23 +222,110 @@ def emit(root):
     return "\n".join(lines) + "\n"
 
 
+def population(root, generated):
+    """The denominator `--check` states, computed from the generated text.
+
+    A module with no front-matter `id` is skipped by `emit()` (there is
+    nothing to key it by), so a corpus that lost its front matter would
+    regenerate to a *smaller* index and a bare "no drift" would be true and
+    useless. Both counts print, so the shrink is visible.
+    """
+    rfcs = root / "rfcs"
+    files = sorted(rfcs.glob("RFC-00*.md"))
+    for pkg in sorted(p for p in rfcs.glob("RFC-00*") if p.is_dir()):
+        files += sorted(pkg.glob("*.md"))
+    keyed = sum(1 for f in files
+                if parse_front_matter(f.read_text(encoding="utf-8")).get("id"))
+    contracts = sum(1 for ln in generated.splitlines()
+                    if ln.startswith("  - id: "))
+    clauses = sum(1 for ln in generated.splitlines()
+                  if ln.lstrip().startswith("- {id: RFC"))
+    boundaries = sum(1 for ln in generated.splitlines()
+                     if ln.strip().startswith("implementation_boundary:")
+                     and "[Unknown]" not in ln)
+    return (f"{contracts} contract(s), {keyed} of {len(files)} module(s) "
+            f"carry a front-matter id, {clauses} clause(s), "
+            f"{boundaries} implementation-boundary declaration(s)")
+
+
+def selftest(root):
+    """Mutate a copy per predicate class; confirm the regeneration differs.
+
+    Review RD-17 finding 13: this script shipped no fixture at all, so its
+    green `--check` was a claim nobody had seen fail. Three classes, because
+    one comparison covering three can pass on the shape it happens to see.
+    """
+    import shutil
+    import tempfile
+    cases = []
+    base = emit(root)
+
+    def mutated(rel, fn, label):
+        d = Path(tempfile.mkdtemp(prefix="index-selftest-"))
+        try:
+            shutil.copytree(root / "rfcs", d / "rfcs")
+            p = d / rel
+            p.write_text(fn(p.read_text(encoding="utf-8")), encoding="utf-8")
+            after = emit(d)
+            cases.append((label, after != base))
+            return after
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+    first_pkg = sorted(p for p in (root / "rfcs").glob("RFC-00*")
+                       if p.is_dir())[0]
+    readme = f"rfcs/{first_pkg.name}/README.md"
+
+    # 1. A dropped front-matter id removes a whole module from the index.
+    mutated(readme, lambda t: t.replace("\nid: ", "\nid_was: ", 1),
+            "dropped front-matter id changes the projection")
+    # 2. A dropped implementation_boundary must show as [Unknown], not vanish.
+    after = mutated(readme,
+                    lambda t: t.replace("implementation_boundary:",
+                                        "implementation_boundary_was:", 1),
+                    "dropped implementation_boundary changes the projection")
+    cases.append(("dropped implementation_boundary renders [Unknown]",
+                  "[Unknown]" in (after or "")))
+    # 3. A clause definition removed must leave the clause list.
+    mods = [p for p in sorted(first_pkg.glob("*.md")) if p.name != "README.md"]
+    if mods:
+        rel = f"rfcs/{first_pkg.name}/{mods[0].name}"
+        mutated(rel, lambda t: re.sub(r"^\*\*(RFC\d+-\d+)", r"__\1", t,
+                                      count=1, flags=re.M),
+                "removed clause definition changes the projection")
+    else:
+        cases.append(("removed clause definition changes the projection",
+                      False))
+
+    ok = True
+    for label, passed in cases:
+        print(f"SELFTEST {'OK' if passed else 'FAIL'}: {label}")
+        ok = ok and passed
+    return 0 if ok else 1
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent)
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--selftest", action="store_true")
     args = ap.parse_args()
     root = args.root.resolve()
+    if args.selftest:
+        sys.exit(selftest(root))
     out = root / "05-CONTRACT-INDEX.yaml"
     generated = emit(root)
+    pop = population(root, generated)
     if args.check:
         current = out.read_text(encoding="utf-8") if out.exists() else ""
         if current != generated:
             print("DRIFT: 05-CONTRACT-INDEX.yaml differs from regeneration")
+            print(f"population: {pop}")
             sys.exit(1)
-        print("index matches regeneration — no drift")
+        print(f"index matches regeneration — no drift over {pop}")
     else:
         out.write_text(generated, encoding="utf-8")
-        print(f"wrote {out} ({len(generated.splitlines())} lines)")
+        print(f"wrote {out} ({len(generated.splitlines())} lines) — {pop}")
 
 
 if __name__ == "__main__":

@@ -43,28 +43,31 @@ This is the whole idea. Most tools collapse these three; Syzygy refuses to.
 | **Execution state** | what was *done* | runs, merges, work lifecycle |
 
 Execution state never substitutes for either of the others. The computed
-difference between desired and observed becomes **reconciliation work**, and
-agent fleets are the actuators that perform it.
+**difference** between desired and observed — gaps, contradictions, and
+Unknowns — is what generates work, and agent fleets are the workers that do
+it.
 
 ```mermaid
 flowchart LR
     Desired["Desired state<br/>(specs, declarations)"]
     Observed["Observed state<br/>(code + captured evidence)"]
     Exec["Execution state<br/>(runs, merges, work lifecycle)"]
-    Diff["Reconciliation work"]
-    Fleet["Agent fleets (actuators)"]
+    Diff["Difference<br/>gaps · contradictions · Unknowns"]
+    Fleet["Agent fleets"]
     Desired --> Diff
     Observed --> Diff
-    Diff -->|warranted work| Fleet
+    Diff -->|"work, once approved"| Fleet
     Fleet -->|recorded as| Exec
     Exec -->|"merged changes — evidence, never proof"| Observed
 ```
 
-## One kernel, and what looks at it
+## One shared project model, and what looks at it
 
-A single semantic **kernel** — a temporal project graph plus an evaluation
-engine — computes every truth exactly once. Everything else is a projection
-of it, and none of them is independently authoritative.
+A single **shared project model** (the *kernel*, in the technical contracts) —
+a project graph that remembers time, plus the rules that compare declared
+intent against captured evidence — computes every truth exactly once.
+Everything else is a rebuildable view of it, and none of those views is
+independently authoritative.
 
 Doctrine commits Syzygy to **two first-class consumers from day one**:
 
@@ -79,21 +82,24 @@ The three project surfaces:
 | Surface | Literal subtitle | Answers |
 |---|---|---|
 | **Polaris** | the intent surface | What is this project supposed to be? |
-| **Trajectory** | the work surface | What remains, what runs, what merged *without yet being reconciled*? |
+| **Trajectory** | the work surface | What remains, what is running, what changed, what did it cost — and has the result been verified against intent? Never satisfied by an issue list |
 | **Orrery** | the map surface | Where does everything live, and in what state? Unknown is a first-class colour |
 
-And one thing that is *not* a surface: **Mission Control**, a
-**workspace-level operator capability** spanning projects — what bounded,
-delegated missions are running. It mints no project truth. It rests on a
-candidate contract and a proposed doctrine amendment, neither accepted.
+And one thing that is **not a fourth project-specific truth surface**:
+**Mission Control**, a **workspace-level operator domain** — a *workspace*
+being the owner's portfolio of projects rather than any one project — which
+answers what bounded, delegated missions are running across them. It mints no
+project truth. It rests on a candidate contract and a proposed doctrine
+amendment, neither accepted.
 
 ## What the owner actually approves
 
 Humans govern intent, guardrails, risk, and budgets. Agents do detailed work
-inside an explicitly approved **Mission** envelope — objective, permissions,
-budget, time, evidence bar, stop and escalation conditions — which they can
-never widen. The human is interrupted for declared exceptions, not routine
-steps.
+inside an explicitly approved **Mission** — one bounded job, carrying written
+bounds it can never widen: objective, permissions, budget, time, the
+**evidence bar** (the minimum strength of evidence its results must carry),
+and its stop and escalation conditions. Widening any of them is a human act.
+The human is interrupted for declared exceptions, not routine steps.
 
 The loop stays human-triggered. Autonomy beyond doctrine's stated bounds is
 licensed only through the mechanism doctrine itself names — never by
@@ -101,14 +107,16 @@ reinterpretation.
 
 ## The north star, honestly labelled
 
-The long-range ideal: a project's complete normative corpus — its **Project
-Genome** — could regenerate the codebase, with code as a replaceable
-realization.
+The long-range ideal: a project's **complete normative definition** —
+everything that would have to survive deletion of the code — could regenerate
+the codebase, with code as a replaceable realization. (Doctrine has a name for
+that corpus; Drawer 2 says where to find it.)
 
-Doctrine names this a **north star, not present doctrine, and never a current
-capability claim**. It exerts direction rather than obligation, with one
-operative rule: **a decision that materially forecloses the ideal must record
-that foreclosure — the unrecorded foreclosure is the violation.**
+Doctrine names this a **north star, not present doctrine**, and forbids any
+artifact from presenting it as a current capability. It exerts direction
+rather than obligation, with one operative rule: **a decision that materially
+forecloses the ideal must record that foreclosure — the unrecorded foreclosure
+is the violation.**
 
 ## What exists today
 
@@ -137,8 +145,8 @@ fired.
 ---
 
 You have the argument. **Everything past this point is optional
-drill-down** — open a drawer when you need it, and nothing below changes any
-claim above.
+drill-down** — open a drawer when you need it, and nothing below changes
+anything asserted above.
 
 <details>
 <summary><b>Drawer 1 — the technical model</b> (typed authority; evidence and
@@ -175,9 +183,11 @@ a new evaluation.
 
 Every merged change enters a reconciliation chain and stays visibly
 **reconciliation-pending** until checked against the exact intent revision
-that warranted it. The terminal answers — reconciled-with-evidence,
-Unknown(reason), unsatisfied, contradiction-raised — are four different
-answers that never share a rendering.
+that authorized it. *Reconciled at E with evidence*, *merged but not yet
+evaluated*, *evaluated and unsatisfied*, and *evaluated, contradiction raised*
+are four different answers that must never share a rendering. At V0 the second
+is the honest answer for all merged work, and it renders as Unknown carrying
+its reason.
 
 A wall of pending states on a fleet-built project is *correct output*, not
 failure. Positive status flows only through gate-backed evidence whose
@@ -232,7 +242,7 @@ so a reader can find the mechanism, not so it can be relied on.
 | Mission envelope; no self-widening | RFC-0010 (RFC10-7, RFC10-8) | Candidate |
 | Autonomy licensed only by doctrine's own mechanism | `doctrine/vision.md` (VIS-4) | Adopted |
 | Whether D3 + RFC-0010 satisfy VIS-4 | **open owner question** | Proposed |
-| North star; the unrecorded-foreclosure rule | `doctrine/vision.md` | Adopted |
+| North star; the unrecorded-foreclosure rule; the complete normative corpus doctrine calls the **Project Genome** | `doctrine/vision.md`; `doctrine/architecture.md` | Adopted |
 | Typed authority; contradictions vs gaps | `doctrine/architecture.md`; RFC-0001, RFC-0002 | Adopted / candidate |
 | Evidence, epistemic labels, staleness | `doctrine/trust-and-evidence.md`; RFC-0002 (RFC2-3, RFC2-4) | Adopted / candidate |
 | Reconciliation chain and its four answers | RFC-0002 (RFC2-17…21), RFC-0004, RFC-0008 | Candidate |

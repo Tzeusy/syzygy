@@ -363,13 +363,21 @@ def emit(root):
     add("")
     add("## Graph consistency")
     add("")
+    # The count that used to sit in this sentence ("the 20 asymmetric edges")
+    # was hard-coded here and emitted into a file whose header reads
+    # *derived, never authority* — a generator transcribing a figure of a
+    # prior state into its own output (review RD-17 finding 5). It is now
+    # named as a dated historical figure owned by the report that measured
+    # it, and this file states no number it has not computed.
     add("**The graph is closed by construction.** `depends_on` is the single")
     add("authored direction; `provides_to` is derived by reversing it and")
     add("appears in no module's front matter. The two therefore cannot")
-    add("disagree — the 20 asymmetric edges this section used to report were")
-    add("not a data-entry problem but a consequence of maintaining both")
-    add("directions by hand. Their per-edge dispositions are recorded in")
-    add("`round-2026-08b/DEPENDENCY-CLOSURE-REPORT.md`.")
+    add("disagree — the asymmetric edges this section used to report were not")
+    add("a data-entry problem but a consequence of maintaining both")
+    add("directions by hand. Their count, as measured at rev10, and their")
+    add("per-edge dispositions are recorded in")
+    add("`round-2026-08b/DEPENDENCY-CLOSURE-REPORT.md`; this file does not")
+    add("restate a figure it cannot recompute.")
     add("")
     add("What remains checkable is **dangling** edges: a declared dependency")
     add("on a contract with no module in this package.")
@@ -405,23 +413,113 @@ def emit(root):
     return "\n".join(L) + "\n"
 
 
+def population(root):
+    """The denominator `--check` states, recomputed each run.
+
+    A module with no front-matter `id` is skipped by `collect()`, so a corpus
+    that lost its front matter would regenerate to a smaller graph and a bare
+    "no drift" would be true and useless (review RD-17 finding 13). Both the
+    file count and the keyed count print, so the shrink is visible.
+    """
+    _rfcs, files = module_files(root)
+    modules, contracts = collect(root)
+    edges = sum(len(m["depends_on"]) for m in modules)
+    constrains = sum(len(c["constrains"]) for c in contracts.values())
+    return (f"{len(modules)} of {len(files)} module(s) carry a front-matter "
+            f"id, {len(contracts)} contract(s), {edges} authored "
+            f"`depends_on` edge(s), {constrains} `constrains` edge(s)")
+
+
+def selftest(root):
+    """Mutate a copy per predicate class; confirm the regeneration differs.
+
+    Review RD-17 finding 13: this script shipped no fixture, so its green
+    `--check` was a claim nobody had seen fail — and two of its three
+    predicates (the dangling test and the `constrains` anchor test) exist
+    because a reviewer found the defect they now catch.
+    """
+    import re as _re
+    import shutil
+    import tempfile
+    cases = []
+    base = emit(root)
+
+    def mutate(rel, fn, label, extra=None):
+        d = Path(tempfile.mkdtemp(prefix="depindex-selftest-"))
+        try:
+            shutil.copytree(root / "rfcs", d / "rfcs")
+            p = d / rel
+            p.write_text(fn(p.read_text(encoding="utf-8")), encoding="utf-8")
+            after = emit(d)
+            cases.append((label, after != base))
+            if extra:
+                cases.append((extra[0], extra[1](after, d)))
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+    _rfcs, files = module_files(root)
+    victim = str(files[0].relative_to(root))
+
+    # 1. A dangling `depends_on` must reach the emitted defect table, not be
+    #    absorbed into a clean graph.
+    mutate(victim,
+           lambda t: _re.sub(r"^depends_on: \[", "depends_on: [RFC-0099, ",
+                             t, count=1, flags=_re.M),
+           "dangling depends_on changes the projection",
+           extra=("dangling depends_on is named in the defect table",
+                  lambda after, _d: "RFC-0099" in after and "dangling" in after))
+
+    # 2. A `constrains` edge whose source clause the declaring module does
+    #    not define — review RD-4 finding F-1's exact shape.
+    src = next((f for f in files
+                if "constrains_source:" in f.read_text(encoding="utf-8")), None)
+    if src is not None:
+        rel = str(src.relative_to(root))
+        mutate(rel,
+               lambda t: _re.sub(r"^constrains_source: .*$",
+                                 "constrains_source: RFC99-99", t, count=1,
+                                 flags=_re.M),
+               "unanchored constrains_source changes the projection",
+               extra=("unanchored constrains_source is named as a defect",
+                      lambda after, _d: "unanchored" in after))
+    else:
+        cases.append(("unanchored constrains_source changes the projection",
+                      False))
+
+    # 3. A dropped front-matter id silently shrinks the graph. The
+    #    denominator is what makes it visible; the projection must move too.
+    mutate(victim, lambda t: t.replace("\nid: ", "\nid_was: ", 1),
+           "dropped front-matter id changes the projection")
+
+    ok = True
+    for label, passed in cases:
+        print(f"SELFTEST {'OK' if passed else 'FAIL'}: {label}")
+        ok = ok and passed
+    return 0 if ok else 1
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent)
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--selftest", action="store_true")
     args = ap.parse_args()
     root = args.root.resolve()
+    if args.selftest:
+        sys.exit(selftest(root))
     out = root / "CONTRACT-DEPENDENCY-INDEX.md"
     generated = emit(root)
+    pop = population(root)
     if args.check:
         current = out.read_text(encoding="utf-8") if out.exists() else ""
         if current != generated:
             print("DRIFT: CONTRACT-DEPENDENCY-INDEX.md differs from regeneration")
+            print(f"population: {pop}")
             sys.exit(1)
-        print("dependency index matches regeneration — no drift")
+        print(f"dependency index matches regeneration — no drift over {pop}")
     else:
         out.write_text(generated, encoding="utf-8")
-        print(f"wrote {out} ({len(generated.splitlines())} lines)")
+        print(f"wrote {out} ({len(generated.splitlines())} lines) — {pop}")
 
 
 if __name__ == "__main__":

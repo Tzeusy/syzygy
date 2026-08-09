@@ -84,6 +84,16 @@ current at the as-of instant renders the gap again — through a new evaluation,
 never a wall-clock flip. [Observed — trust-and-evidence.md; VIS-6, exception
 (a).]
 
+**Dismissal is not erasure**, in RFC2-14's shape. A dismissed gap's own status
+and its Unknown reason stay visible beside the dismissal **on the primary
+surface**, for the whole time the dismissal stands: the dismissal replaces the
+status *rendering*, never the facts the status rested on. Rendering a
+dismissed gap as dismissal alone — the reason, the expiry, and nothing of what
+was dismissed — is a violation of this clause, because it makes a human ruling
+displace facts that an inferred challenge could not displace (RFC2-14), and
+leaves the reader unable to see what returns when the dismissal expires.
+[Inferred — RFC2-14's guarantee, applied to the other gap exit.]
+
 ### Aligned versus Converged
 
 **RFC2-16 — As claim predicates.** **Aligned**: one observed subject satisfies
@@ -210,6 +220,36 @@ renders "reconciliation evidence absent / Unknown", and a wall of such Unknowns
 on a fleet-built project is correct output, not a defect; **V1 computes** the
 reconciliation evaluation and its gap as navigable, work-generating objects.
 Nothing in V0 may simulate the verdict.
+
+**What that Unknown carries, and does not** *(drafted arm — see the bracketed
+note below).* The V0 rendering above is an **absence of a computed
+reconciliation verdict**, not a claim whose evidence is missing. It is
+therefore **chain-state-local**: the `reconciliation-pending` state and the
+"reconciliation evidence absent / Unknown" rendering it produces are **never
+stamped with, counted among, or absorbed by an aggregate of RFC2-24 Unknown
+reasons**, and never contribute to a project's Unknown-reason totals. This is
+the exemption RFC8-12 states for its four absence values, applied to the one
+chain state V0 renders most: no reason from the twelve describes "the
+evaluation that would decide this is deliberately not computed at this stage" —
+#2 `missing-evidence` names a claim whose evidence was sought and not found,
+which misdescribes a verdict never sought — and RFC2-24 forbids minting,
+spelling, or force-fitting one that the list does not carry. The condition is
+disclosed as a **fact of the render** in RFC2-24's own terms: named, counted in
+its own right, expandable, and routed to its resolving action (run a
+reconciliation evaluation). The rendering still carries the durable identity,
+the merge fact, and the warranted intent revision the verdict would bind to,
+so nothing about it is silent.
+
+> **[P-31 — drafted arm, awaiting an owner ruling.]** RD-15 finding 3 found
+> this rendering bound to no RFC2-24 reason. Two routes close it: a thirteenth
+> RFC2-24 reason, which reopens a list owner decision A5 closed at twelve and
+> is an owner act, not a drafting one; or the exemption above, modeled on
+> RFC8-12's, which stays inside this contract's own bytes. The exemption is
+> **drafted here so the owner can rule on a written arm rather than on a
+> description**; it is candidate text like every clause around it, and the
+> owner ratifies or reverts it at the act that binds this module. If the owner
+> instead directs the thirteenth reason, this paragraph is deleted and RFC2-24
+> is amended in its place.
 
 **RFC2-20 — The closure fallacy, forbidden.** Work-scheduler closure (`closed`,
 merged, abandoned, superseded) is execution state and never implies

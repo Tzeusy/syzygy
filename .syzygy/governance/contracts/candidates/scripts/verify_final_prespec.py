@@ -20,21 +20,35 @@ CLAUSE_REF = re.compile(r"\bRFC(\d+)-(\d+)\b")
 HISTORY_PAREN = re.compile(r"(?<!`)\*\(History:")
 
 # Modules allowed above the ~7,000-word default-load ceiling, each with the
-# owner-facing justification the charter requires (also carried in
-# 03-ACTIVE-CONTRACT-COMPACTION-REPORT.md). Anything else over the ceiling
-# still fails.
+# owner-facing justification the charter requires. Anything else over the
+# ceiling still fails.
+#
+# **No justification here states a word count.** The verifier prints the
+# computed figure on the same line as the justification, so a number written
+# into these strings is a second copy of a measurement whose home is the run
+# that produced it — and both entries had already gone stale that way: one
+# said "6,996 words" of a module that had grown past 7,700, the other pinned
+# a floor the module has since been ordered to grow above. A justification
+# explains *why the size is the size*; the size itself is measured.
 JUSTIFIED_OVERSIZE = {
     "rfcs/RFC-0001-project-graph-identity-state-planes.md":
-        "dictionary-shaped kernel contract: 23% verbatim closed vocabularies "
-        "(entity/plane/relation/four-sense tables); reader groups not "
-        "distinct, so no honest split exists; floor established by two "
-        "compaction passes (see 03 report)",
+        "dictionary-shaped kernel contract: roughly a quarter of it is "
+        "verbatim closed vocabularies (entity/plane/relation/four-sense "
+        "tables), and its reader groups are not distinct, so no honest split "
+        "exists. Two compaction passes established a floor, recorded as of "
+        "their date in the historical `03-ACTIVE-CONTRACT-COMPACTION-REPORT"
+        ".md`; the growth above that floor is review-ordered clause addition "
+        "(the RFC1-33 phase rule and the round-2026-08e per-consequence "
+        "paragraphs, per `round-2026-08e/WAVE-A-SEMANTIC-DELTA.md`), not "
+        "padding",
     "rfcs/RFC-0009/semantic-geography.md":
-        "at 6,996 words (99.9% of ceiling) before round-2026-08d; the "
-        "owner-ordered RFC9-8(a) amendment relocating the portfolio layout "
-        "registry to the RFC10-15 workspace governance store, with its "
-        "staged reference, adds the remainder; no further compaction of "
-        "other clauses is available without semantic delta to reviewed text",
+        "sat just under the ceiling before round-2026-08d and was carried "
+        "over it by the owner-ordered RFC9-8(a) amendment, which homes the "
+        "portfolio layout registry on RFC3-15/RFC3-16(a) — in-wave, and no "
+        "longer the cross-wave RFC10-15 reliance an earlier revision of this "
+        "sentence described (RFC10-15 survives as a stated citation, not a "
+        "reliance). No further compaction of other clauses is available "
+        "without a semantic delta to reviewed text",
 }
 
 # Rev9 baseline: authoritative numbered-clause ends per RFC (frozen facts;
@@ -264,16 +278,31 @@ def main():
         if cid not in numbered_defined:
             fail(f"phase-rule clause {cid} not found in active files")
 
-    # Context-selection fixtures: five, each with required fields + digest.
+    # Context-selection fixtures: the population is measured, and every
+    # member carries the required sections.
+    #
+    # **The floor is gone.** It read `need ≥5` with a comment saying "five",
+    # against a population that has been ten since the round-2026-08d split
+    # (review RD-23, m3). A transcribed floor is the class this package keeps
+    # paying for, and a floor derived from the population it is checking
+    # verifies nothing anyway. What is checkable is that the directory is not
+    # empty — an empty one makes RFC-0011 module 2's acceptance criterion
+    # unreachable — and that every fixture present is complete. The count is
+    # printed so a shrinking population is visible rather than inferred.
     fx = root / "fixtures"
     ctx = sorted(fx.glob("context-selection-*.md")) if fx.is_dir() else []
-    if len(ctx) < 5:
-        fail(f"context-selection fixtures: found {len(ctx)}, need ≥5")
+    fixture_sections = ("Required context", "Omitted", "estimate",
+                        "constraint", "Suggested", "digest")
+    if not ctx:
+        fail("context-selection fixtures: none found — RFC-0011 module 2's "
+             "acceptance criterion is stated over this population")
     for p in ctx:
         t = p.read_text(encoding="utf-8")
-        for req in ("Required context", "Omitted", "estimate", "constraint", "Suggested", "digest"):
+        for req in fixture_sections:
             if req.lower() not in t.lower():
                 fail(f"{p.relative_to(root)}: missing '{req}' section")
+    note(f"context-selection fixtures: {len(ctx)} examined × "
+         f"{len(fixture_sections)} required section(s)")
 
     print(f"\nactive corpus (RFC files): {total_words} words across {len(files)} modules")
     for k, v in sorted(module_words.items()):
@@ -285,15 +314,125 @@ def main():
              f"owner-facing justification required (charter)")
 
     print(f"\nnumbered clauses defined: {len(numbered_defined)}")
+    # Every summary line states its denominator — the constraint
+    # `check_governance.py` holds itself to, applied here after review RD-17
+    # finding 13 observed that this script's `PASS — all checks clean` stated
+    # no population at all.
+    print(f"population: {len(files)} module(s), {len(ENDS)} contract(s) with "
+          f"a declared clause end, {len(PHASE_RULE_CLAUSES)} phase-rule "
+          f"clause(s), {len(numbered_defined)} numbered clause identities")
     for n in notes:
         print(f"note: {n}")
     if failures:
         print(f"\nFAIL — {len(failures)} finding(s):")
         for msg in failures:
             print(f"  ✗ {msg}")
-        sys.exit(1)
+        return 1
     print("\nPASS — all checks clean")
+    return 0
+
+
+def selftest(root):
+    """Mutate a copy per predicate class; confirm `main()` fails on it.
+
+    Review RD-17 finding 13: this script shipped no fixture. Its predicates
+    *do* fail under mutation — the reviewer proved it by hand — but a check
+    proved only in someone else's scratch clone is not evidence the battery
+    carries (verification rule 6).
+
+    Each case runs the whole verifier against a mutated copy and asserts a
+    nonzero return. `failures`/`notes` are module-level, so they are cleared
+    between runs.
+    """
+    import io
+    import contextlib
+    import re as _re
+    import shutil
+    import tempfile
+    global failures, notes
+    cases = []
+
+    def run(d):
+        failures, notes = [], []
+        globals()["failures"], globals()["notes"] = failures, notes
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            rc = main_with_root(Path(d))
+        return rc, buf.getvalue()
+
+    def case(label, rel, fn, want_fail=True):
+        d = tempfile.mkdtemp(prefix="prespec-selftest-")
+        try:
+            shutil.copytree(root / "rfcs", Path(d) / "rfcs")
+            for extra in ("04-CLAUSE-MIGRATION-MATRIX.md",):
+                if (root / extra).exists():
+                    shutil.copy(root / extra, Path(d) / extra)
+            if (root / "fixtures").is_dir():
+                shutil.copytree(root / "fixtures", Path(d) / "fixtures")
+            if rel is not None:
+                p = Path(d) / rel
+                p.write_text(fn(p.read_text(encoding="utf-8")),
+                             encoding="utf-8")
+            elif fn is not None:
+                fn(Path(d))
+            rc, _out = run(d)
+            cases.append((label, (rc != 0) == want_fail))
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+    files = active_files(root)
+    victim = str(files[0].relative_to(root))
+
+    # The baseline must pass, or every mutation below proves nothing.
+    case("unmutated copy verifies clean", None, None, want_fail=False)
+    # 1. A citation to a clause no module defines.
+    case("unresolved clause citation detected", victim,
+         lambda t: t + "\n\nSee RFC1-999 for the rule.\n")
+    # 2. Front matter stripped of its id.
+    case("missing front-matter id detected", victim,
+         lambda t: t.replace("\nid: ", "\nid_was: ", 1))
+    # 3. A live History parenthetical returning to an active file.
+    case("live History parenthetical detected", victim,
+         lambda t: t + "\n*(History: this was rev9 text.)*\n")
+    # 4. The whole fixture population removed — the acceptance criterion of
+    #    RFC-0011 module 2 is stated over it, so zero is a failure and the
+    #    stale `need ≥5` floor is not what makes it one.
+    case("empty fixture population detected", None,
+         lambda d: shutil.rmtree(d / "fixtures", ignore_errors=True))
+    # 5. A required section removed from one fixture.
+    fx = sorted((root / "fixtures").glob("context-selection-*.md")) \
+        if (root / "fixtures").is_dir() else []
+    if fx:
+        case("fixture missing a required section detected",
+             f"fixtures/{fx[0].name}",
+             lambda t: _re.sub(r"Omitted", "Left out", t, flags=_re.I))
+    else:
+        cases.append(("fixture missing a required section detected", False))
+
+    ok = True
+    for label, passed in cases:
+        print(f"SELFTEST {'OK' if passed else 'FAIL'}: {label}")
+        ok = ok and passed
+    return 0 if ok else 1
+
+
+def main_with_root(root):
+    """`main()` against an explicit root, for `--selftest`."""
+    import sys as _sys
+    argv = _sys.argv
+    _sys.argv = [argv[0], "--root", str(root)]
+    try:
+        return main()
+    finally:
+        _sys.argv = argv
 
 
 if __name__ == "__main__":
-    main()
+    ap = argparse.ArgumentParser(add_help=False)
+    ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--root", type=Path,
+                    default=Path(__file__).resolve().parent.parent)
+    known, _rest = ap.parse_known_args()
+    if known.selftest:
+        sys.exit(selftest(known.root.resolve()))
+    sys.exit(main())

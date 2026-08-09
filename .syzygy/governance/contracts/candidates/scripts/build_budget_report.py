@@ -64,6 +64,31 @@ ANCHOR_CHARS = re.compile(
     r"(\s*characters)")
 WAIVER_ROW = re.compile(r"^\|\s*\*\*(.+?)\*\*\s*\|\s*(.+?)\s*\|\s*$", re.M)
 
+#: RFC11-4's index-digest duty, machine-writable. Review RD-12 finding 4: two
+#: fixtures select a contract without loading its index and bind the recorded
+#: declaration with *"read at the index bytes the packet digest below was
+#: stamped against"* — but the packet digest is sha256 over the **mandatory**
+#: files, and a README that was not loaded is not among them, so no index
+#: digest is recorded anywhere and the clause's whole point (a later index
+#: edit invalidates the declaration) is unserved. The repair the review asks
+#: for is that the digest be *machine-written and CG-18-covered, never
+#: transcribed* — so the anchor lives here, beside the two anchors this
+#: script already owns.
+#:
+#: A fixture opts in by writing the anchor with any placeholder:
+#:     Index read at `<sha256>` — `rfcs/RFC-0004/README.md`
+#: This script fills it from the named file on every run. **Zero fixtures
+#: carry it today** — the fixture-side edit is R-FIX's and P-29 may bind
+#: those bytes — so the count below prints 0 until they do, which is the
+#: honest state and not a silent no-op.
+ANCHOR_INDEX_DIGEST = re.compile(
+    r"(Index read at\s*`)([0-9a-f]{8,64})(…?`\s*[—-]\s*`)([^`]+)(`)")
+
+#: Named so `--check` can state its denominator as a number of *fields*
+#: rather than a number this script would otherwise transcribe.
+ANCHORED_FIELDS = ("Measured:", "chars ÷ 4", "packet digest",
+                   "index digest")
+
 
 def resolve_load_spec(spec):
     """Same resolution CG-18 uses. Kept textually parallel on purpose: if the
@@ -219,7 +244,18 @@ def rewrite_anchors(m, body):
         tail, n_dig = re.subn(r"`([0-9a-f]{8,64})(?:…|\.\.\.)`", dig, tail,
                               count=1)
         body = head + sep + tail
-    return body, n_meas, n_dig
+
+    # RFC11-4's index digest, computed from the file the fixture names. The
+    # anchor's *target path* is authored; the digest never is.
+    def idx(mo):
+        p = os.path.join(CANDIDATES, mo.group(4))
+        if not os.path.exists(p):
+            return mo.group(0)
+        d = hashlib.sha256(open(p, "rb").read()).hexdigest()
+        width = len(mo.group(2))
+        return f"{mo.group(1)}{d[:width]}{mo.group(3)}{mo.group(4)}{mo.group(5)}"
+    body, n_idx = ANCHOR_INDEX_DIGEST.subn(idx, body)
+    return body, n_meas, n_dig, n_idx
 
 
 def module_words():
@@ -304,21 +340,32 @@ def render_report(measures):
     a("renders `[Unknown]`, never blank and never `none`: an unrecorded")
     a("reviewer is not the same fact as no reviewer being required.")
     a("")
+    # **No figure in this paragraph is transcribed.** It used to read "88
+    # measurement-shaped figures across the nine fixtures \u2026 CG-18 covering 18
+    # of them" \u2014 three hard-coded numbers, two of them already false: \u00a71
+    # above measures ten fixtures, and CG-18's coverage is twice the fixture
+    # count. The file then denied in \u00a74 that it contained any fixture count or
+    # coverage denominator, which is a generated artifact contradicting
+    # itself under its own do-not-copy-a-figure banner (review RD-17
+    # finding 5). Review RD-5's own counts are named as *its* findings, dated,
+    # and not restated as current.
     a("**How dense the redactions are is itself the finding.** Review RD-5")
-    a("counted 88 measurement-shaped figures across the nine fixtures and")
-    a("found CG-18 covering 18 of them; the rest were transcriptions checked")
-    a("by nothing, and at least five contradicted their own fixture's")
-    a("headline. A disposition argued against an unchecked number is a")
-    a("disposition argued against nothing. Reading these fields with the")
+    a("(2026-08-08) found that most measurement-shaped figures inside these")
+    a("fields were transcriptions checked by nothing, and that several")
+    a("contradicted their own fixture's headline. A disposition argued")
+    a("against an unchecked number is a disposition argued against nothing.")
+    a(f"Reading the {len(measures)} fixture(s) measured above with the")
     a("figures removed shows how much of each argument was resting on one.")
     a("")
     a("**Measurement figures inside these transcribed fields are redacted and")
     a("routed to \u00a73**, which measures the files rather than quoting a")
     a("fixture. An earlier revision transcribed them, and two fixtures'")
-    a("*\"RFC-0001 is indivisible (8,353 w)\"* disagreed by eleven words with")
-    a("this file's own computed table thirty lines below \u2014 a stale figure")
-    a("reaching the generated report through the one door left open (review")
-    a("RD-5). The count of redactions is printed at the foot of \u00a75.")
+    a("*\"RFC-0001 is indivisible\"* parenthetical disagreed with this file's")
+    a("own computed table thirty lines below \u2014 a stale figure reaching the")
+    a("generated report through the one door left open (review RD-5). The")
+    a("current measurement of that module is the \u00a73 row for it, and this")
+    a("sentence deliberately does not repeat it. The count of redactions is")
+    a("printed at the foot of \u00a75.")
     a("")
     for m in breaches:
         w = waiver_fields(m["body"], redacted, reparented)
@@ -404,11 +451,27 @@ def _without_asof(text):
                       if not l.startswith("**As-of commit:**"))
 
 
+def exit_code(drift):
+    """`--check`'s exit decision, as one testable function.
+
+    It exists as a function so the repair can be mutation-tested without a
+    filesystem baseline: the defect review RD-17 finding 2 found was one
+    comprehension here — `[d for d in drift if "CONTEXT-BUDGET-REPORT" not in
+    d]` — which removed every finding about the generated report itself from
+    the exit code. **Any drift is drift.** `_without_asof()` already removes
+    the one legitimately volatile line before the comparison, so there is
+    nothing left for an exemption to be for.
+    """
+    return 1 if drift else 0
+
+
 def run(check=False):
     measures = [measure_fixture(p) for p in fixture_paths()]
     drift = []
+    n_index_anchors = 0
     for m in measures:
-        new, n_meas, n_dig = rewrite_anchors(m, m["body"])
+        new, n_meas, n_dig, n_idx = rewrite_anchors(m, m["body"])
+        n_index_anchors += n_idx
         if n_meas == 0:
             drift.append(f"{m['name']} — no `Measured:` anchor to write; a "
                          f"fixture that states no measurement cannot be "
@@ -430,19 +493,28 @@ def run(check=False):
             os.makedirs(os.path.dirname(REPORT), exist_ok=True)
             open(REPORT, "w", encoding="utf-8").write(report)
     if check:
-        # The as-of commit line makes the report differ whenever HEAD moves,
-        # which is correct for a generated file and useless as a drift signal.
-        # --check therefore reports it and exits nonzero only on a *fixture*
-        # anchor drift, which is the thing a stale artifact hides.
-        anchor_drift = [d for d in drift if "CONTEXT-BUDGET-REPORT" not in d]
+        # **No exemption.** This block used to filter every finding about the
+        # report itself out of the exit code, on the stated ground that the
+        # as-of commit line moves whenever HEAD does — but `_without_asof()`
+        # already strips that line before the comparison, so the exemption
+        # suppressed nothing except real content drift. Review RD-17 finding
+        # 2 hand-edited the report's §3 headline from `39 modules, 110,081
+        # words` to `32 modules, 99,067 words` and one module row from 8,556
+        # to 1,234: `--check` printed the drift and returned 0, and the whole
+        # documented battery stayed green. The values it injected were the
+        # *actual* rev10-era figures still living elsewhere in the package,
+        # so the hole permitted precisely the regression the report exists to
+        # end. `AGENTS.md` lists this command as the check for "every
+        # volatile measurement"; now it is one.
         for d in drift:
             print(f"DRIFT: {d}")
-        if anchor_drift:
+        print(f"population: {len(measures)} fixture(s), "
+              f"{len(ANCHORED_FIELDS)} anchored field kind(s), "
+              f"{n_index_anchors} RFC11-4 index-digest anchor(s) present, "
+              f"{len(module_words())} module(s) in the report")
+        if exit_code(drift):
             return 1
-        if drift:
-            print("note: report-only drift (as-of commit / corpus figures); "
-                  "regenerate before quoting")
-        print("fixture anchors match regeneration")
+        print("fixture anchors and the generated report match regeneration")
         return 0
     print(f"measured {len(measures)} fixture(s); wrote anchors and "
           f"{os.path.relpath(REPORT, ROOT)}")
@@ -459,6 +531,30 @@ def selftest():
     import shutil
     import tempfile
     ok = True
+    cases = []
+
+    # Review RD-17 finding 2, as a predicate rather than a filesystem
+    # baseline: a drift finding naming the generated report alone must exit
+    # nonzero. Under the old comprehension it exited 0, and a hand-falsified
+    # §3 headline passed the documented battery.
+    cases.append(("report-only drift exits nonzero",
+                  exit_code(["CONTEXT-BUDGET-REPORT.md — differs from "
+                             "regeneration"]) == 1))
+    cases.append(("a clean run exits zero", exit_code([]) == 0))
+
+    # Review RD-17 finding 5: the §2 paragraph carried three hard-coded
+    # figures, two already false, inside a file whose §4 denies containing a
+    # fixture count. Every figure the generator writes is now computed in the
+    # run that writes it.
+    rendered = render_report([measure_fixture(p) for p in fixture_paths()])
+    cases.append(("no transcribed fixture count in the generated report",
+                  "the nine fixtures" not in rendered
+                  and "covering 18" not in rendered
+                  and "8,353 w" not in rendered))
+    cases.append(("the generated report states its measured fixture count",
+                  f"{len(fixture_paths())} fixture(s) measured above"
+                  in rendered))
+
     for label, pattern, repl in (
         ("measured word count", ANCHOR_MEASURED,
          lambda mo: f"{mo.group(1)}111,111{mo.group(3)}{mo.group(4)}{mo.group(5)}"),
@@ -485,6 +581,9 @@ def selftest():
         finally:
             shutil.copy(backup, target)
             os.unlink(backup)
+    for label, passed in cases:
+        print(f"SELFTEST {'OK' if passed else 'FAIL'}: {label}")
+        ok = ok and passed
     return 0 if ok else 1
 
 

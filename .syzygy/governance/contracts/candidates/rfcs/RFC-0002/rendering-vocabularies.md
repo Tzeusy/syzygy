@@ -6,7 +6,7 @@ module: rendering-vocabularies
 clauses: RFC2-23..RFC2-26 (no gaps, no retirements, no merges)
 governs: [failure-states, degradation-states, unknown-reason-vocabulary, secondary-annotation, rendering-tier-registry, sibling-surface-states]
 applies_to: [kernel, all-surfaces]
-depends_on: [RFC-0001, RFC-0005]
+depends_on: [RFC-0001, RFC-0003, RFC-0005]
 tags: [foundational, closed-vocabulary, unknown, rendering-tier, unknown-never-zero, vis-1, sdr-6, sdr-33]
 ---
 
@@ -67,9 +67,16 @@ rather than renumber.
 
 ### Failure and degradation states
 
-**RFC2-23 — Each with its rendering obligation.** [Inferred — composed from
-trust-and-evidence.md staleness rules, SEC-2/SEC-5, and the closed snapshot
-rule.]
+**RFC2-23 — Six degradation states, closed, each with its rendering
+obligation.** [Inferred — composed from trust-and-evidence.md staleness rules,
+SEC-2/SEC-5, and the closed snapshot rule.] The list below **is** the
+vocabulary: it changes only by amendment to this RFC, and no implementation may
+mint, spell, or force-fit a degradation state it does not carry. The closure is
+required for the reason RFC2-24's is — RFC 0004's adapters map their internal
+errors onto these states by declaration (RFC4-2 item 6), and a state existing
+in no vocabulary can be neither declared there nor checked for parity across
+surfaces (RFC6-22/23). A degradation genuinely outside the six is disclosed as
+a fact of the render, never dressed as one of them.
 
 | State | Semantics | Rendering obligation |
 |---|---|---|
@@ -195,7 +202,18 @@ answers over epistemic state — may be scheduled solely from this RFC. Before
 implementation, every observable consequence either maps to an approved
 OpenSpec requirement and scenario in the governance root's `openspec/**`
 plane, or carries a reviewed N/A judgment proving it purely structural with
-no independently testable behavior. At surface specification a
+no independently testable behavior. **The reviewed N/A judgment's home and
+gate.** A reviewed N/A judgment is a recorded owner judgment homed in
+`decisions/` (RFC3-15), and it is honored only where its owner-act provenance
+is verifiable under RFC3-16(a). Where that provenance does not verify, the
+judgment maps nothing: the consequence remains unmapped and renders Unknown,
+never covered (RFC3-16(a)'s effect rule; VIS-2).
+
+**Rows are per observable consequence, not per clause.** A clause with five
+observable consequences and one mapped requirement is not covered; the matrix
+discloses the consequences it enumerates for each clause, so a
+complete-looking matrix over under-enumerated consequences is a defect of the
+matrix. At surface specification a
 clause-to-requirement coverage matrix over RFC2-1..RFC2-26 is produced —
 **that matrix is review material, never authority**. This clause creates no
 OpenSpec content now (none may exist during bootstrap). This clause binds the
@@ -222,6 +240,9 @@ Case 5 spans this module and module 3 and is held at the package level
 
 **Relies on RFC 0001:** the OpenSpec requirement/scenario references (RFC1-15)
 and topology/region anchors (RFC1-26) whose breakage reason #11 names.
+**Relies on RFC 0003:** RFC3-15's `decisions/` category as the home of the
+reviewed N/A judgment RFC2-26 admits, and RFC3-16(a)'s owner-act provenance
+predicate as the condition under which that judgment is honored.
 **Relies on RFC 0005:** the consent records (SEC-2/SEC-4) behind reason #6 and
 the *Consent withdrawn* degradation state, and the execution profiles whose
 refusal reason #12 names.

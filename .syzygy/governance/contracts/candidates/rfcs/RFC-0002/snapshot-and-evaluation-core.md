@@ -195,8 +195,10 @@ instant, never by ambient clock. [Observed — trust-and-evidence.md; VIS-2.]
 
 The bound declaration is itself an **authorization-bearing governance
 artifact** — it is the act that lets a claim class leave Unknown — and is
-therefore honored only under the owner-act provenance predicate (RFC3-16(a),
-informative until RFC 0003 is accepted). A currency bound present in the tree
+therefore honored only under the owner-act provenance predicate (RFC3-16(a) —
+a load-bearing citation, not a forward reference: this package does not bind
+unless RFC 0003 is bound by the same act or an earlier one, `README.md` §5).
+A currency bound present in the tree
 without verifiable owner-act provenance does not unblock its class: the claims
 continue to render Unknown, and the unverifiable declaration is routed to the
 owner as a contradiction rather than silently honored. [Inferred — composition
@@ -206,8 +208,18 @@ as current.]
 **RFC2-10 — Identity-bearing freshness.** Logical freshness state — `fresh`,
 `stale`, `broken`, `superseded` — changes status and therefore participates in
 the VIS-7 identity test: two runs of one evaluation must agree on every
-freshness state. [Observed — architecture.md.] Freshness is orthogonal to the
-three labels and the tier registry; it never substitutes for either.
+freshness state. [Observed — architecture.md.] **Four values, closed.** The
+list changes only by amendment to this RFC; no implementation may mint, spell,
+or force-fit a freshness value it does not carry. The closure is required for
+the same reason RFC2-24's is: a machine answer carries the freshness state
+verbatim (RFC6-14), aggregates count per freshness value (RFC6-17), and a
+disagreement between two renderings over one declared scope is release-blocking
+(RFC6-22/23) — a value existing in no vocabulary can be neither carried
+verbatim nor checked for parity, and leaving it unstated is how the value gets
+chosen by whoever implements the render first. A condition genuinely outside
+the four is disclosed as a fact of the render, never dressed as a freshness
+state. Freshness is orthogonal to the three labels and the tier registry; it
+never substitutes for either.
 
 **RFC2-11 — Evidence–revision binding.** [Inferred — from the evidence
 definition and the SHA-binding rule.] A report artifact is evidence only *for*

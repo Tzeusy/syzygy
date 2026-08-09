@@ -11,7 +11,7 @@ tags: [project-declaration, consent, workspace-manifest, schema-migration, opens
 ---
 
 # RFC 0003 — Project, Workspace and .syzygy/** Manifests
-## Module: manifests and namespace (RFC3-1…RFC3-14, RFC3-18…RFC3-32)
+## Module: manifests and namespace (every `RFC3-n` except RFC3-15…RFC3-17 and the lettered sub-clauses)
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
@@ -58,8 +58,10 @@ serialization beyond what authority requires.
 - **§3** violation cases; **§7** the open owner questions carried by this
   module (q1, q2).
 
-Clause identities are package-wide: this module holds RFC3-1…RFC3-14 and
-RFC3-18…RFC3-32. No numbers are retired or merged anywhere in the package.
+Clause identities are package-wide: this module holds **every `RFC3-n` number
+other than RFC3-15, RFC3-16, RFC3-17 and their lettered sub-clauses**, which
+are in `governance-homes-and-owner-acts.md`. No numbers are retired or merged
+anywhere in the package.
 
 ---
 
@@ -492,7 +494,18 @@ ceremony surfaces, provenance and effective-status rendering — may be
 scheduled solely from this RFC. Before implementation, every observable
 consequence either maps to an approved OpenSpec requirement and scenario in
 the governance root's `openspec/**` plane, or carries a reviewed N/A judgment
-proving it purely structural with no independently testable behavior. At
+proving it purely structural with no independently testable behavior. **The
+reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a recorded
+owner judgment homed in `decisions/` (RFC3-15), and it is honored only where
+its owner-act provenance is verifiable under RFC3-16(a). Where that provenance
+does not verify, the judgment maps nothing: the consequence remains unmapped
+and renders Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2).
+
+**Rows are per observable consequence, not per clause.** A clause with five
+observable consequences and one mapped requirement is not covered; the matrix
+discloses the consequences it enumerates for each clause, so a
+complete-looking matrix over under-enumerated consequences is a defect of the
+matrix. At
 surface specification a clause-to-requirement coverage matrix over
 RFC3-1..RFC3-33 is produced — **that matrix is review material, never
 authority**. This clause creates no OpenSpec content now (none may exist
@@ -558,6 +571,15 @@ gate for consent records and the `records/` home and `kernel-recorded`
 authority named at RFC3-2 (RFC3-15, RFC3-17(a)); and **RFC3-16(a)**, under
 which a consent record's stored attribution (RFC3-7) and an observing
 project's own policies (RFC3-30) are honored.
+
+**Forward references are informative.** Where a clause of this module cites a
+not-yet-accepted sibling contract by clause number (RFC7-n and beyond —
+RFC3-32's narrative-side parallel at RFC7-37 is the instance), the citation is
+**informative until that RFC is accepted**: it names where a parallel
+obligation will be discharged, never a dependency of this contract's meaning,
+and a renumbering in a sibling draft changes nothing here. Only citations to
+**adopted doctrine**, to the **SDR**, and to the sibling contracts this section
+names as reliances are load-bearing.
 
 **Provides to RFC 0004:** consent and anchor semantics its adapter contracts
 must honor (RFC3-7/8, RFC3-28); the schema-version stamp as a snapshot input;

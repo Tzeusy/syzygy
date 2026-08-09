@@ -10,7 +10,13 @@ Exit status: 0 = no findings, 1 = at least one FAIL finding, 2 = usage error.
 Design constraints (charter §17, "public, portable validation"):
 
   * **Repository-relative.** The repo root is derived from this file's own
-    location; no founder-machine absolute path appears anywhere.
+    location, and **no founder-machine absolute path is ever resolved**. The
+    only ones present are inert fixture *inputs* CG-19 exists to reject (see
+    `--selftest` cases F4b, F5a, F5b); no filesystem access occurs against
+    them. The earlier form of this sentence — "no founder-machine absolute
+    path appears anywhere" — was false against three lines of this file, in
+    a repository whose own term registry says an artifact must not contradict
+    itself in the first line and the third (review RD-17, finding 12).
   * **Standard library only**, Python 3.9+. No installs, no network.
   * **Read-only.** This script never writes, moves, or rewrites a governance
     artifact. When a check finds a defect it *reports* it; correcting a
@@ -23,15 +29,20 @@ Design constraints (charter §17, "public, portable validation"):
 
 Checks
 ------
-  CG-1   internal links and path references resolve
-  CG-2   retired acceptance phrase / `about/` authority path absent from
-         active instructions
+  CG-1   internal links and path references resolve; an active route into
+         `rfcs/**` is a broken pointer, not a by-design absence (CG-1g)
+  CG-2   retired acceptance phrases are confined, current ones carry live
+         arguments even across a line wrap, and `about/` is absent from
+         active instructions. Phrase population:
+         `candidates/ACCEPTANCE-PHRASE-REGISTRY.yaml`
   CG-3   stale bootstrap routing (`_bootstrap/prompts/`) absent
-  CG-4   candidate homes carry candidate banners
+  CG-4   candidate homes carry candidate banners (CG-4a) and claim no
+         acceptance (CG-4b)
   CG-5   canonical craft banners are truthful
   CG-6   accepted homes do not exist yet (created only by owner acts)
-  CG-7   ACTIVE-CONTRACT-MANIFEST digests are valid, and the acceptance
-         record's act-1 argument still matches the manifest
+  CG-7   ACTIVE-CONTRACT-MANIFEST digests are valid; every act argument
+         matches its subject; each wave row's stated module count matches
+         its manifest (CG-7f); `wave-manifests/` holds exactly six (CG-7g)
   CG-8   default-load size and context budgets reported, never enforced
          (charter §7.3 figures every run; §11.4 decomposition triggers)
   CG-9   duplicate authority homes absent
@@ -46,12 +57,16 @@ Checks
   CG-18  context fixtures still recompute (digest and word count)
   CG-19  substrate pins are complete and well-formed; drift is consistent
          and carries a disposition
-  CG-20  the context-load map's word figures still recompute
-  CG-21  package README module word counts recompute (inside act 1's digests)
+  CG-20  the routing artifacts state no measurement (advisory — the rule has
+         no written owner yet; see CHECK_OWNERS)
+  CG-21  contract prose states no measurement (advisory — same)
   CG-22  no unqualified `status` in the active lane — the term registry's
          five-dimension rule, made executable (charter §9.4)
   CG-23  advanced vocabulary on the default public path, reported (§9.3)
   CG-24  which check families have a `--selftest` fixture, computed
+  CG-25  every check family names the authoritative rule it enforces
+         (`CHECK_OWNERS`); a check whose rule lives only in this file is
+         downgraded to WARN with the reason printed
 
 `--selftest` runs a synthetic failing input against the checks that have a
 fixture — **not against every check above**. That distinction is the point:
@@ -81,6 +96,128 @@ DOCTRINE = ".syzygy/governance/doctrine"
 DECISIONS = ".syzygy/governance/decisions"
 
 
+# ------------------------------------------------------------ check owners
+
+#: **Which written rule does this check enforce, and where does that rule
+#: live?** Review RD-17 finding 11 swept the whole corpus for citations of a
+#: `CG-\d+` identifier — 70 files, 692 citations — and found not one inside
+#: doctrine, craft-and-care, or any contract module. The battery could not
+#: distinguish, in its own output, a FAIL against adopted doctrine from a FAIL
+#: against a candidate whose own banner says it binds nothing, and a reader
+#: had no register to consult.
+#:
+#: An entry is one of three shapes, and the shape is the claim:
+#:
+#:   * an **identifier** (`VIS-2`, `SDR-9`, `RFC3-16`) plus the file that
+#:     defines it — the check enforces adopted or owner-approved text;
+#:   * `mechanical — …` — the check verifies self-consistency and needs no
+#:     normative owner. A digest either matches its subject or does not;
+#:     nobody has to rule on that.
+#:   * `candidate: <path>` — the rule is written, but in material with no
+#:     owner act. The FAIL still fires; the printed owner is what stops it
+#:     reading as a doctrine breach.
+#:
+#: Keyed by check family. CG-25 fails the battery when a FAIL-capable check
+#: reported this run has no entry here, so a new check cannot ship
+#: unattributed.
+CHECK_OWNERS = {
+    "CG-1": ("mechanical — a path reference resolves in a clone or it does "
+             "not; the citing file states the claim"),
+    "CG-2": ("record: `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md` §1 "
+             "— \"Two phrases are retired and satisfy nothing\". The "
+             "acceptance record is the acceptance authority; this is not a "
+             "doctrine clause. Population declared in "
+             "ACCEPTANCE-PHRASE-REGISTRY.yaml"),
+    "CG-3": ("mechanical — `_bootstrap/prompts/` is absent from every clone, "
+             "so a route to it is unexecutable"),
+    "CG-4": ("VIS-4 (`doctrine/vision.md`) — \"Humans steer the vision; "
+             "agents shape within it.\" Only the owner accepts, so candidate "
+             "material may not be labelled accepted (AGENTS.md hard "
+             "prohibition, citing VIS-4)"),
+    "CG-5": ("VIS-1 (`doctrine/vision.md`) — \"Comprehensible truth first; "
+             "never comprehensible fiction.\" A banner is a claim about the "
+             "artifact it heads, and a false one is fiction a reader cannot "
+             "see through"),
+    "CG-6": ("VIS-4 (`doctrine/vision.md`) — an accepted home is created by "
+             "an owner act and by nothing else; the acceptance record's §2 "
+             "ceremony is where each home's creating act is written"),
+    "CG-7": ("record: `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md` "
+             "§1-§2 — an act binds exactly the bytes its digest argument "
+             "names. RFC3-16 is cited *by* that record and is itself "
+             "candidate, so the record is the anchor, not the clause"),
+    "CG-8": ("report-only — charter §7.3/§11.4 figures; never fails"),
+    "CG-9": ("mechanical — two copies of an authority artifact make \"which "
+             "one binds\" undecidable. **No clause states the one-home rule**; "
+             "the nearest written statement is AGENTS.md's routing table, "
+             "which says of itself that it is never citable as authority"),
+    "CG-10": ("VIS-2 (`doctrine/vision.md`) — \"No evidence means Unknown, "
+              "not success.\" A register with no as-of line makes its own "
+              "currency Unknown, and Unknown is not current"),
+    "CG-11": ("mechanical — `.syzygy/cache/` and `.syzygy/local/` are "
+              "declared machine-local; a clone must not carry them"),
+    "CG-12": ("mechanical — `_bootstrap/**` is git-excluded, so a clone "
+              "cannot resolve the pointer; what fails is the citing "
+              "artifact's own claim that the source is available"),
+    "CG-13": ("mechanical — a declared `depends_on` edge resolves inside the "
+              "package, and a README is the union of its modules"),
+    "CG-14": ("mechanical — a ceremony step names a location that exists in "
+              "a clone, or an act-created home that does not yet"),
+    "CG-15": ("record: `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md` "
+              "§1 — a truncated digest quote is still a promise about the "
+              "artifact the record binds"),
+    "CG-16": ("VIS-4 (`doctrine/vision.md`) — only the owner adopts, so an "
+              "unaccepted registry may not acquire authority by being cited "
+              "as adopted"),
+    "CG-17": ("candidate: `SURFACE-CLAUSE-ROUTING-MATRIX.md` — every surface "
+              "clause takes exactly one phase route. Mechanically it is a "
+              "completeness check over that matrix's own enumeration"),
+    "CG-18": ("mechanical — a fixture's stated digest and word count "
+              "recompute from the files it names"),
+    "CG-19": ("record: `GOVERNANCE-SUBSTRATE-LOCK.yaml` §verification — the "
+              "lock's own rule that a pin is complete, public, and not "
+              "machine-local. The lock's header calls itself \"record, never "
+              "authority\"; no doctrine clause covers substrate pinning"),
+    "CG-20": ("**Python-only — downgraded to WARN.** The rule *the context-"
+              "load map states no measurement of the corpus it routes* is "
+              "stated in this file's docstring and nowhere else; the nearest "
+              "prose is a round narrative report, not a clause"),
+    "CG-21": ("**Python-only — downgraded to WARN.** The rule *a contract "
+              "module states no measurement* is stated in this file's "
+              "docstring and nowhere else (review RD-17 finding 11)"),
+    "CG-22": ("candidate: `policy-candidates/TERM-REGISTRY.md` §1 — whose "
+              "own third line reads 'Status: CANDIDATE. This file binds "
+              "nothing.' The FAIL is real; the owner is not"),
+    "CG-23": ("report-only — the term registry's own two-tier bound, "
+              "candidate; never fails"),
+    "CG-24": ("mechanical — which check families have a fixture, computed"),
+    "CG-25": ("mechanical — this table's own completeness over the "
+              "FAIL-capable checks reported this run"),
+}
+
+#: Checks whose rule exists **only** in this file. Downgraded to WARN until
+#: the rule acquires a written owner through the normative-change workflow;
+#: the intended home is the compact knowledge-hygiene policy (launch-gate
+#: finding C2, routed to R-SCR — the policy text itself is outside this
+#: file's remit and is recorded as a handoff in
+#: `round-2026-08e/VALIDATOR-AUTHORITY-INVENTORY.md`).
+#:
+#: A downgrade is not a silencing: the findings still print, with their
+#: denominators, and the reason prints beside them. What it stops is a
+#: repository-wide `exit 1` enforced by a rule nobody has ruled on.
+PYTHON_ONLY_RULES = {
+    "CG-20": "rule stated only in check_governance.py — advisory until the "
+             "knowledge-hygiene policy is adopted (RD-17 f11, gate C2)",
+    "CG-21": "rule stated only in check_governance.py — advisory until the "
+             "knowledge-hygiene policy is adopted (RD-17 f11, gate C2)",
+}
+
+
+def check_family(name):
+    """`CG-7a  manifest digests valid…` -> `CG-7`. Empty for a non-CG row."""
+    m = re.match(r"\s*(CG-\d+)", name or "")
+    return m.group(1) if m else ""
+
+
 # --------------------------------------------------------------- results
 
 class Results:
@@ -89,9 +226,19 @@ class Results:
     def __init__(self):
         self.summaries = []
         self._fail = False
+        self.downgraded = []
 
     def add(self, status, name, examined, findings, unit="item",
             note=None, details=()):
+        fam = check_family(name)
+        # A FAIL is a claim that some written rule was broken. Downgraded
+        # here — once, centrally — when that rule exists only in this file.
+        # Doing it at the call sites would mean twenty-five places to forget.
+        if status == "FAIL" and fam in PYTHON_ONLY_RULES:
+            status = "WARN"
+            note = ((note + " — ") if note else "") + PYTHON_ONLY_RULES[fam]
+            if fam not in self.downgraded:
+                self.downgraded.append(fam)
         if status == "FAIL":
             self._fail = True
         self.summaries.append((status, name, examined, findings, unit, note,
@@ -114,6 +261,16 @@ class Results:
             if note:
                 line += f" — {note}"
             print(line)
+            # A FAIL names the rule it enforces, on the same screen as the
+            # finding. Without it a reader cannot tell a breach of adopted
+            # doctrine from a breach of a candidate that binds nothing
+            # (review RD-17, finding 11).
+            if status == "FAIL":
+                owner = CHECK_OWNERS.get(
+                    check_family(name),
+                    "[Unknown] — this check names no authoritative rule; "
+                    "CG-25 reports it")
+                print(f"        rule: {owner}")
             for d in details:
                 print(f"        {d}")
         n_fail = sum(1 for s, *_ in self.summaries if s == "FAIL")
@@ -245,6 +402,62 @@ def _is_historical_packet(target):
     return any(p.match(target) for p in HISTORICAL_PACKET_TARGET)
 
 
+#: A route into the contract package. Unlike `final-prespec/…`, this shape
+#: names a tree that **exists in this repository**, so a dead one is a broken
+#: pointer rather than a by-construction unresolvable reference to a frozen
+#: packet. The launch-gate administration (D2/F4) found two router files
+#: sending readers to `rfcs/RFC-0010-mission-control-autonomy.md` and
+#: `rfcs/RFC-0011-context-compiler.md` — the pre-split single-file paths,
+#: replaced by packages at round-2026-08d — and the whole class was sitting
+#: inside CG-1d's WARN bucket, indistinguishable from a `_bootstrap/`
+#: reference that is *supposed* to be unresolvable.
+RFCS_ROUTE = re.compile(
+    r"^(\.\./)*rfcs/RFC-\d{4}(?:-[a-z0-9-]+\.md|/[A-Za-z0-9._-]+)$")
+
+#: Lanes whose files are evidence, not instructions: raw reviewer output, the
+#: frozen corpus, per-RFC provenance rows, and every superseded round record.
+#: A dead route inside one of them is what the record recorded.
+FROZEN_LANE_PREFIXES = (
+    f"{CANDIDATES}/history/",
+    f"{CANDIDATES}/matrix-rows/",
+    f"{CANDIDATES}/reviews/",
+    f"{CANDIDATES}/round-2026-08/",
+    f"{CANDIDATES}/round-2026-08b/",
+    f"{CANDIDATES}/round-2026-08c/",
+    f"{CANDIDATES}/round-2026-08d/",
+    f"{CANDIDATES}/round-2026-08e/",
+    "_bootstrap/",
+)
+
+#: Active-lane files whose *job* is to name paths that no longer exist.
+#: Declared with a reason and printed, never inferred from a pattern.
+DEAD_ROUTE_ALLOW = (
+    (f"{CANDIDATES}/04-CLAUSE-MIGRATION-MATRIX.md",
+     "clause-migration provenance: every row names the frozen rev9 source a "
+     "clause was migrated from, which is the record, not a route"),
+    (SELF_REL, "this checker names the shape in order to detect it"),
+)
+
+
+def _is_active_lane(rel):
+    """A file a reader is routed to for current meaning.
+
+    Three ways out: a frozen lane, a SUPERSEDED/Historical banner in the
+    first twelve lines, or a declared allowlist entry. Everything else is
+    active, including files nobody has thought about — which is the
+    fail-closed direction.
+    """
+    if any(rel.startswith(p) for p in FROZEN_LANE_PREFIXES):
+        return False
+    if _allow_hit(rel, DEAD_ROUTE_ALLOW):
+        return False
+    try:
+        head = "\n".join(read(rel).splitlines()[:BANNER_SCAN_LINES])
+    except OSError:
+        return True
+    return not SUPERSEDED_BANNER.search(head)
+
+
 #: Raw reviewer output is stored verbatim and never edited — the repository's
 #: strongest evidence rule, and the reason `EXCEPTIONS` never becomes "pass
 #: with findings". A reviewer writing `craft/engineering-bar.md` for a file
@@ -341,6 +554,25 @@ def cg1_links(paths, res):
     n_links = n_paths = 0
     broken_links, broken_paths, forward, historical, vendor_gap, reviewer = \
         [], [], set(), [], [], []
+    dead_routes = []
+
+    def classify(rel, t, bucket):
+        """Where an unresolvable reference belongs. One place, so CG-1a and
+        CG-1b cannot disagree about the same target."""
+        if _is_vendored_gap(rel, t):
+            vendor_gap.append(f"{rel} -> {t}")
+        elif RFCS_ROUTE.match(t) and _is_active_lane(rel):
+            dead_routes.append(f"{rel} -> {t}")
+        elif _is_historical_packet(t):
+            historical.append(f"{rel} -> {t}")
+        elif _is_frozen_lane(rel):
+            # CG-1a had no frozen-lane branch at all; these passed only
+            # because `_resolve` absorbed them (review RD-7, finding E-1).
+            # Now classified explicitly, like CG-1b's.
+            reviewer.append(f"{rel} -> {t}")
+        else:
+            bucket.append(f"{rel} -> {t}")
+
     for rel in md_files(paths):
         txt = read(rel)
         for m in MD_LINK.finditer(txt):
@@ -352,17 +584,7 @@ def cg1_links(paths, res):
                 forward.add(t)
                 continue
             if not _resolve(rel, t, all_paths):
-                if _is_vendored_gap(rel, t):
-                    vendor_gap.append(f"{rel} -> {t}")
-                elif _is_historical_packet(t):
-                    historical.append(f"{rel} -> {t}")
-                elif _is_frozen_lane(rel):
-                    # CG-1a had no frozen-lane branch at all; these passed
-                    # only because `_resolve` absorbed them (review RD-7,
-                    # finding E-1). Now classified explicitly, like CG-1b's.
-                    reviewer.append(f"{rel} -> {t}")
-                else:
-                    broken_links.append(f"{rel} -> {t}")
+                classify(rel, t, broken_links)
         for m in CODE_PATH.finditer(txt):
             t = m.group("t")
             if "/" not in t or t.startswith(EXTERNAL):
@@ -375,14 +597,7 @@ def cg1_links(paths, res):
                 forward.add(t)
                 continue
             if not _resolve(rel, t, all_paths):
-                if _is_vendored_gap(rel, t):
-                    vendor_gap.append(f"{rel} -> {t}")
-                elif _is_historical_packet(t):
-                    historical.append(f"{rel} -> {t}")
-                elif _is_frozen_lane(rel):
-                    reviewer.append(f"{rel} -> {t}")
-                else:
-                    broken_paths.append(f"{rel} -> {t}")
+                classify(rel, t, broken_paths)
 
     if n_links == 0:
         res.add("WARN", "CG-1a  markdown links resolve", 0, 0, "link",
@@ -406,8 +621,26 @@ def cg1_links(paths, res):
     res.add("WARN", "CG-1d  frozen-packet references", len(uniq_hist), 0,
             "reference",
             note="unresolvable in a clone by construction — the rev9 working "
-                 "packet lived under the git-excluded `_bootstrap/`",
+                 "packet lived under the git-excluded `_bootstrap/`; a dead "
+                 "route into `rfcs/**` from active material is CG-1g, not "
+                 "this bucket",
             details=uniq_hist)
+    uniq_dead = sorted(set(dead_routes))
+    res.add("FAIL" if uniq_dead else "OK",
+            "CG-1g  active routes into `rfcs/**` resolve", len(uniq_dead),
+            len(uniq_dead), "route",
+            note=("the target is supposed to exist in this tree — unlike a "
+                  "`_bootstrap/` reference, which is absent by design"
+                  if uniq_dead else
+                  "no active-lane route into `rfcs/**` is dead"),
+            details=[f"{d} — the contract package exists in this repository, "
+                     f"so this route is broken, not by-design absent"
+                     for d in uniq_dead])
+    allow_present = [f"{p} — {r}" for p, r in DEAD_ROUTE_ALLOW
+                     if p in all_paths]
+    res.add("WARN", "CG-1h  dead-route allowlist", len(allow_present), 0,
+            "file", note="active-lane files whose job is to name paths that "
+                         "no longer exist", details=allow_present)
     uniq_rev = sorted(set(reviewer))
     res.add("WARN", "CG-1f  frozen-lane path references", len(uniq_rev), 0,
             "reference",
@@ -424,7 +657,101 @@ def cg1_links(paths, res):
 
 # --------------------------------------------------------------- CG-2
 
-RETIRED_PHRASE = "ACCEPT FOUNDATIONAL RFCS"
+#: The one structured home for "which acceptance phrase is current, which is
+#: retired, and how a file may lawfully quote a retired one". Every phrase
+#: population below is read out of it; **no phrase literal lives in this
+#: file**, deliberately.
+#:
+#: Why. CG-2 named the rev9 phrase in a Python constant. rev10's phrase was
+#: retired at round-2026-08d and the constant was not updated, so the
+#: successor was live in five artifacts and invisible to the whole battery —
+#: the launch-gate administration of 2026-08-09 (findings C1/E6/F3) found it
+#: by hand. A retirement is now one entry in the registry, and it reaches
+#: CG-2a, CG-2e, CG-7d and CG-7e on the same run.
+PHRASE_REGISTRY = f"{CANDIDATES}/ACCEPTANCE-PHRASE-REGISTRY.yaml"
+
+#: Keyed by `ROOT`, not a bare global. `_selftest_wave_partition` swaps ROOT
+#: to a temp tree, and a root-blind cache filled during that swap would pin
+#: the *absent* registry for the rest of the process — every later fixture
+#: then passing over an empty phrase population, which is the vacuous pass
+#: this module is built to refuse. Caught by the CG-7e fixture going red.
+_PHRASE_REGISTRY_CACHE = {}
+
+
+def phrase_registry(text=None):
+    """The parsed registry, as (data, errors). Cached; `text` overrides.
+
+    Parsed with `_yaml_lite` — the same tolerant reader CG-19 uses on the
+    substrate lock, defined below and resolved at call time. Bringing in a
+    YAML dependency would break the "standard library only" design
+    constraint, and a second parser would be a second thing to go wrong.
+
+    An absent or unparseable registry is an **error**, never an empty
+    population: a phrase sweep over zero declared phrases is the vacuous pass
+    this battery exists to prevent (VIS-2).
+    """
+    if text is not None:
+        return _yaml_lite(text)
+    if ROOT not in _PHRASE_REGISTRY_CACHE:
+        if not os.path.exists(os.path.join(ROOT, PHRASE_REGISTRY)):
+            _PHRASE_REGISTRY_CACHE[ROOT] = ({}, [
+                f"{PHRASE_REGISTRY} is absent — the phrase population is "
+                f"Unknown, and Unknown is not empty"])
+        else:
+            data, errs = _yaml_lite(read(PHRASE_REGISTRY))
+            _PHRASE_REGISTRY_CACHE[ROOT] = (data, list(errs))
+    return _PHRASE_REGISTRY_CACHE[ROOT]
+
+
+def _reg_list(data, key):
+    v = data.get(key)
+    return [x for x in v if isinstance(x, dict)] if isinstance(v, list) else []
+
+
+def registry_current(data=None):
+    """Current acceptance phrases: [{label, form, argument, subject, …}]."""
+    data = data if data is not None else phrase_registry()[0]
+    return _reg_list(data, "current_phrases")
+
+
+def registry_retired(data=None):
+    """Retired acceptance phrases: [{label, retired_at, replaced_by, …}]."""
+    data = data if data is not None else phrase_registry()[0]
+    return _reg_list(data, "retired_phrases")
+
+
+def registry_convention(data=None):
+    """(markers, currency_signals, window) for historical quotation."""
+    data = data if data is not None else phrase_registry()[0]
+    conv = data.get("historical_marker_convention")
+    conv = conv if isinstance(conv, dict) else {}
+    mk = [m.lower() for m in conv.get("markers", []) if isinstance(m, str)]
+    cs = [c.lower() for c in conv.get("currency_signals", [])
+          if isinstance(c, str)]
+    try:
+        win = int(conv.get("marker_window_lines", 2))
+    except (TypeError, ValueError):
+        win = 2
+    return tuple(mk), tuple(cs), win
+
+
+#: **Whitespace-tolerant, case-sensitive.** Tolerant of whitespace because
+#: prose wraps and a phrase split over a line break is still the phrase — the
+#: launch-gate pilot's hand sweep missed two occurrences for exactly that
+#: reason, and a `str.__contains__` test cannot see any of them. Case-
+#: sensitive because these phrases are literal ceremony tokens: a lowercase
+#: rendering is prose *about* the act, not the act's words.
+def phrase_pattern(label):
+    return re.compile(r"\s+".join(re.escape(w) for w in label.split()))
+
+
+#: A whole artifact may be marked historical by its banner rather than at
+#: each quotation. Same predicate CG-15 uses, and for the same reason: a
+#: banner in the body is not a banner, because a reader must meet it before
+#: the quotation.
+SUPERSEDED_BANNER = re.compile(
+    r"^>?\s*[#*\s]*(SUPERSEDED|Superseded|Historical|RETIRED|Retired)\b", re.M)
+BANNER_SCAN_LINES = 12
 
 #: A retirement notice must be able to name the phrase it retires, and the
 #: historical record must be able to quote what was superseded. Allowlisted
@@ -434,6 +761,17 @@ RETIRED_PHRASE_ALLOW = (
     (f"{CANDIDATES}/round-2026-08/", "this round's process record and delta register"),
     (f"{CANDIDATES}/history/", "frozen rev9 corpus and per-RFC amendment history"),
     (f"{CANDIDATES}/reviews/", "raw reviewer output, stored verbatim"),
+    #: Opened one round at a time, never by a `round-*/reviews/` glob, on the
+    #: same terms CG-12's allowlist uses. The 08b and 08c directories were
+    #: added on 2026-08-10 when the registry taught CG-2a about the
+    #: *successor* phrase: three reviewers had quoted `ACCEPT COMPACTED
+    #: FOUNDATIONAL RFCS` in their own sweeps, and raw reviewer output is
+    #: never edited — the alternative to allowlisting it is editing evidence.
+    (f"{CANDIDATES}/round-2026-08b/reviews/",
+     "raw reviewer output, stored verbatim — a reviewer's retired-phrase "
+     "sweep must be able to name the phrases it swept for"),
+    (f"{CANDIDATES}/round-2026-08c/reviews/",
+     "raw reviewer output, stored verbatim — same rule as its predecessor"),
     (f"{CANDIDATES}/round-2026-08d/reviews/",
      "raw reviewer output, stored verbatim — a reviewer's retired-phrase "
      "sweep must be able to name the phrases it swept for"),
@@ -472,27 +810,116 @@ def _allow_hit(rel, allow):
     return None
 
 
-def cg2_retired_tokens(paths, res):
-    files = [p for p in paths
-             if p.endswith((".md", ".txt", ".yaml", ".yml", ".py"))]
-    findings, allowed = [], []
-    for rel in files:
-        txt = read(rel)
-        if RETIRED_PHRASE not in txt:
-            continue
+def _phrase_window(lines, start_line, end_line, window):
+    lo = max(0, start_line - 1 - window)
+    hi = end_line + window
+    return " ".join(" ".join(lines[lo:hi]).split()).lower()
+
+
+def cg2_retired_tokens(paths, res, corpus=None, registry=None):
+    """Every retired acceptance phrase in the corpus is classified.
+
+    Four classes, and the split is the point — a retirement notice, a frozen
+    record and a live gate all contain the same characters, and only the
+    third is a defect:
+
+    1. **presented as current** — the quotation sits beside a currency signal
+       (`exact phrase`, `the gate is`, `in force`, …) with no historical
+       marker anywhere near it. This is the P-6 class, and it is what the
+       launch-gate administration found live in five artifacts after the
+       round-2026-08d retirement.
+    2. **unmarked quotation** — no currency signal either, but nothing says
+       the phrase is dead. A reader meets a performable-looking phrase.
+       Fail-closed: an unmarked quotation is assumed to be presenting.
+    3. **marked** — a historical marker inside the window, or a
+       SUPERSEDED/Historical banner in the file's first twelve lines. Lawful;
+       counted and printed under CG-2f, never silenced.
+    4. **path-allowlisted** — a declared file whose job is to preserve what
+       was offered. Counted and printed under CG-2b with its reason.
+
+    The population, the markers, the currency signals and the window all come
+    from `ACCEPTANCE-PHRASE-REGISTRY.yaml`. Adding a retirement is one entry
+    there; it does not touch this function.
+    """
+    data, reg_errors = phrase_registry(registry)
+    retired = registry_retired(data)
+    markers, signals, window = registry_convention(data)
+
+    items = corpus
+    if items is None:
+        items = [(p, read(p)) for p in paths
+                 if p.endswith((".md", ".txt", ".yaml", ".yml", ".py"))]
+
+    live, unmarked, allowed, marked = [], [], [], []
+    reg_findings = list(reg_errors)
+    if not retired:
+        reg_findings.append(
+            f"{PHRASE_REGISTRY} declares no retired phrase — the sweep below "
+            f"has an empty population and verifies nothing")
+    if not markers:
+        reg_findings.append(
+            f"{PHRASE_REGISTRY} declares no historical markers — every lawful "
+            f"quotation would be reported as a defect")
+
+    for rel, txt in items:
+        lines = txt.splitlines()
+        bannered = bool(SUPERSEDED_BANNER.search(
+            "\n".join(lines[:BANNER_SCAN_LINES])))
         reason = _allow_hit(rel, RETIRED_PHRASE_ALLOW)
-        lines = [i for i, ln in enumerate(txt.splitlines(), 1)
-                 if RETIRED_PHRASE in ln]
-        if reason:
-            allowed.append(f"{rel}:{','.join(str(i) for i in lines)} — {reason}")
-        else:
-            findings += [f"{rel}:{i} — retired phrase outside the allowlist"
-                         for i in lines]
-    res.add("FAIL" if findings else "OK",
-            "CG-2a  retired acceptance phrase confined", len(files),
-            len(findings), "file", details=findings)
-    res.add("WARN", "CG-2b  retired-phrase allowlist", len(allowed), 0, "file",
-            note="declared historical/quoting contexts", details=sorted(allowed))
+        for entry in retired:
+            label = entry.get("label")
+            if not isinstance(label, str) or not label.strip():
+                continue
+            replacement = entry.get("replaced_by") or "[Unknown]"
+            retired_at = entry.get("retired_at") or "[Unknown]"
+            for m in phrase_pattern(label).finditer(txt):
+                start = txt[:m.start()].count("\n") + 1
+                end = start + m.group(0).count("\n")
+                wrap = " (quoted across a line wrap)" if end > start else ""
+                if reason:
+                    allowed.append(f"{rel}:{start} `{label}`{wrap} — {reason}")
+                    continue
+                win = _phrase_window(lines, start, end, window)
+                if bannered:
+                    marked.append(f"{rel}:{start} `{label}`{wrap} — "
+                                  f"SUPERSEDED/Historical banner in the first "
+                                  f"{BANNER_SCAN_LINES} lines marks the whole "
+                                  f"artifact")
+                elif any(mk in win for mk in markers):
+                    hit = next(mk for mk in markers if mk in win)
+                    marked.append(f"{rel}:{start} `{label}`{wrap} — marked "
+                                  f"historical by `{hit}` within "
+                                  f"{window} line(s)")
+                elif any(sig in win for sig in signals):
+                    sig = next(s for s in signals if s in win)
+                    live.append(
+                        f"{rel}:{start} — presents the retired phrase "
+                        f"`{label}` as current (`{sig}` in the same window, "
+                        f"no historical marker){wrap}. Retired "
+                        f"{retired_at}; the current form is `{replacement}`")
+                else:
+                    unmarked.append(
+                        f"{rel}:{start} — quotes the retired phrase "
+                        f"`{label}` with no historical marker, no banner, and "
+                        f"no allowlist entry{wrap}. Retired {retired_at}; a "
+                        f"reader cannot tell it from a live gate")
+
+    findings = live + unmarked
+    res.add("FAIL" if findings or reg_findings else "OK",
+            "CG-2a  retired acceptance phrase confined", len(items),
+            len(findings) + len(reg_findings), "file",
+            note=(f"{len(retired)} retired phrase(s) declared; "
+                  f"{len(live)} presented as current, "
+                  f"{len(unmarked)} unmarked"),
+            details=reg_findings + findings)
+    res.add("WARN", "CG-2b  retired-phrase path allowlist", len(allowed), 0,
+            "quotation", note="declared files whose job is to preserve what "
+                              "was offered", details=sorted(allowed))
+    res.add("WARN", "CG-2f  retired-phrase historical markers", len(marked), 0,
+            "quotation",
+            note="lawful quotations — marked at the line or by the "
+                 "artifact's banner; printed, never silenced",
+            details=sorted(marked))
 
     scope = [p for p in ABOUT_SCOPE if p in set(paths)]
     hits = []
@@ -509,6 +936,77 @@ def cg2_retired_tokens(paths, res):
     res.add("WARN", "CG-2d  `about/` allowlist", len(allow_present), 0, "file",
             note="guidance and historical mentions, out of CG-2c scope",
             details=allow_present)
+
+
+def cg2e_wrapped_current_arguments(paths, res, corpus=None, registry=None,
+                                   subjects=None):
+    """A **line-wrapped** current act phrase still carries a live argument.
+
+    CG-7d owns act-digest quotations and matches per line, so a phrase and
+    its 64-hex argument split by a line break are invisible to it — the same
+    blindness the launch-gate pilot's hand sweep had, which missed two
+    occurrences of a retired phrase to wrapping. This check covers exactly
+    the gap: a match that spans a newline. A single-line quotation is CG-7d's
+    and is deliberately **not** reported twice.
+
+    The phrase population is the registry's `current_phrases`, so the same
+    entry that teaches CG-2a about a retirement teaches this check about the
+    replacement.
+    """
+    data, _errs = phrase_registry(registry)
+    current = [e for e in registry_current(data)
+               if e.get("argument") == "sha256" and e.get("subject")]
+    subj = {}
+    for e in current:
+        if subjects is not None:
+            subj[e["label"]] = subjects.get(e["label"])
+            continue
+        full = os.path.join(ROOT, e["subject"])
+        subj[e["label"]] = sha256_file(full) if os.path.exists(full) else None
+
+    items = corpus
+    if items is None:
+        items = [(p, read(p)) for p in paths
+                 if p.endswith((".md", ".txt"))
+                 and not any(p.startswith(x) or p == x
+                             for x in ACT_QUOTE_EXEMPT)]
+    findings, examined = [], 0
+    for rel, body in items:
+        lines = body.splitlines()
+        for e in current:
+            label = e["label"]
+            sep = re.escape(e.get("argument_separator") or ":")
+            pat = re.compile(
+                r"\s+".join(re.escape(w) for w in label.split())
+                + r"\s*" + sep + r"\s*`?([0-9a-f]{64})")
+            for m in pat.finditer(body):
+                if "\n" not in m.group(0):
+                    continue            # CG-7d's population, not this one
+                line_no = body[:m.start()].count("\n") + 1
+                prev = " ".join(lines[max(0, line_no - 2):line_no + 1]).lower()
+                if re.search(r"\b(retired|stale|superseded|historical|"
+                             r"no longer|prior|previous)\b", prev):
+                    continue
+                examined += 1
+                cur = subj.get(label)
+                if cur is None:
+                    findings.append(
+                        f"{rel}:{line_no} — quotes `{label}` across a line "
+                        f"wrap, but its subject `{e['subject']}` does not "
+                        f"exist")
+                elif m.group(1) != cur:
+                    findings.append(
+                        f"{rel}:{line_no} — quotes `{label}: "
+                        f"{m.group(1)[:12]}…` across a line wrap; the subject "
+                        f"hashes to {cur[:12]}…. CG-7d cannot see a wrapped "
+                        f"quotation, so this copy was unchecked")
+    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+            "CG-2e  wrapped act-phrase arguments current", examined,
+            len(findings), "quotation",
+            note=(None if examined else
+                  "no act phrase is quoted across a line wrap — CG-7d covers "
+                  "the single-line population"),
+            details=findings)
 
 
 # --------------------------------------------------------------- CG-3
@@ -538,12 +1036,57 @@ BANNER_LINES = 10
 #: the acceptance record owns its candidate status.
 BANNER_EXEMPT = (f"{TOPOLOGY_CANDIDATES}/BUNDLE-MANIFEST.md",)
 
+#: **The front door.** Review RD-17 finding 6 mutation-proved the hole: it
+#: rewrote `candidates/README.md`'s banner from *"Candidate contract package
+#: — NOT ACCEPTED"* to *"Accepted contract package — IN FORCE"*, and the
+#: battery reported `0 FAIL` over 40 checks. CG-4's population was eight
+#: files and did not include the one a reader meets first, nor any of the
+#: thirty-nine modules an act would bind. The package README is also the
+#: **directory-level candidate marker for `rfcs/`**, the pattern CG-4 already
+#: uses for the topology bundle: per-module banners would churn digest-bound
+#: bytes for labelling alone.
+FRONT_DOOR = (
+    f"{CANDIDATES}/README.md",
+    f"{CANDIDATES}/00-README.md",
+)
+
+#: The inverse predicate CG-5 has had for craft since it was written. A
+#: missing word is a weak test — the strong one is a positive claim of
+#: acceptance inside a tree where no act has been performed. Matched in the
+#: banner region only, because that is where a reader forms the belief.
+ACCEPTED_CLAIMS = (
+    "accepted package", "accepted contract", "is accepted", "are accepted",
+    "in force", "everything here binds", "have been performed",
+    "has been performed", "no longer candidate", "binding package",
+)
+#: Negation, in the banner's own words. Every current banner in the candidate
+#: tree states its candidacy negatively — *"nothing here is accepted"*, *"No
+#: owner acceptance act has been performed"* — so the claim words are present
+#: and correct. The window is generous (80 characters) because the negator
+#: routinely opens a sentence the claim closes.
+CLAIM_NEGATOR = re.compile(r"\b(no|not|never|nothing|none|until|neither|"
+                           r"unaccepted|un-accepted)\b", re.I)
+CLAIM_LOOKBEHIND = 80
+
+
+def _accepted_claim(head):
+    """(claim, context) for an unnegated acceptance claim, or None."""
+    flat = " ".join(head.split())
+    low = flat.lower()
+    for claim in ACCEPTED_CLAIMS:
+        at = low.find(claim)
+        while at >= 0:
+            if not CLAIM_NEGATOR.search(low[max(0, at - CLAIM_LOOKBEHIND):at]):
+                return claim, flat[max(0, at - 40):at + len(claim) + 20]
+            at = low.find(claim, at + 1)
+    return None
+
 
 def cg4_candidate_banners(paths, res):
     targets = []
-    top_readme = f"{CANDIDATES}/00-README.md"
-    if top_readme in set(paths):
-        targets.append(top_readme)
+    for rel in FRONT_DOOR:
+        if rel in set(paths):
+            targets.append(rel)
     #: Topology bundle members are digest-bound by BUNDLE-MANIFEST.md (the
     #: act-3 subject); stuffing a banner word into each member would churn
     #: the offered digest for labeling alone. The directory-level candidate
@@ -568,10 +1111,74 @@ def cg4_candidate_banners(paths, res):
         if "candidate" not in head:
             findings.append(f"{rel} — no 'candidate' in the first "
                             f"{BANNER_LINES} lines")
+    # `candidates/README.md` is the directory-level marker for the modules,
+    # exactly as TRACKING-NOTE.md is for the topology bundle. Reported so the
+    # covered population is a number and not an assumption.
+    pkg_readme = f"{CANDIDATES}/README.md"
+    covered = [p for p in paths
+               if p.startswith(f"{CANDIDATES}/rfcs/") and p.endswith(".md")]
+    marker_ok = pkg_readme in set(paths) and "candidate" in "\n".join(
+        read(pkg_readme).splitlines()[:BANNER_LINES]).lower()
+    if covered and not marker_ok:
+        findings.append(
+            f"{pkg_readme} — carries no candidate banner, and it is the "
+            f"directory-level marker for the {len(covered)} module(s) under "
+            f"`rfcs/`; without it those modules are unmarked")
     status = "FAIL" if findings else ("OK" if targets else "WARN")
-    res.add(status, "CG-4   candidate homes carry candidate banners",
+    res.add(status, "CG-4a  candidate homes carry candidate banners",
             len(set(targets)), len(findings), "file",
-            note=None if targets else "no candidate-home files found — nothing examined",
+            note=(f"plus {len(covered)} `rfcs/` module(s) covered by the "
+                  f"directory-level marker `{pkg_readme}`" if covered
+                  else "no candidate-home files found — nothing examined"),
+            details=findings)
+    cg4b_no_accepted_claim(paths, res)
+
+
+#: Kept under the old name: identifiers are amended in place, never
+#: renumbered, and CG-4's single row became CG-4a/CG-4b when the inverse
+#: predicate arrived.
+cg4_candidate_banners_positive = cg4_candidate_banners
+
+
+def cg4b_no_accepted_claim(paths, res, corpus=None):
+    """No file in a candidate home claims the acceptance has happened.
+
+    CG-4a's predicate is a missing word, and a missing word is the weak
+    half: review RD-17's mutation M8b did not remove the word *candidate*, it
+    replaced the whole banner with a confident, well-formed claim that the
+    acts had been performed. This is the inverse predicate CG-5 has had for
+    craft since it was written, applied to the tree that has no acts at all.
+
+    Scoped to the banner region, because that is where a reader forms the
+    belief, and negation-aware, because every truthful banner in this tree
+    states its candidacy negatively — *"nothing here is accepted"*, *"No
+    owner acceptance act has been performed over any of it"*. A predicate
+    that could not read those would report the three correct banners in the
+    repository as defects and be switched off within a day.
+    """
+    if corpus is None:
+        corpus = [(p, read(p)) for p in paths
+                  if p.endswith(".md")
+                  and (p.startswith(f"{CANDIDATES}/")
+                       or p.startswith(f"{TOPOLOGY_CANDIDATES}/"))
+                  and not any(p.startswith(x) for x in VERBATIM_SOURCES)
+                  and "/round-2026-08" not in p]
+    findings = []
+    for rel, body in corpus:
+        head = "\n".join(body.splitlines()[:BANNER_LINES])
+        hit = _accepted_claim(head)
+        if hit:
+            findings.append(
+                f"{rel} — banner claims `{hit[0]}` with no negation: "
+                f"“{hit[1]}”. No owner act has been performed over "
+                f"anything in this tree (VIS-4); a banner that says otherwise "
+                f"is the labelled-accepted prohibition, at the file a reader "
+                f"meets first")
+    res.add("FAIL" if findings else ("OK" if corpus else "WARN"),
+            "CG-4b  candidate homes claim no acceptance", len(corpus),
+            len(findings), "file",
+            note=None if corpus else "no candidate-tree markdown — nothing "
+                                     "examined",
             details=findings)
 
 
@@ -652,6 +1259,123 @@ def wave_arg_pat(w):
     return re.compile(rf"ACCEPT FOUNDATIONAL WAVE {w}:\s*`?([0-9a-f]{{64}})")
 
 
+#: `The 19 modules of RFC 0001–0006` — a count **before** the noun. Ordinals
+#: are the other way round (`RFC-0010 modules 1, 2, 3, 5`) and must not be
+#: read as counts; requiring the digits to precede the noun is what separates
+#: them, and the D1 row is the live case that proves it matters.
+STATED_MODULE_COUNT = re.compile(r"\b(\d{1,3})\s+modules?\b", re.I)
+
+
+def cg7f_wave_counts(res, record=None, wave_rows=None):
+    """A wave act's *description* is checked against its subject, not only its
+    digest.
+
+    CG-7b compares the record's stated sha256 to the wave manifest's sha256.
+    Nothing compared the record's stated **count**. Review RD-17 finding 1
+    mutation-proved the consequence in a copy: a twentieth module added to
+    Wave A, every manifest and index regenerated, the record's digest updated
+    the way a maintainer would — six scripts, zero findings, against an
+    offering whose own words undercount its subject by one. The owner would
+    have bound 20 modules under the words *"the 19 modules"* with the whole
+    battery green, which is RD-8's class verbatim and live for all six waves
+    at once.
+
+    The counts come from the wave manifests' rows, never from their header
+    lines: a header states a count, and a count quoted outside the thing that
+    measures it is the defect under repair (verification rule 3).
+
+    A row that states no count is **disclosed, not passed over**: the note
+    prints how many of the six rows carry a comparable figure, so a row
+    quietly losing its count cannot look like agreement.
+    """
+    body = record if record is not None else read(ACCEPTANCE_RECORD)
+    if not body:
+        res.add("WARN", "CG-7f  wave-act module counts match the manifests",
+                0, 0, "row", note=f"{ACCEPTANCE_RECORD} unreadable")
+        return
+    if wave_rows is None:
+        wave_rows = {}
+        for w in WAVE_IDS:
+            full = os.path.join(ROOT, WAVE_MANIFESTS[w])
+            if not os.path.exists(full):
+                continue
+            wave_rows[w] = sum(
+                1 for ln in read(WAVE_MANIFESTS[w]).splitlines()
+                if DIGEST_ROW.match(ln.strip()))
+    findings, details, examined, stated = [], [], 0, 0
+    for w in WAVE_IDS:
+        row = next((ln for ln in body.splitlines()
+                    if ln.lstrip().startswith("|")
+                    and f"ACCEPT FOUNDATIONAL WAVE {w}:" in ln), None)
+        examined += 1
+        if row is None:
+            findings.append(f"wave {w} — no §1 table row offering the act; "
+                            f"its subject is described nowhere")
+            continue
+        actual = wave_rows.get(w)
+        if actual is None:
+            findings.append(f"wave {w} — the record describes the act but "
+                            f"`{WAVE_MANIFESTS[w]}` is absent; the count "
+                            f"cannot be checked")
+            continue
+        m = STATED_MODULE_COUNT.search(row)
+        if not m:
+            details.append(f"wave {w} — the row states no module count; "
+                           f"{actual} row(s) in the manifest, nothing to "
+                           f"compare")
+            continue
+        stated += 1
+        if int(m.group(1)) != actual:
+            findings.append(
+                f"wave {w} — the record describes `{m.group(0)}` but "
+                f"{WAVE_MANIFESTS[w]} has {actual} row(s). The act's digest "
+                f"can be correct while its words are not, and the words are "
+                f"what the owner reads")
+    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+            "CG-7f  wave-act module counts match the manifests", examined,
+            len(findings), "row",
+            note=(f"{stated} of {examined} row(s) state a comparable count"
+                  if examined else "no wave rows found"),
+            details=findings + details)
+
+
+def cg7g_wave_manifest_population(paths, res, listing=None):
+    """`wave-manifests/` holds exactly the six generated manifests.
+
+    The generator diffs only the seven files it writes and CG-7a reads only
+    the six paths it names, so neither treats the directory as a population.
+    Review RD-17 finding 5 dropped a seventh, internally false
+    `WAVE-C-MANIFEST.txt` into it: the generator reported *all 7 manifests
+    match regeneration* and the battery reported zero findings. The directory
+    is where the acceptance record sends an owner for each wave act's
+    argument, and a leftover from an earlier wave design would sit there
+    looking exactly like one of the six.
+    """
+    home = f"{CANDIDATES}/wave-manifests"
+    expected = {WAVE_MANIFESTS[w] for w in WAVE_IDS}
+    if listing is not None:
+        actual = set(listing)
+    else:
+        base = os.path.join(ROOT, home)
+        if not os.path.isdir(base):
+            actual = {p for p in paths if p.startswith(home + "/")}
+        else:
+            actual = {f"{home}/{n}" for n in sorted(os.listdir(base))
+                      if os.path.isfile(os.path.join(base, n))}
+    findings = [f"{p} — sits in `{home}/` and is not one of the six generated "
+                f"wave manifests; a file here reads as a wave act's argument"
+                for p in sorted(actual - expected)]
+    findings += [f"{p} — declared wave manifest is missing from `{home}/`"
+                 for p in sorted(expected - actual)]
+    res.add("FAIL" if findings else ("OK" if actual else "WARN"),
+            "CG-7g  wave-manifests/ population closed", len(actual),
+            len(findings), "file",
+            note=(f"{len(expected)} generated manifests expected"
+                  if actual else f"`{home}/` is empty or absent — "
+                                 f"nothing examined"),
+            details=findings)
+
+
 def sha256_file(abspath):
     h = hashlib.sha256()
     with open(abspath, "rb") as fh:
@@ -726,12 +1450,15 @@ def cg7_manifest(paths, res):
                   if n else "no digest rows parsed — nothing examined"),
             details=findings)
 
+    cg7g_wave_manifest_population(paths, res)
+
     if ACCEPTANCE_RECORD not in set(paths):
         res.add("WARN", "CG-7b  wave-act arguments match the wave manifests",
                 0, 0, "record",
                 note=f"{ACCEPTANCE_RECORD} not present — nothing examined")
         return
     record_text = read(ACCEPTANCE_RECORD)
+    cg7f_wave_counts(res, record=record_text)
     bfind, bexam = [], 0
     for w in WAVE_IDS:
         stated = set(wave_arg_pat(w).findall(record_text))
@@ -806,25 +1533,53 @@ def cg7_manifest(paths, res):
 #: stale in the document that offered it (six independent reviewers, RB-1 F1
 #: … RB-8 F1). A digest quoted anywhere is a promise about an artifact; the
 #: artifact is the only thing that can keep it.
-ACT_SUBJECTS = tuple(
-    (f"ACCEPT FOUNDATIONAL WAVE {w}", WAVE_MANIFESTS[w], wave_arg_pat(w))
-    for w in WAVE_IDS
-) + (
-    ("CONFIRM CRAFT AMENDMENT: CC-TEST-2",
-     f"{CRAFT}/testing-and-verification.md",
-     re.compile(r"CC-TEST-2@([0-9a-f]{64})")),
-    ("ACCEPT TOPOLOGY", f"{TOPOLOGY_CANDIDATES}/BUNDLE-MANIFEST.md",
-     re.compile(r"ACCEPT TOPOLOGY:\s*`?([0-9a-f]{64})")),
-    ("ADOPT PROJECT OVERVIEW", ".syzygy/intent/OVERVIEW.md",
-     re.compile(r"ADOPT PROJECT OVERVIEW:\s*`?([0-9a-f]{64})")),
-    # Act 5 needs no phrase — VIS-4 adoption is the owner's own words. The
-    # round charter offers a phrase form anyway, so it is made available and
-    # checked; an optional act with an unchecked digest would be the same
-    # defect as the four this check exists for.
-    ("ADOPT DOCTRINE AMENDMENT: D3",
-     f"{CANDIDATES}/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md",
-     re.compile(r"ADOPT DOCTRINE AMENDMENT:\s*D3@([0-9a-f]{64})")),
-)
+#: **Derived from `ACCEPTANCE-PHRASE-REGISTRY.yaml`, never listed here.**
+#: This tuple used to be a hand-kept copy of the phrase set, which is the
+#: transcription class the battery exists to catch, applied to itself: the
+#: registry, CG-2a's retired list and this list are one population read three
+#: ways, and only a single source can keep them agreeing. A phrase whose
+#: `argument` is `reason` (REWORK/REJECT) carries no digest and is not an act
+#: subject, so it is absent by construction rather than by omission.
+#:
+#: Act 5 needs no phrase — VIS-4 adoption is the owner's own words. The round
+#: charter offers a phrase form anyway, so the registry declares it and it is
+#: checked; an optional act with an unchecked digest would be the same defect
+#: as the four this check exists for.
+def _act_subjects():
+    out = []
+    for e in registry_current():
+        if e.get("argument") != "sha256" or not e.get("subject"):
+            continue
+        label = e["label"]
+        sep = re.escape(e.get("argument_separator") or ":")
+        out.append((label, e["subject"], re.compile(
+            re.escape(label) + r"\s*" + sep + r"\s*`?([0-9a-f]{64})")))
+    return tuple(out)
+
+
+class _ActSubjects:
+    """Lazy, cached view of the registry's digest-bearing phrases.
+
+    Module-level constants are built at import time, and the registry is read
+    from disk — so this stays a descriptor-free lazy tuple rather than a
+    literal, and the selftest can still substitute a synthetic registry.
+    """
+
+    _cache = {}
+
+    def _get(self):
+        if ROOT not in _ActSubjects._cache:
+            _ActSubjects._cache[ROOT] = _act_subjects()
+        return _ActSubjects._cache[ROOT]
+
+    def __iter__(self):
+        return iter(self._get())
+
+    def __len__(self):
+        return len(self._get())
+
+
+ACT_SUBJECTS = _ActSubjects()
 
 #: Files that quote a stale act argument *as* a retired value, on purpose —
 #: the revision table in the acceptance record and the round's own records.
@@ -1708,6 +2463,27 @@ def cg16_term_registry_status(paths, res, corpus=None):
     """
     claim = re.compile(r"\b(adopted|accepted|approved|binding|authoritative|"
                        r"canonical)\b", re.I)
+    #: **The negator may sit a few words away, but not past a sentence end.**
+    #: The old form required the negator within 14 *non-word* characters of
+    #: the claim, so `not adopted` exempted and `never described as accepted`
+    #: did not — and that second phrase is this check's own headline. A record
+    #: that quoted CG-16's summary line verbatim became a CG-16 finding, which
+    #: the vocabulary agent hit and worked around by paraphrasing the battery
+    #: instead of quoting it. A checker that cannot be quoted accurately is a
+    #: checker whose output gets paraphrased, and a paraphrase is where a
+    #: verdict word goes soft.
+    #:
+    #: The bound is a sentence, not a word count: `[^.;:!?]` refuses to cross
+    #: a sentence boundary, so `No act has been performed. The registry is
+    #: accepted.` still fails — the negation belongs to the other sentence.
+    negated = re.compile(
+        r"\b(not|never|no|neither|nor|non|un|unaccepted|candidate)\b"
+        r"[^.;:!?]{0,60}?$", re.I)
+    #: Naming this check is quoting it, not claiming. Same marker convention
+    #: CG-22 already grants itself (`STATUS_RETIRED_MARKERS` contains
+    #: `cg-22`): a document whose subject is the battery must be able to
+    #: reproduce what the battery forbids.
+    self_quote = re.compile(r"\bCG-16\b", re.I)
     items = corpus if corpus is not None else [
         (rel, read(rel)) for rel in paths if rel.endswith(".md")
         and not any(rel.startswith(x) or rel == x for x in VERBATIM_SOURCES)]
@@ -1729,16 +2505,74 @@ def cg16_term_registry_status(paths, res, corpus=None):
             # defect for an unrelated word is a check nobody will keep.
             window = line[max(0, at - 60):at + 90]
             m = claim.search(window)
-            if m and not re.search(r"\b(not|never|un|no|candidate)\b\W{0,14}" +
-                                   re.escape(m.group(0)), window, re.I):
-                findings.append(f"{rel}:{line_no} — calls the term registry "
-                                f"`{m.group(0)}`; it is candidate material "
-                                f"with no owner act")
+            if not m:
+                continue
+            if self_quote.search(window):
+                continue
+            if negated.search(window[:m.start()]):
+                continue
+            findings.append(f"{rel}:{line_no} — calls the term registry "
+                            f"`{m.group(0)}`; it is candidate material "
+                            f"with no owner act")
     res.add("FAIL" if findings else ("OK" if examined else "WARN"),
             "CG-16  term registry never described as accepted", examined,
             len(findings), "mention",
             note=None if examined else "term registry not mentioned anywhere",
             details=findings)
+
+
+#: A sentence that **denies** the lettered token beside it is a sub-clause.
+#: Two shapes exist in the corpus and both are load-bearing:
+#:
+#:   RFC-0008 README — "**No lettered sub-clauses.** Lettered limbs cited
+#:   inside a clause — RFC8-2(a)-(c) …"
+#:   RFC-0009 (README and module 1) — "Lettered *limbs* cited inside a parent
+#:   clause (RFC9-10(c), RFC9-19(b)) are parts of that clause, **not separate
+#:   sub-clauses**, and resolve the same way."
+#:
+#: Only the first was recognised, so `RFC9-10(c)` and `RFC9-19(b)` entered the
+#: declared set and CG-17 demanded matrix rows for them. Adding those rows
+#: would have fabricated two clause identities RFC-0009 explicitly disclaims —
+#: the routing matrix would have grown coverage for clauses that do not exist.
+#: The repair belongs on this side, which is why the check now reads the
+#: denial rather than the disclaiming contract acquiring rows to satisfy it.
+NOT_A_SUBCLAUSE = re.compile(
+    r"\bno lettered sub-clause|\bnot\s+(?:separate\s+)?sub-clauses?\b", re.I)
+#: The denial and the tokens it denies land on opposite sides of a line wrap
+#: in RFC-0009's README (tokens on one line, "not separate sub-clauses" on the
+#: next). Same ±1 window CG-20's threshold marker uses, and for the same
+#: reason: prose wraps, and a line-only test reads half a sentence.
+SUBCLAUSE_WINDOW = 1
+
+
+def _declared_subclauses(bodies, declared):
+    """Lettered identities a module positively declares as sub-clauses.
+
+    Sub-clauses are defined inline inside their parent, so they never match
+    the definition-site regex. They are declared instead — as a range in
+    front matter (`sub-clauses RFC7-2(a)-(c)`) or as singletons — and a token
+    is admitted only when its parent is already declared. A *fabricated* row
+    must not inflate the denominator, and a *denied* limb must not enter it.
+    """
+    lines = bodies.splitlines()
+    out = set()
+    for i, line in enumerate(lines):
+        if "sub-clause" not in line.lower():
+            continue
+        lo = max(0, i - SUBCLAUSE_WINDOW)
+        window = " ".join(
+            " ".join(lines[lo:i + SUBCLAUSE_WINDOW + 1]).split())
+        if NOT_A_SUBCLAUSE.search(window):
+            continue
+        for rng in re.finditer(r"(RFC\d+-\d+)\((\w)\)[-–]\((\w)\)", line):
+            stem, lo_c, hi_c = rng.groups()
+            if stem in declared:
+                for o in range(ord(lo_c), ord(hi_c) + 1):
+                    out.add(f"{stem}({chr(o)})")
+        for single in re.finditer(r"(RFC\d+-\d+\(\w\))(?![-–]\()", line):
+            if single.group(1).split("(")[0] in declared:
+                out.add(single.group(1))
+    return out
 
 
 def cg17_routing_completeness(res, matrix=None, modules=None):
@@ -1779,23 +2613,7 @@ def cg17_routing_completeness(res, matrix=None, modules=None):
     # rather than accepting any token that happens to appear in prose.
     bodies = "\n".join(read(rel) for rel in
                        (modules if modules is not None else _rfc_modules()))
-    # Only a *positive* declaration counts. RFC-0008's README contains the
-    # sentence "**No lettered sub-clauses.** Lettered limbs cited inside a
-    # clause — RFC8-2(a)-(c) …" — reading that as a declaration invented a
-    # clause identity RFC-0008 explicitly says it does not have.
-    for line in bodies.splitlines():
-        if "sub-clause" not in line.lower():
-            continue
-        if re.search(r"\bno lettered sub-clause", line, re.I):
-            continue
-        for rng in re.finditer(r"(RFC\d+-\d+)\((\w)\)[-–]\((\w)\)", line):
-            stem, lo, hi = rng.groups()
-            if stem in declared:
-                for o in range(ord(lo), ord(hi) + 1):
-                    declared.add(f"{stem}({chr(o)})")
-        for single in re.finditer(r"(RFC\d+-\d+\(\w\))(?![-–]\()", line):
-            if single.group(1).split("(")[0] in declared:
-                declared.add(single.group(1))
+    declared |= _declared_subclauses(bodies, declared)
     findings = []
     for c in sorted(declared - set(routed)):
         findings.append(f"{c} — declared in a contract, absent from the matrix")
@@ -1840,7 +2658,13 @@ def cg18_fixture_freshness(res, fixtures=None):
                 if n.startswith("context-selection-") and n.endswith(".md"):
                     items.append((f"{FIXTURES_DIR}/{n}",
                                   read(f"{FIXTURES_DIR}/{n}")))
-    findings, examined = [], 0
+    # **The denominator is `2 × len(items)`, computed once.** It used to be
+    # incremented per predicate *reached*, so a fixture that dropped its
+    # `Measured:` anchor shrank the population and the check still printed
+    # `OK` — review RD-17 finding 10 mutation-proved it at 20 -> 19, silently.
+    # Every predicate the loop cannot run now leaves a finding behind it, so
+    # the count and the coverage can no longer drift apart.
+    findings = []
     for rel, body in items:
         cmd = re.search(r"```\s*\n(scripts/context_load\.py[\s\S]*?)\n```", body)
         # The digest is the first hex quotation after the "Packet digest"
@@ -1851,7 +2675,6 @@ def cg18_fixture_freshness(res, fixtures=None):
         quoted = (re.search(r"`([0-9a-f]{8,64})(?:…|\.\.\.)?`", section[1])
                   if len(section) > 1 else None)
         if not cmd or not quoted:
-            examined += 1
             findings.append(
                 f"{rel} — could not locate a load command and a packet digest "
                 f"to recompute from; a fixture this check cannot parse is "
@@ -1868,7 +2691,6 @@ def cg18_fixture_freshness(res, fixtures=None):
             data = open(path, "rb").read()
             blob += data
             words += len(data.decode("utf-8", "replace").split())
-        examined += 1
         if missing:
             findings.append(f"{rel} — mandatory load names {missing}, which "
                             f"do not exist; the fixture cannot be reproduced")
@@ -1879,16 +2701,25 @@ def cg18_fixture_freshness(res, fixtures=None):
             findings.append(f"{rel} — packet digest `{q}…` but the declared "
                             f"mandatory set hashes to `{actual[:len(q)]}…`")
         claimed = re.search(r"Measured:\s*\*\*([\d,]+)\s*words", body)
-        if claimed:
-            examined += 1
+        if not claimed:
+            findings.append(
+                f"{rel} — no `Measured: **N words` anchor; the word-count "
+                f"predicate has nothing to recompute against, and a skipped "
+                f"predicate is unverified, not passing")
+        else:
             c = int(claimed.group(1).replace(",", ""))
             if c != words:
                 findings.append(f"{rel} — claims {c:,} words; the declared "
                                 f"mandatory set is {words:,}")
+    n_fixtures = len(items)
+    examined = 2 * n_fixtures
     res.add("FAIL" if findings else ("OK" if examined else "WARN"),
             "CG-18  context fixtures recompute", examined, len(findings),
             "measurement",
-            note=None if examined else "no reproducible fixtures found",
+            note=(f"{n_fixtures} fixture(s) × 2 predicates (digest, word "
+                  f"count) — the denominator is computed, never incremented "
+                  f"per predicate found" if examined
+                  else "no reproducible fixtures found"),
             details=findings)
 
 
@@ -2310,6 +3141,191 @@ def selftest():
     cases[-1] = ("CG-13 dangling edge detected",
                  _selftest_dangling())
 
+    # ---- CG-2, registry-driven. Four classes of retired-phrase quotation,
+    # one fixture each, plus the wrap tolerance that the launch-gate pilot's
+    # hand sweep lacked. `REG` is a synthetic registry: the fixtures must
+    # exercise the parsing path too, or a registry that stopped parsing would
+    # leave every fixture passing over an empty population.
+    REG = (
+        'version: 1\n'
+        'current_phrases:\n'
+        '  - id: wave-a\n'
+        '    label: "ACCEPT FOUNDATIONAL WAVE A"\n'
+        '    form: accept\n'
+        '    argument: sha256\n'
+        '    subject: "wave-manifests/WAVE-A-MANIFEST.txt"\n'
+        'retired_phrases:\n'
+        '  - label: "ACCEPT OLD RFCS"\n'
+        '    retired_at: "2026-01-01"\n'
+        '    replaced_by: "ACCEPT FOUNDATIONAL WAVE A"\n'
+        'historical_marker_convention:\n'
+        '  markers:\n'
+        '    - "retired"\n'
+        '  marker_window_lines: 2\n'
+        '  currency_signals:\n'
+        '    - "exact phrase"\n')
+
+    c = Cap()
+    cg2_retired_tokens([], c, registry=REG,
+                       corpus=[("f.md", "write the ACCEPT OLD RFCS phrase")])
+    cases.append(("CG-2a unmarked retired-phrase quotation detected",
+                  c.rows[0][0] == "FAIL" and len(c.rows[0][4]) == 1))
+
+    # (a) the wrap. `str.__contains__` and a line-based matcher both miss
+    # this, and both were what the corpus had.
+    c = Cap()
+    cg2_retired_tokens([], c, registry=REG,
+                       corpus=[("f.md", "the ACCEPT OLD\nRFCS gate")])
+    cases.append(("CG-2a line-wrapped retired phrase detected",
+                  c.rows[0][0] == "FAIL"
+                  and "line wrap" in (c.rows[0][4] or [""])[0]))
+
+    # (b) presented as current — the worse class, reported as its own.
+    c = Cap()
+    cg2_retired_tokens([], c, registry=REG,
+                       corpus=[("f.md", "The exact phrase is\n"
+                                        "`ACCEPT OLD RFCS: <digest>`")])
+    cases.append(("CG-2a retired phrase presented as current detected",
+                  c.rows[0][0] == "FAIL"
+                  and any("presents the retired phrase" in d
+                          for d in c.rows[0][4])))
+
+    # (c) a marked quotation is lawful, counted under CG-2f, never silent.
+    c = Cap()
+    cg2_retired_tokens([], c, registry=REG,
+                       corpus=[("f.md", "the retired `ACCEPT OLD RFCS`")])
+    cases.append(("CG-2a marked historical quotation exempted and printed",
+                  c.rows[0][0] == "OK" and len(c.rows[2][4]) == 1))
+
+    c = Cap()
+    cg2_retired_tokens([], c, registry=REG, corpus=[
+        ("f.md", "# SUPERSEDED — old record\n\nACCEPT OLD RFCS\n")])
+    cases.append(("CG-2a superseded-bannered file exempted",
+                  c.rows[0][0] == "OK" and len(c.rows[2][4]) == 1))
+
+    # An empty or unparseable registry must fail loudly. A phrase sweep over
+    # zero declared phrases is the vacuous pass this battery exists to stop.
+    c = Cap()
+    cg2_retired_tokens([], c, registry="version: 1\n",
+                       corpus=[("f.md", "ACCEPT OLD RFCS")])
+    cases.append(("CG-2a empty phrase registry fails, never passes",
+                  c.rows[0][0] == "FAIL"))
+
+    # (d) a current phrase copied across a wrap with a stale argument.
+    # CG-7d matches per line and is structurally blind to this shape.
+    c = Cap()
+    cg2e_wrapped_current_arguments(
+        [], c, registry=REG, subjects={"ACCEPT FOUNDATIONAL WAVE A": "a" * 64},
+        corpus=[("f.md", "ACCEPT FOUNDATIONAL WAVE\nA: " + "b" * 64)])
+    cases.append(("CG-2e wrapped current phrase with a stale digest detected",
+                  c.rows[0][0] == "FAIL"))
+
+    c = Cap()
+    cg2e_wrapped_current_arguments(
+        [], c, registry=REG, subjects={"ACCEPT FOUNDATIONAL WAVE A": "a" * 64},
+        corpus=[("f.md", "ACCEPT FOUNDATIONAL WAVE\nA: " + "a" * 64)])
+    cases.append(("CG-2e wrapped current phrase with a live digest passes",
+                  c.rows[0][0] == "OK" and c.rows[0][2] == 1))
+
+    # The single-line population is CG-7d's; reporting it here too would
+    # print one defect twice and teach a reader to ignore one of them.
+    c = Cap()
+    cg2e_wrapped_current_arguments(
+        [], c, registry=REG, subjects={"ACCEPT FOUNDATIONAL WAVE A": "a" * 64},
+        corpus=[("f.md", "ACCEPT FOUNDATIONAL WAVE A: " + "b" * 64)])
+    cases.append(("CG-2e single-line quotation left to CG-7d",
+                  c.rows[0][2] == 0))
+
+    # ---- CG-4b, the inverse predicate. RD-17's mutation M8b rewrote the
+    # package README's banner to claim the acts had happened and the battery
+    # reported 0 FAIL over 40 checks; the negative keeps the three truthful
+    # banners in this repository from reading as defects.
+    c = Cap()
+    cg4b_no_accepted_claim([], c, corpus=[
+        ("README.md", "# Accepted contract package — IN FORCE\n\n"
+                      "> Everything under this directory is accepted and "
+                      "binding. The owner acceptance acts have all been "
+                      "performed.\n")])
+    cases.append(("CG-4b accepted-claim banner detected",
+                  c.rows[0][0] == "FAIL"))
+
+    c = Cap()
+    cg4b_no_accepted_claim([], c, corpus=[
+        ("README.md", "# Candidate contract package — NOT ACCEPTED\n\n"
+                      "> No owner acceptance act has been performed over any "
+                      "of it. Nothing here is accepted.\n")])
+    cases.append(("CG-4b negated candidate banner exempted",
+                  c.rows[0][0] == "OK"))
+
+    c = Cap()
+    cg4b_no_accepted_claim([], c, corpus=[])
+    cases.append(("CG-4b empty candidate tree warns, never passes",
+                  c.rows[0][0] == "WARN"))
+
+    # ---- CG-7a/7b: the CG-7 family's act-argument predicates, which had no
+    # fixture of their own — CG-7 counted as covered on CG-7e's strength
+    # while the four checks guarding every owner act argument had none
+    # (review RD-17 finding 3).
+    cases.append(("CG-7a wave partition overlap detected",
+                  _selftest_wave_partition("overlap")))
+    cases.append(("CG-7a wave partition gap detected",
+                  _selftest_wave_partition("gap")))
+    cases.append(("CG-7b stale wave argument in the record detected",
+                  _selftest_wave_partition("stale-arg")))
+
+    # ---- CG-7f: the count predicate finding 1 asked for. A wave row may
+    # bind twenty modules under the words "the 19 modules" with every digest
+    # correct, and nothing compared the two.
+    c = Cap()
+    cg7f_wave_counts(c, record=(
+        "| A | `ACCEPT FOUNDATIONAL WAVE A: " + "0" * 64 + "` | "
+        "The 19 modules of RFC 0001-0006 |"), wave_rows={"A": 20})
+    cases.append(("CG-7f wave row undercounting its manifest detected",
+                  c.rows[0][0] == "FAIL"
+                  and "19 modules" in (c.rows[0][4] or [""])[0]))
+
+    c = Cap()
+    cg7f_wave_counts(c, record=(
+        "| A | `ACCEPT FOUNDATIONAL WAVE A: " + "0" * 64 + "` | "
+        "The 19 modules of RFC 0001-0006 |"), wave_rows={"A": 19})
+    cases.append(("CG-7f matching count raises nothing for that row",
+                  not any("19 modules" in d and "row(s)" in d
+                          for d in c.rows[0][4])))
+
+    # An ordinal is not a count: `RFC-0010 modules 1, 2, 3, 5` must not be
+    # read as "1". This is the live shape of four of the six wave rows.
+    c = Cap()
+    cg7f_wave_counts(c, record=(
+        "| D1 | `ACCEPT FOUNDATIONAL WAVE D1: " + "0" * 64 + "` | "
+        "RFC-0010 modules 1, 2, 3, 5 plus the package index |"),
+        wave_rows={"D1": 5})
+    cases.append(("CG-7f ordinal module list is not read as a count",
+                  not any("does not" in d or "has " in d
+                          for d in c.rows[0][4] if "row(s) in the" not in d)))
+
+    # ---- CG-7g: RD-17 finding 5's seventh manifest, which the generator
+    # and CG-7a both reported clean.
+    c = Cap()
+    cg7g_wave_manifest_population(
+        [], c, listing=[WAVE_MANIFESTS[w] for w in WAVE_IDS]
+        + [f"{CANDIDATES}/wave-manifests/WAVE-C-MANIFEST.txt"])
+    cases.append(("CG-7g stray file in wave-manifests/ detected",
+                  c.rows[0][0] == "FAIL"))
+
+    c = Cap()
+    cg7g_wave_manifest_population(
+        [], c, listing=[WAVE_MANIFESTS[w] for w in WAVE_IDS[:-1]])
+    cases.append(("CG-7g missing wave manifest detected",
+                  c.rows[0][0] == "FAIL"))
+
+    # An empty directory is six missing act arguments, not "nothing to
+    # examine". The WARN branch stays reachable only if `WAVE_IDS` is ever
+    # emptied, which would itself be the defect.
+    c = Cap()
+    cg7g_wave_manifest_population([], c, listing=[])
+    cases.append(("CG-7g wholly absent wave-manifests/ detected",
+                  c.rows[0][0] == "FAIL" and len(c.rows[0][4]) == len(WAVE_IDS)))
+
     c = Cap()
     cg14_install_routes(c, record=(
         "## 2. Ceremony\ncopy from `no-such-dir/` to "
@@ -2406,6 +3422,58 @@ def selftest():
                               corpus=[("f.md", "the term registry is not adopted")])
     cases.append(("CG-16 negated claim exempted", c.rows[0][0] == "OK"))
 
+    # The negator three words out — which is this check's own headline, and
+    # which a record quoting the battery verbatim reproduces. Under the old
+    # 14-non-word-character rule the quotation was a finding, so records
+    # paraphrased the battery instead of quoting it.
+    c = Cap()
+    cg16_term_registry_status([], c, corpus=[
+        ("f.md", "term registry never described as accepted — 59 mentions")])
+    cases.append(("CG-16 negation across intervening words exempts",
+                  c.rows[0][0] == "OK"))
+
+    c = Cap()
+    cg16_term_registry_status([], c, corpus=[
+        ("f.md", "the CG-16 row calls the term registry `accepted` here")])
+    cases.append(("CG-16 a line naming CG-16 is quoting, not claiming",
+                  c.rows[0][0] == "OK"))
+
+    # And the two directions that keep the widening from defanging the check:
+    # a bare claim still fails, and a negator belonging to a *different*
+    # sentence does not reach across the full stop.
+    c = Cap()
+    cg16_term_registry_status([], c,
+                              corpus=[("f.md", "the term registry is accepted")])
+    cases.append(("CG-16 unnegated claim still fails after the widening",
+                  c.rows[0][0] == "FAIL"))
+
+    c = Cap()
+    cg16_term_registry_status([], c, corpus=[
+        ("f.md", "No act has been performed. The term registry is accepted")])
+    cases.append(("CG-16 negator past a sentence boundary does not exempt",
+                  c.rows[0][0] == "FAIL"))
+
+    # ---- CG-17's sub-clause extractor. RFC-0009 denies that two lettered
+    # limbs are sub-clauses; admitting them made CG-17 demand matrix rows
+    # that would have fabricated the identities the contract disclaims.
+    cases.append(("CG-17 limb denied as a sub-clause is not declared",
+                  not _declared_subclauses(
+                      "Lettered limbs cited inside a parent clause "
+                      "(RFC9-10(c), RFC9-19(b))\nare parts of that clause, "
+                      "not separate sub-clauses, and resolve the same way.",
+                      {"RFC9-10", "RFC9-19"})))
+
+    cases.append(("CG-17 declared sub-clause range still enters the population",
+                  _declared_subclauses(
+                      "clauses: RFC7-1..RFC7-9 (sub-clauses RFC7-2(a)-(c))",
+                      {"RFC7-2"}) == {"RFC7-2(a)", "RFC7-2(b)", "RFC7-2(c)"}))
+
+    cases.append(("CG-17 `No lettered sub-clauses` denial still honoured",
+                  not _declared_subclauses(
+                      "**No lettered sub-clauses.** Lettered limbs cited "
+                      "inside a clause — RFC8-2(a)-(c) — resolve to it.",
+                      {"RFC8-2"})))
+
     c = Cap()
     cg17_routing_completeness(c, matrix="| `RFC6-1` | OS |\n| `RFC6-1` | OS |",
                               modules=[])
@@ -2442,10 +3510,31 @@ def selftest():
     cases.append(("CG-21 examines the real corpus without error",
                   c.rows[0][2] > 0 and c.rows[0][0] == "OK"))
 
+    # The load map fed to CG-21 as if it were a module. This fixture asserted
+    # `OK` while calling itself "measurement in prose detected" — true only
+    # because `CONTRACT_MEASUREMENT` could not see a count of *modules* or
+    # *contracts*, which is review RD-17 finding 4's whole subject. With the
+    # regex widened the same input trips the predicate, which is what the
+    # fixture's name always claimed.
     c = Cap()
     cg21_contract_prose_states_no_measurement(c, modules=[LOAD_MAP])
-    cases.append(("CG-21 measurement in prose detected",
+    cases.append(("CG-21 corpus count in prose detected",
+                  c.rows[0][0] == "FAIL"))
+
+    # The widening's negative: the pointer sentence a module is allowed to
+    # write must still pass, or the rule forbids saying where the figures
+    # went.
+    c = Cap()
+    cg20_load_map_states_no_measurement(
+        c, body="Coverage: 39 modules across 11 contracts — see "
+                "`CONTEXT-BUDGET-REPORT.md`.")
+    cases.append(("CG-20 corpus count behind the pointer exempted",
                   c.rows[0][0] == "OK"))
+
+    c = Cap()
+    cg20_load_map_states_no_measurement(c, body="| 11 contracts | 32 modules |")
+    cases.append(("CG-20 stale corpus count detected",
+                  c.rows[0][0] == "FAIL" and len(c.rows[0][4]) == 2))
 
     c = Cap()
     cg18_fixture_freshness(c, fixtures=[("f.md",
@@ -2749,6 +3838,131 @@ def selftest():
     cases.append(("CG-24 fixture naming an unreported check detected",
                   any("did not report" in d for d in c.rows[0][4])))
 
+    # RD-17 finding 3, mutation M9: three string literals in this file broke
+    # the two-space `res.add` convention CG-24's lookahead rested on, and
+    # were counted as fixtures — CG-24 over-credited itself `16 of 24` where
+    # the truth was `14 of 24`. The region anchor is what closes it: a check
+    # name outside `selftest()` is not a fixture however it is spaced.
+    MODULE = (
+        'def cg11_ignored(res):\n'
+        '    res.add("WARN", "CG-11 ignore rules", 0, 0)\n'
+        '\n'
+        'def selftest():\n'
+        '    cases.append(("CG-13 dangling edge detected", True))\n'
+        '\n'
+        '# ------------------------------------------------------- main\n'
+        'def main():\n'
+        '    res.add("WARN", "CG-12b allowlist", 0, 0)\n')
+    c = Cap()
+    cg24_selftest_coverage(c, source=MODULE,
+                           reported=["CG-11  ignore", "CG-12  bootstrap",
+                                     "CG-13  deps"])
+    cases.append(("CG-24 check name outside selftest() is not a fixture",
+                  any("CG-11" in d and "CG-12" in d
+                      for d in c.rows[0][4])))
+
+    # And the same name *inside* the region, in `res.add` position rather
+    # than tuple-head position. This is the shape CG-24's own fixture above
+    # smuggled in on the first run after the region anchor landed.
+    c = Cap()
+    cg24_selftest_coverage(
+        c,
+        source=('def selftest():\n'
+                '    res.add("WARN", "CG-11 ignore rules", 0, 0)\n'
+                '    cases.append(("CG-13 x detected", True))\n'),
+        reported=["CG-11  ignore", "CG-13  deps"])
+    cases.append(("CG-24 res.add name inside selftest() is not a fixture",
+                  any("CG-11" in d for d in c.rows[0][4])))
+
+    c = Cap()
+    cg24_selftest_coverage(c, source=MODULE, reported=["CG-13  deps"])
+    cases.append(("CG-24 fixture inside selftest() is credited",
+                  not any("no `--selftest` fixture" in d
+                          for d in c.rows[0][4])))
+
+    c = Cap()
+    cg24_selftest_coverage(c, source='def selftest_renamed():\n    pass\n',
+                           reported=["CG-13  deps"])
+    cases.append(("CG-24 unparsable selftest region is not silent coverage",
+                  any("Unknown, not empty" in d for d in c.rows[0][4])
+                  or any("no `--selftest` fixture" in d
+                         for d in c.rows[0][4])))
+
+    # ---- CG-25. A check that ships without naming its authoritative rule
+    # fails the run that introduces it (review RD-17 finding 11).
+    c = Cap()
+    cg25_check_owners(c, reported=["CG-99  invented"],
+                      owners={"CG-13": "mechanical"})
+    cases.append(("CG-25 unattributed check family detected",
+                  c.rows[0][0] == "FAIL"))
+
+    c = Cap()
+    cg25_check_owners(c, reported=["CG-13  deps"],
+                      owners={"CG-13": "mechanical", "CG-77": "gone"})
+    cases.append(("CG-25 owner entry for an unreported check reported",
+                  c.rows[0][0] == "OK"
+                  and any("did not report" in d for d in c.rows[0][4])))
+
+    # ---- CG-18. Review RD-17 finding 10: dropping a fixture's `Measured:`
+    # anchor took the denominator from 20 to 19 with no finding and a green
+    # `OK`. The anchor's absence is now the finding, and the denominator is
+    # computed from the population.
+    c = Cap()
+    cg18_fixture_freshness(c, fixtures=[("f.md",
+        "```\nscripts/context_load.py 06-CONTEXT-LOAD-MAP.md\n```\n"
+        "no measured anchor here\n"
+        "## Packet digest\n`0000000000000000` (recompute")])
+    cases.append(("CG-18 missing `Measured:` anchor is a finding, not a skip",
+                  c.rows[0][0] == "FAIL" and c.rows[0][2] == 2
+                  and any("no `Measured:" in d for d in c.rows[0][4])))
+
+    # ---- CG-23. Review RD-16 finding 5 measured both blind spots against
+    # the live default path: `its **Project\nGenome**` and `warranted`.
+    WREG = ("**Core — the one.**\n\n| Term | ID | Q |\n|---|---|---|\n"
+            "| Capability | T-04 | x |\n\n"
+            "#### T-04 · Capability\n#### T-03 · Project Genome\n"
+            "#### T-17 · Warrant\n")
+    c = Cap()
+    cg23_default_path_vocabulary(
+        c, registry=WREG,
+        default_path=[("f.md", "its **Project\nGenome** holds the record")])
+    cases.append(("CG-23 line-wrapped multi-word term detected",
+                  any("T-03" in d for d in c.rows[0][4])))
+
+    c = Cap()
+    cg23_default_path_vocabulary(
+        c, registry=WREG,
+        default_path=[("f.md", "Diff -->|warranted work| Fleet")])
+    cases.append(("CG-23 inflected term detected",
+                  any("T-17" in d for d in c.rows[0][4])))
+
+    c = Cap()
+    cg23_default_path_vocabulary(
+        c, registry=WREG, default_path=[("f.md", "a warranty is not a term")])
+    cases.append(("CG-23 unlisted inflection is not a hit",
+                  not any("T-17" in d for d in c.rows[0][4])))
+
+    # The third blind spot, pinned as a **known limit** rather than repaired:
+    # a term defined in place still reports. Recorded so a future silent
+    # change to the behaviour shows up here instead of in a census nobody
+    # re-derives. See `vocab_pattern`'s docstring for why it is not exempted.
+    c = Cap()
+    cg23_default_path_vocabulary(
+        c, registry=WREG,
+        default_path=[("f.md", "a Warrant — that is, an approved intent — "
+                               "governs the work")])
+    cases.append(("CG-23 defined-in-place use is still reported (known limit)",
+                  any("T-17" in d for d in c.rows[0][4])))
+
+    # ---- CG-1g. The launch-gate D2/F4 class: a route into `rfcs/**` from
+    # active material is a broken pointer, and one from a frozen lane is the
+    # record. Both directions, in a temp tree.
+    cases.append(("CG-1g dead active-lane route into rfcs/ detected",
+                  _selftest_dead_route(active=True)))
+    cases.append(("CG-1g dead route inside a frozen lane is classified, "
+                  "not failed",
+                  _selftest_dead_route(active=False)))
+
     # CG-7e — the first fixture the CG-7 family has ever had. Review RD-6
     # mutation-proved that falsifying every act argument in the owner-facing
     # offering left the battery green; these two reproduce that mutation and
@@ -2810,6 +4024,119 @@ def selftest():
     return 1 if bad else 0
 
 
+def _selftest_dead_route(active):
+    """CG-1g against a temp tree: the same dead route, two lanes.
+
+    `active=True` writes it into a package artifact a reader is routed to;
+    `active=False` writes it into `round-2026-08d/reviews/`, where raw
+    reviewer output is stored verbatim and never edited. The first must fail,
+    the second must be classified — the distinction the launch-gate
+    administration (D2/F4) found the battery could not draw.
+    """
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, status, name, examined, n, unit, note=None, details=None):
+            self.rows.append((status, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows if r[1].startswith(prefix)), None)
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp(prefix="cg1g-selftest-")
+    global ROOT
+    keep = ROOT
+    try:
+        rel = (f"{CANDIDATES}/TASK-INDEX.md" if active
+               else f"{CANDIDATES}/round-2026-08d/reviews/RD-X-RAW.md")
+        full = os.path.join(d, rel)
+        os.makedirs(os.path.dirname(full))
+        with open(full, "w", encoding="utf-8") as fh:
+            fh.write("route: `rfcs/RFC-0010-mission-control-autonomy.md`\n")
+        ROOT = d
+        c = Cap()
+        cg1_links([rel], c)
+        row = c.row("CG-1g")
+        return bool(row) and (row[0] == "FAIL") == bool(active)
+    finally:
+        ROOT = keep
+        shutil.rmtree(d, ignore_errors=True)
+
+
+def _selftest_wave_partition(kind):
+    """CG-7a/CG-7b against a synthetic six-wave package in a temp tree.
+
+    Review RD-17 finding 3: CG-7 was credited as covered on CG-7e's two
+    fixtures while CG-7a-7d — the four checks guarding every owner act
+    argument — had none, so the partition predicates were proved only by a
+    reviewer's mutation in a scratch clone and never by the battery itself.
+
+    `kind` is the mutation: `overlap` puts one module in two waves, `gap`
+    leaves one in the active manifest and no wave, `stale-arg` gives the
+    acceptance record a digest the wave manifest does not hash to.
+    """
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, status, name, examined, n, unit, note=None, details=None):
+            self.rows.append((status, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows if r[1].startswith(prefix)),
+                        None)
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp(prefix="cg7-selftest-")
+    global ROOT
+    keep = ROOT
+    try:
+        cand = os.path.join(d, CANDIDATES)
+        os.makedirs(os.path.join(cand, "rfcs"))
+        os.makedirs(os.path.join(cand, "wave-manifests"))
+        mods, paths = {}, []
+        for i, w in enumerate(WAVE_IDS, 1):
+            rel = f"rfcs/mod-{i}.md"
+            full = os.path.join(cand, rel)
+            with open(full, "w", encoding="utf-8") as fh:
+                fh.write(f"module {i}\n")
+            mods[w] = (rel, sha256_file(full))
+            paths.append(f"{CANDIDATES}/{rel}")
+        active = [mods[w] for w in WAVE_IDS]
+        if kind == "gap":
+            active.append(("rfcs/orphan.md", "0" * 64))
+            with open(os.path.join(cand, "rfcs/orphan.md"), "w") as fh:
+                fh.write("orphan\n")
+            active[-1] = ("rfcs/orphan.md",
+                          sha256_file(os.path.join(cand, "rfcs/orphan.md")))
+        with open(os.path.join(cand, "ACTIVE-CONTRACT-MANIFEST.txt"), "w") as fh:
+            fh.write("".join(f"{s}  {r}\n" for r, s in sorted(active)))
+        paths.append(MANIFEST)
+        for w in WAVE_IDS:
+            rows = [mods[w]]
+            if kind == "overlap" and w == "B":
+                rows.append(mods["A"])
+            p = os.path.join(cand, f"wave-manifests/WAVE-{w}-MANIFEST.txt")
+            with open(p, "w", encoding="utf-8") as fh:
+                fh.write("".join(f"{s}  {r}\n" for r, s in rows))
+            paths.append(WAVE_MANIFESTS[w])
+        ROOT = d
+        if kind == "stale-arg":
+            lines = []
+            for w in WAVE_IDS:
+                lines.append(f"| {w} | `ACCEPT FOUNDATIONAL WAVE {w}: "
+                             f"{'0' * 64}` | one module |")
+            with open(os.path.join(cand, os.path.basename(ACCEPTANCE_RECORD)),
+                      "w", encoding="utf-8") as fh:
+                fh.write("\n".join(lines) + "\n")
+            paths.append(ACCEPTANCE_RECORD)
+        c = Cap()
+        cg7_manifest(paths, c)
+        want = "CG-7b" if kind == "stale-arg" else "CG-7a"
+        row = c.row(want)
+        return bool(row) and row[0] == "FAIL"
+    finally:
+        ROOT = keep
+        shutil.rmtree(d, ignore_errors=True)
+
+
 def _selftest_dangling():
     class Cap:
         def __init__(self): self.rows = []
@@ -2832,8 +4159,23 @@ def _selftest_dangling():
             ROOT = keep
 
 
+#: **The population, widened 2026-08-10 (review RD-17 finding 4).** The rule
+#: was written for the load map and enforced only there, so the same stale
+#: `32 modules` figure sat unreported in the package README's reproduction
+#: instruction and in the task index — both active-lane routers, both files
+#: `AGENTS.md` sends a reader to. A rule applied to one of three artifacts
+#: that share its failure mode is a rule with a two-thirds hole.
+#: Enumerated, never globbed: a glob over `candidates/*.md` would swallow the
+#: generated budget report, whose whole job is to state measurements.
+ROUTING_ARTIFACTS = (
+    LOAD_MAP,
+    f"{CANDIDATES}/README.md",
+    f"{CANDIDATES}/TASK-TO-CONTRACT-INDEX.md",
+)
+
+
 def cg20_load_map_states_no_measurement(res, body=None, modules=None):
-    """The context-load map states no measurement of the corpus it routes.
+    """The routing artifacts state no measurement of the corpus they route.
 
     **Inverted on 2026-08-06, for the reason CG-21 was.** This check used to
     verify that the map's eleven per-contract word rows still recomputed, and
@@ -2852,26 +4194,35 @@ def cg20_load_map_states_no_measurement(res, body=None, modules=None):
     Denominator is lines examined, not figures found: a figure count reaches
     zero exactly when the rule is honoured, and `0 examined` verifies nothing.
     """
-    text = body if body is not None else read(LOAD_MAP)
-    if not text:
-        res.add("WARN", "CG-20  load-map states no measurement", 0, 0, "line",
-                note=f"{LOAD_MAP} unreadable")
+    if body is not None:
+        subjects = [(LOAD_MAP, body)]
+    else:
+        subjects = [(rel, read(rel)) for rel in ROUTING_ARTIFACTS
+                    if os.path.exists(os.path.join(ROOT, rel))]
+    if not any(t for _rel, t in subjects):
+        res.add("WARN", "CG-20  routing artifacts state no measurement", 0, 0,
+                "line", note=f"{LOAD_MAP} unreadable")
         return
     findings, examined = [], 0
-    for line_no, line in enumerate(text.splitlines(), 1):
-        examined += 1
-        if MEASUREMENT_POINTER in line:
-            continue
-        for m in CONTRACT_MEASUREMENT.finditer(line):
-            findings.append(
-                f"{LOAD_MAP}:{line_no} — states the measurement "
-                f"`{m.group(0)}`. The map routes; it does not measure. Its "
-                f"figures went stale eleven rows out of eleven, and their "
-                f"home is the generated {MEASUREMENT_POINTER}")
+    for rel, text in subjects:
+        for line_no, line in enumerate(text.splitlines(), 1):
+            examined += 1
+            if MEASUREMENT_POINTER in line:
+                continue
+            for m in CONTRACT_MEASUREMENT.finditer(line):
+                findings.append(
+                    f"{rel}:{line_no} — states the measurement "
+                    f"`{m.group(0)}`. A routing artifact routes; it does not "
+                    f"measure. The load map's own figures went stale eleven "
+                    f"rows out of eleven, which is why the rule exists; the "
+                    f"home for every figure is the generated "
+                    f"{MEASUREMENT_POINTER}")
     res.add("FAIL" if findings else ("OK" if examined else "WARN"),
-            "CG-20  load-map states no measurement", examined, len(findings),
-            "line",
-            note=None if examined else "load map is empty",
+            "CG-20  routing artifacts state no measurement", examined,
+            len(findings), "line",
+            note=(f"{len(subjects)} artifact(s): "
+                  + ", ".join(os.path.basename(r) for r, _ in subjects)
+                  if examined else "load map is empty"),
             details=findings)
 
 
@@ -2909,9 +4260,21 @@ FIGURE_WINDOW = 2
 #: A measurement claim inside contract prose. Comma-formatted figures in the
 #: derived-value range, and the vocabulary that introduces one. Clause
 #: identities (`RFC9-52`), years, and section numbers do not match.
+#:
+#: **Corpus counts widened 2026-08-10 (review RD-17 finding 4).** The regex
+#: matched comma-formatted figures and word/token vocabulary only, so a count
+#: of *modules*, *contracts* or *clauses* — the corpus measurements most
+#: likely to move under a wave restructure — was invisible to it. CG-20 was
+#: *named* for the rule and reported `73 lines examined, 0 findings` while
+#: the load map it checks stated `11 contracts → 32 modules` against a real
+#: population of 39. Measured before widening: zero new findings across the
+#: 39 contract modules, five across the three routing artifacts — so the
+#: widening reports the defect it was written for and nothing else.
+#: `MEASUREMENT_POINTER` remains the escape hatch.
 CONTRACT_MEASUREMENT = re.compile(
     r"\b\d{1,2},\d{3}\b"
     r"|(?<![\w-])\d{3,}\s*(?:words?|tokens?)\b"
+    r"|\b\d{1,3}\s+(?:modules?|contracts?|clauses?|fixtures?|checks?)\b"
     r"|`wc -w`"
     r"|\bword count(?:s)?\b",
     re.I)
@@ -3132,6 +4495,57 @@ TERM_HEADING = re.compile(r"^#### (T-\d+) · (.+?)(?:\s*\(also called.*)?$", re.
 def _core_term_ids(reg):
     m = CORE_SECTION.search(reg)
     return tuple(CORE_TABLE_ROW.findall(m.group(1))) if m else ()
+
+
+#: Inflectional endings a term picks up in running prose. **Not stemming** —
+#: an enumerated suffix set, so widening it is a deliberate edit rather than
+#: an algorithm quietly changing what counts as a leak.
+VOCAB_INFLECTIONS = ("s", "es", "ed", "d", "ing")
+
+
+def vocab_pattern(name):
+    r"""A term as it actually appears on the default path.
+
+    Two blind spots, both measured by review RD-16 finding 5 against the live
+    corpus and both invisible to `\b<escaped name>\b`:
+
+    * **line wrap.** `OVERVIEW.md` reads ``its **Project\nGenome**``, so
+      `\bProject Genome\b` was `False` and T-03 went unreported while the
+      term registry's §5 census presented "both current hits" as a census of
+      what exists. Multi-word terms now join on `\s+`, the same tolerance
+      CG-12 and CG-22 already apply to their own markers.
+    * **inflection.** `Diff -->|warranted work| Fleet` is `Warrant` (T-17)
+      inflected, and `an explicitly approved **Mission** envelope` is T-28's
+      bare alias. A word-boundary match on the registry's own citation form
+      sees neither.
+
+    The final word takes an optional inflectional suffix; earlier words do
+    not, because an inflected head inside a compound is a different term, not
+    this one. The cost of matching loosely is handled the way this battery
+    handles every widening — `VOCAB_ORDINARY_USE`, enumerated and printed —
+    and CG-23 is report-only, so a false positive costs a printed line, never
+    a failed run.
+
+    **Known limit, third blind spot (RD-16 finding 5, recorded not repaired).**
+    A term *defined in place* — "a **Warrant** — that is, an approved intent
+    — …" — still reads as a leak here, because the matcher sees the token and
+    not the gloss beside it. This is deliberate. The finding CG-23 exists to
+    report is that the registry's own census *understated* the leak count, and
+    widening the exemptions on a check whose defect was under-reporting is the
+    wrong direction: a definition-marker vocabulary would be guessed, and a
+    guessed exemption is how a real leak stops being printed. A reader
+    disposing of one of these has the same tool everyone else does —
+    `VOCAB_ORDINARY_USE`, one enumerated entry, printed every run. The limit
+    is pinned by the fixture `CG-23 defined-in-place use is still reported
+    (known limit)`, so a future silent change to it is visible.
+    """
+    words = name.split()
+    if not words:
+        return re.compile(r"(?!)")
+    body = r"\s+".join(re.escape(w) for w in words[:-1])
+    tail = re.escape(words[-1]) + "(?:" + "|".join(VOCAB_INFLECTIONS) + ")?"
+    joined = (body + r"\s+" + tail) if body else tail
+    return re.compile(r"\b" + joined + r"\b", re.I)
 #: The default path ends where progressive disclosure begins. Everything
 #: inside a drawer is deliberate drill-down and is out of scope by design.
 DRAWER = "<details>"
@@ -3187,7 +4601,7 @@ def cg23_default_path_vocabulary(res, registry=None, default_path=None):
     for rel, body in default_path:
         for tid, name in sorted(advanced.items()):
             examined += 1
-            pat = re.compile(r"\b" + re.escape(name) + r"\b", re.I)
+            pat = vocab_pattern(name)
             hits = len(pat.findall(body))
             if not hits:
                 continue
@@ -3229,11 +4643,49 @@ def cg23_default_path_vocabulary(res, registry=None, default_path=None):
 #: this check counts is the numeric stem. Admitting the suffix is what let the
 #: first CG-7 fixture ever written be credited to CG-7; without it the fixture
 #: existed and the coverage figure still reported the family uncovered.
-CASE_NAME = re.compile(r'"(?:F\d+[a-z]?\s+)?(CG-\d+)[a-z]? (?! )')
+#: **Anchored to `selftest()`'s own body, not to a quoting convention.**
+#: The single-space lookahead below was doing the work of separating a fixture
+#: name from a check name, and three string literals in this file broke the
+#: two-space convention it rested on: `res.add("WARN", "CG-11 ignore rules"`,
+#: `res.add("WARN", "CG-12b …")`, and a sentence about CG-11 inside a
+#: `print`. All three were counted as fixtures, and CG-24 over-credited
+#: itself by two families — `16 of 24` where the truth was `14 of 24` (review
+#: RD-17 finding 3, mutation M9). CG-24's own fixture for exactly this
+#: (*"a check's own name is not a fixture for it"*) passed, because its
+#: synthetic input used the convention the real corpus did not.
+#:
+#: The anchor is now three conditions, and the third was earned the same day:
+#: a fixture name must live inside the `selftest()` region, must open a tuple
+#: or list element (`cases.append(("CG-…`, `("F1a CG-19 …`, `(f"CG-20 …`),
+#: and must keep the single-space form. The tuple anchor exists because
+#: CG-24's *own* new fixture feeds a synthetic module containing
+#: `res.add("WARN", "CG-11 ignore rules", …)` — inside `selftest()`, and
+#: therefore credited under the region rule alone. The check reproduced its
+#: own defect on the first run after the repair, which is what fixtures are
+#: for.
+CASE_NAME = re.compile(r'[(\[]\s*f?"(?:F\d+[a-z]?\s+)?(CG-\d+)[a-z]? (?! )')
 CHECK_ID = re.compile(r"^(CG-\d+)")
+SELFTEST_REGION = re.compile(
+    r"^def (selftest|_selftest_[a-z_]+)\(.*?(?=\n(?:def |# -{5,}))",
+    re.M | re.S)
+
+
+def _selftest_source(text):
+    """Just the fixture-defining regions of this file.
+
+    Returns (source, region_count) so a refactor that renames or moves
+    `selftest()` shows up as `0 regions` rather than as `every family
+    uncovered`, which would read as a catastrophe and be a parser bug.
+    """
+    regions = SELFTEST_REGION.findall(text)
+    if not regions:
+        return "", 0
+    spans = [m.group(0) for m in SELFTEST_REGION.finditer(text)]
+    return "\n".join(spans), len(spans)
 
 
 def cg24_selftest_coverage(res, source=None, reported=None):
+    regions = None
     if source is not None:
         src = source
     else:
@@ -3241,12 +4693,17 @@ def cg24_selftest_coverage(res, source=None, reported=None):
         # identifiers; reading them back out of this file would report them as
         # real. Drop the lines that construct them.
         src = "\n".join(ln for ln in read(SELF_REL).splitlines()
-                         if "cg24_selftest_coverage(" not in ln)
+                        if "cg24_selftest_coverage(" not in ln)
+    # A whole module is narrowed to its fixture regions; a bare snippet is
+    # taken as given, which is what the older fixtures hand in.
+    if "def selftest(" in src:
+        src, regions = _selftest_source(src)
     covered = set(CASE_NAME.findall(src))
     if reported is None:
-        # CG-24 runs last and has not added its own row yet; include it, or it
-        # reports itself as a check the battery never ran.
-        reported = [s[1] for s in res.summaries] + ["CG-24  self"]
+        # CG-24 and CG-25 have not added their own rows yet; include both, or
+        # each reports the other as a check the battery never ran.
+        reported = [s[1] for s in res.summaries] + ["CG-24  self",
+                                                    "CG-25  self"]
     families, seen = [], set()
     for name in reported:
         m = CHECK_ID.match(name.strip())
@@ -3260,6 +4717,10 @@ def cg24_selftest_coverage(res, source=None, reported=None):
     uncovered = [f for f in families if f not in covered]
     orphan = sorted(covered - set(families))
     details = []
+    if regions == 0:
+        details.append("no `selftest()` region parsed out of this file — the "
+                       "fixture population is Unknown, not empty; the "
+                       "coverage figure below is not evidence")
     if uncovered:
         details.append(f"no `--selftest` fixture: {', '.join(uncovered)}")
     if orphan:
@@ -3270,6 +4731,58 @@ def cg24_selftest_coverage(res, source=None, reported=None):
             note=(f"{len(families) - len(uncovered)} of {len(families)} check "
                   f"families have at least one fixture — quote this figure, "
                   f"never 'every check'" if families else "nothing examined"),
+            details=details)
+
+
+def cg25_check_owners(res, reported=None, owners=None):
+    """Every check the battery reports names the rule it enforces.
+
+    Review RD-17 finding 11: a sweep of the whole corpus for `CG-\\d+`
+    citations found 692 of them across 70 files and **not one** inside
+    doctrine, craft-and-care, or any contract module. Three FAIL-severity
+    checks were enforcing normative editorial rules whose only written
+    statement was a Python docstring, and nothing in the battery's output
+    distinguished them from a check enforcing adopted doctrine.
+
+    This check makes the attribution structural rather than remembered: a new
+    check with no `CHECK_OWNERS` entry fails the run that introduces it, and
+    an entry naming a check the battery no longer reports is reported too, so
+    the table cannot quietly outlive its subject.
+
+    `Results.report()` prints the owner beside every FAIL. `PYTHON_ONLY_RULES`
+    downgrades the two checks whose rule is stated nowhere else, with the
+    reason printed — advisory, never silent.
+    """
+    owners = CHECK_OWNERS if owners is None else owners
+    if reported is None:
+        reported = [s[1] for s in res.summaries] + ["CG-25  self"]
+    families, seen = [], set()
+    for name in reported:
+        fam = check_family(name)
+        if fam and fam not in seen:
+            seen.add(fam)
+            families.append(fam)
+    missing = [f for f in families if f not in owners]
+    orphan = sorted(set(owners) - set(families))
+    findings = [f"{f} — reported by the battery and absent from "
+                f"CHECK_OWNERS; a FAIL nobody can attribute to a rule is a "
+                f"FAIL nobody can act on" for f in missing]
+    details = list(findings)
+    if orphan:
+        details.append(f"CHECK_OWNERS names a check the battery did not "
+                       f"report: {', '.join(orphan)}")
+    downgraded = getattr(res, "downgraded", [])
+    for fam in sorted(set(owners) & set(families)):
+        if fam in PYTHON_ONLY_RULES:
+            details.append(f"[downgraded] {fam} — {PYTHON_ONLY_RULES[fam]}")
+    res.add("FAIL" if findings else ("OK" if families else "WARN"),
+            "CG-25  every check names its authoritative rule", len(families),
+            len(findings), "check family",
+            note=(f"{len(families) - len(missing)} of {len(families)} "
+                  f"attributed; {len(PYTHON_ONLY_RULES)} downgraded to WARN "
+                  f"for lack of a written owner"
+                  f"{f'; {len(downgraded)} fired this run' if downgraded else ''}"
+                  if families else "nothing examined"),
             details=details)
 
 
@@ -3312,6 +4825,7 @@ def main():
     res = Results()
     cg1_links(existing, res)
     cg2_retired_tokens(existing, res)
+    cg2e_wrapped_current_arguments(existing, res)
     cg3_stale_routing(existing, res)
     cg4_candidate_banners(existing, res)
     cg5_craft_banners(existing, res)
@@ -3323,7 +4837,7 @@ def main():
     if source == "git":
         cg11_ignored(res)
     else:
-        res.add("WARN", "CG-11 ignore rules", 0, 0, unit="rule",
+        res.add("WARN", "CG-11  ignore rules", 0, 0, unit="rule",
                 note="git unavailable — ignore status is Unknown, "
                      "not clean; re-run inside a git checkout")
     cg12_bootstrap_sources(existing, res)
@@ -3339,6 +4853,7 @@ def main():
     cg22_ambiguous_status(existing, res)
     cg23_default_path_vocabulary(res)
     cg24_selftest_coverage(res)
+    cg25_check_owners(res)
     res.report()
     return 1 if res.failed() else 0
 

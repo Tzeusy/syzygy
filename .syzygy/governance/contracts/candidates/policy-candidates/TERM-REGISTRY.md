@@ -79,33 +79,83 @@ authorities disagree           (contradiction)
 check work against intent      (reconciliation)
 ```
 
-**The bound is testable, it is tested every run, and it currently fails.** A
-sweep of the default path (`README.md` plus `OVERVIEW.md`'s pre-drawer
-content) must use no term outside the core set without defining it in place.
-`check_governance.py` **CG-23** performs that sweep and prints its findings on
-every run — report-only, because the core set is candidate and a candidate
-bound is reported, never enforced. Read its output rather than this sentence;
-what it finds moves.
+**The bound is partly testable, the testable part is tested every run, and it
+currently fails.** A sweep of the default path (`README.md` plus
+`OVERVIEW.md`'s pre-drawer content) must use no term outside the core set
+without defining it in place. `check_governance.py` **CG-23** performs one
+sweep of that bound and prints its findings on every run — report-only,
+because the core set is candidate and a candidate bound is reported, never
+enforced. Read its output rather than this sentence; what it finds moves.
 
-Two classes of leak are known and neither is exempted:
+**What CG-23 does not see, stated in the same breath as what it does**
+(recorded 2026-08-10, review RD-16 finding 5; the earlier wording called the
+bound "tested every run" without qualification, which read as a census of what
+exists rather than a census of what one regex sees):
 
-- **Advanced terms used on the default path**, which CG-23 names. Both current
-  hits sit inside act 4's digest subject, so neither was edited — correcting
-  an artifact whose digest an unperformed act binds is a worse defect than the
-  one being corrected.
-- **Terms used on the default path with no entry here at all** — *kernel*,
-  *surface*, *workspace*, *actuator*. `actuator` has no owning authority
-  anywhere; `workspace` has **zero occurrences in the adopted doctrine tree**.
-  These are **findings, not exemptions**: either the term earns an entry and an
-  owning authority, or the default path stops using it. §10.2 of the closure
-  charter proposes the plain-language replacement for each, and the proposal
-  is routed to the owner rather than applied here.
+- **Core terms are exempt by construction.** CG-23 examines only the advanced
+  set, so a *core* term used loosely on the default path — the defect this
+  section ranks as the **worse** one — is structurally invisible to it. That
+  is the class that produced review RD-16's blocking finding 2
+  (`Reconciliation` used in the sense T-26 reserves against).
+- **Its matcher misses inflected and line-wrapped forms.** It matches
+  `\b<name>\b` case-insensitively, so *warranted* does not match `Warrant`
+  (T-17), and a multi-word term broken across a line — `Project\nGenome` —
+  does not match `Project Genome` (T-03). At the review's baseline commit
+  three advanced terms were present on the default path and unreported for
+  exactly this reason. **Widening the matcher belongs to the checker, not
+  here** — it is routed as a scripts-batch repair (disposition register, batch
+  `R-SCR`) and this paragraph is the disclosure that stands until it lands.
+- **Terms with no entry at all are invisible to it**, because it can only look
+  for names it reads out of this file.
 
-For the substitutions this registry recommends on the default path — *shared
-project model* for *kernel*, *view* for *surface*, *portfolio workspace*
-defined inline for *workspace*, *agent workers* for *actuator* — see
-`../round-2026-08c/PUBLIC-VOCABULARY-COMPREHENSION-REPORT.md`. None is applied
-to an artifact inside an unperformed act's digest subject.
+That third class is the larger one. **The recorded enumeration is fifteen
+default-path terms with no entry and no in-place definition**, listed in
+`../round-2026-08c/PUBLIC-VOCABULARY-COMPREHENSION-REPORT.md` ("The bound is
+not a bound yet"). This registry deliberately **points at that enumeration and
+does not copy it**: a shorter list restated here reads as a repair that did
+not happen, and a copied list goes stale silently the moment either
+default-path artifact is edited — which both now have been. These are
+**findings, not exemptions**: either the term earns an entry and an owning
+authority, or the default path stops using it.
+
+**Recommended substitutions, and what has now been applied.** The
+substitutions this registry recommends on the default path — *shared project
+model* for *kernel*, *view* for *surface*, *portfolio workspace* defined
+inline for *workspace*, *agent workers* or *work-execution tools* for
+*actuator*, *approval* or *authority* for *warrant*, and a plain rendering of
+*evaluation engine* — are stated with their rationale in the same 08c report.
+As of **2026-08-10** they are **applied to `intent/OVERVIEW.md`**, together
+with the RD-16 repairs to that file — **with one deliberate exception, stated
+because a blanket "applied" would be false**: *surface* was **kept** there.
+Every remaining use is the literal product distinction the substitution
+exempts (the three surfaces' proper names and their table, the two-consumers
+sentence, and RFC10-1's negation), plus one ordinary-English verb. This is
+lawful and is recorded rather
+than assumed: **act 4 has not been performed**, its argument is a digest the
+acceptance record re-quotes from the file, and repairing a pending offering
+before the act is the cheapest moment the repair will ever be available. The
+earlier statement here — that both CG-23 hits sat inside act 4's digest
+subject "so neither was edited" — described the position before that pass and
+is superseded. `README.md` is bound by no act; its half of these findings is
+tracked separately.
+
+**`actuator` is the one of these with a home elsewhere.** It has no entry here
+and gains none: adopted doctrine is where the word is actually used
+(`vision.md`'s Thesis and two more sites, `v1.md` once), and doctrine's own
+glossary is where a definition belongs. That definition is drafted for the
+owner at `DOCTRINE-AMENDMENT-ACTUATOR-DEFINITION.md` (**P-25(c)**) — a
+proposal, adopting nothing; **doctrine edits are owner-only, VIS-4**. On the
+default path the registry's other arm applies and is done: the word is gone
+from `intent/OVERVIEW.md`.
+
+**One routing gap this registry cannot close from inside itself** (review
+RD-16 finding 4). `README.md` routes an unfamiliar reader to the doctrine
+glossary as "the only one in this repository". That glossary has seven bullets
+and resolves **one** of the eleven core terms above (`Project`, under the head
+word *Governed project*); the other ten are defined here, and `README.md`
+links to this file nowhere. So the page that promises the answer cannot reach
+the artifact that holds it. The registry-side statement is this paragraph; the
+repair to the promise itself is a `README.md` edit and is not made here.
 
 **Two things this tiering does not do.** It does not rank terms by importance
 — `rendering tier` is more load-bearing to a kernel implementer than `Gap`.
@@ -153,7 +203,7 @@ all of them.
 |---|---|---|---|
 | **State plane** | *What kind of assertion is this record making?* | desired · proposed · observed · inferred · execution · historical | RFC1-22 (candidate) |
 | **Claim epistemic label** | *How is this claim grounded?* | Observed · Inferred · Unknown | `trust-and-evidence.md`, "Status claims vs narrative claims" (**adopted**) |
-| **Evidence tier** | *How strongly does the evidence support the claim?* | `gate-backed` · `report-fact` · `reduced-fidelity` · `asserted-by-worker` · `declared-only` · `suspended` | RFC2-25 (candidate) |
+| **Rendering tier** | *How strongly does the evidence support the claim?* | `gate-backed` · `report-fact` · `reduced-fidelity` · `asserted-by-worker` · `declared-only` · `suspended` | RFC2-25 (candidate) |
 | **Work lifecycle** | *Where is this piece of work?* | `future` · `planned` · `ready` · `active` · `blocked` · `review` · `merged` · `reconciled` · `closed-unmerged` · four absence values — thirteen, closed. Carried **beside** the separate chain state (`merged`, `reconciliation-pending`, `reconciled@E`, `unsatisfied`, `contradiction-raised`, `Unknown(reason)`) | RFC8-12, RFC8-28 (candidate) |
 | **Governance lifecycle** | *What has been done to this artifact, by whom?* | Normative artifacts: draft → adopted/accepted → amended → retired. Decisions and consents: active → superseded/revoked/expired. Kernel records: immutable recorded fact. Presentation artifacts: draft → adopted/published → superseded | RFC3-16 (candidate); adoption authority is VIS-4 (**adopted**) |
 
@@ -161,7 +211,7 @@ all of them.
 
 > **Never use a generic word such as "status", "state", or "stage" where the
 > dimension matters.** Name the dimension: *state plane*, *epistemic label*,
-> *evidence tier*, *work lifecycle state*, *governance lifecycle state*. A
+> *rendering tier*, *work lifecycle state*, *governance lifecycle state*. A
 > field, column, count, badge, filter, or API key named only `status` is a
 > defect wherever more than one of these five could be meant.
 
@@ -190,6 +240,22 @@ in the corpus this registry was built from:
   **[Unknown]** — how many bare uses exist.
 - **A tier is not a fourth label** (RFC2-25, candidate). The three-label rule
   is exclusive and exhaustive; a tier only ever *restricts* its parent label.
+
+**A sixth question the five do not answer** (recorded 2026-08-10, review RD-16
+finding 10). Two `Status` columns on default-path artifacts mix domains under
+one heading: `README.md`'s authority table carries governance-lifecycle values
+in its first rows and **existence facts** (*does not exist yet*, *nothing
+exists yet*) in its last two; `PROJECT-STATUS.md`'s gate table mixes
+governance lifecycle with `not started — blocked on the wave acts`, and
+`blocked` is a value of the **work lifecycle**. The rule above catches both.
+Sharper, and the reason this is recorded rather than repaired here: the domain
+those two tables actually need — *does this artifact exist yet / has this gate
+fired* — **is none of the five**. So the closure is a closure over five
+questions, not over every question the corpus asks with the word "status".
+This registry does not mint a sixth dimension to fix it: admitting one is a
+§3 act with five conditions to satisfy, and the two columns can be renamed
+(`Authority state`, `Gate state`) without it. Neither file is edited from
+here; both are outside this artifact.
 
 ---
 
@@ -283,8 +349,14 @@ more repositories, exactly one of which holds the governance files.
 
 **Formal definition.** One or more repositories with exactly one designated
 **governance root** — the repository holding the Project's single `openspec/**`
-and `.syzygy/**` plane — and one owner. Additional repositories are declared
-observed-source repositories, read-only to Syzygy unless separately onboarded.
+and `.syzygy/**` plane — and one owner, explicitly brought under Syzygy
+observation. Additional repositories are declared observed-source repositories,
+read-only to Syzygy unless separately onboarded, and **every observed
+repository requires consent** (`architecture.md`; security.md **SEC-4**). The
+consent condition was dropped by an earlier restatement here and is restored
+(2026-08-10, review RD-16 finding 13): a SEC-4-bearing condition is a poor
+thing to lose in a paraphrase, even one the banner's "owning authorities always
+win" would have covered.
 
 **Owning authority.** `architecture.md`, "Definitions" (**adopted**);
 RFC1-1 (candidate) makes "exactly one governance root" a kernel invariant and
@@ -297,8 +369,29 @@ rules that zero or two roots is a Contradiction, never silently repaired.
 set of projects and is a distinct, portfolio-level concept (RFC10-15,
 candidate).
 
+> **`workspace` is deprecated as a synonym, undefined as a term, and
+> load-bearing anyway** (recorded 2026-08-10, review RD-16 finding 9). It
+> carries at least three referents in the corpus, each quoted from its site:
+> a **scope** — "workspace-level operator domain" (`README.md`,
+> `intent/OVERVIEW.md`); an **authority store** — "lives in a typed,
+> platform-level workspace governance store" (RFC10-15); and **personal
+> presentation state** — "distinct from the presentation-only workspace
+> manifest (which remains personal presentation state, RFC 0003)" (RFC10-15).
+> It has **zero occurrences in the adopted doctrine tree** — a claim the
+> reviewer measured over all six doctrine files, case-insensitively, and this
+> registry repeats rather than re-derives.
+>
+> Disposition, and it is two-sided: on the **default path** the registry's own
+> recommended substitution is applied — `intent/OVERVIEW.md` now defines
+> *portfolio workspace* inline at first use (2026-08-10). Admitting a
+> **`Workspace` entry** here under §3 is not done and is not an agent's call:
+> the term's only owning clause is candidate (RFC10-15, Wave D1), so an entry
+> would have no adopted definition, which is the class **P-17** records and
+> **P-16** rules on.
+
 **Related but distinct.** Repository (an entity with a declared *role*, not a
-separate class — RFC1-2); Workspace; Governance root (T-02).
+separate class — RFC1-2); Workspace (the portfolio-level concept above, which
+has no entry of its own); Governance root (T-02).
 
 **Example.** A Project with three repositories: one `governance-root` holding
 `.syzygy/`, two `observed-source` repositories consented for observation.
@@ -457,8 +550,9 @@ faster. That mints a second content authority; the kernel holds references.
 
 #### T-06 · State plane
 
-**Plain language.** Which of six kinds of assertion a record is making —
-assigned fresh at every evaluation, and never asked of a relation.
+**Plain language.** Which of six kinds of statement a record is making about
+the project — decided afresh each time the system reads status, and never
+asked of a link between records.
 
 **Formal definition.** Every **source-state assertion** in the graph — an
 entity or record that asserts project state on its own authority — is assigned
@@ -479,7 +573,7 @@ a null.
 work lifecycle state and governance lifecycle state (§1); *layer*, *tier*,
 *bucket*.
 
-**Related but distinct.** Claim epistemic label (T-15); Evidence tier (T-16);
+**Related but distinct.** Claim epistemic label (T-15); Rendering tier (T-16);
 *semantic relation class* (the edge-side counterpart, RFC1-25, candidate).
 
 **Example.** A Proposal sits in the Proposed plane; when adopted, the adopting
@@ -688,8 +782,9 @@ identity-bearing evaluation inputs and VIS-6 exception (b) content.
 
 #### T-13 · Claim
 
-**Plain language.** The one and only carrier of status in Syzygy — so every
-green is challengeable.
+**Plain language.** The single object that carries any positive answer about
+the project — so anything the system shows as good can be disputed at one
+identified place.
 
 **Formal definition.** **All positive status flows through Claims.** No edge
 is itself a status; evidence reaches status only via `supports` into a Claim,
@@ -757,7 +852,7 @@ currency-bound declaration mechanism.
 **Deprecated synonyms.** *proof* (over-claims), *data*, *logs*, *the CI
 output* — evidence is a class with declared properties, not a file type.
 
-**Related but distinct.** Evidence tier (T-16 — how strongly it supports);
+**Related but distinct.** Rendering tier (T-16 — how strongly it supports);
 Warrant (T-17 — authorizes an act; explicitly **not** evidence);
 Observation record (T-23 — one immutable kind of evidence).
 
@@ -794,9 +889,12 @@ for never-zero; RFC2-24 (candidate) for the twelve closed Unknown *reasons*.
 **Deprecated synonyms.** *confidence*, *certainty level*, *N/A*, *TBD*,
 *not applicable*, *0* — every one of these is a way of not saying Unknown.
 
-**Related but distinct.** State plane (T-06 — Observed and Inferred are bound
-in both systems, §1); Evidence tier (T-16 — a tier restricts a label, never
-replaces it); freshness state (`fresh`/`stale`/`broken`/`superseded`, RFC2-10 —
+**Related but distinct.** **Unknown (T-31)** — this entry defines the
+*dimension* and restates `Unknown` only as one of its three values; **T-31
+carries the definition of record for the value**, and is the entry to read
+where the two restatements differ in wording. State plane (T-06 — Observed and
+Inferred are bound in both systems, §1); Rendering tier (T-16 — a tier
+restricts a label, never replaces it); freshness state (`fresh`/`stale`/`broken`/`superseded`, RFC2-10 —
 orthogonal to all three labels).
 
 **Example.** "40 modules Unknown (reason: `missing-evidence` ×31,
@@ -843,10 +941,26 @@ a *negative answer* rather than as an absent one.
 **Related but distinct.** *Claim epistemic label* (T-15 — `Unknown` is one of
 its three values, and T-15 is the dimension, not the value; the core tier used
 to name this term and point at that ID, which is the mismatch corrected on
-2026-08-06). *Gap* (T-20 — a gap is something intended and **known** to be
-absent; an Unknown is not knowing whether it is absent. Rendering an Unknown
-as a gap manufactures knowledge). *Contradiction* (T-19 — two authorities that
-cannot both hold, which is more information than Unknown, not less).
+2026-08-06). **This entry carries the definition of record for the value
+`Unknown`**; T-15 defines the three-value dimension and restates the value
+only as one of its members. Where the two restatements differ in wording, this
+entry is the one to read — and both are restatements, so the owning authority
+still wins over either. *Gap* (T-20 — a gap is something evidence establishes
+to be absent; an Unknown is not knowing whether it is absent. Rendering an
+Unknown as a gap manufactures knowledge). *Contradiction* (T-19 — two
+authorities that cannot both hold, which is more information than Unknown, not
+less).
+
+> **Open owner question, disclosed here rather than only in a round report
+> (repaired 2026-08-10, review RD-16 finding 1).** This entry and T-20 (`Gap`)
+> classified the same case — an adopted requirement with no verifying evidence
+> — in opposite ways: T-20's example called it a gap, this entry's boundary
+> line calls it an Unknown. Doctrine sides with this entry (VIS-2; `v1.md`'s
+> V0/V1 gap boundary), and T-20's example was corrected to match. The
+> resulting two-term rule — **no evidence → Unknown; evidence of
+> non-satisfaction → Gap** — is candidate drafting queued for ruling as
+> **P-36** (`../../../decisions/UNKNOWNS-AND-GAPS-DECISION.md`). It is the
+> pair VIS-2 rests on, and it is not yet settled.
 
 **Example.** "40 modules Unknown (reason: `missing-evidence` ×31,
 `no-currency-bound-declared` ×9)" — aggregated honestly, reason counts
@@ -861,8 +975,9 @@ count; treating "no evidence found" as "no problem found".
 
 #### T-16 · Rendering tier (also called "evidence tier")
 
-**Plain language.** How strong a claim's backing is — six closed values, each
-living inside one of the three labels.
+**Plain language.** How strong the backing for one answer is — six fixed
+strengths, each sitting inside one of the three ways an answer can be
+grounded.
 
 > **Naming conflict, recorded not resolved (2026-08-05b).** RFC2-25 — the
 > owning clause — calls this a **rendering tier**, and so do RFC-0001,
@@ -1056,11 +1171,34 @@ the two exits; VIS-6 exception (a) (**adopted**); RFC1-20, RFC2-15 (candidate).
 **Deprecated synonyms.** *TODO*, *backlog item*, *missing feature*, *tech
 debt* — a gap is a computed relation between planes, not a work item.
 
-**Related but distinct.** Contradiction (T-19); Work item (a gap is
-*addressed*, never *closed*, by work — RFC1-25 `addresses`); Unknown.
+**Related but distinct.** **Contradiction (T-19)** — the distinction is
+load-bearing and is spelled out from both sides: a gap is *compatible* desired
+state not yet realized and exits by evidence or dismissal; a contradiction is
+*co-unsatisfiable* and exits only by adjudication. No surface, count,
+endpoint, or UI string may merge the two. **Unknown (T-31)** — a gap is
+something evidence establishes to be absent; an Unknown is not knowing whether
+it is absent. Rendering an Unknown as a gap manufactures knowledge; rendering
+a gap as an Unknown discards it. Work item (a gap is *addressed*, never
+*closed*, by work — RFC1-25 `addresses`).
 
-**Example.** An adopted requirement with no verifying evidence at evaluation E
-is a gap at E. V0 surfaces the absence; V1 computes the gap (SDR-12, adopted).
+> **Open owner question, disclosed here rather than only in a round report
+> (repaired 2026-08-10, review RD-16 finding 1).** This entry's example
+> previously read *"an adopted requirement with no verifying evidence at
+> evaluation E is a gap at E"*, which is the case T-31 classifies as an
+> **Unknown** — the two entries classified one case in opposite ways. The
+> example below now follows doctrine (VIS-2; `v1.md`'s V0/V1 gap boundary):
+> **no evidence → Unknown; evidence of non-satisfaction → Gap.** That reading
+> is candidate drafting, not a ruling: `Gap` is defined nowhere in force, and
+> the two-term rule is queued as **P-36**
+> (`../../../decisions/UNKNOWNS-AND-GAPS-DECISION.md`), which ratifies or
+> reverts it. Until then this boundary is the registry's best reading of
+> adopted doctrine, not settled law.
+
+**Example.** An adopted requirement whose current admissible evidence
+establishes that it is **not satisfied** at evaluation E is a gap at E. An
+adopted requirement with **no** verifying evidence at E is **Unknown**, never
+a gap (VIS-2). V0 surfaces absence as Unknown; V1 computes gaps as navigable,
+work-generating objects (`v1.md`, the V0/V1 gap boundary; SDR-12, adopted).
 
 **Misuse.** Rendering a dismissed gap green. Dismissal claims nothing about the
 facts and always renders as *dismissed by decision*, with reason and expiry
@@ -1362,7 +1500,8 @@ Work item; Proposal (T-08 — a mission is not a proposal); Warrant (T-17).
 
 **Example.** One approved mission targeting two capabilities, pinned to
 specific contract digests, with a completion predicate declaring the minimum
-evidence tier it accepts.
+rendering tier it accepts (RFC-0010's own text says *evidence tier*, the
+minority name T-16 records as a synonym).
 
 **Misuse.** A mission marking itself completed because all its work items
 closed, with no evidence satisfying the completion predicate (RFC10-6 violation
@@ -1508,7 +1647,18 @@ candidate).
 
 ## 5. Authority-coverage summary
 
-Counted by script over the 31 entries above, not by hand.
+**How the figures on this page are obtained, and what still owns them.** Every
+count in this section is a *derived value* over this file's own contents —
+the class verification rule 3 exists to catch, and the class this registry was
+once caught in: two figures here disagreed with a third by one, and one of
+them failed its own arithmetic (review RD-16 finding 6). All four self-counts
+— entries, core terms, terms corresponding to a frozen doctrine noun, and
+terms outside the frozen list — were **recomputed on 2026-08-10** by
+enumerating the `#### T-nn` headings and the core table's ID column, and
+corrected below. **No check in the battery recomputes them**, so they are only
+as fresh as the last hand-run sweep; adding that recompute is routed to the
+scripts batch (`R-SCR`). Until it exists, treat any of these numbers quoted
+outside this file as stale by default.
 
 | Coverage | Terms | Count |
 |---|---|---|
@@ -1529,17 +1679,40 @@ technical nouns for citation in `architecture.md`, "Vocabulary": *project,
 capability, gap, contradiction, evidence, warrant, aligned, converged,
 genome-complete, genome, snapshot, evaluation, observation record*.
 **"Claim" is not among them** — although RFC1-24 makes the Claim the sole
-carrier of all positive status. Eighteen of this registry's thirty-one terms sit
-outside the frozen list (twelve correspond to a frozen noun: ten by exact
-name plus *Project Genome*→genome and *Source snapshot*→snapshot; the frozen
-*genome-complete* has no registry entry of its own). Their stability today rests on candidate contracts.
+carrier of all positive status. **Twelve** of this registry's entries
+correspond to a frozen noun — ten by exact name (T-01, T-04, T-14, T-17,
+T-19, T-20, T-22, T-23, T-24, T-25) plus *Project Genome*→genome and *Source
+snapshot*→snapshot; the frozen *genome-complete* has no registry entry of its
+own. **Every other entry sits outside the frozen list** — nineteen at this
+recompute, and stated as "every other entry" so the sentence cannot fail its
+own arithmetic the way its predecessor did (it read *eighteen* against
+thirty-one entries and twelve correspondences). Their stability today rests on
+candidate contracts.
 
 ---
 
 ## 6. What this registry does not establish
 
 - **It is not evidence that the vocabulary is coherent.** It records what the
-  31 listed terms mean and who owns each meaning.
+  31 listed terms mean and who owns each meaning. It has twice been shown not
+  to be: `Gap` (T-20) and `Unknown` (T-31) classified one case in opposite
+  ways until 2026-08-10, and the correction that resolved it follows adopted
+  doctrine but is **not a ruling** — see the disclosure in both entries and
+  **P-36**.
+- **There is no term for "the difference between desired and observed", and
+  that is deliberate** (recorded 2026-08-10, review RD-16 finding 3). The
+  aggregate the narrative most often reaches for — *gaps · contradictions ·
+  Unknowns* taken together — is named by no entry here, by none of doctrine's
+  thirteen frozen nouns, and by no glossary bullet. `Gap` (T-20) is a strict
+  subset: *compatible* desired state excludes contradictions, and T-31
+  excludes Unknowns. **The sanctioned phrasing is the plain phrase "the
+  difference"**, which is what adopted doctrine itself uses (`vision.md`:
+  "Syzygy computes and shows the difference…") and what `README.md`'s diagram
+  node carries. Admitting a term for it would have to pass §3's five
+  conditions, and no one has proposed one that does. Reaching for a reserved
+  term instead is how `intent/OVERVIEW.md` came to use `Reconciliation` in the
+  sense T-26 reserves against — the defect this bullet exists to prevent
+  recurring.
 - **The corpus was not swept for terms used normatively that are absent from
   this registry entirely.** That is the larger unrun half of a lexical audit,
   and the migration report says so under its own finding.

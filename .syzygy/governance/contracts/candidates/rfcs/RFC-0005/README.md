@@ -55,9 +55,11 @@ policy; the current measurement lives in the generated budget report
 `../../CONTEXT-BUDGET-REPORT.md`, which is regenerated, never transcribed.
 
 **Lookup rule (deterministic).** For any citation `RFC5-n`, read `n` as an
-integer: `1–11` → module 1; `12–17` → module 2; `18–23` → module 3; `24–26` →
-module 1. The four ranges are contiguous and exhaustive over RFC5-1…RFC5-27 with
-no gaps, so the rule never needs a search. RFC 0005 has **no lettered
+integer: `12–17` → module 2; `18–23` → module 3; **every other number → module
+1**. Two bounded ranges and a catch-all, so the rule is total over the `RFC5-n`
+namespace however the range grows, never needs a search, and cannot go stale
+against the bytes the way an enumeration of ranges can — RFC5-27, the package's
+phase-boundary clause, resolves to module 1, which is where it lives. RFC 0005 has **no lettered
 sub-clauses**: limbs such as RFC5-18(a)–(e) are list items inside one clause
 body and live with their parent. Modules are numbered for reading order only —
 citations name clauses, never modules.

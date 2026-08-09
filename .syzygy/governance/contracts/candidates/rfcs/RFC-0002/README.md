@@ -169,13 +169,29 @@ semantics (post-V1 RFC); currency-bound *values* and retention periods (quality
 policy); the V1 gap-computation algorithm (V1 RFC); challenge admissibility
 *tooling*.
 
-**Forward references are informative.** Where this package cites a sibling
-*draft* by clause number (RFC3-n, RFC4-n, RFC5-n, and the surface RFCs), the
-citation is **informative until that RFC is accepted**: it names where an
-obligation will be discharged, never a dependency of this contract's meaning,
-and a renumbering in a sibling draft changes nothing here. Only citations to
-**adopted doctrine**, to the **SDR**, and to **RFC 0001** are load-bearing;
-archived corpus citations are informative in every case.
+**Forward references are informative, with one stated exception.** Where this
+package cites a sibling *draft* by clause number (RFC4-n, RFC5-n, and the
+surface RFCs), the citation is **informative until that RFC is accepted**: it
+names where an obligation will be discharged, never a dependency of this
+contract's meaning, and a renumbering in a sibling draft changes nothing here.
+Citations to **adopted doctrine**, to the **SDR**, and to **RFC 0001** are
+load-bearing; archived corpus citations are informative in every case.
+
+**The exception: this package's citations of RFC 0003 are load-bearing.** They
+are exactly four — RFC3-2's write-authority classes, RFC3-15's categories,
+the RFC3-16 family, and RFC3-17(a)'s home for challenge and admission
+records — and each names a condition or a home this package's own clauses
+require, never a place where an obligation of this package will later be
+discharged. RFC3-16(a) is the sharp case: it is a condition inside this
+package's own gates — the currency-bound declaration (RFC2-9) and the admission-latency,
+resolution and sweep policies (RFC2-13) are honored **only** under it, and
+snapshot input 11 (RFC2-1) binds the act records RFC3-16(b) item 9 identifies.
+Read as informative, those gates would honor an authorization on nothing but
+its presence in a tree untrusted writers can commit to — the widening RFC2-13
+and RFC3-16(a) exist to prevent. **This package therefore does not bind unless
+RFC 0003 is bound by the same act or an earlier one**; an act binding these
+modules while RFC 0003 remains unbound leaves the gates above without their
+condition, and is not an act this package's meaning survives.
 
 ## 6. Alternatives considered
 

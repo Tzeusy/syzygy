@@ -6,7 +6,7 @@ module: interaction-parity-and-release
 clauses: RFC9-46..RFC9-52 (sub-clause RFC9-47(a); no gaps, no retirements)
 governs: [non-3d-equivalence, accessibility-parity, release-gate, gate-registry-maintenance, performance-budget, declared-scope-narrowing, motion, illumination, openspec-phase-boundary]
 applies_to: [orrery, machine-clients]
-depends_on: [RFC-0002, RFC-0006, RFC-0007, RFC-0008]
+depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0006, RFC-0007, RFC-0008]
 tags: [surface, equivalence, accessibility, release-gate, sdr-26, sdr-27, vis-1, vis-7]
 ---
 
@@ -177,8 +177,15 @@ amendments; §4 case 3a names four of them as violation cases)*:
 **Also gated: the residual-adjacency legend line** (RFC9-9(a)) — the
 position/proximity registry entry declares all three readings, and residual
 placement produces no enclosure, shared boundary, plinth or common ground plane
-that mimics declared containment. This one is partly a judged check rather than a
-computed one, and is named here rather than omitted for that reason.
+that mimics declared containment. **Run at reduced fidelity as well as full:**
+the check is exercised over a filtered scene, a zoomed-out scene, and a scene
+under an RFC9-49 declared narrowing, since RFC9-9(a) part 2's
+reader-decidability property is defeated exactly there — the
+`declared-dependency` edge channel and its RFC9-9(b) state must survive, or
+the third legend line reads "undecidable at this fidelity". A check run only
+at full fidelity passes vacuously over the case the obligation exists for.
+This one is partly a judged check rather than a computed one, and is named
+here rather than omitted for that reason.
 
 **And: stale-layout personal state** (RFC9-13(a)) — a saved camera home carrying
 an older layout version does not restore silently; run against a fixture that
@@ -230,9 +237,11 @@ boundaries exactly as it did across sections.]
 **RFC9-48.** **Non-visual parity.** Every distinction the scene renders has a
 non-visual path: full keyboard navigation of every action — traverse, select,
 zoom, lens, analytical plane, scenario, drawer, filter — without pointer or
-camera; the tabular equivalent as the screen-reader surface; textual epistemic
-labels for every state (RFC9-27's two-carrier rule); reduced-motion honored with
-no loss of meaning; text contrast maintained in every profile. Accessibility here
+camera; the tabular equivalent as the screen-reader surface; **textual
+epistemic labels for every state**, bound by this clause (distinct from
+RFC9-27's two-carrier rule, which bars colour alone but is satisfied by
+surface treatment plus plate/badge, neither of which is text); reduced-motion
+honored with no loss of meaning; text contrast maintained in every profile. Accessibility here
 is a truth requirement: a reader who cannot perceive "Unknown" is being shown
 comprehensible fiction.
 
@@ -284,17 +293,45 @@ not support. [Inferred]
 the map surface; it is **not a specification of record from which implementation
 work may be scheduled**. No implementation work for **user-observable Orrery
 behavior** may be scheduled solely from this RFC: before implementation, every
-observable consequence of RFC9-1…RFC9-51 must either **map to an approved
+observable consequence of **every clause of this contract other than this one**
+must either **map to an approved
 OpenSpec requirement or scenario** in the governance root's `openspec/**` plane,
 or carry an **explicit, reviewed N/A judgment** recording why that consequence
-needs no requirement. The surface-specification phase must produce, as a
+needs no requirement. **The
+reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a recorded
+owner judgment homed in `decisions/` (RFC3-15), and it is honored only where
+its owner-act provenance is verifiable under RFC3-16(a). Where that provenance
+does not verify, the judgment maps nothing: the consequence remains unmapped
+and renders Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2). The
+surface-specification phase must produce, as a
 deliverable, a **clause-to-requirement coverage matrix** for this RFC — every
 clause mapped to requirement identities or to its reviewed N/A — and that matrix
 is review material, never authority. This clause creates no OpenSpec content now
 (none may exist during bootstrap); it binds the phase boundary so RFC prose is
 never quietly treated as an implementable behavioral spec.
 
-*(RFC9-52 binds the whole package, not this module alone: "RFC9-1…RFC9-51" spans
+**The scope is stated without a range on purpose.** A numeric range copied
+into a clause goes stale the moment a clause is appended, and the appended
+clause is then the one no coverage matrix reaches. "Every clause of this
+contract other than this one" needs no maintenance and covers every future
+append; lettered sub-clauses are covered with their parent.
+
+**Rows are per observable consequence, not per clause.** A clause with five
+observable consequences and one mapped requirement is not covered; the matrix
+discloses the consequences it enumerates for each clause, so a
+complete-looking matrix over under-enumerated consequences is a defect of the
+matrix.
+
+**Why the judgment is gated at all.** It *removes* an implementation
+obligation, which makes it authorization-bearing on RFC3-16(a)'s own test —
+the same predicate and the same failure posture RFC9-18, RFC9-26, RFC9-35 and
+RFC9-45 already invoke on this surface. `.syzygy/governance/**` is writable by
+the untrusted fleet-worker class (SEC-3, as RFC3-16(a) extends it to committed
+artifacts), and an N/A judgment that class could commit is the one artifact
+that turns "this clause needs a requirement" into "this clause needs
+nothing".
+
+*(RFC9-52 binds the whole package, not this module alone: its scope spans
 all three modules, and the coverage matrix is produced for RFC 0009 entire. The
 clause is shape-parallel with RFC6-28, RFC7-38 and RFC8-32.)*
 
@@ -312,8 +349,12 @@ clause is shape-parallel with RFC6-28, RFC7-38 and RFC8-32.)*
 
 ## 6. Integration (module-scoped)
 
-**RFC 0002:** the recorded base layout (RFC2-6); the RFC2-18 chain state and
-RFC2-17's word reservation. **RFC 0006:** equivalence (RFC6-22/23); filters
+**RFC 0001:** RFC1-25's anti-conflation rule, run as a rendering check in
+RFC9-47's declared-vs-observed relation-separation gate. **RFC 0002:** the
+recorded base layout (RFC2-6); the RFC2-18 chain state and
+RFC2-17's word reservation. **RFC 0003:** the `decisions/` governance home and
+the RFC3-16(a) owner-act predicate, behind RFC9-52's reviewed N/A judgment.
+**RFC 0006:** equivalence (RFC6-22/23); filters
 disclosed as filters (RFC6-16); cross-surface highlight and evaluation skew
 (RFC6-3); one truth, two consumers (RFC6-13); sibling surface states (RFC6-14);
 scenario context (RFC6-24). **RFC 0008:** the two work-state fields

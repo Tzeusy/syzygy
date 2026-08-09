@@ -3,10 +3,10 @@ id: RFC-0009
 title: Orrery (Map Surface) — semantic geography, anchoring, and layout determinism
 status_source: owner-act-record
 module: semantic-geography
-clauses: RFC9-1..RFC9-23 (sub-clauses RFC9-8(a), RFC9-9(a), RFC9-9(b), RFC9-13(a), RFC9-14(a), RFC9-15(b), RFC9-16(d); no gaps, no retirements)
-governs: [map-surface-identity, home-geography, analytical-plane, anchoring, layout-version, layout-baseline, append-stability, relocation-trigger, placement, shared-component, identity-counting, repository-overlay, authority-overlay]
+clauses: RFC9-1..RFC9-23 (sub-clauses RFC9-8(a), RFC9-9(a), RFC9-9(b), RFC9-13(a), RFC9-14(a), RFC9-15(b), RFC9-16(d); no gaps, no retirements. RFC9-15(b) has no lettered sibling before it — no earlier letter was ever minted for RFC9-15, and none is retired — and it is defined after RFC9-16(d) in file order: both are deliberate. The "no gaps" claim is over the integer range; sub-clause letters are minted as needed and are not a series)
+governs: [map-surface-identity, home-geography, analytical-plane, anchoring, layout-version, layout-baseline, append-stability, relocation-trigger, placement, shared-component, identity-counting, repository-overlay, authority-overlay, portfolio-layout-governance]
 applies_to: [orrery, machine-clients]
-depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0006]
+depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006]
 tags: [surface, spatial, determinism, sdr-21, sdr-22, sdr-23, vis-7, sec-2, sec-3, sec-5]
 ---
 
@@ -140,13 +140,45 @@ registry, reorganisation events with recorded rationale, and the RFC9-16(d) owne
 gate. **This machinery is authority-bearing, and a registry that changes
 authorization, evaluation inputs, stable identity, layout truth, or any other
 project fact belongs in typed governance, never in personal presentation
-state** — so it lives in the typed **workspace governance store** (RFC10-15),
-never in the workspace manifest: the manifest remains personal presentation
-state (RFC3-10, RFC3-11, RFC3-21) and carries at most a non-authoritative
-pointer to the current layout version, since no project owns the arrangement
-of its peers. (Staged reference: until an accepted RFC 0010 mints the store,
-no portfolio re-lay is lawful — the machinery waits with the store, and the
-manifest never substitutes.) RFC9-15(b) applies unchanged at this
+state.**
+
+**Where it lives, in the terms RFC 0003 already fixes.** The registry, its
+reorganisation events, and their recorded rationale are
+**authorization-bearing governance artifacts** under **RFC3-16(a)** — they fix
+the meaning of a rendered encoding rather than report a fact under it, the
+same limb that puts RFC9-18 inside the predicate. So they live in a **typed,
+owner-gated governance store**: an artifact of the governance class RFC3-15
+fixes, durable, honored **only under RFC3-16(a)**, an entry whose owner-act
+provenance does not verify treated exactly as an absent one (RFC9-18's rule,
+at portfolio scope). **Never the workspace manifest and never `local/`:** both
+are personal presentation state under VIS-6 exception (a) and are **never
+snapshot inputs** (RFC3-10, RFC3-11, RFC3-21), while the layout version and
+baseline **are** (RFC2-1 item 7; RFC9-14(a)) — so a personal-state home is
+barred by RFC 0003's own rule, not by preference. The manifest carries at most
+a non-authoritative pointer to the current layout version, since no project
+owns the arrangement of its peers.
+
+**Until such a store exists at workspace scope, no portfolio re-lay is
+lawful — and that is the operative rule.** RFC 0003 fixes governance homes at
+**project** scope (RFC3-15) and puts the workspace manifest outside every
+governed plane (RFC3-10); it establishes no home at workspace scope, and
+establishing one is an owner act of RFC3-15(a)'s recorded-widening class — the
+precedent B19 set when it minted `records/` rather than stretching a
+category's "exclusively". The consequence is fail-closed and complete on its
+own terms: the machinery waits with the store, **the manifest never
+substitutes**, and no re-lay may be performed meanwhile. Nothing here is
+conditioned on an unaccepted contract; a reader holding RFC 0001–RFC 0009 can
+evaluate every condition this clause states.
+
+*(**Staged successor, not a reliance.** A drafted successor already exists in
+candidate material — RFC 0010's typed workspace governance store,
+**RFC10-15** — and on acceptance it becomes this registry's home **without
+amending this clause**, since the rule above names a class and a gate rather
+than a path. It is named for orientation only: a citation, not a reliance. If
+RFC 0010 is never accepted, the rule above still stands and still
+fail-closes.)*
+
+RFC9-15(b) applies unchanged at this
 scope: fixed within a version, full regeneration only, order-independent; and
 RFC9-13(a)'s stamp-and-refuse rule covers portfolio-scope saved cameras. Without
 this machinery, append-stability inherited from RFC9-15 leaves **no lawful way
@@ -229,6 +261,23 @@ within that set. The residue is therefore **declared**, in four binding parts:
    other nearness is residual by construction. A reader can therefore decide
    which of the three readings applies to any given pair **from what is on the
    screen**, without access to the placement algorithm.
+
+   **Both discriminators are protected, or the third legend line becomes
+   false.** Reading 1's already is: district boundary is a reserved,
+   lens-invariant channel (RFC9-25). Reading 2's is protected by nothing else
+   here — RFC9-42 lets LOD reduce label density freely, RFC9-13's persistent
+   count covers hidden *entities* and not edges, and RFC9-49 permits narrowing
+   a declared scope — so this part binds it, in RFC9-44's words: **no filter
+   default, LOD step, lens, scene profile, or RFC9-49 narrowing may drop the
+   `declared-dependency` edge channel or its RFC9-9(b) positional-expression
+   state wherever nearness is rendered.** Where a lawful narrowing suppresses
+   that channel for a region anyway, the third legend line for that region
+   **reads "undecidable at this fidelity"**, never "residual adjacency —
+   carries no meaning": the latter is a claim the surface can no longer
+   support, and asserting it is the VIS-7 legend-fidelity failure this part
+   exists to prevent, reached without violating any other clause. The gate is
+   RFC9-47's, run over filtered and zoomed-out scenes, not full fidelity alone
+   (RFC9-47(a) part 1).
 3. **The residue must not counterfeit the meaningful readings.** Free-space
    placement must not produce apparent grouping that mimics declared containment:
    no enclosure, shared boundary treatment, common plinth or ground plane, or
@@ -731,10 +780,26 @@ Contradiction treatment (RFC2-15); Unknown reasons (RFC2-24); tiers (RFC2-25).
 **RFC 0003:** `map/` as a schema-versioned governed namespace (RFC3-18);
 cache/local boundaries (RFC3-20/21); the RFC3-16(a) owner-act predicate;
 identity-preserving migration (RFC3-23); workspace-manifest arrangement (RFC3-21,
-RFC3-31). **RFC 0004:** code-element identity continuity (RFC4-12); mapping
-declaration sites (RFC4-26). **RFC 0006:** selection references and cross-surface
+RFC3-31); and, behind RFC9-8(a), the governance-home semantics themselves —
+the constitutional categories and their install gates (RFC3-15), the
+recorded-widening precedent for adding one (RFC3-15(a)), and the workspace
+manifest's classification as personal presentation state that is never a
+snapshot input (RFC3-10, RFC3-11). **RFC 0004:** code-element identity
+continuity (RFC4-12); mapping
+declaration sites (RFC4-26). **RFC 0005:** execution-profile boundaries
+(RFC5-20), rendered as a distinct boundary kind by RFC9-23's authority
+overlay. **RFC 0006:** selection references and cross-surface
 sync (RFC6-1/2/3); outcome set incl. retired/never-redirect (RFC6-5/11); the
 single drawer (RFC6-18/19).
+
+**No forward reliance.** Every `depends_on` edge this module declares is
+satisfied by RFC 0001–RFC 0006, and every clause here is evaluable with those
+contracts bound. The one clause of candidate RFC 0010 named anywhere in this
+module appears in RFC9-8(a)'s staged successor parenthetical, as a **citation
+and not a reliance** (the distinction the dependency index states on its own
+face): the operative placement rule stands on RFC3-15/RFC3-16(a) and
+fail-closes on its own, so nothing here is conditional on RFC 0010's
+acceptance or on any question open inside it.
 
 **Discharged foundation defect, retained because it carries owner decisions.**
 RFC1-25 formerly had neither a declared topology-entry→capability placement
@@ -804,5 +869,10 @@ Recorded for the open-question triage; see history §8.
 
 *End of module 1. Clauses RFC9-1 … RFC9-23, plus sub-clauses RFC9-8(a),
 RFC9-9(a), RFC9-9(b), RFC9-13(a), RFC9-14(a), RFC9-15(b) and RFC9-16(d); no gaps,
-no retired or merged numbers. Lettered limbs (RFC9-10(c), RFC9-19(b)) are parts
-of their parent clause, not sub-clauses. Amend in place, never renumber.*
+no retired or merged numbers — the claim is over the integer range. **RFC9-15(b)
+has no lettered sibling before it**: no earlier letter was ever minted for
+RFC9-15 and none is retired, and RFC9-15(b) is defined after RFC9-16(d) in
+file order. Both are deliberate;
+sub-clause letters are minted as needed and are not a series. Lettered limbs
+(RFC9-10(c), RFC9-19(b)) are parts of their parent clause, not sub-clauses.
+Amend in place, never renumber.*

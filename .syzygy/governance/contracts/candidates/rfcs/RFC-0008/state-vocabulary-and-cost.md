@@ -51,8 +51,10 @@ Four rules carry most of the weight. The vocabulary is **closed at thirteen
 values in three partitions** — eight live, one terminal, four state-local
 absence values — and **no implementation may mint, spell, or force-fit a value
 outside it** (RFC8-12; owner decision A8). The normalized state is **one of two
-orthogonal fields**, travelling always beside the RFC2-18 chain state defined
-in module 3 (RFC8-28), and never folded into it. `active` is **unrenderable
+separate fields**, travelling always beside the RFC2-18 chain state defined
+in module 3 (RFC8-28), never folded into it and never substituted for it —
+separate, not orthogonal, because normalized `reconciled` is a projection of
+the chain value `reconciled@E` (RFC8-12). `active` is **unrenderable
 until a staleness bound is declared** (RFC8-16). And **no synthetic "effort"
 number may ever be computed, rendered, or served** (RFC8-18).
 
@@ -98,9 +100,10 @@ disagreement release-blocking under the trust floor. `unadopted draft` and
 members of it. Every value is a **per-evaluation derived projection**, never a
 stored or editable field.
 
-**The normalized state is one of two orthogonal fields.** The closure above
-binds *this* field and closes nothing else. The **RFC2-18 chain state**
-(`merged`, `reconciliation-pending`, `reconciled@E`, `unsatisfied`,
+**The normalized state is a separate field from the chain state, and the two
+are never substituted for one another.** The closure above binds *this* field
+and closes nothing else. The **RFC2-18 chain state** (`merged`,
+`reconciliation-pending`, `reconciled@E`, `unsatisfied`,
 `contradiction-raised`, `Unknown(reason)`) is a **separate field with its own
 closed vocabulary** (RFC8-28), carried beside the normalized state on every
 rendering, filter, count, and machine answer, and **never folded into it**: an
@@ -108,6 +111,30 @@ item whose normalized state is `merged` may carry any of three chain states,
 and rendering all three as normalized `merged` alone is exactly the merge
 RFC2-17's word reservation forbids. Every consumer, RFC9-32's
 work/construction overlay included, consumes **both fields** (§5). [Inferred]
+
+**Separate is not independent, and the difference bites at one value.** The
+two fields are **not orthogonal**, and this clause does not claim they are:
+the normalized value `reconciled` is **defined as** the chain value
+`reconciled@E` (RFC8-13), so for that one value the normalized field is a
+**projection of the chain field** and carries no information the chain field
+lacks.
+**Normalized `reconciled` never substitutes for the chain state.** The
+argument RFC8-28 gives for carrying both fields — that normalized `merged` is
+compatible with three chain states — is true of `merged` and false of
+`reconciled`, and an implementer reasoning from that argument alone would
+drop the chain state exactly where the verdict lives. Both fields are carried
+on every element regardless of value; no value of either field licenses
+dropping the other.
+
+**Field qualification is mandatory on every machine answer.** Two values —
+`merged` and `reconciled` — are spelled identically in the two vocabularies
+while RFC6-14 requires both be carried verbatim beside each other. Every
+machine answer, filter, count, and export therefore **names the field each
+value belongs to**; a bare `merged` or `reconciled` with no field
+qualification is not a conforming answer. It is the same collision hazard
+RFC1-25(b) closes with its twelve-pair invariant for
+`depends_on`/`depends-on`/`declared-dependency`, arising here in the one place
+this package reproduces it.
 
 **The normalized state is not a Claim** (RFC1-24; RFC2-5) *(ruled at
 acceptance by owner decision B14, answering §8 q5)*: a derived rendering of
@@ -122,6 +149,23 @@ counts. For RFC6-14 label parity every machine answer carries the state value
 evaluation identity (RFC6-15); epistemic label, rendering tier, and Unknown
 reason belong to the *claims* rendered beside the state, never to the state
 itself.
+
+**One carve-out, stated rather than left to collide: `reconciled`.** Seven
+live values derive from scheduler and repository facts; `reconciled` derives
+from a **reconciliation verdict claim** — RFC2-18's "positive status claim
+requiring gate-backed Observed evidence" — and it is the one value in the
+enum that is green-capable. Carried in the normalized field with the
+non-Claim rule applied unqualified, it would arrive stripped of the RFC2-25
+tier that is the sole licence for a positive claim and outside the immutable
+observation record. So: **normalized `reconciled` renders only together with
+the underlying verdict claim's RFC2-25 tier and its evaluation identity, read
+from the chain field's `reconciled@E`, and never on its own.** It remains a
+projection, not a second claim: it mints no RFC2-5 two-level claim identity
+and no observation-record membership of its own, and the verdict claim the
+tier belongs to is the chain field's. Where the tier or the evaluation
+identity is not available, the normalized field does not render `reconciled`
+— `merged` with the chain state beside it is the honest answer, which is
+already V0's (RFC8-13; RFC8-29).
 
 The substrate-to-normalized mapping is a **declared, versioned derivation
 artifact** in the governance plane and a snapshot input (**RFC2-1 item 7** —
@@ -144,7 +188,7 @@ and every row states its honest-absence behavior. **Live states:**
 | `planned` | Materialized, open, not dispatch-eligible | Scheduler read: open with unmet dependency edges, or deliberately frozen (`deferred`/equivalent, with its reason) | Frozen-vs-dependency distinction rendered; an unreadable dependency set renders `eligibility-undetermined`, not `planned` |
 | `ready` | Open, unblocked, dispatch-eligible | A derived query at the answering evaluation **over snapshot inputs only** — the work-state export captured in the snapshot (RFC2-1 item 3) plus RFC4-15's dependency feed — recomputed per evaluation, never cached as truth. **No implementation may invoke the substrate's live readiness computation at answer time**: a source not identified in the snapshot must not influence that evaluation's answers (RFC2-2), and calling a substrate whose state has moved defeats RFC2-3's identity test on re-run — the same rule RFC2-18 states for chain states | A ready-set without its evaluation identity is not a ready-set; where the work-state export or the dependency feed is uncaptured, the item renders `eligibility-undetermined`, never `ready` |
 | `active` | Claimed, with current progress | Claimed (in-progress + assignee) **and** a progress signal — branch tip moved, new commit, PR state changed — within the declared staleness bound (RFC4-23) | See RFC8-16: no declared bound ⇒ `activity-undetermined`; signal older than the bound ⇒ `stale-or-dead`; never `active` in either case |
-| `blocked` | Open, waiting on something nameable | Substrate blocked/waiting status, dependency edges, gates | Carries a blocked-cause class or cause-Unknown (RFC8-17) |
+| `blocked` | Open, waiting on something nameable | Substrate blocked/waiting status, dependency edges, gates | Carries its blocked-cause **set** — every cause whose declared derivation resolves — or cause-Unknown where none does (RFC8-17) |
 | `review` | An open review lane bound to an exact head SHA | Open PR facts (hosting sub-adapter) + review work item/labels + `external_ref` | Lane-open is derivable; **reviewer activity is never claimed** (a review lock label is a lock, not liveness); a merge-readiness verdict binds to its head SHA and expires when the head moves |
 | `merged` | The change reached the integration branch | **A VCS merge fact only** (RFC4-11) — never inferred from scheduler closure | Execution state: never done, never green; enters the RFC2-18 chain as `reconciliation-pending` at the evaluation that first captures the merge fact |
 | `reconciled` | `reconciled@E` per RFC2-18 | A reconciliation verdict claim, gate-backed Observed (RFC2-25), rendered with its evaluation identity | V0: never renders (§3.14); merged-but-unreconciled renders "reconciliation evidence absent / Unknown" |
@@ -206,15 +250,25 @@ the initial substrate].
 
 ### 3.7 Blocked causes
 
-**RFC8-17.** `blocked` carries a cause from the **closed taxonomy**
-{`dependency`, `pr-wait`, `external`, `decision`}, each a **declared
-derivation**: `dependency` from unmet work-item dependency edges; `pr-wait`
-from an open PR awaiting review or corrections (`external_ref` + PR/review
-state); `external` from a declared external event (CI in flight, timer or
-substrate gate); `decision` from a pending human gate, owner decision, or
-adjudication (an unresolved contradiction renders here, the conclusion Unknown
-per RFC2-15). Where the substrate conflates causes and no declared derivation
-resolves one, the item renders **blocked with cause Unknown** — the blocked
+**RFC8-17.** `blocked` carries **a cause set** drawn from the **closed
+taxonomy** {`dependency`, `pr-wait`, `external`, `decision`}, each a
+**declared derivation**: `dependency` from unmet work-item dependency edges;
+`pr-wait` from an open PR awaiting review or corrections (`external_ref` +
+PR/review state); `external` from a declared external event (CI in flight,
+timer or substrate gate); `decision` from a pending human gate, owner
+decision, or adjudication (an unresolved contradiction renders here, the
+conclusion Unknown per RFC2-15).
+
+**The set is every cause whose declared derivation resolves, not one of
+them.** A work item genuinely blocks on several things at once — an unmet
+dependency edge *and* an open PR awaiting review satisfy two declared
+derivations — and a single-valued cause forces an implementation to pick,
+which sends the owner to clear a blocker that was never the whole blockage.
+Every resolving cause renders, and every rendering, filter, count, and machine
+answer carries the set (RFC6-14), never a chosen member of it. Where the
+substrate conflates causes and **no** declared derivation resolves — the empty
+set — the item renders **blocked with cause Unknown**; cause-Unknown is
+reserved for that case and is never mixed into a non-empty set. The blocked
 fact is never suppressed and a cause is never guessed.
 
 ### 3.8 Cost without an effort score
@@ -232,7 +286,9 @@ on any project without model-provider consent — the common proving-ground
 case, RFC2-7/SEC-2 — and leave them with RFC2-8/RFC1-22 challenge authority
 only, in place of a governance-plane declaration's standing); lead time;
 active compute time; blocked time (split by RFC8-17 cause where history
-supports it); input tokens; output tokens; billed or derived API cost
+supports it — and where an interval carries more than one resolving cause the
+split discloses that, never attributing the interval to one member of the
+set); input tokens; output tokens; billed or derived API cost
 (derived-from-rates is Inferred, labeled — RFC4-21); attempts (countable only
 from Execution Records, RFC4-20); review rounds; CI time; rework; touched
 files/components/interfaces (from VCS; component granularity resolves through

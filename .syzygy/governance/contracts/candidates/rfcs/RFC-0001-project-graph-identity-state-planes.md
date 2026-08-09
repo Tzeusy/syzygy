@@ -102,18 +102,21 @@ normative force.
 designated **governance root** — the repository holding the Project's single
 `openspec/**` and `.syzygy/**` plane — and one owner [Observed:
 architecture.md, Definitions]. "Exactly one governance root per Project" is a
-kernel invariant: a declaration naming zero or two governance roots is a
-**contradiction** (§3.5), never silently repaired and never rendered as an
-empty project. The two cases surface in different evaluation contexts. **Two
-roots** is well-formed and evaluable — the declaration is readable, so the
-contradiction is minted in the Project's own evaluation. **Zero roots** is
-not: with no designated governance root there is no declared home to read the
-declaration from and no snapshot anchor for it, hence no Project evaluation in
-which to mint anything. That case surfaces at the **workspace/manifest
-level** — unevaluable as a Project, rendered Unknown (`missing-declaration`)
-in the observing workspace, with the contradiction minted in the **workspace's
-own evaluation context** (RFC 0003's manifest rendering — informative, §5)
-[Inferred].
+kernel invariant: a declaration naming zero or two governance roots is never
+silently repaired and never rendered as an empty project. The two cases
+surface in different evaluation contexts. **Two roots** is well-formed and
+evaluable — the declaration is readable, so a **contradiction** (§3.5) is
+minted in the Project's own evaluation. **Zero roots** is not: with no
+designated governance root there is no declared home to read the declaration
+from and no snapshot anchor for it, hence no Project evaluation in which to
+mint anything. That case surfaces at the **workspace/manifest level** —
+unevaluable as a Project, rendered Unknown (`missing-declaration`) in the
+observing workspace, with **no kernel contradiction minted**: an evaluation is
+identified by a Project's (source snapshot, as-of instant) and by nothing else
+(RFC2-3), and the workspace manifest is barred from being a snapshot input, so
+there is no evaluation context in which a kernel contradiction could exist.
+The unevaluable entry renders Unknown with its reason and is never dropped and
+never guessed (RFC 0003's manifest rendering — informative, §5) [Inferred].
 
 **RFC1-2.** **Repository** is one entity class carrying a declared **role**:
 `governance-root` or `observed-source`. Governance root is a role, not a
@@ -206,8 +209,16 @@ Mission contracts (RFC 0010 and successors) are accepted and active for the
 project or workspace, and never part of any project's unconditional V0
 core). A profile may add vocabulary; it may never alter the semantics of
 a V0-core clause. Profile contents are defined by RFCs 0002–0011 and by
-successor RFCs accepted into the contract set; a profile-defining RFC names
-the minting authority of every identity it adds, under RFC1-9's discipline.
+successor RFCs accepted into the contract set; a profile-defining RFC names,
+for every identity it adds, **(i)** exactly one minting authority — which,
+where that authority is the kernel, must derive the identity deterministically
+from declared inputs in RFC1-9's sense — and **(ii)** exactly one RFC1-22
+**state plane** for every source-state assertion the profile adds, so no
+profile entity enters the graph without the plane assignment RFC1-22 requires
+and a drawer renders. Both namings are made in the profile-defining RFC, and
+that is what discharges RFC1-9's "in RFC1-5" locator for profile classes: a
+profile identity is named there rather than in RFC1-5's V0-core table, and
+RFC1-5's closure is not thereby widened.
 
 **RFC1-8.** **Frozen-noun mapping.** Every doctrine-frozen noun resolves to
 exactly one kernel construct: project, capability, gap, contradiction,
@@ -230,7 +241,13 @@ are held as references to the OpenSpec artifact contract; code-element
 identities come from the source adapter. Kernel-owned identities (snapshot,
 evaluation, claim, gap, contradiction, materialization record) are
 **deterministically derived** from their defining inputs, so two runs over the
-same inputs mint the same identity (VIS-7). **Author-minted identities**
+same inputs mint the same identity (VIS-7). **The "in RFC1-5" locator is
+discharged by RFC1-7 for extension-profile classes**, whose minting authority
+and state plane are named in the profile-defining RFC rather than in RFC1-5's
+closed V0-core table: a profile identity so named satisfies this clause, and a
+profile identity minted by the kernel is subject to this clause's determinism
+requirement exactly as a V0-core kernel-owned identity is. **Author-minted
+identities**
 (Proposal) are neither mirrored nor derived, so determinism protects them from
 nothing — two authors could otherwise mint colliding identifiers, and the
 materialization record, `succeeds` citations of superseded proposals, and
@@ -498,8 +515,8 @@ follows:
 | `scoped_to` | Claim/Gap/Contradiction instance → Evaluation | Derived | A status without an evaluation is not a status |
 | `produced_by` | Evidence → Verification run · Execution run; Observation record → Evaluation | Observed | The provenance backbone |
 | `identified_in` | Adapter identity · Policy · Repository state · consumed reports → Source snapshot | Derived | Snapshot closure: an uncaptured source must not influence deterministic claims |
-| `supersedes` | Same-class pairs only: for each identity-bearing class whose RFC1-31 lifecycle mints successive versions or superseding records, exactly the pair (that class → prior version of the same class); no cross-class pair exists | Matches endpoint | Version-level only; never supersedes an identifier. Pair set closed by RFC1-31: a class either versions there or does not; each (C → C) pair resolves per RFC1-25(d) to the superseding endpoint's own assertion class |
-| `succeeds` | Successor identity → predecessor identity | Desired (declared) for declared classes; **derived** for Contradiction successors (RFC1-18(b)), recorded inside the minting evaluation's observation record | The split/merge continuity edge (RFC1-11); the same relation carries contradiction membership drift, where no declaration act exists to carry it |
+| `supersedes` | Same-class pairs only, enumerated from RFC1-31: (Decision → Decision), (Consent record → Consent record), (Policy → Policy) — the governance-act group, whose lifecycle names `superseded`; (Observation record → Observation record) — observed classes, whose records become historical when superseded; (Proposal → Proposal) — the proposal group's `superseded` state, reachable only before materialization (RFC1-29). The remaining two RFC1-31 groups contribute **no pair**: declared classes are amended in place under the same identifier and mint no successive version, and work-item versioning is scheduler-owned execution state mirrored under RFC1-9, never a kernel-minted edge. No cross-class pair exists | Matches endpoint | Version-level only; never supersedes an identifier. Pair set closed by RFC1-31: a class either versions there or does not, and this row states the answer for each of its six groups; each (C → C) pair resolves per RFC1-25(d) to the superseding endpoint's own assertion class |
+| `succeeds` | Same-class pairs only: for each identity-bearing class whose RFC1-11 split/merge or RFC1-18(b) membership drift mints a successor, exactly the pair (that class → predecessor of the same class) — the declared classes of RFC1-31 (Capability → Capability, Topology entry → Topology entry, Declared region → Declared region, Declared implementation mapping → Declared implementation mapping) and (Contradiction → Contradiction); no cross-class pair exists | Matches endpoint | The split/merge continuity edge (RFC1-11); the same relation carries contradiction membership drift, where no declaration act exists to carry it. Each (C → C) pair resolves per RFC1-25(d): the four declared-class pairs resolve to **Desired (declared)**, minted by the declaration act; the (Contradiction → Contradiction) pair resolves to **Derived**, computed at the evaluation that mints the successor and a fact only when recorded inside that evaluation's observation record (RFC1-18(b)) |
 
 **RFC1-25(a) — Two relations minted by owner decision.** `declared-dependency`
 (A6) and `placed_in` (A7) are additions to this closed vocabulary made by
@@ -737,7 +754,18 @@ answers over graph identities — may be scheduled solely from this RFC. Before
 implementation, every observable consequence either maps to an approved
 OpenSpec requirement and scenario in the governance root's `openspec/**`
 plane, or carries a reviewed N/A judgment proving it purely structural with
-no independently testable behavior. At surface specification a
+no independently testable behavior. **The reviewed N/A judgment's home and
+gate.** A reviewed N/A judgment is a recorded owner judgment homed in
+`decisions/` (RFC3-15), and it is honored only where its owner-act provenance
+is verifiable under RFC3-16(a). Where that provenance does not verify, the
+judgment maps nothing: the consequence remains unmapped and renders Unknown,
+never covered (RFC3-16(a)'s effect rule; VIS-2).
+
+**Rows are per observable consequence, not per clause.** A clause with five
+observable consequences and one mapped requirement is not covered; the matrix
+discloses the consequences it enumerates for each clause, so a
+complete-looking matrix over under-enumerated consequences is a defect of the
+matrix. At surface specification a
 clause-to-requirement coverage matrix over RFC1-1..RFC1-33 is produced —
 **that matrix is review material, never authority**. This clause creates no
 OpenSpec content now (none may exist during bootstrap). (Shape-parallel with
@@ -804,11 +832,18 @@ remain post-V1.
 sibling *draft* by clause number (RFC2-n, RFC3-n, RFC4-n, RFC5-n, RFC6-n,
 RFC9-n — e.g. RFC1-3's consent split, RFC1-5's run-identity and
 warrant-reference notes, RFC1-9's Proposal-scheme delegation, RFC1-1's
-workspace surfacing path), the citation is **informative until that RFC is
-accepted**: it names where the obligation will be discharged, not a dependency
-of this contract's meaning. The kernel text is self-standing without them, and
-a renumbering in a sibling draft changes nothing here. Only citations to
-**adopted doctrine** and to the **SDR** are load-bearing.
+workspace surfacing path, **RFC1-33's home and gate for the reviewed N/A
+judgment**), the citation is **informative until that RFC is accepted**: it
+names where the obligation will be discharged, not a dependency of this
+contract's meaning. The kernel text is self-standing without them, and a
+renumbering in a sibling draft changes nothing here. Only citations to
+**adopted doctrine** and to the **SDR** are load-bearing — which is why this
+RFC's `depends_on` is empty and stays empty. RFC1-33's limb is the one place
+where the staging has a consequence worth stating plainly: **until RFC 0003 is
+bound, that limb names no honored home and no verifiable gate**, so the
+judgment it governs cannot be honored at all — which is the conservative
+direction, since no implementation may be scheduled from this RFC in either
+case.
 
 ---
 

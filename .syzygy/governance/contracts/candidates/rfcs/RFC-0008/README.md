@@ -8,10 +8,10 @@ clauses: RFC8-1..RFC8-32 (no gaps, no retired numbers, no merges; no lettered su
 implementation_boundary:
   kind: requires-openspec
   clause: RFC8-32
-governs: [work, work-states, dispatch, execution-records, trajectory-surface, materialization-records, change-accounting-chain, reconciliation-chain-state, cost-measures, provenance]
+governs: [work, work-states, dispatch, execution-records, trajectory-surface, materialization-records, change-accounting-chain, reconciliation-chain-state, cost-measures, provenance, non-visual-parity]
 applies_to: [trajectory]
 depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007]
-tags: [work-state-vocabulary, reconciliation-chain, cost, provenance, compaction, phase-boundary, anti-thesis, closure-fallacy, substrate]
+tags: [work-state-vocabulary, reconciliation-chain, cost, provenance, compaction, phase-boundary, anti-thesis, closure-fallacy, substrate, non-visual, accessibility]
 ---
 
 # RFC 0008 — Trajectory (Work Surface)
@@ -101,8 +101,10 @@ Four rules carry most of the weight, distributed across the modules:
   RFC8-12/8-13);
 - the four post-merge answers — *reconciled at E with evidence*, *merged, not
   yet evaluated*, *evaluated and unsatisfied*, *evaluated, contradiction
-  raised* — **must never share a rendering**, and at V0 the honest answer for
-  merged work is "reconciliation evidence absent" (module 3, RFC8-28/8-29).
+  raised* — **must never share a rendering**, and never differ by colour
+  alone; the chain vocabulary is closed at six values; and at V0 the honest
+  answer for merged work is "reconciliation evidence absent" (module 3,
+  RFC8-28/8-29).
 
 Two invariants span the package. **Cost is independent measures, never a
 composite "effort" score**; absent values are Unknown, never zero; every
@@ -151,8 +153,10 @@ never renumbered. Only cases 4 and 12 span two modules and are held here.*
 Per-module relies-on lists are in each module's §5. Two items are stated once,
 here, because they bind across modules.
 
-**The RFC 0009 handoff is two orthogonal fields, not one** (RFC8-12; RFC8-28),
-and RFC9-32's work/construction overlay consumes **both**:
+**The RFC 0009 handoff is two separate fields, not one** (RFC8-12; RFC8-28) —
+separate, not orthogonal, since normalized `reconciled` is a projection of the
+chain value `reconciled@E` (RFC8-12) — and RFC9-32's work/construction overlay
+consumes **both**:
 
 1. the **normalized work state** — RFC8-12/8-13's closed vocabulary (module 2),
    at present **thirteen values in three partitions**, not eight: eight live
@@ -245,8 +249,11 @@ The phase rule **RFC8-32** binds the whole package: this contract fixes the
 semantics of the work surface and is not a specification of record from which
 implementation work may be scheduled. The clause text is in
 `accounting-reconciliation-and-release.md` §3.16, and its
-clause-to-requirement coverage matrix must cover **RFC8-1…RFC8-31 across all
-three modules**, not module 3 alone.
+clause-to-requirement coverage matrix must cover **every clause of this
+contract other than RFC8-32 itself, across all three modules** — not module 3
+alone, and not a range that stops moving when a clause is appended. RFC8-32
+also fixes the home and the provenance gate of the reviewed N/A judgment; the
+clause states both.
 
 ---
 

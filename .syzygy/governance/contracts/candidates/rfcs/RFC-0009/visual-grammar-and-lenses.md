@@ -67,7 +67,18 @@ rest are sibling states rendered alongside a label, never fourth labels
 decision** (struck plate with reason + expiry; never green, resolved, or
 aligned); **Proposed/speculative** (wireframe + translucency — never looks like
 existing structure [Observed: trust-and-evidence.md]); **Unadopted draft**
-(proposed treatment + "unadopted" plate; anchors nothing). The freshness family —
+(proposed treatment + "unadopted" plate; anchors nothing); **Editorial draft**
+(RFC7-20's third RFC2-25 sibling surface state — a distinct reservation, not
+the unadopted-draft treatment: an `unadopted-draft` awaits an adoption gate
+into authority, an `editorial-draft` awaits a human authorship act into a
+non-authoritative artifact and stays non-citable even after adoption, so a
+shared treatment would tell the reader the wrong thing about what act is
+owed). All three sibling surface states are reserved here because RFC9-43
+makes them **mandatory** in aggregate disclosure and RFC9-26 is fail-closed: a
+state with no reserved treatment either does not render — contradicting
+RFC9-43 and RFC9-46, a release-blocking scene/table disagreement under
+RFC6-22/23 — or renders on an unreserved treatment, which is the unlegended
+meaning VIS-7 forbids. The freshness family —
 fresh / stale / broken / superseded — applies on top of any state (RFC2-10):
 stale desaturates with an age plate; broken shows last-good marked broken, never
 failing invisibly; superseded ghosts. Concrete treatment *values* (hues,
@@ -206,8 +217,10 @@ by open-work-item count would be a measured binding and is therefore forbidden t
 an overlay.
 
 The declared work state is consumed **verbatim from RFC 0008, and it is two
-orthogonal fields, not one** (RFC8-12; RFC8-28). The overlay
-consumes and renders both:
+separate fields, not one** (RFC8-12; RFC8-28) — separate rather than
+orthogonal, since normalized `reconciled` is a projection of the chain value
+`reconciled@E`, which is exactly why neither field ever substitutes for the
+other. The overlay consumes and renders both:
 
 - the **normalized work state** — RFC8-12/13's closed vocabulary, whose values
   are partitioned into live states, a terminal state, and **state-local absence
@@ -393,7 +406,7 @@ generic geometry. [Inferred — VIS-1 honest simplification, operationalized.]
 
 **RFC9-43.** Every aggregate discloses its membership count and epistemic
 composition and supports expansion to members (RFC6-17; SDR-27). **The disclosed
-composition is the full RFC9-46 equivalence tuple** — per-label, per-tier,
+composition is the full RFC6-22 equivalence tuple** — per-label, per-tier,
 per-Unknown-reason and per-freshness-state counts **and sibling surface states** —
 the tier counts covering all six of RFC2-25's tiers (`gate-backed`,
 `report-fact`, `asserted-by-worker`, `reduced-fidelity`, `declared-only`,
@@ -409,8 +422,22 @@ surface, not buried in drill-down"]. A district disclosing "Observed ×30, Unkno
 ×10" while all 30 are `reduced-fidelity`, 12 are stale and 3 are dismissed by
 decision reads as a well-evidenced, current district — to a human and to an agent
 querying the same aggregate under RFC6-13. RFC6-17 binds the same enumeration at
-the foundation layer; the two are deliberately identical, and any divergence is a
-defect to close rather than a surface-local variation.
+the foundation layer — its own words are "the disclosed composition is the full
+RFC6-22 equivalence tuple" — so the two are deliberately identical, and any
+divergence is a defect to close rather than a surface-local variation.
+
+**RFC9-46's surface-local additions are not aggregate-composition items, and
+this clause does not import them.** RFC9-46 adds two fields to the
+**cross-surface equivalence** tuple — the RFC9-9(b) positional-expression
+state per rendered `declared-dependency` edge, and both RFC9-15(b) part 4
+backlog partition counts. Those are properties of an **edge** and of the
+**layout**, not of an aggregate's membership; requiring every district
+aggregate to restate them would create an obligation RFC9-47's gate list has
+no aggregate-level check for, and RFC9-47(a) part 1 forbids minting a
+release-blocking obligation without routing a check for it in the same
+logical change. They bind where RFC9-46 binds them: the 3D scene and the
+non-3D view must agree on both, over the same declared scope, and RFC9-47
+already gates that.
 
 **Aggregated measured channels carry their Unknown contribution — RFC9-27 at
 scale.** Where an aggregate renders a lens-bound measured channel over
@@ -610,6 +637,9 @@ numbers never shift. **None of this module's questions is open.**
   is held behind its own owner approval, which RFC9-41 states as live contract
   text rather than as an open question. See `../../history/RFC-0009-history.md`
   §8.
+- **q4** — analytical-plane governance (RFC9-10, RFC9-18)? **Answered — owner
+  decisions B12(c)/B17**, the single promotion predicate stated in RFC9-35,
+  which answers q4 and q9 with one rule. See history §8.
 - **q8** — is the comprehension test a release gate (RFC9-45)? **Answered —
   owner decision B12(b)**: yes, with attributed judgment. See history §8.
 - **q9** — who may adopt a lens (RFC9-32, RFC9-35)? **Answered — owner decisions

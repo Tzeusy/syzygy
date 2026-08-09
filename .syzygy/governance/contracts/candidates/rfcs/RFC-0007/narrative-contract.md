@@ -225,9 +225,14 @@ exists to enable RFC7-11(a).
 **RFC7-11 — Broken anchors render Unknown, never silent.** When an anchor no
 longer resolves — target retired, spec anchor broken by edit, evidence gone —
 the block renders the break **on the primary surface**: the anchored claim
-degrades to Unknown, the break is named (which anchor, which target; RFC6-5
-outcome `unresolvable` or `retired`), and the same state is served to machine
-consumers (RFC7-33). The narrative never silently drops an anchor, re-guesses
+degrades to Unknown **with RFC2-24 reason #11 `reference-unresolvable`**
+carried verbatim (RFC6-14) and its resolution route — repair the reference —
+visible; the break is named (which anchor, which target; RFC6-5 outcome
+`unresolvable` or `retired`, which is a **navigation** fact and never the
+claim's Unknown reason, RFC6-6); and the same state is served to machine
+consumers (RFC7-33). Naming the outcome without the reason would mint an
+Unknown with nothing to carry, which RFC6-14 requires every machine answer to
+carry. The narrative never silently drops an anchor, re-guesses
 a target (RFC3-28: degrade, never guess), auto-redirects to a successor
 (RFC6-11), or keeps rendering the claim as anchored. A dangling anchor
 rendered as a live citation is a trust-floor violation [Observed:
@@ -497,8 +502,8 @@ review scope.]
 ## 4. Violation cases
 
 *Package numbering; cases are distributed across modules, never renumbered.
-Cases 8, 9 and 11 are in `rendering-and-surface.md`; cases 10, 13 and 15 span
-both modules and are held in `README.md` §4.*
+Cases 8, 9, 11 and 16 are in `rendering-and-surface.md`; cases 10, 13 and 15
+span both modules and are held in `README.md` §4.*
 
 1. *(RFC7-2)* A generated capability summary states a fallback behavior no
    normative artifact asserts, unanchored and unlabeled, in the register of
@@ -539,7 +544,10 @@ the plane rule (RFC1-22) that stops a proposed delta being anchorable at the
 leaf. **On RFC 0002:** the inference-overlay discipline (RFC2-7) an editorial
 draft carries; the verbatim label + tier + reason + freshness vocabulary
 (RFC2-10/24/25) — including `editorial-draft` as the third sibling surface
-state RFC7-20 mints; the admissibility floor made operational (RFC2-12) behind
+state RFC7-20 mints, and reason **#11 `reference-unresolvable`**, minted on
+this package's reported finding and **retained at acceptance by owner
+decision A5** with the list closed at twelve, which RFC7-11 now cites; the
+admissibility floor made operational (RFC2-12) behind
 RFC7-9; the revision-binding pattern (RFC2-11, RFC2-18) which RFC7-10's
 target-state component **imitates and never extends**, so RFC7-11(a) mints no
 RFC2-24 Unknown reason; V0 reconciliation staging (RFC2-19) wherever the

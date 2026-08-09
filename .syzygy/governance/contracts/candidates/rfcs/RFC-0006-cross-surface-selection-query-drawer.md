@@ -8,7 +8,7 @@ implementation_boundary:
   clause: RFC6-28
 governs: [selection-reference, url-identity, resolution-outcome, evidence-drawer, query-answer, label-parity, scenario-context]
 applies_to: [all-surfaces, kernel, machine-clients]
-depends_on: [RFC-0001, RFC-0002]
+depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004]
 tags: [selection, urls, queries, drawer, machine-endpoints, equivalence, scenario, consent, secrets]
 ---
 
@@ -102,9 +102,15 @@ handle must resolve to a selection reference before it crosses a surface
 boundary, a URL, or an endpoint.
 
 **RFC6-2 — Everything selectable, one way.** Every V0-core entity (RFC1-5),
-and every entity of an extension profile loaded for the project or workspace
-(RFC1-7 — the mission profile's Mission and Attention Item included), is
-selectable by reference. Selection targets the **durable identity level**
+and every entity of an extension profile loaded **for the project** (RFC1-7 —
+the mission profile's Mission and Attention Item included, on the staging
+RFC1-7 states for that profile), is selectable by reference. **Entities loaded
+at the workspace level rather than for a project are outside this clause and
+are deferred with the portfolio profile** (SDR-29/30; §7): RFC6-8 pins a
+selection inside a project identity and has no workspace-identity limb, so
+declaring such an entity selectable here would make it selectable with no URL
+form, against RFC6-12's openable-in-any-surface rule and VIS-7's link rule.
+Selection targets the **durable identity level**
 (SDR-2): selecting a claim or gap selects its durable identity; the evaluation
 qualifier picks which instance answers.
 
@@ -137,12 +143,33 @@ absence of the thing.
 | `resolved` | The reference resolves at the evaluation | Full drawer fact set available |
 | `resolved-absent` | The entity's durable identity is known, but the entity is absent from the selected evaluation's snapshot (appeared later, or vanished — absence is a fact, RFC1-31) | Name the evaluations where it is present; never render as error |
 | `retired` | The durable identity is retired, with or without successors (RFC1-11) | Render the retirement record and `succeeds` edges; offer successors; **never auto-redirect** (§3.3) |
-| `unknown` | The reference resolves but the governing claim renders Unknown | Carry exactly one RFC2-24 reason and its resolution route |
+| `unknown` | The reference resolves but the governing claims render Unknown | Carry **each governing claim instance's primary RFC2-24 reason with its resolution route**, and any secondary annotations beside it (RFC2-24: one primary per claim instance, secondaries drawn from the same twelve) — never collapsed to a single reference-level reason, since an entity may have several governing claims Unknown for different causes |
 | `not-applicable` | The entity has no projection on this surface | Legitimate **per surface only**, never for the kernel, a URL, or an endpoint; must still offer the drawer and name the surfaces where the entity does project — never a dead end |
 | `excluded` | Content excluded by secret-detection policy (SEC-5) | Rendered as *excluded* with count, never as absent (§3.8) |
 | `unconsented` | Resolution requires an unconsented source or provider (SEC-2/SEC-4) | Renders Unknown (`unconsented-source-or-provider`), visibly policy (§3.8) |
 | `unresolvable` | The kernel cannot resolve the reference at all — a dangling identity, a broken external-authority anchor (RFC1-15) | A **typed failure naming what failed to resolve**; a trust-floor incident for kernel-emitted links (VIS-7; RFC1-26), an honest degrade for externally-minted references |
 | `incompatible-scenario` | The scenario context names proposals the kernel may not union (§3.7) | Name the exclusivity-group conflict; render *N candidate futures*, never a merged fiction |
+
+**The nine values are disjoint by precedence, fail-closed.** A reference
+regularly satisfies more than one row's condition — a reference that resolves
+whose governing claim is Unknown, a retired identity whose retirement record
+sits behind an unconsented source, an absent entity inside an excluded scope,
+an unresolvable reference named in an incompatible scenario. The outcome is the
+**first** of the following whose condition holds, and no other: **1**
+`excluded` · **2** `unconsented` · **3** `incompatible-scenario` · **4**
+`unresolvable` · **5** `retired` · **6** `resolved-absent` · **7** `unknown` ·
+**8** `resolved`. Policy states rank above identity states, which rank above
+claim state — the fail-closed direction, so a policy condition is never masked
+by an answer about the thing. `not-applicable` is deliberately **not in the
+ordering**: it is legitimate per surface only, and it never displaces the
+kernel outcome — a surface with no projection for the entity renders
+`not-applicable` *in place of its own projection*, while the kernel outcome
+above, and the drawer fact set, stand unchanged and are what RFC6-7's
+determinism binds. Without this ordering RFC6-7's determinism would be asserted
+over a value domain in which two conforming surfaces could lawfully answer
+differently for one (reference, evaluation identity, scenario context) — a
+disagreement RFC6-23 makes release-blocking. [Inferred — the ordering; Observed
+— the fail-closed direction from SEC-5's unclassifiable rule and RFC6-26/27.]
 
 **RFC6-6 — Outcomes are not Unknown reasons.** `not-applicable`, `retired`,
 `resolved-absent`, and `unresolvable` are **navigation outcomes**, not claim
@@ -207,11 +234,21 @@ UI-only facts: anything a surface renders is queryable, and anything queryable
 is renderable. This is SDR-27's semantic/query equivalence stated as a
 bidirectional obligation.
 
-**RFC6-14 — Label parity.** Every entity, claim instance, and aggregate in a
+**RFC6-14 — Label parity.** Every entity and claim instance in a
 machine answer carries its epistemic state **verbatim from the RFC 0002
 vocabulary**: the label (Observed / Inferred / Unknown), the rendering tier
 (RFC2-25), the Unknown reason where applicable (RFC2-24), and the freshness
-state (RFC2-10). **A machine answer never omits epistemic state**: an answer
+state (RFC2-10). **Secondary Unknown annotations travel with the primary**,
+verbatim and marked as secondary (RFC2-24 opens them and closes their
+vocabulary to the same twelve); an answer carrying the primary alone has
+dropped part of the claim instance's epistemic state. **An aggregate carries
+no epistemic state of its own** — no aggregate-level label, tier, Unknown
+reason, or freshness state — and carries instead its members' composition per
+RFC6-17: RFC 0002 defines those four for claim instances, not for sets, and a
+headline label over mixed membership is VIS-1's named violation ("rendering
+that region green because its neighbors are green") whether or not an honest
+composition is disclosed beside it. **A machine answer never omits epistemic
+state**: an answer
 listing entities without their labels, or a count that folds Unknowns into a
 total silently, is a violation — an agent must be exactly as unable to mistake
 Unknown for success as the owner is (VIS-2). Sibling surface states
@@ -238,11 +275,21 @@ partial-snapshot rule, applied to queries).
 unified)* Any aggregate — in a scene, a table, or a machine answer — discloses
 its membership count and epistemic composition and supports expansion to its
 members. **The disclosed composition is the full RFC6-22 equivalence tuple**:
-per-label, per-tier, per-Unknown-reason and per-freshness-state counts **and
-sibling surface states** — the tier counts covering **all six** of RFC2-25's
+per-label, per-tier, per-Unknown-reason and per-freshness-state counts, **the
+sibling surface states**, the `challenge-pending` disclosure (RFC2-13), and —
+where the aggregate's members carry them — per-value counts of the **chain
+state** and the **normalized work state** of RFC6-19 class 8, so an aggregate
+can never satisfy this clause in full while disclosing nothing about
+reconciliation. **Per-Unknown-reason counts are computed over primary reasons
+only** — one claim instance contributes exactly one — with secondary
+annotations (RFC2-24) disclosed separately and never folded into the primary
+counts; otherwise two conforming surfaces could produce different Unknown-reason
+totals over one declared scope while both satisfying this clause, which RFC6-23
+would then class as a release-blocking disagreement. The tier counts cover
+**all six** of RFC2-25's
 tiers (`gate-backed`, `report-fact`, `asserted-by-worker`, `reduced-fidelity`,
-`declared-only`, `suspended`), not a subset, and the sibling surface states
-being the three RFC2-25 places deliberately outside the registry (*dismissed
+`declared-only`, `suspended`), not a subset, and the sibling surface states are
+the three RFC2-25 places deliberately outside the registry (*dismissed
 by decision*, *unadopted draft*, *editorial draft*, per RFC6-14) — never label
 and Unknown reason alone. The aggregation obligation is exactly as wide as the
 equivalence obligation over the same objects: labels may not be dropped at the
@@ -301,14 +348,27 @@ a fact. The human and machine paths receive the same facts (RFC6-13).
    `suspended` tier); `challenge-pending` suspends nothing and leaves the
    deterministic status standing.
 7. **Policy visibility** — exclusions (with counts), the **coverage
-   boundary** (what the producing evaluation could and could not observe,
-   RFC4-2), and consent state (§3.8).
+   boundary**, and consent state (§3.8). The coverage boundary is the union
+   of two defined constructs, never a free-standing judgment about what the
+   evaluation "could observe": the producing evaluation's executed **mapping
+   coverage records** (RFC4-27 — which pass ran, over which declared scope
+   with exclusions counted, with which observer/adapter versions, and what it
+   found; deterministic facts inside the observation record, RFC2-6) and, where
+   the snapshot was partial, its **explicitly declared captured scope**
+   (RFC2-23, partial-snapshot rule).
 8. **Work and reconciliation state** — where work bears on the selection,
-   the relevant items' normalized work state (RFC8-12) and chain state
-   (RFC8-28), carried as two fields, never folded, and never rendered as
-   proof of satisfaction (work is never proof); and the selection's
-   reconciliation state (RFC2-18, RFC2-19) — uncomputed reconciliation
-   renders Unknown, never green.
+   **two fields, never folded into one and never rendered as proof of
+   satisfaction** (work is never proof): (i) the relevant items' **chain
+   state**, defined at RFC2-18 (`merged`, `reconciliation-pending`,
+   `reconciled@E`, `unsatisfied`, `contradiction-raised`, `Unknown(reason)`)
+   and read at this evaluation under RFC2-19's V0 staging — this is the
+   selection's reconciliation state, and an uncomputed reconciliation renders
+   Unknown, never green; and (ii) the items' **normalized work state**
+   (RFC8-12 — a forward reference, informative until RFC 0008 is accepted:
+   until then the field is not required, its absence renders as absence, and
+   nothing may be substituted for it). Trajectory's rendering of the chain
+   state is RFC8-28, likewise informative until RFC 0008 is accepted; the
+   definition this class binds is RFC2-18's.
 
 **RFC6-20 — Drawer links obey the floor.** Every internal link in the fact set
 resolves to its identified target; the kernel does not emit a reference it
@@ -332,16 +392,22 @@ table, machine answer) are **equivalent** iff they present: the same evaluation
 identity, the same declared filters, the same underlying graph (entities and
 edges), the same epistemic states (label + tier + reason + freshness), the
 same sibling surface states (dismissed-by-decision, unadopted-draft,
-editorial-draft — RFC6-14), and the same scenario context (RFC6-24) for every
-presented element. Equivalence is over *semantics and query results*, never
-over pixels.
+editorial-draft — RFC6-14), the same **`challenge-pending` disclosure**
+(RFC2-13), and the same **chain state** and **normalized work state** where
+those are carried (RFC6-19 class 8), and the same scenario context (RFC6-24)
+for every presented element. Equivalence is over *semantics and query results*,
+never over pixels. The last two additions are what make the closure arguments
+of RFC2-13 and RFC8-12 true: each justifies naming its values in the contract
+by this clause checking them for parity, and a facet outside this tuple is
+checked by nothing.
 
 **RFC6-23 — Finer detail is allowed; contradiction is not.** A non-3D
 rendering may expose **finer detail** than an aggregated 3D scene (SDR-27) —
 that is a filter/aggregation difference and must be disclosed as one
 (RFC6-16/17). What no pair of equivalent renderings may do is disagree: on an
 entity's existence, an edge, a label, a tier, a reason, a freshness state, a
-sibling surface state, a scenario context, or a count over the same declared
+sibling surface state, a `challenge-pending` disclosure, a chain state, a
+normalized work state, a scenario context, or a count over the same declared
 scope. Any such disagreement is a kernel or projection defect,
 release-blocking under the trust floor.
 
@@ -411,10 +477,22 @@ work may be scheduled**. No implementation work for **user-observable behavior
 under this contract** — selection and URL behavior, the nine typed resolution
 outcomes, retirement rendering, drawer content, endpoint answers and their
 label parity — may be scheduled solely from this RFC: before implementation,
-every observable consequence of RFC6-1…RFC6-27 must either **map to an
-approved OpenSpec requirement or scenario** in the governance root's
-`openspec/**` plane, or carry an **explicit, reviewed N/A judgment** recording
-why that consequence needs no requirement. The surface-specification phase
+every observable consequence of **every clause of this contract other than
+this one** must either **map to an approved OpenSpec requirement or scenario**
+in the governance root's `openspec/**` plane, or carry an **explicit, reviewed
+N/A judgment** recording why that consequence needs no requirement. **The
+reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a recorded
+owner judgment homed in `decisions/` (RFC3-15), and it is honored only where
+its owner-act provenance is verifiable under RFC3-16(a). Where that provenance
+does not verify, the judgment maps nothing: the consequence remains unmapped
+and renders Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2).
+
+**Rows are per observable consequence, not per clause.** A clause with five
+observable consequences and one mapped requirement is not covered; the matrix
+discloses the consequences it enumerates for each clause, so a
+complete-looking matrix over under-enumerated consequences is a defect of the
+matrix. The
+surface-specification phase
 must produce, as a deliverable, a **clause-to-requirement coverage matrix**
 for this RFC — every clause mapped to requirement identities or to its
 reviewed N/A — and that matrix is review material, never authority. This
@@ -469,6 +547,29 @@ case (RFC1-15 degrade) maps to outcome `unresolvable`; its claim-status
 counterpart is RFC2-24 reason **#11 `reference-unresolvable`**, **retained by
 owner decision A5** — the defect this RFC recorded against RFC 0002 is thereby
 answered (history: §8 q3).
+
+**Relies on RFC 0003:** RFC3-16's owner-act record, which establishes this
+contract's own effective status (Status, above), and RFC3-16(a)'s predicate
+behind RFC6-28's reviewed N/A judgment; RFC3-15's `decisions/` category as that
+judgment's home.
+
+**Relies on RFC 0004:** RFC4-27's executed mapping coverage record, the defined
+construct behind RFC6-19 class 7's coverage boundary (with RFC2-6, which makes
+coverage records deterministic facts of the observation record).
+
+**Forward references are informative.** Where a clause of this RFC cites a
+sibling *draft* by clause number — RFC8-12 and RFC8-28 in RFC6-19 class 8,
+RFC9-14 in RFC6-24, RFC9-41 in RFC6-24 and §7 — the citation is **informative
+until that RFC is accepted**: it names where an obligation will be discharged
+or how another surface renders a facet this contract defines, never a
+dependency of this contract's meaning, and a renumbering in a sibling draft
+changes nothing here. Load-bearing are citations to **adopted doctrine**, to
+the **SDR**, and to RFC 0001, RFC 0002, RFC 0003 and RFC 0004 as enumerated
+above. Where such a forward citation appears inside a normative enumeration —
+RFC6-19 class 8's normalized-work-state limb — that limb states its condition
+in its own text rather than relying on this paragraph, so a reader at
+acceptance is never left deciding whether an obligation is inert or binding but
+unsatisfiable.
 
 **Provides to RFC 0005:** the resolution and query semantics its
 authentication contract wraps — client class never changes an answer's fact

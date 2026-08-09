@@ -4,10 +4,10 @@ title: Trajectory (Work Surface) — change accounting, reconciliation rendering
 status_source: owner-act-record
 module: accounting-reconciliation-and-release
 clauses: RFC8-21..RFC8-32 (no gaps, no retirements, no merges)
-governs: [change-accounting-chain, provenance, unknown-provenance, inherited-mutations, compaction, retention, reconciliation-chain-state, closure-fallacy, endpoints, phase-boundary]
+governs: [change-accounting-chain, provenance, unknown-provenance, inherited-mutations, compaction, retention, reconciliation-chain-state, closure-fallacy, endpoints, non-visual-parity, phase-boundary]
 applies_to: [trajectory]
-depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006]
-tags: [broken-joins, unknown-provenance, warrant-coverage, fail-closed, expired-detail, chain-state, closure-fallacy, sdr-10, sdr-11, sdr-12, phase-rule]
+depends_on: [RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007]
+tags: [broken-joins, unknown-provenance, warrant-coverage, fail-closed, expired-detail, chain-state, closure-fallacy, non-visual, accessibility, sdr-10, sdr-11, sdr-12, phase-rule]
 ---
 
 # RFC 0008 — Trajectory (Work Surface): accounting, reconciliation, release
@@ -42,8 +42,9 @@ Unknown-provenance work and the RFC2-24 reasons this surface renders
 (RFC8-23/8-24), inherited-mutation accounting under a fail-closed threshold and
 a warrant-coverage test (RFC8-25), the binding compaction preservation set and
 expired-detail tier rules (RFC8-26/8-27), the four-way post-merge chain-state
-distinction and the forbidden closure fallacy (RFC8-28/8-29/8-30), RFC 0006
-conformance and endpoint answerability (RFC8-31), and the binding phase rule at
+distinction, its closed six-value vocabulary and the forbidden closure fallacy
+(RFC8-28/8-29/8-30), RFC 0006 conformance, endpoint answerability and this
+surface's non-visual parity floor (RFC8-31), and the binding phase rule at
 the OpenSpec seam (RFC8-32). Read it to answer: *what did the fleet change,
 under whose authority, at what cost — and has any of it been checked against
 the intent that warranted it?*
@@ -56,7 +57,7 @@ threshold is declared **no mutation inherits at all** (RFC8-25; owner decision
 B13). **No observer or surface ever upgrades a tier** (RFC8-27). And the four
 post-merge answers — *reconciled at E with evidence*, *merged, not yet
 evaluated*, *evaluated and unsatisfied*, *evaluated, contradiction raised* —
-**must never share a rendering** (RFC8-28).
+**must never share a rendering**, and never differ by colour alone (RFC8-28).
 
 **Phase boundary.** RFC8-32 is binding and applies to the whole package: no
 implementation work for user-observable Trajectory behavior may be scheduled
@@ -225,7 +226,26 @@ shares a field, count, or UI string with it — and the same reservation binds
 adjudication only), which Trajectory must never merge into one count or one
 badge (RFC2-17; RFC4-6).
 
-**The chain state is a field of its own, orthogonal to RFC8-12's normalized
+**Six values, closed.** The chain-state vocabulary above is closed at those
+six values, and **no implementation may mint, spell, or force-fit one outside
+it** — the closure RFC8-12 cites this clause for, stated here in RFC8-12's own
+form and for its reason: a value the contract never names can be neither
+carried verbatim on a machine answer (RFC6-14) nor checked for parity, and
+RFC6-22/23 make the resulting disagreement release-blocking under the trust
+floor. Closing the field is what makes it the least-protected load-bearing
+facet no longer: it carries the reconciliation truth, and it is the one
+vocabulary an implementation would otherwise be free to spell for itself.
+
+**Never a colour-only distinction.** The four post-merge answers, and
+`unsatisfied` against `contradiction-raised` in particular, **never share a
+mark, a mark's colour, a count, or a legend entry** — the map surface binds
+the identical sentence (RFC9-32), and a distinction only colour carries is not
+a distinction under RFC6-22/23's parity test. Two differently-coloured badges
+do not discharge this clause: the reader on the surface that routes a gap to
+work and a Contradiction to owner adjudication alone must be able to tell them
+apart **without colour**, by label, text, or structure.
+
+**The chain state is a field of its own, separate from RFC8-12's normalized
 work state**, and the two travel together — never one in place of the other. A
 rendering showing normalized `merged` without the item's chain state collapses
 the three post-merge answers into a single mark, which this clause forbids.
@@ -263,22 +283,74 @@ normalized states, blocked causes, chain joins, cost measures — is queryable
 with identical labels, and its answers ("what remains," "what changed," "what
 still lacks reconciliation") are endpoint-answerable at a named evaluation.
 
+**Non-visual parity binds this surface too, and is stated here rather than
+left to the sibling surfaces.** Polaris binds it at RFC7-33/34; no doctrine
+clause distinguishes surfaces, and this surface's distinctions are the ones
+routing a reader to work or to owner adjudication. Two limbs, both binding:
+
+- **Recoverable without colour, position, or layout.** Every normalized work
+  state (RFC8-12), every chain state (RFC8-28), every blocked-cause set
+  (RFC8-17), the Unknown-provenance state (RFC8-23), and every state-local
+  absence value is carried **textually** — by label or structure — on every
+  rendering and every export, never by a colour, a column position, or a
+  board lane alone. This is RFC6-14's verbatim-carriage rule made a rendering
+  obligation: what an endpoint must carry, a human-readable rendering carries
+  too.
+- **Operable without a pointing device.** The board/queue/drawer handoff
+  (RFC6-18) and every traversal between a work item, its chain state, its
+  Execution Records and its evidence is operable by keyboard. Recoverability
+  governs *encoding*; operability is a separate obligation and both bind — a
+  surface whose every unit is recoverable and whose paths between units are
+  pointer-only has satisfied neither (RFC7-34's reasoning, applied here).
+
+*(Stated as a limb of RFC8-31 rather than as a new clause: the `RFC8-n` range
+is closed at RFC8-32 and this package mints no lettered sub-clauses
+(`README.md`). The limb binds exactly as a clause would, and RFC8-32's
+coverage matrix reaches it through RFC8-31.)*
+
 ### 3.16 Authority boundary at the OpenSpec seam (binding phase rule)
 
 **RFC8-32 — This contract schedules nothing.** This RFC fixes the semantics of
 the work surface; it is **not a specification of record from which
 implementation work may be scheduled**. No implementation work for
 **user-observable Trajectory behavior** may be scheduled solely from this RFC:
-before implementation, every observable consequence of RFC8-1…RFC8-31 must
-either **map to an approved OpenSpec requirement or scenario** in the
-governance root's `openspec/**` plane, or carry an **explicit, reviewed N/A
-judgment** recording why that consequence needs no requirement. The surface-
-specification phase must produce, as a deliverable, a **clause-to-requirement
-coverage matrix** for this RFC — every clause mapped to requirement identities
-or to its reviewed N/A — and that matrix is review material, never authority.
-This clause creates no OpenSpec content now (none may exist during bootstrap);
-it binds the phase boundary so RFC prose is never quietly treated as an
-implementable behavioral spec.
+before implementation, every observable consequence of **every clause of this
+contract other than this one** must either **map to an approved OpenSpec
+requirement or scenario** in the governance root's `openspec/**` plane, or
+carry an **explicit, reviewed N/A judgment** recording why that consequence
+needs no requirement. **The
+reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a recorded
+owner judgment homed in `decisions/` (RFC3-15), and it is honored only where
+its owner-act provenance is verifiable under RFC3-16(a). Where that provenance
+does not verify, the judgment maps nothing: the consequence remains unmapped
+and renders Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2). The
+surface-specification phase must produce, as a
+deliverable, a **clause-to-requirement coverage matrix** for this RFC — every
+clause mapped to requirement identities or to its reviewed N/A — and that
+matrix is review material, never authority. This clause creates no OpenSpec
+content now (none may exist during bootstrap); it binds the phase boundary so
+RFC prose is never quietly treated as an implementable behavioral spec.
+
+**The scope is stated without a range on purpose.** A numeric range copied
+into a clause goes stale the moment a clause is appended, and the appended
+clause is then the one no coverage matrix reaches. "Every clause of this
+contract other than this one" needs no maintenance and covers every future
+append.
+
+**Rows are per observable consequence, not per clause.** A clause with five
+observable consequences and one mapped requirement is not covered; the matrix
+discloses the consequences it enumerates for each clause, so a
+complete-looking matrix over under-enumerated consequences is a defect of the
+matrix.
+
+**Why the judgment is gated at all.** It *removes* an implementation
+obligation, which makes it authorization-bearing on RFC3-16(a)'s own test —
+the same predicate and the same failure posture RFC8-12's derivation mapping
+and RFC8-16's staleness bound already invoke in this package.
+`.syzygy/governance/**` is writable by the untrusted fleet-worker class
+(SEC-3, as RFC3-16(a) extends it to committed artifacts), and an N/A judgment
+that class could commit is the one artifact that turns "this clause needs a
+requirement" into "this clause needs nothing".
 
 ---
 
@@ -313,15 +385,21 @@ degradation only through a new identified evaluation (RFC2-4); the Unknown
 reason registry and its aggregation rule (RFC2-24); the tier registry
 (RFC2-25); the Unknown rendering of a conclusion suspended pending adjudication
 (RFC2-15); snapshot inputs for declared policy values (RFC2-1 item 7).
-**RFC 0003:** quality-policy material for the inherited-mutation threshold
-(RFC3-15). **RFC 0004:** Unknown-provenance is never an ingest rejection
+**RFC 0003:** quality-policy material for the inherited-mutation threshold and
+the `decisions/` home of RFC8-32's reviewed N/A judgment (RFC3-15); the
+owner-act provenance predicate that judgment is honored under (RFC3-16(a)).
+**RFC 0007:** the intent surface's machine-parity and non-visual obligations
+(RFC7-33/34), whose floor RFC8-31 states for this surface rather than
+inheriting. **RFC 0004:** Unknown-provenance is never an ingest rejection
 (RFC4-10); the `gate-backed` provenance predicate and its capture-time
 confirmation (RFC4-13, incl. RFC4-13(a)); capture-before-horizon **and its
 declared maximum inter-pass interval** (RFC4-16, incl. RFC4-16(2)); the run
 envelope whose prose fields are class-O optional enrichment (RFC4-19); join
 bases and their declared fidelity (RFC4-22); the co-evolution roadmap that is
 deliberately never required (RFC4-29). **RFC 0005:** machine-client admission
-for RFC8-31's endpoint answers. **RFC 0006:** selection by kernel identity
+(**RFC5-5** — machine clients are admitted only through an explicit, revocable
+admission, and agent and CLI clients are machine clients without exception)
+behind RFC8-31's endpoint answers. **RFC 0006:** selection by kernel identity
 (RFC6-1); the closed navigation-outcome set (RFC6-5); outcomes are not Unknown
 reasons (RFC6-6); label parity (RFC6-14); evaluation stamping (RFC6-15);
 aggregation disclosure (RFC6-17); the single drawer fact set (RFC6-18/19);
