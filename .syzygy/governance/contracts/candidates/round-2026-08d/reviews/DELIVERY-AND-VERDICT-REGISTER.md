@@ -205,13 +205,16 @@ regeneration and one fresh review of the new bytes.
 
 ## Disposition state
 
-No dispositions recorded yet. With all fifteen verdicts in, the disposition
-pass (repair / knowingly-bind / owner-decision routing, per finding) is the
-next step, and it comes **before** any frozen subject is edited (rule 10).
-Nothing in `rfcs/`, the fixtures, the acceptance record, or the wave
-manifests has been edited in response to these reviews as of this register's
-date. Recurring seams the dispositions should treat as one item each, not
-per-review: (i) the stale-numeric-range class — RFC10-16's `RFC10-1..22`
+**Dispositions recorded** — see `DISPOSITION-REGISTER.md` beside this file:
+all 173 findings across the fifteen reviews disposed (repair batches R-A
+through R-OVW, five new owner questions P-29..P-33 queued in
+`decisions/PENDING-OWNER-DECISIONS.md`, two recorded non-findings). Nothing
+in `rfcs/`, the fixtures, the acceptance record, or the wave manifests has
+been edited in response to these reviews as of this register's date; repairs
+draft per the disposition register's execution order, one batched pass per
+wave, each followed by scripted manifest regeneration and a fresh
+confirming review. Recurring seams the disposition register treats as one
+design item each (its §3), not per-review: (i) the stale-numeric-range class — RFC10-16's `RFC10-1..22`
 and RFC11-12's `RFC11-1..12`, found independently by RD-20/RD-21/RD-22/RD-23
 and matching RD-11 F1's dimension finding; (ii) the acceptance record's §7
 item 9, measured false or mis-anchored by RD-19, RD-20, and RD-22; (iii)
