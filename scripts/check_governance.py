@@ -434,6 +434,9 @@ RETIRED_PHRASE_ALLOW = (
     (f"{CANDIDATES}/round-2026-08/", "this round's process record and delta register"),
     (f"{CANDIDATES}/history/", "frozen rev9 corpus and per-RFC amendment history"),
     (f"{CANDIDATES}/reviews/", "raw reviewer output, stored verbatim"),
+    (f"{CANDIDATES}/round-2026-08d/reviews/",
+     "raw reviewer output, stored verbatim — a reviewer's retired-phrase "
+     "sweep must be able to name the phrases it swept for"),
     (f"{CANDIDATES}/00-README.md", "records the phrase as retired at rev10"),
     (f"{CANDIDATES}/10-EXIT-REPORT.md", "records the phrase as retired at rev10"),
     (f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md",
