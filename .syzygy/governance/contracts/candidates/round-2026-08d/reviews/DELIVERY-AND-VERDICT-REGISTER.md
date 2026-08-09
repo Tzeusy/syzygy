@@ -39,8 +39,9 @@ overlap; the RAW file marks the recovered part with a storage note. [Observed]
 **In progress, staggered.** The first launch attempt (all six concurrent,
 2026-08-09 morning) failed on a platform session limit; after the limit
 lifted, the owner directed the six reviewers be dispatched across ~12 hours
-rather than concurrently. RD-19, RD-20, RD-21, RD-22, RD-23 are scheduled at
-roughly two-hour intervals through 23:23 local 2026-08-09, in ceremony order.
+rather than concurrently. RD-20 was pulled forward by owner instruction and
+delivered early; RD-21, RD-22, RD-23 remain scheduled at roughly two-hour
+intervals through 23:23 local 2026-08-09, in ceremony order.
 Until each wave's review is delivered and its verdict stored here, that
 wave's exact-package review stands undischarged and **no wave act may be
 offered or performed** on the strength of the dimension reviews alone: they
@@ -50,10 +51,33 @@ cover the corpus by subject, not by exact per-wave package.
 |---|---|---|---|---|
 | RD-18 | A — RFC 0001–0006, 19 modules | 3/3 | `VERDICT: REVISE` | B1 — RFC3-15's `contracts/` row names the retired `ACCEPT COMPACTED FOUNDATIONAL RFCS` phrase as the live install gate and describes one act where there are six, inside the Wave A digest; B2 — the Wave A install puts `history/`, `matrix-rows/` and two generated reports inside `contracts/`, against RFC3-15's own "exclusively" |
 | RD-19 | B — RFC 0007–0009, 11 modules | 3/3 | `VERDICT: REVISE` | B1 — the acceptance record's §7 item 9 ("RFC 0001–0009 never cite RFC-0010/0011") is false against the wave's own RFC9-8(a), which relies at clause level on the RFC10-15 workspace governance store — the owner-attention list denies the wave's only forward reliance |
-| RD-20 | D1 | — | *scheduled ~17:23* | — |
+| RD-20 | D1 — RFC-0010 prevention plane, 5 files | 4/4 | `VERDICT: REVISE` | B1 — the independent-acceptability conditional ("until the correction plane is accepted") appears exactly once in the 1,011 D1 lines, as README index prose; RFC10-7's actual cap-lift condition does not mention Wave D2, so an ordinary owner act (§8 q2 after act 5) lifts the cap with the correction plane unbound; B2 — what a human stop guarantees is entirely in Wave D2, including limb (a) (no further dispatch), which is pure prevention text; no D1 clause makes a cancelled/expired mission cease dispatching or stop its children (62-line sweep); B3 — under D1-only the `running → completed` transition has no gatekeeper; an envelope may name the executing principal as its own completion establisher and no bound clause refuses it |
 | RD-21 | D2 | — | *scheduled ~19:23* | — |
 | RD-22 | C1 | — | *scheduled ~21:23* | — |
 | RD-23 | C2 | — | *scheduled ~23:23* | — |
+
+RD-20's mechanical layer was clean like its predecessors' — all 5 digests
+verified, the manifest sha256 matching the record's D1 row argument, the
+D1/D2 split an exact orphan-free partition of the 6-file RFC-0010 package,
+all 27 clause-definition sites unique and README-map-consistent, and all 24
+outbound citations into Waves A/B resolving. Its verdict turns on one seam,
+found three ways: the wave's independent-acceptability guarantee is carried
+by index prose that defines no clause while the clauses leave stop
+guarantees (B2), completion establishment (B3), and the cap's persistence
+against a premature autonomy-level enumeration (B1) on the unbound D2 side —
+each a duty that arises with zero effect classes authorized, which is
+exactly the condition the README's staging justification says cannot occur.
+Its enumeration found 15 normative D1→D2 reference sites of which the
+staging apparatus names 4 (M1); RFC10-16's coverage-matrix range still reads
+"RFC10-1..RFC10-22" against a 24-clause package (M2, the stale-22 figure's
+third recurrence); and the record's act-5 ordering guidance still points at
+the retired "act 1" (M5) while §7 item 9 anchors the no-self-widening reach
+on RFC10-15, which contains no loading rule (M6, corroborating RD-19 B1's
+finding that §7 item 9 is unswept). Its positive capability test is worth
+keeping: the reviewer could not construct an external effect reachable under
+D1-only — what a mission may *cause* is bounded; what a human may *do about
+it* is not. Its stated repairs are small and local; per rule 10 they batch
+with the other waves' repairs against a fresh manifest.
 
 RD-19's mechanical layer was as clean as RD-18's — 11/11 digests, the
 manifest sha256 matching the record's row B argument, the file set an exact
