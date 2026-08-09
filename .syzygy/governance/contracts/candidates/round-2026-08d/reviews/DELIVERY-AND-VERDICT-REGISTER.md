@@ -22,27 +22,30 @@ Register as of 2026-08-09.
 | RD-14 | Mission effects — RFC-0010 correction plane | 2/2 | `VERDICT: REVISE` | F1 — a mission reaching `failed` by RFC10-18/RFC10-18(a) neither halts dispatch nor terminates in-flight runs, and RFC10-17(a) releases their reservation in full |
 | RD-15 | Facets — cross-vocabulary closure | 2/2 | `VERDICT: REVISE` | none (11 findings: majors clustered at vocabulary seams, minors) |
 | RD-16 | Vocabulary — registry + default path | 2/2 | `VERDICT: REVISE` | F1 — `Gap`/`Unknown` classify the same case in opposite ways, undisclosed in the registry; F2 — `Reconciliation` used on the default path in the sense its own entry reserves against (inside act 4's digest subject) |
-| RD-17 | Validation — checks, generators, manifests | **2/3 — part 3/3 not delivered** | *not delivered* [Unknown] | F1 — the acceptance record's per-wave module counts are transcribed and verified by nothing; a 20-module wave can bind under the words "the 19 modules" with the whole battery green |
+| RD-17 | Validation — checks, generators, manifests | 3/3 (part 3 recovered from the reviewer's transcript — see note) | `VERDICT: REVISE` | F1 — the acceptance record's per-wave module counts are transcribed and verified by nothing; a 20-module wave can bind under the words "the 19 modules" with the whole battery green |
 
-**Tally: 8 of 9 verdicts delivered, all eight `REVISE`. Zero `CONFIRM`.**
+**Tally: 9 of 9 verdicts in, all nine `REVISE`. Zero `CONFIRM`.**
 
-RD-17's delivery was interrupted by a platform session limit after part 2/3
-("You've hit your session limit · resets 5:10am (Asia/Singapore)" — recorded
-verbatim from the failure notification). Its findings 1–8 are stored; its
-remaining findings and VERDICT line are owed. Until the verdict line arrives,
-no verdict may be recorded for RD-17 (copy-verdict-exactly rule).
+RD-17's message delivery was interrupted by a platform session limit after
+part 2/3 ("You've hit your session limit · resets 5:10am (Asia/Singapore)" —
+recorded verbatim from the failure notification). Part 3/3 (findings 9–13 and
+the VERDICT line) was recovered verbatim on 2026-08-09 from the reviewer's own
+composed final report in its session transcript, after verifying the
+transcript text byte-identical to the delivered parts over the finding-8
+overlap; the RAW file marks the recovered part with a storage note. [Observed]
 
 ## Wave exact-package reviews (work order §5, one per wave)
 
-**RD-18 (Wave A), RD-19 (Wave B), RD-20 (Wave D1), RD-21 (Wave D2), RD-22
-(Wave C1), RD-23 (Wave C2): NOT PERFORMED.** [Observed] All six launch
-attempts on 2026-08-09 failed immediately on the same platform session limit,
-and the launched agents were stopped. No wave exact-package review exists at
-this register's date. The acceptance record's wave-history note therefore
-remains the honest statement of what is unreviewed, and **no wave act may be
-offered or performed** on the strength of this pass alone: the dimension
-reviews cover the corpus by subject, not by exact per-wave package, and the
-§5 requirement of one exact-package reviewer per wave stands undischarged.
+**In progress, staggered.** The first launch attempt (all six concurrent,
+2026-08-09 morning) failed on a platform session limit; after the limit
+lifted, the owner directed the six reviewers be dispatched across ~12 hours
+rather than concurrently. RD-18 (Wave A) launched 2026-08-09 13:22 local;
+RD-19, RD-20, RD-21, RD-22, RD-23 are scheduled at roughly two-hour intervals
+through 23:23 local, in ceremony order. Until each wave's review is delivered
+and its verdict stored here, that wave's exact-package review stands
+undischarged and **no wave act may be offered or performed** on the strength
+of the dimension reviews alone: they cover the corpus by subject, not by
+exact per-wave package.
 
 ## What the delivered reviews establish
 

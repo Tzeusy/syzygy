@@ -203,3 +203,127 @@ total modules now: 40
 No error; silent admission into Wave A — the owner's act argument. `--check` does report `DRIFT`, so it is not invisible, but the drift message says "regenerate", and a regeneration enlarges the wave with no deliberate assignment. The generator's own selftest case 2 uses `RFC-9999-unassigned.md`, a name chosen so its prefix collides with nothing — the fixture passes on the one input shape that cannot exercise the hole.
 
 **Repair.** Require an exact key in `WAVE_OF_MODULE` for every top-level `rfcs/*.md`, using `WAVE_OF_RFC` only for paths of the form `rfcs/RFC-00nn/…`. Change the selftest fixture to a colliding name (`RFC-0006-scratch.md`).
+
+(part 3/3)
+
+> [Storage note, not reviewer text: this part was never delivered by message — the reviewer's session hit a platform limit after part 2/3. It is recovered verbatim from the reviewer's own composed final report in its session transcript (d35824df…), whose text was verified byte-identical to the delivered parts over the finding-8 overlap. Content below is the reviewer's, unedited.]
+
+### 9. The generator's "partition asserted on every run" is a check that cannot fail — **minor**
+
+Docstring rule 3: *"**The waves partition the package.** … the partition is recomputed and asserted on every run."* The assertion is `:131-134`:
+
+```python
+union = sorted(r for w in WAVES for r, _ in per_wave[w])
+if union != sorted(assigned):
+    return None, ["wave partition does not equal the active set — …"]
+```
+
+`per_wave` is populated only by `for rel in sorted(assigned): per_wave[assigned[rel]].append(...)`, so `union == sorted(assigned)` by construction.
+
+**[Observed] Mutation M7** (in the copy, by direct import): the only way the comparison can differ is a wave label outside `WAVES`, and that path raises first —
+
+```
+labels outside WAVES (the only way the assert can fire): []
+with a bad label, build() raises KeyError 'Z' — the assert is never reached
+```
+
+The real partition coverage exists and works, but it lives in CG-7a, not here — **[Observed] Mutations M2a/M2b** (in the copy) confirm it:
+
+```
+M2a (row duplicated into WAVE-B):
+FAIL  CG-7a … 79 entries examined, 1 finding
+      rfcs/RFC-0001-project-graph-identity-state-planes.md — appears in waves A/B; the partition overlaps
+FAIL  CG-7b … wave B — record offers daa6a5dd37b7… but the wave manifest hashes to b7cdeb79bce4…
+M2b (row deleted from WAVE-D1):
+FAIL  CG-7a … 77 entries examined, 1 finding
+      rfcs/RFC-0010/budget-reservation.md — in the active manifest but in no wave manifest; the partition is incomplete
+```
+
+**Repair.** Either delete the unreachable branch and let the docstring credit CG-7a for the partition, or make it a real check by building `per_wave` from an independent second pass over the tree.
+
+---
+
+### 10. CG-18's denominator shrinks silently when a fixture drops its `Measured:` anchor — **minor**
+
+`check_governance.py:1868-1875`:
+
+```python
+claimed = re.search(r"Measured:\s*\*\*([\d,]+)\s*words", body)
+if claimed:
+    examined += 1
+```
+
+The word-count predicate is skipped, without a finding, when the anchor is absent.
+
+**[Observed] Mutation M3b** (in the copy): replaced one fixture's `Measured: **14,112 words ≈ …**` with prose —
+
+```
+-- check_governance CG-18: OK    CG-18  context fixtures recompute — 19 measurements examined, 0 findings
+```
+
+20 → 19, still `OK`. `build_budget_report.py --check` and `verify_final_prespec.py` both do catch it (`DRIFT: … no 'Measured:' anchor to write` and `✗ … missing 'estimate' section`), so it is not unguarded — but CG-18's own line is exactly the failure mode its neighbouring comment warns about (*"a parser that examines 4 of 8 while reporting a count is the failure mode here"*). The falsification direction works correctly (**M3**: `FAIL CG-18 … claims 111,111 words; the declared mandatory set is 14,112`).
+
+**Repair.** Make a missing `Measured:` anchor a finding, not a skipped predicate; CG-18's denominator should be `2 × len(fixtures)`, computed and stated.
+
+---
+
+### 11. Hidden rules: three FAIL-severity checks encode normative editorial rules that no clause, policy or doctrine owns — **minor**
+
+I swept the whole corpus for citations of any `CG-\d+` identifier: **70 files, 692 citations.** Not one is in `.syzygy/governance/doctrine/`, in `.syzygy/governance/policies/craft-and-care/`, or in any `rfcs/` module. The only active-lane, non-round citations are `decisions/PROCESS-LESSONS.md` (22 — explicitly *"not default context"*), the acceptance record (5), `CONTEXT-BUDGET-REPORT.md` (5), `TASK-TO-CONTRACT-INDEX.md` (4), `PENDING-OWNER-DECISIONS.md` (4), `PROJECT-STATUS.md` (2), `AGENTS.md` (2), the fixtures, `TERM-REGISTRY.md` (2), `06-CONTEXT-LOAD-MAP.md` (1), and the substrate lock (1, itself "record, never authority"). **There is no check-to-owning-clause register anywhere in the repository.** [Observed]
+
+Most checks need none — CG-1 (links resolve), CG-7 (digests match subjects), CG-11 (ignore rules), CG-13/14 need no normative owner because they verify mechanical self-consistency. Three do:
+
+| Check | Rule it enforces at FAIL severity | Nearest written owner |
+|---|---|---|
+| **CG-21** | *"a contract module states no measurement"* | None. The only prose statement I found is `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md:167` — *"Current measurement has exactly one home: `CONTEXT-BUDGET-REPORT.md`, generated"* — inside a round narrative report, not a clause. The rule's normative statement is the script's docstring: *"So the rule is now: **a contract module states no measurement.**"* [Observed] |
+| **CG-20** | Same rule applied to the load map | Same — no clause. |
+| **CG-22** | *"no unqualified `status` in the active lane"* | `C/policy-candidates/TERM-REGISTRY.md:162-165`, whose own line 3 reads **"Status: CANDIDATE. This file binds nothing."** and whose banner adds *"none of its 31 entries acquires force from appearing here."* [Observed] |
+
+`verify_final_prespec.py` adds two script-local numeric rules: the hard `words > 7000` gate — the written owner says *"~7,000"* (`02-OWNER-DIRECTION-RECORD.md:47`; `COMPACTION-CHARTER.md:154`), an approximation enforced as an exact bound with an inline `JUSTIFIED_OVERSIZE` allowlist — and `total_words > 57000` (`:283`), a threshold with no written owner anywhere; it fires today (`note: total 110081 exceeds the 35–50k target band`) and is a note, never a failure, while `PASS — all checks clean` prints below it.
+
+This is not an argument that the rules are wrong. It is that the battery cannot distinguish, in its own output, a FAIL against doctrine from a FAIL against a candidate that says it binds nothing — and a reader has no register to consult.
+
+**Repair.** Add a `CHECK_OWNERS` table mapping each check id to its owning identifier (or the literal string `mechanical — no normative owner`, or `candidate: <path>`), print the owner alongside any FAIL, and fail the battery if a check has no entry. Route CG-20/CG-21's rule into the normative-change workflow so it acquires a clause, or downgrade both to WARN until it does.
+
+---
+
+### 12. `check_governance.py`'s stated portability invariant is contradicted inside the file — **minor**
+
+`:13`: *"**Repository-relative.** The repo root is derived from this file's own location; **no founder-machine absolute path appears anywhere.**"*
+
+Three do: `:2482` `gitpin(paths=[("/home/tze/.claude/skills/th/SKILL.md", H64)])`, `:2487` `gitpin(repo="/home/tze/.dotfiles/ai-bootstrap", …)`, `:2490` `gitpin(root="~/.claude/skills/th", …)`. [Observed] All three are inert synthetic YAML strings inside CG-19 selftest fixtures — they are the *inputs* the check must reject, and no filesystem access occurs. The behaviour is correct; the claim is false as written, in a repository whose own term registry says *"an artifact must not contradict itself in the first line and the third."*
+
+**Repair.** One-line amendment: *"no founder-machine absolute path is ever resolved; the only ones present are inert fixture inputs CG-19 exists to reject (see F4b, F5a, F5b)."*
+
+---
+
+### 13. Three of the six scripts have no `--selftest` at all, and none of the generators states a denominator on `--check` — **minor**
+
+`verify_final_prespec.py`, `build_contract_index.py` and `build_dependency_index.py` ship no mutation fixture; `build_active_manifest.py` and `build_budget_report.py` do (both pass). Their `--check` output states no population:
+
+```
+index matches regeneration — no drift
+dependency index matches regeneration — no drift
+```
+
+against `check_governance.py`'s own design constraint: *"Every summary line states its denominator. A check that examined zero items reports WARN."* Both index builders `continue` silently on a module with no front-matter `id` (`build_contract_index.py:86-87`; `build_dependency_index.py:98-99`), so a corpus that lost its front matter would regenerate to a smaller index and `--check` would say "no drift" against the smaller committed file.
+
+I did verify these scripts *can* fail — **[Observed] Mutation M11** (in the copy), removing a clause definition from `rfcs/RFC-0011/deterministic-selection-and-budget.md`, gives `verify_final_prespec.py` → `✗ … unresolved citation RFC11-16` ×4; **M1** (module byte change) gives `build_active_manifest --check` → `DRIFT: ACTIVE-CONTRACT-MANIFEST.txt` + `DRIFT: wave-manifests/WAVE-A-MANIFEST.txt`, rc=1, and `FAIL CG-7a … 2 findings`.
+
+**Repair.** Add a `--selftest` to each (one fixture per predicate class), and print `N contracts / M modules / K clauses examined` on `--check` so a shrunken population is visible.
+
+---
+
+## Explicit non-findings
+
+**Clone-path sensitivity (question 5) is clean.** [Observed] `ROOT` derives from `__file__` (`:74`); `.gitignore` is parsed rather than hardcoded (`_git_excluded_roots`, `:1431-1449`); no `os.environ`, `getenv` or `expanduser` call appears in any of the six scripts. `python3 scripts/check_governance.py` in the clone reports `scope: clone — 286 file(s) examined (286 tracked, 0 untracked-not-ignored)` and `25 OK, 15 WARN, 0 FAIL (40 checks)`, exit 0. In a git-stripped copy the walk fallback examines the same 286 files, degrades exactly one check with a printed disclosure — `WARN CG-11 ignore rules — 0 rules examined … git unavailable — ignore status is Unknown, not clean` — and reports `24 OK, 16 WARN, 0 FAIL (40 checks)`. Only `build_budget_report.head_commit()` reads git, and its output is excluded from comparison by `_without_asof`. Nothing here answers differently in a fresh clone.
+
+**CG-7's core predicates are real.** Mutations M1, M2a and M2b each produced a `FAIL` with an accurate, specific message (quoted in findings 1 and 9). CG-7e's registration predicate — the RD-6 H-1 closure — is well-constructed: predicate 2 (an unregistered file carrying a current act digest fails) is what makes predicate 1 non-circular.
+
+**Manifest enumeration is otherwise total.** `enumerate_modules` correctly hard-errors on a non-`.md` file under `rfcs/`, on an unknown `RFC-nnnn` directory, and on a new module inside `RFC-0010/` or `RFC-0011/` (whose per-module tables demand explicit assignment). The 39-module population matches across `ACTIVE-CONTRACT-MANIFEST.txt`, `verify_final_prespec.py`, `module_words()` and the six wave manifests (19+11+2+1+5+1 = 39, verified by row count). Finding 8 is the sole enumeration hole I found.
+
+---
+
+**Summary.** The validation layer is unusually strong where it was recently attacked — the act-digest population (CG-7d/7e), the substrate lock (50 fixtures), the measurement-in-prose inversions — and it fails honestly under mutation on every predicate I tested that it claims to hold. What it does not yet cover is the seam *around* the digests: the prose that describes what a digest binds (finding 1), the generated artifact that owns every measurement (finding 2), the banner on the file a reader meets first (finding 6), and its own coverage claim (finding 3). Findings 1 and 2 are the ones that would let an owner act on a false description with the documented battery green.
+
+VERDICT: REVISE
