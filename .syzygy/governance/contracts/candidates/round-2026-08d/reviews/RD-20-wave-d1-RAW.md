@@ -365,3 +365,16 @@ The manifest is clean, the partition is exact, the citations resolve, and the pr
 But the wave is offered on a claim — that the prevention plane stands alone — whose one statement lives in a file that defines no clause, and which two concrete duties falsify. Accepting D1 at these bytes would bind an index sentence the owner would reasonably read as a guarantee, and a clause set that does not make it one. The repairs are small and local: one limb on RFC10-7, one limb on RFC10-5 (or a module move for RFC10-20), one limb on RFC10-6 or RFC10-7, a generated seam table, and a range correction in RFC10-16. Batch them — this review is bound to `570e6170…8c0dff` and editing the subject afterwards makes it worth nothing.
 
 VERDICT: REVISE
+
+---
+
+**[Storage note — not part of the review of record.]** After the four parts
+above were delivered and stored, the reviewer sent one further handoff
+message before approving shutdown (2026-08-09). It is procedural guidance
+for the repair pass, stored verbatim below on the same terms as the review:
+
+> Acknowledged — approving shutdown next. One standing note for whoever handles the repairs:
+>
+> RD-20 is bound to `WAVE-D1-MANIFEST.txt` sha256 `570e617091bb41d8b34ca17b09e12f41d22e4d592a23249c8a737a698f8c0dff`. Any edit to any of the five D1 files retires this review (verification rule 10). Batch B1, B2, B3 and M1–M4 into a single repair pass, regenerate the manifest by script, and re-review at the new argument — the repairs are small and local, so one pass should carry all of them.
+>
+> M5 and M6 are record-level (`FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`), outside the D1 bytes, and can be fixed without disturbing the digest.

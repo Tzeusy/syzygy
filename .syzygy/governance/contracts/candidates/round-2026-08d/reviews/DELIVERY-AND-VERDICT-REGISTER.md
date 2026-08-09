@@ -76,8 +76,12 @@ on RFC10-15, which contains no loading rule (M6, corroborating RD-19 B1's
 finding that §7 item 9 is unswept). Its positive capability test is worth
 keeping: the reviewer could not construct an external effect reachable under
 D1-only — what a mission may *cause* is bounded; what a human may *do about
-it* is not. Its stated repairs are small and local; per rule 10 they batch
-with the other waves' repairs against a fresh manifest.
+it* is not. Twelve of its sixteen findings sit in the D1 bytes and move the
+Wave D1 digest (B1–B3, M1–M4, m1–m5); four are record-level and
+digest-stable (M5, M6, m6, m7). The reviewer's parting handoff (stored in
+the RAW file's storage note) directs one batched repair pass over the
+digest-moving set, a scripted manifest regeneration, and a fresh review at
+the new argument, per rule 10.
 
 RD-19's mechanical layer was as clean as RD-18's — 11/11 digests, the
 manifest sha256 matching the record's row B argument, the file set an exact
