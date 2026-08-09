@@ -36,17 +36,21 @@ overlap; the RAW file marks the recovered part with a storage note. [Observed]
 
 ## Wave exact-package reviews (work order §5, one per wave)
 
-**In progress, staggered.** The first launch attempt (all six concurrent,
-2026-08-09 morning) failed on a platform session limit; after the limit
-lifted, the owner directed the six reviewers be dispatched across ~12 hours
-rather than concurrently; RD-20 and RD-21 were then pulled forward by owner
-instruction, and the owner subsequently directed the final two (RD-22,
-RD-23) be launched together without staggering. RD-23's delivery is in
-progress.
-Until each wave's review is delivered and its verdict stored here, that
-wave's exact-package review stands undischarged and **no wave act may be
-offered or performed** on the strength of the dimension reviews alone: they
-cover the corpus by subject, not by exact per-wave package.
+**Complete — all six delivered and stored.** The first launch attempt (all
+six concurrent, 2026-08-09 morning) failed on a platform session limit;
+after the limit lifted, the owner directed the six reviewers be dispatched
+across ~12 hours rather than concurrently; RD-20 and RD-21 were then pulled
+forward by owner instruction, and the owner subsequently directed the final
+two (RD-22, RD-23) be launched together without staggering. All six wave
+exact-package reviews are now delivered and their verdicts stored below.
+
+**Tally: 6 of 6 wave verdicts in, all six `REVISE`. Zero `CONFIRM`.**
+Combined with the nine dimension reviews, the round-2026-08d pass delivered
+**15 of 15 verdicts, all `REVISE`**. No confirming review is bound to any
+wave argument; **no wave act may be offered or performed** at the `771965c`
+bytes. Every wave's manifest layer was verified clean by its reviewer — the
+digests, arguments, and partitions all hold; every verdict turns on clause
+text, record accuracy, or fixture coherence.
 
 | Review | Wave | Parts stored | Verdict (copied exactly) | Blocking findings |
 |---|---|---|---|---|
@@ -55,7 +59,31 @@ cover the corpus by subject, not by exact per-wave package.
 | RD-20 | D1 — RFC-0010 prevention plane, 5 files | 4/4 | `VERDICT: REVISE` | B1 — the independent-acceptability conditional ("until the correction plane is accepted") appears exactly once in the 1,011 D1 lines, as README index prose; RFC10-7's actual cap-lift condition does not mention Wave D2, so an ordinary owner act (§8 q2 after act 5) lifts the cap with the correction plane unbound; B2 — what a human stop guarantees is entirely in Wave D2, including limb (a) (no further dispatch), which is pure prevention text; no D1 clause makes a cancelled/expired mission cease dispatching or stop its children (62-line sweep); B3 — under D1-only the `running → completed` transition has no gatekeeper; an envelope may name the executing principal as its own completion establisher and no bound clause refuses it |
 | RD-21 | D2 — RFC-0010 correction plane, 1 file | 3/3 | `VERDICT: REVISE` | B1 — RFC10-20's trigger set is closed and human-keyed (stop, cancellation, expiry) while D2's own RFC10-18/RFC10-18(a) route missions into `failed` by machine adjudication; no clause in the 6-file package halts dispatch or terminates runs on that transition, so a `failed` mission's compensation runs while its runs keep dispatching and RFC10-17(a) releases their reservation in full |
 | RD-22 | C1 — RFC-0011 module 1 + package index, 2 files | 3/3 | `VERDICT: REVISE` | B1 — RFC11-12's coverage-matrix range reads `RFC11-1..RFC11-12` against a 16-clause package, short by exactly the four clauses this round added (RFC11-13..16); the correction lives only in the README, which RFC11-12 itself and C2's RFC11-4 both deny authority — the third recorded instance of the stale-numeric-range class, and RFC10-16's identical defect is flagged in the same finding |
-| RD-23 | C2 | — | *scheduled ~23:23* | — |
+| RD-23 | C2 — RFC-0011 selection module, 1 file | 3/3 | `VERDICT: REVISE` | B1 — the module's own acceptance condition ("acceptable only when its selection rules can reproduce the blind golden fixtures — the acceptance criterion is stated with the fixtures") points at an empty place: sweeps of all 11 fixture files and 101 candidate-tree files find no pass/fail standard anywhere, and no derivation result is recorded; B2 — the condition is anchored to fixtures outside every wave manifest and the active manifest, so the act would freeze the claim while its subject stays freely editable; B3 — the ten goldens contradict each other on three of the module's six clauses (RFC11-15 applied by 4, violated by 6; RFC11-14 rule 2's enumeration split bimodally 2-vs-8 with 278 outstanding identities; RFC11-16 exercised by 0 of 10), so the test has no single right answer even if run |
+
+RD-23 closed the pass with the sharpest structural finding of the six: the
+C2 module's mechanics are clean (digest verified three ways, exact
+partition, zero unbound outward references at act position — its only
+external clause citation is RFC3-16), but the module's own acceptance
+condition cannot be discharged. The criterion it says is "stated with the
+fixtures" exists nowhere (101-file sweep), the fixtures sit outside every
+manifest so act 6 would freeze the claim while leaving its subject
+editable (the inverse of verification rule 10), and the ten goldens
+mechanically contradict three of the module's six clauses — including a
+bimodal 2-vs-8 split on what RFC11-14's "cite" means, under which two
+honest selectors produce omission registers differing by two orders of
+magnitude. Its operability answer is direct: two independent selectors do
+not terminate on the same packet. Two clauses name mechanisms with zero
+corpus representation (RFC11-14 rule 3's transitive marking, RFC11-15's
+ownership metadata — 0 of 66 rule identifiers satisfiable), and the
+record's §3 budget evidence for RFC11-11 is stale by ~2× against the
+generated report (10,917–35,667 across ten fixtures, not 10,854–18,302
+across five). M4 found the C2 row is the only wave row with no dependency
+statement while its module leans on C1 ten times; M5 confirms RD-22 B1's
+RFC11-12 range defect from the C2 side and insists it be raised before
+act 5. B1/B3's clause-precision halves and m2 move the C2 digest (with
+fixture repairs alongside); M3, M4, and the record-side halves of B2/M6
+are digest-stable record edits.
 
 RD-22 judged the C1/C2 split itself well made: module 1's ten clauses stand
 without RFC11-4, all eight `depends_on` edges are satisfied at act position,
@@ -177,8 +205,19 @@ regeneration and one fresh review of the new bytes.
 
 ## Disposition state
 
-No dispositions recorded yet. The disposition pass (repair / knowingly-bind /
-owner-decision routing, per finding) comes after RD-17 completes and before
-any frozen subject is edited. Nothing in `rfcs/`, the fixtures, the acceptance
-record, or the wave manifests has been edited in response to these reviews as
-of this register's date.
+No dispositions recorded yet. With all fifteen verdicts in, the disposition
+pass (repair / knowingly-bind / owner-decision routing, per finding) is the
+next step, and it comes **before** any frozen subject is edited (rule 10).
+Nothing in `rfcs/`, the fixtures, the acceptance record, or the wave
+manifests has been edited in response to these reviews as of this register's
+date. Recurring seams the dispositions should treat as one item each, not
+per-review: (i) the stale-numeric-range class — RFC10-16's `RFC10-1..22`
+and RFC11-12's `RFC11-1..12`, found independently by RD-20/RD-21/RD-22/RD-23
+and matching RD-11 F1's dimension finding; (ii) the acceptance record's §7
+item 9, measured false or mis-anchored by RD-19, RD-20, and RD-22; (iii)
+prevention/correction containment — RD-13 F1, RD-14 F1, RD-20 B1/B2/B3, and
+RD-21 B1/M1/M2 are one seam whose repairs (a D1-side stop/completion floor,
+a transition-keyed RFC10-20 trigger) should be designed together; (iv) the
+index-carries-what-no-clause-states class — RD-20 B1 (RFC-0010 README),
+RD-22 M1/M2 (RFC-0011 README), RD-23 B1 (criterion "stated with the
+fixtures" that no fixture states).
