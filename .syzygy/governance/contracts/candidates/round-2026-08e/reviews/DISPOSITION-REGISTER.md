@@ -1,0 +1,44 @@
+# Round-2026-08e review dispositions
+
+> **Process bookkeeping — never authority.** One row per finding, recorded
+> **before** any frozen subject is edited (verification rule 10: the review
+> binds the bytes it read; the fix batches into the pass and the delta
+> records it). Verdict words in the delivery register are copied exactly;
+> this file owns only what the pass decided to do about each finding.
+
+## RD-24 — launch-gate instrument v1.4 (subject sha256 `1e28271d…` at `e8a4f36`)
+
+Disposition shorthand: **R** = repaired this pass (instrument → v1.5 with the
+semantic delta extended; validator changes carry mutation fixtures), **J** =
+judgment recorded here and in the delta, **O** = surfaced to the owner in the
+P-34 packet rather than decided by the pass.
+
+| Finding | Class | Disposition | Where the repair lands |
+|---|---|---|---|
+| RD24-01 | BLOCKING | R | P-34 mechanism reordered: the status edit is made first, the owner verifies and binds the *resulting* digest — the act attests the bytes that will be in force |
+| RD24-05 | BLOCKING | R | §5 row form gains `Not met (out of launch scope)`; §4 formula and the validator's LG-6 both read it; fixture added for the T1/T2 pair |
+| RD24-09 | BLOCKING | R | §4 conjunct restated as a verdict predicate (F1 ∈ {`Met`, `Unknown`} passes; `Not met` blocks); the divergence limb lives in F1's own fails-when, where it already was |
+| RD24-02 | MAJOR | R | §5 template's first required field becomes a one-line non-authority banner |
+| RD24-03 | MAJOR | R + O | `governs:` gains "launch-scope parameters (§8)" — the conservative direction (§8 re-parameterization is owner-gated once in force); the delta flags the choice for the owner at P-34 |
+| RD24-06 | MAJOR | R | `LAUNCH_TARGET` gains a path-and-quote citation to Capability 1's defining artifact |
+| RD24-07 | MAJOR | R | `DEFAULT_ROUTE_SET` parameter: path enumeration of the default reading/task routes; D2/D3/F4 language reconciled to it |
+| RD24-10 | MAJOR | R | §5 template emits the literal `GATE VERDICT:` token; G1 gets a non-table slot; validator fixture for the template-verbatim case |
+| RD24-13 | MAJOR | R | `FIRST_SPEC_CANDIDATE` names one path; verdict rule stated for the absent case (E2 `Not met`, not `Unknown`) |
+| RD24-14 | MAJOR | R | Recurrence instruction moved to §8 with the defect described in-place (retired ceremony phrase standing as the live gate in two digest sets) |
+| RD24-15 | MAJOR | R | §2 reconciliation sentence: reviews trees are objects of F2/F4 sweeps, never read for content |
+| RD24-16 | MAJOR | R | `E4_ROUTING_AUTHORITY` parameter with path and clause citation |
+| RD24-18 | MAJOR | R | `CHUNK_UNIT: waves` bound in §8; B1–B5 read it |
+| RD24-19 | MAJOR | R | §5 gains explicit `Deferred:` / `Reopened:` count fields; validator errors on absence instead of printing zero; fixture added |
+| RD24-04 | MINOR | R | P-34 step 3 sentence repaired (with RD24-01's reorder) |
+| RD24-08 | MINOR | J | A5 is declared answered repository-wide, wave-blind; its fail condition is unchanged. Marking entries per wave would import the wave map into an instrument §7 wants project-generic |
+| RD24-11 | MINOR | R | One sentence: an `Unknown` F2 is deferrable on the same owner-deferral terms as a `Not met` F2 |
+| RD24-12 | MINOR | R + O | Sentence added stating F5/F6 are recorded, disclosed in §5, and deliberately non-gating at Administration 1; the delta flags "promote F5 to a conjunct" as an owner option at P-34 |
+| RD24-17 | MINOR | R | §6 names the trend-log path; the result home directory is created with a README stating what may live there (a home, not a decision) |
+| RD24-20 | MINOR | R | C2, C5, C7, D3, D4 each get a denominator rule (path glob or named enumeration) |
+| RD24-21 | MINOR | R | §5 gains an E1 five-sub-verdict block; parser accepts and counts sub-verdict rows; fixture added |
+
+**Re-review obligation.** This session executes the repairs, so it may not
+confirm them ("a repair session may not confirm its own repaired bytes").
+A tenth reviewer, **RD-33 — instrument re-review (v1.5, exact bytes)** — is
+added to the fleet after RD-30 and before the wave exact-package reviews.
+The charter's nine reviewers are a stated minimum.
