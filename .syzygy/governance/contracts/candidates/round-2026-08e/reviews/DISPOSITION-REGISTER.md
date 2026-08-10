@@ -192,3 +192,33 @@ therefore obliges.
 | RD30-13 | MINOR | R | P-41's packet and the index state the ordering: P-40 before P-41's act (CC-SPEC-1 consumes the granularity rule) |
 | RD30-14 | MINOR | R | Acceptance record §6 gains a dated paragraph carrying the 08d (fifteen REVISE) and 08e (fleet in progress) review state |
 | RD30-15 | MINOR | R | P-39 marks the format-delta check a pre-sitting task with cost `[Unknown]` (out-of-clone npm fetch) |
+
+## RD-33 — launch-gate instrument v1.5 re-review (subject sha256 `0522ef47…` at `997d9bd`)
+
+No finding touches a Wave A or Wave B module byte — the subject set is the
+instrument, its validator, P-34, and the trend log's format, all disjoint
+from the wave arguments (which is why RD-31/RD-32 lawfully run in
+parallel). RD-33 verified all 21 RD-24 repairs present and confirmed the
+three BLOCKING ones by execution; its five MAJOR findings are the
+absence-reads-as-success class (RD24-19's principle) one level up, three
+of them created *because* v1.5 made previously-dead checks live. Two
+(RD33-01, RD33-02) amend instrument text, so the repairs produce **v1.6**
+with its own semantic delta — and since this session authors those bytes,
+the P-34 offer waits on a fresh-context re-review of the v1.6 delta
+(**RD-34**) exactly as v1.5 waited on RD-33. The formal administration
+must not run on the v1.5 validator (RD-33's closing sentence, honored).
+
+| Finding | Class | Disposition | Where it lands |
+|---|---|---|---|
+| RD33-01 | MAJOR | R | New validator check **LG-9**: a nonzero count of `Not met (out of launch scope)` rows requires a non-empty deferred-wave findings line naming at least one defect — a scoped row beside `…: none` is an error; mutation fixture added. §4's disclosure sentence now cites LG-9 as its check |
+| RD33-02 | MAJOR | R | §6's trend-log columns gain **Scoped** (an instrument amendment — in the v1.6 offer, per RD-33's own note that post-approval repair would need another act); §6's anti-laundering rule extended: a scoped row is a finding in its own column, never an improvement of any other; validator emits the column and the `startswith`/`==` prior-vs-current asymmetry is fixed (both sides parse the exact verdict vocabulary); fixture covers the asymmetry case |
+| RD33-03 | MAJOR | R | §5's template line loses the free-riding parenthetical as satisfier: any `READY-WITH-DEFERRALS` verdict requires a new required field `Owner deferral decision:` naming a path/identifier that exists in the record's repo; LG-7 rewritten to require the field and reject the bare template phrase; the docstring's "each with a fixture" claim made true for LG-7 (fixture added) and LG-2's digest-mismatch limb (fixture added) |
+| RD33-04 | MAJOR | R | §4 states plainly: **any deferral-carrying pass is `READY-WITH-DEFERRALS`** — a plain `READY FOR` verdict with any owner-deferred row is a contradiction and an error; the F2 deferral marker becomes a citation requirement (an owner decision path/id, not a word match); validator enforces both; fixtures for the r4 case |
+| RD33-05 | MAJOR | R | The validator binds the full question roster (A1–A6, B1–B5, C1–C7, D1–D4, E1 + five sub-rows, E2–E6, F1–F6, plus the G1 heading) and errors on any missing row — absence of a question is a validation failure, never an implicit pass; fixture deletes a row (the p2 case) |
+| RD33-06 | MINOR | R | Validator compares the record's `Instrument version:` against the version in the instrument bytes LG-1 already reads, and parses `Launch target:` comparing it verbatim against §8's `LAUNCH_TARGET`; fixtures for both (the p5 case) |
+| RD33-07 | MINOR | R | (a) v1.6 delta corrects D-6's account (F4 and §4's condition 1 are bound via §8:649's explicit sentence, not by naming the parameter inline); (b) §6's project-specific pilot paragraph moves to the pilot's own administration record home under `decisions/launch-gate/`, closing RD24-14's secondary limb — §6 becomes project-invariant in bytes, and the v1.6 delta says so truthfully |
+| RD33-08 | MINOR | R | (a) a full §5-template-shaped GOOD fixture (the r1 shape) added to the selftest so template↔parser coupling breaks loudly; (b) P-34's governs-alignment paragraph restated as a reviewable claim with the owner's option to reject it, not settled fact; (c) the docstring's universal fixture claim made true (see RD33-03) |
+| RD33-09 | MINOR | R | §5's sentence restated honestly: Not-met/Unknown/scoped counts are computed from the rows; `Deferred count:` and `Reopened count:` are required declared fields the validator parses and cross-checks — no figure on the line is transcribed-only |
+| RD33-10 | MINOR | R | Subsumed by the RD33-05 roster: E1's rollup row is in the roster, so its omission is an error (LG-8 can no longer be silently disabled); the roster fixture covers it |
+| RD33-11 | MINOR | R | P-34's mechanism extended: under option (b), the owner's amendments are applied in the working tree **before** step 2's digest is computed, and the changelog's v1.6→v1.7 entry travels in the same act commit — the digest always binds the amended bytes |
+| RD33-12 | MINOR | R | E4 gains the silence rule: a statement whose routing the matrix does not carry (no per-clause row, no supplement row, no staged-enumeration note covering it) is recorded as `routing authority silent` in the evidence cell and counts as neither agreement nor disagreement; E4 is `Met` only over the cases the authority actually answers, and the silent cases are enumerated in the row |
