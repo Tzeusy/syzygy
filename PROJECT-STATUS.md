@@ -66,11 +66,11 @@ phrases, digest arguments, and the ceremony live in
 `.syzygy/governance/contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`,
 which wins over any offering. The `round-2026-08c/`, `round-2026-08b/` and
 `round-2026-08/` offerings are superseded and banner-marked. No Wave A or
-Wave B offer stands yet. Wave A's fresh exact-package review (RD-31b)
-returned `VERDICT: CONFIRM` on the current argument, and its offer is now
-withheld solely by P-33 (§7 item 11); Wave B's offer waits on RD-32c, the
-fresh exact-package review of the argument regenerated after RD-32b's
-`VERDICT: REVISE` (the register:
+Wave B offer stands yet. Both current wave arguments now carry
+`VERDICT: CONFIRM` from their fresh exact-package reviews — Wave A's from
+RD-31b, Wave B's from RD-32c (2026-08-10). The Wave A offer is withheld
+solely by P-33 (§7 item 11); nothing withholds the Wave B offer itself,
+which follows Wave A's on the A → B path (the register:
 `.syzygy/governance/contracts/candidates/round-2026-08e/reviews/DELIVERY-AND-VERDICT-REGISTER.md`).
 
 ## What exists in this repository
@@ -110,10 +110,11 @@ repaired in the candidate bytes, and the repairs are unreviewed.**
    Class coverage is claimed by construction only — no independent blind
    derivation has run over the restructured fixtures yet.
 
-**The Wave A and Wave B repairs have landed; Wave A's current argument
-carries RD-31b's `VERDICT: CONFIRM` (2026-08-10), while Wave B's awaits
-RD-32c** *(this sentence said "no confirming review is bound" until
-RD-31b delivered — corrected the same day, RD32b-N5)*. The round-2026-08d fresh-context review
+**The Wave A and Wave B repairs have landed, and both current wave
+arguments carry `VERDICT: CONFIRM` — Wave A's from RD-31b, Wave B's from
+RD-32c (both 2026-08-10)** *(this sentence said "no confirming review is
+bound" until RD-31b delivered, and "Wave B's awaits RD-32c" until RD-32c
+delivered — each corrected the same day, per RD32b-N5's discipline)*. The round-2026-08d fresh-context review
 pass delivered fifteen reviews — **fifteen `REVISE` verdicts, zero
 `CONFIRM`** — with all 173 findings disposed in
 `…/round-2026-08d/reviews/DISPOSITION-REGISTER.md`. The round-2026-08e
