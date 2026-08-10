@@ -305,13 +305,26 @@ def _names_nothing(val: str) -> bool:
 
 
 # RD37-01: LG-13's emptiness is a POSITIVE test over a closed marker
-# vocabulary, full-line match — never the negation of a placeholder test,
-# so widening `_names_nothing` can never loosen LG-13 again. The §5
-# template's own slot reads `<empty | enumerated items>`; the lawful
-# empty markers are exactly these. Anything else — including a negation
-# clause leading an enumeration, and an unfilled template slot — is a
-# non-empty reopen-list, and the failure is loud.
-_E3_EMPTY_RE = re.compile(r"(?:empty|none(?: identified)?)\.?$", re.I)
+# vocabulary, full-match — never the negation of a placeholder test, so
+# widening `_names_nothing` can never loosen LG-13 again. RD38-02/07:
+# the vocabulary is VALIDATOR POLICY beneath §5's `<empty | enumerated
+# items>` slot — it is grounded in no instrument clause, it is published
+# to the administrator in LG-13's own error message, and it covers the
+# honest emptiness wordings RD-38 measured while still rejecting
+# placeholders (`TBD`, `unknown`): E3 is the sharpest single gate, and
+# its decisive field deserves a definite answer. Decoration (backticks,
+# bold, underscores, surrounding parens/dashes, trailing punctuation) is
+# stripped before matching; fullmatch keeps it structurally impossible
+# for any enumeration to pass as a marker.
+_E3_MARKERS = ("empty", "none", "none identified", "none known", "n/a",
+               "na", "nil", "nothing", "zero", "0")
+_E3_EMPTY_RE = re.compile(
+    r"(?:" + "|".join(re.escape(m) for m in _E3_MARKERS) + r")$", re.I)
+
+
+def _e3_is_empty(val: str) -> bool:
+    plain = re.sub(r"^[\s`*_(\[{-]+|[\s`*_)\]}.;:,-]+$", "", val)
+    return bool(_E3_EMPTY_RE.fullmatch(plain))
 
 
 class _Field:
@@ -322,6 +335,36 @@ class _Field:
 
     def group(self, _i=0):
         return self._value
+
+
+def _active_text(txt: str) -> str:
+    """RD38-01: a quotation is not the record. §5's template — including
+    its G1 heading, every declared field label, and example verdict rows
+    — is quoted inside the instrument in a fenced block, and a record
+    may lawfully quote it the same way; RD-38 built a record that
+    deleted G1 and six declared fields yet satisfied seven checks by
+    quoting the template in a fenced appendix. Every scan therefore
+    reads the record with fenced code blocks removed — rows, declared
+    fields, presence tokens, the G1 anchor, and the terminal verdict
+    line alike: one rule at the source, for every consumer, rather than
+    a per-check exemption (RD-38's refinement of RD-37's uniformity
+    rule). An unterminated fence blanks the rest of the record, which
+    fails loudly on the roster — a malformed record is never quietly
+    partial. Blockquotes are NOT stripped: §5's own non-authority
+    banner is a blockquote, and a `>`-prefixed line can never satisfy a
+    heading test or parse as a row."""
+    out, fence = [], None
+    for ln in txt.splitlines():
+        s = ln.lstrip()
+        if fence is None and (s.startswith("```") or s.startswith("~~~")):
+            fence = s[:3]
+            continue
+        if fence is not None:
+            if s.startswith(fence):
+                fence = None
+            continue
+        out.append(ln)
+    return "\n".join(out)
 
 
 def _decl(pattern, txt, errors, check, label):
@@ -344,14 +387,19 @@ def _decl(pattern, txt, errors, check, label):
             "narrative line must not shadow the declared field, and the "
             "honest answer must not be silently discarded (RD36-03, "
             "uniform per RD37-02)")
-    return vals[-1].strip() if vals else None
+    # RD38-07: return the SAME normalization the disagreement compares on
+    # — two occurrences declared "agreeing" must yield the value they
+    # agree on, not a whitespace variant a downstream test then rejects.
+    return _norm_ws(vals[-1]) if vals else None
 
 
 def validate(record_path: Path, instrument_path: str, prior_path=None,
              _git=True):
     errors, notes = [], []
     _target_forms = None  # set when §8's LAUNCH_TARGET is readable (git on)
-    txt = record_path.read_text(encoding="utf-8")
+    # RD38-01: every check below reads the fence-stripped text — a fenced
+    # quotation satisfies nothing and shadows nothing.
+    txt = _active_text(record_path.read_text(encoding="utf-8"))
 
     # ---- LG-1 header ------------------------------------------------------
     # mdate/mcommit stay first-match deliberately, outside the _decl rule:
@@ -369,14 +417,21 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     # the next line's text as its answer. An empty field is absent.
     # RD37-02/RD37-06: every declared field parses through _decl — findall,
     # disagreement is an error in both orders, last value taken.
-    _ver = _decl(r"Instrument version:\s*\**\s*(v[\d.]+)", txt,
+    # RD38-03: the three §2 anchor patterns carry RD36-02's anchoring like
+    # every other declared field — `^`-anchored, `[^\S\n]*` never crossing
+    # the newline — so an empty digest field is absent rather than
+    # borrowing the next line, and a mid-line narrative mention ("I
+    # checked whether Instrument version: v1.9 would be accepted") is
+    # inert instead of becoming the value LG-2/LG-11 report on.
+    _ver = _decl(r"^Instrument version:[^\S\n]*\**[^\S\n]*(v[\d.]+)", txt,
                  errors, "LG-1", "Instrument version:")
     mver = _Field(_ver) if _ver else None
-    _instd = _decl(r"Instrument version:[^\n]*sha256:\s*`?([0-9a-f]{64})`?",
-                   txt, errors, "LG-1", "Instrument version: … sha256:")
+    _instd = _decl(
+        r"^Instrument version:[^\n]*sha256:[^\S\n]*`?([0-9a-f]{64})`?",
+        txt, errors, "LG-1", "Instrument version: … sha256:")
     minstd = _Field(_instd) if _instd else None
-    _paramd = _decl(r"Parameter block sha256:\s*`?([0-9a-f]{64})`?", txt,
-                    errors, "LG-1", "Parameter block sha256:")
+    _paramd = _decl(r"^Parameter block sha256:[^\S\n]*`?([0-9a-f]{64})`?",
+                    txt, errors, "LG-1", "Parameter block sha256:")
     mparamd = _Field(_paramd) if _paramd else None
     _lt = _decl(r"^Launch target:[^\S\n]*(\S.*)$", txt,
                 errors, "LG-11", "Launch target:")
@@ -737,28 +792,38 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
         errors.append("LG-12: no `E3 reopen-list:` field — §5 gives E3's "
                       "decisive answer a dedicated field; absence reads as "
                       "empty, and absence is never a pass (RD35-04)")
-    elif not _E3_EMPTY_RE.fullmatch(_e3_val):
+    elif not _e3_is_empty(_e3_val):
         # RD37-01: a POSITIVE emptiness test — a negation clause leading
         # an enumeration ("no items are resolved: (1) …") is a non-empty
         # reopen-list, never an emptiness claim.
         e3_val = _e3_val
+        # RD38-07: the message publishes the vocabulary — the failure is
+        # loud AND instructive — and says "carries", not "enumerates":
+        # the value may be a wording this test cannot read as empty.
+        _mk = " / ".join(_E3_MARKERS)
         if verdicts.get("E3") == "Met":
             errors.append(
-                f"LG-13: `E3 reopen-list:` enumerates {e3_val!r} beside "
+                f"LG-13: `E3 reopen-list:` carries {e3_val!r} beside "
                 "`E3 | Met` — a non-empty reopen-list is E3's own fail "
-                "condition (§3; RD35-04)")
+                "condition (§3; RD35-04). An empty list is written as "
+                f"one of: {_mk} (validator marker vocabulary, RD37-01/"
+                "RD38-07); anything else is read as enumerating items")
         if mg and mg.group(1).strip().startswith("READY"):
             errors.append(
-                f"LG-13: `E3 reopen-list:` enumerates {e3_val!r} under a "
+                f"LG-13: `E3 reopen-list:` carries {e3_val!r} under a "
                 "READY verdict — §3: \"'ready' is then false regardless "
-                "of every other verdict\" (RD35-04)")
+                "of every other verdict\" (RD35-04). An empty list is "
+                f"written as one of: {_mk} (validator marker vocabulary, "
+                "RD37-01/RD38-07)")
 
     # ---- LG-5 trend row ---------------------------------------------------
     deferred = deferred_m.group(1) if deferred_m else "—"
     reopened = reopened_m.group(1) if reopened_m else "—"
     new_vs_prior = "n/a — no prior record supplied"
     if prior_path:
-        ptxt = Path(prior_path).read_text(encoding="utf-8")
+        # RD38-01's rule reaches the prior side too: a fenced quotation
+        # inside the prior is not the prior.
+        ptxt = _active_text(Path(prior_path).read_text(encoding="utf-8"))
         prior_rows = _row_verdicts(ptxt)
         # RD37-04: the prior is validated before it is trusted — full
         # roster coverage, no alien rows. An arbitrary file on the prior
@@ -767,18 +832,39 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
         # verdict reads.
         _p_missing = [q for q in ROSTER if q not in prior_rows]
         _p_alien = sorted(q for q in prior_rows if q not in ROSTER)
-        if _p_missing or _p_alien:
+        # RD38-06: the prior's verdicts obey the same closed vocabulary
+        # and duplicate-row rules a current record obeys — a fabricated
+        # or malformed prior must not drive the New-findings column, in
+        # either direction.
+        _p_dupes, _p_badv, _p_seen = [], [], set()
+        for _pl in ptxt.splitlines():
+            _pm = ROW_RE.match(_pl.strip())
+            if not _pm or _pm.group(1) == "Q":
+                continue
+            _pq, _pv = _pm.group(1), _pm.group(2).strip()
+            if _pq in _p_seen:
+                _p_dupes.append(_pq)
+            _p_seen.add(_pq)
+            if not VERDICT_RE.match(_pv):
+                _p_badv.append(f"{_pq}: {_pv!r}")
+        if _p_missing or _p_alien or _p_dupes or _p_badv:
             parts = []
             if _p_missing:
                 parts.append("missing rows: " + ", ".join(_p_missing))
             if _p_alien:
                 parts.append("rows outside the roster: "
                              + ", ".join(_p_alien))
+            if _p_dupes:
+                parts.append("duplicate rows: "
+                             + ", ".join(sorted(set(_p_dupes))))
+            if _p_badv:
+                parts.append("verdicts outside the closed vocabulary: "
+                             + "; ".join(_p_badv))
             errors.append(
-                "LG-5: the --prior record fails the question roster ("
+                "LG-5: the --prior record fails validation ("
                 + "; ".join(parts) + ") — an unvalidated prior must not "
                 "suppress the New-findings column F1 is answered from "
-                "(RD37-04)")
+                "(RD37-04, RD38-06)")
             new_vs_prior = "n/a — prior record failed validation"
         else:
             # §6 (v1.7, RD34-04): newly-Not-met rows count (incl. a
@@ -858,7 +944,7 @@ def _template_rows() -> str:
 GOOD = """# Launch-gate administration — 2026-08-10, commit {sha}
 > This administration record is evidence, never an owner act; its verdict
 > authorizes nothing (instrument preamble; VIS-4).
-Instrument version: v1.10  sha256: {inst}
+Instrument version: v1.11  sha256: {inst}
 Parameter block sha256: {param}
 Launch target: Capability 1 — Project registration and honest shape visibility
 Reviewer: human, fresh context: yes
@@ -1315,7 +1401,7 @@ def selftest():
         case("instrument digest mismatch rejected (git on, LG-2)",
              good_head, "digest mismatch", _git=True)
         case("instrument version disagreement rejected (RD33-06, LG-11)",
-             good_head.replace("Instrument version: v1.10",
+             good_head.replace("Instrument version: v1.11",
                                "Instrument version: v1.2"),
              "LG-11: record claims instrument version", _git=True)
         case("launch target outside the parameter block rejected "
@@ -1509,36 +1595,185 @@ def selftest():
         fails.append(("bogus prior accepted", trend3 + " || "
                       + " || ".join(errs3)))
 
-    # RD37-02's uniformity assertion — the meta check: every declared
-    # field label is parsed through _decl, never by a raw first-match
-    # read. This asserts the RULE, not any instance: a future repair
-    # that reverts one field to re.search fails here by construction,
-    # which is the discipline RD-37 named as the one that ends the
-    # chain ("the fixture asserts the uniformity rather than the
-    # instance").
-    n_cases[0] += 1
-    src = Path(__file__).read_text(encoding="utf-8")
-    _decl_labels = ("Launch target:", "Deferred count", "Reopened count",
-                    "Owner deferral decision:",
-                    "Deferred-wave findings recorded outside launch "
-                    "scope:",
-                    "Unknowns and what would settle them:",
-                    "E3 reopen-list:", "Instrument version:",
-                    "Parameter block sha256:")
-    _raw_reads = []
-    for _m in re.finditer(r"re\.search\(", src):
-        seg = src[_m.start():_m.start() + 120]
-        for lb in _decl_labels:
-            if lb in seg:
-                _raw_reads.append(lb)
-    ok4 = not _raw_reads
-    print(("  pass  " if ok4 else "  FAIL  ")
-          + "every declared field parses through _decl — no raw "
-          "first-match read of a declared label (RD37-02, uniformity "
-          "asserted)")
-    if not ok4:
-        fails.append(("raw first-match reads of declared labels",
-                      ", ".join(sorted(set(_raw_reads)))))
+    # RD37-02's uniformity assertion, made BEHAVIORAL (RD38-04: the
+    # v1.10 source-scan proxy was evadable by three trivial refactors,
+    # one of them a literal re.search on a literal label with a long
+    # comment pushing the pattern outside the scan window). This loop
+    # drives a disagreeing decoy through EVERY declared label, in both
+    # orders — a reversion of any one field to a first-match read is
+    # caught by the behavior it actually changes, not by a syntactic
+    # pattern. The loop IS the uniformity fixture: a new declared field
+    # means a new row here, and the disagreement must fire in both
+    # directions or the selftest fails.
+    _decoys = (
+        ("Launch target:",
+         "Launch target: Capability 1 — Project registration and honest "
+         "shape visibility",
+         "Launch target: Capability 9 — a decoy target"),
+        ("Instrument version:",
+         f"Instrument version: v1.11  sha256: {inst}",
+         f"Instrument version: v0.0  sha256: {inst}"),
+        ("Instrument version: … sha256:",
+         f"Instrument version: v1.11  sha256: {inst}",
+         "Instrument version: v1.11  sha256: " + "9" * 64),
+        ("Parameter block sha256:",
+         f"Parameter block sha256: {param}",
+         "Parameter block sha256: " + "8" * 64),
+        ("Deferred count:",
+         "Deferred count (owner-deferred findings this administration): 0",
+         "Deferred count declared elsewhere in prose: 7"),
+        ("Reopened count:",
+         "Reopened count (previously recorded resolved, recurred): 0",
+         "Reopened count stated in narrative: 5"),
+        ("Owner deferral decision:", None,  # absent from GOOD: both
+         "Owner deferral decision: SDR-33"),  # lines are inserted below
+        ("Deferred-wave findings recorded outside launch scope:",
+         "Deferred-wave findings recorded outside launch scope: none",
+         "Deferred-wave findings recorded outside launch scope: "
+         "RFC-0010 mission-profile drift (Wave D1)"),
+        ("Unknowns and what would settle them:",
+         "Unknowns and what would settle them: F1 — a second formal "
+         "administration",
+         "Unknowns and what would settle them: TBD"),
+        ("E3 reopen-list:",
+         "E3 reopen-list: empty",
+         "E3 reopen-list: (1) a decoy reopen item"),
+    )
+    for _lbl, _real, _decoy in _decoys:
+        if _real is None:
+            # label absent from the template: insert two disagreeing
+            # occurrences, in both orders
+            case(f"inserted disagreeing pair for `{_lbl}` rejected, "
+                 "order 1 (RD37-02/RD38-04 behavioral loop)",
+                 good.replace(
+                     "Unknowns and what would settle them:",
+                     "Owner deferral decision: SDR-1\n" + _decoy
+                     + "\nUnknowns and what would settle them:"),
+                 "disagreeing values")
+            case(f"inserted disagreeing pair for `{_lbl}` rejected, "
+                 "order 2 (RD37-02/RD38-04 behavioral loop)",
+                 good.replace(
+                     "Unknowns and what would settle them:",
+                     _decoy + "\nOwner deferral decision: SDR-1\n"
+                     "Unknowns and what would settle them:"),
+                 "disagreeing values")
+            continue
+        case(f"decoy ABOVE the declared `{_lbl}` rejected "
+             "(RD37-02/RD38-04 behavioral loop)",
+             good.replace(_real, _decoy + "\n" + _real),
+             "disagreeing values")
+        case(f"decoy BELOW the declared `{_lbl}` rejected "
+             "(RD37-02/RD38-04 behavioral loop)",
+             good.replace(_real, _real + "\n" + _decoy),
+             "disagreeing values")
+
+    # --- v1.11 fixtures: RD-38's findings, kept closed ---
+
+    # RD38-01: a quotation is not the record. A fenced block satisfies
+    # nothing (a deleted section cannot hide behind its quoted template)
+    # and shadows nothing (a quoted example must not fire duplicate or
+    # disagreement checks against the record quoting it).
+    _fence_appendix = (
+        "\n## Appendix — the §5 template, quoted for reference\n"
+        "```\n"
+        "Instrument version: v0.1  sha256: " + "9" * 64 + "\n"
+        "Parameter block sha256: " + "8" * 64 + "\n"
+        "E3 reopen-list: (1) a quoted example item\n"
+        "| A1 | Not met | quoted example row |\n"
+        "## G1 — completeness critic\n"
+        "GATE VERDICT: READY FOR OPENSPEC AUTHORING\n"
+        "```\n")
+    case("G1 section present only inside a fenced quotation rejects — "
+         "a quotation satisfies nothing (RD38-01)",
+         good.replace("## G1 — completeness critic\nnone proposed\n", "")
+         + _fence_appendix,
+         "LG-4")
+    case("`Reviewer model family:` present only inside a fenced "
+         "quotation rejects (RD38-01)",
+         good.replace("Reviewer model family: human\n", "")
+         + "\n```\nReviewer model family: human\n```\n",
+         "Reviewer model family:")
+    case("lawful record WITH a fenced template appendix still validates "
+         "— a quotation shadows nothing (RD38-01)",
+         good + _fence_appendix, None)
+    case("fenced example table with a duplicate A1 row does not fire "
+         "the duplicate check (RD38-01)",
+         good + "\n```\n| A1 | Not met | quoted duplicate |\n```\n",
+         None)
+
+    # RD38-03: the §2 anchors carry the same anchoring as every other
+    # declared field — an empty digest field is absent (never borrowing
+    # the next line), and a mid-line narrative mention is inert.
+    case("empty `Parameter block sha256:` with the digest on the next "
+         "line is ABSENT, never borrowed (RD38-03)",
+         good.replace(f"Parameter block sha256: {param}",
+                      "Parameter block sha256:\n" + param),
+         "no parameter-block sha256")
+    case("mid-line narrative mention of an instrument version is inert "
+         "(RD38-03)",
+         good.replace(
+             "Reviewer's falsification notes: tried to break the roster; "
+             "couldn't",
+             "Reviewer's falsification notes: tried to break the roster; "
+             "couldn't; I checked whether Instrument version: v1.9 would "
+             "be accepted"),
+         None)
+
+    # RD38-07 / RD37-01: the widened closed-marker vocabulary, and
+    # decoration stripping — an honest empty marker in bold or with a
+    # trailing period is still the marker.
+    case("`E3 reopen-list: n/a` accepted as empty (RD38-07 vocabulary)",
+         good.replace("E3 reopen-list: empty", "E3 reopen-list: n/a"),
+         None)
+    case("decorated `E3 reopen-list: **None.**` accepted as empty "
+         "(RD38-07 decoration strip)",
+         good.replace("E3 reopen-list: empty",
+                      "E3 reopen-list: **None.**"),
+         None)
+
+    # RD38-07's behavioral witness: the none-marker test on
+    # `Owner deferral decision:` compares the RETURNED value exactly —
+    # a trailing space must not turn the honest none marker into a
+    # citation the validator then rejects. _decl returns the same
+    # normalization the disagreement compares on.
+    case("`Owner deferral decision: none ` (trailing space) is the none "
+         "marker — the declared value is whitespace-normalized (RD38-07)",
+         good.replace("Unknowns and what would settle them:",
+                      "Owner deferral decision: none \n"
+                      "Unknowns and what would settle them:"),
+         None)
+
+    # RD38-06: a roster-complete prior whose verdicts leave the closed
+    # vocabulary, and one carrying a duplicate row, are refused the same
+    # way an incomplete prior is — a lawful-LOOKING prior must actually
+    # be lawful before it drives the New-findings column.
+    for _nm, _bad_prior in (
+            ("roster-complete prior with out-of-vocabulary verdicts "
+             "refused (RD38-06)",
+             "| Q | Verdict | Evidence |\n|---|---|---|\n"
+             + _template_rows().replace("| Met |", "| Partially met |")),
+            ("roster-complete prior with a duplicate row refused "
+             "(RD38-06)",
+             "| Q | Verdict | Evidence |\n|---|---|---|\n"
+             + _template_rows() + "\n| A1 | Not met | x |")):
+        n_cases[0] += 1
+        with tempfile.NamedTemporaryFile("w", suffix=".md",
+                                         delete=False) as f:
+            f.write(_bad_prior)
+            pp = Path(f.name)
+        with tempfile.NamedTemporaryFile("w", suffix=".md",
+                                         delete=False) as f:
+            f.write(good)
+            cp = Path(f.name)
+        _e, _, _, _t = validate(cp, INSTRUMENT_DEFAULT, pp, _git=False)
+        pp.unlink()
+        cp.unlink()
+        _f = [x.strip() for x in _t.strip().strip("|").split("|")]
+        _ok = (any("RD38-06" in e for e in _e)
+               and _f[7] == "n/a — prior record failed validation")
+        print(("  pass  " if _ok else "  FAIL  ") + _nm)
+        if not _ok:
+            fails.append((_nm, _t + " || " + " || ".join(_e)))
 
     print(f"{n_cases[0]} fixtures, {len(fails)} failing — a check that "
           "cannot fail is not a check")

@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.10 (candidate; v1.3 was the pilot-administered version)
+effective_version: v1.11 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), results record format, and trend log
@@ -993,7 +993,10 @@ Notes for administering against Syzygy specifically:
   and a parsing repair reaches every field, with the selftest asserting
   the uniformity itself. LG-13's emptiness became a positive test over
   the closed marker vocabulary §5's own slot names (`empty` / `none` /
-  `none identified`), never the negation of the placeholder test — the
+  `none identified`) [corrected 2026-08-10, RD38-02: §5's slot is
+  `<empty | enumerated items>` and names no vocabulary — the marker
+  list is validator policy, published in LG-13's error message; see the
+  v1.11 entry below], never the negation of the placeholder test — the
   v1.9 negation-prefix rule, shared across checks of opposite polarity,
   had silently loosened LG-13 into accepting negation-led lines that
   still enumerate reopen items, a measured regression against v1.8
@@ -1015,3 +1018,56 @@ Notes for administering against Syzygy specifically:
   claiming the negation edge fails "never as a silent pass" was false
   of LG-13 — in the D-10 convention: the frozen record is not edited).
   No existing question weakened; no ID renumbered.
+- **v1.11** (2026-08-10, post-RD-38 amendment — the v1.10 re-review's
+  one BLOCKING, two MAJOR and four MINOR findings; candidate, owner
+  approval pending) — a **validator-and-records batch** a fourth time:
+  no question block, no verdict word, and no section §1–§8 changed; the
+  instrument bytes that move are this entry, the version header, and
+  one dated correction marker in the v1.10 entry above, whose grounding
+  for the LG-13 marker vocabulary was false — §5's slot is
+  `<empty | enumerated items>` and names no vocabulary; the vocabulary
+  is validator policy, and it is now **published in LG-13's own error
+  message** so a reviewer can learn the lawful markers from the
+  rejection itself (RD38-02). The record-versus-quotation distinction
+  reaches every check: fenced blocks are stripped from the text all
+  checks read, on the record and the `--prior` side alike, so a fenced
+  quotation of §5's template satisfies nothing (a record that deletes
+  its G1 section and six declared fields no longer validates by quoting
+  the template — RD-38's composite now scores the same seven errors
+  with the appendix as without it) and shadows nothing (a quoted
+  example row fires no duplicate or disagreement check) (RD38-01,
+  BLOCKING). The three §2 integrity anchors are brought under RD36-02's
+  line-anchoring rule that the other declared fields already carry —
+  `^`-anchored, never crossing a newline — so an empty digest field is
+  absent rather than borrowing the next line, and a mid-line narrative
+  mention ("I checked whether Instrument version: v1.9 would be
+  accepted") is inert instead of becoming the value LG-2/LG-11 report
+  on (RD38-03). The marker vocabulary widens to ten honest emptiness
+  forms (`empty`, `none`, `none identified`, `none known`, `n/a`, `na`,
+  `nil`, `nothing`, `zero`, `0`), decoration-stripped, and the LG-13
+  message says what the field *carries*, never that it "enumerates"
+  (RD38-02/RD38-07); `_decl` returns the same normalization the
+  disagreement rule compares on (RD38-07). The evadable source-scan
+  meta-fixture is replaced by what RD-37 actually prescribed,
+  behaviorally: a generated loop drives a disagreeing decoy through
+  every declared label in both orders — twenty fixtures from one loop —
+  so a field reverted to a first-match read fails by the behavior it
+  changes, not by a syntactic pattern a refactor can evade (RD38-04).
+  The `--prior` record now obeys the same closed verdict vocabulary and
+  duplicate-row rules a current record obeys (RD38-06; disclosed
+  residual: a bare roster-complete row block with lawful verdicts is
+  still a lawful prior, because a prior administration lawfully names
+  an older instrument version and digests, so no version cross-check
+  can refuse it). 116 fixtures; **eight** mutation-reverts, each
+  failing exactly the fixtures its repair added, including a
+  first-match reversion carrying RD-38's own comment-evasion shape,
+  caught behaviorally in both orders; RD-38's attack records
+  re-executed — the composite scores 7 errors, the borrowed digest is
+  refused as absent, the narrative mention is inert, the eleven honest
+  emptiness wordings accept while `unknown`/`TBD` still reject (an
+  unknown reopen-list is not an empty one). Semantic delta:
+  `round-2026-08e/LAUNCH-GATE-v1.11-SEMANTIC-DELTA.md` (which also
+  carries the corrections of the frozen v1.10 delta's D-2 first-bullet
+  vocabulary claim, its both-directions sentence, and its D-3
+  meta-fixture sentence, in the D-10 convention — the frozen record is
+  not edited). No existing question weakened; no ID renumbered.
