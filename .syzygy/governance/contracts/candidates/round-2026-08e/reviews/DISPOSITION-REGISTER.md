@@ -163,3 +163,32 @@ prior digest.
 | RD29-12 | MINOR | R | Doctrine README's FD-037/rev7 provenance glossed as founder-local (P-15), so the reader knows the pointer is not resolvable from a clone |
 | RD29-13 | MINOR | R | README borrows the overview's "intended shape, not current capability" sentence beside the loop diagram |
 | RD29-14 | MINOR | R | `candidates/README.md` layout rows for `policy-candidates/` and `scripts/` list what the directories actually hold |
+
+## RD-30 — Owner packets, one-sitting test (launch-critical set at `4599701`)
+
+One repair (RD30-12) touches a Wave A module byte — the P-31 drafted
+exemption gains its own sub-clause identifier — so the Wave A argument
+regenerates by script once more; RD-31 binds the final bytes. The RD30-01
+repair is deliberately **not** a drafting of the facet vocabulary into
+RFC-0006: that would pre-empt the very question P-37 exists to put to the
+owner (VIS-4). The repair makes the three claiming documents tell the
+truth about where the vocabulary lives (nowhere yet) and what ruling (a)
+therefore obliges.
+
+| Finding | Class | Disposition | Where it lands |
+|---|---|---|---|
+| RD30-01 | BLOCKING | R | P-37's current-authority section restated: the anti-rollup amendments ARE drafted (RFC6-18/19); the seven-facet vocabulary itself is in no Wave A/B byte — ruling (a) records the vocabulary and orders its drafting site (an RFC-0006 amendment or the Capability 1 spec) before/at the act; options repriced. §7 item 13 and the sequence's P-37 row corrected to the same truth; trace-table row 5 re-anchored |
+| RD30-02 | MAJOR | R | P-36 moved to the spec-authoring bullet of the launch-scope index; its register row gains the packet's gate |
+| RD30-03 | MAJOR | R | P-28 added to the index's Wave A bullet and P-22 to the Wave B bullet; acceptance record §7 gains items 16 (mission extension profile) and 17 (RFC9-8(a) placement) |
+| RD30-04 | MAJOR | R | The register's current-packet note strikes packet 6 (stale, banner-marked) |
+| RD30-05 | MAJOR | R | §2 ceremony gains step 0 — read §7 before any phrase; PROJECT-STATUS's gate section and the register's acts section route to §7 |
+| RD30-06 | MAJOR | R | P-33's (1b) restated honestly (it is the category-stretching move RFC3-15(a) warns against); new option (1d) — mint a companion-material category by the B19 recorded-widening route; recommendation re-labeled to (1d) `[Inferred]` |
+| RD30-07 | MAJOR | R | P-41 gets its packet (`decisions/SPECIFICATION-ACCEPTANCE-DECISION.md`): question, three options priced, `[Inferred]` recommendation (review pass first), and the plain statement that no act is performable this sitting — the phrase is minted at the offering, after the candidate's fresh review |
+| RD30-08 | MAJOR | R | P-38's consequences block gains (d) with its cost; the recommendation names why (a) over (d) |
+| RD30-09 | MAJOR | R | The register's promised round-08d "owner-facing offering" paragraph corrected: never written (as the pilot's F3 found); the current home of imperfections-before-the-phrase is §7 + the per-wave §1 rows + this round's forthcoming closure reports |
+| RD30-10 | MINOR | R | `FIRST-OPENSPEC-SEQUENCE.md` inlines the Capability 1 scope rows instead of pointing into the superseded revision |
+| RD30-11 | MINOR | R | P-31's row gains the Ground-changed marker (arm drafted at `reconciliation-chain.md`) |
+| RD30-12 | MINOR | R | The drafted exemption minted as sub-clause RFC2-19(a) with front-matter declaration — anchorable under rule 8; Wave A argument regenerates |
+| RD30-13 | MINOR | R | P-41's packet and the index state the ordering: P-40 before P-41's act (CC-SPEC-1 consumes the granularity rule) |
+| RD30-14 | MINOR | R | Acceptance record §6 gains a dated paragraph carrying the 08d (fifteen REVISE) and 08e (fleet in progress) review state |
+| RD30-15 | MINOR | R | P-39 marks the format-delta check a pre-sitting task with cost `[Unknown]` (out-of-clone npm fetch) |
