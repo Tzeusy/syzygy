@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.7 (candidate; v1.3 was the pilot-administered version)
+effective_version: v1.8 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), results record format, and trend log
@@ -920,3 +920,36 @@ Notes for administering against Syzygy specifically:
   in its honest form (RD34-09). Each change carries a fixture. Semantic
   delta: `round-2026-08e/LAUNCH-GATE-v1.7-SEMANTIC-DELTA.md`. No
   existing question weakened; no ID renumbered.
+- **v1.8** (2026-08-10, post-RD-35 amendment — the v1.7 re-review's one
+  BLOCKING, three MAJOR and three MINOR findings; candidate, owner
+  approval pending) — a **validator-and-records batch: no question
+  block, no verdict word, and no section §1–§8 changed** (RD-35: "none
+  of my seven findings requires an instrument amendment"); this
+  changelog entry and the version header are the only instrument bytes
+  that move. The citation-existence check is un-inverted — a prefix
+  strip replaces the character-class `lstrip` that rejected every real
+  `.syzygy/` decision path, and the passing direction is fixtured for
+  the first time: an existing repository path is ACCEPTED at the named
+  commit (RD35-01); the terminal `GATE VERDICT:` anchor becomes the
+  last line containing the literal token, which must itself parse to
+  the closed set — a qualified or quoted terminal verdict errors
+  instead of being skipped for an earlier match, and `|` in a captured
+  verdict is rejected before it can corrupt §6's nine-column trend row
+  (RD35-02); the verdict line's `READY FOR <target>` tail gets the same
+  normalized-equality test the header `Launch target:` line already
+  had — one placeholder, one enforcement standard (RD35-03); the E3
+  reopen-list cross-check lands beside LG-8/LG-9: a non-empty list
+  beside `E3 | Met` or any READY verdict errors, enforcing §3's own
+  "'ready' is then false regardless of every other verdict" (RD35-04);
+  "names nothing" becomes a shared lexicon rule rather than an
+  enumeration, so decorated placeholders fail without a fourth
+  extension (RD35-05); the deferral-identifier families narrow to made
+  decisions — SDR-n/B-n; P-n (the pending queue) and D-n (delta items)
+  grant nothing (RD35-06); §5's declared record fields gain presence
+  checks, including the RD24-02 non-authority banner, and an Unknown
+  row requires named settling evidence (RD35-07). Each change carries a
+  fixture. Semantic delta:
+  `round-2026-08e/LAUNCH-GATE-v1.8-SEMANTIC-DELTA.md` (which also
+  carries the correction of the v1.7 delta's D-2 overclaim, in the
+  D-10 convention — the frozen record is not edited). No existing
+  question weakened; no ID renumbered.

@@ -29,29 +29,38 @@ Checks (each with a `--selftest` mutation fixture):
         required — their absence is an error, never an implicit zero
         (VIS-2); the printed trend row carries the computed and parsed
         figures
-  LG-6  the LAST `GATE VERDICT:` line (§5's "terminal line" — RD34-03)
-        exists, uses the closed verdict set, and is consistent with the
-        §4 formulas as computable from the rows. BOTH pass branches run
-        the full conjunct battery (RD34-01): every E row Met, no plain
-        Not met in A–D (the scoped form does not block), F3 Met, F4 Met,
-        F1 Met-or-Unknown. Plain READY FOR additionally requires **F2 Met
-        and zero declared deferrals**; READY-WITH-DEFERRALS substitutes
-        exactly the F2 limb with an owner-cited deferral (instrument §4)
+  LG-6  the terminal `GATE VERDICT:` line — the last line CONTAINING the
+        literal token, not the last regex match (RD35-02) — exists,
+        parses to the closed verdict set (a qualified or quoted terminal
+        verdict is an error, never an invitation to look upward), carries
+        no `|` in the captured verdict (it would corrupt §6's nine-column
+        trend row), and is consistent with the §4 formulas as computable
+        from the rows. BOTH pass branches run the full conjunct battery
+        (RD34-01): every E row Met, no plain Not met in A–D (the scoped
+        form does not block), F3 Met, F4 Met, F1 Met-or-Unknown. Plain
+        READY FOR additionally requires **F2 Met and zero declared
+        deferrals**; READY-WITH-DEFERRALS substitutes exactly the F2 limb
+        with an owner-cited deferral (instrument §4)
   LG-7  any record whose `Deferred count:` is nonzero — under ANY verdict
         (RD34-07) — and any READY-WITH-DEFERRALS verdict requires the
         `Owner deferral decision:` field, whose value must be a
         repository path (verified to exist at the named commit when git
-        checks run) or a decision identifier (SDR-n/P-n/D-n/B-n shape) —
-        label wording like "(owner only)" is rejected (RD34-02); a
-        deferral-carrying verdict with `Deferred count: 0` is an error
+        checks run — a leading `./` is a prefix strip, RD35-01) or an
+        identifier of a MADE decision (SDR-n/B-n shape; P-n names the
+        pending queue and D-n a delta item — neither grants a deferral,
+        RD35-06) — label wording like "(owner only)" is rejected
+        (RD34-02); a deferral-carrying verdict with `Deferred count: 0`
+        is an error
   LG-8  E1's five sub-verdict rows (form, home, granularity,
         acceptance-authority, change-process) are present, and an E1
         rollup of Met requires all five sub-rows Met
   LG-9  a record with any scoped row must name at least one defect on the
-        deferred-wave findings line — a placeholder ("none", "n/a",
-        "TBD", bare digits or punctuation) asserts a scoped defect exists
-        and that none exists (instrument §4, RD33-01; set widened
-        RD34-06)
+        deferred-wave findings line — "names nothing" is a lexicon rule
+        shared with LG-13, not an enumeration: after stripping
+        punctuation and articles, at least one token must fall outside
+        the placeholder lexicon, so decorated forms ("(none known)",
+        "-- none --", "unknown", "tba") fail too (instrument §4,
+        RD33-01; widened RD34-06; lexicon rule RD35-05)
   LG-10 the full question roster is present AND nothing else is — A1–A6,
         B1–B5, C1–C7, D1–D4, E1 with its five sub-rows, E2–E6, F1–F6; a
         missing row is an error, never a pass (a delta record cannot
@@ -62,9 +71,24 @@ Checks (each with a `--selftest` mutation fixture):
         instrument at the named commit, and its `Launch target:` line
         equals — whitespace-normalized — the parameter block's
         LAUNCH_TARGET or its first sentence, per §5's "verbatim"
-        (RD33-06; upgraded from containment, RD34-08; needs git, skipped
-        with LG-2's notice otherwise; the missing-line case errors
-        regardless)
+        (RD33-06; upgraded from containment, RD34-08); the SAME equality
+        test applies to a `READY FOR <target>` verdict line's tail — the
+        one string the trend log carries cannot name a target §8 never
+        bound (RD35-03). Needs git, skipped with LG-2's notice otherwise;
+        the missing-line case errors regardless
+  LG-12 §5's declared record fields are present — the non-authority
+        banner (RD24-02), `Reviewer model family:`, `Materials given:`,
+        `Operationalization notes:`, `E3 reopen-list:`, `Unknowns and
+        what would settle them:`, `Reviewer's falsification notes:` — a
+        template field deleted without an error reads as answered; and a
+        record with any Unknown row must name settling evidence in the
+        Unknowns field, per §4 (RD35-07)
+  LG-13 the E3 reopen-list cross-check: a non-empty `E3 reopen-list:`
+        beside `E3 | Met` or any READY verdict is an error — §3's own
+        "the list is non-empty; 'ready' is then false regardless of
+        every other verdict" is the instrument's self-declared sharpest
+        single gate, enforced beside LG-8/LG-9 as the same shape: a
+        declared field contradicting a verdict row (RD35-04)
 
 Usage:
   python3 scripts/launch_gate_results.py <record.md>
@@ -156,7 +180,12 @@ def _norm_ws(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
-DECISION_ID_RE = re.compile(r"(?:SDR|P|D|B)-\d+[a-z]?(?:\([a-z]\))?$")
+# RD35-06: only families that name MADE decisions may claim a granted
+# deferral. P-n is this repository's pending-decision queue (a decision not
+# yet made) and D-n is a semantic-delta item number — neither grants
+# anything; cite the made decision (SDR-n, B-n) or its repository path.
+DECISION_ID_RE = re.compile(r"(?:SDR|B)-\d+[a-z]?(?:\([a-z]\))?$")
+_UNMADE_ID_RE = re.compile(r"(?:P|D)-\d+[a-z]?(?:\([a-z]\))?$")
 
 
 def _deferral_citation_error(val, commit, _git):
@@ -166,10 +195,19 @@ def _deferral_citation_error(val, commit, _git):
     v = val.strip().strip("`")
     if DECISION_ID_RE.fullmatch(v):
         return None
+    if _UNMADE_ID_RE.fullmatch(v):
+        return (f"{v!r} names the pending-decision queue (P-n) or a "
+                "semantic-delta item (D-n) — a deferral is granted only by "
+                "a made decision: SDR-n, B-n, or its repository path "
+                "(RD35-06)")
     if "/" in v:
         if not _git or not commit:
             return None  # shape lawful; existence unverifiable without git
-        if git_show(commit, v.lstrip("./")) is None:
+        # RD35-01: prefix strip, never str.lstrip — a character-class strip
+        # turned `.syzygy/…` into `syzygy/…` and rejected every real
+        # decision path in the repository's own decision home.
+        path = v[2:] if v.startswith("./") else v
+        if git_show(commit, path) is None:
             return (f"path {v!r} does not exist at the named commit — a "
                     "citation to nowhere authorizes nothing")
         return None
@@ -177,9 +215,32 @@ def _deferral_citation_error(val, commit, _git):
             "— label wording is not a citation (RD34-02)")
 
 
+# One definition of "names nothing", shared by LG-9 (a scoped row demands a
+# named defect on the findings line) and LG-13 (anything named on the E3
+# reopen-list refutes `E3 | Met` and any READY verdict) — RD35-04/RD35-05.
+# A lexicon rule, not an enumeration: after stripping punctuation and
+# articles, the value must contain at least one token outside this set, so
+# decorated placeholders (`(none known)`, `-- none --`) fail without a
+# fourth enumeration extension.
+_PLACEHOLDER_LEXICON = frozenset((
+    "none", "known", "na", "n", "a", "an", "the", "tbd", "tba", "todo",
+    "to", "be", "determined", "announced", "pending", "not", "applicable",
+    "unknown", "empty", "nil", "nothing", "see", "above", "below",
+    "various", "several", "some", "many", "misc", "miscellaneous", "etc",
+    "x", "yes", "no"))
+
+
+def _names_nothing(val: str) -> bool:
+    if val.startswith("<"):
+        return True  # an unfilled template slot names nothing
+    tokens = re.findall(r"[A-Za-z0-9]+", val.lower())
+    return all(t.isdigit() or t in _PLACEHOLDER_LEXICON for t in tokens)
+
+
 def validate(record_path: Path, instrument_path: str, prior_path=None,
              _git=True):
     errors, notes = [], []
+    _target_forms = None  # set when §8's LAUNCH_TARGET is readable (git on)
     txt = record_path.read_text(encoding="utf-8")
 
     # ---- LG-1 header ------------------------------------------------------
@@ -253,6 +314,7 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
                     r"LAUNCH_TARGET:\s*>\n((?:[ \t]+\S[^\n]*\n)+)", pbt)
                 lt = _norm_ws(lt_m.group(1)) if lt_m else _norm_ws(pbt)
                 first_sentence = lt.split(". ")[0].rstrip(".")
+                _target_forms = (lt.rstrip("."), first_sentence)
                 tgt = _norm_ws(mtarget.group(1)).rstrip(".")
                 # §5 requires the target verbatim: normalized equality with
                 # the LAUNCH_TARGET scalar or its first sentence — a
@@ -381,25 +443,45 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
                 f"LG-9: {n_scoped} scoped row(s) but no deferred-wave "
                 "findings line — §4 requires each scoped defect named "
                 "there; the disclosure is the scoped form's honesty")
-        elif val.startswith("<") or re.fullmatch(
-                r"(?i)[`*\s]*(?:none|n/?a|tbd|todo|pending|"
-                r"not applicable|[\W\d]+)[`*.\s]*", val):
+        elif _names_nothing(val):
             errors.append(
                 f"LG-9: {n_scoped} scoped row(s) beside a deferred-wave "
                 f"findings line reading {val!r} — a placeholder names no "
                 "defect; the record asserts a scoped defect exists and "
-                "that none exists (instrument §4; RD34-06)")
+                "that none exists (instrument §4; RD34-06, lexicon rule "
+                "RD35-05)")
 
     # ---- LG-6 / LG-7 gate verdict line ------------------------------------
-    # §5's "terminal line" is the LAST match — a summary line earlier in the
-    # record must not shadow it (RD34-03; the pilot record has two).
-    _gv_matches = list(GATE_VERDICT_RE.finditer(txt))
-    mg = _gv_matches[-1] if _gv_matches else None
+    # §5's "terminal line" is the last line CONTAINING the literal token
+    # `GATE VERDICT:` — not the last regex match (RD35-02: matching selected
+    # a different, earlier line whenever the terminal verdict carried a
+    # qualifier, so a terminal NOT READY was discarded for a pass line).
+    # That line must itself parse to the closed verdict set; a terminal
+    # verdict outside the set is an error, never an invitation to look
+    # upward. A captured verdict containing `|` is rejected — it would
+    # structurally corrupt §6's nine-column trend row.
+    _gv_lines = [ln for ln in txt.splitlines() if "GATE VERDICT:" in ln]
+    mg = None
     n_not = sum(1 for v in verdicts.values() if v == "Not met")
     n_unk = sum(1 for v in verdicts.values() if v == "Unknown")
-    if not mg:
+    if not _gv_lines:
         errors.append("LG-6: no GATE VERDICT line found")
     else:
+        mg = GATE_VERDICT_RE.search(_gv_lines[-1])
+        if not mg:
+            errors.append(
+                "LG-6: the terminal `GATE VERDICT:` line — "
+                f"{_gv_lines[-1].strip()!r} — does not parse to the closed "
+                "verdict set (READY FOR <LAUNCH_TARGET> / NOT READY / "
+                "READY-WITH-DEFERRALS); a qualified or quoted verdict is "
+                "not a verdict (§5's terminal line; RD35-02)")
+        elif "|" in mg.group(1):
+            errors.append(
+                "LG-6: the terminal verdict contains '|' — it would "
+                "corrupt the nine-column trend row §6 defines and F1 is "
+                "answered from (RD35-02)")
+            mg = None
+    if mg:
         gv = mg.group(1).strip()
         if gv.startswith("READY"):
             # §4 (v1.7, RD34-01): both pass branches run the full conjunct
@@ -420,6 +502,20 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
                 bad.append("F1 is Not met — the §4 convergence conjunct "
                            "(F1 Met-or-Unknown) fails")
             if gv.startswith("READY FOR"):
+                # RD35-03: the verdict line is the one string the trend log
+                # carries — its target gets the same normalized-equality
+                # test LG-11 applies to the header `Launch target:` line.
+                # One placeholder, one enforcement standard.
+                if _target_forms is not None:
+                    vt = _norm_ws(gv[len("READY FOR"):]).rstrip(".")
+                    if vt not in _target_forms:
+                        errors.append(
+                            f"LG-11: the verdict line claims READY FOR "
+                            f"{vt!r} — not the parameter block's "
+                            "LAUNCH_TARGET (verbatim, whitespace-"
+                            "normalized; its first sentence suffices); "
+                            "the one string the trend log carries must "
+                            "name the target §8 binds (RD35-03)")
                 if verdicts.get("F2") != "Met":
                     bad.append("F2 is not Met — a pass resting on an F2 "
                                "deferral is READY-WITH-DEFERRALS with an "
@@ -450,6 +546,55 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
                         "conjunct fails — the E, A–D, F1, F3 and F4 "
                         "conjuncts are never deferrable (§4, RD34-01) — "
                         + "; ".join(bad))
+
+    # ---- LG-12 §5 required record fields (RD35-07) ------------------------
+    # A §5 template field deleted without an error reads as answered.
+    for token, why in (
+            ("evidence, never an owner act",
+             "the non-authority banner (RD24-02)"),
+            ("Reviewer model family:",
+             "the model-family disclosure F5 and §7 read"),
+            ("Materials given:", "the §2 materials list"),
+            ("Operationalization notes:",
+             "the operationalization disclosure"),
+            ("Unknowns and what would settle them:",
+             "§4's Unknown-settling requirement"),
+            ("Reviewer's falsification notes:",
+             "the falsification discipline"),
+    ):
+        if token not in txt:
+            errors.append(f"LG-12: required §5 field missing — {token!r} "
+                          f"({why}; RD35-07)")
+    unk_m = re.search(r"^Unknowns and what would settle them:\s*(\S.*)$",
+                      txt, re.M)
+    if n_unk and unk_m and _names_nothing(unk_m.group(1).strip()):
+        errors.append(
+            f"LG-12: {n_unk} row(s) are Unknown but the Unknowns field "
+            f"reads {unk_m.group(1).strip()!r} — §4 requires every "
+            "Unknown to carry what evidence would settle it (RD35-07)")
+
+    # ---- LG-13 E3 reopen-list cross-check (RD35-04) -----------------------
+    # §3, E3: "the list is non-empty; 'ready' is then false regardless of
+    # every other verdict" — the instrument's self-declared sharpest single
+    # gate, enforced beside LG-8 and LG-9 as the same shape: a declared
+    # field contradicting a verdict row.
+    e3_m = re.search(r"^E3 reopen-list:\s*(\S.*)$", txt, re.M)
+    if not e3_m:
+        errors.append("LG-12: no `E3 reopen-list:` field — §5 gives E3's "
+                      "decisive answer a dedicated field; absence reads as "
+                      "empty, and absence is never a pass (RD35-04)")
+    elif not _names_nothing(e3_m.group(1).strip()):
+        e3_val = e3_m.group(1).strip()
+        if verdicts.get("E3") == "Met":
+            errors.append(
+                f"LG-13: `E3 reopen-list:` enumerates {e3_val!r} beside "
+                "`E3 | Met` — a non-empty reopen-list is E3's own fail "
+                "condition (§3; RD35-04)")
+        if mg and mg.group(1).strip().startswith("READY"):
+            errors.append(
+                f"LG-13: `E3 reopen-list:` enumerates {e3_val!r} under a "
+                "READY verdict — §3: \"'ready' is then false regardless "
+                "of every other verdict\" (RD35-04)")
 
     # ---- LG-5 trend row ---------------------------------------------------
     deferred = deferred_m.group(1) if deferred_m else "—"
@@ -532,7 +677,7 @@ def _template_rows() -> str:
 GOOD = """# Launch-gate administration — 2026-08-10, commit {sha}
 > This administration record is evidence, never an owner act; its verdict
 > authorizes nothing (instrument preamble; VIS-4).
-Instrument version: v1.7  sha256: {inst}
+Instrument version: v1.8  sha256: {inst}
 Parameter block sha256: {param}
 Launch target: Capability 1 — Project registration and honest shape visibility
 Reviewer: human, fresh context: yes
@@ -764,13 +909,115 @@ def selftest():
     case("omitted E1 rollup row rejected (RD33-10, p4)",
          good.replace("| E1 | Met | x |\n", ""), "LG-10")
 
+    # --- v1.8 fixtures: RD-35's findings, kept closed ---------------------
+    case("qualified terminal verdict rejected — the terminal line must "
+         "parse, never be skipped for an earlier match (RD35-02)",
+         good.replace("GATE VERDICT: NOT READY",
+                      "Summary: GATE VERDICT: READY FOR Capability 1\n\n"
+                      "GATE VERDICT: NOT READY — pending the owner's F2 "
+                      "deferral decision"),
+         "does not parse to the closed verdict set")
+    case("quoted §5 template line as terminal GATE VERDICT rejected — "
+         "'|' in a captured verdict corrupts the trend row (RD35-02)",
+         good.replace("GATE VERDICT: NOT READY",
+                      "GATE VERDICT: NOT READY\n\n"
+                      "Appendix, quoting §5's own template:\n"
+                      "GATE VERDICT: READY FOR <LAUNCH_TARGET> | "
+                      "NOT READY |"),
+         "would corrupt the nine-column trend row")
+    case("non-empty E3 reopen-list beside `E3 | Met` rejected (RD35-04)",
+         good.replace("E3 reopen-list: empty",
+                      "E3 reopen-list: (1) whether a Mission is a "
+                      "first-class object; (2) evidence adapters in "
+                      "Wave A"),
+         "E3's own fail condition")
+    case("non-empty E3 reopen-list under a READY verdict rejected "
+         "(RD35-04)",
+         ready.replace("E3 reopen-list: empty",
+                       "E3 reopen-list: the write-boundary scope"),
+         "ready' is then false")
+    case("deleted E3 reopen-list field rejected (RD35-04)",
+         good.replace("E3 reopen-list: empty\n", ""),
+         "no `E3 reopen-list:` field")
+    case("decorated placeholder '(none known)' findings line rejected "
+         "(RD35-05)",
+         scoped_c2.replace(
+             "Deferred-wave findings recorded outside launch scope: none",
+             "Deferred-wave findings recorded outside launch scope: "
+             "(none known)"),
+         "names no defect")
+    case("decorated placeholder '-- none --' findings line rejected "
+         "(RD35-05)",
+         scoped_c2.replace(
+             "Deferred-wave findings recorded outside launch scope: none",
+             "Deferred-wave findings recorded outside launch scope: "
+             "-- none --"),
+         "names no defect")
+    case("VIS-2's own word 'unknown' as findings line rejected (RD35-05)",
+         scoped_c2.replace(
+             "Deferred-wave findings recorded outside launch scope: none",
+             "Deferred-wave findings recorded outside launch scope: "
+             "unknown"),
+         "names no defect")
+    case("P-n (pending queue) as deferral citation rejected (RD35-06)",
+         with_def.replace(
+             "Unknowns and what would settle them:",
+             "Owner deferral decision: P-34\n"
+             "Unknowns and what would settle them:"),
+         "pending-decision queue")
+    case("D-n (delta item) as deferral citation rejected (RD35-06)",
+         with_def.replace(
+             "Unknowns and what would settle them:",
+             "Owner deferral decision: D-10\n"
+             "Unknowns and what would settle them:"),
+         "pending-decision queue")
+    case("B-n (made owner decision) as deferral citation accepted "
+         "(RD35-06)",
+         with_def.replace(
+             "Unknowns and what would settle them:",
+             "Owner deferral decision: B-1\n"
+             "Unknowns and what would settle them:"),
+         None)
+    case("deleted non-authority banner rejected (RD35-07)",
+         good.replace(
+             "> This administration record is evidence, never an owner "
+             "act; its verdict\n> authorizes nothing (instrument "
+             "preamble; VIS-4).\n", ""),
+         "evidence, never an owner act")
+    case("deleted `Reviewer model family:` field rejected (RD35-07)",
+         good.replace("Reviewer model family: human\n", ""),
+         "Reviewer model family:")
+    case("deleted `Materials given:` field rejected (RD35-07)",
+         good.replace("Materials given: the fixed §2 list, no "
+                      "deviations\n", ""),
+         "Materials given:")
+    case("deleted `Operationalization notes:` field rejected (RD35-07)",
+         good.replace("Operationalization notes: none\n", ""),
+         "Operationalization notes:")
+    case("deleted `Unknowns and what would settle them:` field rejected "
+         "(RD35-07)",
+         good.replace("Unknowns and what would settle them: F1 — a "
+                      "second formal administration\n", ""),
+         "Unknowns and what would settle them:")
+    case("deleted `Reviewer's falsification notes:` field rejected "
+         "(RD35-07)",
+         good.replace("Reviewer's falsification notes: tried to break "
+                      "the roster; couldn't\n", ""),
+         "Reviewer's falsification notes:")
+    case("Unknown rows beside a placeholder Unknowns field rejected "
+         "(RD35-07)",
+         good.replace("Unknowns and what would settle them: F1 — a "
+                      "second formal administration",
+                      "Unknowns and what would settle them: TBD"),
+         "carry what evidence would settle it")
+
     head = _head_commit()
     if head:
         good_head = GOOD.format(sha=head, inst=inst, param=param)
         case("instrument digest mismatch rejected (git on, LG-2)",
              good_head, "digest mismatch", _git=True)
         case("instrument version disagreement rejected (RD33-06, LG-11)",
-             good_head.replace("Instrument version: v1.7",
+             good_head.replace("Instrument version: v1.8",
                                "Instrument version: v1.2"),
              "LG-11: record claims instrument version", _git=True)
         case("launch target outside the parameter block rejected "
@@ -798,6 +1045,61 @@ def selftest():
                           "decisions/NO-SUCH-DECISION.md\n"
                           "Unknowns and what would settle them:"),
              "does not exist at the named commit", _git=True)
+        # RD35-01: the passing direction, fixtured — every prior path
+        # fixture asserted a rejection, so a check that rejected its
+        # entire lawful input set read as green (rule 6's blind spot).
+        # These use the REAL committed digests and version at HEAD, so
+        # LG-1/LG-2/LG-11 and the citation-existence path all execute
+        # and the record must validate CLEAN.
+        blob_head = git_show(head, INSTRUMENT_DEFAULT)
+        if blob_head is not None:
+            _iv_m = re.search(rb"^\s*effective_version:\s*(v[\d.]+)",
+                              blob_head, re.M)
+            good_real = (GOOD.format(
+                sha=head, inst=sha256_bytes(blob_head),
+                param=sha256_bytes(param_block_bytes(blob_head)))
+                .replace("Instrument version: v1.8",
+                         f"Instrument version: {_iv_m.group(1).decode()}")
+                if _iv_m else None)
+        else:
+            good_real = None
+        if good_real:
+            case("existing repository path as deferral citation ACCEPTED "
+                 "at the named commit (RD35-01)",
+                 good_real.replace(
+                     "GATE VERDICT: NOT READY",
+                     "GATE VERDICT: READY-WITH-DEFERRALS (owner only)")
+                     .replace("Deferred count (owner-deferred findings "
+                              "this administration): 0",
+                              "Deferred count (owner-deferred findings "
+                              "this administration): 1")
+                     .replace("Unknowns and what would settle them:",
+                              "Owner deferral decision: .syzygy/"
+                              "governance/decisions/"
+                              "LAUNCH-GATE-AUTHORITY-DECISION.md\n"
+                              "Unknowns and what would settle them:"),
+                 None, _git=True)
+            ready_real = (good_real
+                          .replace("| F2 | Not met | x |",
+                                   "| F2 | Met | x |")
+                          .replace("GATE VERDICT: NOT READY",
+                                   "GATE VERDICT: READY FOR Capability 1 "
+                                   "— Project registration and honest "
+                                   "shape visibility"))
+            case("full-template READY FOR record with the verbatim "
+                 "verdict-line target validates clean (git on, RD35-03)",
+                 ready_real, None, _git=True)
+            case("verdict line naming a target §8 never bound rejected "
+                 "(RD35-03)",
+                 ready_real.replace(
+                     "GATE VERDICT: READY FOR Capability 1 — Project "
+                     "registration and honest shape visibility",
+                     "GATE VERDICT: READY FOR Capability 7 — full "
+                     "Mission Control and mission prevention"),
+                 "the verdict line claims READY FOR", _git=True)
+        else:
+            print("  note  committed instrument unreadable at HEAD — 3 "
+                  "RD35 git-dependent fixtures skipped")
     else:
         print("  note  git unavailable — 3 git-dependent fixtures skipped")
 

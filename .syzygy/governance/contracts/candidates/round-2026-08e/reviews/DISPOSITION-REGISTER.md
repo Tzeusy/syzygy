@@ -294,7 +294,7 @@ described.
 | Finding | Class | Disposition | Where it lands |
 |---|---|---|---|
 | RD34-01 | BLOCKING | R | §4 states the `READY-WITH-DEFERRALS` predicate explicitly, as a formula over the closed vocabulary: identical to the `READY FOR` formula in every conjunct — every E `Met`, no plain `Not met` in launch-scope A–D, F1 `Met`-or-`Unknown`, F3 `Met`, F4 `Met` — except the F2 limb, which is satisfied by an owner-cited deferral; the E/A–D/F1/F3/F4 conjuncts are **never deferrable** (each carries §4's own rationale), and a nonzero declared deferral count with the citation is required. The validator runs the full conjunct battery on the deferrals branch, omitting only F2-`Met`; the all-Not-met H9d case is a fixture |
-| RD34-02 | MAJOR | R | The citation gains a shape test: a repository path (containing `/`, verified to exist at the record's named commit via git when git checks run) or a decision identifier (`SDR-n`/`P-n`/`D-n` shape); label wording — `(owner only)`, `the owner`, `yes`, `TBD` — is rejected. The RD33-03 disposition row gains a dated correction (its path-exists claim was aspirational at v1.6; true at v1.7). Fixtures: label rejected, nonexistent path rejected, real-path and identifier forms accepted |
+| RD34-02 | MAJOR | R | The citation gains a shape test: a repository path (containing `/`, verified to exist at the record's named commit via git when git checks run) or a decision identifier (`SDR-n`/`P-n`/`D-n` shape); label wording — `(owner only)`, `the owner`, `yes`, `TBD` — is rejected. The RD33-03 disposition row gains a dated correction (its path-exists claim was aspirational at v1.6; true at v1.7). Fixtures: label rejected, nonexistent path rejected, real-path and identifier forms accepted. [Corrected 2026-08-10, RD35-01: two claims in this row were false of the v1.7 bytes. The existence check shipped inverted — `lstrip("./")` stripped the leading dot from every `.syzygy/` path, so the check rejected every real decision path in the repository — and no "real-path accepted" fixture existed among the 43; every path fixture asserted a rejection. Both are true of the v1.8 bytes: the strip is a prefix strip and the accepting fixture exists, mutation-proven. This is the second dated correction on this one check's record trail — RD33-03's row was the first — recorded as evidence for RD-35's convergence reading] |
 | RD34-03 | MAJOR | R | The validator parses the **last** `GATE VERDICT:` match, matching §5's "terminal line" word; fixture: a record whose summary line and terminal line disagree fails on the terminal line's content |
 | RD34-04 | MAJOR | R | New-findings computed over `Not met ∪ scoped` on both sides of the prior comparison; §6 gains one sentence stating that a new scoped finding is a new finding in that column; fixture: prior-clean → current-scoped yields New-findings 1 |
 | RD34-05 | MAJOR | R | Both stale references corrected and made **version-neutral** so a future bump cannot strand them a third time: `DEFERRED-WAVE-POSTURE.md` cites "the launch-gate instrument's §8 launch scope" without a version word; `FIRST-OPENSPEC-SEQUENCE.md`'s P-34 row cites "the launch-gate instrument (current version per its own header)". The mechanical-guard option RD-34 raised was considered and the version-neutral wording chosen instead — it removes the class rather than detecting it; recorded here so the choice is visible |
@@ -343,3 +343,31 @@ as measurements (VIS-2 applies to a reviewer's own claims first):
   that lack the paragraph each self-mark at the citation site instead;
   no forward reference is unmarked, so the conclusion stands, the
   coverage figure did not.
+
+## RD-35 — launch-gate instrument v1.7 re-review (subject sha256 `c0b0dca4…` at `eb53c3e`)
+
+RD-35 verified all eleven RD-34 repairs present — eight by rebuilding
+RD-34's own records and executing the clone's validator with git checks
+on — and confirmed RD34-01's BLOCKING hole genuinely closed on every
+branch. Its seven new findings all land in the **validator and its
+records**, none in the instrument's question or verdict text — the
+reviewer's own words: "none of my seven findings requires an instrument
+amendment. §5 already says 'terminal', §4 and §5 already say
+`<LAUNCH_TARGET>`, §3 already states E3's fail condition." The repairs
+produce **v1.8** (validator + changelog entry only; §1–§8 byte-unchanged
+from v1.7), recorded in `LAUNCH-GATE-v1.8-SEMANTIC-DELTA.md`, which also
+carries the D-2 correction in the D-10 convention (the frozen v1.7 delta
+is not edited). Per the rule this pass has applied three times, the
+session that authors the v1.8 bytes may not confirm them: the P-34 offer
+waits on a fresh-context re-review (**RD-36**), and the formal
+administration must not run on any earlier validator.
+
+| Finding | Class | Disposition | Where it lands |
+|---|---|---|---|
+| RD35-01 | BLOCKING | R | The path normalization becomes a prefix strip (`v[2:] if v.startswith("./") else v`), never a character-class strip, so `.syzygy/…` paths resolve as written; the fixture **pair** RD-35 directed lands — one accepting the real `.syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md` at the named commit (the untested passing direction rule 6 exists to close), one rejecting `…/NO-SUCH-DECISION.md` for nonexistence. The v1.8 delta corrects D-2's description; this register's RD34-02 row gains a dated correction (its "real-path … accepted" fixture claim was false at v1.7 — the same class RD33-03's row was corrected for) |
+| RD35-02 | MAJOR | R | The anchor becomes the last line **containing the literal token** `GATE VERDICT:`; that line must parse to the closed verdict set or the record errors (a terminal verdict outside the set is an error, never an invitation to look upward); `\|` is rejected inside the captured verdict so the 9-column trend row cannot be corrupted. Fixtures: the qualified-terminal H6-reverse case; the quoted-template appendix case |
+| RD35-03 | MAJOR | R | The `READY FOR <…>` tail on the verdict line gets the same whitespace-normalized equality test LG-11 applies to the header `Launch target:` line — one placeholder, one enforcement standard; fixture: a READY verdict naming a target §8 never bound fails |
+| RD35-04 | MAJOR | R | The `E3 reopen-list:` field becomes required; a value that is not an empty-marker (LG-9's shared placeholder vocabulary — one definition of "names nothing") beside `E3 | Met` or a `READY`-prefixed verdict is an error, enforcing §3's own "'ready' is then false regardless of every other verdict"; fixture: three enumerated reopen items beside all-Met/READY FOR fails |
+| RD35-05 | MINOR | R | LG-9's test upgrades from enumeration `fullmatch` to a lexicon rule — after stripping punctuation and articles, the findings line must contain at least one token outside the placeholder lexicon (so `(none known)`, `-- none --`, `unknown`, `tba` all fail without a fourth enumeration extension); the H1 residual strings become fixtures |
+| RD35-06 | MINOR | R | The identifier form narrows to families that name made decisions (`SDR-n` and warrant identifiers); `P-n` (the pending queue — decisions not yet made) and `D-n` (delta item numbers) no longer satisfy a *granted*-deferral citation; fixture: `P-34` rejected with the reason naming the pending queue |
+| RD35-07 | MINOR | R | §5's declared fields gain presence checks: the RD24-02 non-authority banner, `Reviewer model family:`, `Materials given:`, `E3 reopen-list:`, `Unknowns and what would settle them:` (required non-placeholder whenever any row is `Unknown`), `Reviewer's falsification notes:`; fixtures: each deletion errors |

@@ -126,14 +126,20 @@ owner's launch-gate instrument (v1.3, at commit `067d8a0`) returned
 **GATE VERDICT: NOT READY** — 17 of 31 questions Not met, including all six
 of section E, the OpenSpec-readiness section itself; the raw record is
 `…/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md`.
-The instrument is now **v1.7** (candidate; owner approval prepared as
+The instrument is now **v1.8** (candidate; owner approval prepared as
 P-34). The repair-and-re-review chain: RD-24 (v1.4, REVISE) → v1.5 →
 RD-33 (REVISE, five MAJOR) → v1.6 → RD-34 (REVISE — all twelve RD-33
 repairs verified, one BLOCKING: the deferral-carrying pass branch ran no
-formula conjunct) → v1.7. Each re-review verified the prior batch whole
-before finding the next class; the P-34 offer waits on the RD-35
-re-review of the v1.7 delta, and the formal administration that a launch
-decision could rely on has not yet been run.
+formula conjunct) → v1.7 → RD-35 (REVISE — all eleven RD-34 repairs
+verified, one BLOCKING: the new citation-existence check shipped
+inverted, rejecting every real `.syzygy/` decision path, invisible
+because no fixture tested the passing direction) → v1.8. The v1.8 batch
+is validator-and-records only — RD-35: "the instrument has converged
+while the validator has not"; instrument §1–§8 are byte-unchanged from
+v1.7. Each re-review verified the prior batch whole before finding the
+next class; the P-34 offer waits on the RD-36 re-review of the v1.8
+delta, and the formal administration that a launch decision could rely
+on has not yet been run.
 
 **One thing this project does not have, stated plainly:** there is no
 mechanical task-to-context-packet compiler — `context_load.py` measures a
