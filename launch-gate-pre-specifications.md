@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.11 (candidate; v1.3 was the pilot-administered version)
+effective_version: v1.12 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), results record format, and trend log
@@ -1034,7 +1034,10 @@ Notes for administering against Syzygy specifically:
   quotation of §5's template satisfies nothing (a record that deletes
   its G1 section and six declared fields no longer validates by quoting
   the template — RD-38's composite now scores the same seven errors
-  with the appendix as without it) and shadows nothing (a quoted
+  with the appendix as without it [corrected 2026-08-10, RD39-02: true
+  of the fenced carrier only — an HTML comment, a blockquote, an
+  indented block, or one line of prose still satisfied the presence
+  checks at v1.11; see the v1.12 entry below]) and shadows nothing (a quoted
   example row fires no duplicate or disagreement check) (RD38-01,
   BLOCKING). The three §2 integrity anchors are brought under RD36-02's
   line-anchoring rule that the other declared fields already carry —
@@ -1058,8 +1061,14 @@ Notes for administering against Syzygy specifically:
   residual: a bare roster-complete row block with lawful verdicts is
   still a lawful prior, because a prior administration lawfully names
   an older instrument version and digests, so no version cross-check
-  can refuse it). 116 fixtures; **eight** mutation-reverts, each
-  failing exactly the fixtures its repair added, including a
+  can refuse it [corrected 2026-08-10, RD39-05: the impossibility
+  claim is false — the validator verifies a record against the commit
+  the record itself names, so a prior can be held to its own anchors;
+  see the v1.12 entry below]). 116 fixtures; **eight** mutation-reverts, each
+  failing exactly the fixtures its repair added [corrected 2026-08-10,
+  RD39-03: false for one of the eight — reverting `_decl`'s return to
+  the exact v1.10 bytes failed nothing, because v1.10 returned a
+  stripped value, not a raw one; see the v1.12 entry below], including a
   first-match reversion carrying RD-38's own comment-evasion shape,
   caught behaviorally in both orders; RD-38's attack records
   re-executed — the composite scores 7 errors, the borrowed digest is
@@ -1071,3 +1080,67 @@ Notes for administering against Syzygy specifically:
   vocabulary claim, its both-directions sentence, and its D-3
   meta-fixture sentence, in the D-10 convention — the frozen record is
   not edited). No existing question weakened; no ID renumbered.
+- **v1.12** (2026-08-10, post-RD-39 amendment — the v1.11 re-review's
+  two BLOCKING, two MAJOR and three MINOR findings; candidate, owner
+  approval pending) — a **validator-and-records batch** a fifth time:
+  no question block, no verdict word, and no section §1–§8 changed; the
+  instrument bytes that move are this entry, the version header, and
+  three dated correction markers in the v1.11 entry above, whose
+  quotation claim (RD39-02), mutation claim (RD39-03) and prior-side
+  impossibility claim (RD39-05) were each false of the bytes. The batch
+  adopts RD-39's diagnosis — a repair must be specified over the
+  **property** the instrument requires, then verified against every
+  carrier and every downstream rule that property touches, including
+  the rules the repair itself newly stands upstream of: *"a strip is
+  not a distinction, and inserting one changes the meaning of every
+  rule defined over the text it edits."* The terminal `GATE VERDICT:`
+  line is measured over the **raw record bytes** — v1.11's fence strip,
+  inserted upstream of RD35-02's terminal-line rule, had silently
+  redefined "last", so a stored terminal `NOT READY` behind an
+  unterminated fence was reported `READY FOR <the verbatim target>`;
+  now, if the raw terminal line is not the active terminal line, the
+  record errors loudly and no earlier line is parsed in its place — a
+  verdict quoted after the record's own terminal verdict is ambiguous,
+  never silently resolved (RD39-01, a hole the v1.11 batch itself
+  created and this batch closes). The presence checks become the
+  record-versus-quotation **distinction** rather than another carrier
+  strip: the six `Label:` presence tokens are line-anchored field
+  reads (≤3-space indent per CommonMark, list markers and bold
+  decoration lawful, internal whitespace normalized — closing RD39-07
+  in the same stroke), so blockquoted, deep-indented, and mid-line
+  prose carriers of a label satisfy nothing; the non-authority banner
+  gets a structural test — a blockquote line carrying the phrase,
+  §5's own form; and HTML comments join fences in the strip, since a
+  comment is the one carrier no reader ever sees (RD39-02). The fence
+  grammar aligns with CommonMark where RD-39 measured divergence: a
+  fence marker counts only at ≤3 spaces of indentation, and a closing
+  run must be at least as long as the opening run (RD39-06). The
+  `--prior` record is validated **as a record at its own named
+  commit** — LG-1/LG-2/LG-11 already verify against the commit a
+  record itself names, which is RD-39's refutation of the v1.11
+  impossibility claim, adopted as the repair — so a bare
+  roster-complete row block, lawful verdicts or not, is refused, and
+  the all-`Not met` fabrication that drove New-findings to zero is
+  refused with it (RD39-05; honest cap: a forged but fully
+  lawful-shaped record naming a real commit remains representable —
+  the guard raises the bar to the full lawful shape at the prior's
+  own anchors, and claims no impossibility). The internal-whitespace
+  acceptance — the behavioral change the v1.11 normalization repair
+  actually made — gains its fixture, so reverting `_decl`'s return to
+  the exact v1.10 bytes now fails a fixture, satisfying verification
+  rule 6 against the code the repair replaced (RD39-03). 132
+  fixtures; seven mutation-reverts, each failing exactly the fixtures
+  its repair added; RD-39's attack records re-executed — the
+  laundered record errors loudly with no verdict parsed, the
+  indented-carrier record parses its visible `NOT READY`, and the
+  composite rejects in all four carriers (disclosed limit: a
+  nested-blockquote quotation of the banner still satisfies the
+  banner's structural test, because §5's banner is itself a
+  blockquote — the other six fields and LG-4 still reject such a
+  record). Semantic delta:
+  `round-2026-08e/LAUNCH-GATE-v1.12-SEMANTIC-DELTA.md` (which also
+  carries the corrections of the frozen v1.11 delta's D-7 premise,
+  its "reaches every check" claim, its directionality statement, and
+  its D-6 impossibility sentence, in the D-10 convention — the frozen
+  record is not edited). No existing question weakened; no ID
+  renumbered.

@@ -338,30 +338,61 @@ class _Field:
 
 
 def _active_text(txt: str) -> str:
-    """RD38-01: a quotation is not the record. §5's template — including
-    its G1 heading, every declared field label, and example verdict rows
-    — is quoted inside the instrument in a fenced block, and a record
-    may lawfully quote it the same way; RD-38 built a record that
-    deleted G1 and six declared fields yet satisfied seven checks by
-    quoting the template in a fenced appendix. Every scan therefore
-    reads the record with fenced code blocks removed — rows, declared
-    fields, presence tokens, the G1 anchor, and the terminal verdict
-    line alike: one rule at the source, for every consumer, rather than
-    a per-check exemption (RD-38's refinement of RD-37's uniformity
-    rule). An unterminated fence blanks the rest of the record, which
-    fails loudly on the roster — a malformed record is never quietly
-    partial. Blockquotes are NOT stripped: §5's own non-authority
-    banner is a blockquote, and a `>`-prefixed line can never satisfy a
-    heading test or parse as a row."""
-    out, fence = [], None
+    """RD38-01/RD39-02/RD39-06: a quotation is not the record. §5's
+    template — including its G1 heading, every declared field label,
+    and example verdict rows — is quoted inside the instrument in a
+    fenced block, and a record may lawfully quote it the same way;
+    RD-38 built a record that deleted G1 and six declared fields yet
+    satisfied seven checks by quoting the template in a fenced
+    appendix. Every scan therefore reads the record with fenced code
+    blocks AND HTML comments removed — rows, declared fields, presence
+    tokens, the G1 anchor, and the terminal verdict line alike: one
+    rule at the source, for every consumer, rather than a per-check
+    exemption. RD39-02 added HTML comments: a comment is invisible in
+    rendered markdown, so bytes inside it are the one carrier a reader
+    can never see — they are not the record. The fence grammar follows
+    CommonMark where RD39-06 measured divergence: a fence marker
+    counts only at <=3 spaces of indentation (deeper backticks are
+    literal content of an indented code block, so the prose between
+    them stays active), and a closing run must be the same character
+    and at least as long as the opening run, alone on its line. An
+    unterminated fence or comment blanks the rest of the record —
+    loud on the roster when it swallows rows, and loud on LG-6 when
+    it swallows or shadows the terminal verdict line, which is
+    compared against the RAW bytes (RD39-01). Blockquotes are NOT
+    stripped: §5's own non-authority banner is a blockquote; the
+    presence checks refuse blockquote carriers by anchoring instead
+    (RD39-02)."""
+    out = []
+    fence_char, fence_len = None, 0
+    in_comment = False
     for ln in txt.splitlines():
-        s = ln.lstrip()
-        if fence is None and (s.startswith("```") or s.startswith("~~~")):
-            fence = s[:3]
+        if fence_char is not None:
+            s = ln.lstrip()
+            indent = len(ln) - len(s)
+            mc = re.match(r"(`{3,}|~{3,})[^\S\n]*$", s)
+            if (mc and indent <= 3 and mc.group(1)[0] == fence_char
+                    and len(mc.group(1)) >= fence_len):
+                fence_char, fence_len = None, 0
             continue
-        if fence is not None:
-            if s.startswith(fence):
-                fence = None
+        if in_comment:
+            if "-->" not in ln:
+                continue
+            ln = ln.split("-->", 1)[1]
+            in_comment = False
+        ln = re.sub(r"<!--.*?-->", "", ln)
+        if "<!--" in ln:
+            ln = ln[:ln.index("<!--")]
+            in_comment = True
+            if ln.strip():
+                out.append(ln)
+            continue
+        s = ln.lstrip()
+        indent = len(ln) - len(s)
+        mo = re.match(r"(`{3,}|~{3,})", s)
+        if mo and indent <= 3:
+            fence_char = mo.group(1)[0]
+            fence_len = len(mo.group(1))
             continue
         out.append(ln)
     return "\n".join(out)
@@ -398,8 +429,10 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     errors, notes = [], []
     _target_forms = None  # set when §8's LAUNCH_TARGET is readable (git on)
     # RD38-01: every check below reads the fence-stripped text — a fenced
-    # quotation satisfies nothing and shadows nothing.
-    txt = _active_text(record_path.read_text(encoding="utf-8"))
+    # quotation satisfies nothing and shadows nothing. The raw bytes are
+    # kept for exactly one rule: the terminal GATE VERDICT line (RD39-01).
+    _raw = record_path.read_text(encoding="utf-8")
+    txt = _active_text(_raw)
 
     # ---- LG-1 header ------------------------------------------------------
     # mdate/mcommit stay first-match deliberately, outside the _decl rule:
@@ -652,16 +685,36 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     # `GATE VERDICT:` — not the last regex match (RD35-02: matching selected
     # a different, earlier line whenever the terminal verdict carried a
     # qualifier, so a terminal NOT READY was discarded for a pass line).
+    # RD39-01: "last" is measured over the RAW record bytes, never the
+    # stripped text — inserting the fence strip upstream of this rule
+    # silently redefined "last", so a stored terminal NOT READY behind an
+    # unterminated fence was reported as READY FOR the verbatim target. If
+    # the raw terminal line is not the active terminal line — fenced,
+    # comment-carried, swallowed by an unterminated fence, or shadowed by
+    # a quoted verdict line placed after the record's own — the record
+    # errors loudly; no earlier line is ever parsed in its place.
     # That line must itself parse to the closed verdict set; a terminal
     # verdict outside the set is an error, never an invitation to look
     # upward. A captured verdict containing `|` is rejected — it would
     # structurally corrupt §6's nine-column trend row.
     _gv_lines = [ln for ln in txt.splitlines() if "GATE VERDICT:" in ln]
+    _gv_raw = [ln for ln in _raw.splitlines() if "GATE VERDICT:" in ln]
     mg = None
     n_not = sum(1 for v in verdicts.values() if v == "Not met")
     n_unk = sum(1 for v in verdicts.values() if v == "Unknown")
-    if not _gv_lines:
+    if not _gv_raw:
         errors.append("LG-6: no GATE VERDICT line found")
+    elif not _gv_lines or _gv_lines[-1] != _gv_raw[-1]:
+        errors.append(
+            "LG-6: the record's terminal `GATE VERDICT:` line — "
+            f"{_gv_raw[-1].strip()!r} — is not the record's active "
+            "terminal line: it sits inside a fenced or comment-carried "
+            "block, after an unterminated fence, or a quoted verdict "
+            "line follows the record's own. §5's terminal line is the "
+            "LAST line carrying the token in the record's own bytes; "
+            "the verdict a reader sees must be the verdict the trend "
+            "row reports, and a verdict quoted after the terminal one "
+            "makes the terminal ambiguous (RD35-02, RD39-01)")
     else:
         mg = GATE_VERDICT_RE.search(_gv_lines[-1])
         if not mg:
@@ -745,9 +798,25 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
 
     # ---- LG-12 §5 required record fields (RD35-07) ------------------------
     # A §5 template field deleted without an error reads as answered.
+    # RD39-02/RD39-07: presence is a line-anchored FIELD read, never a
+    # substring scan — the record-versus-quotation distinction the value
+    # checks already own (RD36-02/RD38-03), applied to the presence
+    # surface. A label at <=3 spaces of indentation (CommonMark's own
+    # bound), optionally list-marked or bold-wrapped, with internal
+    # whitespace normalized, is the record's own field; a blockquoted
+    # `> Label:`, a >=4-space-indented line, and a mid-line prose
+    # mention are quotations of the label, not the field. Fences and
+    # HTML comments are already gone from `txt` (_active_text). The
+    # non-authority banner is structural rather than label-shaped: §5's
+    # banner IS a blockquote, so its test is a blockquote line carrying
+    # the phrase — prose or any other carrier fails it.
+    def _label_present(label):
+        words = label.rstrip(":").split()
+        pat = (r"^ {0,3}(?:[-*+][^\S\n]+)?\**"
+               + r"[^\S\n]+".join(re.escape(w) for w in words)
+               + r"[^\S\n]*:")
+        return re.search(pat, txt, re.M) is not None
     for token, why in (
-            ("evidence, never an owner act",
-             "the non-authority banner (RD24-02)"),
             ("Reviewer model family:",
              "the model-family disclosure F5 and §7 read"),
             ("Materials given:", "the §2 materials list"),
@@ -761,9 +830,17 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
              "the fresh-context disclosure §2 requires — the eighth "
              "declared field, RD36-05"),
     ):
-        if token not in txt:
+        if not _label_present(token):
             errors.append(f"LG-12: required §5 field missing — {token!r} "
                           f"({why}; RD35-07)")
+    if not any(re.match(r" {0,3}>", ln)
+               and "evidence, never an owner act" in _norm_ws(ln)
+               for ln in txt.splitlines()):
+        errors.append("LG-12: required §5 field missing — 'evidence, "
+                      "never an owner act' (the non-authority banner "
+                      "(RD24-02) — a blockquote line carrying the "
+                      "phrase, §5's own form; prose and quotation "
+                      "carriers satisfy nothing, RD39-02; RD35-07)")
     _unk_val = _decl(
         r"^Unknowns and what would settle them:[^\S\n]*(\S.*)$",
         txt, errors, "LG-12", "Unknowns and what would settle them:")
@@ -821,50 +898,30 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     reopened = reopened_m.group(1) if reopened_m else "—"
     new_vs_prior = "n/a — no prior record supplied"
     if prior_path:
-        # RD38-01's rule reaches the prior side too: a fenced quotation
-        # inside the prior is not the prior.
-        ptxt = _active_text(Path(prior_path).read_text(encoding="utf-8"))
-        prior_rows = _row_verdicts(ptxt)
-        # RD37-04: the prior is validated before it is trusted — full
-        # roster coverage, no alien rows. An arbitrary file on the prior
-        # side could otherwise suppress the New-findings column F1 is
-        # answered from, contaminating the trend log every later F1
-        # verdict reads.
-        _p_missing = [q for q in ROSTER if q not in prior_rows]
-        _p_alien = sorted(q for q in prior_rows if q not in ROSTER)
-        # RD38-06: the prior's verdicts obey the same closed vocabulary
-        # and duplicate-row rules a current record obeys — a fabricated
-        # or malformed prior must not drive the New-findings column, in
-        # either direction.
-        _p_dupes, _p_badv, _p_seen = [], [], set()
-        for _pl in ptxt.splitlines():
-            _pm = ROW_RE.match(_pl.strip())
-            if not _pm or _pm.group(1) == "Q":
-                continue
-            _pq, _pv = _pm.group(1), _pm.group(2).strip()
-            if _pq in _p_seen:
-                _p_dupes.append(_pq)
-            _p_seen.add(_pq)
-            if not VERDICT_RE.match(_pv):
-                _p_badv.append(f"{_pq}: {_pv!r}")
-        if _p_missing or _p_alien or _p_dupes or _p_badv:
-            parts = []
-            if _p_missing:
-                parts.append("missing rows: " + ", ".join(_p_missing))
-            if _p_alien:
-                parts.append("rows outside the roster: "
-                             + ", ".join(_p_alien))
-            if _p_dupes:
-                parts.append("duplicate rows: "
-                             + ", ".join(sorted(set(_p_dupes))))
-            if _p_badv:
-                parts.append("verdicts outside the closed vocabulary: "
-                             + "; ".join(_p_badv))
+        # RD37-04/RD38-06/RD39-05: the prior is validated AS A RECORD,
+        # at its OWN named commit — LG-1/LG-2/LG-11 already verify
+        # against the commit a record itself names, so a prior lawfully
+        # naming an older instrument version and older digests validates
+        # cleanly, and a bare row block, a fabricated roster, or a
+        # template-shaped fragment is refused whole. (RD-39 refuted the
+        # v1.11 impossibility claim by exactly this construction: a
+        # lawful v1.10-era record scored 0 errors under this validator
+        # at its own named commit.) Recursion is depth 1: the prior's
+        # own --prior is never followed. Honest cap, stated rather than
+        # silent: a forged but fully lawful-shaped record naming a real
+        # commit remains representable — this guard demands the full
+        # lawful shape at the prior's own anchors, a raised bar, not an
+        # impossibility claim.
+        p_errors, _, prior_rows, _ = validate(Path(prior_path),
+                                              instrument_path, None,
+                                              _git=_git)
+        if p_errors:
             errors.append(
-                "LG-5: the --prior record fails validation ("
-                + "; ".join(parts) + ") — an unvalidated prior must not "
+                "LG-5: the --prior record fails validation as a record "
+                f"at its own named commit ({len(p_errors)} error(s); "
+                f"first: {p_errors[0]}) — an unvalidated prior must not "
                 "suppress the New-findings column F1 is answered from "
-                "(RD37-04, RD38-06)")
+                "(RD37-04, RD38-06, RD39-05)")
             new_vs_prior = "n/a — prior record failed validation"
         else:
             # §6 (v1.7, RD34-04): newly-Not-met rows count (incl. a
@@ -1525,8 +1582,14 @@ def selftest():
     # new finding — the prior/current comparison uses one normalization.
     n_cases[0] += 1
     import tempfile
-    prior_txt = good.replace(
+    # RD39-05: the prior must now be a fully lawful record at its own
+    # anchors, so the scoped prior names its scoped defect (LG-9).
+    prior_txt = (good.replace(
         "| C2 | Met | x |", "| C2 | Not met (out of launch scope) | x |")
+        .replace("Deferred-wave findings recorded outside launch scope: "
+                 "none",
+                 "Deferred-wave findings recorded outside launch scope: "
+                 "RFC-0010 mission-profile drift (Wave D1)"))
     cur_txt = good.replace("| C2 | Met | x |", "| C2 | Not met | x |")
     with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False) as f:
         f.write(prior_txt)
@@ -1681,7 +1744,6 @@ def selftest():
         "E3 reopen-list: (1) a quoted example item\n"
         "| A1 | Not met | quoted example row |\n"
         "## G1 — completeness critic\n"
-        "GATE VERDICT: READY FOR OPENSPEC AUTHORING\n"
         "```\n")
     case("G1 section present only inside a fenced quotation rejects — "
          "a quotation satisfies nothing (RD38-01)",
@@ -1743,10 +1805,11 @@ def selftest():
                       "Unknowns and what would settle them:"),
          None)
 
-    # RD38-06: a roster-complete prior whose verdicts leave the closed
-    # vocabulary, and one carrying a duplicate row, are refused the same
-    # way an incomplete prior is — a lawful-LOOKING prior must actually
-    # be lawful before it drives the New-findings column.
+    # RD38-06/RD39-05: a roster-complete prior whose verdicts leave the
+    # closed vocabulary, one carrying a duplicate row, and — RD39-05 — a
+    # bare roster-complete row block with LAWFUL verdicts are all refused
+    # the same way: the prior must be a fully lawful record at its own
+    # named commit before it drives the New-findings column.
     for _nm, _bad_prior in (
             ("roster-complete prior with out-of-vocabulary verdicts "
              "refused (RD38-06)",
@@ -1755,7 +1818,12 @@ def selftest():
             ("roster-complete prior with a duplicate row refused "
              "(RD38-06)",
              "| Q | Verdict | Evidence |\n|---|---|---|\n"
-             + _template_rows() + "\n| A1 | Not met | x |")):
+             + _template_rows() + "\n| A1 | Not met | x |"),
+            ("bare roster-complete row block with lawful verdicts "
+             "refused as a prior — the prior is validated as a record "
+             "at its own named commit (RD39-05)",
+             "| Q | Verdict | Evidence |\n|---|---|---|\n"
+             + _template_rows())):
         n_cases[0] += 1
         with tempfile.NamedTemporaryFile("w", suffix=".md",
                                          delete=False) as f:
@@ -1769,11 +1837,121 @@ def selftest():
         pp.unlink()
         cp.unlink()
         _f = [x.strip() for x in _t.strip().strip("|").split("|")]
-        _ok = (any("RD38-06" in e for e in _e)
+        _ok = (any("RD39-05" in e for e in _e)
                and _f[7] == "n/a — prior record failed validation")
         print(("  pass  " if _ok else "  FAIL  ") + _nm)
         if not _ok:
             fails.append((_nm, _t + " || " + " || ".join(_e)))
+
+    # --- v1.12 fixtures: RD-39's findings, kept closed ---
+
+    # RD39-01: the terminal GATE VERDICT line is the last line carrying
+    # the token in the RAW record bytes; if that line is not the active
+    # terminal line, the record errors — a stored NOT READY can never be
+    # reported as READY, and a verdict quoted after the terminal one is
+    # ambiguous, never silently resolved upward.
+    case("terminal NOT READY laundered behind an unterminated fence "
+         "rejected — the raw terminal line rules (RD39-01)",
+         good.replace("GATE VERDICT: NOT READY",
+                      "GATE VERDICT: READY FOR Capability 1 — Project "
+                      "registration and honest shape visibility\n```\n"
+                      "GATE VERDICT: NOT READY"),
+         "RD39-01")
+    case("a quoted verdict line AFTER the record's terminal verdict "
+         "rejected as ambiguous (RD39-01)",
+         good + "\n```\nGATE VERDICT: READY FOR OPENSPEC AUTHORING\n"
+         "```\n",
+         "RD39-01")
+    case("terminal NOT READY between four-space-indented backticks is "
+         "ordinary prose and parses correctly (RD39-01/RD39-06)",
+         good.replace("GATE VERDICT: NOT READY",
+                      "    ```\nGATE VERDICT: NOT READY\n    ```"),
+         None)
+
+    # RD39-06: CommonMark fence grammar — a closing run must be at
+    # least as long as the opening run, so a 4-backtick fence is not
+    # closed by 3 and its quoted content stays stripped.
+    case("four-backtick fence not closed by three — quoted duplicate "
+         "row stays stripped (RD39-06)",
+         good + "\n````\n```\n| A1 | Not met | x |\n````\n",
+         None)
+
+    # RD39-02: an HTML comment is not the record — the invisible
+    # carrier is stripped at the source, on every surface.
+    case("`Reviewer model family:` present only inside an HTML comment "
+         "rejects (RD39-02)",
+         good.replace("Reviewer model family: human\n", "")
+         + "\n<!--\nReviewer model family: human\n-->\n",
+         "Reviewer model family:")
+    case("G1 heading present only inside an HTML comment rejects "
+         "(RD39-02)",
+         good.replace("## G1 — completeness critic\nnone proposed\n", "")
+         + "\n<!--\n## G1 — completeness critic\n-->\n",
+         "LG-4")
+    case("lawful record with an inline HTML comment still validates "
+         "(RD39-02)",
+         good.replace("Operationalization notes: none",
+                      "Operationalization notes: none "
+                      "<!-- reviewed inline -->"),
+         None)
+
+    # RD39-02: presence is a line-anchored field read — blockquote,
+    # deep-indent and mid-line prose carriers of a label are quotations
+    # of the label, not the field; the banner's test is structural.
+    case("blockquoted `> Materials given:` does not satisfy presence "
+         "(RD39-02)",
+         good.replace("Materials given: the fixed §2 list, "
+                      "no deviations\n", "")
+         + "\n> Materials given: the fixed §2 list, no deviations\n",
+         "Materials given:")
+    case("four-space-indented label line does not satisfy presence "
+         "(RD39-02)",
+         good.replace("Operationalization notes: none\n", "")
+         + "\n    Operationalization notes: none\n",
+         "Operationalization notes:")
+    case("mid-line prose mention of `Reviewer:` does not satisfy "
+         "presence (RD39-02)",
+         good.replace("Reviewer: human, fresh context: yes\n", "")
+         + "\nThe administration was run by Reviewer: human with fresh "
+         "context.\n",
+         "fresh-context disclosure")
+    case("prose restatement of the non-authority banner does not "
+         "satisfy the structural blockquote test (RD39-02)",
+         good.replace("> This administration record is evidence, never "
+                      "an owner act; its verdict\n> authorizes nothing "
+                      "(instrument preamble; VIS-4).\n",
+                      "This record is evidence, never an owner act; its "
+                      "verdict authorizes nothing.\n"),
+         "non-authority banner")
+
+    # RD39-07: presence reads normalize whitespace and accept lawful
+    # decoration — a present field is never reported missing.
+    case("bold-wrapped `**Materials given:**` satisfies presence "
+         "(RD39-07)",
+         good.replace("Materials given: the fixed §2 list, no deviations",
+                      "**Materials given:** the fixed §2 list, "
+                      "no deviations"),
+         None)
+    case("`Reviewer  model family:` (two internal spaces) satisfies "
+         "presence (RD39-07)",
+         good.replace("Reviewer model family: human",
+                      "Reviewer  model family: human"),
+         None)
+    case("list-marked `- Operationalization notes:` satisfies presence "
+         "(RD39-07)",
+         good.replace("Operationalization notes: none",
+                      "- Operationalization notes: none"),
+         None)
+
+    # RD39-03: the internal-whitespace case — the behavioral change the
+    # v1.11 normalization repair actually made — carries its fixture,
+    # so reverting `_decl`'s return to the exact v1.10 `.strip()` bytes
+    # fails here (rule 6 against the code the repair replaced).
+    case("`E3 reopen-list: none  identified` (internal double space) "
+         "accepted as the marker (RD39-03)",
+         good.replace("E3 reopen-list: empty",
+                      "E3 reopen-list: none  identified"),
+         None)
 
     print(f"{n_cases[0]} fixtures, {len(fails)} failing — a check that "
           "cannot fail is not a check")

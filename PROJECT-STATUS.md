@@ -132,7 +132,7 @@ owner's launch-gate instrument (v1.3, at commit `067d8a0`) returned
 **GATE VERDICT: NOT READY** — 17 of 31 questions Not met, including all six
 of section E, the OpenSpec-readiness section itself; the raw record is
 `…/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md`.
-The instrument is now **v1.11** (candidate; owner approval prepared as
+The instrument is now **v1.12** (candidate; owner approval prepared as
 P-34). The repair-and-re-review chain: RD-24 (v1.4, REVISE) → v1.5 →
 RD-33 (REVISE, five MAJOR) → v1.6 → RD-34 (REVISE — one BLOCKING: the
 deferral-carrying pass branch ran no formula conjunct) → v1.7 → RD-35
@@ -146,28 +146,42 @@ text) → v1.9 → RD-37 (REVISE — two MAJOR: the v1.9 negation rule,
 shared across checks of opposite polarity, silently loosened LG-13
 into accepting enumerated reopen lists led by a negation clause — a
 measured regression against v1.8 — and three §5 fields still resolved
-by first match) → v1.10 → RD-38 (REVISE — all six RD-37 repairs
-verified, RD37-01 "genuinely and completely closed"; one BLOCKING: a
-record deleting its G1 section and six of the eight declared §5 fields
+by first match) → v1.10 → RD-38 (REVISE — one BLOCKING: a record
+deleting its G1 section and six of the eight declared §5 fields
 validated clean under `READY FOR <the verbatim target>` by quoting
 §5's own template in a fenced appendix — seven checks turned into
-no-ops by one quotation) → v1.11. The v1.8 through v1.11 batches are
-validator-and-records only — the instrument's §1–§8 have now gone five
+no-ops by one quotation) → v1.11 → RD-39 (REVISE — the strongest
+verification pass of the chain, all seven RD-38 repairs present and
+five closed outright; but two BLOCKING: the fence strip, inserted
+upstream of the terminal-line rule, silently redefined "last", so a
+record whose stored terminal verdict reads `NOT READY` validated
+clean and entered the trend log as `READY FOR <the verbatim target>`
+— a hole the v1.11 batch itself created — and the quotation repair
+closed one carrier of four, leaving the composite validating when its
+template rode an HTML comment, a blockquote, an indented block, or
+one line of prose) → v1.12. The v1.8 through v1.12 batches are
+validator-and-records only — the instrument's §1–§8 have now gone six
 amendments byte-unchanged, while the measuring layer keeps yielding
-one more class per administration. RD-38 moved the diagnosis one word
-past RD-37's: the discipline is uniformity of application **to every
-rule the code carries, not to every rule the batch touched**. That is
-adopted at v1.11: fenced quotations are stripped before any check
-reads the text, the §2 anchors carry the line-anchoring rule the other
-fields already had, the `--prior` obeys the closed verdict vocabulary,
-and the evadable source-scan meta-fixture is replaced by a behavioral
-decoy loop over every declared label in both orders (116 fixtures;
-eight repairs mutation-proven; RD-38's attack records re-executed —
-the composite now scores the same seven errors with its quoted
-appendix as without it). Each re-review verified the prior batch whole
-before finding the next class; the P-34 offer waits on the RD-39
-re-review of the v1.11 delta, and the formal administration that a
-launch decision could rely on has not yet been run.
+one more class per administration. RD-39 moved the diagnosis past
+RD-38's uniformity, to **direction**: a repair must be specified over
+the property the instrument requires ("the record's own structure,
+not a quotation of it"; "the record's own last verdict line"), then
+verified against every carrier and every downstream rule the property
+touches — "a strip is not a distinction, and inserting one changes
+the meaning of every rule defined over the text it edits." That is
+adopted at v1.12: the terminal verdict is measured over the raw
+record bytes, the presence checks become line-anchored field reads
+with a structural banner test, HTML comments join fences in the
+strip, the fence grammar aligns with CommonMark, and the prior is
+validated as a record at its own named commit (132 fixtures; seven
+repairs mutation-proven, including a revert to the exact v1.10 bytes
+the v1.11 batch could not distinguish; RD-39's attack records
+re-executed — the laundered record errors with no verdict parsed, and
+the composite rejects in all four carriers). Each re-review verified
+the prior batch whole before finding the next class; the P-34 offer
+waits on the RD-40 re-review of the v1.12 delta, and the formal
+administration that a launch decision could rely on has not yet been
+run.
 
 **One thing this project does not have, stated plainly:** there is no
 mechanical task-to-context-packet compiler — `context_load.py` measures a
