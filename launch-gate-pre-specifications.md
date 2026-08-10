@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.12 (candidate; v1.3 was the pilot-administered version)
+effective_version: v1.13 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), results record format, and trend log
@@ -1101,7 +1101,14 @@ Notes for administering against Syzygy specifically:
   now, if the raw terminal line is not the active terminal line, the
   record errors loudly and no earlier line is parsed in its place — a
   verdict quoted after the record's own terminal verdict is ambiguous,
-  never silently resolved (RD39-01, a hole the v1.11 batch itself
+  never silently resolved [corrected 2026-08-11, RD40-01: false of the
+  v1.12 bytes — the rule compared raw text to stripped text, so a
+  verdict quoted in a blockquote, an indented code block, a list item
+  or a line of prose was present in both, agreed, and was parsed as
+  the terminal verdict; four such records validated at 0 errors with
+  a stored `NOT READY` reported as `READY FOR <the verbatim target>`.
+  Made true at v1.13 by the own-line predicate; see the v1.13 entry
+  below] (RD39-01, a hole the v1.11 batch itself
   created and this batch closes). The presence checks become the
   record-versus-quotation **distinction** rather than another carrier
   strip: the six `Label:` presence tokens are line-anchored field
@@ -1137,10 +1144,101 @@ Notes for administering against Syzygy specifically:
   nested-blockquote quotation of the banner still satisfies the
   banner's structural test, because §5's banner is itself a
   blockquote — the other six fields and LG-4 still reject such a
-  record). Semantic delta:
+  record [corrected 2026-08-11, RD40-02: false of the v1.12 bytes —
+  the presence anchor admitted a leading list marker, so a bullet-list
+  quotation of §5's field template satisfied all six `Label:` tokens;
+  with the banner nested-blockquoted and a column-0 `## G1` heading in
+  the same appendix, a record carrying none of the eight fields
+  validated at 0 errors under `READY FOR <the verbatim target>`. The
+  six fields and the banner were made to reject at v1.13 (measured: 6
+  errors); LG-4 is *not* among them — see the v1.13 entry's disclosed
+  limits below]). Semantic delta:
   `round-2026-08e/LAUNCH-GATE-v1.12-SEMANTIC-DELTA.md` (which also
   carries the corrections of the frozen v1.11 delta's D-7 premise,
   its "reaches every check" claim, its directionality statement, and
   its D-6 impossibility sentence, in the D-10 convention — the frozen
   record is not edited). No existing question weakened; no ID
   renumbered.
+- **v1.13** (2026-08-11, post-RD-40 amendment — the v1.12 re-review's
+  two BLOCKING, three MAJOR and three MINOR findings; candidate, owner
+  approval pending) — a **validator-and-records batch** a sixth time:
+  no question block, no verdict word, and no section §1–§8 changed;
+  the instrument bytes that move are this entry, the version header,
+  and two dated correction markers in the v1.12 entry above, whose
+  ambiguity claim (RD40-01) and disclosed-limit claim (RD40-02) were
+  each false of the bytes the approval digest would have bound. The
+  batch adopts RD-40's prescription in place of its own habit:
+  *"stop enumerating carriers and enumerate the question."* Five rules
+  asked "is this line the record's own, not a quotation of it?" and
+  answered it five different ways; four consecutive blocking findings
+  (RD38-01, RD39-01, RD40-01, RD40-02) were that one question answered
+  inconsistently. There is now **one own-line predicate**, written
+  once and applied by every consumer: after the fence and
+  HTML-comment strip, a line is the record's own when it carries no
+  blockquote marker (the banner alone excepted, which requires
+  *single-level* `> `, §5's own form, so a nested `> > ` quotation
+  now fails), sits at **≤3 columns** of indentation with tabs
+  expanded to 4-column stops, carries no list marker of any kind
+  (`-`, `*`, `+`, ordered), is not the text line of a setext heading,
+  and is not inside a raw-HTML block (`<details>`/`<summary>`). Its
+  consumers are the terminal-verdict rule, the six `Label:` presence
+  tokens, the non-authority banner test, and the G1 anchor. `_decl`
+  is deliberately **not** a consumer: it is `^`-anchored with no
+  decoration allowance at all, so every quotation carrier either
+  fails the anchor outright or produces a loud disagreement error —
+  a stated scope decision, not an omission. The terminal-verdict rule
+  is computed over the **raw** bytes in the predicate's shape:
+  a `GATE VERDICT:` line quoted *after* the record's own terminal
+  line — in a blockquote, an indented code block, a list item, or a
+  sentence of prose — is now an ambiguity error rather than the
+  parsed verdict (RD40-01; four such records had validated at 0
+  errors, each converting a stored `NOT READY` into `READY FOR <the
+  verbatim target>`), and a record whose *every* `GATE VERDICT:` line
+  is a quotation is refused by name rather than resolved. The v1.12
+  presence anchor's list-marker allowance is **reversed** (RD40-02):
+  `- Operationalization notes:` was accepted at v1.12 as lawful
+  decoration and is rejected at v1.13 as a quotation — the deliberate
+  loss of an RD39-07 acceptance, taken because the decoration
+  allowance *is* the canonical carrier of a quoted field list, and
+  because presence and lawful-decoration were two requirements merged
+  into one regex. Tabs are expanded before every indentation
+  measurement, opening and closing fence alike, since CommonMark's
+  bound is three *columns* and one tab had been deleting a line every
+  reader sees (RD40-03). The LG-11 version-disagreement fixture is
+  rebuilt on the RD34-05 shape: the template's `Instrument version:`
+  literal is rewritten to the committed instrument's own
+  `effective_version` before mutation, so the fixture can no longer
+  be satisfied by its unmutated baseline (RD40-04); a dead
+  row-verdict helper is deleted and the single row normalization
+  documented at the loop that owns it (RD40-07). **145 fixtures**;
+  eight mutation-reverts, each failing exactly the fixtures its
+  repair added, with one honesty qualification measured rather than
+  asserted (RD40-08's own standard): the list refusal is carried
+  **twice** — by the predicate and by the presence anchor — so each
+  single-layer revert fails 0 presence fixtures and only the combined
+  revert to v1.12's exact configuration fails 2; the combined revert
+  is the behavioral witness, and the redundancy is defense in depth,
+  not two proofs. RD-40's attack records re-executed at the named
+  commit with git checks on and real digests: each of the four
+  quoted-after-terminal carriers errors (1 each) with the trend
+  verdict column blank; the all-quoted record errors by name; RD-38's
+  composite carried on a bullet list, with the banner nested-
+  blockquoted, rejects at **6 errors** (five `Label:` fields and the
+  banner); and the tab-fence record now scores exactly what its
+  four-space control scores (3 errors, `Deferred count` read as 3)
+  where at v1.12 it scored 0. **Disclosed limits, each measured:**
+  LG-4 is satisfied by a column-0 `## G1` heading wherever it sits
+  and however empty the section beneath it — that heading *is*
+  structurally the record's own, so this is an emptiness question and
+  not a quotation question, and it is left to a later batch; it opens
+  no pass (the composite scores 6 errors with the heading and 7
+  without). An asymmetric `**Label:*` still satisfies presence, and
+  the trend row is still printed above the error list carrying the
+  record's *claimed* verdict when the record is invalid — both
+  carried forward from RD-40's minor findings. Semantic delta:
+  `round-2026-08e/LAUNCH-GATE-v1.13-SEMANTIC-DELTA.md` (which also
+  carries the corrections of the frozen v1.12 delta's D-2 fourth
+  limb, its disclosed-limit generalization, its D-4 "CommonMark's own
+  bound" phrasing, its directionality assignment, and its D-5
+  mutation denominator, in the D-10 convention — the frozen record is
+  not edited). No existing question weakened; no ID renumbered.

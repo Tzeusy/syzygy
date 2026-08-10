@@ -518,7 +518,7 @@ changes the meaning of every rule defined over the text it edits."
 
 | Finding | Class | Disposition | Where it lands |
 |---|---|---|---|
-| RD39-01 | BLOCKING | R | The terminal-verdict rule is restated over the property: the terminal `GATE VERDICT:` line is the last line containing the token **in the raw record bytes** — computed before any stripping — and if that raw line is not present in the active text (fenced, comment-carried, or swallowed by an unterminated fence), the record ERRORS loudly instead of silently parsing an earlier line. A stored `NOT READY` can never again be reported as `READY FOR`. Consequence accepted and disclosed: a record whose last token-carrying line is a fenced *quotation* after its real verdict now errors as ambiguous rather than validating — §5's "terminal" means last, and a record that puts a quoted verdict after its terminal verdict does not have an unambiguous terminal line; the existing lawful-appendix fixture is reshaped accordingly (the appendix no longer quotes a verdict line; a new fixture asserts the quoted-after-terminal error). Fixtures: the laundered unterminated-fence record errors; the indented-carrier record parses its visible `NOT READY` correctly (via RD39-06's grammar fix); the no-fence qualified-terminal control still errors (RD35-02's fixtured shape). Mutation-proven |
+| RD39-01 | BLOCKING | R | The terminal-verdict rule is restated over the property: the terminal `GATE VERDICT:` line is the last line containing the token **in the raw record bytes** — computed before any stripping — and if that raw line is not present in the active text (fenced, comment-carried, or swallowed by an unterminated fence), the record ERRORS loudly instead of silently parsing an earlier line. A stored `NOT READY` can never again be reported as `READY FOR`. [corrected 2026-08-11, RD40-01: false of the v1.12 bytes as shipped — the rule compared raw text to *stripped* text, so a verdict quoted in a blockquote, an indented code block, a list item or a line of prose was present in both, agreed, and was parsed as the terminal verdict; RD-40 measured four such records at 0 errors, each reporting a stored `NOT READY` as `READY FOR <the verbatim target>`. Made true at v1.13 by the shared own-line predicate — see the RD-40 section below and the v1.13 delta's D-3.] Consequence accepted and disclosed: a record whose last token-carrying line is a fenced *quotation* after its real verdict now errors as ambiguous rather than validating — §5's "terminal" means last, and a record that puts a quoted verdict after its terminal verdict does not have an unambiguous terminal line; the existing lawful-appendix fixture is reshaped accordingly (the appendix no longer quotes a verdict line; a new fixture asserts the quoted-after-terminal error). Fixtures: the laundered unterminated-fence record errors; the indented-carrier record parses its visible `NOT READY` correctly (via RD39-06's grammar fix); the no-fence qualified-terminal control still errors (RD35-02's fixtured shape). Mutation-proven |
 | RD39-02 | BLOCKING, offer-blocking, instrument bytes | R | The presence checks get the distinction the code already owns, not another carrier strip: the six `Label:` presence tokens become line-anchored field reads (≤3-space indent per CommonMark, optional list marker and bold decoration, internal whitespace normalized — closing RD39-07 in the same stroke; a blockquoted `> Label:`, a ≥4-space-indented line, and a mid-line prose mention all fail the anchor), and the non-authority banner gets a structural test — a blockquote line carrying the phrase, since §5's banner IS a blockquote. HTML comments join fences in `_active_text` (a comment is not the record — the invisible carrier is removed at the source, which also ends the comment-carried G1 heading satisfying LG-4). Fixture matrix per carrier per surface: blockquote / indented / HTML-comment / prose carriers each rejected on the deleted-fields composite; the decorated and whitespace-variant lawful forms accepted. The §9 v1.11 entry's false parenthetical gains a dated correction marker in place (RD36-01/RD38-02 precedent); the v1.12 §9 entry states what is actually closed. Mutation-proven per surface |
 | RD39-03 | MAJOR, offer-blocking, instrument bytes | R | The premise is repaired where it is false: the internal-whitespace case — the behavioral change the repair actually made — gains its fixture (`E3 reopen-list: none  identified` accepts at v1.12; reverting `_decl`'s return to the exact v1.10 `.strip()` bytes now fails exactly that fixture, satisfying rule 6 against the code the repair replaced); the trailing-space fixture is kept as a regression guard but stripped of its witness status. The frozen v1.11 delta's false D-7 premise and the false "eight mutation-reverts" sentence are corrected by the v1.12 delta's D-1 (D-10 convention); the §9 v1.11 entry's false mutation sentence gains a dated correction marker; P-34's recommendation is corrected directly (a living record) |
 | RD39-04 | MAJOR | R | The directionality statement is restated in the v1.12 delta over the three axes RD-39 named — newly rejected / newly accepted / same-acceptance-changed-verdict — with every acceptance enumerated against a named fixture; the frozen v1.11 delta's false statement is corrected by the v1.12 delta's D-1, never by editing. The third axis exists in the statement precisely because RD39-01's harm was invisible to the accept/reject vocabulary |
@@ -530,3 +530,57 @@ Carried forward, no action: RD-39's §3 nit — the delta template's "byte-ident
 to their pre-batch state" phrasing is loose for the just-added predecessor raw
 review (RD-38's raw file had no pre-batch state); the v1.12 delta names the
 frozen population explicitly instead of reusing the phrase.
+
+## RD-40 — instrument v1.12 re-review, eighth administration (`VERDICT: REVISE`, at `7751f12`)
+
+RD-40 verified the whole v1.12 batch — "the most disciplined batch of the
+eight": all seven RD-39 findings present, every mutation denominator
+reproduced, D-1's four corrections each re-measured true, the frozen
+population enumerated — and found the class surviving a fourth time, one
+carrier out from where the last reviewer pointed. Its prescription is
+adopted as the v1.13 batch's discipline, and for the first time the
+remaining work is one artifact rather than a list of repairs: **stop
+enumerating carriers and enumerate the question.** One predicate answers
+"is this line the record's own, not a quotation of it?" over every
+markdown container, with its own fixture matrix, and every rule that asks
+the question calls it — "every one of the last four blocking findings is
+the same question answered inconsistently by consumers that never shared
+an answer."
+
+| Finding | Class | Disposition | Where it lands |
+|---|---|---|---|
+| RD40-01 | BLOCKING | R | The terminal-verdict rule is restated over RD-40's own prescription: the record's own verdict lines are the RAW lines that are own-shaped (≤3 columns of indentation with tabs expanded, no blockquote or list marker, the token at the start of the line after optional bold) — the terminal is the LAST of these; any other token-carrying raw line after it, in ANY carrier (blockquote, list, indent, prose, fence, comment), is an ambiguity error; an own-shaped terminal that does not survive to active text (fenced or comment-hidden) is the laundering error; a record whose only verdict lines are quoted has no verdict and errors. Survival is judged by raw line index, not string equality, which also closes RD40-06's inline-comment false rejection. Fixture per carrier, both harms (quoted-after and only-quoted); mutation-proven |
+| RD40-02 | BLOCKING, offer-blocking, instrument bytes | R | Presence and lawful-decoration are unmerged, and the question gets one answer: a shared own-line predicate (fences and comments already stripped; then ≤3 columns with tabs expanded, no blockquote at any nesting, no list marker at any depth, not a setext-heading text, not inside a raw-HTML `<details>`/`<summary>` block) is computed once per line and consumed by the six presence reads, the banner test, the G1 anchor and the terminal rule. The list-marker allowance is REMOVED from presence — the canonical quotation form is not lawful decoration, and the v1.12 fixture that accepted `- Operationalization notes:` flips to rejection, recorded on the directionality axes. The banner test requires a single-level blockquote — `> >` fails it. RD-40's bullet-list composite is re-executed and must reject. The §9 v1.12 disclosed-limit sentence gains a dated correction marker; the v1.13 §9 entry states what is actually closed. Mutation-proven per container |
+| RD40-03 | MAJOR | R | Tabs are expanded to 4-column stops (CommonMark's rule, cited by the reviewer) before every indentation measurement — fence opening, fence closing, and the own-line predicate — so a tab-indented backtick run is literal content and the honest `Deferred count: 3` a reader sees is text the validator sees. Fixtures both directions (tab-indented fence pair stays active; the space control still strips); the "CommonMark's own bound" phrasing in D-4/§9 is corrected via the v1.13 delta (frozen record) and the v1.13 §9 entry. Mutation-proven |
+| RD40-04 | MAJOR | R | The RD34-05 shape-substitution the file already states is applied to `good_head` exactly as to `good_real`: the git-on template's version literal is rewritten to the committed `effective_version` by shape, and the LG-11 disagreement fixture mutates by shape (never by literal), so no future bump can strand it again; the GOOD literal is also bumped to current as hygiene. The fixture's witness is re-proven by disabling the LG-11 version check on a copy — the fixture must fail — restoring "a check that cannot fail is not a check" |
+| RD40-05 | MAJOR | R | The v1.13 delta's directionality statement assigns D-4 to BOTH directions and ships the missing rejection-limb fixture (a label between a four-backtick and three-backtick run is stripped, so its deletion errors); the HTML-comment consequences RD-40 measured (unterminated-comment roster swallowing 0→8 errors; comment-hidden terminal 0→1; comment-spliced label acceptance) are enumerated on the axes. The frozen v1.12 delta's mis-assignment is corrected by the v1.13 delta's D-1, never by editing |
+| RD40-06 | MINOR | R | Folded into RD40-01's repair: terminal-line survival is judged by raw line index, so an inline comment on the verdict line no longer breaks string equality; the lawful form is fixtured (`GATE VERDICT: NOT READY <!-- final -->` validates) |
+| RD40-07 | MINOR | R | `_row_verdicts` is deleted; RD33-02's one-normalization claim is re-pointed at the live row loop in a comment where the rule actually runs |
+| RD40-08 | MINOR | R | Record correction in the v1.13 delta: D-5's mutation denominator is restated as 1 behavioral witness + 2 regression guards that assert the finding-ID string, per RD-40's M5c measurement; no code change |
+
+Nits carried without action: the "six amendments" noun (measured six
+versions / five amendments at v1.12; the v1.13 records state both
+figures); the asymmetric-bold acceptance (`**Label:*`) — safe direction,
+noted in the predicate's comment; the trend row printing above the error
+list with a claimed verdict — pre-existing, safe (the record is refused),
+left for a future batch with its own fixture if taken.
+
+**As built (2026-08-11, v1.13).** All eight dispositions are implemented.
+The shared own-line predicate has one definition and four consumers
+(terminal verdict, six presence tokens, banner, G1 anchor); `_decl` is a
+stated non-consumer, not an omission. Selftest **145 fixtures, 0
+failing**; ten mutation-reverts at denominators 4, 5, 2, 2, 1, 1, 1, 1,
+1, 2. One qualification measured rather than buried: the list-marker
+refusal is carried by both the predicate and the presence anchor, so
+each single-layer revert fails **0** fixtures and only the combined
+revert to v1.12's exact configuration fails **2** — one behavioral
+witness, not two. RD-40's attack records re-executed at `7751f12`, git
+on, real digests: four quoted-after-terminal carriers 1 error each with
+the trend verdict blank; the all-quoted record refused by name; the
+bullet-list composite **6** errors where it scored 0; the tab-fence
+record now scores exactly its four-space control (3 errors, `Deferred
+count` read as 3) where it scored 0. One residual is disclosed rather
+than closed: **LG-4 is satisfied by a column-0 `## G1` heading however
+empty the section beneath it** — an emptiness question, not a quotation
+question; measured at 6 errors with the heading and 7 without, so it
+opens no pass. Full record: `LAUNCH-GATE-v1.13-SEMANTIC-DELTA.md`.

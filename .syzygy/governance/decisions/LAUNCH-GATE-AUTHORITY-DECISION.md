@@ -8,63 +8,49 @@
 
 ## Question
 
-Approve `launch-gate-pre-specifications.md` **v1.12** as this repository's
+Approve `launch-gate-pre-specifications.md` **v1.13** as this repository's
 owner-approved **process policy** for evaluating pre-specification
 readiness?
 
-> **Offer status (2026-08-10):** not yet offerable. v1.5's re-review
-> (RD-33, `VERDICT: REVISE`) was closed by v1.6; v1.6's re-review (RD-34,
-> `VERDICT: REVISE`) by v1.7; v1.7's re-review (RD-35, `VERDICT: REVISE`
-> — one BLOCKING: the new citation-existence check shipped inverted) by
-> v1.8; v1.8's re-review (RD-36, `VERDICT: REVISE`) by v1.9; v1.9's
-> re-review (RD-37, `VERDICT: REVISE` — all seven RD-36 repairs verified,
-> both decisive ones by mutation; instrument §1–§8 found byte-identical
-> for the third amendment running; two MAJOR new findings: the v1.9
-> negation rule, shared across checks of opposite polarity, silently
-> LOOSENED LG-13 into accepting enumerated reopen lists led by a negation
-> clause — a measured regression against v1.8 — and three §5 fields
-> still resolved by first match, so a decoy line silently discarded the
-> honest answer) was closed by v1.10; and v1.10's re-review (RD-38,
-> `VERDICT: REVISE` — all six RD-37 repairs verified, RD37-01 "genuinely
-> and completely closed" with the regression measurably reversed; one
-> BLOCKING new finding: a record deleting its G1 section and six
-> declared §5 fields validated CLEAN if it quoted §5's own template in
-> a fenced appendix — seven checks turned into no-ops by one quotation;
-> plus the three §2 anchors un-anchored, the marker vocabulary falsely
-> attributed to §5 and rejecting eleven honest emptiness wordings, and
-> the uniformity meta-fixture defeated by trivial refactors) is closed
-> by v1.11 — a **validator-and-records batch** a fourth time; instrument
-> §1–§8 have now gone five amendments byte-unchanged. The v1.11 batch
-> adopts RD-38's refinement of the uniformity rule — uniformity to
-> every rule the code carries, not to every rule the batch touched:
-> fenced quotations are stripped before any check reads the text, the
-> §2 anchors carry the line-anchoring rule, the prior obeys the closed
-> vocabulary, and the meta-fixture is replaced by a behavioral decoy
-> loop over every declared label in both orders. v1.11's re-review
-> (RD-39, `VERDICT: REVISE` — the strongest verification pass of the
-> chain, all seven RD-38 repairs present and five closed outright; but
-> two BLOCKING: the fence strip, inserted upstream of the terminal-line
-> rule, silently redefined "last", so a record whose stored terminal
-> verdict reads NOT READY validated clean and entered the trend log as
-> READY FOR the verbatim target — a hole the v1.11 batch itself
-> created; and the quotation repair closed one carrier of four, so the
-> RD-38 composite still validated when its template rode an HTML
-> comment, a blockquote, an indented block, or one line of prose; plus
-> three sentences in §9 false of the bytes) is closed by v1.12 — a
-> **validator-and-records batch** a fifth time; instrument §1–§8 have
-> now gone six amendments byte-unchanged. The v1.12 batch adopts
-> RD-39's diagnosis — direction: a repair is specified over the
-> property the instrument requires, then verified against every
-> carrier and every downstream rule the property touches: the terminal
-> verdict is measured over the raw record bytes, the presence checks
-> become line-anchored field reads with a structural banner test, HTML
-> comments join fences in the strip, the fence grammar aligns with
-> CommonMark, and the prior is validated as a record at its own named
-> commit. Because the same session that authored the v1.12 bytes may
-> not confirm them, the offer waits on a fresh-context re-review of
-> the v1.12 delta (**RD-40**). The formal administration must not run
-> on any earlier validator (the closing directions of RD-33 through
-> RD-39).
+> **Offer status (2026-08-11):** not yet offerable. v1.5's re-review
+> (RD-33, `VERDICT: REVISE`) was closed by v1.6; v1.6's (RD-34) by v1.7;
+> v1.7's (RD-35 — one BLOCKING: the new citation-existence check shipped
+> inverted) by v1.8; v1.8's (RD-36) by v1.9; v1.9's (RD-37) by v1.10;
+> v1.10's (RD-38) by v1.11; v1.11's (RD-39 — two BLOCKING) by v1.12; and
+> v1.12's re-review (**RD-40**, `VERDICT: REVISE`) is closed by v1.13.
+> RD-40 called v1.12 *"the most disciplined batch of the eight"* — all
+> seven RD-39 repairs present, every mutation denominator reproduced,
+> all thirteen checks fixtured with a computed denominator — and still
+> returned REVISE on **two BLOCKING** findings, both of them one
+> question: a verdict quoted *after* the record's own terminal line, in
+> a blockquote, an indented block, a list item or a line of prose, was
+> silently parsed as the terminal verdict (four records at 0 errors,
+> each turning a stored `NOT READY` into `READY FOR <the verbatim
+> target>`); and the presence anchor's list-marker allowance let a
+> bullet-list quotation of §5's template satisfy all six `Label:`
+> tokens, so a record carrying **none** of the eight declared fields
+> validated clean under READY. Two sentences inside §9 — the bytes an
+> approval digest binds — asserted that neither could happen.
+>
+> v1.13 is a **validator-and-records batch** a sixth time; instrument
+> §1–§8 have now gone **seven versions** (v1.7–v1.13 — six amendments;
+> the §8 parameter block alone is unchanged further back still, across
+> the nine versions v1.5–v1.13, each figure swept this session)
+> byte-unchanged, each verified per-section. It adopts RD-40's
+> prescription in place of the batch habit that produced four
+> consecutive blocking findings: *stop enumerating carriers and
+> enumerate the question.* There is now **one own-line predicate** —
+> "is this line the record's own, not a quotation of it?" — written
+> once over every markdown container and consumed by the
+> terminal-verdict rule, the six presence tokens, the banner test and
+> the G1 anchor; `_decl` is a stated non-consumer with its reason
+> given. One v1.12 acceptance is **withdrawn** on purpose
+> (`- Operationalization notes:` no longer satisfies presence), which
+> the owner should weigh as a cost rather than a repair. Because the
+> same session that authored the v1.13 bytes may not confirm them, the
+> offer waits on a fresh-context re-review of the v1.13 delta
+> (**RD-41**). The formal administration must not run on any earlier
+> validator (the closing directions of RD-33 through RD-40).
 
 ## What approval binds — and what it never binds
 
@@ -93,9 +79,9 @@ has already directed this pass to respect.
 
 ## Options
 
-- **(a) Approve v1.12 as offered.** The amendment records are
+- **(a) Approve v1.13 as offered.** The amendment records are
   `contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.4-SEMANTIC-DELTA.md`
-  (ten deltas; no question weakened; three questions added from the
+  (eleven deltas; no question weakened; three questions added from the
   pilot's G1; launch-scope parameters for Capability 1 fixed in §8),
   `…/LAUNCH-GATE-v1.5-SEMANTIC-DELTA.md` (the RD-24 fresh instrument
   review's 21 findings closed — **read with the v1.6 delta's D-10**,
@@ -143,11 +129,28 @@ has already directed this pass to respect.
   validated as a record at its own named commit, the
   internal-whitespace fixture closing the rule-6 gap; validator and
   records only — no question weakened; no ID renumbered; instrument
-  §1–§8 byte-unchanged through six amendments).
+  §1–§8 byte-unchanged through five amendments, six versions; **read with the v1.13
+  delta's D-1**, which corrects D-2's fourth limb, its disclosed-limit
+  generalization, its "CommonMark's own bound" phrasing, its
+  directionality assignment, and its D-5 mutation denominator), and
+  `…/LAUNCH-GATE-v1.13-SEMANTIC-DELTA.md` (the RD-40 re-review's eight
+  findings closed — one own-line predicate written once and consumed by
+  the terminal-verdict rule, the six presence tokens, the banner test
+  and the G1 anchor, so a verdict quoted after the record's own
+  terminal line is an ambiguity error and a bullet-list quotation of
+  §5's template satisfies nothing; tabs expanded before every
+  indentation measurement; the LG-11 version fixture rebuilt on the
+  RD34-05 shape so it can fail again; the fence-close rejection limb
+  fixtured; validator and records only — no question weakened; no ID
+  renumbered; instrument §1–§8 byte-unchanged through **seven
+  versions, v1.7–v1.13** — six amendments. One acceptance is deliberately withdrawn:
+  `- Operationalization notes:` satisfied presence at v1.12 and does
+  not at v1.13, because the decoration allowance was the quotation
+  carrier).
 - **(b) Approve with amendments** — state them; the changelog takes a
-  v1.13 entry and the semantic delta extends. One prepared amendment the
+  v1.14 entry and the semantic delta extends. One prepared amendment the
   owner may take here: **promote F5 (assurance independence) from a
-  recorded question to a verdict conjunct** — v1.12 deliberately leaves it
+  recorded question to a verdict conjunct** — v1.13 deliberately leaves it
   non-gating at Administration 1 and discloses instead (RD24-12); making
   it a conjunct means no same-family administration can ever read READY.
 - **(c) Decline** — the gate remains an informal checklist; readiness
@@ -187,16 +190,27 @@ ready — because one predicate served three checks with two polarities),
 v1.11's are exactly the sixth re-review's (RD-38: a record deleting
 its completeness critic and six declared §5 fields validated clean
 under `READY FOR <the verbatim target>` by quoting §5's own template
-in a fenced appendix), and v1.12's are exactly the seventh
+in a fenced appendix), v1.12's are exactly the seventh
 re-review's (RD-39: the fence strip silently redefined the
 terminal-line rule so a stored NOT READY entered the trend log as
 READY FOR the verbatim target, and the quotation repair had closed
-one carrier of four; each repair now has a fixture that fails without
-it — 132 in all, the seven v1.12 repairs re-proven by mutation
-including a revert to the exact v1.10 `_decl` bytes that the v1.11
-batch could not distinguish, and RD-39's attack records re-executed
-against the repaired validator: the laundered record errors with no
-verdict parsed, and the composite rejects in all four carriers).
+one carrier of four), and v1.13's are exactly the eighth re-review's
+(RD-40: a verdict *quoted after* the record's own terminal line was
+parsed as the terminal verdict in four carriers, and a bullet-list
+quotation of §5's template satisfied all six presence tokens — both
+of them the same question, "is this line the record's own?", answered
+five different ways by five consumers). Each repair now has a fixture
+that fails without it — **145 in all**, the ten mutation-reverts
+failing exactly the fixtures their repairs added, with the one
+two-layer redundancy reported as one behavioral witness rather than
+two; and RD-40's attack records re-executed against the repaired
+validator: the four quoted-after-terminal carriers each error with
+the trend verdict blank, the composite that scored 0 errors now
+scores 6, and the tab-fence record scores exactly what its four-space
+control scores. One residual is disclosed and measured rather than
+closed: LG-4 is satisfied by a column-0 `## G1` heading however empty
+the section beneath it (6 errors with it, 7 without — it opens no
+pass).
 
 ## Mechanism (the lawful transaction, prepared not performed)
 
@@ -216,7 +230,7 @@ nowhere once the header flips). To approve:
 3. Record in this file, below this line, an approval block:
 
    ```text
-   APPROVED — launch-gate v1.12 as process policy
+   APPROVED — launch-gate v1.13 as process policy
    date: <date>
    instrument sha256: <the digest computed in step 2, post-status-edit>
    scope: process policy for pre-specification readiness evaluation;
@@ -232,7 +246,7 @@ nowhere once the header flips). To approve:
 Under **option (b)**, the ordering extends the same way (RD33-11): the
 owner's amendments are applied to the instrument **in the working tree
 before step 2's digest is computed** — together with the status edit and
-the changelog's v1.13 entry — so the digest always binds the amended
+the changelog's v1.14 entry — so the digest always binds the amended
 bytes; the amendments, status edit, changelog entry, and approval block
 travel in the one commit of step 4. An amendment applied after step 2
 would recreate exactly the approval-attests-bytes-that-exist-nowhere

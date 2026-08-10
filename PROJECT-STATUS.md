@@ -132,7 +132,7 @@ owner's launch-gate instrument (v1.3, at commit `067d8a0`) returned
 **GATE VERDICT: NOT READY** — 17 of 31 questions Not met, including all six
 of section E, the OpenSpec-readiness section itself; the raw record is
 `…/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md`.
-The instrument is now **v1.12** (candidate; owner approval prepared as
+The instrument is now **v1.13** (candidate; owner approval prepared as
 P-34). The repair-and-re-review chain: RD-24 (v1.4, REVISE) → v1.5 →
 RD-33 (REVISE, five MAJOR) → v1.6 → RD-34 (REVISE — one BLOCKING: the
 deferral-carrying pass branch ran no formula conjunct) → v1.7 → RD-35
@@ -159,29 +159,50 @@ clean and entered the trend log as `READY FOR <the verbatim target>`
 — a hole the v1.11 batch itself created — and the quotation repair
 closed one carrier of four, leaving the composite validating when its
 template rode an HTML comment, a blockquote, an indented block, or
-one line of prose) → v1.12. The v1.8 through v1.12 batches are
-validator-and-records only — the instrument's §1–§8 have now gone six
-amendments byte-unchanged, while the measuring layer keeps yielding
-one more class per administration. RD-39 moved the diagnosis past
-RD-38's uniformity, to **direction**: a repair must be specified over
-the property the instrument requires ("the record's own structure,
-not a quotation of it"; "the record's own last verdict line"), then
-verified against every carrier and every downstream rule the property
-touches — "a strip is not a distinction, and inserting one changes
-the meaning of every rule defined over the text it edits." That is
-adopted at v1.12: the terminal verdict is measured over the raw
-record bytes, the presence checks become line-anchored field reads
-with a structural banner test, HTML comments join fences in the
-strip, the fence grammar aligns with CommonMark, and the prior is
-validated as a record at its own named commit (132 fixtures; seven
-repairs mutation-proven, including a revert to the exact v1.10 bytes
-the v1.11 batch could not distinguish; RD-39's attack records
-re-executed — the laundered record errors with no verdict parsed, and
-the composite rejects in all four carriers). Each re-review verified
-the prior batch whole before finding the next class; the P-34 offer
-waits on the RD-40 re-review of the v1.12 delta, and the formal
-administration that a launch decision could rely on has not yet been
-run.
+one line of prose) → v1.12 → RD-40 (REVISE — and in the reviewer's
+own words "the most disciplined batch of the eight": all seven RD-39
+repairs present, every mutation denominator reproduced, all thirteen
+checks fixtured with a computed denominator; but two BLOCKING, and
+both of them the *same* question — a verdict **quoted after** the
+record's own terminal line, in a blockquote, an indented block, a
+list item or a line of prose, was silently parsed as the terminal
+verdict, so four records validated at 0 errors turning a stored
+`NOT READY` into `READY FOR <the verbatim target>`; and the presence
+anchor's list-marker allowance let a bullet-list quotation of §5's
+template satisfy all six `Label:` tokens, so RD-38's composite
+reproduced whole) → v1.13. The v1.8 through v1.13 batches are
+validator-and-records only — the instrument's §1–§8 have now gone
+**six amendments across seven versions** (v1.7–v1.13) byte-unchanged,
+and the §8 parameter block nine versions (v1.5–v1.13), while the
+measuring layer keeps yielding one more class per administration.
+RD-40 moved the diagnosis one step past RD-39's *direction*, and it
+is the first time the remaining work could be named as one artifact
+rather than a list of repairs: **stop enumerating carriers and
+enumerate the question.** Four consecutive blocking findings —
+RD38-01, RD39-01, RD40-01, RD40-02 — were the single question "is
+this line the record's own, not a quotation of it?", answered five
+different ways by five consumers that never shared an answer. That is
+adopted at v1.13: **one own-line predicate**, written once over every
+markdown container (fence, HTML comment, blockquote at any nesting,
+indented block by spaces *and* tabs, list item at any marker, setext
+and ATX headings, raw-HTML blocks, table cells, prose), consumed by
+the terminal-verdict rule, the six presence tokens, the banner test
+and the G1 anchor, with `_decl` a stated non-consumer rather than an
+omission (145 fixtures; ten mutation-reverts, with the one two-layer
+redundancy reported as one behavioral witness instead of two; RD-40's
+attack records re-executed — the four quoted-after-terminal carriers
+each error with the trend verdict blank, the composite that scored 0
+now scores 6, and the tab-fence record scores exactly its four-space
+control). One v1.12 acceptance is deliberately **withdrawn**
+(`- Operationalization notes:` no longer satisfies presence, because
+the decoration allowance was the quotation carrier), and one residual
+is disclosed rather than closed (LG-4 is satisfied by a column-0
+`## G1` heading however empty the section beneath it — measured at 6
+errors with it and 7 without, so it opens no pass). Each re-review
+verified the prior batch whole before finding the next class; the
+P-34 offer waits on the RD-41 re-review of the v1.13 delta, and the
+formal administration that a launch decision could rely on has not
+yet been run.
 
 **One thing this project does not have, stated plainly:** there is no
 mechanical task-to-context-packet compiler — `context_load.py` measures a
