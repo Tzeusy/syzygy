@@ -88,5 +88,8 @@ Mandatory selection is deterministic from the index metadata + warrant
 (RFC11-4); suggestion never suppresses (RFC11-5); incomplete is Unknown and by
 default blocks launch — proceeding on disclosed-incomplete context needs
 an explicit, owner-visible relaxation (RFC11-6); the index is a
-rebuildable projection, never a second truth store (RFC11-7). Each fixture
+rebuildable projection, never a second truth store (RFC11-7). **All four
+rules are Wave C2 candidates — deferred, see `DEFERRED-WAVE-POSTURE.md`** —
+so before that wave is accepted they are the candidate discipline this map
+works to, not rules in force. Each fixture
 records its omitted-candidate reasons and packet digest.

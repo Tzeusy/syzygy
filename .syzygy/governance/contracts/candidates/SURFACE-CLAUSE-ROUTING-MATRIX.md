@@ -10,19 +10,32 @@
 
 Eleven contracts each carry the same binding phase rule — RFC1-33,
 RFC2-26, RFC3-33, RFC4-30, RFC5-27, RFC6-28, RFC7-38, RFC8-32, RFC9-52,
-RFC10-16, RFC11-12 (this file's rows cover RFC 0006–0011; RFC 0001–0005's
-enumerations are produced at surface specification, per each phase
-clause's own staging): *no implementation work for
+RFC10-16, RFC11-12 (this file's full per-clause rows cover RFC 0006–0011;
+RFC 0001–0005's full enumerations are staged at surface specification — a
+scoping choice of this file, **not** a property of those contracts' phase
+clauses, whose staging sentence is the same as the included six; the
+Capability 1 clauses an author needs now are routed in the authoring
+supplement below): *no implementation work for
 user-observable behavior may be scheduled solely from that RFC.* Every
 observable consequence must first map to an approved OpenSpec requirement, or
 carry an explicit reviewed judgment that it has no independently testable
 behavior.
 
-That rule is only as good as the enumeration behind it. This matrix is that
-enumeration: **every declared clause identity of RFC 0006–0011, each routed
-exactly once** — a population CG-17 (`scripts/check_governance.py`)
-recomputes against this file's rows every battery run; its printed count,
-not any figure in this file, is the total of record.
+That rule is only as good as the enumeration behind it, and that enumeration
+has two layers with different units. **This matrix is the first layer only —
+the clause-level routing enumeration**: every declared clause identity of
+RFC 0006–0011, each routed exactly once — a population CG-17
+(`scripts/check_governance.py`) recomputes against this file's rows every
+battery run; its printed count, not any figure in this file, is the total of
+record. **The second layer — the per-observable-consequence coverage
+enumeration the phase clauses actually gate on — is not this file and cannot
+be**: every phase clause states "rows are per observable consequence, not per
+clause; a complete-looking matrix over under-enumerated consequences is a
+defect of the matrix", and that coverage matrix is the surface-specification
+deliverable each phase clause stages (review material, never authority). A
+row here answers *where a clause's observable limb routes*; it never answers
+*how many requirements cover that clause* — treating one route per clause as
+coverage is exactly the defect the phase clauses name.
 
 ## The four routes
 
@@ -105,7 +118,9 @@ Provisional names, minted for routing only. Nothing here creates a domain.
 
 `spec/selection-api` · `spec/intent-surface` · `spec/work-surface` ·
 `spec/map-surface` · `spec/map-scenes` · `spec/map-lenses` ·
-`spec/mission-control` · `spec/context-packets`
+`spec/mission-control` · `spec/context-packets` · `spec/registration`
+(the ninth, minted 2026-08-10 for the Capability 1 authoring supplement —
+registration, declaration validation, and consent recording flows)
 
 One further domain is **proposed, not minted**: `spec/platform-service`, for
 RFC10-2/RFC10-3's service-and-client topology and machine-client admission,
@@ -113,14 +128,57 @@ which bind every surface's clients rather than Mission Control's alone. The
 owner decides whether to mint it or keep those limbs in
 `spec/mission-control`.
 
+## Capability 1 authoring supplement — RFC 0001–0005 clauses on the first spec's path
+
+*(Added 2026-08-10, RD28-01.)* The launch scope is Capability 1 — project
+registration and honest shape visibility — and its trace table
+(`round-2026-08e/FIRST-SPEC-TRACE-TABLE.md`) names eleven governing clauses
+from RFC 0001–0005 that the full per-clause tables above deliberately stage.
+An author must not be left improvising on exactly those clauses, so they are
+routed here, by the same four-route vocabulary. **Scope note:** this
+supplement routes the trace table's clauses only; it is not the RFC
+0001–0005 full enumeration, which remains staged at surface specification
+per each phase clause. CG-17's recomputed population is deliberately scoped
+to RFC 0006–0011 and does not count these rows; where a row here and a
+clause disagree, the clause wins.
+
+| Clause | Route | Domain | The rule (clause wins; read it) | What a spec must assert |
+|---|---|---|---|---|
+| RFC1-1 | OS | `spec/registration` | A Project is repositories plus exactly one governance root; two roots is a well-formed contradiction minted in the Project's own evaluation, zero roots is unevaluable as a Project and surfaces at the workspace level as Unknown (`missing-declaration`), no kernel contradiction minted | A scenario per limb: a declaration resolving to two roots renders an owner-routed contradiction, never silent repair; a project with zero roots renders workspace-level Unknown with its reason, is never dropped, and mints nothing in a Project evaluation |
+| RFC1-3 | OS | `spec/registration` | Every observed repository requires a recorded consent record; no consent means no observation and therefore Unknown — never an empty graph read as absence | A scenario must assert an unconsented repository renders Unknown (`unconsented-source-or-provider`), not an empty or missing entry, and that egress consent is a separate per-(Project, provider) instance never folded into observation consent |
+| RFC1-7 | OS | `spec/registration` | Extension profiles are named, per-project-loadable, never presumed present; the mission profile is loadable only where the Mission contracts are accepted and active | A scenario must assert an undeclared profile's entities are absent without error, a declared profile loads its vocabulary, and the mission profile refuses to load where RFC 0010 is unaccepted (deferred-wave posture rendered honestly) |
+| RFC2-24 | OS | every consuming surface's domain — first `spec/registration` | Every Unknown claim instance carries exactly one primary reason from the closed twelve-reason list, verbatim on every machine answer (RFC6-14) | Capability 1's scenarios must assert reasons render verbatim from the vocabulary — at minimum `missing-declaration` (#1) and `unconsented-source-or-provider` (#6) on the registration paths — and that no rendering mints a reason outside the list |
+| RFC3-1 | OS | `spec/registration` | The declaration is the file `.syzygy/project.yaml`; its exact YAML dialect is fixed by the first accepted spec that parses it and is a conformance item from then on | The first spec that parses the declaration must pin the dialect (version, coercion rules, duplicate-key handling); a scenario must assert two implementations agree on whether a given `project.yaml` parses, with disagreement routed to the owner as a contradiction |
+| RFC3-4 | OS | `spec/registration` | Location is designation: the declaration's location in exactly one repository designates the governance root; a declaration designating a different root, or a Project resolving to two roots, is a contradiction per RFC1-1; zero roots follows RFC1-1's workspace-level rule | A scenario must assert designation follows file location and never a field value, with the two-roots and zero-roots limbs rendering per RFC1-1's split |
+| RFC3-5 | OS | `spec/registration` | The declaration's top-level field set is closed, each field naming one write authority (RFC3-2); additions require amendment | A scenario must assert an undeclared top-level field renders the declaration invalid (a named failure, never partial registration), and that per-field authority is honored — Syzygy-drafted membership renders unadopted until owner sign-off |
+| RFC3-6 | OS | `spec/registration` | Repository identity is the declared opaque identifier, never URL, path, or branch; an entry whose consent reference does not resolve to an in-force record is not observed | A scenario must assert locator-hint changes never move identity, and an unresolved consent reference renders the entry's content Unknown (`unconsented-source-or-provider`), never an empty graph |
+| RFC3-7 | OS | `spec/registration` | Consent records are governance acts in `.syzygy/governance/decisions/`, referenced never embedded; observation consent is per (observing Project, repository), egress consent one record per (Project, provider) naming the permitted set | A scenario per kind: an embedded consent value is invalid; observation consent for one project never admits another; egress renders Unknown absent the (Project, provider) record |
+| RFC3-9 | OS | `spec/registration` | Drafted declaration content renders unadopted and binds nothing; an unparseable or invalid `project.yaml` renders every dependent claim Unknown; Syzygy never auto-repairs — repair is a Proposal through the owner gate | A scenario must assert the invalid-declaration path yields Unknown on dependents plus a Proposal route, with no silent write to the declaration and no partial registration |
+| RFC5-3 | OS | `spec/platform-service` (proposed, not minted — the owner decides; these limbs bind every surface's clients) | Every request is exactly one of two client classes, by credential presented, never by network location or header heuristics; the two classes are exhaustive for all present and future clients | A scenario must assert a request with a valid machine credential is machine-class and every other request is browser-class, that loopback location and header absence classify nothing, and that registration endpoints admit each class only under its own discipline |
+
+Tally, this section: 11 rows, 11 OS. The supplement inherits every standing
+caveat; in particular no row here schedules anything, and the
+per-consequence coverage enumeration for these clauses is staged exactly as
+for every other clause.
+
 ## Standing caveats
 
-- **RFC 0001–0005 are deliberately not enumerated here.** Their observable
-  consequences reach users exclusively *through* the six rule-carrying
-  contracts above. That is a recorded judgment, not an omission — and any
-  bypass found is a gap to route, never a licence to schedule. One residue is
-  named rather than hidden: RFC 0005's ceremony, login, and consent
-  *experiences* are user-observable and carry no phase rule of their own.
+- **RFC 0001–0005 are not fully enumerated here, and the reason is
+  staging, not absence of observable behavior.** *(Restated 2026-08-10,
+  RD28-01 — the previous form of this caveat claimed their observable
+  consequences reach users exclusively through the six rule-carrying
+  contracts above and that RFC 0005's ceremony, login, and consent
+  experiences carry no phase rule of their own. Both claims were false
+  against the corpus: RFC1-33 and RFC3-33 enumerate their own
+  user-observable consequences — "project registration and declaration
+  validation flows" is Capability 1 itself — and RFC5-27 is precisely the
+  phase rule for those RFC 0005 experiences.)* All eleven contracts carry a
+  binding phase rule; this file's full per-clause rows cover RFC 0006–0011,
+  the RFC 0001–0005 full enumerations are staged at surface specification,
+  and the Capability 1 authoring supplement below routes the RFC 0001–0005
+  clauses on the first spec's path so an author is not left without the
+  routing authority's answer. Any bypass found is a gap to route, never a
+  licence to schedule.
 - **RFC-0010's OS rows are additionally gated on doctrine amendment D3.**
   Missions can be *specified* under RFC-0010; they cannot lawfully *operate*
   under unamended doctrine.
@@ -1036,8 +1094,8 @@ population and are validated by `verify_final_prespec.py`).
 
 | Clause | Route | Future spec domain | Retained invariant in the RFC | Justification |
 |---|---|---|---|---|
-| RFC7-39 | OS | `spec/polaris` | `.syzygy/intent/OVERVIEW.md` is the fixed, Syzygy-owned human entry point, rendered as governed presentation and **never authority**; a governed project without the file renders the absence, never silently | A scenario must assert that the entry resolves at the fixed path and renders under the narrative rules with its never-authority posture, and that a governed project missing the file surfaces the gap as a finding (absent) or Unknown (unobservable) rather than rendering nothing |
-| RFC7-40 | OS | `spec/polaris` | The repository-front-door link to the project entry is a per-repository kernel finding whose **answer domain is closed at four values — `yes` / `no` / `not-applicable` / `Unknown`** — carried verbatim on every rendering and machine answer (RFC6-14); Syzygy **may propose** the link and **may never write it** (VIS-5) | A scenario must assert the four-valued finding renders per repository — including that a repository with no governance root renders `not-applicable`, never `no` — that a declined link renders `no` truthfully and not as an error, and that the only write path Syzygy offers is a Proposal (RFC1-27) — no conforming implementation touches the front door itself |
+| RFC7-39 | OS | `spec/intent-surface` | `.syzygy/intent/OVERVIEW.md` is the fixed, Syzygy-owned human entry point, rendered as governed presentation and **never authority**; a governed project without the file renders the absence, never silently | A scenario must assert that the entry resolves at the fixed path and renders under the narrative rules with its never-authority posture, and that a governed project missing the file surfaces the gap as a finding (absent) or Unknown (unobservable) rather than rendering nothing |
+| RFC7-40 | OS | `spec/intent-surface` | The repository-front-door link to the project entry is a per-repository kernel finding whose **answer domain is closed at four values — `yes` / `no` / `not-applicable` / `Unknown`** — carried verbatim on every rendering and machine answer (RFC6-14); Syzygy **may propose** the link and **may never write it** (VIS-5) | A scenario must assert the four-valued finding renders per repository — including that a repository with no governance root renders `not-applicable`, never `no` — that a declined link renders `no` truthfully and not as an error, and that the only write path Syzygy offers is a Proposal (RFC1-27) — no conforming implementation touches the front door itself |
 | RFC10-23 | OS | `spec/mission-control` | Effect dimensions — project mutation, external-system mutation, external disclosure, resource consumption — are recorded separately; no single predicate collapses them, and `propose-only` is **never rendered as "no effects"** where dimensions (i), (iii) or (iv) are non-empty | A scenario must assert that a mission's terminal record states all four dimensions, that the effects-applied predicate (RFC10-18(a)) engages on dimension (ii) alone, and that a propose-only mission which disclosed content and spent budget renders *which* effects it had, under which authorization — never a bare "no effects" |
 | RFC10-24 | OS | `spec/mission-control` | Until the D3 doctrine amendment (or an owner ruling that unamended doctrine suffices) is recorded, **no mission leaves `awaiting-approval`**; approval ceremonies for operation are inadmissible, and RFC10-16's OpenSpec gate never discharges this precondition or vice versa | A scenario must assert that with no D3 adoption record and no owner ruling on file, an attempted approval-for-operation act is refused with the precondition named, and that a mission already in `awaiting-approval` cannot transition out however complete its envelope and evidence are |
 | RFC11-13 | OS | `spec/context-packets` | Every active contract declares its implementation boundary in its own index front matter — `{kind, clause}` — and the declaration is consumed, never re-derived, inferred, or overridden by a selector | A scenario must assert that a contract with no declaration, or whose named clause does not exist, renders every packet selecting it **incomplete (RFC11-6)** rather than silently complete, and that a selector never searches for a clause class the contract does not claim to have |

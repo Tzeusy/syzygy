@@ -33,7 +33,7 @@ clauses may be discussed, never cited as binding.
 
 ## Pending owner gates
 
-Ten acts are open; **none has been performed**. Round-2026-08d restructured
+Eleven acts are open; **none has been performed**. Round-2026-08d restructured
 the single foundational-contract act into **six wave acts** (design:
 `contracts/candidates/round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md`). The
 acceptance record owns the phrases and the ceremony. Each digest belongs to
@@ -47,6 +47,7 @@ act. This file restates no digest.
 | Waves C1, C2 | RFC-0011 — context packets; selection policy | `WAVE-C1…C2-MANIFEST.txt` |
 | Waves D1, D2 | RFC-0010 — mission prevention; correction plane | `WAVE-D1…D2-MANIFEST.txt` |
 | Craft | Craft amendment CC-TEST-2 | `craft-and-care/INSTALL-RECORD.md` |
+| Craft 2 (P-41) | The specification-acceptance standard CC-SPEC-1…10 | none yet — digest computed at the act; candidate at `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` |
 | Topology | The topology bundle | `topology-candidates/BUNDLE-MANIFEST.md` |
 | Overview | The project overview | the acceptance record |
 | D3 (optional) | Doctrine amendment D3 — bounded missions | none — VIS-4 adoption of the D3 packet, rev1 |

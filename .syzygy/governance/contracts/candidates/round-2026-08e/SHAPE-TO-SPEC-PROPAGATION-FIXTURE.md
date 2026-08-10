@@ -11,21 +11,34 @@
 > set blind from the TASK section; the ANSWER section is the fixture's
 > golden result. Do not read past the boundary marker when administering.
 
-## Governing description (what the path is; owners cited, nothing invented)
+## Governing description (what the path is; each step names its owner or its lack of one)
+
+*(Corrected 2026-08-10, RD28-04 — this heading previously claimed "owners
+cited, nothing invented". Two citations were wrong: step 2's sweep has no
+craft owner, and step 4 attributed an exception limb to CC-REV-2 that the
+clause does not contain. Both are restated honestly below.)*
 
 1. **Shape delta** — an amendment to an accepted contract clause lands as
    a semantic delta (NORMATIVE-CHANGE-WORKFLOW shape).
 2. **Affected-spec enumeration** — a blast-radius sweep over the spec
    corpus for every requirement citing the amended clause or consuming
-   its vocabulary; the sweep's denominator is recorded (verification
-   rule 9).
+   its vocabulary, with its denominator recorded. **This step has no
+   owner in any authority today**: it is proposed in the candidate
+   normative-change workflow (`policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md`),
+   whose own disclaimer says its script-checkable sweeps "do not exist as
+   checks yet", and the denominator discipline it borrows is repository
+   operating procedure (`AGENTS.md` verification rule 9), which is never
+   citable as authority. Detection is the open half of E6.
 3. **Interim contradiction/Unknown** — until amendments land, each
    affected requirement renders as contradicted/Unknown, never silently
    stale (VIS-2; CC-REV-2 forbids leaving mainline asserting the old
    truth).
 4. **Responsible amendment** — the shape change's author owns the spec
-   amendments (CC-REV-2's same-logical-change merge invariant), or
-   records an explicit exception with its reason and expiry condition.
+   amendments in the same logical change (CC-REV-2's merge invariant).
+   CC-REV-2 admits **no exception limb** — its only carve-out is
+   doctrine's owner gate (VIS-4). *(An earlier form of this step invented
+   an "explicit exception with reason and expiry" alternative; no craft
+   clause contains it, and it is withdrawn.)*
 5. **Re-evaluation** — affected acceptance criteria are re-judged; the
    re-evaluation is recorded with the change.
 

@@ -32,7 +32,12 @@ silently rely on — Waves C1/C2/D1/D2 (`DEFERRED-WAVE-POSTURE.md`).
 Mission-ready renders `not evaluated / deferred / Unknown` until the C/D
 semantics exist (P-37 rule 3); registration is never certification.
 
-## Prerequisites for authoring Capability 1 — each with exactly one state
+## Prerequisites for authoring Capability 1 — one state per row, scoped
+
+Each row carries **one state for authoring Capability 1**. A row whose
+blocking force belongs to a *different* gate (the launch decision, the
+formal administration, a later capability) says so in its own cell as a
+scope note — that is a scoped state, not a second one.
 
 States: `satisfied` / `owner-waived` / `blocking` / `not applicable`.
 
@@ -47,7 +52,7 @@ States: `satisfied` / `owner-waived` / `blocking` / `not applicable`.
 | P-36 Unknown vs Gap | Owner decision | **blocking** (acceptance criteria use both words) |
 | P-37 project-shape facets | Owner decision | **blocking** (Wave A ratifies the drafted form) |
 | P-38 human entry and discoverability | Owner decision | **blocking** (on the E3 path; Wave B ratifies) |
-| Specification acceptance standard in force | Craft act | **blocking** — candidate exists (`policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`); wants review + its craft act, or the owner knowingly authors against the candidate |
+| P-41 specification acceptance standard in force | Craft act | **blocking** — candidate exists (`policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`); queued as **P-41**; wants review + its craft act, or the owner knowingly authors against the candidate |
 | P-12 knowledge hygiene (CC-BUDGET-1) | Craft act | **blocking** for Capability 2; for Capability 1 the budget rule is not consumed — **not applicable** to Capability 1's own authoring, listed for visibility |
 | P-34 launch-gate v1.5 authority + formal administration READY | Process | **blocking** for the launch decision (the owner may lawfully decide without it, but this pass's charter treats the formal administration as the evidence bar) |
 | P-14 license | Owner decision | **not applicable** — blocks release, not specification |

@@ -1,7 +1,8 @@
 # Context-selection fixture 8 — OpenSpec requirement authoring
 
-**Status:** DRAFT — a candidate fixture, not part of the rev10 accepted
-fixture set (fixtures 1–5). Binds nothing. Repaired 2026-08-05 against the
+**Status:** DRAFT — a candidate fixture, later than the earlier candidate
+set (fixtures 1–5; **no fixture is accepted** — all are candidates outside
+every wave manifest, and "rev10" is a superseded revision). Binds nothing. Repaired 2026-08-05 against the
 two stored §20.4 reviews; the repairs are recorded in
 `round-2026-08/CONTEXT-COMPILER-FIXTURE-REPORT.md`.
 
@@ -33,6 +34,15 @@ budget breach in the fixture set — a claim checked against every sibling in
 `CONTEXT-BUDGET-REPORT.md` §1 rather than asserted. (It is *not* the first
 breach: accepted fixture 2 breached before it and is recorded as a
 disclosed exception. Fixture 8's distinction is size, not precedence.)
+
+**Deferred-wave label (RD28-07).** The selection procedure this fixture
+derives with — RFC11-4, RFC11-13, RFC11-14 — is defined entirely in
+`rfcs/RFC-0011/deterministic-selection-and-budget.md`, the sole module of
+**Wave C2, which is deferred** (`DEFERRED-WAVE-POSTURE.md`). This fixture is
+a worked example of the *candidate* selection discipline, not a Capability 1
+reliance: the first spec's content depends on Waves A+B only, and an author
+compiling context before C2 is accepted does so as judgment, with this
+fixture as guidance rather than rule.
 
 **Selection rule trace (RFC11-4, traversal per RFC11-14).** The warrant
 names an adopted Polaris capability → `applies_to: polaris` selects

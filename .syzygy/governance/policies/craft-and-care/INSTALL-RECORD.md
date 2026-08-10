@@ -123,3 +123,12 @@ correction, re-applied because the phrase that correction installed was
 itself later retired; the paragraph now quotes no phrase at all, so a
 future retirement cannot re-create the defect. No rule text, digest, or
 act argument changed in this correction.
+
+**Pending candidate — recorded 2026-08-10, binding nothing.** A second
+craft-amendment candidate exists outside this cluster:
+`.syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`
+(CC-SPEC-1…CC-SPEC-10, the specification-acceptance standard). It is queued
+as owner decision **P-41** and binds nothing until its own
+`CONFIRM CRAFT AMENDMENT` act; its digest is computed at that act, never
+transcribed in advance. This paragraph is a pointer so the cluster is aware
+of the namespace minting into it — it installs nothing.
