@@ -29,34 +29,42 @@ Checks (each with a `--selftest` mutation fixture):
         required — their absence is an error, never an implicit zero
         (VIS-2); the printed trend row carries the computed and parsed
         figures
-  LG-6  the gate-verdict line exists, uses the closed verdict set, and is
-        consistent with the §4 formula as computable from the rows: plain
-        READY FOR requires all E rows Met, no plain Not met in A–D (the
-        scoped form does not block), F3 Met, F4 Met, F1 Met-or-Unknown,
-        **F2 Met and zero declared deferrals** — any deferral-carrying
-        pass must use READY-WITH-DEFERRALS (instrument §4, RD33-04)
-  LG-7  READY-WITH-DEFERRALS requires the `Owner deferral decision:` field
-        naming the granting owner decision — the reviewer may not
-        self-authorize a deferral, and the template's own "(owner only)"
-        label satisfies nothing (RD33-03); a deferral-carrying verdict
-        with `Deferred count: 0` is likewise an error
+  LG-6  the LAST `GATE VERDICT:` line (§5's "terminal line" — RD34-03)
+        exists, uses the closed verdict set, and is consistent with the
+        §4 formulas as computable from the rows. BOTH pass branches run
+        the full conjunct battery (RD34-01): every E row Met, no plain
+        Not met in A–D (the scoped form does not block), F3 Met, F4 Met,
+        F1 Met-or-Unknown. Plain READY FOR additionally requires **F2 Met
+        and zero declared deferrals**; READY-WITH-DEFERRALS substitutes
+        exactly the F2 limb with an owner-cited deferral (instrument §4)
+  LG-7  any record whose `Deferred count:` is nonzero — under ANY verdict
+        (RD34-07) — and any READY-WITH-DEFERRALS verdict requires the
+        `Owner deferral decision:` field, whose value must be a
+        repository path (verified to exist at the named commit when git
+        checks run) or a decision identifier (SDR-n/P-n/D-n/B-n shape) —
+        label wording like "(owner only)" is rejected (RD34-02); a
+        deferral-carrying verdict with `Deferred count: 0` is an error
   LG-8  E1's five sub-verdict rows (form, home, granularity,
         acceptance-authority, change-process) are present, and an E1
         rollup of Met requires all five sub-rows Met
   LG-9  a record with any scoped row must name at least one defect on the
-        deferred-wave findings line — a scoped row beside "none" asserts
-        a scoped defect exists and that none exists (instrument §4,
-        RD33-01)
-  LG-10 the full question roster is present — A1–A6, B1–B5, C1–C7, D1–D4,
-        E1 with its five sub-rows, E2–E6, F1–F6; a missing row is an
-        error, never a pass, and a delta record cannot support a gate
-        decision (instrument §2/§5, RD33-05)
+        deferred-wave findings line — a placeholder ("none", "n/a",
+        "TBD", bare digits or punctuation) asserts a scoped defect exists
+        and that none exists (instrument §4, RD33-01; set widened
+        RD34-06)
+  LG-10 the full question roster is present AND nothing else is — A1–A6,
+        B1–B5, C1–C7, D1–D4, E1 with its five sub-rows, E2–E6, F1–F6; a
+        missing row is an error, never a pass (a delta record cannot
+        support a gate decision, instrument §2/§5, RD33-05), and a row ID
+        outside the roster is an error too, so an invented question
+        cannot enter the trend row's computed columns (RD34-11)
   LG-11 the record's declared instrument version matches the committed
-        instrument at the named commit, and its `Launch target:` line is
-        the parameter block's LAUNCH_TARGET (whitespace-normalized
-        containment) — a verdict must name the target §8 binds (RD33-06;
-        needs git, skipped with LG-2's notice otherwise; the missing-line
-        case errors regardless)
+        instrument at the named commit, and its `Launch target:` line
+        equals — whitespace-normalized — the parameter block's
+        LAUNCH_TARGET or its first sentence, per §5's "verbatim"
+        (RD33-06; upgraded from containment, RD34-08; needs git, skipped
+        with LG-2's notice otherwise; the missing-line case errors
+        regardless)
 
 Usage:
   python3 scripts/launch_gate_results.py <record.md>
@@ -148,6 +156,27 @@ def _norm_ws(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+DECISION_ID_RE = re.compile(r"(?:SDR|P|D|B)-\d+[a-z]?(?:\([a-z]\))?$")
+
+
+def _deferral_citation_error(val, commit, _git):
+    """RD34-02: the citation must be a repository path (existing at the
+    named commit when git checks run) or a decision identifier — label
+    wording is not a citation."""
+    v = val.strip().strip("`")
+    if DECISION_ID_RE.fullmatch(v):
+        return None
+    if "/" in v:
+        if not _git or not commit:
+            return None  # shape lawful; existence unverifiable without git
+        if git_show(commit, v.lstrip("./")) is None:
+            return (f"path {v!r} does not exist at the named commit — a "
+                    "citation to nowhere authorizes nothing")
+        return None
+    return (f"{v!r} is neither a repository path nor a decision identifier "
+            "— label wording is not a citation (RD34-02)")
+
+
 def validate(record_path: Path, instrument_path: str, prior_path=None,
              _git=True):
     errors, notes = [], []
@@ -223,12 +252,18 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
                 lt_m = re.search(
                     r"LAUNCH_TARGET:\s*>\n((?:[ \t]+\S[^\n]*\n)+)", pbt)
                 lt = _norm_ws(lt_m.group(1)) if lt_m else _norm_ws(pbt)
-                tgt = _norm_ws(mtarget.group(1))
-                if tgt and tgt not in lt:
+                first_sentence = lt.split(". ")[0].rstrip(".")
+                tgt = _norm_ws(mtarget.group(1)).rstrip(".")
+                # §5 requires the target verbatim: normalized equality with
+                # the LAUNCH_TARGET scalar or its first sentence — a
+                # fragment is not the target (RD34-08).
+                if tgt and tgt not in (lt.rstrip("."), first_sentence):
                     errors.append(
                         f"LG-11: the record's launch target {tgt!r} is not "
-                        "the parameter block's LAUNCH_TARGET — the target "
-                        "a verdict names must be the one §8 binds")
+                        "the parameter block's LAUNCH_TARGET (verbatim, "
+                        "whitespace-normalized; its first sentence "
+                        "suffices) — a fragment does not name the target "
+                        "§8 binds (RD34-08)")
     elif not _git:
         notes.append("LG-2: git unavailable — digest, version, and target "
                      "verification skipped, record NOT fully validated")
@@ -276,6 +311,13 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
                 " — a full administration answers every question; absence "
                 "is never a pass, and a delta record cannot support a gate "
                 "decision (instrument §2/§5)")
+        unknown_rows = [q for q in verdicts if q not in ROSTER]
+        if unknown_rows:
+            errors.append(
+                "LG-10: row ID(s) outside the question roster: "
+                + ", ".join(sorted(unknown_rows)) +
+                " — an invented question must not enter the trend row's "
+                "computed columns (RD34-11)")
 
     # ---- LG-8 E1 sub-verdicts --------------------------------------------
     if "E1" in verdicts:
@@ -312,6 +354,20 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     if owner_dec and (owner_dec.startswith("<")
                       or owner_dec.lower() in ("none", "n/a")):
         owner_dec = None
+    if owner_dec:
+        cite_err = _deferral_citation_error(
+            owner_dec, mcommit.group(1) if mcommit else None, _git)
+        if cite_err:
+            errors.append("LG-7: `Owner deferral decision:` " + cite_err)
+            owner_dec = None
+    # §5: the citation is required whenever Deferred count is nonzero,
+    # under ANY verdict (RD34-07) — an uncited deferral must not enter
+    # the trend log.
+    if n_deferred_decl and not owner_dec:
+        errors.append(
+            f"LG-7: `Deferred count:` is {n_deferred_decl} with no lawful "
+            "`Owner deferral decision:` citation — only the owner defers, "
+            "under any verdict (§5, RD34-07)")
 
     # ---- LG-9 scoped-row disclosure ---------------------------------------
     n_scoped = sum(1 for v in verdicts.values() if v == SCOPED)
@@ -325,22 +381,29 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
                 f"LG-9: {n_scoped} scoped row(s) but no deferred-wave "
                 "findings line — §4 requires each scoped defect named "
                 "there; the disclosure is the scoped form's honesty")
-        elif val.startswith("<") or re.fullmatch(r"(?i)[`*\s]*none[`*.\s]*",
-                                                 val):
+        elif val.startswith("<") or re.fullmatch(
+                r"(?i)[`*\s]*(?:none|n/?a|tbd|todo|pending|"
+                r"not applicable|[\W\d]+)[`*.\s]*", val):
             errors.append(
                 f"LG-9: {n_scoped} scoped row(s) beside a deferred-wave "
-                f"findings line reading {val!r} — the record asserts a "
-                "scoped defect exists and that none exists (instrument §4)")
+                f"findings line reading {val!r} — a placeholder names no "
+                "defect; the record asserts a scoped defect exists and "
+                "that none exists (instrument §4; RD34-06)")
 
     # ---- LG-6 / LG-7 gate verdict line ------------------------------------
-    mg = GATE_VERDICT_RE.search(txt)
+    # §5's "terminal line" is the LAST match — a summary line earlier in the
+    # record must not shadow it (RD34-03; the pilot record has two).
+    _gv_matches = list(GATE_VERDICT_RE.finditer(txt))
+    mg = _gv_matches[-1] if _gv_matches else None
     n_not = sum(1 for v in verdicts.values() if v == "Not met")
     n_unk = sum(1 for v in verdicts.values() if v == "Unknown")
     if not mg:
         errors.append("LG-6: no GATE VERDICT line found")
     else:
         gv = mg.group(1).strip()
-        if gv.startswith("READY FOR"):
+        if gv.startswith("READY"):
+            # §4 (v1.7, RD34-01): both pass branches run the full conjunct
+            # battery — the branches differ in exactly the F2 limb.
             e_rows = {q: v for q, v in verdicts.items()
                       if SECTION_OF(q) == "E"}
             ad_not = [q for q, v in verdicts.items()
@@ -353,33 +416,40 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
             for fq in ("F3", "F4"):
                 if verdicts.get(fq) != "Met":
                     bad.append(f"{fq} is not Met")
-            if verdicts.get("F2") != "Met":
-                bad.append("F2 is not Met — a pass resting on an F2 "
-                           "deferral is READY-WITH-DEFERRALS with an owner "
-                           "citation, never plain READY FOR (§4)")
             if verdicts.get("F1") == "Not met":
                 bad.append("F1 is Not met — the §4 convergence conjunct "
                            "(F1 Met-or-Unknown) fails")
-            if n_deferred_decl:
-                bad.append(f"Deferred count is {n_deferred_decl} — a "
-                           "deferral-carrying pass is "
-                           "READY-WITH-DEFERRALS, never plain READY FOR "
-                           "(§4)")
-            if bad:
-                errors.append("LG-6: verdict claims READY but the rows "
-                              "refuse it — " + "; ".join(bad))
-        elif gv.startswith("READY-WITH-DEFERRALS"):
-            if not owner_dec:
-                errors.append(
-                    "LG-7: READY-WITH-DEFERRALS without an `Owner deferral "
-                    "decision:` field naming the granting owner decision — "
-                    "only the owner defers, and the template's own "
-                    "'(owner only)' label satisfies nothing (§4/§5)")
-            if n_deferred_decl == 0:
-                errors.append(
-                    "LG-7: READY-WITH-DEFERRALS with `Deferred count: 0` — "
-                    "a deferral-carrying verdict must declare its "
-                    "deferrals")
+            if gv.startswith("READY FOR"):
+                if verdicts.get("F2") != "Met":
+                    bad.append("F2 is not Met — a pass resting on an F2 "
+                               "deferral is READY-WITH-DEFERRALS with an "
+                               "owner citation, never plain READY FOR (§4)")
+                if n_deferred_decl:
+                    bad.append(f"Deferred count is {n_deferred_decl} — a "
+                               "deferral-carrying pass is "
+                               "READY-WITH-DEFERRALS, never plain READY "
+                               "FOR (§4)")
+                if bad:
+                    errors.append("LG-6: verdict claims READY but the rows "
+                                  "refuse it — " + "; ".join(bad))
+            else:  # READY-WITH-DEFERRALS
+                if not owner_dec:
+                    errors.append(
+                        "LG-7: READY-WITH-DEFERRALS without a lawful "
+                        "`Owner deferral decision:` citation — only the "
+                        "owner defers, and the template's own "
+                        "'(owner only)' label satisfies nothing (§4/§5)")
+                if n_deferred_decl == 0:
+                    errors.append(
+                        "LG-7: READY-WITH-DEFERRALS with `Deferred count: "
+                        "0` — a deferral-carrying verdict must declare "
+                        "its deferrals")
+                if bad:
+                    errors.append(
+                        "LG-6: READY-WITH-DEFERRALS but a non-deferrable "
+                        "conjunct fails — the E, A–D, F1, F3 and F4 "
+                        "conjuncts are never deferrable (§4, RD34-01) — "
+                        + "; ".join(bad))
 
     # ---- LG-5 trend row ---------------------------------------------------
     deferred = deferred_m.group(1) if deferred_m else "—"
@@ -387,10 +457,18 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     new_vs_prior = "n/a — no prior record supplied"
     if prior_path:
         ptxt = Path(prior_path).read_text(encoding="utf-8")
-        prior_not = {q for q, v in _row_verdicts(ptxt).items()
-                     if v == "Not met"}
+        # §6 (v1.7, RD34-04): newly-Not-met rows count (incl. a scoped row
+        # turning plain — it newly blocks; the r5 behavior RD-34 verified),
+        # plus newly scoped rows that were no finding before under either
+        # rendering — reclassification never double-counts.
+        prior_rows = _row_verdicts(ptxt)
+        prior_not = {q for q, v in prior_rows.items() if v == "Not met"}
+        prior_scoped = {q for q, v in prior_rows.items() if v == SCOPED}
         cur_not = {q for q, v in verdicts.items() if v == "Not met"}
-        new_vs_prior = str(len(cur_not - prior_not))
+        cur_scoped = {q for q, v in verdicts.items() if v == SCOPED}
+        new_set = (cur_not - prior_not) | (
+            cur_scoped - (prior_scoped | prior_not))
+        new_vs_prior = str(len(new_set))
     gate_word = mg.group(1).strip() if mg else "—"
     if n_scoped:
         notes.append(f"{n_scoped} scoped row(s) — `Not met (out of launch "
@@ -454,9 +532,9 @@ def _template_rows() -> str:
 GOOD = """# Launch-gate administration — 2026-08-10, commit {sha}
 > This administration record is evidence, never an owner act; its verdict
 > authorizes nothing (instrument preamble; VIS-4).
-Instrument version: v1.6  sha256: {inst}
+Instrument version: v1.7  sha256: {inst}
 Parameter block sha256: {param}
-Launch target: Capability 1
+Launch target: Capability 1 — Project registration and honest shape visibility
 Reviewer: human, fresh context: yes
 Reviewer model family: human
 Materials given: the fixed §2 list, no deviations
@@ -531,7 +609,7 @@ def selftest():
          good.replace(f"Parameter block sha256: {param}", ""),
          "no parameter-block sha256")
     case("missing launch-target line rejected (RD33-06)",
-         good.replace("Launch target: Capability 1\n", ""),
+         good.replace("Launch target: Capability 1 — Project registration and honest shape visibility\n", ""),
          "no `Launch target:` line")
     case("missing gate verdict rejected",
          good.replace("GATE VERDICT: NOT READY", ""), "no GATE VERDICT")
@@ -631,9 +709,48 @@ def selftest():
     case("READY-WITH-DEFERRALS with an owner-decision citation validates",
          with_def.replace(
              "Unknowns and what would settle them:",
-             "Owner deferral decision: .syzygy/governance/decisions/"
-             "SDR-99-EXAMPLE.md\nUnknowns and what would settle them:"),
+             "Owner deferral decision: SDR-33\n"
+             "Unknowns and what would settle them:"),
          None)
+    case("label wording as citation rejected (RD34-02, H3)",
+         with_def.replace(
+             "Unknowns and what would settle them:",
+             "Owner deferral decision: (owner only)\n"
+             "Unknowns and what would settle them:"),
+         "neither a repository path nor a decision identifier")
+    case("all-Not-met record under READY-WITH-DEFERRALS rejected "
+         "(RD34-01, H9d)",
+         with_def.replace("| Met | x |", "| Not met | x |")
+                 .replace("Unknowns and what would settle them:",
+                          "Owner deferral decision: SDR-33\n"
+                          "Unknowns and what would settle them:"),
+         "non-deferrable conjunct fails")
+    case("terminal GATE VERDICT line is the one parsed (RD34-03, H6)",
+         good.replace("GATE VERDICT: NOT READY",
+                      "GATE VERDICT: READY FOR Capability 1")
+             .replace("## G1 — completeness critic",
+                      "Summary: GATE VERDICT: NOT READY\n\n"
+                      "## G1 — completeness critic"),
+         "F2 is not Met")
+    case("nonzero Deferred count without citation rejected under any "
+         "verdict (RD34-07, H4)",
+         good.replace("Deferred count (owner-deferred findings this "
+                      "administration): 0",
+                      "Deferred count (owner-deferred findings this "
+                      "administration): 3"),
+         "only the owner defers, under any verdict")
+    case("placeholder findings line rejected (RD34-06, H1)",
+         (ready.replace("| C2 | Met | x |",
+                        "| C2 | Not met (out of launch scope) | x |")
+               .replace("Deferred-wave findings recorded outside launch "
+                        "scope: none",
+                        "Deferred-wave findings recorded outside launch "
+                        "scope: TBD")),
+         "placeholder")
+    case("invented question ID rejected (RD34-11, H5)",
+         good.replace("| A1 | Met | x |",
+                      "| A1 | Met | x |\n| A9 | Met | x |"),
+         "outside the question roster")
     case("READY-WITH-DEFERRALS with zero declared deferrals rejected",
          good.replace("GATE VERDICT: NOT READY",
                       "GATE VERDICT: READY-WITH-DEFERRALS (owner only)")
@@ -653,16 +770,34 @@ def selftest():
         case("instrument digest mismatch rejected (git on, LG-2)",
              good_head, "digest mismatch", _git=True)
         case("instrument version disagreement rejected (RD33-06, LG-11)",
-             good_head.replace("Instrument version: v1.6",
+             good_head.replace("Instrument version: v1.7",
                                "Instrument version: v1.2"),
              "LG-11: record claims instrument version", _git=True)
         case("launch target outside the parameter block rejected "
              "(RD33-06, p5)",
              good_head.replace(
-                 "Launch target: Capability 1",
+                 "Launch target: Capability 1 — Project registration and honest shape visibility",
                  "Launch target: Capability 7 — anything the reviewer "
                  "names"),
              "is not the parameter block's LAUNCH_TARGET", _git=True)
+        case("fragment launch target rejected (RD34-08, H7)",
+             good_head.replace(
+                 "Launch target: Capability 1 — Project registration and honest shape visibility",
+                 "Launch target: Capability 1"),
+             "a fragment does not name the target", _git=True)
+        case("nonexistent citation path rejected (RD34-02, git on)",
+             good_head.replace(
+                 "GATE VERDICT: NOT READY",
+                 "GATE VERDICT: READY-WITH-DEFERRALS (owner only)")
+                 .replace("Deferred count (owner-deferred findings this "
+                          "administration): 0",
+                          "Deferred count (owner-deferred findings this "
+                          "administration): 1")
+                 .replace("Unknowns and what would settle them:",
+                          "Owner deferral decision: .syzygy/governance/"
+                          "decisions/NO-SUCH-DECISION.md\n"
+                          "Unknowns and what would settle them:"),
+             "does not exist at the named commit", _git=True)
     else:
         print("  note  git unavailable — 3 git-dependent fixtures skipped")
 
@@ -689,6 +824,31 @@ def selftest():
           "(RD33-02, r5)")
     if not ok:
         fails.append(("prior scoped asymmetry", trend))
+
+    # RD34-04: a brand-new scoped finding counts in New-findings.
+    n_cases[0] += 1
+    cur2_txt = (good.replace("| C2 | Met | x |",
+                             "| C2 | Not met (out of launch scope) | x |")
+                    .replace("Deferred-wave findings recorded outside "
+                             "launch scope: none",
+                             "Deferred-wave findings recorded outside "
+                             "launch scope: RFC-0010 mission-profile "
+                             "drift (Wave D1)"))
+    with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False) as f:
+        f.write(good)
+        pp2 = Path(f.name)
+    with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False) as f:
+        f.write(cur2_txt)
+        cp2 = Path(f.name)
+    _, _, _, trend2 = validate(cp2, INSTRUMENT_DEFAULT, pp2, _git=False)
+    pp2.unlink()
+    cp2.unlink()
+    f2 = [x.strip() for x in trend2.strip().strip("|").split("|")]
+    ok2 = f2[7] == "1"
+    print(("  pass  " if ok2 else "  FAIL  ")
+          + "brand-new scoped finding counts in New-findings (RD34-04)")
+    if not ok2:
+        fails.append(("new scoped not counted", trend2))
 
     print(f"{n_cases[0]} fixtures, {len(fails)} failing — a check that "
           "cannot fail is not a check")

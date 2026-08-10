@@ -38,7 +38,7 @@ a capability.
    a deferred-wave candidate (e.g. "change what counts as a completed
    Mission") routes to the candidate **explicitly labelled deferred** —
    singular, current, and explicit, never implicit.
-3. **The launch-gate evidence.** Under the launch-gate launch scope (v1.5 at this writing), a defect
+3. **The launch-gate evidence.** Under the launch-gate instrument's §8 launch scope (version per the instrument's own `effective_version:` header — no version is quoted here, so a bump cannot strand this sentence; RD34-05), a defect
    living only in these candidates blocks the Capability 1 verdict only
    if it escapes this containment (default route, required-wave meaning,
    launch-target dependency, current-truth misstatement, or owner

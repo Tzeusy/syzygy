@@ -8,17 +8,18 @@
 
 ## Question
 
-Approve `launch-gate-pre-specifications.md` **v1.6** as this repository's
+Approve `launch-gate-pre-specifications.md` **v1.7** as this repository's
 owner-approved **process policy** for evaluating pre-specification
 readiness?
 
-> **Offer status (2026-08-10):** not yet offerable. v1.5 was re-reviewed
-> fresh-context (RD-33, `VERDICT: REVISE` — all 21 RD-24 repairs verified,
-> five new MAJOR findings); v1.6 closes those findings, and because the
-> same session that authored the v1.6 bytes may not confirm them, the
-> offer waits on a fresh-context re-review of the v1.6 delta (**RD-34**).
-> The formal administration must not run on the v1.5 validator (RD-33's
-> closing direction).
+> **Offer status (2026-08-10):** not yet offerable. v1.5's re-review
+> (RD-33, `VERDICT: REVISE`) was closed by v1.6; v1.6's re-review (RD-34,
+> `VERDICT: REVISE` — all twelve RD-33 repairs verified, one BLOCKING new
+> finding: the deferral-carrying pass branch ran no formula conjunct) is
+> closed by v1.7. Because the same session that authored the v1.7 bytes
+> may not confirm them, the offer waits on a fresh-context re-review of
+> the v1.7 delta (**RD-35**). The formal administration must not run on
+> any earlier validator (RD-33's and RD-34's closing directions).
 
 ## What approval binds — and what it never binds
 
@@ -47,19 +48,23 @@ has already directed this pass to respect.
 
 ## Options
 
-- **(a) Approve v1.6 as offered.** The amendment records are
+- **(a) Approve v1.7 as offered.** The amendment records are
   `contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.4-SEMANTIC-DELTA.md`
   (ten deltas; no question weakened; three questions added from the
   pilot's G1; launch-scope parameters for Capability 1 fixed in §8),
   `…/LAUNCH-GATE-v1.5-SEMANTIC-DELTA.md` (the RD-24 fresh instrument
-  review's 21 findings closed), and `…/LAUNCH-GATE-v1.6-SEMANTIC-DELTA.md`
-  (the RD-33 re-review's twelve findings closed — the scoped-verdict
-  disclosure, trend visibility, and deferral-citation rules; no question
+  review's 21 findings closed — **read with the v1.6 delta's D-10**,
+  which corrects two of its claims; the frozen record itself is not
+  edited, RD34-10), `…/LAUNCH-GATE-v1.6-SEMANTIC-DELTA.md` (the RD-33
+  re-review's twelve findings closed), and
+  `…/LAUNCH-GATE-v1.7-SEMANTIC-DELTA.md` (the RD-34 re-review's eleven
+  findings closed — the `READY-WITH-DEFERRALS` predicate stated and
+  checked, the citation shape test, the terminal-line parse; no question
   weakened; no ID renumbered).
 - **(b) Approve with amendments** — state them; the changelog takes a
-  v1.7 entry and the semantic delta extends. One prepared amendment the
+  v1.8 entry and the semantic delta extends. One prepared amendment the
   owner may take here: **promote F5 (assurance independence) from a
-  recorded question to a verdict conjunct** — v1.6 deliberately leaves it
+  recorded question to a verdict conjunct** — v1.7 deliberately leaves it
   non-gating at Administration 1 and discloses instead (RD24-12); making
   it a conjunct means no same-family administration can ever read READY.
 - **(c) Decline** — the gate remains an informal checklist; readiness
@@ -82,10 +87,12 @@ defects (its C1 finding — a retired phrase standing as the live gate in
 two digest sets — was independently confirmed by the round-08d reviews),
 v1.4's changes are exactly the pilot's own recorded gaps, v1.5's are
 exactly the fresh instrument review's (RD-24: three of its findings were
-mutation-proven against the named validator), and v1.6's are exactly the
-re-review's (RD-33: five of its findings were proven by constructing
-records that validated clean and should not have; each now has a fixture
-that fails without the repair — 34 in all).
+mutation-proven against the named validator), v1.6's are exactly the
+first re-review's (RD-33: five findings proven by constructing records
+that validated clean and should not have), and v1.7's are exactly the
+second re-review's (RD-34: its BLOCKING finding was an all-Not-met record
+validating clean under `READY-WITH-DEFERRALS`; each repair now has a
+fixture that fails without it — 43 in all).
 
 ## Mechanism (the lawful transaction, prepared not performed)
 
@@ -105,7 +112,7 @@ nowhere once the header flips). To approve:
 3. Record in this file, below this line, an approval block:
 
    ```text
-   APPROVED — launch-gate v1.6 as process policy
+   APPROVED — launch-gate v1.7 as process policy
    date: <date>
    instrument sha256: <the digest computed in step 2, post-status-edit>
    scope: process policy for pre-specification readiness evaluation;
@@ -121,7 +128,7 @@ nowhere once the header flips). To approve:
 Under **option (b)**, the ordering extends the same way (RD33-11): the
 owner's amendments are applied to the instrument **in the working tree
 before step 2's digest is computed** — together with the status edit and
-the changelog's v1.7 entry — so the digest always binds the amended
+the changelog's v1.8 entry — so the digest always binds the amended
 bytes; the amendments, status edit, changelog entry, and approval block
 travel in the one commit of step 4. An amendment applied after step 2
 would recreate exactly the approval-attests-bytes-that-exist-nowhere

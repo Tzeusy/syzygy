@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.6 (candidate; v1.3 was the pilot-administered version)
+effective_version: v1.7 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), results record format, and trend log
@@ -523,9 +523,28 @@ Qualifications:
   limb of the formula — and any other owner deferral a pass rests on —
   changes the verdict word: plain `READY FOR <LAUNCH_TARGET>` over any
   deferral, or over a nonzero `Deferred count:`, is a contradiction and a
-  validation error. The validator enforces the split (LG-6/LG-7): plain
-  `READY FOR` requires F2 `Met` and zero declared deferrals;
-  `READY-WITH-DEFERRALS` requires the owner-decision citation.
+  validation error.
+- **The `READY-WITH-DEFERRALS` predicate, stated as a formula** (RD34-01 —
+  a verdict word with no predicate of its own is a branch a pass can ride
+  through unchecked, and every term of this section's formulas is a
+  predicate over the closed vocabulary):
+
+  > **READY-WITH-DEFERRALS** =
+  >     every conjunct of **READY FOR `<LAUNCH_TARGET>`** above —
+  >     every E question `Met`; no plain `Not met` in launch-scope A–D;
+  >     F1 `Met` or `Unknown`; F3 `Met`; F4 `Met` —
+  >     with exactly one substitution: the F2 limb is satisfied by an
+  >     **owner-cited deferral** (the `Owner deferral decision:` field)
+  >     instead of `Met`,
+  >     AND `Deferred count:` is nonzero AND the citation is present.
+
+  The E, A–D, F1, F3 and F4 conjuncts are **never deferrable** — each
+  carries this section's own rationale for blocking — so the two pass
+  verdicts differ in exactly one limb, and the validator runs the full
+  conjunct battery on both branches (LG-6/LG-7): plain `READY FOR`
+  requires F2 `Met` and zero declared deferrals; `READY-WITH-DEFERRALS`
+  requires the citation and the nonzero count, and fails on any non-F2
+  conjunct exactly as a plain pass would.
 - F5 and F6 are recorded and disclosed (§5's family line; the trend row)
   but are deliberately not conjuncts at Administration 1: both were added
   from the pilot's G1 and have no baseline yet, and F5's substantive limb
@@ -633,7 +652,12 @@ improve the read of any other column, and a finding class invisible to
 every column would be invisible to F1 — which is answered from this log
 and only from it. The Scoped column trends to zero the same way Not-met
 does: deferred waves are eventually accepted or their defects repaired,
-never laundered.
+never laundered. A **new** scoped finding is a **new finding**: the
+New-findings column counts rows newly `Not met` (not `Not met` in the
+prior administration — a scoped row turning plain counts, it newly
+blocks) plus rows newly scoped that were not previously a finding under
+either rendering — so rendering a defect scoped never zeroes the delta
+column, and reclassifying an old finding never double-counts it.
 
 A deferral is a finding until resolved: moving a finding from Not-met to
 Deferred must never improve the read of any other column. Reopened counts
@@ -870,3 +894,29 @@ Notes for administering against Syzygy specifically:
   every-check-has-a-fixture claim is true (RD33-03/08). Semantic delta:
   `round-2026-08e/LAUNCH-GATE-v1.6-SEMANTIC-DELTA.md`. No existing
   question weakened; no ID renumbered.
+- **v1.7** (2026-08-10, post-RD-34 amendment — the v1.6 re-review's one
+  BLOCKING, four MAJOR and six MINOR findings; candidate, owner approval
+  pending) — the unchecked-branch class closed: §4 states the
+  **`READY-WITH-DEFERRALS` predicate as a formula** — identical to
+  `READY FOR` in every conjunct, with exactly the F2 limb satisfied by an
+  owner-cited deferral, the non-F2 conjuncts never deferrable — and the
+  validator runs the full conjunct battery on both pass branches, so an
+  all-Not-met record can no longer validate under any verdict word
+  (RD34-01); the deferral citation gains a shape-and-existence test — a
+  repository path verified at the named commit, or a decision identifier;
+  label wording rejected (RD34-02); the validator parses the **last**
+  `GATE VERDICT:` line, matching §5's "terminal" (RD34-03); §6 states
+  that a new scoped finding is a new finding, and New-findings is
+  computed over newly-Not-met ∪ newly-scoped (RD34-04); the two
+  stale-version references on routed paths are corrected and made
+  version-neutral so a bump cannot strand them again (RD34-05); LG-9's
+  placeholder set widened past the literal "none" (RD34-06); a nonzero
+  `Deferred count:` requires the citation under any verdict (RD34-07);
+  the launch-target check upgraded from containment to normalized
+  equality with `LAUNCH_TARGET` or its first sentence (RD34-08); the
+  roster binds membership as well as presence — invented question IDs
+  are rejected (RD34-11); P-34 points the owner to D-10's corrections of
+  the frozen v1.5 delta (RD34-10); the v1.7 delta restates D-7's claim
+  in its honest form (RD34-09). Each change carries a fixture. Semantic
+  delta: `round-2026-08e/LAUNCH-GATE-v1.7-SEMANTIC-DELTA.md`. No
+  existing question weakened; no ID renumbered.
