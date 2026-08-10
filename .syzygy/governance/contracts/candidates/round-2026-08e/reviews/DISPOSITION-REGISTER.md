@@ -399,3 +399,32 @@ fixtured, not only the absent case.**
 | RD36-05 | MINOR | R | LG-12 gains the eighth field: a `Reviewer:` line (the fresh-context disclosure §2 requires). Fixture: deletion errors. The presence tests remain content-blind by design — disclosed in the docstring's scope note |
 | RD36-06 | MINOR | R | The citation existence guard extends to both remaining forms: a path resolving to a git **tree** is rejected (a directory is not a decision record), and an `SDR-n` identifier is existence-checked against the decisions home at the named commit via `git grep` when git checks run (`SDR-9999` rejects; `SDR-33` accepts). The identifier form is no longer the only citation form without an existence guard |
 | RD36-07 | MINOR | R | Three register corrections, dated: the RD34-02 row's third stale claim (`SDR-n`/`P-n`/`D-n` shape — false since the same v1.8 batch that corrected the row's other two claims); the RD35-06 row's "warrant identifiers" (the bytes implemented `B-n`; at v1.9 they implement `SDR-n` alone); the RD35-07 row's field enumeration gains `Operationalization notes:` (an understatement, corrected for completeness) |
+
+## RD-32b — Wave B exact-package, second administration (argument `052acfb8…` at `b00c3dd`)
+
+RD-32b verified all six RD-32 repairs present and closed — B1's
+three-times-failed identity claim "now true item for item against
+RFC6-17's bytes" — and found the mechanics impeccable by independent
+recomputation. The offer fails on one defect the repair batch itself
+minted: the imported primary-reasons-only rule names its release-blocking
+consequence in-clause and is routed into no gate, and RFC9-47(a) part 1
+addresses the accepting review by name — the omission is a defect of the
+amendment, never later housekeeping. RD-32b weighed rule 10 explicitly
+and chose retirement over batching: the governing clause forbids
+deferral, the harm (a bound obligation the gate registry cannot see) is
+the one RFC9-47's closing note records twice, and the schedule cost is
+near zero because Wave A's offer precedes B and P-33 is unruled. The N-1
+and N-2 repairs move module bytes, so the argument **retires**, the
+manifest regenerates, §1 row B rebinds by script, and the offer gate
+re-runs as **RD-32c** on the fresh argument.
+
+| Finding | Class | Disposition | Where it lands |
+|---|---|---|---|
+| N-1 | MAJOR | R | RFC9-47's release-gate list gains the aggregation-attribution entry: per-Unknown-reason counts computed over primary reasons only, one claim instance contributing exactly one, secondaries (RFC2-24) disclosed separately and never folded — run at aggregate level against a fixture whose members carry secondary annotations, so two conforming surfaces cannot produce divergent Unknown-reason totals over one declared scope (RFC6-17's stated failure mode; RFC6-23 classes the divergence release-blocking). Placed beside the work-state two-field entry, following the package's own RFC9-46 precedent of routing new tuple fields in the same change |
+| N-2 | MINOR | R | RFC7-37's four-items-short gloss is deleted, exactly as its own sentence justifies ("cited, never restated here, because a paraphrase is how a roll-up rule drifts from the aggregation contract it instantiates") — the obligation stays "RFC6-17's full composition — the RFC6-22 equivalence tuple, expandable to members," cited whole with no enumerated paraphrase left to drift a fifth time |
+| N-3 | MINOR | R | §1 row B's "four modules" corrected to seven, matching delta §11's own "Modules touched (7 of 11)" — the row now agrees with the record it cites |
+| N-4 | MINOR | R | The unreproducible "1,067" citation figure is replaced by the figure recomputed this session by the same sweep RD-32b ran (`RFC[1-6]-\d+` over the 11 modules), with its method named in-row — rule 3's lesson applied to the ceremony row itself |
+| N-5 | MINOR | R | The three review-state statements that went stale at RD-31b's CONFIRM are corrected: §1 row A now records the CONFIRM bound to `8972d963…` (offer still withheld by P-33 — that sentence stands); §6's "No CONFIRM verdict is bound to the current argument" is rewritten per wave; P-1's row states the true per-wave review state. The RD-8 class from the currency direction, closed on the day it opened |
+| N-6 | MINOR | R | The launch-scope index's Wave B bullet gains P-21(a) (ratified-or-reverted; §7 item 18's "RFC-0007's twin rides the Wave B act the same way") — the completeness M1's repair set out to achieve, finished in the bullet it rewrote |
+| N-7 | — | carried | RD-32's "no WARN names a Wave B module" was false (CG-8 names six as report-only decomposition-review triggers); recorded here so the figure cannot reach the Wave B closure report as a measurement — the same convention as RD-31b's two carried corrections |
+| N-8 | — | already closed | The register's RD-32b row named `36c01a9` in the clone RD-32b read (frozen at `b00c3dd`); the live row was corrected at `aa1a40d`, before the review was delivered. The row now also records the discrepancy and its resolution, dated |

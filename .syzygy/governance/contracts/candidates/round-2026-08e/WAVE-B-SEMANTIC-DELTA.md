@@ -1023,3 +1023,56 @@ change. `c0fd0e27…` joins `2041ad05…` and `daa6a5dd…` as stale, satisfying
 nothing. Per the register's ordering rule the regenerated argument requires
 a fresh exact-package review (**RD-32b**) before any offer; RD-31b and
 RD-32b run sequentially, in that order, at the owner's direction.
+
+## 13. Addendum, 2026-08-10 — the RD-32b repair batch (main session)
+
+RD-32b — the second Wave B exact-package administration, on the
+now-retired argument `052acfb8…` frozen at `b00c3dd` — verified all six RD-32 repairs
+present and closed, and returned `VERDICT: REVISE` on one defect the
+RD-32 batch itself minted (raw:
+`reviews/RD-32b-wave-b-RAW.md`; dispositions:
+`reviews/DISPOSITION-REGISTER.md`, RD-32b section). This addendum
+records the repair batch. Two edits move module bytes:
+
+- **RFC-0009/interaction-parity-and-release.md** (RD32b-N1, MAJOR):
+  RFC9-47's release-gate list gains the **aggregation-attribution**
+  entry — per-Unknown-reason counts computed over primary reasons only,
+  one claim instance contributing exactly one, secondary annotations
+  (RFC2-24) disclosed separately and never folded — run at aggregate
+  level against a fixture whose members carry secondary annotations,
+  since a fixture without them passes vacuously over the exact failure
+  RFC6-17's rule prevents (two conforming surfaces, divergent
+  Unknown-reason totals over one declared scope; RFC6-23 classes the
+  disagreement release-blocking). The rule entered RFC9-43 with the
+  RD-32 batch; RFC9-47(a) part 1 makes routing it into the gate list
+  part of the same amendment, never later housekeeping — the omission
+  was the amendment's defect, and this entry closes it. Placed beside
+  the work-state two-field consumption entry, the package's own RFC9-46
+  precedent.
+- **RFC-0007/rendering-and-surface.md** (RD32b-N2, MINOR): RFC7-37's
+  enumerated gloss of RFC6-17's composition — four items short after two
+  repair batches — is **deleted**, exactly as its own sentence justifies:
+  the obligation stays "RFC6-17's full composition — the RFC6-22
+  equivalence tuple, expandable to members," *cited, never restated*,
+  with the sentence now recording that its own gloss demonstrated the
+  drift it warns against.
+
+Record-only repairs in the same batch (no module bytes): §1 row B's
+"four modules" corrected to seven (N-3, matching §11's own count); the
+unreproducible "1,067" citation figure replaced by **763**, recomputed
+this session by the sweep named in-row, `RFC[1-6]-\d+` over the 11
+manifest modules (N-4, rule 3); the three review-state statements that
+went stale at RD-31b's CONFIRM corrected in §1 row A, §6, and the P-1
+row (N-5); and the launch-scope index's Wave B bullet gains P-21(a)'s
+Wave B instance per §7 item 18 (N-6). N-7 (RD-32's false "no WARN names
+a Wave B module" — CG-8 names six as report-only triggers) is carried in
+the disposition register for the Wave B closure report; N-8 was already
+closed at `aa1a40d`.
+
+Digest-moving in two Wave B modules; the manifest regenerates by
+`build_active_manifest.py` and §1 row B is rebound by script in the same
+change. Now stale, satisfying nothing:
+`052acfb8…`, `c0fd0e27…`, `2041ad05…` and `daa6a5dd…`.
+The regenerated argument requires its own
+fresh exact-package review (**RD-32c**) before any offer — a repair
+session may not confirm its own repaired bytes.

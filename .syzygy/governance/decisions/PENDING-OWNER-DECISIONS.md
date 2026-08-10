@@ -72,7 +72,7 @@ CG-7 failure means "do not perform that act."
 
 | # | Decision | Owning record |
 |---|---|---|
-| P-1 | **The six foundational wave acts** (restructured from the single act at round 2026-08d). **Launch posture 2026-08-10:** only Waves **A → B** are on the offer path — no C/D wave act is offered while `../contracts/candidates/DEFERRED-WAVE-POSTURE.md` stands; the earlier six-act ceremony order (A → B → D1 → D2 → C1 → C2) applies only if the owner lifts that posture. Wave A: RFC 0001–0006 · Wave B: RFC 0007–0009 · Waves C1/C2: RFC-0011 · Waves D1/D2: RFC-0010. **No confirming review is yet bound to any wave argument** — the acceptance record's wave-history note states this beside the phrases | acceptance record §1; digests `contracts/candidates/wave-manifests/WAVE-*-MANIFEST.txt`; design `round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md` |
+| P-1 | **The six foundational wave acts** (restructured from the single act at round 2026-08d). **Launch posture 2026-08-10:** only Waves **A → B** are on the offer path — no C/D wave act is offered while `../contracts/candidates/DEFERRED-WAVE-POSTURE.md` stands; the earlier six-act ceremony order (A → B → D1 → D2 → C1 → C2) applies only if the owner lifts that posture. Wave A: RFC 0001–0006 · Wave B: RFC 0007–0009 · Waves C1/C2: RFC-0011 · Waves D1/D2: RFC-0010. **Review state 2026-08-10: Wave A's current argument carries RD-31b's `VERDICT: CONFIRM` (offer withheld solely by P-33, §7 item 11); Wave B's current argument awaits RD-32c after RD-32b's `VERDICT: REVISE`; no C/D argument carries a confirming review** — the acceptance record's wave-history note is the count of record *(this row said "no confirming review is yet bound to any wave argument" until RD-31b delivered; corrected 2026-08-10, RD32b-N5)* | acceptance record §1; digests `contracts/candidates/wave-manifests/WAVE-*-MANIFEST.txt`; design `round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md` |
 | P-2 | **Act 2** — confirm craft amendment CC-TEST-2 | acceptance record §1 row 2; digest block in `../policies/craft-and-care/INSTALL-RECORD.md` (**2026-08-06 correction** — the 2026-08-05 block holds the retired `3858820f…` argument; corrected 2026-08-10, RD29-01) |
 | P-3 | **Act 3** — accept the topology bundle | acceptance record §1 row 3; `../../map/topology-candidates/BUNDLE-MANIFEST.md` |
 | P-4 | **Act 4** — adopt the project overview | acceptance record §1 row 4; `../../intent/OVERVIEW.md` (refactored this round; the authoring-time status section that previously froze into the digest is gone) |
@@ -130,8 +130,11 @@ Read the open table below through this lens:
   2026-08-10, RD32-M1 — "gate" had carried two different forces.)*
 - **Ratified or reverted at the Wave B act (nothing withholds this
   offer):** P-38 (human entry, incl. the RFC7-39 entry-identity ruling;
-  §7 item 15) and **P-22** (the RFC9-8(a) registry placement; §7 item
-  17). The acts stay sequenced A → B (P-1).
+  §7 item 15), **P-22** (the RFC9-8(a) registry placement; §7 item
+  17), and P-21(a) for its Wave B instance (the RFC8-12/RFC9-32
+  declared-nowhere mutual restriction; §7 item 18 — "the same open
+  ruling covers a declared-nowhere instance inside Wave B"; added
+  2026-08-10, RD32b-N6). The acts stay sequenced A → B (P-1).
 - **Gate authoring the first spec:** P-36 (Unknown vs Gap — Capability
   1's acceptance criteria use both words; moved here from the
   administration bullet 2026-08-10, RD30-02, per its packet's own gate),

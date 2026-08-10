@@ -128,7 +128,18 @@ a fixture carrying **every chain outcome the release can produce**, co-located o
 one district, since a gate exercised only over merged-not-yet-evaluated data
 passes vacuously; per RFC8-29 that is `merged`, `reconciliation-pending` and
 `Unknown(reason)` at V0, the verdict-bearing outcomes entering the fixture with
-the V1 computation that first produces them); **declared-vs-observed relation
+the V1 computation that first produces them); **aggregation attribution**
+(RFC9-43, restating RFC6-17's own rule: per-Unknown-reason counts are computed
+over **primary reasons only** — one claim instance contributes exactly one —
+with secondary annotations (RFC2-24) disclosed separately and never folded
+into the primary counts; run at aggregate level against a fixture whose
+members carry secondary annotations, since a fixture without them passes
+vacuously over the exact failure RFC6-17 states the rule prevents — two
+conforming surfaces producing divergent Unknown-reason totals over one
+declared scope, the disagreement RFC6-23 classes release-blocking; routed
+2026-08-10, RD32b-N1 — the rule entered RFC9-43 with the RD-32 batch and
+RFC9-47(a) part 1 makes routing it here part of the same amendment, never
+later housekeeping); **declared-vs-observed relation
 separation** (RFC9-9: every rendered profile relation legends as itself with its
 profile and state class named — the registry side of this is already covered by
 legend completeness above — and no declared project-scope edge shares a mark, a

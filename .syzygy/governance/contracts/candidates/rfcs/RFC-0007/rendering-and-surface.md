@@ -305,11 +305,12 @@ narrative never draws a confirmed edge the declarations do not support. A
 parent's view of a child carries the child's epistemic labels through
 unchanged (RFC3-32); aggregating a child's Unknowns into anything green is the
 VIS-1 violation. **Any roll-up over a child's facts additionally discloses
-RFC6-17's full composition** — the RFC6-22 equivalence tuple, per-label,
-per-tier, per-Unknown-reason and per-freshness-state counts and sibling
-surface states, expandable to members — **cited, never restated here**,
+RFC6-17's full composition** — the RFC6-22 equivalence tuple, expandable to
+members — **cited, never restated here**,
 because a paraphrase is how a roll-up rule drifts from the aggregation
-contract it instantiates. The narrow reading alone (labels carried through, no
+contract it instantiates — as this sentence itself demonstrated: its own
+enumerated gloss fell four items behind RFC6-17 across two repair batches
+before being deleted (2026-08-10, RD32b-N2). The narrow reading alone (labels carried through, no
 Unknown folded into green) is insufficient; the worked counter-example is in
 history.
 

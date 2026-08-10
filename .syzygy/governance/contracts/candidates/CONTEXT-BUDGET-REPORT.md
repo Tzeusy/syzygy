@@ -15,7 +15,7 @@
 > object from a waiver against one that does (review RC-12 §5), and
 > every row below says `candidate budget exception`, never `waiver`.
 
-**As-of commit:** `6513a55d5c32cfc7f1911dfba6d6b2c8f92f6f56`  *(plus uncommitted working-tree edits at generation time)*
+**As-of commit:** `8ef7117b698302e8e933e9684f20c081b204a092`  *(plus uncommitted working-tree edits at generation time)*
 
 This file is regenerated in the *same change* that moves any measured
 file. Two independent currency tests exist and neither is this line:
@@ -40,7 +40,7 @@ the *measurement*, never the *selection*.
 | `context-selection-5-cross-project-mission.md` | 11 | 21,746 | 29,357 | **above the proposed trigger** by 46.8% | `34b25265f5974e7f…` |
 | `context-selection-6-doctrine-amendment.md` | 6 | 12,133 | 16,380 | above the proposed default band, under the proposed trigger | `ce8c0532263a3ab0…` |
 | `context-selection-7-kernel-identity.md` | 5 | 17,055 | 23,024 | **above the proposed trigger** by 15.1% | `0021b4881e68680d…` |
-| `context-selection-8-openspec-authoring.md` | 6 | 24,921 | 33,643 | **above the proposed trigger** by 68.2% | `9cddb0a4b130e04f…` |
+| `context-selection-8-openspec-authoring.md` | 6 | 24,935 | 33,662 | **above the proposed trigger** by 68.3% | `f7e4cabd917127d0…` |
 | `context-selection-9-evidence-adapter.md` | 12 | 25,840 | 34,884 | **above the proposed trigger** by 74.4% | `05d61c853648d883…` |
 
 **8 of 10 fixtures are above the proposed 20,000-token trigger.**
@@ -125,7 +125,7 @@ printed at the foot of §5.
 
 ### `context-selection-8-openspec-authoring.md`
 
-- **Measured:** 24,921 words ≈ 33,643 estimated tokens — 68.2% above the proposed trigger.
+- **Measured:** 24,935 words ≈ 33,662 estimated tokens — 68.3% above the proposed trigger.
 - **Reason:** RFC-0001 is indivisible (its justified oversize is recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`, *not* in RFC-0001 itself, which records no waiver) and requirement authoring genuinely needs the capability/requirement identity model (RFC1-14/RFC1-15), both modules of the surface contract that makes the behaviour observable (RFC-0007 — including the module carrying its phase rule RFC7-38, forced by the on-seam rule, which dictates the clause-to-requirement coverage matrix the author must produce), the adoption gate the delta must pass (VIS-3/VIS-4), and the verification bar the requirement must be testable against
 - **Scope:** OpenSpec requirement authoring against an adopted capability **whose surface contract is RFC-0007 (Polaris)**. It does **not** stretch to another surface contract: this fixture names "a capability whose surface contract is smaller" as the narrowing that retires the waiver, so applying it there applies it to the case that voids it. Does not cover review of the authored delta, which pulls `craft:review-and-documentation.md` instead (scope tightened by RC-12)
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed
@@ -143,7 +143,7 @@ printed at the foot of §5.
 
 ## 3. Contract modules — the corpus this budget is spent on
 
-**39 modules, 119,130 words.** The 7,000-word per-module
+**39 modules, 119,253 words.** The 7,000-word per-module
 ceiling and the 35–50k corpus target band are the compaction charter's,
 recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`; both are
 candidate figures under the same non-installed policy as §1's trigger.
@@ -171,13 +171,13 @@ candidate figures under the same non-installed policy as §1's trigger.
 | `rfcs/RFC-0006-cross-surface-selection-query-drawer.md` | 5,417 | — |
 | `rfcs/RFC-0007/README.md` | 2,501 | — |
 | `rfcs/RFC-0007/narrative-contract.md` | 5,253 | — |
-| `rfcs/RFC-0007/rendering-and-surface.md` | 4,609 | — |
+| `rfcs/RFC-0007/rendering-and-surface.md` | 4,623 | — |
 | `rfcs/RFC-0008/README.md` | 2,054 | — |
 | `rfcs/RFC-0008/accounting-reconciliation-and-release.md` | 3,800 | — |
 | `rfcs/RFC-0008/identity-authority-materialization.md` | 2,718 | — |
 | `rfcs/RFC-0008/state-vocabulary-and-cost.md` | 4,135 | — |
 | `rfcs/RFC-0009/README.md` | 2,148 | — |
-| `rfcs/RFC-0009/interaction-parity-and-release.md` | 3,408 | — |
+| `rfcs/RFC-0009/interaction-parity-and-release.md` | 3,517 | — |
 | `rfcs/RFC-0009/semantic-geography.md` | 7,818 | **yes** |
 | `rfcs/RFC-0009/visual-grammar-and-lenses.md` | 5,934 | — |
 | `rfcs/RFC-0010/README.md` | 1,536 | — |
