@@ -618,3 +618,41 @@ enumerated the containers; v1.14 must maintain them.
 Nits carried without action: the asymmetric-bold acceptance (`**Label:*`);
 the trend row printed above the error list with a claimed verdict for an
 invalid record. Both were disclosed at v1.13 and remain disclosed.
+
+## RD-42 — instrument v1.14 re-review, tenth administration (`VERDICT: REVISE`, at `47adfa9`)
+
+Raw review: `RD-42-instrument-v114-RAW.md` (storage sha256
+`3ca204d8…`). Thirteen findings — six BLOCKING, three MAJOR, four
+MINOR. Recorded **before** any subject byte moves (verification rule 10).
+
+The reviewer's diagnosis, adopted whole: **the batch carried state for
+markdown's containers and a hardcoded tag list for HTML's** —
+*"enumeration returning inside the repair that replaced enumeration."*
+The raw-HTML limb tracked two tag names of one of CommonMark's seven
+HTML-block start conditions, and its counter was resettable by text a
+renderer never treats as a tag.
+
+| finding | class | disposition | repair |
+|---|---|---|---|
+| RD42-01 | BLOCKING | R | The raw-HTML limb becomes a **block-structure decision like the others**: an HTML block is opened by a line whose content *begins* with an open tag of **any** name (not two), and closed only by a line whose content *begins* with the matching close tag; inline code spans are stripped before any tag is read, so a `` `</details>` `` code span closes nothing; self-closing and void forms open nothing; the depth never decrements below where it was opened. Fixture per carrier (`<div>`, `<p>`, `<span>`, `<table>`, code-span reopen) per consumer. The §9 "raw-HTML block" sentence is false of the bytes and takes a dated correction marker in place |
+| RD42-02 | BLOCKING | R | Closed by RD42-01's repair — this is its terminal-rule consequence — plus a fixture in the silent direction: a record whose visible terminal verdict reads `NOT READY` with a hidden `READY FOR` below it must not report READY. The most dangerous defect of the batch, and the one the unicode fold was taken for |
+| RD42-03 | BLOCKING | R | One-word change: the `Parameter block sha256:` `_decl` site reads `_own_text` like the other nine, with a fixture. The delta's "all ten" was false at denominator 10; the §9 sentence takes a dated correction marker in place. **A sweep with its denominator is added to the batch's own checklist: every call site of a repaired helper is enumerated mechanically, never counted by eye** |
+| RD42-04 | BLOCKING | R | §9 corrected to **thirteen** witnessing reverts, with D-7 disclosed as a **third** unwitnessed repair beside D-8's two. The same verification-rule-3 class as RD41-03, inside the entry written to close RD41-03 — the v1.15 entry states every count with the method that produced it |
+| RD42-05 | BLOCKING | R | §9 corrected to **five** dated correction markers (the RD41-06 marker was uncounted). Counted with Python `re` and the count's method stated, per verification rule 1 — a shell grep returns 3 because the phrase wraps |
+| RD42-06 | BLOCKING | R | The three RD41-06 restoration fixtures are rebuilt **above** the terminal verdict, where the v1.13 defect actually fired, so the raw-side repair gains a witness; §9's "four lawful records restored … each 1 → 0" is corrected in place. Every directionality entry in the v1.15 delta is generated from a measured v→v run of the fixture's own bytes rather than written by hand |
+| RD42-07 | MAJOR | R | LG-4's section content excludes `Label:`-shaped declared trailer lines, so the emptiness requirement fires in §5's own record shape rather than only for records that reorder the template |
+| RD42-08 | MAJOR | R | The placeholder check matches §5's **actual** placeholder strings, read from the committed instrument at the record's named commit (as `_target_forms` already does for LG-11), not the angle-bracket shape — so `<redacted>` and `<none>` are answers again. An undisclosed withdrawal becomes no withdrawal at all |
+| RD42-09 | MAJOR | R | Closed by RD42-01's repair (a `<details>` mentioned mid-paragraph opens no block, and code spans are stripped), plus the LG-6 all-quoted message reporting only what it can name from structure. Fixtures in the accepting direction for a prose mention, a code-span mention, and a table-cell mention |
+| RD42-10 | MINOR | R | Record correction in the v1.15 delta: the setext entry leaves the movement axis (measured 1 → 1); RD-41 already recorded that withdrawal against v1.13 |
+| RD42-11 | MINOR | R | One G1 heading regex, used in all three places, requiring the space CommonMark requires |
+| RD42-12 | MINOR | R | Disclosed: the banner is satisfied by an explicit quotation of itself, because §5's banner *is* a blockquote and `bq1` cannot distinguish a declaration from a quotation of one. A consequence of the disclosed blockquote residual, now named beside it |
+| RD42-13 | MINOR | R | Disclosed with its measurement (quadratic in container depth; 1500-deep nested list ≈ 6 s; it terminates) |
+
+Nit accepted: RD-41's composite bytes were stored nowhere, so the v1.14
+delta's "6 errors, was 0" was unverifiable by a third party. The v1.15
+batch stores every attack record it cites as a fixture, so the numbers a
+reviewer is asked to check are checkable from the repository alone.
+
+Nits carried without action: the asymmetric-bold acceptance
+(`**Label:*`); the trend row printed above the error list with a claimed
+verdict for an invalid record.
