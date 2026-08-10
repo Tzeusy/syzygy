@@ -126,9 +126,13 @@ owner's launch-gate instrument (v1.3, at commit `067d8a0`) returned
 **GATE VERDICT: NOT READY** — 17 of 31 questions Not met, including all six
 of section E, the OpenSpec-readiness section itself; the raw record is
 `…/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md`.
-The instrument is now **v1.5** (candidate; owner approval prepared as
-P-34), and the formal administration that a launch decision could rely on
-has not yet been run.
+The instrument is now **v1.6** (candidate; owner approval prepared as
+P-34): v1.5's fresh re-review (RD-33) verified all 21 RD-24 repairs
+present and returned `VERDICT: REVISE` with five new MAJOR findings —
+each an absence-reading-as-success defect one level up — which v1.6
+closes; the P-34 offer waits on a fresh-context re-review of the v1.6
+delta (RD-34), and the formal administration that a launch decision could
+rely on has not yet been run.
 
 **One thing this project does not have, stated plainly:** there is no
 mechanical task-to-context-packet compiler — `context_load.py` measures a

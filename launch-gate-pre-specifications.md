@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.5 (candidate; v1.3 was the pilot-administered version)
+effective_version: v1.6 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), results record format, and trend log
@@ -373,7 +373,13 @@ the reviewer or the administering session.*
   two-valued), then compares against the project's own routing as recorded
   in the artifact named by `E4_ROUTING_AUTHORITY` in the parameter block.
   Disagreement with the project's routing is a fail; the project's routing
-  disagreeing with itself over parallel cases is a fail.
+  disagreeing with itself over parallel cases is a fail. Where the routing
+  authority is **silent** on a case — no rule of it covers the statement —
+  the reviewer records `routing authority silent` in that case's evidence,
+  and the silent case counts as neither agreement nor disagreement: E4 is
+  judged over the cases the authority actually answers, with the silent
+  ones enumerated in the row. Silence over a case the launch target *needs
+  routed* is a finding in its own right, recorded in the results.
 
 - **E5 [U]** Do acceptance criteria exist for a spec itself — how one will be
   judged complete, testable, and faithful to the shape above it?
@@ -485,8 +491,12 @@ its question's row takes the verdict `Not met (out of launch scope)`, and
 the defect is listed on the record's deferred-wave findings line. Rendering
 such a defect as a bare `Met` is a false row; rendering it as a bare
 `Not met` blocks a verdict §4 says it must not block — the scoped form is
-the only honest rendering, and the validator counts it separately. The gate
-never requires internally unrelated deferred semantics to be accepted.
+the only honest rendering, and the validator counts it separately. The
+disclosure is the scoped form's honesty, so it is checked, not trusted: a
+record with any scoped row whose deferred-wave findings line names no
+defect asserts a scoped defect exists and that none exists — a validation
+error (LG-9), never a lawful record. The gate never requires internally
+unrelated deferred semantics to be accepted.
 
 Qualifications:
 
@@ -505,7 +515,17 @@ Qualifications:
   `Unknown` F2 is deferrable on exactly the same owner-deferral terms as a
   `Not met` F2 — trend-shaped proxies can be legitimately unknowable at
   Administration 1, and the deferral discloses that rather than blocking on
-  it.
+  it. A deferral is claimed only by **citation**: the record's
+  `Owner deferral decision:` field names the owner decision (path or
+  identifier) that granted it — a reviewer's own evidence-cell wording
+  ("treated as owner-deferred") is not a deferral and satisfies nothing.
+- **Any deferral-carrying pass is `READY-WITH-DEFERRALS`.** The F2 deferral
+  limb of the formula — and any other owner deferral a pass rests on —
+  changes the verdict word: plain `READY FOR <LAUNCH_TARGET>` over any
+  deferral, or over a nonzero `Deferred count:`, is a contradiction and a
+  validation error. The validator enforces the split (LG-6/LG-7): plain
+  `READY FOR` requires F2 `Met` and zero declared deferrals;
+  `READY-WITH-DEFERRALS` requires the owner-decision citation.
 - F5 and F6 are recorded and disclosed (§5's family line; the trend row)
   but are deliberately not conjuncts at Administration 1: both were added
   from the pilot's G1 and have no baseline yet, and F5's substantive limb
@@ -556,6 +576,9 @@ E3 reopen-list: <empty | enumerated items>
 Deferred-wave findings recorded outside launch scope: <list | none>
 Deferred count (owner-deferred findings this administration): <n>
 Reopened count (previously recorded resolved, recurred): <n>
+Owner deferral decision: <path or identifier of the owner decision granting
+  every deferral this record carries — required whenever Deferred count is
+  nonzero or the verdict is READY-WITH-DEFERRALS; omitted otherwise>
 Unknowns and what would settle them: <list>
 Reviewer's falsification notes: <what they tried to break and couldn't>
 GATE VERDICT: READY FOR <LAUNCH_TARGET> | NOT READY |
@@ -566,12 +589,26 @@ The terminal line's `GATE VERDICT:` token is literal — it is the line the
 validator parses and the trend row carries; the `Deferred count:` and
 `Reopened count:` fields are required, and their absence is a validation
 error, never an implicit zero (VIS-2 applies to the gate's own record).
+The template's `(owner only)` parenthetical is a description of who may
+grant deferrals, never a satisfier: a `READY-WITH-DEFERRALS` verdict is
+lawful only with the `Owner deferral decision:` field naming the granting
+decision, and copying the template's own words meets no requirement
+(LG-7). Of the trend row's figures, the Not-met, Scoped, and Unknown
+counts are **computed from the rows**; Deferred and Reopened are
+**declared required fields** the validator parses — declared, not
+computed, which is exactly why their absence errors instead of reading
+zero.
 
 Store the record verbatim in the canonical result home. Never edit a past
 administration; supersede it. `scripts/launch_gate_results.py` validates a
 record — verdict vocabulary, counts, G1 presence, named commit, digests —
 and generates the trend row; the instrument, not the tool, owns readiness
-semantics.
+semantics. The validator also binds the **question roster**: a full
+administration answers every question (A1–A6, B1–B5, C1–C7, D1–D4, E1 with
+its five sub-rows, E2–E6, F1–F6, plus the G1 section), and a record
+missing any row is a validation error (LG-10) — absence of a question is
+never a pass, and a delta administration's record cannot support a gate
+decision (§2's full-vs-delta rule, now checked rather than trusted).
 
 ---
 
@@ -582,31 +619,34 @@ Append one line per administration to
 evidence.
 
 ```markdown
-| Date | Commit | Not-met | Unknown | Deferred | Reopened | New findings vs prior | Gate verdict |
-|------|--------|---------|---------|----------|----------|----------------------|--------------|
+| Date | Commit | Not-met | Scoped | Unknown | Deferred | Reopened | New findings vs prior | Gate verdict |
+|------|--------|---------|--------|---------|----------|----------|----------------------|--------------|
 ```
 
 Convergence means the Not-met and new-findings columns trend to zero across
 administrations *without the questions being weakened*. If a question is ever
 amended, note it here — a trend across different questions is not a trend.
 
+**A scoped finding is a finding.** The Scoped column counts
+`Not met (out of launch scope)` rows; rendering a defect scoped must never
+improve the read of any other column, and a finding class invisible to
+every column would be invisible to F1 — which is answered from this log
+and only from it. The Scoped column trends to zero the same way Not-met
+does: deferred waves are eventually accepted or their defects repaired,
+never laundered.
+
 A deferral is a finding until resolved: moving a finding from Not-met to
 Deferred must never improve the read of any other column. Reopened counts
 findings previously recorded resolved that recurred — a nonzero Reopened
 column indicts the resolution process, not just the finding.
 
-**Pilot administration (2026-08-09, v1.3, commit `067d8a0`) — steering
-evidence, not the formal trend baseline.** Its findings stand and its record
-is immutable, but it does not open the formal trend because: (1) the
-instrument was not committed at the administered commit; (2) no instrument
-digest was recorded; (3) no parameter-block digest was recorded; (4) the
-reviewer was from the same model family that authored the corpus. The
-formal trend log begins with the first administration meeting §2's
-integrity requirements ("Administration 1"). The pilot's corpus-level
-recurrence instruction is project-specific and therefore lives in the
-parameter block (§8, `PILOT_RECURRENCE_CHECK`), where the defect is
-described in enough detail to be recognized without reading the withheld
-pilot record.
+The formal trend log begins with the first administration meeting §2's
+integrity requirements ("Administration 1"). Whether any earlier,
+non-conforming administration exists — and why it does not open the log —
+is project-specific and recorded in the trend log's own header, never
+here (§7's rule: everything project-specific lives in the parameter block
+or the project's own records; the pilot-recurrence instruction is §8's
+`PILOT_RECURRENCE_CHECK`).
 
 ---
 
@@ -799,4 +839,34 @@ Notes for administering against Syzygy specifically:
   deferral terms and the deliberate F5/F6 non-conjunct status stated
   (RD24-11, RD24-12). Semantic delta:
   `round-2026-08e/LAUNCH-GATE-v1.5-SEMANTIC-DELTA.md`. No existing
+  question weakened; no ID renumbered.
+- **v1.6** (2026-08-10, post-RD-33 amendment — the v1.5 re-review's five
+  MAJOR and seven MINOR findings; candidate, owner approval pending) —
+  the absence-reads-as-success class closed one level up from v1.5's
+  repairs: §4's scoped-row disclosure is now checked, not trusted (a
+  scoped row beside an empty deferred-wave findings line is a validation
+  error, LG-9 — RD33-01); the §6 trend table gains the **Scoped** column
+  so scoped findings are visible to F1's convergence read, with the
+  a-scoped-finding-is-a-finding rule (RD33-02); deferrals are claimed
+  only by citation — the §5 template gains the required
+  `Owner deferral decision:` field, the `(owner only)` parenthetical is
+  declared a description never a satisfier (RD33-03), and **any
+  deferral-carrying pass is `READY-WITH-DEFERRALS`** — plain `READY FOR`
+  over any deferral is a stated contradiction (RD33-04); the validator
+  binds the full question roster so a missing row errors instead of
+  passing silently (LG-10 — RD33-05, which also closes RD33-10's
+  E1-rollup omission), and cross-checks the record's declared instrument
+  version and launch target against the committed instrument and §8
+  (LG-11 — RD33-06); §5 states honestly which trend figures are computed
+  and which are declared required fields (RD33-09); §6's project-specific
+  pilot paragraph moves to the trend log's own header, restoring §7's
+  project-invariance rule in bytes (RD33-07b, RD24-14's secondary limb);
+  E4 gains the routing-authority-silence rule — a silent case counts as
+  neither agreement nor disagreement and is enumerated (RD33-12).
+  Validator: LG-7 rewritten, LG-9/LG-10/LG-11 added, the
+  prior-vs-current `startswith`/`==` asymmetry fixed, the reduced GOOD
+  fixture replaced by a full §5-template-shaped record, and fixtures
+  added for LG-7 and LG-2's digest-mismatch limb so the
+  every-check-has-a-fixture claim is true (RD33-03/08). Semantic delta:
+  `round-2026-08e/LAUNCH-GATE-v1.6-SEMANTIC-DELTA.md`. No existing
   question weakened; no ID renumbered.

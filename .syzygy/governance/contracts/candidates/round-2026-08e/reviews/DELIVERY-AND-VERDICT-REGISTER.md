@@ -31,6 +31,8 @@ the owner's direction.
 | RD-32 | Final Wave B exact-package reviewer | the exact regenerated Wave B argument — no authoring context | — | held until RD-24…RD-30 triage | — | — |
 | RD-33 | Instrument re-reviewer (added — the nine are a minimum) | `launch-gate-pre-specifications.md` v1.5, exact bytes (sha256 `0522ef47…`, unchanged since the repair commit `395da99`) — the RD-24 repairs, which this session executed and may not confirm | `997d9bd` | 1/1 | `VERDICT: REVISE` | none BLOCKING — all 21 RD-24 repairs verified present (19 closed, 3 BLOCKING confirmed by execution); five MAJOR in the absence-reads-as-success class one level up: RD33-01 scoped row's disclosure requirement unenforced (self-contradicting record validates clean); RD33-02 scoped findings invisible in every trend-log column F1 is answered from, plus a `startswith`/`==` asymmetry; RD33-03 LG-7 satisfied by the template's own "(owner only)" label, no fixture; RD33-04 reviewer-self-authorized F2 deferral passes under plain `READY FOR`; RD33-05 question roster unchecked — a deleted E-row validates READY. Two (RD33-01/02) need instrument amendments → v1.6, so the offer requires a further re-review (RD-34) of the v1.6 delta by a session that did not author it |
 
+| RD-34 | Instrument delta re-reviewer (added — same rule that added RD-33) | `LAUNCH-GATE-v1.6-SEMANTIC-DELTA.md` + the v1.6 instrument and validator bytes — the RD-33 repairs, which this session executed and may not confirm | — | held until the v1.6 repair batch is committed | — | — |
+
 **Ordering note.** RD-31/RD-32 are the offer gates: they bind the exact wave
 arguments, so they run only after RD-24…RD-30 triage is disposed — if that
 triage forces a wave-byte repair, the arguments regenerate and RD-31/RD-32

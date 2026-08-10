@@ -30,15 +30,33 @@ Checks (each with a `--selftest` mutation fixture):
         (VIS-2); the printed trend row carries the computed and parsed
         figures
   LG-6  the gate-verdict line exists, uses the closed verdict set, and is
-        consistent with the §4 formula as computable from the rows:
-        READY requires all E rows Met, no plain Not met in A–D (the scoped
-        form does not block), F3 Met, F4 Met, F2 Met or an explicit
-        owner-deferral marker, and F1 Met-or-Unknown — a Not met F1 blocks
-  LG-7  READY-WITH-DEFERRALS carries an owner-decision citation — the
-        reviewer may not self-authorize a deferral
+        consistent with the §4 formula as computable from the rows: plain
+        READY FOR requires all E rows Met, no plain Not met in A–D (the
+        scoped form does not block), F3 Met, F4 Met, F1 Met-or-Unknown,
+        **F2 Met and zero declared deferrals** — any deferral-carrying
+        pass must use READY-WITH-DEFERRALS (instrument §4, RD33-04)
+  LG-7  READY-WITH-DEFERRALS requires the `Owner deferral decision:` field
+        naming the granting owner decision — the reviewer may not
+        self-authorize a deferral, and the template's own "(owner only)"
+        label satisfies nothing (RD33-03); a deferral-carrying verdict
+        with `Deferred count: 0` is likewise an error
   LG-8  E1's five sub-verdict rows (form, home, granularity,
         acceptance-authority, change-process) are present, and an E1
         rollup of Met requires all five sub-rows Met
+  LG-9  a record with any scoped row must name at least one defect on the
+        deferred-wave findings line — a scoped row beside "none" asserts
+        a scoped defect exists and that none exists (instrument §4,
+        RD33-01)
+  LG-10 the full question roster is present — A1–A6, B1–B5, C1–C7, D1–D4,
+        E1 with its five sub-rows, E2–E6, F1–F6; a missing row is an
+        error, never a pass, and a delta record cannot support a gate
+        decision (instrument §2/§5, RD33-05)
+  LG-11 the record's declared instrument version matches the committed
+        instrument at the named commit, and its `Launch target:` line is
+        the parameter block's LAUNCH_TARGET (whitespace-normalized
+        containment) — a verdict must name the target §8 binds (RD33-06;
+        needs git, skipped with LG-2's notice otherwise; the missing-line
+        case errors regardless)
 
 Usage:
   python3 scripts/launch_gate_results.py <record.md>
@@ -65,6 +83,15 @@ SECTION_OF = lambda q: q[0]
 SCOPED = "Not met (out of launch scope)"
 E1_SUBS = ("E1-form", "E1-home", "E1-granularity",
            "E1-acceptance-authority", "E1-change-process")
+# The full-administration roster (instrument §3/§5): a record missing any
+# of these rows cannot support a gate decision — absence is never a pass.
+ROSTER = (tuple(f"A{i}" for i in range(1, 7))
+          + tuple(f"B{i}" for i in range(1, 6))
+          + tuple(f"C{i}" for i in range(1, 8))
+          + tuple(f"D{i}" for i in range(1, 5))
+          + E1_SUBS + ("E1",)
+          + tuple(f"E{i}" for i in range(2, 7))
+          + tuple(f"F{i}" for i in range(1, 7)))
 GATE_VERDICT_RE = re.compile(
     r"GATE VERDICT[:\s]+\**\s*(READY FOR [^*\n]+?|NOT READY|"
     r"READY-WITH-DEFERRALS[^*\n]*)\s*\**\s*$", re.M)
@@ -105,6 +132,22 @@ def param_block_bytes(instrument_text: bytes):
     return span.encode("utf-8")
 
 
+def _row_verdicts(text: str) -> dict:
+    """Parse verdict rows with one normalization for record and prior alike
+    (RD33-02: the prior side previously used startswith over the scoped
+    form while the current side matched exactly — asymmetric)."""
+    out = {}
+    for line in text.splitlines():
+        m = ROW_RE.match(line.strip())
+        if m and m.group(1) != "Q":
+            out[m.group(1)] = m.group(2).strip()
+    return out
+
+
+def _norm_ws(s: str) -> str:
+    return re.sub(r"\s+", " ", s).strip()
+
+
 def validate(record_path: Path, instrument_path: str, prior_path=None,
              _git=True):
     errors, notes = [], []
@@ -118,6 +161,7 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     minstd = re.search(
         r"Instrument version:[^\n]*sha256:\s*`?([0-9a-f]{64})`?", txt)
     mparamd = re.search(r"Parameter block sha256:\s*`?([0-9a-f]{64})`?", txt)
+    mtarget = re.search(r"^Launch target:\s*(\S.*)$", txt, re.M)
     if not mdate:
         errors.append("LG-1: no administration date found")
     if not mcommit:
@@ -133,8 +177,12 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
                       "decision (§2 integrity requirements)")
     if not mparamd:
         errors.append("LG-1: no parameter-block sha256 recorded")
+    if not mtarget:
+        errors.append("LG-11: no `Launch target:` line — the record must "
+                      "name the launch target verbatim from the parameter "
+                      "block (§5)")
 
-    # ---- LG-2 digest verification ----------------------------------------
+    # ---- LG-2 / LG-11 digest, version, and target verification -----------
     if _git and mcommit and minstd:
         blob = git_show(mcommit.group(1), instrument_path)
         if blob is None:
@@ -149,8 +197,8 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
                     f"LG-2: instrument digest mismatch — record quotes "
                     f"{minstd.group(1)[:12]}…, committed instrument is "
                     f"{actual[:12]}…")
+            pb = param_block_bytes(blob)
             if mparamd:
-                pb = param_block_bytes(blob)
                 if pb is None:
                     errors.append("LG-2: committed instrument has no §8 "
                                   "parameter block to hash")
@@ -159,11 +207,33 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
                         f"LG-2: parameter-block digest mismatch — record "
                         f"quotes {mparamd.group(1)[:12]}…, §8 at the named "
                         f"commit hashes to {sha256_bytes(pb)[:12]}…")
+            inst_ver_m = re.search(rb"^\s*effective_version:\s*(v[\d.]+)",
+                                   blob, re.M)
+            if mver and inst_ver_m:
+                inst_ver = inst_ver_m.group(1).decode()
+                if mver.group(1) != inst_ver:
+                    errors.append(
+                        f"LG-11: record claims instrument version "
+                        f"{mver.group(1)} but the committed instrument at "
+                        f"the named commit declares {inst_ver} — the "
+                        "version a verdict names must be the version the "
+                        "digest binds")
+            if mtarget and pb is not None:
+                pbt = pb.decode("utf-8", errors="replace")
+                lt_m = re.search(
+                    r"LAUNCH_TARGET:\s*>\n((?:[ \t]+\S[^\n]*\n)+)", pbt)
+                lt = _norm_ws(lt_m.group(1)) if lt_m else _norm_ws(pbt)
+                tgt = _norm_ws(mtarget.group(1))
+                if tgt and tgt not in lt:
+                    errors.append(
+                        f"LG-11: the record's launch target {tgt!r} is not "
+                        "the parameter block's LAUNCH_TARGET — the target "
+                        "a verdict names must be the one §8 binds")
     elif not _git:
-        notes.append("LG-2: git unavailable — digest verification skipped, "
-                     "record NOT fully validated")
+        notes.append("LG-2: git unavailable — digest, version, and target "
+                     "verification skipped, record NOT fully validated")
 
-    # ---- LG-3 / LG-5 verdict rows ----------------------------------------
+    # ---- LG-3 / LG-4 verdict rows ----------------------------------------
     verdicts = {}
     for line in txt.splitlines():
         m = ROW_RE.match(line.strip())
@@ -197,6 +267,16 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
         errors.append("LG-4: no G1 section — an administration missing G1 "
                       "is incomplete and cannot support a gate decision")
 
+    # ---- LG-10 roster -----------------------------------------------------
+    if verdicts:
+        missing_rows = [q for q in ROSTER if q not in verdicts]
+        if missing_rows:
+            errors.append(
+                "LG-10: question rows missing: " + ", ".join(missing_rows) +
+                " — a full administration answers every question; absence "
+                "is never a pass, and a delta record cannot support a gate "
+                "decision (instrument §2/§5)")
+
     # ---- LG-8 E1 sub-verdicts --------------------------------------------
     if "E1" in verdicts:
         missing_subs = [s for s in E1_SUBS if s not in verdicts]
@@ -210,48 +290,7 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
             errors.append("LG-8: E1 rolls up Met over non-Met sub-verdicts: "
                           + ", ".join(bad_subs))
 
-    # ---- LG-6 gate verdict line ------------------------------------------
-    mg = GATE_VERDICT_RE.search(txt)
-    n_not = sum(1 for v in verdicts.values() if v == "Not met")
-    n_unk = sum(1 for v in verdicts.values() if v == "Unknown")
-    if not mg:
-        errors.append("LG-6: no GATE VERDICT line found")
-    else:
-        gv = mg.group(1).strip()
-        if gv.startswith("READY"):
-            e_rows = {q: v for q, v in verdicts.items()
-                      if SECTION_OF(q) == "E"}
-            ad_not = [q for q, v in verdicts.items()
-                      if SECTION_OF(q) in "ABCD" and v == "Not met"]
-            bad = []
-            if not e_rows or any(v != "Met" for v in e_rows.values()):
-                bad.append("an E question is not Met")
-            if ad_not:
-                bad.append(f"Not met in A–D: {', '.join(sorted(ad_not))}")
-            for fq in ("F3", "F4"):
-                if verdicts.get(fq) != "Met":
-                    bad.append(f"{fq} is not Met")
-            # The deferral marker must be an F2 statement, not any line
-            # containing the words — §5's own `Deferred count (owner-
-            # deferred …)` field label would otherwise satisfy it.
-            f2_deferral = re.search(
-                r"^[^\n]*F2[^\n]*owner-deferred|^[^\n]*owner-deferred"
-                r"[^\n]*F2", txt, re.I | re.M)
-            if verdicts.get("F2") != "Met" and not f2_deferral:
-                bad.append("F2 neither Met nor explicitly owner-deferred")
-            if verdicts.get("F1") == "Not met":
-                bad.append("F1 is Not met — the §4 convergence conjunct "
-                           "(F1 Met-or-Unknown) fails")
-            if bad and gv.startswith("READY FOR"):
-                errors.append("LG-6: verdict claims READY but the rows "
-                              "refuse it — " + "; ".join(bad))
-            if gv.startswith("READY-WITH-DEFERRALS") and \
-                    "owner" not in gv.lower() and \
-                    not re.search(r"owner decision", txt, re.I):
-                errors.append("LG-7: READY-WITH-DEFERRALS without an owner-"
-                              "decision citation — only the owner defers")
-
-    # ---- LG-5 trend row ---------------------------------------------------
+    # ---- LG-5 required count fields (parsed before LG-6 needs them) ------
     # The Deferred and Reopened figures are parsed from required explicit
     # fields, never derived from absence: a missing field is an error, not a
     # zero (VIS-2 — RD24-19 showed the prior build printed 0 from nothing).
@@ -264,26 +303,103 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     if not reopened_m:
         errors.append("LG-5: no `Reopened count:` field — a zero Reopened "
                       "claim needs a stated count, not a missing field")
+    n_deferred_decl = int(deferred_m.group(1)) if deferred_m else None
+
+    # ---- Owner deferral citation (used by LG-6/LG-7) ----------------------
+    owner_dec_m = re.search(r"^Owner deferral decision:\s*(\S.*)$", txt,
+                            re.M)
+    owner_dec = owner_dec_m.group(1).strip() if owner_dec_m else None
+    if owner_dec and (owner_dec.startswith("<")
+                      or owner_dec.lower() in ("none", "n/a")):
+        owner_dec = None
+
+    # ---- LG-9 scoped-row disclosure ---------------------------------------
+    n_scoped = sum(1 for v in verdicts.values() if v == SCOPED)
+    mfind = re.search(
+        r"^Deferred-wave findings recorded outside launch scope:\s*(.+)$",
+        txt, re.M)
+    if n_scoped:
+        val = mfind.group(1).strip() if mfind else None
+        if val is None:
+            errors.append(
+                f"LG-9: {n_scoped} scoped row(s) but no deferred-wave "
+                "findings line — §4 requires each scoped defect named "
+                "there; the disclosure is the scoped form's honesty")
+        elif val.startswith("<") or re.fullmatch(r"(?i)[`*\s]*none[`*.\s]*",
+                                                 val):
+            errors.append(
+                f"LG-9: {n_scoped} scoped row(s) beside a deferred-wave "
+                f"findings line reading {val!r} — the record asserts a "
+                "scoped defect exists and that none exists (instrument §4)")
+
+    # ---- LG-6 / LG-7 gate verdict line ------------------------------------
+    mg = GATE_VERDICT_RE.search(txt)
+    n_not = sum(1 for v in verdicts.values() if v == "Not met")
+    n_unk = sum(1 for v in verdicts.values() if v == "Unknown")
+    if not mg:
+        errors.append("LG-6: no GATE VERDICT line found")
+    else:
+        gv = mg.group(1).strip()
+        if gv.startswith("READY FOR"):
+            e_rows = {q: v for q, v in verdicts.items()
+                      if SECTION_OF(q) == "E"}
+            ad_not = [q for q, v in verdicts.items()
+                      if SECTION_OF(q) in "ABCD" and v == "Not met"]
+            bad = []
+            if not e_rows or any(v != "Met" for v in e_rows.values()):
+                bad.append("an E question is not Met")
+            if ad_not:
+                bad.append(f"Not met in A–D: {', '.join(sorted(ad_not))}")
+            for fq in ("F3", "F4"):
+                if verdicts.get(fq) != "Met":
+                    bad.append(f"{fq} is not Met")
+            if verdicts.get("F2") != "Met":
+                bad.append("F2 is not Met — a pass resting on an F2 "
+                           "deferral is READY-WITH-DEFERRALS with an owner "
+                           "citation, never plain READY FOR (§4)")
+            if verdicts.get("F1") == "Not met":
+                bad.append("F1 is Not met — the §4 convergence conjunct "
+                           "(F1 Met-or-Unknown) fails")
+            if n_deferred_decl:
+                bad.append(f"Deferred count is {n_deferred_decl} — a "
+                           "deferral-carrying pass is "
+                           "READY-WITH-DEFERRALS, never plain READY FOR "
+                           "(§4)")
+            if bad:
+                errors.append("LG-6: verdict claims READY but the rows "
+                              "refuse it — " + "; ".join(bad))
+        elif gv.startswith("READY-WITH-DEFERRALS"):
+            if not owner_dec:
+                errors.append(
+                    "LG-7: READY-WITH-DEFERRALS without an `Owner deferral "
+                    "decision:` field naming the granting owner decision — "
+                    "only the owner defers, and the template's own "
+                    "'(owner only)' label satisfies nothing (§4/§5)")
+            if n_deferred_decl == 0:
+                errors.append(
+                    "LG-7: READY-WITH-DEFERRALS with `Deferred count: 0` — "
+                    "a deferral-carrying verdict must declare its "
+                    "deferrals")
+
+    # ---- LG-5 trend row ---------------------------------------------------
     deferred = deferred_m.group(1) if deferred_m else "—"
     reopened = reopened_m.group(1) if reopened_m else "—"
     new_vs_prior = "n/a — no prior record supplied"
     if prior_path:
         ptxt = Path(prior_path).read_text(encoding="utf-8")
-        prior_not = {m.group(1) for m in
-                     (ROW_RE.match(l.strip()) for l in ptxt.splitlines())
-                     if m and m.group(2).strip().startswith("Not met")}
+        prior_not = {q for q, v in _row_verdicts(ptxt).items()
+                     if v == "Not met"}
         cur_not = {q for q, v in verdicts.items() if v == "Not met"}
         new_vs_prior = str(len(cur_not - prior_not))
     gate_word = mg.group(1).strip() if mg else "—"
-    n_scoped = sum(1 for v in verdicts.values() if v == SCOPED)
     if n_scoped:
         notes.append(f"{n_scoped} scoped row(s) — `Not met (out of launch "
-                     "scope)` — recorded as findings outside launch scope; "
-                     "they do not block the §4 formula and are not in the "
-                     "trend row's Not-met column")
+                     "scope)` — recorded as findings outside launch scope "
+                     "in the trend row's Scoped column; they do not block "
+                     "the §4 formula and are not in the Not-met column")
     trend = (f"| {mdate.group(1) if mdate else '—'} "
              f"| {mcommit.group(1)[:8] if mcommit else '—'} "
-             f"| {n_not} | {n_unk} | {deferred} | {reopened} "
+             f"| {n_not} | {n_scoped} | {n_unk} | {deferred} | {reopened} "
              f"| {new_vs_prior} | {gate_word} |")
     return errors, notes, verdicts, trend
 
@@ -297,7 +413,8 @@ def run(record, instrument, prior):
           f"Not met {sum(1 for v in verdicts.values() if v == 'Not met')}, "
           f"scoped {sum(1 for v in verdicts.values() if v == SCOPED)}, "
           f"Unknown {sum(1 for v in verdicts.values() if v == 'Unknown')})"
-          " — counts computed from the rows, never transcribed")
+          " — row counts computed from the rows; Deferred/Reopened are "
+          "declared required fields (instrument §5)")
     for x in notes:
         print("NOTE  " + x)
     print("trend row:")
@@ -315,36 +432,60 @@ def run(record, instrument, prior):
 
 # --------------------------------------------------------------- selftest
 
+def _template_rows() -> str:
+    qs = ([f"A{i}" for i in range(1, 7)] + [f"B{i}" for i in range(1, 6)]
+          + [f"C{i}" for i in range(1, 8)] + [f"D{i}" for i in range(1, 5)]
+          + list(E1_SUBS) + ["E1"] + [f"E{i}" for i in range(2, 7)]
+          + [f"F{i}" for i in range(1, 7)])
+    lines = []
+    for q in qs:
+        if q == "F1":
+            lines.append("| F1 | Unknown (first administration) | x |")
+        elif q == "F2":
+            lines.append("| F2 | Not met | x |")
+        else:
+            lines.append(f"| {q} | Met | x |")
+    return "\n".join(lines)
+
+
+# A full §5-template-shaped record (RD33-08a: the reduced fixture guarded
+# nothing about template↔parser coupling; this one breaks loudly if §5's
+# field names and the parser ever drift apart again).
 GOOD = """# Launch-gate administration — 2026-08-10, commit {sha}
-> This administration record is evidence, never an owner act.
-Instrument version: v1.5  sha256: {inst}
+> This administration record is evidence, never an owner act; its verdict
+> authorizes nothing (instrument preamble; VIS-4).
+Instrument version: v1.6  sha256: {inst}
 Parameter block sha256: {param}
 Launch target: Capability 1
 Reviewer: human, fresh context: yes
 Reviewer model family: human
+Materials given: the fixed §2 list, no deviations
+Operationalization notes: none
 
 | Q | Verdict | Evidence |
 |---|---------|----------|
-| A1 | Met | x |
-| E1-form | Met | x |
-| E1-home | Met | x |
-| E1-granularity | Met | x |
-| E1-acceptance-authority | Met | x |
-| E1-change-process | Met | x |
-| E1 | Met | x |
-| F1 | Unknown (first administration) | x |
-| F2 | Not met | x |
-| F3 | Met | x |
-| F4 | Met | x |
+""" + _template_rows() + """
 
 ## G1 — completeness critic
 none proposed
 
+E3 reopen-list: empty
+Deferred-wave findings recorded outside launch scope: none
 Deferred count (owner-deferred findings this administration): 0
 Reopened count (previously recorded resolved, recurred): 0
-
+Unknowns and what would settle them: F1 — a second formal administration
+Reviewer's falsification notes: tried to break the roster; couldn't
 GATE VERDICT: NOT READY
 """
+
+
+def _head_commit():
+    try:
+        r = subprocess.run(["git", "-C", str(REPO), "rev-parse", "HEAD"],
+                           capture_output=True, text=True)
+        return r.stdout.strip() if r.returncode == 0 else None
+    except OSError:
+        return None
 
 
 def selftest():
@@ -374,7 +515,8 @@ def selftest():
     param = "2" * 64
     good = GOOD.format(sha=sha, inst=inst, param=param)
 
-    case("well-formed record validates (git checks off)", good, None)
+    case("well-formed full-template record validates (git checks off)",
+         good, None)
     case("invalid verdict word rejected",
          good.replace("| A1 | Met |", "| A1 | Partially met |"),
          "outside the closed vocabulary")
@@ -388,6 +530,9 @@ def selftest():
     case("missing parameter digest rejected",
          good.replace(f"Parameter block sha256: {param}", ""),
          "no parameter-block sha256")
+    case("missing launch-target line rejected (RD33-06)",
+         good.replace("Launch target: Capability 1\n", ""),
+         "no `Launch target:` line")
     case("missing gate verdict rejected",
          good.replace("GATE VERDICT: NOT READY", ""), "no GATE VERDICT")
     case("READY over a Not met E row rejected",
@@ -400,17 +545,13 @@ def selftest():
              .replace("GATE VERDICT: NOT READY",
                       "GATE VERDICT: READY FOR Capability 1"),
          "F3 is not Met")
-    case("READY with F2 not met and no owner deferral rejected",
-         good.replace("GATE VERDICT: NOT READY",
-                      "GATE VERDICT: READY FOR Capability 1"),
-         "F2 neither Met nor explicitly owner-deferred")
     case("duplicate question rejected",
          good.replace("| A1 | Met | x |", "| A1 | Met | x |\n| A1 | Met | x |"),
          "appears twice")
     case("no verdict rows rejected",
          re.sub(r"^\|.*\|$", "", good, flags=re.M),
          "no verdict rows parsed")
-    # LG-1 commit existence and LG-2 need git; exercise against the repo
+    # LG-1 commit existence needs git; exercise against the repo
     case("nonexistent commit rejected (git on)",
          good.replace(sha, "f" * 40), "does not exist", _git=True)
 
@@ -418,11 +559,14 @@ def selftest():
     ready = (good.replace("| F2 | Not met | x |", "| F2 | Met | x |")
                  .replace("GATE VERDICT: NOT READY",
                           "GATE VERDICT: READY FOR Capability 1"))
-    case("scoped A-D row does not block READY (RD24-05 T2, lawful form)",
-         ready.replace(
-             "| A1 | Met | x |",
-             "| A1 | Met | x |\n"
-             "| C2 | Not met (out of launch scope) | x |"),
+    scoped_c2 = ready.replace(
+        "| C2 | Met | x |", "| C2 | Not met (out of launch scope) | x |")
+    case("scoped A-D row with disclosure does not block READY "
+         "(RD24-05 T2, lawful form)",
+         scoped_c2.replace(
+             "Deferred-wave findings recorded outside launch scope: none",
+             "Deferred-wave findings recorded outside launch scope: "
+             "RFC-0010 mission-profile drift (Wave D1)"),
          None)
     case("plain Not met in A-D still blocks READY (RD24-05 T1)",
          ready.replace("| A1 | Met | x |", "| A1 | Not met | x |"),
@@ -455,6 +599,96 @@ def selftest():
     case("E1 Met over a Not met sub-row rejected (RD24-21)",
          good.replace("| E1-form | Met | x |", "| E1-form | Not met | x |"),
          "rolls up Met")
+
+    # --- v1.6 fixtures: RD-33's findings, kept closed ---------------------
+    case("scoped row beside findings line 'none' rejected (RD33-01, r2)",
+         scoped_c2, "LG-9")
+    case("READY FOR over unresolved F2 rejected even with owner-deferred "
+         "wording in the evidence cell (RD33-04, r4)",
+         good.replace("| F2 | Not met | x |",
+                      "| F2 | Not met | treated as owner-deferred pending "
+                      "a reduction plan |")
+             .replace("GATE VERDICT: NOT READY",
+                      "GATE VERDICT: READY FOR Capability 1"),
+         "F2 is not Met")
+    case("plain READY FOR over a nonzero Deferred count rejected (RD33-04)",
+         ready.replace(
+             "Deferred count (owner-deferred findings this "
+             "administration): 0",
+             "Deferred count (owner-deferred findings this "
+             "administration): 1"),
+         "deferral-carrying pass")
+    with_def = (good.replace(
+        "GATE VERDICT: NOT READY",
+        "GATE VERDICT: READY-WITH-DEFERRALS (owner only)")
+        .replace("Deferred count (owner-deferred findings this "
+                 "administration): 0",
+                 "Deferred count (owner-deferred findings this "
+                 "administration): 1"))
+    case("READY-WITH-DEFERRALS satisfied by the template's own '(owner "
+         "only)' label rejected (RD33-03, r3)",
+         with_def, "LG-7")
+    case("READY-WITH-DEFERRALS with an owner-decision citation validates",
+         with_def.replace(
+             "Unknowns and what would settle them:",
+             "Owner deferral decision: .syzygy/governance/decisions/"
+             "SDR-99-EXAMPLE.md\nUnknowns and what would settle them:"),
+         None)
+    case("READY-WITH-DEFERRALS with zero declared deferrals rejected",
+         good.replace("GATE VERDICT: NOT READY",
+                      "GATE VERDICT: READY-WITH-DEFERRALS (owner only)")
+             .replace("Unknowns and what would settle them:",
+                      "Owner deferral decision: .syzygy/governance/"
+                      "decisions/SDR-99-EXAMPLE.md\n"
+                      "Unknowns and what would settle them:"),
+         "must declare its deferrals")
+    case("missing question row rejected (RD33-05, p2)",
+         good.replace("| E5 | Met | x |\n", ""), "LG-10")
+    case("omitted E1 rollup row rejected (RD33-10, p4)",
+         good.replace("| E1 | Met | x |\n", ""), "LG-10")
+
+    head = _head_commit()
+    if head:
+        good_head = GOOD.format(sha=head, inst=inst, param=param)
+        case("instrument digest mismatch rejected (git on, LG-2)",
+             good_head, "digest mismatch", _git=True)
+        case("instrument version disagreement rejected (RD33-06, LG-11)",
+             good_head.replace("Instrument version: v1.6",
+                               "Instrument version: v1.2"),
+             "LG-11: record claims instrument version", _git=True)
+        case("launch target outside the parameter block rejected "
+             "(RD33-06, p5)",
+             good_head.replace(
+                 "Launch target: Capability 1",
+                 "Launch target: Capability 7 — anything the reviewer "
+                 "names"),
+             "is not the parameter block's LAUNCH_TARGET", _git=True)
+    else:
+        print("  note  git unavailable — 3 git-dependent fixtures skipped")
+
+    # RD33-02: a prior scoped row that turns plain Not met must count as a
+    # new finding — the prior/current comparison uses one normalization.
+    n_cases[0] += 1
+    import tempfile
+    prior_txt = good.replace(
+        "| C2 | Met | x |", "| C2 | Not met (out of launch scope) | x |")
+    cur_txt = good.replace("| C2 | Met | x |", "| C2 | Not met | x |")
+    with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False) as f:
+        f.write(prior_txt)
+        pp = Path(f.name)
+    with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False) as f:
+        f.write(cur_txt)
+        cp = Path(f.name)
+    _, _, _, trend = validate(cp, INSTRUMENT_DEFAULT, pp, _git=False)
+    pp.unlink()
+    cp.unlink()
+    fields = [x.strip() for x in trend.strip().strip("|").split("|")]
+    ok = fields[7] == "1"
+    print(("  pass  " if ok else "  FAIL  ")
+          + "prior scoped → current plain Not met counts as new "
+          "(RD33-02, r5)")
+    if not ok:
+        fails.append(("prior scoped asymmetry", trend))
 
     print(f"{n_cases[0]} fixtures, {len(fails)} failing — a check that "
           "cannot fail is not a check")
