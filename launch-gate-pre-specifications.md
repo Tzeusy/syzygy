@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.13 (candidate; v1.3 was the pilot-administered version)
+effective_version: v1.14 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), results record format, and trend log
@@ -1179,14 +1179,40 @@ Notes for administering against Syzygy specifically:
   *single-level* `> `, §5's own form, so a nested `> > ` quotation
   now fails), sits at **≤3 columns** of indentation with tabs
   expanded to 4-column stops, carries no list marker of any kind
-  (`-`, `*`, `+`, ordered), is not the text line of a setext heading,
-  and is not inside a raw-HTML block (`<details>`/`<summary>`). Its
+  (`-`, `*`, `+`, ordered) [corrected 2026-08-11, RD41-01: false of the
+  v1.13 bytes — the predicate was line-local, and a container is a
+  REGION, not a line: `- `, `> `, `1. ` and four spaces each mark a
+  block's FIRST line and every one of them continues without its
+  marker, so a list item's continuation lines were classified as the
+  record's own and RD-38's composite validated at 0 errors under
+  `READY FOR <the verbatim target>` a fifth time. Made true at v1.14 by
+  a predicate that carries the block stack across lines; see the v1.14
+  entry below], is not the text line of a setext heading [corrected
+  2026-08-11, RD41-06: a setext heading is the record's own visible
+  text, not a quotation of it, and putting it in the containment
+  predicate made a `---` under the terminal verdict hide the decisive
+  line behind a message untrue of the record. At v1.14 it is a separate
+  declaration-form requirement, consumed by the field reads and not by
+  the terminal-verdict rule], and is not inside a raw-HTML block (`<details>`/`<summary>`). Its
   consumers are the terminal-verdict rule, the six `Label:` presence
   tokens, the non-authority banner test, and the G1 anchor. `_decl`
   is deliberately **not** a consumer: it is `^`-anchored with no
   decoration allowance at all, so every quotation carrier either
   fails the anchor outright or produces a loud disagreement error —
-  a stated scope decision, not an omission. The terminal-verdict rule
+  a stated scope decision, not an omission. [corrected 2026-08-11,
+  RD41-02: false of the v1.13 bytes. A `<details>` block and setext
+  heading text both reach column 0, so `_decl` read them; and where a
+  record declared the field nowhere else there was no disagreement to
+  be loud about — the quotation silently BECAME the declared value. A
+  record whose reopen items were visible prose and whose
+  `E3 reopen-list: empty` sat inside collapsed content validated at 0
+  errors under `READY FOR <the verbatim target>`, as did a hidden
+  `Owner deferral decision:`. The scope decision was also internally
+  inconsistent: `Unknowns and what would settle them:` inside
+  `<details>` errored while `E3 reopen-list:` did not. At v1.14 `_decl`
+  IS a consumer for presence — a value carried only on non-own lines
+  is an absent field — with the loud-disagreement behaviour on own
+  lines unchanged; see the v1.14 entry below] The terminal-verdict rule
   is computed over the **raw** bytes in the predicate's shape:
   a `GATE VERDICT:` line quoted *after* the record's own terminal
   line — in a blockquote, an indented code block, a list item, or a
@@ -1211,7 +1237,11 @@ Notes for administering against Syzygy specifically:
   be satisfied by its unmutated baseline (RD40-04); a dead
   row-verdict helper is deleted and the single row normalization
   documented at the loop that owns it (RD40-07). **145 fixtures**;
-  eight mutation-reverts, each failing exactly the fixtures its
+  eight [corrected 2026-08-11, RD41-03: **ten** — the figure the v1.13
+  delta, P-34, PROJECT-STATUS and the disposition register all state,
+  and the one the bytes do; "eight" was carried over from the v1.11
+  entry. Verification rule 3's own case, inside the artifact an
+  approval digest binds] mutation-reverts, each failing exactly the fixtures its
   repair added, with one honesty qualification measured rather than
   asserted (RD40-08's own standard): the list refusal is carried
   **twice** — by the predicate and by the presence anchor — so each
@@ -1232,7 +1262,18 @@ Notes for administering against Syzygy specifically:
   structurally the record's own, so this is an emptiness question and
   not a quotation question, and it is left to a later batch; it opens
   no pass (the composite scores 6 errors with the heading and 7
-  without). An asymmetric `**Label:*` still satisfies presence, and
+  without) [corrected 2026-08-11, RD41-04: the parenthetical
+  measurement is exact and reproduces; the generalization is false —
+  the residual was a load-bearing limb of a **0-error** pass (RD41-01's
+  composite), not a cost of one error inside an already-failing record.
+  It was also wider than disclosed: LG-4's `\s*` crossed the newline,
+  so a bare `###` followed by any own line beginning `G1 ` satisfied
+  the anchor with no G1 heading at all — RD37-03's class returning
+  through a door nobody checked. Both are closed at v1.14: LG-4 now
+  requires the heading to open a non-empty section, and its anchor is
+  matched per line. **This is the third batch running whose disclosed
+  limit was true narrowly and false as stated; the v1.14 entry states
+  its limits as measurements and nothing wider**]. An asymmetric `**Label:*` still satisfies presence, and
   the trend row is still printed above the error list carrying the
   record's *claimed* verdict when the record is invalid — both
   carried forward from RD-40's minor findings. Semantic delta:
@@ -1242,3 +1283,80 @@ Notes for administering against Syzygy specifically:
   bound" phrasing, its directionality assignment, and its D-5
   mutation denominator, in the D-10 convention — the frozen record is
   not edited). No existing question weakened; no ID renumbered.
+- **v1.14** (2026-08-11, post-RD-41 amendment — the v1.13 re-review's
+  four BLOCKING, four MAJOR and four MINOR findings; candidate, owner
+  approval pending) — a **validator-and-records batch** a seventh time:
+  no question block, no verdict word, and no section §1–§8 changed;
+  the instrument bytes that move are this entry, the version header,
+  and four dated correction markers in the v1.13 entry above, whose
+  predicate definition (RD41-01), `_decl` scope sentence (RD41-02),
+  mutation count (RD41-03) and disclosed-limit generalization
+  (RD41-04) were each false of the bytes an approval digest would have
+  bound. RD-41 verified every one of RD-40's eight findings present
+  and six closed outright, reproduced all ten mutation denominators,
+  the fixture arithmetic, the §1–§8 identity and the frozen
+  population — and then broke the batch's central claim one level up.
+  **The predicate now carries state.** v1.13 enumerated markdown's
+  containers; RD-41's finding is that a container is a **region, not a
+  line** — `- `, `> `, `1. ` and four spaces each mark a block's
+  *first* line, and every one of them continues without its marker, so
+  a list item's continuation lines were classified as the record's own
+  and RD-38's composite validated whole a fifth time. The predicate is
+  now CommonMark's block-structure phase in the subset this instrument
+  needs: for each line, the stack of containers open at it —
+  blockquote at any depth, list item at its content column, raw-HTML
+  block — maintained across lines, with lazy continuation; a line is
+  the record's own iff that stack is empty, and `bq1` iff it is
+  exactly one blockquote. Three things this repair had to decide, each
+  stated rather than assumed. **Blockquote laziness is deliberately
+  not implemented**, and §5 is the reason: §5's own template places the
+  declared fields on unmarked lines directly beneath the blockquote
+  banner, so strict CommonMark laziness would refuse every lawful
+  record, that template first (measured: 43 fixtures fail). A
+  blockquote therefore ends at the first line not carrying its marker,
+  and the limit that leaves is fixtured in its accepting direction
+  rather than described. **Setext headings leave the predicate** — a
+  heading is the record's own visible text, not a quotation of it — and
+  become a separate declaration-form requirement consumed by the field
+  reads and not by the terminal-verdict rule, where v1.13's version
+  made a `---` under the verdict hide the decisive line behind a
+  message untrue of the record (RD41-06, with four further lawful
+  records restored: a fenced `<details>` example, a self-closing
+  `<details/>` in prose, and a comment mentioning `<details>`, each of
+  which the v1.13 raw-side call refused because it ran on *un*-stripped
+  text where §9 said "after the strip"). **`_decl` becomes a
+  consumer** (RD41-02): a declared value carried only on non-own lines
+  is an absent field, never a supplied one. And because a quotation
+  whose fields land at column 0 unmarked is byte-for-byte §5's own
+  declaration form — §5 defines no marker that would tell the two
+  apart — two further rules close what containment cannot: a
+  declaration is read only from lines at or above the record's own
+  terminal verdict (§5 places every field there, and the verdict is
+  terminal), and a field whose value is §5's own angle-bracket
+  placeholder has not been answered. LG-4 requires its heading to open
+  a **non-empty** section and matches its anchor per line (RD41-04);
+  unicode whitespace is folded before the `GATE VERDICT:` token is
+  searched for, closing a record whose visible terminal `NOT READY`
+  was invisible to a literal substring search while an earlier `READY
+  FOR` was reported in its place (RD41-08); the LG-1 commit-existence
+  fixture is rebuilt from a real commit so its mutation is what makes
+  its assertion true (RD41-11). **168 fixtures**; **sixteen**
+  mutation-reverts, fourteen of which fail exactly the fixtures their
+  repair added (denominators 1, 1, 1, 43, 5, 1, 1, 1, 1, 1, 5, 1, 3,
+  3). **Disclosed limits, each measured, none generalized:** two
+  predicate clauses — the tab expansion and the ≤3-column bound — fail
+  **0 of 168** when reverted alone, because every consumer either
+  requires `bq1` or carries its own `^ {0,3}` anchor; they are
+  defence-in-depth, they have no single-layer witness, and this entry
+  says so rather than counting them as proven (RD41-10). Unmarked
+  lines beneath any blockquote are the record's own, per the §5
+  decision above. An asymmetric `**Label:*` still satisfies presence,
+  and the trend row is still printed above the error list carrying the
+  record's *claimed* verdict when the record is invalid — both carried
+  forward. Semantic delta:
+  `round-2026-08e/LAUNCH-GATE-v1.14-SEMANTIC-DELTA.md` (which also
+  carries the corrections of the frozen v1.13 delta's directionality
+  assignment, its "only direction lost" sentence, its
+  `effective_version` count, and its disclosed-limit generalization,
+  in the D-10 convention — the frozen record is not edited). No
+  existing question weakened; no ID renumbered.

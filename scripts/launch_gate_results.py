@@ -403,60 +403,196 @@ def _active_lines(txt: str):
 
 _LIST_MARK_RE = re.compile(r"(?:[-*+]|\d{1,9}[.)])(?:[^\S\n]|$)")
 _SETEXT_RE = re.compile(r" {0,3}(?:=+|-{2,})[^\S\n]*$")
+_BLOCK_START_RE = re.compile(
+    r"(?:>|#{1,6}(?:[^\S\n]|$)|`{3,}|~{3,}"
+    r"|(?:[-*+]|\d{1,9}[.)])(?:[^\S\n]|$))")
+_UNI_WS_RE = re.compile("[\u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]")
+
+
+def _norm_uni_ws(s: str) -> str:
+    """RD41-08 — a non-breaking space inside `GATE VERDICT:` renders
+    identically for a human reader and matches no literal substring, so
+    a record's visible terminal `NOT READY` became invisible to the
+    validator and an earlier own `READY FOR` was reported in its place:
+    0 errors, the wrong verdict in the trend row. Unicode whitespace is
+    folded to ASCII spaces before the token is searched for and before
+    the verdict is parsed. The instrument exists because a record's
+    bytes and a reader's eyes can disagree; this is that disagreement
+    in its purest form."""
+    return _UNI_WS_RE.sub(" ", s)
 
 
 def _own_flags(lines):
-    """RD-40's prescription, adopted whole: ONE answer to "is this line
-    the record's own, not a quotation of it?", computed once and shared
-    by every rule that asks — the terminal-verdict rule, the six
-    presence reads, the banner test, and the G1 anchor. Every one of
-    RD38-01, RD39-01, RD39-02, RD40-01 and RD40-02 was this question
-    answered inconsistently by consumers that never shared an answer.
+    """RD-41's prescription, adopted whole: **the predicate carries
+    state.** "Is this line the record's own, not a quotation of it?" is
+    not answerable from the line — a container is a REGION, not a line.
+    `- `, `> `, `1. ` and four spaces each mark a block's FIRST line,
+    and every one of them continues without its marker, so v1.13's
+    line-local classifier refused the line that opened a list item and
+    called its continuation lines the record's own. RD-38's composite
+    reproduced whole through that door, a fifth time (RD41-01).
 
-    A line is the record's OWN ("own") iff, with tabs expanded to
-    CommonMark's 4-column stops: it is indented at most 3 columns; it
-    carries no blockquote marker at any nesting and no list marker
-    (bullet or ordered) at any depth; it is not the text of a setext
-    heading (the following line an =/- underline); and it is not inside
-    a raw-HTML <details>/<summary> block. A line that would be own
-    except for exactly one level of blockquote is "bq1" — §5's
-    non-authority banner IS a single-level blockquote, so the banner
-    test consumes bq1 and a nested `> >` quotation of the banner fails
-    it (RD40-02's disclosed-limit exploit). Everything else is "no".
+    This is CommonMark's block-structure phase, in the subset the
+    instrument needs: for each line, the stack of containers open at
+    it — blockquote at any depth, list item at its content column,
+    raw-HTML block — maintained across lines, with **lazy
+    continuation** (an unmarked paragraph line continuing a blockquote
+    or list item belongs to that container, exactly as a reader sees
+    it). A line is the record's OWN iff that stack is empty, its own
+    indentation is at most 3 columns (tabs expanded to CommonMark's
+    4-column stops), and no raw-HTML block is open. It is "bq1" iff the
+    stack is exactly one blockquote — §5's non-authority banner IS a
+    single-level blockquote, so the banner test consumes bq1 while a
+    nested `> >` quotation of it fails (RD40-02).
 
-    Fenced and comment-carried lines never reach this predicate on the
-    active side (_active_lines strips them first); on the raw side the
-    terminal rule handles them by index survival. _decl stays on
-    `^`-anchored active text by a stated scope decision: every
-    quotation carrier either fails its `^Label` anchor or produces a
-    loud disagreement error, never a silent pass."""
+    Two things deliberately left OUT of this predicate, each named
+    where it now lives. **Setext headings** are not a containment
+    question — a heading is the record's own visible text, not a
+    quotation of it — so `_is_setext_text` is a separate declaration-
+    form requirement consumed by the presence reads, the banner and
+    LG-4, and NOT by the terminal-verdict rule, where v1.13's version
+    made a `---` after the verdict hide the decisive line behind a
+    message untrue of it (RD41-06). **Fences and HTML comments** are
+    stripped upstream by `_active_lines`; this predicate is computed
+    once, over the stripped lines, and the terminal rule maps back by
+    raw index — so §9's "after the fence and HTML-comment strip" is
+    true of every consumer, which at v1.13 it was not (RD41-06).
+
+    `_decl` IS a consumer as of v1.14 (RD41-02): a declared value
+    carried only on non-own lines is an absent field, never a supplied
+    one. A `<details>` block reaches column 0, so at v1.13 it silently
+    supplied `E3 reopen-list:`, `Deferred count:` and the owner's
+    deferral citation — the instrument's sharpest single gate, answered
+    from inside collapsed content a reader may never open."""
     flags = []
+    stack = []
     html_depth = 0
-    for i, ln in enumerate(lines):
+    para_open = False
+    for ln in lines:
         e = ln.expandtabs(4)
-        s = e.lstrip(" ")
-        indent = len(e) - len(s)
+        if not e.strip():
+            flags.append("no")
+            para_open = False
+            continue
+        pos, matched = 0, 0
+        for c in stack:
+            rest = e[pos:]
+            ind = len(rest) - len(rest.lstrip(" "))
+            if c == "bq":
+                if ind <= 3 and rest.lstrip(" ").startswith(">"):
+                    pos += ind + 1
+                    if pos < len(e) and e[pos] == " ":
+                        pos += 1
+                    matched += 1
+                    continue
+                break
+            if ind >= c[1]:
+                pos += c[1]
+                matched += 1
+                continue
+            break
+        rest = e[pos:]
+        body = rest.lstrip(" ")
+        # Lazy continuation applies to LIST ITEMS only, and the reason
+        # is §5's own frozen template: it places the declared fields on
+        # unmarked lines immediately beneath the blockquote banner, with
+        # no blank line between them. Strict CommonMark laziness makes
+        # those fields blockquote content — which would refuse every
+        # lawful record, §5's template first. A blockquote therefore
+        # ends at the first line not carrying its marker. The residual
+        # this leaves is stated in §9 and measured: see _own_flags.
+        lazy = (matched < len(stack) and para_open and body
+                and "bq" not in stack[matched:]
+                and len(rest) - len(body) < 4
+                and not _BLOCK_START_RE.match(body))
+        if not lazy:
+            del stack[matched:]
+            while True:
+                ind = len(rest) - len(rest.lstrip(" "))
+                s = rest.lstrip(" ")
+                if ind > 3 or not s:
+                    break
+                if s.startswith(">"):
+                    stack.append("bq")
+                    rest = s[1:]
+                    if rest.startswith(" "):
+                        rest = rest[1:]
+                    continue
+                m = _LIST_MARK_RE.match(s)
+                if m:
+                    stack.append(("li", ind + len(m.group(0))))
+                    rest = s[len(m.group(0)):]
+                    continue
+                break
+        content = rest.lstrip(" ")
+        cind = len(rest) - len(content)
         cls = "no"
-        if html_depth == 0 and indent <= 3 and s:
-            if s.startswith(">"):
-                rest = s[1:].lstrip(" ")
-                if (rest and not rest.startswith(">")
-                        and not _LIST_MARK_RE.match(rest)):
-                    cls = "bq1"
-            elif _LIST_MARK_RE.match(s):
-                pass
-            elif (i + 1 < len(lines)
-                    and _SETEXT_RE.match(lines[i + 1].expandtabs(4))
-                    and not s.startswith("#")
-                    and not s.startswith("|")):
-                pass
-            else:
+        if html_depth == 0 and content and cind <= 3:
+            if not stack:
                 cls = "own"
-        html_depth += len(re.findall(r"<(?:details|summary)\b", s, re.I))
-        html_depth -= len(re.findall(r"</(?:details|summary)>", s, re.I))
-        html_depth = max(0, html_depth)
+            elif stack == ["bq"]:
+                cls = "bq1"
         flags.append(cls)
+        para_open = bool(content)
+        html_depth += len(re.findall(
+            r"<(?:details|summary)\b(?![^>]*/>)", content, re.I))
+        html_depth -= len(re.findall(
+            r"</(?:details|summary)>", content, re.I))
+        html_depth = max(0, html_depth)
     return flags
+
+
+def _takewhile_before_heading(lines):
+    """The G1 section is what lies between its heading and the next one
+    (RD41-04). The record's terminal verdict is never section content —
+    a `## G1` placed immediately above `GATE VERDICT:` opens nothing."""
+    out = []
+    for ln in lines:
+        if re.match(r" {0,3}#{1,6}(?:[^\S\n]|$)", ln.expandtabs(4)):
+            break
+        out.append(ln)
+    return out
+
+
+def _carriers(idxs, raw_lines, flag_by_raw, kept_idx):
+    """RD41-06 — the LG-6 all-quoted message named five causes and could
+    be emitted when none of them was true of the record. It now reports
+    the carrier each verdict line actually sits in, computed from the
+    same predicate that refused it, so an administrator reading the
+    refusal learns where the validator thinks their verdict is."""
+    seen = []
+    for i in idxs:
+        e = raw_lines[i].expandtabs(4)
+        s = e.lstrip(" ")
+        if i not in kept_idx:
+            c = "inside a fence or an HTML comment"
+        elif flag_by_raw.get(i) == "bq1" or s.startswith(">"):
+            c = "blockquoted"
+        elif _LIST_MARK_RE.match(s):
+            c = "inside a list item"
+        elif len(e) - len(s) >= 4:
+            c = "indented as code"
+        elif not re.match(r" {0,3}\**GATE VERDICT:", e):
+            c = "mid-line, not at the start of its own line"
+        else:
+            c = "inside a container opened on an earlier line"
+        if c not in seen:
+            seen.append(c)
+    return "; ".join(seen) if seen else "in a quotation"
+
+
+def _is_setext_text(lines, i):
+    """A declaration-form requirement, NOT a containment one (RD41-06).
+    §5 declares its fields as `Label: value` lines; an ATX heading
+    (`## Materials given:`) never satisfied a presence read, and a
+    setext-underlined line renders as exactly the same heading, so the
+    two are refused alike. Consumed by the presence reads, the banner
+    and LG-4 — never by the terminal-verdict rule, where a `---` under
+    the verdict is a heading a reader sees, not a quotation."""
+    s = lines[i].expandtabs(4).lstrip(" ")
+    return (bool(s) and not s.startswith("#") and not s.startswith("|")
+            and i + 1 < len(lines)
+            and bool(_SETEXT_RE.match(lines[i + 1].expandtabs(4))))
 
 
 def _decl(pattern, txt, errors, check, label):
@@ -500,8 +636,32 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     _act_only = [ln for _, ln in _act]
     txt = "\n".join(_act_only)
     _act_flags = _own_flags(_act_only)
-    _own_text = "\n".join(ln for ln, fl in zip(_act_only, _act_flags)
-                          if fl == "own")
+    _flag_by_raw = {ri: fl for (ri, _), fl in zip(_act, _act_flags)}
+    # RD41-06: the declaration-form requirement is separate from the
+    # containment one, and only the field-shaped consumers apply it.
+    _decl_flags = ["no" if _is_setext_text(_act_only, k) else fl
+                   for k, fl in enumerate(_act_flags)]
+    # RD41-01, the limb §5's own frozen template makes structural: a
+    # quotation whose fields land at column 0, unmarked, is byte-for-byte
+    # §5's declaration form — §5 defines no marker that would tell a
+    # quoted `Materials given:` from a declared one, and the template
+    # itself puts the fields on unmarked lines directly beneath the
+    # blockquote banner. What every such carrier DOES share is position:
+    # it rides an appendix, after the record's conclusion. §5's template
+    # places every declared field above `GATE VERDICT:`, and the verdict
+    # is terminal. So a declaration is read only from the record's own
+    # lines at or above its own terminal verdict line; an appendix below
+    # it declares nothing, in any container.
+    _raw_lines = [_norm_uni_ws(ln) for ln in _raw.splitlines()]
+    _gv_all = [i for i, ln in enumerate(_raw_lines) if "GATE VERDICT:" in ln]
+    _gv_own = [i for i in _gv_all
+               if _flag_by_raw.get(i) == "own"
+               and re.match(r" {0,3}\**GATE VERDICT:",
+                            _raw_lines[i].expandtabs(4))]
+    _decl_end = _gv_own[-1] if _gv_own else None
+    _own_text = "\n".join(
+        ln for (ri, ln), fl in zip(_act, _decl_flags)
+        if fl == "own" and (_decl_end is None or ri <= _decl_end))
 
     # ---- LG-1 header ------------------------------------------------------
     # mdate/mcommit stay first-match deliberately, outside the _decl rule:
@@ -525,17 +685,17 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     # borrowing the next line, and a mid-line narrative mention ("I
     # checked whether Instrument version: v1.9 would be accepted") is
     # inert instead of becoming the value LG-2/LG-11 report on.
-    _ver = _decl(r"^Instrument version:[^\S\n]*\**[^\S\n]*(v[\d.]+)", txt,
+    _ver = _decl(r"^Instrument version:[^\S\n]*\**[^\S\n]*(v[\d.]+)", _own_text,
                  errors, "LG-1", "Instrument version:")
     mver = _Field(_ver) if _ver else None
     _instd = _decl(
         r"^Instrument version:[^\n]*sha256:[^\S\n]*`?([0-9a-f]{64})`?",
-        txt, errors, "LG-1", "Instrument version: … sha256:")
+        _own_text, errors, "LG-1", "Instrument version: … sha256:")
     minstd = _Field(_instd) if _instd else None
     _paramd = _decl(r"^Parameter block sha256:[^\S\n]*`?([0-9a-f]{64})`?",
                     txt, errors, "LG-1", "Parameter block sha256:")
     mparamd = _Field(_paramd) if _paramd else None
-    _lt = _decl(r"^Launch target:[^\S\n]*(\S.*)$", txt,
+    _lt = _decl(r"^Launch target:[^\S\n]*(\S.*)$", _own_text,
                 errors, "LG-11", "Launch target:")
     mtarget = _Field(_lt) if _lt else None
     if not mdate:
@@ -657,9 +817,33 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     # of an incidental mention. RD40-02: the anchor consumes the shared
     # own-line predicate, so a heading quoted inside a <details> block,
     # a list item, or any other quotation carrier satisfies nothing.
-    if not re.search(r"^ {0,3}#{1,6}\s*G1\b", _own_text, re.M):
+    # RD41-04: two further doors, both measured open at v1.13. `\s*`
+    # crossed the newline, so a bare `###` on one own line followed by
+    # any own line beginning `G1 ` satisfied the anchor — RD37-03's own
+    # class, returning through a door nobody checked. And the heading
+    # alone satisfied LG-4 however EMPTY the section beneath it, which
+    # the v1.13 records disclosed as opening no pass; it was in fact a
+    # load-bearing limb of a 0-error pass. §4's clause is quoted in the
+    # message: an administration missing G1 is incomplete. A heading
+    # with nothing under it is a missing section, not a present one.
+    _own_lines = _own_text.split("\n")
+    _g1_at = next(
+        (k for k, ln in enumerate(_own_lines)
+         if re.match(r" {0,3}#{1,6}[^\S\n]*G1\b", ln.expandtabs(4))), None)
+    if _g1_at is None:
         errors.append("LG-4: no G1 section — an administration missing G1 "
                       "is incomplete and cannot support a gate decision")
+    elif not any(
+            ln.strip()
+            and not re.match(r" {0,3}#{1,6}(?:[^\S\n]|$)", ln.expandtabs(4))
+            and not re.match(r" {0,3}\**GATE VERDICT:", ln.expandtabs(4))
+            for ln in _takewhile_before_heading(_own_lines[_g1_at + 1:])):
+        errors.append(
+            "LG-4: the `G1` heading opens an EMPTY section — no content "
+            "of the record's own follows it before the next heading. §4: "
+            "\"an administration missing G1 is incomplete and cannot "
+            "support a gate decision\"; a heading with nothing beneath it "
+            "is a missing section, not a present one (RD41-04)")
 
     # ---- LG-10 roster -----------------------------------------------------
     if verdicts:
@@ -695,9 +879,9 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     # The Deferred and Reopened figures are parsed from required explicit
     # fields, never derived from absence: a missing field is an error, not a
     # zero (VIS-2 — RD24-19 showed the prior build printed 0 from nothing).
-    _dc = _decl(r"^Deferred count[^:\n]*:[^\S\n]*(\d+)", txt,
+    _dc = _decl(r"^Deferred count[^:\n]*:[^\S\n]*(\d+)", _own_text,
                 errors, "LG-5", "Deferred count:")
-    _rc = _decl(r"^Reopened count[^:\n]*:[^\S\n]*(\d+)", txt,
+    _rc = _decl(r"^Reopened count[^:\n]*:[^\S\n]*(\d+)", _own_text,
                 errors, "LG-5", "Reopened count:")
     deferred_m = _Field(_dc) if _dc else None
     reopened_m = _Field(_rc) if _rc else None
@@ -711,7 +895,7 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     n_deferred_decl = int(deferred_m.group(1)) if deferred_m else None
 
     # ---- Owner deferral citation (used by LG-6/LG-7) ----------------------
-    owner_dec = _decl(r"^Owner deferral decision:[^\S\n]*(\S.*)$", txt,
+    owner_dec = _decl(r"^Owner deferral decision:[^\S\n]*(\S.*)$", _own_text,
                       errors, "LG-7", "Owner deferral decision:")
     if owner_dec and (owner_dec.startswith("<")
                       or owner_dec.lower() in ("none", "n/a")):
@@ -736,7 +920,7 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     _find_val = _decl(
         r"^Deferred-wave findings recorded outside launch scope:"
         r"[^\S\n]*(\S.*)$",
-        txt, errors, "LG-9",
+        _own_text, errors, "LG-9",
         "Deferred-wave findings recorded outside launch scope:")
     if n_scoped:
         val = _find_val
@@ -778,13 +962,6 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     # (comment-stripped) form. The parsed line must itself parse to the
     # closed verdict set; a captured verdict containing `|` is rejected —
     # it would structurally corrupt §6's nine-column trend row.
-    _raw_lines = _raw.splitlines()
-    _raw_flags = _own_flags(_raw_lines)
-    _gv_all = [i for i, ln in enumerate(_raw_lines) if "GATE VERDICT:" in ln]
-    _gv_own = [i for i in _gv_all
-               if _raw_flags[i] == "own"
-               and re.match(r" {0,3}\**GATE VERDICT:",
-                            _raw_lines[i].expandtabs(4))]
     _act_by_idx = dict(_act)
     mg = None
     n_not = sum(1 for v in verdicts.values() if v == "Not met")
@@ -793,11 +970,12 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
         errors.append("LG-6: no GATE VERDICT line found")
     elif not _gv_own:
         errors.append(
-            "LG-6: every `GATE VERDICT:` line in the record is a "
-            "quotation — blockquoted, list-marked, indented, fenced, or "
-            "mid-line — and a quoted verdict is not the record's "
-            "verdict; §5's terminal line must be the record's own "
-            "(RD35-02, RD40-01)")
+            "LG-6: every `GATE VERDICT:` line in the record sits "
+            "inside a quotation container — " + _carriers(
+                _gv_all, _raw_lines, _flag_by_raw, _kept_idx)
+            + " — and a quoted verdict is not the record's verdict; "
+            "§5's terminal line must be the record's own (RD35-02, "
+            "RD40-01, RD41-06)")
     else:
         _t = _gv_own[-1]
         _later = [i for i in _gv_all if i > _t]
@@ -819,7 +997,8 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
                 "be the verdict the trend row reports (RD35-02, "
                 "RD39-01)")
         else:
-            mg = GATE_VERDICT_RE.search(_act_by_idx[_t])
+            mg = GATE_VERDICT_RE.search(
+                _norm_uni_ws(_act_by_idx[_t]))
             if not mg:
                 errors.append(
                     "LG-6: the terminal `GATE VERDICT:` line — "
@@ -921,8 +1100,20 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
         words = label.rstrip(":").split()
         pat = (r"^ {0,3}\**"
                + r"[^\S\n]+".join(re.escape(w) for w in words)
-               + r"[^\S\n]*:")
-        return re.search(pat, _own_text, re.M) is not None
+               + r"[^\S\n]*:[^\S\n]*(.*)$")
+        return [m.group(1).strip()
+                for m in re.finditer(pat, _own_text, re.M)]
+
+    # RD41-01's last limb, and the honest form RD40-02 itself named. At
+    # column 0, unmarked, above the verdict, a quotation of a §5 field
+    # IS a declaration of it — §5 defines no marker that would tell the
+    # two apart, so containment cannot answer this one. What a quotation
+    # of the template carries that an answer never does is §5's own
+    # PLACEHOLDER: `<model/version or human, fresh context: yes/no>`. A
+    # field whose declared value is a bare angle-bracket placeholder has
+    # not been answered, and saying so is a value-quality check, not a
+    # quotation check — the two kept apart on purpose this time.
+    _PLACEHOLDER_RE = re.compile(r"^\**<[^<>]*>\**$")
     for token, why in (
             ("Reviewer model family:",
              "the model-family disclosure F5 and §7 read"),
@@ -937,9 +1128,15 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
              "the fresh-context disclosure §2 requires — the eighth "
              "declared field, RD36-05"),
     ):
-        if not _label_present(token):
+        _vals = _label_present(token)
+        if not _vals:
             errors.append(f"LG-12: required §5 field missing — {token!r} "
                           f"({why}; RD35-07)")
+        elif all(_PLACEHOLDER_RE.match(v) for v in _vals):
+            errors.append(
+                f"LG-12: the {token!r} field carries §5's own placeholder "
+                f"({_vals[-1]!r}), not an answer ({why}; a quoted template "
+                "declares nothing — RD41-01)")
     if not any(fl == "bq1"
                and "evidence, never an owner act" in _norm_ws(ln)
                for ln, fl in zip(_act_only, _act_flags)):
@@ -951,7 +1148,7 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
                       "satisfy nothing, RD39-02/RD40-02; RD35-07)")
     _unk_val = _decl(
         r"^Unknowns and what would settle them:[^\S\n]*(\S.*)$",
-        txt, errors, "LG-12", "Unknowns and what would settle them:")
+        _own_text, errors, "LG-12", "Unknowns and what would settle them:")
     if n_unk:
         if _unk_val is None:
             errors.append(
@@ -971,7 +1168,7 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     # every other verdict" — the instrument's self-declared sharpest single
     # gate, enforced beside LG-8 and LG-9 as the same shape: a declared
     # field contradicting a verdict row.
-    _e3_val = _decl(r"^E3 reopen-list:[^\S\n]*(\S.*)$", txt,
+    _e3_val = _decl(r"^E3 reopen-list:[^\S\n]*(\S.*)$", _own_text,
                     errors, "LG-13", "E3 reopen-list:")
     if _e3_val is None:
         errors.append("LG-12: no `E3 reopen-list:` field — §5 gives E3's "
@@ -1206,9 +1403,6 @@ def selftest():
     case("no verdict rows rejected",
          re.sub(r"^\|.*\|$", "", good, flags=re.M),
          "no verdict rows parsed")
-    # LG-1 commit existence needs git; exercise against the repo
-    case("nonexistent commit rejected (git on)",
-         good.replace(sha, "f" * 40), "does not exist", _git=True)
 
     # --- v1.5 fixtures: RD-24's mutation-proven defects, kept closed ------
     ready = (good.replace("| F2 | Not met | x |", "| F2 | Met | x |")
@@ -1578,6 +1772,14 @@ def selftest():
                                f"Instrument version: "
                                f"{_iv_v.group(1).decode()}",
                                good_head, count=1)
+        # RD41-11: built from a REAL commit, so the mutation is what
+        # makes the assertion true. The v1.13 form mutated `good`, whose
+        # template sha is a `0`*40 placeholder that does not exist
+        # either — the unmutated baseline already emitted the asserted
+        # substring, the RD40-04 class with one instance left.
+        case("nonexistent commit rejected (git on, LG-1)",
+             good_head.replace(head, "f" * 40), "does not exist",
+             _git=True)
         case("instrument digest mismatch rejected (git on, LG-2)",
              good_head, "digest mismatch", _git=True)
         case("instrument version disagreement rejected (RD33-06, LG-11)",
@@ -2128,19 +2330,24 @@ def selftest():
          "presence (RD40-02)",
          good.replace("Materials given: the fixed §2 list, "
                       "no deviations\n", "")
-         + "\n- Materials given: the fixed §2 list, no deviations\n",
+             .replace("GATE VERDICT:",
+                      "- Materials given: the fixed §2 list, no "
+                      "deviations\n\nGATE VERDICT:"),
          "Materials given:")
     case("setext-heading text `Reviewer's falsification notes:` does "
          "not satisfy presence (RD40-02)",
          good.replace("Reviewer's falsification notes: tried to break "
                       "the roster; couldn't\n", "")
-         + "\nReviewer's falsification notes: quoted as a heading\n"
-         "---\n",
+             .replace("GATE VERDICT:",
+                      "Reviewer's falsification notes: quoted as a "
+                      "heading\n---\n\nGATE VERDICT:"),
          "Reviewer's falsification notes:")
     case("`<details>`-wrapped `Reviewer model family:` does not "
          "satisfy presence (RD40-02)",
          good.replace("Reviewer model family: human\n", "")
-         + "\n<details>\nReviewer model family: human\n</details>\n",
+             .replace("GATE VERDICT:",
+                      "<details>\nReviewer model family: human\n"
+                      "</details>\n\nGATE VERDICT:"),
          "Reviewer model family:")
     case("nested-blockquote `> >` banner quotation does not satisfy "
          "the structural banner test (RD40-02)",
@@ -2153,9 +2360,10 @@ def selftest():
          "non-authority banner")
     case("`<details>`-wrapped `## G1` heading does not satisfy LG-4 "
          "(RD40-02)",
-         good.replace("## G1 — completeness critic\nnone proposed\n",
-                      "")
-         + "\n<details>\n## G1 — completeness critic\n</details>\n",
+         good.replace("## G1 — completeness critic\nnone proposed\n", "")
+             .replace("GATE VERDICT:",
+                      "<details>\n## G1 — completeness critic\nnone "
+                      "proposed\n</details>\n\nGATE VERDICT:"),
          "LG-4")
 
     # RD40-05: the fence-close rule's REJECTION limb, previously
@@ -2169,6 +2377,188 @@ def selftest():
          + "\n````\n```\nMaterials given: the fixed §2 list, "
          "no deviations\n````\n",
          "Materials given:")
+
+    # ---- v1.14: the predicate carries state (RD-41) ----------------------
+    # RD41-01: a container is a REGION, not a line. Each of these rides a
+    # continuation line — the line the v1.13 line-local classifier called
+    # the record's own because it carried no marker of its own.
+    _tmpl = ("Reviewer: <model/version or human, fresh context: yes/no>\n"
+             "Reviewer model family: <alternate families>\n"
+             "Materials given: <list, with deviations called out>\n"
+             "Operationalization notes: <every judgment call made>\n"
+             "Reviewer's falsification notes: <what they tried>\n")
+    _real_tmpl = ("Reviewer: human, fresh context: yes\n"
+                  "Reviewer model family: human\n"
+                  "Materials given: the fixed §2 list, no deviations\n"
+                  "Operationalization notes: none\n"
+                  "Reviewer's falsification notes: tried the roster\n")
+    _stripped = good
+    for _f in ("Reviewer: human, fresh context: yes\n",
+               "Reviewer model family: human\n",
+               "Materials given: the fixed §2 list, no deviations\n",
+               "Operationalization notes: none\n",
+               "Reviewer's falsification notes: tried to break the "
+               "roster; couldn't\n"):
+        _stripped = _stripped.replace(_f, "")
+    # Each of these places its quotation ABOVE the record's own terminal
+    # verdict, so the repair under test is the containment one and not
+    # the terminal-line restriction that also guards this shape.
+    case("list-item CONTINUATION lines are inside the list item, not the "
+         "record's own — indented continuation (RD41-01)",
+         _stripped.replace(
+             "GATE VERDICT:",
+             "- Quoting §5's template:\n  "
+             + _tmpl.replace("\n", "\n  ").rstrip()
+             + "\n\nGATE VERDICT:"),
+         "required §5 field missing — 'Reviewer:'")
+    case("LAZY continuation of a list item — unmarked, unindented lines "
+         "continuing the item — is inside it (RD41-01)",
+         _stripped.replace(
+             "GATE VERDICT:",
+             "- Quoting §5's template:\n" + _real_tmpl + "\nGATE VERDICT:"),
+         "required §5 field missing — 'Reviewer:'")
+    # The disclosed limit §5's own frozen template forces (RD41-01):
+    # a blockquote ENDS at the first line not carrying its marker,
+    # because §5 puts the declared fields on unmarked lines directly
+    # beneath the blockquote banner. So unmarked lines under any
+    # blockquote are the record's own — including under `> Quoting §5`.
+    # Fixtured in the ACCEPTING direction, so the limit is a measured
+    # behaviour of this validator rather than a sentence about it; the
+    # exploit it would otherwise carry is closed by the placeholder
+    # check and by the terminal-line restriction, each fixtured above.
+    case("unmarked lines under a blockquote are the record's own — §5's "
+         "template form, fixtured as the limit it is (RD41-01)",
+         _stripped.replace(
+             "GATE VERDICT:",
+             "> Quoting §5's template:\n" + _real_tmpl + "\nGATE VERDICT:"),
+         None)
+    case("a `> ` banner quoted inside a list item does not satisfy the "
+         "banner test (RD41-01)",
+         good.replace("> This administration record is evidence, never "
+                      "an owner act; its verdict\n> authorizes nothing "
+                      "(instrument preamble; VIS-4).\n",
+                      "- quoting the preamble:\n  > This administration "
+                      "record is evidence, never an owner act; its "
+                      "verdict authorizes nothing (instrument preamble; "
+                      "VIS-4).\n"),
+         "non-authority banner")
+    case("§5's own placeholder is not an answer — a template quoted at "
+         "column 0 above the verdict declares nothing (RD41-01)",
+         _stripped.replace("GATE VERDICT:", _tmpl + "\nGATE VERDICT:"),
+         "carries §5's own placeholder")
+    _real = ("Reviewer: human, fresh context: yes\n"
+             "Reviewer model family: human\n"
+             "Materials given: the fixed §2 list, no deviations\n"
+             "Operationalization notes: none\n"
+             "Reviewer's falsification notes: tried the roster\n")
+    case("a field declared BELOW the record's own terminal verdict "
+         "declares nothing — the verdict is terminal (RD41-01)",
+         _stripped.rstrip("\n") + "\n\n" + _real,
+         "required §5 field missing — 'Reviewer:'")
+    case("a lawful record whose value merely contains angle brackets is "
+         "not a placeholder (RD41-01, the accepting direction)",
+         good.replace("Materials given: the fixed §2 list, no deviations",
+                      "Materials given: the fixed §2 list <plus the "
+                      "parameter block>, no deviations"),
+         None)
+
+    # RD41-02: _decl consumes the predicate — a value carried only on
+    # non-own lines is an ABSENT field, never a supplied one.
+    for _lbl, _line, _want in (
+            ("E3 reopen-list", "E3 reopen-list: empty",
+             "no `E3 reopen-list:` field"),
+            ("Deferred count",
+             "Deferred count (owner-deferred findings this "
+             "administration): 0", "no `Deferred count:` field")):
+        _base = "\n".join(l for l in good.split("\n")
+                           if not l.startswith(_lbl))
+        case(f"`{_lbl}:` carried only inside a `<details>` block is an "
+             "absent field, not a supplied value (RD41-02)",
+             _base.replace("GATE VERDICT:",
+                           f"<details>\n{_line}\n</details>\n\n"
+                           "GATE VERDICT:"), _want)
+        case(f"`{_lbl}:` carried only as setext-heading text is an "
+             "absent field (RD41-02)",
+             _base.replace("GATE VERDICT:",
+                           f"{_line}\n---\n\nGATE VERDICT:"), _want)
+    case("an `Owner deferral decision:` citation carried only inside a "
+         "`<details>` block does not license a deferral (RD41-02)",
+         good.replace("Deferred count (owner-deferred findings this "
+                      "administration): 0",
+                      "Deferred count (owner-deferred findings this "
+                      "administration): 3")
+             .replace("GATE VERDICT:",
+                      "<details>\nOwner deferral decision: SDR-33\n"
+                      "</details>\n\nGATE VERDICT:"),
+         "no lawful `Owner deferral decision:` citation")
+
+    # RD41-04: LG-4's two doors — the anchor crossing a newline, and a
+    # heading that opens nothing.
+    case("a bare `###` followed by a line beginning `G1 ` does not "
+         "satisfy LG-4 — the anchor never crosses a newline (RD41-04)",
+         good.replace("## G1 — completeness critic\nnone proposed\n", "")
+             .replace("GATE VERDICT:",
+                      "###\nG1 was considered elsewhere.\n\nGATE VERDICT:"),
+         "no G1 section")
+    case("a `## G1` heading opening an EMPTY section does not satisfy "
+         "LG-4 — the terminal verdict is not section content (RD41-04)",
+         good.replace("## G1 — completeness critic\nnone proposed\n", "")
+             .replace("GATE VERDICT:",
+                      "## G1 — completeness critic\n\nGATE VERDICT:"),
+         "opens an EMPTY section")
+
+    # RD41-06: the raw-side predicate ran on un-stripped text, so these
+    # five lawful records were refused — four of them with a message
+    # naming five causes, none of which was true of the record.
+    case("a fenced `<details>` example does not hide the verdict "
+         "(RD41-06)",
+         good + "\n```html\n<details>\n<summary>x</summary>\n```\n",
+         None)
+    case("a self-closing `<details/>` mentioned in prose is inert "
+         "(RD41-06)",
+         good + "\nA <details/> element was considered.\n", None)
+    case("an HTML comment mentioning `<details>` is inert (RD41-06)",
+         good + "\n<!-- see <details> below -->\n", None)
+    case("a `---` on the line after the terminal verdict is a heading a "
+         "reader sees, not a quotation (RD41-06)",
+         good + "---\n", None)
+
+    # RD41-08: unicode whitespace inside the token.
+    # Witnessed behaviorally, not by an error string: `good` carries
+    # `F2 | Not met`, which refuses READY. If the NBSP line is invisible
+    # the validator reads the earlier READY and the §4 conjunct fires;
+    # reading the record's visible terminal NOT READY, nothing fires.
+    case("a non-breaking space inside `GATE VERDICT:` does not hide the "
+         "record's visible terminal verdict (RD41-08)",
+         good.replace("GATE VERDICT: NOT READY",
+                      "GATE VERDICT: READY FOR Capability 1 — Project "
+                      "registration and honest shape visibility\n\n"
+                      "GATE\u00a0VERDICT: NOT READY"),
+         None)
+
+    # RD41-10: the predicate clauses that had no single-layer witness.
+    case("a TAB-indented `Materials given:` is indented code, not a "
+         "declaration (RD41-10, the predicate's tab limb)",
+         good.replace("Materials given: the fixed §2 list, no deviations",
+                      "\tMaterials given: the fixed §2 list, no deviations"),
+         "Materials given:")
+    case("a TAB-indented banner is indented code, not §5's banner "
+         "(RD41-10 — a defence-in-depth guard, not a single-layer "
+         "witness: see the v1.14 delta's disclosure)",
+         good.replace("> This administration record is evidence",
+                      "\t> This administration record is evidence"),
+         "non-authority banner")
+    case("a 4-space-indented banner is indented code, not §5's banner "
+         "(RD41-10 — a defence-in-depth guard, not a single-layer "
+         "witness: see the v1.14 delta's disclosure)",
+         good.replace("> This administration record is evidence",
+                      "    > This administration record is evidence"),
+         "non-authority banner")
+    case("a 4-column-indented `## G1` heading does not satisfy LG-4 "
+         "(RD41-10, the predicate's indent limb)",
+         good.replace("## G1 — completeness critic",
+                      "    ## G1 — completeness critic"),
+         "no G1 section")
 
     print(f"{n_cases[0]} fixtures, {len(fails)} failing — a check that "
           "cannot fail is not a check")

@@ -132,7 +132,7 @@ owner's launch-gate instrument (v1.3, at commit `067d8a0`) returned
 **GATE VERDICT: NOT READY** — 17 of 31 questions Not met, including all six
 of section E, the OpenSpec-readiness section itself; the raw record is
 `…/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md`.
-The instrument is now **v1.13** (candidate; owner approval prepared as
+The instrument is now **v1.14** (candidate; owner approval prepared as
 P-34). The repair-and-re-review chain: RD-24 (v1.4, REVISE) → v1.5 →
 RD-33 (REVISE, five MAJOR) → v1.6 → RD-34 (REVISE — one BLOCKING: the
 deferral-carrying pass branch ran no formula conjunct) → v1.7 → RD-35
@@ -170,39 +170,65 @@ verdict, so four records validated at 0 errors turning a stored
 `NOT READY` into `READY FOR <the verbatim target>`; and the presence
 anchor's list-marker allowance let a bullet-list quotation of §5's
 template satisfy all six `Label:` tokens, so RD-38's composite
-reproduced whole) → v1.13. The v1.8 through v1.13 batches are
+reproduced whole) → v1.13 → RD-41 (REVISE — six of RD-40's eight
+findings closed outright, the hardest of them, in the reviewer's
+words, "genuinely, structurally closed", and all ten mutation
+denominators reproduced; but four BLOCKING, the first of which is the
+same class a fifth time and says why it keeps recurring: the own-line
+predicate was **line-local**, and a container is a *region, not a
+line* — every markdown container marks a block's first line and
+continues without its marker, so a list item's continuation lines
+counted as the record's own and RD-38's composite validated at 0
+errors under `READY FOR <the verbatim target>`; a `<details>` block
+silently **supplied** the record's decisive declared values, E3's
+reopen-list and the owner's deferral citation among them; §9 stated a
+mutation count of eight where ten is the fact; and the LG-4 residual
+disclosed as opening no pass was a load-bearing limb of one) → v1.14.
+The v1.8 through v1.14 batches are
 validator-and-records only — the instrument's §1–§8 have now gone
-**six amendments across seven versions** (v1.7–v1.13) byte-unchanged,
-and the §8 parameter block nine versions (v1.5–v1.13), while the
-measuring layer keeps yielding one more class per administration.
-RD-40 moved the diagnosis one step past RD-39's *direction*, and it
-is the first time the remaining work could be named as one artifact
-rather than a list of repairs: **stop enumerating carriers and
-enumerate the question.** Four consecutive blocking findings —
-RD38-01, RD39-01, RD40-01, RD40-02 — were the single question "is
-this line the record's own, not a quotation of it?", answered five
-different ways by five consumers that never shared an answer. That is
-adopted at v1.13: **one own-line predicate**, written once over every
-markdown container (fence, HTML comment, blockquote at any nesting,
-indented block by spaces *and* tabs, list item at any marker, setext
-and ATX headings, raw-HTML blocks, table cells, prose), consumed by
-the terminal-verdict rule, the six presence tokens, the banner test
-and the G1 anchor, with `_decl` a stated non-consumer rather than an
-omission (145 fixtures; ten mutation-reverts, with the one two-layer
-redundancy reported as one behavioral witness instead of two; RD-40's
-attack records re-executed — the four quoted-after-terminal carriers
-each error with the trend verdict blank, the composite that scored 0
-now scores 6, and the tab-fence record scores exactly its four-space
-control). One v1.12 acceptance is deliberately **withdrawn**
-(`- Operationalization notes:` no longer satisfies presence, because
-the decoration allowance was the quotation carrier), and one residual
-is disclosed rather than closed (LG-4 is satisfied by a column-0
-`## G1` heading however empty the section beneath it — measured at 6
-errors with it and 7 without, so it opens no pass). Each re-review
-verified the prior batch whole before finding the next class; the
-P-34 offer waits on the RD-41 re-review of the v1.13 delta, and the
-formal administration that a launch decision could rely on has not
-yet been run.
+**seven amendments across eight versions** (v1.7–v1.14) byte-unchanged,
+and the §8 parameter block ten versions (v1.5–v1.14), while the
+measuring layer keeps yielding one more class per administration. The
+diagnosis has moved one step per review and is now as specific as it
+has been: RD-39 said a repair must be specified over the **property**;
+RD-40 said stop enumerating carriers and **enumerate the question**;
+RD-41 said the question is not answerable from the line at all —
+**the predicate must carry state**, because a container is a *region,
+not a line*. v1.13 wrote one own-line predicate over a table of nine
+containers and was broken by the continuation lines those containers
+open. v1.14 replaces the table with CommonMark's block-structure
+phase: for each line, the stack of containers open at it — blockquote
+at any depth, list item at its content column, raw-HTML block —
+maintained across lines with lazy continuation, consumed by the
+terminal-verdict rule, the six presence tokens, the banner test, the
+G1 anchor and now `_decl`, so a value carried only on non-own lines is
+an absent field rather than a supplied one (168 fixtures; sixteen
+mutation-reverts, fourteen failing exactly the fixtures their repair
+added and **two disclosed as failing nothing** rather than counted as
+proven; RD-41's attack records re-executed — both continuation
+composites score 6 errors where they scored 0, every `<details>`-hidden
+declaration is absent, LG-4's two doors are shut, and a record whose
+visible terminal verdict reads `NOT READY` behind a non-breaking space
+now reports `NOT READY` instead of the `READY FOR` it also carried).
+
+Two of v1.14's decisions are worth stating as decisions rather than
+repairs, because they are where the instrument's own text constrains
+its validator. **Blockquote laziness is deliberately not implemented:**
+§5's frozen template places the declared fields on unmarked lines
+directly beneath the blockquote banner, so strict CommonMark would make
+those fields blockquote content and refuse every lawful record —
+measured at 43 of 168 fixtures. And because a quotation whose fields
+land at column 0 is byte-for-byte §5's own declaration form, with no
+marker in §5 that would tell the two apart, containment alone cannot
+finish: two further rules do, on properties a quotation cannot shed —
+a declaration is read only at or above the record's own terminal
+verdict, and a field carrying §5's own angle-bracket placeholder has
+not been answered. Closing the underlying limit properly would need a
+§5 amendment, which is an owner act and not a batch's to make. Each
+re-review verified the prior batch whole before finding the next
+class; the P-34 offer waits on the RD-42 re-review of the v1.14 delta,
+and the formal administration that a launch decision could rely on has
+not yet been run.
 
 **One thing this project does not have, stated plainly:** there is no
 mechanical task-to-context-packet compiler — `context_load.py` measures a
