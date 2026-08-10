@@ -706,3 +706,30 @@ mutant and finds it fails 0 should mutate the apparatus before filing
 the finding. RD-44 did, and recorded two reconstruction errors of its
 own rather than filing a false BLOCKING. The v1.17 batch states the
 revert descriptions precisely enough to be rebuilt from the delta alone.
+
+## RD-45 — instrument v1.17 (thirteenth administration), `VERDICT: REVISE`
+
+Raw: `RD-45-instrument-v117-RAW.md` (sha256
+`c122c9a5ad53c9d947aca0ed5e3033f285e356735a50ac2dc4523f63662ca370`,
+40567 bytes). Subject: instrument `02368c78…`, validator `28bfa9fd…`,
+delta `cb491801…`, all at commit `963f1c4`. Recorded **before** any
+frozen subject is edited (verification rule 10). Dispositions: **R** =
+repair in the v1.18 batch, **D** = disclose, **N** = decline with reason.
+
+| finding | class | disposition | repair |
+|---|---|---|---|
+| RD45-01 | BLOCKING | R | Two limbs, and the second is a process failure this batch owns without qualification: the split-tag rule changed meaning (`_SPLIT_TAG_RE.search` → `.match`, and the `_open_frag.group(1).lower() in _COND6` requirement removed) and **the delta that says it "records every change of meaning" recorded neither**. No mutant covered it. The rule is re-derived from the render in both positions — an unterminated opening tag opens what the renderer opens whether it begins the line or sits mid-line, and it ends where the renderer ends it — and the change is written into the v1.18 delta and §9 as its own D-entry, with the omission stated as an omission rather than folded into the repair |
+| RD45-02 | BLOCKING | R | `_TAG_RE`'s attribute group `[^>]*` stops at the first raw `>`, which the HTML5 tokenizer does not do inside a quoted attribute value. The scanner is rewritten to consume quoted values, so `<div style="content:'>';display:none">` reaches `_HIDING_ATTR_RE` at all. This defeats **the whole of D-6**, not an edge of it, and the fixture is written in the laundering shape the finding used |
+| RD45-03 | BLOCKING | R | The rule was right and **the set it ranges over was never measured** — this is the finding of the round. `_HIDES_INLINE` is regenerated against the render over a named population with a denominator (the HTML Standard's UA-stylesheet `display:none` set, the raw-text and escapable-raw-text elements, and the element names this instrument's records plausibly contain), and every member is justified by a DOM measurement rather than by a specification list. `iframe`, `noframes`, `noembed` and `select` join it; `iframe` and `noframes` are **regressions this batch introduced**, and `iframe` is the name RD-44 recorded as correctly refused. The `<iframe>` fixture that shipped green asserting the record lawful is corrected — it asserted the opposite of the measurement |
+| RD45-04 | BLOCKING | R | The `textarea` residual is false, and the reasoning behind it was backwards: ending a region early in the validator **is** how a field stays hidden in the browser. A raw-text element suppresses tag reading **whether or not it opens a region**, so a `</div>` written inside a mid-line `<textarea>` closes nothing. §9's sentence takes a dated correction marker in place, and the exact construction becomes a fixture |
+| RD45-05 | MAJOR | R | `_opened_by` walks back to the last `own`/`bq1` line, which steps **past** the raw-HTML line that opened the region, so the administrator is pointed at a declared field that opened nothing. The opening line is carried on the stack entry itself and returned. §9's claim takes a dated correction marker, and the fixture asserts the **line number**, not a substring |
+| RD45-06 | MAJOR | R | The corpus cannot fail for the error the finding was about: 65 of 83 fixtures compute both their expectation and their title from `_HIDES_INLINE`. The loop's direction comes instead from a **literal table generated once against the render**, committed in the source with its date, method and denominator, so a wrong membership breaks fixtures instead of relabelling them. This is the batch's own "a check that cannot fail is not a check" turned on its own corpus |
+| RD45-07 | MAJOR | R | A mid-line hider's region must end where its markdown container ends, as the renderer ends it: a `<details>` named inside a blockquote or a list item is closed by `</blockquote>` / `</li>`. Carried from v1.16 rather than introduced, and it is the most likely lawful sentence a reviewer of this instrument writes. The fixture population crosses **name × container**, which is the population the 65-name sweep lacked |
+| RD45-08 | MAJOR | R | `_HIDING_ATTR_RE`'s opacity limb matches one spelling of one value. It is rewritten to match the property's values — `0`, `0.0`, `.0`, `0%`, `0.00%` — with the fixtures written from the render, and §9's "gains … `opacity:0`" phrasing corrected to name what is matched |
+| RD45-09 | MINOR | R | Two record corrections, both of this batch's own figures: "seven accepting-direction fixtures broken by no revert" is **eleven** measured over the whole population (the seven was RD-44's figure for v1.16's 26-fixture population, carried into §9 as a fact about v1.17 — verification rule 3's failure mode exactly), and the "53 names … blanked a lawful record at **0 errors**" clause measures 6 errors; RD-44's sentence said 0 *at v1.15*. Both take dated correction markers |
+
+Method note carried forward, and it is the sentence in front of the
+v1.18 batch: **measure the set, not just the rule — and let a fixture's
+expectation come from somewhere other than the thing it is testing.**
+Every enumeration in the predicate is generated against the render over
+a named population with a denominator, or it is not shipped.
