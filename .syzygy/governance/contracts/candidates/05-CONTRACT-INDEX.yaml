@@ -103,7 +103,7 @@ contracts:
     status_source: owner-act-record
     governs: [manifests, governance-homes, lifecycles, owner-acts, workspace]
     applies_to: [kernel, workspace, all-surfaces]
-    depends_on: [RFC-0001, RFC-0002, RFC-0004, RFC-0005]
+    depends_on: [RFC-0001, RFC-0002, RFC-0005]
     tags: [project-declaration, consent, governance-plane, owner-act-provenance, schema-migration, nesting]
     implementation_boundary:
       clause: RFC3-33

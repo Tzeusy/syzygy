@@ -19,7 +19,7 @@ by `scripts/build_active_manifest.py`). Design rationale:
 
 | # | Act (exact phrase) | Accepts exactly |
 |---|---|---|
-| A | `ACCEPT FOUNDATIONAL WAVE A: c649143bdac1a883874e4d9d57d76a031a6e9b2f9357d12ea1f5b9484a48b8dd` | The 19 modules of RFC 0001–0006 (kernel, evidence, storage, admission, cross-surface selection) at the per-module sha256 digests in `wave-manifests/WAVE-A-MANIFEST.txt`, whose own digest is the act's argument. Every `depends_on` edge of these contracts stays inside the wave. **Argument regenerated twice in round-2026-08e, by script both times** — for the RD-26 repair batch (seven modules: zero-roots limb, expiry-resolution home, `unknown-terminal`, four citation/wording repairs; delta: `round-2026-08e/WAVE-A-SEMANTIC-DELTA.md` §13), retiring `6b98e0c6…`; and for the RD-30 batch (one module: the P-31 drafted exemption minted as sub-clause RFC2-19(a) so it is anchorable under rule 8; delta §14), retiring `8af6805f…`. **Both earlier arguments are stale and satisfy nothing.** RD-31, the exact-package review, binds the current bytes |
+| A | `ACCEPT FOUNDATIONAL WAVE A: 8972d9630b95f5d4266432dbb1b3602114576bbd6c0f29d6f9bd6f905b1f884a` | The 19 modules of RFC 0001–0006 (kernel, evidence, storage, admission, cross-surface selection) at the per-module sha256 digests in `wave-manifests/WAVE-A-MANIFEST.txt`, whose own digest is the act's argument. Every `depends_on` edge of these contracts stays inside the wave. **Argument regenerated three times in round-2026-08e, by script each time** — for the RD-26 repair batch (seven modules; delta: `round-2026-08e/WAVE-A-SEMANTIC-DELTA.md` §13), retiring `6b98e0c6…`; for the RD-30 batch (RFC2-19(a) minted; delta §14), retiring `8af6805f…`; and for the RD-31 batch (RFC3-2/RFC3-15 two-trigger alignment and provenance safeguard, the RFC-0002 index's sub-clause declaration, RFC1-7's P-28 marker, the RFC-0004 dependency correction; delta §15), retiring `c649143b…`. **All three earlier arguments are stale and satisfy nothing.** RD-31 reviewed `c649143b…` and returned `VERDICT: REVISE`; the current argument awaits its fresh exact-package review (RD-31b) before any offer — and §7 item 11 withholds the offer regardless until P-33 is ruled |
 | B | `ACCEPT FOUNDATIONAL WAVE B: c0fd0e27cb309deb72ffa1a957a26b3cabd9584f471fffe1fe3af51004808261` | The 11 modules of RFC 0007–0009 (Polaris, Trajectory, Orrery) per `wave-manifests/WAVE-B-MANIFEST.txt`. Depends on Wave A. **Argument regenerated twice in round-2026-08e, by script both times** — first for the wave-wide repair batch (all eleven modules edited; delta: `round-2026-08e/WAVE-B-SEMANTIC-DELTA.md`), which retired the round-08d argument `daa6a5dd…`; then for the RD-27 repair batch (four modules: the `challenge-pending` disclosure restored to RFC9-43/RFC9-46's tuples, the conformance rule folded into RFC8-12, the RFC 0009 README citation sentence, three cross-module references named; delta: `WAVE-B-SEMANTIC-DELTA.md` §11), which retired `2041ad05…`. **Both earlier arguments are stale and satisfy nothing.** The pre-repair row's reliance caveat is retired with them: after the RFC9-8(a) re-grounding, every normative reliance lands inside Waves A+B (RD-27 §4, confirmed by sweep) — lawful stated at the act |
 | C1 | `ACCEPT FOUNDATIONAL WAVE C1: a5d3ba1f22ad0ff5ff66485b1829e5b2f652a8c7678dcc96699eaca4ac5b2b4d` | RFC-0011 module 1 (packet identity, provenance, memory — RFC11-1..3, 5..10, 12) plus the package index, per `wave-manifests/WAVE-C1-MANIFEST.txt`. Declares `depends_on` RFC-0010 (waves D1/D2): recommended after them. Module 1 uses *mandatory context* as a primitive whose defining clause is RFC11-4 in Wave C2; performed alone, the packet contract binds identity, immutability, execution-record binding, the fail-closed Unknown rule, governed memory and profiles, while the criterion separating a packet's mandatory core from its suggested additions is not yet fixed — lawful only stated at the act. Performing C2 in the same sitting removes the condition |
 | C2 | `ACCEPT FOUNDATIONAL WAVE C2: acd27bb8f9b7be76725057b4280e2dc9fe23f3e9fac17c448542b9cb250d8b1a` | RFC-0011 module 2 (deterministic selection and budget posture — RFC11-4, 11, 13..16), per `wave-manifests/WAVE-C2-MANIFEST.txt`. Depends on C1 (the module consumes module 1's packet primitives throughout) and declares `depends_on` RFC-0010 (waves D1/D2) in its front matter — performed before them, it binds text whose reliances point at candidate material, lawful only stated at the act. Carries its own external criterion: acceptable only when its selection rules reproduce the blind golden fixtures (`fixtures/`), a derivation the fixtures' task/answer boundary exists to allow — and that criterion's pass/fail standard is itself an open owner question (**P-29**): until it is ruled and the standard exists, this row's condition cannot be discharged |
@@ -268,7 +268,7 @@ CG-7a/7b fail on any divergence.
 `python3 scripts/verify_final_prespec.py` prints the count and every
 per-module figure; **as of 2026-08-09 it reports 341 numbered clauses**, and
 that line is the authority, not this one. The ranges are RFC1-1..33,
-RFC2-1..26, RFC3-1..33 (+5 lettered, incl. **RFC3-16(c)**), RFC4-1..30 (+2),
+RFC2-1..26 (+1 lettered: RFC2-19(a)), RFC3-1..33 (+5 lettered, incl. **RFC3-16(c)**), RFC4-1..30 (+2),
 RFC5-1..27, RFC6-1..28, RFC7-1..40 (+7), RFC8-1..32, RFC9-1..52 (+8),
 **RFC10-1..24** (+3 lettered: RFC10-17(a), RFC10-18(a), RFC10-19(a)),
 **RFC11-1..16**. Zero rev9 clauses merged, retired, renumbered, or routed out
@@ -498,8 +498,10 @@ implementation, not specification — accepting with it open is a
     RFC3-15(a) recorded-widening route. **Until P-33 is ruled, this record
     offers no Wave A act** — performing act 1 over the current step 3 would
     freeze an install that breaches a clause the act binds.
-12. **P-31 — the drafted RFC2-19 exemption arm** *(added 2026-08-10;
-    RD26-02/RD26-06).* RFC2-19 carries a drafted-awaiting-ruling arm that
+12. **P-31 — the drafted RFC2-19(a) exemption arm** *(added 2026-08-10;
+    RD26-02/RD26-06; re-keyed 2026-08-10, RD31-08 — the arm is the minted
+    sub-clause RFC2-19(a)).* RFC2-19(a) is a drafted-awaiting-ruling
+    sub-clause that
     exempts the `reconciliation-pending` rendering from RFC2-24's
     twelve-reason closure — candidate text the act would ratify. Rule P-31,
     or perform the act knowing it ratifies the drafted arm.
@@ -518,7 +520,10 @@ implementation, not specification — accepting with it open is a
     RD26-04/RD26-05).* (a) RFC3-15's `records/` cell now admits the
     pre-declared deterministic challenge-sweep's expiry-resolution record —
     the widening that makes RFC2-13's owner-decision-B1 resolution act
-    recordable at all; (b) RFC4-19's `terminal outcome` row now carries §8
+    recordable at all (as repaired after RD-31: RFC3-2's transition rule
+    states the same two triggers, and the record's authority is the
+    resolving policy's RFC3-16(a) provenance, never the record's own
+    say-so); (b) RFC4-19's `terminal outcome` row now carries §8
     q2's proposed answer (`unknown-terminal` as a legal Syzygy-side value,
     keeping vanished-worker runs admissible). Both are candidate drafts in
     the bytes the act binds; the act ratifies or the owner reverts them.
@@ -548,3 +553,16 @@ implementation, not specification — accepting with it open is a
     placement.** The revert option (workspace manifest) restores the RC-4
     contradiction; P-22's register row is the current statement (packet 6
     of the round-08d file is stale and banner-marked).
+
+18. **P-21(a) — the `constrains:` relation, frozen first by this act**
+    *(added 2026-08-10; RD31-05).* RFC-0005's front matter declares the
+    `constrains:` relation (`constrains_source: RFC5-3`) — installed while
+    P-21's sub-question (a), whether `constrains:` is the right relation
+    at all, is still open (RD-4 F-17). The wave that was to ratify it
+    (C2, via RFC11-16's consumption clause) is deferred, so **the Wave A
+    act is now the first act that freezes the declaration into
+    owner-bound bytes** — and the only clause defining what a consumer
+    does with the relation sits in a deferred wave. Nothing in Wave A
+    evaluates the field (an outbound edge, not a reliance — item 9), but
+    the act ratifies its presence. Rule P-21(a), or perform the act
+    knowing the relation rides in unruled.

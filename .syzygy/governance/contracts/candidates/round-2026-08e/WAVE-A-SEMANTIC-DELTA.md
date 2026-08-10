@@ -755,3 +755,59 @@ Digest-moving in that one module; the manifest regenerates by
 `build_active_manifest.py` and §1 row A is rebound by script in the same
 change (`c649143b…`; `8af6805f…` and `6b98e0c6…` are stale and satisfy
 nothing). RD-31 binds the post-repair bytes.
+
+## 15. Addendum, 2026-08-10 — the RD-31 repair batch (main session)
+
+The Wave A exact-package review (RD-31, frozen commit `cd484b7`,
+`VERDICT: REVISE`; raw at `reviews/RD-31-wave-a-RAW.md`) found the
+mechanics impeccable and the offer unlawful — two BLOCKING, three MAJOR,
+three MINOR. Dispositions in `reviews/DISPOSITION-REGISTER.md` (RD-31
+section), recorded before any byte moved. The byte repairs, five modules
+plus the record and one register row:
+
+- **RFC-0003/manifests-and-namespace.md** (RD31-01, RD31-04, RD31-07):
+  RFC3-2's closure sentence now states **two** minting triggers — the
+  actor's submission and the pre-declared deterministic sweep's
+  expiry-resolution — the same set RFC3-15's cell states, ending the
+  contradiction where RFC3-2 said "only on an actor's submission" while
+  naming the sweep four sentences later. A new passage distinguishes the
+  resolution from eligibility (eligibility is a pure function of
+  (snapshot, as-of); the resolution happens once, at the sweep's own
+  instant, which no snapshot input held — that instant is what the record
+  fixes) and states the provenance safeguard: the record's authority is
+  the kernel's verification of the resolving policy's RFC3-16(a)
+  provenance, declared pre-admission — never the record's own say-so —
+  shape-parallel with RFC3-17(a). Front matter drops the RFC-0004
+  `depends_on` edge and §4 gains the sibling-matching "Not a reliance:
+  RFC 0004" statement (both RFC4-n citations sit in RFC3-30's
+  illustrative list).
+- **RFC-0003/governance-homes-and-owner-acts.md** (RD31-04): RFC3-15's
+  `records/` cell carries the same provenance-safeguard sentence; the
+  install-gate column states that the one non-submission member answers
+  to the resolving policy's owner-approval gate and RFC3-16(a)
+  provenance, "so no authorization enters this category by riding a
+  record"; RFC3-16's lifecycle row names the record's authority.
+- **RFC-0002/README.md** (RD31-03): all three sub-clause-denial sites
+  corrected — front matter declares `sub-clause RFC2-19(a)`, the
+  deterministic lookup rule states the one lettered exception and where
+  it resolves, and the closing enumeration matches. The package index no
+  longer contradicts its own module or the generated contract index.
+- **RFC-0001** (RD31-06): RFC1-7's `mission` profile entry gains the
+  in-place drafted marker naming P-28 — one marking convention across
+  all drafted arms, not three.
+- **Acceptance record** (RD31-05, RD31-08): §7 item 12 re-keyed to
+  RFC2-19(a); §3's enumeration gains `(+1 lettered: RFC2-19(a))`; item
+  14(a) notes the two-trigger/provenance repair; new **item 18**
+  disclosing that the Wave A act now freezes the `constrains:` relation
+  first (P-21(a) open, ratifying wave C2 deferred). P-21's register row
+  carries the matching ground-changed note.
+
+**Not repaired, deliberately:** RD31-02 — P-33 is the owner's ruling and
+§7 item 11's withholding stands; no byte pretends the offer is open.
+
+Digest-moving in four Wave A modules; the manifest regenerates by
+`build_active_manifest.py` and §1 row A is rebound by script in the same
+change. `c649143b…` joins `8af6805f…` and `6b98e0c6…` as stale, satisfying
+nothing. Per the register's ordering rule the regenerated argument
+requires a fresh exact-package review (**RD-31b**) before any offer; the
+RD-31 verdict binds only the bytes it froze.

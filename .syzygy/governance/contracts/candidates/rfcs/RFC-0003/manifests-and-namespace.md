@@ -6,7 +6,7 @@ status_source: owner-act-record
 clauses: "RFC3-1..RFC3-14 and RFC3-18..RFC3-33 (no retired or merged numbers; RFC3-15..RFC3-17 and all lettered sub-clauses live in governance-homes-and-owner-acts.md)"
 governs: [manifests, project-declaration, consent, workspace, namespaces, migration]
 applies_to: [kernel, workspace, all-surfaces]
-depends_on: [RFC-0001, RFC-0002, RFC-0004, RFC-0005]
+depends_on: [RFC-0001, RFC-0002, RFC-0005]
 tags: [project-declaration, consent, workspace-manifest, schema-migration, openspec-boundary, nesting]
 ---
 
@@ -127,8 +127,12 @@ a resolution policy, a sweep policy, an approval — is by that fact not in
 this class and falls under RFC3-16(a) instead.
 
 **Which lifecycle transitions mint a record.** A `records/` fact is minted
-**only on an actor's submission** — a challenge submitted (and its admission
-or rejection), a withdrawal submitted, a walkthrough run submitted. **Owner
+on exactly **two triggers**, and no others — the same set RFC3-15's
+`records/` cell states, so the two clauses can never be read apart: **(1)
+an actor's submission** — a challenge submitted (and its admission or
+rejection), a withdrawal submitted, a walkthrough run submitted; **(2) the
+pre-declared deterministic challenge-sweep policy resolving an
+expiry-eligible challenge as `expired`** (RFC2-13; owner decision B1). **Owner
 resolution acts** — upholding, dismissing, or expiring a challenge by
 decision — are Decisions in `decisions/` (RFC3-15), referenced from the
 record, never minted into `records/`. **Kernel-computed expiry *eligibility*** — a
@@ -142,7 +146,19 @@ different thing: per RFC2-13 (owner decision B1), an expiry-eligible
 challenge keeps suspending until a **recorded resolution act** — a human
 resolution in `decisions/`, or the pre-declared deterministic policy
 sweep's resolution record in `records/` (RFC3-15's `records/` cell names
-it) — and that act is an authoritative input of a new snapshot.
+it) — and that act is an authoritative input of a new snapshot. The
+sweep's resolution is not eligibility wearing a record: eligibility is a
+pure function of (snapshot, as-of) and re-derives at every evaluation,
+while the resolution happens **once, at the sweep execution's own
+instant** — *when* the suspension lifted is derivable from no snapshot
+input the tree already held, and that instant is exactly what the record
+fixes as the new snapshot's authoritative input. And the record authorizes
+nothing of itself: its authority is the kernel's verification that the
+resolving policy was provenance-verified under **RFC3-16(a)** and declared
+before the challenge was admitted (RFC2-13's pre-declaration requirement)
+— never the record's own say-so — so an unbacked resolution record is
+inadmissible and the suspension holds. (Shape-parallel with RFC3-17(a)'s
+admission-record authority rule.)
 
 **RFC3-3.** **Direct-write containment.** No field of any manifest — project
 declaration, workspace manifest, or any `.syzygy/**` artifact — may
@@ -579,6 +595,13 @@ gate for consent records and the `records/` home and `kernel-recorded`
 authority named at RFC3-2 (RFC3-15, RFC3-17(a)); and **RFC3-16(a)**, under
 which a consent record's stored attribution (RFC3-7) and an observing
 project's own policies (RFC3-30) are honored.
+
+**Not a reliance: RFC 0004.** Every RFC4-n citation in this module — the
+adapter identity (RFC4-12) and retention bound (RFC4-16) named inside
+RFC3-30's illustrative policy list — sits in a non-exhaustive example, not
+in a rule this module's meaning needs, and this module's front matter
+therefore declares no RFC-0004 edge (same treatment as the package's other
+module, repaired at `round-2026-08e/WAVE-A-SEMANTIC-DELTA.md` §10).
 
 **Forward references are informative.** Where a clause of this module cites a
 not-yet-accepted sibling contract by clause number (RFC7-n and beyond —

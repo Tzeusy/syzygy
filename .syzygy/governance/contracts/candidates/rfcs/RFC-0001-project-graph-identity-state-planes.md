@@ -207,7 +207,9 @@ machinery), **mission** (Mission and Attention Item identities and their
 relations — mission-targets, attention-blocks; loadable only where the
 Mission contracts (RFC 0010 and successors) are accepted and active for the
 project or workspace, and never part of any project's unconditional V0
-core). A profile may add vocabulary; it may never alter the semantics of
+core) **[P-28 — the `mission` profile entry is a drafted arm, awaiting an
+owner ruling; the accepting act ratifies it or the owner reverts it
+(acceptance record §7 item 16)]**. A profile may add vocabulary; it may never alter the semantics of
 a V0-core clause. Profile contents are defined by RFCs 0002–0011 and by
 successor RFCs accepted into the contract set; a profile-defining RFC names,
 for every identity it adds, **(i)** exactly one minting authority — which,

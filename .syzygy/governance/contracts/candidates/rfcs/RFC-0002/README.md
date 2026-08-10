@@ -4,7 +4,7 @@ title: Observation, Evaluation and Reconciliation — contract package index
 status_source: owner-act-record
 package: RFC-0002
 modules: [snapshot-and-evaluation-core, challenge-lifecycle, reconciliation-chain, rendering-vocabularies]
-clauses: RFC2-1..RFC2-26 (contiguous; no sub-clauses, no gaps, no retired numbers, no merges)
+clauses: RFC2-1..RFC2-26 (contiguous; sub-clause RFC2-19(a) in reconciliation-chain.md; no gaps, no retired numbers, no merges)
 implementation_boundary:
   kind: requires-openspec
   clause: RFC2-26
@@ -56,9 +56,11 @@ policy; the current measurement lives in the generated budget report
 `../../CONTEXT-BUDGET-REPORT.md`, which is regenerated, never transcribed.
 
 **Lookup rule (deterministic).** For any citation `RFC2-n`, read `n` as an
-integer and take the first row whose range contains it. RFC 0002 has **no
-lettered sub-clauses** — every `(a)`/`(b)` appearing in its text cites another
-contract — so the integer alone always resolves. The four ranges are contiguous
+integer and take the first row whose range contains it. RFC 0002 has exactly
+**one lettered sub-clause** — **RFC2-19(a)**, minted 2026-08-10 (the RD-30
+batch) inside `reconciliation-chain.md` and resolving by its integer to that
+module — and every other `(a)`/`(b)` appearing in package text cites another
+contract, so the integer always resolves. The four ranges are contiguous
 and exhaustive over RFC2-1…RFC2-26 with no gaps, so the rule never needs a
 search. Modules are numbered for reading order only — citations name clauses,
 never modules.
@@ -263,7 +265,7 @@ alone.
 ---
 
 *End of RFC 0002 package index. Clauses RFC2-1 … RFC2-26, contiguous and
-distributed across four modules. No lettered sub-clauses, no retired numbers,
-no merged numbers, no gaps in the range, and no clause identity in more than
-one module. The clause range is closed: amend in place, add lettered
-sub-clauses, never renumber.*
+distributed across four modules. One lettered sub-clause — RFC2-19(a), in
+`reconciliation-chain.md` — no retired numbers, no merged numbers, no gaps
+in the range, and no clause identity in more than one module. The clause
+range is closed: amend in place, add lettered sub-clauses, never renumber.*
