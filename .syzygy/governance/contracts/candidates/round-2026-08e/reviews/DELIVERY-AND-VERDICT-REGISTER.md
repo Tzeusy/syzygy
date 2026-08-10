@@ -29,7 +29,7 @@ the owner's direction.
 | RD-30 | Owner-packet reviewer | each launch-critical decision packet, one-sitting test | `4599701` | 1/1 | `VERDICT: REVISE` | RD30-01 — P-37's "as drafted" seven-facet vocabulary appears in zero of the 30 Waves A+B modules (swept), yet three launch-path documents claim the Wave A act ratifies it — an owner ruling (a) would believe the act settles something it does not touch |
 | RD-31 | Final Wave A exact-package reviewer | the exact regenerated Wave A argument — no authoring context | — | held until RD-24…RD-30 triage | — | — |
 | RD-32 | Final Wave B exact-package reviewer | the exact regenerated Wave B argument — no authoring context | — | held until RD-24…RD-30 triage | — | — |
-| RD-33 | Instrument re-reviewer (added — the nine are a minimum) | `launch-gate-pre-specifications.md` v1.5, exact bytes — the RD-24 repairs, which this session executed and may not confirm | — | held until the v1.5 repair commit | — | — |
+| RD-33 | Instrument re-reviewer (added — the nine are a minimum) | `launch-gate-pre-specifications.md` v1.5, exact bytes (sha256 `0522ef47…`, unchanged since the repair commit `395da99`) — the RD-24 repairs, which this session executed and may not confirm | `997d9bd` | dispatched 2026-08-10, in flight | — | — |
 
 **Ordering note.** RD-31/RD-32 are the offer gates: they bind the exact wave
 arguments, so they run only after RD-24…RD-30 triage is disposed — if that
