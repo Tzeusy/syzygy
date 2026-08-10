@@ -126,18 +126,25 @@ owner's launch-gate instrument (v1.3, at commit `067d8a0`) returned
 **GATE VERDICT: NOT READY** — 17 of 31 questions Not met, including all six
 of section E, the OpenSpec-readiness section itself; the raw record is
 `…/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md`.
-The instrument is now **v1.8** (candidate; owner approval prepared as
+The instrument is now **v1.9** (candidate; owner approval prepared as
 P-34). The repair-and-re-review chain: RD-24 (v1.4, REVISE) → v1.5 →
-RD-33 (REVISE, five MAJOR) → v1.6 → RD-34 (REVISE — all twelve RD-33
-repairs verified, one BLOCKING: the deferral-carrying pass branch ran no
-formula conjunct) → v1.7 → RD-35 (REVISE — all eleven RD-34 repairs
-verified, one BLOCKING: the new citation-existence check shipped
-inverted, rejecting every real `.syzygy/` decision path, invisible
-because no fixture tested the passing direction) → v1.8. The v1.8 batch
-is validator-and-records only — RD-35: "the instrument has converged
-while the validator has not"; instrument §1–§8 are byte-unchanged from
-v1.7. Each re-review verified the prior batch whole before finding the
-next class; the P-34 offer waits on the RD-36 re-review of the v1.8
+RD-33 (REVISE, five MAJOR) → v1.6 → RD-34 (REVISE — one BLOCKING: the
+deferral-carrying pass branch ran no formula conjunct) → v1.7 → RD-35
+(REVISE — one BLOCKING: the new citation-existence check shipped
+inverted, invisible because no fixture tested the passing direction) →
+v1.8 → RD-36 (REVISE — all seven RD-35 repairs verified, four by
+mutation; two MAJOR: a pass verdict could rest on a deferral "granted"
+by a review finding, because the `B-n` family the v1.8 batch accepted is
+review-finding numbering, not decisions; and a §5 field written with an
+empty value silently borrowed the next line's text) → v1.9. The v1.8 and
+v1.9 batches are validator-and-records only — the instrument's §1–§8
+have now gone three amendments byte-unchanged, while the measuring layer
+keeps yielding one more class per administration. RD-36's diagnosis,
+adopted at v1.9 as fixture discipline: "the fixture set tests one
+direction of each predicate" — changed predicates are now fixtured in
+both directions, and the empty and shadowed field cases are fixtured (74
+fixtures). Each re-review verified the prior batch whole before finding
+the next class; the P-34 offer waits on the RD-37 re-review of the v1.9
 delta, and the formal administration that a launch decision could rely
 on has not yet been run.
 

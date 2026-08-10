@@ -28,7 +28,10 @@ Checks (each with a `--selftest` mutation fixture):
         explicit `Deferred count:` and `Reopened count:` fields are
         required — their absence is an error, never an implicit zero
         (VIS-2); the printed trend row carries the computed and parsed
-        figures
+        figures. Field occurrences disagreeing in value are an error — a
+        narrative line must not shadow a declared field (RD36-03) — and
+        every field value is line-anchored, so an empty field is absent
+        rather than borrowing the next line's text (RD36-02)
   LG-6  the terminal `GATE VERDICT:` line — the last line CONTAINING the
         literal token, not the last regex match (RD35-02) — exists,
         parses to the closed verdict set (a qualified or quoted terminal
@@ -45,22 +48,25 @@ Checks (each with a `--selftest` mutation fixture):
         (RD34-07) — and any READY-WITH-DEFERRALS verdict requires the
         `Owner deferral decision:` field, whose value must be a
         repository path (verified to exist at the named commit when git
-        checks run — a leading `./` is a prefix strip, RD35-01) or an
-        identifier of a MADE decision (SDR-n/B-n shape; P-n names the
-        pending queue and D-n a delta item — neither grants a deferral,
-        RD35-06) — label wording like "(owner only)" is rejected
-        (RD34-02); a deferral-carrying verdict with `Deferred count: 0`
-        is an error
+        checks run — a leading `./` is a prefix strip, RD35-01 — and to
+        be a file, not a directory, RD36-06) or an SDR-n identifier
+        (existence-checked against the decisions home at the named
+        commit, RD36-06). P-n names the pending queue, D-n a delta item,
+        and B-n is round-2026-08c review-finding numbering — none grants
+        a deferral (RD35-06, RD36-01); label wording like "(owner only)"
+        is rejected (RD34-02); a deferral-carrying verdict with
+        `Deferred count: 0` is an error
   LG-8  E1's five sub-verdict rows (form, home, granularity,
         acceptance-authority, change-process) are present, and an E1
         rollup of Met requires all five sub-rows Met
   LG-9  a record with any scoped row must name at least one defect on the
-        deferred-wave findings line — "names nothing" is a lexicon rule
-        shared with LG-13, not an enumeration: after stripping
-        punctuation and articles, at least one token must fall outside
-        the placeholder lexicon, so decorated forms ("(none known)",
-        "-- none --", "unknown", "tba") fail too (instrument §4,
-        RD33-01; widened RD34-06; lexicon rule RD35-05)
+        deferred-wave findings line — "names nothing" is a shared rule
+        (LG-9/LG-12/LG-13), not an enumeration: a value whose first
+        token is a negation word ("no defects found", "none identified")
+        asserts emptiness (RD36-04), and otherwise at least one token
+        must fall outside the placeholder lexicon, so decorated forms
+        ("(none known)", "-- none --", "unknown", "tba") fail too
+        (instrument §4, RD33-01; widened RD34-06; lexicon rule RD35-05)
   LG-10 the full question roster is present AND nothing else is — A1–A6,
         B1–B5, C1–C7, D1–D4, E1 with its five sub-rows, E2–E6, F1–F6; a
         missing row is an error, never a pass (a delta record cannot
@@ -77,12 +83,16 @@ Checks (each with a `--selftest` mutation fixture):
         bound (RD35-03). Needs git, skipped with LG-2's notice otherwise;
         the missing-line case errors regardless
   LG-12 §5's declared record fields are present — the non-authority
-        banner (RD24-02), `Reviewer model family:`, `Materials given:`,
+        banner (RD24-02), `Reviewer:` (the fresh-context disclosure,
+        RD36-05), `Reviewer model family:`, `Materials given:`,
         `Operationalization notes:`, `E3 reopen-list:`, `Unknowns and
         what would settle them:`, `Reviewer's falsification notes:` — a
         template field deleted without an error reads as answered; and a
         record with any Unknown row must name settling evidence in the
-        Unknowns field, per §4 (RD35-07)
+        Unknowns field — an empty or placeholder value fails, per §4
+        (RD35-07, RD36-02). Presence tests are content-blind by design:
+        the field's truthfulness stays with the record's prose and the
+        reader's judgment
   LG-13 the E3 reopen-list cross-check: a non-empty `E3 reopen-list:`
         beside `E3 | Met` or any READY verdict is an error — §3's own
         "the list is non-empty; 'ready' is then false regardless of
@@ -180,26 +190,57 @@ def _norm_ws(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
-# RD35-06: only families that name MADE decisions may claim a granted
-# deferral. P-n is this repository's pending-decision queue (a decision not
-# yet made) and D-n is a semantic-delta item number — neither grants
-# anything; cite the made decision (SDR-n, B-n) or its repository path.
-DECISION_ID_RE = re.compile(r"(?:SDR|B)-\d+[a-z]?(?:\([a-z]\))?$")
+# RD35-06/RD36-01: only families that name MADE decisions may claim a
+# granted deferral. P-n is this repository's pending-decision queue (a
+# decision not yet made), D-n is a semantic-delta item number, and B-n is
+# round-2026-08c's review-finding numbering (zero B-n tokens exist in the
+# decisions home) — none grants anything. The one identifier family naming
+# made decisions is SDR-n; every other decision is cited by its repository
+# path.
+DECISION_ID_RE = re.compile(r"SDR-\d+[a-z]?(?:\([a-z]\))?$")
 _UNMADE_ID_RE = re.compile(r"(?:P|D)-\d+[a-z]?(?:\([a-z]\))?$")
+_FINDING_ID_RE = re.compile(r"B-\d+[a-z]?(?:\([a-z]\))?$")
+
+DECISIONS_HOME = ".syzygy/governance/decisions"
+
+
+def _sdr_exists(ident, commit):
+    """RD36-06: an SDR-n citation must name a decision present in the
+    decisions home at the named commit — substring presence via git grep,
+    fixed string. The identifier form is no longer the only citation form
+    without an existence guard."""
+    try:
+        return subprocess.run(
+            ["git", "-C", str(REPO), "grep", "-q", "-F", ident, commit,
+             "--", DECISIONS_HOME],
+            capture_output=True).returncode == 0
+    except OSError:
+        return False
 
 
 def _deferral_citation_error(val, commit, _git):
     """RD34-02: the citation must be a repository path (existing at the
-    named commit when git checks run) or a decision identifier — label
-    wording is not a citation."""
+    named commit when git checks run) or a made-decision identifier —
+    label wording is not a citation."""
     v = val.strip().strip("`")
     if DECISION_ID_RE.fullmatch(v):
+        if not _git or not commit:
+            return None  # shape lawful; existence unverifiable without git
+        if not _sdr_exists(v, commit):
+            return (f"{v!r} names no decision in {DECISIONS_HOME} at the "
+                    "named commit — the SDR population is finite, and a "
+                    "citation to an unminted ruling grants nothing "
+                    "(RD36-06)")
         return None
     if _UNMADE_ID_RE.fullmatch(v):
         return (f"{v!r} names the pending-decision queue (P-n) or a "
                 "semantic-delta item (D-n) — a deferral is granted only by "
-                "a made decision: SDR-n, B-n, or its repository path "
-                "(RD35-06)")
+                "a made decision: SDR-n or its repository path (RD35-06)")
+    if _FINDING_ID_RE.fullmatch(v):
+        return (f"{v!r} is review-finding numbering (round-2026-08c's B-n "
+                "findings) — it names no decision in this repository and "
+                "grants nothing; cite SDR-n or the decision's repository "
+                "path (RD36-01)")
     if "/" in v:
         if not _git or not commit:
             return None  # shape lawful; existence unverifiable without git
@@ -207,9 +248,14 @@ def _deferral_citation_error(val, commit, _git):
         # turned `.syzygy/…` into `syzygy/…` and rejected every real
         # decision path in the repository's own decision home.
         path = v[2:] if v.startswith("./") else v
-        if git_show(commit, path) is None:
+        blob = git_show(commit, path)
+        if blob is None:
             return (f"path {v!r} does not exist at the named commit — a "
                     "citation to nowhere authorizes nothing")
+        if blob.startswith(b"tree "):
+            return (f"path {v!r} is a directory at the named commit — a "
+                    "tree is not a decision record; cite the record file "
+                    "itself (RD36-06)")
         return None
     return (f"{v!r} is neither a repository path nor a decision identifier "
             "— label wording is not a citation (RD34-02)")
@@ -234,7 +280,22 @@ def _names_nothing(val: str) -> bool:
     if val.startswith("<"):
         return True  # an unfilled template slot names nothing
     tokens = re.findall(r"[A-Za-z0-9]+", val.lower())
+    # RD36-04: a leading negation is an emptiness claim, whatever nouns
+    # follow — "no defects found", "none identified", "nothing of note"
+    # name nothing. A semantic rule, not a fifth enumeration extension.
+    if tokens and tokens[0] in ("no", "none", "nothing", "zero"):
+        return True
     return all(t.isdigit() or t in _PLACEHOLDER_LEXICON for t in tokens)
+
+
+class _Field:
+    """A parsed field value with a match-like interface (RD36-03)."""
+
+    def __init__(self, value):
+        self._value = value
+
+    def group(self, _i=0):
+        return self._value
 
 
 def validate(record_path: Path, instrument_path: str, prior_path=None,
@@ -251,7 +312,19 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     minstd = re.search(
         r"Instrument version:[^\n]*sha256:\s*`?([0-9a-f]{64})`?", txt)
     mparamd = re.search(r"Parameter block sha256:\s*`?([0-9a-f]{64})`?", txt)
-    mtarget = re.search(r"^Launch target:\s*(\S.*)$", txt, re.M)
+    # RD36-02: every field value is anchored with [^\S\n]* — `\s*` crosses
+    # the newline, so a field written with an EMPTY value silently borrowed
+    # the next line's text as its answer. An empty field is absent.
+    # RD36-03: fields parsed by findall take the declared (last) value, and
+    # occurrences disagreeing in value are an error — a narrative line must
+    # not shadow a declared §5 field.
+    _lt_all = re.findall(r"^Launch target:[^\S\n]*(\S.*)$", txt, re.M)
+    if len(set(map(_norm_ws, _lt_all))) > 1:
+        errors.append(
+            "LG-11: `Launch target:` appears more than once with "
+            "disagreeing values — a shadowed field cannot be trusted "
+            "(RD36-03)")
+    mtarget = _Field(_lt_all[-1]) if _lt_all else None
     if not mdate:
         errors.append("LG-1: no administration date found")
     if not mcommit:
@@ -398,8 +471,22 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     # The Deferred and Reopened figures are parsed from required explicit
     # fields, never derived from absence: a missing field is an error, not a
     # zero (VIS-2 — RD24-19 showed the prior build printed 0 from nothing).
-    deferred_m = re.search(r"^Deferred count[^:]*:\s*(\d+)", txt, re.M)
-    reopened_m = re.search(r"^Reopened count[^:]*:\s*(\d+)", txt, re.M)
+    _dc_all = re.findall(r"^Deferred count[^:\n]*:[^\S\n]*(\d+)", txt, re.M)
+    _rc_all = re.findall(r"^Reopened count[^:\n]*:[^\S\n]*(\d+)", txt, re.M)
+    if len(set(_dc_all)) > 1:
+        errors.append(
+            "LG-5: `Deferred count:` appears more than once with "
+            "disagreeing values (" + ", ".join(sorted(set(_dc_all))) +
+            ") — a narrative line must not shadow the declared field "
+            "(RD36-03)")
+    if len(set(_rc_all)) > 1:
+        errors.append(
+            "LG-5: `Reopened count:` appears more than once with "
+            "disagreeing values (" + ", ".join(sorted(set(_rc_all))) +
+            ") — a narrative line must not shadow the declared field "
+            "(RD36-03)")
+    deferred_m = _Field(_dc_all[-1]) if _dc_all else None
+    reopened_m = _Field(_rc_all[-1]) if _rc_all else None
     if not deferred_m:
         errors.append("LG-5: no `Deferred count:` field — the trend row's "
                       "Deferred figure has no source; absence is an error, "
@@ -410,9 +497,14 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     n_deferred_decl = int(deferred_m.group(1)) if deferred_m else None
 
     # ---- Owner deferral citation (used by LG-6/LG-7) ----------------------
-    owner_dec_m = re.search(r"^Owner deferral decision:\s*(\S.*)$", txt,
-                            re.M)
-    owner_dec = owner_dec_m.group(1).strip() if owner_dec_m else None
+    _od_all = re.findall(r"^Owner deferral decision:[^\S\n]*(\S.*)$", txt,
+                         re.M)
+    if len(set(map(str.strip, _od_all))) > 1:
+        errors.append(
+            "LG-7: `Owner deferral decision:` appears more than once with "
+            "disagreeing values — a shadowed citation cannot be trusted "
+            "(RD36-03)")
+    owner_dec = _od_all[-1].strip() if _od_all else None
     if owner_dec and (owner_dec.startswith("<")
                       or owner_dec.lower() in ("none", "n/a")):
         owner_dec = None
@@ -434,15 +526,18 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     # ---- LG-9 scoped-row disclosure ---------------------------------------
     n_scoped = sum(1 for v in verdicts.values() if v == SCOPED)
     mfind = re.search(
-        r"^Deferred-wave findings recorded outside launch scope:\s*(.+)$",
+        r"^Deferred-wave findings recorded outside launch scope:"
+        r"[^\S\n]*(\S.*)$",
         txt, re.M)
     if n_scoped:
         val = mfind.group(1).strip() if mfind else None
         if val is None:
             errors.append(
                 f"LG-9: {n_scoped} scoped row(s) but no deferred-wave "
-                "findings line — §4 requires each scoped defect named "
-                "there; the disclosure is the scoped form's honesty")
+                "findings line (or the line carries no value — an empty "
+                "field is absent, RD36-02) — §4 requires each scoped "
+                "defect named there; the disclosure is the scoped form's "
+                "honesty")
         elif _names_nothing(val):
             errors.append(
                 f"LG-9: {n_scoped} scoped row(s) beside a deferred-wave "
@@ -561,24 +656,36 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
              "§4's Unknown-settling requirement"),
             ("Reviewer's falsification notes:",
              "the falsification discipline"),
+            ("Reviewer:",
+             "the fresh-context disclosure §2 requires — the eighth "
+             "declared field, RD36-05"),
     ):
         if token not in txt:
             errors.append(f"LG-12: required §5 field missing — {token!r} "
                           f"({why}; RD35-07)")
-    unk_m = re.search(r"^Unknowns and what would settle them:\s*(\S.*)$",
-                      txt, re.M)
-    if n_unk and unk_m and _names_nothing(unk_m.group(1).strip()):
-        errors.append(
-            f"LG-12: {n_unk} row(s) are Unknown but the Unknowns field "
-            f"reads {unk_m.group(1).strip()!r} — §4 requires every "
-            "Unknown to carry what evidence would settle it (RD35-07)")
+    unk_m = re.search(
+        r"^Unknowns and what would settle them:[^\S\n]*(\S.*)$",
+        txt, re.M)
+    if n_unk:
+        if unk_m is None:
+            errors.append(
+                f"LG-12: {n_unk} row(s) are Unknown but the Unknowns "
+                "field carries no value (an empty field is absent, "
+                "RD36-02) — §4 requires every Unknown to carry what "
+                "evidence would settle it (RD35-07)")
+        elif _names_nothing(unk_m.group(1).strip()):
+            errors.append(
+                f"LG-12: {n_unk} row(s) are Unknown but the Unknowns "
+                f"field reads {unk_m.group(1).strip()!r} — §4 requires "
+                "every Unknown to carry what evidence would settle it "
+                "(RD35-07)")
 
     # ---- LG-13 E3 reopen-list cross-check (RD35-04) -----------------------
     # §3, E3: "the list is non-empty; 'ready' is then false regardless of
     # every other verdict" — the instrument's self-declared sharpest single
     # gate, enforced beside LG-8 and LG-9 as the same shape: a declared
     # field contradicting a verdict row.
-    e3_m = re.search(r"^E3 reopen-list:\s*(\S.*)$", txt, re.M)
+    e3_m = re.search(r"^E3 reopen-list:[^\S\n]*(\S.*)$", txt, re.M)
     if not e3_m:
         errors.append("LG-12: no `E3 reopen-list:` field — §5 gives E3's "
                       "decisive answer a dedicated field; absence reads as "
@@ -677,7 +784,7 @@ def _template_rows() -> str:
 GOOD = """# Launch-gate administration — 2026-08-10, commit {sha}
 > This administration record is evidence, never an owner act; its verdict
 > authorizes nothing (instrument preamble; VIS-4).
-Instrument version: v1.8  sha256: {inst}
+Instrument version: v1.9  sha256: {inst}
 Parameter block sha256: {param}
 Launch target: Capability 1 — Project registration and honest shape visibility
 Reviewer: human, fresh context: yes
@@ -971,13 +1078,13 @@ def selftest():
              "Owner deferral decision: D-10\n"
              "Unknowns and what would settle them:"),
          "pending-decision queue")
-    case("B-n (made owner decision) as deferral citation accepted "
-         "(RD35-06)",
+    case("B-n (review-finding numbering) as deferral citation rejected "
+         "(RD36-01)",
          with_def.replace(
              "Unknowns and what would settle them:",
              "Owner deferral decision: B-1\n"
              "Unknowns and what would settle them:"),
-         None)
+         "review-finding numbering")
     case("deleted non-authority banner rejected (RD35-07)",
          good.replace(
              "> This administration record is evidence, never an owner "
@@ -1011,13 +1118,59 @@ def selftest():
                       "Unknowns and what would settle them: TBD"),
          "carry what evidence would settle it")
 
+    # --- v1.9 fixtures: RD-36's findings, kept closed ---------------------
+    # RD-36's fixture discipline, adopted: predicates fixtured in BOTH
+    # directions; the empty and shadowed field cases fixtured, not only
+    # the absent case.
+    case("EMPTY findings line beside a scoped row rejected — an empty "
+         "field is absent, never the next line's text (RD36-02)",
+         scoped_c2.replace(
+             "Deferred-wave findings recorded outside launch scope: none",
+             "Deferred-wave findings recorded outside launch scope:"),
+         "LG-9")
+    case("EMPTY Unknowns field beside Unknown rows rejected (RD36-02)",
+         good.replace("Unknowns and what would settle them: F1 — a "
+                      "second formal administration",
+                      "Unknowns and what would settle them:"),
+         "carries no value")
+    case("narrative line shadowing a declared Deferred count rejected "
+         "(RD36-03)",
+         good.replace("Deferred count (owner-deferred findings this "
+                      "administration): 0",
+                      "Deferred count summary for the reader: 0\n"
+                      "Deferred count (owner-deferred findings this "
+                      "administration): 3"),
+         "disagreeing values")
+    case("negation-phrased emptiness claim 'no defects found' as "
+         "findings line rejected (RD36-04)",
+         scoped_c2.replace(
+             "Deferred-wave findings recorded outside launch scope: none",
+             "Deferred-wave findings recorded outside launch scope: "
+             "no defects found"),
+         "names no defect")
+    case("negation-phrased emptiness claim 'none identified' as "
+         "findings line rejected (RD36-04)",
+         scoped_c2.replace(
+             "Deferred-wave findings recorded outside launch scope: none",
+             "Deferred-wave findings recorded outside launch scope: "
+             "none identified"),
+         "names no defect")
+    case("'E3 reopen-list: none identified' is a lawful empty marker — "
+         "no false rejection beside E3 Met (RD36-04)",
+         good.replace("E3 reopen-list: empty",
+                      "E3 reopen-list: none identified"),
+         None)
+    case("deleted `Reviewer:` fresh-context line rejected (RD36-05)",
+         good.replace("Reviewer: human, fresh context: yes\n", ""),
+         "Reviewer:")
+
     head = _head_commit()
     if head:
         good_head = GOOD.format(sha=head, inst=inst, param=param)
         case("instrument digest mismatch rejected (git on, LG-2)",
              good_head, "digest mismatch", _git=True)
         case("instrument version disagreement rejected (RD33-06, LG-11)",
-             good_head.replace("Instrument version: v1.8",
+             good_head.replace("Instrument version: v1.9",
                                "Instrument version: v1.2"),
              "LG-11: record claims instrument version", _git=True)
         case("launch target outside the parameter block rejected "
@@ -1055,11 +1208,16 @@ def selftest():
         if blob_head is not None:
             _iv_m = re.search(rb"^\s*effective_version:\s*(v[\d.]+)",
                               blob_head, re.M)
-            good_real = (GOOD.format(
-                sha=head, inst=sha256_bytes(blob_head),
-                param=sha256_bytes(param_block_bytes(blob_head)))
-                .replace("Instrument version: v1.8",
-                         f"Instrument version: {_iv_m.group(1).decode()}")
+            # Version-agnostic substitution (the RD34-05 lesson): the
+            # template's version literal must never strand this builder
+            # across a bump, so it is matched by shape, not by value.
+            good_real = (re.sub(
+                r"Instrument version: v[\d.]+",
+                f"Instrument version: {_iv_m.group(1).decode()}",
+                GOOD.format(
+                    sha=head, inst=sha256_bytes(blob_head),
+                    param=sha256_bytes(param_block_bytes(blob_head))),
+                count=1)
                 if _iv_m else None)
         else:
             good_real = None
@@ -1097,6 +1255,35 @@ def selftest():
                      "GATE VERDICT: READY FOR Capability 7 — full "
                      "Mission Control and mission prevention"),
                  "the verdict line claims READY FOR", _git=True)
+            with_def_real = (good_real.replace(
+                "GATE VERDICT: NOT READY",
+                "GATE VERDICT: READY-WITH-DEFERRALS (owner only)")
+                .replace("Deferred count (owner-deferred findings this "
+                         "administration): 0",
+                         "Deferred count (owner-deferred findings this "
+                         "administration): 1"))
+            case("existing SDR-n identifier as deferral citation "
+                 "ACCEPTED at the named commit (RD36-06)",
+                 with_def_real.replace(
+                     "Unknowns and what would settle them:",
+                     "Owner deferral decision: SDR-33\n"
+                     "Unknowns and what would settle them:"),
+                 None, _git=True)
+            case("unminted SDR-n identifier rejected at the named commit "
+                 "(RD36-06)",
+                 with_def_real.replace(
+                     "Unknowns and what would settle them:",
+                     "Owner deferral decision: SDR-9999\n"
+                     "Unknowns and what would settle them:"),
+                 "names no decision in", _git=True)
+            case("directory path as deferral citation rejected — a tree "
+                 "is not a decision record (RD36-06)",
+                 with_def_real.replace(
+                     "Unknowns and what would settle them:",
+                     "Owner deferral decision: .syzygy/governance/"
+                     "decisions/\n"
+                     "Unknowns and what would settle them:"),
+                 "is a directory at the named commit", _git=True)
         else:
             print("  note  committed instrument unreadable at HEAD — 3 "
                   "RD35 git-dependent fixtures skipped")

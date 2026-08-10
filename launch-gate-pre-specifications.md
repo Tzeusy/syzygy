@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.8 (candidate; v1.3 was the pilot-administered version)
+effective_version: v1.9 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), results record format, and trend log
@@ -944,7 +944,9 @@ Notes for administering against Syzygy specifically:
   "names nothing" becomes a shared lexicon rule rather than an
   enumeration, so decorated placeholders fail without a fourth
   extension (RD35-05); the deferral-identifier families narrow to made
-  decisions — SDR-n/B-n; P-n (the pending queue) and D-n (delta items)
+  decisions — SDR-n/B-n [corrected 2026-08-10, RD36-01: `B-n` named no
+  decision family in this repository — see the v1.9 entry below]; P-n
+  (the pending queue) and D-n (delta items)
   grant nothing (RD35-06); §5's declared record fields gain presence
   checks, including the RD24-02 non-authority banner, and an Unknown
   row requires named settling evidence (RD35-07). Each change carries a
@@ -953,3 +955,32 @@ Notes for administering against Syzygy specifically:
   carries the correction of the v1.7 delta's D-2 overclaim, in the
   D-10 convention — the frozen record is not edited). No existing
   question weakened; no ID renumbered.
+- **v1.9** (2026-08-10, post-RD-36 amendment — the v1.8 re-review's two
+  MAJOR and five MINOR findings; candidate, owner approval pending) —
+  a **validator-and-records batch** again: no question block, no
+  verdict word, and no section §1–§8 changed; the instrument bytes that
+  move are this entry, the version header, and one dated correction
+  marker in the v1.8 entry above, whose family claim was false — `B-n`
+  is round-2026-08c's review-finding numbering, names no decision
+  anywhere in the decisions home, and granted nothing (RD36-01). The
+  identifier family narrows to **SDR-n alone**, existence-checked
+  against the decisions home at the record's named commit; `B-n` is
+  rejected with a reason naming what it is, and a path resolving to a
+  directory is rejected — a tree is not a decision record (RD36-06).
+  Every §5 field value is line-anchored, so a field written with an
+  empty value is absent rather than silently borrowing the next line's
+  text as its answer (RD36-02); field occurrences disagreeing in value
+  are an error, so a narrative line cannot shadow a declared count into
+  the trend row (RD36-03); "names nothing" gains the negation-prefix
+  rule — a value led by a negation word asserts emptiness — closing the
+  "no defects found" class on LG-9 and the mirror false-rejection on
+  LG-13 (RD36-04); §5's eighth declared field, the `Reviewer:`
+  fresh-context disclosure, joins LG-12's presence set (RD36-05). The
+  fixture discipline RD-36 prescribed is adopted: changed predicates
+  are fixtured in both directions, and the empty and shadowed field
+  cases are fixtured, not only the absent case — 74 fixtures, the two
+  decisive repairs re-proven by mutation. Semantic delta:
+  `round-2026-08e/LAUNCH-GATE-v1.9-SEMANTIC-DELTA.md` (which also
+  carries the correction of the v1.8 delta's D-6, in the D-10
+  convention — the frozen record is not edited). No existing question
+  weakened; no ID renumbered.

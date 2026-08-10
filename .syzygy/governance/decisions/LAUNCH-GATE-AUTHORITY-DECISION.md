@@ -8,23 +8,25 @@
 
 ## Question
 
-Approve `launch-gate-pre-specifications.md` **v1.8** as this repository's
+Approve `launch-gate-pre-specifications.md` **v1.9** as this repository's
 owner-approved **process policy** for evaluating pre-specification
 readiness?
 
 > **Offer status (2026-08-10):** not yet offerable. v1.5's re-review
 > (RD-33, `VERDICT: REVISE`) was closed by v1.6; v1.6's re-review (RD-34,
 > `VERDICT: REVISE`) by v1.7; v1.7's re-review (RD-35, `VERDICT: REVISE`
-> — all eleven RD-34 repairs verified, one BLOCKING new finding: the new
-> citation-existence check shipped inverted and rejected every real
-> `.syzygy/` decision path, with no fixture on the passing direction) is
-> closed by v1.8 — a **validator-and-records batch**: no question block,
-> no verdict word, and no instrument section §1–§8 changed (RD-35: "none
-> of my seven findings requires an instrument amendment"). Because the
-> same session that authored the v1.8 bytes may not confirm them, the
-> offer waits on a fresh-context re-review of the v1.8 delta (**RD-36**).
-> The formal administration must not run on any earlier validator
-> (RD-33's, RD-34's and RD-35's closing directions).
+> — one BLOCKING: the new citation-existence check shipped inverted) by
+> v1.8; v1.8's re-review (RD-36, `VERDICT: REVISE` — all seven RD-35
+> repairs verified, four by mutation; two MAJOR new findings: the `B-n`
+> identifier family the batch accepted "names made decisions" is in fact
+> review-finding numbering that names no decision in this repository, and
+> a §5 field written with an empty value silently borrowed the next
+> line's text) is closed by v1.9 — a **validator-and-records batch**
+> again; instrument §1–§8 have now gone three amendments byte-unchanged.
+> Because the same session that authored the v1.9 bytes may not confirm
+> them, the offer waits on a fresh-context re-review of the v1.9 delta
+> (**RD-37**). The formal administration must not run on any earlier
+> validator (the closing directions of RD-33 through RD-36).
 
 ## What approval binds — and what it never binds
 
@@ -53,7 +55,7 @@ has already directed this pass to respect.
 
 ## Options
 
-- **(a) Approve v1.8 as offered.** The amendment records are
+- **(a) Approve v1.9 as offered.** The amendment records are
   `contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.4-SEMANTIC-DELTA.md`
   (ten deltas; no question weakened; three questions added from the
   pilot's G1; launch-scope parameters for Capability 1 fixed in §8),
@@ -66,16 +68,23 @@ has already directed this pass to respect.
   findings closed — the `READY-WITH-DEFERRALS` predicate stated and
   checked, the citation shape test, the terminal-line parse; **read with
   the v1.8 delta's D-1**, which corrects D-2's existence-check claim),
-  and `…/LAUNCH-GATE-v1.8-SEMANTIC-DELTA.md` (the RD-35 re-review's
+  `…/LAUNCH-GATE-v1.8-SEMANTIC-DELTA.md` (the RD-35 re-review's
   seven findings closed — the citation-existence check un-inverted with
   its passing direction fixtured, the terminal line made the parsed
   anchor, the verdict-line target bound, E3's reopen-list enforced;
-  validator and records only — no question weakened; no ID renumbered;
-  instrument §1–§8 byte-unchanged from v1.7).
+  **read with the v1.9 delta's D-1 and D-4**, which correct D-6's false
+  `B-n` family claim and D-5's over-readable removal claim), and
+  `…/LAUNCH-GATE-v1.9-SEMANTIC-DELTA.md` (the RD-36 re-review's seven
+  findings closed — `B-n` out of the identifier family with the false
+  taxonomy corrected everywhere it was asserted, empty fields made
+  absent rather than borrowed, shadowed fields made errors, both
+  citation forms existence-guarded; validator and records only — no
+  question weakened; no ID renumbered; instrument §1–§8 byte-unchanged
+  through three amendments).
 - **(b) Approve with amendments** — state them; the changelog takes a
-  v1.9 entry and the semantic delta extends. One prepared amendment the
+  v1.10 entry and the semantic delta extends. One prepared amendment the
   owner may take here: **promote F5 (assurance independence) from a
-  recorded question to a verdict conjunct** — v1.8 deliberately leaves it
+  recorded question to a verdict conjunct** — v1.9 deliberately leaves it
   non-gating at Administration 1 and discloses instead (RD24-12); making
   it a conjunct means no same-family administration can ever read READY.
 - **(c) Decline** — the gate remains an informal checklist; readiness
@@ -102,11 +111,15 @@ mutation-proven against the named validator), v1.6's are exactly the
 first re-review's (RD-33: five findings proven by constructing records
 that validated clean and should not have), v1.7's are exactly the
 second re-review's (RD-34: its BLOCKING finding was an all-Not-met record
-validating clean under `READY-WITH-DEFERRALS`), and v1.8's are exactly
-the third re-review's (RD-35: its BLOCKING finding was the new existence
+validating clean under `READY-WITH-DEFERRALS`), v1.8's are exactly the
+third re-review's (RD-35: its BLOCKING finding was the new existence
 check rejecting every real decision path, invisible because no fixture
-tested the passing direction; each repair now has a fixture that fails
-without it — 64 in all, the two decisive ones re-proven by mutation).
+tested the passing direction), and v1.9's are exactly the fourth
+re-review's (RD-36: a pass verdict could rest on a deferral "granted"
+by a review finding, certified by an accepting fixture asserting a
+false taxonomy; each repair now has a fixture that fails without it —
+74 in all, with RD-36's both-directions fixture discipline adopted, and
+the two decisive repairs re-proven by mutation).
 
 ## Mechanism (the lawful transaction, prepared not performed)
 
@@ -126,7 +139,7 @@ nowhere once the header flips). To approve:
 3. Record in this file, below this line, an approval block:
 
    ```text
-   APPROVED — launch-gate v1.8 as process policy
+   APPROVED — launch-gate v1.9 as process policy
    date: <date>
    instrument sha256: <the digest computed in step 2, post-status-edit>
    scope: process policy for pre-specification readiness evaluation;
@@ -142,7 +155,7 @@ nowhere once the header flips). To approve:
 Under **option (b)**, the ordering extends the same way (RD33-11): the
 owner's amendments are applied to the instrument **in the working tree
 before step 2's digest is computed** — together with the status edit and
-the changelog's v1.9 entry — so the digest always binds the amended
+the changelog's v1.10 entry — so the digest always binds the amended
 bytes; the amendments, status edit, changelog entry, and approval block
 travel in the one commit of step 4. An amendment applied after step 2
 would recreate exactly the approval-attests-bytes-that-exist-nowhere
