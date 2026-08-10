@@ -94,3 +94,26 @@ knowing one.
 | RD26-11 | MINOR | R | RFC4-23(2) states the unrenderable rule in its own words; RFC8-16 demoted to a parallel-obligation pointer |
 | RD26-12 | MINOR | R | Matrix: "Six contracts" → eleven; states RFC 0001–0005's enumerations are produced at surface specification |
 | RD26-13 | MINOR | R | §7 item 1 folds in the P-18(a) four-categories-vs-closed-validator seam |
+## RD-27 — Wave B dimensions (11 modules + offering apparatus at `5bb8a36`)
+
+Four repairs below touch Wave B module bytes (RD27-01, -07, -08, -09), so
+the wave manifest and the act-2 argument regenerate by script and row B is
+rebound — RD-32 (exact-package) binds the final argument, which is why it
+runs last. The reviewer's observation that the *findings* sit outside the
+manifest was true of the defects' owner-facing halves; the module-side
+repairs are the durable fix and move the digest knowingly. RD27-02's
+ruling-disclosure instance is queued to the owner, never settled here
+(VIS-4).
+
+| Finding | Class | Disposition | Where it lands |
+|---|---|---|---|
+| RD27-02 | BLOCKING | R + O | (a) RFC7-39's entry-is-primary-narrative ruling disclosed in acceptance record §7 and queued in `PENDING-OWNER-DECISIONS.md` (owner may prefer the other answer; ratified knowingly at the act, or re-opened); (b) `HUMAN-ENTRY-DECISION.md` restated to the four-value domain RFC7-40 closes; (c) packet 6 struck from both "remain current" lists, `OWNER-DECISION-PACKETS.md` banner extended, P-22 register row re-quoted to the repaired RFC9-8(a), register as-of re-dated |
+| RD27-01 | MAJOR | R | RFC9-43's enumeration and RFC9-46's tuple each gain the `challenge-pending` disclosure (RFC2-13) the identity claim requires — Wave B byte, digest-moving |
+| RD27-03 | MAJOR | R | §1 row B gains the regeneration disclosure mirroring row A: all eleven modules edited this round, `daa6a5dd…` stale and satisfies nothing, delta pointer |
+| RD27-04 | MAJOR | R | Matrix RFC7-40 row restated to the closed four-value domain incl. `not-applicable` |
+| RD27-05 | MAJOR | R | Matrix RFC9-8(a) row restated to the typed owner-gated governance store; workspace-manifest placement removed; re-lay-unlawful-until-store criterion |
+| RD27-06 | MAJOR | R | Router route definitions: Polaris row's omission note corrected (RFC-0009 is a declared, clause-borne dependency via RFC7-31→RFC9-45); Orrery row gains RFC-0008's vocabulary modules per RFC9-32/RFC9-46; router regenerated |
+| RD27-07 | MINOR | R | The consume-and-render-every-value sentence folded into RFC8-12; README §5 and the two citing modules point at the clause — Wave B bytes |
+| RD27-08 | MINOR | R | RFC 0009 README sentence corrected to "no clause of RFC 0011 is cited anywhere in RFC 0009" — Wave B byte |
+| RD27-09 | MINOR | R | The three bare `§` references in RFC 0008 name their module — Wave B bytes |
+| RD27-10 | MINOR | R | `05-CONTRACT-INDEX.yaml` regenerated (topology word counts from the RD-25 act-3 repairs); §6 bullet true again at the new commit |
