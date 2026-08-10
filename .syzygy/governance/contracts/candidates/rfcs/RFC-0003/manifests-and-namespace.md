@@ -131,13 +131,18 @@ this class and falls under RFC3-16(a) instead.
 or rejection), a withdrawal submitted, a walkthrough run submitted. **Owner
 resolution acts** — upholding, dismissing, or expiring a challenge by
 decision — are Decisions in `decisions/` (RFC3-15), referenced from the
-record, never minted into `records/`. **Kernel-computed expiry** — a
-challenge lapsing because its declared bound has passed (RFC2-3, RFC2-13) —
-is **derived state computed at each evaluation** from the admission record's
-instant and the declared bound; it mints **no record**, because it involves
-no act and is reproducible from snapshot inputs the tree already holds, so
-minting it would add a snapshot input (RFC2-1 item 9) that pure
-recomputation created.
+record, never minted into `records/`. **Kernel-computed expiry *eligibility*** — a
+challenge's declared bound having passed (RFC2-3, RFC2-13) — is **derived
+state computed at each evaluation** from the admission record's instant and
+the declared bound; the *eligibility* mints **no record**, because it
+involves no act and is reproducible from snapshot inputs the tree already
+holds, so minting it would add a snapshot input (RFC2-1 item 9) that pure
+recomputation created. The **resolution** that ends the suspension is a
+different thing: per RFC2-13 (owner decision B1), an expiry-eligible
+challenge keeps suspending until a **recorded resolution act** — a human
+resolution in `decisions/`, or the pre-declared deterministic policy
+sweep's resolution record in `records/` (RFC3-15's `records/` cell names
+it) — and that act is an authoritative input of a new snapshot.
 
 **RFC3-3.** **Direct-write containment.** No field of any manifest — project
 declaration, workspace manifest, or any `.syzygy/**` artifact — may
@@ -156,9 +161,12 @@ obeyed.
 field value — is what designates the repository as the Project's governance
 root. A repository carries at most one `.syzygy/` plane, at its root, and is
 the governance root of at most one Project. A declaration purporting to
-designate a *different* repository as root, or a Project resolving to zero or
-two roots, is a contradiction per RFC1-1 — routed to the owner, never
-repaired silently. *(Designation by field value was rejected: a field can
+designate a *different* repository as root, or a Project resolving to two
+roots, is a contradiction per RFC1-1 — routed to the owner, never repaired
+silently. A Project resolving to **zero** roots mints no contradiction:
+RFC1-1's zero-roots rule (cited, not restated) surfaces that case at the
+workspace/manifest level, unevaluable as a Project and rendered Unknown
+(`missing-declaration`), with no kernel contradiction to route. *(Designation by field value was rejected: a field can
 dangle or lie; a file's location cannot — history §6.)*
 
 **RFC3-5.** The declaration's top-level field set is **closed** at:

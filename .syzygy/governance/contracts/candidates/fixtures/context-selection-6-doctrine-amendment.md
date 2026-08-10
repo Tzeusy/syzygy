@@ -64,7 +64,7 @@ scripts/context_load.py doctrine:vision.md doctrine:v1.md \
   rfcs/RFC-0003/README.md rfcs/RFC-0003/governance-homes-and-owner-acts.md
 ```
 
-Measured: **11,954 words ≈ 16,138 estimated tokens.** Band position is
+Measured: **12,004 words ≈ 16,205 estimated tokens.** Band position is
 owned by `CONTEXT-BUDGET-REPORT.md` §1, computed from this anchored
 figure; this fixture's prose makes no band claim of its own. The proposed
 band and trigger live in the candidate knowledge-hygiene craft policy,
@@ -149,7 +149,7 @@ the amendment clarifies. Word costs for every module are in
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`f2b5de856da756ef…` (recompute: `cat <mandatory files> | sha256sum`).
+`585500a1e99df11c…` (recompute: `cat <mandatory files> | sha256sum`).
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a
@@ -200,3 +200,5 @@ RD-5's blind-derivation protocol; phase-boundary rule applied under amended
 RFC11-4/RFC11-13; doctrine-selection basis stated under new RFC11-15;
 transcribed measurements removed — the anchored `Measured:` field and the
 packet digest are the only measurements this fixture states.*
+
+*Re-measured 2026-08-10 by the same CG-18 method (declared mandatory set, listed order): the round-2026-08e RD-26 repair batch edited Wave A modules this packet loads. Previous: 11,954 words, digest `f2b5de856da756ef…`. Selection unchanged; the movement is contract repairs landing under the fixture, which is the class this check exists to catch.*

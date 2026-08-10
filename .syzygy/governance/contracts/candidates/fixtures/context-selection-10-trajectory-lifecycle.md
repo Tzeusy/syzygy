@@ -94,7 +94,7 @@ scripts/context_load.py rfcs/RFC-0001-project-graph-identity-state-planes.md \
   doctrine:vision.md
 ```
 
-Measured: **39,092 words ≈ 52,774 estimated tokens.**
+Measured: **39,212 words ≈ 52,936 estimated tokens.**
 
 ## ⚠️ Far above the decomposition trigger — the class's honest floor, and the shard that is the real default
 
@@ -207,7 +207,7 @@ Suggestion never suppresses (RFC11-5).
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`d4e082478168b311…` (recompute: `cat <mandatory files> | sha256sum`, with
+`27bbefa2691ed13d…` (recompute: `cat <mandatory files> | sha256sum`, with
 `doctrine:` resolved to `.syzygy/governance/doctrine/`). Measured, not
 compiled, by `scripts/context_load.py`; the placeholder digest here is
 overwritten by `build_budget_report.py` at first stamp and verified by
@@ -257,3 +257,5 @@ silent source swap. The digest exists so that a later corpus edit
 of RD-5's blind-derivation protocol from the start. No previous figures
 exist: this fixture is new, and its anchors are stamped by
 `build_budget_report.py` and verified by CG-18 from the first run.*
+
+*Re-measured 2026-08-10 by the same CG-18 method (declared mandatory set, listed order): the round-2026-08e RD-26 repair batch edited Wave A modules this packet loads. Previous: 39,092 words, digest `d4e082478168b311…`. Selection unchanged; the movement is contract repairs landing under the fixture, which is the class this check exists to catch.*

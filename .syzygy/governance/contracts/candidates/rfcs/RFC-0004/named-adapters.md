@@ -132,8 +132,10 @@ requiring the project's toolchain to execute is blocked until the
 execution-profile RFC (SEC-3).
 
 **RFC4-13 — Test, CI, and gate observers.** *Authority:* verification evidence
-as it exists on disk or in CI systems — Syzygy reads reports; it does not run
-them (SEC-3) [Observed: v1.md V0 scope]. *Reads:* report identity and hash;
+as it exists on disk or in CI systems — this observer reads reports and
+never executes anything; execution happens only through RFC5-18's profiled
+launch gate, whose retained outputs route 1 below then reads (SEC-3)
+[Observed: v1.md V0 scope]. *Reads:* report identity and hash;
 suite/case identities and outcomes; **the revision the report claims to
 describe** — a report is evidence only for that revision (RFC2-11); CI run
 identity, conclusion, instants, and log/artifact references.
@@ -148,7 +150,8 @@ is emitted `asserted-by-worker`. The observer never upgrades a tier; only new
 evidence in a new snapshot can.
 
 *Provenance predicate on `gate-backed`* (owner decision **A2** confirmed the
-routes, bounded route 3, and added route 4; history §RFC4-13). An artifact
+three routes and bounded route 3; route 4 was added by the Tier C
+**RFC 0002 §8 q3** ruling in the same record; history §RFC4-13). An artifact
 qualifies for `gate-backed` only through **exactly one of four routes**:
 
 1. it was **produced by a Syzygy-launched profiled run** (RFC5-21), and so
@@ -437,8 +440,9 @@ observation/capture time.
    bounds** (`README.md` §7). Confirm, or direct that rendering the risk was
    enough?
 6. **The `gate-backed` provenance predicate (RFC4-13).** **ANSWERED — owner
-   decision A2:** all three admission routes confirmed, route 3 bounded to a
-   named (project, gate class) pair with an expiry, and a fourth route added
+   decision A2 plus the Tier C RFC 0002 §8 q3 ruling:** A2 confirmed all
+   three admission routes and bounded route 3 to a named (project, gate
+   class) pair with an expiry; the §8 q3 ruling added the fourth route
    for doc-only and governance-only work. The deliberately accepted cost —
    projects whose CI Syzygy cannot independently confirm lose green status on
    those gates, which convert to `report-fact` — is recorded in history.

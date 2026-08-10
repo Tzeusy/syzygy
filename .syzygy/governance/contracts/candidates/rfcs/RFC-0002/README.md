@@ -175,7 +175,11 @@ surface RFCs), the citation is **informative until that RFC is accepted**: it
 names where an obligation will be discharged, never a dependency of this
 contract's meaning, and a renumbering in a sibling draft changes nothing here.
 Citations to **adopted doctrine**, to the **SDR**, and to **RFC 0001** are
-load-bearing; archived corpus citations are informative in every case.
+load-bearing, and so are this package's citations of **RFC4-13 route 4 and
+RFC4-13(b)** — RFC2-18's chain-outcome gate uses that route normatively, so
+those citations are a stated reliance discharged by Wave A binding RFC 0002
+and RFC 0004 together, not an informative forward reference; archived corpus
+citations are informative in every case.
 
 **The exception: this package's citations of RFC 0003 are load-bearing.** They
 are exactly four — RFC3-2's write-authority classes, RFC3-15's categories,

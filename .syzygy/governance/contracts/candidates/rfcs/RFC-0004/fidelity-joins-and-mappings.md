@@ -85,8 +85,11 @@ existence outlive the processes they describe [Observed]. Therefore:
    branch tip moved, new commit, PR state changed — rendered with its instant
    and the declared staleness bound (bound value: policy material; the
    obligation to declare is binding here). That bound is an owner-approved
-   declaration that unblocks a claim class — until it is declared, `active` is
-   unrenderable (RFC8-16) — so it is honored **only under RFC3-16(a)**: a
+   declaration that unblocks a claim class — **until it is declared, this
+   contract yields no admissible liveness input, so `active` cannot be
+   rendered from it** (the surface-side statement of the same obligation is
+   RFC8-16, a parallel-obligation pointer, not this rule's source) — so it
+   is honored **only under RFC3-16(a)**: a
    bound an untrusted writer could mint would make `active` renderable, and a
    generous one would hold a dead worker green indefinitely on a signal that
    never comes. An unverifiable bound is no declaration: liveness stays

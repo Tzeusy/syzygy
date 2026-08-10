@@ -106,8 +106,8 @@ scripts/context_load.py rfcs/RFC-0004/README.md \
   craft:testing-and-verification.md
 ```
 
-Measured: **25,466 words ≈ 34,379 estimated tokens** (words × 1.35), or
-**45,433 estimated tokens** at chars ÷ 4 over 181,732 characters. Both
+Measured: **25,718 words ≈ 34,719 estimated tokens** (words × 1.35), or
+**45,836 estimated tokens** at chars ÷ 4 over 183,345 characters. Both
 estimates breach the proposed trigger; the verdict does not depend on which
 heuristic is chosen, and the second figure is stated so that it cannot.
 
@@ -294,7 +294,7 @@ them.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`781b1ec3733698b9…` (recompute: `cat <mandatory files> | sha256sum`, with
+`c7f4091c2fc416bb…` (recompute: `cat <mandatory files> | sha256sum`, with
 `doctrine:` resolved to `.syzygy/governance/doctrine/` and `craft:` to
 `.syzygy/governance/policies/craft-and-care/`). Measured, not compiled, by
 `scripts/context_load.py`.
@@ -359,3 +359,5 @@ transcribed measurements removed — the two anchored measurement fields and
 the packet digest are the only measurements this fixture states.*
 
 ---
+
+*Re-measured 2026-08-10 by the same CG-18 method (declared mandatory set, listed order): the round-2026-08e RD-26 repair batch edited Wave A modules this packet loads. Previous: 25,466 words, digest `781b1ec3733698b9…`. Selection unchanged; the movement is contract repairs landing under the fixture, which is the class this check exists to catch.*

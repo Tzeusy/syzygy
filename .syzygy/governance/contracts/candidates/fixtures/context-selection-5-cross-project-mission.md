@@ -58,7 +58,7 @@ scripts/context_load.py rfcs/RFC-0010/README.md \
   rfcs/RFC-0003/governance-homes-and-owner-acts.md doctrine:vision.md
 ```
 
-Measured: **21,600 words ≈ 29,160 estimated tokens.** Band position and
+Measured: **21,650 words ≈ 29,228 estimated tokens.** Band position and
 disposition against the proposed (non-installed) budget lines are owned by
 `CONTEXT-BUDGET-REPORT.md` §1, computed from this anchored figure; this
 fixture's prose makes no band claim of its own. *(An earlier revision of
@@ -127,7 +127,7 @@ module are in `CONTEXT-BUDGET-REPORT.md` §3.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`d874f9ce4867f1b1…`.
+`ac853acff4c6f30c…`.
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a
@@ -150,3 +150,5 @@ fixture previously named; task/answer boundary added per RD-5's
 blind-derivation protocol; the false band claim removed and recorded
 above; transcribed measurements removed — the anchored `Measured:` field
 and the packet digest are the only measurements this fixture states.*
+
+*Re-measured 2026-08-10 by the same CG-18 method (declared mandatory set, listed order): the round-2026-08e RD-26 repair batch edited Wave A modules this packet loads. Previous: 21,600 words, digest `d874f9ce4867f1b1…`. Selection unchanged; the movement is contract repairs landing under the fixture, which is the class this check exists to catch.*

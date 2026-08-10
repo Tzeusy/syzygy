@@ -19,7 +19,7 @@ by `scripts/build_active_manifest.py`). Design rationale:
 
 | # | Act (exact phrase) | Accepts exactly |
 |---|---|---|
-| A | `ACCEPT FOUNDATIONAL WAVE A: 6b98e0c64f7ffc4f9047faccf2f6a705a79efe2f6a7ceb02915cb160add16b4d` | The 19 modules of RFC 0001–0006 (kernel, evidence, storage, admission, cross-surface selection) at the per-module sha256 digests in `wave-manifests/WAVE-A-MANIFEST.txt`, whose own digest is the act's argument. Every `depends_on` edge of these contracts stays inside the wave |
+| A | `ACCEPT FOUNDATIONAL WAVE A: 8af6805fe94e30ca86ba9ee39860e318bd749255d0f71df466f62f04e2e62de7` | The 19 modules of RFC 0001–0006 (kernel, evidence, storage, admission, cross-surface selection) at the per-module sha256 digests in `wave-manifests/WAVE-A-MANIFEST.txt`, whose own digest is the act's argument. Every `depends_on` edge of these contracts stays inside the wave. **Argument regenerated 2026-08-10 (RD-26 repair batch)** — seven modules repaired (zero-roots limb, expiry-resolution home, `unknown-terminal`, and four citation/wording repairs; delta: `round-2026-08e/WAVE-A-SEMANTIC-DELTA.md` §13); the earlier `6b98e0c6…` argument is stale and satisfies nothing |
 | B | `ACCEPT FOUNDATIONAL WAVE B: 2041ad053127cb1fc1022ed3295744e4b3a0053419f1e9945fb787537ab27f8a` | The 11 modules of RFC 0007–0009 (Polaris, Trajectory, Orrery) per `wave-manifests/WAVE-B-MANIFEST.txt`. Depends on Wave A; performed first, it binds text whose reliances point at candidate material — lawful only stated at the act |
 | C1 | `ACCEPT FOUNDATIONAL WAVE C1: a5d3ba1f22ad0ff5ff66485b1829e5b2f652a8c7678dcc96699eaca4ac5b2b4d` | RFC-0011 module 1 (packet identity, provenance, memory — RFC11-1..3, 5..10, 12) plus the package index, per `wave-manifests/WAVE-C1-MANIFEST.txt`. Declares `depends_on` RFC-0010 (waves D1/D2): recommended after them. Module 1 uses *mandatory context* as a primitive whose defining clause is RFC11-4 in Wave C2; performed alone, the packet contract binds identity, immutability, execution-record binding, the fail-closed Unknown rule, governed memory and profiles, while the criterion separating a packet's mandatory core from its suggested additions is not yet fixed — lawful only stated at the act. Performing C2 in the same sitting removes the condition |
 | C2 | `ACCEPT FOUNDATIONAL WAVE C2: acd27bb8f9b7be76725057b4280e2dc9fe23f3e9fac17c448542b9cb250d8b1a` | RFC-0011 module 2 (deterministic selection and budget posture — RFC11-4, 11, 13..16), per `wave-manifests/WAVE-C2-MANIFEST.txt`. Depends on C1 (the module consumes module 1's packet primitives throughout) and declares `depends_on` RFC-0010 (waves D1/D2) in its front matter — performed before them, it binds text whose reliances point at candidate material, lawful only stated at the act. Carries its own external criterion: acceptable only when its selection rules reproduce the blind golden fixtures (`fixtures/`), a derivation the fixtures' task/answer boundary exists to allow — and that criterion's pass/fail standard is itself an open owner question (**P-29**): until it is ruled and the standard exists, this row's condition cannot be discharged |
@@ -403,7 +403,11 @@ implementation, not specification — accepting with it open is a
    default is load-bearing, not passive: RFC3-15's drafted text is a
    **six-name closed validator** ("accepts exactly these six names and
    rejects a seventh; neither rejecting `declarations/` nor admitting an
-   unreserved directory is conforming").
+   unreserved directory is conforming"). The same act ratifies the P-18(a)
+   seam: doctrine's architecture.md calls its four `governance/` categories
+   "constitutional minimums", and a validator that rejects a seventh name
+   is a closure, not obviously a narrowing — accepting RFC3-15 knowingly
+   closes what doctrine floors (RD26-13).
 2. **The [Inferred] SEC-3 extension** (workers' commits are untrusted) —
    ratify or amend into doctrine; carried unchanged from rev9.
 3. **RFC 0005 §8 q1** — knowing deferral to V0 implementation (§5).
@@ -468,3 +472,31 @@ implementation, not specification — accepting with it open is a
     deleted — an owner-attention item that was live and is not is part of this
     record's history, and silently removing it would leave a reader of an
     earlier revision unable to find out what happened to it.
+11. **P-33 — the Wave A install shape** *(added 2026-08-10; RD26-01/RD26-02).*
+    The ceremony's step 3 installs companion material and the act's own
+    manifests into `governance/contracts/`, and RFC3-15 — bound by the same
+    act — says that category holds accepted load-bearing contracts
+    **exclusively**. P-33's packet
+    (`decisions/WAVE-A-INSTALL-SHAPE-DECISION.md`) states it must be ruled
+    **before Wave A is re-offered** and its own recommendation is the
+    RFC3-15(a) recorded-widening route. **Until P-33 is ruled, this record
+    offers no Wave A act** — performing act 1 over the current step 3 would
+    freeze an install that breaches a clause the act binds.
+12. **P-31 — the drafted RFC2-19 exemption arm** *(added 2026-08-10;
+    RD26-02/RD26-06).* RFC2-19 carries a drafted-awaiting-ruling arm that
+    exempts the `reconciliation-pending` rendering from RFC2-24's
+    twelve-reason closure — candidate text the act would ratify. Rule P-31,
+    or perform the act knowing it ratifies the drafted arm.
+13. **P-37 — the shape-facet vocabulary** *(added 2026-08-10; RD26-02).*
+    P-37's packet names the Wave A act as its earliest required gate
+    (RFC-0006 is in this wave): the act settles the facet vocabulary
+    RFC-0006's drawer queries expose. Rule it, or perform the act knowing
+    that settlement rides in.
+14. **Two drafted repairs ratified by this act** *(added 2026-08-10;
+    RD26-04/RD26-05).* (a) RFC3-15's `records/` cell now admits the
+    pre-declared deterministic challenge-sweep's expiry-resolution record —
+    the widening that makes RFC2-13's owner-decision-B1 resolution act
+    recordable at all; (b) RFC4-19's `terminal outcome` row now carries §8
+    q2's proposed answer (`unknown-terminal` as a legal Syzygy-side value,
+    keeping vanished-worker runs admissible). Both are candidate drafts in
+    the bytes the act binds; the act ratifies or the owner reverts them.

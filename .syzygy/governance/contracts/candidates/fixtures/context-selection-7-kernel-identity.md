@@ -60,7 +60,7 @@ scripts/context_load.py rfcs/RFC-0001-project-graph-identity-state-planes.md \
   doctrine:architecture.md craft:engineering-bar.md
 ```
 
-Measured: **16,958 words ≈ 22,893 estimated tokens.**
+Measured: **17,001 words ≈ 22,951 estimated tokens.**
 
 ## ⚠️ Above the justification trigger — disclosed, not trimmed
 
@@ -162,7 +162,7 @@ are in `CONTEXT-BUDGET-REPORT.md` §3.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`f43e9174d24fe3d5…` (recompute: `cat <mandatory files> | sha256sum`).
+`56932620ead87cc6…` (recompute: `cat <mandatory files> | sha256sum`).
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a
@@ -222,3 +222,5 @@ RD-5's blind-derivation protocol; phase-boundary rule applied under amended
 RFC11-4/RFC11-13 (RFC1-33 now exists and is loaded with the kernel file);
 transcribed measurements removed — the anchored `Measured:` field and the
 packet digest are the only measurements this fixture states.*
+
+*Re-measured 2026-08-10 by the same CG-18 method (declared mandatory set, listed order): the round-2026-08e RD-26 repair batch edited Wave A modules this packet loads. Previous: 16,958 words, digest `f43e9174d24fe3d5…`. Selection unchanged; the movement is contract repairs landing under the fixture, which is the class this check exists to catch.*

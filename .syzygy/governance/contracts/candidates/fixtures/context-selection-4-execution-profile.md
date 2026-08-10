@@ -47,7 +47,7 @@ scripts/context_load.py rfcs/RFC-0005/README.md \
   craft:security-and-secrets.md
 ```
 
-Measured: **11,374 words ≈ 15,355 estimated tokens.** Band position is
+Measured: **11,424 words ≈ 15,422 estimated tokens.** Band position is
 owned by `CONTEXT-BUDGET-REPORT.md` §1, computed from this anchored figure;
 this fixture's prose makes no band claim of its own.
 
@@ -88,7 +88,7 @@ context is in scope); RFC-0002 `rendering-vocabularies`
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`504fe65a0ea9b1c0…`.
+`3d531545dacf1c49…`.
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a
@@ -109,3 +109,5 @@ RD-5's blind-derivation protocol; phase-boundary rule applied under amended
 RFC11-4/RFC11-13; transcribed measurements removed — the anchored
 `Measured:` field and the packet digest are the only measurements this
 fixture states.*
+
+*Re-measured 2026-08-10 by the same CG-18 method (declared mandatory set, listed order): the round-2026-08e RD-26 repair batch edited Wave A modules this packet loads. Previous: 11,374 words, digest `504fe65a0ea9b1c0…`. Selection unchanged; the movement is contract repairs landing under the fixture, which is the class this check exists to catch.*

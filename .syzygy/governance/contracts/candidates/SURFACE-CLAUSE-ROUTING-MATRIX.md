@@ -8,8 +8,11 @@
 
 ## Why this file exists
 
-Six contracts each carry the same binding phase rule — RFC6-28, RFC7-38,
-RFC8-32, RFC9-52, RFC10-16, RFC11-12: *no implementation work for
+Eleven contracts each carry the same binding phase rule — RFC1-33,
+RFC2-26, RFC3-33, RFC4-30, RFC5-27, RFC6-28, RFC7-38, RFC8-32, RFC9-52,
+RFC10-16, RFC11-12 (this file's rows cover RFC 0006–0011; RFC 0001–0005's
+enumerations are produced at surface specification, per each phase
+clause's own staging): *no implementation work for
 user-observable behavior may be scheduled solely from that RFC.* Every
 observable consequence must first map to an approved OpenSpec requirement, or
 carry an explicit reviewed judgment that it has no independently testable

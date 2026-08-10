@@ -215,7 +215,7 @@ module owning its clause, and answered items' reasoning is in
 | q3 | Marker adoption granularity (RFC4-26) | **open** | `fidelity-joins-and-mappings.md` §8 |
 | q4 | Capture cadence duty (RFC4-16) | **open (confirmation)** | `named-adapters.md` §8 |
 | q5 | Defect resolutions (§5) | **confirmed — all four closed** | this README §5; history §8 |
-| q6 | The `gate-backed` provenance predicate (RFC4-13) | **answered — owner decision A2** | `named-adapters.md` §8 |
+| q6 | The `gate-backed` provenance predicate (RFC4-13) | **answered — owner decision A2 + the Tier C RFC 0002 §8 q3 ruling (route 4)** | `named-adapters.md` §8 |
 
 ---
 

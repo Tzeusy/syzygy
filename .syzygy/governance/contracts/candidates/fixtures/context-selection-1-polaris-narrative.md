@@ -50,7 +50,7 @@ scripts/context_load.py rfcs/RFC-0007/README.md \
   rfcs/RFC-0002/rendering-vocabularies.md doctrine:vision.md
 ```
 
-Measured: **14,771 words ≈ 19,941 estimated tokens.** Band position and
+Measured: **14,814 words ≈ 19,999 estimated tokens.** Band position and
 disposition against the proposed (non-installed) budget lines are owned by
 `CONTEXT-BUDGET-REPORT.md` §1, computed from this anchored figure; this
 fixture's prose makes no band claim of its own.
@@ -93,7 +93,7 @@ every module is in `CONTEXT-BUDGET-REPORT.md` §3.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`901ebc04972830bd…` (recompute: `cat <mandatory files> | sha256sum`).
+`694a937836079d38…` (recompute: `cat <mandatory files> | sha256sum`).
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a
@@ -115,3 +115,5 @@ amended RFC11-4/RFC11-13, closing the fixture-1-vs-8 contradiction; every
 transcribed measurement removed — the anchored `Measured:` field and the
 packet digest are the only measurements this fixture states, and both are
 machine-written by `build_budget_report.py` and recomputed by CG-18.*
+
+*Re-measured 2026-08-10 by the same CG-18 method (declared mandatory set, listed order): the round-2026-08e RD-26 repair batch edited Wave A modules this packet loads. Previous: 14,771 words, digest `901ebc04972830bd…`. Selection unchanged; the movement is contract repairs landing under the fixture, which is the class this check exists to catch.*

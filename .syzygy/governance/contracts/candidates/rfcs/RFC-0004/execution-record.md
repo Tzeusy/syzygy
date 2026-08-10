@@ -91,10 +91,10 @@ optional enrichment.
 | run start / end instants | EA | Toolchain-recorded where available; else derivation bounds (first/last commit, report instants) labeled `reduced-fidelity` |
 | runtime + model | EA | Provider-qualified or not at all [Observed]; absent → Unknown |
 | worktree | O | Descriptive, machine-local; never identity-bearing |
-| branch + base revision | EA | The convention-grade correlation join, with its basis declared (RFC4-26) |
+| branch + base revision | EA | The convention-grade correlation join, with its basis declared (RFC4-22) |
 | commits produced | EA | SHA set where reachable at capture; post-squash → PR-granularity, `reduced-fidelity` (RFC4-11) |
 | PR identity + merge-fact reference | EA | From the hosting sub-adapter, never from scheduler closure |
-| terminal outcome + blocker set | R | The toolchain's closed report-status vocabulary, transmitted verbatim with the substrate qualified; blockers structured as reported |
+| terminal outcome + blocker set | R | The toolchain's closed report-status vocabulary, transmitted verbatim with the substrate qualified; blockers structured as reported. Where no report exists to transmit — a vanished worker — the field carries the Syzygy-side value `unknown-terminal` with the reason, so the record stays admissible and the run is never dropped (§8 q2's proposed answer, drafted for ratification at the act; composes with this table's never-dropped rule and RFC4-16(3)) |
 | gate outcomes + artifact references | EA | Each with its RFC2-25 tier; `gate-backed` only under **both** RFC4-13 predicates — a retained resolvable artifact bound to the exact revision (SDR-9) **and** a qualifying provenance route; unverifiable origin caps at `report-fact` |
 | tokens / cost | EA | Per RFC4-21; absent → Unknown, never zero (SDR-6) |
 | **profile identity + version** | EA | The execution profile the run launched under, as RFC5-18(e) requires; absent for runs Syzygy did not launch, rendered Unknown-with-reason, never blank. A run Syzygy *did* launch with no recoverable profile identity is not attributable and its outputs cannot be `gate-backed` (RFC4-13 route 1) |
@@ -183,4 +183,6 @@ capture provenance a context packet binds against.
    an `unknown-terminal` outcome value. Should the envelope instead admit
    records with outcome Unknown-by-reason, keeping R for the field but not the
    value? Proposed: yes — the field is required, `unknown-terminal` is a legal
-   value; stated for explicit confirmation.
+   value; stated for explicit confirmation. **[Drafted 2026-08-10 (RD26-05):**
+   the row above now carries the proposed answer as candidate text; the owner
+   ratifies or reverts it at the act that binds this module.]
