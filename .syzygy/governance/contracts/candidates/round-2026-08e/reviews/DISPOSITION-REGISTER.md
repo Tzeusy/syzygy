@@ -117,3 +117,24 @@ ruling-disclosure instance is queued to the owner, never settled here
 | RD27-08 | MINOR | R | RFC 0009 README sentence corrected to "no clause of RFC 0011 is cited anywhere in RFC 0009" — Wave B byte |
 | RD27-09 | MINOR | R | The three bare `§` references in RFC 0008 name their module — Wave B bytes |
 | RD27-10 | MINOR | R | `05-CONTRACT-INDEX.yaml` regenerated (topology word counts from the RD-25 act-3 repairs); §6 bullet true again at the new commit |
+
+## RD-28 — Specification-authoring path E1–E6 (authoring artifacts at `246af62`)
+
+No finding touches a Wave A or Wave B module byte — no wave argument moves.
+The instrument itself is untouched by this batch (RD-33 still reviews v1.5
+exact bytes). Repairs land in the matrix, the authoring router, the
+fixtures, the load map, the decisions register, the craft install record,
+and AGENTS.md's gate table.
+
+| Finding | Class | Disposition | Where it lands |
+|---|---|---|---|
+| RD28-01 | MAJOR | R | Matrix: the two defective justifications corrected (RFC1-33/RFC2-26/RFC3-33/RFC4-30/RFC5-27 are phase rules; the exclusively-through-six premise retracted); a **Capability 1 authoring supplement** section routes the 11 unrouted trace-table clauses (registration half) with quoted anchors — CG-17 is scoped to RFC6–11 rows and is unaffected |
+| RD28-02 | MAJOR | R | RFC7-39/RFC7-40 rows re-domained `spec/polaris` → `spec/intent-surface`, per the matrix's own RFC-0007 note 10 |
+| RD28-03 | MAJOR | R | Matrix self-description corrected: it is the clause-level **routing** enumeration; the per-consequence coverage enumeration is the surface-specification deliverable each phase clause stages — the matrix now says so instead of claiming to be it |
+| RD28-04 | MAJOR | R | Propagation fixture step 4 restated to CC-REV-2's actual content (doctrine carve-out only; the exception limb removed as unowned); step 2 marked proposed-without-owner, naming the candidate workflow's own no-enforcement disclaimer; HOW-TO's E6 section discloses both |
+| RD28-05 | MAJOR | R + O | New queue row **P-41** (the CC-SPEC craft act) in `PENDING-OWNER-DECISIONS.md`; craft `INSTALL-RECORD.md` gains the pending-candidate row; AGENTS.md's gate table gains the act (ten → eleven); `FIRST-OPENSPEC-SEQUENCE.md`'s prerequisite row points at P-41. Only the owner performs the act |
+| RD28-06 | MAJOR | R | HOW-TO E1 table: all five rows carry an explicit status label; the granularity row quotes option (a) as the packet's `[Inferred]` recommendation with "current authority: none", never as the answer |
+| RD28-07 | MAJOR | R | Fixture 8 and the load map's closing section gain the deferred-wave label the load-map convention already uses (RFC-0011 = Wave C2, deferred; the procedure is the candidate selection discipline, not a Capability 1 reliance) |
+| RD28-08 | MINOR | R | HOW-TO: "the six phase-rule clauses" → the eleven, matching the matrix header |
+| RD28-09 | MINOR | R | Sequence prerequisite header restated: one state per row *for authoring Capability 1*; rows whose blocking belongs to a different gate say so in a Scope note, not a second state |
+| RD28-10 | MINOR | R | Fixture 8 status line: "rev10 accepted fixture set" → the earlier candidate set (no fixture is accepted; all outside every wave manifest) |
