@@ -795,6 +795,11 @@ plus the record and one register row:
 - **RFC-0001** (RD31-06): RFC1-7's `mission` profile entry gains the
   in-place drafted marker naming P-28 — one marking convention across
   all drafted arms, not three.
+- **RFC-0003/README.md** (RD31-07, consequential): the package index's
+  front matter drops the RFC-0004 `depends_on` edge — CG-13 requires
+  the index to declare the union of its modules' edges, so the module
+  edit above forces this one. [Added 2026-08-10 per RD-31b N-2: this
+  fifth digest-moving edit was omitted from §15 as first written]
 - **Acceptance record** (RD31-05, RD31-08): §7 item 12 re-keyed to
   RFC2-19(a); §3's enumeration gains `(+1 lettered: RFC2-19(a))`; item
   14(a) notes the two-trigger/provenance repair; new **item 18**
@@ -805,7 +810,9 @@ plus the record and one register row:
 **Not repaired, deliberately:** RD31-02 — P-33 is the owner's ruling and
 §7 item 11's withholding stands; no byte pretends the offer is open.
 
-Digest-moving in four Wave A modules; the manifest regenerates by
+Digest-moving in five Wave A modules [corrected 2026-08-10, RD-31b N-2:
+"four" as first written — the `RFC-0003/README.md` bullet above was the
+uncounted fifth]; the manifest regenerates by
 `build_active_manifest.py` and §1 row A is rebound by script in the same
 change. `c649143b…` joins `8af6805f…` and `6b98e0c6…` as stale, satisfying
 nothing. Per the register's ordering rule the regenerated argument

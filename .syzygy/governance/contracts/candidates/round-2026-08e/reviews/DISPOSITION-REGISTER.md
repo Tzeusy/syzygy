@@ -248,7 +248,7 @@ parallel with these repairs.
 | RD31-03 | MAJOR | R | RFC-0002 README corrected at all three sites: front matter declares `sub-clause RFC2-19(a)`; the deterministic lookup rule states the one lettered exception and where it resolves; the closing enumeration matches. The RFC-0004 README declaration pattern is followed |
 | RD31-04 | MAJOR | R | RFC3-15's `records/` cell and RFC3-16's lifecycle row gain the RFC3-17(a)-analogous safeguard sentence: a sweep resolution record's authority is the kernel's verification that the resolving policy was provenance-verified under RFC3-16(a) **before the challenge was admitted** — never the record's own say-so; an unbacked resolution record is inadmissible and the suspension holds. The install-gate column's "recorded facts, not authorizations" justification is qualified for this one member |
 | RD31-05 | MAJOR | R | §7 gains item 18: the Wave A act is now the first act that freezes the `constrains:` front-matter relation (RFC-0005) while P-21(a) is open — the ratifying wave (C2) is deferred — and the consumer clause (RFC11-16) sits in a deferred wave; P-21's register row gains the ground-changed note re-routing its earliest gate from the C2 act to the Wave A act |
-| RD31-06 | MINOR | R | RFC1-7's mission profile gains the in-place drafted marker (`[P-28 — mission extension profile, awaiting an owner ruling; ratified or reverted at the act.]`), the same shape as RFC2-19(a)'s and RFC4-19's markers — one marking convention, not three |
+| RD31-06 | MINOR | R | RFC1-7's mission profile gains the in-place drafted marker — the byte at `RFC-0001:210`, copied exactly: `[P-28 — the mission profile entry is a drafted arm, awaiting an owner ruling; the accepting act ratifies it or the owner reverts it (acceptance record §7 item 16)]` — the same shape as RFC2-19(a)'s and RFC4-19's markers — one marking convention, not three. [Corrected 2026-08-10, RD-31b N-3: this row previously presented a paraphrase of the marker in backticks as though it were the byte; the exact bytes now stand in its place] |
 | RD31-07 | MINOR | R | `manifests-and-namespace.md` front matter drops RFC-0004 from `depends_on` and gains the sibling's "Not a reliance: RFC 0004" statement (both RFC4-n citations sit inside RFC3-30's illustrative policy list); dependency index regenerates |
 | RD31-08 | MINOR | R | §7 item 12 re-worded to name RFC2-19(a); §3's sub-clause enumeration gains RFC2 (+1: RFC2-19(a)) |
 
@@ -304,3 +304,42 @@ described.
 | RD34-09 | MINOR | R | The v1.7 delta corrects D-7's overstatement in the honest form RD-34 supplied ("§6 carries no project-specific record or narrative; the trend-log path remains, as RD24-17 required") — the frozen v1.6 delta is not edited, same convention as D-10 |
 | RD34-10 | MINOR | R | P-34's option (a) gains the one-line pointer: the v1.5 delta's D-6/D-7 claims are corrected by the v1.6 delta's D-10 (and D-7's residue by the v1.7 delta) — the frozen records are not edited, and the owner meets the correction before the claims |
 | RD34-11 | MINOR | R | The roster binds membership as well as presence: a parsed row ID outside the 39-entry roster (plus the header sentinel `Q`; G1 keeps its own error) is a validation error, so invented IDs cannot enter the trend row's computed columns; fixture: `A9` rejected |
+
+## RD-31b — Wave A exact-package, second administration (argument `8972d963…` at `1a23d19`)
+
+The round's first `VERDICT: CONFIRM`. All eight RD-31 dispositions were
+verified — seven closed in the bytes, RD31-02 correctly owner-owned with
+§7 item 11's withholding intact — and the regression sweeps ran clean
+(19/19 digests, zero cross-wave escapes over 63 classified tokens, six of
+six drafted/unruled arms disclosed at §7, no ceremony phrase in 19 × 7
+string sweeps). The review's operative sentence, quoted exactly: "these
+bytes are offer-ready. The Wave A act may be offered on argument
+`8972d963…` once, and only once, P-33 is ruled." Its three new findings
+are all MINOR, and the review itself directs them away from these bytes:
+repairing N-1 now would retire the confirmed argument, cost a fourth
+regeneration and a third exact-package review, "and buy nothing an owner
+performing the act would notice." N-2 and N-3 are corrections to process
+records that sit outside the bound manifest — repairing them moves no
+module byte and leaves the argument standing.
+
+| Finding | Class | Disposition | Where it lands |
+|---|---|---|---|
+| N-1 | MINOR | B | **Batched to the next wave-byte pass, per the review's own rule-10 direction — not repaired on these bytes.** The repair owed: widen RFC3-2 ¶1/¶2's class characterization to the same two limbs ¶3 already states, and align trigger 1's qualifier ("an actor's" → "a non-owner actor's", RFC3-15's wording). The review constructed no operative divergence from it (admissibility and write authority resolve identically in both readings), which is what separates it from RD31-01. Tracked as a bd issue so it survives this session; any future pass that touches Wave A bytes for any reason picks it up, regenerates, and re-runs the offer gate |
+| N-2 | MINOR | R | `WAVE-A-SEMANTIC-DELTA.md` §15 corrected in place with a dated marker: the batch moved digests in **five** modules, not four, and the omitted fifth — `RFC-0003/README.md`, whose front matter dropped the RFC-0004 `depends_on` edge as CG-13's union rule forces once `manifests-and-namespace.md` dropped it — gains its own bullet. A delta-record edit only; no manifest byte moves and the argument stands |
+| N-3 | MINOR | R | This register's RD31-06 row corrected with a dated marker: the marker string it presented in backticks was a paraphrase, not the byte. The exact bytes at `RFC-0001:210` are now copied verbatim — the transcribed-quotation class rule 3 exists for, applied to our own bookkeeping |
+
+**Carried corrections (not findings against the package).** RD-31b
+re-measured two of RD-31's passing denominators and both were over-broad;
+recorded here so the false figures do not travel into the closure report
+as measurements (VIS-2 applies to a reviewer's own claims first):
+
+- The "Absent such a record, this contract binds nothing" banner is on
+  **8 of 19** modules (five package indexes, both RFC-0003 modules, the
+  two standalone RFCs) — not 19/19. The other eleven are covered by the
+  directory-level marker CG-4a itself names (`candidates/README.md`);
+  the candidate status stands, the figure did not.
+- The explicit "Forward references are informative" paragraph is in
+  **6 of 19** modules — not 19/19. The modules with cross-wave tokens
+  that lack the paragraph each self-mark at the citation site instead;
+  no forward reference is unmarked, so the conclusion stands, the
+  coverage figure did not.
