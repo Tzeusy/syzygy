@@ -132,7 +132,7 @@ owner's launch-gate instrument (v1.3, at commit `067d8a0`) returned
 **GATE VERDICT: NOT READY** — 17 of 31 questions Not met, including all six
 of section E, the OpenSpec-readiness section itself; the raw record is
 `…/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md`.
-The instrument is now **v1.15** (candidate; owner approval prepared as
+The instrument is now **v1.16** (candidate; owner approval prepared as
 P-34). The repair-and-re-review chain: RD-24 (v1.4, REVISE) → v1.5 →
 RD-33 (REVISE, five MAJOR) → v1.6 → RD-34 (REVISE — one BLOCKING: the
 deferral-carrying pass branch ran no formula conjunct) → v1.7 → RD-35
@@ -195,11 +195,19 @@ verdict; §2's integrity anchor was the tenth `_decl` site and still read
 hidden text; LG-4's new emptiness requirement was inert in the record
 shape §5 mandates; and three of four fixtures shipped for the previous
 repair witnessed a different rule than the one they were written for)
-→ v1.15.
-The v1.8 through v1.15 batches are
+→ v1.15 → RD-43
+(REVISE — two BLOCKING: the raw-HTML region still did not begin or end
+where a reader sees it, measured by rendering the record and parsing it
+with an HTML5 parser; an indented-code close tag, a backslash-escaped
+close tag, a mid-line opening tag and an opening tag split across two
+lines each carried a declared field — or a whole verdict, below a
+visible `NOT READY` — past the validator at 0 errors; a line beginning
+with an autolink blanked every line after it; and LG-4's emptiness
+requirement silently withdrew five lawful forms of G1 content) → v1.16.
+The v1.8 through v1.16 batches are
 validator-and-records only — the instrument's §1–§8 have now gone
-**eight amendments across nine versions** (v1.7–v1.15) byte-unchanged,
-and the §8 parameter block eleven versions (v1.5–v1.15), while the
+**nine amendments across ten versions** (v1.7–v1.16) byte-unchanged,
+and the §8 parameter block twelve versions (v1.5–v1.16), while the
 measuring layer keeps yielding one more class per administration. The
 diagnosis has moved one step per review and is now as specific as it
 has been: RD-39 said a repair must be specified over the **property**;
@@ -234,7 +242,20 @@ validator refused with 8, 8 and 1 errors — a `<details>` named
 mid-sentence, a `` `<summary>` `` in a code span, a `<details>` in a
 table cell — now validate clean, and all 37 stored attack records from
 the three earlier rounds produce byte-identical output under both
-versions).
+versions). v1.16 finishes the move the previous batch began, on the
+authority the previous batch lacked: the block phase is decided before
+any tag is read, the region trigger is CommonMark's own start condition
+6 rather than a rule chosen here, an autolink is not a tag, and a
+section's content is what a reader sees in it (205 fixtures; **all
+twelve** mutation-reverts failing exactly the fixtures their repair
+added — the first batch of this chain with no unwitnessed repair; one
+acceptance deliberately withdrawn, and across the 54 stored attack
+records of the four earlier rounds exactly one record moves, that
+withdrawal). **The method is the durable part:** a claim about what a
+reader sees is now settled by rendering the record and parsing the
+result, never by reading a specification — a distinction that had
+already carried two reviews and one repair batch in the wrong
+direction.
 
 Two of v1.14's decisions are worth stating as decisions rather than
 repairs, because they are where the instrument's own text constrains
@@ -251,7 +272,7 @@ verdict, and a field carrying §5's own angle-bracket placeholder has
 not been answered. Closing the underlying limit properly would need a
 §5 amendment, which is an owner act and not a batch's to make. Each
 re-review verified the prior batch whole before finding the next
-class; the P-34 offer waits on the RD-43 re-review of the v1.15 delta,
+class; the P-34 offer waits on the RD-44 re-review of the v1.16 delta,
 and the formal administration that a launch decision could rely on has
 not yet been run.
 

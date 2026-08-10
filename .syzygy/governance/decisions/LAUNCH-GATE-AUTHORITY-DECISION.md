@@ -8,67 +8,61 @@
 
 ## Question
 
-Approve `launch-gate-pre-specifications.md` **v1.15** as this repository's
+Approve `launch-gate-pre-specifications.md` **v1.16** as this repository's
 owner-approved **process policy** for evaluating pre-specification
 readiness?
 
-> **Offer status (2026-08-11, third revision):** not yet offerable.
-> Ten re-reviews, ten `REVISE` verdicts: v1.5's (RD-33) closed by
-> v1.6; v1.6's (RD-34) by v1.7; v1.7's (RD-35 — the new
-> citation-existence check shipped inverted) by v1.8; v1.8's (RD-36) by
-> v1.9; v1.9's (RD-37) by v1.10; v1.10's (RD-38) by v1.11; v1.11's
-> (RD-39) by v1.12; v1.12's (RD-40) by v1.13; v1.13's (RD-41) by v1.14;
-> and v1.14's re-review (**RD-42**, `VERDICT: REVISE`) is closed by
-> v1.15.
+> **Offer status (2026-08-11, fourth revision):** not yet offerable.
+> Eleven re-reviews, eleven `REVISE` verdicts: v1.5's (RD-33) closed by
+> v1.6 … v1.13's (RD-41) by v1.14; v1.14's (RD-42) by v1.15; and v1.15's
+> re-review (**RD-43**, `VERDICT: REVISE`) is closed by v1.16.
 >
-> RD-42 verified all twelve RD-41 findings present, reproduced the
-> fixture arithmetic, constructed all sixteen mutation-reverts from the
-> delta's own descriptions and measured each, and confirmed the §1–§8
-> identity and the frozen population. It then ran **every captured
-> fixture through both validators on identical bytes** — and returned
-> **six BLOCKING** findings, the first of which is the same class for
-> the **sixth** time, and the reason it keeps recurring is worth the
-> owner's attention: v1.14 replaced enumeration with state for
-> markdown's containers and **kept an enumeration for HTML's**. Four
-> carriers the enumeration did not name — `<div style="display:none">`,
-> `<p style="display:none">`, `<span hidden>`, `<table><tr><td>` — each
-> hid a declared field from the reader while the validator read it as
-> the record's own, and an inline `` `</details>` `` code span reopened
-> the one element the counter did know. The same door laundered a
-> verdict: a `READY FOR` hidden in collapsed content below a record's
-> visible terminal `NOT READY` was reported as the record's verdict, in
-> pure ASCII. Alongside it: `Parameter block sha256:` — §2's integrity
-> anchor — was the tenth `_decl` site and still read hidden text, where
-> the delta claimed all ten read the record's own lines; LG-4's new
-> emptiness requirement was **inert in the record shape §5 mandates**;
-> and three of the four fixtures shipped for the previous round's
-> restoration repair witnessed a different rule than the one they were
-> written for, alongside two counts (`fourteen` witnesses, `four`
-> markers) that were false of the bytes.
+> RD-43 verified all thirteen RD-42 findings present — **eight closed
+> outright**, one **not closed** — and changed the chain's method: it
+> settled every claim about what a reader sees by **rendering the record
+> and parsing the result with an HTML5 parser**, rather than by reading
+> the CommonMark specification. On that footing it returned **two
+> BLOCKING** findings. v1.15's raw-HTML region still did not begin or
+> end where a reader sees it: a close tag written as an indented code
+> block, and a backslash-escaped one, each render as literal text and
+> left the element open; a block-level tag mid-sentence, and an opening
+> tag split across two lines, each opened an element the validator never
+> saw. Four carriers followed, every one of them supplying the
+> instrument's sharpest declared field from content whose DOM ancestor
+> is `details` or a display:none `div`, at **0 errors** under `READY FOR
+> <the verbatim target>` — and one laundered a verdict below a record
+> whose last visible line read `GATE VERDICT: NOT READY`. Alongside
+> them: a line beginning with a **URL or email autolink** blanked every
+> line after it, terminal verdict included, refusing a lawful record
+> with 8 errors; and LG-4's new emptiness requirement silently withdrew
+> **five lawful forms of G1 content** — a bulleted list among them,
+> which is the natural form for a completeness critic's output.
 >
-> v1.15 is a **validator-and-records batch** an eighth time; instrument
-> §1–§8 have now gone **nine versions** (v1.7–v1.15 — eight
-> amendments; the §8 parameter block alone is unchanged across eleven,
-> v1.5–v1.15, each figure swept this session) byte-unchanged, each
-> verified per-section. **A raw-HTML region is now element nesting**,
-> like every other container in the predicate: it opens at a line whose
-> content begins with a tag of any name, every tag inside it is read, a
-> close tag pops back to the element it names and pops nothing if it
-> names none, code spans are removed before any tag is read, and
-> self-closing and void forms open nothing. One decision the owner
-> should read as a decision rather than a repair: **outside a region a
-> line must begin with a tag to open one**, which is what lets a
-> reviewer write *about* a carrier — three lawful records that v1.14
-> refused with 8, 8 and 1 errors now validate clean — and which costs a
-> record line that itself begins with an inline tag, paid in the
-> refusing direction. One clause is disclosed as having **no
-> single-layer witness** (0 of 187) rather than counted as proven, and
-> one message is made true of what it matched rather than of §5's text,
-> with the literal-matching alternative rejected **by measurement**.
-> Because the same session that authored the v1.15 bytes may not confirm
-> them, the offer waits on a fresh-context re-review of the v1.15 delta
-> (**RD-43**). The formal administration must not run on any earlier
-> validator (the closing directions of RD-33 through RD-42).
+> v1.16 is a **validator-and-records batch** a ninth time; instrument
+> §1–§8 have now gone **ten versions** (v1.7–v1.16 — nine amendments;
+> the §8 parameter block alone is unchanged across twelve, v1.5–v1.16,
+> each figure swept this session) byte-unchanged, each verified
+> per-section. **The block phase is decided first** — fences, comments,
+> indented code, backslash escapes and code spans are literal text —
+> and tags are read only out of what survives; the region trigger is
+> **CommonMark's own start condition 6**, quoted from the specification;
+> an autolink is not a tag; and a section's content is what a reader
+> sees in it. Two decisions the owner should read as decisions rather
+> than repairs. **One acceptance is withdrawn on purpose:** a
+> `<details>` named mid-sentence without escaping, which the previous
+> review called lawful on a legacy HTML parse and which the HTML5
+> algorithm collapses — the code-span and table-cell forms stay lawful
+> and are how a reviewer writes about a carrier safely. And the
+> predicate **refuses a declaration carried inside any raw-HTML element
+> the record opens, whether or not that element hides it**, because
+> deciding hiding means evaluating CSS the instrument cannot evaluate;
+> that over-refusal is named and fixtured rather than described as harm
+> prevented. **205 fixtures; twelve mutation-reverts, all twelve
+> witnessing** — the first batch of this chain with no unwitnessed
+> repair. Because the same session that authored the v1.16 bytes may not
+> confirm them, the offer waits on a fresh-context re-review of the
+> v1.16 delta (**RD-44**). The formal administration must not run on any
+> earlier validator (the closing directions of RD-33 through RD-43).
 
 ## What approval binds — and what it never binds
 
@@ -97,7 +91,7 @@ has already directed this pass to respect.
 
 ## Options
 
-- **(a) Approve v1.15 as offered.** The amendment records are
+- **(a) Approve v1.16 as offered.** The amendment records are
   `contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.4-SEMANTIC-DELTA.md`
   (twelve deltas; no question weakened; three questions added from the
   pilot's G1; launch-scope parameters for Capability 1 fixed in §8),
@@ -192,13 +186,27 @@ has already directed this pass to respect.
   they witness the repair they were written for; validator and records
   only — no question weakened; no ID renumbered; instrument §1–§8
   byte-unchanged through **nine versions, v1.7–v1.15**, eight
-  amendments. Three lawful records the previous version refused are
-  newly accepted, and one clause is disclosed as unwitnessed rather
-  than counted as proven).
+  amendments; **read with the v1.16 delta's D-1**, which corrects its
+  element-nesting sentence, its self-closing clause, its claim that
+  three lawful records were restored, its carrier claim, its LG-4 claim,
+  its inline-tag residual and its unreproducible regression figure), and
+  `…/LAUNCH-GATE-v1.16-SEMANTIC-DELTA.md` (the RD-43 re-review's seven
+  findings closed — the block phase decided before any tag is read, so
+  indented code and backslash escapes are literal text; the region
+  trigger taken from CommonMark's own start condition 6, so a
+  block-level tag mid-sentence and a tag split across lines both open
+  what the renderer opens; autolinks excluded from the tag grammar; and
+  a section's content measured as what a reader sees in it; validator
+  and records only — no question weakened; no ID renumbered; instrument
+  §1–§8 byte-unchanged through **ten versions, v1.7–v1.16**, nine
+  amendments. Five lawful G1 forms and four lawful angle-bracket shapes
+  the previous version refused are newly accepted; one acceptance is
+  deliberately withdrawn with its measurement stated; and every one of
+  the twelve mutation-reverts witnesses a repair).
 - **(b) Approve with amendments** — state them; the changelog takes a
-  v1.16 entry and the semantic delta extends. One prepared amendment the
+  v1.17 entry and the semantic delta extends. One prepared amendment the
   owner may take here: **promote F5 (assurance independence) from a
-  recorded question to a verdict conjunct** — v1.15 deliberately leaves it
+  recorded question to a verdict conjunct** — v1.16 deliberately leaves it
   non-gating at Administration 1 and discloses instead (RD24-12); making
   it a conjunct means no same-family administration can ever read READY.
 - **(c) Decline** — the gate remains an informal checklist; readiness
@@ -282,7 +290,22 @@ sha256:` is reported absent rather than mismatched, a bare `## G1` in
 previous validator refused — a `<details>` named mid-sentence, a
 `` `<summary>` `` in a code span, a `<details>` in a table cell —
 validate clean. All 37 stored attack records from the three earlier
-rounds produce byte-identical output under v1.14 and v1.15.
+rounds produce byte-identical output under v1.14 and v1.15. And
+v1.16's repairs are exactly the eleventh re-review's (RD-43: the
+raw-HTML region still did not begin or end where a reader sees it —
+an indented-code close tag, a backslash-escaped close tag, a mid-line
+opening tag and a tag split across two lines each carried a declared
+field, or a whole verdict, past the validator at 0 errors; a line
+beginning with an autolink blanked every line after it; and LG-4's
+emptiness requirement withdrew five lawful forms of G1 content). Each
+repair now has a fixture that fails without it — **205 in all**, with
+**all twelve** mutation-reverts failing exactly the fixtures their
+repair added; RD-43's attack records re-executed against the repaired
+validator: each of the four carriers is refused, the laundered verdict
+is an ambiguity error rather than the record's verdict, the four
+angle-bracket shapes and the five G1 forms validate clean, and across
+the 54 stored attack records of the four earlier rounds exactly one
+record moves — the withdrawn acceptance, whose measurement is stated.
 
 ## Mechanism (the lawful transaction, prepared not performed)
 
@@ -302,7 +325,7 @@ nowhere once the header flips). To approve:
 3. Record in this file, below this line, an approval block:
 
    ```text
-   APPROVED — launch-gate v1.15 as process policy
+   APPROVED — launch-gate v1.16 as process policy
    date: <date>
    instrument sha256: <the digest computed in step 2, post-status-edit>
    scope: process policy for pre-specification readiness evaluation;
@@ -318,7 +341,7 @@ nowhere once the header flips). To approve:
 Under **option (b)**, the ordering extends the same way (RD33-11): the
 owner's amendments are applied to the instrument **in the working tree
 before step 2's digest is computed** — together with the status edit and
-the changelog's v1.15 entry — so the digest always binds the amended
+the changelog's v1.17 entry — so the digest always binds the amended
 bytes; the amendments, status edit, changelog entry, and approval block
 travel in the one commit of step 4. An amendment applied after step 2
 would recreate exactly the approval-attests-bytes-that-exist-nowhere

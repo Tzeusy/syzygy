@@ -474,6 +474,9 @@ def _own_flags(lines):
         if not e.strip():
             flags.append("no")
             para_open = False
+            # A paragraph ends here, and with it every inline element it
+            # opened: inline raw HTML cannot span a blank line.
+            html_stack[:] = [x for x in html_stack if x[1] != "inline"]
             continue
         pos, matched = 0, 0
         for c in stack:
@@ -527,7 +530,18 @@ def _own_flags(lines):
                 break
         content = rest.lstrip(" ")
         cind = len(rest) - len(content)
-        _bare = _strip_code_spans(content)
+        # RD43-01: markdown's literal-text constructs are decided BEFORE
+        # any tag is read. `_active_lines` already removes fences and HTML
+        # comments; an indented code block and a backslash escape are the
+        # same kind of thing — text that renders as text — and v1.15 read
+        # tags out of both. Measured against `pandoc` + `html5lib`: a
+        # `</details>` written as indented code, or as `\</details>`,
+        # leaves the element OPEN in the rendered document, so the
+        # validator that popped on them accepted four records whose
+        # decisive field's DOM ancestor was `details` or a display:none
+        # `div`.
+        _in_code = cind >= 4 and not para_open
+        _bare = "" if _in_code else _readable_tags(content)
         _raw_html_line = bool(_TAG_AT_START_RE.match(_bare))
         cls = "no"
         if not html_stack and not _raw_html_line and content and cind <= 3:
@@ -536,7 +550,6 @@ def _own_flags(lines):
             elif stack == ["bq"]:
                 cls = "bq1"
         flags.append(cls)
-        para_open = bool(content)
         # RD42-01: this limb used to be `<(?:details|summary)\b` — two
         # tag names of one of CommonMark's seven HTML-block start
         # conditions — and its counter could be decremented by an inline
@@ -560,16 +573,56 @@ def _own_flags(lines):
         # mentions `<details>` mid-sentence opens nothing (RD42-09); the
         # residual — a record line whose own text begins with an inline
         # tag is read as raw HTML — is stated in §9 and measured.
-        if html_stack or _raw_html_line:
-            for _m in _TAG_RE.finditer(_bare):
-                _name = _m.group(2).lower()
-                if _m.group(1):
-                    if _name in html_stack:
-                        _i = len(html_stack) - 1 - html_stack[::-1].index(_name)
-                        del html_stack[_i:]
-                elif not _m.group(3).rstrip().endswith("/") \
-                        and _name not in _VOID:
-                    html_stack.append(_name)
+        # A GFM table row is inline context that ENDS at the cell: measured
+        # against the renderer, `| <details> | rejected |` leaves the
+        # following field outside every element (RD42-09's accepting
+        # direction, kept).
+        if _TABLE_ROW_RE.match(_bare):
+            _bare = ""
+        _first = True
+        for _m in _TAG_RE.finditer(_bare):
+            _name = _m.group(2).lower()
+            _at_start = _first and _m.start() == 0
+            _first = False
+            if _m.group(1):
+                _names = [n for n, _k in html_stack]
+                if _name in _names:
+                    _i = len(_names) - 1 - _names[::-1].index(_name)
+                    del html_stack[_i:]
+                continue
+            if _name in _VOID:
+                continue
+            # RD43-01, measured rather than reasoned. CommonMark's HTML
+            # block start condition 6 names the elements that open a raw
+            # block ANYWHERE, interrupting a paragraph; every other name
+            # is condition 7, which cannot interrupt a paragraph and
+            # renders as inline HTML that closes at the paragraph's end.
+            # `<div/>` opens a `div` — HTML5 ignores the slash for
+            # non-void HTML elements, and v1.15's "self-closing opens
+            # nothing" rule was false of the render.
+            if _name in _COND6 or (_at_start and not para_open):
+                # A block region survives blank lines until its close tag.
+                html_stack.append((_name, "block"))
+            elif _HIDING_ATTR_RE.search(_m.group(3)):
+                # Inline raw HTML contains what follows it only to the end
+                # of its paragraph, and containment alone is not harm: an
+                # unknown inline element renders its children, so
+                # `Materials given: the fixed §2 list <plus the parameter
+                # block>` must stay lawful (RD41-01's accepting direction,
+                # RD43-03's class). What makes an inline carrier a carrier
+                # is the attribute that HIDES it — `hidden`,
+                # `style="display:none"`, `aria-hidden="true"` — which is
+                # exactly what `<span hidden>` uses. Measured both ways
+                # against the renderer.
+                html_stack.append((_name, "inline"))
+        # Start condition 6 is also satisfied by an opening tag whose `>`
+        # never arrives on this line (`<div` + newline). v1.15's tag
+        # regex required the `>`, so a tag split across two lines opened
+        # nothing while the renderer emitted the whole thing raw.
+        _open_frag = _SPLIT_TAG_RE.search(_bare)
+        if _open_frag and _open_frag.group(1).lower() in _COND6:
+            html_stack.append((_open_frag.group(1).lower(), "block"))
+        para_open = bool(content)
         html_depth = len(html_stack)
     return flags
 
@@ -580,6 +633,47 @@ _VOID = frozenset((
 _CODE_SPAN_RE = re.compile(r"(`+)(?:(?!\1).)*?\1")
 _TAG_RE = re.compile(r"<(/?)([A-Za-z][A-Za-z0-9-]*)([^>]*)>")
 _TAG_AT_START_RE = re.compile(r"</?[A-Za-z][A-Za-z0-9-]*(?:[^>]*)>")
+_TABLE_ROW_RE = re.compile(r"\|.*\|[^\S\n]*$")
+_HIDING_ATTR_RE = re.compile(
+    r"(?:^|[^\S\n])(?:hidden(?:[^\S\n]*=|[^\S\n]|/?$)"
+    r"|aria-hidden[^\S\n]*=[^\S\n]*[\"\']?true"
+    r"|style[^\S\n]*=[^>]*display[^\S\n]*:[^\S\n]*none)", re.I)
+_SPLIT_TAG_RE = re.compile(r"<([A-Za-z][A-Za-z0-9-]*)(?:[^\S\n][^>]*)?$")
+# CommonMark's HTML block start condition 6 — quoted from the
+# specification, not chosen here. These names open a raw-HTML block from
+# any position, INCLUDING interrupting a paragraph, and HTML5's "in body"
+# insertion mode closes an open `<p>` when it meets them. Every other tag
+# name is condition 7, which cannot interrupt a paragraph: mid-sentence it
+# renders as inline HTML and closes with the paragraph.
+_COND6 = frozenset((
+    "address", "article", "aside", "base", "basefont", "blockquote",
+    "body", "caption", "center", "col", "colgroup", "dd", "details",
+    "dialog", "dir", "div", "dl", "dt", "fieldset", "figcaption",
+    "figure", "footer", "form", "frame", "frameset", "h1", "h2", "h3",
+    "h4", "h5", "h6", "head", "header", "hr", "html", "iframe", "legend",
+    "li", "link", "main", "menu", "menuitem", "nav", "noframes", "ol",
+    "optgroup", "option", "p", "param", "search", "section", "summary",
+    "table", "tbody", "td", "tfoot", "th", "thead", "title", "tr",
+    "track", "ul"))
+# CommonMark autolinks: `<scheme:rest>` and `<local@domain>`. An autolink
+# is not a tag — it renders as a link — and v1.15 read `<https://…>` as an
+# element named `https` that nothing ever closed, blanking every line
+# after it (RD43-03). §5's own template writes unfilled values in angle
+# brackets, so this shape is one a reviewer of this instrument writes.
+_AUTOLINK_RE = re.compile(
+    r"<(?:[A-Za-z][A-Za-z0-9+.-]{1,31}:[^<>\x00-\x20]*"
+    r"|[^\s<>@]+@[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?"
+    r"(?:\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)*)>")
+_ESCAPED_LT_RE = re.compile(r"\\<")
+
+
+def _readable_tags(s: str) -> str:
+    """The text a tag may be read out of: code spans removed (they render
+    as literal text), backslash-escaped `\\<` removed (same), and
+    autolinks removed (they render as links, not elements). Everything
+    left is what the renderer emits as raw HTML."""
+    return _AUTOLINK_RE.sub(" ", _ESCAPED_LT_RE.sub(" ",
+                                                    _strip_code_spans(s)))
 
 
 _ATX_RE = re.compile(r" {0,3}#{1,6}(?:[^\S\n]|$)")
@@ -624,6 +718,41 @@ def _takewhile_before_heading(lines):
             break
         out.append(ln)
     return out
+
+
+
+def _g1_section_content(raw_lines, flag_by_raw, decl_end):
+    """Does the G1 section contain anything a reader would see?
+
+    RD43-04: v1.15 asked whether the section held a line of the record's
+    OWN — which is a containment question, and the wrong one for a
+    *section*. A completeness critic's output is most naturally a bulleted
+    list; a list line is inside a list container and so is never "own", and
+    the same is true of a quotation, a fenced block and indented code. All
+    five forms were silently withdrawn, each refused with a message untrue
+    of a record whose G1 section a reader plainly sees has content. The
+    question here is presence, not containment, so it is asked over the raw
+    lines: anything non-blank between the heading and the next heading
+    counts, except §5's declared trailer labels and the terminal verdict —
+    the two things §5 itself places after G1."""
+    start = next((i for i, ln in enumerate(raw_lines)
+                  if flag_by_raw.get(i) == "own"
+                  and _G1_HEADING_RE.match(ln.expandtabs(4))), None)
+    if start is None:
+        return False
+    for i in range(start + 1, len(raw_lines)):
+        if decl_end is not None and i >= decl_end:
+            break
+        ln = raw_lines[i]
+        e = ln.expandtabs(4)
+        if flag_by_raw.get(i) == "own" and _ATX_RE.match(e):
+            break
+        if not ln.strip():
+            continue
+        if re.match(r" {0,3}\**GATE VERDICT:", e) or _is_declared_label_line(ln):
+            continue
+        return True
+    return False
 
 
 def _carriers(idxs, raw_lines, flag_by_raw, kept_idx):
@@ -905,18 +1034,15 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     if _g1_at is None:
         errors.append("LG-4: no G1 section — an administration missing G1 "
                       "is incomplete and cannot support a gate decision")
-    elif not any(
-            ln.strip()
-            and not _ATX_RE.match(ln.expandtabs(4))
-            and not re.match(r" {0,3}\**GATE VERDICT:", ln.expandtabs(4))
-            and not _is_declared_label_line(ln)
-            for ln in _takewhile_before_heading(_own_lines[_g1_at + 1:])):
+    elif not _g1_section_content(_raw_lines, _flag_by_raw, _decl_end):
         errors.append(
-            "LG-4: the `G1` heading opens an EMPTY section — no content "
-            "of the record's own follows it before the next heading. §4: "
+            "LG-4: the `G1` heading opens an EMPTY section — nothing a "
+            "reader would see follows it before the next heading. §4: "
             "\"an administration missing G1 is incomplete and cannot "
             "support a gate decision\"; a heading with nothing beneath it "
-            "is a missing section, not a present one (RD41-04)")
+            "is a missing section, not a present one (RD41-04). A list, a "
+            "quotation, a code block or a table all count as content "
+            "(RD43-04)")
 
     # ---- LG-10 roster -----------------------------------------------------
     if verdicts:
@@ -2610,11 +2736,16 @@ def selftest():
                       "```html\n<details>\n<summary>x</summary>\n```\n\n"
                       "GATE VERDICT:"),
          None)
-    case("a self-closing `<details/>` mentioned in prose is inert "
-         "(RD41-06)",
+    # RD43-01, measured against `pandoc` + `html5lib`: HTML5 ignores the
+    # self-closing slash on a non-void element, so `<details/>` OPENS a
+    # details element and the rest of the record renders inside it. v1.15
+    # asserted the opposite and this fixture asserted it with v1.15.
+    case("a `<details/>` in prose opens a region — HTML5 ignores the "
+         "self-closing slash on a non-void element (RD43-01, measured "
+         "against the renderer; withdraws a v1.15 acceptance)",
          good.replace("GATE VERDICT:",
                       "A <details/> element was considered.\n\n"
-                      "GATE VERDICT:"), None)
+                      "GATE VERDICT:"), "LG-6")
     case("an HTML comment mentioning `<details>` is inert (RD41-06)",
          good.replace("GATE VERDICT:",
                       "<!-- see <details> below -->\n\nGATE VERDICT:"),
@@ -2674,14 +2805,24 @@ def selftest():
             ("<span hidden>", "</span>", "span"),
             ("<table><tr><td>", "</td></tr></table>", "table"),
             ("<DETAILS>", "</DETAILS>", "uppercase details")):
-        case(f"`{_name}` hides a declared field from the reader, so the "
-             "field is absent — an HTML block is a block, not a tag "
-             "name (RD42-01)",
+        # Measured with `pandoc` + `html5lib` (RD43's method, adopted):
+        # `div`, `p`, `span hidden` and `DETAILS` genuinely HIDE the field
+        # from a reader; `table` does not — the field is inside a `td` a
+        # reader sees. The predicate refuses both, because deciding
+        # hiding means evaluating CSS the instrument cannot evaluate, and
+        # §5 never places a declared field inside raw HTML. The v1.15
+        # wording claimed all five hid it; the over-refusal is named here
+        # and disclosed in §9 rather than described as harm prevented.
+        case(f"`{_name}` carries a declared field inside an element the "
+             "record opened, so the field is not the record's own — an "
+             "HTML region is a region, not a tag name (RD42-01/RD43-01)",
              _no_e3.replace("GATE VERDICT:",
                             f"{_open}\n{_e3}\n{_close}\n\nGATE VERDICT:"),
              "no `E3 reopen-list:` field", forbid="LG-6")
     # Measured, not assumed: reverting the raw-HTML-line CLASSIFICATION
-    # alone kills 0 of 185 (mut15 m4), because every declared-value read is
+    # alone kills 0 of the corpus (mut15 m4; recomputed at each
+    # version rather than transcribed — RD43-06), because every
+    # declared-value read is
     # `^`-anchored and the verdict-token scan counts raw lines. This fixture
     # witnesses the element-nesting rule that closes the region (m2), and
     # the classification stands as defence in depth — §9 and the v1.15
@@ -2696,13 +2837,18 @@ def selftest():
     # The two forms that open nothing, each in its accepting direction:
     # a field beneath them is still the record's own, because no element
     # is open above it.
-    for _tag, _why in (("<div/>", "a self-closing tag"),
-                       ("<br>", "a void element")):
-        case(f"{_why} opens no HTML region — the declared field beneath "
-             "`" + _tag + "` is still the record's own (RD42-01)",
-             _no_e3.replace("GATE VERDICT:", _tag + "\n" + _e3
-                            + "\n\nGATE VERDICT:"),
-             None)
+    case("a void element opens no HTML region — the declared field "
+         "beneath `<br>` is still the record's own (RD42-01)",
+         _no_e3.replace("GATE VERDICT:", "<br>\n" + _e3
+                        + "\n\nGATE VERDICT:"),
+         None)
+    case("a self-closing `<div/>` DOES open a region — the slash is "
+         "ignored for non-void elements, so the field beneath it is "
+         "carried inside a container the record opened (RD43-01, "
+         "measured; withdraws a v1.15 acceptance)",
+         _no_e3.replace("GATE VERDICT:", "<div/>\n" + _e3
+                        + "\n\nGATE VERDICT:"),
+         "no `E3 reopen-list:` field")
     case("a lawful record carrying a CLOSED `<details>` appendix still "
          "validates — the region ends where the element ends (RD42-01)",
          good.replace("## G1 — completeness critic\nnone proposed\n",
@@ -2761,12 +2907,19 @@ def selftest():
     # RD42-09: a reviewer writing ABOUT an HTML carrier — the canonical
     # thing a reviewer of this instrument does — must not break their
     # own record.
-    case("a `<details>` mentioned mid-paragraph opens no HTML block "
-         "(RD42-09)",
+    # RD43-01 again, and it reverses RD42-09's first construction. RD-42
+    # called this record lawful on an `lxml.html` parse; `lxml` is
+    # libxml2's legacy parser, and under the HTML5 algorithm browsers and
+    # GitHub implement, `<details>` mid-sentence closes the open paragraph
+    # and collapses everything below it. The lawful way to write about a
+    # carrier is the code span, which is fixtured beneath this one.
+    case("a `<details>` mentioned mid-paragraph DOES open a region — it "
+         "closes the paragraph and collapses the rest (RD43-01, measured "
+         "against the renderer; withdraws a v1.15 acceptance)",
          good.replace("Operationalization notes: none",
                       "Operationalization notes: I weighed a <details> "
                       "block and rejected it"),
-         None)
+         "LG-6")
     case("a `` `<summary>` `` in an inline code span opens no HTML block "
          "(RD42-09)",
          good.replace("Operationalization notes: none",
@@ -2786,6 +2939,131 @@ def selftest():
              .replace("GATE VERDICT:",
                       "###G1 was considered elsewhere.\n\nGATE VERDICT:"),
          "no G1 section")
+
+    # ---- v1.16: the predicate reads what the renderer emits (RD-43) ------
+    # Every construction below was rendered with `pandoc -f gfm` and
+    # `-f commonmark` and parsed with `html5lib` — the algorithm browsers
+    # and GitHub implement — and the DOM chain containing the field was
+    # read. Where the render and a reading of the CommonMark spec
+    # disagreed, the render won; three v1.15 fixtures asserted the losing
+    # side and are flipped above.
+
+    # RD43-01(a): a close tag written as an indented code block renders as
+    # escaped text, so the element never closes.
+    case("a `</details>` written as an INDENTED CODE BLOCK closes nothing "
+         "— it renders as escaped text (RD43-01a)",
+         _no_e3.replace(
+             "GATE VERDICT:",
+             "<details>\n<summary>Appendix</summary>\n\nNothing here is "
+             "an answer.\n\n    </details>\n\n" + _e3 + "\n\n"
+             "GATE VERDICT:"),
+         "no `E3 reopen-list:` field")
+    # RD43-01(b): `\<` is a CommonMark escape; the close renders as text.
+    case("a backslash-escaped `\\</details>` closes nothing — the escape "
+         "renders it as literal text (RD43-01b)",
+         _no_e3.replace(
+             "GATE VERDICT:",
+             "<details>\n<summary>Appendix</summary>\n\n\\</details>\n\n"
+             + _e3 + "\n\nGATE VERDICT:"),
+         "no `E3 reopen-list:` field")
+    # RD43-01(c): a block-level tag mid-sentence closes the open paragraph
+    # and stays open — CommonMark start condition 6 names the elements
+    # that do this, and the region trigger no longer requires column 0.
+    case("a MID-LINE `<div style=\"display:none\">` opens a region — a "
+         "condition-6 element closes the open paragraph wherever it "
+         "appears (RD43-01c)",
+         _no_e3.replace(
+             "GATE VERDICT:",
+             "Note that the appendix below is not an answer. "
+             "<div style=\"display:none\">\n\n" + _e3 + "\n\n"
+             "GATE VERDICT:"),
+         "no `E3 reopen-list:` field")
+    # RD43-01(d): condition 6 is satisfied by `<div` with no `>` on the
+    # line; v1.15's tag regex required the `>` and saw no tag at all.
+    case("an opening tag SPLIT ACROSS TWO LINES opens a region — "
+         "condition 6 needs no closing `>` on the line (RD43-01d)",
+         _no_e3.replace(
+             "GATE VERDICT:",
+             "<div\n style=\"display:none\">\n\n" + _e3 + "\n\n"
+             "GATE VERDICT:"),
+         "no `E3 reopen-list:` field")
+    # RD43-02: the terminal-rule consequence, in the silent direction —
+    # the record's last VISIBLE line reads NOT READY.
+    case("a `READY FOR` hidden behind an indented-code `</details>` below "
+         "the record's visible terminal `NOT READY` is not the record's "
+         "verdict (RD43-02)",
+         good + "\n<details>\n<summary>Appendix</summary>\n\nNothing "
+         "here is an answer.\n\n    </details>\n\nGATE VERDICT: READY "
+         "FOR Capability 1 — Project registration and honest shape "
+         "visibility\n",
+         "is followed by 1 other line(s) carrying the token")
+    # RD43-03: an autolink is not a tag, and neither is §5's own
+    # angle-bracket shorthand. Each of these blanked every line after it
+    # at v1.15 — 8 errors on a lawful record.
+    for _shape, _why in (
+            ("<https://github.com/example/repo/blob/main/docs/X.md>",
+             "a URL autolink"),
+            ("<owner@example.com>", "an email autolink"),
+            ("<see appendix A>", "an angle-bracketed shorthand")):
+        case(f"{_why} at the start of a line opens no region — it is not "
+             "a tag (RD43-03)",
+             good.replace("Operationalization notes: none",
+                          "Operationalization notes: see the source below\n"
+                          + _shape),
+             None)
+    # RD43-04: a section's content is what a reader sees in it. All five
+    # forms validated at v1.14, were withdrawn at v1.15 with a message
+    # untrue of them, and are fixtured here in the ACCEPTING direction —
+    # which is what the corpus lacked.
+    for _form, _why in (
+            ("- E5 was not re-read this administration", "a bulleted list"),
+            ("1. E5 was not re-read this administration", "a numbered list"),
+            ("> nothing further proposed", "a blockquote"),
+            ("```\nnothing further proposed\n```", "a fenced block"),
+            ("    nothing further proposed", "indented code")):
+        case(f"G1 content written as {_why} satisfies LG-4 — a section's "
+             "content is what a reader sees in it (RD43-04)",
+             good.replace("## G1 — completeness critic\nnone proposed",
+                          "## G1 — completeness critic\n" + _form),
+             None)
+    case("a `## G1` with nothing but §5's declared trailer beneath it is "
+         "still EMPTY (RD43-04, the refusing direction kept)",
+         good.replace("## G1 — completeness critic\nnone proposed\n",
+                      "## G1 — completeness critic\n"),
+         "opens an EMPTY section")
+    # The inline/block distinction, both directions, measured.
+    case("an inline element carrying no hiding attribute contains "
+         "nothing a reader loses — `<plus the parameter block>` is prose "
+         "(RD43-03, the accepting direction)",
+         good.replace("Materials given: the fixed §2 list, no deviations",
+                      "Materials given: the fixed §2 list <plus the "
+                      "parameter block>, no deviations\nDeferred-wave "
+                      "findings recorded outside launch scope: none"),
+         None)
+    # The two constructions that separate the autolink exclusion and the
+    # paragraph-end rule from the layers around them. Without these the
+    # mutants for both repairs fail 0 of the corpus — the two-layer trap,
+    # hunted rather than hoped about.
+    case("a URL autolink ALONE on its own line — a paragraph of its own, "
+         "where the inline rule cannot help — opens no region (RD43-03)",
+         good.replace("Operationalization notes: none",
+                      "Operationalization notes: see the source.\n\n"
+                      "<https://github.com/example/repo/blob/main/docs/"
+                      "X.md>"),
+         None)
+    case("an unclosed inline `<span hidden>` does not reach past its own "
+         "paragraph — a blank line ends it, as the renderer ends it "
+         "(RD43-01, the accepting direction)",
+         good.replace("Operationalization notes: none",
+                      "Operationalization notes: a <span hidden>quiet "
+                      "aside was considered"),
+         None)
+    case("an inline `<span hidden>` DOES carry its field out of the "
+         "reader's sight, blank line or not (RD43-01)",
+         _no_e3.replace("GATE VERDICT:",
+                        "<span hidden>" + _e3 + "</span>\n\n"
+                        "GATE VERDICT:"),
+         "no `E3 reopen-list:` field")
 
     print(f"{n_cases[0]} fixtures, {len(fails)} failing — a check that "
           "cannot fail is not a check")

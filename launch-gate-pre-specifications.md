@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.15 (candidate; v1.3 was the pilot-administered version)
+effective_version: v1.16 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), results record format, and trend log
@@ -1427,22 +1427,55 @@ Notes for administering against Syzygy specifically:
   had abandoned.** v1.14 carried state for markdown's containers and a
   two-tag-name counter for HTML's, so `<div style="display:none">`,
   `<p style="display:none">`, `<span hidden>` and `<table><tr><td>`
-  each hid a declared field from the reader while the validator read it
-  as the record's own, and an inline `` `</details>` `` code span
+  each hid a declared field from the reader [corrected 2026-08-11,
+  RD43-01's method applied to this batch's own claim: four of the five
+  hide it; `<table><tr><td>` does not — measured with `pandoc` and
+  `html5lib`, the field sits in a `td` a reader sees. The predicate
+  refuses it all the same, because deciding *hiding* means evaluating
+  CSS the instrument cannot evaluate; that over-refusal is named at
+  v1.16 rather than described as harm prevented] while the validator
+  read it as the record's own, and an inline `` `</details>` `` code span
   reopened the one element the counter did know. At v1.15 a raw-HTML
   region is an **element-nesting** decision, like every other container
   in the predicate: it opens at a line whose content begins with a tag
   of any name; inside it every tag on every line is read; a close tag
   pops back to the element it names and pops nothing if it names none,
   so `<table><tr><td>` … `</td></tr></table>` closes where a reader
-  sees it close and a lawful record carrying a closed appendix keeps
+  sees it close [corrected 2026-08-11, RD43-01: false of the v1.15
+  bytes in both directions, measured against `pandoc` + `html5lib`
+  rather than argued. The region CLOSED where a reader does not — a
+  `</details>` written as an indented code block, and a
+  backslash-escaped `\</details>`, each render as literal text and
+  leave the element open, and v1.15 popped on both. And it FAILED to
+  open where a reader sees it open — a `<div style="display:none">`
+  mid-sentence (CommonMark start condition 6 interrupts a paragraph,
+  and HTML5 closes the open `<p>`), and an opening tag split across two
+  lines (`<div` with no `>` on the line). Each of the four carried
+  `E3 reopen-list: empty` past the validator at **0 errors** under
+  `READY FOR <the verbatim target>`, with the field's DOM ancestor
+  measured as `details` or a display:none `div`. Repaired at v1.16, and
+  the repair is stated as what it is: the block phase is decided first
+  and tags are read only out of what survives it] and a lawful record
+  carrying a closed appendix keeps
   its own verdict readable; code spans are removed before any tag is
-  read; self-closing and void forms open nothing. Outside a region a
+  read; self-closing and void forms open nothing [corrected 2026-08-11,
+  RD43-01: true of void forms, false of self-closing ones. HTML5 ignores
+  the slash on a non-void HTML element, so `<div/>` opens a `div` and
+  `<details/>` opens a `details` — measured. v1.16 opens on both, and the
+  two fixtures that asserted otherwise are flipped]. Outside a region a
   line must **begin** with a tag to open one, so a reviewer writing
   *about* a carrier — a `<details>` named mid-sentence, a
   `` `<summary>` `` in a code span, a `<details>` in a table cell —
   no longer breaks their own record: three lawful records that v1.14
-  refused with 8, 8 and 1 errors now validate clean (RD42-09). The
+  refused with 8, 8 and 1 errors now validate clean (RD42-09)
+  [corrected 2026-08-11, RD43-01: two of the three are lawful; the
+  `<details>` named mid-sentence is not. RD-42 measured it with
+  `lxml.html` — libxml2's legacy parser — and under the HTML5 algorithm
+  browsers and GitHub implement, an unescaped `<details>` mid-sentence
+  closes the open paragraph and collapses everything below it. v1.16
+  withdraws that acceptance and refuses the record with a message true
+  of it; the code-span and table-cell forms stay lawful, and they are
+  how a reviewer writes about a carrier safely]. The
   same door had laundered a verdict: a `READY FOR` hidden in collapsed
   content below a record's visible terminal `NOT READY` was reported
   as the record's verdict, in pure ASCII, which is the harm the unicode
@@ -1452,7 +1485,17 @@ Notes for administering against Syzygy specifically:
   rather than counted (RD42-03). LG-4's emptiness requirement excludes
   §5's declared trailer fields from G1 section content, so a bare
   `## G1` in the shape §5 mandates opens an EMPTY section instead of
-  validating at 0 errors (RD42-07), and one heading regex requires the
+  validating at 0 errors (RD42-07) [corrected 2026-08-11, RD43-04: true
+  of the refusing direction, and the accepting direction was withdrawn
+  in silence. What remained after the trailer filter had also to be a
+  line of the record's OWN — a containment test, and the wrong one for a
+  *section* — so G1 content written as a bulleted list, a numbered list,
+  a blockquote, a fenced block or indented code was refused with
+  "opens an EMPTY section", a message untrue of a record whose G1
+  section a reader plainly sees has content. A bulleted list is the
+  natural form for a completeness critic's output. v1.16 asks presence
+  over the raw lines instead, with an accepting fixture for each of the
+  five forms], and one heading regex requires the
   space CommonMark requires, so `###G1` is not a heading (RD42-11).
   The angle-bracket placeholder rule keeps its shape and loses its
   false sentence: the message now states what it matched — a value
@@ -1473,7 +1516,19 @@ Notes for administering against Syzygy specifically:
   witness (tab expansion, the ≤3-column bound) remain so. A record
   line whose own text *begins* with an inline tag is read as raw HTML
   and cannot carry a declaration; §5's fields begin with their labels,
-  and no fixture in the corpus is affected. §5's non-authority banner
+  and no fixture in the corpus is affected [corrected 2026-08-11,
+  RD43-03: understated on two counts. The consequence is not that the
+  line cannot carry a declaration — it is that **every line after it,
+  including the terminal verdict, stops being the record's own**: a
+  lawful record scored 8 errors, among them LG-6 telling the
+  administrator their column-0 terminal verdict sat "inside a container
+  opened on an earlier line". And the shapes that triggered it are not
+  tags: a CommonMark **autolink** (`<https://…>`, `<owner@example.com>`)
+  and the `<word …>` shorthand §5's own template writes for an unfilled
+  value. "No fixture in the corpus is affected" was true and is VIS-2's
+  own case — the corpus is the measurement, not the population. v1.16
+  excludes autolinks before any tag is read and confines inline elements
+  to their own paragraph]. §5's non-authority banner
   can still be satisfied by a quotation of the banner in an appendix
   (RD42-12, carried forward: the banner is the one line whose
   quotation is indistinguishable from its assertion). The depth scan
@@ -1486,3 +1541,90 @@ Notes for administering against Syzygy specifically:
   carries the corrections of the frozen v1.14 delta's false claims, in
   the D-10 convention — the frozen record is not edited). No existing
   question weakened; no ID renumbered.
+- **v1.16** (2026-08-11, post-RD-43 amendment — the v1.15 review's two
+  BLOCKING, two MAJOR and three MINOR findings; candidate, owner
+  approval pending) — a **validator-and-records batch** a ninth time:
+  no question block, no verdict word, and no section §1–§8 changed;
+  the instrument bytes that move are this entry, the version header,
+  and **six** dated correction markers in the v1.15 entry above
+  (counted over that entry's span with a wrap-tolerant pattern, the
+  method RD42-05 made necessary), whose element-nesting sentence,
+  self-closing clause, RD42-09 acceptance claim, carrier claim, LG-4
+  claim and inline-tag residual were each false or materially
+  incomplete of the bytes an approval digest would have bound. RD-43
+  verified all thirteen RD-42 findings present — **eight closed
+  outright**, two closed for everything the finding constructed, one
+  closed in its refusing direction only, one partially, **one not
+  closed** — reproduced the fixture arithmetic by set difference of
+  printed fixture names, reproduced twelve of thirteen mutation
+  denominators with the thirteenth at 0 exactly as disclosed, and
+  measured the git-skip hazard the dispatch named (**175 fixtures**
+  from a non-git directory, twelve `_git=True` fixtures silently
+  absent) before running any mutant. **The method changed, and it is
+  the durable part of this batch.** RD-43 settled every claim about
+  what a reader sees by rendering the record with `pandoc` and parsing
+  it with an HTML5 parser, and this batch adopts that as its rule: a
+  claim about a reader is a measurement of the rendered document, never
+  a reading of the CommonMark specification. Applied, it falsified
+  v1.15 in both directions at once. The region **closed where a reader
+  does not**: a `</details>` written as an indented code block, and a
+  backslash-escaped `\</details>`, each render as literal text and left
+  the element open while v1.15 popped on them. It **failed to open
+  where a reader sees it open**: a condition-6 element mid-sentence
+  closes the open paragraph, and an opening tag needs no `>` on its own
+  line. Four carriers followed, each supplying `E3 reopen-list: empty`
+  from content whose DOM ancestor is `details` or a display:none `div`,
+  at **0 errors** under `READY FOR <the verbatim target>` — and one of
+  them laundered a verdict below a record whose last visible line read
+  `GATE VERDICT: NOT READY` (RD43-01, RD43-02). At v1.16 the block
+  phase is decided **first** — fences, HTML comments, indented code
+  blocks, backslash escapes and code spans are literal text — and tags
+  are read only out of what survives. **CommonMark's own start
+  condition 6 names the elements that open a region from any position**,
+  including mid-paragraph; every other name is condition 7, which
+  cannot interrupt a paragraph, so it renders inline and reaches only to
+  the end of its own paragraph — and only when it carries a hiding
+  attribute (`hidden`, `display:none`, `aria-hidden`) does it carry a
+  declaration out of sight. That distinction is what keeps
+  `Materials given: the fixed §2 list <plus the parameter block>`
+  lawful. **An autolink is not a tag** (RD43-03): `<https://…>`,
+  `<owner@example.com>` and §5's own `<word …>` shorthand are excluded
+  before any tag is read, closing a defect that blanked every line
+  after such a line — the terminal verdict included — and refused a
+  lawful record with 8 errors. **A section's content is what a reader
+  sees in it** (RD43-04): LG-4's emptiness test is asked over the raw
+  lines, so G1 written as a bulleted list, a numbered list, a
+  blockquote, a fenced block or indented code satisfies it, while a
+  heading with nothing but §5's declared trailer beneath it still does
+  not. **205 fixtures**; **twelve** mutation-reverts, **all twelve**
+  failing exactly the fixtures their repair added (denominators 2, 1,
+  15, 1, 1, 1, 2, 1, 5, 1, 2, 16) — the first batch of this chain with
+  no unwitnessed repair, and two of the twelve earned their witness
+  only after fixtures were added for constructions the corpus could not
+  otherwise separate. **One acceptance is withdrawn on purpose:** a
+  `<details>` named mid-sentence without escaping. RD-42 called that
+  record lawful on an `lxml.html` parse; under the HTML5 algorithm it
+  collapses everything below it, so v1.16 refuses it, and the code-span
+  and table-cell forms — measured lawful — are how a reviewer writes
+  about a carrier safely. Across the **54** stored attack records of
+  the RD-39, RD-40, RD-41 and RD-42 rounds, run through both
+  validators, that record is the **only** one whose output moves.
+  **Disclosed limits, each measured, none generalized:** the predicate
+  refuses a declaration carried inside **any** raw-HTML element the
+  record opens, whether or not that element hides it — `<table><tr><td>`
+  and a bare `<div/>` are both refused and neither hides its content —
+  because deciding *hiding* means evaluating CSS this instrument cannot
+  evaluate; the over-refusal is in the safe direction and §5 never
+  places a declared field inside raw HTML. The two v1.14 clauses with
+  no single-layer witness (tab expansion, the ≤3-column bound) remain
+  so. Blockquote laziness is still deliberately not implemented, for
+  the §5-template reason stated at v1.14. §5's non-authority banner can
+  still be satisfied by a quotation of itself in an appendix (RD42-12);
+  the depth scan is still quadratic in nesting depth (RD42-13); an
+  asymmetric `**Label:*` still satisfies presence; and the trend row is
+  still printed above the error list carrying the record's *claimed*
+  verdict when the record is invalid — all carried forward. Semantic
+  delta: `round-2026-08e/LAUNCH-GATE-v1.16-SEMANTIC-DELTA.md` (which
+  also carries the corrections of the frozen v1.15 delta's false
+  claims, in the D-10 convention — the frozen record is not edited). No
+  existing question weakened; no ID renumbered.
