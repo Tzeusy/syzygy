@@ -23,9 +23,22 @@ acceptance decision (granularity rule, P-40, pending).
 Capability 1 — Project registration and honest shape visibility
 ```
 
-Scope as in revision 2 (rows 1.1–1.6 with the round-08d corrections:
-RFC7-39 fixed entry, RFC7-40 discoverability finding, RFC6-19 anti-rollup
-amendments), read against the seven-facet decision P-37. **Wave gate:
+Scope, stated here so no superseded revision must be opened *(inlined
+2026-08-10, RD30-10 — the former pointer chained through revision 2 into
+revision 1)*:
+
+| Row | Behaviour | Governing shape |
+|---|---|---|
+| 1.1 | Parse/validate the project declaration; an invalid declaration is a named failure, never partial registration | RFC3-1/3-4/3-5/3-9; RFC1-1 |
+| 1.2 | Record consent and repository coverage; the boundary renders as a fact, not silence | RFC1-3; RFC3-6/3-7; RFC5-3; RFC6-26 |
+| 1.3 | Serve the fixed human entry at `.syzygy/intent/OVERVIEW.md` | RFC7-39 |
+| 1.4 | Answer the shape facets independently — no rollup, no composite badge; uncomputed reconciliation renders Unknown | RFC6-18/19 as amended (the facet vocabulary itself awaits P-37 — see that row below) |
+| 1.5 | Expose owning authority and Unknown reason for every answer, identically to human and machine | RFC6-13/14/15 |
+| 1.6 | Render per-repository discoverability in RFC7-40's closed four-value domain; propose the link, never write it | RFC7-40; VIS-5 |
+
+Read against the seven-facet decision P-37 (corrected form) and the E3
+trace (`round-2026-08e/FIRST-SPEC-TRACE-TABLE.md`), which anchors each
+row's clauses at the current bytes. **Wave gate:
 Waves A and B only.** Capability 1 does not wait for — and must not
 silently rely on — Waves C1/C2/D1/D2 (`DEFERRED-WAVE-POSTURE.md`).
 
@@ -50,7 +63,7 @@ States: `satisfied` / `owner-waived` / `blocking` / `not applicable`.
 | P-39 OpenSpec form/version | Owner decision | **blocking** (`decisions/OPENSPEC-FORM-AND-VERSION-DECISION.md`) |
 | P-40 specification granularity | Owner decision | **blocking** (`decisions/SPECIFICATION-GRANULARITY-DECISION.md`) |
 | P-36 Unknown vs Gap | Owner decision | **blocking** (acceptance criteria use both words) |
-| P-37 project-shape facets | Owner decision | **blocking** (Wave A ratifies the drafted form) |
+| P-37 project-shape facets | Owner decision | **blocking** — the anti-rollup ground (RFC6-18/19 as amended) is Wave A's; the facet vocabulary itself is drafted **nowhere** and needs P-37's ruling plus its chosen drafting site (corrected 2026-08-10, RD30-01) |
 | P-38 human entry and discoverability | Owner decision | **blocking** (on the E3 path; Wave B ratifies) |
 | P-41 specification acceptance standard in force | Craft act | **blocking** — candidate exists (`policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`); queued as **P-41**; wants review + its craft act, or the owner knowingly authors against the candidate |
 | P-12 knowledge hygiene (CC-BUDGET-1) | Craft act | **blocking** for Capability 2; for Capability 1 the budget rule is not consumed — **not applicable** to Capability 1's own authoring, listed for visibility |

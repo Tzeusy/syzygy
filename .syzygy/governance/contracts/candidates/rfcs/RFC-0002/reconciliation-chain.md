@@ -3,7 +3,7 @@ id: RFC-0002
 title: Contradiction, Gap, Alignment and the Post-Merge Reconciliation Chain
 status_source: owner-act-record
 module: reconciliation-chain
-clauses: RFC2-15..RFC2-22 (no gaps, no retirements, no merges)
+clauses: RFC2-15..RFC2-22 (sub-clause RFC2-19(a); no gaps, no retirements, no merges)
 governs: [contradiction, gap, gap-exits, dismissal, aligned, converged, word-reservation, reconciliation-chain, chain-verdicts, closure-fallacy, no-gap, fixed-point]
 applies_to: [kernel, all-surfaces]
 depends_on: [RFC-0001, RFC-0004]
@@ -221,8 +221,10 @@ on a fleet-built project is correct output, not a defect; **V1 computes** the
 reconciliation evaluation and its gap as navigable, work-generating objects.
 Nothing in V0 may simulate the verdict.
 
-**What that Unknown carries, and does not** *(drafted arm — see the bracketed
-note below).* The V0 rendering above is an **absence of a computed
+**RFC2-19(a) — What that Unknown carries, and does not** *(drafted arm —
+see the bracketed note below; identifier minted 2026-08-10, RD30-12, so
+the exemption is anchorable under verification rule 8 rather than citable
+only as prose near RFC2-19).* The V0 rendering above is an **absence of a computed
 reconciliation verdict**, not a claim whose evidence is missing. It is
 therefore **chain-state-local**: the `reconciliation-pending` state and the
 "reconciliation evidence absent / Unknown" rendering it produces are **never

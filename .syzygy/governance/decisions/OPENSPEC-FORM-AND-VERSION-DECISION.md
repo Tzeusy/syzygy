@@ -45,8 +45,12 @@ OpenSpec behavior yet — correct), nothing pinned ("Pin at the first
 `[Inferred]` **(a)** with the upgrade path noted, **unless** the
 pre-decision diff in (b) shows the 1.3.1 format is already superseded in
 a way that would force an early migration — in which case (b). The
-deciding fact (the format delta) is checkable in minutes at decision
-time and should be checked then, not guessed now.
+deciding fact (the format delta) should be checked at decision time,
+not guessed now — and it is the one check in the launch-critical set
+that needs material from **outside the clone** (two npm package
+versions), so treat it as a **pre-sitting task** with cost `[Unknown]`
+(network, registry availability), never a minutes-in-the-sitting step
+*(qualified 2026-08-10, RD30-15)*.
 
 ## Earliest required gate
 

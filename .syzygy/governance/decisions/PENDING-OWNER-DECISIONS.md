@@ -79,9 +79,13 @@ CG-7 failure means "do not perform that act."
 | P-5 | **Optional act 5** — adopt, amend, or decline the D3 bounded-mission doctrine amendment | `../contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1 — supersedes the original `…-DRAFT.md`, whose `vision.md` insertion cannot be applied as written) |
 
 The acceptance record's per-wave owner-attention material remains part of
-each wave's knowing acceptance; the round-2026-08d owner-facing offering
-(produced after that round's review pass) will state each wave's
-imperfections before its phrase.
+each wave's knowing acceptance. **Corrected 2026-08-10 (RD30-09):** an
+earlier form of this paragraph promised a round-2026-08d "owner-facing
+offering" stating each wave's imperfections before its phrase — that
+artifact was never written (the launch-gate pilot's F3 found the same).
+The current home of imperfections-before-the-phrase is the acceptance
+record's **§7** (read before any act — §2 step 0), the per-wave §1 row
+notes, and the round-2026-08e closure reports once the fleet completes.
 
 **Act ordering (recommendation, not a rule; deferral-qualified 2026-08-10,
 RD29-05 — D1/D2 are not offered while `DEFERRED-WAVE-POSTURE.md` stands, so
@@ -118,15 +122,21 @@ its prerequisite acts are **Waves A and B only** (`../contracts/candidates/DEFER
 Read the open table below through this lens:
 
 - **Gate the Wave A offer:** P-31 (drafted RFC2-19 arm), P-33 (install
-  shape), P-37 (shape facets) — each named in the acceptance record §7.
+  shape), P-37 (shape facets) — each named in the acceptance record §7 —
+  and **P-28** (the drafted mission extension profile: accepting Wave A
+  ratifies it; §7 item 16 — added 2026-08-10, RD30-03).
 - **Gate the Wave B offer:** P-38 (human entry, incl. the RFC7-39
-  entry-identity ruling).
-- **Gate authoring the first spec:** P-39 (form/version), P-40
-  (granularity), P-41 (the specification-acceptance craft act), plus the
-  two wave acts themselves.
+  entry-identity ruling) and **P-22** (the RFC9-8(a) registry placement:
+  accepting Wave B ratifies it; §7 item 17 — added 2026-08-10, RD30-03).
+- **Gate authoring the first spec:** P-36 (Unknown vs Gap — Capability
+  1's acceptance criteria use both words; moved here from the
+  administration bullet 2026-08-10, RD30-02, per its packet's own gate),
+  P-39 (form/version), P-40 (granularity), P-41 (the
+  specification-acceptance craft act — **rule P-40 first**: CC-SPEC-1
+  consumes the granularity rule, RD30-13), plus the two wave acts
+  themselves.
 - **Gate the formal launch administration, not the spec:** P-34
-  (instrument authority), P-35 (operating constraints), P-36
-  (Unknown vs Gap — on the acceptance-criteria vocabulary path).
+  (instrument authority), P-35 (operating constraints).
 - **Deferred with their waves (no C/D act is offered):** P-29, P-30, P-32,
   and the D3/D4 doctrine questions — see `DEFERRED-WAVE-POSTURE.md`.
 - **Open but not launch-gating:** everything else below; each row still
@@ -164,25 +174,27 @@ Where this index and a row disagree, the row wins and this index is stale.
 
 | P-29 | **The Wave C2 acceptance criterion** *(new, 2026-08-09, review pass)*: the selection module's §1 makes its own acceptability conditional on reproducing the blind golden fixtures, but the criterion it says is "stated with the fixtures" exists nowhere (101-file sweep, RD-23 B1), and the fixtures sit outside every wave manifest, so the act would freeze the claim while its subject stays editable (RD-23 B2; RD-12 F10 found the same absence independently). Two routes: **(a)** write the reproduction standard as a fixtures-side artifact — compared object, tolerance, number of independent derivations, where results are recorded, what a divergence obliges — run it, record the results, and add the ten fixtures plus the criterion to the Wave C2 manifest so the act binds what it depends on (a real cost: the fixtures join the never-edited set); or **(b)** delete the conditional sentence and record "selection rules unvalidated against any blind derivation" as a knowing owner-attention deferral at the gate. Recommendation `[Inferred]`: (a) — it is what the sentence already promises. Earliest gate: before Wave C2 is re-offered — **and Wave C2 is deferred and not being offered** (`DEFERRED-WAVE-POSTURE.md`; marker added 2026-08-10, RD29-06) | `round-2026-08d/reviews/RD-23-wave-c2-RAW.md` B1/B2; `RD-12-context-selection-RAW.md` F10; `DISPOSITION-REGISTER.md` P-29 |
 | P-30 | **Form of the stop/containment repair** *(new, 2026-08-09, review pass)*: four reviews found one seam from four sides — under D1-only a human stop has no stated effect and completion has no gatekeeper (RD-20 B2/B3, RD-13 f1), while under D2 the containment limbs fire only on human acts, so the `failed` state the correction plane itself mints halts nothing (RD-21 B1, RD-14 f1). Three routes: **(i)** D1-side floor limbs (stop/completion minimums in RFC10-5/10-6/10-7) plus a transition-keyed RFC10-20 trigger in D2 — recommended `[Inferred]`, keeps the two-act staging P-23 relies on; **(ii)** move RFC10-20 into the D1 manifest (moving a clause between modules is not renumbering); **(iii)** merge the D1 and D2 acts into one, withdrawing the independent-acceptability claim. Earliest gate: before Waves D1/D2 are re-offered — **and both are deferred and not being offered** (`DEFERRED-WAVE-POSTURE.md`; marker added 2026-08-10, RD29-06); the repair design is one item across both waves | `round-2026-08d/reviews/RD-20-wave-d1-RAW.md` B1/B2/B3; `RD-21-wave-d2-RAW.md` B1/M1/M2; `RD-13-mission-prevention-RAW.md` finding 1; `RD-14-mission-effects-RAW.md` finding 1 |
-| P-31 | **The merged-but-unreconciled Unknown reason** *(new, 2026-08-09, review pass)*: the corpus's flagship V0 rendering — merged, evidence exists, reconciliation not yet computed → Unknown — is bound to no RFC2-24 reason and granted no exemption, and RFC2-24 forbids minting one downstream (RD-15 finding 3). A thirteenth reason would reopen a list **decision A5 closed at twelve** — only the owner can do that; an RFC8-12-shaped exemption for the uncomputed-reconciliation evaluation stays inside candidate bytes and is draftable. Recommendation `[Inferred]`: draft the exemption arm; ruling wanted before Wave A is re-offered so the drafted arm is ratified knowingly | `round-2026-08d/reviews/RD-15-facets-RAW.md` finding 3; decision A5 |
+| P-31 | **The merged-but-unreconciled Unknown reason** *(new, 2026-08-09, review pass)*: the corpus's flagship V0 rendering — merged, evidence exists, reconciliation not yet computed → Unknown — is bound to no RFC2-24 reason and granted no exemption, and RFC2-24 forbids minting one downstream (RD-15 finding 3). A thirteenth reason would reopen a list **decision A5 closed at twelve** — only the owner can do that; an RFC8-12-shaped exemption for the uncomputed-reconciliation evaluation stays inside candidate bytes and is draftable. **Ground changed (round 08e; marker added 2026-08-10, RD30-11):** the exemption arm **is drafted**, as sub-clause RFC2-19(a) in `RFC-0002/reconciliation-chain.md`, disclosed in-place as awaiting this ruling. Recommendation `[Inferred]`: ratify or revert the drafted arm at the Wave A act — ruling wanted before Wave A is re-offered so it is ratified knowingly | `round-2026-08d/reviews/RD-15-facets-RAW.md` finding 3; decision A5 |
 | P-32 | **RFC11-15 ownership metadata at V0** *(new, 2026-08-09, review pass)*: the clause requires doctrine/craft selection to consume declared ownership metadata — owning artifact, task classes, risk classes — and none exists: 0 of 66 rule identifiers are satisfiable, 31 have no resolvable owning artifact, and `task class` is defined nowhere (RD-23 M2; RD-12 F5). The honest fallback limb ("not claimed deterministic, and the packet states that basis") is currently the clause's entire operative content. Either author the schema at V0 (large: a metadata home, generator support, and fixtures), or rule the fallback permanent and have the clause and module §1 say so plainly. Earliest gate: before Wave C2 is re-offered — **and Wave C2 is deferred and not being offered** (`DEFERRED-WAVE-POSTURE.md`; marker added 2026-08-10, RD29-06); the disclosure sentence is drafted either way | `round-2026-08d/reviews/RD-23-wave-c2-RAW.md` M2; `RD-12-context-selection-RAW.md` F5 |
 | P-33 | **Wave A install shape at the gate** *(new, 2026-08-09, review pass)*: two choices RD-18 found that only the gate can settle. (1) The ceremony's install copies package apparatus (`history/`, `matrix-rows/`, two generated reports, the manifests) into `contracts/` against RFC3-15's own "exclusively" (RD-18 B2) — options: install companions outside `governance/`; amend RFC3-15's `contracts/` cell by its own RFC3-15(a) recorded-widening route (reviewer-preferred); or drop the companion copies and repair backlinks. (2) The 39-row active manifest installs at the first act while 20 rows name files that act does not install (RD-18 M5) — options: defer the install to the final wave act, or install with a generator-written banner stating six-wave identity (reviewer-preferred). Earliest gate: before Wave A is re-offered | `round-2026-08d/reviews/RD-18-wave-a-RAW.md` B2/M5; `DISPOSITION-REGISTER.md` P-33 |
 
 | P-34 | **Launch-gate process-policy authority** *(new, 2026-08-10, launch-closure pass)*: approve `launch-gate-pre-specifications.md` v1.5 as the owner-approved process policy for evaluating pre-specification readiness. The v1.3 pilot administration (2026-08-09, `NOT READY`) is bound as steering evidence, not the formal trend baseline; no administration verdict is ever an owner act | `LAUNCH-GATE-AUTHORITY-DECISION.md` (this directory); amendment records `../contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.4-SEMANTIC-DELTA.md` and `…/LAUNCH-GATE-v1.5-SEMANTIC-DELTA.md` |
 | P-35 | **Project operating constraints** *(new, 2026-08-10)*: state (or approve honest Unknowns for) operators, attention, review capacity, budget, concurrent workstreams, proving project, time horizon, scope-reduction triggers — the launch-gate pilot's A6 found zero resource statements in 281 files. Explicitly makes no date or delivery commitment | `PROJECT-OPERATING-CONSTRAINTS-DECISION.md` (this directory) |
-| P-36 | **Unknown versus Gap** *(current packet 2026-08-10; was round-08d packet 2)*: no evidence → Unknown; evidence of non-satisfaction → Gap. RD-16 finding 1 found the candidate registry's two entries in conflict; the repaired candidate bytes follow doctrine's reading and await this ruling | `UNKNOWNS-AND-GAPS-DECISION.md` (this directory) |
+| P-36 | **Unknown versus Gap** *(current packet 2026-08-10; was round-08d packet 2)*: no evidence → Unknown; evidence of non-satisfaction → Gap. RD-16 finding 1 found the candidate registry's two entries in conflict; the repaired candidate bytes follow doctrine's reading and await this ruling. **Earliest gate: before Capability 1 is authored** (its acceptance criteria use both words — the packet's own gate; added to this row 2026-08-10, RD30-02) | `UNKNOWNS-AND-GAPS-DECISION.md` (this directory) |
 | P-37 | **Project-shape facets** *(current packet 2026-08-10; was round-08d packet 7)*: seven independent facets, no cross-facet rollup; Mission-ready may render `not evaluated / deferred / Unknown` until C/D semantics exist; registration is never certification | `PROJECT-SHAPE-FACETS-DECISION.md` (this directory) |
 | P-38 | **Human entry and discoverability** *(current packet 2026-08-10; was round-08d packet 8)*: fixed entry `.syzygy/intent/OVERVIEW.md`; per-repository discoverability finding — answer domain closed at four values per RFC7-40: yes/no/not-applicable/Unknown; propose-only root-README link (VIS-5). On Capability 1's E3 path | `HUMAN-ENTRY-DECISION.md` (this directory) |
 | P-39 | **OpenSpec form and version** *(current packet 2026-08-10; was round-08d packet 11)*: pin installed 1.3.1 vs current upstream; records version, artifact form, identity expectations, adapter posture, migration posture. The first spec author must not choose the medium implicitly | `OPENSPEC-FORM-AND-VERSION-DECISION.md` (this directory) |
 | P-40 | **Specification granularity** *(new, 2026-08-10)*: one OpenSpec change = one coherent capability (or one coherent change to one), one owner-readable product argument, one acceptance decision | `SPECIFICATION-GRANULARITY-DECISION.md` (this directory) |
-| P-41 | **The specification-acceptance craft act** *(new, 2026-08-10, RD28-05)*: `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` (CC-SPEC-1…10) is the sole named owner of launch-gate E5 and a blocking Capability 1 prerequisite, yet until this row existed it had no queue entry, no act row, and no presence in the craft cluster it mints into — the owner had no route to satisfy the prerequisite. Wanted: review + its `CONFIRM CRAFT AMENDMENT` act (digest computed at the act and recorded in the craft `INSTALL-RECORD.md`, per the CC-TEST-2 precedent), or a recorded ruling to author knowingly against the candidate. Earliest gate: before the first spec is authored | `../contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`; `round-2026-08e/reviews/RD-28-spec-authoring-RAW.md` finding RD28-05 |
+| P-41 | **The specification-acceptance craft act** *(new, 2026-08-10, RD28-05)*: `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` (CC-SPEC-1…10) is the sole named owner of launch-gate E5 and a blocking Capability 1 prerequisite, yet until this row existed it had no queue entry, no act row, and no presence in the craft cluster it mints into — the owner had no route to satisfy the prerequisite. Wanted: review + its `CONFIRM CRAFT AMENDMENT` act (digest computed at the act and recorded in the craft `INSTALL-RECORD.md`, per the CC-TEST-2 precedent), or a recorded ruling to author knowingly against the candidate. Earliest gate: before the first spec is authored, after P-40 (CC-SPEC-1 consumes the granularity rule). **Packet: `SPECIFICATION-ACCEPTANCE-DECISION.md` (this directory, added 2026-08-10, RD30-07)** — it states plainly that the act is not performable this sitting (review first, phrase minted at the offering) | `SPECIFICATION-ACCEPTANCE-DECISION.md` (this directory); `../contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`; `round-2026-08e/reviews/RD-28-spec-authoring-RAW.md` finding RD28-05 |
 
 **Current-packet notes (2026-08-10):** P-12's current packet is now
 `KNOWLEDGE-HYGIENE-DECISION.md` and P-33's is
 `WAVE-A-INSTALL-SHAPE-DECISION.md` (both this directory), superseding the
 round-08d packets file for those rows; the round-08d
-`OWNER-DECISION-PACKETS.md` remains current for packets 1, 3, 4, 5, 6, 9,
-and 12.
+`OWNER-DECISION-PACKETS.md` remains current for packets 1, 3, 4, 5, 9,
+and 12 — **packet 6 is stale and banner-marked** (struck from this note
+2026-08-10, RD30-04; P-22's row and the packets file's own banner already
+said so, and this summary contradicted them).
 
 **Nothing in this register is self-executing.** Acts happen only by the exact
 ceremonies their owning records define, performed by the owner.

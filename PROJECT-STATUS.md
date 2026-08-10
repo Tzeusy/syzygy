@@ -21,7 +21,10 @@ at round-2026-08d** (owner work order; design:
 An **act** is an exact phrase the owner types once, binding one
 script-computed digest of one artifact set; a **wave** is one of the six
 contract subsets those acts accept independently. The acceptance record
-owns the phrases and the ceremony.
+owns the phrases and the ceremony — and its **§7** ("items requiring
+explicit owner attention at the gate") is read **before any act** (§2
+step 0): it lists the drafted arms and open questions each act ratifies
+beyond its digest.
 The rev9 and rev10 all-in-one acceptance phrases are retired and satisfy
 nothing (the acceptance record's retirement paragraph names them).
 

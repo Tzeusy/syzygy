@@ -5,7 +5,7 @@
 6615d4097cdce2581b3ef553d812907290e09db7989d2d17eddd308f7eb8934a  rfcs/RFC-0001-project-graph-identity-state-planes.md
 b2dde155e7ad5db8c814cd756d5ebe293696e68223d302cf471f3f7d3d9dacb2  rfcs/RFC-0002/README.md
 ffafd0528a3ef06c76a47c5137fe0c9cd5e80c3b8e1742d44a065f88f828ddf4  rfcs/RFC-0002/challenge-lifecycle.md
-84b98ed9081f73bf6640394647646cfbafaa1167ec558f48b9c7e5c60cc1464d  rfcs/RFC-0002/reconciliation-chain.md
+614c1325e5d6a3a027ad3e52c43f6cd16aacc9217d28d56d816a541d78c27cf2  rfcs/RFC-0002/reconciliation-chain.md
 68c9d1af1cfe1f9f298066f95e3d0cac0dd338f575330b34deeeb1d06f85d07d  rfcs/RFC-0002/rendering-vocabularies.md
 196393219d1a598393d45ed17c06d645c43636c7cea94fb2b3c27cb4912ff5a4  rfcs/RFC-0002/snapshot-and-evaluation-core.md
 6931765329796e5feb6dc3c2c1ae599e419cd8d33d36fdfac1df45bd70f91271  rfcs/RFC-0003/README.md

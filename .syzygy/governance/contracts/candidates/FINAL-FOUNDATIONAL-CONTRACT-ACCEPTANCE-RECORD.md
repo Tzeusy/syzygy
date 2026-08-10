@@ -19,7 +19,7 @@ by `scripts/build_active_manifest.py`). Design rationale:
 
 | # | Act (exact phrase) | Accepts exactly |
 |---|---|---|
-| A | `ACCEPT FOUNDATIONAL WAVE A: 8af6805fe94e30ca86ba9ee39860e318bd749255d0f71df466f62f04e2e62de7` | The 19 modules of RFC 0001–0006 (kernel, evidence, storage, admission, cross-surface selection) at the per-module sha256 digests in `wave-manifests/WAVE-A-MANIFEST.txt`, whose own digest is the act's argument. Every `depends_on` edge of these contracts stays inside the wave. **Argument regenerated 2026-08-10 (RD-26 repair batch)** — seven modules repaired (zero-roots limb, expiry-resolution home, `unknown-terminal`, and four citation/wording repairs; delta: `round-2026-08e/WAVE-A-SEMANTIC-DELTA.md` §13); the earlier `6b98e0c6…` argument is stale and satisfies nothing |
+| A | `ACCEPT FOUNDATIONAL WAVE A: c649143bdac1a883874e4d9d57d76a031a6e9b2f9357d12ea1f5b9484a48b8dd` | The 19 modules of RFC 0001–0006 (kernel, evidence, storage, admission, cross-surface selection) at the per-module sha256 digests in `wave-manifests/WAVE-A-MANIFEST.txt`, whose own digest is the act's argument. Every `depends_on` edge of these contracts stays inside the wave. **Argument regenerated twice in round-2026-08e, by script both times** — for the RD-26 repair batch (seven modules: zero-roots limb, expiry-resolution home, `unknown-terminal`, four citation/wording repairs; delta: `round-2026-08e/WAVE-A-SEMANTIC-DELTA.md` §13), retiring `6b98e0c6…`; and for the RD-30 batch (one module: the P-31 drafted exemption minted as sub-clause RFC2-19(a) so it is anchorable under rule 8; delta §14), retiring `8af6805f…`. **Both earlier arguments are stale and satisfy nothing.** RD-31, the exact-package review, binds the current bytes |
 | B | `ACCEPT FOUNDATIONAL WAVE B: c0fd0e27cb309deb72ffa1a957a26b3cabd9584f471fffe1fe3af51004808261` | The 11 modules of RFC 0007–0009 (Polaris, Trajectory, Orrery) per `wave-manifests/WAVE-B-MANIFEST.txt`. Depends on Wave A. **Argument regenerated twice in round-2026-08e, by script both times** — first for the wave-wide repair batch (all eleven modules edited; delta: `round-2026-08e/WAVE-B-SEMANTIC-DELTA.md`), which retired the round-08d argument `daa6a5dd…`; then for the RD-27 repair batch (four modules: the `challenge-pending` disclosure restored to RFC9-43/RFC9-46's tuples, the conformance rule folded into RFC8-12, the RFC 0009 README citation sentence, three cross-module references named; delta: `WAVE-B-SEMANTIC-DELTA.md` §11), which retired `2041ad05…`. **Both earlier arguments are stale and satisfy nothing.** The pre-repair row's reliance caveat is retired with them: after the RFC9-8(a) re-grounding, every normative reliance lands inside Waves A+B (RD-27 §4, confirmed by sweep) — lawful stated at the act |
 | C1 | `ACCEPT FOUNDATIONAL WAVE C1: a5d3ba1f22ad0ff5ff66485b1829e5b2f652a8c7678dcc96699eaca4ac5b2b4d` | RFC-0011 module 1 (packet identity, provenance, memory — RFC11-1..3, 5..10, 12) plus the package index, per `wave-manifests/WAVE-C1-MANIFEST.txt`. Declares `depends_on` RFC-0010 (waves D1/D2): recommended after them. Module 1 uses *mandatory context* as a primitive whose defining clause is RFC11-4 in Wave C2; performed alone, the packet contract binds identity, immutability, execution-record binding, the fail-closed Unknown rule, governed memory and profiles, while the criterion separating a packet's mandatory core from its suggested additions is not yet fixed — lawful only stated at the act. Performing C2 in the same sitting removes the condition |
 | C2 | `ACCEPT FOUNDATIONAL WAVE C2: acd27bb8f9b7be76725057b4280e2dc9fe23f3e9fac17c448542b9cb250d8b1a` | RFC-0011 module 2 (deterministic selection and budget posture — RFC11-4, 11, 13..16), per `wave-manifests/WAVE-C2-MANIFEST.txt`. Depends on C1 (the module consumes module 1's packet primitives throughout) and declares `depends_on` RFC-0010 (waves D1/D2) in its front matter — performed before them, it binds text whose reliances point at candidate material, lawful only stated at the act. Carries its own external criterion: acceptable only when its selection rules reproduce the blind golden fixtures (`fixtures/`), a derivation the fixtures' task/answer boundary exists to allow — and that criterion's pass/fail standard is itself an open owner question (**P-29**): until it is ruled and the standard exists, this row's condition cannot be discharged |
@@ -122,7 +122,14 @@ of the four acts had no check at all until 2026-08-05.
 
 ## 2. The acceptance transaction — honest under RFC3-16(c)
 
-Each act is a chat-phrase ceremony executed in five steps:
+Each act is a chat-phrase ceremony executed in five steps — preceded by
+one reading obligation:
+
+0. **Read §7 first** *(step added 2026-08-10, RD30-05)*. §7 is titled
+   "items requiring explicit owner attention at the gate" and lists what
+   each act ratifies beyond its digest — drafted arms, disclosed rulings,
+   open questions riding in. An act performed without §7 read is the
+   surprised act this record exists to prevent; no phrase before it.
 
 1. **The phrase.** The owner writes the exact phrase from §1.
 2. **Digest verification, by script.** The lead re-verifies the bound
@@ -380,8 +387,17 @@ implementation, not specification — accepting with it open is a
   said "three times" — three incompatible counts across two files, one of
   them the acceptance authority. RD-8 finding S2. A count of one's own
   history is a derived value like any other, and it now has one home.)*
-  **No CONFIRM verdict is bound to the current argument** — eight independent
-  reviews ran on 2026-08-07 and every verdict was `REVISE`
+  **No CONFIRM verdict is bound to the current argument.** *(Review state
+  extended 2026-08-10, RD30-14 — this section previously narrated only
+  the 2026-08-07 reviews.)* Three review passes have run since the
+  rev10 offering: eight independent reviews on 2026-08-07 (every verdict
+  `REVISE`); the round-2026-08d pass of fifteen fresh-context reviews on
+  2026-08-09 (nine dimension, six wave exact-package — every verdict
+  `REVISE`, register at `round-2026-08d/reviews/`); and the
+  round-2026-08e launch-closure fleet (RD-24 onward, register at
+  `round-2026-08e/reviews/DELIVERY-AND-VERDICT-REGISTER.md`), whose
+  exact-package reviews RD-31/RD-32 are the offer gates for the current
+  wave arguments. The 2026-08-07 detail: every verdict was `REVISE`
   (raw report verbatim at `reviews/rev10-confirming-review.md`). It
   re-ran every mechanical check (all 32 manifest lines OK; verifier
   PASS; index no-drift), verified every spot-checked disposition in the
@@ -487,11 +503,17 @@ implementation, not specification — accepting with it open is a
     exempts the `reconciliation-pending` rendering from RFC2-24's
     twelve-reason closure — candidate text the act would ratify. Rule P-31,
     or perform the act knowing it ratifies the drafted arm.
-13. **P-37 — the shape-facet vocabulary** *(added 2026-08-10; RD26-02).*
-    P-37's packet names the Wave A act as its earliest required gate
-    (RFC-0006 is in this wave): the act settles the facet vocabulary
-    RFC-0006's drawer queries expose. Rule it, or perform the act knowing
-    that settlement rides in.
+13. **P-37 — the shape-facet vocabulary** *(added 2026-08-10; RD26-02;
+    corrected 2026-08-10, RD30-01).* P-37's packet names the Wave A act
+    as its earliest required gate because RFC-0006 is in this wave — but
+    **the seven-facet vocabulary itself is in no Wave A byte** (RD-30's
+    sweep over all 30 A+B modules found the facet names in zero contract
+    modules). What the act ratifies is the anti-rollup ground the facets
+    ride on (RFC6-18/19 as amended). The vocabulary needs P-37's ruling
+    **plus a drafting site** — an RFC-0006 amendment before this act, or
+    the Capability 1 spec — and an earlier form of this item wrongly said
+    the act settles it. Rule P-37 before the act so the site is chosen
+    knowingly.
 14. **Two drafted repairs ratified by this act** *(added 2026-08-10;
     RD26-04/RD26-05).* (a) RFC3-15's `records/` cell now admits the
     pre-declared deterministic challenge-sweep's expiry-resolution record —
@@ -510,3 +532,19 @@ implementation, not specification — accepting with it open is a
     narrative). The Wave B act ratifies this identity or the owner reverts
     it; the question is carried on P-38's packet
     (`decisions/HUMAN-ENTRY-DECISION.md`), which is the gate path.
+
+16. **P-28 — the drafted mission extension profile** *(added 2026-08-10;
+    RD30-03).* RFC1-7 carries a drafted `mission` extension profile
+    (option (b) of P-28, drafted at round-08d per the owner work order)
+    and RFC10-4 grounds Mission identity in it. RFC-0001 is a Wave A
+    module: **accepting Wave A ratifies the profile.** Rule P-28, or
+    perform the act knowing the profile rides in; packet 5 of
+    `round-2026-08d/OWNER-DECISION-PACKETS.md` carries the alternatives.
+
+17. **P-22 — the RFC9-8(a) registry placement** *(added 2026-08-10;
+    RD30-03).* RFC9-8(a) as repaired places the portfolio layout registry
+    in a typed, owner-gated governance store grounded entirely on Wave A
+    (RFC3-15/RFC3-16(a)/RFC3-15(a)); **accepting Wave B ratifies that
+    placement.** The revert option (workspace manifest) restores the RC-4
+    contradiction; P-22's register row is the current statement (packet 6
+    of the round-08d file is stale and banner-marked).

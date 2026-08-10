@@ -24,20 +24,35 @@ Options:
   non-governance `contracts-companion/` home) — keeps RFC3-15 pristine;
   backlinks repoint; the governed tree's reading paths cross a directory
   boundary.
-- **(1b)** **Amend RFC3-15's `contracts/` cell by its own RFC3-15(a)
-  recorded-widening route** — the clause already defines how its closed
-  table lawfully widens; the widening names the companion classes
-  (generated navigation / historical rationale / review evidence), states
-  they are non-normative and outside every digest set, and the act binds
-  the widened clause knowingly. *(Reviewer-preferred.)*
+- **(1b)** **Widen what the existing `contracts/` category may contain**
+  by owner amendment to RFC3-15's `contracts/` cell. *(Restated
+  2026-08-10, RD30-06 — an earlier form of this option claimed
+  RFC3-15(a) provides this route. It does not: RFC3-15(a) records the
+  precedent for minting a **new category** "by owner amendment rather
+  than by stretching a category's 'exclusively'", and widening an
+  existing cell's contents is exactly the stretching move the clause
+  warns against. The option remains lawful — any owner amendment is —
+  but its earlier justification was false.)*
 - **(1c)** Drop the companion copies from the ceremony and repair the
   modules' backlinks to point at the candidates tree — smallest install,
   but the accepted tree's Tier-2 rationale links then leave the governed
   tree permanently.
+- **(1d)** **Mint a new constitutional category for companion material**
+  (e.g. `contracts-companion/` *inside* `governance/`) by RFC3-15(a)'s
+  own recorded-widening route — the B19 precedent applied as written: a
+  new named category with its own row, declared non-normative and
+  outside every digest set, rather than a stretched `contracts/` cell.
+  *(Added 2026-08-10, RD30-06 — the option the clause's recorded
+  precedent actually implies, previously absent from this packet.)*
 
-**Recommendation `[Inferred]`: (1b)** — it is the route the clause itself
-provides for exactly this, and it keeps the principle intact by naming
-what the companions are instead of pretending they are contracts.
+**Recommendation `[Inferred]` (re-labeled 2026-08-10, RD30-06): (1d)** —
+it is the route RFC3-15(a)'s precedent provides for exactly this shape
+("widen explicitly rather than stretch a category's 'exclusively'", the
+module's own closing guidance), and it keeps the principle intact by
+naming what the companions are instead of pretending they are contracts.
+The earlier recommendation (1b) rested on a misreading of RFC3-15(a) and
+is withdrawn as a recommendation, though (1b) remains an offerable
+option.
 
 ## Question 2 — the 39-row manifest at the first act (RD-18 M5)
 

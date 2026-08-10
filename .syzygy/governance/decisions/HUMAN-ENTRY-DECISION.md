@@ -64,10 +64,16 @@ the write boundary. Wave B ratifies the drafted clauses.
 - (b): Wave B re-review of the widened surface before its act.
 - (c): the launch-gate E3 reopen-list keeps this row forever; the first
   spec would fix the entry by implication.
+- (d): RFC7-39's identity sentence is redrafted before the Wave B act, so
+  the Wave B argument regenerates and the fresh exact-package review
+  binds the new bytes; two documents then need their relationship stated
+  (which is authoritative for what), a seam (a) does not open. *(Costed
+  2026-08-10, RD30-08 — this option previously had no consequence
+  entry.)*
 
 ## Recommendation
 
-`[Inferred]` **(a)**; (b) remains reachable later as OpenSpec-level work.
+`[Inferred]` **(a)**; (b) remains reachable later as OpenSpec-level work; (d) is the honest alternative if the owner rejects the pass's drafted identity ruling — its cost is one more Wave B regeneration plus the two-document seam, not a blocked launch.
 
 ## Earliest required gate
 
