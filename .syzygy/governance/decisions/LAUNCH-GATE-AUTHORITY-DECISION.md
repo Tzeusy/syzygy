@@ -8,59 +8,67 @@
 
 ## Question
 
-Approve `launch-gate-pre-specifications.md` **v1.14** as this repository's
+Approve `launch-gate-pre-specifications.md` **v1.15** as this repository's
 owner-approved **process policy** for evaluating pre-specification
 readiness?
 
-> **Offer status (2026-08-11, second revision):** not yet offerable.
-> Nine re-reviews, nine `REVISE` verdicts: v1.5's (RD-33) closed by
+> **Offer status (2026-08-11, third revision):** not yet offerable.
+> Ten re-reviews, ten `REVISE` verdicts: v1.5's (RD-33) closed by
 > v1.6; v1.6's (RD-34) by v1.7; v1.7's (RD-35 — the new
 > citation-existence check shipped inverted) by v1.8; v1.8's (RD-36) by
 > v1.9; v1.9's (RD-37) by v1.10; v1.10's (RD-38) by v1.11; v1.11's
-> (RD-39) by v1.12; v1.12's (RD-40) by v1.13; and v1.13's re-review
-> (**RD-41**, `VERDICT: REVISE`) is closed by v1.14.
+> (RD-39) by v1.12; v1.12's (RD-40) by v1.13; v1.13's (RD-41) by v1.14;
+> and v1.14's re-review (**RD-42**, `VERDICT: REVISE`) is closed by
+> v1.15.
 >
-> RD-41 verified every one of RD-40's eight findings present with six
-> closed outright — it called the hardest of them *"genuinely,
-> structurally closed"* — and reproduced all ten mutation denominators,
-> the fixture arithmetic, the §1–§8 identity and the frozen population.
-> It then returned **four BLOCKING** findings, the first of which is the
-> same class for the fifth time and the reason it keeps recurring: v1.13
-> answered "is this line the record's own, not a quotation of it?" with
-> a **line-local** classifier, and *a container is a region, not a
-> line* — `- `, `> `, `1. ` and four spaces each mark a block's first
-> line and every one continues without its marker, so a list item's
-> continuation lines counted as the record's own and RD-38's composite
-> validated at 0 errors under `READY FOR <the verbatim target>`.
-> Alongside it: a `<details>` block silently **supplied** the record's
-> decisive declared values, including E3's reopen-list and the owner's
-> deferral citation; §9 stated a mutation count of eight where ten is
-> the fact and every other record said ten; and the LG-4 residual
-> disclosed as opening no pass was a load-bearing limb of one.
+> RD-42 verified all twelve RD-41 findings present, reproduced the
+> fixture arithmetic, constructed all sixteen mutation-reverts from the
+> delta's own descriptions and measured each, and confirmed the §1–§8
+> identity and the frozen population. It then ran **every captured
+> fixture through both validators on identical bytes** — and returned
+> **six BLOCKING** findings, the first of which is the same class for
+> the **sixth** time, and the reason it keeps recurring is worth the
+> owner's attention: v1.14 replaced enumeration with state for
+> markdown's containers and **kept an enumeration for HTML's**. Four
+> carriers the enumeration did not name — `<div style="display:none">`,
+> `<p style="display:none">`, `<span hidden>`, `<table><tr><td>` — each
+> hid a declared field from the reader while the validator read it as
+> the record's own, and an inline `` `</details>` `` code span reopened
+> the one element the counter did know. The same door laundered a
+> verdict: a `READY FOR` hidden in collapsed content below a record's
+> visible terminal `NOT READY` was reported as the record's verdict, in
+> pure ASCII. Alongside it: `Parameter block sha256:` — §2's integrity
+> anchor — was the tenth `_decl` site and still read hidden text, where
+> the delta claimed all ten read the record's own lines; LG-4's new
+> emptiness requirement was **inert in the record shape §5 mandates**;
+> and three of the four fixtures shipped for the previous round's
+> restoration repair witnessed a different rule than the one they were
+> written for, alongside two counts (`fourteen` witnesses, `four`
+> markers) that were false of the bytes.
 >
-> v1.14 is a **validator-and-records batch** a seventh time; instrument
-> §1–§8 have now gone **eight versions** (v1.7–v1.14 — seven
-> amendments; the §8 parameter block alone is unchanged across ten,
-> v1.5–v1.14, each figure swept this session) byte-unchanged, each
-> verified per-section. **The predicate now carries state** — the block
-> stack, maintained across lines with lazy continuation — and `_decl`
-> joins its consumers, so a value carried only on non-own lines is an
-> absent field. Two decisions the owner should read as decisions rather
-> than repairs: **blockquote laziness is deliberately not implemented**,
-> because §5's own template places the declared fields on unmarked lines
-> directly beneath the blockquote banner and strict CommonMark would
-> refuse every lawful record (measured: 43 of 168 fixtures); and because
-> a quotation whose fields land at column 0 is byte-for-byte §5's
-> declaration form, two further rules close what containment cannot — a
-> declaration is read only at or above the record's own terminal
-> verdict, and a field carrying §5's own angle-bracket placeholder has
-> not been answered. Two acceptances are withdrawn on purpose, and two
-> predicate clauses are disclosed as having **no single-layer witness**
-> (0 of 168 each) rather than counted as proven. Because the same
-> session that authored the v1.14 bytes may not confirm them, the offer
-> waits on a fresh-context re-review of the v1.14 delta (**RD-42**). The
-> formal administration must not run on any earlier validator (the
-> closing directions of RD-33 through RD-41).
+> v1.15 is a **validator-and-records batch** an eighth time; instrument
+> §1–§8 have now gone **nine versions** (v1.7–v1.15 — eight
+> amendments; the §8 parameter block alone is unchanged across eleven,
+> v1.5–v1.15, each figure swept this session) byte-unchanged, each
+> verified per-section. **A raw-HTML region is now element nesting**,
+> like every other container in the predicate: it opens at a line whose
+> content begins with a tag of any name, every tag inside it is read, a
+> close tag pops back to the element it names and pops nothing if it
+> names none, code spans are removed before any tag is read, and
+> self-closing and void forms open nothing. One decision the owner
+> should read as a decision rather than a repair: **outside a region a
+> line must begin with a tag to open one**, which is what lets a
+> reviewer write *about* a carrier — three lawful records that v1.14
+> refused with 8, 8 and 1 errors now validate clean — and which costs a
+> record line that itself begins with an inline tag, paid in the
+> refusing direction. One clause is disclosed as having **no
+> single-layer witness** (0 of 187) rather than counted as proven, and
+> one message is made true of what it matched rather than of §5's text,
+> with the literal-matching alternative rejected **by measurement**.
+> Because the same session that authored the v1.15 bytes may not confirm
+> them, the offer waits on a fresh-context re-review of the v1.15 delta
+> (**RD-43**). The formal administration must not run on any earlier
+> validator (the closing directions of RD-33 through RD-42).
 
 ## What approval binds — and what it never binds
 
@@ -89,7 +97,7 @@ has already directed this pass to respect.
 
 ## Options
 
-- **(a) Approve v1.14 as offered.** The amendment records are
+- **(a) Approve v1.15 as offered.** The amendment records are
   `contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.4-SEMANTIC-DELTA.md`
   (twelve deltas; no question weakened; three questions added from the
   pilot's G1; launch-scope parameters for Capability 1 fixed in §8),
@@ -167,16 +175,30 @@ has already directed this pass to respect.
   refused as an answer, LG-4 required to open a non-empty section with
   its anchor matched per line, unicode whitespace folded before the
   verdict token is searched for, and four lawful records restored that
-  v1.13 refused with a message untrue of them; validator and records
+  v1.13 refused with a message untrue of them; **read with the v1.15
+  delta's D-1**, which corrects its "raw-HTML block" predicate
+  description, its "all ten `_decl` sites" claim, its mutation-witness
+  count, its correction-marker count, its restoration claim, one
+  directionality assignment and one unverifiable nit), and
+  `…/LAUNCH-GATE-v1.15-SEMANTIC-DELTA.md` (the RD-42 re-review's
+  thirteen findings closed — a raw-HTML region made an element-nesting
+  decision rather than a two-tag-name counter, closing five carriers
+  and the code-span reopen and the verdict laundered below a visible
+  `NOT READY`; the tenth `_decl` site made a consumer with the sites
+  enumerated mechanically; LG-4's emptiness requirement made effective
+  in the record shape §5 mandates; one heading regex requiring the
+  space CommonMark requires; the placeholder message made true of what
+  it matched; and the previous round's restoration fixtures rebuilt so
+  they witness the repair they were written for; validator and records
   only — no question weakened; no ID renumbered; instrument §1–§8
-  byte-unchanged through **eight versions, v1.7–v1.14**, seven
-  amendments. Two acceptances are deliberately withdrawn and two
-  predicate clauses are disclosed as unwitnessed rather than counted
-  as proven).
+  byte-unchanged through **nine versions, v1.7–v1.15**, eight
+  amendments. Three lawful records the previous version refused are
+  newly accepted, and one clause is disclosed as unwitnessed rather
+  than counted as proven).
 - **(b) Approve with amendments** — state them; the changelog takes a
-  v1.14 entry and the semantic delta extends. One prepared amendment the
+  v1.16 entry and the semantic delta extends. One prepared amendment the
   owner may take here: **promote F5 (assurance independence) from a
-  recorded question to a verdict conjunct** — v1.14 deliberately leaves it
+  recorded question to a verdict conjunct** — v1.15 deliberately leaves it
   non-gating at Administration 1 and discloses instead (RD24-12); making
   it a conjunct means no same-family administration can ever read READY.
 - **(c) Decline** — the gate remains an informal checklist; readiness
@@ -241,16 +263,26 @@ v1.14's repairs are exactly the ninth re-review's
 (RD-41: the own-line predicate was line-local, so a list item's
 continuation lines counted as the record's own and the composite
 validated whole a fifth time; a `<details>` block silently supplied the
-record's decisive declared values). Each repair now has a fixture that
-fails without it — **168 in all**, with fourteen of sixteen
-mutation-reverts failing exactly the fixtures their repair added and
-the other two disclosed as unwitnessed; RD-41's attack records
-re-executed against the repaired validator: both continuation
-composites score 6 errors where they scored 0, every `<details>`-hidden
-declaration is an absent field, LG-4's two doors are shut, and a record
-whose visible terminal verdict reads `NOT READY` behind a non-breaking
-space now reports `NOT READY` instead of the `READY FOR` it also
-carried.
+record's decisive declared values). v1.15's repairs are exactly the
+tenth re-review's (RD-42: the HTML limb was the enumeration the
+previous batch said it had abandoned, so four unnamed carriers and an
+inline code span each hid a declared field — or a whole verdict — from
+the reader while the validator read it as the record's own; §2's
+integrity anchor was the one `_decl` site still reading hidden text;
+and LG-4's new emptiness requirement was inert in the record shape §5
+mandates). Each repair now has a fixture that fails without it —
+**187 in all**, with twelve of thirteen mutation-reverts failing
+exactly the fixtures their repair added and the one disclosed as
+unwitnessed; RD-42's attack records re-executed against the repaired
+validator: each of the five carriers reports its hidden field absent,
+the laundered `READY FOR` below a visible `NOT READY` is an ambiguity
+error rather than the record's verdict, the hidden `Parameter block
+sha256:` is reported absent rather than mismatched, a bare `## G1` in
+§5's own shape opens an empty section, and the three lawful records the
+previous validator refused — a `<details>` named mid-sentence, a
+`` `<summary>` `` in a code span, a `<details>` in a table cell —
+validate clean. All 37 stored attack records from the three earlier
+rounds produce byte-identical output under v1.14 and v1.15.
 
 ## Mechanism (the lawful transaction, prepared not performed)
 
@@ -270,7 +302,7 @@ nowhere once the header flips). To approve:
 3. Record in this file, below this line, an approval block:
 
    ```text
-   APPROVED — launch-gate v1.14 as process policy
+   APPROVED — launch-gate v1.15 as process policy
    date: <date>
    instrument sha256: <the digest computed in step 2, post-status-edit>
    scope: process policy for pre-specification readiness evaluation;

@@ -132,7 +132,7 @@ owner's launch-gate instrument (v1.3, at commit `067d8a0`) returned
 **GATE VERDICT: NOT READY** — 17 of 31 questions Not met, including all six
 of section E, the OpenSpec-readiness section itself; the raw record is
 `…/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md`.
-The instrument is now **v1.14** (candidate; owner approval prepared as
+The instrument is now **v1.15** (candidate; owner approval prepared as
 P-34). The repair-and-re-review chain: RD-24 (v1.4, REVISE) → v1.5 →
 RD-33 (REVISE, five MAJOR) → v1.6 → RD-34 (REVISE — one BLOCKING: the
 deferral-carrying pass branch ran no formula conjunct) → v1.7 → RD-35
@@ -183,18 +183,31 @@ errors under `READY FOR <the verbatim target>`; a `<details>` block
 silently **supplied** the record's decisive declared values, E3's
 reopen-list and the owner's deferral citation among them; §9 stated a
 mutation count of eight where ten is the fact; and the LG-4 residual
-disclosed as opening no pass was a load-bearing limb of one) → v1.14.
-The v1.8 through v1.14 batches are
+disclosed as opening no pass was a load-bearing limb of one) → v1.14 →
+RD-42 (REVISE — six BLOCKING: the batch that replaced enumeration with
+state kept an enumeration for raw HTML, so `<div style="display:none">`,
+`<p style="display:none">`, `<span hidden>` and `<table><tr><td>` each
+hid a declared field from the reader while the validator read it as the
+record's own, an inline `` `</details>` `` code span reopened the one
+element the counter did know, and the same door reported a `READY FOR`
+hidden below a record's visible terminal `NOT READY` as that record's
+verdict; §2's integrity anchor was the tenth `_decl` site and still read
+hidden text; LG-4's new emptiness requirement was inert in the record
+shape §5 mandates; and three of four fixtures shipped for the previous
+repair witnessed a different rule than the one they were written for)
+→ v1.15.
+The v1.8 through v1.15 batches are
 validator-and-records only — the instrument's §1–§8 have now gone
-**seven amendments across eight versions** (v1.7–v1.14) byte-unchanged,
-and the §8 parameter block ten versions (v1.5–v1.14), while the
+**eight amendments across nine versions** (v1.7–v1.15) byte-unchanged,
+and the §8 parameter block eleven versions (v1.5–v1.15), while the
 measuring layer keeps yielding one more class per administration. The
 diagnosis has moved one step per review and is now as specific as it
 has been: RD-39 said a repair must be specified over the **property**;
 RD-40 said stop enumerating carriers and **enumerate the question**;
 RD-41 said the question is not answerable from the line at all —
 **the predicate must carry state**, because a container is a *region,
-not a line*. v1.13 wrote one own-line predicate over a table of nine
+not a line*; RD-42 said the state had been written for markdown's
+containers and **an enumeration kept for HTML's**. v1.13 wrote one own-line predicate over a table of nine
 containers and was broken by the continuation lines those containers
 open. v1.14 replaces the table with CommonMark's block-structure
 phase: for each line, the stack of containers open at it — blockquote
@@ -210,6 +223,18 @@ composites score 6 errors where they scored 0, every `<details>`-hidden
 declaration is absent, LG-4's two doors are shut, and a record whose
 visible terminal verdict reads `NOT READY` behind a non-breaking space
 now reports `NOT READY` instead of the `READY FOR` it also carried).
+v1.15 finishes the same move on the last container that had not had it:
+a raw-HTML region opens at a line beginning with a tag of any name,
+every tag inside it is read, a close tag pops back to the element it
+names, code spans are removed before any tag is read, and self-closing
+and void forms open nothing (187 fixtures; thirteen mutation-reverts,
+twelve failing exactly the fixtures their repair added and **one
+disclosed as failing nothing**; three lawful records the previous
+validator refused with 8, 8 and 1 errors — a `<details>` named
+mid-sentence, a `` `<summary>` `` in a code span, a `<details>` in a
+table cell — now validate clean, and all 37 stored attack records from
+the three earlier rounds produce byte-identical output under both
+versions).
 
 Two of v1.14's decisions are worth stating as decisions rather than
 repairs, because they are where the instrument's own text constrains
@@ -226,7 +251,7 @@ verdict, and a field carrying §5's own angle-bracket placeholder has
 not been answered. Closing the underlying limit properly would need a
 §5 amendment, which is an owner act and not a batch's to make. Each
 re-review verified the prior batch whole before finding the next
-class; the P-34 offer waits on the RD-42 re-review of the v1.14 delta,
+class; the P-34 offer waits on the RD-43 re-review of the v1.15 delta,
 and the formal administration that a launch decision could rely on has
 not yet been run.
 

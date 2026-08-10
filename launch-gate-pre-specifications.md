@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.14 (candidate; v1.3 was the pilot-administered version)
+effective_version: v1.15 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), results record format, and trend log
@@ -1288,7 +1288,15 @@ Notes for administering against Syzygy specifically:
   approval pending) — a **validator-and-records batch** a seventh time:
   no question block, no verdict word, and no section §1–§8 changed;
   the instrument bytes that move are this entry, the version header,
-  and four dated correction markers in the v1.13 entry above, whose
+  and four [corrected 2026-08-11, RD42-05: **five**. The v1.13 entry
+  carries markers for RD41-01, RD41-06, RD41-02, RD41-03 and RD41-04;
+  the count was written from the four findings the sentence then names
+  and never recounted against the bytes. Counted at v1.15 with Python
+  `re` over the entry's span, not by eye — with a pattern that tolerates
+  the line wrap (`\[corrected\s+2026-\d\d-\d\d,\s+(RD\d\d-\d\d)`), since
+  a marker whose date and finding id fall on different lines is invisible
+  to the obvious one-line pattern and both entries carry such markers] dated correction markers in
+  the v1.13 entry above, whose
   predicate definition (RD41-01), `_decl` scope sentence (RD41-02),
   mutation count (RD41-03) and disclosed-limit generalization
   (RD41-04) were each false of the bytes an approval digest would have
@@ -1305,7 +1313,22 @@ Notes for administering against Syzygy specifically:
   now CommonMark's block-structure phase in the subset this instrument
   needs: for each line, the stack of containers open at it —
   blockquote at any depth, list item at its content column, raw-HTML
-  block — maintained across lines, with lazy continuation; a line is
+  block [corrected 2026-08-11, RD42-01: false of the v1.14 bytes — the
+  HTML limb was not a block at all but a counter over two tag names,
+  `<details>` and `<summary>`, decrementable by an inline code span.
+  `<div style="display:none">`, `<p style="display:none">`,
+  `<span hidden>` and `<table><tr><td>` each carried a declared field
+  past it, and a `` `</details>` `` written as prose reopened the one
+  element it named while every renderer left it closed. The batch had
+  adopted "the predicate carries state" for markdown's containers and
+  written an enumeration for HTML's — the enumeration returning inside
+  the repair that replaced enumeration. At v1.15 it is an ELEMENT-
+  nesting decision: a region opens at a line whose content begins with
+  a tag of any name, every tag inside the region is read, a close tag
+  pops back to the element it names and pops nothing if it names none,
+  code spans are removed before any tag is read, and self-closing and
+  void forms open nothing; see the v1.15 entry below] — maintained
+  across lines, with lazy continuation; a line is
   the record's own iff that stack is empty, and `bq1` iff it is
   exactly one blockquote. Three things this repair had to decide, each
   stated rather than assumed. **Blockquote laziness is deliberately
@@ -1324,9 +1347,30 @@ Notes for administering against Syzygy specifically:
   records restored: a fenced `<details>` example, a self-closing
   `<details/>` in prose, and a comment mentioning `<details>`, each of
   which the v1.13 raw-side call refused because it ran on *un*-stripped
-  text where §9 said "after the strip"). **`_decl` becomes a
+  text where §9 said "after the strip" [corrected 2026-08-11, RD42-06:
+  as written, true of one of the four. Measured on the fixtures' own
+  bytes, three — the fenced `<details>` example, the self-closing
+  `<details/>` in prose, and the comment mentioning `<details>` —
+  validate at 0 errors at v1.13 as well (only the `---` case moved 1 →
+  0), because each was written BELOW the record's
+  terminal verdict, where v1.14's own new rule already refuses to read
+  anything; the fixtures witnessed that rule, not this repair. At v1.15
+  those three are rebuilt above the verdict (the fourth tests a `---`
+  after the verdict and belongs where it is) and both repairs are
+  witnessed directly: reverting the raw-side call to un-stripped text fails the
+  fenced-`<details>` fixture (1 of 187, mut15 m9), and applying the
+  setext requirement to the terminal rule fails the `---` fixture (1 of
+  187, m10)]). **`_decl` becomes a
   consumer** (RD41-02): a declared value carried only on non-own lines
-  is an absent field, never a supplied one. And because a quotation
+  is an absent field, never a supplied one [corrected 2026-08-11,
+  RD42-03: true of nine of the ten call sites, not of `Parameter block
+  sha256:`, which still read the full active text — so §2's integrity
+  anchor, the value that binds a record to the instrument bytes it was
+  administered under, could be supplied from collapsed content BELOW
+  the terminal verdict, and the record was then refused for a digest
+  *mismatch* it did not have rather than for the absence it did. Fixed
+  at v1.15, with the call sites enumerated mechanically rather than
+  counted by eye: 10 of 10 read the record's own lines]. And because a quotation
   whose fields land at column 0 unmarked is byte-for-byte §5's own
   declaration form — §5 defines no marker that would tell the two
   apart — two further rules close what containment cannot: a
@@ -1341,7 +1385,13 @@ Notes for administering against Syzygy specifically:
   FOR` was reported in its place (RD41-08); the LG-1 commit-existence
   fixture is rebuilt from a real commit so its mutation is what makes
   its assertion true (RD41-11). **168 fixtures**; **sixteen**
-  mutation-reverts, fourteen of which fail exactly the fixtures their
+  mutation-reverts, fourteen [corrected 2026-08-11, RD42-04:
+  **thirteen**. D-7's revert — the raw-side predicate call — fails **0
+  of 168**, a third unwitnessed repair alongside the two this entry
+  already discloses, and the fourteen was carried over from the
+  batch's plan rather than recounted from the runs. The denominator
+  list that follows has fourteen entries for thirteen witnesses]
+  of which fail exactly the fixtures their
   repair added (denominators 1, 1, 1, 43, 5, 1, 1, 1, 1, 1, 5, 1, 3,
   3). **Disclosed limits, each measured, none generalized:** two
   predicate clauses — the tab expansion and the ≤3-column bound — fail
@@ -1360,3 +1410,79 @@ Notes for administering against Syzygy specifically:
   `effective_version` count, and its disclosed-limit generalization,
   in the D-10 convention — the frozen record is not edited). No
   existing question weakened; no ID renumbered.
+- **v1.15** (2026-08-11, post-RD-42 amendment — the v1.14 review's six
+  BLOCKING, three MAJOR and four MINOR findings; candidate, owner
+  approval pending) — a **validator-and-records batch** an eighth time:
+  no question block, no verdict word, and no section §1–§8 changed;
+  the instrument bytes that move are this entry, the version header,
+  and five dated correction markers in the v1.14 entry above, whose
+  predicate description (RD42-01), `_decl` scope claim (RD42-03),
+  mutation count (RD42-04), marker count (RD42-05) and restoration
+  claim (RD42-06) were each false of the bytes an approval digest
+  would have bound. RD-42 verified all twelve RD-41 findings present,
+  reproduced the fixture arithmetic, the §1–§8 identity and the frozen
+  population, ran every captured fixture through both validators on
+  identical bytes — and found the same question answered inconsistently
+  a sixth time. **The HTML limb was the enumeration the batch said it
+  had abandoned.** v1.14 carried state for markdown's containers and a
+  two-tag-name counter for HTML's, so `<div style="display:none">`,
+  `<p style="display:none">`, `<span hidden>` and `<table><tr><td>`
+  each hid a declared field from the reader while the validator read it
+  as the record's own, and an inline `` `</details>` `` code span
+  reopened the one element the counter did know. At v1.15 a raw-HTML
+  region is an **element-nesting** decision, like every other container
+  in the predicate: it opens at a line whose content begins with a tag
+  of any name; inside it every tag on every line is read; a close tag
+  pops back to the element it names and pops nothing if it names none,
+  so `<table><tr><td>` … `</td></tr></table>` closes where a reader
+  sees it close and a lawful record carrying a closed appendix keeps
+  its own verdict readable; code spans are removed before any tag is
+  read; self-closing and void forms open nothing. Outside a region a
+  line must **begin** with a tag to open one, so a reviewer writing
+  *about* a carrier — a `<details>` named mid-sentence, a
+  `` `<summary>` `` in a code span, a `<details>` in a table cell —
+  no longer breaks their own record: three lawful records that v1.14
+  refused with 8, 8 and 1 errors now validate clean (RD42-09). The
+  same door had laundered a verdict: a `READY FOR` hidden in collapsed
+  content below a record's visible terminal `NOT READY` was reported
+  as the record's verdict, in pure ASCII, which is the harm the unicode
+  fold was taken for (RD42-02). `Parameter block sha256:` — the tenth
+  `_decl` site, and §2's integrity anchor — now reads the record's own
+  lines like the other nine, with the sites enumerated mechanically
+  rather than counted (RD42-03). LG-4's emptiness requirement excludes
+  §5's declared trailer fields from G1 section content, so a bare
+  `## G1` in the shape §5 mandates opens an EMPTY section instead of
+  validating at 0 errors (RD42-07), and one heading regex requires the
+  space CommonMark requires, so `###G1` is not a heading (RD42-11).
+  The angle-bracket placeholder rule keeps its shape and loses its
+  false sentence: the message now states what it matched — a value
+  written entirely inside angle brackets, which is §5's template form
+  and not an answer — rather than claiming the value is §5's own
+  placeholder text, which it need not be (RD42-08); matching §5's
+  literal strings instead was considered and rejected by measurement,
+  because the exploit abbreviates the template it quotes. **187
+  fixtures**; **thirteen** mutation-reverts, twelve of which fail
+  exactly the fixtures their repair added (denominators 10, 3, 2, 3, 1,
+  1, 1, 1, 1, 2, 1, 1). **Disclosed limits, each measured, none
+  generalized:** the raw-HTML-line classification — a line whose own
+  content begins with a tag is raw HTML, not the record's own text —
+  fails **0 of 187** when reverted alone (m4), because every declared
+  value is read `^`-anchored and the verdict-token scan counts raw
+  lines; it is defence in depth and this entry says so rather than
+  counting it as proven. The two v1.14 clauses with no single-layer
+  witness (tab expansion, the ≤3-column bound) remain so. A record
+  line whose own text *begins* with an inline tag is read as raw HTML
+  and cannot carry a declaration; §5's fields begin with their labels,
+  and no fixture in the corpus is affected. §5's non-authority banner
+  can still be satisfied by a quotation of the banner in an appendix
+  (RD42-12, carried forward: the banner is the one line whose
+  quotation is indistinguishable from its assertion). The depth scan
+  is quadratic in nesting depth on adversarial input (RD42-13, carried
+  forward; records are short and the scan is read-only). An asymmetric
+  `**Label:*` still satisfies presence, and the trend row is still
+  printed above the error list carrying the record's *claimed* verdict
+  when the record is invalid — both carried forward. Semantic delta:
+  `round-2026-08e/LAUNCH-GATE-v1.15-SEMANTIC-DELTA.md` (which also
+  carries the corrections of the frozen v1.14 delta's false claims, in
+  the D-10 convention — the frozen record is not edited). No existing
+  question weakened; no ID renumbered.
