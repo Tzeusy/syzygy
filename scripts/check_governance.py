@@ -1664,6 +1664,10 @@ ACT_DIGEST_COPY_FILES = {
     # stale copy a finding instead of a silent misstatement.
     f"{CANDIDATES}/round-2026-08e/WAVE-A-CLOSURE-REPORT.md":
         ("ACCEPT FOUNDATIONAL WAVE A",),
+    # The Wave B closure report (2026-08-10) likewise carries a full copy
+    # of its confirmed argument, for the same reason.
+    f"{CANDIDATES}/round-2026-08e/WAVE-B-CLOSURE-REPORT.md":
+        ("ACCEPT FOUNDATIONAL WAVE B",),
 }
 
 
