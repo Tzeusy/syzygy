@@ -68,3 +68,29 @@ subjects, and RD-25 stays bound to `395da99`).
 | RD25-10 | MINOR | R | `PROCESS-LESSONS.md` "the four" → "the compressed verification rules" |
 | RD25-11 | MINOR | R | `README.md` banner uses "final pre-specification" |
 | RD25-12 | MINOR | R | P-16 re-quotes "31 terms, T-01…T-31" |
+
+## RD-26 — Wave A dimensions (19 modules + decisions at `aaff6fa`)
+
+The Wave A byte repairs below regenerate the wave manifest and the act-1
+argument by script; RD-31 (exact-package) binds the final argument after
+all repairs land, which is why it runs last. Owner-only items are queued,
+never settled here (VIS-4). Where a repair implements a recorded owner
+decision (B1) or a package's own proposed answer (§8 q2), the delta names
+that provenance and the acceptance record's §7 makes the ratification a
+knowing one.
+
+| Finding | Class | Disposition | Where it lands |
+|---|---|---|---|
+| RD26-01 | BLOCKING | O | Only the owner rules P-33 (install shape). The offer stays closed until then; §7 gains the P-33 item (with RD26-02) so the gate document itself now says so. The readiness report will carry P-33 as a launch blocker |
+| RD26-02 | BLOCKING | R | Acceptance record §7 gains three items: P-31 (drafted RFC2-19 arm ratified at the act), P-33 (install shape — blocks the offer), P-37 (shape-facet vocabulary settled by the act) |
+| RD26-03 | MAJOR | R | RFC3-4's limb narrowed to two roots; zero roots routed to RFC1-1's workspace path by citation |
+| RD26-04 | MAJOR | R | RFC3-2/RFC3-15/RFC3-16 say expiry **eligibility** derives; RFC3-15's `records/` cell admits the pre-declared deterministic policy sweep's resolution record (implementing owner decision B1, which requires that act to exist); §7 discloses the widening |
+| RD26-05 | MAJOR | R | RFC4-19's `terminal outcome` row repaired in §8 q2's own proposed direction (field stays R; `unknown-terminal` a legal Syzygy-side value carrying its reason); q2 marked drafted-awaiting-ratification; §7 discloses |
+| RD26-06 | MAJOR | R (disclosure) | The P-31 arm stays as drafted (only the owner rules P-31); §7 names it so ratification is knowing — the missing half of the module's own honesty |
+| RD26-07 | MINOR | R | RFC4-19 join-basis citation → RFC4-22 |
+| RD26-08 | MINOR | R | Route 4 attributed to A2 + the RFC 0002 §8 q3 Tier C ruling, in RFC4-13 and the RFC-0004 README |
+| RD26-09 | MINOR | R | RFC-0002 README's load-bearing exception extended to RFC4-13 route 4's citations |
+| RD26-10 | MINOR | R | RFC4-13 authority line qualified: reads-and-never-executes; execution is RFC5-18's gate |
+| RD26-11 | MINOR | R | RFC4-23(2) states the unrenderable rule in its own words; RFC8-16 demoted to a parallel-obligation pointer |
+| RD26-12 | MINOR | R | Matrix: "Six contracts" → eleven; states RFC 0001–0005's enumerations are produced at surface specification |
+| RD26-13 | MINOR | R | §7 item 1 folds in the P-18(a) four-categories-vs-closed-validator seam |
