@@ -85,7 +85,7 @@ finished with, and not being determinable stays legible:
   and no merge fact exists (RFC8-15). It is named here, in the contract,
   precisely so that no implementer has to name it: it is **never** `done`,
   `complete`, `finished`, or `resolved`, because "done" is exactly the word
-  the closure fallacy needs (§6; RFC8-30);
+  the closure fallacy needs (README §6, Alternatives considered; RFC8-30);
 - **four absence values** — `state-undetermined`, `eligibility-undetermined`,
   `activity-undetermined`, `stale-or-dead`.
 
@@ -110,7 +110,12 @@ rendering, filter, count, and machine answer, and **never folded into it**: an
 item whose normalized state is `merged` may carry any of three chain states,
 and rendering all three as normalized `merged` alone is exactly the merge
 RFC2-17's word reservation forbids. Every consumer, RFC9-32's
-work/construction overlay included, consumes **both fields** (§5). [Inferred]
+work/construction overlay included, **conforms by consuming both fields and
+rendering every value each field currently carries** — an addition to either
+vocabulary crosses the seam without amending any consumer's contract, and a
+value the consumer cannot render is a defect in the consumer, never a licence
+to fold it into a neighbour. This clause is the conformance rule's single
+home; README §5 restates it for orientation. [Inferred]
 
 **Separate is not independent, and the difference bites at one value.** The
 two fields are **not orthogonal**, and this clause does not claim they are:
@@ -191,7 +196,7 @@ and every row states its honest-absence behavior. **Live states:**
 | `blocked` | Open, waiting on something nameable | Substrate blocked/waiting status, dependency edges, gates | Carries its blocked-cause **set** — every cause whose declared derivation resolves — or cause-Unknown where none does (RFC8-17) |
 | `review` | An open review lane bound to an exact head SHA | Open PR facts (hosting sub-adapter) + review work item/labels + `external_ref` | Lane-open is derivable; **reviewer activity is never claimed** (a review lock label is a lock, not liveness); a merge-readiness verdict binds to its head SHA and expires when the head moves |
 | `merged` | The change reached the integration branch | **A VCS merge fact only** (RFC4-11) — never inferred from scheduler closure | Execution state: never done, never green; enters the RFC2-18 chain as `reconciliation-pending` at the evaluation that first captures the merge fact |
-| `reconciled` | `reconciled@E` per RFC2-18 | A reconciliation verdict claim, gate-backed Observed (RFC2-25), rendered with its evaluation identity | V0: never renders (§3.14); merged-but-unreconciled renders "reconciliation evidence absent / Unknown" |
+| `reconciled` | `reconciled@E` per RFC2-18 | A reconciliation verdict claim, gate-backed Observed (RFC2-25), rendered with its evaluation identity | V0: never renders (`accounting-reconciliation-and-release.md` §3.14); merged-but-unreconciled renders "reconciliation evidence absent / Unknown" |
 
 **Terminal state:**
 
@@ -375,8 +380,8 @@ verbatim state carriage on every machine answer (RFC6-14); evaluation stamping
 handoff RFC9-32 consumes — RFC8-12/8-13's closed vocabulary, at present
 thirteen values in three partitions, not eight. The other half is the RFC2-18
 chain state (RFC8-28, module 3); the **conformance rule binding both halves**
-is stated once, in `README.md` §5, and a consumer conforms only by consuming
-both fields. **To RFC 0010:** the work-state vocabulary and liveness rules a
+is stated once, at **RFC8-12** (README §5 restates it), and a consumer
+conforms only by consuming both fields. **To RFC 0010:** the work-state vocabulary and liveness rules a
 Mission lifecycle must interoperate with, and the cost measures a Mission
 budget is accounted in.
 

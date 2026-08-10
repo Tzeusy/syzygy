@@ -173,9 +173,11 @@ consumes **both**:
 Stated as **two fields** rather than a value count on purpose, since a
 count-shaped handoff fails silently whenever either vocabulary grows: **a
 consumer conforms by consuming both fields and rendering every value each field
-currently carries**, so an addition to either vocabulary crosses the seam
-without amending this paragraph, and a value the consumer cannot render is a
-defect in the consumer, never a licence to fold it into a neighbour.
+currently carries** — the conformance rule, whose single clause home is
+**RFC8-12** (this paragraph restates it for orientation) — so an addition to
+either vocabulary crosses the seam without amending this paragraph, and a value
+the consumer cannot render is a defect in the consumer, never a licence to fold
+it into a neighbour.
 
 **One foundation defect is outstanding** — RFC1-28/31 omit the
 queued-for-materialization stage; it is held in module 1 §5 with §8 q2. Four

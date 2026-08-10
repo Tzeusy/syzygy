@@ -578,6 +578,6 @@ governance_sources:
   - {file: topology/06-intent-to-reconciliation-flow.md, role: topology, words: 909, rule_ids: [VIS-4]}
   - {file: topology/07-client-trust-boundaries.md, role: topology, words: 637, rule_ids: [SEC-1, SEC-3]}
   - {file: topology/08-adapter-external-systems.md, role: topology, words: 1017, rule_ids: [SEC-3, SEC-4, SEC-5]}
-  - {file: topology/BUNDLE-MANIFEST.md, role: topology, words: 145}
-  - {file: topology/README.md, role: topology, words: 569}
+  - {file: topology/BUNDLE-MANIFEST.md, role: topology, words: 167}
+  - {file: topology/README.md, role: topology, words: 602}
   - {file: topology/TRACKING-NOTE.md, role: topology, words: 144}

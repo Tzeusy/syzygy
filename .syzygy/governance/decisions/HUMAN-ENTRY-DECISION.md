@@ -16,12 +16,22 @@ fixed Syzygy-owned entry:
     (governed presentation, never authority; absence renders as a finding)
 
 per-repository discoverability:
-    a kernel finding per governed repository: yes / no / Unknown
-    (is the entry reachable from where that repository's readers start?)
+    a kernel finding per governed repository, answer domain CLOSED AT FOUR
+    VALUES per RFC7-40: yes / no / not-applicable / Unknown
+    (is the entry reachable from where that repository's readers start?
+    not-applicable keeps a repository with no governance root from
+    rendering a truthful-looking "no")
 
 write posture:
     Syzygy may PROPOSE a root README link to the entry;
     Syzygy may never write it directly (VIS-5 two-root write boundary)
+
+entry identity (added 2026-08-10, RD27-02(a)):
+    the round-08e repair pass drafted into RFC7-39 the ruling that the
+    fixed entry IS the project's primary narrative (RFC7-6) — "there are
+    not two front doors". This is a substantive answer the pass made, not
+    a derivation; the owner may prefer a thin index entry distinct from
+    the narrative. Disclosed at the acceptance record's §7 item 15.
 ```
 
 ## Current authority
@@ -32,7 +42,9 @@ the write boundary. Wave B ratifies the drafted clauses.
 
 ## Options
 
-- **(a)** As drafted: fixed entry, per-repo finding, propose-only.
+- **(a)** As drafted: fixed entry **identified with the RFC7-6 primary
+  narrative** (RFC7-39's drafted ruling), per-repo four-valued finding,
+  propose-only.
 - **(b)** Additionally allow a proposed root-README pointer via adapter —
   still propose-only under VIS-5; adds an adapter surface the current
   clauses do not contemplate. Available later as an OpenSpec-level
@@ -40,6 +52,10 @@ the write boundary. Wave B ratifies the drafted clauses.
 - **(c)** Leave entry unspecified — every clone renegotiates where to
   start; Capability 1's "honest shape visibility" has no fixed door;
   RFC7-39/40 revert out of Wave B.
+- **(d)** Keep the fixed entry but sever the identity: the entry is a thin
+  index distinct from the primary narrative (two documents, one door) —
+  redraft RFC7-39's "there are not two front doors" sentence before the
+  Wave B act.
 
 ## Consequences
 

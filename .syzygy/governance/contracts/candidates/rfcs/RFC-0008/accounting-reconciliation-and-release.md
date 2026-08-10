@@ -410,7 +410,7 @@ handoff RFC9-32 consumes (RFC8-28), with RFC2-17's word reservation binding the
 overlay — `unsatisfied` and `contradiction-raised` never merge into one count,
 badge, or mark, and neither collapses into `merged`. The other half is the
 normalized work state (RFC8-12/8-13, module 2); the conformance rule binding
-both halves is stated once, in `README.md` §5. Also to RFC 0009: the
+both halves is stated once, at RFC8-12 (README §5 restates it). Also to RFC 0009: the
 touched-components measure's dependence on the declared implementation mapping
 (RFC8-18, module 2). **To RFC 0010:** the reconciliation chain state a Mission
 must render before claiming an objective achieved, and RFC8-30's prohibition on

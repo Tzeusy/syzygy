@@ -159,7 +159,8 @@ clause names one clause of candidate **RFC 0010** exactly once, as the drafted
 successor path that would become the store's home if and when RFC 0010 is
 accepted; that is a **citation, not a reliance**, and nothing in this package
 is conditional on it. It is the only mention of an unaccepted contract's
-clause anywhere in RFC 0009, and RFC 0011 is cited nowhere.
+clause anywhere in RFC 0009, and no clause of RFC 0011 is cited anywhere
+in RFC 0009.
 
 **Provides to:** **RFC 0007 / RFC 0008** — map-side rendering obligations behind
 cross-surface highlights (same reserved palette semantics for shared states);

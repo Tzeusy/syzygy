@@ -13,7 +13,13 @@
 > `.syzygy/governance/decisions/` (`UNKNOWNS-AND-GAPS-`,
 > `PROJECT-SHAPE-FACETS-`, `HUMAN-ENTRY-`, `KNOWLEDGE-HYGIENE-`,
 > `OPENSPEC-FORM-AND-VERSION-DECISION.md`) — do not act from the versions
-> below. Packets 1, 3, 4, 5, 6, 9, 12 remain current here.
+> below. Packets 1, 3, 4, 5, 9, 12 remain current here. **Packet 6 is
+> stale as of 2026-08-10 (RD27-02(c))**: the round-08e repair re-grounded
+> RFC9-8(a)'s store on Wave A (RFC3-15/RFC3-16(a), established by an
+> RFC3-15(a) recorded-widening owner act) — portfolio re-lay does **not**
+> wait for an accepted RFC 0010, and RFC10-15 is a staged successor cited
+> for orientation only. Do not act from packet 6 below; the current
+> question and options are P-22's register row.
 
 ## Packet 1 — The acceptance-wave split itself
 
@@ -122,6 +128,10 @@
   the redrafted RFC9-8(a)); (b) rule for the workspace manifest and revert.
 - **Costs:** (a) portfolio re-lay waits for an accepted RFC 0010 store;
   (b) restores the RFC3 contradiction RC-4 found.
+- **Stale as of 2026-08-10 (RD27-02(c))** — see this file's header banner:
+  the store is now Wave-A-grounded and cost (a) is no longer true of the
+  bytes. The current statement is P-22's row in
+  `decisions/PENDING-OWNER-DECISIONS.md`.
 - **Recommendation [Inferred]:** (a).
 - **Earliest gate:** Wave B act.
 - **Independent work:** yes.

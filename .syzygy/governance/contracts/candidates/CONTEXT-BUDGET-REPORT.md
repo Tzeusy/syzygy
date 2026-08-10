@@ -15,7 +15,7 @@
 > object from a waiver against one that does (review RC-12 §5), and
 > every row below says `candidate budget exception`, never `waiver`.
 
-**As-of commit:** `742108a829aaa632fd8be73bdecf8e23f4372336`  *(plus uncommitted working-tree edits at generation time)*
+**As-of commit:** `bbd75d1b69ea676da6073eb7bab253c5dc2e4260`  *(plus uncommitted working-tree edits at generation time)*
 
 This file is regenerated in the *same change* that moves any measured
 file. Two independent currency tests exist and neither is this line:
@@ -33,9 +33,9 @@ the *measurement*, never the *selection*.
 | Fixture | Files | Words | Est. tokens (×1.35) | Disposition vs the proposed trigger | Packet digest |
 |---|---:|---:|---:|---|---|
 | `context-selection-1-polaris-narrative.md` | 5 | 14,814 | 19,999 | above the proposed default band, under the proposed trigger | `694a937836079d38…` |
-| `context-selection-10-trajectory-lifecycle.md` | 12 | 39,212 | 52,936 | **above the proposed trigger** by 164.7% | `27bbefa2691ed13d…` |
-| `context-selection-2-trajectory-adapter.md` | 8 | 19,596 | 26,455 | **above the proposed trigger** by 32.3% | `fb7c6d9e0e380eed…` |
-| `context-selection-3-orrery-lens.md` | 5 | 15,236 | 20,569 | **above the proposed trigger** by 2.8% | `e747219328d5cb2b…` |
+| `context-selection-10-trajectory-lifecycle.md` | 12 | 39,299 | 53,054 | **above the proposed trigger** by 165.3% | `0e4737543b00a07f…` |
+| `context-selection-2-trajectory-adapter.md` | 8 | 19,679 | 26,567 | **above the proposed trigger** by 32.8% | `749b807c6c038cc4…` |
+| `context-selection-3-orrery-lens.md` | 5 | 15,246 | 20,582 | **above the proposed trigger** by 2.9% | `d1c2c004de2c20a7…` |
 | `context-selection-4-execution-profile.md` | 6 | 11,424 | 15,422 | above the proposed default band, under the proposed trigger | `3d531545dacf1c49…` |
 | `context-selection-5-cross-project-mission.md` | 11 | 21,650 | 29,228 | **above the proposed trigger** by 46.1% | `ac853acff4c6f30c…` |
 | `context-selection-6-doctrine-amendment.md` | 6 | 12,004 | 16,205 | above the proposed default band, under the proposed trigger | `585500a1e99df11c…` |
@@ -71,7 +71,7 @@ printed at the foot of §5.
 
 ### `context-selection-10-trajectory-lifecycle.md`
 
-- **Measured:** 39,212 words ≈ 52,936 estimated tokens — 164.7% above the proposed trigger.
+- **Measured:** 39,299 words ≈ 53,054 estimated tokens — 165.3% above the proposed trigger.
 - **Reason:** The undivided lifecycle warrant spans kernel work identity (RFC-0001, indivisible), all three planes of the work surface (RFC-0008 in full), the mission-side reservation/release seam (RFC-0010 module 3), the state vocabularies and record envelope the chain joins on, and the surface-selection contract every rendering obeys. Every file answers a clause the warrant's own text names. The size is a property of the warrant's breadth, not of padding
 - **Scope:** Amendments spanning the **whole** work-item lifecycle seam — identity + dispatch + materialization + accounting + release together, for mission-spawned work. A warrant touching only one segment takes the matching shard below instead
 - **Reviewer:** **Unassigned.** This fixture is new at round-2026-08d; independent review is owed at the round's review pass, and this row says so rather than borrowing a signature from a review that never saw it
@@ -80,7 +80,7 @@ printed at the foot of §5.
 
 ### `context-selection-2-trajectory-adapter.md`
 
-- **Measured:** 19,596 words ≈ 26,455 estimated tokens — 32.3% above the proposed trigger.
+- **Measured:** 19,679 words ≈ 26,567 estimated tokens — 32.8% above the proposed trigger.
 - **Reason:** An authorization-bearing derivation-mapping edit cannot shed (i) the act contract that makes the edited artifact honored — RFC3-16(a)/(b)/(c), whose smallest load unit is one module (word cost in `CONTEXT-BUDGET-REPORT.md` §3); (ii) the consuming state vocabulary the mapping projects into (RFC8-12/13, tables read verbatim); (iii) the adapter contract bounding what the adapter may write; or (iv) the SEC-3 premise that makes (i) necessary. The only measured configuration under the trigger is reached by dropping (i), which RFC11-5 forbids and which this fixture's own reasoning refuses
 - **Scope:** Work-provider adapter changes that edit an **RFC3-16(a) authorization-bearing** derivation mapping. Does **not** cover: the approval ceremony for such a mapping (a separate, smaller packet); mapping edits that are not authorization-bearing; adapter changes touching execution-record capture or fidelity joins, which is fixture 9's class
 - **Reviewer:** **RC-12, independent reviewer, 2026-08-06.** Ruled `WAIVER SOUND` in `round-2026-08b/reviews/RC-12-budget-waiver-RAW.md`, over the *selection* — not over the contracts it selects. That review's own verdict was `EXCEPTIONS`; read §5 there on what this signature can and cannot mean while no budget rule is installed
@@ -89,7 +89,7 @@ printed at the foot of §5.
 
 ### `context-selection-3-orrery-lens.md`
 
-- **Measured:** 15,236 words ≈ 20,569 estimated tokens — 2.8% above the proposed trigger.
+- **Measured:** 15,246 words ≈ 20,582 estimated tokens — 2.9% above the proposed trigger.
 - **Reason:** [Unknown] — not declared in the fixture
 - **Scope:** [Unknown] — not declared in the fixture
 - **Reviewer:** [Unknown] — not declared in the fixture
@@ -134,7 +134,7 @@ printed at the foot of §5.
 
 ## 3. Contract modules — the corpus this budget is spent on
 
-**39 modules, 118,462 words.** The 7,000-word per-module
+**39 modules, 118,566 words.** The 7,000-word per-module
 ceiling and the 35–50k corpus target band are the compaction charter's,
 recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`; both are
 candidate figures under the same non-installed policy as §1's trigger.
@@ -163,14 +163,14 @@ candidate figures under the same non-installed policy as §1's trigger.
 | `rfcs/RFC-0007/README.md` | 2,501 | — |
 | `rfcs/RFC-0007/narrative-contract.md` | 5,253 | — |
 | `rfcs/RFC-0007/rendering-and-surface.md` | 4,568 | — |
-| `rfcs/RFC-0008/README.md` | 2,037 | — |
-| `rfcs/RFC-0008/accounting-reconciliation-and-release.md` | 3,797 | — |
-| `rfcs/RFC-0008/identity-authority-materialization.md` | 2,717 | — |
-| `rfcs/RFC-0008/state-vocabulary-and-cost.md` | 4,069 | — |
-| `rfcs/RFC-0009/README.md` | 2,142 | — |
-| `rfcs/RFC-0009/interaction-parity-and-release.md` | 3,401 | — |
+| `rfcs/RFC-0008/README.md` | 2,054 | — |
+| `rfcs/RFC-0008/accounting-reconciliation-and-release.md` | 3,800 | — |
+| `rfcs/RFC-0008/identity-authority-materialization.md` | 2,718 | — |
+| `rfcs/RFC-0008/state-vocabulary-and-cost.md` | 4,135 | — |
+| `rfcs/RFC-0009/README.md` | 2,148 | — |
+| `rfcs/RFC-0009/interaction-parity-and-release.md` | 3,408 | — |
 | `rfcs/RFC-0009/semantic-geography.md` | 7,777 | **yes** |
-| `rfcs/RFC-0009/visual-grammar-and-lenses.md` | 5,840 | — |
+| `rfcs/RFC-0009/visual-grammar-and-lenses.md` | 5,844 | — |
 | `rfcs/RFC-0010/README.md` | 1,536 | — |
 | `rfcs/RFC-0010/budget-reservation.md` | 1,635 | — |
 | `rfcs/RFC-0010/effects-recovery-and-stop.md` | 2,825 | — |

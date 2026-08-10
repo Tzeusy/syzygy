@@ -47,7 +47,7 @@ scripts/context_load.py rfcs/RFC-0004/README.md \
   doctrine:security.md
 ```
 
-Measured: **19,596 words ≈ 26,455 estimated tokens** — above the proposed
+Measured: **19,679 words ≈ 26,567 estimated tokens** — above the proposed
 20,000-token decomposition trigger, disclosed as a risk-class exception
 (RFC11-11): an authorization-bearing change may not shed its authorization
 contract (the RFC3-16(a) module) or the mapping's consuming vocabulary
@@ -115,7 +115,7 @@ scope.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`fb7c6d9e0e380eed…`.
+`749b807c6c038cc4…`.
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a
@@ -141,3 +141,5 @@ this fixture covers the work-provider adapter derivation-mapping class
 only, closing RD-5's double-count finding.*
 
 *Re-measured 2026-08-10 by the same CG-18 method (declared mandatory set, listed order): the round-2026-08e RD-26 repair batch edited Wave A modules this packet loads. Previous: 19,490 words, digest `93c4674ef075e667…`. Selection unchanged; the movement is contract repairs landing under the fixture, which is the class this check exists to catch.*
+
+*Re-measured 2026-08-10b by the same CG-18 method: the round-2026-08e RD-27 repair batch edited Wave B modules this packet loads. Previous: 19,596 words, digest `fb7c6d9e0e380eed…`. Selection unchanged.*

@@ -155,7 +155,12 @@ TASKS = [
         ],
         doctrine=[("VIS-1", f"{D}/vision.md")],
         craft=[("CC-VIZ-5", f"{CR}/performance-and-visual-discipline.md")],
-        omissions=["RFC-0008/0009 — sibling views own their own contracts"],
+        omissions=["RFC-0008 — the sibling work view owns its own contract; "
+                   "RFC-0009 is NOT omitted — it is a declared, clause-borne "
+                   "dependency (RFC7-31's shared release-policy leg is "
+                   "stated at RFC9-45, never duplicated locally), so a "
+                   "release-gate question requires "
+                   "rfcs/RFC-0009/interaction-parity-and-release.md"],
     ),
     dict(
         key="surface-trajectory",
@@ -185,12 +190,18 @@ TASKS = [
             f"{C}/rfcs/RFC-0009/semantic-geography.md",
             f"{C}/rfcs/RFC-0009/visual-grammar-and-lenses.md",
             f"{C}/rfcs/RFC-0009/interaction-parity-and-release.md",
+            f"{C}/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+            f"{C}/rfcs/RFC-0008/accounting-reconciliation-and-release.md",
             f"{C}/rfcs/RFC-0002/rendering-vocabularies.md",
             f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
         ],
         doctrine=[("VIS-1", f"{D}/vision.md")],
         craft=[],
-        omissions=[],
+        omissions=["The two RFC-0008 modules are loaded for their closed "
+                   "vocabularies only: RFC9-32/RFC9-46 require the "
+                   "work/construction overlay to carry the thirteen "
+                   "normalized values (RFC8-12/8-13) and six chain values "
+                   "(RFC8-28) verbatim, inside the release-gated tuple"],
     ),
     dict(
         key="security-profile",

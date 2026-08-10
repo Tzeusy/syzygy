@@ -407,8 +407,9 @@ generic geometry. [Inferred — VIS-1 honest simplification, operationalized.]
 **RFC9-43.** Every aggregate discloses its membership count and epistemic
 composition and supports expansion to members (RFC6-17; SDR-27). **The disclosed
 composition is the full RFC6-22 equivalence tuple** — per-label, per-tier,
-per-Unknown-reason and per-freshness-state counts **and sibling surface states** —
-the tier counts covering all six of RFC2-25's tiers (`gate-backed`,
+per-Unknown-reason and per-freshness-state counts, **sibling surface states, and
+the `challenge-pending` disclosure (RFC2-13)** — the tier counts covering all six
+of RFC2-25's tiers (`gate-backed`,
 `report-fact`, `asserted-by-worker`, `reduced-fidelity`, `declared-only`,
 `suspended`), and the sibling surface states being the three RFC2-25 places
 deliberately outside the registry (*dismissed by decision*, *unadopted draft*,

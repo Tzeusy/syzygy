@@ -924,3 +924,53 @@ run** (the lead session owns manifest regeneration). Consequently:
 
 *End of the Wave B (R-B) semantic delta. Eleven of eleven modules edited; all
 edits digest-moving; nothing accepted, nothing installed, no act performed.*
+
+## 11. Addendum, 2026-08-10 — the RD-27 repair batch (main session)
+
+The fresh Wave B dimension review (RD-27, frozen commit `5bb8a36`,
+`VERDICT: REVISE`; raw at `reviews/RD-27-wave-b-RAW.md`, dispositions in
+`reviews/DISPOSITION-REGISTER.md`) confirmed the forward-dependency posture
+("Wave B is independently acceptable given Wave A") and delivered one
+BLOCKING finding against the offering apparatus, five MAJOR and four MINOR.
+Four repairs touch Wave B module bytes:
+
+1. **The `challenge-pending` disclosure restored to both restated tuples**
+   (RD27-01). RFC9-43's aggregate-composition enumeration and RFC9-46's
+   cross-surface equivalence tuple each now carry the `challenge-pending`
+   disclosure (RFC2-13) that RFC6-17/RFC6-22 — the clauses both claim
+   identity with — require. Before this repair a conforming implementation
+   could omit it on both surfaces and pass every RFC9-47 check while
+   RFC6-23 makes the silence release-blocking.
+2. **The conformance rule given a clause home** (RD27-07). The
+   consume-both-fields-and-render-every-value rule moved from RFC 0008's
+   README §5 into **RFC8-12** (the README now restates and points); the two
+   modules citing "`README.md` §5" as its single home now cite RFC8-12.
+3. **RFC 0009 README's package-name sentence corrected** (RD27-08): "no
+   clause of RFC 0011 is cited anywhere in RFC 0009" — true by the recorded
+   sweep — replacing the false "RFC 0011 is cited nowhere".
+4. **Three bare cross-module `§` references named** (RD27-09): RFC8-6's
+   §3.13 and RFC8-13's §3.14 now name
+   `accounting-reconciliation-and-release.md`; RFC8-12's §6 now names the
+   README's Alternatives-considered section.
+
+**Modules touched (7 of 11):** RFC-0008/README.md,
+RFC-0008/identity-authority-materialization.md,
+RFC-0008/state-vocabulary-and-cost.md,
+RFC-0008/accounting-reconciliation-and-release.md, RFC-0009/README.md,
+plus RFC-0009/visual-grammar-and-lenses.md and
+RFC-0009/interaction-parity-and-release.md — seven files. Digest-moving in
+all seven; the manifest regenerates by `build_active_manifest.py` and §1
+row B is rebound by script in the same change (`c0fd0e27…`;
+`2041ad05…` and the round-08d `daa6a5dd…` are stale and satisfy nothing).
+
+**Repairs outside the manifest, same batch:** the matrix's RFC7-40 row
+restated to the four-value closed domain and its RFC9-8(a) row to the
+typed governance store (RD27-04/05); the router's Polaris omission note
+corrected and the Orrery route extended with RFC 0008's vocabulary modules,
+router regenerated (RD27-06); the acceptance record row B disclosure
+(RD27-03) and §7 item 15 disclosing RFC7-39's entry-identity ruling
+(RD27-02(a)); `HUMAN-ENTRY-DECISION.md` corrected to RFC7-40's four-value
+domain and extended with the entry-identity question (RD27-02(a)/(b));
+packet 6 banner-marked stale and P-22's register row re-grounded
+(RD27-02(c)); `05-CONTRACT-INDEX.yaml` regenerated (RD27-10).
+RD-32, the exact-package review, binds the post-repair bytes.

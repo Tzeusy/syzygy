@@ -57,7 +57,8 @@ precision, debugging, and assistive-technology paths — not derived exports. Fo
 one (evaluation, scenario context, lens, declared filter scope), the 3D scene and
 the non-3D view are equivalent per RFC6-22/23: same entity set, same edges, same
 epistemic states (label + tier + reason + freshness **and sibling surface
-states**), same counts, same evidence links, same scenario context, and —
+states**), same counts, **the same `challenge-pending` disclosure (RFC2-13,
+per RFC6-22)**, same evidence links, same scenario context, and —
 wherever the work/construction overlay is active — **both work-state fields: the
 normalized work state and the RFC2-18 chain state** (RFC9-32; RFC8-12/8-28). A
 tabular view that carries the normalized state and drops the chain state is not a

@@ -61,7 +61,7 @@ Crosses the work-surface/evidence seam: RFC-0002 owns the reconciliation chain, 
 **Declared contract dependencies (from module front matter, computed):** RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0009
 **Doctrine:** `VIS-1`
 **Craft:** `CC-VIZ-5`
-**Explicitly omitted:** RFC-0008/0009 — sibling views own their own contracts
+**Explicitly omitted:** RFC-0008 — the sibling work view owns its own contract; RFC-0009 is NOT omitted — it is a declared, clause-borne dependency (RFC7-31's shared release-policy leg is stated at RFC9-45, never duplicated locally), so a release-gate question requires rfcs/RFC-0009/interaction-parity-and-release.md
 
 ## Specify or reason about Trajectory (work view)
 
@@ -74,9 +74,10 @@ Crosses the work-surface/evidence seam: RFC-0002 owns the reconciliation chain, 
 ## Specify or reason about Orrery (map view)
 
 **Directly governing clauses:** `RFC9-1` (`.syzygy/governance/contracts/candidates/rfcs/RFC-0009/semantic-geography.md`)
-**Load:** `.syzygy/governance/contracts/candidates/rfcs/RFC-0009/README.md` · `.syzygy/governance/contracts/candidates/rfcs/RFC-0009/semantic-geography.md` · `.syzygy/governance/contracts/candidates/rfcs/RFC-0009/visual-grammar-and-lenses.md` · `.syzygy/governance/contracts/candidates/rfcs/RFC-0009/interaction-parity-and-release.md` · `.syzygy/governance/contracts/candidates/rfcs/RFC-0002/rendering-vocabularies.md` · `.syzygy/governance/contracts/candidates/rfcs/RFC-0006-cross-surface-selection-query-drawer.md`
+**Load:** `.syzygy/governance/contracts/candidates/rfcs/RFC-0009/README.md` · `.syzygy/governance/contracts/candidates/rfcs/RFC-0009/semantic-geography.md` · `.syzygy/governance/contracts/candidates/rfcs/RFC-0009/visual-grammar-and-lenses.md` · `.syzygy/governance/contracts/candidates/rfcs/RFC-0009/interaction-parity-and-release.md` · `.syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md` · `.syzygy/governance/contracts/candidates/rfcs/RFC-0008/accounting-reconciliation-and-release.md` · `.syzygy/governance/contracts/candidates/rfcs/RFC-0002/rendering-vocabularies.md` · `.syzygy/governance/contracts/candidates/rfcs/RFC-0006-cross-surface-selection-query-drawer.md`
 **Declared contract dependencies (from module front matter, computed):** RFC-0001, RFC-0002, RFC-0003, RFC-0004, RFC-0005, RFC-0006, RFC-0007, RFC-0008
 **Doctrine:** `VIS-1`
+**Explicitly omitted:** The two RFC-0008 modules are loaded for their closed vocabularies only: RFC9-32/RFC9-46 require the work/construction overlay to carry the thirteen normalized values (RFC8-12/8-13) and six chain values (RFC8-28) verbatim, inside the release-gated tuple
 
 ## Security, consent, or execution-profile work
 

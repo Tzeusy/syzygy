@@ -117,7 +117,8 @@ decision*) but are never work items, never auto-scheduled (RFC1-21/20).
 **RFC8-6.** A **compaction record** is a durable, identified record under
 `.syzygy/work/**` (schema: RFC 0003) naming what it summarized, what it
 discarded, and what remains externally queryable. It is a fact about
-retention, never a status claim, and may never alter one (§3.13).
+retention, never a status claim, and may never alter one
+(`accounting-reconciliation-and-release.md` §3.13).
 
 ### 3.3 Pre-materialization authority and "What remains?"
 
