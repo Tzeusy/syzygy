@@ -379,7 +379,11 @@ vocabulary (absent → the gap surfaces; unobservable → Unknown), never
 silently.
 
 **The entry is the project's primary narrative (RFC7-6), and RFC7-30 enters
-it.** There are not two front doors: this path is where the RFC7-6 primary
+it.** **[P-38 — drafted arm, awaiting an owner ruling: this entry-identity
+answer was drafted at round-2026-08e; the Wave B act ratifies it or the
+owner reverts it to a thin index entry distinct from the narrative
+(acceptance record §7 item 15; `decisions/HUMAN-ENTRY-DECISION.md`).]**
+There are not two front doors: this path is where the RFC7-6 primary
 narrative is published, so the path every human reader is sent to first is
 the path this surface's only acceptance test walks. RFC7-6's "at most one"
 is undisturbed — the fixed entry is that one — and RFC7-5's opacity rule is

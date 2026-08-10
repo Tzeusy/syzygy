@@ -408,7 +408,16 @@ generic geometry. [Inferred — VIS-1 honest simplification, operationalized.]
 composition and supports expansion to members (RFC6-17; SDR-27). **The disclosed
 composition is the full RFC6-22 equivalence tuple** — per-label, per-tier,
 per-Unknown-reason and per-freshness-state counts, **sibling surface states, and
-the `challenge-pending` disclosure (RFC2-13)** — the tier counts covering all six
+the `challenge-pending` disclosure (RFC2-13)**, and — where the aggregate's
+members carry them — **per-value counts of the chain state and the normalized
+work state of RFC6-19 class 8**, so an aggregate can never satisfy this clause
+in full while disclosing nothing about reconciliation (RFC9-32 carries the
+element-level obligation these counts aggregate); **per-Unknown-reason counts
+are computed over primary reasons only** — one claim instance contributes
+exactly one — with secondary annotations (RFC2-24) disclosed separately and
+never folded into the primary counts, since divergent totals over one declared
+scope are exactly the disagreement RFC6-23 classes release-blocking — the tier
+counts covering all six
 of RFC2-25's tiers (`gate-backed`,
 `report-fact`, `asserted-by-worker`, `reduced-fidelity`, `declared-only`,
 `suspended`), and the sibling surface states being the three RFC2-25 places

@@ -960,7 +960,8 @@ RFC-0008/accounting-reconciliation-and-release.md, RFC-0009/README.md,
 plus RFC-0009/visual-grammar-and-lenses.md and
 RFC-0009/interaction-parity-and-release.md — seven files. Digest-moving in
 all seven; the manifest regenerates by `build_active_manifest.py` and §1
-row B is rebound by script in the same change (`c0fd0e27…`;
+row B is rebound by script in the same change
+(`c0fd0e27…` — itself retired by the §12 batch below, stale and satisfying nothing since 2026-08-10;
 `2041ad05…` and the round-08d `daa6a5dd…` are stale and satisfy nothing).
 
 **Repairs outside the manifest, same batch:** the matrix's RFC7-40 row
@@ -974,3 +975,51 @@ domain and extended with the entry-identity question (RD27-02(a)/(b));
 packet 6 banner-marked stale and P-22's register row re-grounded
 (RD27-02(c)); `05-CONTRACT-INDEX.yaml` regenerated (RD27-10).
 RD-32, the exact-package review, binds the post-repair bytes.
+
+## 12. Addendum, 2026-08-10 — the RD-32 repair batch (main session)
+
+The Wave B exact-package review (RD-32, frozen commit `ad82f1d`,
+`VERDICT: REVISE`; raw at `reviews/RD-32-wave-b-RAW.md`) found the
+mechanics and containment sound and the offer blocked on one byte defect
+and two ceremony defects. Dispositions in `reviews/DISPOSITION-REGISTER.md`
+(RD-32 section), recorded before any byte moved.
+
+- **RFC-0009/visual-grammar-and-lenses.md** (RD32-B1): RFC9-43's
+  enumeration restored to the full RFC6-17 set it claims identity with —
+  the per-value **chain state** and **normalized work state** counts of
+  RFC6-19 class 8 (where the aggregate's members carry them; RFC9-32
+  carries the element-level obligation these aggregate) and the
+  **primary-reasons-only** Unknown-count rule with secondary annotations
+  disclosed separately. "The two are deliberately identical" is now true
+  of the bytes — the third recurrence of this restatement-drift class in
+  this clause, closed at the full set rather than item-by-item. RFC9-46's
+  surface-local carve-out untouched (RD-32 confirmed it sound).
+- **RFC-0007/rendering-and-surface.md** and
+  **RFC-0009/semantic-geography.md** (RD32-m1): RFC7-39's entry-identity
+  answer and RFC9-8(a)'s governance-store placement gain the in-place
+  awaiting-ruling markers (P-38, P-22) that Wave A's RFC2-19(a) carries —
+  one marking convention across the corpus.
+- **Acceptance record** (RD32-M2): §1 row B gains the C1-shaped solo-act
+  sentence — performed alone, the act binds eleven surface contracts
+  whose operative predicates resolve into unaccepted Wave A candidate
+  text; the A → B ordering now lives where the ceremony binds.
+- **`PENDING-OWNER-DECISIONS.md`** (RD32-M1, RD32-m2): the launch-scope
+  index's one verb "gate" no longer carries two forces — P-33
+  **withholds** the Wave A offer; P-31/P-37/P-28/P-21(a) and P-38/P-22
+  are **ratified or reverted at** their acts; and P-21's row plus §7 item
+  18 name the RFC8-12 ↔ RFC9-32 reciprocal restriction as a further
+  undeclared instance waiting on P-21(a) (no new front-matter edge while
+  (a) is open — F-17's lesson).
+- **This delta's own §7** (RD32-m3): its "zero hits remaining" list is
+  corrected here, not by editing the reviewed text (rule 10): the string
+  `configured landing document` has **one** hit in the wave —
+  RFC7-40's own repair heading (`"Configured landing document" is not an
+  input to this finding.`) — so the correct claim is "no *operative* use
+  remains; one self-referential mention in the repair heading stands."
+
+Digest-moving in three Wave B modules; the manifest regenerates by
+`build_active_manifest.py` and §1 row B is rebound by script in the same
+change. `c0fd0e27…` joins `2041ad05…` and `daa6a5dd…` as stale, satisfying
+nothing. Per the register's ordering rule the regenerated argument requires
+a fresh exact-package review (**RD-32b**) before any offer; RD-31b and
+RD-32b run sequentially, in that order, at the owner's direction.

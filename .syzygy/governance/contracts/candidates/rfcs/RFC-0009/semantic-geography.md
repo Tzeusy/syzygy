@@ -140,7 +140,10 @@ registry, reorganisation events with recorded rationale, and the RFC9-16(d) owne
 gate. **This machinery is authority-bearing, and a registry that changes
 authorization, evaluation inputs, stable identity, layout truth, or any other
 project fact belongs in typed governance, never in personal presentation
-state.**
+state.** **[P-22 — drafted placement, awaiting an owner ruling: the typed
+governance-store placement below was drafted at round-2026-08e; the Wave B
+act ratifies it or the owner reverts it to the workspace manifest,
+restoring the RC-4 contradiction (acceptance record §7 item 17).]**
 
 **Where it lives, in the terms RFC 0003 already fixes.** The registry, its
 reorganisation events, and their recorded rationale are
