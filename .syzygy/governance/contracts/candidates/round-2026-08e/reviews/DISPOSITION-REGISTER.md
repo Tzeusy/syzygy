@@ -222,3 +222,32 @@ must not run on the v1.5 validator (RD-33's closing sentence, honored).
 | RD33-10 | MINOR | R | Subsumed by the RD33-05 roster: E1's rollup row is in the roster, so its omission is an error (LG-8 can no longer be silently disabled); the roster fixture covers it |
 | RD33-11 | MINOR | R | P-34's mechanism extended: under option (b), the owner's amendments are applied in the working tree **before** step 2's digest is computed, and the changelog's v1.6→v1.7 entry travels in the same act commit — the digest always binds the amended bytes |
 | RD33-12 | MINOR | R | E4 gains the silence rule: a statement whose routing the matrix does not carry (no per-clause row, no supplement row, no staged-enumeration note covering it) is recorded as `routing authority silent` in the evidence cell and counts as neither agreement nor disagreement; E4 is `Met` only over the cases the authority actually answers, and the silent cases are enumerated in the row |
+
+## RD-31 — Wave A exact-package (argument `c649143b…` at `cd484b7`)
+
+The offer-gate review. Its verdict is against binding *these* bytes, not
+against the package: mechanics were found impeccable (19/19 digests, no
+reliance escape over 113 classified cross-wave references, all five
+drafted arms disclosed at §7). Four findings repair Wave A module or
+record bytes, so the Wave A argument **regenerates a fourth time** and
+`c649143b…` joins the stale set; per this register's ordering note, the
+regenerated argument requires a fresh exact-package review (**RD-31b**)
+before any offer. RD31-02 is owner-owned and takes no byte repair: the
+record already says, correctly, that no Wave A act is offered until P-33
+is ruled — that gate stands and travels to the closure report. Repairs to
+RFC3-2/RFC3-15 stay inside the drafted-arm discipline: they align the two
+clauses and state the provenance safeguard, and the whole widened cell
+remains ratified-or-reverted at the act (RD26-04's original terms).
+No Wave B byte is touched, so RD-32 lawfully binds `c0fd0e27…` in
+parallel with these repairs.
+
+| Finding | Class | Disposition | Where it lands |
+|---|---|---|---|
+| RD31-01 | BLOCKING | R | RFC3-2's closure sentence widened to state both minting triggers (actor's submission; the pre-declared deterministic sweep's resolution of an expiry-eligible challenge), citing RFC3-15 back, so the two clauses state one set; RFC3-2's reproducibility justification gains the distinguishing sentence — eligibility is a pure function of (snapshot, as-of) and mints nothing, while the resolution act fixes the sweep instant the suspension lifts at, which no recomputation can re-derive, and that instant is exactly what the record carries as the new snapshot's input |
+| RD31-02 | BLOCKING | O | Owner-owned: P-33 stays in the open table; §7 item 11's withholding stands unedited; the Wave A closure report carries "P-33 unruled" as the first launch blocker. No byte pretends otherwise |
+| RD31-03 | MAJOR | R | RFC-0002 README corrected at all three sites: front matter declares `sub-clause RFC2-19(a)`; the deterministic lookup rule states the one lettered exception and where it resolves; the closing enumeration matches. The RFC-0004 README declaration pattern is followed |
+| RD31-04 | MAJOR | R | RFC3-15's `records/` cell and RFC3-16's lifecycle row gain the RFC3-17(a)-analogous safeguard sentence: a sweep resolution record's authority is the kernel's verification that the resolving policy was provenance-verified under RFC3-16(a) **before the challenge was admitted** — never the record's own say-so; an unbacked resolution record is inadmissible and the suspension holds. The install-gate column's "recorded facts, not authorizations" justification is qualified for this one member |
+| RD31-05 | MAJOR | R | §7 gains item 18: the Wave A act is now the first act that freezes the `constrains:` front-matter relation (RFC-0005) while P-21(a) is open — the ratifying wave (C2) is deferred — and the consumer clause (RFC11-16) sits in a deferred wave; P-21's register row gains the ground-changed note re-routing its earliest gate from the C2 act to the Wave A act |
+| RD31-06 | MINOR | R | RFC1-7's mission profile gains the in-place drafted marker (`[P-28 — mission extension profile, awaiting an owner ruling; ratified or reverted at the act.]`), the same shape as RFC2-19(a)'s and RFC4-19's markers — one marking convention, not three |
+| RD31-07 | MINOR | R | `manifests-and-namespace.md` front matter drops RFC-0004 from `depends_on` and gains the sibling's "Not a reliance: RFC 0004" statement (both RFC4-n citations sit inside RFC3-30's illustrative policy list); dependency index regenerates |
+| RD31-08 | MINOR | R | §7 item 12 re-worded to name RFC2-19(a); §3's sub-clause enumeration gains RFC2 (+1: RFC2-19(a)) |
