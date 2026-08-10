@@ -251,3 +251,25 @@ parallel with these repairs.
 | RD31-06 | MINOR | R | RFC1-7's mission profile gains the in-place drafted marker (`[P-28 — mission extension profile, awaiting an owner ruling; ratified or reverted at the act.]`), the same shape as RFC2-19(a)'s and RFC4-19's markers — one marking convention, not three |
 | RD31-07 | MINOR | R | `manifests-and-namespace.md` front matter drops RFC-0004 from `depends_on` and gains the sibling's "Not a reliance: RFC 0004" statement (both RFC4-n citations sit inside RFC3-30's illustrative policy list); dependency index regenerates |
 | RD31-08 | MINOR | R | §7 item 12 re-worded to name RFC2-19(a); §3's sub-clause enumeration gains RFC2 (+1: RFC2-19(a)) |
+
+## RD-32 — Wave B exact-package (argument `c0fd0e27…` at `ad82f1d`)
+
+The second offer-gate review. Mechanics and containment were found sound
+(11/11 digests; zero deferred-wave reliances; the one cross-wave token
+disclaimed in-clause and fail-closed on Wave A ground); the offer fails
+on one byte defect and two ceremony defects. The B1 and m1 repairs move
+Wave B module bytes, so the Wave B argument **regenerates** and
+`c0fd0e27…` joins the stale set; the regenerated argument requires a
+fresh exact-package review (**RD-32b**) before any offer. No Wave A
+module byte is touched, so the Wave A argument `8972d963…` stands and
+RD-31b — held for exactly this triage — dispatches after this batch, the
+two re-run gates sequenced RD-31b → RD-32b per the owner's direction.
+
+| Finding | Class | Disposition | Where it lands |
+|---|---|---|---|
+| B1 | BLOCKING | R | RFC9-43's enumeration restored to the full RFC6-17 set it claims identity with: the per-value chain-state and normalized-work-state counts (where the aggregate's members carry them, RFC6-19 class 8) and the primary-reasons-only computation rule (secondary annotations disclosed separately, never folded) — quoted in RFC6-17's own terms, cited not restated where possible. The identity claim becomes true as written; RFC9-46's surface-local carve-out is untouched (RD-32 confirmed its reasoning sound for its own scope) |
+| M2 | MAJOR | R | §1 row B gains the C1-shaped solo-act sentence: performed alone, the act binds eleven surface contracts whose operative predicates resolve into unaccepted Wave A candidate text — lawful only stated at the act; the offer path is A → B and the row now says so where the ceremony binds, not only in the non-authoritative register |
+| M1 | MAJOR | R | The launch-scope index's Wave B bullet re-verbed: P-38 and P-22 are **ratified at the Wave B act** (ratify-or-revert per §7 items 15/17), not gates that withhold the offer; the Wave A bullet is split the same way — P-33 withholds (§7 item 11), P-31/P-37/P-28 are ratified-or-reverted — so one verb no longer carries two forces |
+| m1 | MINOR | R | RFC7-39 and RFC9-8(a) gain the in-place awaiting-ruling markers Wave A's RFC2-19(a) carries (naming P-38 and P-22 and the ratify-or-revert consequence) — one marking convention across the corpus, visible to a reader of the bytes and not only of §7 |
+| m2 | MINOR | O + R | The relation *choice* is P-21(a)'s open question, and F-17's lesson is precisely not to install more `constrains:` front matter while (a) is unruled — so no new front-matter edge is minted. Repair: P-21's register row and §7 item 18 name the RFC8-12 ↔ RFC9-32 reciprocal in-clause restriction as a further undeclared instance awaiting the same ruling (intra-wave, so no containment escape) |
+| m3 | MINOR | R | The Wave B delta gains addendum §12 (this batch) correcting §7's "zero hits remaining" claim — `configured landing document` has 1 hit, in RFC7-40's own repair heading — rather than editing the reviewed §7 text (rule 10; the same convention as the launch-gate delta's D-10) |
