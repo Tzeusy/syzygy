@@ -123,15 +123,16 @@ Capability 1 direction (semantic deltas:
 `…/round-2026-08e/WAVE-A-SEMANTIC-DELTA.md`, `WAVE-B-SEMANTIC-DELTA.md`)
 and regenerated their manifests; the C/D-wave findings remain disposed but
 unrepaired, deliberately, under the deferred-wave posture. The 08e
-fresh-context review fleet is mid-flight (its register is the record of
-which reviews are in); **the wave offers wait on the final exact-package
-reviews**, and until those bind the current arguments, no wave argument
-carries a confirming review. Separately, a pilot administration of the
+fresh-context review fleet's wave gates have both resolved (the register
+is the record): **RD-31b and RD-32c bound `VERDICT: CONFIRM` to the
+current Wave A and Wave B arguments on 2026-08-10** *(this passage said
+the offers still waited until each gate delivered — corrected the same
+day, per RD32b-N5's discipline)*. Separately, a pilot administration of the
 owner's launch-gate instrument (v1.3, at commit `067d8a0`) returned
 **GATE VERDICT: NOT READY** — 17 of 31 questions Not met, including all six
 of section E, the OpenSpec-readiness section itself; the raw record is
 `…/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md`.
-The instrument is now **v1.9** (candidate; owner approval prepared as
+The instrument is now **v1.10** (candidate; owner approval prepared as
 P-34). The repair-and-re-review chain: RD-24 (v1.4, REVISE) → v1.5 →
 RD-33 (REVISE, five MAJOR) → v1.6 → RD-34 (REVISE — one BLOCKING: the
 deferral-carrying pass branch ran no formula conjunct) → v1.7 → RD-35
@@ -141,17 +142,26 @@ v1.8 → RD-36 (REVISE — all seven RD-35 repairs verified, four by
 mutation; two MAJOR: a pass verdict could rest on a deferral "granted"
 by a review finding, because the `B-n` family the v1.8 batch accepted is
 review-finding numbering, not decisions; and a §5 field written with an
-empty value silently borrowed the next line's text) → v1.9. The v1.8 and
-v1.9 batches are validator-and-records only — the instrument's §1–§8
-have now gone three amendments byte-unchanged, while the measuring layer
-keeps yielding one more class per administration. RD-36's diagnosis,
-adopted at v1.9 as fixture discipline: "the fixture set tests one
-direction of each predicate" — changed predicates are now fixtured in
-both directions, and the empty and shadowed field cases are fixtured (74
-fixtures). Each re-review verified the prior batch whole before finding
-the next class; the P-34 offer waits on the RD-37 re-review of the v1.9
-delta, and the formal administration that a launch decision could rely
-on has not yet been run.
+empty value silently borrowed the next line's text) → v1.9 → RD-37
+(REVISE — all seven RD-36 repairs verified, both decisive ones by
+mutation; two MAJOR: the v1.9 negation rule, shared across checks of
+opposite polarity, silently loosened LG-13 into accepting enumerated
+reopen lists led by a negation clause — a measured regression against
+v1.8 — and three §5 fields still resolved by first match) → v1.10. The
+v1.8, v1.9 and v1.10 batches are validator-and-records only — the
+instrument's §1–§8 have now gone four amendments byte-unchanged, while
+the measuring layer keeps yielding one more class per administration.
+RD-37's diagnosis is the first to move in five administrations: not
+"the fixture set tests one direction" but "the fixture set tests one
+predicate at a time, and a shared predicate has more than one
+consumer." Its uniformity rule is adopted at v1.10: the shared
+predicate is split, every declared field parses through one
+disagreement-detecting helper, and a source-scan meta-fixture asserts
+the uniformity itself (86 fixtures; the four decisive repairs
+mutation-proven). Each re-review verified the prior batch whole before
+finding the next class; the P-34 offer waits on the RD-38 re-review of
+the v1.10 delta, and the formal administration that a launch decision
+could rely on has not yet been run.
 
 **One thing this project does not have, stated plainly:** there is no
 mechanical task-to-context-packet compiler — `context_load.py` measures a

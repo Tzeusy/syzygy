@@ -446,3 +446,29 @@ entry fails to route. Its three findings move no wave byte; the argument
 | N-2c | MINOR, record | R | This register's own N-6 row misattributed a quotation to §7 item 18; the phrase lives in P-21's row (sole hit repo-wide, RD-32c's sweep). Repaired above with a dated correction — rule 8's class, closed in the artifact that committed it |
 | N-3c | trivial, register | already closed | No RD-32c row existed at `18afdd4` — the clone froze before the dispatch-bookkeeping commit added it, N-8's resolution class exactly. The live register carried the row before the review delivered; the row now also holds the verdict |
 | §5.4c pattern | — | carried | Three consecutive Wave B administrations each failed the offer on a defect the previous repair batch minted; RD-32c is the first to find no defect in an obligation. Whether that is convergence or one more turn of the wheel is a question the Wave B closure report must pose, not answer — the discipline RD-34/RD-35 applied to the instrument's own convergence claim |
+
+## RD-37 — instrument v1.9 re-review, fifth administration (`VERDICT: REVISE`, at `95a41ea`)
+
+RD-37 verified the whole v1.9 batch present and mutation-proved its two
+decisive repairs, then found the sixth class in a place the fixture
+discipline could not see: a predicate shared by three checks with two
+polarities. Its diagnosis is the first to move in five administrations —
+not "the fixture set tests one direction" but "the fixture set tests one
+predicate at a time, and a shared predicate has more than one consumer."
+The v1.10 batch adopts the reviewer's stated structural rule:
+**uniformity of application** — when a predicate or parsing rule is
+repaired, it is repaired for every consumer and every field, and the
+selftest asserts the uniformity, not the instance. Per the chain's D-10
+convention (rule 10), the v1.9 delta's false D-4 sentence is corrected by
+the v1.10 delta's D-1, never by editing the frozen v1.9 delta — the
+reviewer's aside that the delta "is not yet frozen" is declined: RD-37's
+own review bound those bytes.
+
+| Finding | Class | Disposition | Where it lands |
+|---|---|---|---|
+| RD37-01 | MAJOR, offer-blocking | R | LG-13 gets its own positive emptiness test — a closed marker vocabulary (`empty` / `none` / `none identified`, full-line match) — instead of the negated placeholder test, so widening `_names_nothing` can never loosen it again; `_names_nothing` keeps serving LG-9/LG-12 where "names nothing" IS the error. Fixtures in the newly-blind direction: a negation-led enumerated reopen list beside `E3 \| Met` under `READY FOR` must reject; the marker forms must accept. The regression is fixtured against the exact four records RD-37 measured. The v1.9 delta's false D-4 sentence is corrected by the v1.10 delta's D-1 (D-10 convention; the frozen v1.9 delta is not edited). No instrument §1–§8 byte moves |
+| RD37-02 | MAJOR | R | Field parsing unified: every §5 declared field — the three content fields (`E3 reopen-list:`, `Unknowns and what would settle them:`, `Deferred-wave findings …:`) included — parses through the one findall-based helper that errors on disagreeing occurrences in both orders; fixtures per repaired field in both orders; a meta-fixture asserts the uniformity by scanning the validator's own source for raw first-match reads of declared labels, so the next enumerated-subset repair fails the selftest by construction |
+| RD37-03 | MINOR | R | LG-4's G1 test anchored to the heading's own shape (`G1` leading the heading text, not a substring anywhere in it); fixtures both directions — the substring-mention-only record rejects, a bare `### G1` still accepts |
+| RD37-04 | MINOR | R | The `--prior` path validates its input before trusting it: full roster coverage and closed verdict vocabulary, refusing the trend computation with a named error otherwise; fixtures — a non-record prior refuses, a lawful prior still yields the New-findings column |
+| RD37-05 | MINOR | R | The SDR existence guard anchored (identifier boundaries, not substring) and scoped to made decisions — the pending-decision queue excluded from the searched corpus, matching the guard's own stated purpose. Honest cap: the live SDR population (SDR-1…33, gapless) makes the substring direction unfixturable against the real corpus today; the anchoring is asserted structurally and the limitation is stated in the delta rather than silently |
+| RD37-06 | MINOR | R | Folded into RD37-02's uniform helper — the §2 integrity anchors parse through the same disagreement-detecting path; the blind-below direction fixtured |

@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.9 (candidate; v1.3 was the pilot-administered version)
+effective_version: v1.10 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), results record format, and trend log
@@ -984,3 +984,34 @@ Notes for administering against Syzygy specifically:
   carries the correction of the v1.8 delta's D-6, in the D-10
   convention — the frozen record is not edited). No existing question
   weakened; no ID renumbered.
+- **v1.10** (2026-08-10, post-RD-37 amendment — the v1.9 re-review's two
+  MAJOR and four MINOR findings; candidate, owner approval pending) — a
+  **validator-and-records batch** a third time: no question block, no
+  verdict word, and no section §1–§8 changed; the instrument bytes that
+  move are this entry and the version header. The batch adopts RD-37's
+  uniformity rule — a predicate serves consumers of one polarity only,
+  and a parsing repair reaches every field, with the selftest asserting
+  the uniformity itself. LG-13's emptiness became a positive test over
+  the closed marker vocabulary §5's own slot names (`empty` / `none` /
+  `none identified`), never the negation of the placeholder test — the
+  v1.9 negation-prefix rule, shared across checks of opposite polarity,
+  had silently loosened LG-13 into accepting negation-led lines that
+  still enumerate reopen items, a measured regression against v1.8
+  (RD37-01). Every declared field — the three §5 content fields and the
+  label-shaped §2 integrity anchors included — now parses by collecting
+  all occurrences, disagreements erroring in both orders, and a
+  source-scan meta-fixture fails any future field that reverts to a
+  first-match read (RD37-02, RD37-06). LG-4's G1 test anchors to the
+  heading's own shape rather than a substring mention (RD37-03); the
+  `--prior` record is validated against the question roster before the
+  New-findings column trusts it (RD37-04); the SDR existence guard
+  matches at identifier boundaries and excludes the pending-decision
+  queue from its corpus (RD37-05 — the anchoring's substring direction
+  is unfixturable against the live gapless population, stated rather
+  than silent). 86 fixtures; all four decisive repairs re-proven by
+  mutation, each failing exactly the fixtures it added. Semantic delta:
+  `round-2026-08e/LAUNCH-GATE-v1.10-SEMANTIC-DELTA.md` (which also
+  carries the correction of the v1.9 delta's D-4 — the sentence
+  claiming the negation edge fails "never as a silent pass" was false
+  of LG-13 — in the D-10 convention: the frozen record is not edited).
+  No existing question weakened; no ID renumbered.

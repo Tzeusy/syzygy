@@ -205,14 +205,23 @@ DECISIONS_HOME = ".syzygy/governance/decisions"
 
 
 def _sdr_exists(ident, commit):
-    """RD36-06: an SDR-n citation must name a decision present in the
-    decisions home at the named commit — substring presence via git grep,
-    fixed string. The identifier form is no longer the only citation form
-    without an existence guard."""
+    """RD36-06/RD37-05: an SDR-n citation must name a decision present in
+    the decisions home at the named commit — matched at identifier
+    boundaries, never by substring (a fixed-string search would accept an
+    unminted `SDR-3` on the strength of a minted `SDR-33` if the
+    population ever had gaps), and scoped to MADE decisions: the
+    pending-decision queue is excluded, because a mention in the queue of
+    decisions not yet made grants nothing — the guard's own stated
+    purpose. Honest cap: the live SDR population (SDR-1…33, gapless)
+    makes the substring direction unfixturable against the real corpus
+    today; the boundary anchoring is asserted structurally here and
+    disclosed in the v1.10 delta rather than silently."""
+    pat = r"(^|[^-A-Za-z0-9])" + re.escape(ident) + r"($|[^0-9a-z(])"
     try:
         return subprocess.run(
-            ["git", "-C", str(REPO), "grep", "-q", "-F", ident, commit,
-             "--", DECISIONS_HOME],
+            ["git", "-C", str(REPO), "grep", "-qE", pat, commit,
+             "--", DECISIONS_HOME,
+             f":(exclude){DECISIONS_HOME}/PENDING-OWNER-DECISIONS.md"],
             capture_output=True).returncode == 0
     except OSError:
         return False
@@ -261,9 +270,16 @@ def _deferral_citation_error(val, commit, _git):
             "— label wording is not a citation (RD34-02)")
 
 
-# One definition of "names nothing", shared by LG-9 (a scoped row demands a
-# named defect on the findings line) and LG-13 (anything named on the E3
-# reopen-list refutes `E3 | Met` and any READY verdict) — RD35-04/RD35-05.
+# One definition of "names nothing", serving LG-9 and LG-12 — the two
+# checks where "names nothing" IS the error — RD35-04/RD35-05. It no
+# longer serves LG-13: there "names nothing" was the NO-error branch, so
+# the two consumers read one predicate with opposite polarities, and
+# RD36-04's widening (the negation-prefix rule) tightened LG-9/LG-12 while
+# silently LOOSENING LG-13 — a negation-led line still enumerating reopen
+# items ("no items are resolved: (1) …") validated clean beside `E3 | Met`
+# under READY, a measured regression against v1.8. A predicate may not be
+# shared by consumers of opposite polarity (RD37-01); LG-13 now carries
+# its own positive emptiness test below.
 # A lexicon rule, not an enumeration: after stripping punctuation and
 # articles, the value must contain at least one token outside this set, so
 # decorated placeholders (`(none known)`, `-- none --`) fail without a
@@ -288,6 +304,16 @@ def _names_nothing(val: str) -> bool:
     return all(t.isdigit() or t in _PLACEHOLDER_LEXICON for t in tokens)
 
 
+# RD37-01: LG-13's emptiness is a POSITIVE test over a closed marker
+# vocabulary, full-line match — never the negation of a placeholder test,
+# so widening `_names_nothing` can never loosen LG-13 again. The §5
+# template's own slot reads `<empty | enumerated items>`; the lawful
+# empty markers are exactly these. Anything else — including a negation
+# clause leading an enumeration, and an unfilled template slot — is a
+# non-empty reopen-list, and the failure is loud.
+_E3_EMPTY_RE = re.compile(r"(?:empty|none(?: identified)?)\.?$", re.I)
+
+
 class _Field:
     """A parsed field value with a match-like interface (RD36-03)."""
 
@@ -298,6 +324,29 @@ class _Field:
         return self._value
 
 
+def _decl(pattern, txt, errors, check, label):
+    """RD37-02/RD37-06 — the uniformity rule: EVERY declared field (§5
+    labels and the label-shaped §2 integrity anchors alike) parses by
+    collecting ALL occurrences; occurrences disagreeing in value are an
+    error in both orders, and the last (declared) value is taken.
+    RD36-03's repair applied this to four fields of fifteen; the three
+    content fields driving LG-9, LG-12 and LG-13 stayed on first match,
+    so a decoy above the declared line silently discarded the honest
+    answer. A parsing rule repaired for some of its consumers was the
+    chain's sixth class — it is repaired for all of them, and the
+    selftest asserts the uniformity itself, not the instance."""
+    vals = re.findall(pattern, txt, re.M)
+    distinct = list(dict.fromkeys(map(_norm_ws, vals)))
+    if len(distinct) > 1:
+        errors.append(
+            f"{check}: `{label}` appears more than once with disagreeing "
+            "values (" + "; ".join(repr(v) for v in distinct) + ") — a "
+            "narrative line must not shadow the declared field, and the "
+            "honest answer must not be silently discarded (RD36-03, "
+            "uniform per RD37-02)")
+    return vals[-1].strip() if vals else None
+
+
 def validate(record_path: Path, instrument_path: str, prior_path=None,
              _git=True):
     errors, notes = [], []
@@ -305,26 +354,33 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     txt = record_path.read_text(encoding="utf-8")
 
     # ---- LG-1 header ------------------------------------------------------
+    # mdate/mcommit stay first-match deliberately, outside the _decl rule:
+    # they are prose-shaped header patterns, not `Label:` fields — a lawful
+    # record names other commits in evidence and narrative ("repaired at
+    # commit `x`"), so a disagreement test over the prose shape would
+    # reject lawful records. The header is the first occurrence by §5's
+    # own construction. (RD37-06 scope decision, stated in the v1.10
+    # delta.)
     mdate = re.search(r"administration\s+—\s+([0-9]{4}-[0-9]{2}-[0-9]{2})",
                       txt)
     mcommit = re.search(r"commit\s+`?([0-9a-f]{7,40})`?", txt)
-    mver = re.search(r"Instrument version:\s*\**\s*(v[\d.]+)", txt)
-    minstd = re.search(
-        r"Instrument version:[^\n]*sha256:\s*`?([0-9a-f]{64})`?", txt)
-    mparamd = re.search(r"Parameter block sha256:\s*`?([0-9a-f]{64})`?", txt)
     # RD36-02: every field value is anchored with [^\S\n]* — `\s*` crosses
     # the newline, so a field written with an EMPTY value silently borrowed
     # the next line's text as its answer. An empty field is absent.
-    # RD36-03: fields parsed by findall take the declared (last) value, and
-    # occurrences disagreeing in value are an error — a narrative line must
-    # not shadow a declared §5 field.
-    _lt_all = re.findall(r"^Launch target:[^\S\n]*(\S.*)$", txt, re.M)
-    if len(set(map(_norm_ws, _lt_all))) > 1:
-        errors.append(
-            "LG-11: `Launch target:` appears more than once with "
-            "disagreeing values — a shadowed field cannot be trusted "
-            "(RD36-03)")
-    mtarget = _Field(_lt_all[-1]) if _lt_all else None
+    # RD37-02/RD37-06: every declared field parses through _decl — findall,
+    # disagreement is an error in both orders, last value taken.
+    _ver = _decl(r"Instrument version:\s*\**\s*(v[\d.]+)", txt,
+                 errors, "LG-1", "Instrument version:")
+    mver = _Field(_ver) if _ver else None
+    _instd = _decl(r"Instrument version:[^\n]*sha256:\s*`?([0-9a-f]{64})`?",
+                   txt, errors, "LG-1", "Instrument version: … sha256:")
+    minstd = _Field(_instd) if _instd else None
+    _paramd = _decl(r"Parameter block sha256:\s*`?([0-9a-f]{64})`?", txt,
+                    errors, "LG-1", "Parameter block sha256:")
+    mparamd = _Field(_paramd) if _paramd else None
+    _lt = _decl(r"^Launch target:[^\S\n]*(\S.*)$", txt,
+                errors, "LG-11", "Launch target:")
+    mtarget = _Field(_lt) if _lt else None
     if not mdate:
         errors.append("LG-1: no administration date found")
     if not mcommit:
@@ -433,7 +489,12 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
         errors.append("LG-5: no verdict rows parsed — nothing to compute")
 
     # ---- LG-4 G1 ----------------------------------------------------------
-    if not re.search(r"^#+ .*G1", txt, re.M):
+    # RD37-03: the heading must BE the G1 section's heading — G1 leads the
+    # heading text. A substring test (`^#+ .*G1`) was satisfied by any
+    # heading that merely mentioned G1, so a record with its
+    # completeness-critic section deleted validated clean on the strength
+    # of an incidental mention.
+    if not re.search(r"^#+\s*G1\b", txt, re.M):
         errors.append("LG-4: no G1 section — an administration missing G1 "
                       "is incomplete and cannot support a gate decision")
 
@@ -471,22 +532,12 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     # The Deferred and Reopened figures are parsed from required explicit
     # fields, never derived from absence: a missing field is an error, not a
     # zero (VIS-2 — RD24-19 showed the prior build printed 0 from nothing).
-    _dc_all = re.findall(r"^Deferred count[^:\n]*:[^\S\n]*(\d+)", txt, re.M)
-    _rc_all = re.findall(r"^Reopened count[^:\n]*:[^\S\n]*(\d+)", txt, re.M)
-    if len(set(_dc_all)) > 1:
-        errors.append(
-            "LG-5: `Deferred count:` appears more than once with "
-            "disagreeing values (" + ", ".join(sorted(set(_dc_all))) +
-            ") — a narrative line must not shadow the declared field "
-            "(RD36-03)")
-    if len(set(_rc_all)) > 1:
-        errors.append(
-            "LG-5: `Reopened count:` appears more than once with "
-            "disagreeing values (" + ", ".join(sorted(set(_rc_all))) +
-            ") — a narrative line must not shadow the declared field "
-            "(RD36-03)")
-    deferred_m = _Field(_dc_all[-1]) if _dc_all else None
-    reopened_m = _Field(_rc_all[-1]) if _rc_all else None
+    _dc = _decl(r"^Deferred count[^:\n]*:[^\S\n]*(\d+)", txt,
+                errors, "LG-5", "Deferred count:")
+    _rc = _decl(r"^Reopened count[^:\n]*:[^\S\n]*(\d+)", txt,
+                errors, "LG-5", "Reopened count:")
+    deferred_m = _Field(_dc) if _dc else None
+    reopened_m = _Field(_rc) if _rc else None
     if not deferred_m:
         errors.append("LG-5: no `Deferred count:` field — the trend row's "
                       "Deferred figure has no source; absence is an error, "
@@ -497,14 +548,8 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     n_deferred_decl = int(deferred_m.group(1)) if deferred_m else None
 
     # ---- Owner deferral citation (used by LG-6/LG-7) ----------------------
-    _od_all = re.findall(r"^Owner deferral decision:[^\S\n]*(\S.*)$", txt,
-                         re.M)
-    if len(set(map(str.strip, _od_all))) > 1:
-        errors.append(
-            "LG-7: `Owner deferral decision:` appears more than once with "
-            "disagreeing values — a shadowed citation cannot be trusted "
-            "(RD36-03)")
-    owner_dec = _od_all[-1].strip() if _od_all else None
+    owner_dec = _decl(r"^Owner deferral decision:[^\S\n]*(\S.*)$", txt,
+                      errors, "LG-7", "Owner deferral decision:")
     if owner_dec and (owner_dec.startswith("<")
                       or owner_dec.lower() in ("none", "n/a")):
         owner_dec = None
@@ -525,12 +570,13 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
 
     # ---- LG-9 scoped-row disclosure ---------------------------------------
     n_scoped = sum(1 for v in verdicts.values() if v == SCOPED)
-    mfind = re.search(
+    _find_val = _decl(
         r"^Deferred-wave findings recorded outside launch scope:"
         r"[^\S\n]*(\S.*)$",
-        txt, re.M)
+        txt, errors, "LG-9",
+        "Deferred-wave findings recorded outside launch scope:")
     if n_scoped:
-        val = mfind.group(1).strip() if mfind else None
+        val = _find_val
         if val is None:
             errors.append(
                 f"LG-9: {n_scoped} scoped row(s) but no deferred-wave "
@@ -663,20 +709,20 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
         if token not in txt:
             errors.append(f"LG-12: required §5 field missing — {token!r} "
                           f"({why}; RD35-07)")
-    unk_m = re.search(
+    _unk_val = _decl(
         r"^Unknowns and what would settle them:[^\S\n]*(\S.*)$",
-        txt, re.M)
+        txt, errors, "LG-12", "Unknowns and what would settle them:")
     if n_unk:
-        if unk_m is None:
+        if _unk_val is None:
             errors.append(
                 f"LG-12: {n_unk} row(s) are Unknown but the Unknowns "
                 "field carries no value (an empty field is absent, "
                 "RD36-02) — §4 requires every Unknown to carry what "
                 "evidence would settle it (RD35-07)")
-        elif _names_nothing(unk_m.group(1).strip()):
+        elif _names_nothing(_unk_val):
             errors.append(
                 f"LG-12: {n_unk} row(s) are Unknown but the Unknowns "
-                f"field reads {unk_m.group(1).strip()!r} — §4 requires "
+                f"field reads {_unk_val!r} — §4 requires "
                 "every Unknown to carry what evidence would settle it "
                 "(RD35-07)")
 
@@ -685,13 +731,17 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     # every other verdict" — the instrument's self-declared sharpest single
     # gate, enforced beside LG-8 and LG-9 as the same shape: a declared
     # field contradicting a verdict row.
-    e3_m = re.search(r"^E3 reopen-list:[^\S\n]*(\S.*)$", txt, re.M)
-    if not e3_m:
+    _e3_val = _decl(r"^E3 reopen-list:[^\S\n]*(\S.*)$", txt,
+                    errors, "LG-13", "E3 reopen-list:")
+    if _e3_val is None:
         errors.append("LG-12: no `E3 reopen-list:` field — §5 gives E3's "
                       "decisive answer a dedicated field; absence reads as "
                       "empty, and absence is never a pass (RD35-04)")
-    elif not _names_nothing(e3_m.group(1).strip()):
-        e3_val = e3_m.group(1).strip()
+    elif not _E3_EMPTY_RE.fullmatch(_e3_val):
+        # RD37-01: a POSITIVE emptiness test — a negation clause leading
+        # an enumeration ("no items are resolved: (1) …") is a non-empty
+        # reopen-list, never an emptiness claim.
+        e3_val = _e3_val
         if verdicts.get("E3") == "Met":
             errors.append(
                 f"LG-13: `E3 reopen-list:` enumerates {e3_val!r} beside "
@@ -709,18 +759,42 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     new_vs_prior = "n/a — no prior record supplied"
     if prior_path:
         ptxt = Path(prior_path).read_text(encoding="utf-8")
-        # §6 (v1.7, RD34-04): newly-Not-met rows count (incl. a scoped row
-        # turning plain — it newly blocks; the r5 behavior RD-34 verified),
-        # plus newly scoped rows that were no finding before under either
-        # rendering — reclassification never double-counts.
         prior_rows = _row_verdicts(ptxt)
-        prior_not = {q for q, v in prior_rows.items() if v == "Not met"}
-        prior_scoped = {q for q, v in prior_rows.items() if v == SCOPED}
-        cur_not = {q for q, v in verdicts.items() if v == "Not met"}
-        cur_scoped = {q for q, v in verdicts.items() if v == SCOPED}
-        new_set = (cur_not - prior_not) | (
-            cur_scoped - (prior_scoped | prior_not))
-        new_vs_prior = str(len(new_set))
+        # RD37-04: the prior is validated before it is trusted — full
+        # roster coverage, no alien rows. An arbitrary file on the prior
+        # side could otherwise suppress the New-findings column F1 is
+        # answered from, contaminating the trend log every later F1
+        # verdict reads.
+        _p_missing = [q for q in ROSTER if q not in prior_rows]
+        _p_alien = sorted(q for q in prior_rows if q not in ROSTER)
+        if _p_missing or _p_alien:
+            parts = []
+            if _p_missing:
+                parts.append("missing rows: " + ", ".join(_p_missing))
+            if _p_alien:
+                parts.append("rows outside the roster: "
+                             + ", ".join(_p_alien))
+            errors.append(
+                "LG-5: the --prior record fails the question roster ("
+                + "; ".join(parts) + ") — an unvalidated prior must not "
+                "suppress the New-findings column F1 is answered from "
+                "(RD37-04)")
+            new_vs_prior = "n/a — prior record failed validation"
+        else:
+            # §6 (v1.7, RD34-04): newly-Not-met rows count (incl. a
+            # scoped row turning plain — it newly blocks; the r5 behavior
+            # RD-34 verified), plus newly scoped rows that were no
+            # finding before under either rendering — reclassification
+            # never double-counts.
+            prior_not = {q for q, v in prior_rows.items()
+                         if v == "Not met"}
+            prior_scoped = {q for q, v in prior_rows.items()
+                            if v == SCOPED}
+            cur_not = {q for q, v in verdicts.items() if v == "Not met"}
+            cur_scoped = {q for q, v in verdicts.items() if v == SCOPED}
+            new_set = (cur_not - prior_not) | (
+                cur_scoped - (prior_scoped | prior_not))
+            new_vs_prior = str(len(new_set))
     gate_word = mg.group(1).strip() if mg else "—"
     if n_scoped:
         notes.append(f"{n_scoped} scoped row(s) — `Not met (out of launch "
@@ -784,7 +858,7 @@ def _template_rows() -> str:
 GOOD = """# Launch-gate administration — 2026-08-10, commit {sha}
 > This administration record is evidence, never an owner act; its verdict
 > authorizes nothing (instrument preamble; VIS-4).
-Instrument version: v1.9  sha256: {inst}
+Instrument version: v1.10  sha256: {inst}
 Parameter block sha256: {param}
 Launch target: Capability 1 — Project registration and honest shape visibility
 Reviewer: human, fresh context: yes
@@ -1164,13 +1238,84 @@ def selftest():
          good.replace("Reviewer: human, fresh context: yes\n", ""),
          "Reviewer:")
 
+    # --- v1.10 fixtures: RD-37's findings, kept closed --------------------
+    # RD-37's uniformity rule, adopted: a predicate serves consumers of
+    # one polarity only; a parsing repair reaches every field; the meta
+    # check below asserts the uniformity itself.
+    case("negation-led ENUMERATED reopen-list beside `E3 | Met` rejected "
+         "— an emptiness claim must be an empty marker, not a negation "
+         "prefix (RD37-01)",
+         good.replace("E3 reopen-list: empty",
+                      "E3 reopen-list: no items are resolved: (1) whether "
+                      "a Mission is a first-class object; (2) evidence "
+                      "adapters in Wave A"),
+         "E3's own fail condition")
+    case("negation-led enumerated reopen-list under a READY verdict "
+         "rejected (RD37-01)",
+         ready.replace("E3 reopen-list: empty",
+                       "E3 reopen-list: none of these are closed: the "
+                       "write-boundary scope"),
+         "ready' is then false")
+    case("unfilled E3 template slot is not an emptiness claim — rejected "
+         "beside `E3 | Met` (RD37-01, positive marker test)",
+         good.replace("E3 reopen-list: empty",
+                      "E3 reopen-list: <empty | enumerated items>"),
+         "E3's own fail condition")
+    case("decoy E3 line above the declared field rejected — the honest "
+         "enumeration must not be silently discarded (RD37-02)",
+         good.replace("E3 reopen-list: empty",
+                      "E3 reopen-list: empty\n"
+                      "E3 reopen-list: (1) whether a Mission is a "
+                      "first-class object"),
+         "disagreeing values")
+    case("decoy Unknowns line shadowing the declared field rejected "
+         "(RD37-02)",
+         good.replace("Unknowns and what would settle them: F1 — a "
+                      "second formal administration",
+                      "Unknowns and what would settle them: F1 — a "
+                      "second formal administration\n"
+                      "Unknowns and what would settle them: TBD"),
+         "disagreeing values")
+    case("decoy findings line shadowing the declared field rejected "
+         "(RD37-02)",
+         scoped_c2.replace(
+             "Deferred-wave findings recorded outside launch scope: none",
+             "Deferred-wave findings recorded outside launch scope: "
+             "RFC-0010 mission-profile drift (Wave D1)")
+             .replace("Reviewer's falsification notes:",
+                      "Deferred-wave findings recorded outside launch "
+                      "scope: none\n"
+                      "Reviewer's falsification notes:"),
+         "disagreeing values")
+    case("agreeing duplicate declared field is not a shadow — no false "
+         "rejection (RD37-02)",
+         good.replace("E3 reopen-list: empty",
+                      "E3 reopen-list: empty\n"
+                      "E3 reopen-list: empty"),
+         None)
+    case("disagreeing duplicate `Parameter block sha256:` line rejected "
+         "— the §2 integrity anchors obey the same rule (RD37-06)",
+         good.replace("Reviewer's falsification notes:",
+                      "Parameter block sha256: " + "3" * 64 + "\n"
+                      "Reviewer's falsification notes:"),
+         "disagreeing values")
+    case("heading that merely MENTIONS G1 does not satisfy LG-4 — the "
+         "completeness-critic section itself is required (RD37-03)",
+         good.replace("## G1 — completeness critic",
+                      "## Materials: we cite §3's G1 rule"),
+         "LG-4")
+    case("bare `### G1` heading satisfies LG-4 — the anchor rejects "
+         "mentions, not lawful headings (RD37-03)",
+         good.replace("## G1 — completeness critic", "### G1"),
+         None)
+
     head = _head_commit()
     if head:
         good_head = GOOD.format(sha=head, inst=inst, param=param)
         case("instrument digest mismatch rejected (git on, LG-2)",
              good_head, "digest mismatch", _git=True)
         case("instrument version disagreement rejected (RD33-06, LG-11)",
-             good_head.replace("Instrument version: v1.9",
+             good_head.replace("Instrument version: v1.10",
                                "Instrument version: v1.2"),
              "LG-11: record claims instrument version", _git=True)
         case("launch target outside the parameter block rejected "
@@ -1338,6 +1483,62 @@ def selftest():
           + "brand-new scoped finding counts in New-findings (RD34-04)")
     if not ok2:
         fails.append(("new scoped not counted", trend2))
+
+    # RD37-04: a non-record prior must be refused, loudly, and the trend
+    # column must say so — an arbitrary file must not suppress the
+    # New-findings column F1 is answered from.
+    n_cases[0] += 1
+    bogus_prior = ("| A1 | Not met | x |\n| B2 | Not met | x |\n"
+                   "| G1 | Not met | x |\n")
+    cur3_txt = good.replace("| A1 | Met | x |", "| A1 | Not met | x |")
+    with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False) as f:
+        f.write(bogus_prior)
+        pp3 = Path(f.name)
+    with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False) as f:
+        f.write(cur3_txt)
+        cp3 = Path(f.name)
+    errs3, _, _, trend3 = validate(cp3, INSTRUMENT_DEFAULT, pp3, _git=False)
+    pp3.unlink()
+    cp3.unlink()
+    f3 = [x.strip() for x in trend3.strip().strip("|").split("|")]
+    ok3 = (any("RD37-04" in e for e in errs3)
+           and f3[7] == "n/a — prior record failed validation")
+    print(("  pass  " if ok3 else "  FAIL  ")
+          + "non-record --prior refused; trend column says so (RD37-04)")
+    if not ok3:
+        fails.append(("bogus prior accepted", trend3 + " || "
+                      + " || ".join(errs3)))
+
+    # RD37-02's uniformity assertion — the meta check: every declared
+    # field label is parsed through _decl, never by a raw first-match
+    # read. This asserts the RULE, not any instance: a future repair
+    # that reverts one field to re.search fails here by construction,
+    # which is the discipline RD-37 named as the one that ends the
+    # chain ("the fixture asserts the uniformity rather than the
+    # instance").
+    n_cases[0] += 1
+    src = Path(__file__).read_text(encoding="utf-8")
+    _decl_labels = ("Launch target:", "Deferred count", "Reopened count",
+                    "Owner deferral decision:",
+                    "Deferred-wave findings recorded outside launch "
+                    "scope:",
+                    "Unknowns and what would settle them:",
+                    "E3 reopen-list:", "Instrument version:",
+                    "Parameter block sha256:")
+    _raw_reads = []
+    for _m in re.finditer(r"re\.search\(", src):
+        seg = src[_m.start():_m.start() + 120]
+        for lb in _decl_labels:
+            if lb in seg:
+                _raw_reads.append(lb)
+    ok4 = not _raw_reads
+    print(("  pass  " if ok4 else "  FAIL  ")
+          + "every declared field parses through _decl — no raw "
+          "first-match read of a declared label (RD37-02, uniformity "
+          "asserted)")
+    if not ok4:
+        fails.append(("raw first-match reads of declared labels",
+                      ", ".join(sorted(set(_raw_reads)))))
 
     print(f"{n_cases[0]} fixtures, {len(fails)} failing — a check that "
           "cannot fail is not a check")
