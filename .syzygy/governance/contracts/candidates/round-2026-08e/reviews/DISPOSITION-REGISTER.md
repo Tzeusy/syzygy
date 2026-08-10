@@ -273,3 +273,34 @@ two re-run gates sequenced RD-31b → RD-32b per the owner's direction.
 | m1 | MINOR | R | RFC7-39 and RFC9-8(a) gain the in-place awaiting-ruling markers Wave A's RFC2-19(a) carries (naming P-38 and P-22 and the ratify-or-revert consequence) — one marking convention across the corpus, visible to a reader of the bytes and not only of §7 |
 | m2 | MINOR | O + R | The relation *choice* is P-21(a)'s open question, and F-17's lesson is precisely not to install more `constrains:` front matter while (a) is unruled — so no new front-matter edge is minted. Repair: P-21's register row and §7 item 18 name the RFC8-12 ↔ RFC9-32 reciprocal in-clause restriction as a further undeclared instance awaiting the same ruling (intra-wave, so no containment escape) |
 | m3 | MINOR | R | The Wave B delta gains addendum §12 (this batch) correcting §7's "zero hits remaining" claim — `configured landing document` has 1 hit, in RFC7-40's own repair heading — rather than editing the reviewed §7 text (rule 10; the same convention as the launch-gate delta's D-10) |
+
+## RD-34 — launch-gate instrument v1.6 re-review (subject sha256 `9d68fa3b…` at `0bdd37d`)
+
+RD-34 verified all twelve RD-33 repairs present (six by execution) and
+found the diagnosis recurring a third time: v1.6's central repair routed
+the whole deferral-carrying-pass population onto the one verdict branch
+with no formula check. The repairs produce **v1.7**; RD34-01 and RD34-04
+amend instrument text, so per the rule this pass has applied twice
+already, the amendment travels in the P-34 offer and the offer waits on a
+fresh-context re-review of the v1.7 delta (**RD-35**). RD-34's own
+closing judgment — "after RD34-01 there is no unchecked verdict branch
+left to route a pass through" — is the convergence argument for why this
+batch should be the last; RD-35 tests it. No wave byte is touched. One
+register correction rides along: the RD33-03 disposition row described a
+path-exists check the v1.6 bytes did not perform (RD34-02's observation)
+— the row gains a dated correction, and v1.7 implements the check the row
+described.
+
+| Finding | Class | Disposition | Where it lands |
+|---|---|---|---|
+| RD34-01 | BLOCKING | R | §4 states the `READY-WITH-DEFERRALS` predicate explicitly, as a formula over the closed vocabulary: identical to the `READY FOR` formula in every conjunct — every E `Met`, no plain `Not met` in launch-scope A–D, F1 `Met`-or-`Unknown`, F3 `Met`, F4 `Met` — except the F2 limb, which is satisfied by an owner-cited deferral; the E/A–D/F1/F3/F4 conjuncts are **never deferrable** (each carries §4's own rationale), and a nonzero declared deferral count with the citation is required. The validator runs the full conjunct battery on the deferrals branch, omitting only F2-`Met`; the all-Not-met H9d case is a fixture |
+| RD34-02 | MAJOR | R | The citation gains a shape test: a repository path (containing `/`, verified to exist at the record's named commit via git when git checks run) or a decision identifier (`SDR-n`/`P-n`/`D-n` shape); label wording — `(owner only)`, `the owner`, `yes`, `TBD` — is rejected. The RD33-03 disposition row gains a dated correction (its path-exists claim was aspirational at v1.6; true at v1.7). Fixtures: label rejected, nonexistent path rejected, real-path and identifier forms accepted |
+| RD34-03 | MAJOR | R | The validator parses the **last** `GATE VERDICT:` match, matching §5's "terminal line" word; fixture: a record whose summary line and terminal line disagree fails on the terminal line's content |
+| RD34-04 | MAJOR | R | New-findings computed over `Not met ∪ scoped` on both sides of the prior comparison; §6 gains one sentence stating that a new scoped finding is a new finding in that column; fixture: prior-clean → current-scoped yields New-findings 1 |
+| RD34-05 | MAJOR | R | Both stale references corrected and made **version-neutral** so a future bump cannot strand them a third time: `DEFERRED-WAVE-POSTURE.md` cites "the launch-gate instrument's §8 launch scope" without a version word; `FIRST-OPENSPEC-SEQUENCE.md`'s P-34 row cites "the launch-gate instrument (current version per its own header)". The mechanical-guard option RD-34 raised was considered and the version-neutral wording chosen instead — it removes the class rather than detecting it; recorded here so the choice is visible |
+| RD34-06 | MINOR | R | LG-9 widened past the literal `none`: the findings line must name something — a placeholder set (`n/a`, `na`, `—`, `-`, `tbd`, `not applicable`, `pending`, `todo`, bare digits, bare punctuation) is rejected; fixtures for the H1 strings |
+| RD34-07 | MINOR | R | §5's first disjunct enforced: a nonzero `Deferred count:` requires the `Owner deferral decision:` citation under **any** verdict, not only `READY-WITH-DEFERRALS`; fixture: `NOT READY` + `Deferred count: 3` + no citation errors |
+| RD34-08 | MINOR | R | The launch-target check upgraded from substring to whitespace-normalized **equality** with the parameter block's `LAUNCH_TARGET` scalar or its first sentence; the GOOD fixture carries the full first sentence; fragment values (`Capability 1`, `The`) are fixtures that fail |
+| RD34-09 | MINOR | R | The v1.7 delta corrects D-7's overstatement in the honest form RD-34 supplied ("§6 carries no project-specific record or narrative; the trend-log path remains, as RD24-17 required") — the frozen v1.6 delta is not edited, same convention as D-10 |
+| RD34-10 | MINOR | R | P-34's option (a) gains the one-line pointer: the v1.5 delta's D-6/D-7 claims are corrected by the v1.6 delta's D-10 (and D-7's residue by the v1.7 delta) — the frozen records are not edited, and the owner meets the correction before the claims |
+| RD34-11 | MINOR | R | The roster binds membership as well as presence: a parsed row ID outside the 39-entry roster (plus the header sentinel `Q`; G1 keeps its own error) is a validation error, so invented IDs cannot enter the trend row's computed columns; fixture: `A9` rejected |
