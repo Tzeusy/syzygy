@@ -8,66 +8,68 @@
 
 ## Question
 
-Approve `launch-gate-pre-specifications.md` **v1.17** as this repository's
+Approve `launch-gate-pre-specifications.md` **v1.18** as this repository's
 owner-approved **process policy** for evaluating pre-specification
 readiness?
 
-> **Offer status (2026-08-11, fifth revision):** not yet offerable.
-> Twelve re-reviews, twelve `REVISE` verdicts: v1.5's (RD-33) closed by
-> v1.6 … v1.14's (RD-42) by v1.15; v1.15's (RD-43) by v1.16; and v1.16's
-> re-review (**RD-44**, `VERDICT: REVISE`) is closed by v1.17.
+> **Offer status (2026-08-11, sixth revision):** not yet offerable.
+> Thirteen re-reviews, thirteen `REVISE` verdicts: v1.5's (RD-33) closed
+> by v1.6 … v1.15's (RD-43) by v1.16; v1.16's (RD-44) by v1.17; and
+> v1.17's re-review (**RD-45**, `VERDICT: REVISE`) is closed by v1.18.
 >
-> RD-44 reproduced **every one of the twelve** v1.16 mutation
-> denominators, verified §1–§8 byte-identical at all eight byte counts,
-> and confirmed the frozen record was not edited beneath its correction
-> markers — and then found the same question answered inconsistently an
-> eighth time, in the batch that adopted the method which answers it.
-> v1.16 read CommonMark's start condition 6 as naming elements that open
-> a region **from any position**; three lines of `pandoc` falsify it.
-> Condition 6, like all seven, is line-initial; what distinguishes it is
-> that it may interrupt a paragraph, and closing a paragraph is not
-> opening a region. **A region begins at a line, not at a `<`** — that
-> sentence is RD-44's and it is the durable part of v1.17. The cost of
-> the wrong reading, swept with its denominator: **53 of 62 element
-> names, mentioned once mid-sentence in a reviewer's own G1 section,
-> blanked the rest of a lawful record at 0 errors.** In the other
-> direction, **four independent constructions** produced `record valid`,
-> exit 0 and a trend row reading `READY FOR <the verbatim target>`
-> beneath a record whose last visible line read
-> `GATE VERDICT: NOT READY`: a mid-line `<script>`, a mid-line
-> `<style>`, an indented-code close tag placed after a heading rather
-> than a paragraph, and a lone pipe-delimited line carrying a
-> `display:none` div.
+> RD-45 reproduced **all nine** of v1.17's mutation denominators on its
+> **first** reconstruction, verified §1–§8 byte-identical, confirmed the
+> frozen record was not edited beneath its markers, and **rebuilt the
+> uncommitted regression sweep from the delta's prose alone**, matching
+> every figure — it calls the records work the strongest this chain has
+> produced, and says so before anything else. Then it found the same
+> question answered inconsistently a ninth time, by the batch's own
+> method: **v1.17 fixed the rule and never measured the set the rule
+> ranges over.** `<iframe>`, `<noframes>`, `<noembed>` and `<select>`
+> are each unpainted mid-line; each laundered a `READY FOR <the verbatim
+> target>` beneath a record whose last visible line read
+> `GATE VERDICT: NOT READY`, at **0 errors**; two were refused at v1.16;
+> and `iframe` is the name RD-44 had recorded as correctly refused. The
+> corpus could not tell, because **65 of 83 new fixtures took their
+> expected direction, and their titles, from the set under test** — so
+> the `<iframe>` record shipped with a passing fixture calling it
+> lawful. Beside that: a `>` inside a quoted attribute value ended the
+> tag match and defeated the whole hiding enumeration; a `</div>`
+> written inside a mid-line `<textarea>` closed the hiding div in the
+> validator and not in the browser; and **a change of meaning shipped
+> unrecorded** — the split-tag rule was narrowed, in a delta that says
+> it records every change of meaning, and that narrowing reopened a
+> carrier.
 >
-> v1.17 is a **validator-and-records batch** a tenth time; instrument
-> §1–§8 have now gone **eleven versions** (v1.7–v1.17 — ten amendments;
-> the §8 parameter block alone is unchanged across thirteen, v1.5–v1.17,
-> each figure swept this session) byte-unchanged, each verified
-> per-section. The region trigger is **line-initial for every name**; a
-> **mid-line** tag opens a region only when it takes its content out of
-> sight — by element type (CommonMark's condition-1 raw-text elements,
-> and a collapsed `<details>`) or by a hiding attribute; `para_open`
-> means *a paragraph is open*; a table row is a row **of a table**; and
-> the hiding set gains `visibility:hidden` and `opacity:0`. Three
-> decisions the owner should read as decisions rather than repairs.
-> **Both lists are disclosed as enumerations** — the block-level element
-> names and the hiding attributes — with no sufficiency asserted for
-> either; a construction outside either is read as prose. **One
-> reviewer finding is declined with its measurement:** RD-44 asked that
-> `<see the hidden appendix>` be accepted as prose, and rendering shows
-> it is not — `hidden` is a global boolean attribute, HTML5 applies it
-> to unknown elements, and the next declared field's DOM ancestry
-> measures `see[HIDDEN]`; the code-span form is fixtured as the safe way
-> to write it. **288 fixtures; nine mutation-reverts, all nine
-> witnessing**, and the regression claim is now a **scripted corpus
-> sweep** whose population is defined by construction: 0 of 200
-> carried-forward records move, and 65 of the 82 records added at v1.17
-> are answered differently by v1.16 — the accepting direction that 205
-> fixtures could not tell. Because the same session that authored the
-> v1.17 bytes may not confirm them, the offer waits on a fresh-context
-> re-review of the v1.17 delta (**RD-45**). The formal administration
-> must not run on any earlier validator (the closing directions of RD-33
-> through RD-44).
+> v1.18 is a **validator-and-records batch** an eleventh time; instrument
+> §1–§8 have now gone **twelve versions** (v1.7–v1.18 — eleven
+> amendments; the §8 parameter block alone is unchanged across fourteen,
+> v1.5–v1.18, each figure swept this session) byte-unchanged, each
+> verified per-section. **Every enumeration in the predicate is now
+> generated against the render over a named population with a
+> denominator, and no fixture takes its expected direction from the
+> thing it is testing.** The mid-line hiding set is measured over **84
+> names** under two readers that agreed on all 84: eight hide, 69 paint,
+> and **seven the measurement could not settle are refused in the safe
+> direction and disclosed as unsettled rather than counted as
+> measured** — the one place in this predicate where a refusal rests on
+> something other than an agreed measurement, and the owner should read
+> it as the disclosed over-refusal it is. The tag scanner respects
+> quoted attribute values; a raw-text element suppresses tag reading
+> whether or not it opened a region; a wrapped opening tag is continued
+> from either position and cancelled by a blank line; a region **ends
+> where its markdown container ends**, so a `<details>` named inside a
+> blockquote or a list item no longer swallows the record; the hiding
+> test reads the *value* of `opacity`; and LG-6 names the line that
+> opened the region. **329 fixtures; twelve mutation-reverts, one per
+> repair, all twelve witnessing** — one of them rebuilt after its first
+> construction proved to mutate only part of the set it named. The
+> regression sweep reports **282 carried forward, 0 dropped, exactly
+> five moved**, every mover named and deliberate. Because the same
+> session that authored the v1.18 bytes may not confirm them, the offer
+> waits on a fresh-context re-review of the v1.18 delta (**RD-46**). The
+> formal administration must not run on any earlier validator (the
+> closing directions of RD-33 through RD-45).
 
 ## What approval binds — and what it never binds
 
@@ -96,7 +98,7 @@ has already directed this pass to respect.
 
 ## Options
 
-- **(a) Approve v1.17 as offered.** The amendment records are
+- **(a) Approve v1.18 as offered.** The amendment records are
   `contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.4-SEMANTIC-DELTA.md`
   (twelve deltas; no question weakened; three questions added from the
   pilot's G1; launch-scope parameters for Capability 1 fixed in §8),
@@ -225,11 +227,30 @@ has already directed this pass to respect.
   amendments. Fifty-three element names the previous version refused
   mid-sentence in a lawful record are newly accepted, and four
   constructions that laundered a verdict beneath a visible `NOT READY`
-  are refused).
+  are refused; **read with the v1.18 delta's D-1**, which corrects its
+  `textarea` residual, its LG-6 claim, its hiding-set clause, its
+  unwitnessed-fixture count, its compressed error count, its unmeasured
+  hiding set — and records the change of meaning it did not record at
+  all), and `…/LAUNCH-GATE-v1.18-SEMANTIC-DELTA.md` (the RD-45
+  re-review's nine findings closed — the mid-line hiding set generated
+  against the render over an 84-name population; the fixtures' expected
+  direction moved to a literal measured table; the tag scanner taught to
+  respect quoted attribute values; raw-text suppression made
+  independent of the region; one rule for a wrapped opening tag in
+  either position; a region ended where its markdown container ends; the
+  hiding test reading a CSS value rather than a spelling; and LG-6
+  naming the line that opened the region; validator and records only —
+  no question weakened; no ID renumbered; instrument §1–§8
+  byte-unchanged through **twelve versions, v1.7–v1.18**, eleven
+  amendments. Four constructions that laundered a verdict beneath a
+  visible `NOT READY` are refused, three lawful shapes the previous
+  version refused with messages untrue of them are accepted, and seven
+  element names are refused on a **disclosed unsettled** measurement
+  rather than a measured one).
 - **(b) Approve with amendments** — state them; the changelog takes a
-  v1.18 entry and the semantic delta extends. One prepared amendment the
+  v1.19 entry and the semantic delta extends. One prepared amendment the
   owner may take here: **promote F5 (assurance independence) from a
-  recorded question to a verdict conjunct** — v1.17 deliberately leaves it
+  recorded question to a verdict conjunct** — v1.18 deliberately leaves it
   non-gating at Administration 1 and discloses instead (RD24-12); making
   it a conjunct means no same-family administration can ever read READY.
 - **(c) Decline** — the gate remains an informal checklist; readiness
@@ -321,19 +342,21 @@ opening tag and a tag split across two lines each carried a declared
 field, or a whole verdict, past the validator at 0 errors; a line
 beginning with an autolink blanked every line after it; and LG-4's
 emptiness requirement withdrew five lawful forms of G1 content). And
-v1.17's repairs are exactly the twelfth re-review's (RD-44: a region
-begins at a line, not at a `<`; condition-1 raw-text elements need
-their own rule; `para_open` must mean a paragraph is open; a table row
-is a row of a table; and the hiding-attribute list is an enumeration,
-not a sufficiency condition). Each
-repair now has a fixture that fails without it — **288 in all**, with
-**nine** mutation-reverts, one per repair, each run inside a repository
-so no git fixture is silently skipped; RD-44's four laundering
-constructions re-executed against the repaired validator are each
-refused with a blank trend verdict, and the regression claim is a
-scripted corpus sweep — **0 of 200 carried-forward records move**, and
-**65 of the 82** added at v1.17 are answered differently by v1.16, both
-counts printed by the script rather than typed.
+v1.18's repairs are exactly the thirteenth re-review's (RD-45: measure
+the set, not just the rule — and let a fixture's expectation come from
+somewhere other than the thing it is testing; a tag scanner must respect
+quoted attribute values; a raw-text element suppresses tags whether or
+not it opened a region; a wrapped opening tag is one rule in both
+positions; and a region ends where its markdown container ends). Each
+repair now has a fixture that fails without it — **329 in all**, with
+**twelve** mutation-reverts, one per repair, each run inside a
+repository so no git fixture is silently skipped; RD-45's eleven
+laundering constructions re-executed against the repaired validator are
+each refused with a blank trend verdict, its four over-refusals each
+validate clean, and the regression claim is a scripted corpus sweep —
+**282 carried forward, 0 dropped, exactly five moved**, every mover
+named and deliberate, all counts printed by the script rather than
+typed.
 
 ## Mechanism (the lawful transaction, prepared not performed)
 
@@ -353,7 +376,7 @@ nowhere once the header flips). To approve:
 3. Record in this file, below this line, an approval block:
 
    ```text
-   APPROVED — launch-gate v1.17 as process policy
+   APPROVED — launch-gate v1.18 as process policy
    date: <date>
    instrument sha256: <the digest computed in step 2, post-status-edit>
    scope: process policy for pre-specification readiness evaluation;

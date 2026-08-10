@@ -465,19 +465,75 @@ def _own_flags(lines):
     deferral citation — the instrument's sharpest single gate, answered
     from inside collapsed content a reader may never open."""
     flags = []
+    open_by = []
     stack = []
+    stack_ids = []
+    next_cid = [0]
     html_stack = []
     html_depth = 0
     para_open = False
+    rawtext = None
+    pending = None
     table_rows = _table_row_lines(lines)
+
+    def _push_container(kind):
+        stack.append(kind)
+        stack_ids.append(next_cid[0])
+        next_cid[0] += 1
+
+    def _pop_to(name):
+        _names = [x[0] for x in html_stack]
+        if name in _names:
+            _i = len(_names) - 1 - _names[::-1].index(name)
+            del html_stack[_i:]
+
+    def _open(name, attrs, at_start, line_i):
+        """RD44-01 / RD45-03: a region begins at a LINE, and mid-line it
+        begins only where the element takes its content out of a
+        reader's sight. RD45-01's second limb applies the same rule to a
+        tag whose `>` arrives on a later line — one rule, three
+        positions."""
+        if at_start and (name in _COND6 or not para_open):
+            html_stack.append((name, "block", line_i, tuple(stack_ids)))
+        elif _hides_inline(name, attrs):
+            # An element that hides by TYPE keeps its region across
+            # blank lines — measured: a mid-line `<iframe>` or `<select>`
+            # still contains the field two paragraphs later, exactly as a
+            # mid-line `<div style="display:none">` does. Only an element
+            # that hides by ATTRIBUTE alone (`<span hidden>`) is inline,
+            # and it reaches to the end of its own paragraph.
+            html_stack.append(
+                (name, "inline" if name not in _COND6
+                 and name not in _RAWTEXT and name not in _HIDES_INLINE
+                 and name not in _HIDES_INLINE_UNSETTLED
+                 else "block", line_i, tuple(stack_ids)))
+
     for _li, ln in enumerate(lines):
         e = ln.expandtabs(4)
         if not e.strip():
             flags.append("no")
+            open_by.append(None)
             para_open = False
             # A paragraph ends here, and with it every inline element it
-            # opened: inline raw HTML cannot span a blank line.
+            # opened: inline raw HTML cannot span a blank line. An
+            # unterminated opening tag ends here too — measured: `<div`
+            # with a blank line before its `>` renders as text.
             html_stack[:] = [x for x in html_stack if x[1] != "inline"]
+            pending = None
+            # RD45-07, the limb the container stack alone cannot see: a
+            # blank line ENDS a blockquote, so a `>` line beneath it
+            # begins a new one — measured, the field in the second
+            # blockquote renders outside a `<details>` named in the
+            # first. The container stack keeps matching `bq` across the
+            # blank line (§5's own template depends on that), so the
+            # blockquote is re-identified here instead: any region opened
+            # inside the old one pops on the next line, and no flag
+            # changes. A list item is NOT re-identified — a blank line
+            # inside one is a loose list, not a new item.
+            for _k, _c in enumerate(stack):
+                if _c == "bq":
+                    stack_ids[_k] = next_cid[0]
+                    next_cid[0] += 1
             continue
         pos, matched = 0, 0
         for c in stack:
@@ -512,23 +568,40 @@ def _own_flags(lines):
                 and not _BLOCK_START_RE.match(body))
         if not lazy:
             del stack[matched:]
+            del stack_ids[matched:]
             while True:
                 ind = len(rest) - len(rest.lstrip(" "))
                 s = rest.lstrip(" ")
                 if ind > 3 or not s:
                     break
                 if s.startswith(">"):
-                    stack.append("bq")
+                    _push_container("bq")
                     rest = s[1:]
                     if rest.startswith(" "):
                         rest = rest[1:]
                     continue
                 m = _LIST_MARK_RE.match(s)
                 if m:
-                    stack.append(("li", ind + len(m.group(0))))
+                    _push_container(("li", ind + len(m.group(0))))
                     rest = s[len(m.group(0)):]
                     continue
                 break
+        # RD45-07: a raw-HTML region opened INSIDE a markdown container
+        # ends where that container ends, because the renderer ends it
+        # there — `</blockquote>` and `</li>` pop the element. v1.17 let
+        # a `<details>` named mid-sentence inside a blockquote or a list
+        # item swallow the rest of the record, refusing a lawful record
+        # with seven messages untrue of it, and that sentence — a
+        # reviewer quoting or bulleting a prior finding that names
+        # `<details>` — is the most likely lawful line in this corpus.
+        # Containers carry identities rather than depths, so a sibling
+        # list item at the same indentation does not inherit the
+        # previous item's region.
+        _cids = tuple(stack_ids)
+        html_stack[:] = [x for x in html_stack
+                         if x[3] == _cids[:len(x[3])]]
+        if pending is not None and pending[3] != _cids[:len(pending[3])]:
+            pending = None
         content = rest.lstrip(" ")
         cind = len(rest) - len(content)
         # RD43-01: markdown's literal-text constructs are decided BEFORE
@@ -552,6 +625,7 @@ def _own_flags(lines):
             elif stack == ["bq"]:
                 cls = "bq1"
         flags.append(cls)
+        open_by.append(html_stack[-1][2] if html_stack else None)
         # RD42-01: this limb used to be `<(?:details|summary)\b` — two
         # tag names of one of CommonMark's seven HTML-block start
         # conditions — and its counter could be decremented by an inline
@@ -561,20 +635,15 @@ def _own_flags(lines):
         # while every renderer left the element open. The batch had
         # adopted "the predicate carries state" for markdown's containers
         # and written an enumeration for HTML's. It is an ELEMENT-nesting
-        # decision now: a raw-HTML region opens at a line whose content
-        # begins with a tag of any name, and inside that region every tag
-        # on every line is read — a close tag pops back to the element it
-        # names and pops nothing if it names none, so the region ends
-        # exactly where the element a reader sees ends. `<table><tr><td>`
-        # …`</td></tr></table>` therefore closes, which the line-initial
-        # rule could not do, and a lawful record carrying a closed block
-        # keeps its own verdict readable. Code spans are removed before
-        # any tag is read, so text that renders as text closes nothing;
-        # self-closing and void forms open nothing. Outside a region a
-        # line must BEGIN with a tag to open one, so prose that merely
-        # mentions `<details>` mid-sentence opens nothing (RD42-09); the
-        # residual — a record line whose own text begins with an inline
-        # tag is read as raw HTML — is stated in §9 and measured.
+        # decision now: a close tag pops back to the element it names and
+        # pops nothing if it names none, so a region ends exactly where
+        # the element a reader sees ends — `<table><tr><td>` …
+        # `</td></tr></table>` closes, which the line-initial rule could
+        # not do, and a lawful record carrying a closed block keeps its
+        # own verdict readable. Code spans are removed before any tag is
+        # read, so text that renders as text closes nothing; void forms
+        # open nothing, while HTML5 ignores the self-closing slash on a
+        # non-void element and so does this scan.
         # A GFM table row is inline context that ENDS at the cell —
         # measured, `| <details> | rejected |` leaves the following field
         # outside every element. RD44-04: a row is a row OF A TABLE, and
@@ -583,74 +652,77 @@ def _own_flags(lines):
         # dropped unread and hid the field and the verdict at 0 errors.
         if row_in_table:
             _bare = ""
+        _scan = _bare
+        _pos = 0
         _first = True
-        for _m in _TAG_RE.finditer(_bare):
-            _name = _m.group(2).lower()
-            _at_start = _first and _m.start() == 0
-            _first = False
-            # RD44-03: inside a raw-text element (CommonMark condition 1)
-            # nothing is a tag until its own close tag arrives. `<script>`
-            # was absent from the predicate entirely, and a mid-line one
-            # took the field AND the verdict out of sight at 0 errors.
-            if html_stack and html_stack[-1][0] in _RAWTEXT:
-                if _m.group(1) and _name == html_stack[-1][0]:
-                    html_stack.pop()
+        # RD45-01: an opening tag whose `>` arrives on a later line. The
+        # v1.17 rule read only a line-INITIAL fragment and required a
+        # condition-6 name — a narrowing recorded in neither its delta
+        # nor its changelog, and it reopened RD43-01(d)'s carrier four
+        # columns to the right: `Appendix. <div` with
+        # `style="display:none">` beneath it hid a whole record at 0
+        # errors. Measured, the renderer opens the element from either
+        # position and from any name, and a blank line before the `>`
+        # cancels it. The continuation is read here and the tag is then
+        # classified by the ONE rule below, with the line that opened it
+        # remembered for LG-6.
+        if pending is not None and not row_in_table and not _in_code:
+            _gt = _first_gt(_scan)
+            if _gt < 0:
+                pending = (pending[0], pending[1] + " " + _scan,
+                           pending[2], pending[3], pending[4])
+                _scan = ""
+            else:
+                _name, _attrs, _oline, _cid, _at0 = pending
+                pending = None
+                _open(_name, _attrs + " " + _scan[:_gt], _at0, _oline)
+                if _name in _RAWTEXT:
+                    rawtext = _name
+                _pos = _gt + 1
+                _first = False
+        while _pos <= len(_scan):
+            # RD45-04: inside a raw-text element nothing is a tag until
+            # its own close tag arrives — and that holds whether or not
+            # the element opened a region. v1.17 tied the suppression to
+            # the region and left `textarea` outside it, reasoning that
+            # an early close "can never hide a field". It is exactly how
+            # a field is hidden: the validator believed the `</div>`
+            # written inside a mid-line `<textarea>` had closed the
+            # hiding div, the browser knew it had not, and the record
+            # laundered a verdict at 0 errors.
+            if rawtext is not None:
+                _c = re.compile(r"</" + re.escape(rawtext) + r"[^\S\n]*>",
+                                re.I).search(_scan, _pos)
+                if _c is None:
+                    break
+                _pop_to(rawtext)
+                rawtext = None
+                _pos = _c.end()
+                _first = False
                 continue
-            if _m.group(1):
-                _names = [n for n, _k in html_stack]
-                if _name in _names:
-                    _i = len(_names) - 1 - _names[::-1].index(_name)
-                    del html_stack[_i:]
+            _m = _TAG_RE.search(_scan, _pos)
+            _frag = _SPLIT_TAG_RE.search(_scan, _pos)
+            if _m is not None and (_frag is None
+                                   or _m.start() <= _frag.start()):
+                _name = _m.group(2).lower()
+                _at_start = _first and _m.start() == 0
+                _first = False
+                _pos = _m.end()
+                if _m.group(1):
+                    _pop_to(_name)
+                    continue
+                if _name in _VOID:
+                    continue
+                _open(_name, _m.group(3), _at_start, _li)
+                if _name in _RAWTEXT:
+                    rawtext = _name
                 continue
-            if _name in _VOID:
-                continue
-            # RD44-01, and it corrects this session's reading rather than
-            # the reviewer's. CommonMark's start condition 6, like all
-            # seven, requires the line to **begin** with the tag; what
-            # separates it from condition 7 is that it may interrupt a
-            # paragraph. v1.16 read it as "opens a region from any
-            # position", which is HTML5's list of start tags that close an
-            # open `<p>` — a different fact about a different thing — and
-            # 53 of those 62 names blanked a lawful record that merely
-            # named one mid-sentence. A region begins at a LINE.
-            if _at_start and (_name in _COND6 or not para_open):
-                # CommonMark's actual rule: a condition-6 name opens a
-                # block even when it interrupts a paragraph; any other
-                # name opens one only when the line does not (condition
-                # 7). `<see appendix A>` on a paragraph continuation line
-                # is therefore still prose, as the renderer has it.
-                html_stack.append((_name, "block"))
-            elif _name in _HIDES_INLINE \
-                    or _HIDING_ATTR_RE.search(_m.group(3)):
-                # What makes a mid-line tag a carrier is that it takes its
-                # content out of a reader's sight — by element type
-                # (`script`, `style` and `title` are never painted;
-                # `details` is collapsed) or by a hiding attribute. Every
-                # other mid-line tag leaves the text visible, so it changes
-                # nothing: measured across all 62 names v1.16 enumerated,
-                # 53 of which it wrongly refused. `textarea`, `pre`,
-                # `summary`, `li`, `div` and `table` are all visible
-                # mid-line and are all accepted. `textarea` is a
-                # raw-text element that is nonetheless PAINTED, so a
-                # mid-line one opens nothing here; the disclosed cost is
-                # that a close tag written inside a mid-line `<textarea>`
-                # is still read as a tag, which can only end a region
-                # early and never hide a field.
-                # Block-level elements keep their region across blank
-                # lines (a `<div style="display:none">` opened mid-
-                # sentence swallows the paragraphs after it, measured);
-                # a genuinely inline one — `<span hidden>` — reaches only
-                # to the end of its own paragraph, also measured. Here
-                # `_COND6` is used for what it actually is: HTML's
-                # block-level element names.
-                html_stack.append(
-                    (_name, "inline" if _name not in _COND6
-                     and _name not in _RAWTEXT else "block"))
-        # A CommonMark HTML block also starts at a line beginning with an
-        # opening tag whose `>` never arrives (`<div` + newline).
-        _open_frag = _SPLIT_TAG_RE.match(_bare)
-        if _open_frag and not (html_stack and html_stack[-1][0] in _RAWTEXT):
-            html_stack.append((_open_frag.group(1).lower(), "block"))
+            if _frag is not None:
+                pending = (_frag.group(1).lower(), _frag.group(2) or "",
+                           _li, _cids,
+                           _first and _frag.start() == 0)
+                break
+            break
         # RD44-02: `para_open` decides whether a 4-column-indented line is
         # an indented code block, and v1.16 set it from "the previous line
         # had characters on it". An ATX heading is not a paragraph, so an
@@ -663,15 +735,38 @@ def _own_flags(lines):
             and not _THEMATIC_RE.match(content) \
             and not _SETEXT_RE.match(content)
         html_depth = len(html_stack)
-    return flags
+    return flags, open_by
 
 
 _VOID = frozenset((
     "area", "base", "br", "col", "embed", "hr", "img", "input", "link",
     "meta", "param", "source", "track", "wbr"))
 _CODE_SPAN_RE = re.compile(r"(`+)(?:(?!\1).)*?\1")
-_TAG_RE = re.compile(r"<(/?)([A-Za-z][A-Za-z0-9-]*)([^>]*)>")
-_TAG_AT_START_RE = re.compile(r"</?[A-Za-z][A-Za-z0-9-]*(?:[^>]*)>")
+# RD45-02: the attribute group was `[^>]*`, so the match ended at the
+# first raw `>` — but the HTML5 tokenizer treats a `>` inside a quoted
+# attribute value as an ordinary character. Everything after it was
+# invisible to the hiding test, and `<div style="content:'>';display:
+# none">` laundered a verdict at 0 errors: not an edge of the hiding
+# enumeration but the whole of it, unreached. Quoted values are consumed
+# here as the tokenizer consumes them.
+_ATTRS = r"""(?:"[^"]*"|'[^']*'|[^>"'])*"""
+_TAG_RE = re.compile(r"<(/?)([A-Za-z][A-Za-z0-9-]*)(" + _ATTRS + r")>")
+_TAG_AT_START_RE = re.compile(r"</?[A-Za-z][A-Za-z0-9-]*" + _ATTRS + r">")
+
+
+def _first_gt(s: str) -> int:
+    """The index of the first `>` that ends a tag — quoted values skipped,
+    as the tokenizer skips them. -1 if the line does not close the tag."""
+    q = None
+    for i, ch in enumerate(s):
+        if q:
+            if ch == q:
+                q = None
+        elif ch in "\"'":
+            q = ch
+        elif ch == ">":
+            return i
+    return -1
 # HTML's block-level element names — the set HTML5's "in body" insertion
 # mode closes an open `<p>` for, which is also CommonMark's HTML block
 # start condition 6 list. Two distinct uses, both measured: a name here
@@ -691,7 +786,9 @@ _COND6 = frozenset((
     "optgroup", "option", "p", "param", "search", "section", "summary",
     "table", "tbody", "td", "tfoot", "th", "thead", "title", "tr",
     "track", "ul"))
-_SPLIT_TAG_RE = re.compile(r"<([A-Za-z][A-Za-z0-9-]*)(?:[^\S\n][^>]*)?$")
+_SPLIT_TAG_RE = re.compile(
+    r"<([A-Za-z][A-Za-z0-9-]*)((?:" + _ATTRS +
+    r"""(?:"[^"]*|'[^']*)?))$""")
 _TABLE_ROW_RE = re.compile(r"\|.*\|[^\S\n]*$")
 _TABLE_DELIM_RE = re.compile(r"[^\S\n]{0,3}\|?(?:[^\S\n]*:?-+:?[^\S\n]*\|)+"
                              r"[^\S\n]*:?-*:?[^\S\n]*$")
@@ -703,18 +800,84 @@ _SETEXT_RE = re.compile(r"[^\S\n]{0,3}(?:=+|-+)[^\S\n]*$")
 # the four a browser never paints the content at all. `<script>` and
 # `<style>` were absent from the v1.16 predicate entirely (RD44-03).
 _RAWTEXT = frozenset(("script", "style", "textarea", "title"))
-# Measured with `pandoc` + `html5lib`, not chosen: the element names whose
-# content a reader does not see when the tag appears MID-LINE. `textarea`
-# is painted (in a form control) and is deliberately absent; so are
-# `pre`, `summary`, `li`, `div` and `table`, each measured visible.
-_HIDES_INLINE = frozenset(("script", "style", "title", "details"))
+# RD45-03, and it is the finding of that round: v1.17 fixed the RULE —
+# a mid-line tag opens a region iff it takes its content out of a
+# reader's sight — and never measured the SET it ranges over. The set
+# shipped as CommonMark's condition 1 plus `details`, and `<iframe>`,
+# `<noframes>`, `<noembed>` and `<select>` each laundered a `READY FOR`
+# beneath a visible `NOT READY` at 0 errors. Two of the four were
+# refused at v1.16, and `iframe` is a name the previous review had
+# written down as correctly refused.
+#
+# This set is now GENERATED, over a population defined by construction:
+# CommonMark's condition-6 list ∪ the HTML5 raw-text and escapable-
+# raw-text elements ∪ the HTML Standard's UA-stylesheet `display:none`
+# set ∪ every element whose content model is fallback or non-painted
+# content — **84 names**, each placed mid-sentence in this instrument's
+# own record shape, rendered with `pandoc` under BOTH `-f gfm` and
+# `-f commonmark`, parsed with `html5lib`, and judged by the ancestor
+# chain of the following declared field. The two readers agreed on all
+# 84. Eight names hide; the other 76 paint.
+_HIDES_INLINE = frozenset((
+    "details",    # collapsed until opened
+    "iframe",     # child text is never painted; the frame shows a document
+    "noembed",    # UA stylesheet: display:none
+    "noframes",   # UA stylesheet: display:none
+    "script",     # UA stylesheet: display:none
+    "select",     # text not inside an <option> is not painted
+    "style",      # UA stylesheet: display:none
+    "title"))     # UA stylesheet: display:none
+# Six names the measurement could NOT settle, refused in the safe
+# direction and disclosed rather than counted as measured: `html5lib`
+# 1.1 closes each of them at the `</p>` that follows, so the field
+# renders outside them here — but each is a name whose content the UA
+# stylesheet does not paint (`datalist`, `head`, `rp`, `template`),
+# whose `<p>`-closing behaviour changed in HTML after this parser
+# (`dialog`), whose visibility depends on scripting (`noscript`),
+# or which the parser treats as void while the UA stylesheet hides
+# it (`basefont`).
+# Refusing them costs a reviewer who writes one of these seven names
+# mid-sentence about this instrument; accepting them would cost a
+# laundered verdict if a browser disagrees with the parser. The
+# over-refusal is the disclosed choice, and it is stated in §9.
+_HIDES_INLINE_UNSETTLED = frozenset((
+    "basefont", "datalist", "dialog", "head", "noscript", "rp",
+    "template"))
+_OPACITY_RE = re.compile(r"opacity[^\S\n]*:[^\S\n]*"
+                         r"([0-9]*\.?[0-9]+)[^\S\n]*(%?)", re.I)
 _HIDING_ATTR_RE = re.compile(
     r"(?:^|[^\S\n])(?:hidden(?:[^\S\n]*=|[^\S\n]|/?$)"
     r"|aria-hidden[^\S\n]*=[^\S\n]*[\"\']?true"
-    r"|style[^\S\n]*=[^>]*(?:display[^\S\n]*:[^\S\n]*none"
-    r"|visibility[^\S\n]*:[^\S\n]*hidden"
-    r"|opacity[^\S\n]*:[^\S\n]*0(?:\.0*)?(?:[^\S\n]*[;\"\']|$)))",
+    # RD45-02 again, one layer down: this limb also stopped at `>`, so
+    # the same quoted `>` hid the declaration from the hiding test even
+    # after the tag scanner was repaired. It reads the tag's own
+    # attribute text, which never contains the tag's terminator.
+    r"|style[^\S\n]*=[^\n]*(?:display[^\S\n]*:[^\S\n]*none"
+    r"|visibility[^\S\n]*:[^\S\n]*hidden))",
     re.I)
+
+
+def _hiding_attrs(attrs: str) -> bool:
+    """RD45-08: the opacity limb matched one spelling of one value —
+    `opacity:.0` and `opacity:0%` are the same value in CSS and hid a
+    declared field at 0 errors while §9 claimed the set had gained
+    `opacity:0`. The property's VALUE is read here, not its spelling."""
+    if _HIDING_ATTR_RE.search(attrs):
+        return True
+    m = _OPACITY_RE.search(attrs)
+    if m:
+        try:
+            if float(m.group(1)) == 0.0:
+                return True
+        except ValueError:
+            pass
+    return False
+
+
+def _hides_inline(name: str, attrs: str) -> bool:
+    """Does a tag written mid-line take what follows out of sight?"""
+    return (name in _HIDES_INLINE or name in _HIDES_INLINE_UNSETTLED
+            or _hiding_attrs(attrs))
 # RD44-06's first limb, adopted: `visibility:hidden` and `opacity:0` each
 # carried a declared field out of sight at 0 errors, and both now count.
 #
@@ -859,7 +1022,7 @@ def _g1_section_content(raw_lines, flag_by_raw, decl_end):
     return False
 
 
-def _carriers(idxs, raw_lines, flag_by_raw, kept_idx):
+def _carriers(idxs, raw_lines, flag_by_raw, kept_idx, open_by_raw):
     """RD41-06 — the LG-6 all-quoted message named five causes and could
     be emitted when none of them was true of the record. It now reports
     the carrier each verdict line actually sits in, computed from the
@@ -885,24 +1048,32 @@ def _carriers(idxs, raw_lines, flag_by_raw, kept_idx):
             # the line that opened it named, and that half did not ship.
             # An administrator whose column-0 verdict is refused is told
             # which line took it out of the record.
-            c = _opened_by(raw_lines, flag_by_raw, i)
+            c = _opened_by(raw_lines, open_by_raw, i)
         if c not in seen:
             seen.append(c)
     return "; ".join(seen) if seen else "in a quotation"
 
 
-def _opened_by(raw_lines, flag_by_raw, i):
-    """Name the line that opened the region this line sits in."""
-    for k in range(i - 1, -1, -1):
-        if flag_by_raw.get(k) in ("own", "bq1"):
-            s = raw_lines[k].expandtabs(4).strip()
-            if len(s) > 60:
-                s = s[:57] + "…"
-            return (f"inside a region opened at line {k + 1} by "
-                    f"`{s}` — nothing after that line is the record's own "
-                    "until the element it opened is closed")
-    return ("inside a region opened before any line of the record's own — "
-            "no line above it is outside a container")
+def _opened_by(raw_lines, open_by_raw, i):
+    """Name the line that opened the region this line sits in.
+
+    RD45-05: v1.17 walked backwards for the last line flagged own/bq1 —
+    which steps PAST the raw-HTML line that opened the region, because
+    that line is itself not the record's own. The administrator was
+    pointed at a declared field that opened nothing and told that
+    nothing after it was theirs until "the element it opened" closed.
+    The opening line is now carried on the region's own stack entry, and
+    the fixture asserts the line NUMBER rather than a substring."""
+    k = open_by_raw.get(i)
+    if k is None:
+        return ("inside a region opened before any line of the record's "
+                "own — no line above it is outside a container")
+    s = raw_lines[k].expandtabs(4).strip()
+    if len(s) > 60:
+        s = s[:57] + "…"
+    return (f"inside a region opened at line {k + 1} by "
+            f"`{s}` — nothing after that line is the record's own "
+            "until the element it opened is closed")
 
 
 def _is_setext_text(lines, i):
@@ -959,8 +1130,12 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
     _kept_idx = {i for i, _ in _act}
     _act_only = [ln for _, ln in _act]
     txt = "\n".join(_act_only)
-    _act_flags = _own_flags(_act_only)
+    _act_flags, _act_open = _own_flags(_act_only)
     _flag_by_raw = {ri: fl for (ri, _), fl in zip(_act, _act_flags)}
+    # RD45-05: the line that opened the region a line sits inside, carried
+    # on the region itself rather than guessed backwards from the flags.
+    _open_by_raw = {ri: (_act[k][0] if k is not None else None)
+                    for (ri, _), k in zip(_act, _act_open)}
     # RD41-06: the declaration-form requirement is separate from the
     # containment one, and only the field-shaped consumers apply it.
     _decl_flags = ["no" if _is_setext_text(_act_only, k) else fl
@@ -1294,7 +1469,8 @@ def validate(record_path: Path, instrument_path: str, prior_path=None,
         errors.append(
             "LG-6: every `GATE VERDICT:` line in the record sits "
             "inside a quotation container — " + _carriers(
-                _gv_all, _raw_lines, _flag_by_raw, _kept_idx)
+                _gv_all, _raw_lines, _flag_by_raw, _kept_idx,
+                _open_by_raw)
             + " — and a quoted verdict is not the record's verdict; "
             "§5's terminal line must be the record's own (RD35-02, "
             "RD40-01, RD41-06)")
@@ -3199,25 +3375,76 @@ def selftest():
                         "GATE VERDICT:"),
          "no `E3 reopen-list:` field")
 
-    # ---- v1.17: a region begins at a LINE, not at a `<` (RD-44) ----------
-    # Every construction below was rendered with `pandoc` and parsed with
-    # `html5lib`, and the DOM chain containing the field was read. The
-    # name loop is the corpus RD-44 asked for — it runs over both
-    # enumerations the predicate carries, in the accepting direction
-    # wherever the render paints the text: v1.16 refused most of these on
-    # records a reader sees whole, and no fixture could tell.
-    for _n in sorted(_COND6 | _RAWTEXT):
-        _hides = _n in _HIDES_INLINE
+    # ---- v1.17/v1.18: a region begins at a LINE, not at a `<` --------
+    # RD45-06: at v1.17 this loop computed its expected direction — and
+    # its own title — from `_HIDES_INLINE`, the set under test, so 65 of
+    # 83 new fixtures could not fail for a wrong membership. They
+    # relabelled themselves instead, which is how `<iframe>` acquired a
+    # passing fixture calling a laundered record "lawful".
+    #
+    # The direction now comes from a LITERAL TABLE, measured once against
+    # the render (2026-08-11: `pandoc` under both `-f gfm` and
+    # `-f commonmark`, parsed with `html5lib`, judged by the ancestor
+    # chain of the following declared field) over a population defined by
+    # construction — CommonMark's condition-6 list ∪ the HTML5 raw-text
+    # and escapable-raw-text elements ∪ the HTML Standard's UA-stylesheet
+    # `display:none` set ∪ every element whose content model is fallback
+    # or non-painted content. **84 names; the two readers agreed on all
+    # 84.** Edit the predicate's set without re-measuring and these
+    # fixtures fail, which is the whole point of writing them down here.
+    _T_HIDES = (
+        "details", "iframe", "noembed", "noframes", "script",
+        "select", "style", "title")
+    # Measured "renders outside the element" HERE, but refused in the
+    # safe direction and disclosed — see `_HIDES_INLINE_UNSETTLED`.
+    _T_UNSETTLED = (
+        "basefont", "datalist", "dialog", "head", "noscript",
+        "rp", "template")
+    _T_PAINTS = (
+        "address", "area", "article", "aside", "audio", "base",
+        "blockquote", "body", "canvas", "caption", "center",
+        "col", "colgroup", "dd", "dir", "div", "dl", "dt",
+        "fieldset", "figcaption", "figure", "footer", "form",
+        "frame", "frameset", "h1", "h2", "h3", "h4", "h5",
+        "h6", "header", "hr", "html", "legend", "li", "link",
+        "main", "map", "menu", "menuitem", "meta", "nav",
+        "object", "ol", "optgroup", "option", "p", "param",
+        "picture", "plaintext", "rt", "ruby", "search",
+        "section", "slot", "summary", "table", "tbody", "td",
+        "textarea", "tfoot", "th", "thead", "tr", "track",
+        "ul", "video", "xmp")
+    _named = lambda _n: good.replace(
+        "## G1 — completeness critic\nnone proposed",
+        "## G1 — completeness critic\nThe <" + _n + "> carrier was not "
+        "re-tested this administration.")
+    for _n in _T_HIDES:
+        case(f"a G1 section naming `<{_n}>` mid-sentence is refused — "
+             "the render puts the next declared field inside it "
+             "(RD45-03, measured, not enumerated)",
+             _named(_n), "LG-6")
+    for _n in _T_UNSETTLED:
+        case(f"a G1 section naming `<{_n}>` mid-sentence is refused in "
+             "the safe direction — the parser and the UA stylesheet "
+             "disagree and the disagreement is disclosed (RD45-03)",
+             _named(_n), "LG-6")
+    for _n in _T_PAINTS:
         case(f"a lawful G1 section naming `<{_n}>` mid-sentence is "
-             + ("refused — its content is out of sight (RD44-01)"
-                if _hides else
-                "accepted — a block-level NAME mid-line is not a region "
-                "(RD44-01)"),
-             good.replace("## G1 — completeness critic\nnone proposed",
-                          "## G1 — completeness critic\nThe <" + _n +
-                          "> carrier was not re-tested this "
-                          "administration."),
-             "LG-6" if _hides else None)
+             "accepted — the render paints what follows it (RD44-01, "
+             "RD45-03)",
+             _named(_n), None)
+    # The table is the authority and the predicate is the subject: this
+    # fixture fails if either set is edited without re-measuring.
+    n_cases[0] += 1
+    _ok = (set(_T_HIDES) == set(_HIDES_INLINE)
+           and set(_T_UNSETTLED) == set(_HIDES_INLINE_UNSETTLED)
+           and not (set(_T_PAINTS) & (_HIDES_INLINE
+                                      | _HIDES_INLINE_UNSETTLED)))
+    print(("  pass  " if _ok else "  FAIL  ")
+          + "the mid-line hiding set matches the measured table, name for "
+            "name (RD45-06 — the fixture's expectation is not computed "
+            "from the predicate under test)")
+    if not _ok:
+        fails.append(("hiding set vs measured table", "set mismatch"))
     # RD44-02: `para_open` must mean a paragraph is open. An indented
     # close tag after an ATX heading IS an indented code block.
     for _before, _why in (("## Appendix note", "an ATX heading"),
@@ -3314,6 +3541,145 @@ def selftest():
          good.replace("GATE VERDICT:",
                       '<div style="display:none">\n\nGATE VERDICT:'),
          "inside a region opened at line")
+
+    # ---- v1.18: measure the SET, and the container it lives in ------
+    # RD45-01: an opening tag whose `>` arrives on a later line. Every
+    # construction below was rendered under both `-f gfm` and
+    # `-f commonmark` and parsed with `html5lib`; the four accepting
+    # directions matter as much as the two refusing ones, because the
+    # v1.17 narrowing that reopened the carrier also refused §5's own
+    # shorthand wrapped across two lines.
+    case("a MID-LINE opening tag whose `style=\"display:none\"` arrives "
+         "on the next line opens the region a reader sees it open "
+         "(RD45-01 — the carrier v1.17 reopened)",
+         good.replace("GATE VERDICT:",
+                      "Appendix, not an answer. <div\n"
+                      'style="display:none">\n\nGATE VERDICT:'),
+         "LG-6")
+    case("the same tag at the start of its line is refused too — one "
+         "rule, both positions (RD45-01)",
+         good.replace("GATE VERDICT:",
+                      '<div\nstyle="display:none">\n\nGATE VERDICT:'),
+         "LG-6")
+    case("§5's own angle-bracket shorthand wrapped across two lines is "
+         "prose — it carries no hiding attribute and the render paints "
+         "what follows (RD45-01, the accepting direction)",
+         good.replace("## G1 — completeness critic\nnone proposed",
+                      "## G1 — completeness critic\nDeferred to <see the "
+                      "appendix for the\nfull carrier list>"),
+         None),
+    case("a wrapped opening tag carrying no hiding attribute opens no "
+         "region mid-line (RD45-01, the accepting direction)",
+         good.replace("## G1 — completeness critic\nnone proposed",
+                      "## G1 — completeness critic\nNoted in <div\n"
+                      'class="appendix"> the appendix'),
+         None)
+    case("a blank line before the `>` cancels the tag — the renderer "
+         "cancels it (RD45-01, the accepting direction)",
+         good.replace("## G1 — completeness critic\nnone proposed",
+                      "## G1 — completeness critic\nNoted in <div\n\n"
+                      'style="display:none">'),
+         None)
+    # RD45-02: a `>` inside a quoted attribute value is an ordinary
+    # character to the tokenizer. v1.17's `[^>]*` ended the match there
+    # and never reached the hiding attribute behind it.
+    case("a `>` inside a quoted attribute value does not end the tag — "
+         "the `display:none` behind it is read (RD45-02)",
+         good.replace("GATE VERDICT:",
+                      "Appendix, not an answer. "
+                      "<div style=\"content:'>';display:none\">"
+                      "\n\nGATE VERDICT:"),
+         "LG-6")
+    case("the same quoted `>` with no hiding attribute behind it opens "
+         "no region mid-line (RD45-02, the accepting direction)",
+         good.replace("## G1 — completeness critic\nnone proposed",
+                      "## G1 — completeness critic\nNoted in "
+                      "<div style=\"content:'>'\"> the appendix"),
+         None)
+    # RD45-04: a raw-text element suppresses tag reading whether or not
+    # it opened a region. Ending a region early IS how a field is hidden:
+    # the validator believed the `</div>` closed the hiding div; the
+    # browser knows the div is still open, and the field renders inside
+    # `div[style=display:none]`.
+    for _pre, _why in (("Appendix prose ", "mid-line"),
+                       ("", "at the start of its line")):
+        case(f"a `</div>` written inside a `<textarea>` {_why} closes "
+             "nothing — the hiding div around it stays open (RD45-04)",
+             good.replace("GATE VERDICT:",
+                          '<div style="display:none">\n' + _pre +
+                          "<textarea>\n</div>\n</textarea>\n\n"
+                          "GATE VERDICT:"),
+             "LG-6")
+    # RD45-07: a region opened inside a markdown container ends where
+    # that container ends, because `</blockquote>` and `</li>` pop the
+    # element. All three accepted here scored 7 errors at v1.17, on a
+    # record whose fields a reader plainly sees.
+    for _form, _why in (
+            ("> RD-44 measured the <details> carrier.", "a blockquote"),
+            ("- RD-44 measured the <details> carrier.", "a list item"),
+            ("- The <details> carrier.\n- A second item, outside it.",
+             "a list item with a sibling after it")):
+        case(f"a `<details>` named mid-sentence inside {_why} does not "
+             "reach past that container — the renderer closes it there "
+             "(RD45-07)",
+             good.replace("## G1 — completeness critic\nnone proposed",
+                          "## G1 — completeness critic\n" + _form),
+             None)
+    case("the same `<details>` named mid-sentence at the top level DOES "
+         "reach the rest of the record (RD45-07, the refusing direction "
+         "kept)",
+         good.replace("## G1 — completeness critic\nnone proposed",
+                      "## G1 — completeness critic\nRD-44 measured the "
+                      "<details> carrier."),
+         "LG-6")
+    # RD45-07's second limb, and the constructions that separate the
+    # container rule from the depth it could be mistaken for. Each
+    # direction is the render's: a blank line ends a blockquote, a
+    # `>`-marked blank line does not, and a sibling list item is not the
+    # item before it.
+    _BAN = "> This administration record is evidence"
+    case("a `<details>` named in one blockquote does not reach the NEXT "
+         "blockquote — a blank line ends the first (RD45-07)",
+         good.replace(_BAN, "> Prior finding: the <details> carrier.\n\n"
+                      + _BAN, 1),
+         None)
+    case("inside ONE blockquote it does reach — a `>`-marked blank line "
+         "is not a blank line (RD45-07, the refusing direction)",
+         good.replace(_BAN, "> Prior finding: the <details> carrier.\n>\n"
+                      + _BAN, 1),
+         "required §5 field missing"),
+    case("a `<details>` named in a list item does not reach the "
+         "blockquote after it — containers are identified, not counted "
+         "(RD45-07)",
+         good.replace(_BAN, "- Prior finding: the <details> carrier.\n"
+                      + _BAN, 1),
+         None)
+    # RD45-08: the property's value, not one spelling of it.
+    for _val in ("opacity:.0", "opacity:0%", "opacity:0.00"):
+        case(f"`{_val}` hides a declared field — the same value, spelled "
+             "as CSS allows (RD45-08)",
+             good.replace("Materials given: the fixed §2 list, no "
+                          "deviations",
+                          "Materials given: the fixed §2 list, no "
+                          'deviations <span style="' + _val + '">'),
+             "required §5 field missing — 'Operationalization notes:'")
+    case("`opacity:0.5` is not a hiding attribute (RD45-08, the "
+         "accepting direction)",
+         good.replace("Materials given: the fixed §2 list, no deviations",
+                      "Materials given: the fixed §2 list, no deviations "
+                      '<span style="opacity:0.5">'),
+         None)
+    # RD45-05: the message names the line that OPENED the region. The
+    # expected number is derived from the record's own text, never from
+    # the predicate under test.
+    _lg6 = good.replace("GATE VERDICT:",
+                        "Reviewer's note: nothing further.\n"
+                        '<div style="display:none">\n\nGATE VERDICT:')
+    _lg6_line = 1 + next(k for k, l in enumerate(_lg6.split("\n"))
+                         if "display:none" in l)
+    case("LG-6 names the line that OPENED the region, not the last line "
+         f"before it (RD45-05 — expects line {_lg6_line})",
+         _lg6, f"opened at line {_lg6_line} by")
 
     print(f"{n_cases[0]} fixtures, {len(fails)} failing — a check that "
           "cannot fail is not a check")

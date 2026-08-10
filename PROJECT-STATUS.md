@@ -132,7 +132,7 @@ owner's launch-gate instrument (v1.3, at commit `067d8a0`) returned
 **GATE VERDICT: NOT READY** — 17 of 31 questions Not met, including all six
 of section E, the OpenSpec-readiness section itself; the raw record is
 `…/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md`.
-The instrument is now **v1.17** (candidate; owner approval prepared as
+The instrument is now **v1.18** (candidate; owner approval prepared as
 P-34). The repair-and-re-review chain: RD-24 (v1.4, REVISE) → v1.5 →
 RD-33 (REVISE, five MAJOR) → v1.6 → RD-34 (REVISE — one BLOCKING: the
 deferral-carrying pass branch ran no formula conjunct) → v1.7 → RD-35
@@ -214,11 +214,18 @@ mid-line `<script>`, a mid-line `<style>`, an indented-code close tag
 after a heading, and a lone pipe-delimited line carrying a
 `display:none` div — each produced `record valid` and a trend row
 reading READY FOR the verbatim target beneath a record whose last
-visible line read `GATE VERDICT: NOT READY`) → v1.17.
-The v1.8 through v1.17 batches are
+visible line read `GATE VERDICT: NOT READY`) → v1.17 → RD-45 (REVISE —
+four BLOCKING: v1.17 fixed the **rule** and never measured the **set**
+the rule ranges over, so `<iframe>`, `<noframes>`, `<noembed>` and
+`<select>` — each unpainted mid-line — laundered a READY FOR beneath a
+visible NOT READY at 0 errors, two of them regressions of that batch and
+one of them the name RD-44 had recorded as correctly refused; and the
+corpus could not tell, because 65 of 83 new fixtures took their expected
+direction from the set under test) → v1.18.
+The v1.8 through v1.18 batches are
 validator-and-records only — the instrument's §1–§8 have now gone
-**ten amendments across eleven versions** (v1.7–v1.17) byte-unchanged,
-and the §8 parameter block thirteen versions (v1.5–v1.17), while the
+**eleven amendments across twelve versions** (v1.7–v1.18) byte-unchanged,
+and the §8 parameter block fourteen versions (v1.5–v1.18), while the
 measuring layer keeps yielding one more class per administration. The
 diagnosis has moved one step per review and is now as specific as it
 has been: RD-39 said a repair must be specified over the **property**;
@@ -287,6 +294,31 @@ which is the accepting direction 205 fixtures could not tell. A
 regression claim in this chain now quotes a script's printed output or
 does not appear.
 
+v1.18 answers RD-45's sentence — **measure the set, not just the rule,
+and let a fixture's expectation come from somewhere other than the thing
+it is testing.** Every enumeration in the predicate is now generated
+against the render over a named population with a denominator: the
+mid-line hiding set is measured across **84 element names** under two
+readers that agreed on all 84 — eight hide, 69 paint, and **seven the
+measurement could not settle are refused in the safe direction and
+disclosed as unsettled rather than counted as measured**, which is the
+one refusal in this predicate resting on something other than an agreed
+measurement. The fixtures' expected direction moved to a literal table
+written down with its date and method, and a further fixture fails if
+the predicate's set and that table ever disagree. Four parser repairs
+travel with it: quoted attribute values are consumed as the tokenizer
+consumes them; a raw-text element suppresses tag reading whether or not
+it opened a region; a wrapped opening tag is one rule in both positions;
+and a region ends where its markdown container ends, so a `<details>`
+named inside a blockquote or a list item no longer swallows the record
+(329 fixtures; twelve mutation-reverts, one per repair, all twelve
+witnessing; the sweep reporting 282 carried forward, 0 dropped and
+exactly five movers, every one named and deliberate). One correction
+this batch owns without qualification: v1.17 changed the split-tag rule
+and **recorded it nowhere**, in a delta whose first paragraph says it
+records every change of meaning — and that unrecorded change is what
+reopened a carrier.
+
 Two of v1.14's decisions are worth stating as decisions rather than
 repairs, because they are where the instrument's own text constrains
 its validator. **Blockquote laziness is deliberately not implemented:**
@@ -302,7 +334,7 @@ verdict, and a field carrying §5's own angle-bracket placeholder has
 not been answered. Closing the underlying limit properly would need a
 §5 amendment, which is an owner act and not a batch's to make. Each
 re-review verified the prior batch whole before finding the next
-class; the P-34 offer waits on the RD-45 re-review of the v1.17 delta,
+class; the P-34 offer waits on the RD-46 re-review of the v1.18 delta,
 and the formal administration that a launch decision could rely on has
 not yet been run.
 
