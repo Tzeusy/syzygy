@@ -15,7 +15,7 @@
 > object from a waiver against one that does (review RC-12 §5), and
 > every row below says `candidate budget exception`, never `waiver`.
 
-**As-of commit:** `ad0944513070dd008852d28dbc8f84970d1bbba8`  *(plus uncommitted working-tree edits at generation time)*
+**As-of commit:** `c24e05e271f9e2f8014ecdfb4b73457f24cc38e3`  *(plus uncommitted working-tree edits at generation time)*
 
 This file is regenerated in the *same change* that moves any measured
 file. Two independent currency tests exist and neither is this line:
@@ -134,7 +134,7 @@ printed at the foot of §5.
 
 ## 3. Contract modules — the corpus this budget is spent on
 
-**39 modules, 118,566 words.** The 7,000-word per-module
+**39 modules, 118,591 words.** The 7,000-word per-module
 ceiling and the 35–50k corpus target band are the compaction charter's,
 recorded in `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`; both are
 candidate figures under the same non-installed policy as §1's trigger.
@@ -144,7 +144,7 @@ candidate figures under the same non-installed policy as §1's trigger.
 | `rfcs/RFC-0001-project-graph-identity-state-planes.md` | 9,097 | **yes** |
 | `rfcs/RFC-0002/README.md` | 2,133 | — |
 | `rfcs/RFC-0002/challenge-lifecycle.md` | 2,225 | — |
-| `rfcs/RFC-0002/reconciliation-chain.md` | 2,914 | — |
+| `rfcs/RFC-0002/reconciliation-chain.md` | 2,939 | — |
 | `rfcs/RFC-0002/rendering-vocabularies.md` | 2,771 | — |
 | `rfcs/RFC-0002/snapshot-and-evaluation-core.md` | 2,093 | — |
 | `rfcs/RFC-0003/README.md` | 1,072 | — |
