@@ -18,6 +18,10 @@ are authored and approved.
 The single foundational-contract act was **restructured into six wave acts
 at round-2026-08d** (owner work order; design:
 `.syzygy/governance/contracts/candidates/round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md`).
+An **act** is an exact phrase the owner types once, binding one
+script-computed digest of one artifact set; a **wave** is one of the six
+contract subsets those acts accept independently. The acceptance record
+owns the phrases and the ceremony.
 The rev9 and rev10 all-in-one acceptance phrases are retired and satisfy
 nothing (the acceptance record's retirement paragraph names them).
 
@@ -43,7 +47,8 @@ per-wave reasons are
 | 6 | Topology (act 3) | ⏳ **Candidate — no act performed** | `.syzygy/map/topology-candidates/BUNDLE-MANIFEST.md` |
 | 7 | Project overview (act 4) | ⏳ **Draft — refactored, awaiting adoption** | `.syzygy/intent/OVERVIEW.md` header |
 | 8 | Doctrine amendment D3 — bounded missions (act 5, optional) | ⏳ **Proposed** — adopt, amend, or decline | `.syzygy/governance/contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1; supersedes the original `…-DRAFT.md`) |
-| 9 | Knowledge-hygiene craft policy | ⏳ **Candidate — own craft act** | `.syzygy/governance/contracts/candidates/policy-candidates/` |
+| 9 | Knowledge-hygiene craft policy | ⏳ **Candidate — own craft act** (P-12) | `.syzygy/governance/contracts/candidates/policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
+| 9b | Specification-acceptance craft standard (CC-SPEC-1…10) | ⏳ **Candidate — own craft act; blocking Capability 1 prerequisite** (P-41, added 2026-08-10) | `.syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`; queue row P-41 |
 | 10 | License | ⏳ **Undecided — owner/legal** | `.syzygy/governance/decisions/LICENSE-DECISION-PACKET.md` |
 | 11 | Behavioral specifications (OpenSpec) | ⛔ **Not started** — blocked on the wave acts | — |
 | 12 | Implementation | ⛔ **Not started** — blocked on gate 11 | — |
@@ -135,7 +140,9 @@ reviews of the regenerated **Wave A** and **Wave B** arguments; repair
 anything those reviews find and re-bind; then the per-wave owner offers
 (acts on Waves A and B only), the launch-gate formal administration under
 the owner-approved instrument (P-34 first), and the owner's launch
-decision. Waves C1/C2/D1/D2 and the P-29/P-30/P-32 rulings stay deferred
+decision — with the authoring-side prerequisites (P-39 form, P-40
+granularity, **P-41 the specification-acceptance craft act**) ruled before
+the first spec is authored. Waves C1/C2/D1/D2 and the P-29/P-30/P-32 rulings stay deferred
 until the owner lifts that posture. After the waves an owner accepts, the
 first concrete proposal runs through `/th-projects
 project-feature-request` toward an owner-approved OpenSpec delta —

@@ -15,7 +15,7 @@
 > object from a waiver against one that does (review RC-12 §5), and
 > every row below says `candidate budget exception`, never `waiver`.
 
-**As-of commit:** `bbd75d1b69ea676da6073eb7bab253c5dc2e4260`  *(plus uncommitted working-tree edits at generation time)*
+**As-of commit:** `ad0944513070dd008852d28dbc8f84970d1bbba8`  *(plus uncommitted working-tree edits at generation time)*
 
 This file is regenerated in the *same change* that moves any measured
 file. Two independent currency tests exist and neither is this line:
@@ -38,7 +38,7 @@ the *measurement*, never the *selection*.
 | `context-selection-3-orrery-lens.md` | 5 | 15,246 | 20,582 | **above the proposed trigger** by 2.9% | `d1c2c004de2c20a7…` |
 | `context-selection-4-execution-profile.md` | 6 | 11,424 | 15,422 | above the proposed default band, under the proposed trigger | `3d531545dacf1c49…` |
 | `context-selection-5-cross-project-mission.md` | 11 | 21,650 | 29,228 | **above the proposed trigger** by 46.1% | `ac853acff4c6f30c…` |
-| `context-selection-6-doctrine-amendment.md` | 6 | 12,004 | 16,205 | above the proposed default band, under the proposed trigger | `585500a1e99df11c…` |
+| `context-selection-6-doctrine-amendment.md` | 6 | 12,037 | 16,250 | above the proposed default band, under the proposed trigger | `7d5a199ba08111bd…` |
 | `context-selection-7-kernel-identity.md` | 5 | 17,001 | 22,951 | **above the proposed trigger** by 14.8% | `56932620ead87cc6…` |
 | `context-selection-8-openspec-authoring.md` | 6 | 24,851 | 33,549 | **above the proposed trigger** by 67.7% | `bd8ac550c6c998ab…` |
 | `context-selection-9-evidence-adapter.md` | 12 | 25,718 | 34,719 | **above the proposed trigger** by 73.6% | `c7f4091c2fc416bb…` |

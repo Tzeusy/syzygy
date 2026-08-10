@@ -24,6 +24,10 @@ completions, and no coherent account of what changed or whether it matched
 intent. Underspecification surfaces at the most expensive moment — after
 deployment. Project knowledge lives in READMEs and ad-hoc investigation.
 
+*(Terms of art ahead — the adopted glossary is
+[`.syzygy/governance/doctrine/README.md`](.syzygy/governance/doctrine/README.md#glossary-read-first);
+this page defines nothing itself.)*
+
 Syzygy's answer: keep three kinds of state semantically distinct — **desired
 state** (human-guided doctrine and specifications), **observed state** (code,
 tests, CI, runtime evidence), and **execution state** (work-scheduler
@@ -66,10 +70,12 @@ flowchart LR
     V -.->|evidence may indict the spec| I
 ```
 
-The loop is human-triggered. Syzygy writes project content directly only
-under `openspec/**` and `.syzygy/**`; it never writes implementation code,
-and it reaches every other system through typed, explicitly authorized
-adapters (VIS-5).
+This diagram, like everything on this page, describes **intended shape,
+not current capability** — nothing below the specification layer exists
+yet. The loop is human-triggered. Syzygy writes project content directly
+only under `openspec/**` and `.syzygy/**`; it never writes implementation
+code, and it reaches every other system through typed, explicitly
+authorized adapters (VIS-5).
 
 ## What is authoritative here
 
@@ -121,8 +127,9 @@ truth.
 Everything. There is no daemon, no UI, no graph store, no adapter, no 3D
 view, no endpoint, and no chosen language, framework, or database — stack
 choices require an accepted contract. No claim of alignment, convergence, or
-regeneration capability is made anywhere in this repository, and any document
-appearing to make one is wrong by doctrine (VIS-2).
+regeneration capability is intended by this repository — doctrine (VIS-2)
+forbids the class — and any document appearing to make one is wrong by that
+doctrine and should be reported as a finding, not read as a promise.
 
 ## License
 

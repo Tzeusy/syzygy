@@ -3,8 +3,10 @@
 > **Governed presentation, never authority.** This page explains; it decides
 > nothing. Any clause it summarizes overrides it. Current gate state is read
 > from [`PROJECT-STATUS.md`](../../PROJECT-STATUS.md), never from here.
-> Adopted by its own owner act (`ADOPT PROJECT OVERVIEW: <digest>`), which
-> binds this file's exact bytes and nothing else.
+> Adopted **only** by its own owner act (`ADOPT PROJECT OVERVIEW:
+> <digest>`), which binds this file's exact bytes and nothing else — and
+> **that act has not been performed**: until it is, this page is a draft
+> like its sibling candidates, however finished it reads.
 
 *(Syzygy, Polaris, Trajectory, Orrery, and Mission Control are working
 codenames; poetic names always carry literal subtitles.)*

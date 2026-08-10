@@ -473,6 +473,12 @@ RAW_REVIEW_DIRS = (
     f"{CANDIDATES}/round-2026-08b/reviews/",
     f"{CANDIDATES}/round-2026-08c/reviews/",
     f"{CANDIDATES}/round-2026-08d/reviews/",
+    #: Added 2026-08-10 with the round's first raw review that quotes
+    #: clone-relative shorthand (RD-29 quotes `../decisions/…` at the depth
+    #: of the file it was reading). Same rule as the rounds above: verbatim
+    #: reviewer output is classified into CG-1f, never edited to please a
+    #: link check.
+    f"{CANDIDATES}/round-2026-08e/reviews/",
 )
 
 
@@ -4561,7 +4567,9 @@ DRAWER = "<details>"
 VOCAB_ORDINARY_USE = {
     ("README.md", "T-13"):
         "\"No claim of alignment, convergence, or regeneration capability\" "
-        "(README.md:118) — the ordinary verb-shaped noun, not the kernel's "
+        "(README.md, 'What is not implemented' section; restated 2026-08-10, "
+        "RD29-10 — 'is intended by this repository') — the ordinary "
+        "verb-shaped noun, not the kernel's "
         "positive-status carrier. An earlier revision of this exemption "
         "misquoted the very line it exempts; review RD-3 caught it in "
         "passing, and nothing here verifies the quotation mechanically",

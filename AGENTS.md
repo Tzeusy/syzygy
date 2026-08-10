@@ -19,9 +19,9 @@ no `openspec/`, and no implementation backlog** — and none may be created.
 |---|---|---|---|
 | Why — purpose, non-negotiables | Doctrine (VIS-1…7, SEC-1…5) | `.syzygy/governance/doctrine/` | **Yes** — adopted 2026-07-30, D1 in force |
 | Prior owner rulings | Decisions (SDR-1…33, warrants, pending queue) | `.syzygy/governance/decisions/` | **Yes** |
-| Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | **Owner-approved (D2)**; clause force begins at act 1 |
+| Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | **Owner-approved (D2)**; clause force begins at the digest-bound acceptance acts the acceptance record defines |
 | External baselines by reference | Substrate lock | `.syzygy/governance/policies/GOVERNANCE-SUBSTRATE-LOCK.yaml` | Record, never authority |
-| Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/candidates/` | **No — candidate.** `contracts/rfcs/` exists only after act 1 |
+| Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/candidates/` | **No — candidate.** `contracts/rfcs/` exists only after the first wave act's install step |
 | Intended placement | Topology bundle | `.syzygy/map/topology-candidates/` | **No — candidate.** `map/topology/` exists only after act 3 |
 | Public narrative | Overview | `.syzygy/intent/OVERVIEW.md` | Governed presentation — **never authority** |
 | Required observable behavior | OpenSpec | *does not exist yet* | — |
@@ -33,7 +33,11 @@ clauses may be discussed, never cited as binding.
 
 ## Pending owner gates
 
-Eleven acts are open; **none has been performed**. Round-2026-08d restructured
+Twelve acts are open; **none has been performed**. (The acceptance
+record's §1 carries the ten acts it offers — six waves, CC-TEST-2,
+topology, overview, D3; the two further craft acts below bind through the
+craft cluster's own `CONFIRM CRAFT AMENDMENT` route and are queued as
+P-12 and P-41.) Round-2026-08d restructured
 the single foundational-contract act into **six wave acts** (design:
 `contracts/candidates/round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md`). The
 acceptance record owns the phrases and the ceremony. Each digest belongs to
@@ -47,6 +51,7 @@ act. This file restates no digest.
 | Waves C1, C2 | RFC-0011 — context packets; selection policy | `WAVE-C1…C2-MANIFEST.txt` |
 | Waves D1, D2 | RFC-0010 — mission prevention; correction plane | `WAVE-D1…D2-MANIFEST.txt` |
 | Craft | Craft amendment CC-TEST-2 | `craft-and-care/INSTALL-RECORD.md` |
+| Craft 3 (P-12) | The knowledge-hygiene craft policy | none yet — digest computed at the act; candidate at `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
 | Craft 2 (P-41) | The specification-acceptance standard CC-SPEC-1…10 | none yet — digest computed at the act; candidate at `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` |
 | Topology | The topology bundle | `topology-candidates/BUNDLE-MANIFEST.md` |
 | Overview | The project overview | the acceptance record |
@@ -74,7 +79,7 @@ Load the minimum for one correct decision. Never "read everything."
 |---|---|
 | A doctrine question | the one doctrine file, via the `heart-and-soul` skill |
 | An engineering-bar question | the one craft policy that owns it |
-| A contract question | **`contracts/candidates/TASK-ROUTER.md`** — the one generated router (validated by `scripts/build_task_router.py`); context-budget measurement stays with `06-CONTEXT-LOAD-MAP.md` / `scripts/context_load.py` |
+| A contract question | **`contracts/candidates/TASK-ROUTER.md`** — the one generated router (validated by `contracts/candidates/scripts/build_task_router.py`); context-budget measurement stays with `06-CONTEXT-LOAD-MAP.md` / `contracts/candidates/scripts/context_load.py` |
 | "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until OpenSpec exists |
 | "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; authoring stays forbidden until the owner's launch decision |
 | Current status | `PROJECT-STATUS.md` |
