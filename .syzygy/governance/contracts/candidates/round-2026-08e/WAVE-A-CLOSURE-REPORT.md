@@ -26,7 +26,7 @@ offer is withheld by exactly one owner ruling, P-33.**
 | Review | Subject | Frozen commit | Verdict (copied exactly) |
 |---|---|---|---|
 | RD-26 (dimension review) | RFC 0001–0006 + launch-critical decisions | `aaff6fa` | `VERDICT: REVISE` |
-| RD-31 (exact-package, first administration) | argument `c649143b…` | `cd484b7` | `VERDICT: REVISE` |
+| RD-31 (exact-package, first administration) | argument `c649143b…` (stale since the §15 repair batch, satisfying nothing) | `cd484b7` | `VERDICT: REVISE` |
 | RD-31b (exact-package, second administration) | argument `8972d963…` | `1a23d19` | `VERDICT: CONFIRM` |
 
 RD-31b is the round's first CONFIRM. Its operative sentence, quoted

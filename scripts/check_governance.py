@@ -1658,6 +1658,12 @@ ACT_DIGEST_COPY_FILES = {
          "ACCEPT TOPOLOGY", "ADOPT PROJECT OVERVIEW"),
     f"{CRAFT}/INSTALL-RECORD.md":
         ("CONFIRM CRAFT AMENDMENT: CC-TEST-2",),
+    # The Wave A closure report (2026-08-10) summarizes the confirmed
+    # argument for the owner and therefore carries a full copy of it; if
+    # the argument ever regenerates again, this registration makes the
+    # stale copy a finding instead of a silent misstatement.
+    f"{CANDIDATES}/round-2026-08e/WAVE-A-CLOSURE-REPORT.md":
+        ("ACCEPT FOUNDATIONAL WAVE A",),
 }
 
 
