@@ -8,61 +8,66 @@
 
 ## Question
 
-Approve `launch-gate-pre-specifications.md` **v1.16** as this repository's
+Approve `launch-gate-pre-specifications.md` **v1.17** as this repository's
 owner-approved **process policy** for evaluating pre-specification
 readiness?
 
-> **Offer status (2026-08-11, fourth revision):** not yet offerable.
-> Eleven re-reviews, eleven `REVISE` verdicts: v1.5's (RD-33) closed by
-> v1.6 … v1.13's (RD-41) by v1.14; v1.14's (RD-42) by v1.15; and v1.15's
-> re-review (**RD-43**, `VERDICT: REVISE`) is closed by v1.16.
+> **Offer status (2026-08-11, fifth revision):** not yet offerable.
+> Twelve re-reviews, twelve `REVISE` verdicts: v1.5's (RD-33) closed by
+> v1.6 … v1.14's (RD-42) by v1.15; v1.15's (RD-43) by v1.16; and v1.16's
+> re-review (**RD-44**, `VERDICT: REVISE`) is closed by v1.17.
 >
-> RD-43 verified all thirteen RD-42 findings present — **eight closed
-> outright**, one **not closed** — and changed the chain's method: it
-> settled every claim about what a reader sees by **rendering the record
-> and parsing the result with an HTML5 parser**, rather than by reading
-> the CommonMark specification. On that footing it returned **two
-> BLOCKING** findings. v1.15's raw-HTML region still did not begin or
-> end where a reader sees it: a close tag written as an indented code
-> block, and a backslash-escaped one, each render as literal text and
-> left the element open; a block-level tag mid-sentence, and an opening
-> tag split across two lines, each opened an element the validator never
-> saw. Four carriers followed, every one of them supplying the
-> instrument's sharpest declared field from content whose DOM ancestor
-> is `details` or a display:none `div`, at **0 errors** under `READY FOR
-> <the verbatim target>` — and one laundered a verdict below a record
-> whose last visible line read `GATE VERDICT: NOT READY`. Alongside
-> them: a line beginning with a **URL or email autolink** blanked every
-> line after it, terminal verdict included, refusing a lawful record
-> with 8 errors; and LG-4's new emptiness requirement silently withdrew
-> **five lawful forms of G1 content** — a bulleted list among them,
-> which is the natural form for a completeness critic's output.
+> RD-44 reproduced **every one of the twelve** v1.16 mutation
+> denominators, verified §1–§8 byte-identical at all eight byte counts,
+> and confirmed the frozen record was not edited beneath its correction
+> markers — and then found the same question answered inconsistently an
+> eighth time, in the batch that adopted the method which answers it.
+> v1.16 read CommonMark's start condition 6 as naming elements that open
+> a region **from any position**; three lines of `pandoc` falsify it.
+> Condition 6, like all seven, is line-initial; what distinguishes it is
+> that it may interrupt a paragraph, and closing a paragraph is not
+> opening a region. **A region begins at a line, not at a `<`** — that
+> sentence is RD-44's and it is the durable part of v1.17. The cost of
+> the wrong reading, swept with its denominator: **53 of 62 element
+> names, mentioned once mid-sentence in a reviewer's own G1 section,
+> blanked the rest of a lawful record at 0 errors.** In the other
+> direction, **four independent constructions** produced `record valid`,
+> exit 0 and a trend row reading `READY FOR <the verbatim target>`
+> beneath a record whose last visible line read
+> `GATE VERDICT: NOT READY`: a mid-line `<script>`, a mid-line
+> `<style>`, an indented-code close tag placed after a heading rather
+> than a paragraph, and a lone pipe-delimited line carrying a
+> `display:none` div.
 >
-> v1.16 is a **validator-and-records batch** a ninth time; instrument
-> §1–§8 have now gone **ten versions** (v1.7–v1.16 — nine amendments;
-> the §8 parameter block alone is unchanged across twelve, v1.5–v1.16,
+> v1.17 is a **validator-and-records batch** a tenth time; instrument
+> §1–§8 have now gone **eleven versions** (v1.7–v1.17 — ten amendments;
+> the §8 parameter block alone is unchanged across thirteen, v1.5–v1.17,
 > each figure swept this session) byte-unchanged, each verified
-> per-section. **The block phase is decided first** — fences, comments,
-> indented code, backslash escapes and code spans are literal text —
-> and tags are read only out of what survives; the region trigger is
-> **CommonMark's own start condition 6**, quoted from the specification;
-> an autolink is not a tag; and a section's content is what a reader
-> sees in it. Two decisions the owner should read as decisions rather
-> than repairs. **One acceptance is withdrawn on purpose:** a
-> `<details>` named mid-sentence without escaping, which the previous
-> review called lawful on a legacy HTML parse and which the HTML5
-> algorithm collapses — the code-span and table-cell forms stay lawful
-> and are how a reviewer writes about a carrier safely. And the
-> predicate **refuses a declaration carried inside any raw-HTML element
-> the record opens, whether or not that element hides it**, because
-> deciding hiding means evaluating CSS the instrument cannot evaluate;
-> that over-refusal is named and fixtured rather than described as harm
-> prevented. **205 fixtures; twelve mutation-reverts, all twelve
-> witnessing** — the first batch of this chain with no unwitnessed
-> repair. Because the same session that authored the v1.16 bytes may not
-> confirm them, the offer waits on a fresh-context re-review of the
-> v1.16 delta (**RD-44**). The formal administration must not run on any
-> earlier validator (the closing directions of RD-33 through RD-43).
+> per-section. The region trigger is **line-initial for every name**; a
+> **mid-line** tag opens a region only when it takes its content out of
+> sight — by element type (CommonMark's condition-1 raw-text elements,
+> and a collapsed `<details>`) or by a hiding attribute; `para_open`
+> means *a paragraph is open*; a table row is a row **of a table**; and
+> the hiding set gains `visibility:hidden` and `opacity:0`. Three
+> decisions the owner should read as decisions rather than repairs.
+> **Both lists are disclosed as enumerations** — the block-level element
+> names and the hiding attributes — with no sufficiency asserted for
+> either; a construction outside either is read as prose. **One
+> reviewer finding is declined with its measurement:** RD-44 asked that
+> `<see the hidden appendix>` be accepted as prose, and rendering shows
+> it is not — `hidden` is a global boolean attribute, HTML5 applies it
+> to unknown elements, and the next declared field's DOM ancestry
+> measures `see[HIDDEN]`; the code-span form is fixtured as the safe way
+> to write it. **288 fixtures; nine mutation-reverts, all nine
+> witnessing**, and the regression claim is now a **scripted corpus
+> sweep** whose population is defined by construction: 0 of 200
+> carried-forward records move, and 65 of the 82 records added at v1.17
+> are answered differently by v1.16 — the accepting direction that 205
+> fixtures could not tell. Because the same session that authored the
+> v1.17 bytes may not confirm them, the offer waits on a fresh-context
+> re-review of the v1.17 delta (**RD-45**). The formal administration
+> must not run on any earlier validator (the closing directions of RD-33
+> through RD-44).
 
 ## What approval binds — and what it never binds
 
@@ -91,7 +96,7 @@ has already directed this pass to respect.
 
 ## Options
 
-- **(a) Approve v1.16 as offered.** The amendment records are
+- **(a) Approve v1.17 as offered.** The amendment records are
   `contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.4-SEMANTIC-DELTA.md`
   (twelve deltas; no question weakened; three questions added from the
   pilot's G1; launch-scope parameters for Capability 1 fixed in §8),
@@ -202,11 +207,29 @@ has already directed this pass to respect.
   amendments. Five lawful G1 forms and four lawful angle-bracket shapes
   the previous version refused are newly accepted; one acceptance is
   deliberately withdrawn with its measurement stated; and every one of
-  the twelve mutation-reverts witnesses a repair).
+  the twelve mutation-reverts witnesses a repair; **read with the v1.17
+  delta's D-1**, which corrects its condition-6 sentence, its
+  condition-7 sufficiency clause, its unreproducible attack-record
+  regression claim, its mutation characterisation, its "no unwitnessed
+  repair" claim and its rename count), and
+  `…/LAUNCH-GATE-v1.17-SEMANTIC-DELTA.md` (the RD-44 re-review's eight
+  findings closed — seven repaired, one limb declined with the
+  measurement that falsifies it — the region trigger returned to
+  line-initial, mid-line openings confined to elements that hide,
+  CommonMark's condition-1 raw-text elements given their own rule,
+  `para_open` made to mean a paragraph is open, table rows computed from
+  a real table, the hiding set widened and disclosed as an enumeration,
+  and LG-6 made to name the line that opened the region; validator and
+  records only — no question weakened; no ID renumbered; instrument
+  §1–§8 byte-unchanged through **eleven versions, v1.7–v1.17**, ten
+  amendments. Fifty-three element names the previous version refused
+  mid-sentence in a lawful record are newly accepted, and four
+  constructions that laundered a verdict beneath a visible `NOT READY`
+  are refused).
 - **(b) Approve with amendments** — state them; the changelog takes a
-  v1.17 entry and the semantic delta extends. One prepared amendment the
+  v1.18 entry and the semantic delta extends. One prepared amendment the
   owner may take here: **promote F5 (assurance independence) from a
-  recorded question to a verdict conjunct** — v1.16 deliberately leaves it
+  recorded question to a verdict conjunct** — v1.17 deliberately leaves it
   non-gating at Administration 1 and discloses instead (RD24-12); making
   it a conjunct means no same-family administration can ever read READY.
 - **(c) Decline** — the gate remains an informal checklist; readiness
@@ -297,15 +320,20 @@ an indented-code close tag, a backslash-escaped close tag, a mid-line
 opening tag and a tag split across two lines each carried a declared
 field, or a whole verdict, past the validator at 0 errors; a line
 beginning with an autolink blanked every line after it; and LG-4's
-emptiness requirement withdrew five lawful forms of G1 content). Each
-repair now has a fixture that fails without it — **205 in all**, with
-**all twelve** mutation-reverts failing exactly the fixtures their
-repair added; RD-43's attack records re-executed against the repaired
-validator: each of the four carriers is refused, the laundered verdict
-is an ambiguity error rather than the record's verdict, the four
-angle-bracket shapes and the five G1 forms validate clean, and across
-the 54 stored attack records of the four earlier rounds exactly one
-record moves — the withdrawn acceptance, whose measurement is stated.
+emptiness requirement withdrew five lawful forms of G1 content). And
+v1.17's repairs are exactly the twelfth re-review's (RD-44: a region
+begins at a line, not at a `<`; condition-1 raw-text elements need
+their own rule; `para_open` must mean a paragraph is open; a table row
+is a row of a table; and the hiding-attribute list is an enumeration,
+not a sufficiency condition). Each
+repair now has a fixture that fails without it — **288 in all**, with
+**nine** mutation-reverts, one per repair, each run inside a repository
+so no git fixture is silently skipped; RD-44's four laundering
+constructions re-executed against the repaired validator are each
+refused with a blank trend verdict, and the regression claim is a
+scripted corpus sweep — **0 of 200 carried-forward records move**, and
+**65 of the 82** added at v1.17 are answered differently by v1.16, both
+counts printed by the script rather than typed.
 
 ## Mechanism (the lawful transaction, prepared not performed)
 
@@ -325,7 +353,7 @@ nowhere once the header flips). To approve:
 3. Record in this file, below this line, an approval block:
 
    ```text
-   APPROVED — launch-gate v1.16 as process policy
+   APPROVED — launch-gate v1.17 as process policy
    date: <date>
    instrument sha256: <the digest computed in step 2, post-status-edit>
    scope: process policy for pre-specification readiness evaluation;

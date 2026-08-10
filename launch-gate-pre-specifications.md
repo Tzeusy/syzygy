@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.16 (candidate; v1.3 was the pilot-administered version)
+effective_version: v1.17 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), results record format, and trend log
@@ -1581,11 +1581,33 @@ Notes for administering against Syzygy specifically:
   blocks, backslash escapes and code spans are literal text — and tags
   are read only out of what survives. **CommonMark's own start
   condition 6 names the elements that open a region from any position**,
-  including mid-paragraph; every other name is condition 7, which
+  including mid-paragraph [corrected 2026-08-11, RD44-01, and the
+  correction is of this batch's reading, not of any reviewer's:
+  **false** — condition 6, like all seven start conditions, requires the
+  line to BEGIN with the tag; what distinguishes it from condition 7 is
+  that it may *interrupt a paragraph*, and closing a paragraph is not
+  opening a region. What v1.16 implemented is HTML5's list of start tags
+  that close an open `<p>` — a different fact about a different thing.
+  Measured cost, swept with its denominator: of the 62 names, 53 named
+  once mid-sentence in a reviewer's own G1 section blanked the rest of a
+  lawful record — declared fields, G1 section and terminal verdict — and
+  scored 0 errors before this batch. v1.17 returns the trigger to
+  line-initial and confines mid-line openings to elements that take
+  content out of sight]; every other name is condition 7, which
   cannot interrupt a paragraph, so it renders inline and reaches only to
   the end of its own paragraph — and only when it carries a hiding
   attribute (`hidden`, `display:none`, `aria-hidden`) does it carry a
-  declaration out of sight. That distinction is what keeps
+  declaration out of sight [corrected 2026-08-11, RD44-03 and RD44-06:
+  **false in both limbs**. By element type — CommonMark's start
+  condition 1, `script`, `style`, `textarea` and `title` — content is
+  raw text a browser never paints, from ANY position and past any blank
+  line, and `<details>` collapses its content with no attribute at all;
+  a mid-line `<script>` and a mid-line `<style>` each carried a whole
+  record out of sight at 0 errors. And the three named attributes are an
+  ENUMERATION, not a sufficiency condition: `visibility:hidden` and
+  `opacity:0` hid a declared field at 0 errors. v1.17 gives condition 1
+  its own rule, adds both properties, and states both lists as the
+  enumerations they are]. That distinction is what keeps
   `Materials given: the fixed §2 list <plus the parameter block>`
   lawful. **An autolink is not a tag** (RD43-03): `<https://…>`,
   `<owner@example.com>` and §5's own `<word …>` shorthand are excluded
@@ -1598,7 +1620,18 @@ Notes for administering against Syzygy specifically:
   heading with nothing but §5's declared trailer beneath it still does
   not. **205 fixtures**; **twelve** mutation-reverts, **all twelve**
   failing exactly the fixtures their repair added (denominators 2, 1,
-  15, 1, 1, 1, 2, 1, 5, 1, 2, 16) — the first batch of this chain with
+  15, 1, 1, 1, 2, 1, 5, 1, 2, 16) [corrected 2026-08-11, RD44-07(b) and
+  RD44-08: the denominators reproduce exactly — RD-44 rebuilt all
+  twelve — and the two characterisations around them do not. Two
+  reverts (autolinks-read-as-tags, and the emptied condition-6 set) also
+  break fixtures that PRE-DATE the batch, because they revert layers
+  those fixtures already rested on, so "exactly the fixtures their
+  repair added" is untrue of them. And seven of the 26 new-or-renamed
+  fixtures are broken by no revert at all: they are accepting-direction
+  fixtures documenting a lawful shape, which is a different job from
+  witnessing a repair. The claim below of "no unwitnessed repair" is
+  withdrawn — the measurement it stood in for is the twelve
+  denominators, which hold] — the first batch of this chain with
   no unwitnessed repair, and two of the twelve earned their witness
   only after fixtures were added for constructions the corpus could not
   otherwise separate. **One acceptance is withdrawn on purpose:** a
@@ -1608,7 +1641,18 @@ Notes for administering against Syzygy specifically:
   and table-cell forms — measured lawful — are how a reviewer writes
   about a carrier safely. Across the **54** stored attack records of
   the RD-39, RD-40, RD-41 and RD-42 rounds, run through both
-  validators, that record is the **only** one whose output moves.
+  validators, that record is the **only** one whose output moves
+  [corrected 2026-08-11, RD44-05: **withdrawn entirely**. The population
+  is unidentifiable from four remembered harness sizes — RD-44 could
+  reproduce neither the 54 nor the attribution — and the reviewer
+  measured five movers, not one, two of which this batch's own delta
+  table listed. It is the second consecutive round in which an attack-
+  record regression claim proved unreproducible. v1.17 replaces the
+  claim with a scripted corpus sweep whose population is defined by
+  construction (every record the selftest hands to the validator,
+  captured from each version's own run) and whose counts are printed by
+  the script; the rule this chain adopts is that a regression claim
+  quotes a script's output or does not appear].
   **Disclosed limits, each measured, none generalized:** the predicate
   refuses a declaration carried inside **any** raw-HTML element the
   record opens, whether or not that element hides it — `<table><tr><td>`
@@ -1628,3 +1672,99 @@ Notes for administering against Syzygy specifically:
   also carries the corrections of the frozen v1.15 delta's false
   claims, in the D-10 convention — the frozen record is not edited). No
   existing question weakened; no ID renumbered.
+- **v1.17** (2026-08-11, post-RD-44 amendment — the v1.16 review's three
+  BLOCKING, three MAJOR and two MINOR findings; candidate, owner
+  approval pending) — a **validator-and-records batch** a tenth time: no
+  question block, no verdict word, and no section §1–§8 changed; the
+  instrument bytes that move are this entry, the version header, and
+  **four** dated correction markers in the v1.16 entry above (counted
+  over that entry's span with a wrap-tolerant pattern, the method
+  RD42-05 made necessary), whose condition-6 sentence, condition-7
+  sufficiency clause, mutation characterisation and attack-record
+  regression claim were each false of the bytes an approval digest would
+  have bound. RD-44 reproduced **every one of the twelve** mutation
+  denominators, verified §1–§8 byte-identical at all eight byte counts
+  across ten versions, confirmed the frozen v1.15 entry stripped of its
+  six markers is byte-for-byte the frozen prose, reconciled 187 + 18 =
+  205 by fixture-name set difference — and then found the same question
+  answered inconsistently a seventh time, in the batch that adopted the
+  method which answers it. **The method was adopted and not applied to
+  the rule it was used to justify.** v1.16 decided the block phase first
+  and then decided where a block *begins* from a list it had read out of
+  the wrong specification: `pandoc` falsifies "condition 6 opens a
+  region from any position" in three lines. **A region begins at a
+  LINE, not at a `<`** — that sentence is RD-44's, and it is the durable
+  part of this batch. Applied, it costs and it pays. The cost, swept
+  with its denominator: **53 of the 62 names** in the condition-6
+  enumeration, named once mid-sentence in a reviewer's own G1 section,
+  blanked the rest of a lawful record at **0 errors** — RD43-03's harm
+  widened from three shapes to fifty-three, inside the batch that closed
+  RD43-03. The payment: **four independent constructions** each produced
+  `record valid`, exit 0 and a trend row reading
+  `READY FOR <the verbatim target>` beneath a record whose last visible
+  line read `GATE VERDICT: NOT READY` — a mid-line `<script>`, a
+  mid-line `<style>`, an indented-code `</details>` placed after an ATX
+  heading rather than a paragraph, and a lone pipe-delimited line
+  carrying a `display:none` div. All four are refused at v1.17, each
+  with a fixture, and each was re-executed against this batch's bytes.
+  At v1.17 the region trigger is **line-initial** for every name, and a
+  **mid-line** tag opens a region only when it takes its content out of
+  a reader's sight: by element type — CommonMark's **condition 1**
+  raw-text elements (`script`, `style`, `title`, whose content a browser
+  never paints and inside which *nothing is a tag* until their own close
+  arrives) and `details` (collapsed) — or by a hiding attribute
+  (RD44-01, RD44-03, RD44-06). `textarea` is raw text that IS painted
+  and is deliberately absent from the hiding set. `para_open` now means
+  *a paragraph is open*: an ATX heading, a thematic break, a raw-HTML
+  block line, a table row and a setext underline each end one, so an
+  indented line after any of them is an indented code block (RD44-02).
+  **A table row is a row of a table** — the carve-out is computed from a
+  delimiter row beneath a header, not from the presence of two pipes
+  (RD44-04). The hiding set gains `visibility:hidden` and `opacity:0`
+  and is stated as an **enumeration** beside the condition-6 one, not as
+  a sufficiency condition (RD44-06). LG-6 now names the line that opened
+  the region an administrator's column-0 verdict sits inside, which the
+  RD43-03 disposition promised and did not ship (RD44-01, second limb).
+  **288 fixtures** (205 + 83 new names, 0 dropped, 0 renamed, by set
+  difference of printed names); **nine** mutation-reverts, one per
+  repair, each run **inside a repository** so no git fixture is silently
+  skipped, killing 54, 17, 1, 3, 1, 2, 1, 11 and 1 fixtures. **One
+  finding is declined, with its measurement:** RD44-06 asked that the
+  word "hidden" inside §5's angle-bracket shorthand stop counting, on
+  the reading that `<see the hidden appendix>` is prose. Rendered, it is
+  not — `hidden` is a **global boolean attribute** and HTML5 applies it
+  to unknown elements, so the next declared field's DOM ancestry
+  measures `see[HIDDEN]` and a reader does not see it. The record is
+  refused, the code-span form is fixtured as the safe way to write it,
+  and the widening limb of the same finding is adopted in full.
+  **Regression, by script rather than by memory** (RD44-05): every
+  record each version's own selftest hands to the validator was captured
+  from both runs and replayed through **both** validators with that
+  record's own git setting — 199 records at v1.16, 282 at v1.17, 200
+  carried forward, 0 dropped — and **0 carried-forward records moved**.
+  Of the 82 records added at v1.17, **65 are answered differently by
+  v1.16**, which is the corpus RD-44 asked for: the accepting direction
+  can now tell. Both counts are printed by the sweep script; neither is
+  typed. **Disclosed limits, each measured, none generalized:** both
+  enumerations are enumerations — the block-level names and the hiding
+  attributes — and a construction outside either is read as prose; a
+  close tag written inside a mid-line `<textarea>` is still parsed as a
+  tag, which can end a region early and can never hide a field; the
+  predicate still refuses a declaration carried inside any raw-HTML
+  region the record opens at a line, whether or not it hides, because
+  deciding *hiding* means evaluating CSS this instrument cannot
+  evaluate; the two v1.14 clauses with no single-layer witness (tab
+  expansion, the ≤3-column bound) remain so; blockquote laziness is
+  still deliberately not implemented; §5's non-authority banner can
+  still be satisfied by a quotation of itself in an appendix (RD42-12);
+  the depth scan is still quadratic in nesting depth (RD42-13); an
+  asymmetric `**Label:*` still satisfies presence; and the trend row is
+  still printed above the error list carrying the record's *claimed*
+  verdict when the record is invalid — all carried forward. Seven
+  accepting-direction fixtures are broken by no revert and are named as
+  what they are: documentation of a lawful shape, not a witness
+  (RD44-08). Semantic delta:
+  `round-2026-08e/LAUNCH-GATE-v1.17-SEMANTIC-DELTA.md` (which also
+  carries the corrections of the frozen v1.16 delta's false claims, in
+  the D-10 convention — the frozen record is not edited). No existing
+  question weakened; no ID renumbered.
