@@ -260,6 +260,61 @@ TASKS = [
                    "answers nothing"],
     ),
     dict(
+        key="author-capability-1",
+        title="Author Capability 1 — Project registration and honest "
+              "shape visibility",
+        note="**Authoring is forbidden today.** This route exists so the "
+             "rules are reachable *before* the owner's launch decision, "
+             "not so a spec can be written. `openspec/` does not exist and "
+             "may not be created. Every blocking owner decision is named "
+             "below; none is ruled.",
+        clauses={
+            # project identity and governance root
+            "RFC1-1": f"{C}/rfcs/RFC-0001-project-graph-identity-state-planes.md",
+            "RFC1-4": f"{C}/rfcs/RFC-0001-project-graph-identity-state-planes.md",
+            # project declaration, consent and repository coverage
+            "RFC3-4": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
+            "RFC3-7": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
+            # Unknown reason vocabulary
+            "RFC2-24": f"{C}/rfcs/RFC-0002/rendering-vocabularies.md",
+            # shared human/machine answer facts
+            "RFC7-33": f"{C}/rfcs/RFC-0007/rendering-and-surface.md",
+            # fixed human entry; repository discoverability
+            "RFC7-39": f"{C}/rfcs/RFC-0007/rendering-and-surface.md",
+            "RFC7-40": f"{C}/rfcs/RFC-0007/rendering-and-surface.md",
+            # anti-rollup semantics; absence is Unknown, never zero
+            "RFC8-18": f"{C}/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+            "RFC8-19": f"{C}/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+        },
+        modules=[
+            f"{C}/rfcs/RFC-0001-project-graph-identity-state-planes.md",
+            f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
+            f"{C}/rfcs/RFC-0002/rendering-vocabularies.md",
+            f"{C}/rfcs/RFC-0007/rendering-and-surface.md",
+            f"{C}/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+        ],
+        doctrine=[("VIS-2", f"{D}/vision.md"), ("VIS-4", f"{D}/vision.md"),
+                  ("VIS-5", f"{D}/vision.md")],
+        craft=[],
+        blocking_decisions=["P-33", "P-31", "P-36", "P-37", "P-38", "P-39",
+                            "P-40", "P-41", "P-34", "P-35"],
+        omissions=[
+            "Every Mission and Context-selection contract — RFC-0010 and "
+            "RFC-0011 — is excluded. They are DEFERRED-WAVE candidates and "
+            "Capability 1 relies on none of them; the Mission-ready facet "
+            "is a future extension, not a launch facet",
+            "The specification-acceptance rules (CC-SPEC-1…10) and the "
+            "shape-to-spec impact rules (CC-IMPACT-1…7) are CANDIDATE "
+            "craft policy, in force from neither. They are routed as "
+            "prerequisites, never cited as binding — which is why they are "
+            "not listed under Craft above",
+            "The facet vocabulary itself is routed to no clause: it "
+            "appears in zero of the 30 Waves A+B modules, and P-37 decides "
+            "whether the Capability 1 specification owns it or Wave A must "
+            "be amended to",
+        ],
+    ),
+    dict(
         key="deferred-waves",
         title="Anything touching Missions or Context selection",
         deferred=True,
@@ -315,6 +370,15 @@ def validate(tasks):
                 for o in t["omissions"]):
             errs.append(f"{t['key']}: deferred route lacks a deferred "
                         "disclosure in its omissions")
+        # A route that names a blocking owner decision must name one that
+        # is actually OPEN in the queue. A decision named here but already
+        # ruled would understate what a reader may do; one named here but
+        # absent from the queue is a decision nobody is tracking.
+        for pid in t.get("blocking_decisions", []):
+            queue = read(f"{DEC}/PENDING-OWNER-DECISIONS.md")
+            if not re.search(rf"^\|\s*{re.escape(pid)}\s*\|", queue, re.M):
+                errs.append(f"{t['key']}: blocking decision {pid} has no "
+                            f"row in {DEC}/PENDING-OWNER-DECISIONS.md")
     return errs
 
 
@@ -361,6 +425,11 @@ def render(tasks):
         if t.get("craft"):
             lines.append("**Craft:** " + ", ".join(
                 f"`{i}`" for i, _ in t["craft"]))
+        if t.get("blocking_decisions"):
+            lines.append("**Owner decisions still blocking:** " + ", ".join(
+                f"`{p}`" for p in t["blocking_decisions"])
+                + " — each verified open in the pending queue at "
+                  "generation time")
         for o in t["omissions"]:
             lines.append(f"**Explicitly omitted:** {o}")
         lines.append("")
@@ -415,7 +484,22 @@ def main():
              lambda ts: ts[1]["modules"].__setitem__(
                  0, f"{C}/rfcs/RFC-0010-mission-control-autonomy.md"),
              "routed path missing")
-        n = 6
+        cap = next(i for i, t in enumerate(TASKS)
+                   if t["key"] == "author-capability-1")
+        case("Capability 1 route: an unqueued blocking decision detected",
+             lambda ts: ts[cap]["blocking_decisions"].append("P-999"),
+             "has no row in")
+        case("Capability 1 route: a clause routed to the wrong module "
+             "detected",
+             lambda ts: ts[cap]["clauses"].update(
+                 {"RFC7-39": f"{C}/rfcs/RFC-0008/state-vocabulary-and-cost.md"}),
+             "not defined in")
+        case("Capability 1 route: a deferred-wave module in the load set "
+             "detected",
+             lambda ts: ts[cap]["clauses"].update(
+                 {"RFC10-5": f"{C}/rfcs/RFC-0007/rendering-and-surface.md"}),
+             "not defined in")
+        n = 9
         print(f"{n} fixtures, {len(fails)} failing — a check that cannot "
               "fail is not a check")
         sys.exit(1 if fails else 0)

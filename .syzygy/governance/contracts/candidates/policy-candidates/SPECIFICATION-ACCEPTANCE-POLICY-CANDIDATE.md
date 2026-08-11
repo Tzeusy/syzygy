@@ -15,21 +15,50 @@ one coherent capability (per the granularity rule, P-40), what is in it,
 and what is out. A reader can say what the capability is in one sentence
 without reading the requirements.
 
-**CC-SPEC-2 — Governing vision and contracts are cited.** Every
-requirement traces to the doctrine rule and/or accepted contract clause
-it serves, by identifier. A requirement serving nothing citable is a
-finding against the spec, not a bonus.
+**CC-SPEC-2 — Every requirement names its lawful higher-level warrant.**
+A requirement traces upward to exactly one of these, **and names which**:
+
+```text
+adopted doctrine                 by rule ID
+accepted contract                by clause ID
+recorded owner product decision  by decision identifier or path
+accepted parent specification    by specification and requirement ID
+lawfully admitted user need      by the record that admitted it
+```
+
+A requirement serving nothing on this list is a finding against the spec,
+not a bonus. *(Widened 2026-08-11, owner charter §9. The clause previously
+admitted only doctrine rules and contract clauses — a rule narrow enough
+that a requirement implementing a **recorded owner decision** had no lawful
+warrant to cite, and the first specification is full of them: P-31, P-36,
+P-37, P-38 and P-40 are all owner rulings that Capability 1 must implement
+and no contract clause states. Naming which kind of warrant is the part
+that keeps the widening honest: five admissible sources with no obligation
+to say which would be no constraint at all.)*
 
 **CC-SPEC-3 — Every requirement has a stable identity.** Identifiers are
 minted once, amended in place, never renumbered or reused — the corpus's
 identifier discipline extended to specs.
 
-**CC-SPEC-4 — Observable requirements have testable scenarios.** A
-requirement is testable when it names: the observable surface (human
-view, machine endpoint, or both), the initiating condition, the expected
-observable outcome, and the evidence that would show the outcome absent.
-A requirement whose satisfaction no evidence could ever contradict is not
-a requirement.
+**CC-SPEC-4 — Observable requirements name success *and* falsification.**
+A testable observable requirement names four things:
+
+```text
+initiating condition      what happens, or is done, to trigger it
+observable result         what is then visible, and where — human view,
+                          machine endpoint, or both
+positive success oracle   how one decides the result IS the expected one,
+                          without judgment
+falsifying evidence       what would show it failed or is absent
+```
+
+A requirement whose satisfaction no evidence could ever contradict is not a
+requirement. *(Restated 2026-08-11, owner charter §9. The clause already
+required the initiating condition, the observable outcome and the absence
+evidence; the **positive success oracle** is the addition. "The outcome is
+visible" is not an oracle — two reviewers can both see something and
+disagree about whether it is the expected something, and a spec that leaves
+that to judgment has moved the vibe check from acceptance to testing.)*
 
 **CC-SPEC-5 — Non-goals and Unknowns are explicit.** What the capability
 deliberately does not do is listed; what is not yet known renders
@@ -57,9 +86,19 @@ reader (CC-REV-4's standard) can restate the capability and its
 acceptance conditions without authoring context; failure to restate is a
 finding against the spec's comprehensibility, not the reader.
 
-**CC-SPEC-10 — Owner adoption is recorded.** The spec binds only from a
-recorded owner adoption (VIS-4); the record quotes what was adopted at
-which digest. Until then it is a candidate like everything else.
+**CC-SPEC-10 — Lawful adoption is recorded at the exact digest.**
+
+> Lawful adoption under VIS-4 is recorded at the exact digest. Under the
+> current doctrine state, this means owner adoption.
+
+Until that record exists the spec is a candidate like everything else, and
+the record quotes what was adopted at which digest. *(Restated 2026-08-11,
+owner charter §9. The clause previously hard-coded owner-only adoption
+forever. VIS-4 governs delegation and may define a future gate that is not
+the owner personally; a craft rule that contradicted doctrine's own
+delegation clause would have to be amended the day doctrine exercised it.
+The rule now defers to VIS-4 and states the current reading of it, which is
+the same thing today and the right thing later.)*
 
 ## What this policy is not
 
