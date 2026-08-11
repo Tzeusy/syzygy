@@ -482,8 +482,40 @@ RAW_REVIEW_DIRS = (
 )
 
 
+#: **The lane is a shape, not a list, and that is a 2026-08-11 correction.**
+#: Every round above was registered by hand on the day its first raw review
+#: landed, in three separate enumerations — and round-2026-08e reached
+#: `VERBATIM_SOURCES` in none of them, so an 08e reviewer who called the term
+#: registry "canonical" would have failed CG-16 for reporting what they read.
+#: The miss is the argument: a per-round list that must be edited in three
+#: places is a list that will be short by one round, and the round it is short
+#: by is always the current one.
+#:
+#: The generalization is bounded by two conjuncts, both checked: the path sits
+#: under the candidate contract tree, **and** a whole path segment is
+#: `reviews`. A `reviews/` directory anywhere else in the repository is not
+#: this lane, and `previews/` or `reviews-summary.md` are not segments. The
+#: tuple above is retained as the record of which rounds were registered by
+#: hand and why; it is no longer the population.
 def _is_raw_review(rel):
-    return any(rel.startswith(d) for d in RAW_REVIEW_DIRS)
+    return (rel.startswith(f"{CANDIDATES}/")
+            and "reviews" in rel.split("/")[:-1])
+
+
+#: The two exemption enumerations below (`ACT_QUOTE_EXEMPT`,
+#: `VERBATIM_SOURCES`) are declared far later in this file and stay declared:
+#: they hold lanes that are *not* raw review — the frozen rev9 corpus, the
+#: owner charter, generated fixtures. These two helpers add the raw-review
+#: shape to both, in one place each, so a new round's reviews lane is exempt
+#: the moment it exists rather than the moment somebody remembers.
+def _act_quote_exempt(rel):
+    return _is_raw_review(rel) or any(rel.startswith(x) or rel == x
+                                      for x in ACT_QUOTE_EXEMPT)
+
+
+def _verbatim_source(rel):
+    return _is_raw_review(rel) or any(rel.startswith(x) or rel == x
+                                      for x in VERBATIM_SOURCES)
 
 
 #: Superseded round records, banner-marked and frozen. They cite paths that
@@ -974,8 +1006,7 @@ def cg2e_wrapped_current_arguments(paths, res, corpus=None, registry=None,
     if items is None:
         items = [(p, read(p)) for p in paths
                  if p.endswith((".md", ".txt"))
-                 and not any(p.startswith(x) or p == x
-                             for x in ACT_QUOTE_EXEMPT)]
+                 and not _act_quote_exempt(p)]
     findings, examined = [], 0
     for rel, body in items:
         lines = body.splitlines()
@@ -1167,7 +1198,7 @@ def cg4b_no_accepted_claim(paths, res, corpus=None):
                   if p.endswith(".md")
                   and (p.startswith(f"{CANDIDATES}/")
                        or p.startswith(f"{TOPOLOGY_CANDIDATES}/"))
-                  and not any(p.startswith(x) for x in VERBATIM_SOURCES)
+                  and not _verbatim_source(p)
                   and "/round-2026-08" not in p]
     findings = []
     for rel, body in corpus:
@@ -1711,7 +1742,7 @@ def cg7e_act_digest_copies(paths, res):
     for rel in paths:
         if not rel.endswith((".md", ".txt")):
             continue
-        if any(rel.startswith(x) or rel == x for x in ACT_QUOTE_EXEMPT):
+        if _act_quote_exempt(rel):
             continue
         if rel == MANIFEST:
             continue
@@ -1780,7 +1811,7 @@ def cg7d_quoted_elsewhere(paths, res):
         subjects[label] = sha256_file(full) if os.path.exists(full) else None
     findings, examined = [], 0
     for rel in paths:
-        if any(rel.startswith(x) or rel == x for x in ACT_QUOTE_EXEMPT):
+        if _act_quote_exempt(rel):
             continue
         if not rel.endswith(".md"):
             continue
@@ -2427,8 +2458,7 @@ def cg15_truncated_digests(paths, res, corpus=None):
         re.M)
     items = corpus if corpus is not None else [
         (rel, read(rel)) for rel in paths
-        if rel.endswith(".md") and not any(
-            rel.startswith(x) or rel == x for x in ACT_QUOTE_EXEMPT)]
+        if rel.endswith(".md") and not _act_quote_exempt(rel)]
     findings, examined, historical_files = [], 0, []
     for rel, body in items:
         if _allow_hit(rel, DIGEST_SCOPE_EXEMPT):
@@ -2505,7 +2535,7 @@ def cg16_term_registry_status(paths, res, corpus=None):
     self_quote = re.compile(r"\bCG-16\b", re.I)
     items = corpus if corpus is not None else [
         (rel, read(rel)) for rel in paths if rel.endswith(".md")
-        and not any(rel.startswith(x) or rel == x for x in VERBATIM_SOURCES)]
+        and not _verbatim_source(rel)]
     findings, examined = [], 0
     for rel, body in items:
         if rel.endswith("TERM-REGISTRY.md"):
@@ -3419,6 +3449,33 @@ def selftest():
                   any("1000 authored + 804 tool-managed" in d
                       for d in c.rows[0][4])
                   and not any("target band" in d for d in c.rows[0][4])))
+
+    # The raw-review lane, which four checks consult and which was a
+    # hand-maintained per-round list until 2026-08-11. Each conjunct of the
+    # shape gets its own fixture, so a mutation that widens or narrows it is
+    # witnessed by exactly one failing case rather than by none.
+    cases.append(("raw-review lane covers a new round's reviews directory",
+                  _is_raw_review(
+                      f"{CANDIDATES}/round-2026-08f/reviews/RD-47-x-RAW.md")
+                  and _is_raw_review(f"{CANDIDATES}/reviews/x.md")))
+    cases.append(("raw-review lane requires a whole path segment",
+                  not _is_raw_review(
+                      f"{CANDIDATES}/round-2026-08f/reviews-summary.md")
+                  and not _is_raw_review(
+                      f"{CANDIDATES}/round-2026-08f/previews/x.md")))
+    cases.append(("raw-review lane is scoped to the candidate tree",
+                  not _is_raw_review("scripts/reviews/x.md")
+                  and not _is_raw_review(
+                      ".syzygy/governance/decisions/reviews/x.md")))
+    cases.append(("raw review is exempt from both quote-currency lanes",
+                  _act_quote_exempt(
+                      f"{CANDIDATES}/round-2026-08f/reviews/RD-47-x-RAW.md")
+                  and _verbatim_source(
+                      f"{CANDIDATES}/round-2026-08f/reviews/RD-47-x-RAW.md")
+                  and not _act_quote_exempt(
+                      f"{CANDIDATES}/round-2026-08f/SOME-ACTIVE-FILE.md")
+                  and not _verbatim_source(
+                      f"{CANDIDATES}/round-2026-08f/SOME-ACTIVE-FILE.md")))
 
     c = Cap()
     cg15_truncated_digests([], c, corpus=[("f.md", "digest `deadbeefcafe…`")])
