@@ -1,0 +1,551 @@
+{
+  "schema_version": "2.0",
+  "date": "2026-08-11",
+  "administration_kind": "delta",
+  "formal": false,
+  "instrument": {
+    "path": "launch-gate-pre-specifications.md",
+    "version": "v2.0",
+    "sha256": "05ecaa954e81ef95f6e2e2b409fbcb5bd5391037c10d9624ab4af3217a00f6d2"
+  },
+  "parameter_block_sha256": "01209c0f052971f794e1f35827a002aa8d80420aad471d10fde000abb6366ff6",
+  "repository_commit": "a8f9719fc0f81a599c832f334f788397f967aef1",
+  "launch_target": "Capability 1 — Project registration and honest shape visibility",
+  "required_waves": [
+    "A",
+    "B"
+  ],
+  "deferred_waves": [
+    "C1",
+    "C2",
+    "D1",
+    "D2"
+  ],
+  "reviewer": {
+    "identity": "round-2026-08f authoring session — SCHEMA DRY RUN, not an administration",
+    "model": "not applicable — no reviewer was administered this gate",
+    "model_family": "not applicable",
+    "fresh_context": false,
+    "same_family_as_corpus_authors": true
+  },
+  "materials": {
+    "included": [
+      "the v2.0 instrument at the named commit",
+      "launch-gate-administration.schema.json"
+    ],
+    "withheld": [
+      "nothing was withheld, because nothing was administered"
+    ],
+    "deviations": [
+      "THE WHOLE RECORD IS A DEVIATION: no reviewer was given the §2 materials, no question was answered, and every row is Unknown for that reason"
+    ]
+  },
+  "operationalization_notes": [
+    "This file exists to prove the v2.0 chain on real bytes: it validates, it renders, and its verdict is computed. It is not evidence about Syzygy's readiness and cannot be cited as any.",
+    "Every question is Unknown by construction. A dry run that answered questions would be an administration by the session that authored the instrument, which instrument §2 forbids.",
+    "The E4 rows below are illustrative classifications only; E4's own verdict is Unknown, so nothing is computed from them."
+  ],
+  "question_results": [
+    {
+      "question_id": "A1",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "A2",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "A3",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "A4",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "A5",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "A6",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "B1",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "B2",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "B3",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "B4",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "B5",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "C1",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "C2",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "C3",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "C4",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "C5",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "C6",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "C7",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "D1",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "D2",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "D3",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "D4",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "E1-form",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "E1-home",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "E1-granularity",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "E1-acceptance-authority",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "E1-change-process",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "E1",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "E2",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "E3",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "E4",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "E5",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "E6",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "F1",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "F2",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "F3",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "F4",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "F5",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    },
+    {
+      "question_id": "F6",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "dry run — this record exercises the v2.0 schema, validator and renderer end to end; NO administration was performed and this row is not a finding about Syzygy",
+      "unknown_settlement": "a full administration by a fresh-context reviewer, per instrument §2, at a named commit",
+      "falsification_attempt": "none — a dry run attempts no falsification, which is itself why every row here is Unknown"
+    }
+  ],
+  "e3": {
+    "concepts": [],
+    "trace_rows": [],
+    "reopen_items": []
+  },
+  "e4": {
+    "routing_authority": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+    "fixed_case_results": [
+      {
+        "case_index": 1,
+        "case_text": "Every registered project has exactly one graph identity, and a rename does not mint a new one.",
+        "reviewer_classification": "shape",
+        "routing_authority_says": "silent",
+        "evidence": "illustrative only — no routing lookup was performed",
+        "needed_by_launch_target": false
+      },
+      {
+        "case_index": 2,
+        "case_text": "When a repository is registered, a human can see in the product that registration succeeded, what was registered, and what was not.",
+        "reviewer_classification": "spec",
+        "routing_authority_says": "silent",
+        "evidence": "illustrative only — no routing lookup was performed",
+        "needed_by_launch_target": false
+      },
+      {
+        "case_index": 3,
+        "case_text": "A region with no evidence renders visibly as Unknown — never green, never zero.",
+        "reviewer_classification": "spec",
+        "routing_authority_says": "silent",
+        "evidence": "illustrative only — no routing lookup was performed",
+        "needed_by_launch_target": false
+      },
+      {
+        "case_index": 4,
+        "case_text": "Every specification change receives an independent fresh-context review before adoption.",
+        "reviewer_classification": "shape",
+        "routing_authority_says": "silent",
+        "evidence": "illustrative only — no routing lookup was performed",
+        "needed_by_launch_target": false
+      },
+      {
+        "case_index": 5,
+        "case_text": "A machine client can query any project answer a human can see, and receives the same facts with the same epistemic labels.",
+        "reviewer_classification": "spec",
+        "routing_authority_says": "silent",
+        "evidence": "illustrative only — no routing lookup was performed",
+        "needed_by_launch_target": false
+      },
+      {
+        "case_index": 6,
+        "case_text": "When a shape artifact changes, every affected specification is enumerated and amended in the same logical change, or the disagreement is rendered rather than hidden.",
+        "reviewer_classification": "shape",
+        "routing_authority_says": "silent",
+        "evidence": "illustrative only — no routing lookup was performed",
+        "needed_by_launch_target": false
+      }
+    ]
+  },
+  "owner_deferrals": [],
+  "deferred_wave_findings": [],
+  "reopened_findings": [],
+  "pilot_recurrence_check": {
+    "performed": false,
+    "method": "not performed — a dry run runs no sweep",
+    "findings": []
+  },
+  "g1": {
+    "critic_answer": "Not answered. G1 asks what readiness dimension the series would miss; answering it here would make this an administration.",
+    "proposed_missing_questions": []
+  },
+  "falsification_summary": "Nothing was falsified. The only claim this file makes is about itself: that a lawful v2.0 record validates, renders deterministically, and computes NOT READY from rows that assert nothing.",
+  "prior_record": null
+}

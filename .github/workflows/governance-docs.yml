@@ -21,6 +21,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history: the launch-administration validator resolves the
+          # commit a record names, and a depth-1 checkout would make every
+          # such check silently unrunnable rather than red.
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -61,3 +66,12 @@ jobs:
 
       - name: render_launch_administration --selftest
         run: python3 scripts/render_launch_administration.py --selftest
+
+      # The worked v2.0 record: it validates, and its report regenerates to
+      # the committed bytes. A generated file that drifts from its source is
+      # the one failure mode a generator cannot report about itself.
+      - name: dry-run administration record validates
+        run: python3 scripts/validate_launch_administration.py .syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json
+
+      - name: dry-run administration report is regenerable
+        run: python3 scripts/render_launch_administration.py .syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json --check
