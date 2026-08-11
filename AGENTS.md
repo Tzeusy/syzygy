@@ -184,8 +184,15 @@ python3 $CS/verify_final_prespec.py                       # clauses, citations, 
 python3 $CS/build_contract_index.py --check               # index drift
 python3 $CS/build_dependency_index.py --check             # dependency-edge drift
 python3 $CS/build_budget_report.py --check                # every volatile measurement
+python3 $CS/build_active_manifest.py --check              # package-identity drift
+python3 $CS/build_task_router.py --check                  # router drift
+python3 $CS/build_task_router.py --selftest               # router predicates
 python3 $CS/context_load.py rfcs/RFC-0002/README.md doctrine:vision.md
 ```
+
+`PROJECT-STATUS.md` owns the canonical battery and states its count; the
+hosted workflow (`.github/workflows/governance-docs.yml`) must run exactly
+that list, or a green run means less than a reader takes it to mean.
 
 ## Beads scope in this phase
 
@@ -194,6 +201,44 @@ product backlog. Record unknowns as open questions in
 `decisions/PENDING-OWNER-DECISIONS.md`, not as issues. Commits are
 documentation-only and land at stable gates; **never commit a normative
 artifact while its adoption gate is unresolved.**
+
+# Notes to self
+
+Traps that recur underneath the verification rules above.
+
+- **Classify by shape, never by enumeration.** A per-round list inside a check
+  (exempt paths, known rounds) is short by exactly the round you are in. The
+  raw-review lane is a path-*segment* predicate so a new `round-*/reviews/`
+  is covered the day it exists. Adding a literal round name to a script is a
+  bug in the predicate.
+- **A fixture's name is not a check** — confirm the fixture mutates the input
+  it names and that the *named* predicate fires. And probe with neutral
+  wording: a probe containing a word the check exempts (`stale`, `retired`)
+  passes for the wrong reason.
+- **A presence test is not an openness test.** Predicates over
+  `PENDING-OWNER-DECISIONS.md` must scope to sections: rows under `Resolved…`
+  or carrying `**Executed.**` are not open. A file-wide row `grep` accepts
+  decisions already made.
+- **A blank line inside a Markdown table splits it**, and the rows after it
+  render as loose pipe text — invisible in a diff and to any row regex.
+  Render long tables once.
+- **An act's argument is its wave manifest's digest, and nothing else.** The
+  ceremony lives in the acceptance record, which is in no manifest, so a
+  ceremony-only change moves no accepted byte and **retires no confirmation**.
+  Re-derive before repeating any claim about what an act costs.
+- **Correcting a false claim means sweeping its restatements** with a
+  denominator, in the same pass — excluding the frozen review lane, whose
+  quotation of it must stay.
+- **A repair session cannot confirm its own repairs.** Keep raw reviewer bytes
+  behind a provenance banner (role, dispatch date, subject commit, fresh
+  context, model family, verdict copied exactly) and the repair account in a
+  separate register reading `repaired` · `open` · `declined` — never
+  "acknowledged". Same-model-family reviews support repair only.
+- **A finding needing a normative change to the instrument stays open.**
+  Byte-identity of a section across versions is often itself a load-bearing
+  claim; batch the amendment with its own version, delta and review.
+- **Parallel agent spawns can fail on pane exhaustion** — run reviews
+  synchronously; never kill panes or change configuration.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
 ## Beads Issue Tracker
