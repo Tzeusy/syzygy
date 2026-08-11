@@ -18,17 +18,22 @@ Markdown validator `scripts/launch_gate_results.py` sha256
 **RD-45**, on v1.17, `VERDICT: REVISE`. **No review is bound to v1.18**: its
 re-review (RD-46) was composed and never dispatched.
 
-**Subject.** v2.0 — instrument sha256
-`05ecaa954e81ef95f6e2e2b409fbcb5bd5391037c10d9624ab4af3217a00f6d2`;
-schema `launch-gate-administration.schema.json` sha256
-`e0167fb8af6a903c527d402d56c4fb85ebdfed9608de1a485f4f1563aa6a69fb`;
-`scripts/validate_launch_administration.py` sha256
-`dd41d134dbff20e06d7830f669f1cc62a04134082f6c653c1618d649068d2409`;
-`scripts/render_launch_administration.py` sha256
-`d1d4928cf729a07338788962c8266ff241e8ec87387eaab1482a59bb47c27041`.
-Digests are of the working-tree bytes at authoring time and are recomputed
-at the commit that carries them; the packet, not this line, is what a
-reviewer binds.
+**Subject.** v2.0 **as committed at `a8c2031`**, which is the state a
+reviewer binds:
+
+```text
+launch-gate-pre-specifications.md            05ecaa954e81ef95f6e2e2b409fbcb5bd5391037c10d9624ab4af3217a00f6d2
+launch-gate-administration.schema.json       e0167fb8af6a903c527d402d56c4fb85ebdfed9608de1a485f4f1563aa6a69fb
+scripts/validate_launch_administration.py    d6b203f7c276aa4e58e0b1d0bb4d4cf947158dea34255370a2683bc981e0c745
+scripts/render_launch_administration.py      9f90fa6ad6f6feaed175b78fe9e0901a2e3279586ffbf73b7854ead6140f9ed3
+```
+
+Verified by `sha256sum` in a fresh clone at that commit, not transcribed
+from the working tree. An earlier revision of this line quoted the two
+tool digests from pre-commit bytes: they moved when mutants **m17** and
+**m30** forced two fixture repairs, and a digest quoted before the change
+it describes is exactly the stale-derived-value class this repository has
+a rule about. The figure's home is the artifact it names.
 
 ---
 
@@ -249,8 +254,8 @@ launch_gate_results.py            --selftest  329 fixtures, 0 failing
 **31 mutation-reverts, one per decision branch, 0 unwitnessed.** Each
 reverts a single branch to the form that would pass a naive reading and runs
 that tool's own selftest; a mutant killing zero fixtures means the branch is
-decorative. Kill counts: m1 2, m2–m11 1 each, m12 3, m13–m22 1 each, m23 2,
-m24 crashes the suite, m25–m31 1 each.
+decorative. Kill counts, from the run: **m1 2; m12 3; m23 2; m24 crashes
+the suite outright; every other mutant kills exactly 1.**
 
 **Two defects the harness found in these very bytes**, recorded because the
 alternative is a delta that reads as though the work were clean:
