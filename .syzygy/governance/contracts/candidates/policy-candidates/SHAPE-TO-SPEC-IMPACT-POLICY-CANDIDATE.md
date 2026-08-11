@@ -116,5 +116,4 @@ This is a **candidate**. It comes into force only by its own
 `CONFIRM CRAFT AMENDMENT` act, at a digest computed at the act — the route
 the craft cluster defines. Nothing in it binds today, and no verdict of the
 launch gate may cite it as in force until that act is performed. Its queue
-row is minted with the shape-to-spec craft act in
-`../../../decisions/PENDING-OWNER-DECISIONS.md`.
+row is **P-42** in `../../../decisions/PENDING-OWNER-DECISIONS.md`.

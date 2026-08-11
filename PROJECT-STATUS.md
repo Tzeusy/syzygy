@@ -56,12 +56,12 @@ which is the correct state — the first act creates it.
 | Doctrine amendment D3 (bounded missions) | Proposed — adopt, amend, or decline | `contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1) |
 | Knowledge-hygiene craft policy | Candidate — own craft act (P-12) | `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
 | Specification-acceptance standard (CC-SPEC-1…10) | Candidate — own craft act (P-41); a Capability 1 prerequisite | `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` |
-| Shape-to-spec impact rule | Candidate — own craft act; a Capability 1 prerequisite | `policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` |
+| Shape-to-spec impact rule (CC-IMPACT-1…7) | Candidate — own craft act (P-42); a Capability 1 prerequisite | `policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` |
 | License | Undecided — owner/legal | `.syzygy/governance/decisions/LICENSE-DECISION-PACKET.md` |
 
 ## Launch-critical owner decisions
 
-Eight rulings stand between the confirmed contracts and a first
+Eleven rulings stand between the confirmed contracts and a first
 specification. They are prepared, never made, and the queue that owns them
 is `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`. One bounded
 packet collects them in dependency order:
@@ -78,7 +78,7 @@ P-40  specification granularity
 P-35  project operating constraints
 P-34  launch-gate v2.0 as process policy
 P-41  the specification-acceptance craft act
-      the shape-to-spec impact craft act
+P-42  the shape-to-spec impact craft act
 ```
 
 ## What exists in this repository

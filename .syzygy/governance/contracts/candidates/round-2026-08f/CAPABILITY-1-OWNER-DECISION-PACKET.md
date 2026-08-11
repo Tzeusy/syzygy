@@ -24,7 +24,7 @@ P-33  ─┬─→ Wave A act ──→ Wave B act ──┐
 P-31  ─┤ (ratified AT the Wave A act)   │
 P-37  ─┘ (cheapest before it)           ├──→ formal launch administration ──→ owner launch decision ──→ author Capability 1
                                         │
-P-36, P-38, P-39, P-40, P-41, shape-to-spec, P-35, P-34 ─┘
+P-36, P-38, P-39, P-40, P-41, P-42, P-35, P-34 ─────────┘
 ```
 
 Only three rows are ordered by *necessity*: **P-33 before the Wave A act**
@@ -125,7 +125,7 @@ Analysis, with method and denominators: `P33-SEMANTIC-INSTALL-ANALYSIS.md`.
 | **Earliest gate** | before the first OpenSpec changeset, which is Capability 1 |
 | **Next transaction** | run the version comparison, then rule in `../../../decisions/OPENSPEC-FORM-AND-VERSION-DECISION.md` and pin in `GOVERNANCE-SUBSTRATE-LOCK.yaml` |
 
-## 8. P-41 and the shape-to-spec rule — two craft acts
+## 8. P-41 and P-42 — two craft acts
 
 | | |
 |---|---|

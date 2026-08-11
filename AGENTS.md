@@ -53,7 +53,7 @@ act. This file restates no digest.
 | Craft | Craft amendment CC-TEST-2 | `craft-and-care/INSTALL-RECORD.md` |
 | Craft 3 (P-12) | The knowledge-hygiene craft policy | none yet — digest computed at the act; candidate at `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
 | Craft 2 (P-41) | The specification-acceptance standard CC-SPEC-1…10 | none yet — digest computed at the act; candidate at `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` |
-| Craft 4 | The shape-to-spec impact rule CC-IMPACT-1…7 (E6's open half) | none yet — digest computed at the act; candidate at `policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` |
+| Craft 4 (P-42) | The shape-to-spec impact rule CC-IMPACT-1…7 (E6's open half) | none yet — digest computed at the act; candidate at `policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` |
 | Topology | The topology bundle | `topology-candidates/BUNDLE-MANIFEST.md` |
 | Overview | The project overview | the acceptance record |
 | D3 (optional) | Doctrine amendment D3 — bounded missions | none — VIS-4 adoption of the D3 packet, rev1 |

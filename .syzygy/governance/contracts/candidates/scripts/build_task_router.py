@@ -297,7 +297,7 @@ TASKS = [
                   ("VIS-5", f"{D}/vision.md")],
         craft=[],
         blocking_decisions=["P-33", "P-31", "P-36", "P-37", "P-38", "P-39",
-                            "P-40", "P-41", "P-34", "P-35"],
+                            "P-40", "P-41", "P-42", "P-34", "P-35"],
         omissions=[
             "Every Mission and Context-selection contract — RFC-0010 and "
             "RFC-0011 — is excluded. They are DEFERRED-WAVE candidates and "
