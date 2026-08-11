@@ -128,8 +128,14 @@ python3 $CS/build_contract_index.py --check
 python3 $CS/build_dependency_index.py --check
 python3 $CS/build_budget_report.py --check
 python3 $CS/build_active_manifest.py --check
+python3 $CS/build_task_router.py --check
+python3 $CS/build_task_router.py --selftest
 git tag --list 'doctrine-*'
 ```
+
+The fourteen checks above are the same fourteen the hosted workflow runs
+(`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
+battery is clean" are one claim rather than two a reader conflates.
 
 **Read the output, not the exit code** — a PASS over zero examined items
 verified nothing. Every check prints its own denominator; the WARNs are

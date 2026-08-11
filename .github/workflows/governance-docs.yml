@@ -2,9 +2,14 @@
 #
 # This repository is pre-specification: there is no application code, no
 # toolchain manifest, and no product tooling to run. This workflow therefore
-# installs nothing beyond a Python interpreter and runs the three read-only
-# checkers that already exist. Adding a linter, a build, or a dependency step
-# here would be a stack choice, which requires an accepted contract.
+# installs nothing beyond a Python interpreter and runs the read-only checkers
+# that already exist. Adding a linter, a build, or a dependency step here
+# would be a stack choice, which requires an accepted contract.
+#
+# The step list below is the hosted denominator. It is meant to match the
+# battery `PROJECT-STATUS.md` publishes, so that "hosted CI is green" and
+# "the battery is clean" are the same claim rather than two claims a reader
+# conflates. When a check is added there, add it here.
 name: governance-docs
 
 on:
@@ -52,9 +57,25 @@ jobs:
       - name: build_budget_report --check
         run: python3 .syzygy/governance/contracts/candidates/scripts/build_budget_report.py --check
 
+      # Wave manifest drift: the digests an owner act binds are generated,
+      # and a stale manifest would offer an act over bytes that moved.
+      - name: build_active_manifest --check
+        run: python3 .syzygy/governance/contracts/candidates/scripts/build_active_manifest.py --check
+
+      # Task-router drift, and the router's own fixtures. The router is the
+      # single generated answer to "what do I read for this task"; a drifted
+      # router misroutes silently, which no other check here would notice.
+      - name: build_task_router --check
+        run: python3 .syzygy/governance/contracts/candidates/scripts/build_task_router.py --check
+
+      - name: build_task_router --selftest
+        run: python3 .syzygy/governance/contracts/candidates/scripts/build_task_router.py --selftest
+
       # The checkers' own fixtures. A hosted run that exercises the checks
       # but never the checks' checks reports a denominator it does not have.
-      # All three are stdlib-only, which is why they can run here at all.
+      # Every one is stdlib-only, which is why they can run here at all —
+      # the hosted job installs no packages, so a checker that imported one
+      # would be unrunnable here and its coverage would be local-only.
       - name: check_governance --selftest
         run: python3 scripts/check_governance.py --selftest
 
