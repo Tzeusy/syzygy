@@ -33,11 +33,11 @@ clauses may be discussed, never cited as binding.
 
 ## Pending owner gates
 
-Twelve acts are open; **none has been performed**. (The acceptance
+Thirteen acts are open; **none has been performed**. (The acceptance
 record's §1 carries the ten acts it offers — six waves, CC-TEST-2,
-topology, overview, D3; the two further craft acts below bind through the
-craft cluster's own `CONFIRM CRAFT AMENDMENT` route and are queued as
-P-12 and P-41.) Round-2026-08d restructured
+topology, overview, D3; the three further craft acts below bind through
+the craft cluster's own `CONFIRM CRAFT AMENDMENT` route — P-12, P-41, and
+the shape-to-spec impact act added 2026-08-11.) Round-2026-08d restructured
 the single foundational-contract act into **six wave acts** (design:
 `contracts/candidates/round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md`). The
 acceptance record owns the phrases and the ceremony. Each digest belongs to
@@ -53,18 +53,29 @@ act. This file restates no digest.
 | Craft | Craft amendment CC-TEST-2 | `craft-and-care/INSTALL-RECORD.md` |
 | Craft 3 (P-12) | The knowledge-hygiene craft policy | none yet — digest computed at the act; candidate at `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
 | Craft 2 (P-41) | The specification-acceptance standard CC-SPEC-1…10 | none yet — digest computed at the act; candidate at `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` |
+| Craft 4 | The shape-to-spec impact rule CC-IMPACT-1…7 (E6's open half) | none yet — digest computed at the act; candidate at `policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` |
 | Topology | The topology bundle | `topology-candidates/BUNDLE-MANIFEST.md` |
 | Overview | The project overview | the acceptance record |
 | D3 (optional) | Doctrine amendment D3 — bounded missions | none — VIS-4 adoption of the D3 packet, rev1 |
 
 The live gates are `contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`.
-The round-2026-08d review pass delivered fifteen reviews, **all `REVISE`**;
-the launch-closure pass (round-2026-08e) repaired Waves A and B under the
-owner's Capability 1 direction — each wave's offer waits on its fresh
-exact-package review of the regenerated argument. Waves C1/C2/D1/D2 are
-deferred (`contracts/candidates/DEFERRED-WAVE-POSTURE.md`). The
-round-2026-08b/08c/08d offerings are superseded where banner-marked; review
-RD-8 called routing an owner to a stale offering *"the finding that
+
+**Current state of the launch path (2026-08-11):**
+
+| | |
+|---|---|
+| **Wave A** | **confirmed** — `VERDICT: CONFIRM` on argument `8972d963…` (RD-31b). **Offer withheld solely by P-33** |
+| **Wave B** | **confirmed** — `VERDICT: CONFIRM` on argument `193e3c1e…` (RD-32c). Nothing withholds it; it **follows Wave A** |
+| **Waves C1/C2/D1/D2** | deferred (`contracts/candidates/DEFERRED-WAVE-POSTURE.md`) |
+| **Launch gate** | **structured-record v2.0 candidate** — the record is JSON, the report is generated; approval is P-34, ungranted, and its two independent reviews are **not yet obtained** |
+| **OpenSpec** | forbidden until the owner's launch decision |
+
+No arm of P-33 preserves the Wave A confirmation: whichever is ruled, the
+Wave A exact-package gate re-runs on a regenerated argument
+(`round-2026-08f/P33-SEMANTIC-INSTALL-ANALYSIS.md`).
+
+The round-2026-08b/08c/08d offerings are superseded where banner-marked;
+review RD-8 called routing an owner to a stale offering *"the finding that
 converts act 1 from a knowing act into a surprised one."*
 `decisions/ACCEPTANCE-ACT-RECORD.md` is created by the first act; its absence
 is correct. **Never edit an artifact after an act has bound its digest.** The
@@ -83,7 +94,9 @@ Load the minimum for one correct decision. Never "read everything."
 | "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until OpenSpec exists |
 | "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; authoring stays forbidden until the owner's launch decision |
 | Current status | `PROJECT-STATUS.md` |
-| "Is this ready for OpenSpec?" | the answer is **not ready** — the launch-gate pilot administration returned `GATE VERDICT: NOT READY` (2026-08-09) and the readiness question is owned by `launch-gate-pre-specifications.md` + `PROJECT-STATUS.md`. Launch target: **Capability 1**, prerequisite **Waves A+B**; Waves C1/C2/D1/D2 deferred per `contracts/candidates/DEFERRED-WAVE-POSTURE.md` |
+| "Is this ready for OpenSpec?" | the answer is **not ready** — the only administration on record is the 2026-08-09 pilot, `GATE VERDICT: NOT READY`, and no formal administration has been run. Owned by `launch-gate-pre-specifications.md` + `PROJECT-STATUS.md`. Launch target: **Capability 1**, prerequisite **Waves A+B**; C1/C2/D1/D2 deferred |
+| A launch-gate administration | the record is **structured JSON** (`launch-gate-administration.schema.json`), validated by `scripts/validate_launch_administration.py`; the Markdown report is generated by `scripts/render_launch_administration.py` and **never parsed back**. `scripts/launch_gate_results.py` validates the **historical** v1.3–v1.18 Markdown records only |
+| The launch-gate repair chain | `decisions/launch-gate/HISTORY.md` — **not default context**; the current policy is the instrument itself |
 | Open owner questions | `decisions/PENDING-OWNER-DECISIONS.md` |
 | Mission or Context-selection work | `contracts/candidates/DEFERRED-WAVE-POSTURE.md` first — those candidates are visibly deferred and route only through the task router's deferred rows |
 | What a term means | doctrine's glossary, `governance/doctrine/README.md`; then the candidate `policy-candidates/TERM-REGISTRY.md` |
@@ -159,6 +172,9 @@ All read-only; run before claiming anything is clean.
 ```sh
 python3 scripts/check_governance.py                       # repo-wide
 python3 scripts/check_governance.py --selftest            # fixtures; CG-24 prints their coverage
+python3 scripts/validate_launch_administration.py --selftest   # v2.0 record path
+python3 scripts/render_launch_administration.py --selftest
+python3 scripts/launch_gate_results.py --selftest         # historical Markdown records
 CS=.syzygy/governance/contracts/candidates/scripts
 python3 $CS/verify_final_prespec.py                       # clauses, citations, ceilings
 python3 $CS/build_contract_index.py --check               # index drift

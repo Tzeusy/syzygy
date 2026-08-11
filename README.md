@@ -46,14 +46,15 @@ Two rules everything else follows from:
 | Name | Literal subtitle | Answers |
 |---|---|---|
 | **Polaris** | the intent surface | What is this project supposed to be? |
-| **Trajectory** | the work surface | What remains, what is running, what changed, what did it cost — and has the result been verified against intent? Never satisfied by an issue list |
+| **Trajectory** | the work surface | **What remains, what is running, what changed, what it cost, and whether the result has been verified against intent.** Five questions, and the fifth is the one no issue tracker answers: a merged change is not a satisfied intent |
 | **Orrery** | the map surface | Where does everything live, and in what state? |
 | **Mission Control** | workspace-level operator domain — **not a fourth project-specific truth surface** | What bounded, delegated missions are running across projects? |
 
-Polaris, Trajectory, and Orrery are **projections over one shared project
-model** (the kernel, in the technical contracts), never independent truth
-stores. Mission Control is a workspace-level operator domain, not a fourth
-project-specific truth surface; it is defined by candidate contract
+Polaris, Trajectory, and Orrery are **views over one shared project model**
+(called the *kernel* in the technical contracts), never independent truth
+stores. Mission Control sits at the level of a **portfolio workspace** — the
+set of projects one operator runs, above any single project — and is not a
+fourth project-specific truth surface; it is defined by candidate contract
 RFC-0010 and a pending doctrine amendment (D3), neither yet accepted. All
 four names are working codenames only.
 

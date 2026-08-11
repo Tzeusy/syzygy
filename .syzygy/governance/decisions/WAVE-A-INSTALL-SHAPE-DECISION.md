@@ -45,14 +45,68 @@ Options:
   *(Added 2026-08-10, RD30-06 — the option the clause's recorded
   precedent actually implies, previously absent from this packet.)*
 
-**Recommendation `[Inferred]` (re-labeled 2026-08-10, RD30-06): (1d)** —
-it is the route RFC3-15(a)'s precedent provides for exactly this shape
-("widen explicitly rather than stretch a category's 'exclusively'", the
-module's own closing guidance), and it keeps the principle intact by
-naming what the companions are instead of pretending they are contracts.
-The earlier recommendation (1b) rested on a misreading of RFC3-15(a) and
-is withdrawn as a recommendation, though (1b) remains an offerable
-option.
+- **(1e)** *(added 2026-08-11, owner charter §7 — the typed arm)* **Type
+  the cell rather than widen it vaguely**: amend RFC3-15's `contracts/`
+  cell to a **closed enumeration of three occupant classes** — accepted
+  contract modules (`rfcs/`), integrity-bearing manifests
+  (`wave-manifests/`), and one explicitly named **non-normative resolution
+  lane** holding `history/`, `matrix-rows/` and the two generated reports,
+  each declared outside every digest set and each carrying its own
+  "nothing here binds" statement. A closed enumeration is not a stretched
+  category.
+- **(1f)** *(added 2026-08-11; named so the space is visibly searched, and
+  **rejected**)* Let the ceremony rewrite the relative references while
+  copying, so accepted bytes stay put and installed links resolve.
+  Rejected: the ceremony's own invariant is "Installation, bytes
+  unchanged", verified by `sha256sum -c`. An installed byte that differs
+  from the accepted byte makes the digest verification meaningless.
+
+**What every arm costs, measured** *(added 2026-08-11 — this table did not
+exist when the (1d) recommendation was made, and it changes the answer)*.
+Swept over all 39 candidate modules: **19 of 19 Wave A modules and 11 of 11
+Wave B modules carry code-span links into `history/`** — 68 references
+across the 30 launch-path modules. Any arm that moves the companions
+elsewhere requires rewriting all of them.
+
+| Arm | Modules whose bytes move | Wave A confirmation (RD-31b) | Wave B confirmation (RD-32c) |
+|---|---|---|---|
+| (1a) outside `governance/` | 19 A + 11 B | retired | retired |
+| (1b) widen the cell | **1** | retired | **survives** |
+| (1c) drop the copies | 19 A + 11 B | retired | retired |
+| (1d) mint `contracts-companion/` | **1 + 19 A + 11 B** | retired | retired |
+| (1e) typed closed enumeration | **1** | retired | **survives** |
+
+**There is no arm that preserves the current confirmations.** Whichever is
+ruled, at least the Wave A exact-package gate re-runs on a regenerated
+argument. The arms differ in how many modules move and what the tree means
+afterwards.
+
+**Recommendation `[Inferred]` (replaced 2026-08-11, owner charter §7):
+(1e)** — it moves one module instead of thirty, retires one confirmation
+instead of two, keeps every reference resolving without touching an
+accepted reference, and states what the tree contains instead of stretching
+a category.
+
+*The 2026-08-10 recommendation of (1d) is withdrawn.* It was reasoned from
+RFC3-15(a)'s precedent, which is sound as far as it goes, but it was made
+without the reference measurement above: **(1d) is the most expensive arm
+in the space** — an RFC3-15 amendment *and* a 68-reference rewrite, because
+a category minted at `governance/contracts-companion/` is not where
+the `../../history/` reference inside an installed RFC-0002 README
+lands. (1b)
+remains offerable and is (1e) without the closed enumeration; (1d) remains
+offerable at its now-stated cost.
+
+**Honest counter-argument to the recommendation.** (1e) keeps historical
+rationale and generated measurements inside the contract home, under a
+name. The charter's typing would send them out of it entirely. The reason
+(1e) does not is the 68 references, which is a cost argument, not a
+principled one. An owner who values the clean type boundary above that cost
+should take (1a) or (1c) with the two-wave re-review priced in — and that
+is a legitimate ruling, not a mistake.
+
+Supporting measurement, method and denominators:
+`../contracts/candidates/round-2026-08f/P33-SEMANTIC-INSTALL-ANALYSIS.md`.
 
 ## Question 2 — the 39-row manifest at the first act (RD-18 M5)
 
@@ -73,6 +127,13 @@ Options:
 **Recommendation `[Inferred]`: (2b)** — the generator owns the banner so
 it can never go stale by hand; (2a) trades a labelled record for an
 absent one, which VIS-2 disfavors.
+
+*Added 2026-08-11, under the launch posture:* **there is no final wave act
+on the offer path.** Waves C1/C2/D1/D2 are deferred, so (2a) does not mean
+"install later" — it means "install never, while the posture stands", and
+the package-identity record simply would not exist in the governed tree.
+That consequence belongs in the ruling rather than being discovered after
+it. (`../contracts/candidates/DEFERRED-WAVE-POSTURE.md`)
 
 ## Consequences of not ruling
 
