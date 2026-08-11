@@ -4,20 +4,24 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v1.18 (candidate; v1.3 was the pilot-administered version)
+effective_version: v2.0 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
-  launch-scope parameters (§8), results record format, and trend log
+  launch-scope parameters (§8), the structured administration source record
+  and its generated report (§5), and the trend log
 does_not_govern: whether specifications are authored (the owner's launch
   decision); the content of any artifact under judgment; any acceptance,
   adoption, or approval
 amendment_process: semantic delta per NORMATIVE-CHANGE-WORKFLOW.md shape,
   changelog entry in §9, question IDs never renumbered or reused; owner
   approval required once this instrument is in force
+record_schema: launch-gate-administration.schema.json (the machine annex of
+  §5; an administration source record conforms to it or it is not a record)
 canonical_result_home: .syzygy/governance/decisions/launch-gate/
-  (administration records verbatim + TREND-LOG.md; the 2026-08-09 pilot
-  record remains immutable at
-  .syzygy/governance/contracts/candidates/round-2026-08d/reviews/)
+  (administration source records as JSON + their generated reports +
+  TREND-LOG.md; the 2026-08-09 pilot record remains immutable at
+  .syzygy/governance/contracts/candidates/round-2026-08d/reviews/, in the
+  Markdown form v1.3 defined)
 ```
 
 **What this is.** A benchmark-style question series for judging whether a
@@ -30,20 +34,30 @@ synthesis↔review cycle, and its verdicts are the acceptance criteria for the
 instrument only — no verdict here adopts, accepts, or approves anything on the
 owner's behalf. The owner reads the verdicts and decides.
 
-**Three artifact classes, never conflated:**
+**Four artifact classes, never conflated** (v2.0 splits the third — the
+record — into its source and its presentation, because asking one Markdown
+file to be both a human report and a machine-validated source record is what
+produced this instrument's longest defect chain):
 
 ```text
-Launch-gate definition (this file)
+Launch-gate policy (this file)
     owner-approved process policy once in force
+    human-readable Markdown
     governs how pre-specification readiness is evaluated
 
-Administration record
-    evidence produced by applying the policy at one named commit
-    never adopts anything; stored verbatim; superseded, never edited
+Administration source record
+    strict structured data (JSON), conforming to the schema named above
+    the answers and evidence for ONE administration at a named commit
+    never adopts anything; superseded, never edited
+
+Administration report
+    generated Markdown, produced from the source record
+    a presentation for human reading
+    NEVER parsed back as authority, and never the source of any fact
 
 Owner launch decision
     authorizes or refuses specification authoring
-    the only one of the three that is an act
+    the only one of the four that is an act
 ```
 
 An administration verdict is never itself an owner act, and a READY verdict
@@ -111,8 +125,12 @@ Administration integrity requirements (a record missing any of these cannot
 support a gate decision):
 
 - The instrument must be **committed at the administered commit**, and the
-  record quotes the instrument's sha256 and the parameter block's sha256.
+  record carries the instrument's sha256 and the parameter block's sha256.
 - The record names the commit, and every citation is verified against it.
+- **The record is the JSON source, not the report.** A reviewer who submits
+  only prose has submitted no record; a report edited after generation is
+  not evidence of anything, and `render_launch_administration.py --check`
+  is how that is detected rather than assumed.
 - A **formal** administration (one a launch decision may rely on) is run
   full, not delta, by a fresh-context reviewer — preferably from a
   different model family than the corpus's authors; if it cannot be, the
@@ -158,10 +176,12 @@ Administration shape:
   questions whose evidence changed) is acceptable for steering. The gate
   decision itself requires a full administration at the named commit —
   regressions do not announce themselves.
-- Copy these verdict words exactly into the results record. Never translate
-  a verdict into softer language. Questions are quoted verbatim at the
-  version administered — a verdict rendered against a paraphrased question
-  is void, and every operationalization judgment call is recorded.
+- Record these verdict words exactly. In the structured record the
+  vocabulary is a closed enumeration, so a softened verdict is a schema
+  error rather than a reading the next reader has to catch. Questions are
+  bound at the version administered — a verdict rendered against a
+  paraphrased question is void — and every operationalization judgment call
+  is recorded in the record's own field, never left in prose.
 
 ---
 
@@ -559,83 +579,136 @@ Qualifications:
 
 ---
 
-## 5. Results record format
+## 5. The administration record — structured source, generated report
 
-One record per administration:
+**One administration produces two files, and only one of them is a fact.**
 
-```markdown
-# Launch-gate administration — <date>, commit <sha>
-> This administration record is evidence, never an owner act; its verdict
-> authorizes nothing (instrument preamble; VIS-4).
-Instrument version: <vX.Y>  sha256: <instrument digest at the named commit>
-Parameter block sha256: <digest of §8 as bound for this administration>
-Launch target: <LAUNCH_TARGET, verbatim from the parameter block>
-Reviewer: <model/version or human, fresh context: yes/no>
-Reviewer model family: <alternate families across administrations where possible;
-  same-family administrations must say so here and in the trend row>
-Materials given: <list, with deviations from the fixed list called out>
-Operationalization notes: <every judgment call made interpreting a question>
-
-| Q | Verdict | Evidence / counterexample (paths + quotes) |
-|---|---------|--------------------------------------------|
-| A1 | Met | ... |
-| E1-form | Met | ... |
-| E1-home | Met | ... |
-| E1-granularity | Met | ... |
-| E1-acceptance-authority | Met | ... |
-| E1-change-process | Met | ... |
-| E1 | Met | rollup — Met only when all five sub-rows are Met |
-| ... | | |
-
-## G1 — completeness critic
-<G1 is recorded here as a section, never as a verdict row — it yields no
-Met/Not-met verdict>
-
-E3 reopen-list: <empty | enumerated items>
-Deferred-wave findings recorded outside launch scope: <list | none>
-Deferred count (owner-deferred findings this administration): <n>
-Reopened count (previously recorded resolved, recurred): <n>
-Owner deferral decision: <path or identifier of the owner decision granting
-  every deferral this record carries — required whenever Deferred count is
-  nonzero or the verdict is READY-WITH-DEFERRALS; omitted otherwise>
-Unknowns and what would settle them: <list>
-Reviewer's falsification notes: <what they tried to break and couldn't>
-GATE VERDICT: READY FOR <LAUNCH_TARGET> | NOT READY |
-  READY-WITH-DEFERRALS (owner only)
+```text
+<record>.json    the source record — canonical, validated, the only authority
+<record>.md      the generated report — presentation, never read back
 ```
 
-The terminal line's `GATE VERDICT:` token is literal — it is the line the
-validator parses and the trend row carries; the `Deferred count:` and
-`Reopened count:` fields are required, and their absence is a validation
-error, never an implicit zero (VIS-2 applies to the gate's own record).
-The template's `(owner only)` parenthetical is a description of who may
-grant deferrals, never a satisfier: a `READY-WITH-DEFERRALS` verdict is
-lawful only with the `Owner deferral decision:` field naming the granting
-decision, and copying the template's own words meets no requirement
-(LG-7). Of the trend row's figures, the Not-met, Scoped, and Unknown
-counts are **computed from the rows**; Deferred and Reopened are
-**declared required fields** the validator parses — declared, not
-computed, which is exactly why their absence errors instead of reading
-zero.
+The source record conforms to `launch-gate-administration.schema.json`,
+committed beside this instrument and digest-bound in the administration
+packet. The schema is the machine annex of this section: where this section
+and the schema describe the same requirement, the schema is the one a tool
+enforces, and a disagreement between them is a defect in this instrument to
+be repaired by amendment, never resolved by a reader's judgment at
+administration time.
 
-Store the record verbatim in the canonical result home. Never edit a past
-administration; supersede it. `scripts/launch_gate_results.py` validates a
-record — verdict vocabulary, counts, G1 presence, named commit, digests —
-and generates the trend row; the instrument, not the tool, owns readiness
-semantics. The validator also binds the **question roster**: a full
-administration answers every question (A1–A6, B1–B5, C1–C7, D1–D4, E1 with
-its five sub-rows, E2–E6, F1–F6, plus the G1 section), and a record
-missing any row is a validation error (LG-10) — absence of a question is
-never a pass, and a delta administration's record cannot support a gate
-decision (§2's full-vs-delta rule, now checked rather than trusted).
+**Why the format changed at v2.0.** Between v1.3 and v1.18 this section
+defined a Markdown record that was simultaneously a human report and the
+machine-validated source of a launch decision. Thirteen consecutive
+administrations of the instrument returned `REVISE`, and their findings
+converged on a single question no Markdown rule answered stably: *is this
+line the record's own claim, or a quotation of one?* Quotations, fences,
+comments, list items, continuations, raw HTML, hidden DOM regions, CSS
+visibility, tag populations, and disagreements between renderers each
+produced a path on which a false `READY FOR` could be carried past a
+validator. v2.0 does not answer the question again. It removes it: the
+verdict is computed from typed fields, and the Markdown carries no fact
+that anything reads.
 
----
+**What the record represents** (the schema is normative on shape; this is
+the reading of it):
+
+```text
+schema_version, date, administration_kind (full | delta), formal
+instrument: path, version, sha256
+parameter_block_sha256
+repository_commit
+launch_target, required_waves, deferred_waves
+reviewer: identity, model, model_family, fresh_context,
+          same_family_as_corpus_authors
+materials: included, withheld, deviations
+operationalization_notes
+question_results[]: question_id, question_digest, verdict, launch_scope,
+                    evidence[], counterexample, unknown_reason,
+                    unknown_settlement, falsification_attempt
+e3: concepts, trace_rows, reopen_items
+e4: routing_authority, fixed_case_results[]
+owner_deferrals[], deferred_wave_findings[], reopened_findings[]
+pilot_recurrence_check
+g1: critic_answer, proposed_missing_questions[]
+falsification_summary
+prior_record
+```
+
+Every evidence entry names a **repository path, the commit, a line/range or
+stable identifier, and a short quote or measurement**. Evidence is
+commit-anchored: an entry whose commit is not the record's own is void, and
+the validator rejects it rather than reading it charitably.
+
+**The record carries no verdict.** There is no `final_verdict` field to
+author, and the schema rejects one: the verdict is computed by
+`scripts/validate_launch_administration.py` from the rows, by §4's formula.
+The previous format let a record state its own conclusion and asked a tool
+to agree; a record that cannot state one cannot be believed about one.
+
+**Three properties this shape buys, each of which the Markdown format could
+not hold:**
+
+1. **Absence is an error, never an implicit answer.** A missing required
+   field fails validation. There is no deleted-template-line that reads as
+   answered, and no field that borrows the next line's text.
+2. **Scope cannot be laundered by wording.** `verdict` and `launch_scope`
+   are separate typed fields that must agree, so rendering a defect out of
+   launch scope takes two deliberate acts, not one soft phrase.
+3. **Counts are computed, not declared.** `Deferred` and `Reopened` are the
+   lengths of required arrays: an absent array is an error, an empty array
+   is an explicit assertion of zero, and neither can be a silent zero
+   (VIS-2 applied to the gate's own record).
+
+**The generated report** is produced by
+`scripts/render_launch_administration.py` and opens with, literally:
+
+```text
+Generated presentation.
+Canonical source: <record>.json
+Do not edit this file.
+```
+
+It is never parsed, never cited as the source of an administration fact, and
+`--check` regenerates it to detect an edited one. A record that does not
+validate is not rendered at all.
+
+**What the validator checks** (`LA-1` … `LA-16`, each with at least one
+mutation fixture; the tool's own docstring is the enumeration, and it is the
+tool's, not this instrument's, to keep current): schema conformance;
+instrument, parameter-block and commit identity; the launch-target and wave
+binding; roster completeness and closure; verdict/scope agreement; evidence
+discipline per verdict; E1's five sub-rows and its rollup; scoped-row
+disclosure against the deferred-wave findings; E3's credibility protocol and
+its reopen-list gate; E4's fixed-case completeness and case-text fidelity;
+deferral citation (a made decision, never a queue entry); §4's formula on
+both pass branches; full-vs-delta and fresh-context integrity; G1's
+presence and answer; prior-record anchoring; and the pilot-recurrence check.
+
+The instrument, not the tool, owns readiness semantics. A record the tool
+passes can still support nothing if this file's non-mechanical requirements
+— fresh context, family disclosure, a genuine falsification attempt, a full
+administration — were not honored. Those live in the record's fields and the
+reader's judgment, and no validator promotes them to facts.
+
+**Historical records.** Administrations performed under v1.3–v1.18 are
+Markdown records in the format those versions defined. They remain immutable
+historical evidence, they are never migrated, and
+`scripts/launch_gate_results.py` remains in the repository to validate
+**those** records only. It is not the correctness path for any v2.0
+administration, and no v2.0 record is a Markdown file.
+
+Store the source record and its generated report in the canonical result
+home. Never edit a past administration; supersede it.
 
 ## 6. Trend log
 
 Append one line per administration to
 `.syzygy/governance/decisions/launch-gate/TREND-LOG.md`; this is F1's
-evidence.
+evidence. **The row is generated**, not transcribed:
+`validate_launch_administration.py --trend-row` prints it from the source
+record, and the New-findings column is computed against the record the
+`prior_record` field names. A hand-typed trend row is a figure quoted
+outside its owning artifact, which is how the columns went stale before.
 
 ```markdown
 | Date | Commit | Not-met | Scoped | Unknown | Deferred | Reopened | New findings vs prior | Gate verdict |
@@ -664,6 +737,17 @@ Deferred must never improve the read of any other column. Reopened counts
 findings previously recorded resolved that recurred — a nonzero Reopened
 column indicts the resolution process, not just the finding.
 
+**Trend comparability across the v2.0 boundary is limited, and the limit is
+stated rather than smoothed.** The pilot (v1.3) and every subsequent
+Markdown administration were recorded in a format whose counts were parsed
+from prose; v2.0's are computed from typed fields. The questions and the
+formula are unchanged, so the *verdicts* are comparable question by
+question; the *counts* are comparable only insofar as the earlier records'
+parsed figures were correct, which is precisely what thirteen `REVISE`
+verdicts put in doubt. A trend line drawn across the boundary must say so,
+by the same rule that governs amended questions: a trend across different
+measurement methods is not a trend.
+
 The formal trend log begins with the first administration meeting §2's
 integrity requirements ("Administration 1"). Whether any earlier,
 non-conforming administration exists — and why it does not open the log —
@@ -688,10 +772,13 @@ concretized as skills under `/th-projects`:
 3. **`launch-gate-trend`** — read the trend log and answer F1 honestly,
    including the "questions were weakened" check.
 
-Generalization rule: the [U] questions and the §2/§4 protocol are the
-invariant; everything project-specific lives in the parameter block. If a
-generalized version needs to edit a [U] question to fit a project, that is a
-finding about the question — record it upstream, don't fork silently.
+Generalization rule: the [U] questions, the §2/§4 protocol, **and the
+record schema** are the invariant; everything project-specific lives in the
+parameter block. The schema generalizes without change — it names no Syzygy
+artifact, and the launch target, waves, and fixed cases it carries are
+values a parameter block supplies. If a generalized version needs to edit a
+[U] question to fit a project, that is a finding about the question —
+record it upstream, don't fork silently.
 
 ---
 
@@ -1913,3 +2000,60 @@ Notes for administering against Syzygy specifically:
   including the change of meaning it did not record at all — in the
   D-10 convention; the frozen record is not edited). No existing
   question weakened; no ID renumbered.
+
+- **v2.0** (2026-08-11, structured-record migration — owner charter
+  *"Syzygy — Structured Launch Gate, Owner-Decision Closure, and
+  Capability 1 Readiness"*, §5) — **the administration record stops being
+  Markdown.** The owner's direction was to stop the carrier-by-carrier
+  repair loop rather than to run it once more: between v1.3 and v1.18 this
+  file asked one Markdown document to be both a human report and a
+  machine-validated source record, and thirteen consecutive administrations
+  (RD-33 … RD-45) returned `REVISE`, the last five of them on one question
+  — *is this line the record's own claim, or a quotation of one?* — that
+  quotations, fences, comments, list items, continuations, raw HTML, hidden
+  DOM regions, CSS visibility, tag populations and renderer disagreements
+  each reopened. v2.0 removes the question instead of answering it again.
+  **What changed:** §5 is replaced — the canonical record is JSON
+  conforming to the new committed schema
+  `launch-gate-administration.schema.json`, the Markdown report is
+  generated from it by `scripts/render_launch_administration.py` and is
+  never parsed back, and `scripts/validate_launch_administration.py`
+  (checks `LA-1` … `LA-16`, 74 mutation fixtures) validates the record and
+  **computes** the verdict; the preamble's three artifact classes become
+  four, splitting record from report; §2 adds the integrity requirement
+  that the record *is* the JSON and that an edited report is detectable by
+  `--check`; §6's trend row is generated from the record rather than typed,
+  and states the comparability limit across the format boundary; §7 adds
+  the schema to the portable core. **What did not change:** every question
+  ID and every question's text; the §4 formula, both pass branches, the
+  five blocking conditions, the never-deferrable conjuncts, and the closed
+  verdict vocabulary; §8's parameter block, byte for byte. **Three
+  properties the new shape holds that the old could not:** a missing field
+  is an error rather than a template line that reads as answered; `verdict`
+  and `launch_scope` are separate typed fields that must agree, so
+  laundering a defect out of scope takes two deliberate acts rather than
+  one soft phrase; and `Deferred`/`Reopened` are array lengths, so an
+  absent array errors and an empty one asserts zero, with no silent zero
+  available (VIS-2 applied to the gate's own record). The record can no
+  longer claim a verdict at all: the schema rejects a `final_verdict` key.
+  **Historical records are not migrated** — the 2026-08-09 pilot and every
+  Markdown administration remain immutable evidence in the format their
+  version defined, and `scripts/launch_gate_results.py` (329 fixtures)
+  stays in the repository to validate those and only those. **Disclosed
+  limits, measured rather than asserted:** the validator reads the
+  instrument's own §8 prose in exactly one place — binding E4's fixed cases
+  — and that read is bounded (it stops at the first non-consecutive case
+  number) and fail-closed (no cases parsed is an error, a count or text
+  mismatch is an error), which is why it is disclosed here rather than
+  claimed absent; the schema interpreter is a documented subset of JSON
+  Schema and **rejects any keyword it does not implement**, so the schema
+  cannot quietly rely on one that is ignored, but it is a subset and not
+  the reference implementation (where `jsonschema` is installed the
+  selftest cross-checks against it as a second method; hosted CI installs
+  no packages, so that cross-check never gates anything); presence tests on
+  free-text fields remain content-blind by design, guarded only against a
+  placeholder lexicon, so the truthfulness of an evidence quote stays with
+  the reader; and no administration has yet been performed under this
+  version — v2.0 is a candidate whose approval is P-34. Semantic delta:
+  `round-2026-08f/LAUNCH-GATE-v2.0-SEMANTIC-DELTA.md`. No existing question
+  weakened; no ID renumbered; the formula is unchanged.

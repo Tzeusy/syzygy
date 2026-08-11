@@ -1,0 +1,449 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Tzeusy/syzygy/launch-gate-administration.schema.json",
+  "title": "Launch-gate administration source record",
+  "description": "The canonical source record for ONE administration of the launch gate defined by launch-gate-pre-specifications.md (v2.0 and later). This file is the machine annex of the instrument's section 5. The Markdown administration report is GENERATED from a record conforming to this schema and is never parsed back as authority. No field here adopts, accepts, or approves anything (VIS-4). The record carries no final verdict: the verdict is computed by scripts/validate_launch_administration.py from the rows, and a `final_verdict` key is rejected by additionalProperties rather than compared, so a claimed verdict can never be the thing a reader trusts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "date",
+    "administration_kind",
+    "formal",
+    "instrument",
+    "parameter_block_sha256",
+    "repository_commit",
+    "launch_target",
+    "required_waves",
+    "deferred_waves",
+    "reviewer",
+    "materials",
+    "operationalization_notes",
+    "question_results",
+    "e3",
+    "e4",
+    "owner_deferrals",
+    "deferred_wave_findings",
+    "reopened_findings",
+    "pilot_recurrence_check",
+    "g1",
+    "falsification_summary",
+    "prior_record"
+  ],
+  "properties": {
+    "schema_version": {
+      "description": "The version of THIS schema the record was authored against. A record naming a version the validator does not implement is rejected, never read on a best-effort basis.",
+      "const": "2.0"
+    },
+    "date": {
+      "description": "Administration date, ISO 8601 (YYYY-MM-DD).",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "administration_kind": {
+      "description": "instrument section 2's full-vs-delta rule. Only a `full` administration can support a gate decision; a `delta` record is lawful for steering and is rejected as gate evidence.",
+      "enum": ["full", "delta"]
+    },
+    "formal": {
+      "description": "True when this administration is offered as one a launch decision may rely on. A formal administration must be full, fresh-context, and disclose its model family (instrument section 2).",
+      "type": "boolean"
+    },
+    "instrument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "version", "sha256"],
+      "properties": {
+        "path": {
+          "description": "Repository-relative path of the instrument as committed at repository_commit.",
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "description": "The instrument's effective_version at repository_commit, e.g. `v2.0`.",
+          "type": "string",
+          "pattern": "^v[0-9]+\\.[0-9]+$"
+        },
+        "sha256": {
+          "description": "sha256 of the instrument file as committed at repository_commit.",
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "parameter_block_sha256": {
+      "description": "sha256 of the instrument's section 8 parameter block as bound for this administration, computed from the committed instrument.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "repository_commit": {
+      "description": "The named commit. Every citation in this record must exist at it; evidence quoted from any other version is void (instrument section 2).",
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$"
+    },
+    "launch_target": {
+      "description": "Verbatim from the parameter block's LAUNCH_TARGET, or its first sentence. Compared whitespace-normalised against the committed instrument.",
+      "type": "string",
+      "minLength": 1
+    },
+    "required_waves": {
+      "description": "The parameter block's REQUIRED_WAVES.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "deferred_waves": {
+      "description": "The parameter block's DEFERRED_WAVES. May be empty; an empty array asserts that none are deferred.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "model", "model_family", "fresh_context", "same_family_as_corpus_authors"],
+      "properties": {
+        "identity": { "type": "string", "minLength": 1 },
+        "model": {
+          "description": "Model and version, or `human`.",
+          "type": "string",
+          "minLength": 1
+        },
+        "model_family": {
+          "description": "The reviewer's model family, or `human`. F5's disclosure lives here.",
+          "type": "string",
+          "minLength": 1
+        },
+        "fresh_context": { "type": "boolean" },
+        "same_family_as_corpus_authors": {
+          "description": "instrument section 2: a family-constant administration measures agreement as much as convergence and must say so. Declared, never inferred.",
+          "type": "boolean"
+        }
+      }
+    },
+    "materials": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["included", "withheld", "deviations"],
+      "properties": {
+        "included": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "withheld": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "deviations": {
+          "description": "Anything added, missing, or unreadable relative to the fixed materials list. An empty array asserts there were none.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "operationalization_notes": {
+      "description": "Every judgment call made interpreting a question. An empty array asserts none were made.",
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "question_results": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/question_result" }
+    },
+    "e3": {
+      "description": "E3's credibility protocol (instrument section 3): concepts enumerated, each traced to the governing shape artifact, then the reopen list. An empty reopen list without the trace table is Unknown, never Met.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["concepts", "trace_rows", "reopen_items"],
+      "properties": {
+        "concepts": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "trace_rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["concept", "governing_artifact", "note"],
+            "properties": {
+              "concept": { "type": "string", "minLength": 1 },
+              "governing_artifact": { "type": "string", "minLength": 1 },
+              "note": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "reopen_items": {
+          "description": "Vision- or shape-level questions authoring the first spec would force reopening. Non-empty means E3 is not Met and no READY verdict is lawful.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["item", "why"],
+            "properties": {
+              "item": { "type": "string", "minLength": 1 },
+              "why": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "e4": {
+      "description": "E4's fixed cases (parameter block E4_CASES), classified from their text alone, then compared against the routing authority. Agreement is computed, never authored.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["routing_authority", "fixed_case_results"],
+      "properties": {
+        "routing_authority": {
+          "description": "The parameter block's E4_ROUTING_AUTHORITY path, as read at repository_commit.",
+          "type": "string",
+          "minLength": 1
+        },
+        "fixed_case_results": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "case_index",
+              "case_text",
+              "reviewer_classification",
+              "routing_authority_says",
+              "evidence",
+              "needed_by_launch_target"
+            ],
+            "properties": {
+              "case_index": {
+                "description": "1-based index into E4_CASES, in the parameter block's own order.",
+                "type": "integer"
+              },
+              "case_text": {
+                "description": "The case quoted verbatim from the parameter block. Compared against the committed instrument, so a paraphrased case cannot carry a verdict.",
+                "type": "string",
+                "minLength": 1
+              },
+              "reviewer_classification": {
+                "description": "Two-valued by instrument section 3 — the reviewer always classifies.",
+                "enum": ["shape", "spec"]
+              },
+              "routing_authority_says": {
+                "description": "`silent` when no rule of the routing authority covers the statement; a silent case counts as neither agreement nor disagreement.",
+                "enum": ["shape", "spec", "silent"]
+              },
+              "evidence": { "type": "string", "minLength": 1 },
+              "needed_by_launch_target": {
+                "description": "True when the launch target needs this case routed. Silence over such a case is a finding in its own right.",
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "owner_deferrals": {
+      "description": "Deferrals granted by the owner, each claimed only by citation. A reviewer's own wording is not a deferral (instrument section 4).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["question_id", "decision_citation", "bounded_reduction_plan"],
+        "properties": {
+          "question_id": { "type": "string", "minLength": 1 },
+          "decision_citation": {
+            "description": "A repository path existing at repository_commit, or an SDR-n identifier. P-n names the pending queue and grants nothing.",
+            "type": "string",
+            "minLength": 1
+          },
+          "bounded_reduction_plan": {
+            "description": "Required for an F2 deferral by instrument section 4: maximum new meta-artifacts, artifacts to retire, stop condition.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "deferred_wave_findings": {
+      "description": "Defects living only in a deferred wave's candidate semantics. Any scoped row requires at least one entry here (instrument section 4).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["wave", "question_id", "defect", "blocking_conditions_met"],
+        "properties": {
+          "wave": { "type": "string", "minLength": 1 },
+          "question_id": { "type": "string", "minLength": 1 },
+          "defect": { "type": "string", "minLength": 1 },
+          "blocking_conditions_met": {
+            "description": "Which of instrument section 4's five blocking conditions the defect meets. A scoped verdict is lawful only when this is empty.",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "on-default-route",
+                "changes-required-wave-meaning",
+                "dependency-of-launch-target",
+                "misstates-current-truth",
+                "prevents-owner-understanding"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "reopened_findings": {
+      "description": "Findings previously recorded resolved that recurred. An empty array asserts zero; the array's absence is an error, never an implicit zero (VIS-2).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["finding", "prior_record", "note"],
+        "properties": {
+          "finding": { "type": "string", "minLength": 1 },
+          "prior_record": { "type": "string", "minLength": 1 },
+          "note": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "pilot_recurrence_check": {
+      "description": "The parameter block's PILOT_RECURRENCE_CHECK, performed and recorded rather than silently skippable.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["performed", "method", "findings"],
+      "properties": {
+        "performed": { "type": "boolean" },
+        "method": { "type": "string", "minLength": 1 },
+        "findings": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "g1": {
+      "description": "The completeness critic. G1 yields no Met/Not-met verdict and never blocks, but an administration missing it is incomplete and cannot support a gate decision (instrument section 3).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["critic_answer", "proposed_missing_questions"],
+      "properties": {
+        "critic_answer": {
+          "description": "What readiness dimension could this project fail that no question in the series would catch?",
+          "type": "string",
+          "minLength": 1
+        },
+        "proposed_missing_questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["proposal", "rationale"],
+            "properties": {
+              "proposal": { "type": "string", "minLength": 1 },
+              "rationale": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "falsification_summary": {
+      "description": "What the reviewer tried to break across the administration and could not.",
+      "type": "string",
+      "minLength": 1
+    },
+    "prior_record": {
+      "description": "The immediately preceding administration this one is compared against for the trend row, or null when this record opens the log.",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "repository_commit", "date"],
+          "properties": {
+            "path": { "type": "string", "minLength": 1 },
+            "repository_commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+            "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" }
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "question_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "question_id",
+        "question_digest",
+        "verdict",
+        "launch_scope",
+        "evidence",
+        "counterexample",
+        "unknown_reason",
+        "unknown_settlement",
+        "falsification_attempt"
+      ],
+      "properties": {
+        "question_id": {
+          "description": "A roster identifier: A1-A6, B1-B5, C1-C7, D1-D4, E1 with its five sub-rows, E2-E6, F1-F6. G1 is a section, never a row.",
+          "type": "string",
+          "pattern": "^(A[1-6]|B[1-5]|C[1-7]|D[1-4]|E1|E1-(form|home|granularity|acceptance-authority|change-process)|E[2-6]|F[1-6])$"
+        },
+        "question_digest": {
+          "description": "sha256 of the question's verbatim text as administered, or the literal `instrument-bound` when the record binds identity through the instrument digest instead. A verdict rendered against a paraphrased question is void (instrument section 2).",
+          "type": "string",
+          "pattern": "^([0-9a-f]{64}|instrument-bound)$"
+        },
+        "verdict": {
+          "description": "The closed vocabulary. `Unknown` carries its reason in unknown_reason; the rendered form is Unknown(reason). Nothing else is lawful — no `Partially met`, no `Met with caveats`.",
+          "enum": ["Met", "Not met", "Not met (out of launch scope)", "Unknown"]
+        },
+        "launch_scope": {
+          "description": "Authored independently of the verdict word and cross-checked against it: `deferred-wave-only` is lawful with the scoped verdict and with no other, so one typo cannot launder a defect out of scope.",
+          "enum": ["in-launch-scope", "deferred-wave-only"]
+        },
+        "evidence": {
+          "description": "Required for Met. Every entry is commit-anchored to repository_commit.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "commit", "locator", "quote"],
+            "properties": {
+              "path": { "type": "string", "minLength": 1 },
+              "commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+              "locator": {
+                "description": "Line, range, or stable identifier (a clause ID, a heading).",
+                "type": "string",
+                "minLength": 1
+              },
+              "quote": {
+                "description": "Short quote or measurement.",
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "counterexample": {
+          "description": "Required for either Not met form: the artifact and passage that fails, or the sweep with its denominator. Null when the verdict is not a Not met.",
+          "oneOf": [{ "type": "null" }, { "type": "string", "minLength": 1 }]
+        },
+        "unknown_reason": {
+          "description": "The parenthetical of Unknown(reason). Null unless the verdict is Unknown.",
+          "oneOf": [{ "type": "null" }, { "type": "string", "minLength": 1 }]
+        },
+        "unknown_settlement": {
+          "description": "What evidence would settle it. Required for Unknown; null otherwise.",
+          "oneOf": [{ "type": "null" }, { "type": "string", "minLength": 1 }]
+        },
+        "falsification_attempt": {
+          "description": "What the reviewer tried in order to break this question or its verdict. A question surviving no genuine attempt has no credible verdict (instrument section 2).",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

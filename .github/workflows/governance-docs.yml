@@ -42,3 +42,22 @@ jobs:
       # Dependency index drift: same guard, for the declared edges.
       - name: build_dependency_index --check
         run: python3 .syzygy/governance/contracts/candidates/scripts/build_dependency_index.py --check
+
+      # Every volatile measurement: fixture anchors and the generated report.
+      - name: build_budget_report --check
+        run: python3 .syzygy/governance/contracts/candidates/scripts/build_budget_report.py --check
+
+      # The checkers' own fixtures. A hosted run that exercises the checks
+      # but never the checks' checks reports a denominator it does not have.
+      # All three are stdlib-only, which is why they can run here at all.
+      - name: check_governance --selftest
+        run: python3 scripts/check_governance.py --selftest
+
+      - name: launch_gate_results --selftest        # historical Markdown records
+        run: python3 scripts/launch_gate_results.py --selftest
+
+      - name: validate_launch_administration --selftest
+        run: python3 scripts/validate_launch_administration.py --selftest
+
+      - name: render_launch_administration --selftest
+        run: python3 scripts/render_launch_administration.py --selftest
