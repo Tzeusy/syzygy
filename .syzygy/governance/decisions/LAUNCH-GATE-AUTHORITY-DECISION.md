@@ -76,22 +76,51 @@ defect, and each repair minted the next. The chronology is
 
 ## Independent review verdicts
 
-> **Two reviews are required before this decision is offerable, and
-> neither has been obtained.** The owner charter (§5.6, §14) commissions a
-> policy-semantics review — *did v2.0 weaken any readiness question or
-> formula?* — and a structured-record review — *can malformed or
-> contradictory data produce a false READY, and does the generated report
-> faithfully present the canonical record?*
+> **Two reviews are required before this decision is offerable. Both have
+> now been obtained, and both returned `REVISE`.** The owner charter (§5.6,
+> §14) commissions a policy-semantics review — *did v2.0 weaken any
+> readiness question or formula?* — and a structured-record review — *can
+> malformed or contradictory data produce a false READY, and does the
+> generated report faithfully present the canonical record?*
 >
-> **Status 2026-08-11: not dispatched.** The authoring session could not
-> spawn reviewer agents (no pane space in the terminal it runs in) and did
-> not confirm its own bytes instead. This packet is therefore **prepared,
-> not offered**, and the row below is honest rather than empty.
+> **Status 2026-08-11: dispatched and returned; findings unrepaired.**
+> *(Corrected 2026-08-11. An earlier revision of this section read "neither
+> has been obtained … not dispatched" and carried two `[Unknown]` rows.
+> That was true when written earlier the same day — the authoring session
+> could not spawn reviewer agents — and stopped being true when the reviews
+> were run synchronously.)* This packet is **prepared, not offered**, and
+> the reason has changed: it is not that nobody has looked, it is that two
+> reviewers looked and asked for revisions that have not been made.
 
-| Review | Subject | Verdict |
+| Review | Subject | Verdict (copied exactly) |
 |---|---|---|
-| Policy semantics | v2.0 instrument | `[Unknown]` — not dispatched |
-| Structured record | schema, validator, renderer | `[Unknown]` — not dispatched |
+| Policy semantics | v2.0 instrument | `REVISE` — RD-48, 2026-08-11, frozen commit `e2efda6` |
+| Structured record | schema, validator, renderer | `REVISE` — RD-47, 2026-08-11, frozen commit `e2efda6` |
+
+Both reviewers are the **same model family as the corpus authors**, so
+under the charter each supports repair and neither is the formal launch
+administration. Raw bytes:
+`../contracts/candidates/round-2026-08f/reviews/RD-47-launch-record-schema-RAW.md`
+and `…/RD-48-launch-policy-v2.0-RAW.md`; the repair account, including
+which findings are open and why, is that directory's
+`DISPOSITION-REGISTER.md`.
+
+**What they found, in one line each.** RD-48: **no readiness question,
+row-level verdict word, or trend column was dropped, renamed, or made
+unreachable** — the weakening question the charter asked is answered *no*.
+It nonetheless found two structural discrepancies: the *computed* formula
+carries a sixth core conjunct that §4 does not state (a strengthening,
+grounded in §3's E3 rule, but not a term the instrument carries), and the
+gate-level verdict word `NOT READY` has no home in §1–§8 although the tool
+emits it. RD-47 found five material defects in the validator's decision
+path, of which the load-bearing one is that the schema audit never requires
+an object schema to close, so deleting a single `additionalProperties`
+re-opens the claimed-verdict route the v2.0 design rests on.
+
+**None of these is repaired.** Each needs an amendment to the instrument or
+a change to the validator's error surface, and both belong in their own
+version with their own delta and re-review rather than beside a repair
+batch.
 
 ## Known residuals
 
@@ -115,9 +144,16 @@ generalized:
 
 ## Your options
 
-**(a) Approve v2.0 as process policy.** Recommended `[Inferred]` **only
-after** the two reviews above return. The instrument becomes the standard a
-formal administration is run under.
+**(a) Approve v2.0 as process policy.** *(Recommendation restated
+2026-08-11, now that the reviews have returned.)* The earlier form of this
+option said "recommended **only after** the two reviews return". They have
+returned, and both said `REVISE` — so the condition it named is met in
+letter and fails in substance. **Approving v2.0 as it stands means
+approving an instrument whose two independent reviews asked for changes
+that were not made**, including a formula the tool computes differently
+from the way the instrument states it. That is a lawful owner choice with
+the cost now stated; it is no longer the recommended one. The instrument
+becomes the standard a formal administration is run under.
 
 **(b) Approve with F5 promoted to a conjunct.** Same as (a), plus: a
 `Not met` F5 blocks a READY verdict. This would block a pass on any
@@ -127,6 +163,12 @@ can administer the gate.
 
 **(c) Amend first.** Name what to change; the change travels as a semantic
 delta and a v2.1 entry, and the two reviews re-run on the changed bytes.
+**Recommended `[Inferred]`, as of 2026-08-11**, and the reviews name the
+change list rather than leaving it to be invented: bring §4's stated
+formula and the tool's computed one into agreement, give `NOT READY` a home
+in the instrument body, and close the schema audit's open-object route. The
+recommendation is inferred from two same-family reviews and is not itself
+reviewed.
 
 **(d) Decline.** The gate stays a candidate. Administrations remain
 evidence you may weigh; no formal administration can be said to have been

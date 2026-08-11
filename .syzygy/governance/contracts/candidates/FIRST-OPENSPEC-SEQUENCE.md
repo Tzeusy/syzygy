@@ -9,6 +9,12 @@
 > historical and competes with nothing. It chooses no language,
 > framework, database, graph store, rendering engine, or deployment
 > target, and contains no schema.
+>
+> **It owns no state it reports.** The wave rows are owned by
+> `PROJECT-STATUS.md` and the `P-nn` rows by
+> `decisions/PENDING-OWNER-DECISIONS.md`; where this plan and one of those
+> disagree, **the owning record wins and this plan is stale**. Report the
+> disagreement rather than resolving it yourself.
 
 ## The rule this sequence is built on
 
@@ -54,10 +60,10 @@ scope note — that is a scoped state, not a second one.
 
 States: `satisfied` / `owner-waived` / `blocking` / `not applicable`.
 
-| Prerequisite | Kind | State (2026-08-10) |
+| Prerequisite | Kind | State (2026-08-11) |
 |---|---|---|
-| Wave A act performed at a confirmed argument | Owner act | **blocking** — repairs landed this pass; fresh exact-package review then the offer |
-| Wave B act performed at a confirmed argument | Owner act | **blocking** — same |
+| Wave A act performed at a confirmed argument | Owner act | **blocking** — the *argument* is confirmed (`VERDICT: CONFIRM`, RD-31b); what blocks is that no act has been performed, and the offer itself is withheld solely by **P-33**. Corrected 2026-08-11, RD-50 f2: this cell previously read "fresh exact-package review then the offer", which the confirmation had already overtaken |
+| Wave B act performed at a confirmed argument | Owner act | **blocking** — same shape: confirmed (`VERDICT: CONFIRM`, RD-32c), unoffered, and it follows Wave A. Nothing else withholds it |
 | P-33 Wave A install shape ruled | Owner decision | **blocking** (gates the Wave A re-offer; packet `decisions/WAVE-A-INSTALL-SHAPE-DECISION.md`) |
 | P-31 merged-unreconciled exemption ratified | Owner decision | **blocking** (drafted arm rides Wave A; ruling wanted at or before that act) |
 | P-39 OpenSpec form/version | Owner decision | **blocking** (`decisions/OPENSPEC-FORM-AND-VERSION-DECISION.md`) |

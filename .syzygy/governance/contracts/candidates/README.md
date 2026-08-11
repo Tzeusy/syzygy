@@ -14,15 +14,29 @@ packet, then corrected round by round as each round's semantic-delta record
 states (`round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md` through
 `round-2026-08e/`).
 
-**Current state (2026-08-10, launch-closure pass):** the round-2026-08d
-review pass delivered fifteen fresh-context reviews, **all fifteen
-`REVISE`, zero `CONFIRM`** (`round-2026-08d/reviews/`). The owner's launch
-target is **Capability 1 — Project registration and honest shape
-visibility**, prerequisite **Waves A + B**; the Wave A/B repair batches
-landed at round-2026-08e and await fresh exact-package reviews before the
-acts may be offered. **Waves C1/C2/D1/D2 are visibly deferred** —
-`DEFERRED-WAVE-POSTURE.md` is the disclosure. Task routing has one current
-answer: the generated `TASK-ROUTER.md`.
+> **This page does not own any state it reports.** `PROJECT-STATUS.md`
+> owns the launch path and `decisions/PENDING-OWNER-DECISIONS.md` owns the
+> queue; where this page and one of those disagree, **the owning record
+> wins and this page is stale**. Report the disagreement rather than
+> resolving it yourself.
+
+**Current state (as-of 2026-08-11):** the owner's launch target is
+**Capability 1 — Project registration and honest shape visibility**,
+prerequisite **Waves A + B**. Both waves' current exact packages are
+**confirmed** — Wave A `VERDICT: CONFIRM` (RD-31b), Wave B `VERDICT:
+CONFIRM` (RD-32c) — and neither act has been offered: Wave A's offer is
+withheld solely by owner decision **P-33**, and Wave B follows Wave A.
+`PROJECT-STATUS.md` owns both rows. **Waves C1/C2/D1/D2 are visibly
+deferred** — `DEFERRED-WAVE-POSTURE.md` is the disclosure. Task routing has
+one current answer: the generated `TASK-ROUTER.md`.
+
+*Superseded state, kept because it is cited elsewhere:* an earlier revision
+of this paragraph said the Wave A/B repair batches "await fresh
+exact-package reviews before the acts may be offered". That was true when
+written (2026-08-10) and stopped being true when RD-31b and RD-32c
+returned; review RD-50 found it still standing here a day later. The
+round-2026-08d pass's fifteen `REVISE` verdicts (`round-2026-08d/reviews/`)
+are that round's record and are not the current package's state.
 
 ## Layout
 

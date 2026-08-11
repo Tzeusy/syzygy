@@ -54,7 +54,10 @@ no subject moved while a reviewer was reading it.
 ## Open — recorded, not repaired
 
 Nothing here is dismissed. Each row is a finding this pass did not close,
-with the reason it did not.
+with the reason it did not. *(One subsection — RD-50's, added later — lists
+that review's findings **in full**, repaired rows included, because the
+defect being corrected there was an incomplete list. Its rows carry their
+own dispositions.)*
 
 ### The launch instrument (RD-48)
 
@@ -96,6 +99,29 @@ its first review is this one.
 | RD-52 f3 *(blocking)* — the exclusion list omits five open queue entries, three of them unperformed acts | the task router now names P-1 among the blocking acts, which closes the router's half; the packet's exclusion list is not yet reconciled against the queue's 31 open rows plus 5 acts |
 | RD-52 f4–f16 | batched with the same rewrite |
 
+### The default path (RD-50)
+
+*Added 2026-08-11. **This section was missing**, and its absence was the
+register's own worst finding: RD-50 raised eleven findings, exactly one
+(f1) appeared in the repaired table above, and the other ten appeared
+nowhere — while this file's header says "Nothing here is dismissed". Ten
+findings were dismissed by omission. They are dispositioned below.*
+
+| Finding | Disposition |
+|---|---|
+| f1 *(blocking)* — the decisions register renders as broken Markdown for 20 of 22 open rows | **repaired** — see the table above |
+| f2 *(material)* — `candidates/README.md` and `FIRST-OPENSPEC-SEQUENCE.md` say the waves await fresh exact-package reviews, contradicting `PROJECT-STATUS.md`, and carry no precedence banner | **repaired 2026-08-11** — both now carry the "the owning record wins and this page is stale" banner and a dated state line; the two stale sentences are corrected in place, each naming RD-50 f2 and what it replaced |
+| f11 *(minor)* — the sealed packet binds a commit behind HEAD, so a reviewer verifying at HEAD finds a mismatch and must decide for themselves that it does not matter | **repaired 2026-08-11** — the packet's §2 now says the commit is expected to advance, that the four digests are what bind, and what a real mismatch looks like |
+| f3 *(material)* — the P-34 queue row asks the owner to approve **v1.18**, a version that no longer exists | **open** — the fix RD-50 prescribes (cite the instrument's header rather than writing a version number into the row) is one line, but it sits inside the same table cell f6 says must be rewritten. Editing that cell twice is how a 1,283-word cell got built; it moves once, with f6 |
+| f6 *(material)* — the P-34 cell is ~1,283 words of v1.4→v1.18 litigation in a single table cell; the register makes the reader read the history it exists to spare them | **open** — this is charter §6.2's bounded P-34 packet, which was not written. It is a rewrite of one cell into a packet file plus a three-column row, with the chronology moving to `decisions/launch-gate/HISTORY.md`, and it carries f3 with it |
+| f5 *(material)* — `doctrine/v1.md`, the only file that says what the software would do, is not linked from README's "Start here" | **open** — a one-line addition to a doctrine-adjacent routing list, and the front door is exactly where an unreviewed "small" edit is expensive. Batched with f7/f9/f10 as one front-door pass with its own review |
+| f4 *(material)* — the 48-check battery reports 0 FAIL and catches none of f1–f3; a reader told "the battery is clean" over-reads it | **open** — the prescribed currency check (any file asserting a wave/gate state must match `PROJECT-STATUS.md` or carry the precedence banner) is a new check family with its own fixtures. It is the most valuable item in this section, because f2 recurring silently is the default outcome without it |
+| f7 *(minor)* — `decisions/` has no `README.md`, though README links the directory as a destination | **open** — front-door pass |
+| f8 *(minor)* — terms used before definition: `act`, `argument`, `wave`, `offer`, `P-nn`, `RD-nn`, `E1…E6` have no glossary anywhere on the routed path | **open** — process vocabulary has no home; the candidate `TERM-REGISTRY.md` covers product terms only. Naming its home is a decision, not an edit |
+| f9 *(minor)* — `OVERVIEW.md` sets a riddle ("Doctrine has a name for that corpus") 131 lines from the answer | **open** — front-door pass; `OVERVIEW.md` is a candidate awaiting its own owner act, so its bytes should move once |
+| f10 *(minor)* — a 2,059-line process instrument and the launch packet sit in the repository root, unmentioned by README | **open** — moving either changes paths that other artifacts and the sealed packet cite by name. Naming them in README's authority table is the cheap half and belongs to the front-door pass |
+| f12 | not a defect — RD-50 recorded zero marketing language across the front door as a positive finding. Nothing to dispose |
+
 ### The route and the exercise (RD-53)
 
 | Finding | Why still open |
@@ -103,6 +129,26 @@ its first review is this one.
 | f7 *(remainder)* — no `--check` predicate fails when the route diverges from `FIRST-OPENSPEC-SEQUENCE.md` rows 1.1–1.6 | the clause list was repaired by hand this pass, which means the defect can recur silently. This is the most valuable single check still unbuilt |
 | f8 *(material)* — pass criterion 3 is unfalsifiable, criteria 2 and 4 carry no threshold, and no criterion tests clause coverage | the exercise has now been administered once against these criteria. Changing them after a run and then quoting that run's grade would be exactly the "graded to taste" failure the exercise exists to avoid; the criteria should be revised **and the exercise re-administered** |
 | f9 *(minor)* — the route report is stale (ten decisions, not eleven), drops "Cost" from its RFC8-18 gloss, and calls a one-level union a transitive closure | pending the same regeneration |
+
+## Not a reviewer's finding — three sites the reviews' own arrival made false
+
+*Added 2026-08-11, from a sweep run when the charter was audited section by
+section. No reviewer raised these; obtaining RD-47 and RD-48 is what made
+them false, and the pass that obtained them did not sweep for their
+consequences. Recorded here because this is where a reader looks for what
+moved after the reviews.*
+
+| Site | What it said | What changed |
+|---|---|---|
+| `decisions/LAUNCH-GATE-AUTHORITY-DECISION.md` — the **P-34 owner packet** | *"Two reviews are required … and neither has been obtained … Status 2026-08-11: not dispatched"*, with two `[Unknown]` verdict rows, and option (a) recommended *"only after the two reviews return"* | both verdicts recorded as `REVISE` with their raw paths, dates and frozen commit; a one-line summary of what each found; option (a)'s condition shown as met in letter and failed in substance; option (c) *amend first* now carries the recommendation and the reviews' own change list. **This was the worst of the three** — the owner-facing packet for P-34 told the owner nobody had looked |
+| `FORMAL-CAPABILITY-1-LAUNCH-PACKET/README.md` §9 | *"The two v2.0 reviews. They have not been obtained"* | replaced with what they returned and why it matters to an administrator, kept inside §5's withholding rule so the disclosure does not become a channel for the reviewers' judgments |
+| `round-2026-08f/FINAL-CAPABILITY-1-READINESS-REPORT.md` conjunct 7 and step 7 | the conjunct said RD-48 confirmed *"the computed formula matches §4 conjunct for conjunct"* — **the reverse of RD-48 finding 2**, which measured a sixth computed conjunct §4 does not carry. The step list still said *"obtain the two v2.0 reviews"* | both corrected, the conjunct naming what RD-48 actually confirmed (no question, verdict word or trend column weakened) beside what it actually found |
+
+**Denominator.** Swept every tracked `.md` outside the frozen review lane
+for *"not been obtained"*, *"not yet been obtained"*, *"two required
+reviews"* and *"two v2.0 reviews"*; four hits in three files, all above,
+all resolved. `[Observed]` for the sweep; a sweep over phrasings is only as
+good as its phrase list, so this is not a claim that no fourth site exists.
 
 ## What this register does not do
 

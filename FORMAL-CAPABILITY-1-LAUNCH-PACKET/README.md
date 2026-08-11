@@ -56,8 +56,21 @@ sha256sum launch-gate-pre-specifications.md launch-gate-administration.schema.js
           scripts/validate_launch_administration.py scripts/render_launch_administration.py
 ```
 
-**If any digest differs, stop.** The packet is stale and the administration
-would bind bytes nobody offered. Report the mismatch rather than proceeding.
+**If any of the four sha256 digests differs, stop.** The packet is stale and
+the administration would bind bytes nobody offered. Report the mismatch
+rather than proceeding.
+
+**The repository commit is expected to have advanced, and that alone is not
+a mismatch.** *(Clarified 2026-08-11, RD-50 f11.)* Commit `5c3013f` above
+is where these four artifacts were sealed; the repository has continued to
+move for reasons that do not touch them. What binds is the four sha256
+digests — verify them at whatever commit you clone, record the commit you
+actually used in `repository_commit`, and note the divergence in
+`materials.deviations`. If the digests match but the sealed commit is not
+reachable in the clone's history, that *is* a mismatch: report it.
+*(Written as a 7-character git abbreviation, deliberately: the `<8 hex>…`
+form is reserved in this repository for a prefix of an artifact digest that
+binds an act, and a commit is not one.)*
 
 ## 3. How the record is produced
 
@@ -166,11 +179,27 @@ be **human spot-reviewed** before the record is treated as gate evidence:
   them, say so in `materials.deviations`.
 - **A recommended verdict.** There is none, and any document that offered
   one would be inviting the failure the gate exists to catch.
-- **The two v2.0 reviews.** They have not been obtained
-  (`.syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md` records
-  this). **P-34 is not approved**, so this administration would be run
-  under a *candidate* policy. That is disclosed here rather than discovered:
-  an administration under an unapproved instrument is evidence the owner may
+- **The two v2.0 reviews' findings.** *(Corrected 2026-08-11 — this section
+  previously said the reviews "have not been obtained". They have been, and
+  what they returned is disclosed here rather than discovered mid-run.)*
+  Both were obtained 2026-08-11 against frozen bytes, and **both returned
+  `REVISE`**: RD-48 on the policy's semantics, RD-47 on the schema and
+  validator. Their findings are **unrepaired**, and the material ones bear
+  on the instrument you are about to administer — §4 of the policy still
+  names record fields no v2.0 record has; the computed formula carries a
+  conjunct §4 does not state; the verdict word `NOT READY` is defined
+  nowhere in §1–§8 although the tool emits it. The raw files are
+  `.syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-47-…`
+  and `…/RD-48-…`, with the repair account in that directory's
+  `DISPOSITION-REGISTER.md`.
+  **Their content is withheld from you under §5 for every other purpose.**
+  Do not read them to inform an answer; this paragraph exists so that you
+  know the instrument is under unrepaired review, not so that you inherit
+  its reviewers' judgments. If you do read them, record it in
+  `materials.deviations`.
+  **P-34 is not approved**, so this administration would be run under a
+  *candidate* policy that two independent reviews have asked to revise. An
+  administration under an unapproved instrument is evidence the owner may
   weigh, and it is not the "launch-gate v2.0 is owner-approved" conjunct of
   the readiness standard.
 
