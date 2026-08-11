@@ -67,12 +67,16 @@ The live gates are `contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-
 | **Wave A** | **confirmed** — `VERDICT: CONFIRM` on argument `8972d963…` (RD-31b). **Offer withheld solely by P-33** |
 | **Wave B** | **confirmed** — `VERDICT: CONFIRM` on argument `193e3c1e…` (RD-32c). Nothing withholds it; it **follows Wave A** |
 | **Waves C1/C2/D1/D2** | deferred (`contracts/candidates/DEFERRED-WAVE-POSTURE.md`) |
-| **Launch gate** | **structured-record v2.0 candidate** — the record is JSON, the report is generated; approval is P-34, ungranted, and its two independent reviews are **not yet obtained** |
+| **Launch gate** | **structured-record v2.0 candidate** — the record is JSON, the report is generated; approval is P-34, ungranted. Its two independent reviews were obtained 2026-08-11 and **both returned `REVISE`** (RD-47, RD-48), so the packet is not offerable |
 | **OpenSpec** | forbidden until the owner's launch decision |
 
-No arm of P-33 preserves the Wave A confirmation: whichever is ruled, the
-Wave A exact-package gate re-runs on a regenerated argument
-(`round-2026-08f/P33-SEMANTIC-INSTALL-ANALYSIS.md`).
+Every P-33 arm drafted before 2026-08-11 moves at least one accepted byte,
+so under any of them the Wave A exact-package gate re-runs on a regenerated
+argument. **This file previously said "no arm preserves the confirmation",
+which was false** — the act's argument is the wave manifest's digest, and the
+install ceremony is in no manifest, so review RD-49's arm (1g) preserves both
+confirmations. The packet owns the arms and their costs
+(`decisions/WAVE-A-INSTALL-SHAPE-DECISION.md`).
 
 The round-2026-08b/08c/08d offerings are superseded where banner-marked;
 review RD-8 called routing an owner to a stale offering *"the finding that

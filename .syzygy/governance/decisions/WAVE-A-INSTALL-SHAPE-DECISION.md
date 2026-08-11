@@ -60,6 +60,23 @@ Options:
   Rejected: the ceremony's own invariant is "Installation, bytes
   unchanged", verified by `sha256sum -c`. An installed byte that differs
   from the accepted byte makes the digest verification meaningless.
+- **(1g)** *(added 2026-08-11 by review RD-49, which found the arm space
+  incomplete)* **Drop the companion copies and do not repair the
+  references**; carry both manifests inside the owner-act record rather
+  than in `contracts/`. The `contracts/` cell then holds `rfcs/` and
+  nothing else, so it is satisfied **literally, with no amendment at all**.
+  This is (1c) with its second half removed — and the coupling in (1c)
+  ("drop the copies *and repair the backlinks*") was never argued. The
+  supporting analysis argues against it twice, in its own words: the
+  dependency is *"navigational, not semantic"*, and what a copy preserves
+  is *"the resolution of a relative link"*, not access to the rationale,
+  which the candidates tree keeps regardless.
+  **Its cost, stated plainly:** 87 code-span path strings in the installed
+  tree point at files that are not beside them. Nothing renders them —
+  RD-49 measured 0 of 87 as markdown links — so a reader follows them by
+  hand and lands nowhere, while the same paths resolve in any clone of this
+  repository. **Its price in confirmations is zero**, which is the reason
+  it belongs in the space whatever the owner thinks of dangling strings.
 
 **What every arm costs, measured** *(added 2026-08-11 — this table did not
 exist when the (1d) recommendation was made, and it changes the answer)*.
@@ -75,11 +92,32 @@ elsewhere requires rewriting all of them.
 | (1c) drop the copies | 19 A + 11 B | retired | retired |
 | (1d) mint `contracts-companion/` | **1 + 19 A + 11 B** | retired | retired |
 | (1e) typed closed enumeration | **1** | retired | **survives** |
+| **(1g)** drop the copies, leave the references | **0** | **survives** | **survives** |
 
-**There is no arm that preserves the current confirmations.** Whichever is
-ruled, at least the Wave A exact-package gate re-runs on a regenerated
-argument. The arms differ in how many modules move and what the tree means
-afterwards.
+**Corrected 2026-08-11 by review RD-49.** This packet previously said, in
+bold, *"There is no arm that preserves the current confirmations."* **That
+was false, it was unlabelled, and it was the packet's headline.** The Wave A
+act's argument is `sha256(wave-manifests/WAVE-A-MANIFEST.txt)`, and that
+manifest is nineteen per-module digest rows and nothing else; the install
+ceremony lives in the acceptance record, which is in no manifest and feeds
+no argument. So an arm that changes only the ceremony moves no accepted byte
+and retires no confirmation. Re-verified here at this revision: the manifest
+carries 19 digest rows, the acceptance record appears in no manifest, and
+the current argument still computes to `8972d963…`.
+
+What is true, and is all that was ever measured: **every arm drafted before
+RD-49 moves at least one accepted byte**, so under any of (1a)–(1f) the Wave
+A exact-package gate re-runs on a regenerated argument. `[Observed]` for the
+digest derivation; `[Inferred]` for each arm's consequence, which is a
+prediction about bytes that have not moved yet.
+
+The false claim also propagated. It is corrected at
+`../contracts/candidates/round-2026-08f/CAPABILITY-1-OWNER-DECISION-PACKET.md`,
+in `AGENTS.md`, and in
+`../contracts/candidates/round-2026-08f/FINAL-CAPABILITY-1-READINESS-REPORT.md`.
+Those three were the whole population: swept 2026-08-11 over every tracked
+`.md` outside the frozen review lane, which is where RD-49's own quotation
+of the false sentence lives and stays.
 
 **Recommendation `[Inferred]` (replaced 2026-08-11, owner charter §7):
 (1e)** — it moves one module instead of thirty, retires one confirmation

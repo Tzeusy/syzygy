@@ -52,6 +52,10 @@ Verify before acting — the digest belongs to the artifact, not to this
 page:
 
 ```sh
+# from the repository root — both artifacts live there, and this packet
+# does not. Run from anywhere else and you get "No such file or directory",
+# which reads like a missing artifact rather than a wrong directory.
+cd "$(git rev-parse --show-toplevel)"
 sha256sum launch-gate-pre-specifications.md launch-gate-administration.schema.json
 ```
 

@@ -42,6 +42,66 @@ C = ".syzygy/governance/contracts/candidates"
 #: of the module that must define it (validated). `deps` is derived, not
 #: listed here. Routes marked deferred=True route into deferred-wave
 #: candidates and say so (DEFERRED-WAVE-POSTURE.md).
+def _read(rel):
+    return (REPO / rel).read_text(encoding="utf-8")
+
+
+#: RD-53 f6: the router claimed "zero of the 30 Waves A+B modules" and
+#: claimed, one line later, that its counts are computed. Both figures were
+#: literals. They are derived here, from the two wave manifests and from a
+#: sweep over the modules those manifests name, so the sentence goes stale
+#: loudly — if P-37 is ruled and the vocabulary is drafted into a contract,
+#: this count moves and `--check` fails.
+#:
+#: The sweep is for the facet NAMES, not for the English word "facet": the
+#: word occurs generically in RFC-0006 and RFC-0008 and would make the
+#: measurement useless. A name matching here means a contract module has
+#: begun to carry the vocabulary.
+FACET_NAMES = ("Shape present", "Human-understandable", "Mission-ready",
+               "shape facet", "project-shape facet")
+
+
+def _wave_ab_modules():
+    mods = []
+    for wave in ("A", "B"):
+        man = f"{C}/wave-manifests/WAVE-{wave}-MANIFEST.txt"
+        for line in _read(man).splitlines():
+            parts = line.split()
+            if len(parts) == 2 and len(parts[0]) == 64:
+                mods.append(parts[1])
+    return mods
+
+
+def _facet_carrying_modules():
+    hits = []
+    for rel in _wave_ab_modules():
+        path = rel if rel.startswith(".syzygy/") else f"{C}/{rel}"
+        try:
+            body = _read(path)
+        except OSError:
+            continue
+        if any(name.lower() in body.lower() for name in FACET_NAMES):
+            hits.append(rel)
+    return hits
+
+
+AB_MODULE_COUNT = len(_wave_ab_modules())
+FACET_HITS = _facet_carrying_modules()
+
+
+def _clause_range(rel, prefix):
+    ids = sorted(int(m) for m in re.findall(
+        rf"\*\*{prefix}-([0-9]+)\b", _read(rel)))
+    return (f"{prefix}-{ids[0]}…{ids[-1]}" if ids else f"no {prefix} clause")
+
+
+CC_SPEC_RANGE = _clause_range(
+    f"{C}/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md",
+    "CC-SPEC")
+CC_IMPACT_RANGE = _clause_range(
+    f"{C}/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md",
+    "CC-IMPACT")
+
 TASKS = [
     dict(
         key="evidence-adapter",
@@ -266,52 +326,96 @@ TASKS = [
         note="**Authoring is forbidden today.** This route exists so the "
              "rules are reachable *before* the owner's launch decision, "
              "not so a spec can be written. `openspec/` does not exist and "
-             "may not be created. Every blocking owner decision is named "
-             "below; none is ruled.",
+             "may not be created. Every clause below is **candidate** — "
+             "Waves A and B are confirmed and unaccepted, so each module's "
+             "own banner (\"absent such a record, this contract binds "
+             "nothing\") governs every citation here. The decisions named "
+             "below are the ones this route can see; none is ruled.",
         clauses={
             # project identity and governance root
             "RFC1-1": f"{C}/rfcs/RFC-0001-project-graph-identity-state-planes.md",
             "RFC1-4": f"{C}/rfcs/RFC-0001-project-graph-identity-state-planes.md",
-            # project declaration, consent and repository coverage
+            "RFC1-3": f"{C}/rfcs/RFC-0001-project-graph-identity-state-planes.md",
+            # project declaration, its closed field set, consent, and what an
+            # invalid declaration does — RD-53 f7: the module was loaded and
+            # these four were unnamed, so row 1.1 had no cited authority
+            "RFC3-1": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
             "RFC3-4": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
+            "RFC3-5": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
+            "RFC3-6": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
             "RFC3-7": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
+            "RFC3-9": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
+            # the owner-act provenance predicate every loaded module defers
+            # to — RD-53 f2: RFC3-7's stored attribution is honored only
+            # under RFC3-16(a), and its module was not in the load set
+            "RFC3-16": f"{C}/rfcs/RFC-0003/governance-homes-and-owner-acts.md",
             # Unknown reason vocabulary
             "RFC2-24": f"{C}/rfcs/RFC-0002/rendering-vocabularies.md",
-            # shared human/machine answer facts
+            # admission boundary for observed repository content
+            "RFC5-3": f"{C}/rfcs/RFC-0005/admission-and-boundary.md",
+            # one truth two consumers; label parity; aggregation discloses;
+            # one drawer one fact set; unconsented renders as policy.
+            # RD-53 f1: this is the anti-rollup ground and the human/machine
+            # parity ground, and RFC6-17 is cited-never-restated by three of
+            # the modules already loaded, so it was unreachable from here
+            "RFC6-13": f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+            "RFC6-14": f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+            "RFC6-17": f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+            "RFC6-18": f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+            "RFC6-19": f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+            "RFC6-26": f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+            # what this package's distinctions owe every rendering
             "RFC7-33": f"{C}/rfcs/RFC-0007/rendering-and-surface.md",
             # fixed human entry; repository discoverability
             "RFC7-39": f"{C}/rfcs/RFC-0007/rendering-and-surface.md",
             "RFC7-40": f"{C}/rfcs/RFC-0007/rendering-and-surface.md",
-            # anti-rollup semantics; absence is Unknown, never zero
+            # COST renders as independent measures, and an absent measure is
+            # Unknown, never zero. RD-53 f1: these are cost-scoped and were
+            # standing in for the general anti-rollup ground, which is
+            # RFC6-18/6-19's
             "RFC8-18": f"{C}/rfcs/RFC-0008/state-vocabulary-and-cost.md",
             "RFC8-19": f"{C}/rfcs/RFC-0008/state-vocabulary-and-cost.md",
         },
         modules=[
+            # what the capability must do — RD-53 f10 and G1: the route had
+            # no document stating its own scope
+            f"{C}/FIRST-OPENSPEC-SEQUENCE.md",
+            f"{C}/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md",
             f"{C}/rfcs/RFC-0001-project-graph-identity-state-planes.md",
             f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
+            f"{C}/rfcs/RFC-0003/governance-homes-and-owner-acts.md",
             f"{C}/rfcs/RFC-0002/rendering-vocabularies.md",
+            f"{C}/rfcs/RFC-0005/admission-and-boundary.md",
+            f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
             f"{C}/rfcs/RFC-0007/rendering-and-surface.md",
             f"{C}/rfcs/RFC-0008/state-vocabulary-and-cost.md",
         ],
         doctrine=[("VIS-2", f"{D}/vision.md"), ("VIS-4", f"{D}/vision.md"),
                   ("VIS-5", f"{D}/vision.md")],
         craft=[],
-        blocking_decisions=["P-33", "P-31", "P-36", "P-37", "P-38", "P-39",
-                            "P-40", "P-41", "P-42", "P-34", "P-35"],
+        # RD-53 f5: the two wave acts and the three rulings that ride them
+        # were absent, and P-34/P-35 were listed here though the queue's own
+        # launch-scope index assigns them to the administration gate.
+        blocking_decisions=["P-1", "P-33", "P-31", "P-37", "P-21", "P-28",
+                            "P-22", "P-38", "P-36", "P-39", "P-40", "P-41",
+                            "P-42"],
+        downstream_decisions=["P-34", "P-35"],
         omissions=[
             "Every Mission and Context-selection contract — RFC-0010 and "
             "RFC-0011 — is excluded. They are DEFERRED-WAVE candidates and "
             "Capability 1 relies on none of them; the Mission-ready facet "
             "is a future extension, not a launch facet",
-            "The specification-acceptance rules (CC-SPEC-1…10) and the "
-            "shape-to-spec impact rules (CC-IMPACT-1…7) are CANDIDATE "
+            f"The specification-acceptance rules ({CC_SPEC_RANGE}) and the "
+            f"shape-to-spec impact rules ({CC_IMPACT_RANGE}) are CANDIDATE "
             "craft policy, in force from neither. They are routed as "
             "prerequisites, never cited as binding — which is why they are "
             "not listed under Craft above",
-            "The facet vocabulary itself is routed to no clause: it "
-            "appears in zero of the 30 Waves A+B modules, and P-37 decides "
-            "whether the Capability 1 specification owns it or Wave A must "
-            "be amended to",
+            "The facet vocabulary itself is routed to no clause: swept at "
+            f"generation over the {AB_MODULE_COUNT} modules the Waves A+B "
+            f"manifests name, it appears in {len(FACET_HITS)} of them, and "
+            "P-37 decides whether the Capability 1 specification owns it or "
+            "Wave A must be amended to. The sweep is for the facet names, "
+            "not for the English word \"facet\", which occurs generically",
         ],
     ),
     dict(
@@ -349,6 +453,34 @@ def module_deps(paths):
     return sorted(deps)
 
 
+#: The identifiers a route may name as blocking. Two populations qualify:
+#: rows in the queue's open table, and the unperformed acceptance acts —
+#: P-41 and P-42 are themselves craft acts, so excluding acts would be
+#: inconsistent. Everything under a "Resolved…" heading, and every row
+#: carrying `**Executed.**`, is disqualified: RD-53 proved that the old
+#: whole-file anchor accepted P-6, P-7, P-13 and P-26 — all executed — and
+#: rendered them under the words "each verified open".
+def queue_disposable_ids():
+    text = read(f"{DEC}/PENDING-OWNER-DECISIONS.md")
+    ids = set()
+    for chunk in re.split(r"^## ", text, flags=re.M)[1:]:
+        heading = chunk.split("\n", 1)[0]
+        if heading.startswith("Resolved"):
+            continue
+        for line in chunk.splitlines():
+            m = re.match(r"\|\s*(P-[0-9]+(?:\([a-z]\))?)\s*\|", line)
+            if m and "**Executed.**" not in line:
+                ids.add(m.group(1))
+    return ids
+
+
+#: A non-deferred route may not reach deferred-wave content. RD-53 proved
+#: the old fixture named for this check tested something else entirely:
+#: injecting real RFC-0010 and RFC-0011 modules into the Capability 1 load
+#: set validated clean and rendered them into the Load line.
+DEFERRED_RE = re.compile(r"/rfcs/RFC-001[01]\b")
+
+
 def validate(tasks):
     errs = []
     for t in tasks:
@@ -374,11 +506,29 @@ def validate(tasks):
         # is actually OPEN in the queue. A decision named here but already
         # ruled would understate what a reader may do; one named here but
         # absent from the queue is a decision nobody is tracking.
-        for pid in t.get("blocking_decisions", []):
-            queue = read(f"{DEC}/PENDING-OWNER-DECISIONS.md")
-            if not re.search(rf"^\|\s*{re.escape(pid)}\s*\|", queue, re.M):
-                errs.append(f"{t['key']}: blocking decision {pid} has no "
-                            f"row in {DEC}/PENDING-OWNER-DECISIONS.md")
+        disposable = queue_disposable_ids()
+        for key in ("blocking_decisions", "downstream_decisions"):
+            for pid in t.get(key, []):
+                if pid not in disposable:
+                    errs.append(
+                        f"{t['key']}: {key} names {pid}, which is not an "
+                        f"open row or an unperformed act in "
+                        f"{DEC}/PENDING-OWNER-DECISIONS.md — it is absent, "
+                        f"resolved, or already executed")
+        # A route that is not itself the deferred-wave route may not route
+        # into a deferred wave, by module or by clause home.
+        if not t.get("deferred"):
+            for rel in list(t["modules"]) + list(t["clauses"].values()):
+                if DEFERRED_RE.search(rel):
+                    errs.append(
+                        f"{t['key']}: routes into deferred-wave content "
+                        f"({rel}); RFC-0010 and RFC-0011 are deferred and "
+                        f"belong to no launch-path route")
+            for dep in module_deps(t["modules"]):
+                if dep in ("RFC-0010", "RFC-0011"):
+                    errs.append(
+                        f"{t['key']}: a routed module declares a dependency "
+                        f"on {dep}, which is deferred")
     return errs
 
 
@@ -396,7 +546,8 @@ def render(tasks):
         "> as the routing answer; `06-CONTEXT-LOAD-MAP.md` remains the",
         "> context-budget instrument.",
         "",
-        "Three routes are **permanent routing regression fixtures** (the",
+        f"{sum(1 for t in tasks if t.get('fixture'))} routes are "
+        "**permanent routing regression fixtures** (the",
         "launch-gate parameter block's fixed D2 tasks); they are marked and",
         "`--selftest` proves their mutation is caught.",
         "",
@@ -426,10 +577,21 @@ def render(tasks):
             lines.append("**Craft:** " + ", ".join(
                 f"`{i}`" for i, _ in t["craft"]))
         if t.get("blocking_decisions"):
-            lines.append("**Owner decisions still blocking:** " + ", ".join(
-                f"`{p}`" for p in t["blocking_decisions"])
-                + " — each verified open in the pending queue at "
-                  "generation time")
+            lines.append("**Owner decisions and acts blocking this task:** "
+                         + ", ".join(f"`{p}`"
+                                     for p in t["blocking_decisions"])
+                         + " — each checked at generation time against the "
+                           "queue's open table and its unperformed acts; a "
+                           "resolved or executed row is refused")
+        if t.get("downstream_decisions"):
+            lines.append("**Open upstream of this task, at a later gate:** "
+                         + ", ".join(f"`{p}`"
+                                     for p in t["downstream_decisions"])
+                         + " — the queue's launch-scope index assigns these "
+                           "to the formal launch administration, not to "
+                           "authoring; they are named so the reader is not "
+                           "surprised by them, not because this task "
+                           "consumes them")
         for o in t["omissions"]:
             lines.append(f"**Explicitly omitted:** {o}")
         lines.append("")
@@ -448,7 +610,10 @@ def main():
         import copy
         fails = []
 
+        seen = []
+
         def case(name, mutate, expect):
+            seen.append(name)
             ts = copy.deepcopy(TASKS)
             mutate(ts)
             errs = validate(ts)
@@ -488,18 +653,38 @@ def main():
                    if t["key"] == "author-capability-1")
         case("Capability 1 route: an unqueued blocking decision detected",
              lambda ts: ts[cap]["blocking_decisions"].append("P-999"),
-             "has no row in")
+             "which is not an open row")
         case("Capability 1 route: a clause routed to the wrong module "
              "detected",
              lambda ts: ts[cap]["clauses"].update(
                  {"RFC7-39": f"{C}/rfcs/RFC-0008/state-vocabulary-and-cost.md"}),
              "not defined in")
+        # RD-53 f3: the case that used to carry this name mutated `clauses`
+        # and asserted "not defined in" — the predicate two cases above it.
+        # It now mutates `modules` with a real deferred module, which is the
+        # thing the name says, and it fails only against the new predicate.
         case("Capability 1 route: a deferred-wave module in the load set "
              "detected",
+             lambda ts: ts[cap]["modules"].append(
+                 f"{C}/rfcs/RFC-0011/deterministic-selection-and-budget.md"),
+             "routes into deferred-wave content")
+        case("Capability 1 route: a deferred-wave clause home detected",
              lambda ts: ts[cap]["clauses"].update(
-                 {"RFC10-5": f"{C}/rfcs/RFC-0007/rendering-and-surface.md"}),
-             "not defined in")
-        n = 9
+                 {"RFC10-5":
+                  f"{C}/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md"}),
+             "routes into deferred-wave content")
+        # RD-53 f4: P-26 is a recorded owner override — an executed row in a
+        # "Resolved…" section. The old whole-file anchor accepted it and
+        # rendered it as "verified open".
+        case("Capability 1 route: an already-executed decision named as "
+             "blocking detected",
+             lambda ts: ts[cap]["blocking_decisions"].append("P-26"),
+             "resolved, or already executed")
+        case("Capability 1 route: a later-gate decision named as executed "
+             "detected",
+             lambda ts: ts[cap]["downstream_decisions"].append("P-7"),
+             "resolved, or already executed")
+        n = len(seen)
         print(f"{n} fixtures, {len(fails)} failing — a check that cannot "
               "fail is not a check")
         sys.exit(1 if fails else 0)

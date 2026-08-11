@@ -34,11 +34,18 @@ formal administration** (the administration is run under the policy P-34
 approves). Everything else is ordered by cost, not by logic — each is
 cheaper before a re-offer than after one.
 
-**One fact governs the whole page: there is no arm of P-33 that preserves
-the current Wave A confirmation.** Whatever is ruled, the Wave A
-exact-package gate re-runs on a regenerated argument. That is not a reason
-to delay the ruling — it is the reason to batch P-31 and P-37 into the same
-regeneration.
+**Corrected 2026-08-11 by review RD-49.** This page opened with "there is
+no arm of P-33 that preserves the current Wave A confirmation". That was
+false. The act's argument is the wave manifest's digest — nineteen module
+rows — and the install ceremony lives in the acceptance record, which is in
+no manifest. Arm **(1g)**, which RD-49 added, changes only the ceremony and
+therefore retires **no** confirmation.
+
+What is true: `[Inferred]` **every arm drafted before RD-49** moves at least
+one accepted byte, so under (1a)–(1f) the Wave A exact-package gate re-runs
+on a regenerated argument — which is why, if one of those is ruled, P-31 and
+P-37 are cheaper batched into the same regeneration. Under (1g) there is no
+regeneration to batch into, and that trade is the owner's to weigh.
 
 ---
 
@@ -75,7 +82,7 @@ Analysis, with method and denominators: `P33-SEMANTIC-INSTALL-ANALYSIS.md`.
 |---|---|
 | **Question** | Does the observable facet vocabulary belong to the Capability 1 specification, or to shared contract semantics? |
 | **Current authority** | none — the vocabulary appears in **zero** of the 30 Waves A+B modules (swept, RD30-01), while three launch-path documents claimed the Wave A act ratifies it |
-| **Recommendation** | `[Inferred]` **(a)** — the **Capability 1 specification owns the observable facet vocabulary**; Wave A owns the underlying constituent facts and evaluation semantics. Core facets: Registered · Shape present · Human-understandable · Observable · Traceable · Reconciled. *Mission-ready* is a future extension facet, after the deferred Context/Mission contracts are accepted |
+| **Recommendation** | `[Inferred]` **(a)** — the **Capability 1 specification owns the observable facet vocabulary**; Wave A owns the underlying constituent facts and evaluation semantics. **Seven** facets, per the linked packet, which wins over this row: Registered · Shape present · Human-understandable · Observable · Traceable · Reconciled · **Mission-ready**. *(Corrected 2026-08-11 by RD-52: this row said six and demoted Mission-ready to "a future extension", contradicting the packet's rule 3 — which is that **Mission-ready renders `not evaluated / deferred / Unknown`** until the C/D-wave semantics exist, because "a deferred facet renders its deferral honestly rather than waiting invisible". The difference is operational: seven rows render, one of them honestly deferred; six rows render and the seventh is silent, which is the invisible wait VIS-2 forbids.)* |
 | **Consequence** | **No rollup.** Each facet exposes its constituent facts and reasons; no facet composes into a maturity or compliance score. If the owner instead wants facets to be shared contract semantics, **Wave A must be amended, regenerated, and freshly confirmed** |
 | **Digest invalidated** | (a): none. The contract-semantics alternative: Wave A |
 | **Earliest gate** | cheapest before the Wave A re-offer; strictly required before Capability 1 is authored |
