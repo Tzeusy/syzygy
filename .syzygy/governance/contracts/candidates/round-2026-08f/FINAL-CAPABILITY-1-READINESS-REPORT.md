@@ -123,18 +123,25 @@ argument against trusting them as a substitute for a reader.
 
 ## Hosted CI and clone truth
 
-Hosted CI is **observable and green** at the commit this pass began from —
-`gh run list` reports run `31433784576`, conclusion `success`, head
-`4aa221b`. The charter's `Unknown` fallback does not fire.
+Hosted CI is **observable and green** at this pass's final commit —
+`governance-docs` run `31452287396`, conclusion `success`, head `5e8b286`.
+The charter's `Unknown` fallback does not fire.
 
-Its denominator, stated: the hosted workflow used to run **four** checks. It
-now runs **eleven**, including the budget report, all four selftests, and
-the worked record's regeneration check, with full history so that
-commit-resolving checks are red when they fail rather than silently
-unrunnable. Before this pass, a green hosted run was evidence about four
-checks; a reader who took it for the battery was over-reading it.
+Its denominator, stated, because it moved twice in this pass: the hosted
+workflow ran **four** checks when the pass began and runs **fourteen** now —
+the budget report, the wave-manifest and task-router drift checks, the
+router's selftest, all four checker selftests, and the worked record's
+validation and regeneration — with full history, so that commit-resolving
+checks are red when they fail rather than silently unrunnable. Before this
+pass a green hosted run was evidence about four checks. It was still short by
+three for most of this pass, including the one check that would notice a
+misrouted reader, and the workflow now declares that its step list must track
+the published battery.
 
-Clean-clone evidence at the final commit: `FINAL-PUBLIC-CLONE-REPORT.md`.
+Clean-clone evidence at the final commit — the fourteen checks verbatim, the
+eighteen declared WARNs, the seven check families with no fixture, and the
+hosted run as an independent second method under a different interpreter:
+`FINAL-PUBLIC-CLONE-REPORT.md`.
 
 ---
 
