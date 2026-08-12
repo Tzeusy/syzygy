@@ -1,5 +1,19 @@
 # P-33 — the Wave A install shape, analysed by semantic class
 
+> # SUPERSEDED — historical, 2026-08-13
+>
+> **This analysis is superseded by
+> `../round-2026-08g/P33-SEMANTIC-INSTALL-ANALYSIS.md`** and is kept only
+> because reviews and registers cite it. Review **RD-49** returned `REVISE`
+> over it with three findings marked BLOCKING; the successor re-derives the
+> decision from the clauses rather than patching this text, because RD-49's
+> own finding was that sentence-by-sentence patching produced the defects.
+>
+> **Do not rule from this file.** Its arm space is incomplete, its
+> recommendation of (1e) is withdrawn, and its two recommendations were
+> mutually inconsistent. The measurement it carries is correct and was
+> independently reproduced.
+
 > **Analysis, not a decision.** P-33 is the owner's, and this file rules
 > nothing. It exists because the owner charter of 2026-08-11 (§7) directed
 > that the packet be rebuilt on **what the material is**, not on where it

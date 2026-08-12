@@ -1,190 +1,188 @@
-# Owner decision packet — Wave A installation shape (P-33, current packet)
+# Owner decision packet — Wave A installation shape (P-33)
 
-> **This file decides nothing.** It is the current packet for **P-33**
-> (queued 2026-08-09 from review RD-18's blocking finding B2 and major
-> M5); the register row still owns the queue entry. It must be ruled
-> **before Wave A is re-offered**: both defects are properties of the
-> install ceremony an act would freeze, unrepairable after binding.
+> **This file decides nothing.** It is the bounded packet for **P-33**, the
+> single decision withholding the offer of an already-confirmed Wave A.
+>
+> *Rewritten 2026-08-13 as a bounded packet after review **RD-49** returned
+> `REVISE` with three findings marked BLOCKING, one of which was that an owner
+> could not rule from the previous version at all. The arm-by-arm history —
+> six arms, a withdrawn recommendation, a false headline — is **not restated
+> here**. The measurement and clause derivation behind every figure is
+> `../contracts/candidates/round-2026-08g/P33-SEMANTIC-INSTALL-ANALYSIS.md`.*
 
-## The principle at stake
+## Question
 
-The accepted contract home must not violate its own closed category
-rules. RFC3-15's `contracts/` row says the home holds accepted contract
-content **exclusively** — and the ceremony as written copies non-contract
-companions (`history/`, `matrix-rows/`, two generated reports, the
-manifests) into it. Companions are legitimate as **generated navigation,
-historical rationale, and review evidence** — but they are not accepted
-contract content, and either the ceremony or the clause must move.
+When a wave act installs its accepted contract modules, **what else goes into
+`.syzygy/governance/contracts/`, and does anything move that an act has
+already bound?**
 
-## Question 1 — the `contracts/` containment breach (RD-18 B2)
+## Current authority
 
-Options:
+Candidate clause **RFC3-15** (`RFC-0003/governance-homes-and-owner-acts.md`),
+the `contracts/` row, quoted exactly:
 
-- **(1a)** Install companions **outside** `governance/` (e.g. a
-  non-governance `contracts-companion/` home) — keeps RFC3-15 pristine;
-  backlinks repoint; the governed tree's reading paths cross a directory
-  boundary.
-- **(1b)** **Widen what the existing `contracts/` category may contain**
-  by owner amendment to RFC3-15's `contracts/` cell. *(Restated
-  2026-08-10, RD30-06 — an earlier form of this option claimed
-  RFC3-15(a) provides this route. It does not: RFC3-15(a) records the
-  precedent for minting a **new category** "by owner amendment rather
-  than by stretching a category's 'exclusively'", and widening an
-  existing cell's contents is exactly the stretching move the clause
-  warns against. The option remains lawful — any owner amendment is —
-  but its earlier justification was false.)*
-- **(1c)** Drop the companion copies from the ceremony and repair the
-  modules' backlinks to point at the candidates tree — smallest install,
-  but the accepted tree's Tier-2 rationale links then leave the governed
-  tree permanently.
-- **(1d)** **Mint a new constitutional category for companion material**
-  (e.g. `contracts-companion/` *inside* `governance/`) by RFC3-15(a)'s
-  own recorded-widening route — the B19 precedent applied as written: a
-  new named category with its own row, declared non-normative and
-  outside every digest set, rather than a stretched `contracts/` cell.
-  *(Added 2026-08-10, RD30-06 — the option the clause's recorded
-  precedent actually implies, previously absent from this packet.)*
+> | `contracts/` | Accepted load-bearing contracts (RFCs), including normative
+> data contracts and external service contracts | …
 
-- **(1e)** *(added 2026-08-11, owner charter §7 — the typed arm)* **Type
-  the cell rather than widen it vaguely**: amend RFC3-15's `contracts/`
-  cell to a **closed enumeration of three occupant classes** — accepted
-  contract modules (`rfcs/`), integrity-bearing manifests
-  (`wave-manifests/`), and one explicitly named **non-normative resolution
-  lane** holding `history/`, `matrix-rows/` and the two generated reports,
-  each declared outside every digest set and each carrying its own
-  "nothing here binds" statement. A closed enumeration is not a stretched
-  category.
-- **(1f)** *(added 2026-08-11; named so the space is visibly searched, and
-  **rejected**)* Let the ceremony rewrite the relative references while
-  copying, so accepted bytes stay put and installed links resolve.
-  Rejected: the ceremony's own invariant is "Installation, bytes
-  unchanged", verified by `sha256sum -c`. An installed byte that differs
-  from the accepted byte makes the digest verification meaningless.
-- **(1g)** *(added 2026-08-11 by review RD-49, which found the arm space
-  incomplete)* **Drop the companion copies and do not repair the
-  references**; carry both manifests inside the owner-act record rather
-  than in `contracts/`. The `contracts/` cell then holds `rfcs/` and
-  nothing else, so it is satisfied **literally, with no amendment at all**.
-  This is (1c) with its second half removed — and the coupling in (1c)
-  ("drop the copies *and repair the backlinks*") was never argued. The
-  supporting analysis argues against it twice, in its own words: the
-  dependency is *"navigational, not semantic"*, and what a copy preserves
-  is *"the resolution of a relative link"*, not access to the rationale,
-  which the candidates tree keeps regardless.
-  **Its cost, stated plainly:** 87 code-span path strings in the installed
-  tree point at files that are not beside them. Nothing renders them —
-  RD-49 measured 0 of 87 as markdown links — so a reader follows them by
-  hand and lands nowhere, while the same paths resolve in any clone of this
-  repository. **Its price in confirmations is zero**, which is the reason
-  it belongs in the space whatever the owner thinks of dangling strings.
+and its framing sentence:
 
-**What every arm costs, measured** *(added 2026-08-11 — this table did not
-exist when the (1d) recommendation was made, and it changes the answer)*.
-Swept over all 39 candidate modules: **19 of 19 Wave A modules and 11 of 11
-Wave B modules carry code-span links into `history/`** — 68 references
-across the 30 launch-path modules. Any arm that moves the companions
-elsewhere requires rewriting all of them.
+> The **five** constitutional categories of `.syzygy/governance/` hold,
+> **exclusively** … A plane validator therefore accepts exactly these six
+> names and **rejects a seventh**.
 
-| Arm | Modules whose bytes move | Wave A confirmation (RD-31b) | Wave B confirmation (RD-32c) |
-|---|---|---|---|
-| (1a) outside `governance/` | 19 A + 11 B | retired | retired |
-| (1b) widen the cell | **1** | retired | **survives** |
-| (1c) drop the copies | 19 A + 11 B | retired | retired |
-| (1d) mint `contracts-companion/` | **1 + 19 A + 11 B** | retired | retired |
-| (1e) typed closed enumeration | **1** | retired | **survives** |
-| **(1g)** drop the copies, leave the references | **0** | **survives** | **survives** |
+The install ceremony as currently written copies six classes of companion into
+that home. **One of the six is admitted by those words.** A wave manifest is
+not an RFC; neither is a history file, a matrix-row file, or a generated
+report. Either the ceremony changes or the clause does.
 
-**Corrected 2026-08-11 by review RD-49.** This packet previously said, in
-bold, *"There is no arm that preserves the current confirmations."* **That
-was false, it was unlabelled, and it was the packet's headline.** The Wave A
-act's argument is `sha256(wave-manifests/WAVE-A-MANIFEST.txt)`, and that
-manifest is nineteen per-module digest rows and nothing else; the install
-ceremony lives in the acceptance record, which is in no manifest and feeds
-no argument. So an arm that changes only the ceremony moves no accepted byte
-and retires no confirmation. Re-verified here at this revision: the manifest
-carries 19 digest rows, the acceptance record appears in no manifest, and
-the current argument still computes to `8972d963…`.
+## The one thing worth knowing before you read the options
 
-What is true, and is all that was ever measured: **every arm drafted before
-RD-49 moves at least one accepted byte**, so under any of (1a)–(1f) the Wave
-A exact-package gate re-runs on a regenerated argument. `[Observed]` for the
-digest derivation; `[Inferred]` for each arm's consequence, which is a
-prediction about bytes that have not moved yet.
+The Wave A act's argument is `sha256(WAVE-A-MANIFEST.txt)`, and that manifest
+is **19 per-module digest rows and nothing else**. So:
 
-The false claim also propagated. It is corrected at
-`../contracts/candidates/round-2026-08f/CAPABILITY-1-OWNER-DECISION-PACKET.md`,
-in `AGENTS.md`, and in
-`../contracts/candidates/round-2026-08f/FINAL-CAPABILITY-1-READINESS-REPORT.md`.
-Those three were the whole population: swept 2026-08-11 over every tracked
-`.md` outside the frozen review lane, which is where RD-49's own quotation
-of the false sentence lives and stays.
+> **A confirmation retires if and only if the arm edits a file that is a row
+> in a wave manifest.** The ceremony text is in no manifest.
 
-**Recommendation `[Inferred]` (replaced 2026-08-11, owner charter §7):
-(1e)** — it moves one module instead of thirty, retires one confirmation
-instead of two, keeps every reference resolving without touching an
-accepted reference, and states what the tree contains instead of stretching
-a category.
+RFC3-15 and RFC3-20 both live in `RFC-0003`, which **is** a Wave A row. So
+*any arm that amends either clause retires Wave A's confirmation* — and any arm
+that rewrites the modules' internal path strings retires both.
 
-*The 2026-08-10 recommendation of (1d) is withdrawn.* It was reasoned from
-RFC3-15(a)'s precedent, which is sound as far as it goes, but it was made
-without the reference measurement above: **(1d) is the most expensive arm
-in the space** — an RFC3-15 amendment *and* a 68-reference rewrite, because
-a category minted at `governance/contracts-companion/` is not where
-the `../../history/` reference inside an installed RFC-0002 README
-lands. (1b)
-remains offerable and is (1e) without the closed enumeration; (1d) remains
-offerable at its now-stated cost.
+**Choosing where a companion goes, or declining to install it, costs nothing.**
 
-**Honest counter-argument to the recommendation.** (1e) keeps historical
-rationale and generated measurements inside the contract home, under a
-name. The charter's typing would send them out of it entirely. The reason
-(1e) does not is the 68 references, which is a cost argument, not a
-principled one. An owner who values the clean type boundary above that cost
-should take (1a) or (1c) with the two-wave re-review priced in — and that
-is a legitimate ruling, not a mistake.
+## Options
 
-Supporting measurement, method and denominators:
-`../contracts/candidates/round-2026-08f/P33-SEMANTIC-INSTALL-ANALYSIS.md`.
+Both options put accepted modules at `contracts/rfcs/` and nothing else in
+`contracts/`; both are typed, and both satisfy RFC3-15 **with no amendment**.
+They differ on one axis only.
 
-## Question 2 — the 39-row manifest at the first act (RD-18 M5)
+### (M) Leave the modules' internal path strings alone — *recommended*
 
-The first wave act installs `ACTIVE-CONTRACT-MANIFEST.txt` (39 rows)
-while that act accepts only its own wave's modules — the installed file
-reads as an inventory of accepted content, 20 rows early.
+Companions are not installed. Wave membership travels inside the owner-act
+record. Rationale, matrix rows and generated reports stay in the candidates
+tree, where they are today and where every clone can read them.
 
-Options:
+```text
+accepted bytes moved              0
+Wave A confirmation               survives
+Wave B confirmation               survives
+RFC3-15 amendment                 none
+code-span path strings dangling   87   (44 Wave A, 33 Wave B, 10 deferred)
+rendered links broken             0    — none of the 87 is a Markdown link
+re-review required                none
+```
 
-- **(2a)** Defer the active-manifest install to the final wave act — the
-  installed tree carries no over-claiming inventory, but loses its
-  package-identity record until the last act.
-- **(2b)** Install at the first act **with a generator-written banner**
-  stating six-wave identity: the manifest is the package identity record,
-  each row binds only when its wave's act fires, and the banner names
-  which waves are bound (regenerated at each act). *(Reviewer-preferred.)*
+**What the owner is accepting:** inside the *installed* tree, 87 backtick path
+strings point at files that are not beside them. A reader who follows one by
+hand lands nowhere. The same string resolves in any clone of this repository,
+and no clause requires it to resolve — swept over all 39 modules, 9 hits for
+link-obligation language, all of them runtime rendering clauses about product
+surfaces.
 
-**Recommendation `[Inferred]`: (2b)** — the generator owns the banner so
-it can never go stale by hand; (2a) trades a labelled record for an
-absent one, which VIS-2 disfavors.
+### (T) Rewrite the strings so the installed tree is self-contained
 
-*Added 2026-08-11, under the launch posture:* **there is no final wave act
-on the offer path.** Waves C1/C2/D1/D2 are deferred, so (2a) does not mean
-"install later" — it means "install never, while the posture stands", and
-the package-identity record simply would not exist in the governed tree.
-That consequence belongs in the ruling rather than being discovered after
-it. (`../contracts/candidates/DEFERRED-WAVE-POSTURE.md`)
+Same homes, plus every internal reference repointed at its new location.
 
-## Consequences of not ruling
+```text
+accepted bytes moved              up to 30 modules (19 Wave A + 11 Wave B)
+Wave A confirmation               RETIRES
+Wave B confirmation               RETIRES
+RFC3-15 amendment                 none, unless a history home is minted
+                                  under governance/ — that amends the
+                                  closure sentence, not just a row
+code-span path strings dangling   0
+re-review required                one full exact-package review per wave
+```
 
-Wave A cannot be re-offered: RD-18 B2 is a blocking finding against the
-act's own ceremony, and drafting either arm without the ruling would
-repeat the F-17 pattern (an arm installed while its question was open).
+**What the owner is accepting:** the two `CONFIRM` verdicts already obtained
+(RD-31b, RD-32c) stop covering anything, and each wave must be re-reviewed on
+a regenerated argument before it can be offered.
+
+## Recommendation `[Inferred]`
+
+**(M).**
+
+The reasoning is not digest preservation for its own sake. It is that the
+**typed layout is available under both options at no cost** — `contracts/`
+holding `rfcs/` and nothing else is what makes either arm lawful, and it
+requires no amendment either way. So the two options do **not** trade
+cleanliness against economy. They trade one thing only:
+
+> Must a path string inside an installed module resolve from inside the
+> installed tree?
+
+Answering *yes* costs two confirmations and two full re-reviews. What it buys
+is that 87 inert strings — none of them rendered, none of them required by any
+clause, all of them resolvable in the source repository — resolve one more
+place.
+
+**Where this departs from the charter's steer, and why.** The owner charter
+directs preferring the clean typed layout *unless* confirmation preservation is
+explicitly chosen over installed-tree self-containment. That instruction
+assumed typing and preservation were in tension. **They are not** — the
+measurement shows the clean typed layout is reachable without moving an
+accepted byte. What remains is self-containment alone, and that is the narrower
+thing the charter reserves for the owner to choose explicitly. **This is that
+choice**, stated in one sentence rather than distributed across seven arms.
+
+**Honest counter-argument.** An owner who holds that an accepted tree must be
+readable on its own terms — that a governance home containing pointers to
+nowhere is a defect regardless of what any clause requires — should take (T),
+and should not regard the re-review as waste. The confirmations were obtained
+once and can be obtained again; the installed tree is read for years. That is a
+legitimate ruling and not a mistake. `[Inferred]` sits on the weighting, not on
+the measurement.
+
+## The manifest question — separate, and not bundled
+
+The first wave act would install `ACTIVE-CONTRACT-MANIFEST.txt`, whose **39
+rows span all six waves** while the act accepts 19 modules. That is not a
+membership record; it is an inventory, and 20 rows of it would be over-claims.
+Under the deferred posture C1/C2/D1/D2 are off the offer path, so **9 rows
+would over-claim permanently**, not temporarily.
+
+The two manifests are different artifacts and want different homes:
+
+| Artifact | Is | Belongs |
+|---|---|---|
+| `WAVE-x-MANIFEST.txt` | **Accepted membership** — the argument the act binds | With the owner-act record. It *is* the argument |
+| `ACTIVE-CONTRACT-MANIFEST.txt` | **Candidate package identity** | The candidates tree |
+| An installed effective-state view | **Generated** from the acts performed | Generated, never hand-written |
+
+**Recommendation `[Inferred]`: install neither package-wide manifest into the
+accepted tree.** Wave membership rides with its act, which is exactly scoped
+and needs no banner to be honest about what it covers.
+
+*A previously recommended alternative — install the 39-row manifest with a
+generator-written banner naming which waves are bound — is withdrawn. It
+presumed machinery that does not exist (`build_active_manifest.py` contains no
+banner logic), and it contradicted the containment fix it was paired with.*
+
+## Which digest would change
+
+| Under | Digest change |
+|---|---|
+| **(M)** | **None.** No file in any wave manifest is edited |
+| **(T)** | `WAVE-A-MANIFEST.txt` and `WAVE-B-MANIFEST.txt` both regenerate, because up to 30 of their 30 rows change |
+
+## Exact next transaction
+
+There is no ceremony phrase — this is a recorded owner decision, not a
+digest-binding act. Record here, dated, in your own words:
+
+```text
+P-33 RULED — Wave A installation shape
+companion install shape:      M / T
+package-wide manifest:        not installed / installed
+```
+
+Then the register row P-33 closes, the ceremony is drafted to match, and
+**Wave A becomes offerable** — under (M) on the argument `8972d963…` that
+RD-31b already confirmed; under (T) after a fresh exact-package review of the
+regenerated argument.
 
 ## Earliest required gate
 
-Before the Wave A re-offer (this pass prepares the offer; the ruling
-gates it).
-
-## Independent work
-
-All Wave A clause repairs proceed (they are ruling-independent); only the
-ceremony text and the RFC3-15 widening wait.
+**Before the Wave A offer.** Both defects are properties of the install
+ceremony an act would freeze, and are unrepairable after binding. Wave A's
+clause content is unaffected either way; only the ceremony and the reference
+strings wait on this ruling.

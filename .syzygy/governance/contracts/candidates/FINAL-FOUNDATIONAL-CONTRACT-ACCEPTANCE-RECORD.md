@@ -503,10 +503,16 @@ implementation, not specification — accepting with it open is a
     act — says that category holds accepted load-bearing contracts
     **exclusively**. P-33's packet
     (`decisions/WAVE-A-INSTALL-SHAPE-DECISION.md`) states it must be ruled
-    **before Wave A is re-offered** and its own recommendation is the
-    RFC3-15(a) recorded-widening route. **Until P-33 is ruled, this record
-    offers no Wave A act** — performing act 1 over the current step 3 would
-    freeze an install that breaches a clause the act binds.
+    **before Wave A is re-offered**; **the packet owns the options and the
+    recommendation, and this record restates neither** *(corrected
+    2026-08-13, RD-49 finding 7 — this item previously named "the RFC3-15(a)
+    recorded-widening route" as P-33's own recommendation. That
+    recommendation was withdrawn on 2026-08-11, and §2 step 0 makes this
+    document mandatory reading before any phrase, so the stale line met an
+    owner at exactly the moment it would do the most damage)*. **Until P-33
+    is ruled, this record offers no Wave A act** — performing act 1 over the
+    current step 3 would freeze an install that breaches a clause the act
+    binds.
 12. **P-31 — the drafted RFC2-19(a) exemption arm** *(added 2026-08-10;
     RD26-02/RD26-06; re-keyed 2026-08-10, RD31-08 — the arm is the minted
     sub-clause RFC2-19(a)).* RFC2-19(a) is a drafted-awaiting-ruling
