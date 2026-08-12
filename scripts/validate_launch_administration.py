@@ -115,6 +115,7 @@ Usage:
 import argparse
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -133,7 +134,51 @@ _NON_WARRANT_FILES = frozenset((
     "PENDING-OWNER-DECISIONS.md",
     "README.md",
     "PROCESS-LESSONS.md",
+    # RD-56 f5 — the three-name list accepted 16 of the 20 files in the
+    # decisions home, including a trend log (F1's own evidence, so citing it
+    # to defer F2 is circular), a repair-chain history, and a decision
+    # PACKET whose own bytes say the choice "remains PENDING". §4 names that
+    # last class explicitly: "neither is a queue entry, a Beads issue, or a
+    # candidate decision packet, each of which records that the owner has
+    # *not* ruled."
+    "TREND-LOG.md",
+    "HISTORY.md",
 ))
+
+#: A file whose own text says the owner has not ruled is not a warrant,
+#: whatever its name. Classify by SHAPE, never by enumeration: a per-file
+#: list is short by exactly the file added next.
+_PENDING_SELF_DECLARATION = re.compile(
+    r"(?im)^[>\s]*\*{0,2}(status|disposition|state)\*{0,2}\s*[:—-]"
+    r"[^\n]*\b(pending|open|candidate|draft|proposal|proposed|unresolved"
+    r"|binds nothing|not (?:yet )?(?:ruled|decided|chosen|made))\b")
+_PACKET_NAME = re.compile(r"(?i)(PACKET|CANDIDATE|DRAFT|PROPOSAL)")
+
+
+def _non_warrant_reason(commit, rel):
+    """Why `rel` grants no deferral, or None if it may.
+
+    Presence in the decisions home is not a warrant. This returns the reason
+    a reader would give, so the error names the actual defect rather than
+    reporting every refusal as "the pending-decision queue" — which it did
+    for two of its four refusals (RD-56 f5).
+    """
+    name = rel.rsplit("/", 1)[-1]
+    if name in _NON_WARRANT_FILES:
+        return ("records what the owner has *not* decided, or routes to what "
+                "others record — it is an index, a queue or a log")
+    if _PACKET_NAME.search(name):
+        return ("is a decision *packet* — it prepares a decision for the "
+                "owner and does not record one")
+    blob = _git_show(commit, rel)
+    if blob is None:
+        return None
+    m = _PENDING_SELF_DECLARATION.search(blob.decode("utf-8", "replace"))
+    if m:
+        return (f"declares its own status as unresolved "
+                f"({m.group(0).strip()[:60]!r}) — a document that says the "
+                "question is open cannot warrant deferring it")
+    return None
 
 # --------------------------------------------------------------------------
 # The question roster. Order is presentation order; membership is the check.
@@ -196,9 +241,18 @@ def _load_json(text):
     return json.loads(text, object_pairs_hook=_no_duplicate_keys)
 
 
+_INVISIBLE = "\u200b\u200c\u200d\u2060\ufeff"
+
+
 def _is_placeholder(value: str) -> bool:
     """True when every token falls inside the placeholder lexicon."""
-    toks = [t.strip("()[[]].,;:\"'*_`") for t in str(value).lower().split()]
+    # Invisible characters are stripped BEFORE tokenizing: `"none\u200b"`
+    # is not a word the lexicon must learn, it is `"none"` wearing a
+    # character `str.split()` does not treat as whitespace (RD-56 f13).
+    raw = str(value).lower()
+    for ch in _INVISIBLE:
+        raw = raw.replace(ch, "")
+    toks = [t.strip("()[[]].,;:\"'*_`") for t in raw.split()]
     toks = [t for t in toks if t]
     return not toks or all(t in _PLACEHOLDER_TOKENS for t in toks)
 
@@ -234,6 +288,15 @@ _TYPES = {
     "integer": lambda v: isinstance(v, int) and not isinstance(v, bool),
     "number": lambda v: isinstance(v, (int, float)) and not isinstance(v, bool),
 }
+
+
+def _audit_root_is_a_record_schema(schema, out):
+    """A schema that declares no `properties` at its root constrains nothing,
+    and `_audit_schema` is vacuous on it — so the closure audit passed a
+    schema of `{"type": "object"}` (RD-56 f3)."""
+    if not isinstance(schema, dict) or not schema.get("properties"):
+        out.append("the schema declares no root `properties` — a schema that "
+                   "constrains nothing is not the record schema")
 
 
 def _audit_schema(node, path, out):
@@ -499,8 +562,14 @@ def _param_path(pb_text, key):
 def e4_cases(pb_text):
     """The `E4_CASES` list, each case's quoted text, in the block's order.
 
-    This is the one place the validator reads the instrument's own prose,
-    and it is bounded and fail-closed by construction: it starts at the
+    One of SIX places the validator reads the instrument's own prose —
+    `param_block_bytes`, `instrument_version`, `launch_target_forms`,
+    `_yaml_list`, `_param_path` and this. RD-47 f9 caught the claim that it
+    was "the one place"; v2.1 replaced it with "five", and the same commit's
+    own `LA-3b` repair added the sixth. The count is stated here, beside the
+    population it counts, and nowhere else (RD-56 f9).
+
+    Like the other five it is bounded and fail-closed by construction: it starts at the
     `E4_CASES` marker and takes numbered, double-quoted items only while
     their numbers run consecutively from 1, so the walk terminates at the
     first thing that is not the next case rather than wandering into the
@@ -539,10 +608,23 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
     except (OSError, ValueError) as exc:
         return ([f"LA-1: schema unreadable at {schema_path}: {exc}"], notes,
                 {})
+    # RD-56 f3 — `--schema` was bound to nothing, so `--schema weak.json`
+    # containing `{"type": "object"}` turned LA-1 off entirely and the tool
+    # still printed a gate result. The flag stays (an operator may want to
+    # try a proposed schema), but a record validated against anything other
+    # than the committed schema is an INVALID record, and therefore — via
+    # §4's fourth eligibility limb — an ineligible one.
+    if Path(schema_path).resolve() != Path(DEFAULT_SCHEMA).resolve():
+        errors.append(
+            f"LA-1: the record was validated against {schema_path}, not the "
+            f"committed schema {Path(DEFAULT_SCHEMA).name} — a record is "
+            "conformant to the schema the instrument binds or it is not a "
+            "record (§5). Use this only for inspection")
     audit = []
+    _audit_root_is_a_record_schema(schema, audit)
     _audit_schema(schema, "#", audit)
     if audit:
-        return (["LA-1: " + a for a in audit], notes, {})
+        return (errors + ["LA-1: " + a for a in audit], notes, {})
 
     try:
         raw = Path(record_path).read_text()
@@ -848,6 +930,12 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
                     "makes that silence a finding in its own right")
 
     # ---- LA-11 deferrals -------------------------------------------------
+    # Which deferrals carry a citation that actually RESOLVED. §4's
+    # READY-WITH-DEFERRALS predicate ends "AND the citation resolves", and
+    # the branch was selected from the deferral COUNT alone, so a record
+    # with an unresolvable citation still computed the pass word beside its
+    # own error (RD-56 f8).
+    resolved_deferrals = set()
     for d in rec["owner_deferrals"]:
         qid = d["question_id"]
         if qid not in ROSTER_SET:
@@ -870,6 +958,8 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
                 errors.append(
                     f"LA-11: {cite} names no decision in {DECISIONS_HOME} "
                     f"at {commit}")
+            else:
+                resolved_deferrals.add(qid)
         elif _git and _path_kind(
                 commit, cite[2:] if cite.startswith("./") else cite):
             # Path-ness is decided by RESOLVING the citation against the
@@ -896,12 +986,16 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
                     f"LA-11: the deferral citation {cite!r} does not live "
                     f"in {DECISIONS_HOME}/ — a deferral is warranted by a "
                     "made owner decision, and nothing else grants one")
-            elif rel.rsplit("/", 1)[-1] in _NON_WARRANT_FILES:
-                errors.append(
-                    f"LA-11: {cite!r} is the pending-decision queue, not a "
-                    "decision — it records that the owner has *not* ruled, "
-                    "which is the opposite of a warrant (LA-11's own words: "
-                    "\"a made decision, never a queue entry\")")
+            else:
+                why = _non_warrant_reason(commit, rel)
+                if why:
+                    errors.append(
+                        f"LA-11: {cite!r} {why} — a deferral is warranted by "
+                        "a made owner decision and by nothing else (LA-11's "
+                        "own words: \"a made decision, never a queue "
+                        "entry\")")
+                else:
+                    resolved_deferrals.add(qid)
         elif "/" in cite or cite.endswith((".md", ".txt", ".yaml", ".json")):
             # Shaped like a path, and did not resolve. Distinguished from
             # the not-a-citation case below so the error names the actual
@@ -996,13 +1090,24 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
                           "method")
 
     # ---- LA-12 the §4 formula -------------------------------------------
-    computed = _compute(rec, rows, prior_path)
+    computed = _compute(rec, rows, prior_path, prior_errors=errors,
+                        git_ok=bool(_git),
+                        resolved_deferrals=resolved_deferrals)
     errors.extend(computed.pop("_errors"))
     return errors, notes, computed
 
 
-def _compute(rec, rows, prior_path):
-    """The §4 formula and the §6 trend figures, computed from the rows."""
+def _compute(rec, rows, prior_path, prior_errors=(), git_ok=True,
+             resolved_deferrals=None):
+    """The §4 formula and the §6 trend figures, computed from the rows.
+
+    `prior_errors` are the errors every check before LA-12 has already
+    raised. They are an *input* because §4's eligibility clause has four
+    limbs and the fourth is "and validates without error" — computing
+    eligibility without them implements three quarters of a rule while
+    reporting it as the whole (RD-55 f1, RD-56 f1, found independently).
+    `git_ok` is false when the identity checks could not run at all, which
+    is a stronger disqualification than any single error."""
     errs = []
     verdict_of = {q: rows[q]["verdict"] for q in rows}
 
@@ -1043,11 +1148,20 @@ def _compute(rec, rows, prior_path):
                     if d["question_id"] == "F2"]
     f2_met = f2 == MET
     f2_deferred = bool(f2_deferrals)
+    # §4: "…AND the citation resolves." `None` means the caller did not run
+    # the citation checks (a fixture computing the formula alone); an empty
+    # set from a real validation means nothing resolved.
+    _f2_citation_resolves = (resolved_deferrals is None
+                             or "F2" in resolved_deferrals)
+    if f2_deferred and not _f2_citation_resolves:
+        errs.append("LA-12: READY-WITH-DEFERRALS requires the F2 deferral's "
+                    "citation to resolve (§4), and it did not — a deferral "
+                    "whose warrant cannot be found defers nothing")
 
     if core and f2_met and n_deferred == 0:
         verdict = f"READY FOR {rec['launch_target']}"
         branch = "plain"
-    elif core and f2_deferred and n_deferred > 0:
+    elif core and f2_deferred and n_deferred > 0 and _f2_citation_resolves:
         verdict = "READY-WITH-DEFERRALS"
         branch = "deferrals"
     else:
@@ -1066,17 +1180,6 @@ def _compute(rec, rows, prior_path):
     # row carrying it, and `record valid` — with no error and no note —
     # although §2 rejects a delta record as gate evidence. The formula was
     # right; presenting its output as a gate result was not.
-    ineligible = []
-    if not rec["formal"]:
-        ineligible.append("`formal: false`")
-    if rec["administration_kind"] != "full":
-        ineligible.append(f"`administration_kind: "
-                          f"{rec['administration_kind']}`")
-    if not rec["reviewer"]["fresh_context"]:
-        ineligible.append("the reviewer declares no fresh context")
-    eligible = not ineligible
-    gate_result = verdict if eligible else "NO FORMAL GATE RESULT"
-
     # A pass that rests on any deferral is READY-WITH-DEFERRALS, never plain.
     if branch == "plain" and n_deferred:
         errs.append("LA-12: a plain READY verdict over a nonzero deferral "
@@ -1104,7 +1207,23 @@ def _compute(rec, rows, prior_path):
     new_findings = None
     src = prior_path
     if src is None and rec.get("prior_record"):
-        src = str(REPO / rec["prior_record"]["path"])
+        # RD-56 f6 — this is the only path whose CONTENT is read and
+        # arithmetic performed on, and it was the one path not resolved
+        # against the repository: `REPO / "../../../forged.json"` escapes,
+        # and a hand-written file asserting every row was already `Not met`
+        # zeroed the §6 new-findings column with no error raised.
+        cand = (REPO / rec["prior_record"]["path"]).resolve()
+        try:
+            inside = cand.is_relative_to(REPO.resolve())
+        except AttributeError:                      # Python < 3.9
+            inside = str(cand).startswith(str(REPO.resolve()) + "/")
+        src = str(cand) if inside else None
+        if not inside:
+            errs.append(
+                "LA-15: the prior record's path "
+                f"{rec['prior_record']['path']!r} resolves outside the "
+                "repository — the new-findings column is computed from it, "
+                "so it is evidence and must live where evidence lives")
     if src is not None:
         try:
             pj = _load_json(Path(src).read_text())
@@ -1119,6 +1238,27 @@ def _compute(rec, rows, prior_path):
             new_findings = len(newly_not_met) + len(newly_scoped)
         except (OSError, ValueError):
             new_findings = "unknown"
+
+    # Eligibility is computed LAST, because its fourth limb counts errors —
+    # including the LA-12 errors raised above. Placing it earlier is how the
+    # rule came to be three-quarters implemented the first time.
+    n_err = len(prior_errors) + len(errs)
+    ineligible = []
+    if not rec["formal"]:
+        ineligible.append("`formal: false`")
+    if rec["administration_kind"] != "full":
+        ineligible.append(f"`administration_kind: "
+                          f"{rec['administration_kind']}`")
+    if not rec["reviewer"]["fresh_context"]:
+        ineligible.append("the reviewer declares no fresh context")
+    if n_err:
+        ineligible.append(f"the record has {n_err} validation error(s)")
+    if not git_ok:
+        ineligible.append("git was unavailable, so the identity, binding, "
+                          "case-text, deferral and evidence checks did not "
+                          "run — an unverified record is not eligible")
+    eligible = not ineligible
+    gate_result = verdict if eligible else "NO FORMAL GATE RESULT"
 
     return {
         "_errors": errs,
@@ -1148,12 +1288,22 @@ def trend_row(rec, computed):
     else:
         col = ("NONE — not eligible; row outcome was "
                + computed["verdict"])
+    # Every cell is sanitized, not only the verdict. A `launch_target`
+    # differing from §8 by an embedded newline passes LA-3 (which compares
+    # whitespace-normalized) and used to split this row across two lines
+    # (RD-56 f12); `date` did the same through a pattern anchored with `$`,
+    # which matches before a trailing newline.
+    def cell(x):
+        return str(x).replace("|", "/").replace("\r", " ").replace(
+            "\n", " ").strip()
+
     return "| {} | {} | {} | {} | {} | {} | {} | {} | {} |".format(
-        rec["date"], rec["repository_commit"][:7], computed["not_met"],
-        computed["scoped"], computed["unknown"], computed["deferred"],
-        computed["reopened"],
-        "n/a (no prior record)" if nf is None else nf,
-        col.replace("|", "/"))
+        cell(rec["date"]), cell(rec["repository_commit"][:7]),
+        cell(computed["not_met"]), cell(computed["scoped"]),
+        cell(computed["unknown"]), cell(computed["deferred"]),
+        cell(computed["reopened"]),
+        "n/a (no prior record)" if nf is None else cell(nf),
+        cell(col))
 
 
 # ==========================================================================
@@ -1303,7 +1453,35 @@ def _selftest():
                         verdict=NOT_MET, counterexample="x"),
                     r["owner_deferrals"].append(_deferral(
                         DECISIONS_HOME + "/PENDING-OWNER-DECISIONS.md"))),
-         "the pending-decision queue, not a decision", git=True)
+         "records what the owner has *not* decided", git=True)
+    # RD-56 f5 — presence in the decisions home was the whole test, and it
+    # accepted 16 of the home's 20 files. Each refusal below names a real
+    # file that granted a deferral clean before this repair.
+    for _cite, _why in (
+            (DECISIONS_HOME + "/launch-gate/TREND-LOG.md",
+             "an index, a queue or a log"),
+            (DECISIONS_HOME + "/launch-gate/HISTORY.md",
+             "an index, a queue or a log"),
+            (DECISIONS_HOME + "/LICENSE-DECISION-PACKET.md",
+             "is a decision *packet*"),
+    ):
+        case(f"LA-11 {_cite.rsplit('/', 1)[-1]} grants no deferral",
+             (lambda c: lambda r: (
+                 r["question_results"][__i(r, "F2")].update(
+                     verdict=NOT_MET, counterexample="x"),
+                 r["owner_deferrals"].append(_deferral(c))))(_cite),
+             _why, git=True)
+    # …and the shape predicate, which is what keeps the list from being
+    # short by exactly the file added next: a document that declares its own
+    # status unresolved warrants nothing, whatever it is called.
+    case("LA-11 a decisions-home file declaring its own status pending "
+         "grants no deferral",
+         lambda r: (r["question_results"][__i(r, "F2")].update(
+                        verdict=NOT_MET, counterexample="x"),
+                    r["owner_deferrals"].append(_deferral(
+                        DECISIONS_HOME
+                        + "/DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md"))),
+         "declares its own status as unresolved", git=True)
 
     case("LA-11 a Beads issue grants no deferral",
          lambda r: (r["question_results"][__i(r, "F2")].update(
@@ -1729,6 +1907,178 @@ def _selftest():
                              "NO FORMAL GATE RESULT", str(comp.get(
                                  "ineligible_because"))))
 
+    # RD-56 f3 — `--schema` was bound to nothing, so a schema constraining
+    # nothing turned LA-1 off and the tool still printed a gate result.
+    import tempfile as _tf
+    for _label, _body, _want in (
+            ("a schema other than the committed one",
+             None, "not the committed schema"),
+            ("a schema that constrains nothing",
+             '{"type": "object"}', "constrains nothing"),
+    ):
+        n_cases[0] += 1
+        rec = _base_record(False)
+        with _tf.NamedTemporaryFile("w", suffix=".json", delete=False) as fR:
+            json.dump(rec, fR)
+            pR = Path(fR.name)
+        body = _body or Path(DEFAULT_SCHEMA).read_text()
+        with _tf.NamedTemporaryFile("w", suffix=".json", delete=False) as fS:
+            fS.write(body)
+            pS = Path(fS.name)
+        try:
+            errs, _n, _c = validate(pR, schema_path=pS, _git=False)
+            ok = any(_want in e for e in errs)
+        finally:
+            pR.unlink()
+            pS.unlink()
+        print(f"  {'pass' if ok else 'FAIL'}  {_label} is a validation "
+              "error, not a silent substitution")
+        if not ok:
+            failures.append((f"--schema {_label}", _want, str(errs)[:200]))
+
+    # RD-56 f6 — the prior-record path is the only path whose CONTENT is
+    # read, and it was the one path not resolved against the repository.
+    n_cases[0] += 1
+    rec = _base_record(False)
+    rec["prior_record"] = {"path": "../../../../etc/forged-prior.json",
+                           "repository_commit": "0" * 40,
+                           "date": "2020-01-01"}
+    rows = {q["question_id"]: q for q in rec["question_results"]}
+    comp = _compute(rec, rows, None)
+    ok = any("outside the repository" in e for e in comp["_errors"])
+    print(f"  {'pass' if ok else 'FAIL'}  a prior-record path escaping the "
+          "repository is an error")
+    if not ok:
+        failures.append(("prior path escape", "outside the repository",
+                         str(comp["_errors"])[:200]))
+
+    # RD-56 f8 — §4's READY-WITH-DEFERRALS ends "AND the citation resolves".
+    n_cases[0] += 1
+    rec = _base_record(False)
+    rec["question_results"][__i(rec, "F2")].update(verdict=NOT_MET,
+                                                   counterexample="x")
+    rec["owner_deferrals"].append(_deferral("SDR-9"))
+    rows = {q["question_id"]: q for q in rec["question_results"]}
+    unresolved = _compute(rec, rows, None, resolved_deferrals=set())
+    resolved = _compute(rec, rows, None, resolved_deferrals={"F2"})
+    ok = (resolved["verdict"] == "READY-WITH-DEFERRALS"
+          and unresolved["verdict"] == "NOT READY"
+          and any("citation to resolve" in e
+                  for e in unresolved["_errors"]))
+    print(f"  {'pass' if ok else 'FAIL'}  a deferral whose citation does "
+          "not resolve yields no READY-WITH-DEFERRALS")
+    if not ok:
+        failures.append(("deferral resolution", "NOT READY",
+                         unresolved["verdict"]))
+
+    # RD-56 f13 — an invisible character is not a word the lexicon must
+    # learn; it is a placeholder wearing one.
+    for _label, _val in (("a zero-width space", "none\u200b"),
+                         ("a byte-order mark", "\ufeffnone")):
+        n_cases[0] += 1
+        ok = _is_placeholder(_val)
+        print(f"  {'pass' if ok else 'FAIL'}  {_label} does not defeat the "
+              "placeholder lexicon")
+        if not ok:
+            failures.append((f"placeholder {_label}", "placeholder", _val))
+
+    # RD-56 f4 — the fixture that claimed to cover RD-47 f1 mutated the
+    # RECORD, so §8 stayed readable and it hit the pre-existing mismatch
+    # branch; it passed against the unrepaired validator. The failing input
+    # RD-47 actually built mutates the INSTRUMENT, so the fixture has to as
+    # well. A scratch repository is the cheapest honest way to do that.
+    if _git_available():
+        import tempfile
+        blob = _git_show("HEAD", "launch-gate-pre-specifications.md")
+        if blob:
+            txt = blob.decode()
+            # Every parameter rewritten into a form the parsers cannot read,
+            # none of them deleted — the fail-open case, not the absent case.
+            broken = (txt
+                      .replace("REQUIRED_WAVES: [", "REQUIRED_WAVES:\n  - [")
+                      .replace("DEFERRED_WAVES: [", "DEFERRED_WAVES:\n  - [")
+                      .replace("effective_version:", "effective-version:"))
+            with tempfile.TemporaryDirectory() as td:
+                d = Path(td)
+                (d / "launch-gate-pre-specifications.md").write_text(broken)
+                env = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t",
+                       "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL":
+                       "t@t", "PATH": os.environ.get("PATH", "")}
+                for cmd in (["init", "-q"], ["add", "-A"],
+                            ["commit", "-qm", "x"]):
+                    subprocess.run(["git", "-C", str(d)] + cmd,
+                                   capture_output=True, env=env)
+                head = subprocess.run(
+                    ["git", "-C", str(d), "rev-parse", "HEAD"],
+                    capture_output=True, text=True, env=env).stdout.strip()
+                rec = _base_record(False)
+                rec["repository_commit"] = head
+                rec["instrument"]["sha256"] = hashlib.sha256(
+                    broken.encode()).hexdigest()
+                rec["required_waves"] = ["A", "B", "C1", "C2", "D1", "D2"]
+                rec["deferred_waves"] = []
+                global REPO
+                saved, REPO = REPO, d
+                try:
+                    with tempfile.NamedTemporaryFile(
+                            "w", suffix=".json", delete=False) as fW:
+                        json.dump(rec, fW)
+                        pW = Path(fW.name)
+                    errs, _n, _c = validate(pW, _git=True)
+                    pW.unlink()
+                finally:
+                    REPO = saved
+                n_cases[0] += 1
+                # The expectation names the UNREADABLE wording, not the bare
+                # parameter name: the mismatch branch mentions the parameter
+                # too, so `"REQUIRED_WAVES" in errs` passes for the wrong
+                # reason — which is the defect RD-56 f4 found in the fixture
+                # this one replaces.
+                unreadable = [e for e in errs
+                              if "this validator can read" in e]
+                joined = " ".join(unreadable)
+                ok = ("REQUIRED_WAVES" in joined
+                      and "DEFERRED_WAVES" in joined
+                      and "effective_version" in joined)
+                print(f"  {'pass' if ok else 'FAIL'}  an UNREADABLE §8 "
+                      "parameter is an error, not a skipped check "
+                      "(instrument mutated, not the record)")
+                if not ok:
+                    failures.append(("RD-47 f1 fail-open",
+                                     "three unreadable-parameter errors",
+                                     joined[:300]))
+
+    # RD-55 f1 / RD-56 f1 — §4's eligibility clause has FOUR limbs. Two
+    # reviewers found independently that the tool implemented three, and the
+    # fourth lived at one consumer. Each limb is exercised alone: a fixture
+    # covering only the booleans passes with the error limb deleted.
+    for label, kw, why in (
+            ("a validation error", {"prior_errors": ["LA-2: forged digest"]},
+             "validation error"),
+            ("git being unavailable", {"git_ok": False}, "git was unavail"),
+    ):
+        n_cases[0] += 1
+        rec = _base_record(False)
+        rec["formal"], rec["administration_kind"] = True, "full"
+        rec["reviewer"]["fresh_context"] = True
+        rows = {q["question_id"]: q for q in rec["question_results"]}
+        comp = _compute(rec, rows, None, **kw)
+        base = _compute(rec, rows, None)
+        ok = (base["eligible"] and not comp["eligible"]
+              and comp["gate_result"] == "NO FORMAL GATE RESULT"
+              and any(why in b for b in comp["ineligible_because"])
+              # The row states the diagnostic outcome, so `READY FOR` does
+              # appear — after `NONE — not eligible`. What must not appear
+              # is a verdict cell that READS as a gate answer.
+              and trend_row(rec, comp).rsplit("|", 2)[1].strip().startswith(
+                  "NONE — not eligible"))
+        print(f"  {'pass' if ok else 'FAIL'}  {label} alone makes an "
+              "otherwise-passing record ineligible")
+        if not ok:
+            failures.append((f"eligibility limb {label}",
+                             "ineligible", str(comp.get(
+                                 "ineligible_because"))))
+
     # RD-48 f10(b) — the §6 row is emitted for every administration, so the
     # separation D-3 made at the CLI has to reach the trend log too.
     n_cases[0] += 1
@@ -1827,16 +2177,15 @@ def main(argv=None):
         # The formula outcome and the gate result are printed as two lines,
         # never one. A reader who sees a single "gate verdict" line takes it
         # for the gate's answer, whatever the record's eligibility says.
+        # This branch used to add `and not errors` here, which is how the
+        # fourth limb came to live at one consumer instead of in the rule.
+        # Eligibility now owns all four; every consumer reads the one answer.
         print(f"Row/formula outcome: {computed['verdict']}")
-        if computed["eligible"] and not errors:
+        if computed["eligible"]:
             print(f"Formal gate result:  {computed['gate_result']}")
-        elif not computed["eligible"]:
+        else:
             print("Formal gate result:  NONE — diagnostic only ("
                   + "; ".join(computed["ineligible_because"]) + ")")
-        else:
-            print("Formal gate result:  NONE — the record has "
-                  f"{len(errors)} validation error(s); an invalid record "
-                  "supports no gate decision")
         for name, ok, why in computed["conjuncts"]:
             print(f"  [{'ok ' if ok else 'NO '}] {name} — {why}")
         print(f"  F2 limb: branch={computed['branch']}, "

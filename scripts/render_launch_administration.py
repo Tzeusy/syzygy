@@ -85,6 +85,46 @@ def _cell(s):
     return str(s).replace("|", "\\|").replace("\n", " ").strip()
 
 
+def _inline(s):
+    """Reviewer text in an inline position — a bullet, a sentence, a cell.
+
+    Every Markdown block construct (heading, fence, table row, list item,
+    thematic break) must START a line. Reviewer text emitted inline is
+    therefore neutralized by removing its ability to start one: newlines
+    collapse to spaces. A `#` or a backtick fence mid-line opens nothing.
+
+    RD-56 f2: `_quoted` was applied to the two fields the previous reviewer
+    happened to name, and the delta then described the repair as a class
+    property — "every line blockquoted, so no line can open a heading, table
+    or fence at document level". It was true of 2 of 21 free-text-bearing
+    sites, and the forgery reproduced verbatim through `operationalization_
+    notes`. Blockquoting is right for a multi-line block; flattening is right
+    for an inline value; between them the class property is now true.
+    """
+    return str(s).replace("\r", " ").replace("\n", " ")
+
+
+def _unrenderable(record_path, why, notes=()):
+    """A report for a record that could not be verdicted. Short, and it
+    states the one thing a reader needs: this is not an administration."""
+    L = [f"# Launch-gate record — UNRENDERABLE: `{Path(record_path).name}`",
+         "",
+         "> **This record could not be validated, so there is no report of "
+         "it.**",
+         "> No verdict, no figures, no trend row — a partial rendering of "
+         "an",
+         "> unlawful record is the thing this file exists not to produce.",
+         "",
+         "## Why",
+         ""]
+    L += [f"- {_inline(w)}" for w in why]
+    if notes:
+        L += ["", "## Validation notes", ""]
+        L += [f"- {_inline(n)}" for n in notes]
+    L.append("")
+    return "\n".join(L)
+
+
 def _verdict_text(row):
     if row["verdict"] == UNKNOWN:
         return f"Unknown({row['unknown_reason']})"
@@ -101,22 +141,36 @@ def _evidence_text(row):
         for e in row["evidence"])
 
 
-def render(record_path, computed, valid):
+def render(record_path, computed, valid, notes=(), errors=()):
     # Duplicate keys are refused here too: the renderer must present the
     # same record the validator verdicted, and a last-wins parse on one side
     # only would let the report and the verdict disagree (RD-47 f12).
-    rec = json.loads(Path(record_path).read_text(),
-                     object_pairs_hook=_no_duplicate_keys)
+    #
+    # RD-56 f10: `--allow-invalid` on a record with a SCHEMA error ended in
+    # a traceback, because `validate` returns `computed = {}` for those and
+    # this function indexed it unconditionally. The documented inspection
+    # path did not work for the commonest invalid record. A record that
+    # could not be parsed or verdicted gets a short honest report saying so,
+    # never a partial one that reads like a real administration.
+    try:
+        rec = json.loads(Path(record_path).read_text(),
+                         object_pairs_hook=_no_duplicate_keys)
+    except (OSError, ValueError) as exc:
+        return _unrenderable(record_path, [str(exc)], notes)
+    if not computed:
+        return _unrenderable(record_path, list(errors) or
+                             ["the record produced no computed result"],
+                             notes)
     src = Path(record_path).name
     rows = {q["question_id"]: q for q in rec["question_results"]}
     L = []
     a = L.append
 
-    a(f"# Launch-gate administration — {rec['date']}, commit "
-      f"`{rec['repository_commit'][:7]}`")
+    a(f"# Launch-gate administration — {_inline(rec['date'])}, commit "
+      f"`{_inline(rec['repository_commit'][:7])}`")
     a("")
     a("> **Generated presentation.**")
-    a(f"> Canonical source: `{src}`")
+    a(f"> Canonical source: `{_inline(src)}`")
     a(f"> {DO_NOT_EDIT} Edit the record and regenerate.")
     a(">")
     a("> This administration record is evidence, never an owner act; its "
@@ -127,28 +181,37 @@ def render(record_path, computed, valid):
         a("> **THIS RECORD DOES NOT VALIDATE.** It was rendered with "
           "`--allow-invalid`")
         a("> for inspection only and supports no gate decision whatsoever.")
+    # RD-56 f7 — the git-unavailable note went to stdout and never into the
+    # file, so the stored artifact of a wholly unverified record looked
+    # exactly like the artifact of a verified one, and `--check` reported
+    # the byte difference between the two machines as a hand edit.
+    for nte in notes:
+        a(">")
+        a(f"> **UNVERIFIED:** {_inline(nte)}")
     a("")
 
     a("## Identity")
     a("")
-    a(f"- Instrument: `{rec['instrument']['path']}` "
-      f"{rec['instrument']['version']}")
-    a(f"- Instrument sha256: `{rec['instrument']['sha256']}`")
-    a(f"- Parameter block sha256: `{rec['parameter_block_sha256']}`")
-    a(f"- Repository commit: `{rec['repository_commit']}`")
-    a(f"- Launch target: {rec['launch_target']}")
-    a(f"- Required waves: {', '.join(rec['required_waves']) or 'none'}")
-    a(f"- Deferred waves: {', '.join(rec['deferred_waves']) or 'none'}")
-    a(f"- Administration: {rec['administration_kind']}, "
+    a(f"- Instrument: `{_inline(rec['instrument']['path'])}` "
+      f"{_inline(rec['instrument']['version'])}")
+    a(f"- Instrument sha256: `{_inline(rec['instrument']['sha256'])}`")
+    a(f"- Parameter block sha256: `{_inline(rec['parameter_block_sha256'])}`")
+    a(f"- Repository commit: `{_inline(rec['repository_commit'])}`")
+    a(f"- Launch target: {_inline(rec['launch_target'])}")
+    a("- Required waves: "
+      + (_inline(", ".join(rec["required_waves"])) or "none"))
+    a("- Deferred waves: "
+      + (_inline(", ".join(rec["deferred_waves"])) or "none"))
+    a(f"- Administration: {_inline(rec['administration_kind'])}, "
       f"{'formal' if rec['formal'] else 'not formal (steering only)'}")
     a("")
 
     a("## Reviewer")
     a("")
     rv = rec["reviewer"]
-    a(f"- Identity: {rv['identity']}")
-    a(f"- Model: {rv['model']}")
-    a(f"- Model family: {rv['model_family']}")
+    a(f"- Identity: {_inline(rv['identity'])}")
+    a(f"- Model: {_inline(rv['model'])}")
+    a(f"- Model family: {_inline(rv['model_family'])}")
     a(f"- Fresh context: {'yes' if rv['fresh_context'] else 'no'}")
     if rv["same_family_as_corpus_authors"]:
         a("- **Same model family as the corpus's authors — a family-constant "
@@ -162,23 +225,23 @@ def render(record_path, computed, valid):
     a("")
     a("Given:")
     for m in rec["materials"]["included"]:
-        a(f"- {m}")
+        a(f"- {_inline(m)}")
     a("")
     a("Withheld:")
     for m in rec["materials"]["withheld"]:
-        a(f"- {m}")
+        a(f"- {_inline(m)}")
     a("")
     a("Deviations from the fixed materials list: "
       + ("none recorded" if not rec["materials"]["deviations"] else ""))
     for m in rec["materials"]["deviations"]:
-        a(f"- {m}")
+        a(f"- {_inline(m)}")
     a("")
 
     a("## Operationalization notes")
     a("")
     if rec["operationalization_notes"]:
         for n in rec["operationalization_notes"]:
-            a(f"- {n}")
+            a(f"- {_inline(n)}")
     else:
         a("None recorded.")
     a("")
@@ -213,7 +276,7 @@ def render(record_path, computed, valid):
           "verdict (instrument §3).")
         a("")
         for it in rec["e3"]["reopen_items"]:
-            a(f"- **{it['item']}** — {it['why']}")
+            a(f"- **{_inline(it['item'])}** — {_inline(it['why'])}")
     else:
         a("E3 reopen-list: **empty**, arrived at through the trace table "
           "above.")
@@ -221,7 +284,7 @@ def render(record_path, computed, valid):
 
     a("## E4 — fixed cases")
     a("")
-    a(f"Routing authority: `{rec['e4']['routing_authority']}`")
+    a(f"Routing authority: `{_inline(rec['e4']['routing_authority'])}`")
     a("")
     a("| # | Case | Reviewer | Routing authority | Agreement | Needed by "
       "the launch target |")
@@ -245,10 +308,10 @@ def render(record_path, computed, valid):
     a("")
     if rec["deferred_wave_findings"]:
         for f in rec["deferred_wave_findings"]:
-            cond = ", ".join(f["blocking_conditions_met"]) or \
+            cond = _inline(", ".join(f["blocking_conditions_met"])) or \
                 "none of §4's five blocking conditions"
-            a(f"- **{f['wave']} / {f['question_id']}** — {f['defect']} "
-              f"(meets: {cond})")
+            a(f"- **{_inline(f['wave'])} / {_inline(f['question_id'])}** — "
+              f"{_inline(f['defect'])} (meets: {cond})")
     else:
         a("None recorded.")
     a("")
@@ -257,9 +320,9 @@ def render(record_path, computed, valid):
     a("")
     if rec["owner_deferrals"]:
         for d in rec["owner_deferrals"]:
-            a(f"- **{d['question_id']}** — granted by "
-              f"`{d['decision_citation']}`; bounded reduction plan: "
-              f"{d['bounded_reduction_plan']}")
+            a(f"- **{_inline(d['question_id'])}** — granted by "
+              f"`{_inline(d['decision_citation'])}`; bounded reduction plan: "
+              f"{_inline(d['bounded_reduction_plan'])}")
     else:
         a("None. No conjunct of the verdict rests on a deferral.")
     a("")
@@ -268,8 +331,8 @@ def render(record_path, computed, valid):
     a("")
     if rec["reopened_findings"]:
         for r in rec["reopened_findings"]:
-            a(f"- {r['finding']} (previously resolved at "
-              f"`{r['prior_record']}`) — {r['note']}")
+            a(f"- {_inline(r['finding'])} (previously resolved at "
+              f"`{_inline(r['prior_record'])}`) — {_inline(r['note'])}")
     else:
         a("None. A nonzero count here would indict the resolution process, "
           "not just the finding.")
@@ -279,10 +342,10 @@ def render(record_path, computed, valid):
     a("")
     prc = rec["pilot_recurrence_check"]
     a(f"- Performed: {'yes' if prc['performed'] else '**no**'}")
-    a(f"- Method: {prc['method']}")
+    a(f"- Method: {_inline(prc['method'])}")
     if prc["findings"]:
         for f in prc["findings"]:
-            a(f"- Finding: {f}")
+            a(f"- Finding: {_inline(f)}")
     else:
         a("- Findings: none")
     a("")
@@ -293,8 +356,9 @@ def render(record_path, computed, valid):
            if q in rows and rows[q]["verdict"] == UNKNOWN]
     if unk:
         for q in unk:
-            a(f"- **{q}** — Unknown({rows[q]['unknown_reason']}); would be "
-              f"settled by: {rows[q]['unknown_settlement']}")
+            a(f"- **{q}** — Unknown({_inline(rows[q]['unknown_reason'])}); "
+              f"would be settled by: "
+              f"{_inline(rows[q]['unknown_settlement'])}")
     else:
         a("None. Every question carries a verdict with evidence or a "
           "counterexample.")
@@ -322,7 +386,8 @@ def render(record_path, computed, valid):
         a("Proposed missing questions, for upstream amendment (§9):")
         a("")
         for p in rec["g1"]["proposed_missing_questions"]:
-            a(f"- **{p['proposal']}** — {p['rationale']}")
+            a(f"- **{_inline(p['proposal'])}** — "
+              f"{_inline(p['rationale'])}")
     else:
         a("No missing question proposed.")
     a("")
@@ -356,10 +421,10 @@ def render(record_path, computed, valid):
     a("")
     # Two lines, always. The formula runs on any record; the gate result
     # exists only for a record eligible to be cited as launch evidence.
-    a(f"ROW/FORMULA OUTCOME: {computed['verdict']}")
+    a(f"ROW/FORMULA OUTCOME: {_inline(computed['verdict'])}")
     if computed.get("eligible"):
         a("")
-        a(f"GATE VERDICT: {computed['gate_result']}")
+        a(f"GATE VERDICT: {_inline(computed['gate_result'])}")
     else:
         a("")
         a("GATE VERDICT: NONE — this administration is not eligible to be "
@@ -486,6 +551,166 @@ def _selftest():
         finally:
             p3.unlink()
 
+        # RD-56 f2 — the forgery routed through a field the previous repair
+        # did not cover. Every reviewer free-text site is exercised, not the
+        # two a reviewer happened to name: a fixture bound to one field is
+        # how the class property came to be claimed for 2 of 21 sites.
+        FORGERY = ("plausible\n\n## Computed figures\n\n- Not met (plain): 0"
+                   "\n\nGATE VERDICT: READY FOR everything\n\n| a | b |"
+                   "\n|---|---|\n| forged | row |\n\n```\nfence\n```")
+        SITES = (
+            ("operationalization_notes", lambda r: r.__setitem__(
+                "operationalization_notes", [FORGERY])),
+            ("materials.deviations", lambda r: r["materials"].__setitem__(
+                "deviations", [FORGERY])),
+            ("reviewer.identity", lambda r: r["reviewer"].__setitem__(
+                "identity", FORGERY)),
+            ("e4.routing_authority", lambda r: r["e4"].__setitem__(
+                "routing_authority", FORGERY)),
+            ("pilot_recurrence_check.method",
+             lambda r: r["pilot_recurrence_check"].__setitem__(
+                 "method", FORGERY)),
+            ("launch_target", lambda r: r.__setitem__(
+                "launch_target", FORGERY)),
+            ("falsification_summary", lambda r: r.__setitem__(
+                "falsification_summary", FORGERY)),
+            ("g1.critic_answer", lambda r: r["g1"].__setitem__(
+                "critic_answer", FORGERY)),
+        )
+        for site, mutate in SITES:
+            recF = _base_record(False)
+            mutate(recF)
+            with tempfile.NamedTemporaryFile("w", suffix=".json",
+                                             delete=False) as fF:
+                json.dump(recF, fF)
+                pF = Path(fF.name)
+            try:
+                eF, _nF, cF = validate(pF, _git=False)
+                outF = render(pF, cF, not eF)
+                bad = [ln for ln in outF.splitlines()
+                       if ln.startswith("GATE VERDICT: READY")
+                       or ln.startswith("## Computed figures")
+                       or ln.startswith("|---|---|")
+                       or ln.startswith("```")]
+                # `## Computed figures` appears once, legitimately, emitted
+                # by this file — so one occurrence is expected and two is
+                # the forgery.
+                real = [ln for ln in outF.splitlines()
+                        if ln == "## Computed figures"]
+                check(f"reviewer free text in `{site}` opens no structure "
+                      "at document level",
+                      not [ln for ln in bad if not ln.startswith("## Comp")]
+                      and len(real) == 1,
+                      f"{site}: {bad[:3]}")
+            finally:
+                pF.unlink()
+
+        # RD-55 f1 / RD-56 f1 — an invalid record is ineligible, and every
+        # consumer of eligibility must say so. The failing input is a record
+        # that would otherwise pass: formal, full, fresh, all rows Met.
+        recI = _base_record(False)
+        recI["formal"], recI["administration_kind"] = True, "full"
+        recI["reviewer"]["fresh_context"] = True
+        recI["owner_deferrals"] = [{
+            "question_id": "F2", "decision_citation": "NOT/A/DECISION.md",
+            "bounded_reduction_plan": "a plan with enough words to pass"}]
+        with tempfile.NamedTemporaryFile("w", suffix=".json",
+                                         delete=False) as fI:
+            json.dump(recI, fI)
+            pI = Path(fI.name)
+        try:
+            eI, _nI, _cI = validate(pI, _git=False)
+            # `_git=False` makes every record ineligible on its own (an
+            # unverified record supports no gate decision), which would mask
+            # the limb under test. The eligibility here is recomputed with
+            # git_ok=True so the ONLY disqualifier left is the error count —
+            # otherwise this fixture passes with the repair reverted, which
+            # is precisely the false witness RD-56 f4 caught.
+            from validate_launch_administration import _compute
+            rowsI = {q["question_id"]: q for q in recI["question_results"]}
+            cI = _compute(recI, rowsI, None, prior_errors=eI, git_ok=True)
+            outI = render(pI, cI, not eI)
+            check("an invalid record renders no READY gate verdict",
+                  bool(eI) and not cI["eligible"]
+                  and "GATE VERDICT: NONE" in outI
+                  and not [ln for ln in outI.splitlines()
+                           if ln.startswith("GATE VERDICT: READY")],
+                  f"errors={len(eI)} eligible={cI.get('eligible')}")
+            trowI = [ln for ln in outI.splitlines()
+                     if ln.startswith("| 2026-08-11 |")][0]
+            check("an invalid record's §6 trend row carries no READY verdict",
+                  "READY FOR" not in trowI, trowI)
+        finally:
+            pI.unlink()
+
+        # RD-56 f12 — a newline-bearing scalar must not split the trend row.
+        recN = _base_record(False)
+        recN["launch_target"] = "Capability 1 — Project\nregistration"
+        with tempfile.NamedTemporaryFile("w", suffix=".json",
+                                         delete=False) as fN:
+            json.dump(recN, fN)
+            pN = Path(fN.name)
+        try:
+            eN, _nN, cN = validate(pN, _git=False)
+            outN = render(pN, cN, not eN)
+            trowN = [ln for ln in outN.splitlines()
+                     if ln.startswith("| 2026-08-11 |")][0]
+            check("a newline in a rendered scalar does not split the trend "
+                  "row", trowN.count("|") - trowN.count("\\|") == 10
+                  and "registration" in trowN, trowN)
+        finally:
+            pN.unlink()
+
+        # RD-56 f10 — `--allow-invalid` on a record with a SCHEMA error
+        # ended in a traceback, so the documented inspection path did not
+        # work for the commonest invalid record.
+        for label, body in (
+                ("a record missing a required object",
+                 json.dumps({k: v for k, v in _base_record(False).items()
+                             if k != "g1"})),
+                ("a record that is not valid JSON", "{not json"),
+                ("a record with a duplicate key",
+                 '{"date": "2026-08-11", "date": "2026-08-12"}'),
+        ):
+            with tempfile.NamedTemporaryFile("w", suffix=".json",
+                                             delete=False) as fX:
+                fX.write(body)
+                pX = Path(fX.name)
+            try:
+                try:
+                    eX, nX, cX = validate(pX, _git=False)
+                except Exception as exc:          # noqa: BLE001
+                    eX, nX, cX = [str(exc)], [], {}
+                try:
+                    outX = render(pX, cX, False, notes=nX, errors=eX)
+                    crashed = False
+                except Exception as exc:          # noqa: BLE001
+                    outX, crashed = str(exc), True
+                check(f"--allow-invalid on {label} renders a refusal, not a "
+                      "traceback",
+                      not crashed and "UNRENDERABLE" in outX
+                      and "GATE VERDICT" not in outX, outX[:160])
+            finally:
+                pX.unlink()
+
+        # RD-56 f7 — the git-unavailable note reached stdout and never the
+        # stored artifact, so an unverified record's report was
+        # indistinguishable from a verified one's.
+        recG = _base_record(False)
+        with tempfile.NamedTemporaryFile("w", suffix=".json",
+                                         delete=False) as fG:
+            json.dump(recG, fG)
+            pG = Path(fG.name)
+        try:
+            eG, nG, cG = validate(pG, _git=False)
+            outG = render(pG, cG, not eG, notes=nG)
+            check("a report of an unverified record says so in the file, "
+                  "not only on stdout",
+                  bool(nG) and "**UNVERIFIED:**" in outG,
+                  f"notes={len(nG)}")
+        finally:
+            pG.unlink()
+
         # --check must detect a hand-edited report.
         with tempfile.NamedTemporaryFile("w", suffix=".md",
                                          delete=False) as f4:
@@ -531,7 +756,8 @@ def main(argv=None):
             print(f"  {e}")
         return 1
 
-    text = render(args.record, computed, not errors)
+    text = render(args.record, computed, not errors, notes=notes,
+                  errors=errors)
     out = Path(args.output) if args.output \
         else Path(args.record).with_suffix(".md")
 

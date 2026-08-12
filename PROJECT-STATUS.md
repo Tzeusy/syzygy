@@ -29,7 +29,7 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 | Wave A (RFC 0001–0006, 19 modules) | **Confirmed** — `VERDICT: CONFIRM` on the current argument `8972d963…` (RD-31b). **Offer withheld solely by P-33.** | acceptance record §1 + §7 item 11; `wave-manifests/WAVE-A-MANIFEST.txt` |
 | Wave B (RFC 0007–0009 + the three surfaces, 11 modules) | **Confirmed** — `VERDICT: CONFIRM` on the current argument `193e3c1e…` (RD-32c). Nothing withholds it; it **follows Wave A**. | acceptance record §1; `wave-manifests/WAVE-B-MANIFEST.txt` |
 | Waves C1/C2/D1/D2 | **Deferred** — candidate, not accepted, not used by the launch target, not offered. Not retired. | `contracts/candidates/DEFERRED-WAVE-POSTURE.md` |
-| Launch-gate policy | **Candidate v2.0** — structured-record migration. Owner approval is **P-34**, not granted. Its two required fresh-context reviews were obtained 2026-08-11 and **both returned `REVISE`**; their findings are unrepaired, so the packet is **not offerable**. | `launch-gate-pre-specifications.md`; `round-2026-08f/LAUNCH-GATE-v2.0-SEMANTIC-DELTA.md`; `round-2026-08f/reviews/DISPOSITION-REGISTER.md` |
+| Launch-gate policy | **Candidate v2.2.** Owner approval is **P-34**, not granted. **Four fresh-context reviews, four `REVISE` verdicts**: RD-47/RD-48 on v2.0 (2026-08-11) and RD-55/RD-56 on v2.1 (2026-08-13), the latter pair finding the same blocking defect independently. Each pair's findings are repaired; **the repaired bytes have never been reviewed at any version**, so the packet is **not offerable**. | `launch-gate-pre-specifications.md`; `round-2026-08g/LAUNCH-GATE-v2.2-SEMANTIC-DELTA.md`; `round-2026-08g/reviews/DISPOSITION-REGISTER.md` |
 | Formal launch administration | **Not performed.** The only administration on record is the 2026-08-09 **pilot** (v1.3), which returned `GATE VERDICT: NOT READY`. | `round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md` |
 | OpenSpec (`openspec/`) | **Does not exist.** Authoring is forbidden until the owner's launch decision. | — |
 | Implementation | **Does not exist.** Blocked on accepted specifications. | — |
@@ -76,7 +76,7 @@ P-38  human entry and repository discoverability
 P-39  OpenSpec form and version
 P-40  specification granularity
 P-35  project operating constraints
-P-34  launch-gate v2.0 as process policy
+P-34  launch-gate v2.2 as process policy
 P-41  the specification-acceptance craft act
 P-42  the shape-to-spec impact craft act
 ```
@@ -120,7 +120,7 @@ implementation only after specifications are accepted.
 python3 scripts/check_governance.py
 python3 scripts/check_governance.py --selftest
 python3 scripts/launch_gate_results.py --selftest            # historical Markdown records
-python3 scripts/validate_launch_administration.py --selftest # the v2.0 record path
+python3 scripts/validate_launch_administration.py --selftest # the structured record path
 python3 scripts/render_launch_administration.py --selftest
 CS=.syzygy/governance/contracts/candidates/scripts
 python3 $CS/verify_final_prespec.py

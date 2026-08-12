@@ -13,7 +13,7 @@
 
 ## 1. What is being asked
 
-Administer `launch-gate-pre-specifications.md` **v2.1**, in full, at the
+Administer `launch-gate-pre-specifications.md` **v2.2**, in full, at the
 named commit, against:
 
 ```text
@@ -33,24 +33,26 @@ DEFERRED WAVES
 ## 2. What is bound — verify every digest before you begin
 
 ```text
-repository commit    (re-sealed at v2.1 — see the note below)
+repository commit    (re-sealed at v2.2 — see the note below)
 
-launch-gate-pre-specifications.md (v2.1)
-    3afdffdab0d71d32a4e901f43db1c11ba096f699e240050e8cc6cbb95ada12c8
+launch-gate-pre-specifications.md (v2.2)
+    ac8751236ec7434c20606b404d41c885d29f67dd5f3dab8c9d0cbb90de670977
 §8 parameter block (as bound for this administration)
     01209c0f052971f794e1f35827a002aa8d80420aad471d10fde000abb6366ff6
 launch-gate-administration.schema.json
     e0167fb8af6a903c527d402d56c4fb85ebdfed9608de1a485f4f1563aa6a69fb
 scripts/validate_launch_administration.py
-    22178af793770255815c98f9c88f6cab158a66ce328be285afe5c4096d16b631
+    bf67c0fc8c8bd9c3a5c93a7f218ccbbc20c121616853dc0998d82d134ea61525
 scripts/render_launch_administration.py
-    c9f81cb42853872735fcc25727a7660742e9c5a9db257ce483766976b9141d10
+    4ffa3c9ec83aad7951884be159eec81dde8374387fc45c4d7a6ba9b323a08e61
 ```
 
-**Re-sealed 2026-08-13 at instrument v2.1.** The instrument, validator and
-renderer digests carried by the previous v2.0 seal are **superseded and
-satisfy nothing**; they moved when the two v2.0 reviews were repaired, and a
-packet still binding them would send an administrator to bytes nobody offers.
+**Re-sealed 2026-08-13 at instrument v2.2** — the second re-seal in one
+day, and the reason is the point rather than an embarrassment: v2.1 was
+reviewed, both reviews returned `REVISE`, and the repair moved the bytes
+again. Every instrument, validator and renderer digest carried by the v2.0
+and v2.1 seals is **superseded and satisfies nothing**; a packet still
+binding them would send an administrator to bytes nobody offers.
 
 **Two of the five did not move**, which is the fact worth checking rather
 than taking on trust: the **§8 parameter-block digest is identical**, so
@@ -188,31 +190,33 @@ be **human spot-reviewed** before the record is treated as gate evidence:
   them, say so in `materials.deviations`.
 - **A recommended verdict.** There is none, and any document that offered
   one would be inviting the failure the gate exists to catch.
-- **The two v2.0 reviews' findings.** *(Updated 2026-08-13. This section has
-  now said three different things, and the sequence matters more than any one
-  of them: first that the reviews "have not been obtained"; then, from
-  2026-08-11, that both returned `REVISE` and their findings were
-  unrepaired; and now this.)*
+- **The four reviews' findings.** *(Updated 2026-08-13. This section has now
+  said four different things; the sequence matters more than any one of
+  them, and it is the honest answer to "how settled is this instrument?")*
 
-  Both were obtained 2026-08-11 against frozen bytes and **both returned
-  `REVISE`** — RD-48 on the policy's semantics, RD-47 on the schema,
-  validator and renderer. **Their material findings have since been
-  repaired, and the instrument you are administering is v2.1**, which is
-  that repair. In particular the three defects this paragraph used to warn
-  you about are gone: §4 names the schema's own fields, the sixth computed
-  conjunct is stated in §4, and `NOT READY` is defined in the instrument
-  body rather than only in its changelog.
+  | Round | Reviews | Verdicts |
+  |---|---|---|
+  | v2.0 | RD-47 machinery, RD-48 policy | both `REVISE` |
+  | v2.1 | RD-56 machinery, RD-55 policy | both `REVISE` |
 
-  **What has not happened is a review of the repaired bytes.** A repair
-  session cannot confirm its own repairs. So the honest statement is not
-  "the instrument is fixed" but "the instrument has been amended in response
-  to two `REVISE` verdicts, by the session that received them, and the
-  amendment is unreviewed."
+  **The instrument you are administering is v2.2**, the repair of the second
+  pair. Both v2.1 reviewers found the same blocking defect independently:
+  §4 stated four eligibility limbs and the tool implemented three, so an
+  invalid record could still deposit `READY FOR …` in the trend log and in
+  a report's last line. That is repaired, along with eleven other findings.
 
-  The raw files are
-  `.syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-47-…`
-  and `…/RD-48-…`, with the repair account in
-  `round-2026-08g/reviews/DISPOSITION-REGISTER.md`.
+  **What has not happened, at any version, is a review of the repaired
+  bytes.** A repair session cannot confirm its own repairs. So the honest
+  statement is not "the instrument is fixed" but "the instrument has twice
+  been amended in response to `REVISE` verdicts, each time by the session
+  that received them, and the current amendment is unreviewed."
+
+  Read that as a fact about *this instrument's* maturity, and do not let it
+  colour your verdicts on the corpus — F6 is where the process's own health
+  is recorded. The raw files are `round-2026-08f/reviews/RD-47-…`, `…/RD-48-…`
+  and `round-2026-08g/reviews/RD-55-…`, `…/RD-56-…`; the repair accounts are
+  the v2.1 and v2.2 semantic deltas in `round-2026-08g/`, with dispositions
+  in `round-2026-08g/reviews/DISPOSITION-REGISTER.md`.
   **Their content is withheld from you under §5 for every other purpose.**
   Do not read them to inform an answer; this paragraph exists so that you
   know what state the instrument is in, not so that you inherit its

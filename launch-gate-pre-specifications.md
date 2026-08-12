@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v2.1 (candidate; v1.3 was the pilot-administered version)
+effective_version: v2.2 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), the structured administration source record
@@ -492,9 +492,14 @@ instrument that owns readiness semantics):*
 | **`READY-WITH-DEFERRALS`** | Every conjunct holds except that the F2 limb is satisfied by an owner-cited deferral rather than by `Met` |
 | **`NOT READY`** | Any conjunct fails. The default: this is the verdict whenever the formula does not produce one of the two pass words |
 
-The set is closed. A record may not contain any of them — the verdict is
-computed, never claimed — and no administration may translate one into softer
-language.
+The set is closed. **A record carries no verdict field** — the verdict is
+computed, never claimed, and the schema's closure refuses one — and no
+administration may translate a verdict into softer language. *(Narrowed at
+v2.2, RD-55 f6: this clause read "a record may not contain any of them",
+which nothing enforces and nothing could sensibly enforce — a reviewer's
+free text may legitimately quote a verdict word. What is enforced is that no
+FIELD carries one, and the report renders every free-text field as data, so a
+quoted verdict cannot present itself as the report's own.)*
 
 **A verdict is not a gate result.** *(Added at v2.1; charter §7.1.)* Three
 outcomes are distinct and must be presented separately:
@@ -502,11 +507,22 @@ outcomes are distinct and must be presented separately:
 | Outcome | Produced when |
 |---|---|
 | **Row/formula outcome** | Always. It is a function of the rows and nothing else |
-| **Administration eligibility** | Separately determined: a record is eligible to be cited as launch evidence only when it is `formal`, of kind `full`, declares fresh context, and validates without error |
+| **Administration eligibility** | Separately determined, and **conjunctive over five limbs**: the record is `formal`; `administration_kind` is `full`; the reviewer declares fresh context; the record validates with **zero** errors; and the checks that bind it to the repository actually ran — with git unavailable, identity, binding, case-text, deferral and evidence existence are not verified, and an unverified record is not eligible *(the fourth limb was stated at v2.1 and implemented at only one of its four consumers; the fifth was a disclosed limit that eligibility did not consider — RD-55 f1, RD-56 f1 and f7)* |
 | **Formal gate result** | Only for an eligible record. For any other, the formal gate result is **none**, and the row outcome is diagnostic |
 
-A delta, non-formal, stale or invalid administration may therefore produce a
-diagnostic row outcome. **It may never produce a `READY FOR` gate result.**
+An administration failing any limb may therefore produce a diagnostic row
+outcome. **It may never produce a `READY FOR` gate result.** *(v2.1 wrote
+"a delta, non-formal, stale or invalid administration"; `stale` named no
+limb, defined nothing, and was computed nowhere — RD-55 f7. The limbs above
+are the list.)*
+
+**The fourth outcome has a name: `NONE`.** When an administration is
+ineligible the gate result is the literal `NONE`, followed by the limbs it
+failed. Every surface uses that word — the trend log's Gate-verdict column,
+the generated report's terminal line, and the validator's own output —
+so §6's column vocabulary is four-valued and all four values are defined
+here. *(Added at v2.2, RD-55 f8: v2.1 introduced the outcome in prose as
+"none" and three tool surfaces spelled it three ways.)*
 
 This reaches every place a gate result is stated, and §6's trend log is one of
 them: the Gate-verdict column carries the **gate result**, so an ineligible
@@ -617,13 +633,16 @@ Qualifications:
   The E, A–D, F1, F3 and F4 conjuncts are **never deferrable** — each
   carries this section's own rationale for blocking — so the two pass
   verdicts differ in exactly one limb, and the validator runs the full
-  conjunct battery on both branches (LG-6/LG-7): plain `READY FOR`
+  conjunct battery on both branches (`LA-12`): plain `READY FOR`
   requires F2 `Met` and zero declared deferrals; `READY-WITH-DEFERRALS`
-  requires the citation and the nonzero count, and fails on any non-F2
-  conjunct exactly as a plain pass would. *(Check identifiers corrected at
-  v2.1, RD-48 f1: this sentence cited `LG-6/LG-7`, checks in
-  `launch_gate_results.py`, which validates historical Markdown records only
-  and never runs on a v2.0 record. The structured path's checks are `LA-*`.)*
+  requires the nonzero count **and a citation that resolves**, and fails on
+  any non-F2 conjunct exactly as a plain pass would. *(Corrected at v2.2,
+  RD-55 f4. v2.1 annotated this sentence but left the literal `LG-6/LG-7`
+  standing — checks in `launch_gate_results.py`, which validates historical
+  Markdown records only and never runs on a structured record — while three
+  documents said the citation had been replaced. The structured path's check
+  is `LA-12`. The resolving-citation limb was likewise stated here and
+  selected from the deferral count alone until v2.2, RD-56 f8.)*
 - F5 and F6 are recorded and disclosed (`reviewer.model_family`; the trend
   row) *(field name corrected at v2.1, RD-48 f1 — §5 has no "family line")*
   but are deliberately not conjuncts at Administration 1: both were added
@@ -732,8 +751,8 @@ It is never parsed, never cited as the source of an administration fact, and
 `--check` regenerates it to detect an edited one. A record that does not
 validate is not rendered at all.
 
-**What the validator checks** (`LA-1` … `LA-16`, each with at least one
-mutation fixture). *(Amended at v2.1, review RD-48 finding 5. This clause
+**What the validator checks** (`LA-1` … `LA-16`, and `LA-3b`, each with at
+least one mutation fixture). *(Amended at v2.1, review RD-48 finding 5. This clause
 read "the tool's own docstring is the enumeration, and it is the tool's, not
 this instrument's, to keep current" — an instrument making a document
 normative and simultaneously disclaiming responsibility for its currency,
@@ -746,8 +765,14 @@ binding; roster completeness and closure; verdict/scope agreement; evidence
 discipline per verdict; E1's five sub-rows and its rollup; scoped-row
 disclosure against the deferred-wave findings; E3's credibility protocol and
 its reopen-list gate; E4's fixed-case completeness and case-text fidelity;
-deferral citation (a made decision, never a queue entry); §4's formula on
-both pass branches; full-vs-delta and fresh-context integrity; G1's
+the E4 routing authority's binding to §8 (`LA-3b` — named here at v2.2,
+RD-55 f2 and RD-56 f8: v2.1 took back this enumeration in the same pass that
+added a check the enumeration did not name, which by this clause's own
+construction is a finding); the schema's own identity, since a record
+validated against anything but the committed schema is not validated
+(RD-56 f3); deferral citation — **a made owner decision**, never a queue
+entry, a log, an index, a decision packet, or a document that declares its
+own status unresolved (RD-56 f5); §4's formula on both pass branches; full-vs-delta and fresh-context integrity; G1's
 presence and answer; prior-record anchoring; and the pilot-recurrence check.
 
 The instrument, not the tool, owns readiness semantics. A record the tool
@@ -968,6 +993,35 @@ Notes for administering against Syzygy specifically:
 ---
 
 ## 9. Changelog
+
+- **v2.2** (2026-08-13, repair pass — the two v2.1 reviews) — v2.1's two
+  commissioned reviews (RD-55 policy semantics, RD-56 machinery) both
+  returned `REVISE`, and **both found the same blocking defect
+  independently**: §4's eligibility clause stated four limbs and the tool
+  implemented three, so a record whose only defect was a forged instrument
+  digest still deposited `READY FOR …` into the trend log §6 calls F1's only
+  evidence, and into the generated report's last line. Eligibility now owns
+  all five limbs (the fifth — that the binding checks actually ran — was a
+  disclosed limit nothing acted on), is computed last so it can count the
+  errors, and every consumer reads the one answer. §4 also gains the name
+  `NONE` for the fourth outcome, drops `stale` (an ineligibility ground that
+  defined nothing), narrows the closed-set clause to what is enforced, and
+  finally replaces the `LG-6/LG-7` citation v2.1 annotated but did not
+  change. §5's enumeration names `LA-3b`, the schema's own identity, and
+  what a deferral warrant is not. **The tool repairs, each with a fixture
+  verified to fail without it:** free text is neutralized at every one of
+  its sites rather than the two a reviewer named (the forgery reproduced
+  verbatim through `operationalization_notes`); `--schema` is bound, and a
+  schema that constrains nothing is refused; the prior-record path is
+  resolved inside the repository before its contents zero a trend column; a
+  deferral warrant is judged by shape, not by a three-name list that
+  accepted 16 of the decisions home's 20 files; `--allow-invalid` renders a
+  refusal instead of a traceback; the git-unavailable note reaches the
+  stored artifact instead of only stdout; invisible characters no longer
+  defeat the placeholder lexicon; and the fixture that claimed to cover the
+  wave-binding repair — and passed against the unrepaired validator, because
+  it mutated the record rather than the instrument — is replaced by one that
+  mutates the instrument in a scratch repository.
 
 - **v2.1** (2026-08-13, repair pass — the two v2.0 reviews) — the amendment
   RD-47 and RD-48 earned, both of which returned `REVISE` on v2.0.

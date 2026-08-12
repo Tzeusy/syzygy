@@ -162,13 +162,22 @@ available reading of assurance independence, and a real constraint on who
 can administer the gate.
 
 **(c) Amend first.** Name what to change; the change travels as a semantic
-delta and a v2.1 entry, and the two reviews re-run on the changed bytes.
+delta and a changelog entry, and the two reviews re-run on the changed bytes.
 **Recommended `[Inferred]`, as of 2026-08-11**, and the reviews name the
 change list rather than leaving it to be invented: bring §4's stated
 formula and the tool's computed one into agreement, give `NOT READY` a home
 in the instrument body, and close the schema audit's open-object route. The
 recommendation is inferred from two same-family reviews and is not itself
 reviewed.
+
+*(Status note, 2026-08-13.* **This arm has now been taken twice, and neither
+pass has been confirmed.** v2.1 made all three named changes and was reviewed;
+both reviews returned `REVISE`. v2.2 repaired those and is unreviewed. The
+arm's cost is therefore observable rather than estimated: **one amendment
+round costs two fresh-context reviews and has, twice, produced a further
+`REVISE`.** That is a fact about this instrument's maturity, and it is the
+thing to weigh against arm (a) — approving a candidate whose defects are at
+least enumerated — rather than a reason to keep amending indefinitely.*)
 
 **(d) Decline.** The gate stays a candidate. Administrations remain
 evidence you may weigh; no formal administration can be said to have been
