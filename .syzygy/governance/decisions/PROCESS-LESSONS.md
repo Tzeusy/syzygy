@@ -486,10 +486,16 @@ incidents, which is the arrangement the rules themselves already used.*
 - **A blank line inside a Markdown table splits it**, and the rows after it
   render as loose pipe text — invisible in a diff and to any row regex.
   Render long tables once.
-- **An act's argument is its wave manifest's digest, and nothing else.** The
-  ceremony lives in the acceptance record, which is in no manifest, so a
-  ceremony-only change moves no accepted byte and **retires no confirmation**.
-  Re-derive before repeating any claim about what an act costs.
+- **An act's argument is its wave manifest's digest — of the *whole file*.**
+  The manifest is four generated header lines plus the module rows, and the
+  fourth header line **names the acceptance phrase**. So a ceremony change
+  retires no confirmation *only if it leaves the phrase, the module count and
+  the wave description alone*; rename the phrase and the argument regenerates
+  with no module touched. *(Corrected 2026-08-13, RD-54 finding 2. The
+  unconditional form of this lesson was written here on 2026-08-13 and was
+  false the same day — a reviewer read the manifest's first four lines, which
+  nobody who repeated the claim had done. Re-derive before repeating any
+  claim about what an act costs, and read the artifact, not the summary.)*
 - **Correcting a false claim means sweeping its restatements** with a
   denominator, in the same pass — excluding the frozen review lane, whose
   quotation of it must stay.

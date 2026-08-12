@@ -35,25 +35,60 @@ that home. **One of the six is admitted by those words.** A wave manifest is
 not an RFC; neither is a history file, a matrix-row file, or a generated
 report. Either the ceremony changes or the clause does.
 
-## The one thing worth knowing before you read the options
+## Two things worth knowing before you read the options
 
-The Wave A act's argument is `sha256(WAVE-A-MANIFEST.txt)`, and that manifest
-is **19 per-module digest rows and nothing else**. So:
+### 1. What actually retires a confirmation
 
-> **A confirmation retires if and only if the arm edits a file that is a row
-> in a wave manifest.** The ceremony text is in no manifest.
+The Wave A act's argument is `sha256` of the **whole** `WAVE-A-MANIFEST.txt`
+file. That file is four generated header lines followed by 19 per-module
+digest rows. The fourth header line reads:
 
-RFC3-15 and RFC3-20 both live in `RFC-0003`, which **is** a Wave A row. So
-*any arm that amends either clause retires Wave A's confirmation* — and any arm
-that rewrites the modules' internal path strings retires both.
+```text
+# This file's own sha256 is the argument of the phrase `ACCEPT FOUNDATIONAL WAVE A: <sha256>`.
+```
 
-**Choosing where a companion goes, or declining to install it, costs nothing.**
+So the rule is:
+
+> **The argument regenerates — and the confirmation retires — if any listed
+> module's digest changes, any row's path changes, or any of the four header
+> lines changes, including the line that names the acceptance phrase.**
+
+*(Corrected 2026-08-13, review RD-54 finding 2. An earlier form of this
+section said the manifest was "19 per-module digest rows and nothing else"
+and concluded that a ceremony-only change retires nothing. **That was false in
+the direction the recommendation relied on**: renaming the acceptance phrase
+regenerates the header, regenerates the argument, and retires the confirmation
+without touching a single module. The acceptance record shows two phrases
+already retired, so this is not hypothetical. `[Observed]` — the argument
+`8972d963…` recomputes from the whole file, not from the rows alone.)*
+
+The practical consequence for this decision: **choosing where a companion goes,
+or declining to install it, still costs nothing — provided the ruling does not
+also rename the acceptance phrase.** RFC3-15 and RFC3-20 both live in
+`RFC-0003`, a Wave A row, so any arm that amends either clause retires Wave A;
+any arm that rewrites the modules' internal path strings retires both.
+
+### 2. What this decision cannot fix
+
+**`contracts/` will not hold `rfcs/` alone under any option here.** A wave act
+does not retire the candidate home — the acceptance record says retirement of
+`contracts/candidates/` is "a separate" matter — so after the act the category
+holds `candidates/` **and** `rfcs/`, and `candidates/` contains every companion
+class this decision is about, plus the review lane and seven round trees.
+
+*(Added 2026-08-13, RD-54 finding 1, which is the reason no option below claims
+category purity.)* The containment breach RFC3-15 describes is therefore **not
+created by the install ceremony**; the ceremony adds to a breach the candidates
+tree already constitutes. Full purity needs a *second* decision — where the
+candidates tree lives — which is out of P-33's scope as queued and is recorded
+below as the follow-on it implies.
 
 ## Options
 
-Both options put accepted modules at `contracts/rfcs/` and nothing else in
-`contracts/`; both are typed, and both satisfy RFC3-15 **with no amendment**.
-They differ on one axis only.
+All three options install accepted modules at `contracts/rfcs/` and add no
+companion beside them; all three satisfy RFC3-15's `contracts/` cell **as far
+as the install ceremony can**, with no amendment. Every figure below is
+`[Observed]` unless marked.
 
 ### (M) Leave the modules' internal path strings alone — *recommended*
 
@@ -62,50 +97,86 @@ record. Rationale, matrix rows and generated reports stay in the candidates
 tree, where they are today and where every clone can read them.
 
 ```text
-accepted bytes moved              0
-Wave A confirmation               survives
-Wave B confirmation               survives
-RFC3-15 amendment                 none
-code-span path strings dangling   87   (44 Wave A, 33 Wave B, 10 deferred)
-rendered links broken             0    — none of the 87 is a Markdown link
-re-review required                none
+accepted bytes moved              0                        [Observed]
+Wave A confirmation               survives                  [Inferred]
+Wave B confirmation               survives                  [Inferred]
+RFC3-15 amendment                 none                      [Observed]
+path strings left dangling        88  (45 A, 33 B, 10 deferred)  [Observed]
+rendered links broken             0   — none is a Markdown link  [Observed]
+in-tree integrity artifact        none — re-verifying the 19 installed
+                                  modules requires the digests in the act
+                                  record, not a file beside them
+re-review required                none                      [Inferred]
 ```
 
-**What the owner is accepting:** inside the *installed* tree, 87 backtick path
-strings point at files that are not beside them. A reader who follows one by
-hand lands nowhere. The same string resolves in any clone of this repository,
-and no clause requires it to resolve — swept over all 39 modules, 9 hits for
-link-obligation language, all of them runtime rendering clauses about product
-surfaces.
+**What the owner is accepting:** inside the *installed* tree, 88 path strings
+in module prose point at files that are not beside them. A reader who follows
+one by hand lands nowhere. The same string resolves in any clone of this
+repository, and **no clause requires it to resolve**: `[Observed]` 9 hits for
+link-obligation language across 6 of the 39 modules; `[Inferred]` each governs
+a *rendered* runtime reference, the nearest being RFC6-20, which binds only
+where a surface renders a citation as a link. `[Observed]` doctrine's own link
+rule (VIS-7) is scoped to rendered internal *project-entity* links across seven
+named classes and does not reach a file path in a contract module's prose.
+
+*Also: ceremony step 3 verifies the copy by running `sha256sum -c` against the
+wave manifest from inside `contracts/`. Under (M) that file is not there, so
+the step must be re-pointed at the candidates tree — a ceremony edit, free
+under the corrected rule above provided the phrase is untouched.*
+
+### (M+) As (M), and move the candidates tree out of `governance/`
+
+The only option that actually leaves `contracts/` holding `rfcs/` alone.
+RFC3-15's scope stops at `.syzygy/governance/`, so a home outside it needs no
+amendment, and the wave-manifest rows are candidates-root-relative, so the
+manifests' bytes — and therefore both arguments — do not move.
+
+```text
+accepted bytes moved              0                         [Observed]
+both confirmations                survive                   [Inferred]
+RFC3-15 amendment                 none                      [Observed]
+contract-category purity          FULL — the only option achieving it
+path strings left dangling        88, as (M)
+cost                              every artifact citing `contracts/candidates/…`
+                                  by path is repointed. Population not yet
+                                  measured                  [Unknown]
+```
+
+**What the owner is accepting:** an unmeasured repointing cost across the
+repository, in exchange for the one thing (M) cannot deliver. *(Added
+2026-08-13, RD-54 finding 1. Its cost is honestly `[Unknown]` — it was
+identified after the measurement pass, and quoting a number here that nobody
+computed is the failure this packet exists to avoid.)*
 
 ### (T) Rewrite the strings so the installed tree is self-contained
 
-Same homes, plus every internal reference repointed at its new location.
+As (M), plus every internal reference repointed at its new location.
 
 ```text
-accepted bytes moved              up to 30 modules (19 Wave A + 11 Wave B)
-Wave A confirmation               RETIRES
-Wave B confirmation               RETIRES
-RFC3-15 amendment                 none, unless a history home is minted
-                                  under governance/ — that amends the
-                                  closure sentence, not just a row
-code-span path strings dangling   0
+accepted bytes moved              all 30 modules (19 A + 11 B)  [Observed]
+Wave A confirmation               RETIRES                       [Inferred]
+Wave B confirmation               RETIRES                       [Inferred]
+RFC3-15 amendment                 none
+path strings left dangling        0
 re-review required                one full exact-package review per wave
 ```
 
 **What the owner is accepting:** the two `CONFIRM` verdicts already obtained
 (RD-31b, RD-32c) stop covering anything, and each wave must be re-reviewed on
-a regenerated argument before it can be offered.
+a regenerated argument before it can be offered. *"All 30", not "up to 30":
+every module in both waves carries at least one such reference — 19 of 19 and
+11 of 11, measured.*
 
 ## Recommendation `[Inferred]`
 
 **(M).**
 
-The reasoning is not digest preservation for its own sake. It is that the
-**typed layout is available under both options at no cost** — `contracts/`
-holding `rfcs/` and nothing else is what makes either arm lawful, and it
-requires no amendment either way. So the two options do **not** trade
-cleanliness against economy. They trade one thing only:
+The reasoning is not digest preservation for its own sake. It is that
+**every option here leaves the contract category in the same condition** — the
+candidates tree sits inside it under all three, and only (M+) changes that, at
+an unmeasured cost. None of the three requires an RFC3-15 amendment. So (M)
+and (T) do **not** trade cleanliness against economy; they trade one thing
+only:
 
 > Must a path string inside an installed module resolve from inside the
 > installed tree?

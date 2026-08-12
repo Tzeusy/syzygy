@@ -110,10 +110,13 @@ and splitting them would have given each reviewer half the question.
 that changed a conclusion rather than a wording:
 
 - **The P-33 packet's headline was false.** It said no arm preserves the
-  Wave A confirmation. The act's argument is the wave manifest's digest —
-  nineteen module rows — and the install ceremony is in no manifest, so an
-  arm that changes only the ceremony retires nothing. RD-49 supplied that
-  arm, **(1g)**, which the packet had never enumerated and which is cheaper
+  Wave A confirmation. The act's argument is the digest of the whole wave
+  manifest — four generated header lines plus nineteen module rows — so an
+  arm that changes only the ceremony retires nothing **provided it leaves the
+  header alone, and the header names the acceptance phrase** *(that proviso
+  added 2026-08-13, RD-54 finding 2; the unqualified form stated here was
+  itself false)*. RD-49 supplied that arm, **(1g)**, which the packet had
+  never enumerated and which is cheaper
   than the recommendation on both of the packet's own measures. The claim
   had propagated to three documents including `AGENTS.md`.
 - **The owner packet's one-sitting claim is false by its own contents.**

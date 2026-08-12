@@ -45,10 +45,14 @@ accepted**; no owner act has been performed in this repository at all.
   absence is correct rather than a gap.
 
 - **argument** — the exact bytes an act binds, identified by a `sha256`
-  digest. For a wave act the argument is the digest of that wave's manifest
-  file **and nothing else**. This matters constantly: a change to any file
-  *not* in the manifest — including the ceremony text itself — moves no
-  accepted byte and retires no confirmation.
+  digest. For a wave act the argument is the digest of that wave's **whole
+  manifest file** — four generated header lines plus one digest row per
+  module. A change to a file that is not in the manifest moves no accepted
+  byte. **But the header names the acceptance phrase**, so renaming the phrase
+  regenerates the argument and retires the confirmation without touching any
+  module. *(Corrected 2026-08-13, RD-54: the shorter form of this rule — "the
+  ceremony is in no manifest, so a ceremony change costs nothing" — was false
+  in exactly that case.)*
 
 - **offer** — presenting a prepared act to the owner for a yes/no. Preparing
   an offer is not performing it. An act can be *confirmed and unoffered*,
