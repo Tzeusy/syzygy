@@ -76,8 +76,17 @@ Checks (each with at least one `--selftest` mutation fixture):
         `READY-WITH-DEFERRALS` substitutes exactly the F2 limb with an
         owner-cited deferral and requires a nonzero deferral count
   LA-13 administration integrity — a `formal` administration must be
-        `full`, must be fresh-context, and a `delta` record can never
-        support a gate decision (§2)
+        `full` and must be fresh-context (§2). It does NOT reject a
+        `formal: false` delta record: such a record is lawful, and what
+        stops it supporting a gate decision is the eligibility computation,
+        which yields `NO FORMAL GATE RESULT` for it. *(Corrected — review
+        RD-48 finding 5 found this entry claiming "a `delta` record can
+        never support a gate decision", while the check gates entirely on
+        `rec["formal"]`. A record with `formal: false`, kind `delta` and
+        every row `Met` printed a READY verdict and a trend row carrying
+        it, with no error and no note. The check was right and this
+        sentence was wrong; the missing half was eligibility, now
+        computed and printed separately from the formula.)*
   LA-14 G1 — present, answered, and never a verdict row. The roster (LA-4)
         already refuses a `G1` row; this check refuses a placeholder answer,
         because a G1 section that says "none" is the absence LA-4 would have
@@ -115,6 +124,17 @@ REPO = Path(__file__).resolve().parent.parent
 DEFAULT_SCHEMA = REPO / "launch-gate-administration.schema.json"
 DECISIONS_HOME = ".syzygy/governance/decisions"
 
+#: Files that live in the decisions home but are not warrants. The queue
+#: records what the owner has NOT decided; a README routes. `_sdr_exists`
+#: already excluded the queue for `SDR-n` citations, and the path branch did
+#: not — so the same file granted nothing by identifier and everything by
+#: path (review RD-47 finding 4). One list, both branches.
+_NON_WARRANT_FILES = frozenset((
+    "PENDING-OWNER-DECISIONS.md",
+    "README.md",
+    "PROCESS-LESSONS.md",
+))
+
 # --------------------------------------------------------------------------
 # The question roster. Order is presentation order; membership is the check.
 # --------------------------------------------------------------------------
@@ -150,6 +170,30 @@ _PLACEHOLDER_TOKENS = frozenset((
     "unknown", "unspecified", "pending", "-", "--", "—", "(none)", "()",
     "empty", "not", "applicable", "yet", "identified", "found", "known",
 ))
+
+
+def _no_duplicate_keys(pairs):
+    """`object_pairs_hook` that refuses a duplicate key.
+
+    `json.loads` is last-wins and silent, so a record carrying
+    `"administration_kind": "full"` early and `"delta"` appended validates as
+    one thing and reads to a human as another (review RD-47 finding 12).
+    The record is the deliverable a reader inspects; a file that means two
+    things depending on who is reading it is not one.
+    """
+    seen = {}
+    for k, v in pairs:
+        if k in seen:
+            raise ValueError(
+                f"duplicate key {k!r} — a record must mean one thing; JSON "
+                "parsers take the last value silently while a reader takes "
+                "the first")
+        seen[k] = v
+    return seen
+
+
+def _load_json(text):
+    return json.loads(text, object_pairs_hook=_no_duplicate_keys)
 
 
 def _is_placeholder(value: str) -> bool:
@@ -193,10 +237,31 @@ _TYPES = {
 
 
 def _audit_schema(node, path, out):
-    """Reject any keyword the interpreter does not implement."""
+    """Reject any keyword the interpreter does not implement, and any open
+    object schema.
+
+    The keyword audit's safety property is that the schema can never quietly
+    rely on a keyword being *ignored*. It did not cover a keyword being
+    **deleted** — and the one keyword this whole design rests on is
+    `additionalProperties: false`, which is what stops a record carrying a
+    field the schema never named. Review RD-47 finding 6 removed it from one
+    `$defs` node and got a record whose `question_results[0].final_verdict`
+    read `"READY FOR everything"` past a clean validation.
+
+    So closure is audited, not assumed: **any node declaring `properties`
+    must also declare `additionalProperties: false`.** The claimed-verdict
+    route the v2.0 design forbids is then closed by a check rather than by a
+    keyword nobody was watching.
+    """
     if not isinstance(node, dict):
         out.append(f"{path}: schema node is not an object")
         return
+    if "properties" in node and node.get("additionalProperties") is not False:
+        out.append(f"{path}: object schema declares `properties` without "
+                   "`additionalProperties: false` — an open object lets a "
+                   "record carry fields this schema never named, including "
+                   "a claimed verdict, which the record format exists to "
+                   "make impossible")
     for k, v in node.items():
         here = f"{path}/{k}"
         if k not in _SUPPORTED_KEYWORDS:
@@ -398,10 +463,37 @@ def launch_target_forms(pb_text):
 
 
 def _yaml_list(pb_text, key):
+    """`KEY: [a, b]` -> `["a","b"]`; `KEY: []` -> `[]`; absent -> `None`.
+
+    **`None` means "this validator could not read the parameter", and every
+    caller must treat it as an error rather than a skipped check** (review
+    RD-47 finding 1). The empty list and the unreadable parameter are
+    different facts: a §8 written in YAML block form instead of flow form
+    parsed as absent, the `want is not None` guard skipped LA-3 entirely,
+    and a record declaring all six waves required validated clean with a
+    `READY FOR` verdict. An unparseable parameter is the one case where
+    failing open converts the binding check into a no-op.
+    """
     m = re.search(re.escape(key) + r":\s*\[([^\]]*)\]", pb_text)
     if not m:
         return None
     return [x.strip() for x in m.group(1).split(",") if x.strip()]
+
+
+def _param_path(pb_text, key):
+    """The repository path §8 binds to `key`, or `None` if unreadable.
+
+    §8 is a Markdown table, so the row reads
+
+        | `E4_ROUTING_AUTHORITY` | `some/path.md` — commentary |
+
+    and the binding value is the **first code span of the value cell**, not
+    the whole cell. Returning `None` when the row cannot be read is
+    deliberate: every caller treats it as an error (RD-47 f1).
+    """
+    m = re.search(r"^\|\s*`" + re.escape(key) + r"`\s*\|\s*`([^`]+)`",
+                  pb_text, re.M)
+    return m.group(1).strip() if m else None
 
 
 def e4_cases(pb_text):
@@ -443,7 +535,7 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
 
     schema_path = Path(schema_path or DEFAULT_SCHEMA)
     try:
-        schema = json.loads(Path(schema_path).read_text())
+        schema = _load_json(Path(schema_path).read_text())
     except (OSError, ValueError) as exc:
         return ([f"LA-1: schema unreadable at {schema_path}: {exc}"], notes,
                 {})
@@ -457,7 +549,7 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
     except OSError as exc:
         return ([f"LA-1: record unreadable: {exc}"], notes, {})
     try:
-        rec = json.loads(raw)
+        rec = _load_json(raw)
     except ValueError as exc:
         return ([f"LA-1: record is not valid JSON: {exc}"], notes, {})
 
@@ -513,7 +605,14 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
                         f"quotes {rec['instrument']['sha256'][:12]}…, the "
                         f"committed instrument is {got[:12]}…")
                 ver = instrument_version(blob)
-                if ver and ver != rec["instrument"]["version"]:
+                if ver is None:
+                    errors.append(
+                        "LA-2: the instrument committed at "
+                        f"{commit} declares no `effective_version:` this "
+                        "validator can read — the version binding is "
+                        "Unknown, and an unreadable parameter is an error, "
+                        "never a skipped check (RD-47 f1)")
+                elif ver != rec["instrument"]["version"]:
                     errors.append(
                         f"LA-2: the record declares instrument version "
                         f"{rec['instrument']['version']} but the instrument "
@@ -543,11 +642,36 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
                     for key, field in (("REQUIRED_WAVES", "required_waves"),
                                        ("DEFERRED_WAVES", "deferred_waves")):
                         want = _yaml_list(pb_text, key)
-                        if want is not None and want != rec[field]:
+                        if want is None:
+                            errors.append(
+                                f"LA-3: §8 at {commit} declares no `{key}` "
+                                "this validator can read (it expects flow "
+                                f"form, `{key}: [ … ]`). The wave binding is "
+                                "Unknown, and Unknown is an error here — "
+                                "skipping it would let a record declare any "
+                                "wave set and still pass (RD-47 f1)")
+                        elif want != rec[field]:
                             errors.append(
                                 f"LA-3: {field} is {rec[field]!r} but §8's "
                                 f"{key} is {want!r} — the administration "
                                 "must be bound to the parameters it names")
+                    # LA-3b — the routing authority the record restates is
+                    # bound to §8 like every other parameter it quotes. A
+                    # figure quoted outside its owning artifact goes stale
+                    # silently (RD-47 f7).
+                    want_ra = _param_path(pb_text, "E4_ROUTING_AUTHORITY")
+                    got_ra = _norm_ws(
+                        rec.get("e4", {}).get("routing_authority", ""))
+                    if want_ra is None:
+                        errors.append(
+                            f"LA-3b: §8 at {commit} declares no "
+                            "`E4_ROUTING_AUTHORITY` this validator can read")
+                    elif got_ra and got_ra != want_ra:
+                        errors.append(
+                            f"LA-3b: the record's E4 routing authority "
+                            f"{got_ra!r} is not §8's {want_ra!r} — E4 is "
+                            "judged against the authority §8 binds, not one "
+                            "the record names")
     else:
         notes.append("LA-2: git unavailable — identity, binding, E4 case "
                      "text and deferral-citation existence were NOT "
@@ -600,6 +724,19 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
                     f"LA-6: {qid} evidence[{i}] is anchored to "
                     f"{ev['commit']} but the record names {commit} — "
                     "evidence quoted from any other version is void (§2)")
+            # RD-47 f8: deferral paths were existence-checked and evidence
+            # paths were not, though evidence is what a verdict rests on. A
+            # fabricated filename passed clean. Quote *truthfulness* stays
+            # the reader's job and is documented as content-blind; the file
+            # existing at the named commit is mechanical, and now checked.
+            elif _git:
+                pth = ev["path"]
+                rel = pth[2:] if pth.startswith("./") else pth
+                if _path_kind(commit, rel) != "blob":
+                    errors.append(
+                        f"LA-6: {qid} evidence[{i}] cites {pth!r}, which is "
+                        f"not a file at {commit} — a quote from a file that "
+                        "does not exist is not evidence")
 
     # ---- LA-7 E1 rollup --------------------------------------------------
     if "E1" in rows and rows["E1"]["verdict"] == MET:
@@ -733,22 +870,45 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
                 errors.append(
                     f"LA-11: {cite} names no decision in {DECISIONS_HOME} "
                     f"at {commit}")
-        elif "/" in cite:
-            if _git:
-                # A PREFIX strip, never `lstrip("./")` — that takes a
-                # character SET and would eat the leading dot of
-                # `.syzygy/…`, turning every governed path into a
-                # non-existent one and every deferral citation into a
-                # false error.
-                rel = cite[2:] if cite.startswith("./") else cite
-                kind = _path_kind(commit, rel)
-                if kind is None:
-                    errors.append(f"LA-11: the deferral path {cite!r} does "
-                                  f"not exist at {commit}")
-                elif kind != "blob":
-                    errors.append(f"LA-11: the deferral path {cite!r} is a "
-                                  f"{kind}, not a file — a directory grants "
-                                  "nothing")
+        elif _git and _path_kind(
+                commit, cite[2:] if cite.startswith("./") else cite):
+            # Path-ness is decided by RESOLVING the citation against the
+            # commit, never by `"/" in cite` (RD-47 f5) — that test rejected
+            # a real root-level file and accepted anything with a slash in
+            # it, which is how `.beads/issues.jsonl` became a warrant.
+            #
+            # A PREFIX strip, never `lstrip("./")` — that takes a character
+            # SET and would eat the leading dot of `.syzygy/…`, turning
+            # every governed path into a non-existent one.
+            rel = cite[2:] if cite.startswith("./") else cite
+            kind = _path_kind(commit, rel)
+            if kind != "blob":
+                errors.append(f"LA-11: the deferral path {cite!r} is a "
+                              f"{kind}, not a file — a directory grants "
+                              "nothing")
+            elif not rel.startswith(DECISIONS_HOME + "/"):
+                # RD-47 f4. A deferral is a WARRANT, and only a recorded
+                # owner decision is one. The queue of decisions the owner
+                # has NOT made was granting deferrals through this branch,
+                # as was a Beads issue — both are records that a question is
+                # open, which is the opposite of the thing being cited.
+                errors.append(
+                    f"LA-11: the deferral citation {cite!r} does not live "
+                    f"in {DECISIONS_HOME}/ — a deferral is warranted by a "
+                    "made owner decision, and nothing else grants one")
+            elif rel.rsplit("/", 1)[-1] in _NON_WARRANT_FILES:
+                errors.append(
+                    f"LA-11: {cite!r} is the pending-decision queue, not a "
+                    "decision — it records that the owner has *not* ruled, "
+                    "which is the opposite of a warrant (LA-11's own words: "
+                    "\"a made decision, never a queue entry\")")
+        elif "/" in cite or cite.endswith((".md", ".txt", ".yaml", ".json")):
+            # Shaped like a path, and did not resolve. Distinguished from
+            # the not-a-citation case below so the error names the actual
+            # defect: a citation that points nowhere is a different mistake
+            # from a citation that was never a citation.
+            errors.append(f"LA-11: the deferral path {cite!r} does "
+                          f"not exist at {commit}")
         else:
             errors.append(
                 f"LA-11: {cite!r} is neither a repository path nor an SDR-n "
@@ -811,7 +971,7 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
                           "declares prior_record: null")
         else:
             try:
-                pj = json.loads(Path(prior_path).read_text())
+                pj = _load_json(Path(prior_path).read_text())
             except (OSError, ValueError) as exc:
                 errors.append(f"LA-15: --prior unreadable: {exc}")
                 pj = None
@@ -894,6 +1054,29 @@ def _compute(rec, rows, prior_path):
         verdict = "NOT READY"
         branch = "blocked"
 
+    # ---- eligibility is a SEPARATE question from the formula -------------
+    # Three results, and conflating them is how a diagnostic run comes to
+    # read like a gate outcome (charter §7.1; reviews RD-47 f11, RD-48 f5).
+    #
+    #   verdict        what the rows compute        always produced
+    #   eligible       may this run be cited as launch evidence?
+    #   gate_result    the formal outcome           only when eligible
+    #
+    # A `delta` record with every row Met printed `READY FOR …`, a §6 trend
+    # row carrying it, and `record valid` — with no error and no note —
+    # although §2 rejects a delta record as gate evidence. The formula was
+    # right; presenting its output as a gate result was not.
+    ineligible = []
+    if not rec["formal"]:
+        ineligible.append("`formal: false`")
+    if rec["administration_kind"] != "full":
+        ineligible.append(f"`administration_kind: "
+                          f"{rec['administration_kind']}`")
+    if not rec["reviewer"]["fresh_context"]:
+        ineligible.append("the reviewer declares no fresh context")
+    eligible = not ineligible
+    gate_result = verdict if eligible else "NO FORMAL GATE RESULT"
+
     # A pass that rests on any deferral is READY-WITH-DEFERRALS, never plain.
     if branch == "plain" and n_deferred:
         errs.append("LA-12: a plain READY verdict over a nonzero deferral "
@@ -905,10 +1088,26 @@ def _compute(rec, rows, prior_path):
         errs.append("LA-12: deferrals are declared against a passing core "
                     "with no F2 deferral — the only deferrable limb is F2")
 
+    # ---- new findings versus the prior administration --------------------
+    # The CANONICAL RECORD decides what this is compared against — its own
+    # `prior_record.path` — never an optional CLI flag (review RD-47 f3).
+    # Bound to `--prior` alone, the column could not be computed by the
+    # documented path at all: the renderer has no such flag, so every
+    # generated report read `n/a (no prior record)` even when the record
+    # named one. That is a false claim of absence, which is exactly what
+    # VIS-2 forbids. `--prior`, when given, still overrides for inspection.
+    #
+    # Three distinct outcomes, and they must not collapse into each other:
+    #   an integer   the comparison ran
+    #   None         no prior is declared — this record opens the log
+    #   "unknown"    a prior IS declared and could not be read
     new_findings = None
-    if prior_path is not None:
+    src = prior_path
+    if src is None and rec.get("prior_record"):
+        src = str(REPO / rec["prior_record"]["path"])
+    if src is not None:
         try:
-            pj = json.loads(Path(prior_path).read_text())
+            pj = _load_json(Path(src).read_text())
             pv = {q["question_id"]: q["verdict"]
                   for q in pj.get("question_results", [])}
             newly_not_met = [q for q in ROSTER
@@ -919,11 +1118,14 @@ def _compute(rec, rows, prior_path):
                             and pv.get(q) not in (NOT_MET, SCOPED)]
             new_findings = len(newly_not_met) + len(newly_scoped)
         except (OSError, ValueError):
-            new_findings = None
+            new_findings = "unknown"
 
     return {
         "_errors": errs,
         "verdict": verdict,
+        "eligible": eligible,
+        "ineligible_because": ineligible,
+        "gate_result": gate_result,
         "branch": branch,
         "conjuncts": conjuncts,
         "not_met": n_not_met,
@@ -936,13 +1138,22 @@ def _compute(rec, rows, prior_path):
 
 
 def trend_row(rec, computed):
+    """§6's row, generated. The Gate-verdict column carries the *gate result*
+    (§4's third outcome), never the row/formula outcome — an ineligible
+    administration whose rows all read `Met` must not deposit
+    `READY FOR …` into the log F1 is answered from and only from."""
     nf = computed["new_findings"]
+    if computed["eligible"]:
+        col = computed["gate_result"]
+    else:
+        col = ("NONE — not eligible; row outcome was "
+               + computed["verdict"])
     return "| {} | {} | {} | {} | {} | {} | {} | {} | {} |".format(
         rec["date"], rec["repository_commit"][:7], computed["not_met"],
         computed["scoped"], computed["unknown"], computed["deferred"],
         computed["reopened"],
         "n/a (no prior record)" if nf is None else nf,
-        computed["verdict"].replace("|", "/"))
+        col.replace("|", "/"))
 
 
 # ==========================================================================
@@ -1011,7 +1222,7 @@ def _base_record(git_bound):
                                "governing_artifact": "RFC-0002",
                                "note": "clause 4"}],
                "reopen_items": []},
-        "e4": {"routing_authority": "SURFACE-CLAUSE-ROUTING-MATRIX.md",
+        "e4": {"routing_authority": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
                "fixed_case_results": [
                    {"case_index": i, "case_text": t,
                     "reviewer_classification": "shape",
@@ -1029,6 +1240,18 @@ def _base_record(git_bound):
         "falsification_summary": "attempted to break each Met",
         "prior_record": None,
     }
+
+
+def __i(rec, qid):
+    """Index of a roster row in a record, for fixtures that mutate one."""
+    return next(i for i, q in enumerate(rec["question_results"])
+                if q["question_id"] == qid)
+
+
+def _deferral(citation, qid="F2"):
+    return {"question_id": qid, "decision_citation": citation,
+            "bounded_reduction_plan":
+                "the Wave A act closes this limb; reviewed at that act"}
 
 
 def _selftest():
@@ -1072,6 +1295,43 @@ def _selftest():
     case("a lawful record validates clean (no-git)", lambda r: None, None)
     case("a lawful record validates clean against the live instrument",
          lambda r: None, None, git=True)
+
+    # --- v2.1 repairs (RD-47). Every one of these validated CLEAN before
+    # the repair, and most of them produced a READY verdict while doing so.
+    case("LA-11 the pending-decision queue grants no deferral",
+         lambda r: (r["question_results"][__i(r, "F2")].update(
+                        verdict=NOT_MET, counterexample="x"),
+                    r["owner_deferrals"].append(_deferral(
+                        DECISIONS_HOME + "/PENDING-OWNER-DECISIONS.md"))),
+         "the pending-decision queue, not a decision", git=True)
+
+    case("LA-11 a Beads issue grants no deferral",
+         lambda r: (r["question_results"][__i(r, "F2")].update(
+                        verdict=NOT_MET, counterexample="x"),
+                    r["owner_deferrals"].append(
+                        _deferral(".beads/issues.jsonl"))),
+         "does not live in", git=True)
+
+    case("LA-11 a file outside the decisions home grants no deferral",
+         lambda r: (r["question_results"][__i(r, "F2")].update(
+                        verdict=NOT_MET, counterexample="x"),
+                    r["owner_deferrals"].append(_deferral("README.md"))),
+         "does not live in", git=True)
+
+    case("LA-3 an unreadable REQUIRED_WAVES is an error, not a skip",
+         lambda r: r.update(required_waves=["A", "B", "C1", "D1"]),
+         "LA-3", git=True)
+
+    case("LA-3b the E4 routing authority is bound to §8",
+         lambda r: r["e4"].update(routing_authority="INVENTED-MATRIX.md"),
+         "LA-3b", git=True)
+
+    case("LA-6 evidence citing a non-existent file is rejected",
+         lambda r: r["question_results"][__i(r, "A1")]["evidence"].append(
+             {"path": "NO/SUCH/FILE-INVENTED.md",
+              "commit": r["repository_commit"],
+              "locator": "line 4000", "quote": "whatever I want"}),
+         "not a file at", git=True)
 
     # --- LA-1 schema ------------------------------------------------------
     case("LA-1 unknown verdict word rejected",
@@ -1420,6 +1680,99 @@ def _selftest():
     if not ok:
         failures.append(("committed schema audit", "clean", str(audit[:3])))
 
+    # RD-47 f6 — the load-bearing one. Deleting `additionalProperties` from
+    # a single `$defs` node re-opened the claimed-verdict route the whole
+    # v2.0 design rests on, and the keyword audit did not notice because it
+    # only refused keywords it could not implement, never a keyword removed.
+    n_cases[0] += 1
+    sch = json.loads(DEFAULT_SCHEMA.read_text())
+    sch["$defs"]["question_result"].pop("additionalProperties", None)
+    audit = []
+    _audit_schema(sch, "#", audit)
+    ok = any("without `additionalProperties: false`" in a for a in audit)
+    print(f"  {'pass' if ok else 'FAIL'}  an object schema that stops "
+          "closing is detected")
+    if not ok:
+        failures.append(("schema closure audit", "open object detected",
+                         str(audit[:3])))
+
+    # RD-47 f12 — a record that means one thing to a parser and another to
+    # a reader is not one record.
+    n_cases[0] += 1
+    try:
+        _load_json('{"administration_kind": "full", '
+                   '"administration_kind": "delta"}')
+        ok, got = False, "accepted a duplicate key"
+    except ValueError as exc:
+        ok, got = "duplicate key" in str(exc), str(exc)
+    print(f"  {'pass' if ok else 'FAIL'}  a duplicate JSON key is refused "
+          "rather than silently last-wins")
+    if not ok:
+        failures.append(("duplicate keys", "rejected", got))
+
+    # RD-47 f11 / charter §7.1 — a delta or non-formal record may produce a
+    # diagnostic formula outcome, and must never produce a gate result.
+    for kind, formal, why in (("delta", True, "administration_kind"),
+                              ("full", False, "formal")):
+        n_cases[0] += 1
+        rec = _base_record(False)
+        rec["administration_kind"], rec["formal"] = kind, formal
+        rows = {q["question_id"]: q for q in rec["question_results"]}
+        comp = _compute(rec, rows, None)
+        ok = (not comp["eligible"]
+              and comp["gate_result"] == "NO FORMAL GATE RESULT"
+              and any(why in b for b in comp["ineligible_because"]))
+        print(f"  {'pass' if ok else 'FAIL'}  a {kind}/formal={formal} "
+              "record yields no formal gate result")
+        if not ok:
+            failures.append((f"eligibility {kind}/{formal}",
+                             "NO FORMAL GATE RESULT", str(comp.get(
+                                 "ineligible_because"))))
+
+    # RD-48 f10(b) — the §6 row is emitted for every administration, so the
+    # separation D-3 made at the CLI has to reach the trend log too.
+    n_cases[0] += 1
+    rec = _base_record(False)
+    rec["administration_kind"], rec["formal"] = "delta", False
+    rows = {q["question_id"]: q for q in rec["question_results"]}
+    comp = _compute(rec, rows, None)
+    row = trend_row(rec, comp)
+    ok = "NONE — not eligible" in row and "READY FOR" not in row.split(
+        "NONE")[0]
+    print(f"  {'pass' if ok else 'FAIL'}  an ineligible administration's "
+          "trend row carries no gate verdict")
+    if not ok:
+        failures.append(("trend row eligibility", "NONE — not eligible", row))
+
+    # ... and an eligible one still deposits its verdict.
+    n_cases[0] += 1
+    rec = _base_record(False)
+    rec["administration_kind"], rec["formal"] = "full", True
+    rec["reviewer"]["fresh_context"] = True
+    rows = {q["question_id"]: q for q in rec["question_results"]}
+    comp = _compute(rec, rows, None)
+    row = trend_row(rec, comp)
+    ok = comp["eligible"] and comp["gate_result"] in row
+    print(f"  {'pass' if ok else 'FAIL'}  an eligible administration's "
+          "trend row still carries its gate result")
+    if not ok:
+        failures.append(("trend row eligible", comp.get("gate_result"), row))
+
+    # RD-47 f3 — an unreadable prior is Unknown, never "no prior record".
+    n_cases[0] += 1
+    rec = _base_record(False)
+    rec["prior_record"] = {"path": "NO/SUCH/PRIOR.json",
+                           "repository_commit": "0" * 40,
+                           "date": "2020-01-01"}
+    rows = {q["question_id"]: q for q in rec["question_results"]}
+    comp = _compute(rec, rows, None)
+    ok = comp["new_findings"] == "unknown"
+    print(f"  {'pass' if ok else 'FAIL'}  a declared-but-unreadable prior "
+          "record computes Unknown, not absence")
+    if not ok:
+        failures.append(("prior record", "unknown",
+                         repr(comp.get("new_findings"))))
+
     # A second method, when it is available: the reference implementation.
     n_cases[0] += 1
     try:
@@ -1471,13 +1824,25 @@ def main(argv=None):
     for n in notes:
         print(f"note: {n}")
     if computed:
-        print(f"Computed gate verdict: {computed['verdict']}")
+        # The formula outcome and the gate result are printed as two lines,
+        # never one. A reader who sees a single "gate verdict" line takes it
+        # for the gate's answer, whatever the record's eligibility says.
+        print(f"Row/formula outcome: {computed['verdict']}")
+        if computed["eligible"] and not errors:
+            print(f"Formal gate result:  {computed['gate_result']}")
+        elif not computed["eligible"]:
+            print("Formal gate result:  NONE — diagnostic only ("
+                  + "; ".join(computed["ineligible_because"]) + ")")
+        else:
+            print("Formal gate result:  NONE — the record has "
+                  f"{len(errors)} validation error(s); an invalid record "
+                  "supports no gate decision")
         for name, ok, why in computed["conjuncts"]:
             print(f"  [{'ok ' if ok else 'NO '}] {name} — {why}")
         print(f"  F2 limb: branch={computed['branch']}, "
               f"deferrals={computed['deferred']}")
         if args.trend_row:
-            rec = json.loads(Path(args.record).read_text())
+            rec = _load_json(Path(args.record).read_text())
             print("\nTrend row (§6):")
             print(trend_row(rec, computed))
     if errors:

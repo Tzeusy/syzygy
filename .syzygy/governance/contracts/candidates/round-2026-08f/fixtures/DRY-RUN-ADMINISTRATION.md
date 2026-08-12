@@ -172,7 +172,7 @@ None. A nonzero count here would indict the resolution process, not just the fin
 
 ## Falsification
 
-Nothing was falsified. The only claim this file makes is about itself: that a lawful v2.0 record validates, renders deterministically, and computes NOT READY from rows that assert nothing.
+> Nothing was falsified. The only claim this file makes is about itself: that a lawful v2.0 record validates, renders deterministically, and computes NOT READY from rows that assert nothing.
 
 | Q | What was tried |
 |---|----------------|
@@ -220,7 +220,7 @@ Nothing was falsified. The only claim this file makes is about itself: that a la
 
 *G1 yields no Met/Not-met verdict and never blocks; an administration missing it is incomplete.*
 
-Not answered. G1 asks what readiness dimension the series would miss; answering it here would make this an administration.
+> Not answered. G1 asks what readiness dimension the series would miss; answering it here would make this an administration.
 
 No missing question proposed.
 
@@ -233,7 +233,7 @@ No missing question proposed.
 - Unknown: 39
 - Deferred: 0
 - Reopened: 0
-- New findings vs prior: n/a (no prior record)
+- New findings vs prior: n/a (this record declares no prior — it opens the log)
 
 Conjuncts of the §4 formula:
 
@@ -248,7 +248,9 @@ Trend row (§6):
 
 | Date | Commit | Not-met | Scoped | Unknown | Deferred | Reopened | New findings vs prior | Gate verdict |
 |------|--------|---------|--------|---------|----------|----------|----------------------|--------------|
-| 2026-08-11 | a8f9719 | 0 | 0 | 39 | 0 | 0 | n/a (no prior record) | NOT READY |
+| 2026-08-11 | a8f9719 | 0 | 0 | 39 | 0 | 0 | n/a (no prior record) | NONE — not eligible; row outcome was NOT READY |
 
-GATE VERDICT: NOT READY
+ROW/FORMULA OUTCOME: NOT READY
+
+GATE VERDICT: NONE — this administration is not eligible to be cited as launch evidence (`formal: false`; `administration_kind: delta`; the reviewer declares no fresh context). The outcome above is diagnostic.
 

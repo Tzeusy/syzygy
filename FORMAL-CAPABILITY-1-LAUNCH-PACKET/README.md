@@ -13,7 +13,7 @@
 
 ## 1. What is being asked
 
-Administer `launch-gate-pre-specifications.md` **v2.0**, in full, at the
+Administer `launch-gate-pre-specifications.md` **v2.1**, in full, at the
 named commit, against:
 
 ```text
@@ -33,19 +33,32 @@ DEFERRED WAVES
 ## 2. What is bound — verify every digest before you begin
 
 ```text
-repository commit    5c3013f0784bc76236cfe2380d21701a625079cf
+repository commit    (re-sealed at v2.1 — see the note below)
 
-launch-gate-pre-specifications.md (v2.0)
-    05ecaa954e81ef95f6e2e2b409fbcb5bd5391037c10d9624ab4af3217a00f6d2
+launch-gate-pre-specifications.md (v2.1)
+    3afdffdab0d71d32a4e901f43db1c11ba096f699e240050e8cc6cbb95ada12c8
 §8 parameter block (as bound for this administration)
     01209c0f052971f794e1f35827a002aa8d80420aad471d10fde000abb6366ff6
 launch-gate-administration.schema.json
     e0167fb8af6a903c527d402d56c4fb85ebdfed9608de1a485f4f1563aa6a69fb
 scripts/validate_launch_administration.py
-    d6b203f7c276aa4e58e0b1d0bb4d4cf947158dea34255370a2683bc981e0c745
+    22178af793770255815c98f9c88f6cab158a66ce328be285afe5c4096d16b631
 scripts/render_launch_administration.py
-    9f90fa6ad6f6feaed175b78fe9e0901a2e3279586ffbf73b7854ead6140f9ed3
+    c9f81cb42853872735fcc25727a7660742e9c5a9db257ce483766976b9141d10
 ```
+
+**Re-sealed 2026-08-13 at instrument v2.1.** The instrument, validator and
+renderer digests carried by the previous v2.0 seal are **superseded and
+satisfy nothing**; they moved when the two v2.0 reviews were repaired, and a
+packet still binding them would send an administrator to bytes nobody offers.
+
+**Two of the five did not move**, which is the fact worth checking rather
+than taking on trust: the **§8 parameter-block digest is identical**, so
+every fixed input this administration uses — the launch target, the required
+and deferred waves, the D2 routing tasks, the E4 cases, the A3 near-misses,
+the A5 commitments — is unchanged from the v2.0 seal. So is the **schema**.
+The amendment changed how the instrument states its rules; it changed none
+of the inputs you will be judged against.
 
 Verify, in a fresh clone at that commit:
 
@@ -60,17 +73,13 @@ sha256sum launch-gate-pre-specifications.md launch-gate-administration.schema.js
 the administration would bind bytes nobody offered. Report the mismatch
 rather than proceeding.
 
-**The repository commit is expected to have advanced, and that alone is not
-a mismatch.** *(Clarified 2026-08-11, RD-50 f11.)* Commit `5c3013f` above
-is where these four artifacts were sealed; the repository has continued to
-move for reasons that do not touch them. What binds is the four sha256
-digests — verify them at whatever commit you clone, record the commit you
-actually used in `repository_commit`, and note the divergence in
-`materials.deviations`. If the digests match but the sealed commit is not
-reachable in the clone's history, that *is* a mismatch: report it.
-*(Written as a 7-character git abbreviation, deliberately: the `<8 hex>…`
-form is reserved in this repository for a prefix of an artifact digest that
-binds an act, and a commit is not one.)*
+**No commit is bound, deliberately** *(changed 2026-08-13; the v2.0 seal
+named one, and RD-50 f11 had already had to explain that its advancing was
+not a mismatch)*. **The four sha256 digests are the whole of the binding.**
+Verify them at whatever commit you clone, record the commit you actually
+used in `repository_commit`, and note nothing about divergence — there is
+nothing to diverge from. A digest mismatch is the only mismatch, and it means
+this packet is stale: report it rather than proceeding.
 
 ## 3. How the record is produced
 
@@ -179,29 +188,41 @@ be **human spot-reviewed** before the record is treated as gate evidence:
   them, say so in `materials.deviations`.
 - **A recommended verdict.** There is none, and any document that offered
   one would be inviting the failure the gate exists to catch.
-- **The two v2.0 reviews' findings.** *(Corrected 2026-08-11 — this section
-  previously said the reviews "have not been obtained". They have been, and
-  what they returned is disclosed here rather than discovered mid-run.)*
-  Both were obtained 2026-08-11 against frozen bytes, and **both returned
-  `REVISE`**: RD-48 on the policy's semantics, RD-47 on the schema and
-  validator. Their findings are **unrepaired**, and the material ones bear
-  on the instrument you are about to administer — §4 of the policy still
-  names record fields no v2.0 record has; the computed formula carries a
-  conjunct §4 does not state; the verdict word `NOT READY` is defined
-  nowhere in §1–§8 although the tool emits it. The raw files are
+- **The two v2.0 reviews' findings.** *(Updated 2026-08-13. This section has
+  now said three different things, and the sequence matters more than any one
+  of them: first that the reviews "have not been obtained"; then, from
+  2026-08-11, that both returned `REVISE` and their findings were
+  unrepaired; and now this.)*
+
+  Both were obtained 2026-08-11 against frozen bytes and **both returned
+  `REVISE`** — RD-48 on the policy's semantics, RD-47 on the schema,
+  validator and renderer. **Their material findings have since been
+  repaired, and the instrument you are administering is v2.1**, which is
+  that repair. In particular the three defects this paragraph used to warn
+  you about are gone: §4 names the schema's own fields, the sixth computed
+  conjunct is stated in §4, and `NOT READY` is defined in the instrument
+  body rather than only in its changelog.
+
+  **What has not happened is a review of the repaired bytes.** A repair
+  session cannot confirm its own repairs. So the honest statement is not
+  "the instrument is fixed" but "the instrument has been amended in response
+  to two `REVISE` verdicts, by the session that received them, and the
+  amendment is unreviewed."
+
+  The raw files are
   `.syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-47-…`
-  and `…/RD-48-…`, with the repair account in that directory's
-  `DISPOSITION-REGISTER.md`.
+  and `…/RD-48-…`, with the repair account in
+  `round-2026-08g/reviews/DISPOSITION-REGISTER.md`.
   **Their content is withheld from you under §5 for every other purpose.**
   Do not read them to inform an answer; this paragraph exists so that you
-  know the instrument is under unrepaired review, not so that you inherit
-  its reviewers' judgments. If you do read them, record it in
+  know what state the instrument is in, not so that you inherit its
+  reviewers' judgments. If you do read them, record it in
   `materials.deviations`.
+
   **P-34 is not approved**, so this administration would be run under a
-  *candidate* policy that two independent reviews have asked to revise. An
-  administration under an unapproved instrument is evidence the owner may
-  weigh, and it is not the "launch-gate v2.0 is owner-approved" conjunct of
-  the readiness standard.
+  *candidate* policy. An administration under an unapproved instrument is
+  evidence the owner may weigh, and it is not the "launch-gate is
+  owner-approved" conjunct of the readiness standard.
 
 ## 10. Deliverable
 

@@ -4,7 +4,7 @@
 status: candidate process policy — owner approval pending, see
   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
 owner: the project owner (VIS-4 — no verdict here performs an owner act)
-effective_version: v2.0 (candidate; v1.3 was the pilot-administered version)
+effective_version: v2.1 (candidate; v1.3 was the pilot-administered version)
 governs: how pre-specification readiness is evaluated — the question set,
   administration protocol, verdict vocabulary, verdict formula, the
   launch-scope parameters (§8), the structured administration source record
@@ -478,7 +478,45 @@ the reviewer or the administering session.*
 ## 4. Verdict computation
 
 The gate is administered **against a named launch target** (parameter block:
-`LAUNCH_TARGET`, `REQUIRED_WAVES`, `DEFERRED_WAVES`). The launch-gate rule:
+`LAUNCH_TARGET`, `REQUIRED_WAVES`, `DEFERRED_WAVES`).
+
+**The three gate verdict words, defined here** *(added at v2.1, review RD-48
+finding 3 — `NOT READY` was emitted by the tool, printed as the report's last
+line and carried in the trend log, while appearing in this instrument only
+inside §9's history. The word the failing branch produces had no home in the
+instrument that owns readiness semantics):*
+
+| Word | Means |
+|---|---|
+| **`READY FOR <LAUNCH_TARGET>`** | Every conjunct below holds and the pass rests on no deferral |
+| **`READY-WITH-DEFERRALS`** | Every conjunct holds except that the F2 limb is satisfied by an owner-cited deferral rather than by `Met` |
+| **`NOT READY`** | Any conjunct fails. The default: this is the verdict whenever the formula does not produce one of the two pass words |
+
+The set is closed. A record may not contain any of them — the verdict is
+computed, never claimed — and no administration may translate one into softer
+language.
+
+**A verdict is not a gate result.** *(Added at v2.1; charter §7.1.)* Three
+outcomes are distinct and must be presented separately:
+
+| Outcome | Produced when |
+|---|---|
+| **Row/formula outcome** | Always. It is a function of the rows and nothing else |
+| **Administration eligibility** | Separately determined: a record is eligible to be cited as launch evidence only when it is `formal`, of kind `full`, declares fresh context, and validates without error |
+| **Formal gate result** | Only for an eligible record. For any other, the formal gate result is **none**, and the row outcome is diagnostic |
+
+A delta, non-formal, stale or invalid administration may therefore produce a
+diagnostic row outcome. **It may never produce a `READY FOR` gate result.**
+
+This reaches every place a gate result is stated, and §6's trend log is one of
+them: the Gate-verdict column carries the **gate result**, so an ineligible
+administration deposits `NONE — not eligible` there and its row outcome
+travels beside it as the diagnostic it is. §6's counting columns are unaffected
+— a diagnostic administration's findings are findings. *(The column's rule is
+stated here rather than in §6 so that the three-outcome separation has one
+home; §6 is byte-unchanged at v2.1.)*
+
+The launch-gate rule:
 
 > **READY FOR `<LAUNCH_TARGET>`** =
 >     every E question `Met` for the named launch target
@@ -490,9 +528,20 @@ The gate is administered **against a named launch target** (parameter block:
 >     AND F4 is `Met`
 >     AND (F2 is `Met` OR explicitly owner-deferred with a bounded
 >          reduction plan)
+>     AND E3's reopen list is empty
 >
 > Every term of this formula is a predicate over the closed verdict
 > vocabulary — nothing in it requires a word the rows may not contain.
+
+*The E3 conjunct is stated here from v2.1 (review RD-48 finding 2). The tool
+has computed it since v2.0 and the generated report printed it under the
+heading "Conjuncts of the §4 formula", while §4 listed five. It is a
+strengthening and it is grounded in §3's own E3 rule — "**an empty list is
+the readiness signal**", and E3's fails-when is "the list is non-empty;
+'ready' is then false regardless of every other verdict". But a formula term
+the instrument does not carry is a term the instrument does not own, and §5
+says the instrument, not the tool, owns readiness semantics. It is now a
+stated conjunct rather than an unstated one.*
 
 **Launch scope.** A–D questions are answered over the whole repository —
 global source-of-truth and current-path hygiene are never scoped away — but
@@ -515,7 +564,8 @@ the only honest rendering, and the validator counts it separately. The
 disclosure is the scoped form's honesty, so it is checked, not trusted: a
 record with any scoped row whose deferred-wave findings line names no
 defect asserts a scoped defect exists and that none exists — a validation
-error (LG-9), never a lawful record. The gate never requires internally
+error (`LA-9`), never a lawful record. *(Identifier corrected at v2.1,
+RD-48 f1 — `LG-9` belongs to the historical Markdown validator.)* The gate never requires internally
 unrelated deferred semantics to be accepted.
 
 Qualifications:
@@ -536,14 +586,20 @@ Qualifications:
   `Not met` F2 — trend-shaped proxies can be legitimately unknowable at
   Administration 1, and the deferral discloses that rather than blocking on
   it. A deferral is claimed only by **citation**: the record's
-  `Owner deferral decision:` field names the owner decision (path or
-  identifier) that granted it — a reviewer's own evidence-cell wording
-  ("treated as owner-deferred") is not a deferral and satisfies nothing.
+  `owner_deferrals[].decision_citation` names the owner decision — an
+  `SDR-n` identifier, or a file in `.syzygy/governance/decisions/` that is
+  not the pending queue — that granted it, together with a
+  `bounded_reduction_plan`. A reviewer's own evidence-cell wording ("treated
+  as owner-deferred") is not a deferral and satisfies nothing; neither is a
+  queue entry, a Beads issue, or a candidate decision packet, each of which
+  records that the owner has **not** ruled. *(Field name corrected at v2.1,
+  RD-48 finding 1: this clause named `Owner deferral decision:`, a field of
+  the Markdown record format v2.0 deleted.)*
 - **Any deferral-carrying pass is `READY-WITH-DEFERRALS`.** The F2 deferral
   limb of the formula — and any other owner deferral a pass rests on —
   changes the verdict word: plain `READY FOR <LAUNCH_TARGET>` over any
-  deferral, or over a nonzero `Deferred count:`, is a contradiction and a
-  validation error.
+  deferral, or over a nonzero `len(owner_deferrals)`, is a contradiction and
+  a validation error. *(Field name corrected at v2.1, RD-48 f1.)*
 - **The `READY-WITH-DEFERRALS` predicate, stated as a formula** (RD34-01 —
   a verdict word with no predicate of its own is a branch a pass can ride
   through unchecked, and every term of this section's formulas is a
@@ -554,9 +610,9 @@ Qualifications:
   >     every E question `Met`; no plain `Not met` in launch-scope A–D;
   >     F1 `Met` or `Unknown`; F3 `Met`; F4 `Met` —
   >     with exactly one substitution: the F2 limb is satisfied by an
-  >     **owner-cited deferral** (the `Owner deferral decision:` field)
+  >     **owner-cited deferral** (`owner_deferrals[].decision_citation`)
   >     instead of `Met`,
-  >     AND `Deferred count:` is nonzero AND the citation is present.
+  >     AND `len(owner_deferrals)` is nonzero AND the citation resolves.
 
   The E, A–D, F1, F3 and F4 conjuncts are **never deferrable** — each
   carries this section's own rationale for blocking — so the two pass
@@ -564,8 +620,12 @@ Qualifications:
   conjunct battery on both branches (LG-6/LG-7): plain `READY FOR`
   requires F2 `Met` and zero declared deferrals; `READY-WITH-DEFERRALS`
   requires the citation and the nonzero count, and fails on any non-F2
-  conjunct exactly as a plain pass would.
-- F5 and F6 are recorded and disclosed (§5's family line; the trend row)
+  conjunct exactly as a plain pass would. *(Check identifiers corrected at
+  v2.1, RD-48 f1: this sentence cited `LG-6/LG-7`, checks in
+  `launch_gate_results.py`, which validates historical Markdown records only
+  and never runs on a v2.0 record. The structured path's checks are `LA-*`.)*
+- F5 and F6 are recorded and disclosed (`reviewer.model_family`; the trend
+  row) *(field name corrected at v2.1, RD-48 f1 — §5 has no "family line")*
   but are deliberately not conjuncts at Administration 1: both were added
   from the pilot's G1 and have no baseline yet, and F5's substantive limb
   is partially satisfied by mechanical checks even under a same-family
@@ -673,8 +733,14 @@ It is never parsed, never cited as the source of an administration fact, and
 validate is not rendered at all.
 
 **What the validator checks** (`LA-1` … `LA-16`, each with at least one
-mutation fixture; the tool's own docstring is the enumeration, and it is the
-tool's, not this instrument's, to keep current): schema conformance;
+mutation fixture). *(Amended at v2.1, review RD-48 finding 5. This clause
+read "the tool's own docstring is the enumeration, and it is the tool's, not
+this instrument's, to keep current" — an instrument making a document
+normative and simultaneously disclaiming responsibility for its currency,
+and that docstring was already false about `LA-13`. **The enumeration below
+is this instrument's**; the tool implements it, and a check the tool runs
+that this list does not name is a finding against the tool.)* The checks
+cover: schema conformance;
 instrument, parameter-block and commit identity; the launch-target and wave
 binding; roster completeness and closure; verdict/scope agreement; evidence
 discipline per verdict; E1's five sub-rows and its rollup; scoped-row
@@ -773,10 +839,25 @@ concretized as skills under `/th-projects`:
    including the "questions were weakened" check.
 
 Generalization rule: the [U] questions, the §2/§4 protocol, **and the
-record schema** are the invariant; everything project-specific lives in the
-parameter block. The schema generalizes without change — it names no Syzygy
-artifact, and the launch target, waves, and fixed cases it carries are
-values a parameter block supplies. If a generalized version needs to edit a
+record schema's field shapes** are the invariant; everything project-specific
+lives in the parameter block.
+
+*(Corrected at v2.1, review RD-48 finding 4. This rule said the schema
+"names no Syzygy artifact". **It does**: its `$id` is a `github.com/Tzeusy/
+syzygy` URL, it names `launch-gate-pre-specifications.md` and
+`scripts/validate_launch_administration.py`, it cites VIS-2 and VIS-4, and
+it carries this project's `SDR-n`/`P-n` decision-identifier conventions.
+`validate_launch_administration.py` additionally hardcodes the decisions
+home that `LA-11` depends on. What actually generalizes is the schema's
+**field shapes**; its identifiers, doctrine citations and decision
+conventions are project bindings that a generalized version must rebind.)*
+
+**The portable core includes the two tools.** Without a validator and a
+renderer a v2.0-or-later record cannot be validated, verdicted, or read: the
+verdict is computed and the record may not claim one, so an instrument
+shipped without them ships a record format nobody can turn into an answer.
+A generalized version must carry the tools or state a tool-independent
+procedure for computing §4's formula. If a generalized version needs to edit a
 [U] question to fit a project, that is a finding about the question —
 record it upstream, don't fork silently.
 
@@ -887,6 +968,46 @@ Notes for administering against Syzygy specifically:
 ---
 
 ## 9. Changelog
+
+- **v2.1** (2026-08-13, repair pass — the two v2.0 reviews) — the amendment
+  RD-47 and RD-48 earned, both of which returned `REVISE` on v2.0.
+  **§4 gains three things it should always have carried:** the closed set of
+  **gate verdict words**, including `NOT READY`, which the tool emitted and
+  the instrument defined only inside this changelog (RD-48 f3); the **E3
+  reopen-list conjunct**, which the tool has computed since v2.0 and the
+  report printed as a "§4 conjunct" while §4 stated five (RD-48 f2); and the
+  separation of **row/formula outcome, administration eligibility and formal
+  gate result** into three distinct outcomes, so that a delta or non-formal
+  administration produces a diagnostic outcome and never a `READY FOR` gate
+  result (charter §7.1; RD-47 f11, RD-48 f5). §4's clauses now name the
+  **schema fields** (`owner_deferrals[].decision_citation`,
+  `len(owner_deferrals)`, `reviewer.model_family`) and the `LA-*` checks,
+  in place of Markdown-record fields v2.0 deleted and `LG-*` checks that
+  never run on a v2.0 record (RD-48 f1). **§5 takes back the check
+  enumeration** it had delegated to a script docstring while disclaiming
+  that docstring's currency — and which was already false about `LA-13`
+  (RD-48 f5). **§7's claim that the schema "names no Syzygy artifact" is
+  withdrawn**: it is false, and the portable core now includes the two
+  tools, without which no record can be turned into an answer (RD-48 f4).
+  The changelog's own stale fixture count is deleted rather than corrected —
+  the count is printed by `--selftest` and stated nowhere else (RD-48 f6).
+  **§1, §2, §3, §6 and §8 are byte-identical to v2.0** — measured by
+  splitting both texts on their `## <n>.` headings and digesting each span,
+  not asserted: no question's text moved, no protocol obligation changed, no
+  parameter changed, and the roster and trend-log rules are untouched. §4,
+  §5, §7 and §9 are the four that moved, and each is accounted for above.
+  The three-outcome separation is stated in §4 as reaching **every** place a
+  gate result appears, which caught one the CLI repair had missed: §6's
+  Gate-verdict column was still generated from the row outcome, so an
+  ineligible administration with all-`Met` rows would have deposited
+  `READY FOR …` into the log F1 is answered from and only from (RD-48
+  f10(b)). Four further RD-48 findings concern the **v2.0 delta document**
+  rather than this instrument; they are dispositioned in the v2.1 delta,
+  including the two normative sentences v2.0 deleted from §2 without record
+  (f8) and the preamble's "stored verbatim" (f11) — both are recorded there,
+  and **neither is restored**, because §2's successor obligations are
+  equivalent-or-stronger and re-opening §2 would cost its byte-identity for
+  no gain in force.
 
 - **v1.0** (2026-08-09) — initial instrument: A1–A4, B1–B4, C1–C4, D1–D4,
   E1–E5, F1–F4; protocol, verdict rule, records, trend log, generalization
@@ -2018,7 +2139,9 @@ Notes for administering against Syzygy specifically:
   `launch-gate-administration.schema.json`, the Markdown report is
   generated from it by `scripts/render_launch_administration.py` and is
   never parsed back, and `scripts/validate_launch_administration.py`
-  (checks `LA-1` … `LA-16`, 74 mutation fixtures) validates the record and
+  (checks `LA-1` … `LA-16`, each with at least one mutation fixture;
+  the count is printed by `--selftest` and stated nowhere else) validates the
+  record and
   **computes** the verdict; the preamble's three artifact classes become
   four, splitting record from report; §2 adds the integrity requirement
   that the record *is* the JSON and that an edited report is detectable by
