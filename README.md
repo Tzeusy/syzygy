@@ -97,28 +97,46 @@ authority and are never themselves authoritative.
 
 ## Start here
 
-**Unfamiliar word?**
-[`.syzygy/governance/doctrine/README.md`](.syzygy/governance/doctrine/README.md#glossary-read-first)
-holds the adopted glossary — the one doctrine means when it says "README
-glossary" (seven entries; this file has none). The wider working
-vocabulary, including every term the glossary does not carry, is the
-candidate term registry:
-[`policy-candidates/TERM-REGISTRY.md`](.syzygy/governance/contracts/candidates/policy-candidates/TERM-REGISTRY.md)
-(candidate — approved by no act).
+**Unfamiliar word?** Which glossary depends on what kind of word it is:
+
+| Kind of word | Where |
+|---|---|
+| An adopted product term | [`doctrine/README.md`](.syzygy/governance/doctrine/README.md#glossary-read-first) — the glossary doctrine means when it says "README glossary" (seven entries; *this* file has none) |
+| A wider working product term | [`TERM-REGISTRY.md`](.syzygy/governance/contracts/candidates/policy-candidates/TERM-REGISTRY.md) — candidate, approved by no act |
+| A **process** word — *act*, *argument*, *wave*, *offer*, `P-nn`, `RD-nn`, *candidate* vs *confirmed* vs *accepted* | [`PROCESS-GLOSSARY.md`](PROCESS-GLOSSARY.md) |
 
 1. [`.syzygy/intent/OVERVIEW.md`](.syzygy/intent/OVERVIEW.md) — the project
    argument, 30 seconds to full depth (draft; adoption pending).
 2. [`.syzygy/governance/doctrine/vision.md`](.syzygy/governance/doctrine/vision.md)
    — the thesis and the non-negotiables.
-3. [`PROJECT-STATUS.md`](PROJECT-STATUS.md) — exact current gate state.
-4. [`.syzygy/governance/contracts/candidates/`](.syzygy/governance/contracts/candidates/)
+3. [`.syzygy/governance/doctrine/v1.md`](.syzygy/governance/doctrine/v1.md)
+   — **what the software would actually do at V0 and V1.** The one adopted
+   file that states scope in terms of behavior rather than principle; read it
+   if `vision.md` leaves you asking "yes, but what does it *do*?"
+4. [`PROJECT-STATUS.md`](PROJECT-STATUS.md) — exact current gate state.
+5. [`.syzygy/governance/contracts/candidates/`](.syzygy/governance/contracts/candidates/)
    — the candidate contract corpus (RFC 0001–0011) and its acceptance record.
-5. [`.syzygy/governance/policies/craft-and-care/`](.syzygy/governance/policies/craft-and-care/)
+6. [`.syzygy/governance/policies/craft-and-care/`](.syzygy/governance/policies/craft-and-care/)
    — the engineering bar.
-6. [`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`](.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md)
-   — what the owner has not yet decided.
-7. [`CONTRIBUTING.md`](CONTRIBUTING.md) — posture and change discipline.
-8. [`SECURITY.md`](SECURITY.md) — committed security posture and reporting.
+7. [`.syzygy/governance/decisions/`](.syzygy/governance/decisions/README.md)
+   — what the owner has decided, what is pending, and what acts exist.
+   Start at its [`README.md`](.syzygy/governance/decisions/README.md); the
+   queue itself is
+   [`PENDING-OWNER-DECISIONS.md`](.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md).
+8. [`CONTRIBUTING.md`](CONTRIBUTING.md) — posture and change discipline.
+9. [`SECURITY.md`](SECURITY.md) — committed security posture and reporting.
+
+**Two things in the repository root are process instruments, not project
+content**, and are named here so they are not mistaken for either *(added
+2026-08-13, RD-50 f10 — both were unmentioned by this page)*:
+
+- [`launch-gate-pre-specifications.md`](launch-gate-pre-specifications.md)
+  — the question set used to judge whether this repository is ready for
+  anyone to author its first specification. **Candidate** (approval is
+  P-34), and a `READY` verdict from it would authorize nothing.
+- [`FORMAL-CAPABILITY-1-LAUNCH-PACKET/`](FORMAL-CAPABILITY-1-LAUNCH-PACKET/)
+  — everything an outside reviewer would need to run that gate once,
+  formally. **Prepared, never administered.**
 
 Agents: read [`AGENTS.md`](AGENTS.md) — operating procedure, not project
 truth.

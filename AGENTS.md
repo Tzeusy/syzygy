@@ -33,58 +33,30 @@ clauses may be discussed, never cited as binding.
 
 ## Pending owner gates
 
-Thirteen acts are open; **none has been performed**. (The acceptance
-record's §1 carries the ten acts it offers — six waves, CC-TEST-2,
-topology, overview, D3; the three further craft acts below bind through
-the craft cluster's own `CONFIRM CRAFT AMENDMENT` route — P-12, P-41, and
-the shape-to-spec impact act added 2026-08-11.) Round-2026-08d restructured
-the single foundational-contract act into **six wave acts** (design:
-`contracts/candidates/round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md`). The
-acceptance record owns the phrases and the ceremony. Each digest belongs to
-the artifact it names, so verify with `check_governance.py` (CG-7) before any
-act. This file restates no digest.
+**Thirteen acts are open; none has been performed**, and this file states no
+more than that. *(Compressed 2026-08-13, owner charter §11.5 — the act table
+and launch-path table that stood here restated state two other records own,
+which is the currency defect the same charter asks to check for. Restating
+was costing ~700 words of always-loaded context to duplicate a page a reader
+should open anyway.)*
 
-| Act | Accepts | Digest source |
-|---|---|---|
-| Wave A | RFC 0001–0006 (19 modules) | `wave-manifests/WAVE-A-MANIFEST.txt` |
-| Wave B | RFC 0007–0009, the three surfaces (11 modules) | `wave-manifests/WAVE-B-MANIFEST.txt` |
-| Waves C1, C2 | RFC-0011 — context packets; selection policy | `WAVE-C1…C2-MANIFEST.txt` |
-| Waves D1, D2 | RFC-0010 — mission prevention; correction plane | `WAVE-D1…D2-MANIFEST.txt` |
-| Craft | Craft amendment CC-TEST-2 | `craft-and-care/INSTALL-RECORD.md` |
-| Craft 3 (P-12) | The knowledge-hygiene craft policy | none yet — digest computed at the act; candidate at `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
-| Craft 2 (P-41) | The specification-acceptance standard CC-SPEC-1…10 | none yet — digest computed at the act; candidate at `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` |
-| Craft 4 (P-42) | The shape-to-spec impact rule CC-IMPACT-1…7 (E6's open half) | none yet — digest computed at the act; candidate at `policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` |
-| Topology | The topology bundle | `topology-candidates/BUNDLE-MANIFEST.md` |
-| Overview | The project overview | the acceptance record |
-| D3 (optional) | Doctrine amendment D3 — bounded missions | none — VIS-4 adoption of the D3 packet, rev1 |
-
-The live gates are `contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`.
-
-**Current state of the launch path (2026-08-11):**
-
-| | |
+| Question | The one record that owns the answer |
 |---|---|
-| **Wave A** | **confirmed** — `VERDICT: CONFIRM` on argument `8972d963…` (RD-31b). **Offer withheld solely by P-33** |
-| **Wave B** | **confirmed** — `VERDICT: CONFIRM` on argument `193e3c1e…` (RD-32c). Nothing withholds it; it **follows Wave A** |
-| **Waves C1/C2/D1/D2** | deferred (`contracts/candidates/DEFERRED-WAVE-POSTURE.md`) |
-| **Launch gate** | **structured-record v2.0 candidate** — the record is JSON, the report is generated; approval is P-34, ungranted. Its two independent reviews were obtained 2026-08-11 and **both returned `REVISE`** (RD-47, RD-48), so the packet is not offerable |
-| **OpenSpec** | forbidden until the owner's launch decision |
+| Which acts exist, their phrases, ceremony and arguments | `contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md` |
+| Current launch-path state — waves, gate, OpenSpec | `PROJECT-STATUS.md` |
+| What each act would cost | the packet named in `decisions/README.md` |
+| Process vocabulary — *act*, *argument*, *offer*, *confirmed* vs *accepted* | `PROCESS-GLOSSARY.md` |
 
-Every P-33 arm drafted before 2026-08-11 moves at least one accepted byte,
-so under any of them the Wave A exact-package gate re-runs on a regenerated
-argument. **This file previously said "no arm preserves the confirmation",
-which was false** — the act's argument is the wave manifest's digest, and the
-install ceremony is in no manifest, so review RD-49's arm (1g) preserves both
-confirmations. The packet owns the arms and their costs
-(`decisions/WAVE-A-INSTALL-SHAPE-DECISION.md`).
+Each digest belongs to the artifact it names, so verify with
+`check_governance.py` (CG-7) before any act. **This file restates no digest
+and no verdict.**
 
-The round-2026-08b/08c/08d offerings are superseded where banner-marked;
-review RD-8 called routing an owner to a stale offering *"the finding that
-converts act 1 from a knowing act into a surprised one."*
 `decisions/ACCEPTANCE-ACT-RECORD.md` is created by the first act; its absence
 is correct. **Never edit an artifact after an act has bound its digest.** The
-rev9 phrase `ACCEPT FOUNDATIONAL RFCS` and the rev10 all-in-one phrase are
-retired and satisfy nothing.
+round-2026-08b/08c/08d offerings are superseded where banner-marked, and the
+retired rev9 / rev10 phrases satisfy nothing — review RD-8 called routing an
+owner to a stale offering *"the finding that converts act 1 from a knowing
+act into a surprised one."*
 
 ## Task routing — context is compiled, never accumulated
 
@@ -201,44 +173,6 @@ product backlog. Record unknowns as open questions in
 `decisions/PENDING-OWNER-DECISIONS.md`, not as issues. Commits are
 documentation-only and land at stable gates; **never commit a normative
 artifact while its adoption gate is unresolved.**
-
-# Notes to self
-
-Traps that recur underneath the verification rules above.
-
-- **Classify by shape, never by enumeration.** A per-round list inside a check
-  (exempt paths, known rounds) is short by exactly the round you are in. The
-  raw-review lane is a path-*segment* predicate so a new `round-*/reviews/`
-  is covered the day it exists. Adding a literal round name to a script is a
-  bug in the predicate.
-- **A fixture's name is not a check** — confirm the fixture mutates the input
-  it names and that the *named* predicate fires. And probe with neutral
-  wording: a probe containing a word the check exempts (`stale`, `retired`)
-  passes for the wrong reason.
-- **A presence test is not an openness test.** Predicates over
-  `PENDING-OWNER-DECISIONS.md` must scope to sections: rows under `Resolved…`
-  or carrying `**Executed.**` are not open. A file-wide row `grep` accepts
-  decisions already made.
-- **A blank line inside a Markdown table splits it**, and the rows after it
-  render as loose pipe text — invisible in a diff and to any row regex.
-  Render long tables once.
-- **An act's argument is its wave manifest's digest, and nothing else.** The
-  ceremony lives in the acceptance record, which is in no manifest, so a
-  ceremony-only change moves no accepted byte and **retires no confirmation**.
-  Re-derive before repeating any claim about what an act costs.
-- **Correcting a false claim means sweeping its restatements** with a
-  denominator, in the same pass — excluding the frozen review lane, whose
-  quotation of it must stay.
-- **A repair session cannot confirm its own repairs.** Keep raw reviewer bytes
-  behind a provenance banner (role, dispatch date, subject commit, fresh
-  context, model family, verdict copied exactly) and the repair account in a
-  separate register reading `repaired` · `open` · `declined` — never
-  "acknowledged". Same-model-family reviews support repair only.
-- **A finding needing a normative change to the instrument stays open.**
-  Byte-identity of a section across versions is often itself a load-bearing
-  claim; batch the amendment with its own version, delta and review.
-- **Parallel agent spawns can fail on pane exhaustion** — run reviews
-  synchronously; never kill panes or change configuration.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
 ## Beads Issue Tracker

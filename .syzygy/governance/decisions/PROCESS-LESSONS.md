@@ -461,3 +461,52 @@ still described the choice as untaken.
 **The rule:** implementing one arm of an open owner question is how a pending
 decision becomes a fait accompli. If an arm must be prototyped to be
 evaluated, the register says so in the same change.
+
+## Round 2026-08g — traps that recur underneath the verification rules
+
+*Moved here 2026-08-13 from `AGENTS.md`, on owner instruction (charter §11.5).
+They were written into the always-loaded operating-procedure file on
+2026-08-11, which took it past its declared size band; this is their home.
+`AGENTS.md` keeps the ten verification rules and points here for the
+incidents, which is the arrangement the rules themselves already used.*
+
+- **Classify by shape, never by enumeration.** A per-round list inside a check
+  (exempt paths, known rounds) is short by exactly the round you are in. The
+  raw-review lane is a path-*segment* predicate so a new `round-*/reviews/`
+  is covered the day it exists. Adding a literal round name to a script is a
+  bug in the predicate.
+- **A fixture's name is not a check** — confirm the fixture mutates the input
+  it names and that the *named* predicate fires. And probe with neutral
+  wording: a probe containing a word the check exempts (`stale`, `retired`)
+  passes for the wrong reason.
+- **A presence test is not an openness test.** Predicates over
+  `PENDING-OWNER-DECISIONS.md` must scope to sections: rows under `Resolved…`
+  or carrying `**Executed.**` are not open. A file-wide row `grep` accepts
+  decisions already made.
+- **A blank line inside a Markdown table splits it**, and the rows after it
+  render as loose pipe text — invisible in a diff and to any row regex.
+  Render long tables once.
+- **An act's argument is its wave manifest's digest, and nothing else.** The
+  ceremony lives in the acceptance record, which is in no manifest, so a
+  ceremony-only change moves no accepted byte and **retires no confirmation**.
+  Re-derive before repeating any claim about what an act costs.
+- **Correcting a false claim means sweeping its restatements** with a
+  denominator, in the same pass — excluding the frozen review lane, whose
+  quotation of it must stay.
+- **A repair session cannot confirm its own repairs.** Keep raw reviewer bytes
+  behind a provenance banner (role, dispatch date, subject commit, fresh
+  context, model family, verdict copied exactly) and the repair account in a
+  separate register reading `repaired` · `open` · `declined` — never
+  "acknowledged". Same-model-family reviews support repair only.
+- **A finding needing a normative change to the instrument stays open.**
+  Byte-identity of a section across versions is often itself a load-bearing
+  claim; batch the amendment with its own version, delta and review.
+- **Parallel agent spawns can fail on pane exhaustion** — run reviews
+  synchronously; never kill panes or change configuration.
+- **A quoted `script --flag` string is one filename to the shell.** Looping
+  over `"a.py --check"` gives `can't open file 'a.py --check'`. Cost two
+  sessions; run battery commands on their own lines.
+- **`check_governance` sweeps untracked files too.** An owner prompt or scratch
+  note in the working tree containing an unresolvable code-span path turns
+  CG-1b red, and the FAIL is indistinguishable from a corpus defect. Confirm
+  by moving the file aside and re-running before diagnosing anything.

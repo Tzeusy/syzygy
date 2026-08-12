@@ -192,6 +192,12 @@ CHECK_OWNERS = {
     "CG-24": ("mechanical — which check families have a fixture, computed"),
     "CG-25": ("mechanical — this table's own completeness over the "
               "FAIL-capable checks reported this run"),
+    "CG-26": ("record: `PROJECT-STATUS.md` §\"How to verify this page\" — its "
+              "own sentence that the published checks \"are the same\" ones "
+              "the hosted workflow runs, and the workflow header's matching "
+              "statement that the step list is the hosted denominator. Both "
+              "are claims the repository makes about itself; this check is "
+              "their enforcement"),
 }
 
 #: Checks whose rule exists **only** in this file. Downgraded to WARN until
@@ -1699,6 +1705,12 @@ ACT_DIGEST_COPY_FILES = {
     # of its confirmed argument, for the same reason.
     f"{CANDIDATES}/round-2026-08e/WAVE-B-CLOSURE-REPORT.md":
         ("ACCEPT FOUNDATIONAL WAVE B",),
+    # The round-2026-08g preflight (2026-08-13) records both current
+    # arguments as measured evidence of the starting state. A preflight is
+    # a dated snapshot by design, which is exactly why it needs registering:
+    # "it was true when written" is how a stale digest survives unnoticed.
+    f"{CANDIDATES}/round-2026-08g/FINAL-OWNER-AND-SPEC-CLOSURE-PREFLIGHT.md":
+        ("ACCEPT FOUNDATIONAL WAVE A", "ACCEPT FOUNDATIONAL WAVE B"),
 }
 
 
@@ -3165,6 +3177,147 @@ def _lock_drift_findings(name, pin, groups):
 
 # --------------------------------------------------------- self-test
 
+BATTERY_STATUS_FILE = "PROJECT-STATUS.md"
+BATTERY_WORKFLOW_FILE = ".github/workflows/governance-docs.yml"
+BATTERY_HEADING = "## How to verify this page"
+
+#: Written as words because that is how the claim is written. A digit form
+#: would silently miss the sentence this check exists to police.
+_NUMBER_WORDS = {
+    "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
+    "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16,
+    "seventeen": 17, "eighteen": 18, "nineteen": 19, "twenty": 20,
+}
+
+
+def _battery_commands(sh_block):
+    """Normalise a shell block into comparable command strings.
+
+    Shell-variable definitions are consumed, not compared: `CS=…` exists so
+    the published block stays readable, and expanding it here is what makes
+    the two lists comparable at all.
+    """
+    assigns, cmds = {}, []
+    for raw in sh_block.split("\n"):
+        line = raw.split("#")[0].strip()
+        if not line:
+            continue
+        def expand(s):
+            # Repeat to a fixed point: one shorthand may be defined in terms
+            # of another (`DR=$CS/…`), and a single pass would leave the
+            # inner name unexpanded and report a phantom divergence.
+            for _ in range(len(assigns) + 1):
+                before = s
+                for name, val in assigns.items():
+                    s = s.replace(f"${name}", val)
+                if s == before:
+                    break
+            return s
+
+        m = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)=(\S+)$", line)
+        if m:
+            assigns[m.group(1)] = expand(m.group(2))
+            continue
+        cmds.append(" ".join(expand(line).split()))
+    return cmds
+
+
+def cg26_battery_parity(res, status=None, workflow=None):
+    """The published battery and the hosted battery are one list.
+
+    `PROJECT-STATUS.md` publishes a block of commands and states, in its own
+    voice, that they are the same checks the hosted workflow runs. That
+    sentence exists so a reader cannot conflate "hosted CI is green" with
+    "the battery is clean" — and on 2026-08-13 the sentence was false three
+    ways at once: the published block held thirteen commands while claiming
+    fourteen, the hosted workflow ran fourteen steps, and only twelve were
+    shared. Two hosted-only steps exercised the dry-run administration record
+    that no local reader ever ran.
+
+    Nothing caught it, because the two lists were maintained by hand in two
+    files and the claim that they agreed was maintained by hand in a third
+    place — the sentence itself.
+
+    **What is compared, and what is not.** Only `python3` invocations are
+    checks. A published line like `git tag --list 'doctrine-*'` is
+    orientation: it prints information and cannot fail, so requiring the
+    hosted job to run it would be noise. Such lines are reported, never
+    compared. What must agree exactly is the set of `python3` commands.
+
+    **RESIDUAL LIMIT.** This establishes that the two lists name the same
+    commands. It does not establish that either list is *complete* — a check
+    absent from both files is invisible here, and no denominator of
+    "checks that ought to run" exists to compare against.
+    """
+    label = "CG-26  published battery and hosted battery are one list"
+    status_text = status if status is not None else read(BATTERY_STATUS_FILE)
+    wf_text = workflow if workflow is not None else read(BATTERY_WORKFLOW_FILE)
+    if not status_text or not wf_text:
+        res.add("WARN", label, 0, 0, "list",
+                note="one of the two files is unreadable — parity is "
+                     "Unknown, which is not the same as clean")
+        return
+
+    m = re.search(re.escape(BATTERY_HEADING) + r".*?```sh\n(.*?)```",
+                  status_text, re.S)
+    if not m:
+        res.add("FAIL", label, 1, 1, "list",
+                details=[f"{BATTERY_STATUS_FILE} — no `sh` block under "
+                         f"`{BATTERY_HEADING}`. The published battery is the "
+                         f"denominator of every 'the battery is clean' claim; "
+                         f"if it cannot be found, that claim has no subject"])
+        return
+
+    published = _battery_commands(m.group(1))
+    hosted = [" ".join(x.split())
+              for x in re.findall(r"^\s*run:\s*(.+?)\s*$", wf_text, re.M)]
+
+    pub_checks = {c for c in published if c.startswith("python3 ")}
+    host_checks = {c for c in hosted if c.startswith("python3 ")}
+    orientation = [c for c in published if not c.startswith("python3 ")]
+
+    findings = []
+    for c in sorted(pub_checks - host_checks):
+        findings.append(f"published but not hosted — `{c}`. A reader running "
+                        f"the published block exercises a check the hosted "
+                        f"run never does, so a green hosted run is the weaker "
+                        f"claim")
+    for c in sorted(host_checks - pub_checks):
+        findings.append(f"hosted but not published — `{c}`. A reader running "
+                        f"the published block believes they ran the battery "
+                        f"and did not")
+
+    # The stated count is a third hand-maintained copy of the same fact.
+    for claim in re.finditer(r"\bThe (\w+) checks above are the same (\w+)\b",
+                             status_text):
+        said = _NUMBER_WORDS.get(claim.group(1).lower())
+        also = _NUMBER_WORDS.get(claim.group(2).lower())
+        for n, which in ((said, "published"), (also, "hosted")):
+            if n is None:
+                findings.append(
+                    f"the parity sentence says `{claim.group(0)}` and this "
+                    f"check cannot read one of its numbers as a word; a "
+                    f"number it cannot read is a number it cannot police")
+                break
+        else:
+            if said != len(pub_checks):
+                findings.append(
+                    f"the parity sentence claims {said} published checks; the "
+                    f"block holds {len(pub_checks)}")
+            if also != len(host_checks):
+                findings.append(
+                    f"the parity sentence claims {also} hosted checks; the "
+                    f"workflow runs {len(host_checks)}")
+
+    examined = len(pub_checks | host_checks)
+    note = (f"{len(pub_checks)} published, {len(host_checks)} hosted, "
+            f"{len(pub_checks & host_checks)} shared")
+    details = findings + [
+        f"[orientation, not compared] {c}" for c in orientation]
+    res.add("FAIL" if findings else "OK", label, examined, len(findings),
+            "check", note=note, details=details)
+
+
 def selftest():
     """Prove each new check can fail. A validator with no failing fixture is
     indistinguishable from a no-op, and this repository has shipped one.
@@ -3978,6 +4131,94 @@ def selftest():
     cases.append(("CG-25 owner entry for an unreported check reported",
                   c.rows[0][0] == "OK"
                   and any("did not report" in d for d in c.rows[0][4])))
+
+    # ---- CG-26. The 2026-08-13 incident: `PROJECT-STATUS.md` claimed its
+    # published block and the hosted workflow were the same fourteen checks.
+    # The block held thirteen commands, the workflow ran fourteen steps, and
+    # twelve were shared. Each predicate gets its own fixture, and the
+    # agreeing case is fixtured too — a check that cannot pass is as useless
+    # as one that cannot fail.
+    def _wf(*cmds):
+        return "".join(f"      - name: x\n        run: {c}\n" for c in cmds)
+
+    def _st(block, claim=""):
+        return (f"# S\n\n{BATTERY_HEADING}\n\n```sh\n{block}```\n\n{claim}\n")
+
+    AGREE = "python3 scripts/a.py\npython3 scripts/b.py --check\n"
+
+    c = Cap()
+    cg26_battery_parity(c, status=_st(AGREE),
+                        workflow=_wf("python3 scripts/a.py",
+                                     "python3 scripts/b.py --check"))
+    cases.append(("CG-26 agreeing lists pass", c.rows[0][0] == "OK"))
+
+    c = Cap()
+    cg26_battery_parity(c, status=_st(AGREE),
+                        workflow=_wf("python3 scripts/a.py"))
+    cases.append(("CG-26 published-but-not-hosted check detected",
+                  c.rows[0][0] == "FAIL"
+                  and any("published but not hosted" in d
+                          for d in c.rows[0][4])))
+
+    c = Cap()
+    cg26_battery_parity(c, status=_st("python3 scripts/a.py\n"),
+                        workflow=_wf("python3 scripts/a.py",
+                                     "python3 scripts/dry-run.py rec.json"))
+    cases.append(("CG-26 hosted-but-not-published check detected",
+                  c.rows[0][0] == "FAIL"
+                  and any("hosted but not published" in d
+                          for d in c.rows[0][4])))
+
+    # A `CS=` shorthand must expand, or every abbreviated line reads as a
+    # divergence and the check cries wolf until someone deletes it.
+    c = Cap()
+    cg26_battery_parity(
+        c, status=_st("CS=.syzygy/x\npython3 $CS/a.py --check\n"),
+        workflow=_wf("python3 .syzygy/x/a.py --check"))
+    cases.append(("CG-26 shell-variable shorthand expands before comparison",
+                  c.rows[0][0] == "OK"))
+
+    # A shorthand defined in terms of another shorthand must reach a fixed
+    # point. A single expansion pass leaves the inner name in place and
+    # reports a divergence that does not exist.
+    c = Cap()
+    cg26_battery_parity(
+        c, status=_st("CS=.syzygy/x\nD=$CS/f\npython3 $D/a.py\n"),
+        workflow=_wf("python3 .syzygy/x/f/a.py"))
+    cases.append(("CG-26 nested shell shorthand expands to a fixed point",
+                  c.rows[0][0] == "OK"))
+
+    # Orientation lines are reported, never compared: `git tag` cannot fail,
+    # so demanding the hosted job run it would be noise, not rigour.
+    c = Cap()
+    cg26_battery_parity(c, status=_st(AGREE + "git tag --list 'doctrine-*'\n"),
+                        workflow=_wf("python3 scripts/a.py",
+                                     "python3 scripts/b.py --check"))
+    cases.append(("CG-26 non-python orientation line does not fail parity",
+                  c.rows[0][0] == "OK"
+                  and any("orientation, not compared" in d
+                          for d in c.rows[0][4])))
+
+    c = Cap()
+    cg26_battery_parity(
+        c, status=_st(AGREE, "The fourteen checks above are the same fourteen "
+                             "the hosted workflow runs."),
+        workflow=_wf("python3 scripts/a.py", "python3 scripts/b.py --check"))
+    cases.append(("CG-26 miscounted parity sentence detected",
+                  c.rows[0][0] == "FAIL"
+                  and any("claims 14 published checks" in d
+                          for d in c.rows[0][4])))
+
+    c = Cap()
+    cg26_battery_parity(c, status="# S\n\nno block here\n",
+                        workflow=_wf("python3 scripts/a.py"))
+    cases.append(("CG-26 missing published block is a finding, not a skip",
+                  c.rows[0][0] == "FAIL"))
+
+    c = Cap()
+    cg26_battery_parity(c, status="", workflow=_wf("python3 scripts/a.py"))
+    cases.append(("CG-26 unreadable input warns rather than passing",
+                  c.rows[0][0] == "WARN"))
 
     # ---- CG-18. Review RD-17 finding 10: dropping a fixture's `Measured:`
     # anchor took the denominator from 20 to 19 with no finding and a green
@@ -4930,6 +5171,7 @@ def main():
     cg21_package_readme_counts(res)
     cg22_ambiguous_status(existing, res)
     cg23_default_path_vocabulary(res)
+    cg26_battery_parity(res)
     cg24_selftest_coverage(res)
     cg25_check_owners(res)
     res.report()

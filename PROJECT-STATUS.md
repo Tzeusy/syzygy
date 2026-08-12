@@ -130,12 +130,26 @@ python3 $CS/build_budget_report.py --check
 python3 $CS/build_active_manifest.py --check
 python3 $CS/build_task_router.py --check
 python3 $CS/build_task_router.py --selftest
+DR=.syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json
+python3 scripts/validate_launch_administration.py $DR
+python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
 ```
 
 The fourteen checks above are the same fourteen the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
-battery is clean" are one claim rather than two a reader conflates.
+battery is clean" are one claim rather than two a reader conflates. The
+`git tag` line is orientation, not a check — it prints and cannot fail.
+
+**That sentence used to be false, and a check now enforces it.** *(Corrected
+2026-08-13.)* Until then this block held **twelve** checks while claiming
+fourteen; the hosted workflow ran **fourteen**, and only twelve were shared —
+the two dry-run administration steps were hosted-only, so every reader who
+ran the published block believed they had run the battery and had not. The
+sentence existed precisely to stop that conflation and was itself the
+conflation, because both lists and the claim that they agreed were maintained
+by hand in three separate places. **CG-26** now parses both files and fails on
+any divergence, including a miscounted number in this very sentence.
 
 **Read the output, not the exit code** — a PASS over zero examined items
 verified nothing. Every check prints its own denominator; the WARNs are
