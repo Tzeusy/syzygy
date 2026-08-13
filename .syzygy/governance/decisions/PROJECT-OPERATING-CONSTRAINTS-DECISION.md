@@ -29,7 +29,24 @@ the owner to anything — a stated constraint is a fact, not a promise.
 | Maximum concurrent workstreams the owner will supervise | *[unstated]* |
 | Target proving project(s) for V0 (doctrine says "the owner's other live projects"; name them or defer) | *[unstated]* |
 | Time horizon (what cadence of progress makes this worth continuing; explicitly NOT a deadline) | *[unstated]* |
-| Scope-reduction triggers (what circumstance cuts V0 scope — e.g. "if X months pass without spec authoring, the 3D map moves to V1") | *[unstated]* |
+| Scope-reduction triggers (what circumstance cuts V0 scope — e.g. "if independent-review capacity stays at zero for X months, the seven-class review bar is renegotiated as its own decision") | *[unstated]* |
+
+### The limit on a scope-reduction trigger
+
+**A trigger may request a doctrine amendment. It may not enact one.** `V0`'s
+mandatory content is fixed by adopted doctrine — `doctrine/v1.md` states that
+*"the owner has mandated **3D** as V0's realization of the constitutional
+spatial requirement"* — and doctrine changes only through a doctrine
+amendment (VIS-4). A constraints statement is a record of **capacity**; if a
+trigger would move, defer, or thin anything doctrine mandates at V0, the
+lawful form is *"this circumstance opens a doctrine-amendment question"*,
+carried to the owner as an amendment, and never a line in this table that
+quietly makes it so.
+
+*This limit is stated because the row's own former example broke it.* It read
+"if X months pass without spec authoring, the 3D map moves to V1" — which is
+exactly a doctrine-mandated V0 element being moved by a capacity statement.
+*(Corrected 2026-08-13, owner charter §12.)*
 
 ## What is explicitly NOT being decided
 

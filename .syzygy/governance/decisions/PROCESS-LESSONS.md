@@ -516,3 +516,25 @@ incidents, which is the arrangement the rules themselves already used.*
   note in the working tree containing an unresolvable code-span path turns
   CG-1b red, and the FAIL is indistinguishable from a corpus defect. Confirm
   by moving the file aside and re-running before diagnosing anything.
+- **A mutation that silently stops mutating is a check that silently stops
+  checking.** A fixture doing `text.replace(LITERAL, …)` reports `pass` for
+  ever once the subject moves the literal — it asserts on a *finding count*
+  that an unmutated input also satisfies. Twice on 2026-08-13: a launch-gate
+  fixture bound to `.beads/issues.jsonl` after another session untracked it,
+  and a charter fixture bound to `governing_clauses: [RFC7-40]` after the row
+  gained two clauses. Neither was found by design; both surfaced when
+  something else failed. **Guard every mutation site** — `if mutated == base:
+  return False, "mutation did not apply"` — and then break the literal to
+  confirm the guard fires. Sweep with a denominator: at that date, 216
+  unguarded sites in `launch_gate_results.py`, 8 across three other scripts.
+- **Compare a check's denominator before and after your repair.** Satisfying a
+  proximity-window predicate by adding a citation makes the sentence longer,
+  which can push its trigger word outside the window — the claim then leaves
+  the population and the count drops. A repair that quiets a check instead of
+  satisfying it looks identical to success in the summary line. [Observed —
+  `CG-27` on `TASK-ROUTER.md`, 17 examined became 16.]
+- **A candidate home is not an authoritative one, and a check must say which
+  it has.** A rule stated only in a script and a rule stated in a policy the
+  owner has not ruled on are different states; collapsing them into one
+  "advisory" bucket makes the second look like the first. Keep the tables
+  separate and report the two counts.
