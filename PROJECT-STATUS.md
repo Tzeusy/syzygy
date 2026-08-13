@@ -175,6 +175,13 @@ filesystem whether a git-excluded directory existed, and the founder machine
 has one. That divergence is invisible from the machine that has the
 directory.
 
+The most recent clone run is
+[`round-2026-08g/FINAL-PUBLIC-CLONE-REPORT.md`](.syzygy/governance/contracts/candidates/round-2026-08g/FINAL-PUBLIC-CLONE-REPORT.md),
+which names the one commit it is valid for and links the hosted run at that
+same commit. **A clone report older than `HEAD` establishes nothing about
+`HEAD`** — check the commit it names against the commit you are on before
+reading it as current.
+
 **No result figures are quoted on this page.** Twice, figures that were
 correct when written went stale within two commits — in the two documents an
 owner is sent to for evidence. Run the commands.
