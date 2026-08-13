@@ -57,6 +57,38 @@ confirmed against a ruled P-40, not a pending one.
 E5 is the one launch-gate criterion whose owner is entirely inside this
 repository's control.
 
+## Digest consequences and the exact next transaction
+
+*(Added 2026-08-13, owner charter §16.)*
+
+| Arm | Wave A / Wave B manifests | Confirmations | What binds |
+|---|---|---|---|
+| **(a)** review, then act | **unchanged** | **both survive** | the **policy file's own digest**, computed at the act (`CC-TEST-2` precedent), never transcribed in advance |
+| **(b)** author against the unconfirmed candidate | unchanged | both survive | nothing — the spec's acceptance rests on the owner accepting the spec, not on a standard in force |
+| **(c)** no written standard | unchanged | both survive | nothing |
+
+**No arm touches a contract wave.** This is craft policy: neither manifest
+regenerates and neither confirmation is retired under any arm. What differs
+is whether anything is in force when the first specification is judged.
+
+**Pre-work required:** **rule `P-40` first.** `CC-SPEC-1` consumes the
+granularity rule by identifier, so ruling P-40's arm (b) or (c) changes
+`CC-SPEC-1`'s content without changing its text — the standard must be
+confirmed against a ruled P-40, not a pending one.
+
+**Review required:** one fresh-context review of `CC-SPEC-1…10`, and it must
+cover the **repaired** bytes: the candidate was rewritten on 2026-08-13 and
+no independent reader has seen the result. Commission it **jointly with
+`P-42`** — `CC-IMPACT-1`'s spec-level declaration is generated as the union
+of `CC-SPEC-2`'s six fields, so reviewing either alone leaves a dangling
+generation.
+
+**Exact next transaction.** Under (a): rule P-40; commission the joint
+review; disposition every finding; freeze the bytes; then
+`CONFIRM CRAFT AMENDMENT` over the frozen digest, recorded in the craft
+`INSTALL-RECORD.md`. The ceremony phrase is minted at the offering, after
+the review — not now.
+
 ## Earliest required gate
 
 Before the first specification is authored (`FIRST-OPENSPEC-SEQUENCE.md`

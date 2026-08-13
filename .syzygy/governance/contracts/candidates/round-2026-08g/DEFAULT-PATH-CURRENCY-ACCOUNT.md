@@ -108,6 +108,11 @@ instead of satisfying it is the failure `CC-KNOW-17` names, and it took a
 before/after denominator comparison to see it at all. The window was widened
 to a paragraph scale and the claim is back in, satisfied rather than invisible.
 
+*`17` and `16` are the **transient** figures of that one before/after
+comparison, kept because the comparison is the lesson. They are **not** the
+settled denominator — the remaining repairs moved it again, and the current
+figure is whatever `CG-27` prints when you run it. Do not quote these two.*
+
 ## §11.5 — AGENTS.md within its band
 
 `# Notes to self` was already relocated to `decisions/PROCESS-LESSONS.md`,

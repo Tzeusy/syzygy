@@ -78,6 +78,36 @@ wants the vocabulary contract-governed, at the cost of another Wave A
 regeneration. Rule 3 exists so the deferred Mission waves cannot hold
 Capability 1 hostage while also never being silently presumed.
 
+## Digest consequences and the exact next transaction
+
+*(Added 2026-08-13, owner charter §16 — the costs were stated inside the
+options; this gathers them where they can be compared.)*
+
+| Arm | Wave A manifest | Wave B manifest | Confirmations |
+|---|---|---|---|
+| **(a1)** seven facets, drafted into an RFC-0006 amendment before the Wave A act | **regenerates** | unchanged | **Wave A's is retired** — a fresh exact-package review binds the new bytes before the wave can be offered |
+| **(a2)** seven facets, owned by the Capability 1 specification | **unchanged** | unchanged | **both survive** |
+| **(b)** an explicit labelled composite facet | **regenerates** | unchanged | Wave A's is retired; RFC-0006's review re-opens |
+| **(c)** fewer facets | **unchanged** | unchanged | both survive — corrected 2026-08-10; RFC-0006/0008 carry no facet vocabulary to re-review |
+
+**This is the decision whose arms differ most in cost**, and the difference is
+one confirmed wave. `(a2)` is recommended partly for that reason, and the
+owner should know that is what the recommendation is trading: contract-level
+anchoring of the vocabulary, for keeping a confirmation that already exists.
+
+**Pre-work required:** none for `(a2)` or `(c)`. For `(a1)` and `(b)`: draft
+the amendment, travel it as a semantic delta, and regenerate the manifest —
+in that order, before the ruling is recorded.
+
+**Review required:** `(a1)` and `(b)` need a fresh-context review of the
+changed RFC-0006 bytes **and** a new exact-package review of the regenerated
+Wave A argument. `(a2)` and `(c)` need neither.
+
+**Exact next transaction.** One row in `SURFACE-DECISION-RECORD.md` naming
+**both** the facet set and its drafting site — the site is half the ruling,
+and a row naming only the facets leaves the question open in the form that
+caused this packet's 2026-08-10 correction.
+
 ## Earliest required gate
 
 Wave A act (RFC-0006 is in Wave A); the ruling is cheapest before the

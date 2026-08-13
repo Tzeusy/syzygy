@@ -47,6 +47,29 @@ the granularity, not just an ordering.
 
 `[Inferred]` **(a)**.
 
+## Digest consequences and the exact next transaction
+
+*(Added 2026-08-13, owner charter §16.)*
+
+| Arm | Wave A manifest | Wave B manifest | Confirmations |
+|---|---|---|---|
+| (a) one capability, one change | **unchanged** | **unchanged** | **both survive** |
+| (b) finer, per view | unchanged | unchanged | both survive |
+| (c) coarser, one change for V0 | unchanged | unchanged | both survive |
+
+**No arm touches a contract module.** This is the cheapest launch-critical
+ruling on the queue in digest terms: it costs nothing already confirmed. What
+it costs is the alternative decompositions — (b) and (c) would each require
+`FIRST-OPENSPEC-SEQUENCE.md` to be re-derived, since its four-capability
+ordering assumes (a).
+
+**Pre-work required:** none. **Review required:** none — no normative artifact
+changes; the rule is recorded and the sequence document then cites it.
+
+**Exact next transaction.** One row in `SURFACE-DECISION-RECORD.md` stating
+the granularity rule verbatim, after which `FIRST-OPENSPEC-SEQUENCE.md` cites
+that row instead of asserting the rule in its own voice.
+
 ## Earliest required gate
 
 Before OpenSpec Capability 1 is authored (it defines what "Capability 1

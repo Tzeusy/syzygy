@@ -64,6 +64,34 @@ choice must land before specs cite the rules.
 `[Inferred]` **(a)**, unchanged from round-08d packet 10, now with the
 CG-20/21 re-arming consequence attached.
 
+## Digest consequences and the exact next transaction
+
+*(Added 2026-08-13, owner charter §16.)*
+
+| Arm | Wave A / Wave B manifests | Confirmations | Side effect |
+|---|---|---|---|
+| **(a)** the compact 10-rule version | **unchanged** | **both survive** | `CG-20`, `CG-21` and `CG-27` stop being advisory and can fail the battery |
+| **(b)** the original 22-rule version | unchanged | both survive | same re-arming; the migration map becomes unnecessary |
+| **(c)** neither | unchanged | both survive | `CC-BUDGET-1` stays orphaned; the three checks stay advisory; the shadow-authority finding stands at every future administration |
+
+**No arm touches a contract wave.** The consequence to weigh is not a digest —
+it is that **three repository checks currently downgraded to WARN would begin
+to fail**, because their rules would have a binding home. `CG-27` is new as of
+2026-08-13 and enforces `CC-KNOW-11`'s currency limb over the default reading
+path; it is clean today, and arm (a) or (b) makes that cleanliness load-bearing
+rather than advisory.
+
+**Pre-work required:** none. **Review required:** one fresh-context confirming
+review of the compaction under (a) — specifically that the twelve retired
+identifiers' obligations survive in their named absorbers, which is the claim
+the migration map makes and the one a reviewer can check.
+
+**Exact next transaction.** Under (a): commission that review; disposition it;
+freeze the bytes; then `CONFIRM CRAFT AMENDMENT` over the frozen digest,
+recorded in the craft `INSTALL-RECORD.md`. Under (c): a recorded decision
+saying so, which is strictly better than leaving the question open — an
+advisory check with a recorded reason is honest, one with none is drift.
+
 ## Earliest required gate
 
 Its own craft act; **before OpenSpec** (specs will cite CC-BUDGET-1).

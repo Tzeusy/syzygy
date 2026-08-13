@@ -1,5 +1,14 @@
 # Is Syzygy ready to author Capability 1 in OpenSpec?
 
+> # SUPERSEDED — do not route an owner here
+>
+> **Superseded 2026-08-13 by
+> [`round-2026-08g/FINAL-CAPABILITY-1-READINESS-REPORT.md`](../round-2026-08g/FINAL-CAPABILITY-1-READINESS-REPORT.md).**
+> This page grades the readiness standard as it stood at **eleven**
+> conjuncts; the standard now carries **thirteen**, and several states below
+> have moved. Kept unedited as the record of what was true on 2026-08-11.
+> The verdict is unchanged in both: **no**.
+
 ## No.
 
 Not one of the eleven conjuncts of the readiness standard is satisfied. Nine

@@ -75,6 +75,35 @@ the write boundary. Wave B ratifies the drafted clauses.
 
 `[Inferred]` **(a)**; (b) remains reachable later as OpenSpec-level work; (d) is the honest alternative if the owner rejects the pass's drafted identity ruling — its cost is one more Wave B regeneration plus the two-document seam, not a blocked launch.
 
+## Digest consequences and the exact next transaction
+
+*(Added 2026-08-13, owner charter §16 — the consequences section carried
+these in prose; this states them per arm.)*
+
+| Arm | Wave A manifest | Wave B manifest | Confirmations |
+|---|---|---|---|
+| **(a)** as drafted | unchanged | **unchanged** | **both survive** |
+| **(b)** plus an adapter-proposed README pointer | unchanged | **regenerates** | Wave B's is retired; the widened surface is re-reviewed before its act |
+| **(c)** leave the entry unspecified | unchanged | **regenerates** | Wave B's is retired — `RFC7-39`/`RFC7-40` revert out of the wave |
+| **(d)** fixed entry, identity severed | unchanged | **regenerates** | Wave B's is retired; a fresh exact-package review binds the redrafted bytes |
+
+**Only (a) keeps Wave B's confirmation.** Three of the four arms regenerate
+the Wave B argument, which is the shape of this decision: the drafted clauses
+already encode arm (a), so any other answer is a redraft.
+
+**Pre-work required:** none for (a). For (d), redraft `RFC7-39`'s "there are
+not two front doors" sentence and state which of the two documents is
+authoritative for what — the seam (a) does not open.
+
+**Review required:** none for (a) beyond Wave B's existing confirmation.
+(b), (c) and (d) each need a fresh-context review of the changed bytes plus a
+new exact-package review of the regenerated Wave B argument.
+
+**Exact next transaction.** A recorded owner decision naming the arm. Under
+(a) nothing else moves and the Wave B act ratifies the clauses as they stand;
+under (b)/(c)/(d) the redraft, its semantic delta and the two reviews come
+first, and the Wave B act waits for them.
+
 ## Earliest required gate
 
 Wave B act; on Capability 1's E3 path, so before spec authoring

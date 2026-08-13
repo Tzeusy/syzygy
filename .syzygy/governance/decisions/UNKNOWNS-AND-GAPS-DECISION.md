@@ -69,6 +69,32 @@ failure the launch standard forbids.
 `[Inferred]` **(a)** — it is the distinction the three-state thesis
 already implies, and doctrine's own example reads this way.
 
+## Digest consequences and the exact next transaction
+
+*(Added 2026-08-13, owner charter §16 — the packet stated its deltas but not
+what they cost a confirmed wave, which is the fact that decides whether a
+ruling is cheap.)*
+
+| Arm | Wave A manifest | Wave B manifest | Confirmations |
+|---|---|---|---|
+| (a) the two-term rule | **unchanged** | **unchanged** | **both survive** |
+| (b) fold into Unknown | unchanged | unchanged | both survive |
+| (c) other vocabulary | unchanged | unchanged | both survive; the **term registry** is re-reviewed |
+
+**No arm of this decision touches a contract module.** `Gap` appears in
+candidate contract text descriptively only, and the corpus's uses of
+`Unknown` already follow VIS-2. That claim is the one thing to check before
+relying on it — the delta above requires a sweep with a denominator at
+ratification (verification rule 9), not a repetition of this sentence.
+
+**Pre-work required:** that sweep. **Review required:** none for (a) or (b);
+(c) re-reviews the term registry.
+
+**Exact next transaction.** A recorded owner decision, not an act: one row in
+`SURFACE-DECISION-RECORD.md` stating the chosen arm, plus — for (a) — the
+term registry's `T-20`/`T-31` conflict note collapsing to a pointer at that
+row.
+
 ## Earliest required gate
 
 **Before OpenSpec Capability 1 is authored** (its acceptance criteria use

@@ -69,6 +69,11 @@ view over them — which can be settled now, which cannot yet, and what would
 unblock each — is
 `round-2026-08g/CAPABILITY-1-OWNER-DECISION-INDEX.md`.
 
+The standing answer to *"is this ready?"* — the readiness standard graded
+conjunct by conjunct, with the record that owns each state — is
+[`round-2026-08g/FINAL-CAPABILITY-1-READINESS-REPORT.md`](.syzygy/governance/contracts/candidates/round-2026-08g/FINAL-CAPABILITY-1-READINESS-REPORT.md).
+It quotes no counts from this page and this page quotes none from it.
+
 *(Repointed 2026-08-13. This named the round-08f combined packet, which
 review `RD-52` returned `REVISE` on for a one-sitting premise its own
 contents contradicted; it is now banner-marked superseded.)*
