@@ -64,6 +64,10 @@ backup/
 *.db-shm
 db.sqlite
 bd.db
+
+# Tracker exports are local working state; canonical tracker state syncs via Dolt.
+issues.jsonl
+interactions.jsonl
 # NOTE: Do NOT add negation patterns here.
 # They would override fork protection in .git/info/exclude.
 # Config files (metadata.json, config.yaml) are tracked by git by default
