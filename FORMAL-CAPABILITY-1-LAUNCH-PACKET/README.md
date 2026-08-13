@@ -42,10 +42,43 @@ launch-gate-pre-specifications.md (v2.2)
 launch-gate-administration.schema.json
     e0167fb8af6a903c527d402d56c4fb85ebdfed9608de1a485f4f1563aa6a69fb
 scripts/validate_launch_administration.py
-    bf67c0fc8c8bd9c3a5c93a7f218ccbbc20c121616853dc0998d82d134ea61525
+    dbb8b69097df15a4bf60cc6fc0cef1043b838a22d30920f1914da31a91322977
 scripts/render_launch_administration.py
     4ffa3c9ec83aad7951884be159eec81dde8374387fc45c4d7a6ba9b323a08e61
 ```
+
+**Third re-seal, 2026-08-13 — one digest, and the packet's own stop rule
+fired on it.** `scripts/validate_launch_administration.py` moved from
+`bf67c0fc8c8bd9c3a5c93a7f218ccbbc20c121616853dc0998d82d134ea61525`
+(sealed at commit `0baf089`) to
+`dbb8b69097df15a4bf60cc6fc0cef1043b838a22d30920f1914da31a91322977`
+(commit `622481a`). The second is the digest bound above; the first
+**satisfies nothing**. Both are written in full deliberately — a truncated
+digest quote is itself a promise, and `CG-15` refuses one that prefixes no
+current binding.
+
+*What moved, stated as a reviewable claim rather than an assurance.* The diff
+is **one selftest fixture** and its comment — `LA-11 a Beads issue grants no
+deferral` became `LA-11 a Beads artifact grants no deferral`, and the path it
+exercises moved from `.beads/issues.jsonl` to `.beads/README.md`. No
+validation logic, no schema handling, no verdict computation changed. Two
+pieces of evidence, both re-runnable:
+
+1. **Identical output.** The sealed bytes and the current bytes were both run
+   against `round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json`; both exit
+   `0` and their output is byte-identical.
+2. **The sealed bytes are not merely stale, they are broken at `HEAD`.**
+   Running the sealed version's own `--selftest` today fails, reporting
+   *"the deferral path `.beads/issues.jsonl` does not exist"* — a commit
+   between the seal and now stopped tracking that file, so the fixture
+   reached LA-11's does-not-exist branch and stopped testing what it names.
+   The repair repointed it at a tracked Beads artifact that makes the same
+   point.
+
+So the administration you would run is unchanged; what changed is that one of
+the validator's own fixtures started passing for the wrong reason and was
+fixed. **Verify the new digest anyway** — this paragraph is a claim, and the
+digest is the check.
 
 **Re-sealed 2026-08-13 at instrument v2.2** — the second re-seal in one
 day, and the reason is the point rather than an embarrassment: v2.1 was
@@ -162,9 +195,21 @@ A5's population yourself.
 
 **No owner acceptance act has been performed**, and
 `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` does not exist —
-that absence is correct, not a gap. Ten owner decisions are open and
-listed in
-`.syzygy/governance/contracts/candidates/round-2026-08f/CAPABILITY-1-OWNER-DECISION-PACKET.md`.
+that absence is correct, not a gap.
+
+The open decisions are owned by
+`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`, and the readiness
+view over them — which can be settled now, which cannot yet, and what would
+unblock each — is
+`.syzygy/governance/contracts/candidates/round-2026-08g/CAPABILITY-1-OWNER-DECISION-INDEX.md`.
+
+**No count is stated here on purpose.** *(Corrected 2026-08-13.)* This
+section previously said "ten owner decisions are open" and routed to the
+round-08f combined packet — a page review `RD-52` returned `REVISE` on, whose
+blocking finding was that its one-sitting premise was false by its own
+contents. It is now banner-marked superseded. Routing an administrator to a
+superseded offering, with a hand-maintained count beside it, is the defect
+this repository has already paid for twice; read the queue.
 
 This matters for your verdicts in a specific way: **an unruled decision is
 not a defect of the corpus** — it is a recorded open question, which is

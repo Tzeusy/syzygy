@@ -64,9 +64,14 @@ which is the correct state — the first act creates it.
 
 Eleven rulings stand between the confirmed contracts and a first
 specification. They are prepared, never made, and the queue that owns them
-is `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`. One bounded
-packet collects them in dependency order:
-`round-2026-08f/CAPABILITY-1-OWNER-DECISION-PACKET.md`.
+is `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`. The readiness
+view over them — which can be settled now, which cannot yet, and what would
+unblock each — is
+`round-2026-08g/CAPABILITY-1-OWNER-DECISION-INDEX.md`.
+
+*(Repointed 2026-08-13. This named the round-08f combined packet, which
+review `RD-52` returned `REVISE` on for a one-sitting premise its own
+contents contradicted; it is now banner-marked superseded.)*
 
 ```text
 P-33  Wave A install shape      — the ONLY obstacle to offering confirmed Wave A

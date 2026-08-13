@@ -1,5 +1,24 @@
 # Capability 1 — the owner decision packet
 
+> # SUPERSEDED — do not route an owner here
+>
+> **Superseded 2026-08-13 by
+> [`../round-2026-08g/CAPABILITY-1-OWNER-DECISION-INDEX.md`](../round-2026-08g/CAPABILITY-1-OWNER-DECISION-INDEX.md).**
+> Review **RD-52** returned `REVISE` on this page, and its blocking finding
+> f1 was that **the one-sitting claim is false by this page's own contents**.
+> The replacement is an *index* that separates the decisions that can be made
+> now from the ones that cannot yet, with the unblocking action named for
+> each — which the disposition register recorded as "a rewrite, not an edit."
+>
+> RD-52 f3, also blocking, found the exclusion list omitting five open queue
+> entries, three of them unperformed acts. **That reconciliation was never
+> completed on this page** and will not be: the queue
+> (`../../../decisions/PENDING-OWNER-DECISIONS.md`) owns the open set, and the
+> index routes to it rather than restating it.
+>
+> Kept for the record, off every reading path. Nothing below is current, and
+> its counts were correct only when written.
+
 > **This file decides nothing.** It collects the rulings that stand between
 > two confirmed contract waves and a first specification, in the order they
 > must be taken, so they can be settled in one sitting. Each row links the
