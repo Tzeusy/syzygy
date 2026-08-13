@@ -210,6 +210,14 @@ The 31 open rows are P-10, P-12, P-14 … P-42, including both P-25 and
 **P-25(c)**, which are two distinct questions rather than a duplicated row —
 checked, because a duplicate identifier would be a defect.
 
+> **These figures are as-of this preflight's run and are now stale.** The
+> queue has grown twice since: **P-43** (2026-08-13, RD-56 f5) and **P-44**
+> (2026-08-13, RD-51 f1). Recounted 2026-08-13 by the same method —
+> **7,684 words in the file; open section 6,028 words, 32 rows; 44 distinct
+> P-identifiers.** The measurement above is left unedited because it is what
+> the charter's §8 finding was made against; `PENDING-OWNER-DECISIONS.md`
+> owns the current count, and `decisions/README.md` restates it.
+
 The charter's §8 finding stands on these numbers: a 7,181-word queue mixing
 rulable questions, unperformed research, unpassed reviews and future acts is
 not a thing an owner can work through in one sitting, and RD-52 said so.

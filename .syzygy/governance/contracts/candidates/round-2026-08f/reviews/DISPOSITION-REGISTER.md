@@ -89,6 +89,20 @@ is ruled** and reviewed fresh at that point, so repairing them now would
 freeze the wrong bytes. The shape-to-spec impact policy is one day old and
 its first review is this one.
 
+> **Superseded 2026-08-13 — this paragraph was wrong, and the twenty
+> findings are now dispositioned.** The reasoning above conflated **repair**
+> with **freeze**: repairing a candidate does not freeze it, and only the
+> freeze had to wait on P-40. Written as a reason not to act, it left four
+> blocking findings — including one clause weakening an owner-approved rule
+> — carried for two days as "not repaired, by design."
+>
+> All twenty findings are dispositioned in
+> `../../round-2026-08g/reviews/DISPOSITION-REGISTER.md` (15 repaired, 4
+> repaired in part, 1 open and deliberately so). The repair account is
+> `../../round-2026-08g/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA.md`. The
+> freeze and the combined review still wait on P-40, which is the only part
+> of the paragraph above that was correct.
+
 ### P-33 and the owner packet (RD-49, RD-52)
 
 | Finding | Why still open |

@@ -1,5 +1,24 @@
 # Shape-to-spec propagation fixture (E6 dry run)
 
+> ## SUPERSEDED 2026-08-13 — do not administer this fixture
+>
+> Replaced by **`../round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md`**,
+> which CC-IMPACT-7 names by path and digest. Two reasons, both recorded:
+>
+> 1. **This fixture's golden ANSWER contradicts its own governing
+>    description** (RD-51 f8). Step 4 below states that CC-REV-2 admits *no*
+>    exception limb and that an earlier form of that limb was withdrawn; the
+>    ANSWER then grades *"or a recorded exception"* as the correct
+>    responsibility answer. A reviewer answering correctly from the
+>    governing description is marked divergent.
+> 2. **Its scenario exercises contract-clause triggers only.** It cannot
+>    detect the failure that owner-decision and craft-policy warrants are
+>    unsweepable — which was the blocking defect of the policy this fixture
+>    is supposed to exercise.
+>
+> Kept unedited below as the record of what was run. **Its ANSWER section is
+> not a pass criterion for anything.**
+>
 > **Non-product governance fixture.** Everything below is deliberately
 > fictitious: the "specifications" are mock stubs that exist only inside
 > this file, no `openspec/` tree exists or is implied, and no mock

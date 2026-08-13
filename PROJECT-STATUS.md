@@ -55,8 +55,9 @@ which is the correct state — the first act creates it.
 | Project overview | Draft — awaiting adoption | `.syzygy/intent/OVERVIEW.md` |
 | Doctrine amendment D3 (bounded missions) | Proposed — adopt, amend, or decline | `contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1) |
 | Knowledge-hygiene craft policy | Candidate — own craft act (P-12) | `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
-| Specification-acceptance standard (CC-SPEC-1…10) | Candidate — own craft act (P-41); a Capability 1 prerequisite | `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` |
-| Shape-to-spec impact rule (CC-IMPACT-1…7) | Candidate — own craft act (P-42); a Capability 1 prerequisite | `policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` |
+| Specification-acceptance standard (CC-SPEC-1…10) | Candidate — own craft act (P-41); a Capability 1 prerequisite. **Amended 2026-08-13** against RD-51 (`REVISE`); the repaired bytes are **unreviewed**, and CC-SPEC-1 may not be frozen before **P-40** is ruled. Offered jointly with P-42 | `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` |
+| Shape-to-spec impact rule (CC-IMPACT-1…7) | Candidate — own craft act (P-42); a Capability 1 prerequisite. **Amended 2026-08-13** against RD-51; its blind fixture has now been **run and passed** (RD-59). The repaired bytes are **unreviewed**. Offered jointly with P-41 | `policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` |
+| Lagging-specification exception to CC-REV-2 | **Offered 2026-08-13, two arms, declining is one of them** (P-44). CC-REV-2 is owner-approved; the exception cannot be created by a side-clause | `policy-candidates/CC-REV-2-LAGGING-SPECIFICATION-AMENDMENT-OFFER.md` |
 | License | Undecided — owner/legal | `.syzygy/governance/decisions/LICENSE-DECISION-PACKET.md` |
 
 ## Launch-critical owner decisions
@@ -80,6 +81,15 @@ P-34  launch-gate v2.2 as process policy
 P-41  the specification-acceptance craft act
 P-42  the shape-to-spec impact craft act
 ```
+
+**P-43 and P-44 are new (2026-08-13) and are deliberately *not* on this
+list.** P-43 asks what marks a file as recording an owner decision; P-44
+offers a lagging-specification exception to CC-REV-2. Neither blocks
+authoring a first specification — there is no specification to lag, and the
+launch-gate check P-43 concerns has a stricter interim rule. **P-41 and P-42
+are offered jointly**: CC-IMPACT-1 generates from CC-SPEC-2 and CC-IMPACT-2's
+trigger set *is* CC-SPEC-2's warrant set, so accepting one alone
+reintroduces two blocking defects that the 2026-08-13 amendment removed.
 
 ## What exists in this repository
 

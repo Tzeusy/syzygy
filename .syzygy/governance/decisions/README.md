@@ -13,7 +13,7 @@
 |---|---|---|
 | **Has the owner decided this?** | the **recorded decisions** below | A few things are recorded. Most are not |
 | **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **No.** The file does not exist, and that absence is correct |
-| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | 31 open rows. Each links a bounded packet |
+| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | 32 open rows *(counted 2026-08-13)*. Each links a bounded packet |
 | **Where is the history?** | [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md), and the round trees under `contracts/candidates/` | Deliberately off the default path |
 
 A **decision** is recorded prose the owner writes. An **act** is a formal

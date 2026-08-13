@@ -148,3 +148,120 @@ as a lesson learned, and was falsified the same day by a reviewer who did the
 one thing nobody repeating the claim had done: **read the manifest's first
 four lines.** The claim had by then been restated in five places and used to
 justify a recommendation. A summary of an artifact is not the artifact.
+
+## RD-51 — specification acceptance and shape-to-spec impact
+
+`VERDICT: REVISE` — four findings marked **blocking**. Dispatched
+2026-08-11 against frozen commit `e2efda6`; fresh context; same model family
+as the corpus authors. Raw bytes are in the **previous round**:
+`../../round-2026-08f/reviews/RD-51-spec-acceptance-and-impact-RAW.md`.
+
+**Why the disposition is here and not there.** The round-08f register says
+of this review: *"The full finding set is in the raw file; none is repaired.
+The specification-acceptance policy's bytes are meant to be frozen after
+P-40 is ruled and reviewed fresh at that point, so repairing them now would
+freeze the wrong bytes."* That reasoning conflated **repair** with
+**freeze**. Repairing a candidate does not freeze it; freezing is stopping,
+and only the freeze had to wait on P-40. Owner charter §9 directed the
+repair, and it is done here. The 08f register now points forward to this
+section.
+
+The repair account, clause by clause with before/after text, is
+`../SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA.md`.
+
+| # | Finding | Disposition |
+|---|---|---|
+| **1** | *BLOCKING* — CC-IMPACT-6 weakens the owner-approved CC-REV-2 by side-clause, in the population CC-REV-2 names first, and its exception has no confirmer | **repaired.** The clause now creates no alternative; CC-REV-2 governs unmodified. The exception is offered instead as an amendment to CC-REV-2 itself (`policy-candidates/CC-REV-2-LAGGING-SPECIFICATION-AMENDMENT-OFFER.md`, queue row **P-44**), with a confirmer distinct from the change's author and a fifth element the old form lacked — the visible `contradicted`/`Unknown` interim state. **Two arms are offered, and declining is one of them** |
+| **2** | *BLOCKING* — CC-SPEC-2's rationale asserts as owner rulings five decisions that are all pending, and describes a specification that does not exist | **repaired.** The sentence is withdrawn, not softened. Replaced with the true statement, plus a new operative rule: a **pending** decision is not a lawful warrant |
+| **9** | *BLOCKING* — CC-IMPACT-2's sweep triggers are narrower than CC-SPEC-2's warrant sources, so a requirement can be warranted by an authority whose amendment reaches nothing | **repaired.** CC-IMPACT-2 no longer carries a second enumeration: *"the identities that can trigger a sweep are exactly the identities that can warrant a requirement."* Stated as a set identity precisely so the two cannot drift |
+| **10** | *BLOCKING* — CC-IMPACT-1 declarations may diverge from CC-SPEC-2 warrants, defeating the sweep | **repaired.** The specification-level declaration is now **generated** as the union of its requirements' declarations; a narrower declaration is a defect and a hand-maintained second list is the duplicate authority CC-REV-3 forbids |
+| **3** | *material* — CC-SPEC-1's operative text binds to the pending P-40 | **repaired.** The clause states the rule it proposes, quoted from P-40's packet, and states that its force is conditional and that it **may not be frozen before P-40 is ruled** |
+| **4** | *material* — CC-SPEC-2's fifth warrant source names a record class that exists nowhere | **repaired.** The class is removed, per charter §9.1. The sweep was **re-run in the repairing session** rather than quoted from the review: 371 files and 784 files, two methods, hits confined to the clause's own discussion, this review, and one untracked file |
+| **5** | *material* — the warrant list omits approved craft clauses and topology identities | **repaired.** Both added; the two policies now name one authority set |
+| **6** | *material* — "exactly one" is ambiguous and supplies no tie-break | **repaired.** Replaced by charter §9.1's rule: all material warrants, one optionally marked primary, none hidden for being less specific |
+| **7** | *material* — CC-SPEC-4 rejects prohibitions and admits unreachable conditions and tautological oracles | **repaired.** Five named forms; five obligations on every form, including the oracle's **effectiveness** and **independence**; four oracle forms rejected outright. For invariants and prohibitions the reachable case is the scope of quantification, a counterexample schema, and the sweep whose denominator bounds it |
+| **8** | *material* — the fixture's golden ANSWER contradicts the fixture's own step 4 | **repaired by supersession.** Fixture 1 is banner-marked superseded and not administered; fixture 2 is new, and its answer key is a **separate file**, so blindness is structural |
+| **11** | *material* — CC-IMPACT-3 mis-cites its sibling and asserts an absence without the sweep | **repaired.** The identifier is corrected, and the denominator discipline is cited to CC-KNOW-16 instead of claimed as a new home |
+| **12** | *material* — CC-SPEC-10 drops VIS-4's always-human-gated class | **repaired.** Both dropped limbs are now quoted: the two conjoined preconditions, and the always-human-gated class |
+| **13** | *material* — CC-IMPACT-7 has no pass criterion, no named actor, and no named fixture | **repaired in part.** Fixture named by path and sha256; administrator fresh-context per CC-REV-1; pass criterion owned by the answer key; consequence of failure stated. **Open:** the clause still does not say who *selects* the administrator |
+| **15** | *material* — CC-SPEC-8's N/A judgement has no independent confirmer, and its home is circular | **repaired in part.** The confirmer is added on the CC-TEST-4 pattern. **Open:** "applicable" is undefined, and the reviewed-N/A rule's identifier is still unresolved — the routing matrix routes the deliverable back to CC-SPEC-8, so each names the other as owner |
+| **20** | *material* — CC-IMPACT-3 permits a wrong "explicitly unaffected" and bounds nothing | **repaired.** The `explicitly unaffected` set now requires the **method**, not only the reason, and what a method cannot decide routes to `undecidable` rather than to `explicitly unaffected` |
+| **16** | *minor* — CC-SPEC-1 mandates one capability; CC-IMPACT-1 contemplates several | **repaired.** CC-IMPACT-1 is singular |
+| **17** | *minor* — CC-SPEC-9 duplicates CC-REV-4 and VIS-3 | **repaired.** Reduced to a citation, which is what CC-REV-3 requires |
+| **18** | *minor* — three amendment warrants cite a document absent from the frozen bytes | **repaired.** Every amendment note in both files now cites the tracked semantic delta and an RD-51 finding number. The charter itself remains untracked and is not the citation |
+| **19** | *minor* — neither candidate carries epistemic labels | **repaired in part.** The substantive claims in the amendment notes and rationale carry labels; the "why each rule is here" table does not |
+| **14** | *material* | **open, and deliberately.** No clause tests a specification for **completeness against its capability**, so launch-gate E5's "complete" limb is unclosed — 0 of 10 clauses ask whether the requirement set covers the capability it claims. The fix is a new clause, and charter §9 does not direct one; minting an unrequested clause enlarges what the owner must approve at P-41. Recorded on the policy's own surface as well as here, because a candidate that hides its own open findings is the failure VIS-2 names |
+
+**Repaired: 15. Repaired in part: 4 (f13, f15, f19, and f7's sibling
+concern about undefined vocabulary consumption). Open: 1. Declined: 0.**
+
+`[Unknown]` — **none of this is confirmed.** These repairs were made by the
+session that read the verdict, which is the weakest possible evidence about
+their correctness, and the same pattern has already cost this round two
+rounds of `REVISE` on the launch gate. Charter §9.8 sequences one combined
+fresh-context review **after P-40 is ruled**; P-40 is not ruled, so the
+review has not been dispatched and **the bytes are not frozen**.
+
+## RD-59 — the blind propagation run, graded
+
+The exercise CC-IMPACT-7 requires has been **run**, not just specified. A
+path that has never been run is a plan, not a process — the clause's own
+sentence. Raw bytes: `RD-59-blind-propagation-RAW.md`. Subject:
+`../SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md` at sha256
+`685a71f7…272ed4e0`, the digest CC-IMPACT-7 names. The administrator was
+given that one file and forbidden everything else, including repository-wide
+search; their confirmation section names the single file they opened.
+
+**Result: PASS**, against the answer key's three criteria.
+
+| Criterion | Outcome |
+|---|---|
+| the derived `affected` set contains all six golden affected requirements | **met** — FAC-1, FAC-2, STA-1, REG-4, COST-1, COST-2 all present |
+| FAC-3 is never filed `explicitly unaffected` | **met** — filed `affected` |
+| population stated, all sixteen placed, sets sum | **met** — 16 stated and derived independently; 7 + 8 + 1 = 16 |
+
+**What the run demonstrates.** The sweep found **4 of its 6** affected
+requirements through `policies[]` and `decisions[]`, not through
+`contracts[]`. A sweep matching contract clause IDs — the shape of every
+sweep the unrepaired CC-IMPACT-2 could have required — would have returned
+FAC-1 and FAC-2 and stopped, a 67 % miss. That is RD-51 f9's
+warranted-but-unsweepable class, measured rather than argued.
+
+It also reproduced, unprompted, the two reasonings the answer key treats as
+the discriminating ones: FAC-4's **invariance argument** (a parity
+obligation quantifies over the relation, not over what is computed, so it
+survives a change to the computation), and the routing of a case its method
+could not settle to `undecidable` rather than to `explicitly unaffected`.
+
+### Two divergences from the golden, and one is the fixture's fault
+
+| Divergence | Judgement |
+|---|---|
+| **FAC-3 filed `affected`, golden `undecidable`** | **the golden's stated reason is wrong, and the run is right.** The answer key says the sweep "cannot settle it without a contract reading it does not own" — but the fixture's own authority table hands the administrator `RFC6-18`'s content, *"whose facets are those the folding rules produce"*, which settles it in one hop. The fixture supplied the fact its answer key says is unavailable. The pass criterion admits both placements, which is why the run still passes; the criterion was written that way as a hedge, and the hedge is what saved it |
+| **COST-3 filed `undecidable`, golden `explicitly unaffected`** | **defensible, and unanticipated.** The administrator's argument — that `CC-TEST-6`'s coverage obligation over "the absence branch" may or may not acquire a new branch when `CC-PROV-5` gains an aggregate-disclosure limb, and that branch granularity is not a fact the fixture states — is sound. The answer key listed FAC-4 and STA-3 as tolerable divergences and did not anticipate this one |
+
+### Two defects the run found in the fixture
+
+`[Observed]`, both verified against the fixture's bytes after the run:
+
+1. **The fixture says the declaration has "six fields" and no requirement
+   carries `topology[]`** — `grep -c topology` over the fixture returns
+   **0**. One of the six warrant classes is entirely unexercised, and the
+   administrator could not even see *which* field was missing, correctly
+   noting that "if it can carry a reference, my declaration sweep is
+   incomplete by exactly that field."
+2. **The fixture asks for a CC-IMPACT-2 sweep and CC-IMPACT-3 output
+   without stating either clause.** The administrator worked from the
+   four-set block printed in the task, which was sufficient, and said so.
+
+**Neither is repaired, and repairing them is forbidden.** CC-IMPACT-7 binds
+this fixture by digest and this run is bound to those bytes; editing it now
+would make the run worth nothing, which is verification rule 10. The fixture
+is **superseded by a fixture 3, never edited** — filed as work, not fixed
+here. Until then CC-IMPACT-7 continues to name fixture 2, and this record is
+what a reader needs to know its limits.
+
+`[Inferred]` — that the path works. One passing run against one fixture
+built by the session that wrote the clause it exercises is weak evidence, and
+the administrator shares the corpus authors' model family. It is more than
+existed before, which was nothing.
