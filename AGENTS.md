@@ -1,17 +1,14 @@
 # Agent Instructions — Syzygy
 
-**Syzygy** (provisional codename) is a specification-driven software control
-plane: specifications define *desired state*, evidence defines *observed
-state*, the difference is reconciliation work, and agent fleets close it. This
-file is **repository operating procedure** — never citable as authority. What
-the project *is* lives in `README.md` and `.syzygy/intent/OVERVIEW.md`.
+This file is **repository operating procedure** — never citable as authority.
+What the project *is* lives in `README.md` and `.syzygy/intent/OVERVIEW.md`.
 
 ## Current lifecycle stage: final pre-specification
 
-Doctrine is adopted; engineering policy is owner-approved. The foundational
-design contracts, topology, overview, and two policy additions are
-**candidates awaiting explicit owner acts**. There is **no application code,
-no `openspec/`, and no implementation backlog** — and none may be created.
+Doctrine is adopted; engineering policy is owner-approved. Contracts,
+topology, overview and the policy additions are **candidates awaiting owner
+acts**. There is **no application code, no `openspec/`, and no implementation
+backlog** — and none may be created.
 
 ## Where authority lives
 
@@ -19,13 +16,13 @@ no `openspec/`, and no implementation backlog** — and none may be created.
 |---|---|---|---|
 | Why — purpose, non-negotiables | Doctrine (VIS-1…7, SEC-1…5) | `.syzygy/governance/doctrine/` | **Yes** — adopted 2026-07-30, D1 in force |
 | Prior owner rulings | Decisions (SDR-1…33, warrants, pending queue) | `.syzygy/governance/decisions/` | **Yes** |
-| Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | **Owner-approved (D2)**; clause force begins at the digest-bound acceptance acts the acceptance record defines |
-| External baselines by reference | Substrate lock | `.syzygy/governance/policies/GOVERNANCE-SUBSTRATE-LOCK.yaml` | Record, never authority |
-| Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/candidates/` | **No — candidate.** `contracts/rfcs/` exists only after the first wave act's install step |
+| Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | **Owner-approved (D2)**; clause force begins at the acceptance acts |
+| Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/candidates/` | **No — candidate.** `contracts/rfcs/` exists only after the first wave act |
 | Intended placement | Topology bundle | `.syzygy/map/topology-candidates/` | **No — candidate.** `map/topology/` exists only after act 3 |
 | Public narrative | Overview | `.syzygy/intent/OVERVIEW.md` | Governed presentation — **never authority** |
-| Required observable behavior | OpenSpec | *does not exist yet* | — |
-| What exists | Code, tests, CI, runtime | *none* | — |
+
+`GOVERNANCE-SUBSTRATE-LOCK.yaml` is a record, never authority. OpenSpec and
+running code do not exist. `README.md` carries the reader-facing view.
 
 **Cite by identifier** — `VIS-2`, `SEC-4`, `SDR-9`, `CC-REV-3`, `RFC10-9`.
 Identifiers are amended in place or retired, **never renumbered**. Candidate
@@ -34,11 +31,7 @@ clauses may be discussed, never cited as binding.
 ## Pending owner gates
 
 **Thirteen acts are open; none has been performed**, and this file states no
-more than that. *(Compressed 2026-08-13, owner charter §11.5 — the act table
-and launch-path table that stood here restated state two other records own,
-which is the currency defect the same charter asks to check for. Restating
-was costing ~700 words of always-loaded context to duplicate a page a reader
-should open anyway.)*
+more than that.
 
 | Question | The one record that owns the answer |
 |---|---|
@@ -52,34 +45,32 @@ Each digest belongs to the artifact it names, so verify with
 and no verdict.**
 
 `decisions/ACCEPTANCE-ACT-RECORD.md` is created by the first act; its absence
-is correct. **Never edit an artifact after an act has bound its digest.** The
-round-2026-08b/08c/08d offerings are superseded where banner-marked, and the
-retired rev9 / rev10 phrases satisfy nothing — review RD-8 called routing an
-owner to a stale offering *"the finding that converts act 1 from a knowing
-act into a surprised one."*
+is correct. The round-2026-08b/08c/08d offerings are superseded where
+banner-marked and the retired rev9 / rev10 phrases satisfy nothing — routing
+an owner to a stale offering turns act 1 into a surprised act.
 
 ## Task routing — context is compiled, never accumulated
 
-Load the minimum for one correct decision. Never "read everything."
+Load the minimum for one correct decision; never "read everything."
 
 | Your task | Start here |
 |---|---|
 | A doctrine question | the one doctrine file, via the `heart-and-soul` skill |
 | An engineering-bar question | the one craft policy that owns it |
-| A contract question | **`contracts/candidates/TASK-ROUTER.md`** — the one generated router (validated by `contracts/candidates/scripts/build_task_router.py`); context-budget measurement stays with `06-CONTEXT-LOAD-MAP.md` / `contracts/candidates/scripts/context_load.py` |
+| A contract question | **`contracts/candidates/TASK-ROUTER.md`** — the one generated router; context-budget measurement stays with `06-CONTEXT-LOAD-MAP.md` / `scripts/context_load.py` |
 | "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until OpenSpec exists |
 | "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; authoring stays forbidden until the owner's launch decision |
 | Current status | `PROJECT-STATUS.md` |
-| "Is this ready for OpenSpec?" | the answer is **not ready** — the only administration on record is the 2026-08-09 pilot, `GATE VERDICT: NOT READY`, and no formal administration has been run. Owned by `launch-gate-pre-specifications.md` + `PROJECT-STATUS.md`. Launch target: **Capability 1**, prerequisite **Waves A+B**; C1/C2/D1/D2 deferred |
-| A launch-gate administration | the record is **structured JSON** (`launch-gate-administration.schema.json`), validated by `scripts/validate_launch_administration.py`; the Markdown report is generated by `scripts/render_launch_administration.py` and **never parsed back**. `scripts/launch_gate_results.py` validates the **historical** v1.3–v1.18 Markdown records only |
+| "Is this ready for OpenSpec?" | **not ready**, and no formal administration has been run. `PROJECT-STATUS.md` owns the current verdict and launch target; the instrument is `launch-gate-pre-specifications.md` |
+| A launch-gate administration | the record is **structured JSON** (`launch-gate-administration.schema.json`); the Markdown report is generated and **never parsed back**. Scripts: `validate_launch_administration.py`, `render_launch_administration.py`, and `launch_gate_results.py` for the historical Markdown records only |
 | The launch-gate repair chain | `decisions/launch-gate/HISTORY.md` — **not default context**; the current policy is the instrument itself |
 | Open owner questions | `decisions/PENDING-OWNER-DECISIONS.md` |
-| Mission or Context-selection work | `contracts/candidates/DEFERRED-WAVE-POSTURE.md` first — those candidates are visibly deferred and route only through the task router's deferred rows |
+| Mission or Context-selection work | `contracts/candidates/DEFERRED-WAVE-POSTURE.md` first — deferred candidates route only through the router's deferred rows |
 | What a term means | doctrine's glossary, `governance/doctrine/README.md`; then the candidate `policy-candidates/TERM-REGISTRY.md` |
 | Maintenance, review, or avoiding a repeat mistake | `decisions/PROCESS-LESSONS.md` — **not default context** |
 
 Historical process material lives in the git-excluded `_bootstrap/` tree and
-in `contracts/candidates/history/`: never on a default path, never authority.
+`contracts/candidates/history/` — never on a default path, never authority.
 
 ## Hard prohibitions
 
@@ -89,32 +80,33 @@ framework, database, or platform; create OpenSpec changesets, implementation
 issues, epics, or a backlog; treat a draft, candidate, index, summary, or
 generated view as authority; adopt doctrine, accept contracts, or approve
 policy on the owner's behalf (VIS-4); install candidate material into an
-accepted home or label it accepted; run unattended agent coordination.
+accepted home or label it accepted; run unattended agent coordination; **edit
+an artifact after an act has bound its digest.**
 
 ## Epistemic and change discipline
 
 Label substantive claims `[Observed]`, `[Inferred]`, or `[Unknown]`. No
 evidence yields Unknown — never green, never zero (VIS-2). An LLM assertion is
-Inferred, never Observed. Preserve the owner's actual trade-offs; never smooth
-them into consensus language.
+Inferred, never Observed. Preserve the owner's trade-offs; never smooth them
+into consensus language.
 
 Normative edits travel as **semantic deltas**
 (`policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md`); "editorial" and "no
-semantic change" are reviewable claims. Reviews run in fresh-context sessions
-given only the artifact, its governing references, and acceptance criteria.
-Store raw reviewer output verbatim and **copy verdict words exactly**
+semantic change" are reviewable claims. Reviews run in fresh context, given
+only the artifact, its governing references and the acceptance criteria; raw
+output is stored verbatim and **verdict words are copied exactly**
 (`EXCEPTIONS` never becomes "pass with findings").
 
 ## Verification rules
 
-Ten rules, each paid for by a recorded incident. The incidents — and why
-each rule is shaped the way it is — are in `decisions/PROCESS-LESSONS.md`;
-read them before writing or trusting a check.
+Ten rules, each paid for by a recorded incident. The incidents are in
+`decisions/PROCESS-LESSONS.md`; read them before trusting a check.
 
 1. **`grep` here is ugrep.** `[^]]`-style classes silently match nothing. Use
    `grep -F` or Python `re` for anything load-bearing.
 2. **No "zero / all / 100%" claim without running that exact sweep this
-   session**, confirmed by a second method. Enumerate remainders.
+   session**, confirmed by a second method. Enumerate remainders. A mutation
+   that silently stops mutating is a check that silently stops checking.
 3. **Digests are scripted, never transcribed; totals are computed.** A derived
    value quoted outside its owning artifact goes stale silently.
 4. **Read a check's *output*, not its exit code**, and check its denominator
@@ -126,55 +118,32 @@ read them before writing or trusting a check.
 7. **Run the battery in a clone** before calling it green; a clone report is
    valid only for the commit it was run at.
 8. **Anchor a claim about a contract to a *defined clause*, and quote it.**
-   Section prose near a clause is not the clause. Two reviewers found the same
-   defect in one week — an edge justified by prose fifty lines past the last
-   clause, and a sentence attributed to RFC3-4 that exists nowhere.
+   Section prose near a clause is not the clause.
 9. **A claim of absence needs a sweep with a denominator.** "No clause defines
-   X" is a measurement, and one such claim was false because a module went
-   unread. VIS-2 applies to your own claims first.
-10. **Freeze the bytes a review is bound to.** A review names a digest; editing
-    the subject afterwards makes the review worth nothing, however small the
+   X" is a measurement. VIS-2 applies to your own claims first.
+10. **Freeze the bytes a review is bound to.** Editing the subject after a
+    review names its digest makes the review worth nothing, however small the
     edit. Batch the fix into the next pass.
 
 **A generator that quotes prose has re-opened the door it closed.** Owning a
-measurement means nothing inside the generated file was copied — twice this
-round a generated artifact contradicted itself because it transcribed a figure
-from something else.
+measurement means nothing inside the generated file was copied.
 
 ## Validation
 
 All read-only; run before claiming anything is clean.
 
-```sh
-python3 scripts/check_governance.py                       # repo-wide
-python3 scripts/check_governance.py --selftest            # fixtures; CG-24 prints their coverage
-python3 scripts/validate_launch_administration.py --selftest   # v2.0 record path
-python3 scripts/render_launch_administration.py --selftest
-python3 scripts/launch_gate_results.py --selftest         # historical Markdown records
-CS=.syzygy/governance/contracts/candidates/scripts
-python3 $CS/verify_final_prespec.py                       # clauses, citations, ceilings
-python3 $CS/build_contract_index.py --check               # index drift
-python3 $CS/build_dependency_index.py --check             # dependency-edge drift
-python3 $CS/build_budget_report.py --check                # every volatile measurement
-python3 $CS/build_active_manifest.py --check              # package-identity drift
-python3 $CS/build_task_router.py --check                  # router drift
-python3 $CS/build_task_router.py --selftest               # router predicates
-python3 $CS/build_capability_1_views.py --check            # capability 1 views
-python3 $CS/build_capability_1_views.py --selftest         # charter predicates
-python3 $CS/context_load.py rfcs/RFC-0002/README.md doctrine:vision.md
-```
-
-`PROJECT-STATUS.md` owns the canonical battery and states its count; the
-hosted workflow (`.github/workflows/governance-docs.yml`) must run exactly
-that list, or a green run means less than a reader takes it to mean.
+**`PROJECT-STATUS.md` §"How to verify this page" owns the canonical battery.**
+Run that block, never a copy: `CG-26` compares it against hosted CI,
+and nothing compares a third list. Everyday:
+`python3 scripts/check_governance.py`; `--selftest` runs the fixtures (CG-24
+prints coverage).
 
 ## Beads scope in this phase
 
-`bd` tracks **process housekeeping only**: no implementation issues, epics, or
-product backlog. Record unknowns as open questions in
-`decisions/PENDING-OWNER-DECISIONS.md`, not as issues. Commits are
-documentation-only and land at stable gates; **never commit a normative
-artifact while its adoption gate is unresolved.**
+`bd` tracks **process housekeeping only** — no implementation issues, epics or
+backlog. Unknowns become open questions in `decisions/PENDING-OWNER-DECISIONS.md`,
+not issues. Commits are documentation-only and land at stable gates; **never
+commit a normative artifact while its adoption gate is unresolved.**
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
 ## Beads Issue Tracker

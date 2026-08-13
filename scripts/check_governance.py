@@ -198,6 +198,12 @@ CHECK_OWNERS = {
               "statement that the step list is the hosted denominator. Both "
               "are claims the repository makes about itself; this check is "
               "their enforcement"),
+    "CG-27": ("candidate: `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY-"
+              "COMPACT.md` **CC-KNOW-11** ¶2 — \"Prose asserting what is "
+              "currently true carries its as-of revision and is never the "
+              "sole source for the fact it states.\" The policy is queued as "
+              "P-12 and binds nothing yet, which is why this check is "
+              "advisory"),
 }
 
 #: Checks whose rule exists **only** in this file. Downgraded to WARN until
@@ -216,6 +222,24 @@ PYTHON_ONLY_RULES = {
     "CG-21": "rule stated only in check_governance.py — advisory until the "
              "knowledge-hygiene policy is adopted (RD-17 f11, gate C2)",
 }
+
+#: Checks whose rule *does* have a written home, but a **candidate** one that
+#: no owner act has made binding. Kept separate from `PYTHON_ONLY_RULES`
+#: because the two states are different and the distinction is the whole
+#: subject of this repository: a rule nobody wrote is not a rule nobody ruled
+#: on. Both downgrade to WARN; only this table can be emptied by an act.
+#:
+#: The owner charter's §11.4 states the condition directly — *"the rule must
+#: have an authoritative policy home before the validator is binding"* — and a
+#: candidate home is not an authoritative one.
+CANDIDATE_HOME_RULES = {
+    "CG-27": "rule's home is CC-KNOW-11 in the candidate knowledge-hygiene "
+             "policy — advisory until P-12 is ruled",
+}
+
+#: The downgrade lookup both tables feed. One place, so a new advisory table
+#: cannot be forgotten at the twenty-six call sites.
+ADVISORY_RULES = dict(PYTHON_ONLY_RULES, **CANDIDATE_HOME_RULES)
 
 
 def check_family(name):
@@ -238,11 +262,13 @@ class Results:
             note=None, details=()):
         fam = check_family(name)
         # A FAIL is a claim that some written rule was broken. Downgraded
-        # here — once, centrally — when that rule exists only in this file.
-        # Doing it at the call sites would mean twenty-five places to forget.
-        if status == "FAIL" and fam in PYTHON_ONLY_RULES:
+        # here — once, centrally — when that rule has no home the owner has
+        # made binding: either it exists only in this file, or its home is a
+        # candidate nobody has ruled on. Doing it at the call sites would mean
+        # twenty-six places to forget.
+        if status == "FAIL" and fam in ADVISORY_RULES:
             status = "WARN"
-            note = ((note + " — ") if note else "") + PYTHON_ONLY_RULES[fam]
+            note = ((note + " — ") if note else "") + ADVISORY_RULES[fam]
             if fam not in self.downgraded:
                 self.downgraded.append(fam)
         if status == "FAIL":
@@ -3318,6 +3344,166 @@ def cg26_battery_parity(res, status=None, workflow=None):
             "check", note=note, details=details)
 
 
+# --------------------------------------------------------------- CG-27
+
+#: CG-27's population — the files a newcomer reads *before* choosing what to
+#: open next. Declared as a literal so the check prints its own denominator
+#: (verification rule 9: a claim of absence needs a sweep with a denominator).
+#:
+#: `PROJECT-STATUS.md` is deliberately **absent**. It is the owning record for
+#: wave, gate and launch state; requiring it to cite itself would be circular,
+#: and its currency is a different problem with a different owner.
+CURRENCY_DEFAULT_PATH = (
+    "README.md",
+    "AGENTS.md",
+    "PROCESS-GLOSSARY.md",
+    "CONTRIBUTING.md",
+    ".syzygy/intent/OVERVIEW.md",
+    ".syzygy/governance/decisions/README.md",
+    ".syzygy/governance/contracts/candidates/TASK-ROUTER.md",
+    ".syzygy/governance/contracts/candidates/FIRST-OPENSPEC-SEQUENCE.md",
+)
+
+#: One class per kind of current-state claim, with the record that owns the
+#: answer and the pattern that recognises an *assertion* rather than a
+#: mention. Naming the class matters: a banner that names PROJECT-STATUS.md
+#: makes wave claims derivable and says nothing about the gate's version.
+CURRENCY_CLASSES = (
+    ("wave", "PROJECT-STATUS.md",
+     re.compile(r"\bWaves?\s+(?:A|B|A\s*(?:and|\+)\s*B)\b"
+                r"(?:(?!\n\n).){0,120}?"
+                r"\b(?:accepted|unaccepted|confirmed|offered|installed|"
+                r"performed|blocking|satisfied|complete)\b",
+                re.S | re.I)),
+    ("gate-version", "launch-gate-pre-specifications.md",
+     re.compile(r"\b(?:launch[- ]gate|gate)\b(?:(?!\n\n).){0,80}?"
+                r"\bv\d+\.\d+\b", re.S | re.I)),
+    ("gate-verdict", "PROJECT-STATUS.md",
+     re.compile(r"\b(?:NOT READY|GATE VERDICT)\b", re.I)),
+    # The window was 100 characters until a repair to TASK-ROUTER.md's prose
+    # pushed its state word past it and the claim silently left the
+    # denominator — a repair that quieted the check instead of satisfying it,
+    # which is the exact failure CC-KNOW-17 names. 240 is the paragraph-scale
+    # figure that keeps that sentence in; the number is arbitrary and is
+    # printed with the denominator so a reader can judge it.
+    ("prerequisite", "PENDING-OWNER-DECISIONS.md",
+     re.compile(r"\bP-\d+\b(?:(?!\n\n).){0,240}?"
+                r"\b(?:satisfied|waived|ruled|resolved|answered|closed)\b",
+                re.S | re.I)),
+)
+
+#: A paragraph that says it is talking about the past is not asserting current
+#: state, and the charter's fifth fixture is exactly this case.
+CURRENCY_HISTORICAL = re.compile(
+    r"\b(?:histor\w*|superseded|retired|previously|formerly|no longer|"
+    r"used to|at the time|as it stood|prior revision)\b", re.I)
+
+#: An assertion carrying its own as-of satisfies CC-KNOW-11's currency limb
+#: without naming an owning record: the reader can see how old the claim is.
+CURRENCY_ASOF = re.compile(
+    r"(?:\bas of\b|\bcounted\b|\bcorrected\b|\badded\b|\bmeasured\b)[^\n]{0,40}"
+    r"\b20\d\d-\d\d-\d\d\b|\b20\d\d-\d\d-\d\d\b[^\n]{0,20}"
+    r"(?:\bas of\b|\bcounted\b|\bcorrected\b)", re.I)
+
+
+def _leading_banner(body):
+    """The blockquote block at the top of a file, if it has one.
+
+    A precedence banner is only visible if a reader meets it before the
+    prose it governs, so only the *leading* blockquote counts. A `>` block
+    four screens down governs nothing a reader has already believed.
+    """
+    lines, out = body.splitlines(), []
+    i = 0
+    while i < len(lines) and (not lines[i].strip()
+                              or lines[i].lstrip().startswith("#")):
+        i += 1
+    while i < len(lines) and (lines[i].startswith(">") or
+                              (out and not lines[i].strip())):
+        if lines[i].startswith(">"):
+            out.append(lines[i])
+        i += 1
+    return "\n".join(out)
+
+
+def cg27_default_path_currency(res, corpus=None):
+    """A default-path file asserting current state derives it, or banners it.
+
+    **The rule and its home.** `CC-KNOW-11` second paragraph — *"Prose
+    asserting what is currently true carries its as-of revision and is never
+    the sole source for the fact it states."* That clause lives in the
+    **candidate** knowledge-hygiene policy (item P-12), so this check is
+    downgraded to WARN until the owner rules; see `PYTHON_ONLY_RULES`'
+    sibling table. The clause is the ceiling, and this check deliberately
+    enforces less than it: CC-KNOW-11 requires *both* an as-of *and* a
+    non-sole source, while this accepts *either* a derivation or a visible
+    precedence banner. A check that under-enforces its clause is safe; one
+    that over-enforces invents obligation nobody approved.
+
+    **What counts as satisfied**, per assertion, in this order:
+
+    1. the paragraph is talking about the past — `CURRENCY_HISTORICAL`;
+    2. the paragraph names the record that owns that class of fact;
+    3. the file's **leading** banner names it — a precedence banner scoped
+       to the owner is what makes the claim derivable, which is why a banner
+       naming `PROJECT-STATUS.md` does nothing for a gate-version claim;
+    4. the assertion carries its own as-of date.
+
+    **RESIDUAL LIMIT, and it is the important one.** This never checks
+    whether a claim is *true*. It checks whether a reader who meets the
+    claim can tell where to go if it is wrong. A file that cites
+    `PROJECT-STATUS.md` beside a claim that flatly contradicts it passes
+    here — what fails is the claim that stands alone with nothing to
+    check it against.
+    """
+    label = "CG-27  default-path current-state claims are derived or bannered"
+    if corpus is None:
+        corpus = []
+        for rel in CURRENCY_DEFAULT_PATH:
+            try:
+                corpus.append((rel, read(rel)))
+            except OSError:
+                corpus.append((rel, None))
+
+    findings, examined, unreadable = [], 0, []
+    for rel, body in corpus:
+        if body is None:
+            unreadable.append(rel)
+            continue
+        banner = _leading_banner(body)
+        for cls, owner, pat in CURRENCY_CLASSES:
+            for m in pat.finditer(body):
+                examined += 1
+                start = body.rfind("\n\n", 0, m.start()) + 2
+                end = body.find("\n\n", m.end())
+                para = body[start: end if end > 0 else len(body)]
+                if CURRENCY_HISTORICAL.search(para):
+                    continue
+                if owner in para or owner in banner:
+                    continue
+                if CURRENCY_ASOF.search(para):
+                    continue
+                quote = " ".join(m.group(0).split())[:90]
+                findings.append(
+                    f"{rel} — `{cls}` claim with nothing to check it "
+                    f"against: \"{quote}\". Name `{owner}`, which owns this "
+                    f"fact, in the paragraph or in the file's leading "
+                    f"banner; or carry an as-of date")
+
+    note = (f"{len(corpus) - len(unreadable)} of {len(CURRENCY_DEFAULT_PATH)} "
+            f"default-path file(s) read, {len(CURRENCY_CLASSES)} claim class"
+            f"(es)")
+    if unreadable:
+        note += f"; unreadable, so Unknown rather than clean: {unreadable}"
+    if not examined:
+        res.add("WARN", label, 0, 0, "claim",
+                note=note + " — no current-state claim matched, and a "
+                            "zero-count check reports WARN, never PASS")
+        return
+    res.add("FAIL" if findings else "OK", label, examined, len(findings),
+            "claim", note=note, details=findings)
+
+
 def selftest():
     """Prove each new check can fail. A validator with no failing fixture is
     indistinguishable from a no-op, and this repository has shipped one.
@@ -4220,6 +4406,74 @@ def selftest():
     cases.append(("CG-26 unreadable input warns rather than passing",
                   c.rows[0][0] == "WARN"))
 
+    # ---- CG-27, the five stale classes the owner charter §11.4 names, each
+    # with its accepting twin. A rejecting fixture alone proves a check that
+    # says no to everything; the pairs are what prove it discriminates.
+    def _cur(body):
+        c = Cap()
+        cg27_default_path_currency(c, corpus=[("f.md", body)])
+        return c.rows[0]
+
+    _STALE = (
+        ("stale Wave A state",
+         "# F\n\nWave A is accepted and installed.\n",
+         "# F\n\nWave A is accepted and installed "
+         "(`PROJECT-STATUS.md` owns this).\n"),
+        ("stale Wave B state",
+         "# F\n\nWave B is confirmed and the act was performed.\n",
+         "# F\n\n> Where this and `PROJECT-STATUS.md` disagree, that record "
+         "wins.\n\nWave B is confirmed and the act was performed.\n"),
+        ("stale launch-gate version",
+         "# F\n\nThe launch gate stands at v1.4 today.\n",
+         "# F\n\nThe launch gate stands at v1.4 today "
+         "(`launch-gate-pre-specifications.md` states its own version).\n"),
+        ("stale first-spec prerequisite",
+         "# F\n\nP-33 is satisfied, so authoring may begin.\n",
+         "# F\n\nP-33 is satisfied as of 2026-08-13, so authoring may "
+         "begin.\n"),
+        ("stale gate verdict",
+         "# F\n\nThe gate returned NOT READY.\n",
+         "# F\n\nThe gate returned NOT READY; `PROJECT-STATUS.md` owns the "
+         "current verdict.\n"),
+    )
+    for _name, _bad, _good in _STALE:
+        cases.append((f"CG-27 {_name} — unanchored claim detected",
+                      _cur(_bad)[3] == 1))
+        cases.append((f"CG-27 {_name} — anchored twin raises nothing",
+                      _cur(_good)[3] == 0))
+
+    # The charter's fifth fixture: a statement that says it is about the past
+    # is not asserting current state, and must not be reported.
+    cases.append((
+        "CG-27 correctly bannered historical statement raises nothing",
+        _cur("# F\n\nHistorically, Wave A was accepted at the 2026-07 "
+             "pass; that revision is superseded.\n")[3] == 0))
+
+    # Scoped, not blanket: a banner naming the wave owner must not launder a
+    # gate-version claim. This is the predicate that makes the banner limb
+    # worth having, and without this fixture nothing tests it.
+    cases.append((
+        "CG-27 a banner naming the wrong owner does not satisfy the claim",
+        _cur("# F\n\n> `PROJECT-STATUS.md` wins where this disagrees.\n\n"
+             "The launch gate stands at v1.4.\n")[3] == 1))
+
+    # A banner is only visible if the reader meets it first.
+    cases.append((
+        "CG-27 a precedence banner buried below the prose does not count",
+        _cur("# F\n\nWave A is accepted.\n\n> `PROJECT-STATUS.md` wins "
+             "where this disagrees.\n")[3] == 1))
+
+    # A file with no current-state claim at all is Unknown, not clean.
+    cases.append(("CG-27 zero matched claims warns, never passes",
+                  _cur("# F\n\nNothing current is asserted here.\n")[0]
+                  == "WARN"))
+
+    # An unreadable population member is Unknown too, and says so.
+    c = Cap()
+    cg27_default_path_currency(c, corpus=[("gone.md", None)])
+    cases.append(("CG-27 an unreadable default-path file is Unknown, "
+                  "not clean", c.rows[0][0] == "WARN"))
+
     # ---- CG-18. Review RD-17 finding 10: dropping a fixture's `Measured:`
     # anchor took the denominator from 20 to 19 with no finding and a green
     # `OK`. The anchor's absence is now the finding, and the denominator is
@@ -5092,14 +5346,15 @@ def cg25_check_owners(res, reported=None, owners=None):
                        f"report: {', '.join(orphan)}")
     downgraded = getattr(res, "downgraded", [])
     for fam in sorted(set(owners) & set(families)):
-        if fam in PYTHON_ONLY_RULES:
-            details.append(f"[downgraded] {fam} — {PYTHON_ONLY_RULES[fam]}")
+        if fam in ADVISORY_RULES:
+            details.append(f"[downgraded] {fam} — {ADVISORY_RULES[fam]}")
     res.add("FAIL" if findings else ("OK" if families else "WARN"),
             "CG-25  every check names its authoritative rule", len(families),
             len(findings), "check family",
             note=(f"{len(families) - len(missing)} of {len(families)} "
-                  f"attributed; {len(PYTHON_ONLY_RULES)} downgraded to WARN "
-                  f"for lack of a written owner"
+                  f"attributed; {len(ADVISORY_RULES)} downgraded to WARN "
+                  f"({len(PYTHON_ONLY_RULES)} with no written owner, "
+                  f"{len(CANDIDATE_HOME_RULES)} with a candidate one)"
                   f"{f'; {len(downgraded)} fired this run' if downgraded else ''}"
                   if families else "nothing examined"),
             details=details)
@@ -5172,6 +5427,7 @@ def main():
     cg22_ambiguous_status(existing, res)
     cg23_default_path_vocabulary(res)
     cg26_battery_parity(res)
+    cg27_default_path_currency(res)
     cg24_selftest_coverage(res)
     cg25_check_owners(res)
     res.report()

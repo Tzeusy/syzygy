@@ -171,6 +171,17 @@ view, because a current-state section that must be hand-edited whenever
 reality changes is a known decay site. (CC-REV-5 governs epistemic labelling;
 this governs currency.) *Absorbs:* CC-KNOW-12.
 
+*Check:* `CG-27` in `scripts/check_governance.py` enforces a **floor** under
+this rule's second paragraph over the default reading path — every claim about
+current wave, gate or launch state either names the record that owns it, sits
+under a leading banner that names it, or carries its own as-of date. It
+enforces *less* than the clause (which requires both an as-of *and* a
+non-sole source), and it never checks whether a claim is **true** — only
+whether a reader who doubts it can tell where to go. It is advisory until this
+policy is ruled (P-12). *(Added 2026-08-13, owner charter §11.4 — the rule
+predates the check, and this line exists because the policy's own closing
+section says a rule names its check where one exists.)*
+
 *Violation:* a status file describing "the current gates" in three
 hand-maintained places, two of them a revision behind, none saying as of when
 it was true.
@@ -288,8 +299,12 @@ grows is not a compaction.
 
 ## What this policy still does not do
 
-- **No rule here is script-checked.** These are obligations on people and
-  agents, not validations. Where a check exists it is named in the rule.
+- **Almost no rule here is script-checked.** These are obligations on people
+  and agents, not validations. Where a check exists it is named in the rule —
+  which today is `CC-KNOW-11` alone, and there the check is a floor under the
+  clause rather than the clause. *(Corrected 2026-08-13: this sentence read
+  "No rule here is script-checked", which stopped being true the moment CG-27
+  shipped.)*
 - **It does not say what any rule should say.** Doctrine and the contracts own
   that.
 - **It binds nothing until its own owner act.** Item P-12.

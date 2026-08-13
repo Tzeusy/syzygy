@@ -200,6 +200,15 @@ because a current-state section that must be hand-edited whenever reality
 changes is a known decay site. (CC-REV-5 governs epistemic labelling; this
 governs currency.)
 
+*Check:* `CG-27` in `scripts/check_governance.py` enforces a **floor** under
+this rule over the default reading path — a claim about current wave, gate or
+launch state names the record that owns it, sits under a leading banner that
+does, or carries its own as-of date. It enforces less than this clause and
+never checks whether a claim is true. Advisory until P-12. *(Added 2026-08-13,
+owner charter §11.4; the check's docstring cites the compact version's
+`CC-KNOW-11`, which is where this obligation lands if the owner picks that
+version — the pointer is here too so neither arm of the P-12 choice loses it.)*
+
 *Violation:* a status file describing "the current gates" in three
 hand-maintained places, two of them a revision behind, none of them saying as
 of when it was true.

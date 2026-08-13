@@ -5,7 +5,10 @@
 > binding, who may make it so, and what the shorthand identifiers mean. It
 > defines no product term, adopts nothing, and binds nothing. Where this page
 > and an owning record disagree, **the owning record wins and this page is
-> stale.**
+> stale.** For every claim below about current wave, gate or launch state, that
+> owning record is [`PROJECT-STATUS.md`](PROJECT-STATUS.md) — named here rather
+> than left implicit, so a reader who suspects a sentence has gone stale knows
+> where to check without first working out who owns the answer.
 >
 > Two other glossaries exist and this one replaces neither:
 >

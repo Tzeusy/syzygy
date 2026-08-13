@@ -350,7 +350,8 @@ TASKS = [
              "rules are reachable *before* the owner's launch decision, "
              "not so a spec can be written. `openspec/` does not exist and "
              "may not be created. Every clause below is **candidate** — "
-             "Waves A and B are confirmed and unaccepted, so each module's "
+             "Waves A and B are confirmed and unaccepted "
+             "(`PROJECT-STATUS.md` owns that state), so each module's "
              "own banner (\"absent such a record, this contract binds "
              "nothing\") governs every citation here. The decisions named "
              "below are the ones this route can see; none is ruled.",
@@ -560,8 +561,10 @@ def render(tasks):
                          + ", ".join(f"`{p}`"
                                      for p in t["blocking_decisions"])
                          + " — each checked at generation time against the "
-                           "queue's open table and its unperformed acts; a "
-                           "resolved or executed row is refused")
+                           "open table in `PENDING-OWNER-DECISIONS.md`, "
+                           "which owns their state, and against the "
+                           "unperformed acts; a resolved or executed row "
+                           "is refused")
         if t.get("downstream_decisions"):
             lines.append("**Open upstream of this task, at a later gate:** "
                          + ", ".join(f"`{p}`"
