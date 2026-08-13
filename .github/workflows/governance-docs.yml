@@ -71,6 +71,15 @@ jobs:
       - name: build_task_router --selftest
         run: python3 .syzygy/governance/contracts/candidates/scripts/build_task_router.py --selftest
 
+      # Capability 1's five views against their one source. Owner charter
+      # §10: the route and the first-spec sequence may not be independently
+      # maintained enumerations, and a drift check nobody runs is a plan.
+      - name: build_capability_1_views --check
+        run: python3 .syzygy/governance/contracts/candidates/scripts/build_capability_1_views.py --check
+
+      - name: build_capability_1_views --selftest
+        run: python3 .syzygy/governance/contracts/candidates/scripts/build_capability_1_views.py --selftest
+
       # The checkers' own fixtures. A hosted run that exercises the checks
       # but never the checks' checks reports a denominator it does not have.
       # Every one is stdlib-only, which is why they can run here at all —

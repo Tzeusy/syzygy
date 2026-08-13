@@ -265,3 +265,95 @@ what a reader needs to know its limits.
 built by the session that wrote the clause it exercises is weak evidence, and
 the administrator shares the corpus authors' model family. It is more than
 existed before, which was nothing.
+
+## RD-60 — the Capability 1 outline exercise, against the generated route
+
+Owner charter §10's closing exercise, run and recorded. Raw bytes:
+`RD-60-capability-1-outline-exercise-RAW.md`. **Not a review** — no artifact
+was judged, no verdict word is claimed, and nothing below copies one. Subject:
+`CAPABILITY-1-CHARTER.yaml` at sha256 `15e92acb…de64ad107` and the two views
+generated from it. Materials withheld: every review, every register, the
+status file, the README, the sequence document, and the pending-decisions
+queue. Rulings available to it: **none** — every decision in its materials is
+open and no spec-quality policy is in force.
+
+**It produced a full outline** — the capability in one sentence, a shape/
+behaviour split of 29 fixed items against 12 open ones with four cases argued
+onto the boundary, 22 proposed requirements across the six rows each carrying
+a form, a reachable case, a terminating oracle, a falsifier and a clause
+citation, and a ten-row table of the decisions it ran into. It created nothing, edited nothing, and created no
+`openspec/`; its confirmation section enumerates the eleven files it opened
+and the line ranges it read.
+
+### What the exercise establishes about the generated-view architecture
+
+Two things, and only these two:
+
+1. **It could not mis-home an authority**, because the charter names clause
+   IDs only and the builder resolves each home from the generated contract
+   index. Every module the exercise opened, it opened because the route named
+   it. The failure mode a hand-maintained route has — a plausible wrong path
+   that no check tests — was not available to it.
+2. **The charter carried no decoration.** Set-difference run this session over
+   the exercise's argument section (its file list excluded, since clause IDs
+   appear there as range endpoints, not citations): **34 clause IDs cited, all
+   25 of the charter's then-current clauses among them, 0 uncited.** A charter
+   clause the exercise had no use for would have been a citation that was not
+   a reliance; there were none.
+
+### The four clauses added because of it
+
+`[Observed]`, each verified defined and homed in a Waves A+B module before
+being added; the charter's own provenance comment records the same:
+
+| Clause | Row | Why it is a reliance, not a citation | Found by |
+|---|---|---|---|
+| `RFC6-22` | 1.4 | `RFC6-17` requires disclosure of *"the full RFC6-22 equivalence tuple"* inside its own body — an author cannot satisfy `RFC6-17` without it | the exercise, by citing it as authority for R1.4-C while it was absent from the route |
+| `RFC1-27` | 1.6 | `RFC7-40` says the link is proposed as *"a Proposal, RFC1-27"*; row 1.6's whole obligation is that Proposal | **the exercise, explicitly** — its "what I could not do" item 6 names `RFC1-27` as cited by two clauses, outside the range the route gave it, and leaves R1.6-C's artifact undefined in consequence |
+| `RFC3-3` | 1.6 | direct-write containment — the contract-level statement of what row 1.6's *"never write it"* means; VIS-5 is the doctrine half and was already carried | the exercise, by citing it in R1.6-B's authority line while it was absent from the route |
+| `RFC6-23` | 1.5 | `RFC6-18` gives row 1.5 *"one fact set"* and `RFC6-22` gives the comparison tuple, but only `RFC6-23` enumerates the twelve things two equivalent renderings may not disagree about, and makes the disagreement release-blocking. That enumeration **is** the parity oracle's domain | **this disposition session, not the exercise** — the exercise cited `RFC6-23` only as the consequence in R1.5-C's falsifier line. The reliance question was asked afterwards and answered differently. Recorded as this session's reading, and the owner may disagree with the reasoning rather than only the conclusion |
+
+**The charter has moved, and the exercise is bound to the bytes before it
+moved.** The banner on the raw file says so and names the pre-addition digest.
+Verification rule 10 is not violated because nothing the exercise was bound to
+was *edited* — the charter was extended afterwards, on the exercise's own
+evidence, and the record states which digest the run read.
+
+### Five clause IDs the exercise cited that were deliberately **not** added
+
+`[Observed]` — each verified this session to appear **inside the body of a
+clause the charter already carries**, so the obligation is the host clause's
+and adding the inner ID would import a citation that is not a reliance:
+
+| Inner ID | Host clause already in the charter | Verified |
+|---|---|---|
+| `RFC1-2` | `RFC3-6` | yes |
+| `RFC2-18` | `RFC6-19` | yes |
+| `RFC2-25` | `RFC6-14` | yes |
+| `RFC7-6` | `RFC7-39` | yes |
+| `RFC8-12` | `RFC6-19` | yes |
+
+`RFC8-12` is the sharpest of the five: `RFC6-19` class 8 (ii) marks it *"a
+forward reference, informative until RFC 0008 is accepted"*, so adding it
+would have imported an unaccepted dependency into a capability the charter
+claims depends on Waves A+B only. The exercise saw this and said so.
+
+### Findings left open, and why
+
+| # | Finding | Disposition |
+|---|---|---|
+| f1 | **"Never partial registration" is anchored to no clause.** Row 1.1's statement asserts atomicity; `RFC3-9` gives the consequence of invalidity and `RFC3-5` the closed field set, and neither states an all-or-nothing transition. The exercise proposed R1.1-A with its authority marked incomplete rather than attribute a sentence to a clause that does not contain it | **open.** Two lawful repairs exist — amend a contract to state it, or drop the phrase from the charter row — and both are decisions this session may not make. Amending a candidate contract clause enlarges the Wave A package the owner is being asked to accept; dropping the phrase weakens a row the charter's author put there deliberately. Filed as work, routed to the owner |
+| f2 | **The "named failure" vocabulary does not exist.** Row 1.1 requires an invalid declaration to be "a named failure"; no clause defines a failure-identifier vocabulary. Either the specification mints one — structurally the same question `P-37` poses for the facet names — or a contract amendment does | **open**, and deliberately not minted. It is a decision about what a specification may own, which is the subject of an open queue row, not a gap a repair session fills |
+| f3 | **`RFC3-1` delegates the `project.yaml` dialect** — version, coercion rules, duplicate-key handling — *"to the first accepted spec that parses it,"* and makes it a conformance item from then on. R1.1-A/B's parse-outcome oracle therefore has an undefined boundary | **declined as a defect; recorded as a fact.** This is the contract working: it is behaviour by delegation from shape, and the delegation is explicit. The exercise correctly named it and proposed no dialect. Nothing to repair |
+| f4 | **Row 1.4 could be taken least far**, because the facet names are drafted in no accepted module (the route's own generation-time sweep: **0 of the 30** Waves A+B modules). Every row-1.4 requirement the exercise wrote is a frame with an empty domain | **already recorded, not a new finding.** The charter's `deferred_semantics` carries it and routes it to `P-37`, which is exactly what the exercise concluded independently. The convergence is the useful part |
+| f5 | **R1.4-B has no expected value.** The merged-but-unreconciled rendering must render Unknown, `RFC6-14` requires reasons verbatim, and `RFC2-24` closes the vocabulary at twelve — none of which the flagship V0 case is bound to | **already recorded**, `deferred_semantics` → `P-31`. Same convergence |
+| f6 | **It could not say what `P-36`, or any of the nine capability-level decisions, decides** — it had identifiers and no subject matter, because the queue was withheld | **declined as a defect of the exercise's brief, not of the route.** It reported the identifiers and stopped, which is the correct behaviour; it did not guess. Worth noting that the route names blocking decisions by ID and does not summarise them: a reader following the route reaches the queue, which owns the answer |
+| f7 | **No spec-quality bar was in force**, so the form/oracle/falsifier shape the exercise used is its own construction, warranted by nothing in the repository — and it said so unprompted | **correct, and it is the state `P-41` exists to end.** Recorded so no later reader mistakes the outline's shape for a policy-derived one |
+
+`[Inferred]` — that the generated-route architecture holds. One exercise, one
+capability, one model family shared with the corpus authors. What it shows is
+narrower than "the route works": it shows that a fresh reader given only the
+generated route reached the same open decisions the charter already names, and
+found four clause gaps by trying to write requirements and running out of
+authority. That last part is the only thing here that could not have been got
+by reading.

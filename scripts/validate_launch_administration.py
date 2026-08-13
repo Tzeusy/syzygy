@@ -1483,11 +1483,17 @@ def _selftest():
                         + "/DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md"))),
          "declares its own status as unresolved", git=True)
 
-    case("LA-11 a Beads issue grants no deferral",
+    # The path must EXIST at HEAD, or the check stops at LA-11's
+    # does-not-exist branch and this fixture passes for the wrong reason —
+    # which is what happened on 2026-08-13 when a commit gitignored
+    # `.beads/issues.jsonl` and this fixture, bound to that path, started
+    # failing. `.beads/README.md` is tracked, is a Beads artifact, and makes
+    # the same point: an issue tracker is not the owner's decision home.
+    case("LA-11 a Beads artifact grants no deferral",
          lambda r: (r["question_results"][__i(r, "F2")].update(
                         verdict=NOT_MET, counterexample="x"),
                     r["owner_deferrals"].append(
-                        _deferral(".beads/issues.jsonl"))),
+                        _deferral(".beads/README.md"))),
          "does not live in", git=True)
 
     case("LA-11 a file outside the decisions home grants no deferral",

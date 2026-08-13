@@ -159,6 +159,8 @@ python3 $CS/build_budget_report.py --check                # every volatile measu
 python3 $CS/build_active_manifest.py --check              # package-identity drift
 python3 $CS/build_task_router.py --check                  # router drift
 python3 $CS/build_task_router.py --selftest               # router predicates
+python3 $CS/build_capability_1_views.py --check            # capability 1 views
+python3 $CS/build_capability_1_views.py --selftest         # charter predicates
 python3 $CS/context_load.py rfcs/RFC-0002/README.md doctrine:vision.md
 ```
 

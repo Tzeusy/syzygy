@@ -38,6 +38,30 @@ CR = ".syzygy/governance/policies/craft-and-care"
 DEC = ".syzygy/governance/decisions"
 C = ".syzygy/governance/contracts/candidates"
 
+#: Owner charter §10: the Capability 1 route and the first-specification
+#: sequence may not be independently maintained enumerations. Everything
+#: this router says about Capability 1 — its clauses, their authority
+#: homes, its doctrine, its blocking decisions and its later-gate
+#: decisions — is read from `CAPABILITY-1-CHARTER.yaml` through
+#: `build_capability_1_views.route_payload()`, which resolves each clause
+#: to its module through the generated contract index and refuses one homed
+#: outside Waves A+B. **Nothing about Capability 1 is typed twice**, so
+#: this route and the sequence's behaviour rows cannot disagree: they are
+#: one source read by two generators, and each `--check` fails on drift.
+sys.path.insert(0, str(HERE))
+from build_capability_1_views import (                             # noqa: E402
+    CharterError, route_payload)
+
+try:
+    CAP1 = route_payload()
+except CharterError as _exc:
+    print(f"CAPABILITY-1-CHARTER.yaml does not validate, so the Capability 1 "
+          f"route cannot be generated:\n  {_exc}", file=sys.stderr)
+    raise SystemExit(1)
+
+CAP1_CLAUSES = {cid: f"{C}/{rel}" for cid, rel in CAP1["clauses"].items()}
+CAP1_CLAUSE_MODULES = sorted(set(CAP1_CLAUSES.values()))
+
 #: One entry per task class. `clauses` maps clause-id -> repo-relative path
 #: of the module that must define it (validated). `deps` is derived, not
 #: listed here. Routes marked deferred=True route into deferred-wave
@@ -321,8 +345,7 @@ TASKS = [
     ),
     dict(
         key="author-capability-1",
-        title="Author Capability 1 — Project registration and honest "
-              "shape visibility",
+        title=f"Author Capability 1 — {CAP1['title']}",
         note="**Authoring is forbidden today.** This route exists so the "
              "rules are reachable *before* the owner's launch decision, "
              "not so a spec can be written. `openspec/` does not exist and "
@@ -331,75 +354,24 @@ TASKS = [
              "own banner (\"absent such a record, this contract binds "
              "nothing\") governs every citation here. The decisions named "
              "below are the ones this route can see; none is ruled.",
-        clauses={
-            # project identity and governance root
-            "RFC1-1": f"{C}/rfcs/RFC-0001-project-graph-identity-state-planes.md",
-            "RFC1-4": f"{C}/rfcs/RFC-0001-project-graph-identity-state-planes.md",
-            "RFC1-3": f"{C}/rfcs/RFC-0001-project-graph-identity-state-planes.md",
-            # project declaration, its closed field set, consent, and what an
-            # invalid declaration does — RD-53 f7: the module was loaded and
-            # these four were unnamed, so row 1.1 had no cited authority
-            "RFC3-1": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
-            "RFC3-4": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
-            "RFC3-5": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
-            "RFC3-6": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
-            "RFC3-7": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
-            "RFC3-9": f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
-            # the owner-act provenance predicate every loaded module defers
-            # to — RD-53 f2: RFC3-7's stored attribution is honored only
-            # under RFC3-16(a), and its module was not in the load set
-            "RFC3-16": f"{C}/rfcs/RFC-0003/governance-homes-and-owner-acts.md",
-            # Unknown reason vocabulary
-            "RFC2-24": f"{C}/rfcs/RFC-0002/rendering-vocabularies.md",
-            # admission boundary for observed repository content
-            "RFC5-3": f"{C}/rfcs/RFC-0005/admission-and-boundary.md",
-            # one truth two consumers; label parity; aggregation discloses;
-            # one drawer one fact set; unconsented renders as policy.
-            # RD-53 f1: this is the anti-rollup ground and the human/machine
-            # parity ground, and RFC6-17 is cited-never-restated by three of
-            # the modules already loaded, so it was unreachable from here
-            "RFC6-13": f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
-            "RFC6-14": f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
-            "RFC6-17": f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
-            "RFC6-18": f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
-            "RFC6-19": f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
-            "RFC6-26": f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
-            # what this package's distinctions owe every rendering
-            "RFC7-33": f"{C}/rfcs/RFC-0007/rendering-and-surface.md",
-            # fixed human entry; repository discoverability
-            "RFC7-39": f"{C}/rfcs/RFC-0007/rendering-and-surface.md",
-            "RFC7-40": f"{C}/rfcs/RFC-0007/rendering-and-surface.md",
-            # COST renders as independent measures, and an absent measure is
-            # Unknown, never zero. RD-53 f1: these are cost-scoped and were
-            # standing in for the general anti-rollup ground, which is
-            # RFC6-18/6-19's
-            "RFC8-18": f"{C}/rfcs/RFC-0008/state-vocabulary-and-cost.md",
-            "RFC8-19": f"{C}/rfcs/RFC-0008/state-vocabulary-and-cost.md",
-        },
+        clauses=CAP1_CLAUSES,
         modules=[
             # what the capability must do — RD-53 f10 and G1: the route had
-            # no document stating its own scope
+            # no document stating its own scope. The three planning
+            # documents are named here; every contract module below them is
+            # DERIVED from the charter's clause set, so a module can no
+            # longer be loaded without a clause that needs it.
             f"{C}/FIRST-OPENSPEC-SEQUENCE.md",
+            f"{C}/CAPABILITY-1-GENERATED-VIEWS.md",
             f"{C}/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md",
-            f"{C}/rfcs/RFC-0001-project-graph-identity-state-planes.md",
-            f"{C}/rfcs/RFC-0003/manifests-and-namespace.md",
-            f"{C}/rfcs/RFC-0003/governance-homes-and-owner-acts.md",
-            f"{C}/rfcs/RFC-0002/rendering-vocabularies.md",
-            f"{C}/rfcs/RFC-0005/admission-and-boundary.md",
-            f"{C}/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
-            f"{C}/rfcs/RFC-0007/rendering-and-surface.md",
-            f"{C}/rfcs/RFC-0008/state-vocabulary-and-cost.md",
-        ],
-        doctrine=[("VIS-2", f"{D}/vision.md"), ("VIS-4", f"{D}/vision.md"),
-                  ("VIS-5", f"{D}/vision.md")],
+        ] + CAP1_CLAUSE_MODULES,
+        doctrine=[(r, f"{D}/vision.md") for r in CAP1["doctrine"]],
         craft=[],
         # RD-53 f5: the two wave acts and the three rulings that ride them
         # were absent, and P-34/P-35 were listed here though the queue's own
         # launch-scope index assigns them to the administration gate.
-        blocking_decisions=["P-1", "P-33", "P-31", "P-37", "P-21", "P-28",
-                            "P-22", "P-38", "P-36", "P-39", "P-40", "P-41",
-                            "P-42"],
-        downstream_decisions=["P-34", "P-35"],
+        blocking_decisions=CAP1["blocking_decisions"],
+        downstream_decisions=CAP1["downstream_decisions"],
         omissions=[
             "Every Mission and Context-selection contract — RFC-0010 and "
             "RFC-0011 — is excluded. They are DEFERRED-WAVE candidates and "
@@ -490,7 +462,14 @@ def validate(tasks):
         for cid, rel in t["clauses"].items():
             if not (REPO / rel).exists():
                 errs.append(f"{t['key']}: clause home missing: {rel}")
-            elif not re.search(rf"\*\*{re.escape(cid)}\b", read(rel)):
+            # `\b` was wrong for sub-clause identifiers: after the `)` of
+            # `RFC3-16(a)` the next character is `*`, and two non-word
+            # characters are not a word boundary, so a genuinely defined
+            # sub-clause reported as undefined. The lookahead does the job
+            # `\b` was there for — refusing a `RFC3-1` match inside
+            # `RFC3-16` — and admits the sub-clause form.
+            elif not re.search(rf"\*\*{re.escape(cid)}(?![0-9A-Za-z(-])",
+                               read(rel)):
                 errs.append(f"{t['key']}: clause {cid} not defined in {rel}")
         for ident, rel in t.get("doctrine", []) + t.get("craft", []):
             if not (REPO / rel).exists():

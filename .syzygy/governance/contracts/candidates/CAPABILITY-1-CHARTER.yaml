@@ -1,0 +1,154 @@
+# CAPABILITY-1-CHARTER — candidate planning metadata, not product authority.
+#
+# WHAT THIS IS. One machine-readable source for everything the repository
+# says about Capability 1's shape. Five views are generated from it and none
+# of them is edited by hand:
+#
+#     the Capability 1 task-router route   (build_task_router.py reads this)
+#     the first-specification sequence's behaviour rows
+#     the E3 trace-table skeleton
+#     the initial clause-coverage population
+#     the blocking-decision list
+#
+# Regenerate and check drift with scripts/build_capability_1_views.py.
+#
+# WHAT THIS IS NOT. Not a specification, not authority, and not a decision.
+# It binds nothing, adopts nothing, and creates no `openspec/`. Every clause
+# it names is a CANDIDATE clause of a confirmed-but-unaccepted wave: each
+# module's own banner ("absent such a record, this contract binds nothing")
+# governs every citation here. Once Capability 1 is accepted in OpenSpec,
+# the accepted specification supersedes this charter for required behaviour
+# and this file becomes history.
+#
+# NO AUTHORITY HOMES ARE WRITTEN HERE, DELIBERATELY. The charter names
+# clause IDs only; the builder resolves each to its owning module from the
+# generated 05-CONTRACT-INDEX.yaml. A clause that does not exist, or that a
+# hand-written path would have mis-homed, cannot survive generation.
+
+capability_id: CAP-1
+title: "Project registration and honest shape visibility"
+
+argument: "A project can be registered and its shape read honestly — every facet answered on its own, every Unknown carrying its reason and its owning authority, and the same facts reaching a human and a machine — without any claim the evidence does not support."
+
+# The waves whose clauses this capability may cite. A clause homed in a
+# module outside these waves is a generation error, which is how "no C/D
+# dependency" is enforced rather than asserted.
+required_waves: [A, B]
+deferred_waves: [C1, C2, D1, D2]
+
+# Doctrine that governs the capability as a whole rather than one row.
+doctrine: [VIS-4]
+
+# THREE CLAUSES ADDED 2026-08-13 by the outline exercise (RD-60), which was
+# run against charter sha256 15e92acbd5a62c3f28ff507abc59fd07fb7657ceb19978c3
+# c4921fede64ad107 — the bytes BEFORE this addition. Each is a reliance, not a
+# decoration (verification rule 5), and each was verified defined and homed in
+# a Wave A module before being added:
+#
+#   RFC6-22  cited from inside RFC6-17's own body — the aggregate must
+#            disclose "the full RFC6-22 equivalence tuple", so an author
+#            cannot satisfy RFC6-17 without it
+#   RFC1-27  cited from inside RFC7-40's own body — the link is proposed as
+#            "a Proposal, RFC1-27", and row 1.6's obligation is that Proposal
+#   RFC3-3   direct-write containment, the contract-level statement of what
+#            row 1.6's "never write it" means; VIS-5 is the doctrine half
+#
+# The exercise found them by trying to write requirements and running out of
+# authority. That is what the exercise is for.
+#
+# A FOURTH CLAUSE, RFC6-23, was added the same day by the session dispositioning
+# that exercise — NOT by the exercise, which cited RFC6-23 only as the
+# consequence of a falsifier. The disposition asked the reliance question
+# (verification rule 5) and answered it differently: RFC6-18 gives row 1.5 "one
+# fact set" and RFC6-22 gives the comparison tuple, but only RFC6-23 enumerates
+# the twelve things two equivalent renderings may not disagree about and makes
+# the disagreement release-blocking. That enumeration IS the parity oracle's
+# domain, so an author cannot write row 1.5's acceptance without it. Recorded
+# as this session's reading, open to the owner disagreeing with the reasoning
+# rather than only the conclusion.
+
+behavior_rows:
+
+  - id: "1.1"
+    statement: "Parse and validate the project declaration; an invalid declaration is a named failure, never partial registration"
+    governing_clauses: [RFC1-1, RFC3-1, RFC3-4, RFC3-5, RFC3-9]
+    doctrine: [VIS-2]
+    owner_decisions: []
+    policy_requirements: []
+    topology: []
+
+  - id: "1.2"
+    statement: "Record consent and repository coverage; the boundary renders as a fact, not silence"
+    governing_clauses: [RFC1-3, RFC1-4, RFC3-6, RFC3-7, "RFC3-16(a)", RFC5-3, RFC6-26]
+    doctrine: [VIS-5]
+    owner_decisions: []
+    policy_requirements: []
+    topology: []
+
+  - id: "1.3"
+    statement: "Serve the fixed human entry at the declared entry path"
+    governing_clauses: [RFC7-39]
+    doctrine: []
+    owner_decisions: [P-38]
+    policy_requirements: []
+    topology: []
+
+  - id: "1.4"
+    statement: "Answer the shape facets independently — no rollup, no composite badge; uncomputed reconciliation renders Unknown"
+    governing_clauses: [RFC2-24, RFC6-17, RFC6-18, RFC6-19, RFC6-22, RFC8-18, RFC8-19]
+    doctrine: [VIS-2]
+    owner_decisions: [P-31, P-36, P-37]
+    policy_requirements: []
+    topology: []
+
+  - id: "1.5"
+    statement: "Expose the owning authority and the Unknown reason for every answer, identically to human and machine"
+    governing_clauses: [RFC3-16, RFC6-13, RFC6-14, RFC6-15, RFC6-23, RFC7-33]
+    doctrine: [VIS-2]
+    owner_decisions: [P-36]
+    policy_requirements: []
+    topology: []
+
+  - id: "1.6"
+    statement: "Render per-repository discoverability in the closed four-value domain; propose the link, never write it"
+    governing_clauses: [RFC1-27, RFC3-3, RFC7-40]
+    doctrine: [VIS-5]
+    owner_decisions: [P-38]
+    policy_requirements: []
+    topology: []
+
+# Decisions and acts that block AUTHORING this capability, over and above
+# the per-row ones above. Each is checked at generation against the queue's
+# own open table: a resolved or executed row is refused, and so is a row the
+# queue does not carry.
+blocking_decisions: [P-1, P-21, P-22, P-28, P-33, P-39, P-40, P-41, P-42]
+
+# Open upstream, at a LATER gate — named so a reader is not surprised by
+# them, not because authoring consumes them.
+downstream_decisions: [P-34, P-35]
+
+non_goals:
+  - "Any composite or rolled-up project score, badge, or single health number"
+  - "Certification of any kind — registration is never certification"
+  - "Writing to a governed repository: the discoverability link is proposed, never written"
+  - "Mission evaluation, which renders `not evaluated / deferred / Unknown` until the C/D semantics exist"
+  - "Deterministic context-packet generation, which is Capability 2"
+  - "Any choice of language, framework, database, graph store, rendering engine, or deployment target"
+
+deferred_semantics:
+  - id: "facet vocabulary"
+    note: "The facet names themselves are drafted in no accepted module. P-37 decides whether the Capability 1 specification owns them or Wave A must be amended to."
+  - id: "Mission-ready facet"
+    note: "Renders `not evaluated / deferred / Unknown` while Waves D1/D2 are deferred. The facet exists; its semantics do not."
+  - id: "merged-but-unreconciled reason"
+    note: "The flagship V0 rendering is bound to no reason value in the closed vocabulary until P-31 rules."
+
+# Assertions the charter makes about itself, each one the builder checks.
+# A charter that claims a property no check tests is a wish.
+self_checks:
+  - "every governing_clauses entry resolves to exactly one module in 05-CONTRACT-INDEX.yaml"
+  - "every resolved module is named by the Wave A or Wave B manifest"
+  - "no resolved module is named by a deferred-wave manifest"
+  - "every owner_decisions and blocking_decisions entry is an OPEN row of the pending-decisions queue"
+  - "no decision appears in both blocking_decisions and downstream_decisions"
+  - "no clause appears in two behaviour rows"

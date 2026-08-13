@@ -31,16 +31,26 @@ Capability 1 — Project registration and honest shape visibility
 
 Scope, stated here so no superseded revision must be opened *(inlined
 2026-08-10, RD30-10 — the former pointer chained through revision 2 into
-revision 1)*:
+revision 1)*.
 
-| Row | Behaviour | Governing shape |
-|---|---|---|
-| 1.1 | Parse/validate the project declaration; an invalid declaration is a named failure, never partial registration | RFC3-1/3-4/3-5/3-9; RFC1-1 |
-| 1.2 | Record consent and repository coverage; the boundary renders as a fact, not silence | RFC1-3; RFC3-6/3-7; RFC5-3; RFC6-26 |
-| 1.3 | Serve the fixed human entry at `.syzygy/intent/OVERVIEW.md` | RFC7-39 |
-| 1.4 | Answer the shape facets independently — no rollup, no composite badge; uncomputed reconciliation renders Unknown | RFC6-18/19 as amended (the facet vocabulary itself awaits P-37 — see that row below) |
-| 1.5 | Expose owning authority and Unknown reason for every answer, identically to human and machine | RFC6-13/14/15 |
-| 1.6 | Render per-repository discoverability in RFC7-40's closed four-value domain; propose the link, never write it | RFC7-40; VIS-5 |
+**The table below is generated** *(2026-08-13, owner charter §10)* from
+`CAPABILITY-1-CHARTER.yaml` by `scripts/build_capability_1_views.py`, which
+resolves every clause to its authority home through the generated contract
+index and refuses one homed outside Waves A+B. **Do not edit it here** —
+edit the charter and regenerate; `--check` fails on drift. The same table,
+with the trace skeleton, the clause-coverage population and the
+blocking-decision list, is in `CAPABILITY-1-GENERATED-VIEWS.md`.
+
+<!-- BEGIN GENERATED: capability-1 behaviour rows -->
+| Row | Behaviour | Governing clauses | Doctrine | Owner decisions |
+|---|---|---|---|---|
+| 1.1 | Parse and validate the project declaration; an invalid declaration is a named failure, never partial registration | `RFC1-1`, `RFC3-1`, `RFC3-4`, `RFC3-5`, `RFC3-9` | `VIS-2` | — |
+| 1.2 | Record consent and repository coverage; the boundary renders as a fact, not silence | `RFC1-3`, `RFC1-4`, `RFC3-6`, `RFC3-7`, `RFC3-16(a)`, `RFC5-3`, `RFC6-26` | `VIS-5` | — |
+| 1.3 | Serve the fixed human entry at the declared entry path | `RFC7-39` | — *(none directly; the clause governs)* | `P-38` |
+| 1.4 | Answer the shape facets independently — no rollup, no composite badge; uncomputed reconciliation renders Unknown | `RFC2-24`, `RFC6-17`, `RFC6-18`, `RFC6-19`, `RFC6-22`, `RFC8-18`, `RFC8-19` | `VIS-2` | `P-31`, `P-36`, `P-37` |
+| 1.5 | Expose the owning authority and the Unknown reason for every answer, identically to human and machine | `RFC3-16`, `RFC6-13`, `RFC6-14`, `RFC6-15`, `RFC6-23`, `RFC7-33` | `VIS-2` | `P-36` |
+| 1.6 | Render per-repository discoverability in the closed four-value domain; propose the link, never write it | `RFC1-27`, `RFC3-3`, `RFC7-40` | `VIS-5` | `P-38` |
+<!-- END GENERATED: capability-1 behaviour rows -->
 
 Read against the seven-facet decision P-37 (corrected form) and the E3
 trace (`round-2026-08e/FIRST-SPEC-TRACE-TABLE.md`), which anchors each
