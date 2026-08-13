@@ -99,6 +99,26 @@ This is recorded rather than passed over because it is the *only* evidence in
 this report that the hosted battery can go red at all, and a check that has
 never failed in CI is a check nobody has watched fail.
 
+## The re-run at this report's own commit
+
+A clone report has an awkward property: committing it moves `HEAD` past the
+commit it names, so the report is stale the instant it lands. Rather than
+leave that, the whole exercise was repeated once more after this file was
+pushed.
+
+| | |
+|---|---|
+| **Commit** | `abf3fb732d3c5cf0c37f0721d6c3dd22eee56deb` (`abf3fb7`) — the commit that added this report |
+| **Fresh public clone** | all **sixteen** checks exit `0`; `check_governance.py` reports the same `32 OK, 18 WARN, 0 FAIL (50 checks)` |
+| **Hosted run** | `31707905943`, head SHA `abf3fb7`, **success** |
+
+**This section is where the recursion stops.** The commit that adds *these
+paragraphs* is again not covered, and re-running would produce the same
+regress. What the two runs together establish is that the battery is green in
+a fresh public clone and in hosted CI at two consecutive commits, one of which
+is the state a reader fetching this project gets. Anything after `abf3fb7`
+needs its own run, and `PROJECT-STATUS.md` says so where it links here.
+
 ## What this report does not establish
 
 - **It does not grade any artifact's content.** Every check here is
@@ -108,9 +128,9 @@ never failed in CI is a check nobody has watched fail.
 - **It does not make the repository ready for anything.** The launch gate has
   never been formally administered, and green checks are not a `READY`
   verdict. `PROJECT-STATUS.md` owns that state.
-- **It is valid for `ccaf95e` and no other commit.** Any commit after this one
-  needs its own run. That is verification rule 7, and it is the reason this
-  file names the commit six times rather than saying "current".
+- **It is valid for `ccaf95e` and `abf3fb7`, and no other commit.** Anything
+  after those needs its own run. That is verification rule 7, and it is the
+  reason this file names its commits rather than saying "current".
 - **`0 FAIL` is not `0 WARN`.** Eighteen checks warn at this commit, including
   three advisory downgrades whose rules have no binding home. The warnings are
   printed with their denominators on every run; read the output, not the
