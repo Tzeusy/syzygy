@@ -221,7 +221,15 @@ def open_decisions(queue_text):
             continue
         for line in chunk.split("\n"):
             m = re.match(r"\|\s*(P-\d+(?:\([a-z]\))?)\s*\|", line)
-            if m and "**Executed.**" not in line:
+            # The marker disqualifies a row only where it is a
+            # *disposition* — leading the row's final cell — not wherever the
+            # string appears. P-43's row asks whether "an `**Executed.**`
+            # marker" should be the convention, and a substring test read
+            # that question as its own answer and dropped an open row from
+            # the population. Found 2026-08-13 by recounting the queue two
+            # ways and reconciling the difference.
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            if m and not (cells and cells[-1].startswith("**Executed.**")):
                 ids.add(m.group(1))
     return ids
 
@@ -631,6 +639,82 @@ def selftest():
                 "; ".join(errs) or "no error raised")
 
     case("a clause claimed by two behaviour rows is refused", duplicate_clause)
+
+    def executed_in_prose():
+        """A row that *discusses* the executed marker is still open.
+
+        P-43 asks whether "an `**Executed.**` marker" should be the
+        convention for recording an owner decision, and a substring test
+        read that question as its own answer and silently dropped an open
+        row from the population. The marker disqualifies a row only where
+        it leads the row's final cell."""
+        mutated = base_queue.replace(
+            "| P-33 |", "| P-33 | should an `**Executed.**` marker count? |", 1)
+        if mutated == base_queue:
+            return False, "mutation did not apply"
+        ids = open_decisions(mutated)
+        return ("P-33" in ids,
+                "P-33 dropped from the open population by a prose mention"
+                if "P-33" not in ids else "still open, correctly")
+
+    case("a row mentioning `**Executed.**` in prose stays open",
+         executed_in_prose)
+
+    def executed_disposition():
+        """The accepting direction, and it must be exercised SYNTHETICALLY.
+
+        Measured 2026-08-13: every executed-marked row in the real queue
+        already sits under a `Resolved…` heading, so the heading check alone
+        disqualifies all seven and the marker check has **no live subject**.
+        A fixture reading the real queue therefore passes with the marker
+        check deleted — which is exactly what happened, and is why this
+        fixture mutates an OPEN row instead. The check is defence in depth
+        against an executed row landing in the open section; a defence
+        nothing tests is not a defence."""
+        mutated = base_queue.replace(
+            "| P-33 |", "| P-33 |", 1)
+        lines = base_queue.split("\n")
+        for j, line in enumerate(lines):
+            if line.startswith("| P-33 |"):
+                lines[j] = line.rstrip().rstrip("|").rstrip() \
+                    + " | **Executed.** synthetic disposition |"
+                break
+        else:
+            return False, "no P-33 row to mutate"
+        mutated = "\n".join(lines)
+        if mutated == base_queue:
+            return False, "mutation did not apply"
+        ids = open_decisions(mutated)
+        return ("P-33" not in ids,
+                "an executed disposition in the OPEN section was still "
+                "counted open" if "P-33" in ids else "disqualified, correctly")
+
+    case("an `**Executed.**` disposition inside the open section disqualifies",
+         executed_disposition)
+
+    def resolved_heading():
+        """The heading limb, also synthetic, and also because the two limbs
+        mask each other.
+
+        All seven rows under `Resolved…` headings carry the executed marker
+        too, so deleting the heading check changed nothing — the marker check
+        caught them. Strip the marker from one resolved row and the heading
+        must still disqualify it."""
+        lines = base_queue.split("\n")
+        for j, line in enumerate(lines):
+            if line.startswith("| P-6 |") and "**Executed.**" in line:
+                lines[j] = line.replace("**Executed.**", "Recorded:", 1)
+                break
+        else:
+            return False, "no marked P-6 row to mutate"
+        ids = open_decisions("\n".join(lines))
+        return ("P-6" not in ids,
+                "a row under a `Resolved…` heading was counted open once its "
+                "marker was removed" if "P-6" in ids else "disqualified by "
+                "the heading, correctly")
+
+    case("a `Resolved…` heading disqualifies without help from the marker",
+         resolved_heading)
 
     def row_decision():
         """The row-level owner_decisions check has its own fixture because

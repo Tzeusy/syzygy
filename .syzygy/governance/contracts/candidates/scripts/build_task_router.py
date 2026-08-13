@@ -50,7 +50,7 @@ C = ".syzygy/governance/contracts/candidates"
 #: one source read by two generators, and each `--check` fails on drift.
 sys.path.insert(0, str(HERE))
 from build_capability_1_views import (                             # noqa: E402
-    CharterError, route_payload)
+    CharterError, open_decisions, route_payload)
 
 try:
     CAP1 = route_payload()
@@ -429,22 +429,19 @@ def module_deps(paths):
 #: The identifiers a route may name as blocking. Two populations qualify:
 #: rows in the queue's open table, and the unperformed acceptance acts —
 #: P-41 and P-42 are themselves craft acts, so excluding acts would be
-#: inconsistent. Everything under a "Resolved…" heading, and every row
-#: carrying `**Executed.**`, is disqualified: RD-53 proved that the old
-#: whole-file anchor accepted P-6, P-7, P-13 and P-26 — all executed — and
-#: rendered them under the words "each verified open".
+#: inconsistent. Everything under a "Resolved…" heading, and every row whose
+#: final cell leads with `**Executed.**`, is disqualified: RD-53 proved that
+#: the old whole-file anchor accepted P-6, P-7, P-13 and P-26 — all executed
+#: — and rendered them under the words "each verified open".
+#:
+#: **This is now one function, not two identical ones.** It was duplicated
+#: here with a comment saying the two copies must stay identical, which is
+#: the same "maintained by hand in two places" defect this generator exists
+#: to remove — and on 2026-08-13 both copies had to be patched for one bug.
+#: `build_capability_1_views.open_decisions` is the single home; the three
+#: limbs of its predicate are mutation-covered by that module's `--selftest`.
 def queue_disposable_ids():
-    text = read(f"{DEC}/PENDING-OWNER-DECISIONS.md")
-    ids = set()
-    for chunk in re.split(r"^## ", text, flags=re.M)[1:]:
-        heading = chunk.split("\n", 1)[0]
-        if heading.startswith("Resolved"):
-            continue
-        for line in chunk.splitlines():
-            m = re.match(r"\|\s*(P-[0-9]+(?:\([a-z]\))?)\s*\|", line)
-            if m and "**Executed.**" not in line:
-                ids.add(m.group(1))
-    return ids
+    return open_decisions(read(f"{DEC}/PENDING-OWNER-DECISIONS.md"))
 
 
 #: A non-deferred route may not reach deferred-wave content. RD-53 proved

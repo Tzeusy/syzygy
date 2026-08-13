@@ -13,7 +13,7 @@
 |---|---|---|
 | **Has the owner decided this?** | the **recorded decisions** below | A few things are recorded. Most are not |
 | **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **No.** The file does not exist, and that absence is correct |
-| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | 32 open rows *(counted 2026-08-13)*. Each links a bounded packet |
+| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **33** rows in the open section, plus **5** unperformed acceptance acts *(measured 2026-08-13 by the predicate the generators use: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
 | **Where is the history?** | [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md), and the round trees under `contracts/candidates/` | Deliberately off the default path |
 
 A **decision** is recorded prose the owner writes. An **act** is a formal
@@ -54,6 +54,7 @@ launch-critical rows each have a prepared packet here:
 
 | `P-nn` | Question | Packet |
 |---|---|---|
+| **P-31** | What reason does a merged-but-unreconciled `Unknown` carry? | [`MERGED-UNRECONCILED-DECISION.md`](MERGED-UNRECONCILED-DECISION.md) |
 | **P-33** | Where do accepted contract modules and their companions install? | [`WAVE-A-INSTALL-SHAPE-DECISION.md`](WAVE-A-INSTALL-SHAPE-DECISION.md) |
 | **P-34** | Is the launch-gate instrument owner-approved process policy? | [`LAUNCH-GATE-AUTHORITY-DECISION.md`](LAUNCH-GATE-AUTHORITY-DECISION.md) |
 | **P-35** | What are the project's operating constraints? | [`PROJECT-OPERATING-CONSTRAINTS-DECISION.md`](PROJECT-OPERATING-CONSTRAINTS-DECISION.md) |
@@ -63,6 +64,7 @@ launch-critical rows each have a prepared packet here:
 | **P-39** | Which OpenSpec form and version? | [`OPENSPEC-FORM-AND-VERSION-DECISION.md`](OPENSPEC-FORM-AND-VERSION-DECISION.md) |
 | **P-40** | One specification per what? | [`SPECIFICATION-GRANULARITY-DECISION.md`](SPECIFICATION-GRANULARITY-DECISION.md) |
 | **P-41** | The specification-acceptance craft amendment | [`SPECIFICATION-ACCEPTANCE-DECISION.md`](SPECIFICATION-ACCEPTANCE-DECISION.md) |
+| **P-42** | The shape-to-spec impact craft amendment — offered jointly with P-41 | [`SHAPE-TO-SPEC-IMPACT-DECISION.md`](SHAPE-TO-SPEC-IMPACT-DECISION.md) |
 | **P-12** | The knowledge-hygiene craft policy | [`KNOWLEDGE-HYGIENE-DECISION.md`](KNOWLEDGE-HYGIENE-DECISION.md) |
 | **P-14** | Which license? | [`LICENSE-DECISION-PACKET.md`](LICENSE-DECISION-PACKET.md) |
 

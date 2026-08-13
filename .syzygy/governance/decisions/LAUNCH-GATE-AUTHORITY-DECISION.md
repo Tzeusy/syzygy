@@ -13,9 +13,15 @@
 
 ## Question
 
-Approve `launch-gate-pre-specifications.md` **v2.0** as this repository's
+Approve `launch-gate-pre-specifications.md` **v2.2** as this repository's
 owner-approved **process policy** for evaluating pre-specification
 readiness?
+
+*(Repointed 2026-08-13 from v2.0. This packet asked for v2.0 and quoted its
+digest after the instrument had moved twice — it would have routed the owner
+to bytes nobody offers, which is the defect review RD-8 called "the finding
+that converts act 1 from a knowing act into a surprised one." Every v2.0 and
+v2.1 digest is superseded and satisfies nothing.)*
 
 ## What the policy governs
 
@@ -45,8 +51,12 @@ approved policy is worth exactly as much as the administration behind it.
 
 | Artifact | sha256 |
 |---|---|
-| `launch-gate-pre-specifications.md` (v2.0) | `05ecaa954e81ef95f6e2e2b409fbcb5bd5391037c10d9624ab4af3217a00f6d2` |
+| `launch-gate-pre-specifications.md` (v2.2) | `ac8751236ec7434c20606b404d41c885d29f67dd5f3dab8c9d0cbb90de670977` |
 | `launch-gate-administration.schema.json` | `e0167fb8af6a903c527d402d56c4fb85ebdfed9608de1a485f4f1563aa6a69fb` |
+
+The **schema digest is unchanged** across v2.0, v2.1 and v2.2 — the
+amendments changed how the instrument states its rules, not the record
+format. That is the fact to check rather than take on trust.
 
 Verify before acting — the digest belongs to the artifact, not to this
 page:
@@ -59,7 +69,7 @@ cd "$(git rev-parse --show-toplevel)"
 sha256sum launch-gate-pre-specifications.md launch-gate-administration.schema.json
 ```
 
-## What changed at v2.0, in five lines
+## What changed at v2.0, in five lines — and what changed after it
 
 The administration record stops being Markdown. It is JSON validated
 against the schema above; the human report is generated from it and never
@@ -74,28 +84,52 @@ independent re-reviews of the Markdown record format each found a real
 defect, and each repair minted the next. The chronology is
 `launch-gate/HISTORY.md` and you do not need it to decide this.
 
+**v2.1 and v2.2, in three more lines.** v2.1 repaired the two `REVISE`
+verdicts returned against v2.0. v2.1 was then itself reviewed twice, and
+**both reviews returned `REVISE` again** — independently, in fresh context,
+landing on the same blocking defect. v2.2 is that repair, and it is the
+version this packet now binds. Deltas:
+`../contracts/candidates/round-2026-08g/LAUNCH-GATE-v2.1-SEMANTIC-DELTA.md`
+and `…/LAUNCH-GATE-v2.2-SEMANTIC-DELTA.md`.
+
+**v2.2 has had no review.** That is not a gap in this packet; it is the
+state, and §"Your options" below is written around it.
+
 ## Independent review verdicts
 
-> **Two reviews are required before this decision is offerable. Both have
-> now been obtained, and both returned `REVISE`.** The owner charter (§5.6,
-> §14) commissions a policy-semantics review — *did v2.0 weaken any
-> readiness question or formula?* — and a structured-record review — *can
-> malformed or contradictory data produce a false READY, and does the
-> generated report faithfully present the canonical record?*
+> **Two reviews are required, against the version being approved, before
+> this decision is offerable.** The owner charter (§5.6, §14) commissions a
+> policy-semantics review — *did this version weaken any readiness question
+> or formula?* — and a structured-record review — *can malformed or
+> contradictory data produce a false READY, and does the generated report
+> faithfully present the canonical record?*
 >
-> **Status 2026-08-11: dispatched and returned; findings unrepaired.**
-> *(Corrected 2026-08-11. An earlier revision of this section read "neither
-> has been obtained … not dispatched" and carried two `[Unknown]` rows.
-> That was true when written earlier the same day — the authoring session
-> could not spawn reviewer agents — and stopped being true when the reviews
-> were run synchronously.)* This packet is **prepared, not offered**, and
-> the reason has changed: it is not that nobody has looked, it is that two
-> reviewers looked and asked for revisions that have not been made.
+> **Status 2026-08-13: the required pair has been run against v2.0 and
+> against v2.1, and has never been run against v2.2** — the version this
+> packet binds. This packet is therefore **prepared, not offered**, and the
+> reason has changed twice: first it was that nobody had looked; then that
+> two reviewers had looked and asked for changes; now it is that the changes
+> were made and nobody has looked at the result.
 
 | Review | Subject | Verdict (copied exactly) |
 |---|---|---|
-| Policy semantics | v2.0 instrument | `REVISE` — RD-48, 2026-08-11, frozen commit `e2efda6` |
-| Structured record | schema, validator, renderer | `REVISE` — RD-47, 2026-08-11, frozen commit `e2efda6` |
+| Policy semantics | **v2.0** instrument | `REVISE` — RD-48, 2026-08-11, frozen commit `e2efda6` |
+| Structured record | **v2.0** schema, validator, renderer | `REVISE` — RD-47, 2026-08-11, frozen commit `e2efda6` |
+| Policy semantics | **v2.1** instrument | `REVISE` — RD-55, 2026-08-13 |
+| Structured record | **v2.1** schema, validator, renderer | `REVISE` — RD-56, 2026-08-13 |
+| Policy semantics | **v2.2** — the version this packet binds | **none commissioned** |
+| Structured record | **v2.2** | **none commissioned** |
+
+**Four reviews, four `REVISE` verdicts, across two versions.** The v2.1 pair
+were dispatched separately in fresh context, neither saw the other's output,
+and **they found the same blocking defect** — a convergence the v2.2 delta
+calls the most load-bearing fact it records, because a defect two independent
+readings land on is not a matter of taste.
+
+**v2.2 repaired both, and v2.2 has not been reviewed.** A repair session
+cannot confirm its own repairs. The bytes this packet binds are therefore
+repaired-but-unconfirmed, and that is the single most important thing on this
+page. Tracked as `syzygy-6j8`.
 
 Both reviewers are the **same model family as the corpus authors**, so
 under the charter each supports repair and neither is the formal launch
@@ -117,10 +151,10 @@ path, of which the load-bearing one is that the schema audit never requires
 an object schema to close, so deleting a single `additionalProperties`
 re-opens the claimed-verdict route the v2.0 design rests on.
 
-**None of these is repaired.** Each needs an amendment to the instrument or
-a change to the validator's error surface, and both belong in their own
-version with their own delta and re-review rather than beside a repair
-batch.
+**Those v2.0 findings were repaired at v2.1, whose own reviews then returned
+`REVISE`, repaired in turn at v2.2.** What has never happened is a review that
+returned anything other than `REVISE`, and what has not happened yet is any
+review of v2.2 at all.
 
 ## Known residuals
 
@@ -136,53 +170,55 @@ generalized:
 3. Presence tests on free-text fields are **content-blind** by design. A
    reviewer who writes a plausible false evidence quote defeats this tool,
    and no version of it has claimed otherwise.
-4. **No administration has been performed under v2.0.** The verdict path is
-   fixture-proven, not field-proven.
+4. **No administration has been performed under v2.0, v2.1 or v2.2.** The
+   verdict path is fixture-proven, not field-proven. The only administration
+   on record anywhere is the 2026-08-09 pilot, at v1.3, which returned
+   `GATE VERDICT: NOT READY`.
 5. F5 (assurance independence) is **not** a conjunct of the formula. Every
    administration so far has been by the corpus authors' model family.
    Promoting F5 to a conjunct is an owner option — see below.
 
 ## Your options
 
-**(a) Approve v2.0 as process policy.** *(Recommendation restated
-2026-08-11, now that the reviews have returned.)* The earlier form of this
-option said "recommended **only after** the two reviews return". They have
-returned, and both said `REVISE` — so the condition it named is met in
-letter and fails in substance. **Approving v2.0 as it stands means
-approving an instrument whose two independent reviews asked for changes
-that were not made**, including a formula the tool computes differently
-from the way the instrument states it. That is a lawful owner choice with
-the cost now stated; it is no longer the recommended one. The instrument
-becomes the standard a formal administration is run under.
+**(a) Approve v2.2 as process policy.** *(Repointed 2026-08-13 from v2.0.)*
+The v2.0 and v2.1 findings **have** been repaired — that is what v2.2 is —
+so this arm no longer means approving an instrument with known-unmade
+changes. What it does mean is **approving bytes no independent reader has
+seen**: the repair was made by the session that received the verdicts, and a
+repair session cannot confirm its own repairs. A lawful owner choice, and the
+cost is stated rather than hidden. The instrument becomes the standard a
+formal administration is run under.
 
-**(b) Approve with F5 promoted to a conjunct.** Same as (a), plus: a
+**(b) Approve v2.2 with F5 promoted to a conjunct.** Same as (a), plus: a
 `Not met` F5 blocks a READY verdict. This would block a pass on any
 administration run by this corpus's own model family — the strictest
 available reading of assurance independence, and a real constraint on who
 can administer the gate.
 
-**(c) Amend first.** Name what to change; the change travels as a semantic
-delta and a changelog entry, and the two reviews re-run on the changed bytes.
-**Recommended `[Inferred]`, as of 2026-08-11**, and the reviews name the
-change list rather than leaving it to be invented: bring §4's stated
-formula and the tool's computed one into agreement, give `NOT READY` a home
-in the instrument body, and close the schema audit's open-object route. The
-recommendation is inferred from two same-family reviews and is not itself
-reviewed.
+**(c) Review v2.2 first, then decide.** Commission the two fresh-context
+reviews against v2.2's exact bytes and bring their verdicts back to this
+packet before ruling. **Recommended `[Inferred]`, as of 2026-08-13** — and
+what it recommends has changed since 2026-08-11, when this arm read "amend
+first". There is nothing named left to amend: the three changes the v2.0
+reviews asked for were made at v2.1, and the v2.1 reviews' blocking defect
+was repaired at v2.2. What is missing is not a change; it is a reading.
 
-*(Status note, 2026-08-13.* **This arm has now been taken twice, and neither
-pass has been confirmed.** v2.1 made all three named changes and was reviewed;
-both reviews returned `REVISE`. v2.2 repaired those and is unreviewed. The
-arm's cost is therefore observable rather than estimated: **one amendment
-round costs two fresh-context reviews and has, twice, produced a further
-`REVISE`.** That is a fact about this instrument's maturity, and it is the
-thing to weigh against arm (a) — approving a candidate whose defects are at
-least enumerated — rather than a reason to keep amending indefinitely.*)
+*(The arm's cost is observable rather than estimated.* **It has been taken
+twice and neither pass returned anything but `REVISE`.** v2.1 made all three
+named changes and drew two more `REVISE` verdicts; v2.2 repaired those and
+has drawn none, because none has been commissioned. So the honest form of
+this recommendation is: **the next review is the one that could return
+`CONFIRM`, and it is also the one that has never been run.** If it returns
+`REVISE` a third time, that is itself the answer to whether this instrument
+converges, and it should be weighed against arm (a) rather than absorbed as
+another round.*)
 
 **(d) Decline.** The gate stays a candidate. Administrations remain
 evidence you may weigh; no formal administration can be said to have been
-run under approved policy, and the readiness standard's "launch-gate
-v2.0 is owner-approved" conjunct stays unsatisfied.
+run under approved policy, and the readiness standard's "the launch-gate
+instrument is owner-approved" conjunct stays unsatisfied. *(That conjunct is
+stated without a version number deliberately — naming one here is how this
+page came to ask for v2.0 two versions after v2.0.)*
 
 ## The lawful transaction
 
@@ -191,7 +227,7 @@ recorded owner decision, not a digest-binding act. To approve, record in
 this file, dated and signed in your own words:
 
 ```text
-APPROVED — launch-gate v2.0 as process policy
+APPROVED — launch-gate as process policy, at the version whose digest is below
 instrument sha256: <the digest you verified>
 schema sha256:     <the digest you verified>
 F5 promoted to a conjunct: yes / no
