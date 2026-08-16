@@ -112,6 +112,45 @@ which still matches — verified this session).
 - It mints no new authority: CC-SPEC-11's confirmer and the N/A record
   fields reuse the CC-TEST-4 pattern already approved in craft.
 
+## Blocker repair after RD-69 (2026-08-17, same day)
+
+### D2-6 — CC-SPEC-8 reduced to a citation of the contract's reviewed-N/A rule (RD-69 BLOCKER 1)
+
+The combined fresh-context review **RD-69** (`VERDICT: REVISE`, raw in
+`reviews/RD-69-p41-p42-combined-RAW.md`) found D2-2's homing decision to
+be its one launch blocker: nine confirmed contract modules (RFC1-33,
+RFC6-28, RFC7-38, RFC8-32, RFC9-52 and their shape-parallel siblings)
+already state the reviewed-N/A rule with a **stricter** gate — a recorded
+**owner** judgment, homed in `decisions/` (RFC3-15), honored only under
+verifiable **RFC3-16(a)** provenance, rows per **observable consequence**,
+unverified ⇒ **Unknown, never covered** — and D2-2's "no other statement
+of it exists" was a false absence claim (reviewer's sweep: 398 files,
+11 hits).
+
+**Before** (D2-2's text): CC-SPEC-8 declared "**this clause is its one
+home**", a five-field record with `confirmer` = "the reviewer or owner",
+no provenance predicate, coverage per clause, and the sentence "no other
+statement of it exists".
+
+**After:** CC-SPEC-8 states that the judgment's **home, gate, unit, and
+effect rule are the contract's** and cites the modules above; the false
+absence sentence and the five-field record are deleted. The clause keeps
+its two genuine additions — the **"applicable" definition** (unchanged
+from D2-2) and the **production obligation**, now sharpened: the spec
+ships with its coverage matrix, rows per observable consequence, and
+every N/A row cites the owner judgment's record in `decisions/` so
+RFC3-16(a) has something to verify.
+
+**Semantic effect:** the clause's gate strengthens to the contract's
+(owner-only, provenance-checked); no obligation weakens. The 2026-08-13
+confirmer limb ("never the author alone") is subsumed by the owner gate.
+The banner and known-findings table were updated as carriers; the two
+owner packets in `decisions/` were reconciled the same day.
+
+**This is the one authorized blocker-only repair** of the pass's single
+repair→review→repair→confirm cycle. It awaits the one confirming review;
+if a real blocker survives that, the matter returns to the owner.
+
 ## Review posture
 
 The repaired pair (plus the P-44 offer, per the P-41 packet's

@@ -5,13 +5,16 @@
 > digest would change, exact next transaction. **No history chain** — the
 > reviews are named once as provenance, not narrated.
 >
-> **The subject was reviewed `REVISE` and then repaired; the repair is
-> unreviewed.** RD-51 returned **`VERDICT: REVISE`** over the joint
-> `CC-SPEC`/`CC-IMPACT` subject; the disposition register grades its twenty
-> findings 15 repaired, 4 repaired in part, 1 deliberately open — repaired
-> **by the session that read the verdict**, and a repair session cannot
-> confirm its own repairs. This packet does not ask the owner to approve
-> unrepaired or unreviewed bytes. Read the options with that in front.
+> **The subject has been through two review rounds; the final blocker
+> repair awaits its confirming review.** RD-51 returned
+> **`VERDICT: REVISE`** over the joint `CC-SPEC`/`CC-IMPACT` subject and
+> was repaired; the combined fresh-context review **RD-69** (2026-08-17)
+> then returned **`VERDICT: REVISE`** with one launch blocker (against
+> CC-SPEC-8, repaired same day — no CC-IMPACT clause was found blocking)
+> and five non-blocking findings. A repair session cannot confirm its own
+> repairs, so the blocker repair stands unconfirmed until the one
+> confirming review returns. This packet does not ask the owner to approve
+> unconfirmed bytes. Read the options with that in front.
 >
 > Repaired 2026-08-16 against review **RD-64** (`REVISE`,
 > `../contracts/candidates/round-2026-08h/reviews/RD-64-p42-impact-packet-RAW.md`);
@@ -98,10 +101,16 @@ an administrator with nothing to cite.
 **Known open findings that travel with (b)**, stated so the option is not
 chosen blind:
 
-- `RD-51 f14` — **the one deliberately open finding**: no clause tests a
-  specification for **completeness** against its capability.
-- `RD-51 f15` — **repaired in part**: *"applicable"* is undefined, and the
-  reviewed-N/A rule's identifier is unresolved.
+- `RD-51 f14` — **repaired 2026-08-17** (CC-SPEC-11, the bounded coverage
+  model); RD-69 raised no finding against it, and the confirming review of
+  the same-day blocker repair has the last word.
+- `RD-51 f15` — **repaired 2026-08-17, twice**: the first repair defined
+  *"applicable"* but wrongly declared CC-SPEC-8 the reviewed-N/A rule's one
+  home (RD-69's launch blocker); the blocker repair reduced CC-SPEC-8 to a
+  citation of the nine contract modules that own the rule. Awaits the
+  confirming review.
+- `RD-69`'s five non-blocking findings (N1–N5, dispositioned open in
+  `../contracts/candidates/round-2026-08i/reviews/RD-69-DISPOSITION-REGISTER.md`).
 - the undefined term *"consumes its vocabulary"* inside `CC-IMPACT-2`'s
   second trigger limb — the policy flags it against itself (`[Unknown]`,
   RD-51's G section), and it governs one of the sweep's two limbs.

@@ -22,11 +22,20 @@
 > convergence direction §9) — CC-SPEC-1 re-grounded on the ruled **SDR-37**
 > (P-40, 2026-08-16), discharging the "may not be frozen" conditional;
 > **CC-SPEC-11** minted, closing RD-51 f14's completeness gap; **CC-SPEC-8**
-> completed, closing f15's two open limbs ("applicable" defined; the
-> reviewed-N/A rule homed here with an identifier). The delta is
+> completed, closing f15's two open limbs. The delta is
 > `../round-2026-08i/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA-2.md`.
-> **The repaired bytes await the combined fresh-context review** — a repair
-> session cannot confirm its own repairs.
+>
+> **Reviewed 2026-08-17: RD-69, `VERDICT: REVISE`** (raw at
+> `../round-2026-08i/reviews/RD-69-p41-p42-combined-RAW.md`) — one launch
+> blocker: the f15 completion had wrongly declared CC-SPEC-8 the reviewed-
+> N/A rule's one home over the nine contract modules that already state it
+> with a stricter owner gate. **Blocker repaired same day** (D2-6 in the
+> same delta): CC-SPEC-8 now cites RFC1-33/RFC6-28/RFC7-38/RFC8-32/RFC9-52
+> for the judgment's home, gate, unit, and effect, keeping only the
+> production obligation and the "applicable" definition. The repair awaits
+> its one confirming review — a repair session cannot confirm its own
+> repairs. RD-69's five non-blocking findings are dispositioned open in
+> `../round-2026-08i/reviews/RD-69-DISPOSITION-REGISTER.md`.
 
 ## The rule
 
@@ -220,7 +229,10 @@ implementation, later.
 **CC-SPEC-8 — Applicable contract clauses are covered or lawfully N/A.**
 The clause-to-requirement coverage matrix (the phase-rule clauses'
 obligation) is produced with the spec; every applicable clause is covered
-by a requirement or carries a reviewed N/A judgment.
+by requirements or carries a reviewed N/A judgment. The matrix's unit is
+the contract's, not this clause's: **rows are per observable consequence,
+not per clause** (RFC1-33, RFC6-28) — a clause with five observable
+consequences and one mapped requirement is not covered.
 
 **"Applicable", defined.** A contract clause is applicable to a
 specification when **the capability uses the entity, behavior, authority
@@ -230,25 +242,28 @@ scope statement; a clause governing something the capability neither
 renders, stores, transitions, queries, nor crosses is not applicable, and
 saying so is an N/A judgment, not an omission.
 
-**The reviewed-N/A rule — this clause is its one home.** Every N/A
-judgment records five things:
-
-```text
-clause        the clause ID judged not applicable
-reason        why the capability does not use what the clause governs
-scope         the specification (and revision) the judgment covers
-confirmer     the reviewer or owner who confirmed it — never the
-              specification's author alone (the CC-TEST-4 pattern)
-provenance    where and when the judgment was recorded
-```
-
-Any artifact needing the reviewed-N/A rule cites **CC-SPEC-8**; no other
-statement of it exists. *(Confirmer added 2026-08-13, RD-51 f15.
-Completed 2026-08-17 on the owner's convergence direction: "applicable"
-is defined above, and the circular citation — this clause deferring to
-"the corpus's reviewed-N/A rule" while the routing matrix named this
-clause as that rule's home — is closed by making this clause the home it
-was already routed as.)*
+**The reviewed-N/A judgment's home, gate, unit, and effect rule are the
+contract's, not this clause's.** They are stated by the confirmed contract
+modules **RFC1-33, RFC6-28, RFC7-38, RFC8-32, and RFC9-52**: a reviewed
+N/A judgment is a recorded **owner** judgment homed in `decisions/`
+(RFC3-15), honored only where its owner-act provenance is verifiable under
+**RFC3-16(a)**; where that provenance does not verify, the judgment maps
+nothing — the consequence remains unmapped and **renders Unknown, never
+covered** (VIS-2). This clause adds only the specification-side
+**production obligation**: the specification ships with its coverage
+matrix, and every N/A row in that matrix cites the owner judgment's record
+in `decisions/`, so the RFC3-16(a) check has something to verify. A matrix
+whose N/A rows rest on anything less — the author's or a reviewer's
+say-so, a judgment recorded only inside the spec — does not discharge this
+clause. *(History: a confirmer limb was added 2026-08-13 against RD-51
+f15; the 2026-08-17 completion then declared this clause the rule's one
+home, with a reviewer-grade confirmer and no provenance predicate, over
+the nine contract modules that already state the rule with the owner gate
+— and defended that with an absence claim a 398-file sweep falsifies.
+RD-69 BLOCKER 1. Repaired 2026-08-17: the clause is reduced to a citation
+of those modules, keeping only the production obligation and the
+"applicable" definition; the contract's owner gate subsumes the 2026-08-13
+confirmer limb.)*
 
 **CC-SPEC-9 — A fresh technical reader can restate it.** A specification is
 a normative artifact, so **CC-REV-4** and **VIS-3** apply unmodified: a
@@ -337,6 +352,6 @@ failure VIS-2 names.
 
 | Finding | State |
 |---|---|
-| f14 | **Repaired 2026-08-17, unconfirmed** — CC-SPEC-11 now tests the requirement set for completeness against the declared capability (the bounded coverage model above). Whether it closes the finding is for the combined fresh-context review to judge, not this file |
-| f15 | **Repaired 2026-08-17, unconfirmed** — "applicable" is defined in CC-SPEC-8, which is now the reviewed-N/A rule's one identified home; the circular citation is closed. Same review caveat |
+| f14 | **Repaired 2026-08-17; RD-69 raised no finding against CC-SPEC-11** — the confirming review of the blocker repair has the last word, not this file |
+| f15 | **Repaired 2026-08-17, twice** — the first repair ("applicable" defined; CC-SPEC-8 declared the reviewed-N/A rule's one home) was itself RD-69's BLOCKER 1: the home claim was false against nine contract modules. The blocker repair reduces CC-SPEC-8 to a citation of those modules; "applicable" stays defined. Awaits the confirming review |
 | f1 (sibling) | **Open** — the lagging-specification exception is not lawful until CC-REV-2 is itself amended — see `SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` CC-IMPACT-6 and the P-44 offer it names |

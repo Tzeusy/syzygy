@@ -35,16 +35,22 @@ computed at the act (never transcribed in advance). What the owner *can*
 do in this sitting is choose the route below; the act itself follows the
 review.
 
-**The formerly open findings — repaired 2026-08-17, unconfirmed.** RD-51
-f14 (no completeness-against-capability clause) was deliberately open
-until a charter directed its closure; the owner's convergence direction
-(2026-08-17, §9.2) supplied that authority, and **CC-SPEC-11** now states
-the bounded coverage model. f15's two open limbs ("applicable" undefined;
-the reviewed-N/A rule's circular home) are closed in **CC-SPEC-8**. Both
-repairs were made by an authoring session and are **unconfirmed** — the
-combined fresh-context review judges whether they close the findings;
-until then `E5`'s "complete" limb is repaired-in-candidate, not `Met`.
-Delta: `../contracts/candidates/round-2026-08i/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA-2.md`.
+**The formerly open findings — repaired, reviewed once, blocker repaired.**
+RD-51 f14 (no completeness-against-capability clause) was deliberately
+open until a charter directed its closure; the owner's convergence
+direction (2026-08-17, §9.2) supplied that authority, and **CC-SPEC-11**
+now states the bounded coverage model. f15's two open limbs were repaired
+the same day, and the combined fresh-context review **RD-69**
+(`VERDICT: REVISE`, raw in `../contracts/candidates/round-2026-08i/reviews/`)
+found that repair's home claim to be its one launch blocker: CC-SPEC-8
+had declared itself the reviewed-N/A rule's one home over nine contract
+modules that already state the rule with a stricter owner gate. The
+blocker was repaired 2026-08-17 — CC-SPEC-8 now cites
+RFC1-33/RFC6-28/RFC7-38/RFC8-32/RFC9-52 for the judgment's home, gate,
+unit, and effect, keeping the "applicable" definition and the production
+obligation. The blocker repair **awaits its one confirming review**; until
+that returns, `E5`'s "complete" limb is repaired-in-candidate, not `Met`.
+Delta (both amendments): `../contracts/candidates/round-2026-08i/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA-2.md`.
 
 ## Ordering constraint (RD30-13) — satisfied 2026-08-16
 
