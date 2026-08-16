@@ -19,8 +19,8 @@ by `scripts/build_active_manifest.py`). Design rationale:
 
 | # | Act (exact phrase) | Accepts exactly |
 |---|---|---|
-| A | `ACCEPT FOUNDATIONAL WAVE A: 8972d9630b95f5d4266432dbb1b3602114576bbd6c0f29d6f9bd6f905b1f884a` | The 19 modules of RFC 0001–0006 (kernel, evidence, storage, admission, cross-surface selection) at the per-module sha256 digests in `wave-manifests/WAVE-A-MANIFEST.txt`, whose own digest is the act's argument. Every `depends_on` edge of these contracts stays inside the wave. **Argument regenerated three times in round-2026-08e, by script each time** — for the RD-26 repair batch (seven modules; delta: `round-2026-08e/WAVE-A-SEMANTIC-DELTA.md` §13), retiring `6b98e0c6…`; for the RD-30 batch (RFC2-19(a) minted; delta §14), retiring `8af6805f…`; and for the RD-31 batch (RFC3-2/RFC3-15 two-trigger alignment and provenance safeguard, the RFC-0002 index's sub-clause declaration, RFC1-7's P-28 marker, the RFC-0004 dependency correction; delta §15), retiring `c649143b…`. **All three earlier arguments are stale and satisfy nothing.** RD-31 reviewed `c649143b…` and returned `VERDICT: REVISE`; **RD-31b reviewed the current argument `8972d963…` exactly and returned `VERDICT: CONFIRM` (2026-08-10; raw at `round-2026-08e/reviews/RD-31b-wave-a-RAW.md`)** — the offer is now withheld solely by §7 item 11, until P-33 is ruled *(review-state corrected 2026-08-10, RD32b-N5 — the row still said "awaits RD-31b" after RD-31b had delivered)* |
-| B | `ACCEPT FOUNDATIONAL WAVE B: 193e3c1e15e4b1375f938d62c9e8c1a442984313e0794ada5965d2cdf9d7e3ed` | The 11 modules of RFC 0007–0009 (Polaris, Trajectory, Orrery) per `wave-manifests/WAVE-B-MANIFEST.txt`. Depends on Wave A. **Argument regenerated four times in round-2026-08e, by script each time** — for the wave-wide repair batch (all eleven modules; delta: `round-2026-08e/WAVE-B-SEMANTIC-DELTA.md`), retiring the round-08d argument `daa6a5dd…`; for the RD-27 batch (seven modules — delta §11's own "Modules touched (7 of 11)"; this row said "four" until 2026-08-10, RD32b-N3), retiring `2041ad05…`; for the RD-32 batch (RFC9-43's enumeration restored to the full RFC6-17 set, the P-38/P-22 in-place markers; delta §12), retiring `c0fd0e27…`; and for the RD-32b batch (the aggregation-attribution entry routed into RFC9-47's release-gate list per RFC9-47(a) part 1, RFC7-37's drift-prone gloss deleted; delta §13), retiring `052acfb8…`. **All four earlier arguments are stale and satisfy nothing.** RD-32 reviewed `c0fd0e27…` and RD-32b reviewed `052acfb8…` — both returned `VERDICT: REVISE`; **RD-32c reviewed the current argument `193e3c1e…` exactly and returned `VERDICT: CONFIRM` (2026-08-10; raw at `round-2026-08e/reviews/RD-32c-wave-b-RAW.md`)** — nothing withholds this offer itself, and it follows Wave A's on the A → B path, which waits on P-33 *(review-state updated the day RD-32c delivered — the RD32b-N5 currency discipline applied to this row's own sentence)*. The pre-repair row's reliance caveat is retired with them: after the RFC9-8(a) re-grounding, every normative reliance lands inside Waves A+B (RD-27 §4, confirmed by sweep) — lawful stated at the act. **Performed alone — before act 1 — this act binds eleven surface contracts whose operative predicates (11 of 11 modules' `depends_on`; 763 RFC 0001–0006 clause citation tokens — `RFC[1-6]-\d+` swept over the 11 manifest modules at the RD-32b rebind, 2026-08-10, replacing an unreproducible "1,067" per RD32b-N4 and rule 3) resolve into unaccepted Wave A candidate text: lawful only stated at the act, and the offer path is A → B** (RD32-M2; the register's P-1 row states the same ordering) |
+| A | `ACCEPT FOUNDATIONAL WAVE A: 8972d9630b95f5d4266432dbb1b3602114576bbd6c0f29d6f9bd6f905b1f884a` | The 19 modules of RFC 0001–0006 (kernel, evidence, storage, admission, cross-surface selection) at the per-module sha256 digests in `wave-manifests/WAVE-A-MANIFEST.txt`, whose own digest is the act's argument. Every `depends_on` edge of these contracts stays inside the wave. **Argument regenerated three times in round-2026-08e, by script each time** — for the RD-26 repair batch (seven modules; delta: `round-2026-08e/WAVE-A-SEMANTIC-DELTA.md` §13), retiring `6b98e0c6…`; for the RD-30 batch (RFC2-19(a) minted; delta §14), retiring `8af6805f…`; and for the RD-31 batch (RFC3-2/RFC3-15 two-trigger alignment and provenance safeguard, the RFC-0002 index's sub-clause declaration, RFC1-7's P-28 marker, the RFC-0004 dependency correction; delta §15), retiring `c649143b…`. **All three earlier arguments are stale and satisfy nothing.** RD-31 reviewed `c649143b…` and returned `VERDICT: REVISE`; **RD-31b reviewed the current argument `8972d963…` exactly and returned `VERDICT: CONFIRM` (2026-08-10; raw at `round-2026-08e/reviews/RD-31b-wave-a-RAW.md`)**. The offer was withheld solely by §7 item 11 until **P-33 was ruled (2026-08-16, install shape (M), zero bytes moved)** — **nothing now withholds this offer**; the act itself has not been performed *(offer-state corrected 2026-08-17; earlier review-state correction 2026-08-10, RD32b-N5)* |
+| B | `ACCEPT FOUNDATIONAL WAVE B: 193e3c1e15e4b1375f938d62c9e8c1a442984313e0794ada5965d2cdf9d7e3ed` | The 11 modules of RFC 0007–0009 (Polaris, Trajectory, Orrery) per `wave-manifests/WAVE-B-MANIFEST.txt`. Depends on Wave A. **Argument regenerated four times in round-2026-08e, by script each time** — for the wave-wide repair batch (all eleven modules; delta: `round-2026-08e/WAVE-B-SEMANTIC-DELTA.md`), retiring the round-08d argument `daa6a5dd…`; for the RD-27 batch (seven modules — delta §11's own "Modules touched (7 of 11)"; this row said "four" until 2026-08-10, RD32b-N3), retiring `2041ad05…`; for the RD-32 batch (RFC9-43's enumeration restored to the full RFC6-17 set, the P-38/P-22 in-place markers; delta §12), retiring `c0fd0e27…`; and for the RD-32b batch (the aggregation-attribution entry routed into RFC9-47's release-gate list per RFC9-47(a) part 1, RFC7-37's drift-prone gloss deleted; delta §13), retiring `052acfb8…`. **All four earlier arguments are stale and satisfy nothing.** RD-32 reviewed `c0fd0e27…` and RD-32b reviewed `052acfb8…` — both returned `VERDICT: REVISE`; **RD-32c reviewed the current argument `193e3c1e…` exactly and returned `VERDICT: CONFIRM` (2026-08-10; raw at `round-2026-08e/reviews/RD-32c-wave-b-RAW.md`)** — nothing withholds this offer itself, and it follows Wave A's on the A → B path *(the "waits on P-33" clause retired 2026-08-17 — P-33 was ruled 2026-08-16; earlier review-state update the day RD-32c delivered)*. The pre-repair row's reliance caveat is retired with them: after the RFC9-8(a) re-grounding, every normative reliance lands inside Waves A+B (RD-27 §4, confirmed by sweep) — lawful stated at the act. **Performed alone — before act 1 — this act binds eleven surface contracts whose operative predicates (11 of 11 modules' `depends_on`; 763 RFC 0001–0006 clause citation tokens — `RFC[1-6]-\d+` swept over the 11 manifest modules at the RD-32b rebind, 2026-08-10, replacing an unreproducible "1,067" per RD32b-N4 and rule 3) resolve into unaccepted Wave A candidate text: lawful only stated at the act, and the offer path is A → B** (RD32-M2; the register's P-1 row states the same ordering) |
 | C1 | `ACCEPT FOUNDATIONAL WAVE C1: a5d3ba1f22ad0ff5ff66485b1829e5b2f652a8c7678dcc96699eaca4ac5b2b4d` | RFC-0011 module 1 (packet identity, provenance, memory — RFC11-1..3, 5..10, 12) plus the package index, per `wave-manifests/WAVE-C1-MANIFEST.txt`. Declares `depends_on` RFC-0010 (waves D1/D2): recommended after them. Module 1 uses *mandatory context* as a primitive whose defining clause is RFC11-4 in Wave C2; performed alone, the packet contract binds identity, immutability, execution-record binding, the fail-closed Unknown rule, governed memory and profiles, while the criterion separating a packet's mandatory core from its suggested additions is not yet fixed — lawful only stated at the act. Performing C2 in the same sitting removes the condition |
 | C2 | `ACCEPT FOUNDATIONAL WAVE C2: acd27bb8f9b7be76725057b4280e2dc9fe23f3e9fac17c448542b9cb250d8b1a` | RFC-0011 module 2 (deterministic selection and budget posture — RFC11-4, 11, 13..16), per `wave-manifests/WAVE-C2-MANIFEST.txt`. Depends on C1 (the module consumes module 1's packet primitives throughout) and declares `depends_on` RFC-0010 (waves D1/D2) in its front matter — performed before them, it binds text whose reliances point at candidate material, lawful only stated at the act. Carries its own external criterion: acceptable only when its selection rules reproduce the blind golden fixtures (`fixtures/`), a derivation the fixtures' task/answer boundary exists to allow — and that criterion's pass/fail standard is itself an open owner question (**P-29**): until it is ruled and the standard exists, this row's condition cannot be discharged |
 | D1 | `ACCEPT FOUNDATIONAL WAVE D1: 570e617091bb41d8b34ca17b09e12f41d22e4d592a23249c8a737a698f8c0dff` | RFC-0010 modules 1, 2, 3, 5 (mission identity/approval/lifecycle; envelope/attention; budget reservation; portfolio/consent) plus the package index, per `wave-manifests/WAVE-D1-MANIFEST.txt`. Even accepted, RFC10-24 holds every mission in `awaiting-approval` until the D3 question (act 5) is ruled — this act is never an operating license |
@@ -141,14 +141,21 @@ one reading obligation:
    package. Any mismatch means no act: regenerate, re-review, re-offer.
 3. **Installation, bytes unchanged.** A wave act installs its manifest's
    modules (with their package directory structure) to
-   `.syzygy/governance/contracts/rfcs/` and its wave manifest to
-   `.syzygy/governance/contracts/wave-manifests/` — the RFC3-15
-   `contracts/` home, created at the first wave act; the first wave act
-   also installs `ACTIVE-CONTRACT-MANIFEST.txt` beside it as the package
-   identity record (updated in place by later regenerations only through
-   re-offer, never silently). The copy is digest-verified by running
-   `sha256sum -c wave-manifests/WAVE-<X>-MANIFEST.txt` **from
-   `.syzygy/governance/contracts/`**. Acts 2/4 bind content already
+   `.syzygy/governance/contracts/rfcs/` — the RFC3-15 `contracts/` home,
+   created at the first wave act — **and nothing else**. *(Step redrafted
+   2026-08-17 to the owner's P-33 ruling of 2026-08-16, install shape
+   **(M)**, recorded in `decisions/WAVE-A-INSTALL-SHAPE-DECISION.md`: no
+   companion material is installed, and neither the wave manifest nor
+   `ACTIVE-CONTRACT-MANIFEST.txt` is installed — wave membership travels
+   in the owner-act record of step 4, which quotes the exact phrase and
+   manifest digest. The step previously copied the wave manifest and the
+   package-wide manifest into the governed home; those copies are no
+   longer performed.)* The installed copy is digest-verified by running
+   `sha256sum -c candidates/wave-manifests/WAVE-<X>-MANIFEST.txt` **from
+   `.syzygy/governance/contracts/`** — the manifest's module rows are
+   candidates-root-relative, so run from the governed home they resolve
+   against the installed `rfcs/` tree, while the manifest itself stays at
+   its tracked candidates home. Acts 2/4 bind content already
    committed at canonical homes; act 3 copies the nine bundle members from
    **`.syzygy/map/topology-candidates/`** — their tracked home, present in
    every clone — to `.syzygy/map/topology/`, verified by the bundle
@@ -163,34 +170,20 @@ one reading obligation:
    written. `check_governance.py` CG-14 now resolves every act's install
    source and destination so this class of defect fails a check rather than
    waiting for a reader.
-   **Companion material, installed but not accepted:** the first wave
-   act's install also copies `history/` and `matrix-rows/` to
-   `.syzygy/governance/contracts/history/` and `…/matrix-rows/` so the
-   modules' Tier-2 rationale backlinks and the RFC-0003 README's
-   census link resolve from the governed tree. These directories are
-   **non-normative** (their own README states "Nothing in this directory
-   binds"), sit outside every act's accepted digest set, and carry no
-   authority — each wave act binds exactly its manifest entries, nothing
-   else.
-
-   **The RD-7 pointer finding, and its repair.** Review **RD-7** simulated
-   the rev10 install exactly as documented and swept the installed
-   modules: **81 relative backlinks examined, 12 unresolved, of which 8
-   broke as a direct consequence of the act** — six package READMEs point
-   two levels up at the context budget report, and one points two levels
-   up at the 03 compaction report, targets the install did not copy.
-   **Repaired at round-2026-08d in the ceremony, not the modules**: the
-   first wave act's install additionally copies
-   `CONTEXT-BUDGET-REPORT.md` and
-   `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md` to
-   `.syzygy/governance/contracts/` — both non-normative generated
-   reports, outside every digest set, carrying no authority — so the
-   backlinks resolve where they land. The repair is verified by
-   simulation, not asserted:
-   `round-2026-08d/POST-INSTALL-LINK-REPORT.md` re-runs RD-7's sweep
-   against the current bytes with the copy in place and records the
-   remaining unresolved population with its denominator. `CG-14` still
-   checks install *routes* only.
+   **Companion material — none is installed (P-33, install shape (M)).**
+   Earlier revisions of this step copied `history/`, `matrix-rows/` and two
+   generated reports beside the installed modules — the RD-7 backlink
+   repair rode on two of those copies. The owner's P-33 ruling supersedes
+   all of them: under **(M)** the installed tree holds accepted modules
+   only, and the modules' path strings — **88** across the installed
+   waves, none rendered as a link, none required by any clause to resolve
+   — resolve in this repository's candidates tree rather than beside the
+   installed copies. That is a disclosed property of the ruling, accepted
+   knowingly at the act; `decisions/WAVE-A-INSTALL-SHAPE-DECISION.md`
+   owns the measurement and the clause derivation, and RD-7's sweep
+   (`round-2026-08d/POST-INSTALL-LINK-REPORT.md`) remains the historical
+   record of the superseded repair. `CG-14` still checks install *routes*
+   only.
 4. **The owner-act record.** A dated entry quoting the exact phrase and
    digest is appended to
    `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` (created at
@@ -497,22 +490,22 @@ implementation, not specification — accepting with it open is a
     deleted — an owner-attention item that was live and is not is part of this
     record's history, and silently removing it would leave a reader of an
     earlier revision unable to find out what happened to it.
-11. **P-33 — the Wave A install shape** *(added 2026-08-10; RD26-01/RD26-02).*
-    The ceremony's step 3 installs companion material and the act's own
-    manifests into `governance/contracts/`, and RFC3-15 — bound by the same
-    act — says that category holds accepted load-bearing contracts
-    **exclusively**. P-33's packet
-    (`decisions/WAVE-A-INSTALL-SHAPE-DECISION.md`) states it must be ruled
-    **before Wave A is re-offered**; **the packet owns the options and the
-    recommendation, and this record restates neither** *(corrected
-    2026-08-13, RD-49 finding 7 — this item previously named "the RFC3-15(a)
-    recorded-widening route" as P-33's own recommendation. That
-    recommendation was withdrawn on 2026-08-11, and §2 step 0 makes this
-    document mandatory reading before any phrase, so the stale line met an
-    owner at exactly the moment it would do the most damage)*. **Until P-33
-    is ruled, this record offers no Wave A act** — performing act 1 over the
-    current step 3 would freeze an install that breaches a clause the act
-    binds.
+11. **P-33 — the Wave A install shape — RULED 2026-08-16, install shape
+    (M)** *(added 2026-08-10, RD26-01/RD26-02; updated 2026-08-17 to the
+    ruling).* The ceremony's step 3 previously installed companion
+    material and the act's own manifests into `governance/contracts/`,
+    while RFC3-15 — bound by the same act — says that category holds
+    accepted load-bearing contracts **exclusively**; that conflict is what
+    P-33 was queued to resolve. The owner ruled **(M)**
+    (`decisions/WAVE-A-INSTALL-SHAPE-DECISION.md`): modules only, no
+    companion apparatus, neither package-wide manifest. Step 3 is
+    redrafted to match; **zero manifest bytes moved, and both wave
+    confirmations survive on their current arguments**. What the act now
+    ratifies knowingly under (M): **88 path strings** inside the installed
+    modules resolve in the candidates tree, not beside the installed
+    copies — none rendered, none required by any clause to resolve; the
+    packet owns the measurement. **The Wave A offer is no longer withheld
+    by this item.**
 12. **P-31 — the drafted RFC2-19(a) exemption arm** *(added 2026-08-10;
     RD26-02/RD26-06; re-keyed 2026-08-10, RD31-08 — the arm is the minted
     sub-clause RFC2-19(a)).* RFC2-19(a) is a drafted-awaiting-ruling
