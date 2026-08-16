@@ -538,3 +538,27 @@ incidents, which is the arrangement the rules themselves already used.*
   owner has not ruled on are different states; collapsing them into one
   "advisory" bucket makes the second look like the first. Keep the tables
   separate and report the two counts.
+
+## Round 2026-08h — lessons from the launch-gate v2.4 round
+
+*Moved here 2026-08-17 from `AGENTS.md` (convergence pass, round 2026-08i) —
+the same arrangement as the 2026-08g block above: `AGENTS.md` keeps the ten
+verification rules and points here for the incidents.*
+
+- **CG-15 examines only ellipsis-marked truncated digests (`‹hex›…`) and wants
+  each to prefix a *current act argument*.** An instrument/schema/§8-sub-block
+  digest (bound by a *recorded decision*, not an act) FAILs it. Fix: quote the
+  full 64-hex, or drop the ellipsis (`01209c0f052971f7`), or keep digests in
+  the artifact's own table, not sprinkled in prose.
+- **An owner may lawfully APPROVE with disclosed residuals — not a `CONFIRM`.**
+  When a review pair is `REVISE` and the owner still approves (P-34 arm a),
+  record "approved *with* the named residuals"; never launder to "clean" or
+  imply the reviews flipped. The transaction is a recorded decision, so
+  transcribing the owner's selection (provenance + verified digests + F5 y/n)
+  is faithful recording, not approving for them (VIS-4).
+- **Instance-vs-class is the launch-gate's signature failure:** a fix that
+  closes the named *instance* and restates it as a *class property* recurs one
+  address/category over (invisible strip `Cf/Cc/Mn`→`So`; 40-hex schema read→
+  abbreviated commit). Only a fixture mechanical over the whole population
+  (RD-66 f1's every-string-leaf sweep) held. Prefer schema-derived/allowlist
+  fixtures over blocklists, and mutation-test every limb.

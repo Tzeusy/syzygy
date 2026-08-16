@@ -11,10 +11,11 @@
 
 | You want to know | Ask | Short answer today |
 |---|---|---|
-| **Has the owner decided this?** | the **recorded decisions** below | A few things are recorded. Most are not |
+| **Has the owner decided this?** | the **recorded decisions** below | Doctrine, craft, SDR-1…37, and the 2026-08-16 rulings are recorded. The rest is not |
 | **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **No.** The file does not exist, and that absence is correct |
-| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **33** rows in the open section, plus **5** unperformed acceptance acts *(measured 2026-08-13 by the predicate the generators use: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
-| **Where is the history?** | [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md), and the round trees under `contracts/candidates/` | Deliberately off the default path |
+| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **24** rows in the open section, plus **5** unperformed acceptance acts *(measured 2026-08-17 by the predicate the generators use: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
+| **Which decisions were resolved, and how?** | [`DECISION-HISTORY.md`](DECISION-HISTORY.md) | The resolved rows — including the nine 2026-08-16 rulings — and the register's chronology |
+| **Where is the history?** | [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md), [`DECISION-HISTORY.md`](DECISION-HISTORY.md), and the round trees under `contracts/candidates/` | Deliberately off the default path |
 
 A **decision** is recorded prose the owner writes. An **act** is a formal
 transaction with a ceremony phrase and a digest-bound argument. They are not
@@ -27,9 +28,14 @@ These carry rulings the owner has actually made.
 
 | File | Holds |
 |---|---|
-| [`SURFACE-DECISION-RECORD.md`](SURFACE-DECISION-RECORD.md) | **SDR-1…33** — the standing body of prior owner rulings. The largest single source of settled ground |
+| [`SURFACE-DECISION-RECORD.md`](SURFACE-DECISION-RECORD.md) | **SDR-1…37** — the standing body of prior owner rulings (SDR-34…37 record the 2026-08-16 P-31/P-36/P-37/P-40 rulings). The largest single source of settled ground |
 | [`OWNER-ANSWERS-2026-08-01.md`](OWNER-ANSWERS-2026-08-01.md) | The owner's answers to the 2026-08-01 question set |
 | [`DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md`](DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md) | Doctrine amendment **D1**, in force |
+| [`WAVE-A-INSTALL-SHAPE-DECISION.md`](WAVE-A-INSTALL-SHAPE-DECISION.md) | **P-33 ruled 2026-08-16** — install shape (M), recorded in the packet's own template |
+| [`LAUNCH-GATE-AUTHORITY-DECISION.md`](LAUNCH-GATE-AUTHORITY-DECISION.md) | **P-34 ruled 2026-08-16** — launch-gate v2.4 approved as process policy, arm (a), residuals disclosed |
+| [`PROJECT-OPERATING-CONSTRAINTS-DECISION.md`](PROJECT-OPERATING-CONSTRAINTS-DECISION.md) | **P-35 ruled 2026-08-16** — the operating-constraints table, Unknowns kept |
+| [`HUMAN-ENTRY-DECISION.md`](HUMAN-ENTRY-DECISION.md) | **P-38 ruled 2026-08-16** — human entry as drafted (option a) |
+| `../policies/GOVERNANCE-SUBSTRATE-LOCK.yaml` `openspec` block | **P-39 ruled 2026-08-16** — OpenSpec pinned at 1.9.0 |
 
 Doctrine itself (VIS-1…7, SEC-1…5) is adopted and lives in
 [`../doctrine/`](../doctrine/), not here.
@@ -54,33 +60,29 @@ launch-critical rows each have a prepared packet here:
 
 | `P-nn` | Question | Packet |
 |---|---|---|
-| **P-31** | What reason does a merged-but-unreconciled `Unknown` carry? | [`MERGED-UNRECONCILED-DECISION.md`](MERGED-UNRECONCILED-DECISION.md) |
-| **P-33** | Where do accepted contract modules and their companions install? | [`WAVE-A-INSTALL-SHAPE-DECISION.md`](WAVE-A-INSTALL-SHAPE-DECISION.md) |
-| **P-34** | Is the launch-gate instrument owner-approved process policy? | [`LAUNCH-GATE-AUTHORITY-DECISION.md`](LAUNCH-GATE-AUTHORITY-DECISION.md) |
-| **P-35** | What are the project's operating constraints? | [`PROJECT-OPERATING-CONSTRAINTS-DECISION.md`](PROJECT-OPERATING-CONSTRAINTS-DECISION.md) |
-| **P-36** | `Unknown` versus `Gap` — one word or two? | [`UNKNOWNS-AND-GAPS-DECISION.md`](UNKNOWNS-AND-GAPS-DECISION.md) |
-| **P-37** | Which project-shape facets exist, and who owns the vocabulary? | [`PROJECT-SHAPE-FACETS-DECISION.md`](PROJECT-SHAPE-FACETS-DECISION.md) |
-| **P-38** | Human entry point and per-repository discoverability | [`HUMAN-ENTRY-DECISION.md`](HUMAN-ENTRY-DECISION.md) |
-| **P-39** | Which OpenSpec form and version? | [`OPENSPEC-FORM-AND-VERSION-DECISION.md`](OPENSPEC-FORM-AND-VERSION-DECISION.md) |
-| **P-40** | One specification per what? | [`SPECIFICATION-GRANULARITY-DECISION.md`](SPECIFICATION-GRANULARITY-DECISION.md) |
 | **P-41** | The specification-acceptance craft amendment | [`SPECIFICATION-ACCEPTANCE-DECISION.md`](SPECIFICATION-ACCEPTANCE-DECISION.md) |
 | **P-42** | The shape-to-spec impact craft amendment — offered jointly with P-41 | [`SHAPE-TO-SPEC-IMPACT-DECISION.md`](SHAPE-TO-SPEC-IMPACT-DECISION.md) |
 | **P-12** | The knowledge-hygiene craft policy | [`KNOWLEDGE-HYGIENE-DECISION.md`](KNOWLEDGE-HYGIENE-DECISION.md) |
 | **P-14** | Which license? | [`LICENSE-DECISION-PACKET.md`](LICENSE-DECISION-PACKET.md) |
 
+Packets whose question the owner has since ruled (P-31's
+`MERGED-UNRECONCILED-DECISION.md`, P-36's `UNKNOWNS-AND-GAPS-DECISION.md`,
+P-37's `PROJECT-SHAPE-FACETS-DECISION.md`, P-39's
+`OPENSPEC-FORM-AND-VERSION-DECISION.md`, P-40's
+`SPECIFICATION-GRANULARITY-DECISION.md`, and the four files listed under
+"Recorded decisions" above) remain in this directory as the record or the
+context of their ruling — see
+[`DECISION-HISTORY.md`](DECISION-HISTORY.md) for what each ruling was.
+
 Rows without a packet in this table are queue entries only, and the register
 row is the whole of what exists for them.
-
-**Not every pending row is ready to be ruled.** Some need research first,
-some are waiting on a review, and some are acts rather than decisions. The
-grouping is
-[`../contracts/candidates/round-2026-08g/CAPABILITY-1-OWNER-DECISION-INDEX.md`](../contracts/candidates/round-2026-08g/CAPABILITY-1-OWNER-DECISION-INDEX.md).
 
 ## 4. History — kept, and off the default path
 
 | Where | Holds |
 |---|---|
-| [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md) | The launch-gate repair chain, v1.3 → v2.0. Thirteen versions, thirteen reviews |
+| [`DECISION-HISTORY.md`](DECISION-HISTORY.md) | Resolved decision rows and the register's as-of chronology |
+| [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md) | The launch-gate repair chain |
 | [`launch-gate/TREND-LOG.md`](launch-gate/TREND-LOG.md) | One row per administration |
 | [`PROCESS-LESSONS.md`](PROCESS-LESSONS.md) | The incidents behind the verification rules. **Read before writing or trusting a check** |
 | `../contracts/candidates/round-*/` | Each pass's reports and its raw review lane |

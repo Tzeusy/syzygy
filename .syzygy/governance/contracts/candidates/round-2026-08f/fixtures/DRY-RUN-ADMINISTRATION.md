@@ -248,9 +248,9 @@ Trend row (§6):
 
 | Date | Commit | Not-met | Scoped | Unknown | Deferred | Reopened | New findings vs prior | Gate verdict |
 |------|--------|---------|--------|---------|----------|----------|----------------------|--------------|
-| 2026-08-11 | a8f9719 | 0 | 0 | 39 | 0 | 0 | n/a (no prior record) | NONE — not eligible; row outcome was NOT READY |
+| 2026-08-11 | a8f9719 | 0 | 0 | 39 | 0 | 0 | n/a (no prior record) | NONE — `formal: false`; `administration_kind: delta`; the reviewer declares no fresh context; row outcome was NOT READY |
 
 ROW/FORMULA OUTCOME: NOT READY
 
-GATE VERDICT: NONE — this administration is not eligible to be cited as launch evidence (`formal: false`; `administration_kind: delta`; the reviewer declares no fresh context). The outcome above is diagnostic.
+GATE VERDICT: NONE — `formal: false`; `administration_kind: delta`; the reviewer declares no fresh context — not eligible to be cited as launch evidence; the outcome above is diagnostic.
 

@@ -405,7 +405,8 @@ def render_views(charter, rows, decisions, digest):
     a("```")
     a("")
     a("**Open upstream, at a later gate — not consumed by authoring:** "
-      + ", ".join(f"`{p}`" for p in charter["downstream_decisions"]) + ".")
+      + (", ".join(f"`{p}`" for p in charter["downstream_decisions"])
+         or "none — the queue holds no downstream row") + ".")
     a("")
 
     a("## Non-goals")
@@ -609,13 +610,19 @@ def selftest():
          "manifest is refused", wrong_home)
 
     def resolved_decision():
-        # P-26 is a RESOLVED row: it exists in the file, outside the open
-        # section. A file-wide grep would accept it; this check must not.
+        # A RESOLVED row must be refused even when it exists in the file,
+        # outside the open section — a file-wide grep would accept it.
+        # (Synthesized 2026-08-17: the register refactor moved every
+        # resolved row to `DECISION-HISTORY.md`, so the fixture plants one.)
+        queue_with_resolved = base_queue + (
+            "\n## Resolved synthetically (fixture only)\n\n"
+            "| # | What happened |\n|---|---|\n"
+            "| P-26 | **Executed.** synthetic resolved row |\n")
         mutated = base_charter.replace("blocking_decisions: [P-1,",
                                        "blocking_decisions: [P-26, P-1,", 1)
-        if mutated == base_charter:
+        if mutated == base_charter or queue_with_resolved == base_queue:
             return False, "mutation did not apply"
-        errs = run(ct=mutated)
+        errs = run(ct=mutated, qt=queue_with_resolved)
         return (any("P-26" in e for e in errs),
                 "; ".join(errs) or "no error raised")
 
@@ -647,15 +654,20 @@ def selftest():
         convention for recording an owner decision, and a substring test
         read that question as its own answer and silently dropped an open
         row from the population. The marker disqualifies a row only where
-        it leads the row's final cell."""
+        it leads the row's final cell.
+
+        (Re-anchored 2026-08-17 from P-34 to P-43 — P-34 was ruled and its
+        row moved to `DECISION-HISTORY.md` in the register refactor; P-43
+        remains genuinely open, and is the very row whose prose discusses
+        the marker.)"""
         mutated = base_queue.replace(
-            "| P-34 |", "| P-34 | should an `**Executed.**` marker count? |", 1)
+            "| P-43 |", "| P-43 | should an `**Executed.**` marker count? |", 1)
         if mutated == base_queue:
             return False, "mutation did not apply"
         ids = open_decisions(mutated)
-        return ("P-34" in ids,
-                "P-34 dropped from the open population by a prose mention"
-                if "P-34" not in ids else "still open, correctly")
+        return ("P-43" in ids,
+                "P-43 dropped from the open population by a prose mention"
+                if "P-43" not in ids else "still open, correctly")
 
     case("a row mentioning `**Executed.**` in prose stays open",
          executed_in_prose)
@@ -672,24 +684,24 @@ def selftest():
         against an executed row landing in the open section; a defence
         nothing tests is not a defence.
 
-        (Re-anchored 2026-08-16 from P-33 to P-34 — P-33 was ruled and moved
-        under a `Resolved…` heading that sitting, so it stopped being a live
-        OPEN-row subject for this fixture; P-34 remains genuinely open.)"""
+        (Re-anchored 2026-08-16 from P-33 to P-34, and 2026-08-17 from P-34
+        to P-43 — each predecessor was ruled and left the open table; P-43
+        remains genuinely open.)"""
         lines = base_queue.split("\n")
         for j, line in enumerate(lines):
-            if line.startswith("| P-34 |"):
+            if line.startswith("| P-43 |"):
                 lines[j] = line.rstrip().rstrip("|").rstrip() \
                     + " | **Executed.** synthetic disposition |"
                 break
         else:
-            return False, "no P-34 row to mutate"
+            return False, "no P-43 row to mutate"
         mutated = "\n".join(lines)
         if mutated == base_queue:
             return False, "mutation did not apply"
         ids = open_decisions(mutated)
-        return ("P-34" not in ids,
+        return ("P-43" not in ids,
                 "an executed disposition in the OPEN section was still "
-                "counted open" if "P-34" in ids else "disqualified, correctly")
+                "counted open" if "P-43" in ids else "disqualified, correctly")
 
     case("an `**Executed.**` disposition inside the open section disqualifies",
          executed_disposition)
@@ -698,21 +710,24 @@ def selftest():
         """The heading limb, also synthetic, and also because the two limbs
         mask each other.
 
-        All seven rows under `Resolved…` headings carry the executed marker
+        All rows under `Resolved…` headings carried the executed marker
         too, so deleting the heading check changed nothing — the marker check
-        caught them. Strip the marker from one resolved row and the heading
-        must still disqualify it."""
-        lines = base_queue.split("\n")
-        for j, line in enumerate(lines):
-            if line.startswith("| P-6 |") and "**Executed.**" in line:
-                lines[j] = line.replace("**Executed.**", "Recorded:", 1)
-                break
-        else:
-            return False, "no marked P-6 row to mutate"
-        ids = open_decisions("\n".join(lines))
+        caught them. A resolved-section row *without* the marker must still
+        be disqualified by the heading alone.
+
+        (Made fully synthetic 2026-08-17: the register refactor moved every
+        resolved row to `DECISION-HISTORY.md`, so the real queue holds no
+        `Resolved…` section — the fixture appends one, unmarked.)"""
+        mutated = base_queue + (
+            "\n## Resolved synthetically (fixture only)\n\n"
+            "| # | What happened |\n|---|---|\n"
+            "| P-6 | Recorded: a synthetic resolved row without the marker |\n")
+        if mutated == base_queue:
+            return False, "mutation did not apply"
+        ids = open_decisions(mutated)
         return ("P-6" not in ids,
-                "a row under a `Resolved…` heading was counted open once its "
-                "marker was removed" if "P-6" in ids else "disqualified by "
+                "a row under a `Resolved…` heading was counted open without "
+                "its marker" if "P-6" in ids else "disqualified by "
                 "the heading, correctly")
 
     case("a `Resolved…` heading disqualifies without help from the marker",
@@ -739,13 +754,20 @@ def selftest():
          "refused", row_decision)
 
     def blocking_executed():
-        """And the capability-level list has its own path too. P-6 sits
-        under a `Resolved…` heading."""
+        """And the capability-level list has its own path too.
+
+        (Synthesized 2026-08-17: the resolved rows moved to
+        `DECISION-HISTORY.md`, so the fixture plants a marked P-6 row in a
+        synthetic resolved section rather than relying on the live file.)"""
+        queue_with_resolved = base_queue + (
+            "\n## Resolved synthetically (fixture only)\n\n"
+            "| # | What happened |\n|---|---|\n"
+            "| P-6 | **Executed.** synthetic resolved row |\n")
         mutated = base_charter.replace("blocking_decisions: [P-1,",
                                        "blocking_decisions: [P-6, P-1,", 1)
-        if mutated == base_charter:
+        if mutated == base_charter or queue_with_resolved == base_queue:
             return False, "mutation did not apply"
-        errs = run(ct=mutated)
+        errs = run(ct=mutated, qt=queue_with_resolved)
         return (any("P-6 is not an open queue row" in e for e in errs),
                 "; ".join(errs) or "no error raised")
 
@@ -757,11 +779,11 @@ def selftest():
         reader is least likely to check by hand, which is the argument for
         checking it mechanically rather than against it.
 
-        (Re-anchored 2026-08-16 — P-35 was ruled and dropped from
-        `downstream_decisions`, so the literal `[P-34, P-35]` no longer
-        appears; the charter's list is `[P-34]` now.)"""
-        mutated = base_charter.replace("downstream_decisions: [P-34]",
-                                       "downstream_decisions: [P-34, P-997]")
+        (Re-anchored 2026-08-16 when P-35 left the list, and 2026-08-17
+        when P-34 was ruled — the charter's list is now empty, so the
+        fixture injects into `[]`.)"""
+        mutated = base_charter.replace("downstream_decisions: []",
+                                       "downstream_decisions: [P-997]")
         if mutated == base_charter:
             return False, "mutation did not apply"
         errs = run(ct=mutated)
@@ -774,11 +796,11 @@ def selftest():
     def both_lists():
         """(Re-anchored 2026-08-16 — P-40 was ruled and removed from
         `blocking_decisions`, so appending it to `downstream_decisions` no
-        longer produces a both-lists collision. P-41 remains genuinely in
-        `blocking_decisions`, so it is the fixture's collision subject
-        now.)"""
-        mutated = base_charter.replace("downstream_decisions: [P-34]",
-                                       "downstream_decisions: [P-34, P-41]",
+        longer produced a both-lists collision; P-41 remains genuinely in
+        `blocking_decisions` and is the collision subject. Re-anchored
+        again 2026-08-17: P-34 was ruled, the downstream list is empty.)"""
+        mutated = base_charter.replace("downstream_decisions: []",
+                                       "downstream_decisions: [P-41]",
                                        1)
         if mutated == base_charter:
             return False, "mutation did not apply"

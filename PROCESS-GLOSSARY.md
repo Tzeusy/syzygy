@@ -58,9 +58,9 @@ accepted**; no owner act has been performed in this repository at all.
   in exactly that case.)*
 
 - **offer** — presenting a prepared act to the owner for a yes/no. Preparing
-  an offer is not performing it. An act can be *confirmed and unoffered*,
-  which is exactly Wave A's state: its argument is confirmed, and one
-  unresolved owner decision (P-33) withholds the offer.
+  an offer is not performing it. An act can be *confirmed and unoffered* —
+  Wave A spent a week in exactly that state while the P-33 install-shape
+  decision withheld its offer (`PROJECT-STATUS.md` owns the current state).
 
 - **wave** — one batch of contract modules accepted by one act. There are six
   (A, B, C1, C2, D1, D2). Waves A and B are the launch path; C1/C2/D1/D2 are
@@ -77,7 +77,7 @@ Identifiers are amended in place or retired — **never renumbered**.
 
 | Form | Is | Example |
 |---|---|---|
-| `P-nn` | An open **owner decision**, queued in `PENDING-OWNER-DECISIONS.md`. A question only the owner may answer | `P-33` — Wave A installation shape |
+| `P-nn` | An open **owner decision**, queued in `PENDING-OWNER-DECISIONS.md`. A question only the owner may answer | `P-41` — the specification-acceptance craft act |
 | `RD-nn` | A **review**. Raw reviewer output, stored verbatim and never edited | `RD-49` — the P-33 review |
 | `VIS-n`, `SEC-n` | An adopted **doctrine** rule. Binding since 2026-07-30 | `VIS-2` — no evidence means Unknown |
 | `SDR-n` | A prior recorded owner **decision** | `SDR-9` |

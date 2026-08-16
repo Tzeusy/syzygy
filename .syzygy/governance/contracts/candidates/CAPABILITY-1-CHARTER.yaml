@@ -145,9 +145,14 @@ blocking_decisions: [P-1, P-21, P-22, P-28, P-41, P-42]
 # them, not because authoring consumes them.
 #
 # P-35 ruled 2026-08-16 (full operating-constraints table recorded) and
-# removed from this list — `../../decisions/PENDING-OWNER-DECISIONS.md`
+# removed from this list — `../../decisions/DECISION-HISTORY.md`
 # ("Resolved on 2026-08-16"), `../../decisions/PROJECT-OPERATING-CONSTRAINTS-DECISION.md`.
-downstream_decisions: [P-34]
+#
+# P-34 ruled 2026-08-16 (arm a — launch-gate v2.4 approved as process
+# policy, two residuals disclosed, F5 not promoted) and removed from this
+# list — `../../decisions/LAUNCH-GATE-AUTHORITY-DECISION.md`. The later
+# gate it named (the formal administration) is thereby runnable, not run.
+downstream_decisions: []
 
 non_goals:
   - "Any composite or rolled-up project score, badge, or single health number"

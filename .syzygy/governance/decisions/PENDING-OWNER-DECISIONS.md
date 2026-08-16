@@ -6,69 +6,13 @@
 > where this file and an owning record disagree, the record wins and this
 > file is stale.
 >
-> **As-of: 2026-08-16** — eight rows ruled by the owner in one
-> adversarially-reviewed questionnaire-packet sitting: **P-31, P-33, P-35,
-> P-36, P-37, P-38, P-39, P-40**. See "Resolved on 2026-08-16" below for
-> what each ruling was and what it does not close — none performs the
-> Wave A/B acts, none runs the formal launch-gate administration. The
-> Launch-scope index bullets below are struck through where a row is now
-> ruled.
->
-> **Previously as-of 2026-08-10** (round 2026-08e, launch closure) — rows
-> P-25(c), P-34…P-41 added (P-41 the same day, RD28-05), P-22 re-grounded,
-> P-38 corrected to RFC7-40's four-value domain; the RFC7-39
-> entry-identity ruling disclosed at the acceptance record's §7 item 15
-> travels on P-38's packet; launch-scope index added before the open
-> table (RD29-06).
->
-> **Previously as-of 2026-08-09** (round 2026-08d, structural closure). The single
-> foundational-contract act P-1 was restructured into **six wave acts** —
-> see the acceptance-acts table. Four open rows had their ground changed by
-> candidate-byte repairs this round and say so inline: P-21(c′) (RFC11-16
-> now names `constrains` among selection inputs), P-22 (RFC9-8(a) redrafted
-> to the governance store), P-23 (the D1/D2 wave split makes the staging
-> performable), P-28 (option (b), the mission extension profile, is drafted
-> into RFC1-7/RFC10-4). **A candidate-byte repair is a drafting posture,
-> not a decision** — each still wants its ruling, now in the cheaper form
-> "ratify or revert before the wave act". Current packets:
-> `../contracts/candidates/round-2026-08d/OWNER-DECISION-PACKETS.md`
-> (supersedes the round-2026-08c packets file as the current offering; the
-> register still owns the queue).
->
-> **Later on 2026-08-09:** the round's fresh-context review pass completed —
-> fifteen reviews (nine dimension, six wave exact-package), every verdict
-> `REVISE`, none confirming. The per-finding disposition register is
-> `../contracts/candidates/round-2026-08d/reviews/DISPOSITION-REGISTER.md`;
-> it adds five questions only the owner can dispose, **P-29..P-33** below.
-> No wave act may be offered until its wave's repairs land and a fresh
-> confirming review is bound to the regenerated argument.
->
-> **Previously as-of 2026-08-07**, adding **P-28** (Mission is declared a first-class
-> identified entity by RFC10-4 and appears nowhere in RFC-0001's closed entity
-> vocabulary) and extending **P-21** with review RD-4's finding **F-17** — one
-> arm of that still-pending question was installed into candidate front matter
-> while the question was open. Concise packets for every open item, in the
-> charter's required form (question / current authority / options /
-> consequences / recommendation / earliest required gate / whether work can
-> proceed without it), are at
-> `../contracts/candidates/round-2026-08c/OWNER-DECISION-PACKETS.md`. **That
-> file decides nothing and this one still owns the queue.**
->
-> **Previously as-of 2026-08-06c**, closing **P-26** — owner override, 2026-08-06:
-> `th-engineering` re-pinned to `f4cf1c7` and vendored in-tree, see
-> "Resolved on 2026-08-06". Also adding **P-27** from reviews RC-11
-> (`REVISE`) and RC-12 (`EXCEPTIONS`). The vocabulary rows (P-16, P-17,
-> P-18, P-25) were re-checked against
-> `../contracts/candidates/round-2026-08b/TERM-CLOSURE-REPORT.md`, which
-> draws charter §9 together and states its residue; none of the four moved,
-> and the report adds no new item. Previously regenerated 2026-08-05 at the
-> close of the human-clarity
-> refactor round (owner round prompt §7). The previous revision (as-of
-> `adddc34`) is superseded: it listed P-6/P-7/P-8/P-9/P-11 as open when the
-> round executed them, and routed most owning records to the git-excluded
-> `_bootstrap/` tree that a clone cannot read.
->
-> **Owning records are now clone-visible** except where a row says otherwise.
+> **As-of: 2026-08-17** — refactored (convergence pass, round 2026-08i):
+> the default sections now hold **only currently open decisions and
+> unperformed acts**. Resolved rows — including the eight launch-critical
+> rulings and the P-34 approval of 2026-08-16 — and the register's own
+> as-of chronology live in [`DECISION-HISTORY.md`](DECISION-HISTORY.md);
+> the pre-refactor row narratives are preserved verbatim in git history at
+> commit `9c43fc5`.
 
 ## The acceptance acts (none performed)
 
@@ -76,176 +20,73 @@ Exact phrases, digests, and the ceremony live in
 `../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`.
 **Verify every digest before acting** — `python3 scripts/check_governance.py`
 (check CG-7) compares each act argument against its subject artifact; a
-CG-7 failure means "do not perform that act."
+CG-7 failure means "do not perform that act." The acceptance record's §7
+(imperfections before the phrase) is part of each wave's knowing acceptance
+— read it before any act (§2 step 0).
 
 | # | Decision | Owning record |
 |---|---|---|
-| P-1 | **The six foundational wave acts** (restructured from the single act at round 2026-08d). **Launch posture 2026-08-10:** only Waves **A → B** are on the offer path — no C/D wave act is offered while `../contracts/candidates/DEFERRED-WAVE-POSTURE.md` stands; the earlier six-act ceremony order (A → B → D1 → D2 → C1 → C2) applies only if the owner lifts that posture. Wave A: RFC 0001–0006 · Wave B: RFC 0007–0009 · Waves C1/C2: RFC-0011 · Waves D1/D2: RFC-0010. **Review state 2026-08-10: Wave A's current argument carries RD-31b's `VERDICT: CONFIRM` (offer withheld solely by P-33, §7 item 11); Wave B's current argument carries RD-32c's `VERDICT: CONFIRM` (2026-08-10; nothing withholds its offer, which follows Wave A's on the A → B path); no C/D argument carries a confirming review** — the acceptance record's wave-history note is the count of record *(this row said "no confirming review is yet bound to any wave argument" until RD-31b delivered; corrected 2026-08-10, RD32b-N5)* | acceptance record §1; digests `contracts/candidates/wave-manifests/WAVE-*-MANIFEST.txt`; design `round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md` |
-| P-2 | **Act 2** — confirm craft amendment CC-TEST-2 | acceptance record §1 row 2; digest block in `../policies/craft-and-care/INSTALL-RECORD.md` (**2026-08-06 correction** — the 2026-08-05 block holds the retired `3858820f…` argument; corrected 2026-08-10, RD29-01) |
+| P-1 | **The six foundational wave acts.** Launch posture: only Waves **A → B** are on the offer path while `../contracts/candidates/DEFERRED-WAVE-POSTURE.md` stands. **Wave A** (RFC 0001–0006, 19 modules): confirmed — RD-31b `VERDICT: CONFIRM` on the current argument; offer unblocked (P-33 ruled 2026-08-16, `DECISION-HISTORY.md`); **act not performed**. **Wave B** (RFC 0007–0009 + the three surfaces, 11 modules): confirmed — RD-32c `VERDICT: CONFIRM`; follows Wave A; **act not performed**. Waves C1/C2 (RFC-0011) and D1/D2 (RFC-0010) carry no confirming review and are deferred | acceptance record §1; digests `contracts/candidates/wave-manifests/WAVE-*-MANIFEST.txt`; design `round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md` |
+| P-2 | **Act 2** — confirm craft amendment CC-TEST-2 | acceptance record §1 row 2; digest block in `../policies/craft-and-care/INSTALL-RECORD.md` (**2026-08-06 correction** block holds the current argument) |
 | P-3 | **Act 3** — accept the topology bundle | acceptance record §1 row 3; `../../map/topology-candidates/BUNDLE-MANIFEST.md` |
-| P-4 | **Act 4** — adopt the project overview | acceptance record §1 row 4; `../../intent/OVERVIEW.md` (refactored this round; the authoring-time status section that previously froze into the digest is gone) |
-| P-5 | **Optional act 5** — adopt, amend, or decline the D3 bounded-mission doctrine amendment | `../contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1 — supersedes the original `…-DRAFT.md`, whose `vision.md` insertion cannot be applied as written) |
+| P-4 | **Act 4** — adopt the project overview | acceptance record §1 row 4; `../../intent/OVERVIEW.md` |
+| P-5 | **Optional act 5** — adopt, amend, or decline the D3 bounded-mission doctrine amendment. Rule **P-24 (D4)** first — adopting D3 as written settles D4 by stipulation | `../contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1) |
 
-The acceptance record's per-wave owner-attention material remains part of
-each wave's knowing acceptance. **Corrected 2026-08-10 (RD30-09):** an
-earlier form of this paragraph promised a round-2026-08d "owner-facing
-offering" stating each wave's imperfections before its phrase — that
-artifact was never written (the launch-gate pilot's F3 found the same).
-The current home of imperfections-before-the-phrase is the acceptance
-record's **§7** (read before any act — §2 step 0), the per-wave §1 row
-notes, and the round-2026-08e closure reports once the fleet completes.
+**Act ordering:** A → B (P-1). Under the current deferred-wave posture no
+C/D act is offered; perform the wave acts before act 5 so bounded-mission
+terms do not become adopted doctrine with definitions only in unaccepted
+contracts (acceptance record §7 item 8).
 
-**Act ordering (recommendation, not a rule; deferral-qualified 2026-08-10,
-RD29-05 — D1/D2 are not offered while `DEFERRED-WAVE-POSTURE.md` stands, so
-under the current launch posture this note governs only a future in which
-the owner lifts it):** perform Waves A, B, D1 and
-D2 before act 5. Adopting D3 first would leave *bounded mission* and
-*autonomy envelope* as adopted doctrine terms whose binding definitions
-live only in unaccepted contracts; the wave acts first remove that gap
-under every outcome of the D4 question (acceptance record §7 item 8).
-*(This note previously said "perform act 1 before act 5", naming the
-retired all-in-one gate — RD-20 M5.)*
+## Launch-scope index (a reading aid, never authority)
 
-## Resolved during the 2026-08-05 round (recorded, not decisions to make)
+The launch target is **Capability 1**
+(`../contracts/candidates/FIRST-OPENSPEC-SEQUENCE.md`); its prerequisite
+acts are **Waves A and B only** (`DEFERRED-WAVE-POSTURE.md`). Read the open
+table through this lens:
 
-| # | What happened |
-|---|---|
-| P-6 | **Executed.** The retired phrase was removed from both digest sets — `rfcs/RFC-0003/governance-homes-and-owner-acts.md` (act 1) and topology `README.md` (act 3). Both manifests regenerated; semantic deltas SD-1/SD-2 |
-| P-7 | **Executed.** All nine canonical craft files now describe themselves truthfully as canonical; rule text byte-unchanged; digests regenerated (SD-3) |
-| P-8 | **Executed.** `INSTALL-RECORD.md` binds craft force to the digest-bound acceptance act, not the retired phrase (SD-4) |
-| P-9 | **Executed.** Candidate contracts, topology, acceptance record, reviews, validation scripts, decision warrants, and the license packet are tracked and clone-visible; raw interviews and bootstrap history stay founder-local (FD-021/FD-037) |
-| P-11 | **Executed.** README, AGENTS.md, PROJECT-STATUS.md, CONTRIBUTING.md, SECURITY.md installed; `.gitignore` verified |
-| P-13 | **Executed.** The overview's progressive-disclosure refactor landed (SD-9); its adoption is P-4 |
-
-## Resolved on 2026-08-06 (owner override, recorded)
-
-| # | What happened |
-|---|---|
-| P-26 | **Executed.** Owner override: re-pin `th-engineering` to the installed commit `f4cf1c7` (closing the drift instead of holding the 2026-07-30 pin) **and** vendor a byte-identical local copy in-tree at `.claude/skills/th-engineering/` and `.codex/skills/th-engineering/`, superseding the `PUBLIC-CLONE-AUTHORITY-MATRIX.md` "out of scope, do not import" disposition. CC-BAR-1 and CC-TEST-1…6 were re-checked against test-rigor's two new bars (9: suite tiering/targetability; 10: governed test growth) and the new engineering-bar Definition-of-Done item ("Test delta accounted"); no conflicts found, so no override text changed — `testing-and-verification.md` gained CC-TEST-7 recording the re-check, `engineering-bar.md`'s CC-BAR-1 gained a matching note. Full detail: `../policies/GOVERNANCE-SUBSTRATE-LOCK.yaml` `th_engineering`; `../policies/craft-and-care/INSTALL-RECORD.md` (2026-08-06 correction); `../policies/craft-and-care/README.md` "Adoption by reference" |
-
-## Resolved on 2026-08-16 (owner ruling via adversarially-reviewed questionnaire packet)
-
-Every ruling below is a **recorded decision, not a digest-binding act** —
-none performs the Wave A or Wave B act, none runs the formal launch-gate
-administration, and none authors OpenSpec. Each ruling was independently
-adversarially reviewed (separate scope and recommendation verdicts) before
-being presented, per the `user-questionnaire` subskill's mandatory gate; the
-full packet, including the review record and one caught-and-corrected error
-(a stale-framing discrepancy in an external plan's stated preference on
-`P-33`), is the owner's local decision packet, not tracked in this
-repository.
-
-| # | What happened |
-|---|---|
-| P-31 | **Ruled.** Ratify the drafted `RFC2-19(a)` exemption as written — the merged-but-unreconciled Unknown carries no thirteenth reason; the `RFC2-24` list stays closed at twelve. Recorded as **SDR-34**, `SURFACE-DECISION-RECORD.md`. Zero bytes move; the Wave A confirmation is unaffected. |
-| P-33 | **Ruled.** Install shape **(M)** — leave the accepted modules' internal path strings alone; install no companion package apparatus; install neither package-wide manifest. Recorded in `WAVE-A-INSTALL-SHAPE-DECISION.md`'s own template. Zero bytes move; both Wave A and Wave B confirmations are unaffected. This was the sole obstacle withholding the Wave A offer — **the offer is now unblocked; the Wave A act itself has not been performed.** |
-| P-35 | **Ruled.** Full operating-constraints table filled in (option a) — 1 operator; attention and budget Unknown; independent-review capacity is Claude-family agents plus the owner, with occasional ad hoc other-model-family review; other rows recorded or Unknown. No date or delivery commitment. Recorded in `PROJECT-OPERATING-CONSTRAINTS-DECISION.md`. |
-| P-36 | **Ruled.** The two-term rule: no verifying evidence → `Unknown`; evidence of non-satisfaction → `Gap`. Recorded as **SDR-35**, `SURFACE-DECISION-RECORD.md`; the term registry's `T-20`/`T-31` disclosed conflict note collapses to a pointer at that row. Zero bytes move on any contract module. |
-| P-37 | **Ruled.** Seven project-shape facets adopted, no cross-facet rollup; drafting site = the Capability 1 specification (site a2), not an RFC-0006 amendment. Recorded as **SDR-36**, `SURFACE-DECISION-RECORD.md`, naming both the facets and the site. Both Wave A and Wave B confirmations are unaffected (the cheaper of the two drafting-site arms was chosen). |
-| P-38 | **Ruled.** As drafted (option a): fixed entry `.syzygy/intent/OVERVIEW.md` identified with the primary narrative (RFC7-6, "not two front doors"); four-valued per-repository discoverability finding; propose-only root-README link. Recorded in `HUMAN-ENTRY-DECISION.md`. Zero bytes move; the Wave B confirmation is unaffected. |
-| P-39 | **Ruled.** Pin current upstream OpenSpec, at **1.9.0** (refreshed at answer time from the packet's measured `1.8.0`, since upstream had published again and the owner had already upgraded). The schema/template format contract is confirmed byte-identical `1.8.0`→`1.9.0`; other tooling changes exist and are recorded `[Inferred]` non-breaking, not independently verified line-by-line. Recorded in `GOVERNANCE-SUBSTRATE-LOCK.yaml`'s `openspec` block. |
-| P-40 | **Ruled.** One OpenSpec change governs one coherent capability, or one coherent change to one. Recorded as **SDR-37**, `SURFACE-DECISION-RECORD.md`. `FIRST-OPENSPEC-SEQUENCE.md` now cites the SDR row instead of asserting the rule in its own voice. Zero bytes move on any contract module. |
-
-**What this does not close.** Wave A and Wave B remain **un-acted** (the
-confirmed arguments still await the owner's Wave A and Wave B acts); `P-34`
-(launch-gate process-policy approval) is unruled on approve/decline, but the
-owner ruled its **arm (c)** on 2026-08-16 after the v2.3 reviews (RD-65/RD-66,
-both `REVISE`, the fourth consecutive pair) — the structural **v2.4** repair
-was committed (`4dd6e20`) and its review pair **RD-67/RD-68 returned
-`REVISE`/`REVISE`, the fifth consecutive pair**. The one structural repair
-held (no live forgery in v2.4), but two instance-patched class defects
-recurred as fresh BLOCKING false-`READY` paths. The owner weighed that under
-arm (c)'s reasoning and on **2026-08-16 ruled arm (a): approved v2.4 as
-process policy, residuals disclosed, F5 not promoted** — so **`P-34` is now
-CLOSED (approved)**, the readiness standard's "launch-gate is owner-approved"
-conjunct is satisfied at v2.4, and the formal (out-of-family) administration
-becomes runnable with the two residuals in hand. No unilateral v2.5 was
-begun; a bounded v2.5 to close the residuals structurally remains an owner
-option, not a gate. No formal launch-gate administration has been run;
-`P-41`
-and `P-42` (the joint specification-acceptance and shape-to-spec craft acts)
-remain unruled. `PROJECT-STATUS.md`'s "Next lawful step" section is stale as
-of this round and needs its own refresh, out of scope for this batch.
-
-## Launch-scope index (added 2026-08-10, RD29-06 — a reading aid, never authority)
-
-The launch target is **Capability 1** (`../contracts/candidates/FIRST-OPENSPEC-SEQUENCE.md`);
-its prerequisite acts are **Waves A and B only** (`../contracts/candidates/DEFERRED-WAVE-POSTURE.md`).
-Read the open table below through this lens:
-
-- **Withholds the Wave A offer:** ~~P-33 (install shape)~~ **ruled
-  2026-08-16** — see "Resolved on 2026-08-16" above; **the Wave A act
-  itself has not been performed, so the offer, while unblocked, is not
-  yet live.** §7 item 11 states in the record's own voice that no Wave A
-  act is offered until it is ruled. **Ratified or reverted at the Wave A
-  act (the offer, once live, stands):** ~~P-31 (the drafted RFC2-19(a)
-  arm)~~ and ~~P-37 (shape facets)~~ are both **ruled 2026-08-16**;
-  **P-28** (the drafted mission extension profile; §7 item 16) and
-  P-21(a) (the `constrains:` relation; §7 item 18) remain **open**.
-  *(Verbs split 2026-08-10, RD32-M1 — "gate" had carried two different
-  forces.)*
-- **Ratified or reverted at the Wave B act (nothing withholds this
-  offer):** ~~P-38 (human entry, incl. the RFC7-39 entry-identity
-  ruling; §7 item 15)~~ is **ruled 2026-08-16**; **P-22** (the RFC9-8(a)
-  registry placement; §7 item 17) and P-21(a) for its Wave B instance
-  (the RFC8-12/RFC9-32 declared-nowhere mutual restriction; §7 item 18
-  — "the same open ruling covers a declared-nowhere instance inside
-  Wave B"; added 2026-08-10, RD32b-N6) remain **open**. The acts stay
-  sequenced A → B (P-1); neither has been performed.
-- **Gate authoring the first spec:** ~~P-36 (Unknown vs Gap)~~, ~~P-39
-  (form/version)~~, and ~~P-40 (granularity)~~ are all **ruled
-  2026-08-16** — see "Resolved on 2026-08-16" above. **P-41** (the
-  specification-acceptance craft act — **rule P-40 first**: CC-SPEC-1
-  consumes the granularity rule, RD30-13, now satisfied) remains
-  **open**, plus the two wave acts themselves, which remain unperformed.
-- **Gate the formal launch administration, not the spec:** P-34
-  (instrument authority) remains **open**; ~~P-35 (operating
-  constraints)~~ is **ruled 2026-08-16**.
-- **Deferred with their waves (no C/D act is offered):** P-29, P-30, P-32,
-  and the D3/D4 doctrine questions — see `DEFERRED-WAVE-POSTURE.md`.
-- **Open but not launch-gating:** everything else below; each row still
-  states its own earliest gate where one exists.
+- **Ratified or reverted at the Wave A act:** P-28 (mission extension
+  profile, §7 item 16) and P-21(a) (the `constrains:` relation, §7 item 18).
+- **Ratified or reverted at the Wave B act:** P-22 (the RFC9-8(a) registry
+  placement, §7 item 17) and P-21(a)'s Wave B instance (§7 item 18).
+- **Gate authoring the first spec:** P-41 + P-42 (jointly), plus the two
+  wave acts themselves.
+- **Gate a deferral-bearing administration:** P-43.
+- **Deferred with their waves (no C/D act is offered):** P-19, P-23, P-27,
+  P-29, P-30, P-32, and the D3/D4 doctrine questions — see
+  `DEFERRED-WAVE-POSTURE.md`.
+- **Open but not launch-gating:** everything else below; each row states
+  its own earliest gate where one exists.
 
 Where this index and a row disagree, the row wins and this index is stale.
 
 ## Open, and only the owner can dispose
 
-| # | Decision | Owning record |
-|---|---|---|
-| P-10 | **Review coverage.** The round commissioned eight independent verticals (`contracts/candidates/round-2026-08/reviews/`) covering the term registry, hygiene policy, fixtures, Mission material, and front door — the gaps the previous register named. **Closed 2026-08-05b for the routing gap:** `SURFACE-CLAUSE-ROUTING-MATRIX.md` now routes all **199** clause identities of RFC 0006–0011, RFC-0006 included, one route each. What remains open is the *review* question, not the artifact: the new matrix and the six new RFC-0010 clauses have been read by the RC battery but by no confirming review bound to the final bytes | round reviews; `SURFACE-CLAUSE-ROUTING-MATRIX.md` |
-| P-12 | **Knowledge-hygiene craft policy** — needs its own `CONFIRM CRAFT AMENDMENT` act. **Two versions are now offered and the owner picks one:** the original 22 rules (CC-KNOW-1…18, CC-BUDGET-1…4, ~3,500 words) or a **compaction to ten** that drops no obligation, renumbers no identifier, retires twelve into named survivors, and carries the migration map. The compact version adds exactly one obligation, listed rather than folded in silently (raw reviewer output verbatim; verdict word copied; allowlist the checker, never edit the report). Also open: the six sub-questions at the long version's foot | `…/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md`; `…-COMPACT.md` |
-| P-14 | **License choice** — four candidates, three `[Unknown]`s including copyleft reach into governed repositories; wants qualified legal review. Not to be chosen autonomously | `LICENSE-DECISION-PACKET.md` (this directory) |
-| P-15 | **Founder decision log** — FD-n identifiers are still cited from tracked files while the log itself is founder-local. Two warrants were extracted this round (`DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md`, `OWNER-ANSWERS-2026-08-01.md`); decide whether a compact FD register follows them into this directory | round preflight; FD-037 |
-| P-16 | **Vocabulary.** The term registry (31 terms, T-01…T-31) — candidate, no owner act — proposes the six-plane state model as the project's single state vocabulary and separates it from claim labels, evidence tiers, work lifecycle, and governance lifecycle. Approve it as the working vocabulary, or amend. **Correction to this item as previously written:** there is no "older four-state phrasing" in the corpus — sweeps found zero. The older phrasing that exists is doctrine's own **three-state** thesis, which is adopted and stays governing; the six-plane model is a candidate refinement and a permitted compression relation, not a supersession | `../contracts/candidates/policy-candidates/TERM-REGISTRY.md`; `round-2026-08/TERM-MIGRATION-REPORT.md`; `round-2026-08b/TERM-CLOSURE-REPORT.md` |
-| P-17 | **Term-registry admission gap** *(new)*: eight of the thirty foundational public terms — State plane, Proposed state, Historical state, Evidence tier, Mission, Autonomy envelope, Attention item, Context packet — have **no adopted definition anywhere**; they exist only in candidate contracts, and the public surface already uses several. The wave acts (Wave A for the plane/tier terms, Waves C/D and act 5 for the packet/mission terms — *re-keyed 2026-08-10, RD29-04; "act 1" was restructured into the six wave acts*) close this; accepting the surface before then is a knowing deferral. **Corrected 2026-08-06:** this row previously reported *two* default-path leaks, `Warrant` and `Evaluation`. **The `Warrant` finding was false** — CG-23 counted case-insensitive substrings and matched the ordinary verb in "warranted work"; a word-boundary sweep finds zero. CG-23 now matches at word boundaries with an enumerated, printed allowlist for ordinary-English uses. The current leaks are `Evaluation` (T-22) and — newly visible because `Claim` moved from core to advanced in semantic delta SD-11 — `Claim` (T-13) ×2. All are in `intent/OVERVIEW.md` and none was edited, because they sit inside act 4's digest subject. Separately, the core table's `Unknown`-listed-as-T-15 mismatch is **closed**: `Unknown` now has its own entry **T-31** with an *adopted* owning authority (VIS-2, SDR-6), so one core term's definition no longer waits on an act | term registry §authority coverage; contradiction C-2; `round-2026-08b/TERM-CLOSURE-REPORT.md` §9.3 |
-| P-18 | **Doctrine/contract vocabulary seams** *(new)*: three recorded contradictions the round surfaced but did not resolve — (a) `architecture.md` names **four** constitutional `governance/` categories as "minimums" while candidate RFC3-15 names **five** plus a reserved sixth and calls them "closed"; (b) **"Claim"** is the sole carrier of positive status in candidate RFC1-24 but is absent from doctrine's frozen-noun list; (c) `evidence tier` vs `rendering tier` name one dimension twice. Each is compatible on a plain reading and none blocks an act; all three want an owner ruling before OpenSpec multiplies them | `round-2026-08/TERM-MIGRATION-REPORT.md` (C-1…C-6) |
-| P-19 | **Mission-envelope residuals** *(new, post-act-1 candidates)*: RFC-0010 defines checkpointing but **no rollback or compensation** of already-applied effects; RFC10-11 lets already-dispatched work complete past an exhausted budget with no reservation or recording of the overrun (a live *spend* risk, unlike the effect classes the propose-only cap bounds); and no clause names who adjudicates a mission's completion predicate. **Addressed 2026-08-05b, as candidate text:** RFC-0010 gained a correction plane — RFC10-17 (budget reservation, closing the overrun), RFC10-18 (completion adjudication, naming the adjudicator), RFC10-19 (effect reversibility and recovery), RFC10-20 (stop guarantees), RFC10-21 (cross-project consent), RFC10-22 (attention bounds). These are candidate clauses now carried by **Waves D1/D2** (the correction plane is Wave D2's module after the round-08d package split), so the residuals are closed only if those wave acts are performed. The stage-placement question — which of them V0 must ship versus V1 — is item P-23 | `round-2026-08/MISSION-CONTROL-REVIEW.md`; `RB-6-mission-autonomy-RAW.md`; `round-2026-08b/reviews/RC-7-mission-safety-RAW.md` |
-| P-20 | **Round residuals carried knowingly** *(new)*: the findings the round's own battery raised and did not fix, each recorded with its evidence in `round-2026-08/ROUND-DISPOSITIONS.md` — including the craft cluster's engineering-bar reference to a machine-local skill tree and the fixture set's incomplete coverage of the charter's eight fixture classes. **Two of the three were closed on 2026-08-05b, and one was misstated.** The machine-local skill tree now resolves publicly through `../policies/GOVERNANCE-SUBSTRATE-LOCK.yaml`, and (2026-08-06) is vendored in-tree — the drift the lock surfaced is resolved, P-26. The fixture-coverage gap was then named precisely — the *evidence-adapter* class had no fixture; the set was seven-for-eight with one double-count (`round-2026-08b/FINAL-CONTEXT-COMPILER-FIXTURE-REPORT.md`). **Ground changed (recorded 2026-08-10, RD29-07):** fixture 9 (`fixtures/context-selection-9-evidence-adapter.md`, written 2026-08-05b) closes that exact gap and fixture 10 covers the double-counted Trajectory-lifecycle class — the set is ten; the residue still open here is the fixture-set acceptance posture (P-29's question), not coverage. **The misstatement:** this item previously said doctrine cites a "README glossary" that *does not exist*. It does exist, at `../doctrine/README.md:15`. The real defect is narrower and is now **P-25** | `round-2026-08/ROUND-DISPOSITIONS.md`; `round-2026-08b/` reports |
-| P-21 | **Contract-seam residuals surfaced by RC-4** *(new, 2026-08-05b)*: three findings that need a ruling rather than an edit. (a) **One-way constraints have no home.** RFC-0006 constrains RFC-0005 (client class never changes an answer's fact set, only admission) and RFC8-9 asserts ownership against RFC7-24's seam; in both cases the constraint is stated in one contract, acknowledged by no clause in the other, and enforced by neither. `depends_on` cannot hold these — it drives loading, and neither is a load obligation — so either a separate `constrains:` relation is introduced or each constrained contract gains an acknowledging clause. (b) **Citation-without-declaration**, the bounded imprecision table in the closure report: eight contracts cite clauses of contracts they do not declare a dependency on, mostly as forward references from a lower layer to the surface that consumes it. Declaring them would make the kernel depend on everything. Ruling wanted on whether any is a genuine missed dependency. (c) **`RFC 0008 §5` cited as authority** by RFC9-32 — a navigational section, not a clause. **Extended 2026-08-07 by review RD-4 (`VERDICT: REVISE`):** the (a) alternative — a separate `constrains:` relation — **was installed into candidate front matter while this question was still open** (RD-4 finding **F-17**), on two modules, anchored by `constrains_source` to RFC5-3 and RFC7-3. Both edges the previous round *named* in this row were wrong in direction and the two clause-borne ones were undeclared; the correction is in `round-2026-08c/CONTRACT-RELATION-CLOSURE-REPORT.md`. A new sub-question **(c′)** follows: **RFC11-4 does not name `constrains` among the deterministic selection inputs**, so a conformant compiler would not read the relation at all. Also disclosed: the earlier citation test was scoped to 20 edges and the scoping was undisclosed; **eleven** non-README `depends_on` edges carry zero clause evidence. **Ground changed 2026-08-09 (round 08d):** sub-question (c′) is repaired in candidate bytes — RFC11-4 as amended consumes `constrains` via the new **RFC11-16** (clause-first consumption), and RFC11-13..15 give the other relation inputs defined semantics. The (a) ruling — whether `constrains:` is the right relation at all — is still the owner's; accepting Wave C2 ratifies the drafted arm. **Ground changed 2026-08-10 (RD31-05):** with Waves C1/C2 deferred, the **Wave A act** — not the C2 act — is now the first act freezing the `constrains:` declaration (RFC-0005 is a Wave A module; RFC-0007's twin rides the Wave B act the same way); disclosed at acceptance record §7 item 18, and the (a) ruling's earliest gate is therefore the Wave A offer. A further undeclared instance (RD32-m2): RFC8-12 imposes an in-clause conformance restriction on RFC9-32 and RFC9-32 reciprocates, with no `depends_on` or `constrains` edge either way — intra-wave (both Wave B), so no containment escape, and no new front-matter edge is minted while (a) is unruled (F-17's lesson); the instance waits on the same ruling | `round-2026-08b/DEPENDENCY-CLOSURE-REPORT.md`; `round-2026-08b/reviews/RC-4-contract-semantics-RAW.md`; `round-2026-08c/reviews/RD-4-contract-relation-RAW.md`; `round-2026-08d/SEMANTIC-DELTA-RECORD.md` |
-| P-22 | **RFC9-8(a) versus RFC3-10/11/21** *(new, 2026-08-05b)*: RC-4's one substantive contradiction. RFC9-8(a) places an owner-gated, snapshot-input registry **inside the workspace manifest**, which RFC3-10/11/21 close as personal presentation state — a VIS-6(a) consequence. RFC10-15 explicitly rejects that move and builds the correct alternative, so the corpus contains both the error and its remedy. This wants an owner ruling on which plane the registry belongs to, not a silent edit to whichever clause is younger. **Ground changed 2026-08-09 (round 08d):** the owner work order ruled the direction — governance plane — and the contradiction no longer exists in candidate bytes. **Re-grounded 2026-08-10 (round 08e):** RFC9-8(a) now stands entirely on Wave A — the registry lives in a typed, owner-gated governance store of RFC3-15's class, honored only under RFC3-16(a), established by an owner act of RFC3-15(a)'s recorded-widening class; until that store exists no portfolio re-lay is lawful, and RFC10-15 is a staged successor cited for orientation, not a reliance. Accepting Wave B ratifies the placement; the revert option (workspace manifest) restores the RC-4 contradiction. Packet 6 of `round-2026-08d/OWNER-DECISION-PACKETS.md` is stale and banner-marked | `round-2026-08b/reviews/RC-4-contract-semantics-RAW.md` §contradictions; `round-2026-08d/SEMANTIC-DELTA-RECORD.md` A-9 |
-| P-23 | **Mission-safety stage placement** *(new, 2026-08-05b)*: the correction-plane clauses added to RFC-0010 do not all have to ship at once, and the question of which stage each belongs to is a scope decision, not a drafting one. Review RC-7 recommends holding the full correction plane for **V1** while capping V0's autonomy ceiling at `propose-only`, on the argument that a V0 which can only propose does not yet need reversal, adjudication, or recovery machinery — the prevention plane suffices. The alternative is to ship the correction plane with V0 and accept the larger first slice. Whichever is chosen, the ceiling and the plane must move together: a V0 that can apply effects without RFC10-19/10-20 is the combination the review rules out. **Ground changed 2026-08-09 (round 08d):** the D1/D2 wave split makes the staging performable as two separate acts — D1 binds the propose-only prevention plane, D2 the effect-bearing correction plane — so "the ceiling and the plane move together" holds by construction; packet 3 of `round-2026-08d/OWNER-DECISION-PACKETS.md` is the current form of this question | `round-2026-08b/reviews/RC-7-mission-safety-RAW.md`; `round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md` |
-| P-24 | **D4 must be ruled before act 5** *(new, 2026-08-05b)*: review RC-7 finding F10 holds that the D3 packet's `vision.md` insertion places a bounded mission inside VIS-4's bounds **by stipulation**, inside the one sentence whose second half exists to foreclose that move — so adopting D3 as written also silently settles open question D4. The packet now discloses this at its §6 and carries the reviewer's alternative text, which states the reason rather than assuming it; neither is adopted. Rule D4, then adopt whichever text the ruling implies. If D4 is ruled the other way, no `vision.md` insertion is lawful without an accepted adjudication RFC, and the wave acts covering the adjudication contracts (*re-keyed 2026-08-10, RD29-04; formerly "act 1"*) become a **requirement** before act 5 rather than a recommendation. Separately: the `architecture.md` floor as drafted omits any maximum autonomy level, which moves "how autonomous may a mission be" permanently out of doctrine | `../contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` §6; `round-2026-08b/reviews/RC-7-mission-safety-RAW.md` F10 |
-| P-25 | **The "README glossary" citation** *(new, 2026-08-05b — replaces the false half of P-20)*: adopted doctrine cites a glossary at three sites — `../doctrine/vision.md:16`, `vision.md:39`, `v1.md:98` — as "README glossary", without saying which README. The glossary **exists**, at `../doctrine/README.md:15` (`## Glossary (read first)`), but the root `README.md` a reader is actually holding has none, so the pointer routes them to the wrong file and they conclude it is broken. Two separable repairs: (a) an **editorial doctrine amendment** qualifying the three citations — drafted, not performed, at `../contracts/candidates/policy-candidates/DOCTRINE-EDITORIAL-AMENDMENT-GLOSSARY-CITATION.md`; (b) reachability, done — the root README now links the glossary directly. Separately, three terms are genuinely undefined anywhere reachable: *actuator toolchain* (`vision.md:38`), *ai-bootstrap toolchain* (`v1.md:98`), *actuator* | `round-2026-08b/reviews/RC-3-vocabulary-RAW.md` Q5; `RC-2-vision-polaris-RAW.md` §6d |
-| P-25(c) | **The `actuator` definition** *(new, 2026-08-10, extends P-25)*: adopted doctrine uses *actuator* / *actuator toolchain* at four sites and defines it nowhere (launch-gate pilot D3; 6-file doctrine sweep, 5 hits, none defining). A minimal doctrine amendment packet with the exact glossary insertion is drafted at `../contracts/candidates/policy-candidates/DOCTRINE-AMENDMENT-ACTUATOR-DEFINITION.md`; it adds one genuine definition (not editorial-only) and flags its one inferred sentence for the owner to press on. VIS-4: only the owner applies it | the packet; P-25's row above |
-| P-27 | **RFC10-18's correction-plane routing, and RC-10's undisclosed residue** *(new, 2026-08-06)*: review RC-11 — the confirming review over the RC-10 repairs, `VERDICT: REVISE` — found two contract-text defects **inside the wave acts' digest set** (*re-keyed 2026-08-10, RD29-04; formerly "act 1's" — the clauses are RFC-0010's, now Waves D1/D2, deferred*), one of them introduced by the repair itself. (a) RFC10-18 now cites RFC10-5 for a human resolution act that RFC10-5's own scope excludes, so a reader of RFC10-18 alone believes an exit obligation exists that does not; the indefinite park survives in the no-applied-effects case, holding its budget reservation, since RFC10-17 releases only on completion or termination. (b) The clause pivots its whole correction plane on "whether effects have been applied" and assigns that determination to **nobody** — no independent party, no evidence tier, no Unknown rule — while the other determination in the same paragraph is meticulous about all three; an executing principal that asserts no effects were applied routes itself outside the correction plane. RFC10-17, written in the same pass, states the fail-closed Unknown rule for exactly this shape. Also carried here: RC-10's item x (the correction-plane clauses were inserted *before* act 1 where RC-7 asked for after, deviation unrecorded), RC-10's still-undisclosed clause findings RC10-C/D/G/H, and RC-12's finding F-5 (fixture 9's declared Shard 1 is incomplete for its own warrant; a corrected split is measured at 18,943 tokens). **None was repaired in the session that received the review** — a repair pass and the review of that pass cannot be the same pass, which is the shape criterion 8 has now held for two rounds | `../contracts/candidates/round-2026-08b/DISPOSITIONS-RC-11-RC-12.md`; `round-2026-08b/reviews/RC-11-repair-confirming-RAW.md`; `RC-12-budget-waiver-RAW.md` |
-| P-28 | **Mission is a first-class entity that the graph contract does not admit** *(new, 2026-08-07)*: **`Mission` has zero occurrences in `contracts/candidates/rfcs/RFC-0001-project-graph-identity-state-planes.md`** — verified by whole-file Python `re` sweep. Yet **RFC10-4** declares a Mission *"a first-class identified entity (minted under RFC 0001's identity rules)"*, and **RFC10-12** says the same of the **Attention Item**. Three clauses make this a seam rather than a wording quibble: RFC1-5 closes the V0-core entity vocabulary and lists neither, admitting new entities *"only through an extension profile (RFC1-7) or an amendment to this RFC"*; RFC1-7's five profiles (inference, presentation, map, portfolio, annotation/dismissal) contain none that is mission-shaped; and RFC1-7 closes with *"Profile contents are defined by RFCs 0002–0009"*, a range that excludes RFC-0010. **Consequence:** RFC6-2 makes only V0-core entities selectable and RFC6-18 gives every selection one fact set, so **none of the eleven universal-visibility facts is contractually available for a Mission** — including its Unknown reason and consent boundary, for the one entity class that can spend budget and touch the world. Three options, all normative edits to act 1's digest subject: **(a)** amend RFC1-5; **(b)** add a `mission` extension profile to RFC1-7 and widen its RFC range — recommended `[Inferred]`, the only option that composes with P-23's staging; **(c)** amend RFC10-4 to stop claiming RFC-0001 minting — cheapest and worst, since a first-class entity outside the identity system is the failure RFC1-9 exists to prevent. (*Row re-keyed 2026-08-10, RD29-04: "act 1" throughout this row reads as the Wave A act.*) **This is not a Mission-safety defect**; RFC-0010's envelope clauses stand on their own. **Ground changed 2026-08-09 (round 08d):** option **(b)** is drafted into candidate bytes — RFC1-7 carries a mission extension profile with named minting authority and RFC10-4 grounds Mission identity in it (semantic deltas A-2/A-7). Accepting Wave A ratifies the profile; packet 5 of `round-2026-08d/OWNER-DECISION-PACKETS.md` carries the alternatives | `round-2026-08c/UNIVERSAL-VISIBILITY-REVIEW.md` §3; `round-2026-08d/SEMANTIC-DELTA-RECORD.md` |
-| P-29 | **The Wave C2 acceptance criterion** *(new, 2026-08-09, review pass)*: the selection module's §1 makes its own acceptability conditional on reproducing the blind golden fixtures, but the criterion it says is "stated with the fixtures" exists nowhere (101-file sweep, RD-23 B1), and the fixtures sit outside every wave manifest, so the act would freeze the claim while its subject stays editable (RD-23 B2; RD-12 F10 found the same absence independently). Two routes: **(a)** write the reproduction standard as a fixtures-side artifact — compared object, tolerance, number of independent derivations, where results are recorded, what a divergence obliges — run it, record the results, and add the ten fixtures plus the criterion to the Wave C2 manifest so the act binds what it depends on (a real cost: the fixtures join the never-edited set); or **(b)** delete the conditional sentence and record "selection rules unvalidated against any blind derivation" as a knowing owner-attention deferral at the gate. Recommendation `[Inferred]`: (a) — it is what the sentence already promises. Earliest gate: before Wave C2 is re-offered — **and Wave C2 is deferred and not being offered** (`DEFERRED-WAVE-POSTURE.md`; marker added 2026-08-10, RD29-06) | `round-2026-08d/reviews/RD-23-wave-c2-RAW.md` B1/B2; `RD-12-context-selection-RAW.md` F10; `DISPOSITION-REGISTER.md` P-29 |
-| P-30 | **Form of the stop/containment repair** *(new, 2026-08-09, review pass)*: four reviews found one seam from four sides — under D1-only a human stop has no stated effect and completion has no gatekeeper (RD-20 B2/B3, RD-13 f1), while under D2 the containment limbs fire only on human acts, so the `failed` state the correction plane itself mints halts nothing (RD-21 B1, RD-14 f1). Three routes: **(i)** D1-side floor limbs (stop/completion minimums in RFC10-5/10-6/10-7) plus a transition-keyed RFC10-20 trigger in D2 — recommended `[Inferred]`, keeps the two-act staging P-23 relies on; **(ii)** move RFC10-20 into the D1 manifest (moving a clause between modules is not renumbering); **(iii)** merge the D1 and D2 acts into one, withdrawing the independent-acceptability claim. Earliest gate: before Waves D1/D2 are re-offered — **and both are deferred and not being offered** (`DEFERRED-WAVE-POSTURE.md`; marker added 2026-08-10, RD29-06); the repair design is one item across both waves | `round-2026-08d/reviews/RD-20-wave-d1-RAW.md` B1/B2/B3; `RD-21-wave-d2-RAW.md` B1/M1/M2; `RD-13-mission-prevention-RAW.md` finding 1; `RD-14-mission-effects-RAW.md` finding 1 |
-| P-32 | **RFC11-15 ownership metadata at V0** *(new, 2026-08-09, review pass)*: the clause requires doctrine/craft selection to consume declared ownership metadata — owning artifact, task classes, risk classes — and none exists: 0 of 66 rule identifiers are satisfiable, 31 have no resolvable owning artifact, and `task class` is defined nowhere (RD-23 M2; RD-12 F5). The honest fallback limb ("not claimed deterministic, and the packet states that basis") is currently the clause's entire operative content. Either author the schema at V0 (large: a metadata home, generator support, and fixtures), or rule the fallback permanent and have the clause and module §1 say so plainly. Earliest gate: before Wave C2 is re-offered — **and Wave C2 is deferred and not being offered** (`DEFERRED-WAVE-POSTURE.md`; marker added 2026-08-10, RD29-06); the disclosure sentence is drafted either way | `round-2026-08d/reviews/RD-23-wave-c2-RAW.md` M2; `RD-12-context-selection-RAW.md` F5 |
-| P-34 | **Ruled (approved) 2026-08-16 — arm (a).** Launch-gate process-policy authority *(new, 2026-08-10, launch-closure pass)*: the owner approved `launch-gate-pre-specifications.md` **v2.4** as this repository's process policy, F5 not promoted, with two disclosed BLOCKING residuals (RD-67 f1, RD-68 f1). Recorded in the packet's transaction section. **The packet owns the question, the options, the digests and the transaction; this row states none of them.** *(Compressed 2026-08-13, owner charter §8 — this cell had grown to 1,280 words, almost all of it the v1.3→v2.2 review chronology, which `launch-gate/HISTORY.md` owns and which a bounded packet is forbidden to carry. It also named a version the instrument had moved past twice.)* | **`LAUNCH-GATE-AUTHORITY-DECISION.md`** (this directory) — the bounded packet; `launch-gate/HISTORY.md` — the amendment chronology, deliberately off the default path |
-| P-41 | **The specification-acceptance craft act** *(new, 2026-08-10, RD28-05)*: `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` (CC-SPEC-1…10) is the sole named owner of launch-gate E5 and a blocking Capability 1 prerequisite, yet until this row existed it had no queue entry, no act row, and no presence in the craft cluster it mints into — the owner had no route to satisfy the prerequisite. Wanted: review + its `CONFIRM CRAFT AMENDMENT` act (digest computed at the act and recorded in the craft `INSTALL-RECORD.md`, per the CC-TEST-2 precedent), or a recorded ruling to author knowingly against the candidate. Earliest gate: before the first spec is authored, after P-40 (CC-SPEC-1 consumes the granularity rule). **Packet: `SPECIFICATION-ACCEPTANCE-DECISION.md` (this directory, added 2026-08-10, RD30-07)** — it states plainly that the act is not performable this sitting (review first, phrase minted at the offering) **Amended 2026-08-13** — the candidate was repaired against RD-51's 20 findings (warrant rule, requirement forms, adoption posture, one dependency home); the delta is `../contracts/candidates/round-2026-08g/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA.md`. **This act and P-42 are offered jointly** — CC-IMPACT-1 generates from CC-SPEC-2 and CC-IMPACT-2's trigger set *is* CC-SPEC-2's warrant set, so accepting one alone reintroduces two blocking defects. The repaired bytes are **unreviewed**, and CC-SPEC-1 may not be frozen before **P-40** is ruled. | `SPECIFICATION-ACCEPTANCE-DECISION.md` (this directory); `../contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`; `round-2026-08e/reviews/RD-28-spec-authoring-RAW.md` finding RD28-05 |
-| P-42 | **The shape-to-spec impact craft act** *(new, 2026-08-11, structured-closure pass)*: launch-gate **E6** asks how a shape change propagates to affected specifications once specs exist. The propagation fixture has recorded for a round that its detection step — the reverse-reference sweep — **has no owner in any authority**: it is proposed in a candidate workflow whose own disclaimer says its sweeps "do not exist as checks yet", and its denominator discipline is repository operating procedure, never citable. Steps 3 and 4 have owners (VIS-2, CC-REV-2); step 2 did not, so E6 could not be `Met` by citation. Candidate `CC-IMPACT-1…7` now states it. Wanted: review + its `CONFIRM CRAFT AMENDMENT` act (digest computed at the act, CC-TEST-2 precedent), or a recorded ruling to launch knowingly without it. Earliest gate: before the first spec is authored — a propagation rule adopted after specifications exist is adopted after the first amendment it was meant to govern **Amended 2026-08-13** — same delta. CC-IMPACT-6 no longer creates an exception to the owner-approved CC-REV-2 by side-clause (RD-51 f1, blocking); the exception is offered instead as an amendment to CC-REV-2 itself, **P-44**. CC-IMPACT-7 now names its fixture by path and digest. **Offered jointly with P-41.** The repaired bytes are **unreviewed**. | **`SHAPE-TO-SPEC-IMPACT-DECISION.md`** (this directory) — the bounded packet, added 2026-08-13; subject `../contracts/candidates/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` |
-| P-43 | **What records an owner decision** *(new, 2026-08-13, review RD-56 f5)*: the launch-gate validator must decide whether a cited file warrants an owner deferral, and there is **no adopted convention for what a recorded owner decision looks like**. Bound to "any file in the decisions home", the check accepted 16 of that home's 20 files — including a trend log (F1's own evidence, so citing it to defer F2 is circular), a repair history, and a decision packet whose own bytes read *"remains PENDING"*, which §4 names explicitly as granting nothing. `LA-11` now classifies by **shape** — logs and indexes, packet/draft name patterns, and any document declaring its own status unresolved — which is defensible and is **not** a rule the owner has established. Wanted: a ruling on what marks a file as recording a made decision (an `SDR-n` entry? an `**Executed.**` marker? a front-matter field?), or a recorded ruling that `SDR-n` citations are the only warrant form. Earliest gate: before any administration rests on a deferral | `round-2026-08g/reviews/RD-56-launch-machinery-v2.1-RAW.md` finding 5; `round-2026-08g/LAUNCH-GATE-v2.2-SEMANTIC-DELTA.md` limit 9 |
-| P-44 | **A lagging-specification exception to CC-REV-2** *(new, 2026-08-13, review RD-51 f1)*: owner charter §9.6 directs that a lagging specification require a lawful owner-visible exception mechanism owned by craft policy, and equally that no casual exception conflicting with CC-REV-2 be created. Those two directions have one consistent implementation: **amend CC-REV-2 in place**, because a new clause beside it would weaken an owner-approved rule in the population that rule names first, with both clauses in craft tier 2 and no precedence rule to arbitrate them. **Two arms are offered and declining is one of them** — arm (a) appends a second structural carve-out carrying five elements (affected specification, reason, owner, end condition, and a visible `contradicted`/`Unknown` interim state on the specification's own surface) plus a confirmer distinct from the change's author; arm (b) leaves CC-REV-2 as approved, so no specification may ever lag, which costs nothing today because no specification exists. **Not performable this sitting** — the offer is one day old and unreviewed; its review is part of the combined CC-SPEC/CC-IMPACT review charter §9.8 sequences after P-40 | `../contracts/candidates/policy-candidates/CC-REV-2-LAGGING-SPECIFICATION-AMENDMENT-OFFER.md` |
-
-**Current-packet notes (2026-08-10):** P-12's current packet is now
-`KNOWLEDGE-HYGIENE-DECISION.md` and P-33's is
-`WAVE-A-INSTALL-SHAPE-DECISION.md` (both this directory), superseding the
-round-08d packets file for those rows; the round-08d
-`OWNER-DECISION-PACKETS.md` remains current for packets 1, 3, 4, 5, 9,
-and 12 — **packet 6 is stale and banner-marked** (struck from this note
-2026-08-10, RD30-04; P-22's row and the packets file's own banner already
-said so, and this summary contradicted them).
+| # | Decision | Type | Blocks / earliest gate | Owning record |
+|---|---|---|---|---|
+| P-10 | Commission a confirming review of `SURFACE-CLAUSE-ROUTING-MATRIX.md`'s final bytes (all 199 routes) and the six newest RFC-0010 clauses, or knowingly defer | review posture | none — not launch-gating | the matrix; `round-2026-08/reviews/` |
+| P-12 | Knowledge-hygiene craft policy — pick the 22-rule original or the ten-rule compaction; own `CONFIRM CRAFT AMENDMENT` act. Would also give CG-20/21/27 an authoritative home | craft act | not launch-gating | `KNOWLEDGE-HYGIENE-DECISION.md`; `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` + `…-COMPACT.md` |
+| P-14 | License choice — four candidates, three `[Unknown]`s incl. copyleft reach; wants qualified legal review, never chosen autonomously | owner/legal decision | none stated | `LICENSE-DECISION-PACKET.md` (this directory) |
+| P-15 | Whether a compact FD register follows the two extracted warrants into this directory, while the founder decision log stays founder-local | decision | none | queue entry only; FD-037 |
+| P-16 | Approve the term registry (31 terms, T-01…T-31, six-plane state model) as working vocabulary, or amend. Doctrine's three-state thesis stays governing either way | decision | none — the registry stays candidate | `policy-candidates/TERM-REGISTRY.md` |
+| P-17 | Eight foundational public terms have no adopted definition anywhere; the wave acts close this. Accepting the surface before then is a knowing deferral | knowing deferral | the wave acts / act 4 | term registry §authority coverage; `round-2026-08b/TERM-CLOSURE-REPORT.md` §9.3 |
+| P-18 | Three doctrine/contract vocabulary seams (C-1…C-6): governance-category counts, "Claim" outside doctrine's frozen nouns, `evidence tier` vs `rendering tier` | ruling | before OpenSpec multiplies them (advisory) | `round-2026-08/TERM-MIGRATION-REPORT.md` |
+| P-19 | Mission-envelope residuals — the RFC-0010 correction plane (RFC10-17…22) closes them only if the D-wave acts are performed | deferred with waves | D1/D2 offer | `DEFERRED-WAVE-POSTURE.md`; `round-2026-08b/reviews/RC-7-mission-safety-RAW.md` |
+| P-20 | The fixture-set acceptance posture — the residue P-29 owns; coverage itself is closed (ten fixtures) | deferred | with P-29 | `round-2026-08/ROUND-DISPOSITIONS.md`; `round-2026-08b/FINAL-CONTEXT-COMPILER-FIXTURE-REPORT.md` |
+| P-21 | Is `constrains:` the right relation for one-way constraints (arm a)? Drafted into two modules' front matter; the Wave A act is the first act freezing it, Wave B its RFC8-12/RFC9-32 instance | ruling, ratified or reverted at act | Wave A act; Wave B act | `round-2026-08c/CONTRACT-RELATION-CLOSURE-REPORT.md`; acceptance record §7 item 18 |
+| P-22 | RFC9-8(a) registry placement — re-grounded on the Wave A governance store; accepting Wave B ratifies it, reverting restores the RC-4 contradiction | ruling, ratified or reverted at act | Wave B act | acceptance record §7 item 17; `round-2026-08d/SEMANTIC-DELTA-RECORD.md` A-9 |
+| P-23 | Mission-safety stage placement — hold the correction plane for V1 (propose-only V0), or ship it with V0; the ceiling and the plane move together | deferred with waves | D1/D2 offer | `round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md`; `round-2026-08b/reviews/RC-7-mission-safety-RAW.md` |
+| P-24 | Rule doctrine question **D4** before act 5 — D3's `vision.md` insertion otherwise settles D4 by stipulation; the reviewer's alternative text is carried in the packet | doctrine ruling | act 5 | `DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` §6; RC-7 F10 |
+| P-25 | Editorial doctrine amendment qualifying the three "README glossary" citations (drafted, not performed); three terms remain undefined anywhere reachable | doctrine amendment — only the owner applies | none | `policy-candidates/DOCTRINE-EDITORIAL-AMENDMENT-GLOSSARY-CITATION.md` |
+| P-25(c) | The `actuator` definition — a minimal doctrine amendment with the exact glossary insertion, one inferred sentence flagged for the owner | doctrine amendment — only the owner applies | none | `policy-candidates/DOCTRINE-AMENDMENT-ACTUATOR-DEFINITION.md` |
+| P-27 | RFC10-18's correction-plane routing defects (RC-11) and RC-10's undisclosed residue — all inside deferred D-wave modules | deferred with waves | D1/D2 offer | `round-2026-08b/DISPOSITIONS-RC-11-RC-12.md` |
+| P-28 | The mission extension profile (option b, drafted into RFC1-7/RFC10-4) — accepting Wave A ratifies it; the packet carries the alternatives | ruling, ratified or reverted at act | Wave A act | acceptance record §7 item 16; packet 5, `round-2026-08d/OWNER-DECISION-PACKETS.md` |
+| P-29 | The Wave C2 acceptance criterion — write the blind-fixture reproduction standard into the manifest (arm a), or delete the conditional sentence and defer knowingly (arm b) | deferred with waves | Wave C2 re-offer | `round-2026-08d/reviews/RD-23-wave-c2-RAW.md` B1/B2 |
+| P-30 | Form of the stop/containment repair — D1-side floor limbs (i), move RFC10-20 to D1 (ii), or merge the D acts (iii) | deferred with waves | D1/D2 re-offer | `round-2026-08d/reviews/RD-20…RD-21…RD-13…RD-14` raw reviews |
+| P-32 | RFC11-15 ownership metadata at V0 — author the schema, or rule the honest-fallback limb permanent and say so plainly | deferred with waves | Wave C2 re-offer | `round-2026-08d/reviews/RD-23-wave-c2-RAW.md` M2 |
+| P-41 | The **specification-acceptance craft act** (CC-SPEC-1…10) — review the repaired candidate, then its `CONFIRM CRAFT AMENDMENT` act. Offered **jointly with P-42**: accepting one alone reintroduces two blocking defects | craft act | before the first spec is authored; the P-40 prerequisite is satisfied (2026-08-16, `DECISION-HISTORY.md`) | `SPECIFICATION-ACCEPTANCE-DECISION.md` (this directory); `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` |
+| P-42 | The **shape-to-spec impact craft act** (CC-IMPACT-1…7) — gives launch-gate E6's detection step an owner. Offered **jointly with P-41** | craft act | before the first spec is authored | `SHAPE-TO-SPEC-IMPACT-DECISION.md` (this directory); `policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` |
+| P-43 | What marks a file as recording a **made** owner decision — `SDR-n` only, an `**Executed.**` marker, a front-matter field? LA-11's shape classification is defensible and unruled | convention ruling | before any administration rests on a deferral | this row; `round-2026-08g/reviews/RD-56-launch-machinery-v2.1-RAW.md` f5 |
+| P-44 | A lagging-specification exception to CC-REV-2 — amend in place (arm a) or decline (arm b); declining costs nothing while no specification exists | policy amendment offer | not launch-critical; its review is sequenced with the P-41/P-42 cycle | `policy-candidates/CC-REV-2-LAGGING-SPECIFICATION-AMENDMENT-OFFER.md` |
 
 **Nothing in this register is self-executing.** Acts happen only by the exact
 ceremonies their owning records define, performed by the owner.

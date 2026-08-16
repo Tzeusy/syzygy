@@ -9,7 +9,7 @@
 > here belongs to a confirmed-but-unaccepted wave and binds nothing.
 > No `openspec/` exists and none may be created.
 >
-> Charter sha256 `9f21e68519e290eafa221bdf6c9e2465b3499dddd80d42241083cf25e80f45da`.
+> Charter sha256 `aa71b9b2c0d82158f96ecc175d226ff00ea9b36f1cfbd6e832111cbf50934f58`.
 
 **CAP-1 — Project registration and honest shape visibility**
 
@@ -132,7 +132,7 @@ P-41   capability-level
 P-42   capability-level
 ```
 
-**Open upstream, at a later gate — not consumed by authoring:** `P-34`.
+**Open upstream, at a later gate — not consumed by authoring:** none — the queue holds no downstream row.
 
 ## Non-goals
 

@@ -385,9 +385,10 @@ TASKS = [
             "not listed under Craft above",
             "The facet vocabulary itself is routed to no clause: swept at "
             f"generation over the {AB_MODULE_COUNT} modules the Waves A+B "
-            f"manifests name, it appears in {len(FACET_HITS)} of them, and "
-            "P-37 decides whether the Capability 1 specification owns it or "
-            "Wave A must be amended to. The sweep is for the facet names, "
+            f"manifests name, it appears in {len(FACET_HITS)} of them. "
+            "P-37 (ruled 2026-08-16, SDR-36) places the vocabulary in the "
+            "Capability 1 specification, not a Wave A amendment — the text "
+            "still needs authoring there. The sweep is for the facet names, "
             "not for the English word \"facet\", which occurs generically",
         ],
     ),

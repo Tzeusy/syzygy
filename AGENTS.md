@@ -46,9 +46,8 @@ Each digest belongs to the artifact it names, so verify with
 and no verdict.**
 
 `decisions/ACCEPTANCE-ACT-RECORD.md` is created by the first act; its absence
-is correct. The round-2026-08b/08c/08d offerings are superseded where
-banner-marked and the retired rev9 / rev10 phrases satisfy nothing — routing
-an owner to a stale offering turns act 1 into a surprised act.
+is correct. Superseded offerings are banner-marked and retired phrases satisfy
+nothing — never route an owner to a stale offering.
 
 ## Task routing — context is compiled, never accumulated
 
@@ -62,16 +61,17 @@ Load the minimum for one correct decision; never "read everything."
 | "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until accepted OpenSpec content exists |
 | "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; authoring stays forbidden until the owner's launch decision |
 | Current status | `PROJECT-STATUS.md` |
-| "Is this ready for OpenSpec?" | **not ready**, and no formal administration has been run. `PROJECT-STATUS.md` owns the current verdict and launch target; the instrument is `launch-gate-pre-specifications.md` |
-| A launch-gate administration | the record is **structured JSON** (`launch-gate-administration.schema.json`); the Markdown report is generated and **never parsed back**. Scripts: `validate_launch_administration.py`, `render_launch_administration.py`, and `launch_gate_results.py` for the historical Markdown records only |
+| "Is this ready for OpenSpec?" | **not ready** — no formal administration has been run. `PROJECT-STATUS.md` owns the current state; the instrument is `launch-gate-pre-specifications.md` |
+| A launch-gate administration | the record is **structured JSON** (`launch-gate-administration.schema.json`); the Markdown report is generated, **never parsed back**. Scripts: `validate_launch_administration.py`, `render_launch_administration.py`; `launch_gate_results.py` covers the historical Markdown records only |
 | The launch-gate repair chain | `decisions/launch-gate/HISTORY.md` — **not default context**; the current policy is the instrument itself |
 | Open owner questions | `decisions/PENDING-OWNER-DECISIONS.md` |
 | Mission or Context-selection work | `contracts/candidates/DEFERRED-WAVE-POSTURE.md` first — deferred candidates route only through the router's deferred rows |
 | What a term means | doctrine's glossary, `governance/doctrine/README.md`; then the candidate `policy-candidates/TERM-REGISTRY.md` |
 | Maintenance, review, or avoiding a repeat mistake | `decisions/PROCESS-LESSONS.md` — **not default context** |
 
-Historical process material lives in the git-excluded `_bootstrap/` tree and
-`contracts/candidates/history/` — never on a default path, never authority.
+Historical process material lives in the git-excluded `_bootstrap/` tree,
+`contracts/candidates/history/`, and the `round-*` trees — never on a default
+path, never authority.
 
 ## Hard prohibitions
 
@@ -87,16 +87,15 @@ an artifact after an act has bound its digest.**
 ## Epistemic and change discipline
 
 Label substantive claims `[Observed]`, `[Inferred]`, or `[Unknown]`. No
-evidence yields Unknown — never green, never zero (VIS-2). An LLM assertion is
-Inferred, never Observed. Preserve the owner's trade-offs; never smooth them
-into consensus language.
+evidence yields Unknown — never green, never zero (VIS-2). An LLM assertion
+is Inferred. Preserve the owner's trade-offs; never smooth them into
+consensus language.
 
 Normative edits travel as **semantic deltas**
 (`policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md`); "editorial" and "no
 semantic change" are reviewable claims. Reviews run in fresh context, given
 only the artifact, its governing references and the acceptance criteria; raw
-output is stored verbatim and **verdict words are copied exactly**
-(`EXCEPTIONS` never becomes "pass with findings").
+output is stored verbatim and **verdict words are copied exactly**.
 
 ## Verification rules
 
@@ -106,25 +105,23 @@ Ten rules, each paid for by a recorded incident. The incidents are in
 1. **`grep` here is ugrep.** `[^]]`-style classes silently match nothing. Use
    `grep -F` or Python `re` for anything load-bearing.
 2. **No "zero / all / 100%" claim without running that exact sweep this
-   session**, confirmed by a second method. Enumerate remainders. A mutation
-   that silently stops mutating is a check that silently stops checking.
-3. **Digests are scripted, never transcribed; totals are computed.** A derived
-   value quoted outside its owning artifact goes stale silently.
+   session**, confirmed by a second method. Enumerate remainders.
+3. **Digests are scripted, never transcribed; totals are computed.**
 4. **Read a check's *output*, not its exit code**, and check its denominator
    against the whole population.
-5. **A citation is not a reliance** — the `RFC3-16` status banner and
-   `(Shape-parallel with …)` are not dependency edges.
+5. **A citation is not a reliance** — a status banner or "(Shape-parallel
+   with …)" is not a dependency edge.
 6. **Mutate the input and confirm the check fails**, per predicate, before
    trusting it. `--selftest` holds the fixtures.
 7. **Run the battery in a clone** before calling it green; a clone report is
    valid only for the commit it was run at.
 8. **Anchor a claim about a contract to a *defined clause*, and quote it.**
    Section prose near a clause is not the clause.
-9. **A claim of absence needs a sweep with a denominator.** "No clause defines
-   X" is a measurement. VIS-2 applies to your own claims first.
+9. **A claim of absence needs a sweep with a denominator.** VIS-2 applies to
+   your own claims first.
 10. **Freeze the bytes a review is bound to.** Editing the subject after a
-    review names its digest makes the review worth nothing, however small the
-    edit. Batch the fix into the next pass.
+    review names its digest retires the review, however small the edit.
+    Batch the fix into the next pass.
 
 **A generator that quotes prose has re-opened the door it closed.** Owning a
 measurement means nothing inside the generated file was copied.
@@ -141,10 +138,11 @@ prints coverage).
 
 ## Beads scope in this phase
 
-`bd` tracks **process housekeeping only** — no implementation issues, epics or
-backlog. Unknowns become open questions in `decisions/PENDING-OWNER-DECISIONS.md`,
-not issues. Commits are documentation-only and land at stable gates; **never
-commit a normative artifact while its adoption gate is unresolved.**
+`bd` tracks **process housekeeping only** — no implementation issues, epics
+or backlog. Unknowns become open questions in
+`decisions/PENDING-OWNER-DECISIONS.md`. Commits are documentation-only and
+land at stable gates; **never commit a normative artifact while its adoption
+gate is unresolved.**
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
 ## Beads Issue Tracker
@@ -170,46 +168,16 @@ bd close <id>         # Complete work
 
 ## Session Completion
 
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
+**MANDATORY — work is NOT complete until `git push` succeeds:**
 
-**MANDATORY WORKFLOW:**
+1. **File issues** for remaining work; close finished issues, update
+   in-progress ones
+2. **Run quality gates** (if code changed)
+3. **Push**: `git pull --rebase && git push`; `git status` must show
+   "up to date with origin"
+4. **Clean up** (stashes, stale branches) and **hand off** context for the
+   next session
 
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
-3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
-   ```bash
-   git pull --rebase
-   git push
-   git status  # MUST show "up to date with origin"
-   ```
-5. **Clean up** - Clear stashes, prune remote branches
-6. **Verify** - All changes committed AND pushed
-7. **Hand off** - Provide context for next session
-
-**CRITICAL RULES:**
-- Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
+NEVER stop before pushing — that strands work locally. If push fails,
+resolve and retry until it succeeds.
 <!-- END BEADS INTEGRATION -->
-
-# Notes to self
-
-- **CG-15 examines only ellipsis-marked truncated digests (`‹hex›…`) and wants
-  each to prefix a *current act argument*.** An instrument/schema/§8-sub-block
-  digest (bound by a *recorded decision*, not an act) FAILs it. Fix: quote the
-  full 64-hex, or drop the ellipsis (`01209c0f052971f7`), or keep digests in the
-  artifact's own table, not sprinkled in prose.
-- **An owner may lawfully APPROVE with disclosed residuals — not a `CONFIRM`.**
-  When a review pair is `REVISE` and the owner still approves (P-34 arm a),
-  record "approved *with* the named residuals"; never launder to "clean" or
-  imply the reviews flipped. The transaction is a recorded decision, so
-  transcribing the owner's selection (provenance + verified digests + F5 y/n) is
-  faithful recording, not approving for them (VIS-4).
-- **Instance-vs-class is the launch-gate's signature failure:** a fix that
-  closes the named *instance* and restates it as a *class property* recurs one
-  address/category over (invisible strip `Cf/Cc/Mn`→`So`; 40-hex schema read→
-  abbreviated commit). Only a fixture mechanical over the whole population
-  (RD-66 f1's every-string-leaf sweep) held. Prefer schema-derived/allowlist
-  fixtures over blocklists, and mutation-test every limb.

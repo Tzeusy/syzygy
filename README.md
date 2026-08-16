@@ -132,8 +132,10 @@ content**, and are named here so they are not mistaken for either *(added
 
 - [`launch-gate-pre-specifications.md`](launch-gate-pre-specifications.md)
   — the question set used to judge whether this repository is ready for
-  anyone to author its first specification. **Candidate** (approval is
-  P-34), and a `READY` verdict from it would authorize nothing.
+  anyone to author its first specification. **Owner-approved process policy
+  at v2.4** (P-34, ruled 2026-08-16 with disclosed residuals —
+  `decisions/LAUNCH-GATE-AUTHORITY-DECISION.md`), and a `READY` verdict
+  from it would authorize nothing.
 - [`FORMAL-CAPABILITY-1-LAUNCH-PACKET/`](FORMAL-CAPABILITY-1-LAUNCH-PACKET/)
   — everything an outside reviewer would need to run that gate once,
   formally. **Prepared, never administered.**

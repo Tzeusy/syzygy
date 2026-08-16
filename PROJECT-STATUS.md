@@ -1,16 +1,15 @@
 # Project status
 
-> **As-of: 2026-08-11** (the commit introducing this revision —
+> **As-of: 2026-08-17** (the commit introducing this revision —
 > `git log -1 --format=%h PROJECT-STATUS.md`). A hand-authored pointer page:
 > it **must not be the sole source** for any fact it states. Each row cites
 > the record that owns it, and where they disagree the record wins and this
 > page is stale.
 >
 > This page holds **current state only**. The launch-gate review chronology
-> that used to live here is at
-> `.syzygy/governance/decisions/launch-gate/HISTORY.md`; process lessons are
-> at `.syzygy/governance/decisions/PROCESS-LESSONS.md`. Neither is default
-> reading.
+> is at `.syzygy/governance/decisions/launch-gate/HISTORY.md`; process
+> lessons are at `.syzygy/governance/decisions/PROCESS-LESSONS.md`; each
+> pass's reports live in the `round-*` trees. None is default reading.
 
 ## Lifecycle stage
 
@@ -26,12 +25,14 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 
 | Step | State | Owning record |
 |---|---|---|
-| Wave A (RFC 0001–0006, 19 modules) | **Confirmed** — `VERDICT: CONFIRM` on the current argument `8972d963…` (RD-31b). **Offer withheld solely by P-33.** | acceptance record §1 + §7 item 11; `wave-manifests/WAVE-A-MANIFEST.txt` |
-| Wave B (RFC 0007–0009 + the three surfaces, 11 modules) | **Confirmed** — `VERDICT: CONFIRM` on the current argument `193e3c1e…` (RD-32c). Nothing withholds it; it **follows Wave A**. | acceptance record §1; `wave-manifests/WAVE-B-MANIFEST.txt` |
+| Wave A (RFC 0001–0006, 19 modules) | **Confirmed** — `VERDICT: CONFIRM` on the current argument `8972d963…` (RD-31b). **Offer unblocked** — P-33 ruled install shape **(M)** 2026-08-16; zero bytes moved, the confirmation survives. **Act not performed.** | acceptance record §1 + §7 item 11; `wave-manifests/WAVE-A-MANIFEST.txt`; `decisions/WAVE-A-INSTALL-SHAPE-DECISION.md` |
+| Wave B (RFC 0007–0009 + the three surfaces, 11 modules) | **Confirmed** — `VERDICT: CONFIRM` on the current argument `193e3c1e…` (RD-32c). Nothing withholds it; it **follows Wave A**. **Act not performed.** | acceptance record §1; `wave-manifests/WAVE-B-MANIFEST.txt` |
 | Waves C1/C2/D1/D2 | **Deferred** — candidate, not accepted, not used by the launch target, not offered. Not retired. | `contracts/candidates/DEFERRED-WAVE-POSTURE.md` |
-| Launch-gate policy | **Owner-approved process policy at v2.4 — P-34 ruled arm (a), 2026-08-16, residuals disclosed, F5 not promoted.** After **ten fresh-context reviews, ten `REVISE` verdicts** across v2.0–v2.4, the owner approved v2.4 (`launch-gate-pre-specifications.md`, instrument `1852c2c3…`, schema `e0167fb8…`, committed `4dd6e20`) rather than spend a sixth repair cycle. The approval is made **with two disclosed BLOCKING residuals** — false-`READY` paths in the validator's guarding, reachable only by an adversarial record author: **RD-67 f1** (abbreviated `repository_commit` reads the schema at `HEAD`, admitting a forbidden verdict word into an eligible `READY`) and **RD-68 f1** (`U+2800`/category `So` defeats the invisible-char strip). The one genuinely structural repair this round (RD-66 f1's mechanical forgery sweep) **held** — no live forgery across 1,620 combos. The questions, verdict formula and §8 launch-scope parameters are unweakened across all five versions. **Next:** the formal administration is now runnable, by an out-of-family reviewer or a human, run knowingly against the two residuals; a bounded v2.5 that closes them structurally is an owner option, not a gate. | `launch-gate-pre-specifications.md`; `decisions/LAUNCH-GATE-AUTHORITY-DECISION.md` (the recorded approval); `round-2026-08h/reviews/DISPOSITION-REGISTER.md` |
-| Formal launch administration | **Not performed.** The only administration on record is the 2026-08-09 **pilot** (v1.3), which returned `GATE VERDICT: NOT READY`. | `round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md` |
-| OpenSpec (`openspec/`) | **No specification content — fleshing-out has not begun.** A tool-created `openspec/` scaffold (config plus empty trees) may exist and is not specification work; authoring is forbidden until the owner's launch decision. | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` |
+| Owner rulings, 2026-08-16 | **P-31, P-33, P-35, P-36, P-37, P-38, P-39, P-40 ruled** in one adversarially-reviewed sitting, plus P-34 below. Zero contract bytes moved; both wave confirmations survive. | `decisions/PENDING-OWNER-DECISIONS.md` §"Resolved on 2026-08-16"; each row names its owning record |
+| Launch-gate policy | **Owner-approved process policy at v2.4** — P-34 ruled arm (a), 2026-08-16, **with two disclosed BLOCKING residuals** (RD-67 f1, RD-68 f1 — false-`READY` paths reachable only by an adversarial record author), **F5 not promoted**. Ten `REVISE` verdicts across v2.0–v2.4 stand as recorded; this is approval-with-residuals, not a clean review verdict. A bounded v2.5 is an owner option, not a gate. | `decisions/LAUNCH-GATE-AUTHORITY-DECISION.md` (the recorded approval); instrument `launch-gate-pre-specifications.md`; `round-2026-08h/reviews/DISPOSITION-REGISTER.md` |
+| P-41 + P-42, offered jointly | **Open — the one remaining policy prerequisite.** The specification-acceptance (CC-SPEC-1…10) and shape-to-spec impact (CC-IMPACT-1…7) craft acts. Candidates amended 2026-08-13 against RD-51 (`REVISE`); the repaired bytes are **unreviewed**; CC-SPEC-1's P-40 prerequisite is satisfied as of 2026-08-16. Accepting one alone reintroduces two blocking defects. | `decisions/SPECIFICATION-ACCEPTANCE-DECISION.md`; `decisions/SHAPE-TO-SPEC-IMPACT-DECISION.md` |
+| Formal launch administration | **Not performed.** The only administration on record is the 2026-08-09 **pilot** (v1.3), `GATE VERDICT: NOT READY`. Now runnable under approved v2.4 — by an out-of-family model or a human, in fresh context, knowingly against the residuals. | `round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md` |
+| OpenSpec (`openspec/`) | **No specification content.** A tool-created scaffold (config plus empty trees) exists and is not specification work; authoring is forbidden until the owner's launch decision. | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` |
 | Implementation | **Does not exist.** Blocked on accepted specifications. | — |
 
 **No owner acceptance act has been performed.**
@@ -44,7 +45,8 @@ which is the correct state — the first act creates it.
 |---|---|---|
 | Doctrine adoption | ✅ Adopted 2026-07-30, amendment D1 in force | tag `doctrine-adopted-2026-07-30`; `.syzygy/governance/doctrine/README.md` |
 | Craft-and-care approval | ✅ Approved (owner decision D2) | `.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md` |
-| Surface decisions | ✅ Recorded SDR-1…33 | `.syzygy/governance/decisions/SURFACE-DECISION-RECORD.md` |
+| Surface decisions | ✅ Recorded SDR-1…37 | `.syzygy/governance/decisions/SURFACE-DECISION-RECORD.md` |
+| The 2026-08-16 rulings | ✅ See the launch-path table above | `decisions/PENDING-OWNER-DECISIONS.md` §"Resolved on 2026-08-16" |
 
 ## Gates still open, beyond the launch path
 
@@ -55,84 +57,22 @@ which is the correct state — the first act creates it.
 | Project overview | Draft — awaiting adoption | `.syzygy/intent/OVERVIEW.md` |
 | Doctrine amendment D3 (bounded missions) | Proposed — adopt, amend, or decline | `contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1) |
 | Knowledge-hygiene craft policy | Candidate — own craft act (P-12) | `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
-| Specification-acceptance standard (CC-SPEC-1…10) | Candidate — own craft act (P-41); a Capability 1 prerequisite. **Amended 2026-08-13** against RD-51 (`REVISE`); the repaired bytes are **unreviewed**, and CC-SPEC-1 may not be frozen before **P-40** is ruled. Offered jointly with P-42 | `policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` |
-| Shape-to-spec impact rule (CC-IMPACT-1…7) | Candidate — own craft act (P-42); a Capability 1 prerequisite. **Amended 2026-08-13** against RD-51; its blind fixture has now been **run and passed** (RD-59). The repaired bytes are **unreviewed**. Offered jointly with P-41 | `policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` |
-| Lagging-specification exception to CC-REV-2 | **Offered 2026-08-13, two arms, declining is one of them** (P-44). CC-REV-2 is owner-approved; the exception cannot be created by a side-clause | `policy-candidates/CC-REV-2-LAGGING-SPECIFICATION-AMENDMENT-OFFER.md` |
+| Decision-record convention (P-43) | Open — not launch-gating; earliest gate is a deferral-bearing administration | `decisions/PENDING-OWNER-DECISIONS.md` row P-43 |
+| CC-REV-2 lagging-spec exception (P-44) | Offered, two arms, declining is one of them — not launch-gating | `policy-candidates/CC-REV-2-LAGGING-SPECIFICATION-AMENDMENT-OFFER.md` |
 | License | Undecided — owner/legal | `.syzygy/governance/decisions/LICENSE-DECISION-PACKET.md` |
-
-## Launch-critical owner decisions
-
-Eleven rulings stand between the confirmed contracts and a first
-specification. They are prepared, never made, and the queue that owns them
-is `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`. The readiness
-view over them — which can be settled now, which cannot yet, and what would
-unblock each — is
-`round-2026-08g/CAPABILITY-1-OWNER-DECISION-INDEX.md`.
-
-The standing answer to *"is this ready?"* — the readiness standard graded
-conjunct by conjunct, with the record that owns each state — is
-[`round-2026-08g/FINAL-CAPABILITY-1-READINESS-REPORT.md`](.syzygy/governance/contracts/candidates/round-2026-08g/FINAL-CAPABILITY-1-READINESS-REPORT.md).
-It quotes no counts from this page and this page quotes none from it.
-
-*(Repointed 2026-08-13. This named the round-08f combined packet, which
-review `RD-52` returned `REVISE` on for a one-sitting premise its own
-contents contradicted; it is now banner-marked superseded.)*
-
-```text
-P-33  Wave A install shape      — the ONLY obstacle to offering confirmed Wave A
-P-31  merged-but-unreconciled → Unknown
-P-36  Unknown versus Gap
-P-37  project-shape facets and their authority home
-P-38  human entry and repository discoverability
-P-39  OpenSpec form and version
-P-40  specification granularity
-P-35  project operating constraints
-P-34  launch-gate v2.4 as process policy
-P-41  the specification-acceptance craft act
-P-42  the shape-to-spec impact craft act
-```
-
-**P-43 and P-44 are new (2026-08-13) and are deliberately *not* on this
-list.** P-43 asks what marks a file as recording an owner decision; P-44
-offers a lagging-specification exception to CC-REV-2. Neither blocks
-authoring a first specification — there is no specification to lag, and the
-launch-gate check P-43 concerns has a stricter interim rule. **P-41 and P-42
-are offered jointly**: CC-IMPACT-1 generates from CC-SPEC-2 and CC-IMPACT-2's
-trigger set *is* CC-SPEC-2's warrant set, so accepting one alone
-reintroduces two blocking defects that the 2026-08-13 amendment removed.
-
-## What exists in this repository
-
-Adopted doctrine; owner-approved engineering policy; recorded owner
-decisions with tracked warrant extracts; the candidate contract corpus
-(RFC 0001–0011, 39 modules) with its generated manifests, acceptance record,
-context-selection fixtures, reviews and verification scripts; the candidate
-topology bundle; candidate policy additions; the overview draft; navigation
-skills; the launch-gate policy, its record schema, its validator and its
-renderer; documentation-only CI.
-
-**No** `openspec/`, no accepted-contract home, no source tree, no product
-CI, no implementation backlog.
-
-**One thing this project does not have, stated plainly:** there is no
-mechanical task-to-context-packet compiler — `context_load.py` measures a
-selection you have already made, and every fixture's selection is
-hand-authored. The fixtures' verification checklists say so per fixture.
 
 ## Next lawful step
 
-Rule **P-33**. It is the single obstacle to offering a Wave A that is
-already confirmed, and nothing downstream — Wave B's offer, the launch-gate
-administration, the first specification — moves until it is ruled. The
-packet is `.syzygy/governance/decisions/WAVE-A-INSTALL-SHAPE-DECISION.md`,
-with the typed-content analysis at
-`round-2026-08f/P33-SEMANTIC-INSTALL-ANALYSIS.md`.
+The remaining launch path, in order — each step's owning record governs:
 
-After it: the Wave A act, then the Wave B act; P-34 approving the launch-gate
-policy; the formal launch administration under that policy, run by a
-reviewer outside this corpus's model family; and the owner's separate launch
-decision. Specification authoring begins only after that decision, and
-implementation only after specifications are accepted.
+1. Owner performs the **Wave A act**, then the **Wave B act** (both offers
+   unblocked; the acceptance record owns the phrases and arguments).
+2. **P-41 + P-42**: one bounded repair/review cycle on the joint
+   candidates, then their craft acts.
+3. **Formal Capability 1 administration** under approved v2.4 — an
+   out-of-family model or a human, never an authoring session.
+4. The owner's separate **launch decision**. Specification authoring only
+   after it; implementation only after specifications are accepted.
 
 ## How to verify this page
 
@@ -162,36 +102,18 @@ The sixteen checks above are the same sixteen the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.
-
-**That sentence used to be false, and a check now enforces it.** *(Corrected
-2026-08-13.)* Until then this block held **twelve** checks while claiming
-fourteen; the hosted workflow ran **fourteen**, and only twelve were shared —
-the two dry-run administration steps were hosted-only, so every reader who
-ran the published block believed they had run the battery and had not. The
-sentence existed precisely to stop that conflation and was itself the
-conflation, because both lists and the claim that they agreed were maintained
-by hand in three separate places. **CG-26** now parses both files and fails on
-any divergence, including a miscounted number in this very sentence.
+**CG-26** parses both lists and fails on any divergence, including a
+miscounted number in the sentence above.
 
 **Read the output, not the exit code** — a PASS over zero examined items
 verified nothing. Every check prints its own denominator; the WARNs are
 declared-by-design. `--selftest` covers **the checks that have a fixture**,
-not every check: CG-24 computes and prints which families are covered, and
-that figure is the one to quote.
+not every check — CG-24 prints which, and that figure is the one to quote.
 
-**Run it in a clone, not only here.** At one commit these disagreed — 0 FAIL
-in the working tree, 1 FAIL in a clone — because a check asked the local
-filesystem whether a git-excluded directory existed, and the founder machine
-has one. That divergence is invisible from the machine that has the
-directory.
+**Run it in a clone, not only here** — one working tree and its clone have
+disagreed before, invisibly from the machine holding the git-excluded
+directory. A clone report is valid only for the commit it names; the most
+recent is
+[`round-2026-08g/FINAL-PUBLIC-CLONE-REPORT.md`](.syzygy/governance/contracts/candidates/round-2026-08g/FINAL-PUBLIC-CLONE-REPORT.md).
 
-The most recent clone run is
-[`round-2026-08g/FINAL-PUBLIC-CLONE-REPORT.md`](.syzygy/governance/contracts/candidates/round-2026-08g/FINAL-PUBLIC-CLONE-REPORT.md),
-which names the one commit it is valid for and links the hosted run at that
-same commit. **A clone report older than `HEAD` establishes nothing about
-`HEAD`** — check the commit it names against the commit you are on before
-reading it as current.
-
-**No result figures are quoted on this page.** Twice, figures that were
-correct when written went stale within two commits — in the two documents an
-owner is sent to for evidence. Run the commands.
+**No result figures are quoted on this page.** Run the commands.
