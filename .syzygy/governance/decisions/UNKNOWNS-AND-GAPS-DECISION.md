@@ -103,3 +103,13 @@ both words).
 ## Independent work
 
 Everything except OpenSpec authoring.
+
+## Ruled 2026-08-16
+
+Owner, via an adversarially-reviewed questionnaire packet, direct
+conversational response — chose **(a)**: the two-term rule, no verifying
+evidence → `Unknown`; evidence of non-satisfaction → `Gap`. Recorded as
+**SDR-35** in `SURFACE-DECISION-RECORD.md`; the term registry's `T-20`/`T-31`
+disclosed conflict note collapses to a pointer at that row. Full record:
+`PENDING-OWNER-DECISIONS.md` (row `P-36`, 2026-08-16 resolved section) and
+the owner's local decision packet.

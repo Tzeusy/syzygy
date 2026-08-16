@@ -182,20 +182,42 @@ openspec:
   distribution: "npm: @fission-ai/openspec"
   repository: https://github.com/Fission-AI/OpenSpec
   license: MIT
-  installed_version: "1.3.1"
-  latest_published_at_lock_time: "1.7.0"
+  installed_version: "1.9.0"
+  latest_published_at_lock_time: "1.9.0"
   compatibility: >-
-    [Unknown] — no Syzygy artifact yet depends on any OpenSpec behavior,
-    because `openspec/` does not exist. Compatibility becomes a real question
-    at the first changeset, not before. Recorded now so the version in use is
-    a decision rather than an accident.
+    Format contract confirmed additive across 1.3.1 -> 1.8.0 -> 1.9.0: the
+    `schemas/spec-driven/` schema.yaml and all four templates (design.md,
+    proposal.md, spec.md, tasks.md) are byte-identical between 1.8.0 and
+    1.9.0 (sha256
+    7004a6a4d82fbab6d2e5e0e5f178db4e612fa57d7e012ce275fcce9f76a61af6 on
+    schema.yaml, both versions). Tooling behavior beyond the schema changed
+    (a tasks.md numbering-ambiguity validator; loosened scenario-header
+    matching in requirement parsing; revised archive rebuild logic in
+    specs-apply.js) — these were not individually verified line-by-line and
+    are [Inferred] to be non-breaking (loosening, not tightening) rather than
+    [Observed] risk-free. `openspec/` does not exist in this repository yet;
+    compatibility becomes a live question at the first changeset.
   digest_or_lock_reference: >-
-    None pinned. Nothing in this repository is generated from or validated by
-    OpenSpec today, so there is nothing to pin against. Pin at the first
-    `openspec/` write.
-  owner_item: >-
-    Choose the OpenSpec version to author against (installed 1.3.1 vs current
-    1.7.0) before the first changeset. Tracked in PENDING-OWNER-DECISIONS.
+    Pinned 2026-08-16 per owner ruling P-39. schema.yaml sha256:
+    7004a6a4d82fbab6d2e5e0e5f178db4e612fa57d7e012ce275fcce9f76a61af6 (both
+    1.8.0 and 1.9.0). No `openspec/` artifact exists yet to validate against
+    this pin — the pin governs the *first* write.
+  owner_decision: >-
+    P-39 RULED 2026-08-16 (owner, via an adversarially-reviewed
+    questionnaire packet, direct conversational response) — option (b): pin
+    current upstream, at 1.9.0 (refreshed at answer time from the packet's
+    measured 1.8.0, since the owner had already upgraded and upstream had
+    published again). Artifact form: OpenSpec changeset directories under
+    `openspec/` per the pinned version's format. Stable identity
+    expectations: requirement IDs stable forever once minted; whether
+    OpenSpec identities survive edit/rename remains [Unknown], RFC 0004's
+    adapter-contract obligation. Adapter compatibility posture: the CLI is a
+    substitutable adapter beneath a non-substitutable artifact contract.
+    Migration posture: version upgrades are recorded migrations with the
+    artifact contract as the invariant; no silent regeneration of accepted
+    specs. Full record: `PENDING-OWNER-DECISIONS.md` (row P-39, 2026-08-16
+    resolved section), `decisions/OPENSPEC-FORM-AND-VERSION-DECISION.md`,
+    and the owner's local decision packet.
 
 # ---------------------------------------------------------------------------
 # beads — the work-lifecycle tracker

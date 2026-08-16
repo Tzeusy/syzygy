@@ -146,3 +146,16 @@ changeset, so before spec authoring begins.
 ## Independent work
 
 Everything up to OpenSpec authoring.
+
+## Ruled 2026-08-16
+
+Owner, via an adversarially-reviewed questionnaire packet, direct
+conversational response — chose **(b)**, pinned at **1.9.0** (refreshed
+from this packet's measured 1.8.0: upstream published again and the owner
+had already upgraded before answering; the additive-delta claim was
+independently re-verified against 1.9.0 this session — see
+`GOVERNANCE-SUBSTRATE-LOCK.yaml`'s `openspec.compatibility` field for the
+one correction that surfaced during that re-verification). Recorded in
+`GOVERNANCE-SUBSTRATE-LOCK.yaml`'s `openspec` block. Full record:
+`PENDING-OWNER-DECISIONS.md` (row `P-39`, 2026-08-16 resolved section) and
+the owner's local decision packet.

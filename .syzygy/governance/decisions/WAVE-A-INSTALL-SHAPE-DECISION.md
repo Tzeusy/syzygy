@@ -242,9 +242,16 @@ digest-binding act. Record here, dated, in your own words:
 
 ```text
 P-33 RULED — Wave A installation shape
-companion install shape:      M / T
-package-wide manifest:        not installed / installed
+companion install shape:      M
+package-wide manifest:        not installed
 ```
+
+**Ruled 2026-08-16.** Owner, via an adversarially-reviewed questionnaire
+packet, direct conversational response — chose **(M)**: leave the accepted
+modules' internal path strings alone; install no companion package
+apparatus; install neither package-wide manifest. Full record:
+`PENDING-OWNER-DECISIONS.md` (row `P-33`, 2026-08-16 resolved section) and
+the owner's local decision packet.
 
 Then the register row P-33 closes, the ceremony is drafted to match, and
 **Wave A becomes offerable** — under (M) on the argument `8972d963…` that

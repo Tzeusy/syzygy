@@ -115,3 +115,11 @@ the Wave A act until that sequence completes.
 
 Before the Wave A act. `P-33` is what withholds the Wave A offer today; this
 ruling is wanted at or before the same sitting.
+
+## Ruled 2026-08-16
+
+Owner, via an adversarially-reviewed questionnaire packet, direct
+conversational response — chose **(a)**: ratify the drafted `RFC2-19(a)`
+exemption as written. Recorded as **SDR-34** in `SURFACE-DECISION-RECORD.md`.
+Full record: `PENDING-OWNER-DECISIONS.md` (row `P-31`, 2026-08-16 resolved
+section) and the owner's local decision packet.

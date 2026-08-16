@@ -951,16 +951,11 @@ Unknown as a gap manufactures knowledge). *Contradiction* (T-19 — two
 authorities that cannot both hold, which is more information than Unknown, not
 less).
 
-> **Open owner question, disclosed here rather than only in a round report
-> (repaired 2026-08-10, review RD-16 finding 1).** This entry and T-20 (`Gap`)
-> classified the same case — an adopted requirement with no verifying evidence
-> — in opposite ways: T-20's example called it a gap, this entry's boundary
-> line calls it an Unknown. Doctrine sides with this entry (VIS-2; `v1.md`'s
-> V0/V1 gap boundary), and T-20's example was corrected to match. The
-> resulting two-term rule — **no evidence → Unknown; evidence of
-> non-satisfaction → Gap** — is candidate drafting queued for ruling as
-> **P-36** (`../../../decisions/UNKNOWNS-AND-GAPS-DECISION.md`). It is the
-> pair VIS-2 rests on, and it is not yet settled.
+> **Settled 2026-08-16 — SDR-35.** The two-term rule — **no evidence →
+> Unknown; evidence of non-satisfaction → Gap** — is ratified as the owner
+> ruling on **P-36**. Record: `../../../decisions/SURFACE-DECISION-RECORD.md`
+> (SDR-35); `../../../decisions/UNKNOWNS-AND-GAPS-DECISION.md`. This entry's
+> boundary line above states the ratified reading.
 
 **Example.** "40 modules Unknown (reason: `missing-evidence` ×31,
 `no-currency-bound-declared` ×9)" — aggregated honestly, reason counts
@@ -1181,18 +1176,11 @@ it is absent. Rendering an Unknown as a gap manufactures knowledge; rendering
 a gap as an Unknown discards it. Work item (a gap is *addressed*, never
 *closed*, by work — RFC1-25 `addresses`).
 
-> **Open owner question, disclosed here rather than only in a round report
-> (repaired 2026-08-10, review RD-16 finding 1).** This entry's example
-> previously read *"an adopted requirement with no verifying evidence at
-> evaluation E is a gap at E"*, which is the case T-31 classifies as an
-> **Unknown** — the two entries classified one case in opposite ways. The
-> example below now follows doctrine (VIS-2; `v1.md`'s V0/V1 gap boundary):
-> **no evidence → Unknown; evidence of non-satisfaction → Gap.** That reading
-> is candidate drafting, not a ruling: `Gap` is defined nowhere in force, and
-> the two-term rule is queued as **P-36**
-> (`../../../decisions/UNKNOWNS-AND-GAPS-DECISION.md`), which ratifies or
-> reverts it. Until then this boundary is the registry's best reading of
-> adopted doctrine, not settled law.
+> **Settled 2026-08-16 — SDR-35.** The two-term rule — **no evidence →
+> Unknown; evidence of non-satisfaction → Gap** — is ratified as the owner
+> ruling on **P-36**. Record: `../../../decisions/SURFACE-DECISION-RECORD.md`
+> (SDR-35); `../../../decisions/UNKNOWNS-AND-GAPS-DECISION.md`. The example
+> below states the ratified reading.
 
 **Example.** An adopted requirement whose current admissible evidence
 establishes that it is **not satisfied** at evaluation E is a gap at E. An

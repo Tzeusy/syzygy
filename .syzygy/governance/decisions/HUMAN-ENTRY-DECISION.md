@@ -104,6 +104,14 @@ new exact-package review of the regenerated Wave B argument.
 under (b)/(c)/(d) the redraft, its semantic delta and the two reviews come
 first, and the Wave B act waits for them.
 
+**Ruled 2026-08-16.** Owner, via an adversarially-reviewed questionnaire
+packet, direct conversational response — chose **(a)**, as drafted: fixed
+entry identified with the primary narrative (RFC7-6), the four-valued
+per-repository discoverability finding, propose-only root-README link.
+Nothing else moves; the Wave B act ratifies the clauses as they stand. Full
+record: `PENDING-OWNER-DECISIONS.md` (row `P-38`, 2026-08-16 resolved
+section) and the owner's local decision packet.
+
 ## Earliest required gate
 
 Wave B act; on Capability 1's E3 path, so before spec authoring

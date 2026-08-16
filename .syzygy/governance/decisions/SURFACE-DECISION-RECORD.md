@@ -53,7 +53,7 @@ amendment D1; architecture.md now carries "historical" at both sites, and the
 doctrine README's amendment log records it. This paragraph is preserved as
 written for the historical record.]**
 
-## 3. Owner rulings (SDR-1 … SDR-33)
+## 3. Owner rulings (SDR-1 … SDR-37)
 
 Indexed for citation as `SDR-n`. Where a ruling resolves a rev6 founder
 question, the R-number is noted; where the owner ruled **differently from the
@@ -171,6 +171,30 @@ rev6 recommendation**, that is marked ⚑ — the divergence is deliberate.
 - **SDR-33** (R-14c): capture **event-time evidence where available**; where
   only PR-level data exists, render **reduced fidelity explicitly** rather
   than inventing event-level certainty.
+
+### Launch-critical decisions (round 2026-08g)
+
+Ruled 2026-08-16 via an adversarially-reviewed owner-decision questionnaire
+packet, not the rev6 founder-ruling corpus §3's other entries derive from —
+no R-number applies to these four. Full background, options, and recorded
+authorization boundary for each: `PENDING-OWNER-DECISIONS.md` (rows P-31,
+P-36, P-37, P-40) and each row's own bounded packet in this directory.
+
+- **SDR-34** (P-31): the merged-but-unreconciled Unknown reason ratifies the
+  drafted `RFC2-19(a)` exemption as written. The condition is disclosed as a
+  **fact of the render**, never dressed as a thirteenth `RFC2-24` reason;
+  the closed twelve-reason list (decision `A5`) stays closed at twelve.
+- **SDR-35** (P-36): the two-term vocabulary rule — **no verifying evidence →
+  `Unknown`; evidence of non-satisfaction → `Gap`.**
+- **SDR-36** (P-37): the seven project-shape facets (Registered, Shape
+  present, Human-understandable, Observable, Traceable, Mission-ready,
+  Reconciled) are adopted, **no cross-facet rollup**; the vocabulary's
+  drafting site is the **Capability 1 specification** (site a2), not an
+  RFC-0006 amendment — naming only the facets without the site leaves the
+  question open in the form this packet was previously corrected for.
+- **SDR-37** (P-40): the specification-granularity rule — **one OpenSpec
+  change governs one coherent capability, or one coherent change to one**:
+  one owner-readable product argument, one acceptance decision per change.
 
 ## 4. V0-core entity vocabulary
 

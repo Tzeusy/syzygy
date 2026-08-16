@@ -22,14 +22,14 @@ the owner to anything — a stated constraint is a fact, not a promise.
 
 | Constraint | Owner's statement |
 |---|---|
-| Number of human operators | *[unstated — believed 1 (the owner); confirm]* |
-| Engineering attention available (hours/week, honest range) | *[unstated]* |
-| Independent-review capacity (who besides Claude-family agents can review — other model families? humans? none?) | *[unstated — the assurance-independence question F5 turns on this]* |
-| Model/provider budget (monthly ceiling, or Unknown) | *[unstated]* |
-| Maximum concurrent workstreams the owner will supervise | *[unstated]* |
-| Target proving project(s) for V0 (doctrine says "the owner's other live projects"; name them or defer) | *[unstated]* |
-| Time horizon (what cadence of progress makes this worth continuing; explicitly NOT a deadline) | *[unstated]* |
-| Scope-reduction triggers (what circumstance cuts V0 scope — e.g. "if independent-review capacity stays at zero for X months, the seven-class review bar is renegotiated as its own decision") | *[unstated]* |
+| Number of human operators | 1 (the owner) |
+| Engineering attention available (hours/week, honest range) | Unknown |
+| Independent-review capacity (who besides Claude-family agents can review — other model families? humans? none?) | Claude-family agents plus the owner; occasional ad hoc ChatGPT/GPT-family review, no fixed cadence |
+| Model/provider budget (monthly ceiling, or Unknown) | Unknown |
+| Maximum concurrent workstreams the owner will supervise | Unknown |
+| Target proving project(s) for V0 (doctrine says "the owner's other live projects"; name them or defer) | Unknown / deferred — not named at this sitting |
+| Time horizon (what cadence of progress makes this worth continuing; explicitly NOT a deadline) | Steady progress, no fixed cadence — explicitly not a deadline |
+| Scope-reduction triggers (what circumstance cuts V0 scope — e.g. "if independent-review capacity stays at zero for X months, the seven-class review bar is renegotiated as its own decision") | Owner's standing case-by-case judgment; any doctrine-level consequence is a request for a separate doctrine-amendment question, per the limit below, never enacted directly by this statement |
 
 ### The limit on a scope-reduction trigger
 
@@ -82,3 +82,12 @@ Before the formal launch-gate administration (A6 and F5 read this file).
 ## Independent work
 
 Everything proceeds; this blocks only the A6/F5 verdicts.
+
+## Ruled 2026-08-16
+
+Owner, via an adversarially-reviewed questionnaire packet, direct
+conversational response — chose **(a)**: filled the full table above (see
+"What the owner is asked to fill in") and approved it as the recorded
+operating-constraints statement. No date or delivery commitment is made.
+Full record: `PENDING-OWNER-DECISIONS.md` (row `P-35`, 2026-08-16 resolved
+section) and the owner's local decision packet.

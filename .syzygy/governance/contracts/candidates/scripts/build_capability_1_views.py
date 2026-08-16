@@ -649,13 +649,13 @@ def selftest():
         row from the population. The marker disqualifies a row only where
         it leads the row's final cell."""
         mutated = base_queue.replace(
-            "| P-33 |", "| P-33 | should an `**Executed.**` marker count? |", 1)
+            "| P-34 |", "| P-34 | should an `**Executed.**` marker count? |", 1)
         if mutated == base_queue:
             return False, "mutation did not apply"
         ids = open_decisions(mutated)
-        return ("P-33" in ids,
-                "P-33 dropped from the open population by a prose mention"
-                if "P-33" not in ids else "still open, correctly")
+        return ("P-34" in ids,
+                "P-34 dropped from the open population by a prose mention"
+                if "P-34" not in ids else "still open, correctly")
 
     case("a row mentioning `**Executed.**` in prose stays open",
          executed_in_prose)
@@ -670,24 +670,26 @@ def selftest():
         check deleted — which is exactly what happened, and is why this
         fixture mutates an OPEN row instead. The check is defence in depth
         against an executed row landing in the open section; a defence
-        nothing tests is not a defence."""
-        mutated = base_queue.replace(
-            "| P-33 |", "| P-33 |", 1)
+        nothing tests is not a defence.
+
+        (Re-anchored 2026-08-16 from P-33 to P-34 — P-33 was ruled and moved
+        under a `Resolved…` heading that sitting, so it stopped being a live
+        OPEN-row subject for this fixture; P-34 remains genuinely open.)"""
         lines = base_queue.split("\n")
         for j, line in enumerate(lines):
-            if line.startswith("| P-33 |"):
+            if line.startswith("| P-34 |"):
                 lines[j] = line.rstrip().rstrip("|").rstrip() \
                     + " | **Executed.** synthetic disposition |"
                 break
         else:
-            return False, "no P-33 row to mutate"
+            return False, "no P-34 row to mutate"
         mutated = "\n".join(lines)
         if mutated == base_queue:
             return False, "mutation did not apply"
         ids = open_decisions(mutated)
-        return ("P-33" not in ids,
+        return ("P-34" not in ids,
                 "an executed disposition in the OPEN section was still "
-                "counted open" if "P-33" in ids else "disqualified, correctly")
+                "counted open" if "P-34" in ids else "disqualified, correctly")
 
     case("an `**Executed.**` disposition inside the open section disqualifies",
          executed_disposition)
@@ -719,9 +721,14 @@ def selftest():
     def row_decision():
         """The row-level owner_decisions check has its own fixture because
         it has its own code path. Disabling it left every other fixture
-        passing, which is exactly how an uncovered predicate hides."""
-        mutated = base_charter.replace("owner_decisions: [P-38]",
-                                       "owner_decisions: [P-38, P-998]", 1)
+        passing, which is exactly how an uncovered predicate hides.
+
+        (Re-anchored 2026-08-16 — every row's `owner_decisions` emptied
+        once P-31/P-36/P-37/P-38 were all ruled the same sitting, so the
+        fixture now injects into the first empty list rather than
+        appending to `[P-38]`, which no longer appears anywhere.)"""
+        mutated = base_charter.replace("owner_decisions: []",
+                                       "owner_decisions: [P-998]", 1)
         if mutated == base_charter:
             return False, "mutation did not apply"
         errs = run(ct=mutated)
@@ -748,8 +755,12 @@ def selftest():
     def downstream_unknown():
         """Third code path, third fixture. The later-gate list is the one a
         reader is least likely to check by hand, which is the argument for
-        checking it mechanically rather than against it."""
-        mutated = base_charter.replace("downstream_decisions: [P-34, P-35]",
+        checking it mechanically rather than against it.
+
+        (Re-anchored 2026-08-16 — P-35 was ruled and dropped from
+        `downstream_decisions`, so the literal `[P-34, P-35]` no longer
+        appears; the charter's list is `[P-34]` now.)"""
+        mutated = base_charter.replace("downstream_decisions: [P-34]",
                                        "downstream_decisions: [P-34, P-997]")
         if mutated == base_charter:
             return False, "mutation did not apply"
@@ -761,8 +772,13 @@ def selftest():
          downstream_unknown)
 
     def both_lists():
-        mutated = base_charter.replace("downstream_decisions: [P-34, P-35]",
-                                       "downstream_decisions: [P-34, P-35, P-40]",
+        """(Re-anchored 2026-08-16 — P-40 was ruled and removed from
+        `blocking_decisions`, so appending it to `downstream_decisions` no
+        longer produces a both-lists collision. P-41 remains genuinely in
+        `blocking_decisions`, so it is the fixture's collision subject
+        now.)"""
+        mutated = base_charter.replace("downstream_decisions: [P-34]",
+                                       "downstream_decisions: [P-34, P-41]",
                                        1)
         if mutated == base_charter:
             return False, "mutation did not apply"

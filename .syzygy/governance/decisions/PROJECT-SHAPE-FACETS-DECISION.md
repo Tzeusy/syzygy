@@ -116,3 +116,13 @@ Wave A re-offer.
 ## Independent work
 
 Yes — everything except OpenSpec authoring of the facet rows.
+
+## Ruled 2026-08-16
+
+Owner, via an adversarially-reviewed questionnaire packet, direct
+conversational response — chose **(a) with site (a2)**: the seven facets as
+stated, drafting site = the Capability 1 specification, not an RFC-0006
+amendment. Recorded as **SDR-36** in `SURFACE-DECISION-RECORD.md`, naming
+both the facet set and the site. Full record: `PENDING-OWNER-DECISIONS.md`
+(row `P-37`, 2026-08-16 resolved section) and the owner's local decision
+packet.

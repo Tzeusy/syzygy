@@ -21,7 +21,8 @@
 Unchanged since revision 1: **the capability whose absence would make the
 next one's evidence uninterpretable goes first.** Each capability must be
 provable on its own. One capability = one OpenSpec change = one owner
-acceptance decision (granularity rule, P-40, pending).
+acceptance decision (granularity rule, ratified 2026-08-16 as **SDR-37**,
+`decisions/SURFACE-DECISION-RECORD.md`; P-40).
 
 ## The one first specification (E2)
 
@@ -46,10 +47,10 @@ blocking-decision list, is in `CAPABILITY-1-GENERATED-VIEWS.md`.
 |---|---|---|---|---|
 | 1.1 | Parse and validate the project declaration; an invalid declaration is a named failure, never partial registration | `RFC1-1`, `RFC3-1`, `RFC3-4`, `RFC3-5`, `RFC3-9` | `VIS-2` | — |
 | 1.2 | Record consent and repository coverage; the boundary renders as a fact, not silence | `RFC1-3`, `RFC1-4`, `RFC3-6`, `RFC3-7`, `RFC3-16(a)`, `RFC5-3`, `RFC6-26` | `VIS-5` | — |
-| 1.3 | Serve the fixed human entry at the declared entry path | `RFC7-39` | — *(none directly; the clause governs)* | `P-38` |
-| 1.4 | Answer the shape facets independently — no rollup, no composite badge; uncomputed reconciliation renders Unknown | `RFC2-24`, `RFC6-17`, `RFC6-18`, `RFC6-19`, `RFC6-22`, `RFC8-18`, `RFC8-19` | `VIS-2` | `P-31`, `P-36`, `P-37` |
-| 1.5 | Expose the owning authority and the Unknown reason for every answer, identically to human and machine | `RFC3-16`, `RFC6-13`, `RFC6-14`, `RFC6-15`, `RFC6-23`, `RFC7-33` | `VIS-2` | `P-36` |
-| 1.6 | Render per-repository discoverability in the closed four-value domain; propose the link, never write it | `RFC1-27`, `RFC3-3`, `RFC7-40` | `VIS-5` | `P-38` |
+| 1.3 | Serve the fixed human entry at the declared entry path | `RFC7-39` | — *(none directly; the clause governs)* | — |
+| 1.4 | Answer the shape facets independently — no rollup, no composite badge; uncomputed reconciliation renders Unknown | `RFC2-24`, `RFC6-17`, `RFC6-18`, `RFC6-19`, `RFC6-22`, `RFC8-18`, `RFC8-19` | `VIS-2` | — |
+| 1.5 | Expose the owning authority and the Unknown reason for every answer, identically to human and machine | `RFC3-16`, `RFC6-13`, `RFC6-14`, `RFC6-15`, `RFC6-23`, `RFC7-33` | `VIS-2` | — |
+| 1.6 | Render per-repository discoverability in the closed four-value domain; propose the link, never write it | `RFC1-27`, `RFC3-3`, `RFC7-40` | `VIS-5` | — |
 <!-- END GENERATED: capability-1 behaviour rows -->
 
 Read against the seven-facet decision P-37 (corrected form) and the E3
@@ -70,28 +71,32 @@ scope note — that is a scoped state, not a second one.
 
 States: `satisfied` / `owner-waived` / `blocking` / `not applicable`.
 
-| Prerequisite | Kind | State (2026-08-11) |
+| Prerequisite | Kind | State (2026-08-16) |
 |---|---|---|
-| Wave A act performed at a confirmed argument | Owner act | **blocking** — the *argument* is confirmed (`VERDICT: CONFIRM`, RD-31b); what blocks is that no act has been performed, and the offer itself is withheld solely by **P-33**. Corrected 2026-08-11, RD-50 f2: this cell previously read "fresh exact-package review then the offer", which the confirmation had already overtaken |
+| Wave A act performed at a confirmed argument | Owner act | **blocking** — the *argument* is confirmed (`VERDICT: CONFIRM`, RD-31b) and its sole ruling obstacle (**P-33**) is now ruled, but **the act itself has not been performed**. Corrected 2026-08-11, RD-50 f2: this cell previously read "fresh exact-package review then the offer", which the confirmation had already overtaken |
 | Wave B act performed at a confirmed argument | Owner act | **blocking** — same shape: confirmed (`VERDICT: CONFIRM`, RD-32c), unoffered, and it follows Wave A. Nothing else withholds it |
-| P-33 Wave A install shape ruled | Owner decision | **blocking** (gates the Wave A re-offer; packet `decisions/WAVE-A-INSTALL-SHAPE-DECISION.md`) |
-| P-31 merged-unreconciled exemption ratified | Owner decision | **blocking** (drafted arm rides Wave A; ruling wanted at or before that act) |
-| P-39 OpenSpec form/version | Owner decision | **blocking** (`decisions/OPENSPEC-FORM-AND-VERSION-DECISION.md`) |
-| P-40 specification granularity | Owner decision | **blocking** (`decisions/SPECIFICATION-GRANULARITY-DECISION.md`) |
-| P-36 Unknown vs Gap | Owner decision | **blocking** (acceptance criteria use both words) |
-| P-37 project-shape facets | Owner decision | **blocking** — the anti-rollup ground (RFC6-18/19 as amended) is Wave A's; the facet vocabulary itself is drafted **nowhere** and needs P-37's ruling plus its chosen drafting site (corrected 2026-08-10, RD30-01) |
-| P-38 human entry and discoverability | Owner decision | **blocking** (on the E3 path; Wave B ratifies) |
+| P-33 Wave A install shape ruled | Owner decision | **owner-waived** — ruled 2026-08-16, option (M); `decisions/WAVE-A-INSTALL-SHAPE-DECISION.md`, `decisions/PENDING-OWNER-DECISIONS.md` ("Resolved on 2026-08-16") |
+| P-31 merged-unreconciled exemption ratified | Owner decision | **owner-waived** — ruled 2026-08-16, drafted `RFC2-19(a)` ratified as written; SDR-34 |
+| P-39 OpenSpec form/version | Owner decision | **owner-waived** — ruled 2026-08-16, pin current upstream at 1.9.0; `GOVERNANCE-SUBSTRATE-LOCK.yaml` `openspec` block |
+| P-40 specification granularity | Owner decision | **owner-waived** — ruled 2026-08-16, one capability per change; SDR-37 |
+| P-36 Unknown vs Gap | Owner decision | **owner-waived** — ruled 2026-08-16, the two-term rule; SDR-35 |
+| P-37 project-shape facets | Owner decision | **owner-waived** — ruled 2026-08-16, seven facets, drafting site = the Capability 1 specification (a2); SDR-36. The facet *vocabulary text* still needs authoring into that specification when written — the ruling names the site, not the text |
+| P-38 human entry and discoverability | Owner decision | **owner-waived** — ruled 2026-08-16, option (a) as drafted; `decisions/HUMAN-ENTRY-DECISION.md` |
 | P-41 specification acceptance standard in force | Craft act | **blocking** — candidate exists (`policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`); queued as **P-41**; wants review + its craft act, or the owner knowingly authors against the candidate |
 | P-12 knowledge hygiene (CC-BUDGET-1) | Craft act | **blocking** for Capability 2; for Capability 1 the budget rule is not consumed — **not applicable** to Capability 1's own authoring, listed for visibility |
 | P-34 launch-gate instrument authority (current version per the instrument's own header; RD34-05) + formal administration READY | Process | **blocking** for the launch decision (the owner may lawfully decide without it, but this pass's charter treats the formal administration as the evidence bar) |
 | P-14 license | Owner decision | **not applicable** — blocks release, not specification |
-| P-35 operating constraints | Owner decision | **blocking** for the formal administration's A6/F5 verdicts; the spec itself does not consume it |
+| P-35 operating constraints | Owner decision | **owner-waived** — ruled 2026-08-16, full table recorded; `decisions/PROJECT-OPERATING-CONSTRAINTS-DECISION.md`. Still blocks the formal administration's A6/F5 verdicts, which read the recorded statement rather than the ruling event |
 | Waves C1/C2/D1/D2, P-29, P-30, P-32, D3/D4 | — | **not applicable** — deferred per `DEFERRED-WAVE-POSTURE.md`; not on Capability 1's path |
 
-Nothing is `satisfied` and nothing is `owner-waived` today; every
-`blocking` row is a prepared decision or a prepared act, none an
-archaeology exercise. The concept-level trace behind this table is
-`round-2026-08e/FIRST-SPEC-TRACE-TABLE.md` (E3).
+**As of 2026-08-16:** eight of the fifteen scoped rows are `owner-waived`
+(ruled, per the queue's "Resolved on 2026-08-16" section); nothing is yet
+`satisfied` — the two wave acts remain unperformed, so Capability 1 may not
+yet be authored. `P-41` remains **blocking**: its own gate, "rule P-40
+first" (CC-SPEC-1 consumes the granularity rule), is now satisfied, but
+`P-41` itself is still an un-ruled craft act. The concept-level trace
+behind this table is `round-2026-08e/FIRST-SPEC-TRACE-TABLE.md` (E3), which
+this batch did not refresh — a follow-on task, not performed here.
 
 ## The rest of the sequence (unchanged in substance from revision 2)
 

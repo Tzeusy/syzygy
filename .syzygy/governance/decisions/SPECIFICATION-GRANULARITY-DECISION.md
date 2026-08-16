@@ -78,3 +78,12 @@ is one spec" even means).
 ## Independent work
 
 Everything up to OpenSpec authoring.
+
+## Ruled 2026-08-16
+
+Owner, via an adversarially-reviewed questionnaire packet, direct
+conversational response — chose **(a)**: one OpenSpec change governs one
+coherent capability, or one coherent change to one. Recorded as **SDR-37**
+in `SURFACE-DECISION-RECORD.md`. Full record: `PENDING-OWNER-DECISIONS.md`
+(row `P-40`, 2026-08-16 resolved section) and the owner's local decision
+packet.
