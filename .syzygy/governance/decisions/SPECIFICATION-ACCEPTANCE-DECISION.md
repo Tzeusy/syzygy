@@ -48,8 +48,13 @@ modules that already state the rule with a stricter owner gate. The
 blocker was repaired 2026-08-17 — CC-SPEC-8 now cites
 RFC1-33/RFC6-28/RFC7-38/RFC8-32/RFC9-52 for the judgment's home, gate,
 unit, and effect, keeping the "applicable" definition and the production
-obligation. The blocker repair **awaits its one confirming review**; until
-that returns, `E5`'s "complete" limb is repaired-in-candidate, not `Met`.
+obligation. The confirming review **RD-70** returned
+**`VERDICT: CONFIRM WITH EXCEPTIONS`** (2026-08-17): the blocker is
+cleared on all five limbs, no new blocker, four non-blocking findings
+batched to the next authoring pass (register in
+`../contracts/candidates/round-2026-08i/reviews/`). `E5`'s "complete"
+limb remains not `Met` until the craft act is performed and a formal
+administration says otherwise.
 Delta (both amendments): `../contracts/candidates/round-2026-08i/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA-2.md`.
 
 ## Ordering constraint (RD30-13) — satisfied 2026-08-16

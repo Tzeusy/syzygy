@@ -11,10 +11,11 @@
 > was repaired; the combined fresh-context review **RD-69** (2026-08-17)
 > then returned **`VERDICT: REVISE`** with one launch blocker (against
 > CC-SPEC-8, repaired same day — no CC-IMPACT clause was found blocking)
-> and five non-blocking findings. A repair session cannot confirm its own
-> repairs, so the blocker repair stands unconfirmed until the one
-> confirming review returns. This packet does not ask the owner to approve
-> unconfirmed bytes. Read the options with that in front.
+> and five non-blocking findings. The one confirming review **RD-70**
+> (2026-08-17) returned **`VERDICT: CONFIRM WITH EXCEPTIONS`**: the
+> blocker is cleared, no new blocker, four further non-blocking findings
+> batched. The review cycle is closed; the open findings travel with the
+> offer, disclosed. Read the options with that in front.
 >
 > Repaired 2026-08-16 against review **RD-64** (`REVISE`,
 > `../contracts/candidates/round-2026-08h/reviews/RD-64-p42-impact-packet-RAW.md`);

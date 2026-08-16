@@ -28,9 +28,37 @@
 | N4 — P-44 offer: warrant "Owner charter §9.6" unresolvable in-tree; arm (a) yields "one carve-out"/"second carve-out" contradiction; expiry has no named detector | **open** — P-44 is not launch-critical (arm (b) verified costless); the offer must be repaired **before any arm-(a) act**, and its queue row will say so | fails condition 1 |
 | N5 — dated claims (CC-SPEC-2 sweep counts; P-44 "one day old"/"not yet dispatched"; craft README tier-1 "SDR-1…33") and one claim RD-69 cannot verify (CC-IMPACT-7's RD-59 pass, barred by fresh context) | **open** — staleness batched to the next authoring pass; the CC-IMPACT-7 limb is not repairable by edit: the RD-59 record exists (`../../round-2026-08g/reviews/DISPOSITION-REGISTER.md`) but is structurally invisible to any fresh-context review — disclosed to the owner in the P-42 offering | fails conditions 3 and 4 |
 
-**Cycle state after this register:** the one blocker-only repair is made;
-the one confirming review is dispatched over the repaired bytes' new
-frozen digests. If a real blocker survives it, the matter returns to the
-owner with four choices (repair under new instruction / reduce scope /
-defer the acts / accept the risk on the record) — never a third repair
-cycle in this pass.
+## RD-70 — confirming review of the blocker-only repair
+
+- **Raw:** `RD-70-p41-p42-confirming-RAW.md` (delivered in two parts;
+  provenance banner in the file).
+- **Subjects at commit `bef5de1`** (sha256):
+  - CC-SPEC candidate —
+    `9889b7e311ad941eec84d01dc2c035c7e2502a57cf18e68a1028a76d5b814871`
+  - CC-IMPACT candidate and P-44 offer — byte-unchanged since RD-69
+    (digests in the RD-69 section above); coherence scope only.
+- **Verdict, copied exactly:** `VERDICT: CONFIRM WITH EXCEPTIONS`
+- **Outcome:** **BLOCKER 1 cleared on all five limbs**, verified against
+  the module texts (RFC1-33, RFC6-28, RFC7-38, RFC8-32, RFC9-52 read and
+  quoted); all five citations checked real and correctly attributed; no
+  new launch blocker; four non-blocking findings.
+
+Per verification rule 10, the subject bytes are **not** edited after this
+review — every finding below batches into the next authoring pass, and
+each is disclosed in the P-41/P-42 offering packets.
+
+| Finding | Disposition | Evidence / route |
+|---|---|---|
+| RD70-N1 — CC-SPEC-11's "(the CC-TEST-4 pattern, as CC-SPEC-8)" now points at a confirmer limb the repair deleted | **open** — batched; fix is dropping "as CC-SPEC-8" or repointing to CC-SPEC-6. CC-SPEC-11's obligation stands on CC-TEST-4 independently (reviewer: fails condition 2) | raw §4 N1 |
+| RD70-N2 — CC-SPEC-8's headline still says per-clause; corrected two sentences later | **open** — cosmetic (fails condition 5), batched | raw §4 N2 |
+| RD70-N3 — citation names 5 of the 9 modules carrying the rule, no "including" | **open** — batched; reviewer's independent sweep (343 files, 9 hits) corroborates the nine and finds the citation representative, not wrong (fails condition 3) | raw §4 N3 |
+| RD70-N4 — RFC1-33's shape-parallel list names RFC10-16 and RFC11-12, which do **not** carry the standardized sentence (0 hits) | **open** — contract-plane, outside the subjects; RFC-0010/0011 are deferred Wave C/D candidates, so this routes through `DEFERRED-WAVE-POSTURE.md` when those waves are next touched; recorded here so it is not lost | raw §4 N4 |
+
+**Cycle state — CLOSED.** The pass's single
+repair→review→repair→confirm cycle is complete: RD-69 (`REVISE`, one
+blocker) → one blocker-only repair (D2-6) → RD-70
+(`CONFIRM WITH EXCEPTIONS`, blocker cleared, no new blocker). No blocker
+survives, so the matter does **not** return to the owner for the
+four-choice ruling; the P-41/P-42 offerings may now be prepared over the
+reviewed digests. Both reviews are same-model-family and support
+offering-readiness only, never a formal administration.
