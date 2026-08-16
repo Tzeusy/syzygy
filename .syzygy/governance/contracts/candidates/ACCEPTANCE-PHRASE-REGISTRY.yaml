@@ -27,7 +27,7 @@
 # CG-2e (wrapped current-phrase arguments), CG-7d/CG-7e (act-argument copies).
 
 version: 1
-as_of: "2026-08-10"
+as_of: "2026-08-17"
 authority: "FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md"
 status: "record — candidate material, binds nothing"
 
@@ -83,7 +83,21 @@ current_phrases:
     argument: sha256
     argument_separator: "@"
     subject: ".syzygy/governance/policies/craft-and-care/testing-and-verification.md"
-    note: "act 2 — the one craft amendment still needing confirmation"
+    note: "act 2 — craft amendment awaiting confirmation since D2"
+  - id: craft-cc-spec
+    label: "CONFIRM CRAFT AMENDMENT: CC-SPEC"
+    form: accept
+    argument: sha256
+    argument_separator: "@"
+    subject: ".syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md"
+    note: "act 6 — minted 2026-08-17 at the P-41 offering; offered jointly with act 7 (one model)"
+  - id: craft-cc-impact
+    label: "CONFIRM CRAFT AMENDMENT: CC-IMPACT"
+    form: accept
+    argument: sha256
+    argument_separator: "@"
+    subject: ".syzygy/governance/contracts/candidates/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md"
+    note: "act 7 — minted 2026-08-17 at the P-42 offering; offered jointly with act 6 (one model)"
   - id: topology
     label: "ACCEPT TOPOLOGY"
     form: accept

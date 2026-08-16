@@ -19,7 +19,9 @@
 >
 > Repaired 2026-08-16 against review **RD-64** (`REVISE`,
 > `../contracts/candidates/round-2026-08h/reviews/RD-64-p42-impact-packet-RAW.md`);
-> the repaired packet has had no fresh read.
+> the repaired packet has had no fresh read. **Updated 2026-08-17 to
+> offering-ready state**: the subject's review cycle closed and act 7 was
+> minted at the offering.
 
 ## Question
 
@@ -51,13 +53,17 @@ So `E6` cannot be answered `Met` by citation. That is the gap.
 
 ## Options
 
-- **(a) Review, then act.** Commission the fresh-context review of the
-  repaired `CC-SPEC` + `CC-IMPACT` bytes as one combined subject, disposition
-  its findings, then perform `CONFIRM CRAFT AMENDMENT` over the reviewed
-  digest. `E6` becomes answerable by citation.
-- **(b) Act without the review.** Perform the craft act over the current
-  bytes. Fastest, and it accepts a policy whose most recent repair no session
-  independent of the repair has read.
+- **(a) Act — the review half is done.** The combined fresh-context
+  review ran (RD-69), its one blocker (against the sibling CC-SPEC file)
+  was repaired, and RD-70 confirmed the repair; no CC-IMPACT clause drew
+  a finding in either round. Perform **act 7** jointly with **act 6**
+  (acceptance record §1; the exact phrase lives there —
+  `CONFIRM CRAFT AMENDMENT: CC-IMPACT@…` over this file's own digest,
+  which RD-70 verified byte-unchanged through the cycle). `E6` becomes
+  answerable by citation.
+- **(b) — discharged by events.** This arm was "act without the review";
+  the review has now happened, so (b) no longer describes a real
+  alternative and is retained only so the option lettering stays stable.
 - **(c) Decline the rule, and record it.** Record a ruling that the first
   specification may be authored with no owned propagation rule, and that `E6`
   is `Not met` by decision rather than by omission. **This does not license
@@ -80,9 +86,10 @@ contract-only sweep would have missed **4 of 6** affected requirements, and
 finding two defects in the fixture itself. That is real evidence the rule is
 worth adopting.
 
-It is also evidence the bytes have moved recently, which is why (b) is not
-recommended: this repository's own rule is that a repair session cannot
-confirm its own repairs, and the last hands on these clauses were the repair's.
+The bytes have now had two independent fresh-context reads (RD-69 and
+RD-70) — the CC-IMPACT file is byte-unchanged through both, and the one
+blocker found in the cycle lived in the sibling CC-SPEC file and was
+repaired and confirmed. What remains for the owner is the act itself.
 
 (c) is a lawful and honest posture — `E6` `Not met` **by recorded decision** is
 strictly better than `Not met` by silence — but under the instrument as
@@ -94,13 +101,13 @@ an administrator with nothing to cite.
 
 | | |
 |---|---|
-| **(a)** | one fresh-context review over the combined `CC-SPEC` + `CC-IMPACT` subject, its disposition pass, then the act. The review is the cost; the act is minutes |
-| **(b)** | minutes, and a policy in force that no independent reader has checked. The known-open findings below travel into force with it |
+| **(a)** | minutes — the review and its disposition pass are done; what remains is verifying the digests and performing acts 6 + 7 in one sitting |
+| **(b)** | discharged by events — the review this arm proposed skipping has happened |
 | **(c)** | one recorded decision — and no administration can return `READY` while `E6` is `Not met` (§4: every E question `Met`; E conjuncts never deferrable) |
 | **(d)** | zero now; `E6` unanswerable at the formal administration, with no reason on record |
 
-**Known open findings that travel with (b)**, stated so the option is not
-chosen blind:
+**Known open findings that travel with the act**, stated so it is not
+performed blind:
 
 - `RD-51 f14` — **repaired 2026-08-17** (CC-SPEC-11, the bounded coverage
   model); RD-69 raised no finding against it, and the confirming review of
@@ -158,20 +165,22 @@ its own.
 Under **(a)**, in order:
 
 1. ~~rule `P-40`~~ — **done, 2026-08-16 (SDR-37)**;
-2. commission one fresh-context review of both files as a single subject,
-   given the artifacts, their governing references and the acceptance
-   criteria, and nothing else;
-3. store the raw output verbatim and disposition every finding
-   `repaired` · `open` · `declined`;
-4. **freeze the bytes** and compute the digest;
-5. perform `CONFIRM CRAFT AMENDMENT` over that digest, for both files. No
-   `CC-SPEC`/`CC-IMPACT` act row exists in the acceptance record yet — the
-   act and its ceremony phrase are minted at the offering (the precedent
-   is act 2, `CONFIRM CRAFT AMENDMENT: CC-TEST-2@…`).
+2. ~~commission one fresh-context review of both files as a single
+   subject~~ — **done, 2026-08-17**: RD-69 (three subjects, the P-44
+   offer included), one blocker, repaired; RD-70 confirming;
+3. ~~store the raw output verbatim and disposition every finding~~ —
+   **done**: `../contracts/candidates/round-2026-08i/reviews/`;
+4. ~~freeze the bytes and compute the digest~~ — **done**: both act
+   arguments stand in the acceptance record §1 (**acts 6 and 7**, minted
+   2026-08-17 at this offering per the act-2 precedent), checked live by
+   `check_governance.py` CG-7d;
+5. **remaining:** run the verify block above — a `sha256sum` mismatch
+   against the act arguments means the bytes moved, the reviews are
+   retired, and the act stops — then perform **act 6** and **act 7** in
+   one sitting, recorded in the craft `INSTALL-RECORD.md`.
 
-Under **(b)**: freeze today's bytes, compute the digest, perform the act
-over them for both files, and record it in the craft `INSTALL-RECORD.md` —
-with the register's open findings above traveling into force.
+Under **(b)**: discharged by events — the review this arm would have
+skipped has happened; its remaining content is identical to (a) step 5.
 
 Under **(c)**, the transaction is one row in `SURFACE-DECISION-RECORD.md`
 stating that the first specification may be authored with no owned propagation

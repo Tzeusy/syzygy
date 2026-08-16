@@ -5,7 +5,10 @@
 > launch-critical decision, instead of only a register row. Repaired
 > 2026-08-16 against review **RD-63** (`REVISE`,
 > `../contracts/candidates/round-2026-08h/reviews/RD-63-p41-spec-acceptance-packet-RAW.md`);
-> the repaired packet has had no fresh read.
+> the repaired packet has had no fresh read. **Updated 2026-08-17 to
+> offering-ready state**: the subject's review cycle closed (RD-69 →
+> blocker repair → RD-70 `CONFIRM WITH EXCEPTIONS`) and act 6 was minted
+> at the offering.
 
 ## Question
 
@@ -20,20 +23,29 @@ until its own `CONFIRM CRAFT AMENDMENT` act.
 
 ## Review state — stated plainly
 
-**This act is not performable today.** The candidate was reviewed as
-**RD-51**
-(`../contracts/candidates/round-2026-08f/reviews/RD-51-spec-acceptance-and-impact-RAW.md`),
-verdict **`REVISE`**, and was repaired on 2026-08-13 **by the session that
-read the verdict** — a repair session cannot confirm its own repairs, so
-the repaired bytes have had no independent read. The disposition register
-(`../contracts/candidates/round-2026-08g/reviews/DISPOSITION-REGISTER.md`)
-grades the twenty findings: 15 repaired, 4 repaired in part, **1
-deliberately open** (f14, next paragraph). No ceremony phrase or digest
-subject is minted for this act in `ACCEPTANCE-PHRASE-REGISTRY.yaml` — the
-phrase is minted at the offering, after the review, with the digest
-computed at the act (never transcribed in advance). What the owner *can*
-do in this sitting is choose the route below; the act itself follows the
-review.
+**This act is performable: the offer is open.** The review chain, in
+order: **RD-51** (`REVISE`,
+`../contracts/candidates/round-2026-08f/reviews/RD-51-spec-acceptance-and-impact-RAW.md`)
+→ the 2026-08-13 repair → the 2026-08-17 amendment (SDR-37 re-grounding,
+CC-SPEC-11, CC-SPEC-8) → the combined fresh-context review **RD-69**
+(`REVISE`, one launch blocker) → the one blocker-only repair → the
+confirming review **RD-70** (**`CONFIRM WITH EXCEPTIONS`**, 2026-08-17:
+blocker cleared on all five limbs, no new blocker). Raw reviews and the
+disposition register: `../contracts/candidates/round-2026-08i/reviews/`.
+The nine open findings (RD-69 N1–N5, RD-70 N1–N4) are all non-blocking
+and travel with the offer, disclosed below.
+
+**The ceremony phrase is minted — acceptance record §1, act 6:**
+
+```
+CONFIRM CRAFT AMENDMENT: CC-SPEC@9889b7e311ad941eec84d01dc2c035c7e2502a57cf18e68a1028a76d5b814871
+```
+
+The argument is the policy file's sha256 — the exact bytes RD-70
+examined. Recompute it at the act (`sha256sum`, command below); if it no
+longer matches, the bytes have moved, both reviews are retired, and the
+act must not be performed. **Perform jointly with act 7 (P-42), one
+sitting** — the two files are one model.
 
 **The formerly open findings — repaired, reviewed once, blocker repaired.**
 RD-51 f14 (no completeness-against-capability clause) was deliberately
@@ -68,21 +80,19 @@ commissioned.
 
 ## Options
 
-- **(a)** Order the review-then-act route: a fresh-context review of the
-  candidate (CC-SPEC-1…11), repairs disposed, then the
-  `CONFIRM CRAFT AMENDMENT` act binding the reviewed digest, recorded in
-  the craft `INSTALL-RECORD.md` per the CC-TEST-2 precedent. Cost: one
-  full cycle before the first spec can be judged acceptable — review,
-  disposition, possible repair pass, freeze, act; the elapsed time is the
-  price (b) exists to avoid. Benefit: the standard is in force and
-  citable. It does **not** by itself make `E5` `Met` — f14's
-  completeness limb stays open under this arm too.
-- **(b)** Knowingly author the first spec against the unconfirmed
+- **(a)** Perform the act — the review-then-act route's review half is
+  **done** (RD-69/RD-70 above). Verify the digest, then perform act 6
+  jointly with act 7, recorded in the craft `INSTALL-RECORD.md` per the
+  CC-TEST-2 precedent. Cost: minutes. Benefit: the standard is in force
+  and citable, and `E5` finally has a citable owner — though only a
+  formal administration can pronounce `E5` `Met`.
+- **(b)** Knowingly author the first spec against the unaccepted
   candidate, recording that choice at the launch decision. Cost: the
   first spec's acceptance is judged against text with no act behind it —
   the judgment binds by the owner's acceptance of the spec itself, not by
   a standard in force; a later act may then invalidate criteria the spec
-  was already judged by.
+  was already judged by. (The candidate is now review-confirmed, which
+  shrinks this arm's risk but does not change its structure.)
 - **(c)** Decline a written standard for the first spec entirely; judge
   Capability 1's acceptability ad hoc at its own acceptance decision.
   Cost: launch-gate `E5` is `Not met`, and the instrument's §4 formula
@@ -93,14 +103,40 @@ commissioned.
 
 ## Recommendation
 
-`[Inferred]` **(a)** — the review is one cycle, the precedent for the
-form exists (the CC-TEST-2 amendment of 2026-08-02 — noting its own
-confirming act, act 2, is still unperformed, so no craft amendment has
-yet completed this route end to end), and `E5` is the one launch-gate
-criterion whose owner is entirely inside this repository's control.
-Stated with its limit: `E5` becomes citable only after the combined
-review confirms the 2026-08-17 repairs, including whether CC-SPEC-11
-closes f14's completeness limb.
+`[Inferred]` **(a)** — the review cycle is complete, the act is minutes,
+and `E5` is the one launch-gate criterion whose owner is entirely inside
+this repository's control. The precedent for the form exists (the
+CC-TEST-2 amendment of 2026-08-02 — noting its own confirming act, act 2,
+is still unperformed, so no craft amendment has yet completed this route
+end to end; acts 6 and 7 performed jointly would be the first).
+
+**Disclosed with the offer — the open items an owner should see before
+acting** (full dispositions in
+`../contracts/candidates/round-2026-08i/reviews/RD-69-DISPOSITION-REGISTER.md`):
+
+- **RD-69 N1** `[Unknown]` — SDR-37's second limb ("one coherent change
+  to one" capability) has no acceptance criteria yet; for Capability 1's
+  *first* spec, change and capability coincide, so nothing blocks. What
+  settles it: a change-scoped acceptance rule, decided when the first
+  amendment-sized change exists.
+- **RD-69 N2** — a requirement warranted by a ruled-but-unnumbered
+  decision (P-33/P-35/P-38/P-39 pattern) is not distinguishable, on the
+  face of a `decisions[]` citation, from a forbidden pending-decision
+  citation; open row **P-43** owns the settling question.
+- **RD-69 N5** `[Unknown]` — CC-IMPACT-7's blind-exercise pass (RD-59) is
+  structurally invisible to any fresh-context review (its record lives in
+  a barred `round-*/reviews/` file), so no combined review can confirm
+  that satisfaction claim; the record exists at
+  `../contracts/candidates/round-2026-08g/reviews/DISPOSITION-REGISTER.md`.
+- **RD-69 N3, RD-70 N1–N3** — wording-level items (the six-class
+  "warrant" set beside doctrine's four-class work-warrant set; a stale
+  "as CC-SPEC-8" cross-reference; a per-clause headline corrected two
+  sentences later; a five-of-nine citation without "including"), batched
+  because editing the reviewed bytes before the act would retire the
+  reviews (rule 10).
+- **RD-70 N4** — contract-plane: RFC1-33's shape-parallel list names
+  RFC10-16/RFC11-12, which do not carry the standardized sentence;
+  deferred Wave C/D material, routed via `DEFERRED-WAVE-POSTURE.md`.
 
 ## Digest consequences and the exact next transaction
 
@@ -120,29 +156,27 @@ in force when the first specification is judged.
 **Pre-work required:** none remaining — the P-40 ordering constraint is
 satisfied (ruled 2026-08-16, SDR-37).
 
-**Review required:** one fresh-context review of `CC-SPEC-1…11`, and it
-must cover the **repaired** bytes: the candidate was rewritten on
-2026-08-13 and amended again on 2026-08-17, and no independent reader has
-seen the result. Commission it
-**jointly with `P-42`**, for two independent reasons: `CC-IMPACT-1`'s
-spec-level declaration is generated as the union of `CC-SPEC-2`'s six
-fields, and `CC-IMPACT-2`'s trigger set **is** `CC-SPEC-2`'s warrant set —
-accepting one alone reintroduces two blocking defects. The combined
-review's subject also includes **P-44**'s CC-REV-2 lagging-specification
-amendment offer, so it is a three-subject review, not two.
+**Review required: discharged.** The three-subject combined review
+(CC-SPEC + CC-IMPACT + the P-44 offer) ran as **RD-69**, its one blocker
+was repaired, and **RD-70** confirmed the repair — both fresh-context,
+raw output stored verbatim in `../contracts/candidates/round-2026-08i/reviews/`.
+Both reviews are same-model-family as the authoring sessions: sufficient
+for this craft offering, **never for a formal launch-gate
+administration**, which requires an out-of-family reviewer.
 
 **Exact next transaction.**
 
-- Under **(a)**: commission the joint review (P-40 is ruled); disposition
-  every finding; freeze the bytes; then `CONFIRM CRAFT AMENDMENT` over the
-  frozen digest, recorded in the craft `INSTALL-RECORD.md`. No
-  `CC-SPEC`/`CC-IMPACT` act row exists in the acceptance record yet — the
-  act and its ceremony phrase are minted at the offering, after the
-  review, not now.
-- Under **(b)**: freeze today's bytes, compute the digest, perform the act
-  over them, record it in `INSTALL-RECORD.md`, and record at the launch
-  decision that the standard entered force with its post-`REVISE` repair
-  unreviewed.
+- Under **(a)**, in one sitting, from the repository root:
+  1. verify: `python3 scripts/check_governance.py` (CG-7d covers both
+     act arguments), and
+     `sha256sum .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md .syzygy/governance/contracts/candidates/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md`
+     — the results must equal act 6's and act 7's arguments exactly;
+     any mismatch means the reviews are retired and the act stops;
+  2. perform **act 6** and **act 7** (acceptance record §1 — the exact
+     phrases live there);
+  3. record both in the craft `INSTALL-RECORD.md` per the act-2 precedent.
+- Under **(b)**: no act; record at the launch decision that the first
+  spec is authored against a review-confirmed but unaccepted candidate.
 - Under **(c)**: one row in `SURFACE-DECISION-RECORD.md` recording that
   the first specification is judged ad hoc with no standard in force,
   naming the `E5` consequence above; the queue row closes citing it.

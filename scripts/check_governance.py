@@ -1718,6 +1718,8 @@ ACT_DIGEST_COPY_FILES = {
     f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md":
         tuple(f"ACCEPT FOUNDATIONAL WAVE {w}" for w in WAVE_IDS) + (
          "CONFIRM CRAFT AMENDMENT: CC-TEST-2",
+         "CONFIRM CRAFT AMENDMENT: CC-SPEC",
+         "CONFIRM CRAFT AMENDMENT: CC-IMPACT",
          "ACCEPT TOPOLOGY", "ADOPT PROJECT OVERVIEW"),
     f"{CRAFT}/INSTALL-RECORD.md":
         ("CONFIRM CRAFT AMENDMENT: CC-TEST-2",),
@@ -1737,6 +1739,11 @@ ACT_DIGEST_COPY_FILES = {
     # "it was true when written" is how a stale digest survives unnoticed.
     f"{CANDIDATES}/round-2026-08g/FINAL-OWNER-AND-SPEC-CLOSURE-PREFLIGHT.md":
         ("ACCEPT FOUNDATIONAL WAVE A", "ACCEPT FOUNDATIONAL WAVE B"),
+    # The P-41 offering packet (2026-08-17) quotes act 6's exact phrase so
+    # the owner sees what would be performed; registered so a regenerated
+    # argument turns this copy into a finding, not a silent misstatement.
+    f"{DECISIONS}/SPECIFICATION-ACCEPTANCE-DECISION.md":
+        ("CONFIRM CRAFT AMENDMENT: CC-SPEC",),
 }
 
 

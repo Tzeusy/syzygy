@@ -30,7 +30,7 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 | Waves C1/C2/D1/D2 | **Deferred** — candidate, not accepted, not used by the launch target, not offered. Not retired. | `contracts/candidates/DEFERRED-WAVE-POSTURE.md` |
 | Owner rulings, 2026-08-16 | **P-31, P-33, P-35, P-36, P-37, P-38, P-39, P-40 ruled** in one adversarially-reviewed sitting, plus P-34 below. Zero contract bytes moved; both wave confirmations survive. | `decisions/PENDING-OWNER-DECISIONS.md` §"Resolved on 2026-08-16"; each row names its owning record |
 | Launch-gate policy | **Owner-approved process policy at v2.4** — P-34 ruled arm (a), 2026-08-16, **with two disclosed BLOCKING residuals** (RD-67 f1, RD-68 f1 — false-`READY` paths reachable only by an adversarial record author), **F5 not promoted**. Ten `REVISE` verdicts across v2.0–v2.4 stand as recorded; this is approval-with-residuals, not a clean review verdict. A bounded v2.5 is an owner option, not a gate. | `decisions/LAUNCH-GATE-AUTHORITY-DECISION.md` (the recorded approval); instrument `launch-gate-pre-specifications.md`; `round-2026-08h/reviews/DISPOSITION-REGISTER.md` |
-| P-41 + P-42, offered jointly | **Open — the one remaining policy prerequisite.** The specification-acceptance (CC-SPEC-1…11) and shape-to-spec impact (CC-IMPACT-1…7) craft acts. Candidates amended 2026-08-13 against RD-51 (`REVISE`) and again 2026-08-17 (P-40 re-grounding, CC-SPEC-11, CC-SPEC-8 completion); the repaired bytes are **unreviewed**. Accepting one alone reintroduces two blocking defects. | `decisions/SPECIFICATION-ACCEPTANCE-DECISION.md`; `decisions/SHAPE-TO-SPEC-IMPACT-DECISION.md` |
+| P-41 + P-42, offered jointly | **Offer open — acts 6 and 7 minted 2026-08-17.** The specification-acceptance (CC-SPEC-1…11) and shape-to-spec impact (CC-IMPACT-1…7) craft acts. The review cycle closed 2026-08-17: RD-69 (`REVISE`, one launch blocker against CC-SPEC-8) → the one blocker-only repair → RD-70 (`CONFIRM WITH EXCEPTIONS`, blocker cleared, no new blocker). Nine non-blocking findings travel disclosed. Perform both acts in one sitting — accepting one alone reintroduces two blocking defects. | `decisions/SPECIFICATION-ACCEPTANCE-DECISION.md`; `decisions/SHAPE-TO-SPEC-IMPACT-DECISION.md`; acceptance record §1 acts 6–7 |
 | Formal launch administration | **Not performed.** The only administration on record is the 2026-08-09 **pilot** (v1.3), `GATE VERDICT: NOT READY`. Now runnable under approved v2.4 — by an out-of-family model or a human, in fresh context, knowingly against the residuals. | `round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md` |
 | OpenSpec (`openspec/`) | **No specification content.** A tool-created scaffold (config plus empty trees) exists and is not specification work; authoring is forbidden until the owner's launch decision. | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` |
 | Implementation | **Does not exist.** Blocked on accepted specifications. | — |
@@ -67,8 +67,9 @@ The remaining launch path, in order — each step's owning record governs:
 
 1. Owner performs the **Wave A act**, then the **Wave B act** (both offers
    unblocked; the acceptance record owns the phrases and arguments).
-2. **P-41 + P-42**: one bounded repair/review cycle on the joint
-   candidates, then their craft acts.
+2. **P-41 + P-42**: perform craft acts 6 and 7 in one sitting — the
+   bounded repair/review cycle closed 2026-08-17, and the acceptance
+   record owns the phrases and arguments.
 3. **Formal Capability 1 administration** under approved v2.4 — an
    out-of-family model or a human, never an authoring session.
 4. The owner's separate **launch decision**. Specification authoring only
