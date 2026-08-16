@@ -4,7 +4,7 @@
 > act.** Proposed at the 2026-08-10 launch-closure pass to close
 > launch-gate question E5 (no acceptance criteria existed for a
 > specification itself — "spec acceptance would be a vibe check").
-> Identifiers `CC-SPEC-1…10`; amended in place, never renumbered. The
+> Identifiers `CC-SPEC-1…11`; amended in place, never renumbered. The
 > testability sub-criterion (CC-SPEC-4) is the one E5 limb that had no
 > criterion even in candidate form before this file.
 >
@@ -18,8 +18,15 @@
 > home of a requirement's governing identities, and CC-IMPACT-1 generates
 > the specification-level declaration from it.
 >
-> **Not frozen.** CC-SPEC-1's operative text is conditional on owner
-> decision **P-40**, which is unruled. These bytes may still move.
+> **Amended 2026-08-17** (convergence pass, round 2026-08i, on the owner's
+> convergence direction §9) — CC-SPEC-1 re-grounded on the ruled **SDR-37**
+> (P-40, 2026-08-16), discharging the "may not be frozen" conditional;
+> **CC-SPEC-11** minted, closing RD-51 f14's completeness gap; **CC-SPEC-8**
+> completed, closing f15's two open limbs ("applicable" defined; the
+> reviewed-N/A rule homed here with an identifier). The delta is
+> `../round-2026-08i/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA-2.md`.
+> **The repaired bytes await the combined fresh-context review** — a repair
+> session cannot confirm its own repairs.
 
 ## The rule
 
@@ -27,25 +34,21 @@
 one coherent capability, what is in it, and what is out. A reader can say
 what the capability is in one sentence without reading the requirements.
 
-*"One coherent capability" is the granularity rule queued as **P-40**:*
+*"One coherent capability" is the granularity rule the owner ruled on
+2026-08-16 as **SDR-37** (`../../../decisions/SURFACE-DECISION-RECORD.md`),
+quoted exactly:*
 
-> One OpenSpec change governs one coherent capability, or one coherent
-> change to a capability. Its requirements may span several views, but the
-> change has one owner-readable product argument and one acceptance
-> decision.
+> the specification-granularity rule — **one OpenSpec change governs one
+> coherent capability, or one coherent change to one**: one owner-readable
+> product argument, one acceptance decision per change.
 
-**P-40 is not ruled** (`../../../decisions/PENDING-OWNER-DECISIONS.md`;
-packet `../../../decisions/SPECIFICATION-GRANULARITY-DECISION.md`, whose
-own first line is "This file decides nothing"). This clause therefore
-states the rule it *proposes*, and its force is conditional: if the owner
-rules P-40 arm (a), this clause is confirmed as written; if the owner rules
-otherwise or declines, the clause is amended before the craft act, not
-silently re-pointed. **This clause may not be frozen before P-40 is
-ruled.** *(Restated 2026-08-13, RD-51 f3 — the clause previously said
-"per the granularity rule, P-40", so its meaning would have changed with
-no amendment the moment P-40 was ruled differently. A bound clause that
-silently re-points is what CC-REV-7's discipline exists to prevent, and it
-put CC-SPEC-1 in the very posture CC-SPEC-6 forbids.)*
+The rule is cited from its recorded home, never restated normatively here.
+*(Re-grounded 2026-08-17: P-40 was ruled in the confirming direction — the
+drafted rule recorded as SDR-37 — so the 2026-08-13 conditional, "this
+clause may not be frozen before P-40 is ruled", is discharged and removed;
+the clause now stands on a recorded owner decision. The 2026-08-13
+restatement history (RD-51 f3 — a bound clause must not silently re-point)
+is preserved in that amendment's delta.)*
 
 **CC-SPEC-2 — Every requirement names all its material governing
 warrants.** The rule:
@@ -217,18 +220,35 @@ implementation, later.
 **CC-SPEC-8 — Applicable contract clauses are covered or lawfully N/A.**
 The clause-to-requirement coverage matrix (the phase-rule clauses'
 obligation) is produced with the spec; every applicable clause is covered
-by a requirement or carries a reviewed N/A judgment whose home and
-provenance follow the corpus's reviewed-N/A rule. **The N/A judgment is
-confirmed by a party other than the specification's author** — the
-CC-TEST-4 pattern ("never made by the implementing agent alone …
-confirmed by the change's reviewer, or the owner where no reviewer
-exists"). *(Confirmer added 2026-08-13, RD-51 f15. Two further defects that
-finding names are **not** repaired here and remain open: "applicable" is
-undefined, and "the corpus's reviewed-N/A rule" carries no identifier while
-the routing matrix names *this clause* as the rule's home — a circular
-citation. Both are recorded in the delta; naming the clause requires reading
-RFC modules that are candidates, and defining "applicable" is a rule this
-session may not invent.)*
+by a requirement or carries a reviewed N/A judgment.
+
+**"Applicable", defined.** A contract clause is applicable to a
+specification when **the capability uses the entity, behavior, authority
+boundary, state vocabulary, or interface the clause governs**. A reviewer
+applies this test clause by clause against the specification's CC-SPEC-1
+scope statement; a clause governing something the capability neither
+renders, stores, transitions, queries, nor crosses is not applicable, and
+saying so is an N/A judgment, not an omission.
+
+**The reviewed-N/A rule — this clause is its one home.** Every N/A
+judgment records five things:
+
+```text
+clause        the clause ID judged not applicable
+reason        why the capability does not use what the clause governs
+scope         the specification (and revision) the judgment covers
+confirmer     the reviewer or owner who confirmed it — never the
+              specification's author alone (the CC-TEST-4 pattern)
+provenance    where and when the judgment was recorded
+```
+
+Any artifact needing the reviewed-N/A rule cites **CC-SPEC-8**; no other
+statement of it exists. *(Confirmer added 2026-08-13, RD-51 f15.
+Completed 2026-08-17 on the owner's convergence direction: "applicable"
+is defined above, and the circular citation — this clause deferring to
+"the corpus's reviewed-N/A rule" while the routing matrix named this
+clause as that rule's home — is closed by making this clause the home it
+was already routed as.)*
 
 **CC-SPEC-9 — A fresh technical reader can restate it.** A specification is
 a normative artifact, so **CC-REV-4** and **VIS-3** apply unmodified: a
@@ -270,6 +290,37 @@ anticipate: a reader in a gate-open future, reading CC-SPEC-10 alone, would
 conclude the entire spec corpus is LLM-adoptable at a digest. The clause now
 quotes both limbs rather than glossing them.)*
 
+**CC-SPEC-11 — The requirement set covers the capability, and the coverage
+is demonstrated.** *(Minted 2026-08-17, on the owner's convergence
+direction §9.2, closing RD-51 f14 — E5's "complete" limb. Distinct from
+CC-SPEC-8, which covers contract **clauses**; this clause covers the
+**capability's own obligations**.)*
+
+A specification demonstrates that its requirements cover the capability it
+declares, with a **coverage table** produced with the spec. The table's
+**population is the declared capability obligations** — each thing the
+CC-SPEC-1 scope statement says the capability does, renders, records, or
+refuses — counted, and declared by the spec itself. Each declared
+obligation is placed in **exactly one** of three sets, which sum to the
+population:
+
+```text
+covered                 named requirement IDs satisfy it
+lawfully out of scope   excluded by the spec's own non-goals (CC-SPEC-5),
+                        with the excluding non-goal named
+Unknown / unresolved    rendered with what would settle it, never
+                        silently omitted (VIS-2)
+```
+
+The completeness test is **bounded to the declared scope**: no proof is
+demanded over obligations the specification does not declare, and a
+reviewer who believes an obligation is missing from the population raises
+that against CC-SPEC-1's scope statement, not against this table. The
+table is **confirmed by a party other than the specification's author**
+(the CC-TEST-4 pattern, as CC-SPEC-8). A fresh engineer applies this
+clause by reading the scope statement, listing its obligations, and
+checking each against the table — no other context is required.
+
 ## What this policy is not
 
 Not a workflow (the th-projects feature-request workflow is referenced
@@ -284,8 +335,8 @@ dispositioned in `../round-2026-08g/reviews/DISPOSITION-REGISTER.md`.
 Listed here because a candidate that hides its own open findings is the
 failure VIS-2 names.
 
-| Finding | Open defect |
+| Finding | State |
 |---|---|
-| f14 | **No clause tests a specification for completeness against its capability.** E5 asks that a spec be judged "complete, testable, and faithful"; CC-SPEC-8 is completeness with respect to contract clauses, CC-SPEC-5 requires non-goals but not in-scope coverage, and CC-SPEC-1 requires scope *stated*, not *covered*. 0 of 10 clauses ask whether the requirement set covers the capability it claims. E5's "complete" limb is unclosed |
-| f15 (part) | "applicable" (CC-SPEC-8) is undefined, and "the corpus's reviewed-N/A rule" has no identifier while the routing matrix routes the deliverable back to CC-SPEC-8 — each names the other as owner |
-| f1 (sibling) | the lagging-specification exception is not lawful until CC-REV-2 is itself amended — see `SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` CC-IMPACT-6 and the offer it names |
+| f14 | **Repaired 2026-08-17, unconfirmed** — CC-SPEC-11 now tests the requirement set for completeness against the declared capability (the bounded coverage model above). Whether it closes the finding is for the combined fresh-context review to judge, not this file |
+| f15 | **Repaired 2026-08-17, unconfirmed** — "applicable" is defined in CC-SPEC-8, which is now the reviewed-N/A rule's one identified home; the circular citation is closed. Same review caveat |
+| f1 (sibling) | **Open** — the lagging-specification exception is not lawful until CC-REV-2 is itself amended — see `SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` CC-IMPACT-6 and the P-44 offer it names |

@@ -118,7 +118,7 @@ Crosses the work-surface/evidence seam: RFC-0002 owns the reconciliation chain, 
 **Doctrine:** `VIS-2`, `VIS-4`, `VIS-5`
 **Owner decisions and acts blocking this task:** `P-1`, `P-21`, `P-22`, `P-28`, `P-41`, `P-42` — each checked at generation time against the open table in `PENDING-OWNER-DECISIONS.md`, which owns their state, and against the unperformed acts; a resolved or executed row is refused
 **Explicitly omitted:** Every Mission and Context-selection contract — RFC-0010 and RFC-0011 — is excluded. They are DEFERRED-WAVE candidates and Capability 1 relies on none of them; the Mission-ready facet is a future extension, not a launch facet
-**Explicitly omitted:** The specification-acceptance rules (CC-SPEC-1…10) and the shape-to-spec impact rules (CC-IMPACT-1…7) are CANDIDATE craft policy, in force from neither. They are routed as prerequisites, never cited as binding — which is why they are not listed under Craft above
+**Explicitly omitted:** The specification-acceptance rules (CC-SPEC-1…11) and the shape-to-spec impact rules (CC-IMPACT-1…7) are CANDIDATE craft policy, in force from neither. They are routed as prerequisites, never cited as binding — which is why they are not listed under Craft above
 **Explicitly omitted:** The facet vocabulary itself is routed to no clause: swept at generation over the 30 modules the Waves A+B manifests name, it appears in 0 of them. P-37 (ruled 2026-08-16, SDR-36) places the vocabulary in the Capability 1 specification, not a Wave A amendment — the text still needs authoring there. The sweep is for the facet names, not for the English word "facet", which occurs generically
 
 ## Anything touching Missions or Context selection — **DEFERRED-WAVE ROUTE**

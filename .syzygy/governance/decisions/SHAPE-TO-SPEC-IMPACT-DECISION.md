@@ -135,10 +135,11 @@ sha256sum .syzygy/governance/contracts/candidates/policy-candidates/SHAPE-TO-SPE
 **Do not rule `P-42` alone.** It is offered jointly with **`P-41`**: the two
 policies are one model — `CC-IMPACT-1`'s spec-level declaration is *generated*
 as the union of `CC-SPEC-2`'s six fields — and adopting either without the
-other leaves a dangling generation. The coupling drags in P-41's own
-prerequisite: **P-40 must be ruled first**, because the joint subject
-includes `CC-SPEC-1`, which states of itself *"This clause may not be
-frozen before P-40 is ruled."* One further coupling is disclosed, not
+other leaves a dangling generation. P-41's own prerequisite is
+**satisfied**: P-40 was ruled 2026-08-16 (SDR-37), and `CC-SPEC-1` was
+re-grounded on the recorded ruling in the 2026-08-17 amendment — the
+freeze conditional it used to carry is discharged. One further coupling
+is disclosed, not
 blocking: `CC-IMPACT-6` hard-points at the separately offered **P-44**
 (the CC-REV-2 lagging-specification amendment); its review is part of this
 combined review, and adopting `CC-IMPACT-6` creates no lag alternative on
@@ -146,7 +147,7 @@ its own.
 
 Under **(a)**, in order:
 
-1. **rule `P-40`** (the prerequisite above);
+1. ~~rule `P-40`~~ — **done, 2026-08-16 (SDR-37)**;
 2. commission one fresh-context review of both files as a single subject,
    given the artifacts, their governing references and the acceptance
    criteria, and nothing else;

@@ -13,9 +13,10 @@ Which route puts a specification-acceptance standard in force before the
 first spec is authored — review-then-act, author against the unconfirmed
 candidate, or no written standard? The candidate is
 `../contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`
-(**CC-SPEC-1…CC-SPEC-10**): what a spec must name, how testability is
-judged, and the coverage bar (CC-SPEC-8) a spec is reviewed against. It
-binds nothing until its own `CONFIRM CRAFT AMENDMENT` act.
+(**CC-SPEC-1…CC-SPEC-11**): what a spec must name, how testability is
+judged, and the two coverage bars (CC-SPEC-8 clause coverage, CC-SPEC-11
+capability completeness) a spec is reviewed against. It binds nothing
+until its own `CONFIRM CRAFT AMENDMENT` act.
 
 ## Review state — stated plainly
 
@@ -34,29 +35,30 @@ computed at the act (never transcribed in advance). What the owner *can*
 do in this sitting is choose the route below; the act itself follows the
 review.
 
-**What stays open under every arm.** RD-51 f14 is deliberately open: no
-clause tests a specification for **completeness against its capability**,
-so launch-gate `E5`'s "complete" limb stays unclosed **even under (a)** —
-and the instrument forbids a halfway verdict (*"a caveat that matters
-makes it `Not met`"*). Closing it means minting a clause no charter
-directed, which would enlarge exactly what this act asks the owner to
-approve; that choice rides with this ruling. f15 is repaired in part:
-*"applicable"* remains undefined and the reviewed-N/A rule's identifier is
-unresolved.
+**The formerly open findings — repaired 2026-08-17, unconfirmed.** RD-51
+f14 (no completeness-against-capability clause) was deliberately open
+until a charter directed its closure; the owner's convergence direction
+(2026-08-17, §9.2) supplied that authority, and **CC-SPEC-11** now states
+the bounded coverage model. f15's two open limbs ("applicable" undefined;
+the reviewed-N/A rule's circular home) are closed in **CC-SPEC-8**. Both
+repairs were made by an authoring session and are **unconfirmed** — the
+combined fresh-context review judges whether they close the findings;
+until then `E5`'s "complete" limb is repaired-in-candidate, not `Met`.
+Delta: `../contracts/candidates/round-2026-08i/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA-2.md`.
 
-## Ordering constraint (RD30-13)
+## Ordering constraint (RD30-13) — satisfied 2026-08-16
 
-**Rule P-40 (granularity) before this act.** `CC-SPEC-1` states the
-proposed granularity rule inline and says of itself: *"This clause may not
-be frozen before P-40 is ruled."* If the owner rules P-40 differently or
-declines it, the clause is amended before the craft act, not silently
-re-pointed — so commissioning the review or freezing the bytes first would
-spend a review cycle on bytes a P-40 ruling then amends.
+**P-40 was ruled 2026-08-16** (SDR-37, the drafted rule confirmed as
+written), so the constraint this section stated — do not freeze or review
+CC-SPEC-1 before the granularity ruling — is **satisfied, not removed**:
+CC-SPEC-1 is re-grounded on the recorded SDR-37 (2026-08-17 amendment)
+and the freeze conditional is discharged. The review may now be
+commissioned.
 
 ## Options
 
 - **(a)** Order the review-then-act route: a fresh-context review of the
-  candidate (CC-SPEC-1…10), repairs disposed, then the
+  candidate (CC-SPEC-1…11), repairs disposed, then the
   `CONFIRM CRAFT AMENDMENT` act binding the reviewed digest, recorded in
   the craft `INSTALL-RECORD.md` per the CC-TEST-2 precedent. Cost: one
   full cycle before the first spec can be judged acceptable — review,
@@ -85,8 +87,9 @@ form exists (the CC-TEST-2 amendment of 2026-08-02 — noting its own
 confirming act, act 2, is still unperformed, so no craft amendment has
 yet completed this route end to end), and `E5` is the one launch-gate
 criterion whose owner is entirely inside this repository's control.
-Stated with its limit: (a) makes `E5`'s other limbs citable; it does not
-close f14's completeness limb, which no arm here closes.
+Stated with its limit: `E5` becomes citable only after the combined
+review confirms the 2026-08-17 repairs, including whether CC-SPEC-11
+closes f14's completeness limb.
 
 ## Digest consequences and the exact next transaction
 
@@ -103,12 +106,13 @@ regenerates and neither confirmation is retired under any arm (*retire* /
 *survive* per `PROCESS-GLOSSARY.md`). What differs is whether anything is
 in force when the first specification is judged.
 
-**Pre-work required:** **rule `P-40` first** — the ordering constraint
-above.
+**Pre-work required:** none remaining — the P-40 ordering constraint is
+satisfied (ruled 2026-08-16, SDR-37).
 
-**Review required:** one fresh-context review of `CC-SPEC-1…10`, and it
+**Review required:** one fresh-context review of `CC-SPEC-1…11`, and it
 must cover the **repaired** bytes: the candidate was rewritten on
-2026-08-13 and no independent reader has seen the result. Commission it
+2026-08-13 and amended again on 2026-08-17, and no independent reader has
+seen the result. Commission it
 **jointly with `P-42`**, for two independent reasons: `CC-IMPACT-1`'s
 spec-level declaration is generated as the union of `CC-SPEC-2`'s six
 fields, and `CC-IMPACT-2`'s trigger set **is** `CC-SPEC-2`'s warrant set —
@@ -118,8 +122,8 @@ amendment offer, so it is a three-subject review, not two.
 
 **Exact next transaction.**
 
-- Under **(a)**: rule P-40; commission the joint review; disposition every
-  finding; freeze the bytes; then `CONFIRM CRAFT AMENDMENT` over the
+- Under **(a)**: commission the joint review (P-40 is ruled); disposition
+  every finding; freeze the bytes; then `CONFIRM CRAFT AMENDMENT` over the
   frozen digest, recorded in the craft `INSTALL-RECORD.md`. No
   `CC-SPEC`/`CC-IMPACT` act row exists in the acceptance record yet — the
   act and its ceremony phrase are minted at the offering, after the

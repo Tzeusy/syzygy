@@ -22,6 +22,16 @@
 > `../round-2026-08f/reviews/RD-51-spec-acceptance-and-impact-RAW.md`.
 > **This file and `SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` are one
 > model** and are reviewed and offered together.
+>
+> **2026-08-17** (convergence pass, round 2026-08i): no CC-IMPACT clause
+> changed in this amendment — the sibling file gained CC-SPEC-11 and a
+> completed CC-SPEC-8, neither of which alters the six-class identity this
+> file consumes. This banner line exists so the one-model pair carries the
+> same amendment history; the delta is
+> `../round-2026-08i/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA-2.md`. The
+> blind exercise CC-IMPACT-7 requires has been run and passed (RD-59,
+> `../round-2026-08g/reviews/DISPOSITION-REGISTER.md`), bound to the
+> fixture digest quoted in CC-IMPACT-7.
 
 ## The rule
 
