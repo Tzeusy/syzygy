@@ -1,10 +1,18 @@
 # Owner decision packet — launch-gate process-policy authority (P-34)
 
-> **This file decides nothing, adopts nothing, approves nothing.** It is
-> the exact owner decision required to put the launch-gate instrument into
-> force as process policy. Queued in `PENDING-OWNER-DECISIONS.md` as
-> **P-34**. Until this decision is recorded, the instrument is a candidate:
-> its administrations are evidence the owner may weigh, and nothing more.
+> **✅ RULED 2026-08-16 — APPROVED (arm a), residuals disclosed. P-34 is
+> closed.** The owner approved `launch-gate-pre-specifications.md` **v2.4** as
+> this repository's process policy, **F5 not promoted**, with two disclosed
+> BLOCKING residuals in the validator's guarding (RD-67 f1, RD-68 f1). The
+> recorded decision — with the full verified instrument and schema digests —
+> lives in **The lawful transaction** below; this packet is now a **record of
+> a completed decision**, not an open question.
+
+> **This packet is the exact owner decision that put the launch-gate
+> instrument into force as process policy.** Queued in
+> `PENDING-OWNER-DECISIONS.md` as **P-34**. Before this decision was recorded,
+> the instrument was a candidate whose administrations were evidence the owner
+> could weigh; the recorded approval below is what changed that.
 >
 > *Rewritten 2026-08-11 as a bounded packet (owner charter §6.2). The
 > repair chain it used to reproduce — thirteen versions, thirteen reviews —
@@ -120,9 +128,11 @@ Deltas:
 > frozen commit `4dd6e20`. The structural repair that was genuinely
 > structural (RD-66 f1's mechanical forgery sweep) **held**; the two new
 > BLOCKING findings are the *other* two class defects, instance-patched this
-> round and recurring at new addresses. **P-34's approve/decline now returns
-> to the owner** with that fifth-`REVISE` evidence — this packet remains
-> **prepared, not offered**.
+> round and recurring at new addresses. **The owner weighed that evidence and
+> on 2026-08-16 approved v2.4 under arm (a), residuals disclosed** (F5 not
+> promoted). Ten `REVISE` verdicts stand as the record of the repair chain;
+> the approval is a lawful owner choice made *with* the two residuals in hand,
+> not a review that turned to `CONFIRM`.
 
 | Review | Subject | Verdict (copied exactly) |
 |---|---|---|
@@ -227,20 +237,20 @@ generalized:
 
 ## Your options
 
-> **Arm (c) was ruled 2026-08-16; v2.4 is the structural repair, and its
-> pair RD-67/RD-68 has now reported — both `REVISE`, the fifth consecutive
-> pair.** The decision **returns to you**, refreshed with that evidence.
-> Arm (c)'s own reasoning applies: a fifth `REVISE` is *"itself further
-> evidence on convergence, to be weighed against (a) rather than absorbed."*
-> The new evidence has a specific shape — the one genuinely structural repair
-> (the mechanical forgery sweep) held and no live forgery exists in v2.4's
-> bytes, but the two class defects that got *instance* patches this round both
-> recurred as fresh BLOCKING false-`READY` paths (RD-67 f1, RD-68 f1). The
-> arms below carry `[Observed]` status as of the v2.4 verdicts.
+> **✅ Ruled 2026-08-16: arm (a) — approve v2.4, residuals disclosed.** After
+> the fifth consecutive `REVISE` pair (RD-67/RD-68), the owner weighed arm
+> (c)'s reasoning — a fifth `REVISE` is *"further evidence on convergence, to
+> be weighed against (a) rather than absorbed"* — and chose to approve rather
+> than spend a sixth cycle. The one genuinely structural repair (the
+> mechanical forgery sweep) held and no live forgery exists in v2.4's bytes;
+> the two recurring class defects (RD-67 f1, RD-68 f1) are disclosed residuals
+> the formal administration runs with. The arms below are preserved as the
+> decision record; **(a) is the one chosen.**
 
-**(a) Approve v2.4 as process policy, residuals disclosed.** This now means
-approving bytes whose independent reading returned `REVISE` — with **two
-demonstrated false-`READY` paths** (an abbreviated-commit schema read, and a
+**(a) Approve v2.4 as process policy, residuals disclosed.**
+**⇒ Owner ruling 2026-08-16: this arm is chosen; see The lawful transaction.**
+This means approving bytes whose independent reading returned `REVISE` — with
+**two demonstrated false-`READY` paths** (an abbreviated-commit schema read, and a
 `So`-category invisible), both bounded and both listed rather than hidden. A
 lawful owner choice whose cost is stated plainly: the standard a formal
 administration runs under would be one two known holes are documented in. The
@@ -309,19 +319,49 @@ page came to ask for v2.0 two versions after v2.0.)*
 ## The lawful transaction
 
 There is no ceremony phrase for this decision and none is needed — it is a
-recorded owner decision, not a digest-binding act. To approve, record in
-this file, dated and signed in your own words:
+recorded owner decision, not a digest-binding act.
+
+**Recorded owner decision — 2026-08-16.** The owner, having been shown the
+fifth-`REVISE` outcome and the two disclosed residuals by name, chose **arm
+(a): approve v2.4 as process policy, residuals disclosed.**
 
 ```text
 APPROVED — launch-gate as process policy, at the version whose digest is below
-instrument sha256: <the digest you verified>
-schema sha256:     <the digest you verified>
-F5 promoted to a conjunct: yes / no
+instrument sha256: 1852c2c3d31eff3afa0924b6b72e855481ab2516ba8fde5eda7b2ae8772f01e8
+schema sha256:     e0167fb8af6a903c527d402d56c4fb85ebdfed9608de1a485f4f1563aa6a69fb
+F5 promoted to a conjunct: no
+effective_version: v2.4
 ```
 
-Then the queue row P-34 closes, and the formal administration becomes
-runnable — by a reviewer outside this corpus's model family, or a human,
-which is a requirement of the instrument and not of this packet.
+**Recorded, not laundered.** This is an approval made *with* two known
+BLOCKING residuals, not a clean pass — both are false-`READY` paths in the
+validator's guarding, reachable only by an adversarial record author:
+
+1. **RD-67 f1** — an abbreviated `repository_commit` (7–39 hex) routes the
+   schema read to `HEAD` instead of the record's commit, so a widening
+   committed at `HEAD` can admit a forbidden verdict word on an A–D row into
+   an eligible `READY`.
+2. **RD-68 f1** — a category-`So` invisible (`U+2800`, `U+FFFC`) defeats the
+   placeholder strip, so a wholly-unfalsified record can reach `READY`.
+
+Neither touches the questions, the verdict formula, or the §8 launch-scope
+parameters, which are unweakened across all five versions; both are logged
+here so the formal administration is run with them in hand. The owner may
+restate this approval in their own hand at any time; this record transcribes
+the decision as made via the session, with the digests verified against the
+committed bytes at commit `4dd6e20` on 2026-08-16.
+
+**Provenance.** Attributed to the owner (`uniquosity@gmail.com`) via the
+2026-08-16 session; not an approval made on the owner's behalf (VIS-4) —
+the arm was the owner's explicit selection.
+
+With this, the queue row **P-34 closes (approved)**, and the formal
+administration becomes runnable — by a reviewer outside this corpus's model
+family, or a human, which is a requirement of the instrument and not of this
+packet. That administration should be run against the two residuals above
+knowingly; a bounded v2.5 that closes them structurally (schema-pattern-bound
+read; allowlist invisibles) remains an option the owner may authorize
+separately, but is no longer a gate on approval.
 
 ## Earliest required gate
 
