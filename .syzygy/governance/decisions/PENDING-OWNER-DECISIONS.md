@@ -151,8 +151,13 @@ confirmed arguments still await the owner's Wave A and Wave B acts); `P-34`
 (launch-gate process-policy approval) is unruled on approve/decline, but the
 owner ruled its **arm (c)** on 2026-08-16 after the v2.3 reviews (RD-65/RD-66,
 both `REVISE`, the fourth consecutive pair) — the structural **v2.4** repair
-is committed and its review pair (RD-67/RD-68) is dispatched, and P-34
-returns to the owner once that pair reports; no formal launch-gate
+was committed (`4dd6e20`) and its review pair **RD-67/RD-68 has now returned
+`REVISE`/`REVISE`, the fifth consecutive pair**. The one structural repair
+held (no live forgery in v2.4), but two instance-patched class defects
+recurred as fresh BLOCKING false-`READY` paths. Per arm (c), a fifth `REVISE`
+is owner-weighed, not absorbed: **P-34 now returns to the owner** (approve
+v2.4 with residuals disclosed / approve+F5 / freshly authorize a bounded v2.5
+/ decline), and no unilateral v2.5 was begun; no formal launch-gate
 administration has been run;
 `P-41`
 and `P-42` (the joint specification-acceptance and shape-to-spec craft acts)

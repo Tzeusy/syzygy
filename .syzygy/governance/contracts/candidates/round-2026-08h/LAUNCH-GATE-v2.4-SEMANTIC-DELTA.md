@@ -106,10 +106,22 @@ record and report alone. Both are disclosed here rather than claimed absent.
 
 ## Fixtures
 
+> **Erratum, 2026-08-16 (RD-68 f3).** The paragraph below claims the `Mn`
+> strip was mutation-tested — "reverted on a copy and its fixture watched to
+> fail". **That claim is false and is corrected here, not silently edited:**
+> RD-68 found, and this session independently confirmed, that reverting
+> `("Cf","Cc","Mn")`→`("Cf","Cc")` (or removing the `Lo` fillers) leaves the
+> validator suite **123/0 green** — there is no `Mn` fixture and no filler
+> fixture, so that limb of the RD-66 f2 repair is protected by no check. The
+> other reversions listed *were* performed and did fail as stated; the `Mn`
+> claim was not. This erratum is what rule 2 requires: a verification claim
+> that turned out false, named as false at its source.
+
 `--selftest`: validator 119 → **123**, renderer 34 → **38**. Every new
 fixture was mutation-tested by hand in this pass — reverted on a copy and its
 fixture watched to fail: the mechanical forgery sweep (reverting `_inline`
-re-opens `prior_record.path` with the RD-47 f2 signature), the `Mn` strip,
+re-opens `prior_record.path` with the RD-47 f2 signature), the `Mn` strip
+*(see erratum above — this one was not, in fact, fixtured)*,
 the record-commit schema read (schema widened at `HEAD`, record at an
 ancestor), the committed-vs-uncommitted prior read, the git-unverifiable-SDR
 row outcome, the decoy instrument path, and the `--allow-invalid` exit code.

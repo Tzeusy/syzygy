@@ -113,12 +113,16 @@ Deltas:
 > contradictory data produce a false READY, and does the generated report
 > faithfully present the canonical record?*
 >
-> **Status 2026-08-16: eight completed reviews across v2.0–v2.3, eight
-> `REVISE` verdicts; the v2.4 pair (RD-67/RD-68) is dispatched, pending.**
-> The owner ruled arm (c) after the v2.3 pair, so v2.4 is the structural
-> repair and its pair (RD-67/RD-68) is the ninth and tenth reviews of this
-> commission. This packet is **prepared, not offered** until that pair
-> returns `CONFIRM`.
+> **Status 2026-08-16: ten completed reviews across v2.0–v2.4, ten `REVISE`
+> verdicts.** The owner ruled arm (c) after the v2.3 pair; v2.4 is that
+> structural repair, and its pair — RD-67 (policy) and RD-68 (machinery), the
+> ninth and tenth reviews — both returned `REVISE` on 2026-08-16 against
+> frozen commit `4dd6e20`. The structural repair that was genuinely
+> structural (RD-66 f1's mechanical forgery sweep) **held**; the two new
+> BLOCKING findings are the *other* two class defects, instance-patched this
+> round and recurring at new addresses. **P-34's approve/decline now returns
+> to the owner** with that fifth-`REVISE` evidence — this packet remains
+> **prepared, not offered**.
 
 | Review | Subject | Verdict (copied exactly) |
 |---|---|---|
@@ -130,34 +134,48 @@ Deltas:
 | Structured record | **v2.2** schema, validator, renderer | `REVISE` — RD-62, 2026-08-16, frozen commit `918574c` |
 | Policy semantics | **v2.3** instrument | `REVISE` — RD-65, 2026-08-16, frozen commit `494acab` |
 | Structured record | **v2.3** schema, validator, renderer | `REVISE` — RD-66, 2026-08-16, frozen commit `494acab` |
-| Policy semantics | **v2.4** — the version this packet binds | **dispatched, pending** — RD-67 |
-| Structured record | **v2.4** | **dispatched, pending** — RD-68 |
+| Policy semantics | **v2.4** — the version this packet binds | `REVISE` — RD-67, 2026-08-16, frozen commit `4dd6e20` |
+| Structured record | **v2.4** | `REVISE` — RD-68, 2026-08-16, frozen commit `4dd6e20` |
 
-**Eight reviews, eight `REVISE` verdicts, across four versions; a fifth
-version (v2.4) is under its first review.** Each pair
-was dispatched separately in fresh context, neither seeing the other's
-output. The v2.3 pair verified the repair account fairly: RD-65 confirmed
-**nothing was weakened** v2.2→v2.3 and six of RD-61's eleven findings
-repaired outright; RD-66 confirmed **eight of RD-62's thirteen** repaired,
-each verified by reverting its fixture, with selftests at 119/34. But both
-returned `REVISE`, and the pattern is no longer "narrower each round":
-**RD-66's blocking finding is the same document-forgery class the tool has
-closed twice before** (RD-47 f2 → RD-56 f2 → RD-62 f1), reproduced at a
-free-text site — `prior_record.path` — that no prior review named, in a
-record that validates with zero errors and exits 0. RD-65's third finding
-is the same shape: RD-61 f1's eligible `READY FOR` outcome surviving at the
-schema's new `HEAD` binding. RD-66 diagnoses the mechanism: each pass
-repairs the *instances* its reviewers name and restates the result as a
-*class property*, so the next review finds the class at a new address.
+**Ten reviews, ten `REVISE` verdicts, across five versions (v2.0–v2.4).**
+Each pair was dispatched separately in fresh context, neither seeing the
+other's output. The v2.3 pair verified the repair account fairly (RD-65:
+**nothing weakened** v2.2→v2.3, six of RD-61's eleven repaired; RD-66: eight
+of RD-62's thirteen repaired) but both returned `REVISE`, converging on the
+*class* — RD-66's forgery class (RD-47 f2 → RD-56 f2 → RD-62 f1) at
+`prior_record.path`, RD-65's at the schema's `HEAD` binding. The owner ruled
+arm (c): a **structural** v2.4 repair aimed at that class.
 
-**v2.3 repaired the RD-61/RD-62 findings; its own review is now complete and
-returned `REVISE`.** A repair session could not confirm its own repairs, and
-the fresh reading did not confirm them either. The full disposition of all
-eleven v2.3 findings, with a fix shape for each, is
-`../contracts/candidates/round-2026-08h/reviews/DISPOSITION-REGISTER.md`;
-the raw bytes are `RD-65-launch-policy-v2.3-RAW.md` and
-`RD-66-launch-machinery-v2.3-RAW.md` beside it. Tracked as `syzygy-6j8`,
-which stays open.
+**The v2.4 pair (RD-67/RD-68) returned `REVISE`/`REVISE` — the fifth
+consecutive pair — and the result is specific.** The one repair that was
+genuinely structural, RD-66 f1's mechanical forgery sweep over every string
+leaf, **held**: RD-68 drove 1,620 leaf/spelling combinations through it and
+found **no live forgery in v2.4's bytes**. But the *other* two class defects,
+instance-patched this round, recurred at new addresses — both as fresh
+BLOCKING false-`READY` paths:
+
+- **RD-67 f1** — RD-61 f1's forbidden-verdict-word→eligible-`READY` class:
+  the schema types `repository_commit` `^[0-9a-f]{7,40}$`, but the validator
+  reads the schema at the record's commit only for a *full 40-hex* value, so
+  an **abbreviated** commit (the repo's own `[:7]` house style) falls through
+  to reading the schema at `HEAD` — a widening committed at `HEAD` then admits
+  a forbidden word on an A–D row into an eligible `READY FOR`, zero errors.
+- **RD-68 f1** — RD-66 f2's invisible-character→eligible-`READY` class: the
+  strip covers categories `Cf/Cc/Mn` + `Lo` fillers, but `U+2800` (Braille
+  blank) is category `So`, one category beyond the strip; a wholly-unfalsified
+  record padded with it validates zero-error and reaches `READY FOR`.
+
+Both were independently reproduced this session. RD-67 names the mechanism
+for the third round running: *"a repair closes the named instance and
+restates the result as a class property the machinery does not hold."* And
+RD-68 f3 found — confirmed here — that **this session's own v2.4 delta
+claimed a mutation-test (the `Mn` strip) it had not performed**; that false
+claim is corrected by erratum at its source. The full disposition of all nine
+v2.4 findings is
+`../contracts/candidates/round-2026-08h/reviews/DISPOSITION-REGISTER.md`; the
+raws are `RD-67-launch-policy-v2.4-RAW.md` and
+`RD-68-launch-machinery-v2.4-RAW.md`. Tracked as `syzygy-6j8`, which stays
+open.
 
 Both reviewers are the **same model family as the corpus authors**, so
 under the charter each supports repair and neither is the formal launch
@@ -180,10 +198,10 @@ an object schema to close, so deleting a single `additionalProperties`
 re-opens the claimed-verdict route the v2.0 design rests on.
 
 **Those v2.0 findings were repaired at v2.1, whose own reviews then returned
-`REVISE`, repaired in turn at v2.2, whose reviews returned `REVISE`, repaired
-at v2.3, whose reviews (RD-65/RD-66) returned `REVISE` on 2026-08-16.** What
-has never happened, across four versions and eight reviews, is a review that
-returned anything other than `REVISE`.
+`REVISE`, repaired in turn at v2.2 (`REVISE`), v2.3 (`REVISE`), and the
+owner-authorized structural v2.4, whose reviews (RD-67/RD-68) returned
+`REVISE` on 2026-08-16.** What has never happened, across five versions and
+ten reviews, is a review that returned anything other than `REVISE`.
 
 ## Known residuals
 
@@ -209,48 +227,63 @@ generalized:
 
 ## Your options
 
-> **Arm (c) was ruled 2026-08-16, and v2.4 is the repair now under review
-> (RD-67/RD-68).** The arms below are the decision that **returns** to you
-> once that pair reports — approve the reviewed v2.4 bytes, approve with F5
-> promoted, or decline. They are stated now so the choice is not a surprise;
-> the `[Observed]` status each carries will be refreshed with the v2.4
-> verdicts. If RD-67/RD-68 return `REVISE` a fifth time, arm (c)'s own
-> reasoning says that is itself further evidence on convergence, to be
-> weighed against (a) rather than absorbed.
+> **Arm (c) was ruled 2026-08-16; v2.4 is the structural repair, and its
+> pair RD-67/RD-68 has now reported — both `REVISE`, the fifth consecutive
+> pair.** The decision **returns to you**, refreshed with that evidence.
+> Arm (c)'s own reasoning applies: a fifth `REVISE` is *"itself further
+> evidence on convergence, to be weighed against (a) rather than absorbed."*
+> The new evidence has a specific shape — the one genuinely structural repair
+> (the mechanical forgery sweep) held and no live forgery exists in v2.4's
+> bytes, but the two class defects that got *instance* patches this round both
+> recurred as fresh BLOCKING false-`READY` paths (RD-67 f1, RD-68 f1). The
+> arms below carry `[Observed]` status as of the v2.4 verdicts.
 
-**(a) Approve v2.4 as process policy** *(once RD-67/RD-68 report).* The v2.0
-through v2.3 findings **have** been repaired — v2.4 is the structural repair
-of the last pair — and if its independent reading returns clean, this arm
-approves reviewed, confirmed bytes rather than the "reviewers still ask for
-more" state (a) meant a round ago. Should the v2.4 reading return `REVISE`
-again, this arm means approving bytes whose reviewers ask for more, with the
-residuals listed rather than hidden — a lawful owner choice whose cost is
-stated. The instrument becomes the standard a formal administration is run
-under.
+**(a) Approve v2.4 as process policy, residuals disclosed.** This now means
+approving bytes whose independent reading returned `REVISE` — with **two
+demonstrated false-`READY` paths** (an abbreviated-commit schema read, and a
+`So`-category invisible), both bounded and both listed rather than hidden. A
+lawful owner choice whose cost is stated plainly: the standard a formal
+administration runs under would be one two known holes are documented in. The
+holes are not in the launch-scope parameters or the questions — they are in
+the validator's guarding of them — so an administration could still be run and
+its result read with the residuals in hand. Weigh this against the fact that
+five rounds have not driven the `REVISE` count to zero.
 
 **(b) Approve v2.4 with F5 promoted to a conjunct.** Same as (a), plus: a
 `Not met` F5 blocks a READY verdict. This would block a pass on any
 administration run by this corpus's own model family — the strictest
 available reading of assurance independence, and a real constraint on who
-can administer the gate.
+can administer the gate. It does **not** close the two false-`READY` paths;
+it constrains who may administer, not what the validator guards.
 
-**(c) Authorize one more repair round (v2.4), then re-review.**
-**⇒ Owner ruling 2026-08-16: this arm is chosen.** The v2.4 repair round is
-authorized and in progress — the eleven open findings repaired with RD-66's
-structural fixtures at the core, a v2.4 semantic delta, and a fresh-context
-re-review. This is a work authorization, not the policy approval: **P-34's
-approve/decline stays open** and returns to the owner once the v2.4 review
-pair reports. The owner weighed the fourth `REVISE` under this arm — rather
-than absorbing it as an automatic round — and authorized the fifth cycle
-because RD-66 handed over a *structural* fix, not another instance patch:
-drive the forgery test through **every** schema-declared string field
-mechanically, and assert the sanitizer- and lexicon-coverage sweeps
-themselves, aimed squarely at the instance-vs-class mechanism the prior
-three rounds could not break. That repair is v2.4, now implemented and under
-RD-67/RD-68. The standing risk, named in the row below, is that a class
-defect resurfaces at a site the v2.4 fixtures again do not enumerate — which
-is why this arm's cost was the owner's to weigh, and why the return decision
-below is (a)/(b)/(d), not another (c).
+**(c-again) Authorize a bounded v2.5 repair, then re-review.** Both blocking
+findings are bounded and few-line repairable *if done structurally* — bind the
+schema read to the schema's own `^[0-9a-f]{7,40}$` pattern (or narrow the
+schema to 40 hex so the two agree by construction), and handle invisibles by
+an **allowlist of visible substance** rather than a category blocklist that
+the next unlisted category defeats. The case *for*: the structural approach
+demonstrably worked where it was actually applied (the forgery sweep held).
+The case *against*: this is a sixth cycle, and arm (c)'s own reasoning warns
+that treating each `REVISE` as an automatic next round is what the owner
+reserved this judgment to avoid. If chosen, it is a fresh owner work
+authorization, not a standing one — the session will not loop to v2.5 without
+it.
+
+**(c) [ruled and completed] Authorize one more repair round (v2.4), then
+re-review.** **⇒ Owner ruling 2026-08-16: this arm was chosen, and the round
+is now complete.** The eleven open v2.3 findings were repaired with RD-66's
+structural fixtures at the core, a v2.4 semantic delta written, and a
+fresh-context re-review dispatched. The owner weighed the fourth `REVISE`
+under this arm — rather than absorbing it as an automatic round — and
+authorized the cycle because RD-66 handed over a *structural* fix, not another
+instance patch: drive the forgery test through **every** schema-declared
+string field mechanically. **The outcome (RD-67/RD-68, both `REVISE`, above):
+that one structural fix held and no live forgery exists in v2.4's bytes, but
+the two class defects that were instance-patched this round recurred.** The
+standing risk this arm named — *"a class defect resurfaces at a site the v2.4
+fixtures again do not enumerate"* — is exactly what landed. That is why the
+returning decision is (a)/(b)/(d) or a **freshly-authorized** (c-again), never
+an automatic next round.
 
 *(The observable history that arm (c) weighed:* **the review pair had been
 taken four times and returned `REVISE` all four.** Earlier rounds' findings

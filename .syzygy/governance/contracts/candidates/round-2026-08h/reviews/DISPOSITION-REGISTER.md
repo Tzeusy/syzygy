@@ -249,3 +249,81 @@ fails the suite rather than the next review. The account is
 under fresh review as **RD-67** (policy) and **RD-68** (machinery). Tracked
 as `syzygy-6j8`, which stays open until that pair reports and the owner
 rules P-34's approve/decline.
+
+## RD-67 — launch-gate policy semantics at v2.4
+
+Fresh context, frozen commit `4dd6e2085237278b9f89e72be7755f5bf5c795c7`
+(instrument digest `1852c2c3…` verified), concurrently with RD-68 and mutually
+blind. Same model family as the corpus authors, so a repair-supporting review,
+not the formal administration. Verdict copied exactly: **`VERDICT: REVISE`**.
+Raw: `RD-67-launch-policy-v2.4-RAW.md`.
+
+| # | Finding (severity) | Disposition |
+|---|---|---|
+| **1** | *BLOCKING* — §5's *"read from the committed bytes at the record's own commit … never the working tree and never `HEAD`"* is false for any abbreviated `repository_commit`. The schema types `repository_commit` `^[0-9a-f]{7,40}$` but the validator sets `schema_commit` only on `re.fullmatch("[0-9a-f]{40}", …)`, so a 7–39-hex commit falls through to `elif _git:` → `_git_show("HEAD", …)`. A record bound to an ancestor with a forbidden verdict word (`Met (with caveats)`) on an A–D row then reads the widened `HEAD` schema, validates **0 errors**, and reaches an **eligible `READY FOR …`**. This is RD-61 f1's class (forbidden word → eligible READY) recurring at a new address; abbreviated SHAs are the repo's own house style (`[:7]`) | **open — returns to owner.** Independently verified this session by source (schema line 81 vs validator line 706) and structure (fallthrough at line 759–762). Not repaired: this is the fifth-`REVISE` fork, weighed by the owner, not absorbed |
+| **2** | *MATERIAL* — §4's *"'any other owner deferral' is a **validation error**"* is false in 2 of 3 reachable populations: an F5/F6 deferral beside a resolving F2 deferral (`branch == "deferrals"`), or in a record whose core already fails (`core == False`), raises **0** errors. `LA-12` fires only for `n_deferred and branch=="blocked" and core`. The v2.4 repair of RD-65 f4 replaced a wrong identifier with a false universal, in the same clause | **open — returns to owner** |
+| **3** | *MATERIAL* — §2's *"(§8 residual on F5)"* points at a residual that does not exist: §8 has no `F5`/`residual`/`family` string and is byte-identical `01209c0f…` at every version. RD-65 f1's defect shape (a justifying clause pointing at something that does not exist) recurs one version later — v2.4 removed one dead pointer and installed another. The substantive half of the f1 repair (9-column table, schema-required `model_family`, renderer emission) is verified true | **open — returns to owner** |
+| **4** | *MATERIAL* — a check v2.3 enforced that v2.4 does not: v2.3's single `elif _git:` branch always read `HEAD` **and always ran the working-tree drift comparison**; v2.4 moved the drift check inside `elif _git and schema_commit is not None:`, so for abbreviated commits the `HEAD` blob is read with **no drift comparison at all**. A literal instance of the commission's *"removes a check the prior version enforced."* Shares a root cause with f1, distinct loss | **open — returns to owner.** Verified this session by source structure |
+| **5** | *MINOR* — §4's v2.4 absolute *"the one `NONE — <limbs>` string … on every surface"* is false: `trend_row()` appends `"; row outcome was " + verdict`, so an ineligible `delta` record deposits `NONE — …; row outcome was READY FOR Capability 1 …` into the Gate-verdict cell — the very `READY FOR` conflation §4 exists to prevent. Mitigated by §4's own "its row outcome travels beside it", hence MINOR | **open — returns to owner** |
+
+**Open: 5. Repaired: 0. Declined: 0.** RD-67 also verified **six** v2.4
+repairs sound (RD-65 f2 fail-closed environment; RD-66 f3 instrument-path
+constant; RD-66 f4 prior-from-commit; RD-65 f1 substantive half; RD-65 f4
+second half; the 17/17 `LA-*` enumeration) — recorded for balance, none a
+finding.
+
+## RD-68 — launch-gate schema, validator and renderer at v2.4
+
+Fresh context, same frozen commit `4dd6e208…` (all three machinery digests
+verified), concurrently with RD-67 and mutually blind. Same model family, so
+repair-supporting, not the formal administration. Verdict copied exactly:
+**`VERDICT: REVISE`**. Raw: `RD-68-launch-machinery-v2.4-RAW.md`.
+
+| # | Finding (severity) | Disposition |
+|---|---|---|
+| **1** | *BLOCKING* — the invisible-character strip covers categories `Cf/Cc/Mn` + four `Lo` fillers, but `U+2800 BRAILLE PATTERN BLANK` and `U+FFFC OBJECT REPLACEMENT CHARACTER` are category **`So`** — zero-advance, non-whitespace (survives `str.split()`). A wholly-unfalsified record padded with `⠀` (no falsification account, empty G1 answer, no pilot method, all 39 `falsification_attempt`) validates **0 errors**, exits **0**, and renders `GATE VERDICT: READY FOR Capability 1 …` into both report and §6 trend log. This is RD-66 f2's class (invisible defeats placeholder → eligible READY) recurring one Unicode category over. The docstring's *"disclosed residual, not a silent pass"* is falsified by the mechanism it names — the error count **is** the fourth eligibility limb | **open — returns to owner.** Independently verified this session: `_is_placeholder("none")` = True, `_is_placeholder("none"+"⠀"×30)` = False. Not repaired: fifth-`REVISE` fork |
+| **2** | *MATERIAL* — the "structural" forgery sweep walks the string leaves of `_maximal()` (`_base_record` + a synthetic prior), **not** the schema's string-bearing paths. 18 schema-reachable field shapes are populated by neither the mechanical sweep nor the surviving hand-`SITES` (all strings in `owner_deferrals`, `deferred_wave_findings`, `reopened_findings`, `e3.reopen_items`, `g1.proposed_missing_questions`, `pilot_recurrence_check.findings`, three per-row optionals). Reverting `_inline` at just `owner_deferrals`+`e3.reopen_items` leaves the suite **38/0 green** while 5 field shapes forge document structure. **Scope: fixture-coverage, not a live forgery** — RD-68 swept all 405 string leaves × 4 spellings = 1620 combos through the shipped renderer and found **0** live forgeries. The delta's *"the next unnamed string field fails this suite"* is false for 18 shapes | **open — returns to owner** |
+| **3** | *MATERIAL* — the v2.4 delta's Fixtures section claims the `Mn` strip was mutation-tested ("reverted on a copy and its fixture watched to fail: … the `Mn` strip"). **False:** reverting `("Cf","Cc","Mn")`→`("Cf","Cc")`, or removing the four `Lo` fillers, leaves the suite **123/0 green** — there is no `Mn` fixture and no filler fixture. The RD-66 f2 repair limb (restoring `Mn`, where `U+034F` lives) is protected by no check, violating this repo's own rule 6 | **open — returns to owner.** Independently verified this session (123/0 on `Mn` reversion). **This is a false verification claim in this session's own v2.4 delta and is owned as such** — see the delta erratum |
+| **4** | *MINOR* — `reviewer_classification` and `routing_authority_says` reach the E4 table row without `_cell`/`_inline`, safe today only because the schema `enum`s them (`["shape","spec"]`, `["shape","spec","silent"]`). No live exploit; noted as the two exceptions to the file's stated "every reviewer string reaches the document through a neutralizer" class property | **open — returns to owner** |
+
+**Open: 4. Repaired: 0. Declined: 0.** RD-68 also verified the **renderer's
+structural forgery fix sound** — the `_inline` sanitizer holds across all 1620
+leaf/spelling combinations, RD-66 f1's headline mutation test reproduces
+exactly, and RD-65 f3 / RD-66 f4 / RD-66 f6 each fail on reversion (12
+reversions total). **No live forgery exists in v2.4's bytes.** The two
+BLOCKING false-`READY` paths are f1 (invisibles) here and RD-67 f1 (schema
+read), both distinct from the renderer forgery.
+
+## Round note — the fifth `REVISE`, and why it returns to the owner
+
+RD-67 and RD-68 both returned `REVISE` against v2.4. That is the **fifth
+consecutive `REVISE` pair** — ten fresh-context reviews, ten `REVISE`
+verdicts, across five versions (v2.0–v2.4). The evidence this pair adds is
+specific and decision-relevant:
+
+1. **The one genuinely structural repair held. The instance-patched ones did
+   not.** RD-68 confirmed the renderer's mechanical forgery sweep (RD-66 f1)
+   is sound across 1620 leaf/spelling combinations and that **no live forgery
+   exists in v2.4's bytes**. But both new BLOCKING findings are the *other*
+   two class defects, repaired this round by instance patches and recurring at
+   new addresses: RD-67 f1 is RD-61 f1's forbidden-word→`READY` class via
+   abbreviated-commit `HEAD` fallthrough; RD-68 f1 is RD-66 f2's
+   invisible→`READY` class via a `So` character one Unicode category beyond
+   the strip. RD-67 states the pattern directly: *"the third round in a row in
+   which a repair closes the named instance and restates the result as a class
+   property the machinery does not hold."*
+2. **This session's own v2.4 delta carried a false verification claim** (RD-68
+   f3): it stated the `Mn` strip was mutation-tested when no such fixture
+   exists. Confirmed and owned this session.
+3. Both blocking findings are *bounded and one- to few-line repairable* (accept
+   the schema's own `7,40` pattern for the schema read, or narrow the schema to
+   40 hex; handle invisibles by an allowlist of visible substance rather than a
+   category blocklist). But repairing them here is exactly the *"absorbed as
+   another round"* that arm (c) reserves to the owner — and doing so a sixth
+   time, after a commissioned structural round left two of three classes
+   recurring, is the decision VIS-4 places with the owner, not this session.
+
+This session therefore did **not** repair to v2.5. It recorded all nine
+findings `open`, stored both raws verbatim, corrected the delta's false claim
+by erratum, and returns P-34 to the owner with the fifth-`REVISE` evidence
+above. `syzygy-6j8` stays open.
