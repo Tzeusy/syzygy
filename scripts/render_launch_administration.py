@@ -86,7 +86,15 @@ def _new_findings_cell(nf, rec):
     """
     if nf == "unknown":
         p = (rec.get("prior_record") or {}).get("path", "the declared prior")
-        return f"Unknown (prior record `{p}` could not be read)"
+        # RD-66 f1 — `prior_record.path` is attacker-controlled free text and
+        # was the one interpolation site the v2.3 forgery suite did not
+        # enumerate: a path spelled with newlines rendered a document-level
+        # `GATE VERDICT: READY FOR …` and a second `## Computed figures`
+        # section above the real ones, in a record that validated with zero
+        # errors. Every reviewer string reaches the document through a
+        # neutralizer, this one included (see the coverage assertion in the
+        # selftest that now walks every schema string field).
+        return f"Unknown (prior record `{_inline(p)}` could not be read)"
     if nf is None:
         return "n/a (this record declares no prior — it opens the log)"
     return nf
@@ -120,7 +128,8 @@ def _inline(s):
 def _unrenderable(record_path, why, notes=()):
     """A report for a record that could not be verdicted. Short, and it
     states the one thing a reader needs: this is not an administration."""
-    L = [f"# Launch-gate record — UNRENDERABLE: `{Path(record_path).name}`",
+    L = [f"# Launch-gate record — UNRENDERABLE: "
+         f"`{_inline(Path(record_path).name)}`",
          "",
          "> **This record could not be validated, so there is no report of "
          "it.**",
@@ -661,6 +670,116 @@ def _selftest():
             finally:
                 pC.unlink()
 
+        # RD-66 f1 — the DURABLE fix: a MECHANICAL walk of every string leaf
+        # in a fully-populated record, not a hand-maintained SITES tuple. The
+        # v2.3 suite listed the eight fields prior reviewers named and missed
+        # `prior_record.path` — the ninth — which carried the RD-47 f2 forgery
+        # into a clean record's report with zero errors. Walking the record
+        # means the NEXT unnamed string field fails THIS suite, not the next
+        # review. `prior_record` is populated so its `path` is a leaf the
+        # walk reaches; both `\n`- and `\r`-spelled forgeries are driven
+        # through every leaf.
+        def _string_leaves(obj, prefix=()):
+            if isinstance(obj, dict):
+                for k, val in obj.items():
+                    yield from _string_leaves(val, prefix + (k,))
+            elif isinstance(obj, list):
+                for i, val in enumerate(obj):
+                    yield from _string_leaves(val, prefix + (i,))
+            elif isinstance(obj, str):
+                yield prefix
+
+        def _set_leaf(obj, path, value):
+            for step in path[:-1]:
+                obj = obj[step]
+            obj[path[-1]] = value
+
+        def _maximal():
+            r = _base_record(False)
+            # A prior so `prior_record.path` is a string leaf the walk hits;
+            # git=False makes it unreadable → "unknown" → its path renders.
+            r["prior_record"] = {"path": "prior.json",
+                                 "repository_commit": "0" * 40,
+                                 "date": "2020-01-01"}
+            return r
+
+        leaf_paths = list(_string_leaves(_maximal()))
+        swept, covered_prior_path = 0, False
+        for spelling, forgery in (("\\n", FORGERY),
+                                  ("\\r", FORGERY.replace("\n", "\r"))):
+            for path in leaf_paths:
+                recL = _maximal()
+                _set_leaf(recL, path, forgery)
+                dotted = ".".join(str(s) for s in path)
+                if dotted == "prior_record.path":
+                    covered_prior_path = True
+                with tempfile.NamedTemporaryFile("w", suffix=".json",
+                                                 delete=False) as fL:
+                    json.dump(recL, fL)
+                    pL = Path(fL.name)
+                try:
+                    eL, _nL, cL = validate(pL, _git=False)
+                    # allow-invalid semantics: an invalid record renders the
+                    # short _unrenderable report, a valid one the full report;
+                    # neither may carry a forged document-level construct.
+                    outL = render(pL, cL, not eL, errors=eL)
+                    badL = [ln for ln in outL.splitlines()
+                            if ln.startswith("GATE VERDICT: READY")
+                            or ln == "## Computed figures"
+                            or ln.startswith("|---|---|")
+                            or ln.startswith("```")]
+                    realL = [ln for ln in outL.splitlines()
+                             if ln == "## Computed figures"]
+                    forged = [ln for ln in badL
+                              if not ln.startswith("## Comp")]
+                    ok = not forged and len(realL) <= 1
+                    if not ok:
+                        check(f"a {spelling}-forgery in string leaf "
+                              f"`{dotted}` opens no document structure",
+                              False, f"{dotted}: {badL[:3]}")
+                    swept += 1
+                finally:
+                    pL.unlink()
+        check("the forgery sweep is mechanical — every string leaf of a "
+              "populated record, both spellings, opens no document structure",
+              swept == 2 * len(leaf_paths) and swept >= 40,
+              f"swept {swept} of {2 * len(leaf_paths)}")
+        check("the mechanical sweep reaches prior_record.path — the site the "
+              "v2.3 hand-list missed (RD-66 f1)", covered_prior_path)
+
+        # RD-66 f5 — the record's FILENAME reaches the UNRENDERABLE report;
+        # a name spelled with newlines put a document-level GATE VERDICT in
+        # it. Tested on the function directly (a real newline-in-filename is
+        # not portable to create).
+        u = _unrenderable(
+            "bad\n\nGATE VERDICT: READY FOR everything\n\n"
+            "## Computed figures\n\nx.json", ["the record is not JSON"])
+        check("a forged record FILENAME opens no structure in the "
+              "unrenderable report (RD-66 f5)",
+              not any(ln.startswith("GATE VERDICT: READY")
+                      or ln == "## Computed figures"
+                      for ln in u.splitlines()),
+              u[:200])
+
+        # RD-66 f6 — `--allow-invalid` WROTE a report but the record did not
+        # validate; the exit status must say so. A clean record exits 0, an
+        # --allow-invalid render of an invalid one must not.
+        badrec = _base_record(False)
+        badrec["question_results"][0]["verdict"] = "Met (with caveats)"
+        with tempfile.NamedTemporaryFile("w", suffix=".json",
+                                         delete=False) as fB:
+            json.dump(badrec, fB)
+            pB = Path(fB.name)
+        outB = pB.with_suffix(".md")
+        try:
+            rc = main([str(pB), "-o", str(outB), "--allow-invalid"])
+            check("--allow-invalid on an invalid record exits non-zero "
+                  "(RD-66 f6)", rc != 0, f"exit {rc}")
+        finally:
+            pB.unlink()
+            if outB.exists():
+                outB.unlink()
+
         # RD-55 f1 / RD-56 f1 — an invalid record is ineligible, and every
         # consumer of eligibility must say so. The failing input is a record
         # that would otherwise pass: formal, full, fresh, all rows Met.
@@ -843,6 +962,16 @@ def main(argv=None):
     out.write_text(text)
     print(f"wrote {out} ({len(text)} bytes) — generated from "
           f"{Path(args.record).name}")
+    # RD-66 f6 — `--allow-invalid` still WROTE a report, but the record did
+    # not validate; the exit status is a surface too, and a chain must not
+    # read an --allow-invalid render as a clean one. RD-62 f6 fixed the
+    # validator's `record valid`/exit-0 and the git-unavailable render; this
+    # is the sibling on the --allow-invalid write path.
+    if errors:
+        print(f"NOT a valid record — {len(errors)} validation error(s); the "
+              "report is stamped THIS RECORD DOES NOT VALIDATE and is for "
+              "inspection only")
+        return 1
     # RD-62 f6 — the report is stamped UNVERIFIED in this state, and the
     # exit status is a surface too: a chain must not read an unverified
     # render as a verified one.

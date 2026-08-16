@@ -154,24 +154,24 @@ rebuilding each attack and watching it fail. The new findings are that
 three clauses v2.3 *newly wrote* make false claims about the instrument
 itself — the same defect class this round exists to close.
 
-> **Dispositioned `open`, not `repaired`, deliberately.** This is the
-> fourth `REVISE` (see the round note below). Under the P-34 packet's arm
-> (c), a fourth `REVISE` "should be weighed against arm (a) rather than
-> absorbed as another round" — so whether to repair to v2.4 or to put the
-> convergence question to the owner is now the owner's decision (VIS-4),
-> not this session's to make by repairing. Fix shapes are recorded so the
-> owner can see the cost of the repair arm; no bytes were changed.
+> **Dispositioned `repaired (v2.4)` after the owner ruled arm (c).** These
+> were first recorded `open` (the fourth `REVISE` was the owner's to weigh,
+> per arm (c), not this session's to absorb). On 2026-08-16 the owner ruled
+> **arm (c)** — a structural v2.4 repair — so the findings are now repaired
+> in v2.4, in this session's judgement and **not confirmed**: RD-67/RD-68
+> re-review the v2.4 bytes. The account is
+> `round-2026-08h/LAUNCH-GATE-v2.4-SEMANTIC-DELTA.md`.
 
 | # | Finding | Disposition |
 |---|---|---|
-| **1** | *MATERIAL* — the RD-61 f5 repair relocated the same-family obligation onto the generated report and justified it with *"the trend log's family reading runs through the reports its rows link"*; §6 is byte-identical, its nine columns link nothing, so the trend log carries no family signal at all | **open.** Fix shape: add a `Report`/`Same family` column to §6 and `trend_row()` so the asserted link exists, or narrow §2's parenthetical to claim only that the disclosure lives in the record and the report and *not* the trend log |
-| **2** | *MATERIAL* — §4's replacement for RD-61 m2 asserts the row/formula outcome is *"never of the environment"*; one byte-identical record yields `NOT READY` with git and `READY-WITH-DEFERRALS` without it, because an uncheckable `SDR-n` warrant is added to `resolved_deferrals` anyway — permissive, against VIS-2. Eligibility contains it (no formal `READY FOR` reachable this way) | **open.** Fix shape: treat an uncheckable citation as unresolved (do not add to `resolved_deferrals` on the git-unavailable branch), or delete the *"and never of the environment"* clause |
-| **3** | *MATERIAL* — the RD-61 f1 repair bound the schema to `HEAD` while the instrument and every other identity input stay bound to the record's named commit; v2.3's own new ancestry rule guarantees `HEAD` is the later of the two, so a **committed** enum widening at `HEAD` produces an eligible record carrying `Met (with caveats)` and a `READY FOR` gate result at any ancestor commit. Narrower than the working-tree hole it replaced, and the precondition is now itself an auditable governance violation | **open.** Fix shape: read the schema at `rec["repository_commit"]` as the instrument is read, keeping the `HEAD`-drift check as a separate warning; or carry a `schema_sha256` field so the binding is recorded rather than recomputed |
-| **4** | *MINOR* — §4 says *"any other owner deferral"* is an `LA-11` error; for F5/F6 (the 2 of 39 roster rows that are neither F2 nor `NEVER_DEFERRABLE`) the check that actually fires is `LA-12`. Outcome claim is correct; only the identifier is wrong | **open.** Fix shape: say `LA-12`, or "a validation error" without naming a check |
-| **5** | *MINOR* — §4 line 529 still says an ineligible administration deposits `NONE — not eligible`; the RD-61 m3 repair changed the emitted string to `NONE — \`formal: false\`; …`, so the words *"not eligible"* are gone and §4 specifies the column twice, contradictorily | **open.** Fix shape: restate line 529 as "deposits the gate result — `NONE` followed by the limbs it failed" |
+| **1** | *MATERIAL* — the RD-61 f5 repair relocated the same-family obligation onto the generated report and justified it with *"the trend log's family reading runs through the reports its rows link"*; §6 is byte-identical, its nine columns link nothing, so the trend log carries no family signal at all | **repaired (v2.4)** — add a `Report`/`Same family` column to §6 and `trend_row()` so the asserted link exists, or narrow §2's parenthetical to claim only that the disclosure lives in the record and the report and *not* the trend log |
+| **2** | *MATERIAL* — §4's replacement for RD-61 m2 asserts the row/formula outcome is *"never of the environment"*; one byte-identical record yields `NOT READY` with git and `READY-WITH-DEFERRALS` without it, because an uncheckable `SDR-n` warrant is added to `resolved_deferrals` anyway — permissive, against VIS-2. Eligibility contains it (no formal `READY FOR` reachable this way) | **repaired (v2.4)** — treat an uncheckable citation as unresolved (do not add to `resolved_deferrals` on the git-unavailable branch), or delete the *"and never of the environment"* clause |
+| **3** | *MATERIAL* — the RD-61 f1 repair bound the schema to `HEAD` while the instrument and every other identity input stay bound to the record's named commit; v2.3's own new ancestry rule guarantees `HEAD` is the later of the two, so a **committed** enum widening at `HEAD` produces an eligible record carrying `Met (with caveats)` and a `READY FOR` gate result at any ancestor commit. Narrower than the working-tree hole it replaced, and the precondition is now itself an auditable governance violation | **repaired (v2.4)** — read the schema at `rec["repository_commit"]` as the instrument is read, keeping the `HEAD`-drift check as a separate warning; or carry a `schema_sha256` field so the binding is recorded rather than recomputed |
+| **4** | *MINOR* — §4 says *"any other owner deferral"* is an `LA-11` error; for F5/F6 (the 2 of 39 roster rows that are neither F2 nor `NEVER_DEFERRABLE`) the check that actually fires is `LA-12`. Outcome claim is correct; only the identifier is wrong | **repaired (v2.4)** — say `LA-12`, or "a validation error" without naming a check |
+| **5** | *MINOR* — §4 line 529 still says an ineligible administration deposits `NONE — not eligible`; the RD-61 m3 repair changed the emitted string to `NONE — \`formal: false\`; …`, so the words *"not eligible"* are gone and §4 specifies the column twice, contradictorily | **repaired (v2.4)** — restate line 529 as "deposits the gate result — `NONE` followed by the limbs it failed" |
 
-**Open: 5. Repaired: 0. Declined: 0.** No bytes changed; see the round
-note on why the repair arm is the owner's to authorize.
+**Repaired (v2.4): 5. Open: 0. Declined: 0.** All repairs are this session's
+judgement and are not confirmed — RD-67 re-reviews the v2.4 bytes.
 
 ## RD-66 — launch-gate schema, validator and renderer at v2.3
 
@@ -193,24 +193,26 @@ claims for its sanitizers and lexicons is still enumerated, not structural
 — "the third consecutive pass to do exactly that on exactly this
 mechanism" (RD-56 f2 → RD-62 f1 → v2.3).
 
-> **Dispositioned `open` for the same reason as RD-65** — the fourth
-> `REVISE` and arm (c). Note that RD-66's finding 1 is BLOCKING and is the
-> RD-47 f2 / RD-56 f2 / RD-62 f1 forgery reproduced at an unnamed site: it
-> is the sharpest evidence bearing on the convergence question the owner
-> must now weigh.
+> **Dispositioned `repaired (v2.4)` after the owner ruled arm (c)**, as with
+> RD-65. RD-66's finding 1 is BLOCKING and is the RD-47 f2 / RD-56 f2 /
+> RD-62 f1 forgery at an unnamed site; the v2.4 repair closes it *and* the
+> class, by making the renderer's forgery sweep mechanical (every string
+> leaf), so the next unnamed site fails the suite rather than the next
+> review. Repairs are this session's judgement and are not confirmed.
 
 | # | Finding | Disposition |
 |---|---|---|
-| **1** | *BLOCKING* — `_new_findings_cell` interpolates `prior_record.path` with no sanitizer; a record that validates with **zero errors, exit 0, no `--allow-invalid`** renders a document-level forged `GATE VERDICT: READY FOR …` and a second `## Computed figures` section above the real ones (confirmed under `pandoc -f gfm`). The RD-47 f2 forgery at the one free-text site none of the 34 renderer fixtures cover | **open.** Fix shape: `_new_findings_cell` returns `_inline(p)`. **Durable fix (root cause of four findings): a fixture that drives the forgery through *every* schema-declared string field mechanically, and an assertion over the sanitizer-coverage sweep itself — so the next unnamed site fails the suite, not the next review** |
-| **2** | *MATERIAL* — the Cf/Cc category strip excludes `Mn`; `U+034F` (the exact code point and the exact `("Cf","Mn")` fix RD-62 f12 handed over — the repair substituted `Cc` for `Mn`) defeats the placeholder lexicon, converting a wholly unfalsified record (no falsification attempt, empty G1 critic answer, empty falsification summary) into an **eligible `READY FOR …`** with zero errors | **open.** Fix shape: strip `Mn` as well as `Cf`/`Cc` (RD-62's original hand-over was `("Cf","Mn")`; the correct set is at least `Cf`, `Cc`, `Mn`), and correct the docstring's false completeness claim |
-| **3** | *MATERIAL* — `instrument.path` is chosen by the untrusted record, so the entire §8 binding (launch target, waves, E4 cases, routing authority) anchors to a record-selected path; a decoy instrument at a second repository path yields an eligible `READY FOR <attacker target>`. Latent, not live at `494acab` (1 of 451 `.md` files parses), but a stale in-tree copy of the instrument would bind superseded parameters silently | **open.** Fix shape: `INSTRUMENT_NAME` as a module constant beside `SCHEMA_NAME`, with `instrument.path` checked equal, or a schema `const` |
-| **4** | *MATERIAL* — the prior record is the one cited path resolved against the filesystem, not the commit; an untracked, never-committed two-key file inside the repository zeroes §6's New-findings column (3→0) with zero errors, falsifying the trend log F1 rests on. Verdict unchanged, so MATERIAL not BLOCKING | **open.** Fix shape: read the prior through `_git_show(commit_or_HEAD, rel)` as every other cited path is read, so an uncommitted prior is `Unknown`, not authoritative |
-| **5** | *MINOR* — `_unrenderable` interpolates `Path(record_path).name` raw; a record file named with newlines, plus `--allow-invalid`, puts a document-level `GATE VERDICT: READY FOR everything` in the report, exit 0 | **open.** Fix shape: `_inline(Path(record_path).name)` at renderer:123 |
-| **6** | *MINOR* — `render … --allow-invalid` on a record with N validation errors exits 0; RD-62 f6's "the return code is a surface too" was applied to the validator and the git-unavailable render, not this sibling | **open.** Fix shape: non-zero exit on the `--allow-invalid` write path when the record did not validate |
+| **1** | *BLOCKING* — `_new_findings_cell` interpolates `prior_record.path` with no sanitizer; a record that validates with **zero errors, exit 0, no `--allow-invalid`** renders a document-level forged `GATE VERDICT: READY FOR …` and a second `## Computed figures` section above the real ones (confirmed under `pandoc -f gfm`). The RD-47 f2 forgery at the one free-text site none of the 34 renderer fixtures cover | **repaired (v2.4)** — `_new_findings_cell` returns `_inline(p)`. **Durable fix (root cause of four findings): a fixture that drives the forgery through *every* schema-declared string field mechanically, and an assertion over the sanitizer-coverage sweep itself — so the next unnamed site fails the suite, not the next review** |
+| **2** | *MATERIAL* — the Cf/Cc category strip excludes `Mn`; `U+034F` (the exact code point and the exact `("Cf","Mn")` fix RD-62 f12 handed over — the repair substituted `Cc` for `Mn`) defeats the placeholder lexicon, converting a wholly unfalsified record (no falsification attempt, empty G1 critic answer, empty falsification summary) into an **eligible `READY FOR …`** with zero errors | **repaired (v2.4)** — strip `Mn` as well as `Cf`/`Cc` (RD-62's original hand-over was `("Cf","Mn")`; the correct set is at least `Cf`, `Cc`, `Mn`), and correct the docstring's false completeness claim |
+| **3** | *MATERIAL* — `instrument.path` is chosen by the untrusted record, so the entire §8 binding (launch target, waves, E4 cases, routing authority) anchors to a record-selected path; a decoy instrument at a second repository path yields an eligible `READY FOR <attacker target>`. Latent, not live at `494acab` (1 of 451 `.md` files parses), but a stale in-tree copy of the instrument would bind superseded parameters silently | **repaired (v2.4)** — `INSTRUMENT_NAME` as a module constant beside `SCHEMA_NAME`, with `instrument.path` checked equal, or a schema `const` |
+| **4** | *MATERIAL* — the prior record is the one cited path resolved against the filesystem, not the commit; an untracked, never-committed two-key file inside the repository zeroes §6's New-findings column (3→0) with zero errors, falsifying the trend log F1 rests on. Verdict unchanged, so MATERIAL not BLOCKING | **repaired (v2.4)** — read the prior through `_git_show(commit_or_HEAD, rel)` as every other cited path is read, so an uncommitted prior is `Unknown`, not authoritative |
+| **5** | *MINOR* — `_unrenderable` interpolates `Path(record_path).name` raw; a record file named with newlines, plus `--allow-invalid`, puts a document-level `GATE VERDICT: READY FOR everything` in the report, exit 0 | **repaired (v2.4)** — `_inline(Path(record_path).name)` at renderer:123 |
+| **6** | *MINOR* — `render … --allow-invalid` on a record with N validation errors exits 0; RD-62 f6's "the return code is a surface too" was applied to the validator and the git-unavailable render, not this sibling | **repaired (v2.4)** — non-zero exit on the `--allow-invalid` write path when the record did not validate |
 
-**Open: 6. Repaired: 0. Declined: 0.** No bytes changed.
+**Repaired (v2.4): 6. Open: 0. Declined: 0.** All repairs are this session's
+judgement and are not confirmed — RD-68 re-reviews the v2.4 bytes.
 
-## Round note — the fourth `REVISE`, and why nothing is `repaired` above
+## Round note — the fourth `REVISE`, the owner's arm (c), and the v2.4 repair
 
 The v2.3 review pair (RD-65/RD-66) returned `REVISE` and `REVISE`. Counting
 the pairs run against v2.0 (RD-47/RD-48), v2.1 (RD-55/RD-56), v2.2
@@ -232,13 +234,18 @@ Two facts make this round different from "another narrower round":
    instrument converges, and it should be weighed against arm (a) rather
    than absorbed as another round."*
 
-Therefore this session **did not repair to v2.4**. Repairing would be the
-"absorbed as another round" the packet warns against, and the choice
-between (a) approve v2.3 with its reading now complete and unfavourable,
-(c) authorize one more repair round — RD-66 hands over a *structural* fix
-(mechanical forgery sweep over every schema string field + a
-coverage-sweep assertion) that would break the instance-vs-class cycle the
-prior three rounds could not — or (d) decline, is the owner's under VIS-4.
-The findings are dispositioned `open` with fix shapes so the cost of the
-repair arm is legible; no instrument or script bytes were changed. Tracked
-as `syzygy-6j8`, which stays open.
+This session therefore did **not** repair unilaterally. It recorded the
+findings `open`, updated the P-34 packet to make the fourth-`REVISE` fork
+legible, and put the choice — (a) approve v2.3 as-read, (c) authorize a
+structural v2.4, (d) decline — to the owner under VIS-4.
+
+**The owner ruled arm (c) on 2026-08-16.** v2.4 is that structural repair.
+The eleven findings are now `repaired (v2.4)` above — this session's
+judgement, unconfirmed — and the fix is aimed at the class, not only the
+instances: the renderer's forgery suite now walks **every string leaf** of a
+populated record (both `\n` and `\r` spellings), so the next unnamed field
+fails the suite rather than the next review. The account is
+`round-2026-08h/LAUNCH-GATE-v2.4-SEMANTIC-DELTA.md`; the v2.4 bytes go back
+under fresh review as **RD-67** (policy) and **RD-68** (machinery). Tracked
+as `syzygy-6j8`, which stays open until that pair reports and the owner
+rules P-34's approve/decline.

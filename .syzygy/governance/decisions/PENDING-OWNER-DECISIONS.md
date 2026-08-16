@@ -150,9 +150,10 @@ repository.
 confirmed arguments still await the owner's Wave A and Wave B acts); `P-34`
 (launch-gate process-policy approval) is unruled on approve/decline, but the
 owner ruled its **arm (c)** on 2026-08-16 after the v2.3 reviews (RD-65/RD-66,
-both `REVISE`, the fourth consecutive pair) — a structural **v2.4** repair
-round is authorized and in progress, and P-34 returns to the owner once the
-v2.4 review pair reports; no formal launch-gate administration has been run;
+both `REVISE`, the fourth consecutive pair) — the structural **v2.4** repair
+is committed and its review pair (RD-67/RD-68) is dispatched, and P-34
+returns to the owner once that pair reports; no formal launch-gate
+administration has been run;
 `P-41`
 and `P-42` (the joint specification-acceptance and shape-to-spec craft acts)
 remain unruled. `PROJECT-STATUS.md`'s "Next lawful step" section is stale as

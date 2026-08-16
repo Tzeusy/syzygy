@@ -125,6 +125,15 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 SCHEMA_NAME = "launch-gate-administration.schema.json"
 
+#: The instrument's committed path is fixed by the tool, never chosen by the
+#: record (RD-66 f3). Like `SCHEMA_NAME`, a record must not select the bytes
+#: it is judged by: `instrument.path` was schema-typed `{"minLength": 1}`
+#: with nothing pinning it, so a decoy instrument at a second in-repo path —
+#: or a stale copy left in a round directory — bound an administration to a
+#: §8 no owner set, with zero errors. The record still declares the path (so
+#: the digest quote reads naturally), but it must equal this.
+INSTRUMENT_NAME = "launch-gate-pre-specifications.md"
+
 
 def _default_schema():
     """REPO-relative, computed at call time: fixtures swap `REPO` to a
@@ -255,15 +264,48 @@ def _load_json(text):
     return json.loads(text, object_pairs_hook=_no_duplicate_keys)
 
 
+#: Code points that render at zero advance width but fall in a category
+#: `_strip_invisible` does not sweep (their category is `Lo`, letters). These
+#: are Unicode's zero-width fillers \u2014 the residual RD-66 f2 named beyond the
+#: `Mn` gap. Listed explicitly BECAUSE they are the exception to the
+#: category rule, not a return to enumeration: the rule below is the sweep,
+#: this is the short, named tail the sweep provably cannot reach.
+_ZERO_WIDTH_FILLERS = frozenset(
+    "\u115f\u1160\u3164\uffa0"   # Hangul choseong/jungseong/filler/halfwidth
+)
+
+
 def _strip_invisible(raw: str) -> str:
-    """Zero-render characters are stripped by Unicode category, never by
-    enumeration: the RD-56 f13 repair enumerated five code points and
-    RD-62 f12 defeated it with a sixth (`Cf` alone holds over 150). `Cf`
-    and `Cc` are the classes that render as nothing; tab, newline and
-    carriage return stay \u2014 they are whitespace `str.split()` handles."""
+    """Strip characters that render at zero advance width, so an attacker
+    cannot make a placeholder ("none") read as substance by hanging an
+    invisible on it (RD-56 f13).
+
+    Swept by Unicode general category \u2014 never by an enumeration of code
+    points, which RD-56 f13 tried (five points) and RD-62 f12 defeated with
+    a sixth:
+
+      Cf  format characters (ZWSP, ZWJ, BOM, soft hyphen \u2014 `Cf` alone > 150)
+      Cc  C0/C1 controls (NUL and kin)
+      Mn  nonspacing combining marks (CGJ U+034F, the variation selectors,
+          Khmer inherent vowels) \u2014 zero advance width, RD-62 f12's handed-
+          over `("Cf","Mn")` set, dropped to `Cc` at v2.3 (RD-66 f2)
+
+    plus `_ZERO_WIDTH_FILLERS`, the short set of zero-width characters whose
+    category is `Lo` and so escape the sweep. Tab, newline and carriage
+    return are whitespace `str.split()` already handles and are kept.
+
+    This is a substance AID, not a complete model of "invisible": Unicode's
+    own Default_Ignorable_Code_Point property spans reserved ranges this
+    sweep does not enumerate, and the placeholder lexicon is content-blind
+    besides (packet residual 3). A novel zero-width character outside these
+    categories and this filler set is a disclosed residual, not a silent
+    pass \u2014 the eligibility limbs, not this strip, are what a gate result
+    rests on."""
     return "".join(ch for ch in raw
-                   if not (unicodedata.category(ch) in ("Cf", "Cc")
-                           and ch not in "\t\n\r"))
+                   if not (
+                       (unicodedata.category(ch) in ("Cf", "Cc", "Mn")
+                        or ch in _ZERO_WIDTH_FILLERS)
+                       and ch not in "\t\n\r"))
 
 
 def _is_placeholder(value: str) -> bool:
@@ -643,6 +685,26 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
     if _git is None:
         _git = _git_available()
 
+    # The record is read and parsed FIRST, because the schema is read at the
+    # commit the record names (RD-65 f3) and that commit lives in the record.
+    try:
+        raw = Path(record_path).read_text()
+    except OSError as exc:
+        return ([f"LA-1: record unreadable: {exc}"], notes, {})
+    try:
+        rec = _load_json(raw)
+    except ValueError as exc:
+        return ([f"LA-1: record is not valid JSON: {exc}"], notes, {})
+
+    # The commit the schema is read at, taken defensively from the raw
+    # record. A well-formed record carries a 40-hex `repository_commit`; one
+    # that does not is malformed and fails conformance below under whatever
+    # schema judges it, so it falls back to HEAD/working-tree rather than
+    # blocking on a commit it never supplied.
+    raw_commit = rec.get("repository_commit") if isinstance(rec, dict) else None
+    schema_commit = (raw_commit if isinstance(raw_commit, str)
+                     and re.fullmatch(r"[0-9a-f]{40}", raw_commit) else None)
+
     # RD-56 f3 — `--schema` was bound to nothing, so `--schema weak.json`
     # containing `{"type": "object"}` turned LA-1 off entirely and the tool
     # still printed a gate result. The flag stays (an operator may want to
@@ -651,12 +713,16 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
     # §4's fourth eligibility limb — an ineligible one.
     #
     # RD-61 f1 / RD-62 f5 — the committed schema is committed BYTES, not a
-    # path: the path comparison below passed a working-tree file edited in
-    # place, and an audit-clean enum widening admitted a §2-forbidden
-    # verdict word into an eligible READY record. With git available the
-    # schema is read from `HEAD` and a drifted working-tree copy is an
-    # error; the filesystem is a fallback only where the git limb already
-    # makes the record ineligible.
+    # working-tree path an in-place enum widening could quietly edit.
+    #
+    # RD-65 f3 — and the committing commit is the RECORD'S, never HEAD. v2.3
+    # read the schema at HEAD while the instrument and every other identity
+    # input read at the record's commit; the new LA-2 ancestry rule
+    # guarantees HEAD is the later of the two, so a committed enum widening
+    # at HEAD governed a record at any ancestor commit. The schema now binds
+    # exactly as the instrument does — to the commit the record names — and a
+    # working-tree copy that differs from the bytes that judged the record is
+    # its own error.
     schema_src = None
     default_schema = _default_schema()
     if schema_path is not None:
@@ -671,13 +737,13 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
         except OSError as exc:
             return ([f"LA-1: schema unreadable at {schema_path}: {exc}"],
                     notes, {})
-    elif _git:
-        blob = _git_show("HEAD", SCHEMA_NAME)
+    elif _git and schema_commit is not None:
+        blob = _git_show(schema_commit, SCHEMA_NAME)
         if blob is None:
             errors.append(
-                f"LA-1: {SCHEMA_NAME} is not committed at HEAD — a record "
-                "validated against uncommitted rules is not validated "
-                "(RD-61 f1)")
+                f"LA-1: {SCHEMA_NAME} is not committed at {schema_commit[:12]}"
+                "… — a record is judged against the schema committed at the "
+                "commit it names, and that commit carries none (RD-65 f3)")
         else:
             schema_src = blob.decode("utf-8", errors="replace")
             try:
@@ -687,9 +753,15 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
             if wt is not None and wt != schema_src:
                 errors.append(
                     f"LA-1: the working-tree {SCHEMA_NAME} differs from the "
-                    "schema committed at HEAD — validation ran against the "
-                    "committed bytes; restore or commit the working tree "
-                    "before citing this record (RD-61 f1)")
+                    "schema committed at the record's commit — validation ran "
+                    "against the committed bytes; restore or commit the "
+                    "working tree before citing this record (RD-61 f1)")
+    elif _git:
+        # git available but the record names no readable commit — fall back
+        # to HEAD so a malformed record still gets a real conformance read.
+        blob = _git_show("HEAD", SCHEMA_NAME)
+        if blob is not None:
+            schema_src = blob.decode("utf-8", errors="replace")
     if schema_src is None:
         try:
             schema_src = default_schema.read_text()
@@ -706,15 +778,6 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
     if audit:
         return (errors + ["LA-1: " + a for a in audit], notes, {})
 
-    try:
-        raw = Path(record_path).read_text()
-    except OSError as exc:
-        return ([f"LA-1: record unreadable: {exc}"], notes, {})
-    try:
-        rec = _load_json(raw)
-    except ValueError as exc:
-        return ([f"LA-1: record is not valid JSON: {exc}"], notes, {})
-
     # ---- LA-1 schema conformance ----------------------------------------
     schema_errs = []
     _instance_errors(rec, schema, schema, "$", schema_errs)
@@ -726,6 +789,19 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
 
     commit = rec["repository_commit"]
     rows = {q["question_id"]: q for q in rec["question_results"]}
+
+    # ---- LA-2 the instrument is the tool's, not the record's ------------
+    # RD-66 f3 — read at the commit or not, the instrument must be the ONE
+    # the tool binds. Checked here, git-independent, before any binding is
+    # read from it: a decoy at `docs/launch-gate-pre-specifications.md`, or a
+    # stale copy in a round directory, otherwise carried its own §8 and
+    # produced an eligible READY for a launch target no owner set.
+    if rec["instrument"]["path"] != INSTRUMENT_NAME:
+        errors.append(
+            f"LA-2: the record binds instrument `{rec['instrument']['path']}`"
+            f", not the tool's `{INSTRUMENT_NAME}` — the instrument that owns "
+            "§8, the waves, the E4 cases and the routing authority is fixed "
+            "by the tool, never selected by the record under judgement")
 
     # ---- LA-4 roster ----------------------------------------------------
     seen = [q["question_id"] for q in rec["question_results"]]
@@ -1054,7 +1130,19 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
                 "review-finding numbering. A deferral is claimed by citing "
                 "a made decision")
         elif re.fullmatch(r"SDR-\d+[a-z]?(?:\([a-z]\))?", cite):
-            if _git and not _sdr_exists(cite, commit):
+            # RD-65 f2 — an SDR warrant resolves ONLY when git actually
+            # confirmed it. The former `else` added the deferral to
+            # `resolved_deferrals` whenever `_git` was False, so one
+            # byte-identical record read READY-WITH-DEFERRALS with git
+            # unavailable and NOT READY with it: an uncheckable warrant
+            # counted as a found one, which is the permissive direction
+            # VIS-2 forbids. A path citation already fails closed when git
+            # is down (it cannot resolve); the SDR branch now matches it.
+            # The record is ineligible without git regardless; this only
+            # keeps the row/formula outcome honest.
+            if not _git:
+                pass                       # unverifiable → unresolved
+            elif not _sdr_exists(cite, commit):
                 errors.append(
                     f"LA-11: {cite} names no decision in {DECISIONS_HOME} "
                     f"at {commit}")
@@ -1331,42 +1419,72 @@ def _compute(rec, rows, prior_path, prior_errors=(), git_ok=True,
     #   None         no prior is declared — this record opens the log
     #   "unknown"    a prior IS declared and could not be read
     new_findings = None
-    src = prior_path
-    if src is None and rec.get("prior_record"):
+    prior_text = None                       # the JSON to compare against
+    prior_label = None                      # names it in any error
+    commit = rec["repository_commit"]
+    if prior_path is not None:
+        # `--prior` override, for inspection. Containment and the declared-
+        # identity check ran in validate(); a filesystem read is acceptable
+        # on this explicitly-inspection route.
+        try:
+            prior_text = Path(prior_path).read_text()
+            prior_label = Path(prior_path).name
+        except OSError:
+            new_findings = "unknown"
+    elif rec.get("prior_record"):
+        rel = rec["prior_record"]["path"]
         # RD-56 f6 — this is the only path whose CONTENT is read and
-        # arithmetic performed on, and it was the one path not resolved
-        # against the repository: `REPO / "../../../forged.json"` escapes,
-        # and a hand-written file asserting every row was already `Not met`
-        # zeroed the §6 new-findings column with no error raised.
-        cand = (REPO / rec["prior_record"]["path"]).resolve()
+        # arithmetic performed on, so it must resolve inside the repository:
+        # `REPO / "../../../forged.json"` escapes.
+        cand = (REPO / rel).resolve()
         try:
             inside = cand.is_relative_to(REPO.resolve())
         except AttributeError:                      # Python < 3.9
             inside = str(cand).startswith(str(REPO.resolve()) + "/")
-        src = str(cand) if inside else None
         if not inside:
             errs.append(
                 "LA-15: the prior record's path "
-                f"{rec['prior_record']['path']!r} resolves outside the "
+                f"{rel!r} resolves outside the "
                 "repository — the new-findings column is computed from it, "
                 "so it is evidence and must live where evidence lives")
-            # RD-62 f4 — leaving this `None` re-created RD-47 f3's false
-            # absence: the report said "declares no prior — it opens the
-            # log" about a record that declares one. A declared prior that
-            # cannot lawfully be read is Unknown, never absent.
+            # RD-62 f4 — a declared prior that cannot lawfully be read is
+            # Unknown, never absent (RD-47 f3's false "no prior record").
             new_findings = "unknown"
-    if src is not None:
+        elif not git_ok:
+            # RD-66 f4 — the prior is evidence, read at the commit. Without
+            # git the committed bytes cannot be read, so the column is
+            # Unknown; the record is ineligible in this state anyway.
+            new_findings = "unknown"
+        else:
+            # RD-66 f4 — read the COMMITTED bytes, never the working tree. A
+            # filesystem read let an untracked, never-committed two-key file
+            # inside the repository zero the §6 new-findings column with no
+            # error: evidence lives in the repository AND at the commit, as
+            # every other cited path (LA-6 evidence, LA-11 warrants) is read.
+            relpath = str(cand.relative_to(REPO.resolve()))
+            blob = _git_show(commit, relpath)
+            if blob is None:
+                errs.append(
+                    f"LA-15: the prior record {rel!r} is not committed at "
+                    f"{commit[:12]}… — the new-findings column is computed "
+                    "from it, so it is evidence and must be committed where "
+                    "evidence lives, not read from the working tree (RD-66 "
+                    "f4)")
+                new_findings = "unknown"
+            else:
+                prior_text = blob.decode("utf-8", errors="replace")
+                prior_label = rel
+    if prior_text is not None and new_findings is None:
         try:
-            pj = _load_json(Path(src).read_text())
+            pj = _load_json(prior_text)
             # RD-62 f3 — the declared `prior_record` identity controls the
-            # comparison, so the file read must BE that identity: `--prior`
-            # had a commit-equality check and this branch had none.
+            # comparison, so the bytes read must BE that identity.
             declared = (rec.get("prior_record") or {}).get(
                 "repository_commit")
             if pj.get("repository_commit") != declared:
                 errs.append(
                     "LA-15: the prior record read from "
-                    f"{Path(src).name} names commit "
+                    f"{prior_label} names commit "
                     f"{pj.get('repository_commit')} but prior_record "
                     f"declares {declared} — the declared identity controls "
                     "the comparison")
@@ -1381,7 +1499,7 @@ def _compute(rec, rows, prior_path, prior_errors=(), git_ok=True,
                                 if verdict_of.get(q) == SCOPED
                                 and pv.get(q) not in (NOT_MET, SCOPED)]
                 new_findings = len(newly_not_met) + len(newly_scoped)
-        except (OSError, ValueError):
+        except ValueError:
             new_findings = "unknown"
 
     # Eligibility is computed LAST, because its fourth limb counts errors —
@@ -1929,17 +2047,30 @@ def _selftest():
     _expect_verdict("a Not met F2 with no deferral blocks",
                     lambda r: r["question_results"][ROSTER.index("F2")].update(
                         verdict=NOT_MET, counterexample="x"), "NOT READY")
+    # git=True: the SDR warrant must be VERIFIED to resolve (RD-65 f2), so
+    # these run against the real SURFACE-DECISION-RECORD.md where SDR-9 lives.
     _expect_verdict(
         "a Not met F2 with an owner-cited deferral is READY-WITH-DEFERRALS",
         lambda r: (r["question_results"][ROSTER.index("F2")].update(
             verdict=NOT_MET, counterexample="x"), _defer(r)),
-        "READY-WITH-DEFERRALS")
+        "READY-WITH-DEFERRALS", git=True)
     _expect_verdict(
         "an Unknown F2 is deferrable on the same terms",
         lambda r: (r["question_results"][ROSTER.index("F2")].update(
             verdict=UNKNOWN, evidence=[], unknown_reason="no trend",
             unknown_settlement="two more administrations"), _defer(r)),
-        "READY-WITH-DEFERRALS")
+        "READY-WITH-DEFERRALS", git=True)
+    # RD-65 f2 — with git unavailable the SDR warrant cannot be verified, so
+    # it does NOT resolve: the byte-identical record that reads
+    # READY-WITH-DEFERRALS with git must read NOT READY without it, never the
+    # reverse (the former permissive `else` counted an uncheckable warrant as
+    # found, against VIS-2). This is the reversion detector for that fix.
+    _expect_verdict(
+        "an SDR deferral does not resolve without git (unverifiable is "
+        "unresolved)",
+        lambda r: (r["question_results"][ROSTER.index("F2")].update(
+            verdict=NOT_MET, counterexample="x"), _defer(r)),
+        "NOT READY", git=False)
     _expect_verdict("a non-empty reopen list blocks every pass branch",
                     lambda r: r["e3"]["reopen_items"].append(
                         {"item": "x", "why": "y"}), "NOT READY")
@@ -2329,7 +2460,8 @@ def _selftest():
                        "verdict word (committed bytes govern)",
                        errs, "is outside the")
                 _scase("working-tree schema drift is its own error",
-                       errs, "differs from the schema committed at HEAD")
+                       errs, "differs from the schema committed at the "
+                       "record's commit")
                 (d / SCHEMA_NAME).write_text(schema_bytes)
 
                 # Off-branch commit: exists, same tree, reachable from no
@@ -2353,26 +2485,164 @@ def _selftest():
                        "prior (ancestry, not existence)",
                        errs, "not an ancestor")
 
-                # The prior file read must BE the declared identity
-                # (RD-62 f3): same path, different repository_commit inside.
-                (d / "prior.json").write_text(json.dumps(
-                    {"repository_commit": "f" * 40,
-                     "question_results": []}))
-                errs, _n, comp = _scratch_validate(
+    # RD-65 f3 and RD-66 f4 need a TWO-commit repository: the schema and the
+    # prior record are each read AT THE RECORD'S COMMIT, so distinguishing
+    # "committed at an ancestor" from "committed at HEAD" (f3) and "committed"
+    # from "in the working tree only" (f4) requires two commits to point at.
+    if _git_available():
+        import tempfile
+        inst_blob2 = _git_show("HEAD", "launch-gate-pre-specifications.md")
+        if inst_blob2:
+            schema_bytes2 = _default_schema().read_text()
+            inst_sha2 = hashlib.sha256(inst_blob2).hexdigest()
+            with tempfile.TemporaryDirectory() as td2:
+                d2 = Path(td2)
+                env2 = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t",
+                        "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL":
+                        "t@t", "PATH": os.environ.get("PATH", "")}
+
+                def _g2(*cmd):
+                    return subprocess.run(
+                        ["git", "-C", str(d2)] + list(cmd),
+                        capture_output=True, text=True, env=env2).stdout.strip()
+
+                (d2 / "launch-gate-pre-specifications.md").write_bytes(
+                    inst_blob2)
+                (d2 / SCHEMA_NAME).write_text(schema_bytes2)
+                (d2 / "README.md").write_text("scratch\n")
+                for cmd in (("init", "-q"), ("add", "-A"),
+                            ("commit", "-qm", "c0")):
+                    _g2(*cmd)
+                c0 = _g2("rev-parse", "HEAD")
+                # A prior administration committed AT c0: fewer Not-met rows
+                # than the record under test, so the comparison is a real
+                # integer. Its own repository_commit is c0 (matches what the
+                # record will declare), and it lives in a SECOND commit so
+                # the record can name c1 while the prior names its ancestor.
+                prior_rec = _base_record(True)
+                prior_rec = json.loads(json.dumps(prior_rec).replace(
+                    prior_rec["repository_commit"], c0))
+                # prior: every row Met (the base record's default) — the
+                # record under test will regress A1, giving exactly one new.
+                (d2 / "prior.json").write_text(json.dumps(prior_rec))
+                # A widened schema committed AT c1 (HEAD): the record binds
+                # c1's ancestor c0, whose schema does NOT carry the forbidden
+                # word — so f3's attack (widen at HEAD, anchor at an ancestor)
+                # is refused.  The widened copy governs only records that
+                # name c1 itself.
+                for cmd in (("add", "-A"), ("commit", "-qm", "c1")):
+                    _g2(*cmd)
+                c1 = _g2("rev-parse", "HEAD")
+
+                def _sv2(mutate, at_commit, prior_path=None):
+                    rec = _base_record(True)
+                    rec = json.loads(json.dumps(rec).replace(
+                        rec["repository_commit"], at_commit))
+                    rec["instrument"]["sha256"] = inst_sha2
+                    mutate(rec)
+                    global REPO
+                    saved, REPO = REPO, d2
+                    try:
+                        with tempfile.NamedTemporaryFile(
+                                "w", suffix=".json", delete=False) as fS:
+                            json.dump(rec, fS)
+                            pS = Path(fS.name)
+                        try:
+                            return validate(pS, prior_path=prior_path,
+                                            _git=True)
+                        finally:
+                            pS.unlink()
+                    finally:
+                        REPO = saved
+
+                def _scase2(name, errs, *want_all):
+                    n_cases[0] += 1
+                    joined = " || ".join(errs)
+                    ok = all(w in joined for w in want_all)
+                    print(f"  {'pass' if ok else 'FAIL'}  {name}")
+                    if not ok:
+                        failures.append((name, " AND ".join(want_all),
+                                         joined[:300]))
+
+                # RD-66 f4 — a COMMITTED prior at the record's commit computes
+                # a real integer: the record (bound to c1, where prior.json is
+                # committed) regresses A1 from the prior's Met.
+                def _regress_a1(r):
+                    r["question_results"][0].update(
+                        verdict=NOT_MET, counterexample="x")
+                    r["prior_record"] = {"path": "prior.json",
+                                         "repository_commit": c0,
+                                         "date": "2020-01-01"}
+                errs, _n, comp = _sv2(_regress_a1, c1)
+                n_cases[0] += 1
+                ok = comp.get("new_findings") == 1 and not [
+                    e for e in errs if "LA-15" in e]
+                print(f"  {'pass' if ok else 'FAIL'}  a committed prior at the "
+                      "record's commit computes new-findings as an integer")
+                if not ok:
+                    failures.append(("committed prior → integer", "1",
+                                     repr(comp.get("new_findings")) +
+                                     " || " + " || ".join(errs)[:200]))
+
+                # RD-66 f4 reversion detector — an UNCOMMITTED prior (working
+                # tree only, never committed) is Unknown, never a filesystem
+                # read an untracked file can forge. Reverting to
+                # `Path(src).read_text()` makes this compute an integer.
+                (d2 / "untracked-prior.json").write_text(json.dumps({
+                    "repository_commit": c1,
+                    "question_results": [{"question_id": "A1",
+                                          "verdict": NOT_MET}]}))
+                errs, _n, comp = _sv2(
                     lambda r: r.update(prior_record={
-                        "path": "prior.json",
-                        "repository_commit": head,
-                        "date": "2020-01-01"}))
-                _scase("a prior file whose own commit differs from the "
-                       "declared identity is refused",
-                       errs, "the declared identity controls")
+                        "path": "untracked-prior.json",
+                        "repository_commit": c1, "date": "2020-01-01"}), c1)
+                _scase2("an uncommitted prior record is not read from the "
+                        "working tree (committed bytes govern)",
+                        errs, "is not committed at")
                 n_cases[0] += 1
                 ok = comp.get("new_findings") == "unknown"
-                print(f"  {'pass' if ok else 'FAIL'}  ...and the "
-                      "new-findings column reads Unknown, not a number")
+                print(f"  {'pass' if ok else 'FAIL'}  ...and its new-findings "
+                      "column reads Unknown, not a forged number")
                 if not ok:
-                    failures.append(("prior identity → unknown", "unknown",
+                    failures.append(("uncommitted prior → unknown", "unknown",
                                      repr(comp.get("new_findings"))))
+
+                # RD-62 f3 — a COMMITTED prior whose own repository_commit
+                # differs from the declared identity is refused (now on
+                # committed bytes, since the read is via git).
+                errs, _n, comp = _sv2(
+                    lambda r: r.update(prior_record={
+                        "path": "prior.json",
+                        "repository_commit": c1,   # prior.json declares c0
+                        "date": "2020-01-01"}), c1)
+                _scase2("a committed prior whose own commit differs from the "
+                        "declared identity is refused",
+                        errs, "the declared identity controls")
+
+                # RD-65 f3 — the schema is read at the RECORD'S commit, not
+                # HEAD. Widen the enum at c1 (HEAD), commit it, then bind a
+                # record to the ANCESTOR c0 and answer a row with the
+                # forbidden word: c0's schema rejects it. Reverting to
+                # `_git_show("HEAD", …)` reads c1's widened schema and admits
+                # the word into an eligible record.
+                widened = schema_bytes2.replace(
+                    '"Not met (out of launch scope)",',
+                    '"Not met (out of launch scope)", "Met (with caveats)",',
+                    1)
+                assert widened != schema_bytes2
+                (d2 / SCHEMA_NAME).write_text(widened)
+                for cmd in (("add", SCHEMA_NAME), ("commit", "-qm", "widen")):
+                    _g2(*cmd)
+                c2 = _g2("rev-parse", "HEAD")
+                assert c2 != c1
+
+                def _forbidden2(r):
+                    r["question_results"][0]["verdict"] = "Met (with caveats)"
+                errs, _n, _c = _sv2(_forbidden2, c0)
+                _scase2("the schema is read at the record's commit — a "
+                        "widening at HEAD does not govern an ancestor "
+                        "administration",
+                        errs, "is outside the")
 
     # RD-61 f4 — `" "` satisfied minLength, normalized to nothing, and
     # switched LA-3b off from inside the record.
