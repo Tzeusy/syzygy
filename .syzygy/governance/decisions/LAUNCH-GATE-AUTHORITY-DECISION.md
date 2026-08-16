@@ -229,8 +229,14 @@ administration run by this corpus's own model family — the strictest
 available reading of assurance independence, and a real constraint on who
 can administer the gate.
 
-**(c) Authorize one more repair round (v2.4), then re-review.** The v2.3
-reviews (RD-65/RD-66) have now returned, both `REVISE`, so this arm no
+**(c) Authorize one more repair round (v2.4), then re-review.**
+**⇒ Owner ruling 2026-08-16: this arm is chosen.** The v2.4 repair round is
+authorized and in progress — the eleven open findings repaired with RD-66's
+structural fixtures at the core, a v2.4 semantic delta, and a fresh-context
+re-review. This is a work authorization, not the policy approval: **P-34's
+approve/decline stays open** and returns to the owner once the v2.4 review
+pair reports. The v2.3 reviews (RD-65/RD-66) have now returned, both
+`REVISE`, so this arm no
 longer means "wait for the pending look" — that look is done. It now means
 **spending a fifth repair-and-review cycle** on the eleven open v2.3
 findings. What is genuinely new this time: RD-66 hands over a *structural*
