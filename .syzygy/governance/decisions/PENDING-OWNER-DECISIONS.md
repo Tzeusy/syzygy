@@ -148,8 +148,11 @@ repository.
 
 **What this does not close.** Wave A and Wave B remain **un-acted** (the
 confirmed arguments still await the owner's Wave A and Wave B acts); `P-34`
-(launch-gate v2.2 process-policy approval) is unruled and its repaired bytes
-remain unreviewed; no formal launch-gate administration has been run; `P-41`
+(launch-gate v2.3 process-policy approval) is unruled — its v2.3 repair has now
+been reviewed (RD-65/RD-66, both `REVISE`, the fourth consecutive `REVISE`
+pair), and the packet's arm (c) makes that fourth `REVISE` a live owner
+decision rather than an automatic v2.4; no formal launch-gate administration
+has been run; `P-41`
 and `P-42` (the joint specification-acceptance and shape-to-spec craft acts)
 remain unruled. `PROJECT-STATUS.md`'s "Next lawful step" section is stale as
 of this round and needs its own refresh, out of scope for this batch.
