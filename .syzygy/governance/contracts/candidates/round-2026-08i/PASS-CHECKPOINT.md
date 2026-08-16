@@ -13,7 +13,7 @@
 |---|---|---|
 | 0 | Preflight — exact-state verification, baseline battery | **done** (`CONVERGENCE-PREFLIGHT.md`, this directory) |
 | 1 | A — reconcile active truth path (PROJECT-STATUS, pending register, decisions/README, PROCESS-GLOSSARY, AGENTS.md, README) | **done** — plus: DECISION-HISTORY.md created; charter's stale P-34 downstream row removed and views/router regenerated; 7 view-generator fixtures re-anchored; pre-existing dry-run render drift (red at clean `9c43fc5`) regenerated clean |
-| 2 | B — Wave A/B act verification, install simulation, clean clone, owner action sheet | pending |
+| 2 | B — Wave A/B act verification, install simulation, clean clone, owner action sheet | **done** — P-33 (M) verified; ceremony §2 step 3 redrafted to (M), §1 rows A/B + §7 item 11 de-staled (commit `96b3efd`); both manifest digests verified equal to the RD-31b/RD-32c-confirmed arguments; clean-clone battery 32 OK/18 WARN/0 FAIL; (M) install simulated in the clone, 19/19 + 11/11 rows OK from the governed home; action sheet is response-only (draft in the lead session's scratchpad) |
 | 3 | C1 — P-41/P-42 consolidated repair as one model + semantic delta + blind fixture | pending |
 | 4 | C2 — freeze; one combined adversarial review (fresh context) | pending |
 | 5 | C3 — blocker-only repair (if needed); one confirming review | pending |
