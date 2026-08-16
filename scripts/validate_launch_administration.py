@@ -79,7 +79,7 @@ Checks (each with at least one `--selftest` mutation fixture):
         `full` and must be fresh-context (§2). It does NOT reject a
         `formal: false` delta record: such a record is lawful, and what
         stops it supporting a gate decision is the eligibility computation,
-        which yields `NO FORMAL GATE RESULT` for it. *(Corrected — review
+        which yields a `NONE — <limbs>` gate result for it. *(Corrected — review
         RD-48 finding 5 found this entry claiming "a `delta` record can
         never support a gate decision", while the check gates entirely on
         `rec["formal"]`. A record with `formal: false`, kind `delta` and
@@ -119,17 +119,31 @@ import os
 import re
 import subprocess
 import sys
+import unicodedata
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-DEFAULT_SCHEMA = REPO / "launch-gate-administration.schema.json"
+SCHEMA_NAME = "launch-gate-administration.schema.json"
+
+
+def _default_schema():
+    """REPO-relative, computed at call time: fixtures swap `REPO` to a
+    scratch repository, and a module-load-time constant kept pointing at the
+    real repository — which is how the schema-identity check would have been
+    untestable (RD-61 f1)."""
+    return REPO / SCHEMA_NAME
+
+
 DECISIONS_HOME = ".syzygy/governance/decisions"
 
 #: Files that live in the decisions home but are not warrants. The queue
-#: records what the owner has NOT decided; a README routes. `_sdr_exists`
-#: already excluded the queue for `SDR-n` citations, and the path branch did
-#: not — so the same file granted nothing by identifier and everything by
-#: path (review RD-47 finding 4). One list, both branches.
+#: records what the owner has NOT decided; a README routes. This
+#: classification serves the PATH branch of the deferral check; the
+#: identifier branch does not consult it — an `SDR-n` citation resolves
+#: only against `SURFACE-DECISION-RECORD.md`, the record that owns SDR
+#: rows, which is stricter than any exclusion list (RD-61 f3, RD-62 f9 —
+#: the earlier "one list, both branches" claim described a property the
+#: code did not have).
 _NON_WARRANT_FILES = frozenset((
     "PENDING-OWNER-DECISIONS.md",
     "README.md",
@@ -241,7 +255,15 @@ def _load_json(text):
     return json.loads(text, object_pairs_hook=_no_duplicate_keys)
 
 
-_INVISIBLE = "\u200b\u200c\u200d\u2060\ufeff"
+def _strip_invisible(raw: str) -> str:
+    """Zero-render characters are stripped by Unicode category, never by
+    enumeration: the RD-56 f13 repair enumerated five code points and
+    RD-62 f12 defeated it with a sixth (`Cf` alone holds over 150). `Cf`
+    and `Cc` are the classes that render as nothing; tab, newline and
+    carriage return stay \u2014 they are whitespace `str.split()` handles."""
+    return "".join(ch for ch in raw
+                   if not (unicodedata.category(ch) in ("Cf", "Cc")
+                           and ch not in "\t\n\r"))
 
 
 def _is_placeholder(value: str) -> bool:
@@ -249,9 +271,7 @@ def _is_placeholder(value: str) -> bool:
     # Invisible characters are stripped BEFORE tokenizing: `"none\u200b"`
     # is not a word the lexicon must learn, it is `"none"` wearing a
     # character `str.split()` does not treat as whitespace (RD-56 f13).
-    raw = str(value).lower()
-    for ch in _INVISIBLE:
-        raw = raw.replace(ch, "")
+    raw = _strip_invisible(str(value).lower())
     toks = [t.strip("()[[]].,;:\"'*_`") for t in raw.split()]
     toks = [t for t in toks if t]
     return not toks or all(t in _PLACEHOLDER_TOKENS for t in toks)
@@ -325,6 +345,16 @@ def _audit_schema(node, path, out):
                    "record carry fields this schema never named, including "
                    "a claimed verdict, which the record format exists to "
                    "make impossible")
+    # The interpreter matches patterns with `fullmatch` (RD-62 f11), which
+    # agrees with an anchored pattern and silently strengthens an
+    # unanchored one — so an unanchored pattern fails closed here rather
+    # than meaning something different under the two implementations.
+    if "pattern" in node and not (str(node["pattern"]).startswith("^")
+                                  and str(node["pattern"]).endswith("$")):
+        out.append(f"{path}: pattern {node['pattern']!r} is not anchored "
+                   "`^…$` — this validator matches patterns exactly, and "
+                   "an unanchored pattern would mean something different "
+                   "under a reference implementation")
     for k, v in node.items():
         here = f"{path}/{k}"
         if k not in _SUPPORTED_KEYWORDS:
@@ -399,7 +429,11 @@ def _instance_errors(inst, sch, root, path, out):
         if "minLength" in sch and len(inst) < sch["minLength"]:
             out.append(f"{path}: shorter than the required "
                        f"{sch['minLength']} character(s)")
-        if "pattern" in sch and not re.search(sch["pattern"], inst):
+        # `fullmatch`, never `search`: Python's `$` matches before a
+        # trailing newline, so `"2026-08-11\n"` satisfied every anchored
+        # pattern in the schema (RD-62 f11). `_audit_schema` requires the
+        # `^…$` anchors, so fullmatch and the schema's own intent agree.
+        if "pattern" in sch and not re.fullmatch(sch["pattern"], inst):
             out.append(f"{path}: {inst!r} does not match "
                        f"/{sch['pattern']}/")
 
@@ -473,15 +507,22 @@ def _path_kind(commit, path):
 
 
 def _sdr_exists(ident, commit):
-    """An SDR-n citation must name a decision present in the decisions home
-    at the named commit — matched at identifier boundaries, and scoped to
-    MADE decisions: a mention in the pending queue grants nothing."""
-    pat = r"(^|[^-A-Za-z0-9])" + re.escape(ident) + r"($|[^0-9a-z(])"
+    """An SDR-n citation resolves against the one record that OWNS SDR
+    rows — `SURFACE-DECISION-RECORD.md` — and against its definition shape
+    (`**SDR-n**`), never a bare mention elsewhere in the decisions home.
+
+    The previous form grepped the whole home minus the queue, so an
+    identifier whose only occurrence was a narrative mention in the
+    launch-gate `HISTORY.md` — a file the path branch refuses by name as
+    "an index, a queue or a log" — granted a deferral (RD-61 f3), and the
+    exclusion list was one file where the path branch's was a
+    classification (RD-62 f9). Scoping to the owning record makes the two
+    branches consistent by construction rather than by parallel lists."""
+    pat = r"\*\*" + re.escape(ident) + r"\*\*"
     try:
         return subprocess.run(
             ["git", "-C", str(REPO), "grep", "-qE", pat, commit, "--",
-             DECISIONS_HOME,
-             f":(exclude){DECISIONS_HOME}/PENDING-OWNER-DECISIONS.md"],
+             f"{DECISIONS_HOME}/SURFACE-DECISION-RECORD.md"],
             capture_output=True).returncode == 0
     except OSError:
         return False
@@ -602,24 +643,63 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
     if _git is None:
         _git = _git_available()
 
-    schema_path = Path(schema_path or DEFAULT_SCHEMA)
-    try:
-        schema = _load_json(Path(schema_path).read_text())
-    except (OSError, ValueError) as exc:
-        return ([f"LA-1: schema unreadable at {schema_path}: {exc}"], notes,
-                {})
     # RD-56 f3 — `--schema` was bound to nothing, so `--schema weak.json`
     # containing `{"type": "object"}` turned LA-1 off entirely and the tool
     # still printed a gate result. The flag stays (an operator may want to
     # try a proposed schema), but a record validated against anything other
     # than the committed schema is an INVALID record, and therefore — via
     # §4's fourth eligibility limb — an ineligible one.
-    if Path(schema_path).resolve() != Path(DEFAULT_SCHEMA).resolve():
+    #
+    # RD-61 f1 / RD-62 f5 — the committed schema is committed BYTES, not a
+    # path: the path comparison below passed a working-tree file edited in
+    # place, and an audit-clean enum widening admitted a §2-forbidden
+    # verdict word into an eligible READY record. With git available the
+    # schema is read from `HEAD` and a drifted working-tree copy is an
+    # error; the filesystem is a fallback only where the git limb already
+    # makes the record ineligible.
+    schema_src = None
+    default_schema = _default_schema()
+    if schema_path is not None:
+        schema_path = Path(schema_path)
         errors.append(
             f"LA-1: the record was validated against {schema_path}, not the "
-            f"committed schema {Path(DEFAULT_SCHEMA).name} — a record is "
-            "conformant to the schema the instrument binds or it is not a "
-            "record (§5). Use this only for inspection")
+            f"committed schema {SCHEMA_NAME} — a record is conformant to "
+            "the schema the instrument binds or it is not a record (§5). "
+            "Use this only for inspection")
+        try:
+            schema_src = schema_path.read_text()
+        except OSError as exc:
+            return ([f"LA-1: schema unreadable at {schema_path}: {exc}"],
+                    notes, {})
+    elif _git:
+        blob = _git_show("HEAD", SCHEMA_NAME)
+        if blob is None:
+            errors.append(
+                f"LA-1: {SCHEMA_NAME} is not committed at HEAD — a record "
+                "validated against uncommitted rules is not validated "
+                "(RD-61 f1)")
+        else:
+            schema_src = blob.decode("utf-8", errors="replace")
+            try:
+                wt = default_schema.read_text()
+            except OSError:
+                wt = None
+            if wt is not None and wt != schema_src:
+                errors.append(
+                    f"LA-1: the working-tree {SCHEMA_NAME} differs from the "
+                    "schema committed at HEAD — validation ran against the "
+                    "committed bytes; restore or commit the working tree "
+                    "before citing this record (RD-61 f1)")
+    if schema_src is None:
+        try:
+            schema_src = default_schema.read_text()
+        except OSError as exc:
+            return ([f"LA-1: schema unreadable at {default_schema}: {exc}"],
+                    notes, {})
+    try:
+        schema = _load_json(schema_src)
+    except ValueError as exc:
+        return (errors + [f"LA-1: schema unparseable: {exc}"], notes, {})
     audit = []
     _audit_root_is_a_record_schema(schema, audit)
     _audit_schema(schema, "#", audit)
@@ -673,6 +753,14 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
                           "this repository — every citation is anchored to "
                           "it")
         else:
+            # RD-61 f2 — existence alone anchored nothing: a dangling or
+            # off-branch commit can carry a rewritten §8 no branch ever
+            # held, and the record validated with zero errors.
+            if not _is_ancestor(commit, "HEAD"):
+                errors.append(
+                    f"LA-2: named commit {commit} is not reachable from the "
+                    "repository's current HEAD — an administration anchored "
+                    "off-branch can quote bytes no branch carries")
             blob = _git_show(commit, rec["instrument"]["path"])
             if blob is None:
                 errors.append(
@@ -748,7 +836,17 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
                         errors.append(
                             f"LA-3b: §8 at {commit} declares no "
                             "`E4_ROUTING_AUTHORITY` this validator can read")
-                    elif got_ra and got_ra != want_ra:
+                    elif not got_ra:
+                        # RD-61 f4 — `" "` satisfied the schema's
+                        # minLength, normalized to the empty string, and
+                        # the `elif got_ra and …` guard switched LA-3b off
+                        # from inside the record.
+                        errors.append(
+                            "LA-3b: the record's E4 routing_authority is "
+                            "empty after whitespace normalization — E4 is "
+                            "judged against the authority §8 binds, and a "
+                            "blank restatement binds nothing")
+                    elif got_ra != want_ra:
                         errors.append(
                             f"LA-3b: the record's E4 routing authority "
                             f"{got_ra!r} is not §8's {want_ra!r} — E4 is "
@@ -777,7 +875,9 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
         if v == MET and not row["evidence"]:
             errors.append(f"LA-6: {qid} is Met with no evidence entry — an "
                           "unsupported Met is recorded as Unknown")
-        if v in (NOT_MET, SCOPED) and not row["counterexample"]:
+        if v in (NOT_MET, SCOPED) and (not row["counterexample"]
+                                       or _is_placeholder(
+                                           row["counterexample"])):
             errors.append(f"LA-6: {qid} is {v!r} with no counterexample — a "
                           "Not met names the passage that fails or the "
                           "sweep, with its denominator, that shows absence")
@@ -1038,6 +1138,14 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
             "missing G1 is incomplete and cannot support a gate decision, "
             "and a G1 that answers nothing is that absence wearing the "
             "shape of a presence")
+    # RD-62 f10 — the summary renders in the report as the record's own
+    # falsification account and was the one free-text field with no
+    # substance check at all.
+    if _is_placeholder(rec["falsification_summary"]):
+        errors.append(
+            "LA-14: the falsification_summary asserts nothing — a "
+            "placeholder is not a falsification account, and the report "
+            "renders this field as the administration's own answer")
 
     # ---- LA-15 trend anchoring ------------------------------------------
     prior = rec["prior_record"]
@@ -1059,6 +1167,24 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
                     f"{commit} — a record from a divergent history is a "
                     "stale prior, and the trend delta computed against it "
                     "would be meaningless")
+    if prior_path is not None:
+        # RD-61 f6 / RD-62 f2 — the containment the RD-56 f6 repair gave the
+        # record-declared path never covered this sibling: `--prior` read a
+        # file anywhere on the filesystem and zeroed the §6 New-findings
+        # column. Same rule, both paths: the column is computed from the
+        # file, so the file is evidence, and evidence lives in the
+        # repository.
+        cand = Path(prior_path).resolve()
+        try:
+            inside = cand.is_relative_to(REPO.resolve())
+        except AttributeError:                      # Python < 3.9
+            inside = str(cand).startswith(str(REPO.resolve()) + "/")
+        if not inside:
+            errors.append(
+                f"LA-15: --prior {prior_path!r} resolves outside the "
+                "repository — the new-findings column is computed from it, "
+                "so it is evidence and must live where evidence lives")
+            prior_path = None
     if prior_path is not None:
         if prior is None:
             errors.append("LA-15: --prior was supplied but the record "
@@ -1180,13 +1306,13 @@ def _compute(rec, rows, prior_path, prior_errors=(), git_ok=True,
     # row carrying it, and `record valid` — with no error and no note —
     # although §2 rejects a delta record as gate evidence. The formula was
     # right; presenting its output as a gate result was not.
-    # A pass that rests on any deferral is READY-WITH-DEFERRALS, never plain.
-    if branch == "plain" and n_deferred:
-        errs.append("LA-12: a plain READY verdict over a nonzero deferral "
-                    "count is a contradiction (§4)")
-    if branch == "deferrals" and not f2_met and not f2_deferred:
-        errs.append("LA-12: READY-WITH-DEFERRALS substitutes exactly the F2 "
-                    "limb, and no owner deferral names F2")
+    # A pass that rests on any deferral is READY-WITH-DEFERRALS, never
+    # plain. That rule is enforced by the branch conditions themselves —
+    # `plain` requires `n_deferred == 0` and `deferrals` requires an F2
+    # deferral — so the two guard branches that restated it here were
+    # unreachable by construction and discriminated nothing (RD-61 m5,
+    # independently verified by RD-62 f7: deleting both left every fixture
+    # green). The one reachable contradiction is kept:
     if n_deferred and branch == "blocked" and core:
         errs.append("LA-12: deferrals are declared against a passing core "
                     "with no F2 deferral — the only deferrable limb is F2")
@@ -1224,18 +1350,37 @@ def _compute(rec, rows, prior_path, prior_errors=(), git_ok=True,
                 f"{rec['prior_record']['path']!r} resolves outside the "
                 "repository — the new-findings column is computed from it, "
                 "so it is evidence and must live where evidence lives")
+            # RD-62 f4 — leaving this `None` re-created RD-47 f3's false
+            # absence: the report said "declares no prior — it opens the
+            # log" about a record that declares one. A declared prior that
+            # cannot lawfully be read is Unknown, never absent.
+            new_findings = "unknown"
     if src is not None:
         try:
             pj = _load_json(Path(src).read_text())
-            pv = {q["question_id"]: q["verdict"]
-                  for q in pj.get("question_results", [])}
-            newly_not_met = [q for q in ROSTER
-                             if verdict_of.get(q) == NOT_MET
-                             and pv.get(q) != NOT_MET]
-            newly_scoped = [q for q in ROSTER
-                            if verdict_of.get(q) == SCOPED
-                            and pv.get(q) not in (NOT_MET, SCOPED)]
-            new_findings = len(newly_not_met) + len(newly_scoped)
+            # RD-62 f3 — the declared `prior_record` identity controls the
+            # comparison, so the file read must BE that identity: `--prior`
+            # had a commit-equality check and this branch had none.
+            declared = (rec.get("prior_record") or {}).get(
+                "repository_commit")
+            if pj.get("repository_commit") != declared:
+                errs.append(
+                    "LA-15: the prior record read from "
+                    f"{Path(src).name} names commit "
+                    f"{pj.get('repository_commit')} but prior_record "
+                    f"declares {declared} — the declared identity controls "
+                    "the comparison")
+                new_findings = "unknown"
+            else:
+                pv = {q["question_id"]: q["verdict"]
+                      for q in pj.get("question_results", [])}
+                newly_not_met = [q for q in ROSTER
+                                 if verdict_of.get(q) == NOT_MET
+                                 and pv.get(q) != NOT_MET]
+                newly_scoped = [q for q in ROSTER
+                                if verdict_of.get(q) == SCOPED
+                                and pv.get(q) not in (NOT_MET, SCOPED)]
+                new_findings = len(newly_not_met) + len(newly_scoped)
         except (OSError, ValueError):
             new_findings = "unknown"
 
@@ -1258,7 +1403,12 @@ def _compute(rec, rows, prior_path, prior_errors=(), git_ok=True,
                           "case-text, deferral and evidence checks did not "
                           "run — an unverified record is not eligible")
     eligible = not ineligible
-    gate_result = verdict if eligible else "NO FORMAL GATE RESULT"
+    # §4: the fourth outcome is "the literal `NONE`, followed by the limbs
+    # it failed", on every surface. The former fourth literal
+    # `NO FORMAL GATE RESULT` named no limb and each surface respelled it
+    # (RD-61 m3).
+    gate_result = (verdict if eligible
+                   else "NONE — " + "; ".join(ineligible))
 
     return {
         "_errors": errs,
@@ -1286,7 +1436,9 @@ def trend_row(rec, computed):
     if computed["eligible"]:
         col = computed["gate_result"]
     else:
-        col = ("NONE — not eligible; row outcome was "
+        # The gate result already reads `NONE — <limbs>` (§4); the row
+        # outcome travels beside it as the diagnostic it is.
+        col = (computed["gate_result"] + "; row outcome was "
                + computed["verdict"])
     # Every cell is sanitized, not only the verdict. A `launch_target`
     # differing from §8 by an embedded newline passes LA-3 (which compares
@@ -1294,8 +1446,11 @@ def trend_row(rec, computed):
     # (RD-56 f12); `date` did the same through a pattern anchored with `$`,
     # which matches before a trailing newline.
     def cell(x):
-        return str(x).replace("|", "/").replace("\r", " ").replace(
-            "\n", " ").strip()
+        # The full vertical-whitespace class, not `\r`/`\n` alone — the
+        # renderer's neutralizers were defeated by the member the
+        # enumeration lacked (RD-62 f1); one class, every surface.
+        return re.sub(r"[\r\n\v\f\x85  ]", " ",
+                      str(x)).replace("|", "/").strip()
 
     return "| {} | {} | {} | {} | {} | {} | {} | {} | {} |".format(
         cell(rec["date"]), cell(rec["repository_commit"][:7]),
@@ -1502,7 +1657,11 @@ def _selftest():
                     r["owner_deferrals"].append(_deferral("README.md"))),
          "does not live in", git=True)
 
-    case("LA-3 an unreadable REQUIRED_WAVES is an error, not a skip",
+    # Renamed at v2.3 (RD-62 f8): this fixture mutates the RECORD, so it
+    # exercises the §8-mismatch branch — the unreadable-parameter branch is
+    # covered by the instrument-mutating scratch fixture below, and a green
+    # line must not claim a property it does not test.
+    case("LA-3 a wave set differing from §8's is an error",
          lambda r: r.update(required_waves=["A", "B", "C1", "D1"]),
          "LA-3", git=True)
 
@@ -1857,7 +2016,7 @@ def _selftest():
 
     n_cases[0] += 1
     audit = []
-    _audit_schema(json.loads(DEFAULT_SCHEMA.read_text()), "#", audit)
+    _audit_schema(json.loads(_default_schema().read_text()), "#", audit)
     ok = not audit
     print(f"  {'pass' if ok else 'FAIL'}  the committed schema uses only "
           "implemented keywords")
@@ -1869,7 +2028,7 @@ def _selftest():
     # v2.0 design rests on, and the keyword audit did not notice because it
     # only refused keywords it could not implement, never a keyword removed.
     n_cases[0] += 1
-    sch = json.loads(DEFAULT_SCHEMA.read_text())
+    sch = json.loads(_default_schema().read_text())
     sch["$defs"]["question_result"].pop("additionalProperties", None)
     audit = []
     _audit_schema(sch, "#", audit)
@@ -1904,14 +2063,15 @@ def _selftest():
         rows = {q["question_id"]: q for q in rec["question_results"]}
         comp = _compute(rec, rows, None)
         ok = (not comp["eligible"]
-              and comp["gate_result"] == "NO FORMAL GATE RESULT"
+              and comp["gate_result"].startswith("NONE — ")
+              and why in comp["gate_result"]
               and any(why in b for b in comp["ineligible_because"]))
         print(f"  {'pass' if ok else 'FAIL'}  a {kind}/formal={formal} "
               "record yields no formal gate result")
         if not ok:
             failures.append((f"eligibility {kind}/{formal}",
-                             "NO FORMAL GATE RESULT", str(comp.get(
-                                 "ineligible_because"))))
+                             "NONE — <limbs>", str(comp.get(
+                                 "gate_result"))))
 
     # RD-56 f3 — `--schema` was bound to nothing, so a schema constraining
     # nothing turned LA-1 off and the tool still printed a gate result.
@@ -1927,7 +2087,7 @@ def _selftest():
         with _tf.NamedTemporaryFile("w", suffix=".json", delete=False) as fR:
             json.dump(rec, fR)
             pR = Path(fR.name)
-        body = _body or Path(DEFAULT_SCHEMA).read_text()
+        body = _body or _default_schema().read_text()
         with _tf.NamedTemporaryFile("w", suffix=".json", delete=False) as fS:
             fS.write(body)
             pS = Path(fS.name)
@@ -1980,7 +2140,13 @@ def _selftest():
     # RD-56 f13 — an invisible character is not a word the lexicon must
     # learn; it is a placeholder wearing one.
     for _label, _val in (("a zero-width space", "none\u200b"),
-                         ("a byte-order mark", "\ufeffnone")):
+                         ("a byte-order mark", "\ufeffnone"),
+                         # RD-62 f12 \u2014 the enumeration of five code points
+                         # was defeated by a sixth; the strip is now by
+                         # Unicode category (Cf/Cc).
+                         ("a function-application character (Cf)",
+                          "none\u2061"),
+                         ("a C1 control character (Cc)", "no\x8fne")):
         n_cases[0] += 1
         ok = _is_placeholder(_val)
         print(f"  {'pass' if ok else 'FAIL'}  {_label} does not defeat the "
@@ -2004,9 +2170,14 @@ def _selftest():
                       .replace("REQUIRED_WAVES: [", "REQUIRED_WAVES:\n  - [")
                       .replace("DEFERRED_WAVES: [", "DEFERRED_WAVES:\n  - [")
                       .replace("effective_version:", "effective-version:"))
+            schema_bytes = _default_schema().read_text()
             with tempfile.TemporaryDirectory() as td:
                 d = Path(td)
                 (d / "launch-gate-pre-specifications.md").write_text(broken)
+                # The schema resolves from git too (RD-61 f1), so a scratch
+                # repository must commit one or the run fails on the
+                # missing schema instead of the mutation under test.
+                (d / SCHEMA_NAME).write_text(schema_bytes)
                 env = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t",
                        "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL":
                        "t@t", "PATH": os.environ.get("PATH", "")}
@@ -2054,6 +2225,268 @@ def _selftest():
                                      "three unreadable-parameter errors",
                                      joined[:300]))
 
+    # RD-61 f1 / RD-62 f5 — the committed schema is BYTES: an audit-clean
+    # in-place enum widening of the working-tree schema admitted a
+    # §2-forbidden verdict word into an eligible READY record. The committed
+    # schema must govern, and the drift must be its own error.
+    #
+    # RD-61 f2 — a commit that exists but is reachable from no branch can
+    # carry rewritten bytes; existence alone anchors nothing.
+    #
+    # RD-62 f3 — the prior file read must BE the declared identity.
+    # All three need a scratch repository.
+    if _git_available():
+        import tempfile
+        inst_blob = _git_show("HEAD", "launch-gate-pre-specifications.md")
+        if inst_blob:
+            schema_bytes = _default_schema().read_text()
+            with tempfile.TemporaryDirectory() as td:
+                d = Path(td)
+                (d / "launch-gate-pre-specifications.md").write_bytes(
+                    inst_blob)
+                (d / SCHEMA_NAME).write_text(schema_bytes)
+                # The base record's evidence cites this path; LA-6
+                # existence-checks evidence at the named commit.
+                (d / "README.md").write_text("scratch\n")
+                env = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t",
+                       "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL":
+                       "t@t", "PATH": os.environ.get("PATH", "")}
+
+                def _g(*cmd):
+                    return subprocess.run(
+                        ["git", "-C", str(d)] + list(cmd),
+                        capture_output=True, text=True, env=env
+                    ).stdout.strip()
+
+                for cmd in (("init", "-q"), ("add", "-A"),
+                            ("commit", "-qm", "x")):
+                    _g(*cmd)
+                head = _g("rev-parse", "HEAD")
+                # A commit that EXISTS and carries the same tree, reachable
+                # from nothing: `commit-tree` with no ref update.
+                dangling = _g("commit-tree", head + "^{tree}", "-m", "y")
+
+                def _scratch_validate(mutate, prior_path=None):
+                    # `_base_record(True)` binds the real HEAD's instrument
+                    # digests — the scratch commit carries those same bytes,
+                    # so only the commit itself needs rebinding.
+                    rec = _base_record(True)
+                    # Every anchor in the record — evidence rows included —
+                    # moves with the commit, or LA-6 rightly objects.
+                    rec = json.loads(json.dumps(rec).replace(
+                        rec["repository_commit"], head))
+                    rec["instrument"]["sha256"] = hashlib.sha256(
+                        inst_blob).hexdigest()
+                    mutate(rec)
+                    global REPO
+                    saved, REPO = REPO, d
+                    try:
+                        with tempfile.NamedTemporaryFile(
+                                "w", suffix=".json", delete=False) as fS:
+                            json.dump(rec, fS)
+                            pS = Path(fS.name)
+                        try:
+                            return validate(pS, prior_path=prior_path,
+                                            _git=True)
+                        finally:
+                            pS.unlink()
+                    finally:
+                        REPO = saved
+
+                def _scase(name, errs, *want_all):
+                    n_cases[0] += 1
+                    joined = " || ".join(errs)
+                    ok = all(w in joined for w in want_all)
+                    print(f"  {'pass' if ok else 'FAIL'}  {name}")
+                    if not ok:
+                        failures.append((name, " AND ".join(want_all),
+                                         joined[:300]))
+
+                errs, _n, _c = _scratch_validate(lambda r: None)
+                n_cases[0] += 1
+                ok = not errs
+                print(f"  {'pass' if ok else 'FAIL'}  the scratch baseline "
+                      "validates clean (schema and instrument committed)")
+                if not ok:
+                    failures.append(("scratch baseline", "no errors",
+                                     " || ".join(errs)[:300]))
+
+                # Schema drift: widen the enum IN PLACE in the working tree
+                # and answer a row with the forbidden word. The committed
+                # schema must reject the word, and the drift itself errors.
+                drifted = schema_bytes.replace(
+                    '"Not met (out of launch scope)",',
+                    '"Not met (out of launch scope)", '
+                    '"Met (with caveats)",', 1)
+                assert drifted != schema_bytes
+                (d / SCHEMA_NAME).write_text(drifted)
+
+                def _forbidden(r):
+                    r["question_results"][0]["verdict"] = \
+                        "Met (with caveats)"
+                errs, _n, _c = _scratch_validate(_forbidden)
+                _scase("an in-place schema edit does not admit a forbidden "
+                       "verdict word (committed bytes govern)",
+                       errs, "is outside the")
+                _scase("working-tree schema drift is its own error",
+                       errs, "differs from the schema committed at HEAD")
+                (d / SCHEMA_NAME).write_text(schema_bytes)
+
+                # Off-branch commit: exists, same tree, reachable from no
+                # branch (RD-61 f2).
+                errs, _n, _c = _scratch_validate(
+                    lambda r: r.update(repository_commit=dangling))
+                _scase("a record anchored to an off-branch commit is an "
+                       "error, not an anchor",
+                       errs, "not reachable from the repository's current "
+                       "HEAD")
+
+                # Prior commit that exists but is NOT an ancestor
+                # (RD-62 f7 item 2 — the old fixture used a nonexistent
+                # sha and never reached the ancestry branch).
+                errs, _n, _c = _scratch_validate(
+                    lambda r: r.update(prior_record={
+                        "path": "prior.json",
+                        "repository_commit": dangling,
+                        "date": "2020-01-01"}))
+                _scase("a prior commit outside this history is a stale "
+                       "prior (ancestry, not existence)",
+                       errs, "not an ancestor")
+
+                # The prior file read must BE the declared identity
+                # (RD-62 f3): same path, different repository_commit inside.
+                (d / "prior.json").write_text(json.dumps(
+                    {"repository_commit": "f" * 40,
+                     "question_results": []}))
+                errs, _n, comp = _scratch_validate(
+                    lambda r: r.update(prior_record={
+                        "path": "prior.json",
+                        "repository_commit": head,
+                        "date": "2020-01-01"}))
+                _scase("a prior file whose own commit differs from the "
+                       "declared identity is refused",
+                       errs, "the declared identity controls")
+                n_cases[0] += 1
+                ok = comp.get("new_findings") == "unknown"
+                print(f"  {'pass' if ok else 'FAIL'}  ...and the "
+                      "new-findings column reads Unknown, not a number")
+                if not ok:
+                    failures.append(("prior identity → unknown", "unknown",
+                                     repr(comp.get("new_findings"))))
+
+    # RD-61 f4 — `" "` satisfied minLength, normalized to nothing, and
+    # switched LA-3b off from inside the record.
+    # The expectation names the EMPTY wording, not the bare check id: the
+    # mismatch branch also says LA-3b, so `"LA-3b" in errs` passes against
+    # the unrepaired `elif got_ra and …` guard for the wrong reason — the
+    # RD-56 f4 trap, caught here by its own mutation test.
+    case("LA-3b a whitespace routing authority is an error, not a skipped "
+         "check", lambda r: r["e4"].__setitem__("routing_authority", " "),
+         "empty after whitespace normalization", git=True)
+
+    # RD-62 f10 — a placeholder counterexample carried a Not met.
+    case("LA-6 a placeholder counterexample is no counterexample",
+         lambda r: r["question_results"][0].update(
+             verdict="Not met", counterexample="none"),
+         "LA-6")
+
+    # RD-62 f10 — the falsification summary was the one free-text field
+    # with no substance check.
+    case("LA-14 a placeholder falsification_summary is an error",
+         lambda r: r.update(falsification_summary="n/a"),
+         "falsification_summary")
+
+    # RD-62 f11 — Python's `$` matches before a trailing newline, so an
+    # anchored pattern passed a value with one.
+    case("LA-1 a trailing newline does not satisfy an anchored pattern",
+         lambda r: r.update(date="2026-08-11\n"),
+         "does not match")
+
+    # RD-62 f7 item 4 — at the right count, a duplicated case index means
+    # one case answered twice and another never.
+    case("LA-10 duplicate E4 case indices at the right count are an error",
+         lambda r: r["e4"]["fixed_case_results"][1].__setitem__(
+             "case_index", r["e4"]["fixed_case_results"][0]["case_index"]),
+         "answered once each")
+
+    # RD-62 f7 item 1 — the fresh-context eligibility limb had no
+    # discriminating fixture: the LA-13 fixture's record was ineligible
+    # through the error-count limb, masking this one.
+    n_cases[0] += 1
+    rec = _base_record(False)
+    rec["formal"], rec["administration_kind"] = True, "full"
+    rec["reviewer"]["fresh_context"] = False
+    rows = {q["question_id"]: q for q in rec["question_results"]}
+    comp = _compute(rec, rows, None)
+    ok = (not comp["eligible"]
+          and any("fresh context" in b for b in comp["ineligible_because"])
+          and comp["gate_result"].startswith("NONE — "))
+    print(f"  {'pass' if ok else 'FAIL'}  no fresh context alone makes an "
+          "otherwise-passing record ineligible (limb, not error count)")
+    if not ok:
+        failures.append(("fresh-context limb", "ineligible",
+                         str(comp.get("ineligible_because"))))
+
+    # RD-61 f6 / RD-62 f2 — `--prior` read a file anywhere on the
+    # filesystem and zeroed the §6 New-findings column.
+    n_cases[0] += 1
+    rec = _base_record(False)
+    with tempfile.NamedTemporaryFile("w", suffix=".json",
+                                     delete=False) as fP:
+        json.dump(rec, fP)
+        pP = Path(fP.name)
+    try:
+        errs, _n, _c = validate(pP, prior_path="/dev/null", _git=False)
+    finally:
+        pP.unlink()
+    ok = any("resolves outside the repository" in e for e in errs)
+    print(f"  {'pass' if ok else 'FAIL'}  --prior outside the repository "
+          "is an error, not a comparison")
+    if not ok:
+        failures.append(("--prior containment", "resolves outside",
+                         " || ".join(errs)[:200]))
+
+    # RD-62 f4 — a declared prior whose path escapes is Unknown, never
+    # "declares no prior".
+    n_cases[0] += 1
+    rec = _base_record(False)
+    rec["prior_record"] = {"path": "../outside.json",
+                           "repository_commit": "0" * 40,
+                           "date": "2020-01-01"}
+    rows = {q["question_id"]: q for q in rec["question_results"]}
+    comp = _compute(rec, rows, None)
+    ok = (comp["new_findings"] == "unknown"
+          and any("resolves outside" in e for e in comp["_errors"]))
+    print(f"  {'pass' if ok else 'FAIL'}  a declared prior that escapes "
+          "the repository computes Unknown, not absence")
+    if not ok:
+        failures.append(("declared-prior escape", "unknown + LA-15",
+                         repr(comp.get("new_findings"))))
+
+    # RD-62 f11 companion — an unanchored pattern in a schema fails closed.
+    import tempfile as _tf2
+    bad = json.loads(_default_schema().read_text())
+    bad["properties"]["date"]["pattern"] = "[0-9]{4}"
+    with _tf2.NamedTemporaryFile("w", suffix=".json", delete=False) as fB:
+        json.dump(bad, fB)
+        pB = Path(fB.name)
+    rec = _base_record(False)
+    with _tf2.NamedTemporaryFile("w", suffix=".json", delete=False) as fR:
+        json.dump(rec, fR)
+        pR = Path(fR.name)
+    try:
+        errs, _n, _c = validate(pR, schema_path=str(pB), _git=False)
+    finally:
+        pB.unlink()
+        pR.unlink()
+    n_cases[0] += 1
+    ok = any("is not anchored" in e for e in errs)
+    print(f"  {'pass' if ok else 'FAIL'}  an unanchored schema pattern "
+          "fails closed in the audit")
+    if not ok:
+        failures.append(("pattern anchoring audit", "is not anchored",
+                         " || ".join(errs)[:200]))
+
     # RD-55 f1 / RD-56 f1 — §4's eligibility clause has FOUR limbs. Two
     # reviewers found independently that the tool implemented three, and the
     # fourth lived at one consumer. Each limb is exercised alone: a fixture
@@ -2071,13 +2504,16 @@ def _selftest():
         comp = _compute(rec, rows, None, **kw)
         base = _compute(rec, rows, None)
         ok = (base["eligible"] and not comp["eligible"]
-              and comp["gate_result"] == "NO FORMAL GATE RESULT"
+              and comp["gate_result"].startswith("NONE — ")
+              # §4: the limbs the administration failed travel WITH the
+              # word, on every surface (RD-61 m3).
+              and why in comp["gate_result"]
               and any(why in b for b in comp["ineligible_because"])
               # The row states the diagnostic outcome, so `READY FOR` does
-              # appear — after `NONE — not eligible`. What must not appear
-              # is a verdict cell that READS as a gate answer.
+              # appear — after `NONE — <limbs>`. What must not appear is a
+              # verdict cell that READS as a gate answer.
               and trend_row(rec, comp).rsplit("|", 2)[1].strip().startswith(
-                  "NONE — not eligible"))
+                  "NONE — "))
         print(f"  {'pass' if ok else 'FAIL'}  {label} alone makes an "
               "otherwise-passing record ineligible")
         if not ok:
@@ -2093,12 +2529,11 @@ def _selftest():
     rows = {q["question_id"]: q for q in rec["question_results"]}
     comp = _compute(rec, rows, None)
     row = trend_row(rec, comp)
-    ok = "NONE — not eligible" in row and "READY FOR" not in row.split(
-        "NONE")[0]
+    ok = "NONE — " in row and "READY FOR" not in row.split("NONE")[0]
     print(f"  {'pass' if ok else 'FAIL'}  an ineligible administration's "
           "trend row carries no gate verdict")
     if not ok:
-        failures.append(("trend row eligibility", "NONE — not eligible", row))
+        failures.append(("trend row eligibility", "NONE — <limbs>", row))
 
     # ... and an eligible one still deposits its verdict.
     n_cases[0] += 1
@@ -2135,11 +2570,11 @@ def _selftest():
         import jsonschema  # noqa: F401
         rec = _base_record(False)
         probe = jsonschema.Draft202012Validator(
-            json.loads(DEFAULT_SCHEMA.read_text()))
+            json.loads(_default_schema().read_text()))
         second = [e.message for e in probe.iter_errors(rec)]
         mine = []
-        _instance_errors(rec, json.loads(DEFAULT_SCHEMA.read_text()),
-                         json.loads(DEFAULT_SCHEMA.read_text()), "$", mine)
+        _instance_errors(rec, json.loads(_default_schema().read_text()),
+                         json.loads(_default_schema().read_text()), "$", mine)
         ok = (not second) and (not mine)
         print(f"  {'pass' if ok else 'FAIL'}  the base record validates "
               "identically under the reference jsonschema implementation")
@@ -2190,8 +2625,9 @@ def main(argv=None):
         if computed["eligible"]:
             print(f"Formal gate result:  {computed['gate_result']}")
         else:
-            print("Formal gate result:  NONE — diagnostic only ("
-                  + "; ".join(computed["ineligible_because"]) + ")")
+            # `gate_result` already reads `NONE — <limbs>` (§4, RD-61 m3).
+            print(f"Formal gate result:  {computed['gate_result']} "
+                  "(diagnostic only)")
         for name, ok, why in computed["conjuncts"]:
             print(f"  [{'ok ' if ok else 'NO '}] {name} — {why}")
         print(f"  F2 limb: branch={computed['branch']}, "
@@ -2205,6 +2641,14 @@ def main(argv=None):
         for e in errors:
             print(f"  {e}")
         return 1
+    # RD-62 f6 — with git unavailable the checks did not run, and "valid"
+    # plus exit 0 was a green a CI chain would believe. No evidence yields
+    # Unknown, and the summary line and return code are surfaces too.
+    if any("git unavailable" in n for n in notes):
+        print("\nrecord NOT fully validated — git was unavailable, so the "
+              "identity, binding, case-text, deferral and evidence checks "
+              "did not run; diagnostic only")
+        return 2
     print("\nrecord valid — the verdict above is computed from the rows")
     return 0
 

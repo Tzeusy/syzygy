@@ -13,15 +13,16 @@
 
 ## Question
 
-Approve `launch-gate-pre-specifications.md` **v2.2** as this repository's
+Approve `launch-gate-pre-specifications.md` **v2.3** as this repository's
 owner-approved **process policy** for evaluating pre-specification
 readiness?
 
-*(Repointed 2026-08-13 from v2.0. This packet asked for v2.0 and quoted its
-digest after the instrument had moved twice — it would have routed the owner
-to bytes nobody offers, which is the defect review RD-8 called "the finding
-that converts act 1 from a knowing act into a surprised one." Every v2.0 and
-v2.1 digest is superseded and satisfies nothing.)*
+*(Repointed 2026-08-13 from v2.0, and 2026-08-16 from v2.2. This packet
+once asked for v2.0 after the instrument had moved twice — it would have
+routed the owner to bytes nobody offers, which is the defect review RD-8
+called "the finding that converts act 1 from a knowing act into a
+surprised one." Every v2.0, v2.1 and v2.2 digest is superseded and
+satisfies nothing.)*
 
 ## What the policy governs
 
@@ -51,10 +52,10 @@ approved policy is worth exactly as much as the administration behind it.
 
 | Artifact | sha256 |
 |---|---|
-| `launch-gate-pre-specifications.md` (v2.2) | `ac8751236ec7434c20606b404d41c885d29f67dd5f3dab8c9d0cbb90de670977` |
+| `launch-gate-pre-specifications.md` (v2.3) | `3e65aaa39bd6525c70ce589fb3f0c029af91b1bb74b29966563d3f3dcf376294` |
 | `launch-gate-administration.schema.json` | `e0167fb8af6a903c527d402d56c4fb85ebdfed9608de1a485f4f1563aa6a69fb` |
 
-The **schema digest is unchanged** across v2.0, v2.1 and v2.2 — the
+The **schema digest is unchanged** across v2.0 through v2.3 — the
 amendments changed how the instrument states its rules, not the record
 format. That is the fact to check rather than take on trust.
 
@@ -84,16 +85,20 @@ independent re-reviews of the Markdown record format each found a real
 defect, and each repair minted the next. The chronology is
 `launch-gate/HISTORY.md` and you do not need it to decide this.
 
-**v2.1 and v2.2, in three more lines.** v2.1 repaired the two `REVISE`
-verdicts returned against v2.0. v2.1 was then itself reviewed twice, and
-**both reviews returned `REVISE` again** — independently, in fresh context,
-landing on the same blocking defect. v2.2 is that repair, and it is the
-version this packet now binds. Deltas:
-`../contracts/candidates/round-2026-08g/LAUNCH-GATE-v2.1-SEMANTIC-DELTA.md`
-and `…/LAUNCH-GATE-v2.2-SEMANTIC-DELTA.md`.
+**v2.1 through v2.3, in four more lines.** v2.1 repaired the two `REVISE`
+verdicts returned against v2.0; its own two reviews returned `REVISE`
+again, converging on one blocking defect, and v2.2 repaired that. v2.2's
+two reviews (RD-61/RD-62, 2026-08-16) returned `REVISE` a third time —
+**converging again on one defect**, in the v2.2 additions themselves —
+and v2.3 is that repair, the version this packet now binds. Deltas:
+`../contracts/candidates/round-2026-08g/LAUNCH-GATE-v2.1-SEMANTIC-DELTA.md`,
+`…/round-2026-08g/LAUNCH-GATE-v2.2-SEMANTIC-DELTA.md` and
+`…/round-2026-08h/LAUNCH-GATE-v2.3-SEMANTIC-DELTA.md`.
 
-**v2.2 has had no review.** That is not a gap in this packet; it is the
-state, and §"Your options" below is written around it.
+**v2.3's own review pair was dispatched in the same round that repaired
+it** (RD-65/RD-66) — the first time the repair and its re-review travel
+together. Until they return `CONFIRM`, this packet is prepared, not
+offered.
 
 ## Independent review verdicts
 
@@ -104,12 +109,12 @@ state, and §"Your options" below is written around it.
 > contradictory data produce a false READY, and does the generated report
 > faithfully present the canonical record?*
 >
-> **Status 2026-08-13: the required pair has been run against v2.0 and
-> against v2.1, and has never been run against v2.2** — the version this
-> packet binds. This packet is therefore **prepared, not offered**, and the
-> reason has changed twice: first it was that nobody had looked; then that
-> two reviewers had looked and asked for changes; now it is that the changes
-> were made and nobody has looked at the result.
+> **Status 2026-08-16: the required pair has been run against v2.0, v2.1
+> and v2.2 — six reviews, six `REVISE` verdicts — and the v2.3 pair is
+> dispatched with verdicts pending.** This packet is therefore **prepared,
+> not offered**, and the reason has changed with each round: first nobody
+> had looked; then reviewers asked for changes; then the changes were made
+> and nobody had looked at the result; now the look is running.
 
 | Review | Subject | Verdict (copied exactly) |
 |---|---|---|
@@ -117,19 +122,24 @@ state, and §"Your options" below is written around it.
 | Structured record | **v2.0** schema, validator, renderer | `REVISE` — RD-47, 2026-08-11, frozen commit `e2efda6` |
 | Policy semantics | **v2.1** instrument | `REVISE` — RD-55, 2026-08-13 |
 | Structured record | **v2.1** schema, validator, renderer | `REVISE` — RD-56, 2026-08-13 |
-| Policy semantics | **v2.2** — the version this packet binds | **none commissioned** |
-| Structured record | **v2.2** | **none commissioned** |
+| Policy semantics | **v2.2** instrument | `REVISE` — RD-61, 2026-08-16, frozen commit `918574c` |
+| Structured record | **v2.2** schema, validator, renderer | `REVISE` — RD-62, 2026-08-16, frozen commit `918574c` |
+| Policy semantics | **v2.3** — the version this packet binds | **dispatched, pending** — RD-65 |
+| Structured record | **v2.3** | **dispatched, pending** — RD-66 |
 
-**Four reviews, four `REVISE` verdicts, across two versions.** The v2.1 pair
-were dispatched separately in fresh context, neither saw the other's output,
-and **they found the same blocking defect** — a convergence the v2.2 delta
-calls the most load-bearing fact it records, because a defect two independent
-readings land on is not a matter of taste.
+**Six reviews, six `REVISE` verdicts, across three versions.** Each pair
+was dispatched separately in fresh context, neither seeing the other's
+output — and **each pair independently converged on one blocking defect**:
+the eligibility limbs at v2.1, the schema's byte identity at v2.2. A
+defect two independent readings land on is not a matter of taste, twice
+over. The RD-61/RD-62 pair also verified the prior repairs held: nothing
+weakened across v2.1 → v2.2, all ten RD-55 findings closed, an 814-site
+injection sweep with zero leaks.
 
-**v2.2 repaired both, and v2.2 has not been reviewed.** A repair session
-cannot confirm its own repairs. The bytes this packet binds are therefore
-repaired-but-unconfirmed, and that is the single most important thing on this
-page. Tracked as `syzygy-6j8`.
+**v2.3 repaired the RD-61/RD-62 findings, and its own review is pending.**
+A repair session cannot confirm its own repairs. The bytes this packet
+binds are repaired-with-review-in-flight, and that is the single most
+important thing on this page. Tracked as `syzygy-6j8`.
 
 Both reviewers are the **same model family as the corpus authors**, so
 under the charter each supports repair and neither is the formal launch
@@ -170,7 +180,7 @@ generalized:
 3. Presence tests on free-text fields are **content-blind** by design. A
    reviewer who writes a plausible false evidence quote defeats this tool,
    and no version of it has claimed otherwise.
-4. **No administration has been performed under v2.0, v2.1 or v2.2.** The
+4. **No administration has been performed under any v2.x version.** The
    verdict path is fixture-proven, not field-proven. The only administration
    on record anywhere is the 2026-08-09 pilot, at v1.3, which returned
    `GATE VERDICT: NOT READY`.
@@ -180,38 +190,36 @@ generalized:
 
 ## Your options
 
-**(a) Approve v2.2 as process policy.** *(Repointed 2026-08-13 from v2.0.)*
-The v2.0 and v2.1 findings **have** been repaired — that is what v2.2 is —
-so this arm no longer means approving an instrument with known-unmade
-changes. What it does mean is **approving bytes no independent reader has
-seen**: the repair was made by the session that received the verdicts, and a
-repair session cannot confirm its own repairs. A lawful owner choice, and the
-cost is stated rather than hidden. The instrument becomes the standard a
-formal administration is run under.
+**(a) Approve v2.3 as process policy now.** *(Repointed 2026-08-16.)* The
+v2.0 through v2.2 findings **have** been repaired — that is what v2.3
+is — so this arm no longer means approving an instrument with
+known-unmade changes. What it does mean is **approving bytes whose
+independent reading is still in flight**: the repair was made by the
+session that received the verdicts, and a repair session cannot confirm
+its own repairs. A lawful owner choice, and the cost is stated rather
+than hidden. The instrument becomes the standard a formal administration
+is run under.
 
-**(b) Approve v2.2 with F5 promoted to a conjunct.** Same as (a), plus: a
+**(b) Approve v2.3 with F5 promoted to a conjunct.** Same as (a), plus: a
 `Not met` F5 blocks a READY verdict. This would block a pass on any
 administration run by this corpus's own model family — the strictest
 available reading of assurance independence, and a real constraint on who
 can administer the gate.
 
-**(c) Review v2.2 first, then decide.** Commission the two fresh-context
-reviews against v2.2's exact bytes and bring their verdicts back to this
-packet before ruling. **Recommended `[Inferred]`, as of 2026-08-13** — and
-what it recommends has changed since 2026-08-11, when this arm read "amend
-first". There is nothing named left to amend: the three changes the v2.0
-reviews asked for were made at v2.1, and the v2.1 reviews' blocking defect
-was repaired at v2.2. What is missing is not a change; it is a reading.
+**(c) Wait for RD-65/RD-66, then decide.** The two fresh-context reviews
+of v2.3's exact bytes are **already dispatched** — for the first time in
+the same round as the repair, so this arm's former cost (commissioning a
+review nobody had ordered) is already paid. **Recommended `[Inferred]`,
+as of 2026-08-16.**
 
-*(The arm's cost is observable rather than estimated.* **It has been taken
-twice and neither pass returned anything but `REVISE`.** v2.1 made all three
-named changes and drew two more `REVISE` verdicts; v2.2 repaired those and
-has drawn none, because none has been commissioned. So the honest form of
-this recommendation is: **the next review is the one that could return
-`CONFIRM`, and it is also the one that has never been run.** If it returns
-`REVISE` a third time, that is itself the answer to whether this instrument
-converges, and it should be weighed against arm (a) rather than absorbed as
-another round.*)
+*(The observable history:* **the review pair has been taken three times
+and returned `REVISE` all three.** Each round's findings were narrower —
+v2.2's were confined to v2.2's own additions, with everything earlier
+verified closed. So the honest form of this recommendation is: **the
+pending pair is the one that could return `CONFIRM`.** If it returns
+`REVISE` a fourth time, that is itself the answer to whether this
+instrument converges, and it should be weighed against arm (a) rather
+than absorbed as another round.*)
 
 **(d) Decline.** The gate stays a candidate. Administrations remain
 evidence you may weigh; no formal administration can be said to have been
