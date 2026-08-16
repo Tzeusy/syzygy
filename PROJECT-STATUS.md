@@ -31,7 +31,7 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 | Waves C1/C2/D1/D2 | **Deferred** — candidate, not accepted, not used by the launch target, not offered. Not retired. | `contracts/candidates/DEFERRED-WAVE-POSTURE.md` |
 | Launch-gate policy | **Candidate v2.2.** Owner approval is **P-34**, not granted. **Four fresh-context reviews, four `REVISE` verdicts**: RD-47/RD-48 on v2.0 (2026-08-11) and RD-55/RD-56 on v2.1 (2026-08-13), the latter pair finding the same blocking defect independently. Each pair's findings are repaired; **the repaired bytes have never been reviewed at any version**, so the packet is **not offerable**. | `launch-gate-pre-specifications.md`; `round-2026-08g/LAUNCH-GATE-v2.2-SEMANTIC-DELTA.md`; `round-2026-08g/reviews/DISPOSITION-REGISTER.md` |
 | Formal launch administration | **Not performed.** The only administration on record is the 2026-08-09 **pilot** (v1.3), which returned `GATE VERDICT: NOT READY`. | `round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md` |
-| OpenSpec (`openspec/`) | **Does not exist.** Authoring is forbidden until the owner's launch decision. | — |
+| OpenSpec (`openspec/`) | **No specification content — fleshing-out has not begun.** A tool-created `openspec/` scaffold (config plus empty trees) may exist and is not specification work; authoring is forbidden until the owner's launch decision. | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` |
 | Implementation | **Does not exist.** Blocked on accepted specifications. | — |
 
 **No owner acceptance act has been performed.**

@@ -89,7 +89,7 @@ Authority is **typed** — each question has one owning home:
 | Engineering and evidence bar | [`.syzygy/governance/policies/craft-and-care/`](.syzygy/governance/policies/craft-and-care/) | **Owner-approved** (D2); clause-level force begins at foundational-contract acceptance |
 | Load-bearing technical contracts | [`.syzygy/governance/contracts/candidates/`](.syzygy/governance/contracts/candidates/) | **Candidate — accepted by no act yet** |
 | Intended placement | [`.syzygy/map/topology-candidates/`](.syzygy/map/topology-candidates/) | **Candidate** |
-| Required observable behavior | `openspec/` | Does not exist yet |
+| Required observable behavior | `openspec/` | Not begun — scaffold at most, no specification content yet |
 | What currently exists | Code, tests, CI, runtime | Nothing exists yet |
 
 Generated indexes, summaries, and this README are presentation — they cite

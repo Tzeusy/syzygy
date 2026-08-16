@@ -7,8 +7,9 @@ What the project *is* lives in `README.md` and `.syzygy/intent/OVERVIEW.md`.
 
 Doctrine is adopted; engineering policy is owner-approved. Contracts,
 topology, overview and the policy additions are **candidates awaiting owner
-acts**. There is **no application code, no `openspec/`, and no implementation
-backlog** — and none may be created.
+acts**. There is **no application code, no specification content, and no
+implementation backlog** — none may be begun before the owner's launch
+decision.
 
 ## Where authority lives
 
@@ -21,8 +22,8 @@ backlog** — and none may be created.
 | Intended placement | Topology bundle | `.syzygy/map/topology-candidates/` | **No — candidate.** `map/topology/` exists only after act 3 |
 | Public narrative | Overview | `.syzygy/intent/OVERVIEW.md` | Governed presentation — **never authority** |
 
-`GOVERNANCE-SUBSTRATE-LOCK.yaml` is a record, never authority. OpenSpec and
-running code do not exist. `README.md` carries the reader-facing view.
+`GOVERNANCE-SUBSTRATE-LOCK.yaml` is a record, never authority. `README.md`
+carries the reader-facing view.
 
 **Cite by identifier** — `VIS-2`, `SEC-4`, `SDR-9`, `CC-REV-3`, `RFC10-9`.
 Identifiers are amended in place or retired, **never renumbered**. Candidate
@@ -58,7 +59,7 @@ Load the minimum for one correct decision; never "read everything."
 | A doctrine question | the one doctrine file, via the `heart-and-soul` skill |
 | An engineering-bar question | the one craft policy that owns it |
 | A contract question | **`contracts/candidates/TASK-ROUTER.md`** — the one generated router; context-budget measurement stays with `06-CONTEXT-LOAD-MAP.md` / `scripts/context_load.py` |
-| "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until OpenSpec exists |
+| "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until accepted OpenSpec content exists |
 | "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; authoring stays forbidden until the owner's launch decision |
 | Current status | `PROJECT-STATUS.md` |
 | "Is this ready for OpenSpec?" | **not ready**, and no formal administration has been run. `PROJECT-STATUS.md` owns the current verdict and launch target; the instrument is `launch-gate-pre-specifications.md` |

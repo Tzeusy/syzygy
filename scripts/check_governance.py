@@ -4990,6 +4990,9 @@ STATUS_WINDOW = 2
 VENDORED_EXTERNAL = (
     ".claude/skills/th-engineering/",
     ".codex/skills/th-engineering/",
+    # OpenSpec's installed slash-command set (arrived with the `openspec/`
+    # tool scaffold, 2026-08-15). Upstream's prose, upstream's field names.
+    ".claude/commands/opsx/",
 )
 
 
