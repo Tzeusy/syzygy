@@ -82,21 +82,21 @@ States: `satisfied` / `owner-waived` / `blocking` / `not applicable`.
 | P-36 Unknown vs Gap | Owner decision | **owner-waived** — ruled 2026-08-16, the two-term rule; SDR-35 |
 | P-37 project-shape facets | Owner decision | **owner-waived** — ruled 2026-08-16, seven facets, drafting site = the Capability 1 specification (a2); SDR-36. The facet *vocabulary text* still needs authoring into that specification when written — the ruling names the site, not the text |
 | P-38 human entry and discoverability | Owner decision | **owner-waived** — ruled 2026-08-16, option (a) as drafted; `decisions/HUMAN-ENTRY-DECISION.md` |
-| P-41 specification acceptance standard in force | Craft act | **blocking** — candidate exists (`policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`); queued as **P-41**; wants review + its craft act, or the owner knowingly authors against the candidate |
+| P-41 + P-42 acceptance and impact standards in force | Craft acts | **blocking, offer open** — the review cycle closed 2026-08-17 (RD-69 → one blocker repair → RD-70 `CONFIRM WITH EXCEPTIONS`) and **acts 6 and 7 are minted** in the acceptance record §1; what remains is the owner performing both acts in one sitting |
 | P-12 knowledge hygiene (CC-BUDGET-1) | Craft act | **blocking** for Capability 2; for Capability 1 the budget rule is not consumed — **not applicable** to Capability 1's own authoring, listed for visibility |
 | P-34 launch-gate instrument authority (current version per the instrument's own header; RD34-05) + formal administration READY | Process | **blocking** for the launch decision (the owner may lawfully decide without it, but this pass's charter treats the formal administration as the evidence bar) |
 | P-14 license | Owner decision | **not applicable** — blocks release, not specification |
 | P-35 operating constraints | Owner decision | **owner-waived** — ruled 2026-08-16, full table recorded; `decisions/PROJECT-OPERATING-CONSTRAINTS-DECISION.md`. Still blocks the formal administration's A6/F5 verdicts, which read the recorded statement rather than the ruling event |
 | Waves C1/C2/D1/D2, P-29, P-30, P-32, D3/D4 | — | **not applicable** — deferred per `DEFERRED-WAVE-POSTURE.md`; not on Capability 1's path |
 
-**As of 2026-08-16:** eight of the fifteen scoped rows are `owner-waived`
-(ruled, per the queue's "Resolved on 2026-08-16" section); nothing is yet
-`satisfied` — the two wave acts remain unperformed, so Capability 1 may not
-yet be authored. `P-41` remains **blocking**: its own gate, "rule P-40
-first" (CC-SPEC-1 consumes the granularity rule), is now satisfied, but
-`P-41` itself is still an un-ruled craft act. The concept-level trace
-behind this table is `round-2026-08e/FIRST-SPEC-TRACE-TABLE.md` (E3), which
-this batch did not refresh — a follow-on task, not performed here.
+**As of 2026-08-17:** eight of the scoped rows are `owner-waived` (ruled
+2026-08-16, per `decisions/DECISION-HISTORY.md`); nothing is yet
+`satisfied` — the two wave acts remain unperformed, so Capability 1 may
+not yet be authored. `P-41`/`P-42` remain **blocking but fully teed up**:
+their review cycle is closed and acts 6/7 await only the owner's sitting.
+The concept-level trace behind this table is
+`round-2026-08e/FIRST-SPEC-TRACE-TABLE.md` (E3), which this batch did not
+refresh — a follow-on task, not performed here.
 
 ## The rest of the sequence (unchanged in substance from revision 2)
 
