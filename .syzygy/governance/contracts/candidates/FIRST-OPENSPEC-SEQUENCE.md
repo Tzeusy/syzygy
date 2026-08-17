@@ -71,7 +71,7 @@ scope note — that is a scoped state, not a second one.
 
 States: `satisfied` / `owner-waived` / `blocking` / `not applicable`.
 
-| Prerequisite | Kind | State (2026-08-16) |
+| Prerequisite | Kind | State (2026-08-17) |
 |---|---|---|
 | Wave A act performed at a confirmed argument | Owner act | **satisfied — performed 2026-08-17** over the RD-31b-confirmed argument; recorded in `decisions/ACCEPTANCE-ACT-RECORD.md`, modules installed at `contracts/rfcs/` (shape (M)) |
 | Wave B act performed at a confirmed argument | Owner act | **satisfied — performed 2026-08-17**, after the Wave A act, over the RD-32c-confirmed argument; recorded in `decisions/ACCEPTANCE-ACT-RECORD.md` |
@@ -82,20 +82,21 @@ States: `satisfied` / `owner-waived` / `blocking` / `not applicable`.
 | P-36 Unknown vs Gap | Owner decision | **owner-waived** — ruled 2026-08-16, the two-term rule; SDR-35 |
 | P-37 project-shape facets | Owner decision | **owner-waived** — ruled 2026-08-16, seven facets, drafting site = the Capability 1 specification (a2); SDR-36. The facet *vocabulary text* still needs authoring into that specification when written — the ruling names the site, not the text |
 | P-38 human entry and discoverability | Owner decision | **owner-waived** — ruled 2026-08-16, option (a) as drafted; `decisions/HUMAN-ENTRY-DECISION.md` |
-| P-41 + P-42 acceptance and impact standards in force | Craft acts | **blocking, offer open** — the review cycle closed 2026-08-17 (RD-69 → one blocker repair → RD-70 `CONFIRM WITH EXCEPTIONS`) and **acts 6 and 7 are minted** in the acceptance record §1; what remains is the owner performing both acts in one sitting |
+| P-41 + P-42 acceptance and impact standards in force | Craft acts | **satisfied — acts 6 and 7 performed 2026-08-17, one sitting** (review cycle: RD-69 → one blocker repair → RD-70 `CONFIRM WITH EXCEPTIONS`); CC-SPEC-1…11 and CC-IMPACT-1…7 in force at their reviewed digests; recorded in `decisions/ACCEPTANCE-ACT-RECORD.md` and the craft `INSTALL-RECORD.md` |
 | P-12 knowledge hygiene (CC-BUDGET-1) | Craft act | **blocking** for Capability 2; for Capability 1 the budget rule is not consumed — **not applicable** to Capability 1's own authoring, listed for visibility |
 | P-34 launch-gate instrument authority (current version per the instrument's own header; RD34-05) + formal administration READY | Process | **blocking** for the launch decision (the owner may lawfully decide without it, but this pass's charter treats the formal administration as the evidence bar) |
 | P-14 license | Owner decision | **not applicable** — blocks release, not specification |
 | P-35 operating constraints | Owner decision | **owner-waived** — ruled 2026-08-16, full table recorded; `decisions/PROJECT-OPERATING-CONSTRAINTS-DECISION.md`. Still blocks the formal administration's A6/F5 verdicts, which read the recorded statement rather than the ruling event |
 | Waves C1/C2/D1/D2, P-29, P-30, P-32, D3/D4 | — | **not applicable** — deferred per `DEFERRED-WAVE-POSTURE.md`; not on Capability 1's path |
 
-**As of 2026-08-17 (post-Waves-A+B):** eight of the scoped rows are
+**As of 2026-08-17 (post-acts):** eight of the scoped rows are
 `owner-waived` (ruled 2026-08-16, per `decisions/DECISION-HISTORY.md`) and
-**both wave rows are `satisfied`** — the two acts were performed
-2026-08-17, A then B. Capability 1 may still not be authored: the owner's
-launch decision has not been made, and
-`P-41`/`P-42` remain **blocking but fully teed up**:
-their review cycle is closed and acts 6/7 await only the owner's sitting.
+**three rows are `satisfied`** — the Wave A and B acts (performed
+2026-08-17, A then B) and the P-41/P-42 craft acts (acts 6 and 7,
+performed later the same day in one sitting). Capability 1 may still not
+be authored: the formal administration has not been run and the owner's
+launch decision has not been made — the P-34 process row above is the one
+remaining blocking row.
 The concept-level trace behind this table is
 `round-2026-08e/FIRST-SPEC-TRACE-TABLE.md` (E3), which this batch did not
 refresh — a follow-on task, not performed here.

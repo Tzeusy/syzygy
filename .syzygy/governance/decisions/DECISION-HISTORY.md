@@ -12,6 +12,23 @@
 > cells — are preserved verbatim in git history at commit `9c43fc5`
 > (`git show 9c43fc5:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`).
 
+## Resolved on 2026-08-17 (the four owner acts, and their §7 ratifications)
+
+The acts themselves are recorded in
+[`ACCEPTANCE-ACT-RECORD.md`](ACCEPTANCE-ACT-RECORD.md), which owns them;
+these rows record only each queue row's disposal.
+
+| # | What happened |
+|---|---|
+| P-41 | **Executed — act 6 performed 2026-08-17** (`CONFIRM CRAFT AMENDMENT: CC-SPEC@9889b7e3…`, one sitting with act 7). The specification-acceptance policy (CC-SPEC-1…11) is in force as owner-confirmed craft at its reviewed digest; the RD-51 → RD-69 (`REVISE`) → blocker repair → RD-70 (`CONFIRM WITH EXCEPTIONS`) cycle and the nine disclosed non-blocking findings travel with it. Owning records: `SPECIFICATION-ACCEPTANCE-DECISION.md`; `ACCEPTANCE-ACT-RECORD.md`; `../policies/craft-and-care/INSTALL-RECORD.md`. |
+| P-42 | **Executed — act 7 performed 2026-08-17** (`CONFIRM CRAFT AMENDMENT: CC-IMPACT@cd6ec838…`, same sitting as act 6, satisfying the joint-sitting requirement). The shape-to-spec impact policy (CC-IMPACT-1…7) is in force at its reviewed digest. Owning records: `SHAPE-TO-SPEC-IMPACT-DECISION.md`; `ACCEPTANCE-ACT-RECORD.md`; `../policies/craft-and-care/INSTALL-RECORD.md`. |
+| P-28 | **Resolved by ratification at the Wave A act** (acceptance record §7 item 16): performing the act with the drafted mission-extension profile riding in ratified it. The owner read §7 before the phrase (§2 step 0). Owning record: `ACCEPTANCE-ACT-RECORD.md` (Wave A entry). |
+| P-22 | **Resolved by ratification at the Wave B act** (acceptance record §7 item 17): the RFC9-8(a) registry placement rode in and was ratified when the act was performed. Owning record: `ACCEPTANCE-ACT-RECORD.md` (Wave B entry). |
+
+P-21 did **not** resolve at the acts — §7 item 18 ratifies only the
+declaration's *presence* while sub-question (a) rides in unruled; its row
+stays open in the register.
+
 ## Resolved on 2026-08-16 (owner ruling via adversarially-reviewed questionnaire packet)
 
 Every ruling below is a **recorded decision, not a digest-binding act** —
@@ -55,6 +72,11 @@ repository.
 
 ## The register's as-of chronology (oldest last)
 
+- **2026-08-17** — the four owner acts: Waves A and B accepted (A then B),
+  then craft acts 6 and 7 performed in one sitting. P-41/P-42 executed;
+  P-22/P-28 resolved by §7 ratification; P-21 narrowed to its open
+  sub-question (a). The register refactored the same day (this file
+  created); resolved rows moved here.
 - **2026-08-16** — eight rows ruled by the owner in one adversarially-reviewed
   questionnaire-packet sitting: P-31, P-33, P-35, P-36, P-37, P-38, P-39,
   P-40; P-34 ruled arm (c) then arm (a) the same day (see above).

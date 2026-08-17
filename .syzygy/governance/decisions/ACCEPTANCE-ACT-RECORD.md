@@ -56,3 +56,26 @@ Effective status of the 11 modules for human governance: **accepted —
 owner-adopted (bootstrap, uncorrelated)**. Constraints bind at full
 strength; nothing consumed as an authorization-for-effect satisfies
 RFC3-16(a) from this record alone.
+
+## Acts 6 and 7 — the CC-SPEC and CC-IMPACT craft amendments confirmed, 2026-08-17
+
+**Phrases, exactly as written by the owner (in-interaction, 2026-08-17,
+one sitting — the two policies are one model and were offered jointly):**
+
+```
+CONFIRM CRAFT AMENDMENT: CC-SPEC@9889b7e311ad941eec84d01dc2c035c7e2502a57cf18e68a1028a76d5b814871
+CONFIRM CRAFT AMENDMENT: CC-IMPACT@cd6ec838e701f0258889d0c3c2776fc91fe1686829379b789ae5b151b04c27c0
+```
+
+| | |
+|---|---|
+| Arguments | each policy file's own sha256, re-verified by script at the act and equal to its phrase — the exact bytes the confirming review examined |
+| Confirms | **CC-SPEC-1…11** (the specification-acceptance standard) and **CC-IMPACT-1…7** (the shape-to-spec impact rule) as owner-confirmed craft policy, in force at those digests |
+| Review chain | RD-51 `REVISE` → repair → RD-69 `REVISE` (one blocker, repaired same day) → **RD-70 `CONFIRM WITH EXCEPTIONS`** on these digests (raw + register: `contracts/candidates/round-2026-08i/reviews/`) |
+| Disclosed at the act | the nine open non-blocking findings (RD-69 N1–N5, RD-70 N1–N4) travel into force, per the offering packets — the first post-act amendment's worklist |
+| Recording | `policies/craft-and-care/INSTALL-RECORD.md` (the act-2 precedent); the files bind at their committed home, uncopied and unedited — an edit after the act retires it |
+| What this changes | launch-gate **E5** and **E6** now have owner-confirmed, citable owners; the first specification, when the owner authorizes authoring, is judged under a standard in force |
+| Commit / tag (step 5) | the commit carrying this entry; annotated tag `craft-acts-6-7-confirmed-2026-08-17` |
+
+Effective status for human governance: **confirmed craft policy —
+owner-adopted (bootstrap, uncorrelated)**.

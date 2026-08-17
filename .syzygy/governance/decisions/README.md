@@ -12,9 +12,9 @@
 | You want to know | Ask | Short answer today |
 |---|---|---|
 | **Has the owner decided this?** | the **recorded decisions** below | Doctrine, craft, SDR-1…37, and the 2026-08-16 rulings are recorded. The rest is not |
-| **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **No.** The file does not exist, and that absence is correct |
-| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **24** rows in the open section, plus **5** unperformed acceptance acts *(measured 2026-08-17 by the predicate the generators use: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
-| **Which decisions were resolved, and how?** | [`DECISION-HISTORY.md`](DECISION-HISTORY.md) | The resolved rows — including the nine 2026-08-16 rulings — and the register's chronology |
+| **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **Yes — four, all 2026-08-17:** Wave A, Wave B, and craft acts 6 + 7 (CC-SPEC, CC-IMPACT). The record file exists since the first act and owns every performed act |
+| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **20** rows in the open section, plus **5** open acceptance-act rows *(measured 2026-08-17, after the acts, by the predicate the generators use: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`; P-1's row stays open for the deferred C/D waves)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
+| **Which decisions were resolved, and how?** | [`DECISION-HISTORY.md`](DECISION-HISTORY.md) | The resolved rows — the nine 2026-08-16 rulings and the 2026-08-17 act dispositions (P-41/P-42 executed, P-22/P-28 ratified) — and the register's chronology |
 | **Where is the history?** | [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md), [`DECISION-HISTORY.md`](DECISION-HISTORY.md), and the round trees under `contracts/candidates/` | Deliberately off the default path |
 
 A **decision** is recorded prose the owner writes. An **act** is a formal
@@ -40,16 +40,17 @@ These carry rulings the owner has actually made.
 Doctrine itself (VIS-1…7, SEC-1…5) is adopted and lives in
 [`../doctrine/`](../doctrine/), not here.
 
-## 2. Owner acts — none performed
+## 2. Owner acts — four performed 2026-08-17
 
 ```text
-ACCEPTANCE-ACT-RECORD.md      does not exist
+ACCEPTANCE-ACT-RECORD.md      exists — created by the Wave A act, 2026-08-17
 ```
 
-**Its absence is the point.** It is created by the first act, so its presence
-would mean an act had been performed. Thirteen acts are prepared and open;
-none has fired. The acts themselves — their exact phrases and arguments — are
-owned by
+[`ACCEPTANCE-ACT-RECORD.md`](ACCEPTANCE-ACT-RECORD.md) owns the four acts
+performed 2026-08-17: Wave A, then Wave B, then craft acts 6 + 7 (CC-SPEC
+and CC-IMPACT, one sitting). Entries are appended, never edited. As of
+2026-08-17, nine offered acts remain unperformed. The acts themselves — their exact phrases and
+arguments — are owned by
 [`../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`](../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md),
 never by this directory and never by this page.
 
@@ -60,12 +61,13 @@ launch-critical rows each have a prepared packet here:
 
 | `P-nn` | Question | Packet |
 |---|---|---|
-| **P-41** | The specification-acceptance craft amendment | [`SPECIFICATION-ACCEPTANCE-DECISION.md`](SPECIFICATION-ACCEPTANCE-DECISION.md) |
-| **P-42** | The shape-to-spec impact craft amendment — offered jointly with P-41 | [`SHAPE-TO-SPEC-IMPACT-DECISION.md`](SHAPE-TO-SPEC-IMPACT-DECISION.md) |
 | **P-12** | The knowledge-hygiene craft policy | [`KNOWLEDGE-HYGIENE-DECISION.md`](KNOWLEDGE-HYGIENE-DECISION.md) |
 | **P-14** | Which license? | [`LICENSE-DECISION-PACKET.md`](LICENSE-DECISION-PACKET.md) |
 
-Packets whose question the owner has since ruled (P-31's
+Packets whose question the owner has since ruled or executed (P-41's
+`SPECIFICATION-ACCEPTANCE-DECISION.md` and P-42's
+`SHAPE-TO-SPEC-IMPACT-DECISION.md` — acts 6 and 7 performed 2026-08-17 —
+P-31's
 `MERGED-UNRECONCILED-DECISION.md`, P-36's `UNKNOWNS-AND-GAPS-DECISION.md`,
 P-37's `PROJECT-SHAPE-FACETS-DECISION.md`, P-39's
 `OPENSPEC-FORM-AND-VERSION-DECISION.md`, P-40's

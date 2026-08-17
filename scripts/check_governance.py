@@ -1788,7 +1788,9 @@ ACT_DIGEST_COPY_FILES = {
          "CONFIRM CRAFT AMENDMENT: CC-IMPACT",
          "ACCEPT TOPOLOGY", "ADOPT PROJECT OVERVIEW"),
     f"{CRAFT}/INSTALL-RECORD.md":
-        ("CONFIRM CRAFT AMENDMENT: CC-TEST-2",),
+        ("CONFIRM CRAFT AMENDMENT: CC-TEST-2",
+         "CONFIRM CRAFT AMENDMENT: CC-SPEC",
+         "CONFIRM CRAFT AMENDMENT: CC-IMPACT"),
     # The Wave A closure report (2026-08-10) summarizes the confirmed
     # argument for the owner and therefore carries a full copy of it; if
     # the argument ever regenerates again, this registration makes the
@@ -1814,7 +1816,9 @@ ACT_DIGEST_COPY_FILES = {
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
     f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md":
-        ("ACCEPT FOUNDATIONAL WAVE A", "ACCEPT FOUNDATIONAL WAVE B"),
+        ("ACCEPT FOUNDATIONAL WAVE A", "ACCEPT FOUNDATIONAL WAVE B",
+         "CONFIRM CRAFT AMENDMENT: CC-SPEC",
+         "CONFIRM CRAFT AMENDMENT: CC-IMPACT"),
 }
 
 

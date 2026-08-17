@@ -796,11 +796,13 @@ def selftest():
     def both_lists():
         """(Re-anchored 2026-08-16 — P-40 was ruled and removed from
         `blocking_decisions`, so appending it to `downstream_decisions` no
-        longer produced a both-lists collision; P-41 remains genuinely in
-        `blocking_decisions` and is the collision subject. Re-anchored
-        again 2026-08-17: P-34 was ruled, the downstream list is empty.)"""
+        longer produced a both-lists collision. Re-anchored again
+        2026-08-17, twice: P-34 was ruled, emptying the downstream list;
+        then acts 6/7 removed P-41 from `blocking_decisions`, so the
+        collision subject moved to P-21, which remains genuinely in
+        `blocking_decisions` and open in the queue.)"""
         mutated = base_charter.replace("downstream_decisions: []",
-                                       "downstream_decisions: [P-41]",
+                                       "downstream_decisions: [P-21]",
                                        1)
         if mutated == base_charter:
             return False, "mutation did not apply"

@@ -5,11 +5,12 @@ What the project *is* lives in `README.md` and `.syzygy/intent/OVERVIEW.md`.
 
 ## Current lifecycle stage: final pre-specification
 
-Doctrine is adopted; engineering policy is owner-approved. Contracts,
-topology, overview and the policy additions are **candidates awaiting owner
-acts**. There is **no application code, no specification content, and no
-implementation backlog** — none may be begun before the owner's launch
-decision.
+Doctrine is adopted; engineering policy is owner-approved. The Wave A/B
+contracts and the CC-SPEC/CC-IMPACT craft policies are **accepted/in force
+as of 2026-08-17**; deferred-wave contracts, topology, overview and the
+remaining policy additions are **candidates awaiting owner acts**. There is
+**no application code, no specification content, and no implementation
+backlog** — none may be begun before the owner's launch decision.
 
 ## Where authority lives
 
@@ -17,7 +18,7 @@ decision.
 |---|---|---|---|
 | Why — purpose, non-negotiables | Doctrine (VIS-1…7, SEC-1…5) | `.syzygy/governance/doctrine/` | **Yes** — adopted 2026-07-30, D1 in force |
 | Prior owner rulings | Decisions (SDR-1…33, warrants, pending queue) | `.syzygy/governance/decisions/` | **Yes** |
-| Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | **Owner-approved (D2)**; clause force begins at the acceptance acts |
+| Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | **Owner-approved (D2)**; clause force begins at the acceptance acts. **CC-SPEC-1…11 and CC-IMPACT-1…7 in force as of 2026-08-17** (acts 6/7, recorded in `INSTALL-RECORD.md`; the files bind at `contracts/candidates/policy-candidates/`, uncopied and unedited) |
 | Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/` | **RFC 0001–0009: accepted** — the Wave A and B acts were performed 2026-08-17 and recorded in `decisions/ACCEPTANCE-ACT-RECORD.md`, with the 30 modules installed at `contracts/rfcs/` as of 2026-08-17 (owner-adopted bootstrap, uncorrelated). RFC 0010–0011: **candidate**, in `contracts/candidates/` (deferred waves) |
 | Intended placement | Topology bundle | `.syzygy/map/topology-candidates/` | **No — candidate.** `map/topology/` exists only after act 3 |
 | Public narrative | Overview | `.syzygy/intent/OVERVIEW.md` | Governed presentation — **never authority** |
@@ -31,9 +32,10 @@ clauses may be discussed, never cited as binding.
 
 ## Pending owner gates
 
-**Eleven acts are open. Two acts have been performed — Waves A and B,
-2026-08-17** (`decisions/ACCEPTANCE-ACT-RECORD.md` owns the record); this
-file states no more than that.
+**Nine acts are open. Four acts have been performed — Waves A and B, then
+craft acts 6 and 7 (CC-SPEC, CC-IMPACT), all 2026-08-17**
+(`decisions/ACCEPTANCE-ACT-RECORD.md` owns the record); this file states no
+more than that.
 
 | Question | The one record that owns the answer |
 |---|---|

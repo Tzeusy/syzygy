@@ -137,9 +137,17 @@ behavior_rows:
 # row of the pending-decisions queue"). None of the three rulings performs
 # the Wave A/B acts or authors OpenSpec — see
 # `../../decisions/PENDING-OWNER-DECISIONS.md` ("Resolved on 2026-08-16")
-# for what each ruling was and what remains open (P-1, the wave acts
-# themselves, are unperformed and correctly remain listed below).
-blocking_decisions: [P-1, P-21, P-22, P-28, P-41, P-42]
+# for what each ruling was and what remains open.
+#
+# P-41 and P-42 EXECUTED 2026-08-17 (craft acts 6 and 7, one sitting) and
+# removed per the same self-check — record:
+# `../../decisions/ACCEPTANCE-ACT-RECORD.md`. P-22 and P-28 resolved the
+# same day by §7 ratification at the Wave B and Wave A acts and their rows
+# moved to `../../decisions/DECISION-HISTORY.md`, so they are removed too.
+# P-1 stays listed: its launch-path waves A and B were performed 2026-08-17,
+# but its row remains open for the deferred C/D waves, and the queue row is
+# what the self-check reads. P-21 stays listed: sub-question (a) is open.
+blocking_decisions: [P-1, P-21]
 
 # Open upstream, at a LATER gate — named so a reader is not surprised by
 # them, not because authoring consumes them.

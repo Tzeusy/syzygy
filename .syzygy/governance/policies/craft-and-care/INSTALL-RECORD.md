@@ -133,3 +133,33 @@ as owner decision **P-41** and binds nothing until its own
 `CONFIRM CRAFT AMENDMENT` act; its digest is computed at that act, never
 transcribed in advance. This paragraph is a pointer so the cluster is aware
 of the namespace minting into it — it installs nothing.
+
+**Acts 6 and 7 performed — 2026-08-17, one sitting.** The owner wrote both
+phrases in-interaction, exactly:
+
+```
+CONFIRM CRAFT AMENDMENT: CC-SPEC@9889b7e311ad941eec84d01dc2c035c7e2502a57cf18e68a1028a76d5b814871
+CONFIRM CRAFT AMENDMENT: CC-IMPACT@cd6ec838e701f0258889d0c3c2776fc91fe1686829379b789ae5b151b04c27c0
+```
+
+Each argument was re-verified by script at the act against its subject and
+matched exactly — the same digests the confirming review **RD-70**
+(`CONFIRM WITH EXCEPTIONS`, 2026-08-17) examined:
+
+- `CC-SPEC-1…11` — `.syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`
+- `CC-IMPACT-1…7` — `.syzygy/governance/contracts/candidates/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md`
+
+**Both policies are in force as owner-confirmed craft, at those exact
+digests, from this date.** The acts bind content at its committed home
+(the acts-2/4 pattern): the files are **not** copied and **not** edited —
+an edit after the act would retire it (RFC3-16(b) item 3), so the files'
+own "candidate / awaiting review" banner paragraphs are frozen historical
+text superseded by this record, exactly as the launch-gate instrument's
+banner is superseded by the P-34 approval record. The nine open
+non-blocking findings (RD-69 N1–N5, RD-70 N1–N4) traveled into force
+disclosed, per the offering packets; their register is
+`.syzygy/governance/contracts/candidates/round-2026-08i/reviews/RD-69-DISPOSITION-REGISTER.md`,
+and they are the first post-act amendment's worklist. Owner-act record:
+`.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` (acts 6 and 7);
+tag `craft-acts-6-7-confirmed-2026-08-17`. With this entry, the pending
+candidate recorded in the 2026-08-10 paragraph above is pending no longer.

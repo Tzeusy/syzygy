@@ -13,8 +13,13 @@
 > as-of chronology live in [`DECISION-HISTORY.md`](DECISION-HISTORY.md);
 > the pre-refactor row narratives are preserved verbatim in git history at
 > commit `9c43fc5`.
+>
+> **Updated 2026-08-17 (later the same day):** four acts were performed —
+> Waves A and B, then craft acts 6 and 7 (P-41/P-42, one sitting). The
+> executed rows moved to `DECISION-HISTORY.md`; P-22 and P-28 resolved by
+> §7 ratification at the acts; P-21 stays open (sub-question (a) unruled).
 
-## The acceptance acts (none performed)
+## The acceptance acts (four performed; the rest open)
 
 Exact phrases, digests, and the ceremony live in
 `../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`.
@@ -44,12 +49,15 @@ The launch target is **Capability 1**
 acts are **Waves A and B only** (`DEFERRED-WAVE-POSTURE.md`). Read the open
 table through this lens:
 
-- **Ratified or reverted at the Wave A act:** P-28 (mission extension
-  profile, §7 item 16) and P-21(a) (the `constrains:` relation, §7 item 18).
-- **Ratified or reverted at the Wave B act:** P-22 (the RFC9-8(a) registry
-  placement, §7 item 17) and P-21(a)'s Wave B instance (§7 item 18).
-- **Gate authoring the first spec:** P-41 + P-42 (jointly), plus the two
-  wave acts themselves.
+- **Ratified at the Wave A act (2026-08-17):** P-28 (mission extension
+  profile, §7 item 16) — resolved, see `DECISION-HISTORY.md`. P-21(a)'s
+  presence also rode in, **unruled** (§7 item 18) — its row stays open below.
+- **Ratified at the Wave B act (2026-08-17):** P-22 (the RFC9-8(a) registry
+  placement, §7 item 17) — resolved, see `DECISION-HISTORY.md`.
+- **Gate authoring the first spec:** satisfied 2026-08-17 — the two wave
+  acts and craft acts 6 + 7 (P-41 + P-42) are all performed
+  (`ACCEPTANCE-ACT-RECORD.md`). What still gates authoring is the formal
+  administration and the owner's launch decision, not any queue row here.
 - **Gate a deferral-bearing administration:** P-43.
 - **Deferred with their waves (no C/D act is offered):** P-19, P-23, P-27,
   P-29, P-30, P-32, and the D3/D4 doctrine questions — see
@@ -72,19 +80,15 @@ Where this index and a row disagree, the row wins and this index is stale.
 | P-18 | Three doctrine/contract vocabulary seams (C-1…C-6): governance-category counts, "Claim" outside doctrine's frozen nouns, `evidence tier` vs `rendering tier` | ruling | before OpenSpec multiplies them (advisory) | `round-2026-08/TERM-MIGRATION-REPORT.md` |
 | P-19 | Mission-envelope residuals — the RFC-0010 correction plane (RFC10-17…22) closes them only if the D-wave acts are performed | deferred with waves | D1/D2 offer | `DEFERRED-WAVE-POSTURE.md`; `round-2026-08b/reviews/RC-7-mission-safety-RAW.md` |
 | P-20 | The fixture-set acceptance posture — the residue P-29 owns; coverage itself is closed (ten fixtures) | deferred | with P-29 | `round-2026-08/ROUND-DISPOSITIONS.md`; `round-2026-08b/FINAL-CONTEXT-COMPILER-FIXTURE-REPORT.md` |
-| P-21 | Is `constrains:` the right relation for one-way constraints (arm a)? Drafted into two modules' front matter; the Wave A act is the first act freezing it, Wave B its RFC8-12/RFC9-32 instance | ruling, ratified or reverted at act | Wave A act; Wave B act | `round-2026-08c/CONTRACT-RELATION-CLOSURE-REPORT.md`; acceptance record §7 item 18 |
-| P-22 | RFC9-8(a) registry placement — re-grounded on the Wave A governance store; accepting Wave B ratifies it, reverting restores the RC-4 contradiction | ruling, ratified or reverted at act | Wave B act | acceptance record §7 item 17; `round-2026-08d/SEMANTIC-DELTA-RECORD.md` A-9 |
+| P-21 | Is `constrains:` the right relation for one-way constraints (arm a)? The declaration's **presence** was ratified when the Wave A and B acts were performed 2026-08-17 (§7 item 18: "the acts ratify its presence" while (a) rides in **unruled**) — the sub-question itself remains open; its consumer clause sits in deferred Wave C2 | ruling | before Wave C2 is offered, or at the first consumer of the relation | `round-2026-08c/CONTRACT-RELATION-CLOSURE-REPORT.md`; acceptance record §7 item 18 |
 | P-23 | Mission-safety stage placement — hold the correction plane for V1 (propose-only V0), or ship it with V0; the ceiling and the plane move together | deferred with waves | D1/D2 offer | `round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md`; `round-2026-08b/reviews/RC-7-mission-safety-RAW.md` |
 | P-24 | Rule doctrine question **D4** before act 5 — D3's `vision.md` insertion otherwise settles D4 by stipulation; the reviewer's alternative text is carried in the packet | doctrine ruling | act 5 | `DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` §6; RC-7 F10 |
 | P-25 | Editorial doctrine amendment qualifying the three "README glossary" citations (drafted, not performed); three terms remain undefined anywhere reachable | doctrine amendment — only the owner applies | none | `policy-candidates/DOCTRINE-EDITORIAL-AMENDMENT-GLOSSARY-CITATION.md` |
 | P-25(c) | The `actuator` definition — a minimal doctrine amendment with the exact glossary insertion, one inferred sentence flagged for the owner | doctrine amendment — only the owner applies | none | `policy-candidates/DOCTRINE-AMENDMENT-ACTUATOR-DEFINITION.md` |
 | P-27 | RFC10-18's correction-plane routing defects (RC-11) and RC-10's undisclosed residue — all inside deferred D-wave modules | deferred with waves | D1/D2 offer | `round-2026-08b/DISPOSITIONS-RC-11-RC-12.md` |
-| P-28 | The mission extension profile (option b, drafted into RFC1-7/RFC10-4) — accepting Wave A ratifies it; the packet carries the alternatives | ruling, ratified or reverted at act | Wave A act | acceptance record §7 item 16; packet 5, `round-2026-08d/OWNER-DECISION-PACKETS.md` |
 | P-29 | The Wave C2 acceptance criterion — write the blind-fixture reproduction standard into the manifest (arm a), or delete the conditional sentence and defer knowingly (arm b) | deferred with waves | Wave C2 re-offer | `round-2026-08d/reviews/RD-23-wave-c2-RAW.md` B1/B2 |
 | P-30 | Form of the stop/containment repair — D1-side floor limbs (i), move RFC10-20 to D1 (ii), or merge the D acts (iii) | deferred with waves | D1/D2 re-offer | `round-2026-08d/reviews/RD-20…RD-21…RD-13…RD-14` raw reviews |
 | P-32 | RFC11-15 ownership metadata at V0 — author the schema, or rule the honest-fallback limb permanent and say so plainly | deferred with waves | Wave C2 re-offer | `round-2026-08d/reviews/RD-23-wave-c2-RAW.md` M2 |
-| P-41 | The **specification-acceptance craft act** (CC-SPEC-1…11) — **offer open**: the review cycle closed 2026-08-17 (RD-69 `REVISE`, one blocker repaired → RD-70 `CONFIRM WITH EXCEPTIONS`) and **act 6** is minted in the acceptance record §1. Perform **jointly with P-42 (act 7), one sitting**: accepting one alone reintroduces two blocking defects. Nine non-blocking findings travel disclosed (register in `../contracts/candidates/round-2026-08i/reviews/`) | craft act | before the first spec is authored | `SPECIFICATION-ACCEPTANCE-DECISION.md` (this directory); acceptance record §1 act 6 |
-| P-42 | The **shape-to-spec impact craft act** (CC-IMPACT-1…7) — gives launch-gate E6's detection step an owner. **Offer open**: same closed cycle (the CC-IMPACT file byte-unchanged through it); **act 7** minted. Perform **jointly with P-41 (act 6), one sitting** | craft act | before the first spec is authored | `SHAPE-TO-SPEC-IMPACT-DECISION.md` (this directory); acceptance record §1 act 7 |
 | P-43 | What marks a file as recording a **made** owner decision — `SDR-n` only, an `**Executed.**` marker, a front-matter field? LA-11's shape classification is defensible and unruled | convention ruling | before any administration rests on a deferral | this row; `round-2026-08g/reviews/RD-56-launch-machinery-v2.1-RAW.md` f5 |
 | P-44 | A lagging-specification exception to CC-REV-2 — amend in place (arm a) or decline (arm b); declining costs nothing while no specification exists. **Reviewed in the P-41/P-42 cycle (RD-69): the offer itself needs repair before any arm-(a) act** — its "Owner charter §9.6" warrant resolves nowhere in-tree, and arm (a)'s appended text contradicts the "one structural carve-out" sentence it follows (RD-69 N4); arm (b) is verified costless and needs no repair | policy amendment offer | not launch-critical | `policy-candidates/CC-REV-2-LAGGING-SPECIFICATION-AMENDMENT-OFFER.md`; RD-69 register (`../contracts/candidates/round-2026-08i/reviews/`) |
 
