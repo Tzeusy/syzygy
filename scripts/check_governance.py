@@ -1814,7 +1814,7 @@ ACT_DIGEST_COPY_FILES = {
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
     f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md":
-        ("ACCEPT FOUNDATIONAL WAVE A",),
+        ("ACCEPT FOUNDATIONAL WAVE A", "ACCEPT FOUNDATIONAL WAVE B"),
 }
 
 

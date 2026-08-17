@@ -26,7 +26,7 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 | Step | State | Owning record |
 |---|---|---|
 | Wave A (RFC 0001–0006, 19 modules) | **ACCEPTED — act performed 2026-08-17.** The owner wrote the exact phrase over the RD-31b-confirmed argument `8972d963…`; the 19 modules are installed at `contracts/rfcs/` (shape (M), 19/19 digest-verified from the governed home). Owner-adopted bootstrap, uncorrelated — never "verified". | `decisions/ACCEPTANCE-ACT-RECORD.md`; tag `wave-a-accepted-2026-08-17` |
-| Wave B (RFC 0007–0009 + the three surfaces, 11 modules) | **Confirmed** — `VERDICT: CONFIRM` on the current argument `193e3c1e…` (RD-32c). Nothing withholds it; it follows the **performed** Wave A act and is the next act on the path. **Act not performed.** | acceptance record §1; `wave-manifests/WAVE-B-MANIFEST.txt` |
+| Wave B (RFC 0007–0009 + the three surfaces, 11 modules) | **ACCEPTED — act performed 2026-08-17, after Wave A.** The owner wrote the exact phrase over the RD-32c-confirmed argument `193e3c1e…`; the 11 modules are installed at `contracts/rfcs/` (shape (M), 11/11 digest-verified). Owner-adopted bootstrap, uncorrelated — never "verified". | `decisions/ACCEPTANCE-ACT-RECORD.md`; tag `wave-b-accepted-2026-08-17` |
 | Waves C1/C2/D1/D2 | **Deferred** — candidate, not accepted, not used by the launch target, not offered. Not retired. | `contracts/candidates/DEFERRED-WAVE-POSTURE.md` |
 | Owner rulings, 2026-08-16 | **P-31, P-33, P-35, P-36, P-37, P-38, P-39, P-40 ruled** in one adversarially-reviewed sitting, plus P-34 below. Zero contract bytes moved; both wave confirmations survive. | `decisions/PENDING-OWNER-DECISIONS.md` §"Resolved on 2026-08-16"; each row names its owning record |
 | Launch-gate policy | **Owner-approved process policy at v2.4** — P-34 ruled arm (a), 2026-08-16, **with two disclosed BLOCKING residuals** (RD-67 f1, RD-68 f1 — false-`READY` paths reachable only by an adversarial record author), **F5 not promoted**. Ten `REVISE` verdicts across v2.0–v2.4 stand as recorded; this is approval-with-residuals, not a clean review verdict. A bounded v2.5 is an owner option, not a gate. | `decisions/LAUNCH-GATE-AUTHORITY-DECISION.md` (the recorded approval); instrument `launch-gate-pre-specifications.md`; `round-2026-08h/reviews/DISPOSITION-REGISTER.md` |
@@ -65,9 +65,9 @@ which is the correct state — the first act creates it.
 
 The remaining launch path, in order — each step's owning record governs:
 
-1. ~~Owner performs the **Wave A act**~~ — **done 2026-08-17**
-   (`decisions/ACCEPTANCE-ACT-RECORD.md`); then the **Wave B act** (offer
-   open; the acceptance record owns the phrase and argument).
+1. ~~Owner performs the **Wave A act**, then the **Wave B act**~~ —
+   **both done 2026-08-17**, A then B
+   (`decisions/ACCEPTANCE-ACT-RECORD.md`).
 2. **P-41 + P-42**: perform craft acts 6 and 7 in one sitting — the
    bounded repair/review cycle closed 2026-08-17, and the acceptance
    record owns the phrases and arguments.

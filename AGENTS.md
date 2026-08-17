@@ -18,7 +18,7 @@ decision.
 | Why — purpose, non-negotiables | Doctrine (VIS-1…7, SEC-1…5) | `.syzygy/governance/doctrine/` | **Yes** — adopted 2026-07-30, D1 in force |
 | Prior owner rulings | Decisions (SDR-1…33, warrants, pending queue) | `.syzygy/governance/decisions/` | **Yes** |
 | Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | **Owner-approved (D2)**; clause force begins at the acceptance acts |
-| Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/` | **RFC 0001–0006: accepted** — the Wave A act was performed 2026-08-17 and recorded in `decisions/ACCEPTANCE-ACT-RECORD.md`, with the modules installed at `contracts/rfcs/` as of 2026-08-17 (owner-adopted bootstrap, uncorrelated). RFC 0007–0011: **candidate**, in `contracts/candidates/` |
+| Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/` | **RFC 0001–0009: accepted** — the Wave A and B acts were performed 2026-08-17 and recorded in `decisions/ACCEPTANCE-ACT-RECORD.md`, with the 30 modules installed at `contracts/rfcs/` as of 2026-08-17 (owner-adopted bootstrap, uncorrelated). RFC 0010–0011: **candidate**, in `contracts/candidates/` (deferred waves) |
 | Intended placement | Topology bundle | `.syzygy/map/topology-candidates/` | **No — candidate.** `map/topology/` exists only after act 3 |
 | Public narrative | Overview | `.syzygy/intent/OVERVIEW.md` | Governed presentation — **never authority** |
 
@@ -31,9 +31,9 @@ clauses may be discussed, never cited as binding.
 
 ## Pending owner gates
 
-**Twelve acts are open. One act has been performed — Wave A, 2026-08-17**
-(`decisions/ACCEPTANCE-ACT-RECORD.md` owns the record); this file states
-no more than that.
+**Eleven acts are open. Two acts have been performed — Waves A and B,
+2026-08-17** (`decisions/ACCEPTANCE-ACT-RECORD.md` owns the record); this
+file states no more than that.
 
 | Question | The one record that owns the answer |
 |---|---|
