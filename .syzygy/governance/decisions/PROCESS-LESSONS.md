@@ -562,3 +562,25 @@ verification rules and points here for the incidents.*
   abbreviated commit). Only a fixture mechanical over the whole population
   (RD-66 f1's every-string-leaf sweep) held. Prefer schema-derived/allowlist
   fixtures over blocklists, and mutation-test every limb.
+
+## Round 2026-08i — lessons from the convergence pass
+
+- **Minting a new act is three registrations, not one row.** A `§1` row in
+  the acceptance record with the full argument, a `current_phrases` entry
+  in `ACCEPTANCE-PHRASE-REGISTRY.yaml` (CG-7d reads digests from there),
+  and — for any packet quoting the argument in full — an
+  `ACT_DIGEST_COPY_FILES` entry, or CG-7e fails by design. Mutation-test
+  each new argument (rule 6) before claiming coverage: acts 6/7 were
+  verified by corrupting one hex char and watching CG-7d **and** CG-7e
+  fire.
+- **A digest-bound approval freezes the subject's own banner.** P-34's
+  approval binds the instrument's exact digest, so the instrument still
+  says "owner approval pending" and may not be fixed without retiring the
+  approval. Route readers to the authority record; never "helpfully"
+  repair a banner inside digest-bound bytes.
+- **Repair against the corpus, not the finding.** RD-69's one blocker was
+  a repair (CC-SPEC-8's "one home") that closed a circularity by minting
+  a rule nine contract modules already owned with a stricter gate — and
+  "no other statement of it exists" was written without the rule-9 sweep
+  that would have falsified it. Before declaring any clause a fact's
+  home, sweep for the fact's existing statements with a denominator.
