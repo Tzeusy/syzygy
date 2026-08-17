@@ -18,7 +18,7 @@ decision.
 | Why — purpose, non-negotiables | Doctrine (VIS-1…7, SEC-1…5) | `.syzygy/governance/doctrine/` | **Yes** — adopted 2026-07-30, D1 in force |
 | Prior owner rulings | Decisions (SDR-1…33, warrants, pending queue) | `.syzygy/governance/decisions/` | **Yes** |
 | Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | **Owner-approved (D2)**; clause force begins at the acceptance acts |
-| Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/candidates/` | **No — candidate.** `contracts/rfcs/` exists only after the first wave act |
+| Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/` | **RFC 0001–0006: accepted** — the Wave A act was performed 2026-08-17 and recorded in `decisions/ACCEPTANCE-ACT-RECORD.md`, with the modules installed at `contracts/rfcs/` as of 2026-08-17 (owner-adopted bootstrap, uncorrelated). RFC 0007–0011: **candidate**, in `contracts/candidates/` |
 | Intended placement | Topology bundle | `.syzygy/map/topology-candidates/` | **No — candidate.** `map/topology/` exists only after act 3 |
 | Public narrative | Overview | `.syzygy/intent/OVERVIEW.md` | Governed presentation — **never authority** |
 
@@ -31,8 +31,9 @@ clauses may be discussed, never cited as binding.
 
 ## Pending owner gates
 
-**Thirteen acts are open; none has been performed**, and this file states no
-more than that.
+**Twelve acts are open. One act has been performed — Wave A, 2026-08-17**
+(`decisions/ACCEPTANCE-ACT-RECORD.md` owns the record); this file states
+no more than that.
 
 | Question | The one record that owns the answer |
 |---|---|
@@ -45,8 +46,9 @@ Each digest belongs to the artifact it names, so verify with
 `check_governance.py` (CG-7) before any act. **This file restates no digest
 and no verdict.**
 
-`decisions/ACCEPTANCE-ACT-RECORD.md` is created by the first act; its absence
-is correct. Superseded offerings are banner-marked and retired phrases satisfy
+`decisions/ACCEPTANCE-ACT-RECORD.md` exists since the first act (Wave A,
+2026-08-17) and owns every performed act; entries are appended, never
+edited. Superseded offerings are banner-marked and retired phrases satisfy
 nothing — never route an owner to a stale offering.
 
 ## Task routing — context is compiled, never accumulated

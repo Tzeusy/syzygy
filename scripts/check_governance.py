@@ -626,10 +626,21 @@ def cg1_links(paths, res):
         [], [], set(), [], [], []
     dead_routes = []
 
+    INSTALLED_RFCS = ".syzygy/governance/contracts/rfcs/"
+    installed_disclosed = []
+
     def classify(rel, t, bucket):
         """Where an unresolvable reference belongs. One place, so CG-1a and
         CG-1b cannot disagree about the same target."""
-        if _is_vendored_gap(rel, t):
+        if rel.startswith(INSTALLED_RFCS):
+            # P-33 install shape (M), ruled 2026-08-16: the installed tree
+            # holds accepted modules only, and the modules' path strings
+            # resolve in the candidates tree rather than beside the
+            # installed copies — a disclosed property of the ruling,
+            # accepted knowingly at the act. The measurement (88 strings)
+            # is owned by decisions/WAVE-A-INSTALL-SHAPE-DECISION.md.
+            installed_disclosed.append(f"{rel} -> {t}")
+        elif _is_vendored_gap(rel, t):
             vendor_gap.append(f"{rel} -> {t}")
         elif RFCS_ROUTE.match(t) and _is_active_lane(rel):
             dead_routes.append(f"{rel} -> {t}")
@@ -687,6 +698,14 @@ def cg1_links(paths, res):
     res.add("WARN", "CG-1c  declared forward references", len(forward), 0, "target",
             note="skipped by design — an owner act creates these",
             details=sorted(forward))
+    uniq_inst = sorted(set(installed_disclosed))
+    res.add("WARN", "CG-1i  installed-tree path strings (P-33 shape (M))",
+            len(uniq_inst), 0, "reference",
+            note="disclosed at the act — installed modules' path strings "
+                 "resolve in the candidates tree, never beside the installed "
+                 "copies; decisions/WAVE-A-INSTALL-SHAPE-DECISION.md owns "
+                 "the measurement",
+            details=uniq_inst)
     uniq_hist = sorted(set(historical))
     res.add("WARN", "CG-1d  frozen-packet references", len(uniq_hist), 0,
             "reference",
@@ -1290,20 +1309,67 @@ def cg5_craft_banners(paths, res):
 
 # --------------------------------------------------------------- CG-6
 
+#: home -> (why, phrase-label prefix whose recorded performance creates it).
+#: `contracts/rfcs/` is created by the FIRST wave act, so any recorded
+#: `ACCEPT FOUNDATIONAL WAVE …` entry licenses it.
 ACCEPTED_HOMES = (
-    (".syzygy/governance/contracts/rfcs", "created only by owner act 1"),
-    (".syzygy/map/topology", "created only by owner act 3"),
+    (".syzygy/governance/contracts/rfcs", "created only by a wave act",
+     "ACCEPT FOUNDATIONAL WAVE"),
+    (".syzygy/map/topology", "created only by owner act 3",
+     "ACCEPT TOPOLOGY"),
 )
+
+ACT_RECORD_PATH = ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md"
+
+
+def _recorded_act_labels():
+    """Phrase labels recorded as PERFORMED in the owner-act record.
+
+    Empty before the first act (the record file's absence is the correct
+    pre-act state). A phrase counts only in the ceremony's step-4 shape —
+    the exact phrase with its full 64-hex argument on one line — so prose
+    that merely names a phrase records nothing.
+    """
+    if not os.path.exists(os.path.join(ROOT, ACT_RECORD_PATH)):
+        return set()          # pre-first-act state: absence is correct
+    body = read(ACT_RECORD_PATH)
+    if not body:
+        return set()
+    labels = set()
+    for m in re.finditer(
+            r"^(ACCEPT FOUNDATIONAL WAVE [A-Z][0-9]?|ACCEPT TOPOLOGY|"
+            r"ADOPT PROJECT OVERVIEW): ([0-9a-f]{64})\s*$", body, re.M):
+        labels.add(m.group(1))
+    for m in re.finditer(
+            r"^(CONFIRM CRAFT AMENDMENT: [A-Za-z0-9-]+)@([0-9a-f]{64})\s*$",
+            body, re.M):
+        labels.add(m.group(1))
+    return labels
+
+
+def _home_act_recorded(rel, recorded):
+    for home, _why, prefix in ACCEPTED_HOMES:
+        if rel.rstrip("/") == home or rel.rstrip("/").endswith(home):
+            return any(l.startswith(prefix) for l in recorded)
+    return False
 
 
 def cg6_accepted_homes(res):
-    findings = []
-    for rel, why in ACCEPTED_HOMES:
+    findings, created = [], []
+    recorded = _recorded_act_labels()
+    for rel, why, prefix in ACCEPTED_HOMES:
         if os.path.exists(os.path.join(ROOT, rel)):
-            findings.append(f"{rel} exists — {why}; no act has been recorded")
+            if any(l.startswith(prefix) for l in recorded):
+                created.append(f"[created by recorded act] {rel} — the "
+                               f"owner-act record carries its creating "
+                               f"phrase with a full argument")
+            else:
+                findings.append(f"{rel} exists — {why}; no act has been "
+                                f"recorded in {ACT_RECORD_PATH}")
     res.add("FAIL" if findings else "OK",
-            "CG-6   accepted homes not yet created", len(ACCEPTED_HOMES),
-            len(findings), "home", details=findings)
+            "CG-6   accepted homes created only by recorded acts",
+            len(ACCEPTED_HOMES), len(findings), "home",
+            details=findings + created)
 
 
 # --------------------------------------------------------------- CG-7
@@ -1744,6 +1810,11 @@ ACT_DIGEST_COPY_FILES = {
     # argument turns this copy into a finding, not a silent misstatement.
     f"{DECISIONS}/SPECIFICATION-ACCEPTANCE-DECISION.md":
         ("CONFIRM CRAFT AMENDMENT: CC-SPEC",),
+    # The owner-act record quotes each performed act's exact phrase and
+    # argument (ceremony step 4). Extend this tuple as acts are performed;
+    # a stale copy here would misstate what was accepted.
+    f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md":
+        ("ACCEPT FOUNDATIONAL WAVE A",),
 }
 
 
@@ -2392,10 +2463,11 @@ def cg14_install_routes(res, record=None, all_paths=()):
             # package's own `history/` as the act-1 destination of the same
             # name and demanded it not exist.
             if "/" in path.strip("/") and _is_forward(path):
-                if exists:
+                if exists and not _home_act_recorded(path, _recorded_act_labels()):
                     findings.append(
                         f"`{path}` — declared as created by an act, but it "
-                        f"already exists; the act cannot be performed")
+                        f"already exists with no recorded act; the act "
+                        f"cannot be performed")
             elif not exists:
                 findings.append(
                     f"`{path}` — named by the ceremony as an existing "

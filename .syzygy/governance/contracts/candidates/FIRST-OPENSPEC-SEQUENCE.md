@@ -73,7 +73,7 @@ States: `satisfied` / `owner-waived` / `blocking` / `not applicable`.
 
 | Prerequisite | Kind | State (2026-08-16) |
 |---|---|---|
-| Wave A act performed at a confirmed argument | Owner act | **blocking** — the *argument* is confirmed (`VERDICT: CONFIRM`, RD-31b) and its sole ruling obstacle (**P-33**) is now ruled, but **the act itself has not been performed**. Corrected 2026-08-11, RD-50 f2: this cell previously read "fresh exact-package review then the offer", which the confirmation had already overtaken |
+| Wave A act performed at a confirmed argument | Owner act | **satisfied — performed 2026-08-17** over the RD-31b-confirmed argument; recorded in `decisions/ACCEPTANCE-ACT-RECORD.md`, modules installed at `contracts/rfcs/` (shape (M)) |
 | Wave B act performed at a confirmed argument | Owner act | **blocking** — same shape: confirmed (`VERDICT: CONFIRM`, RD-32c), unoffered, and it follows Wave A. Nothing else withholds it |
 | P-33 Wave A install shape ruled | Owner decision | **owner-waived** — ruled 2026-08-16, option (M); `decisions/WAVE-A-INSTALL-SHAPE-DECISION.md`, `decisions/PENDING-OWNER-DECISIONS.md` ("Resolved on 2026-08-16") |
 | P-31 merged-unreconciled exemption ratified | Owner decision | **owner-waived** — ruled 2026-08-16, drafted `RFC2-19(a)` ratified as written; SDR-34 |
@@ -89,10 +89,11 @@ States: `satisfied` / `owner-waived` / `blocking` / `not applicable`.
 | P-35 operating constraints | Owner decision | **owner-waived** — ruled 2026-08-16, full table recorded; `decisions/PROJECT-OPERATING-CONSTRAINTS-DECISION.md`. Still blocks the formal administration's A6/F5 verdicts, which read the recorded statement rather than the ruling event |
 | Waves C1/C2/D1/D2, P-29, P-30, P-32, D3/D4 | — | **not applicable** — deferred per `DEFERRED-WAVE-POSTURE.md`; not on Capability 1's path |
 
-**As of 2026-08-17:** eight of the scoped rows are `owner-waived` (ruled
-2026-08-16, per `decisions/DECISION-HISTORY.md`); nothing is yet
-`satisfied` — the two wave acts remain unperformed, so Capability 1 may
-not yet be authored. `P-41`/`P-42` remain **blocking but fully teed up**:
+**As of 2026-08-17 (post-Wave-A):** eight of the scoped rows are
+`owner-waived` (ruled 2026-08-16, per `decisions/DECISION-HISTORY.md`) and
+**the Wave A row is `satisfied`** — the act was performed 2026-08-17. The
+Wave B act remains unperformed, so Capability 1 may not yet be authored.
+`P-41`/`P-42` remain **blocking but fully teed up**:
 their review cycle is closed and acts 6/7 await only the owner's sitting.
 The concept-level trace behind this table is
 `round-2026-08e/FIRST-SPEC-TRACE-TABLE.md` (E3), which this batch did not
