@@ -1,5 +1,10 @@
 # Capability 1 — final readiness, round-2026-08g
 
+> **SUPERSEDED 2026-08-17 — historical.** The current report is
+> `round-2026-08i/FINAL-CAPABILITY-1-READINESS-REPORT.md`; eight of the
+> thirteen conjunct states below changed with the 2026-08-16 rulings and
+> the 2026-08-17 convergence pass. Nothing here is current.
+
 > **Supersedes `round-2026-08f/FINAL-CAPABILITY-1-READINESS-REPORT.md`**, which
 > is banner-marked historical from this date. This report grades no artifact's
 > content; it states, conjunct by conjunct, what the readiness standard asks

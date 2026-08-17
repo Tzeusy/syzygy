@@ -1,5 +1,12 @@
 # Capability 1 — owner decision index
 
+> **SUPERSEDED 2026-08-17 — historical.** Written for the 2026-08-14
+> sitting; the owner then ruled eight of the decisions below on
+> 2026-08-16 (P-31, P-33, P-34, P-35, P-36, P-37, P-38, P-39, P-40) and
+> the P-41/P-42 review cycle closed 2026-08-17. Nothing here is current.
+> The live open queue is `decisions/PENDING-OWNER-DECISIONS.md`; the
+> resolved record is `decisions/DECISION-HISTORY.md`.
+
 > **An index, not a packet.** This page decides nothing, recommends nothing,
 > and reproduces no review history. It answers one question: **which of the
 > open decisions can actually be made right now, and which cannot yet.**

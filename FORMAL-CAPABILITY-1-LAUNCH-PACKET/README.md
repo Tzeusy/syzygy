@@ -13,8 +13,17 @@
 
 ## 1. What is being asked
 
-Administer `launch-gate-pre-specifications.md` **v2.2**, in full, at the
-named commit, against:
+Administer `launch-gate-pre-specifications.md` **v2.4**, in full, against
+the target below. **v2.4 is owner-approved process policy** — ruled
+2026-08-16 (P-34, arm (a); the recorded decision with verified digests is
+`.syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md`) — with
+**two disclosed BLOCKING residuals** in the validator's guarding
+(RD-67 f1, RD-68 f1; §3 below states the mitigation this packet requires
+of you) and **F5 not promoted** to a formula conjunct. The instrument's
+own header still reads "owner approval pending": the approval binds the
+instrument's exact digest, so the header could not be updated without
+retiring the approved bytes — the authority record above, not the banner,
+states the instrument's force.
 
 ```text
 LAUNCH TARGET
@@ -33,69 +42,37 @@ DEFERRED WAVES
 ## 2. What is bound — verify every digest before you begin
 
 ```text
-repository commit    (re-sealed at v2.2 — see the note below)
+repository commit    (recorded by you, in full — see the note below)
 
-launch-gate-pre-specifications.md (v2.2)
-    ac8751236ec7434c20606b404d41c885d29f67dd5f3dab8c9d0cbb90de670977
+launch-gate-pre-specifications.md (v2.4 — the digest the P-34 approval itself binds)
+    1852c2c3d31eff3afa0924b6b72e855481ab2516ba8fde5eda7b2ae8772f01e8
 §8 parameter block (as bound for this administration)
     01209c0f052971f794e1f35827a002aa8d80420aad471d10fde000abb6366ff6
 launch-gate-administration.schema.json
     e0167fb8af6a903c527d402d56c4fb85ebdfed9608de1a485f4f1563aa6a69fb
 scripts/validate_launch_administration.py
-    dbb8b69097df15a4bf60cc6fc0cef1043b838a22d30920f1914da31a91322977
+    047098326af2f415558f0ca748a98a5889d91e9cfecaa67d700ef1ba883ba497
 scripts/render_launch_administration.py
-    4ffa3c9ec83aad7951884be159eec81dde8374387fc45c4d7a6ba9b323a08e61
+    44d568e397271ff897dc13fd4cc46a9d1a9404d0d32db19b5b22dad69fa351c5
 ```
 
-**Third re-seal, 2026-08-13 — one digest, and the packet's own stop rule
-fired on it.** `scripts/validate_launch_administration.py` moved from
-`bf67c0fc8c8bd9c3a5c93a7f218ccbbc20c121616853dc0998d82d134ea61525`
-(sealed at commit `0baf089`) to
-`dbb8b69097df15a4bf60cc6fc0cef1043b838a22d30920f1914da31a91322977`
-(commit `622481a`). The second is the digest bound above; the first
-**satisfies nothing**. Both are written in full deliberately — a truncated
-digest quote is itself a promise, and `CG-15` refuses one that prefixes no
-current binding.
+**Fourth re-seal, 2026-08-17, at instrument v2.4.** The v2.2 seal's
+instrument, validator and renderer digests —
+`ac8751236ec7434c20606b404d41c885d29f67dd5f3dab8c9d0cbb90de670977`,
+`dbb8b69097df15a4bf60cc6fc0cef1043b838a22d30920f1914da31a91322977`,
+`4ffa3c9ec83aad7951884be159eec81dde8374387fc45c4d7a6ba9b323a08e61`,
+each written in full because a truncated stale digest is a promise
+`CG-15` refuses — are superseded and **satisfy nothing**: the instrument
+was repaired through v2.3 and v2.4 (each pair of reviews returned
+`REVISE`; §9 has the sequence) and the owner then approved v2.4 with the
+residuals disclosed. **Two of the five digests did not move across all
+five seals**: the **§8 parameter block** (full value in the block above —
+every fixed input you are judged against is unchanged since v2.0) and
+the **schema**. The instrument digest above is the same digest the P-34
+approval record binds; if it does not verify, you are not holding the
+approved instrument.
 
-*What moved, stated as a reviewable claim rather than an assurance.* The diff
-is **one selftest fixture** and its comment — `LA-11 a Beads issue grants no
-deferral` became `LA-11 a Beads artifact grants no deferral`, and the path it
-exercises moved from `.beads/issues.jsonl` to `.beads/README.md`. No
-validation logic, no schema handling, no verdict computation changed. Two
-pieces of evidence, both re-runnable:
-
-1. **Identical output.** The sealed bytes and the current bytes were both run
-   against `round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json`; both exit
-   `0` and their output is byte-identical.
-2. **The sealed bytes are not merely stale, they are broken at `HEAD`.**
-   Running the sealed version's own `--selftest` today fails, reporting
-   *"the deferral path `.beads/issues.jsonl` does not exist"* — a commit
-   between the seal and now stopped tracking that file, so the fixture
-   reached LA-11's does-not-exist branch and stopped testing what it names.
-   The repair repointed it at a tracked Beads artifact that makes the same
-   point.
-
-So the administration you would run is unchanged; what changed is that one of
-the validator's own fixtures started passing for the wrong reason and was
-fixed. **Verify the new digest anyway** — this paragraph is a claim, and the
-digest is the check.
-
-**Re-sealed 2026-08-13 at instrument v2.2** — the second re-seal in one
-day, and the reason is the point rather than an embarrassment: v2.1 was
-reviewed, both reviews returned `REVISE`, and the repair moved the bytes
-again. Every instrument, validator and renderer digest carried by the v2.0
-and v2.1 seals is **superseded and satisfies nothing**; a packet still
-binding them would send an administrator to bytes nobody offers.
-
-**Two of the five did not move**, which is the fact worth checking rather
-than taking on trust: the **§8 parameter-block digest is identical**, so
-every fixed input this administration uses — the launch target, the required
-and deferred waves, the D2 routing tasks, the E4 cases, the A3 near-misses,
-the A5 commitments — is unchanged from the v2.0 seal. So is the **schema**.
-The amendment changed how the instrument states its rules; it changed none
-of the inputs you will be judged against.
-
-Verify, in a fresh clone at that commit:
+Verify, in a fresh clone:
 
 ```sh
 git log --oneline -1
@@ -110,11 +87,19 @@ rather than proceeding.
 
 **No commit is bound, deliberately** *(changed 2026-08-13; the v2.0 seal
 named one, and RD-50 f11 had already had to explain that its advancing was
-not a mismatch)*. **The four sha256 digests are the whole of the binding.**
+not a mismatch)*. **The five sha256 digests are the whole of the binding.**
 Verify them at whatever commit you clone, record the commit you actually
 used in `repository_commit`, and note nothing about divergence — there is
 nothing to diverge from. A digest mismatch is the only mismatch, and it means
 this packet is stale: report it rather than proceeding.
+
+**`repository_commit` must be the full 40-hex commit — this is residual
+mitigation, not house style.** Disclosed residual **RD-67 f1**: an
+abbreviated commit (7–39 hex) validates against the schema's pattern but
+routes the validator's schema read to `HEAD` instead of the record's
+commit, which is a demonstrated false-`READY` path. Write all 40
+characters (`git rev-parse HEAD`), and the schema the validator reads is
+then the one at your commit.
 
 ## 3. How the record is produced
 
@@ -134,17 +119,41 @@ Set `"formal": true` and `"administration_kind": "full"`. A delta
 administration cannot support a gate decision, and the validator refuses
 the combination.
 
+**Before submitting the record, run the two residual checks yourself** —
+the validator's guarding has two disclosed holes an adversarial record
+could walk through, and a formal record must be shown clean of both:
+
+1. **Full 40-hex `repository_commit`** (RD-67 f1 — §2 above).
+2. **No category-`So`/invisible padding** (RD-68 f1): the placeholder
+   strip misses `So`-category characters (`U+2800` Braille blank,
+   `U+FFFC`), so a padded, unfalsified record can validate. Verify the
+   record contains none:
+
+   ```sh
+   python3 -c "import sys,unicodedata as u; d=open(sys.argv[1],encoding='utf-8').read(); bad=[(i,hex(ord(c))) for i,c in enumerate(d) if u.category(c)=='So' or ord(c)==0x2800]; print(bad or 'clean'); sys.exit(1 if bad else 0)" <record>.json
+   ```
+
+   `clean` is the required output; anything else is a finding against the
+   record itself.
+
 ## 4. Who may administer this
 
 - **Fresh context.** No prior contact with this repository's review
   history, no summaries of "how it's going", no prior administrations
   (except the trend log, and only when answering F1).
-- **Preferably a different model family from the corpus's authors**, or a
-  human. This corpus was authored by Claude models and every administration
-  to date has been by that family. If you are also that family, the record
-  must say so — `reviewer.same_family_as_corpus_authors: true` — and the
-  disclosure travels into the trend row. This is launch-gate **F5**'s own
-  example, and hiding it would fail the question the record is answering.
+- **A different model family from the corpus's authors, or a human —
+  required for THIS administration.** This corpus was authored by Claude
+  models, every administration and review to date has been by that
+  family, and the owner's convergence direction treats a same-family
+  formal administration as repair-grade evidence only — it cannot be the
+  formal administration this packet exists to obtain. (The instrument's
+  F5 is not a formula conjunct — the owner declined to promote it at
+  P-34 — so this requirement is the *packet's*, stated here because the
+  packet is what commissions the run.) If the owner nonetheless accepts a
+  same-family run, the record must say so —
+  `reviewer.same_family_as_corpus_authors: true` — and the disclosure
+  travels into the trend row; hiding it would fail the question the
+  record is answering.
 - **Not an authoring session of this repository**, under any circumstance.
 
 ## 5. The materials you are given
@@ -198,10 +207,11 @@ A5's population yourself.
 that absence is correct, not a gap.
 
 The open decisions are owned by
-`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`, and the readiness
-view over them — which can be settled now, which cannot yet, and what would
-unblock each — is
-`.syzygy/governance/contracts/candidates/round-2026-08g/CAPABILITY-1-OWNER-DECISION-INDEX.md`.
+`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` (open rows) and
+`.syzygy/governance/decisions/DECISION-HISTORY.md` (what was ruled and
+when). *(The round-08g owner-decision index this section previously
+routed to is superseded and banner-marked — eight of its decisions were
+ruled 2026-08-16; read the queue.)*
 
 **No count is stated here on purpose.** *(Corrected 2026-08-13.)* This
 section previously said "ten owner decisions are open" and routed to the
@@ -235,43 +245,39 @@ be **human spot-reviewed** before the record is treated as gate evidence:
   them, say so in `materials.deviations`.
 - **A recommended verdict.** There is none, and any document that offered
   one would be inviting the failure the gate exists to catch.
-- **The four reviews' findings.** *(Updated 2026-08-13. This section has now
-  said four different things; the sequence matters more than any one of
+- **The ten reviews' findings.** *(Updated 2026-08-17. This section has
+  said several different things; the sequence matters more than any one of
   them, and it is the honest answer to "how settled is this instrument?")*
 
   | Round | Reviews | Verdicts |
   |---|---|---|
   | v2.0 | RD-47 machinery, RD-48 policy | both `REVISE` |
   | v2.1 | RD-56 machinery, RD-55 policy | both `REVISE` |
+  | v2.2 | RD-62 machinery, RD-61 policy | both `REVISE` |
+  | v2.3 | RD-66 machinery, RD-65 policy | both `REVISE` |
+  | v2.4 | RD-68 machinery, RD-67 policy | both `REVISE` |
 
-  **The instrument you are administering is v2.2**, the repair of the second
-  pair. Both v2.1 reviewers found the same blocking defect independently:
-  §4 stated four eligibility limbs and the tool implemented three, so an
-  invalid record could still deposit `READY FOR …` in the trend log and in
-  a report's last line. That is repaired, along with eleven other findings.
+  **The instrument you are administering is v2.4, and it is
+  owner-approved with that record in front of the owner.** After the
+  fifth consecutive `REVISE` pair, the owner ruled **P-34 arm (a)**
+  (2026-08-16): approve v2.4 as process policy rather than spend a sixth
+  repair cycle — the one structural repair (the mechanical forgery sweep)
+  held, no live forgery exists in v2.4's bytes, and the two recurring
+  class defects (**RD-67 f1**, **RD-68 f1**) are **disclosed blocking
+  residuals** this administration runs with; §3's residual checks are
+  their mitigation. **F5 was not promoted** to a formula conjunct. The
+  full reasoning and the digests the approval binds are in
+  `.syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md`.
 
-  **What has not happened, at any version, is a review of the repaired
-  bytes.** A repair session cannot confirm its own repairs. So the honest
-  statement is not "the instrument is fixed" but "the instrument has twice
-  been amended in response to `REVISE` verdicts, each time by the session
-  that received them, and the current amendment is unreviewed."
-
-  Read that as a fact about *this instrument's* maturity, and do not let it
-  colour your verdicts on the corpus — F6 is where the process's own health
-  is recorded. The raw files are `round-2026-08f/reviews/RD-47-…`, `…/RD-48-…`
-  and `round-2026-08g/reviews/RD-55-…`, `…/RD-56-…`; the repair accounts are
-  the v2.1 and v2.2 semantic deltas in `round-2026-08g/`, with dispositions
-  in `round-2026-08g/reviews/DISPOSITION-REGISTER.md`.
-  **Their content is withheld from you under §5 for every other purpose.**
-  Do not read them to inform an answer; this paragraph exists so that you
-  know what state the instrument is in, not so that you inherit its
-  reviewers' judgments. If you do read them, record it in
+  Read that as a fact about *this instrument's* maturity, and do not let
+  it colour your verdicts on the corpus — F6 is where the process's own
+  health is recorded. The raw reviews live in `round-2026-08f/`,
+  `round-2026-08g/` and `round-2026-08h/` `reviews/` trees.
+  **Their content is withheld from you under §5 for every other
+  purpose.** Do not read them to inform an answer; this section exists so
+  that you know what state the instrument is in, not so that you inherit
+  its reviewers' judgments. If you do read them, record it in
   `materials.deviations`.
-
-  **P-34 is not approved**, so this administration would be run under a
-  *candidate* policy. An administration under an unapproved instrument is
-  evidence the owner may weigh, and it is not the "launch-gate is
-  owner-approved" conjunct of the readiness standard.
 
 ## 10. Deliverable
 
