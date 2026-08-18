@@ -348,13 +348,15 @@ TASKS = [
         title=f"Author Capability 1 — {CAP1['title']}",
         note="**Authoring is forbidden today.** This route exists so the "
              "rules are reachable *before* the owner's launch decision, "
-             "not so a spec can be written. `openspec/` does not exist and "
-             "may not be created. Every clause below is **candidate** — "
-             "Waves A and B are confirmed and unaccepted "
-             "(`PROJECT-STATUS.md` owns that state), so each module's "
-             "own banner (\"absent such a record, this contract binds "
-             "nothing\") governs every citation here. The decisions named "
-             "below are the ones this route can see; none is ruled.",
+             "not so a spec can be written. `openspec/` holds a scaffold "
+             "only and no specification content may be created. The Wave "
+             "A and B acts were performed 2026-08-17, so every clause "
+             "below is **accepted** contract text installed at "
+             "`contracts/rfcs/` (`PROJECT-STATUS.md` owns that state; "
+             "owner-adopted bootstrap, uncorrelated — never \"verified\"). "
+             "What still withholds authoring is the launch gate, not the "
+             "clauses: the formal administration and the owner's separate "
+             "launch decision.",
         clauses=CAP1_CLAUSES,
         modules=[
             # what the capability must do — RD-53 f10 and G1: the route had

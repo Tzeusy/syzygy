@@ -561,7 +561,7 @@ governance_sources:
   - {file: doctrine/trust-and-evidence.md, role: doctrine, words: 1069, rule_ids: [SEC-5, VIS-1, VIS-2, VIS-6, VIS-7]}
   - {file: doctrine/v1.md, role: doctrine, words: 1056, rule_ids: [SEC-1, SEC-2, SEC-3, VIS-2, VIS-4, VIS-5]}
   - {file: doctrine/vision.md, role: doctrine, words: 2156, rule_ids: [VIS-1, VIS-2, VIS-3, VIS-4, VIS-5, VIS-6, VIS-7]}
-  - {file: craft-and-care/INSTALL-RECORD.md, role: craft-policy, words: 886, rule_ids: [CC-BAR-1, CC-SPEC-1, CC-SPEC-10, CC-TEST-1, CC-TEST-2, CC-TEST-7, CC-VIZ-5]}
+  - {file: craft-and-care/INSTALL-RECORD.md, role: craft-policy, words: 1086, rule_ids: [CC-BAR-1, CC-IMPACT-1, CC-SPEC-1, CC-SPEC-11, CC-TEST-1, CC-TEST-2, CC-TEST-7, CC-VIZ-5]}
   - {file: craft-and-care/README.md, role: craft-policy, words: 768, rule_ids: [CC-BAR-1, CC-REV-3, CC-TEST-3, SEC-1, SEC-5, VIS-1, VIS-7]}
   - {file: craft-and-care/agent-provenance-and-execution-evidence.md, role: craft-policy, words: 972, rule_ids: [CC-PROV-1, CC-PROV-2, CC-PROV-3, CC-PROV-4, CC-PROV-5, CC-PROV-6, CC-PROV-7, CC-SEC-6, CC-TEST-2]}
   - {file: craft-and-care/engineering-bar.md, role: craft-policy, words: 1328, rule_ids: [CC-BAR-1, CC-BAR-2, CC-BAR-3, CC-BAR-4, CC-BAR-5, CC-BAR-6, CC-BAR-7, CC-DEP-2, CC-REV-1, CC-REV-2, CC-REV-4, CC-REV-7, CC-TEST-1, CC-TEST-3, CC-TEST-4, CC-TEST-7, SEC-1, SEC-5, VIS-1, VIS-2, VIS-3, VIS-4, VIS-5, VIS-7]}

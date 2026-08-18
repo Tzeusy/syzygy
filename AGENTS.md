@@ -65,7 +65,7 @@ Load the minimum for one correct decision; never "read everything."
 | "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until accepted OpenSpec content exists |
 | "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; authoring stays forbidden until the owner's launch decision |
 | Current status | `PROJECT-STATUS.md` |
-| "Is this ready for OpenSpec?" | **not ready** — no formal administration has been run. `PROJECT-STATUS.md` owns the current state; the instrument is `launch-gate-pre-specifications.md` |
+| "Is this ready for OpenSpec?" | **not ready** — Administration 1 (2026-08-18, out-of-family, v2.4) returned `NOT READY`. `PROJECT-STATUS.md` owns the current state; the record is in `decisions/launch-gate/`; the instrument is `launch-gate-pre-specifications.md` |
 | A launch-gate administration | the record is **structured JSON** (`launch-gate-administration.schema.json`); the Markdown report is generated, **never parsed back**. Scripts: `validate_launch_administration.py`, `render_launch_administration.py`; `launch_gate_results.py` covers the historical Markdown records only |
 | The launch-gate repair chain | `decisions/launch-gate/HISTORY.md` — **not default context**; the current policy is the instrument itself |
 | Open owner questions | `decisions/PENDING-OWNER-DECISIONS.md` |

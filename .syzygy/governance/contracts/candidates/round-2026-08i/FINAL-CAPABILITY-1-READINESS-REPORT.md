@@ -35,7 +35,7 @@ been commissioned yet."
 | 7 | The propagation fixture **passes** | **Yes** — RD-59 administered fixture 2 blind and passed; the fixture digest CC-IMPACT-7 binds still matches (verified this pass) | `round-2026-08g/reviews/RD-59-blind-propagation-RAW.md` |
 | 8 | Operating constraints are recorded | **Yes** — P-35 ruled 2026-08-16, the full table recorded | `decisions/PROJECT-OPERATING-CONSTRAINTS-DECISION.md` |
 | 9 | The launch-gate instrument is **owner-approved** | **Yes** — P-34 ruled 2026-08-16, arm (a): v2.4 approved as process policy after the fifth `REVISE` pair, **two blocking residuals disclosed** (RD-67 f1, RD-68 f1), F5 not promoted. Approval at the instrument's exact digest | `decisions/LAUNCH-GATE-AUTHORITY-DECISION.md` |
-| 10 | The formal structured administration returns **READY** | **No.** None has been run under any v2.x. The packet was **re-sealed at v2.4 this pass** (fourth re-seal) with the residual mitigations written in; it requires an **out-of-family administrator or a human** — this repository's authoring family is disqualified for the formal run. The only administration on record is the 2026-08-09 v1.3 pilot: `NOT READY` | `FORMAL-CAPABILITY-1-LAUNCH-PACKET/README.md` |
+| 10 | The formal structured administration returns **READY** | **No — Administration 1 was run 2026-08-18** (out-of-family, v2.4, commit `71e5986`) and returned **`NOT READY`**: 10 plain Not-met, 2 scoped, 5 Unknown. The conjunct asks for `READY`, so it stays unsatisfied; what changed is that the trend log is now open and F1's second-administration path is defined | `decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json`; `decisions/launch-gate/TREND-LOG.md` |
 | 11 | The owner **separately authorizes** launch | **No.** Downstream of 10 by this pass's own charter (the owner may lawfully decide without it; the charter treats the formal administration as the evidence bar) | — |
 | 12 | Default-path currency and hygiene **passes** | **Yes at this commit** — CG-27 examines 27 default-path claims, 0 findings (battery, this pass). Still **advisory**: its rule's home is the candidate knowledge-hygiene policy (P-12), disclosed rather than hidden | `scripts/check_governance.py` CG-27 |
 | 13 | Each owner decision is comprehensible from its **bounded packet** | **Partial.** Every launch-critical decision has a bounded packet, and eight of them became records of completed decisions on 2026-08-16 — their comprehension question is discharged by the rulings themselves. The two live packets (P-41/P-42) were reviewed RD-63/RD-64 (`REVISE`), repaired, and rewritten to offering-ready this pass; **the rewritten packets have had no fresh read**, disclosed in their own banners | `decisions/README.md` |
@@ -44,9 +44,11 @@ been commissioned yet."
 
 1. ~~**One owner sitting**: Wave A act, Wave B act, then acts 6 + 7~~ —
    **all four performed 2026-08-17** (`decisions/ACCEPTANCE-ACT-RECORD.md`).
-2. **The formal v2.4 administration**, commissioned per
-   `FORMAL-CAPABILITY-1-LAUNCH-PACKET/README.md` — out-of-family or
-   human, fresh context, full 40-hex commit, `So`-clean record.
+2. ~~**The formal v2.4 administration**~~ — **run 2026-08-18, verdict
+   `NOT READY`** (out-of-family, full 40-hex commit, `So`-clean; record
+   in `decisions/launch-gate/`). The gate's own path onward is repair of
+   the repairable findings, then a second administration at a descendant
+   commit naming this record as prior.
 3. **The owner's launch decision**, separately, with the administration's
    verdict in hand.
 

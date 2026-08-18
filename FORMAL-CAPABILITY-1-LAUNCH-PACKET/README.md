@@ -202,9 +202,14 @@ A5's population yourself.
 
 ## 7. What the owner has and has not decided
 
-**No owner acceptance act has been performed**, and
-`.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` does not exist —
-that absence is correct, not a gap.
+**Four owner acts have been performed, all 2026-08-17** *(corrected
+2026-08-18; this section previously said no act had been performed and the
+act record did not exist — true at the fourth re-seal, false from the acts
+onward, and Administration 1 correctly flagged the staleness as its F3
+counterexample)*: Wave A, Wave B, and craft acts 6 + 7 (CC-SPEC,
+CC-IMPACT). `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` exists
+since the first act and owns them. The five seal digests above are
+unchanged by this correction — none of the sealed artifacts moved.
 
 The open decisions are owned by
 `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` (open rows) and

@@ -13,12 +13,13 @@
 # Regenerate and check drift with scripts/build_capability_1_views.py.
 #
 # WHAT THIS IS NOT. Not a specification, not authority, and not a decision.
-# It binds nothing, adopts nothing, and creates no `openspec/`. Every clause
-# it names is a CANDIDATE clause of a confirmed-but-unaccepted wave: each
-# module's own banner ("absent such a record, this contract binds nothing")
-# governs every citation here. Once Capability 1 is accepted in OpenSpec,
-# the accepted specification supersedes this charter for required behaviour
-# and this file becomes history.
+# It binds nothing, adopts nothing, and creates no `openspec/` content.
+# Every clause it names is, as of 2026-08-17, an ACCEPTED clause of Wave A
+# or Wave B (the acts of that date; modules installed at `contracts/rfcs/`)
+# — the acceptance is the module's, and this charter still cites rather
+# than owns it. Once Capability 1 is accepted in OpenSpec, the accepted
+# specification supersedes this charter for required behaviour and this
+# file becomes history.
 #
 # NO AUTHORITY HOMES ARE WRITTEN HERE, DELIBERATELY. The charter names
 # clause IDs only; the builder resolves each to its owning module from the

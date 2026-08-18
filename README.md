@@ -7,9 +7,11 @@ work to close the difference — with the difference always rendered honestly.**
 > **Current stage: final pre-specification.**
 > This repository contains **no application code, no behavioral
 > specifications, and no implementation backlog — deliberately.** What exists
-> is adopted doctrine, owner-approved engineering policy, and a candidate
-> foundational-contract corpus awaiting explicit owner acceptance. See
-> [`PROJECT-STATUS.md`](PROJECT-STATUS.md) for the exact gate state.
+> is adopted doctrine, owner-approved engineering policy, and a
+> foundational-contract corpus whose launch-path waves (RFC 0001–0009) the
+> owner **accepted by act on 2026-08-17**, the remaining waves still
+> candidate. See [`PROJECT-STATUS.md`](PROJECT-STATUS.md) for the exact
+> gate state.
 
 Concretely, the intended shape is a **local-first daemon with a browser
 app**, serving the owner visually and agents through machine-queryable
@@ -87,7 +89,7 @@ Authority is **typed** — each question has one owning home:
 | Why; non-negotiable rules | [`.syzygy/governance/doctrine/`](.syzygy/governance/doctrine/) (VIS-1…7, SEC-1…5) | **Adopted** 2026-07-30 |
 | Prior owner rulings | [`.syzygy/governance/decisions/`](.syzygy/governance/decisions/) | **Recorded** |
 | Engineering and evidence bar | [`.syzygy/governance/policies/craft-and-care/`](.syzygy/governance/policies/craft-and-care/) | **Owner-approved** (D2); clause-level force begins at foundational-contract acceptance |
-| Load-bearing technical contracts | [`.syzygy/governance/contracts/candidates/`](.syzygy/governance/contracts/candidates/) | **Candidate — accepted by no act yet** |
+| Load-bearing technical contracts | [`.syzygy/governance/contracts/`](.syzygy/governance/contracts/) | **RFC 0001–0009 accepted as of 2026-08-17** — the Wave A/B acts, modules installed at `contracts/rfcs/` ([`PROJECT-STATUS.md`](PROJECT-STATUS.md) owns this state); RFC 0010–0011 remain **candidate** in `contracts/candidates/` |
 | Intended placement | [`.syzygy/map/topology-candidates/`](.syzygy/map/topology-candidates/) | **Candidate** |
 | Required observable behavior | `openspec/` | Not begun — scaffold at most, no specification content yet |
 | What currently exists | Code, tests, CI, runtime | Nothing exists yet |
@@ -114,8 +116,10 @@ authority and are never themselves authoritative.
    file that states scope in terms of behavior rather than principle; read it
    if `vision.md` leaves you asking "yes, but what does it *do*?"
 4. [`PROJECT-STATUS.md`](PROJECT-STATUS.md) — exact current gate state.
-5. [`.syzygy/governance/contracts/candidates/`](.syzygy/governance/contracts/candidates/)
-   — the candidate contract corpus (RFC 0001–0011) and its acceptance record.
+5. [`.syzygy/governance/contracts/`](.syzygy/governance/contracts/)
+   — the contract corpus: accepted modules at `rfcs/` (RFC 0001–0009, the
+   2026-08-17 Wave A/B acts), the deferred candidates and the acceptance
+   record under `candidates/`.
 6. [`.syzygy/governance/policies/craft-and-care/`](.syzygy/governance/policies/craft-and-care/)
    — the engineering bar.
 7. [`.syzygy/governance/decisions/`](.syzygy/governance/decisions/README.md)

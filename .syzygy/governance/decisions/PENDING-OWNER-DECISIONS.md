@@ -56,8 +56,10 @@ table through this lens:
   placement, §7 item 17) — resolved, see `DECISION-HISTORY.md`.
 - **Gate authoring the first spec:** satisfied 2026-08-17 — the two wave
   acts and craft acts 6 + 7 (P-41 + P-42) are all performed
-  (`ACCEPTANCE-ACT-RECORD.md`). What still gates authoring is the formal
-  administration and the owner's launch decision, not any queue row here.
+  (`ACCEPTANCE-ACT-RECORD.md`). What still gates authoring is the launch
+  gate, not any queue row here: Administration 1 (2026-08-18) returned
+  `NOT READY` (`launch-gate/TREND-LOG.md`), and the owner's launch
+  decision is separate.
 - **Gate a deferral-bearing administration:** P-43.
 - **Deferred with their waves (no C/D act is offered):** P-19, P-23, P-27,
   P-29, P-30, P-32, and the D3/D4 doctrine questions — see

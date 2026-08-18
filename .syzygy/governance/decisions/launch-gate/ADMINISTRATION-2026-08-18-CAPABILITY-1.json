@@ -1,0 +1,898 @@
+{
+  "schema_version": "2.0",
+  "date": "2026-08-18",
+  "administration_kind": "full",
+  "formal": true,
+  "instrument": {
+    "path": "launch-gate-pre-specifications.md",
+    "version": "v2.4",
+    "sha256": "1852c2c3d31eff3afa0924b6b72e855481ab2516ba8fde5eda7b2ae8772f01e8"
+  },
+  "parameter_block_sha256": "01209c0f052971f794e1f35827a002aa8d80420aad471d10fde000abb6366ff6",
+  "repository_commit": "71e598607d8db161a34e99eae453253152692915",
+  "launch_target": "Capability 1 — Project registration and honest shape visibility.",
+  "required_waves": [
+    "A",
+    "B"
+  ],
+  "deferred_waves": [
+    "C1",
+    "C2",
+    "D1",
+    "D2"
+  ],
+  "reviewer": {
+    "identity": "OpenAI GPT-5.6 Pro — restart administration pass",
+    "model": "GPT-5.6 Pro",
+    "model_family": "OpenAI GPT",
+    "fresh_context": true,
+    "same_family_as_corpus_authors": false
+  },
+  "materials": {
+    "included": [
+      "FORMAL-CAPABILITY-1-LAUNCH-PACKET/README.md, read first",
+      "launch-gate-pre-specifications.md v2.4 and its section 8 parameter block",
+      ".syzygy/governance/doctrine/ and .syzygy/intent/OVERVIEW.md",
+      "read-only repository objects at 71e598607d8db161a34e99eae453253152692915",
+      ".syzygy/governance/decisions/launch-gate/TREND-LOG.md for F1 only",
+      "the current hosted checkout/check output at the exact commit for clone identity, pilot recurrence CG-2a, and generated-state reproducibility"
+    ],
+    "withheld": [
+      "prior administration findings and narratives, except the trend log and the pilot-prescribed recurrence measurement",
+      "raw review findings and authoring history as evidence for substantive A–F judgments",
+      "the E4 routing authority until the six classifications were frozen from the case text alone"
+    ],
+    "deviations": [
+      "The execution sandbox refused outbound HTTPS, so a literal local `git clone` and the committed validator/renderer entrypoints could not be run here. The exact main ref, full commit, root tree, committed file bytes, and cited paths were resolved read-only through the connected GitHub object API; the current hosted workflow independently checked out the same full commit.",
+      "This retry follows an aborted pass in the same conversation that accessed historical review material. The restart judgments above were rebuilt from the sealed packet and current primary artifacts only; strict fresh-context isolation is therefore a disclosed limitation even though the substantive pass did not rely on those prior findings.",
+      "The user prohibited repository modification. The JSON/report were written outside the checkout and the trend row is printed rather than appended to TREND-LOG.md."
+    ]
+  },
+  "operationalization_notes": [
+    "B-section chunk means the six wave acts A, B, C1, C2, D1, D2, exactly as the parameter block requires.",
+    "B1/B2 deferred-wave defects were given the scoped verdict because they are confined to C1/C2, are not on the default route, do not change A/B meaning, are not Capability 1 dependencies, do not misstate current truth, and do not prevent the owner understanding this launch decision.",
+    "E2 excludes this administration and the owner’s later launch decision from the upstream prerequisite set to avoid making the gate prove itself; all pre-administration prerequisites remain enumerated in FIRST-OPENSPEC-SEQUENCE.md.",
+    "E3 distinguishes stale presentation/routing defects from reopening a vision- or shape-level semantic decision. The former block D/F questions but do not create a non-empty E3 reopen list.",
+    "E4 classifications were frozen as shape/spec/spec/shape/spec/shape before comparing with SURFACE-CLAUSE-ROUTING-MATRIX.md. All six cases are needed by the launch target.",
+    "No verdict or generated text in this administration performs the owner’s separate launch decision."
+  ],
+  "question_results": [
+    {
+      "question_id": "A1",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/doctrine/vision.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "The human problem, and whose it is",
+          "quote": "The primary user is an owner running a portfolio of projects built largely by agent fleets; the lived failure is a day ending in oversized diffs and scattered completions with no coherent account."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried to reduce the problem to the category “agent observability.” The adopted vision instead names one owner, one orchestration day, and the specific behavioral failure the product must end."
+    },
+    {
+      "question_id": "A2",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/doctrine/vision.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Success — and what failure would look like",
+          "quote": "If, after sustained real use across the proving ground, the owner still learns projects through the old ritual and still cannot account for fleet days from Syzygy alone, the thesis is judged wrong and reformulated."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Looked for a thesis that could narrate every outcome as progress. The doctrine supplies both a sustained-real-use trigger and an adverse judgment that rejects the thesis rather than merely expanding scope."
+    },
+    {
+      "question_id": "A3",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/doctrine/vision.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "What Syzygy is not",
+          "quote": "It is not an issue tracker with a code browser, not a documentation portal, and not a substrate replacement; V0 must have machine-consumed truth and a three-axis propagation proof."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Applied all three fixed near-misses: issue tracker plus dashboards, documentation portal, and CI-status aggregator with AI chat. The vision rejects each on a load-bearing missing property rather than by naming a strawman."
+    },
+    {
+      "question_id": "A4",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/doctrine/v1.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "V0 propagation proof-of-concept",
+          "quote": "V0 requires a minimal working slice on intent, work, and code: reflect an intent edit, dispatch one signed-off spec delta to scheduled work, and navigate from code to governing spec and work."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried to show that first value required the complete observatory or full V1 gap engine. V0 defines a bounded three-axis slice that can be built and evaluated before the rest."
+    },
+    {
+      "question_id": "A5",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/doctrine/vision.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Two first-class consumers",
+          "quote": "The owner is served spatially and visually and agents through machine-queryable endpoints."
+        },
+        {
+          "path": ".syzygy/governance/doctrine/architecture.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Typed authority and one kernel",
+          "quote": "Typed authority, one shared kernel, and three surfaces connect the fixed shape commitments to the owner and agent consumers."
+        },
+        {
+          "path": ".syzygy/governance/doctrine/v1.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "V0 scope",
+          "quote": "Machine endpoints, honest Unknown, 3D plus exact non-3D views, and the propagation proof are V0 commitments."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Built the required two-way table over all 11 fixed commitments. Owner: typed authority, Polaris, Trajectory, Orrery, Unknown truthfulness, write boundary, Mission Control, 3D/non-3D comprehension, propagation proof. Agents: typed authority, machine endpoints, Unknown truthfulness, write boundary, context packets, propagation proof. Every commitment served at least one named consumer and both consumers had multiple serving commitments."
+    },
+    {
+      "question_id": "A6",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "The operating-constraints record says one operator and no fixed deadline, but engineering hours, model budget, maximum concurrent workstreams, and the first proving project remain explicitly Unknown.",
+      "unknown_settlement": "A dated owner resource envelope naming an honest engineering-hours range, review capacity/cadence, model budget ceiling, concurrent-workstream limit, and the first proving project, followed by a scope-versus-capacity assessment.",
+      "falsification_attempt": "Searched the current owner constraints for stated people, attention, money, calendar, and proving-ground capacity rather than inferring them from project ambition. Several dimensions remain deliberately Unknown."
+    },
+    {
+      "question_id": "B1",
+      "question_digest": "instrument-bound",
+      "verdict": "Not met (out of launch scope)",
+      "launch_scope": "deferred-wave-only",
+      "evidence": [],
+      "counterexample": "Deferred Waves C1/C2 are not independently valuable or understandable before their later/dependent chunks: the acceptance record says C1 uses mandatory context defined in C2 and is recommended after the D waves, while C2 depends on C1 and the D waves. This defect is confined to deferred waves and meets none of the five launch-scope blocking conditions.",
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried to accept and explain each of the six wave chunks without later chunks. A and B survived; C1/C2 did not, because their own recorded dependencies require one another and deferred Mission semantics."
+    },
+    {
+      "question_id": "B2",
+      "question_digest": "instrument-bound",
+      "verdict": "Not met (out of launch scope)",
+      "launch_scope": "deferred-wave-only",
+      "evidence": [],
+      "counterexample": "The deferred-wave ordering is explicit but not acyclic: the current acceptance offering records C1 as consuming mandatory context defined in C2 and C2 as depending on C1. The A→B launch path is acyclic; the cycle is confined to C1/C2 and is outside Capability 1 launch scope.",
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Constructed the wave dependency graph from the offering and deferred-wave posture, then looked for a topological ordering. A→B is valid, but C1↔C2 prevents an acyclic ordering of the full six-wave graph."
+    },
+    {
+      "question_id": "B3",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/contracts/candidates/FIRST-OPENSPEC-SEQUENCE.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "The one first specification",
+          "quote": "Capability 1 — Project registration and honest shape visibility is the first specification."
+        },
+        {
+          "path": ".syzygy/governance/contracts/candidates/CAPABILITY-1-CHARTER.yaml",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "argument",
+          "quote": "The capability tests whether a project can be registered and its shape read honestly, with independent facets, owning authority, Unknown reason, and human/machine parity."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried to characterize the first slice as registry plumbing. Its acceptance argument directly exercises the thesis that truthful project shape can be made legible to owner and agents."
+    },
+    {
+      "question_id": "B4",
+      "question_digest": "instrument-bound",
+      "verdict": "Not met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": "Wave B and the Capability 1 launch target are explicitly downstream of Wave A. Rejecting Wave A therefore invalidates the accepted premises and routes used by Wave B rather than leaving a designed partial product state. One chunk cannot be rejected without collapsing the current launch path.",
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried each wave as the rejected chunk. Rejecting deferred waves is designed; rejecting Wave A collapses Wave B and Capability 1, so the universal “any single chunk” test fails."
+    },
+    {
+      "question_id": "B5",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "The first-spec sequence is ordered by evidence interpretability, but no current artifact names and ranks the thesis-threatening assumptions or identifies the single riskiest assumption.",
+      "unknown_settlement": "A compact risk-ordering record that names the thesis-threatening assumptions, ranks them, and maps each to the earliest wave/capability capable of falsifying it.",
+      "falsification_attempt": "Looked for explicit risk retirement rather than sequencing rationale. The repository explains why Capability 1 precedes later evidence consumers, but not whether this is the earliest test of the most dangerous thesis assumption."
+    },
+    {
+      "question_id": "C1",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/doctrine/architecture.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Typed authority",
+          "quote": "Doctrine owns why, accepted contracts own load-bearing how, OpenSpec owns observable requirements, code/evidence own observed state, and Syzygy displays rebuildable projections."
+        },
+        {
+          "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Why this file exists",
+          "quote": "Observable consequences must map to approved OpenSpec requirements before implementation work is scheduled; the RFC remains the structural owner."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried to find a lower layer empowered to rewrite a higher one. The authority table, proposal/adoption boundary, and implementation-boundary clauses preserve the vision→shape→spec→implementation direction."
+    },
+    {
+      "question_id": "C2",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "A complete C2 population sweep was not reproducible in this sandbox. The current hosted check reports duplicate authority homes absent across its configured population, but also reports an advisory routing-measurement rule whose only owner is checker code or candidate policy.",
+      "unknown_settlement": "Run and retain a full, current C2 population report over README.md, AGENTS.md, and every governance Markdown/YAML artifact, enumerating each normative “should,” its sole owner, and every conflict-resolution rule.",
+      "falsification_attempt": "Searched for concrete duplicate authority homes and inspected the current governance check output. No configured duplicate home was reported, but the required all-normative-should denominator was not independently reconstructed, so Met would overclaim."
+    },
+    {
+      "question_id": "C3",
+      "question_digest": "instrument-bound",
+      "verdict": "Not met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": "The repository does not apply current-state truthfulness consistently to itself. At this commit, README.md says the foundational contracts are “awaiting explicit owner acceptance” and its authority table says “accepted by no act yet”; TASK-ROUTER.md’s Capability 1 route says Waves A/B are unaccepted. PROJECT-STATUS.md and ACCEPTANCE-ACT-RECORD.md at the same commit record Waves A/B and craft acts 6/7 as performed. In addition, hosted CI at this exact SHA reports `05-CONTRACT-INDEX.yaml` differs from regeneration.",
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Compared current-state claims on the default path and ran them against the owner act record and hosted generation checks at the named SHA. Multiple claims and one generated index are stale."
+    },
+    {
+      "question_id": "C4",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/doctrine/vision.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "VIS-4",
+          "quote": "Shape-defining deltas require owner sign-off; agents may draft but never adopt them."
+        },
+        {
+          "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Performed owner acts",
+          "quote": "Performed acts are recorded with exact owner phrase, digest, commit/tag, and bootstrap status."
+        },
+        {
+          "path": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Open decisions",
+          "quote": "Open questions remain visibly separate from performed acts and the current launch decision."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried to make an agent-authored candidate or queue entry indistinguishable from a made decision. The performed-act record and pending queue use different forms and authority states."
+    },
+    {
+      "question_id": "C5",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/policies/GOVERNANCE-SUBSTRATE-LOCK.yaml",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Pinned substrate registry",
+          "quote": "OpenSpec, Beads, orchestration, th-engineering, and th-projects each have a recorded source/pin or declared version, drift posture, and substitution/compatibility notes."
+        },
+        {
+          "path": ".syzygy/governance/doctrine/architecture.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Adapters",
+          "quote": "Substrate tools are adapters, not doctrine; their roles are substitutable while the OpenSpec artifact contract remains constitutional."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried to find a load-bearing external tool treated as guaranteed and unregistered. The designated substrates are recorded with pins or declared versions and failure/substitution posture."
+    },
+    {
+      "question_id": "C6",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/doctrine/vision.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "VIS-4 and VIS-5",
+          "quote": "Shape changes require owner sign-off; direct writes are confined to openspec/** and .syzygy/**; effects on other authorities require typed explicit adapters."
+        },
+        {
+          "path": ".syzygy/governance/doctrine/trust-and-evidence.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Warrants",
+          "quote": "Status describes while a warrant authorizes; factual resolution and policy dismissal are distinct."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried to reach an irreversible or outward effect through the routine drafting path. Owner acts, namespace confinement, and typed adapter authorization add stronger gates as reversibility decreases."
+    },
+    {
+      "question_id": "C7",
+      "question_digest": "instrument-bound",
+      "verdict": "Not met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": "The distributable doctrine itself records a reachability gap for irreversible rationale: doctrine/README.md says D1’s founder-decision identifiers and rev7 directive live in a founder-local bootstrap log absent from the clone, with P-15 queued. A successor can read the ruling but cannot re-derive all cited rationale from clone contents alone.",
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Followed the adopted doctrine amendment log and attempted to resolve every cited rationale from the clone-visible homes. The file explicitly identifies founder-local material that is not present."
+    },
+    {
+      "question_id": "D1",
+      "question_digest": "instrument-bound",
+      "verdict": "Not met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": "A bounded fresh-engineer path does not yield one current lifecycle answer without reconciliation. README.md says foundational acceptance is still pending; AGENTS.md and PROJECT-STATUS.md say Waves A/B and craft acts 6/7 are accepted/in force; TASK-ROUTER.md repeats the pre-act state. Correctness requires knowing which current-state statement to distrust.",
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Read only the default route set and attempted to state problem, thesis, current lifecycle stage, and next decision. Problem/thesis were clear, but current stage and lawful next step conflicted across the bounded path."
+    },
+    {
+      "question_id": "D2",
+      "question_digest": "instrument-bound",
+      "verdict": "Not met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": "Fixed-task denominator: 3. The Mission-completion task correctly routes to deferred RFC-0010 candidate semantics. The evidence-adapter and merged-change/reconciliation tasks route to candidate copies and stale “unaccepted” status even though their governing Waves A/B modules are installed and accepted. Current single-rule routes: 1/3.",
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Started from the fixed default-route set for each of the three prescribed tasks, refusing to use corpus-wide archaeology. Two routes ended at stale authority state or candidate homes rather than the accepted governing home."
+    },
+    {
+      "question_id": "D3",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "The term registry and doctrine glossary define a large coined vocabulary, but the full prescribed coined-term enumeration and defined-before-use walk over the default path was not independently reproduced in this sandbox.",
+      "unknown_settlement": "A generated D3 report enumerating every coined term from the two prescribed populations, its first default-path use, definition site, and ordinary-language justification.",
+      "falsification_attempt": "Spot-checked the default path for undefined codenames and technical nouns, then compared with the doctrine glossary and term registry. No decisive unlisted term was established, but a spot check cannot support Met over the fixed population."
+    },
+    {
+      "question_id": "D4",
+      "question_digest": "instrument-bound",
+      "verdict": "Not met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": "D4 population denominator: 4. README.md materially understates current acceptance state (“awaiting explicit owner acceptance”; “accepted by no act yet”), while PROJECT-STATUS.md and AGENTS.md record the performed acts. OVERVIEW.md correctly delegates current state to PROJECT-STATUS.md. One of four entry/summary documents therefore makes a stronger stale claim than its owning current records support.",
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Compared README.md, OVERVIEW.md, PROJECT-STATUS.md, and AGENTS.md against the owner act record at the exact commit. The root README failed; the other three either matched or delegated."
+    },
+    {
+      "question_id": "E1-form",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/decisions/OPENSPEC-FORM-AND-VERSION-DECISION.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Ruled 2026-08-16",
+          "quote": "The owner selected the current OpenSpec form and pinned version 1.9.0."
+        },
+        {
+          "path": "openspec/config.yaml",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Committed scaffold",
+          "quote": "The repository contains the tool-created OpenSpec configuration scaffold at the named commit."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Looked for an unresolved medium, version, or syntax family. The owner decision and committed scaffold fix the form before the first requirement is authored."
+    },
+    {
+      "question_id": "E1-home",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/doctrine/architecture.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "The .syzygy namespace",
+          "quote": "Observable behavioral requirements live under the governance root’s openspec/**; Syzygy writes that tree only in OpenSpec-compatible form."
+        },
+        {
+          "path": ".syzygy/governance/contracts/candidates/FIRST-OPENSPEC-SEQUENCE.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "The one first specification",
+          "quote": "Capability 1 is assigned to the OpenSpec specification sequence and no competing home is named."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Searched for a second specification home or a plan to place requirements in RFCs, README, or implementation. The authority table and phase rules point to openspec/** only."
+    },
+    {
+      "question_id": "E1-granularity",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/decisions/SPECIFICATION-GRANULARITY-DECISION.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Ruled 2026-08-16 / SDR-37",
+          "quote": "One OpenSpec change governs one coherent capability, or one coherent change to one, with one owner-readable argument and one acceptance decision."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried to split Capability 1 by view or combine it with later capabilities. SDR-37 fixes one capability/one coherent change and one acceptance decision."
+    },
+    {
+      "question_id": "E1-acceptance-authority",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "CC-SPEC-10",
+          "quote": "Lawful adoption is recorded at the exact digest; under current doctrine this means owner adoption."
+        },
+        {
+          "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Acts 6 and 7",
+          "quote": "CC-SPEC-1…11 are in force at the reviewed digest as owner-confirmed craft policy."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried to find only a proposed acceptance standard or an agent-adoption shortcut. The policy’s owner gate is explicit and its craft act is recorded as performed."
+    },
+    {
+      "question_id": "E1-change-process",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/contracts/candidates/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "CC-IMPACT-1…7",
+          "quote": "Shape changes carry reverse-reference sweeps, four-set results, named actors, visible Unknown/contradiction, same-logical-change amendment, and a blind exercise."
+        },
+        {
+          "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Acts 6 and 7",
+          "quote": "CC-IMPACT-1…7 are in force at the reviewed digest as owner-confirmed craft policy."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Searched for an undefined post-adoption edit path or a propagation rule that could hide lag. The in-force policy names detection, actor, interim rendering, and merge discipline."
+    },
+    {
+      "question_id": "E1",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/contracts/candidates/FIRST-OPENSPEC-SEQUENCE.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Prerequisites for authoring Capability 1",
+          "quote": "Form/version, granularity, Waves A/B, and craft acts 6/7 are all recorded as satisfied or owner-ruled for Capability 1."
+        },
+        {
+          "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Performed acts",
+          "quote": "Wave A, Wave B, CC-SPEC, and CC-IMPACT acts were performed on 2026-08-17."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Re-evaluated all five E1 subrows independently and then attempted to construct a missing-medium, missing-home, missing-granularity, missing-authority, or missing-change-process case. None survived."
+    },
+    {
+      "question_id": "E2",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/contracts/candidates/FIRST-OPENSPEC-SEQUENCE.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "The one first specification and prerequisites",
+          "quote": "Capability 1 is uniquely identified; Wave A, Wave B, and the paired craft acts are satisfied, and C/D waves are explicitly not applicable."
+        },
+        {
+          "path": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Current launch-path note",
+          "quote": "No open queue row gates Capability 1 authoring; the remaining gates are this formal administration and the separate owner launch decision."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Looked for a competing first spec or an upstream prerequisite discovered outside the table. The live queue and sequence agree on Capability 1 and the satisfied/waived/non-applicable set."
+    },
+    {
+      "question_id": "E3",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/contracts/candidates/CAPABILITY-1-CHARTER.yaml",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "behavior_rows 1.1–1.6",
+          "quote": "The six central obligations are each tied to accepted Wave A/B clause identities and ruled owner decisions; the only undeclared text left to author is the facet vocabulary at the specification site selected by SDR-36."
+        },
+        {
+          "path": ".syzygy/governance/contracts/candidates/DEFERRED-WAVE-POSTURE.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Launch target posture",
+          "quote": "Capability 1 depends on Waves A+B only; C1/C2/D1/D2 semantics are deferred and excluded from its required path."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Enumerated the first spec’s central concepts before opening the routing comparison, traced each to accepted shape authority, then tried to identify a question the spec author would have to settle above the spec layer. Stale summaries require repair, but no vision/shape semantic decision must reopen."
+    },
+    {
+      "question_id": "E4",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "The four routes and Capability 1 supplement",
+          "quote": "OS routes are specification-side; structural N/A and craft/review CR routes are shape-side. The six fixed cases compare as shape/spec/spec/shape/spec/shape with no needed silence."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Classified all six fixed statements from their text alone, froze the classifications, then compared them with the named routing authority. Every answered case agreed and all six launch-needed cases were answered."
+    },
+    {
+      "question_id": "E5",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "CC-SPEC-1, CC-SPEC-4, CC-SPEC-8, CC-SPEC-11",
+          "quote": "The in-force standard covers coherent capability scope, falsifiable requirement forms and independent oracles, applicable-clause coverage, and demonstrated capability completeness."
+        },
+        {
+          "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Acts 6 and 7",
+          "quote": "The CC-SPEC standard is owner-confirmed and in force at its exact reviewed digest."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried to accept a spec by polished prose alone, with a tautological oracle, incomplete capability obligations, or unmapped applicable clauses. The in-force clauses reject each case."
+    },
+    {
+      "question_id": "E6",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": ".syzygy/governance/contracts/candidates/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "CC-IMPACT-1…7",
+          "quote": "The in-force path generates dependency declarations, performs reverse-reference sweeps, records population/affected/unaffected/undecidable sets, names actors, renders disagreement, and lands required amendments together."
+        },
+        {
+          "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Acts 6 and 7",
+          "quote": "The CC-IMPACT standard is owner-confirmed and in force at its exact reviewed digest."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Simulated a post-spec shape change and tried to leave an affected spec silently stale. The policy requires detection, an owner, visible Unknown/contradiction, and same-logical-change amendment."
+    },
+    {
+      "question_id": "F1",
+      "question_digest": "instrument-bound",
+      "verdict": "Unknown",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": null,
+      "unknown_reason": "The formal trend log has no administration rows, so successive formal-round severity and new-finding trends cannot yet be measured.",
+      "unknown_settlement": "A second full formal administration at a descendant commit that declares this record as its prior, plus an explicit stop condition for the launch-repair cycle.",
+      "falsification_attempt": "Opened TREND-LOG.md only for F1 after substantive review. It contains the formal-log header and no prior administration row, so neither convergence nor divergence is presently evidenced."
+    },
+    {
+      "question_id": "F2",
+      "question_digest": "instrument-bound",
+      "verdict": "Not met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": "The corpus is not yet proportionate on the launch path. A bounded operator must reconcile README.md, PROJECT-STATUS.md, AGENTS.md, TASK-ROUTER.md, the sealed packet, and the act record to learn current state; the sealed packet itself has no retirement/supersession path after the acts made its state section false. Hosted checks also report 52 advisory measurements embedded in routing artifacts. No owner F2 deferral or bounded reduction plan exists.",
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried to complete current-state orientation and the three fixed routes through a small routed set, and looked for an owner/retirement path for each stale meta-artifact. The route expanded and no bounded reduction plan was present."
+    },
+    {
+      "question_id": "F3",
+      "question_digest": "instrument-bound",
+      "verdict": "Not met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": "The bounded formal launch packet cannot be used in one sitting without archaeology: §7 says no owner acceptance act has been performed and ACCEPTANCE-ACT-RECORD.md does not exist, while that file exists at the packet’s own commit and records four performed acts. The owner must independently discover and reconcile the contradiction before relying on the packet.",
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Treated the sealed packet as the complete owner packet and checked every current-state assertion against its exact commit. Its acceptance-state section is false at the bound tree."
+    },
+    {
+      "question_id": "F4",
+      "question_digest": "instrument-bound",
+      "verdict": "Not met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": "Stopping today would leave reachable stale state. README.md and TASK-ROUTER.md describe Waves A/B as unaccepted; the sealed packet says the act record is absent; current authoritative records say the acts were performed. Separately, the exact-commit hosted workflow fails because `05-CONTRACT-INDEX.yaml` differs from regeneration. These are reachable, unbannered current-state defects.",
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Walked the default route and formal packet as a future reader, then checked generated-state reproducibility at the exact SHA. Stale claims and index drift remain reachable."
+    },
+    {
+      "question_id": "F5",
+      "question_digest": "instrument-bound",
+      "verdict": "Met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [
+        {
+          "path": "FORMAL-CAPABILITY-1-LAUNCH-PACKET/README.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Who may administer this",
+          "quote": "This formal run requires a different model family from the Claude-authored corpus or a human, plus full model-family disclosure."
+        },
+        {
+          "path": "scripts/check_governance.py",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "Mechanical check families",
+          "quote": "Current assurance includes mechanical link, digest, act, routing, substrate, and retired-phrase checks in addition to model review."
+        },
+        {
+          "path": "launch-gate-pre-specifications.md",
+          "commit": "71e598607d8db161a34e99eae453253152692915",
+          "locator": "F5",
+          "quote": "Independence must be substantive: a different model family, a human, or a mechanical check, and the administration discloses its family."
+        }
+      ],
+      "counterexample": null,
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Tried to reduce independence to a new Claude session. The commissioned reviewer is OpenAI-family, the owner is human, and mechanical checks exercise distinct failure modes; the remaining limitations are disclosed rather than hidden."
+    },
+    {
+      "question_id": "F6",
+      "question_digest": "instrument-bound",
+      "verdict": "Not met",
+      "launch_scope": "in-launch-scope",
+      "evidence": [],
+      "counterexample": "No current artifact states the governance-effort/delivered-increment ratio or a ceiling at which process is cut. The operating-constraints record leaves engineering attention, budget, and concurrency Unknown and uses case-by-case owner judgment rather than a declared process ceiling. Pre-specification progress exists (accepted waves and decisions), but governance effort is not bounded or shown declining against it.",
+      "unknown_reason": null,
+      "unknown_settlement": null,
+      "falsification_attempt": "Searched the current status, operating constraints, and process instrument for an effort ratio, trend, and hard ceiling. None was stated; “case-by-case judgment” is not the declared ceiling F6 asks for."
+    }
+  ],
+  "e3": {
+    "concepts": [
+      "project declaration parsing, one governance root, and named invalid-declaration failure",
+      "repository identity, consent, and visible coverage boundary",
+      "fixed human entry and per-repository discoverability",
+      "independent shape facets with no composite badge",
+      "owning authority and one closed Unknown reason on human and machine answers",
+      "proposal-only discoverability link with no direct repository write"
+    ],
+    "trace_rows": [
+      {
+        "concept": "project declaration parsing, one governance root, and named invalid-declaration failure",
+        "governing_artifact": "RFC1-1; RFC3-1, RFC3-4, RFC3-5, RFC3-9; VIS-2",
+        "note": "Accepted Wave A authority fixes the declaration, root cardinality, closed fields, invalid path, Unknown result, and no auto-repair."
+      },
+      {
+        "concept": "repository identity, consent, and visible coverage boundary",
+        "governing_artifact": "RFC1-3, RFC1-4; RFC3-6, RFC3-7, RFC3-16(a); RFC5-3; RFC6-26; VIS-5",
+        "note": "Accepted Wave A authority separates membership/content, requires per-repository consent, and makes absent consent visible rather than empty."
+      },
+      {
+        "concept": "fixed human entry and per-repository discoverability",
+        "governing_artifact": "RFC7-39, RFC1-27, RFC7-40; HUMAN-ENTRY-DECISION.md",
+        "note": "Accepted Wave B authority and the ruled human-entry decision fix the entry and closed discoverability domain."
+      },
+      {
+        "concept": "independent shape facets with no composite badge",
+        "governing_artifact": "RFC2-24; RFC6-17, RFC6-18, RFC6-19, RFC6-22; RFC8-18, RFC8-19; SDR-34…36",
+        "note": "Accepted A/B authority forbids a composite health badge and makes uncomputed reconciliation an independently rendered Unknown."
+      },
+      {
+        "concept": "owning authority and one closed Unknown reason on human and machine answers",
+        "governing_artifact": "RFC3-16; RFC6-13, RFC6-14, RFC6-15, RFC6-23; RFC7-33; VIS-2",
+        "note": "Accepted A/B authority owns human/machine parity, evidence drawer, authority disclosure, and the closed Unknown vocabulary."
+      },
+      {
+        "concept": "proposal-only discoverability link with no direct repository write",
+        "governing_artifact": "RFC1-27; RFC3-3; RFC7-40; VIS-5",
+        "note": "The discoverability link is a Proposal and direct writes remain confined to the two constitutional namespaces."
+      }
+    ],
+    "reopen_items": []
+  },
+  "e4": {
+    "routing_authority": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+    "fixed_case_results": [
+      {
+        "case_index": 1,
+        "case_text": "Every registered project has exactly one graph identity, and a rename does not mint a new one.",
+        "reviewer_classification": "shape",
+        "routing_authority_says": "shape",
+        "evidence": "Frozen reviewer classification 'shape'; the named routing authority routes this case to the same side.",
+        "needed_by_launch_target": true
+      },
+      {
+        "case_index": 2,
+        "case_text": "When a repository is registered, a human can see in the product that registration succeeded, what was registered, and what was not.",
+        "reviewer_classification": "spec",
+        "routing_authority_says": "spec",
+        "evidence": "Frozen reviewer classification 'spec'; the named routing authority routes this case to the same side.",
+        "needed_by_launch_target": true
+      },
+      {
+        "case_index": 3,
+        "case_text": "A region with no evidence renders visibly as Unknown — never green, never zero.",
+        "reviewer_classification": "spec",
+        "routing_authority_says": "spec",
+        "evidence": "Frozen reviewer classification 'spec'; the named routing authority routes this case to the same side.",
+        "needed_by_launch_target": true
+      },
+      {
+        "case_index": 4,
+        "case_text": "Every specification change receives an independent fresh-context review before adoption.",
+        "reviewer_classification": "shape",
+        "routing_authority_says": "shape",
+        "evidence": "Frozen reviewer classification 'shape'; the named routing authority routes this case to the same side.",
+        "needed_by_launch_target": true
+      },
+      {
+        "case_index": 5,
+        "case_text": "A machine client can query any project answer a human can see, and receives the same facts with the same epistemic labels.",
+        "reviewer_classification": "spec",
+        "routing_authority_says": "spec",
+        "evidence": "Frozen reviewer classification 'spec'; the named routing authority routes this case to the same side.",
+        "needed_by_launch_target": true
+      },
+      {
+        "case_index": 6,
+        "case_text": "When a shape artifact changes, every affected specification is enumerated and amended in the same logical change, or the disagreement is rendered rather than hidden.",
+        "reviewer_classification": "shape",
+        "routing_authority_says": "shape",
+        "evidence": "Frozen reviewer classification 'shape'; the named routing authority routes this case to the same side.",
+        "needed_by_launch_target": true
+      }
+    ]
+  },
+  "owner_deferrals": [],
+  "deferred_wave_findings": [
+    {
+      "wave": "C1",
+      "question_id": "B1",
+      "defect": "C1 is not independently understandable/value-bearing before C2/D semantics because its offering records mandatory context in C2 and recommends D first.",
+      "blocking_conditions_met": []
+    },
+    {
+      "wave": "C2",
+      "question_id": "B1",
+      "defect": "C2 depends on C1 and deferred Mission semantics, so it is not independently acceptable/value-bearing before later/dependent chunks.",
+      "blocking_conditions_met": []
+    },
+    {
+      "wave": "C1",
+      "question_id": "B2",
+      "defect": "C1 consumes mandatory context from C2 while C2 declares a dependency on C1, producing an explicit deferred-wave cycle.",
+      "blocking_conditions_met": []
+    },
+    {
+      "wave": "C2",
+      "question_id": "B2",
+      "defect": "C2 depends on C1 while C1 consumes C2, so the full six-wave ordering is not acyclic.",
+      "blocking_conditions_met": []
+    }
+  ],
+  "reopened_findings": [],
+  "pilot_recurrence_check": {
+    "performed": true,
+    "method": "Used the exact-commit hosted `check_governance.py` CG-2a run over 486 eligible files and the two registry-declared retired phrases. It reported 0 presented-as-current and 0 unmarked occurrences; 54 allowlisted quotations and 25 banner/line-marked historical quotations were separately disclosed, not counted as recurrences.",
+    "findings": []
+  },
+  "g1": {
+    "critic_answer": "The series can pass without requiring the first capability to be attached to a named real proving project and a concrete evidence-capture plan. A6 asks whether resources are stated and B3 asks whether the slice could inform the thesis, but neither requires naming the actual project, session, actors, evidence artifacts, or decision rule that will make the first real use interpretable.",
+    "proposed_missing_questions": [
+      {
+        "proposal": "H1 — Is the first capability bound to a named proving project and a predeclared evaluation plan?",
+        "rationale": "Require the concrete project, evaluator, usage session, evidence artifacts, success/failure observations, and decision point. This would catch a theoretically thesis-bearing first slice that launches with no place or protocol in which to learn from it."
+      }
+    ]
+  },
+  "falsification_summary": "Attempted to break every row before assigning a verdict: applied all fixed near-misses; built the A5 two-way consumer table; constructed the six-wave dependency graph; followed all three fixed D2 tasks; froze and compared all six E4 classifications; traced all six Capability 1 obligations for E3; compared the four D4 entry documents; checked the current owner acts and queue; used the exact-commit hosted CG-2a recurrence denominator; and checked current generated-state reproducibility. The strongest surviving failures are stale default/packet state, an unbuildable current contract index, non-independent/acyclic deferred chunks, collapse on Wave A rejection, clone-rationale reachability, and unbounded governance effort.",
+  "prior_record": null
+}

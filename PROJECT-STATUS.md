@@ -1,6 +1,6 @@
 # Project status
 
-> **As-of: 2026-08-17** (the commit introducing this revision —
+> **As-of: 2026-08-18** (the commit introducing this revision —
 > `git log -1 --format=%h PROJECT-STATUS.md`). A hand-authored pointer page:
 > it **must not be the sole source** for any fact it states. Each row cites
 > the record that owns it, and where they disagree the record wins and this
@@ -31,7 +31,7 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 | Owner rulings, 2026-08-16 | **P-31, P-33, P-35, P-36, P-37, P-38, P-39, P-40 ruled** in one adversarially-reviewed sitting, plus P-34 below. Zero contract bytes moved; both wave confirmations survive. | `decisions/PENDING-OWNER-DECISIONS.md` §"Resolved on 2026-08-16"; each row names its owning record |
 | Launch-gate policy | **Owner-approved process policy at v2.4** — P-34 ruled arm (a), 2026-08-16, **with two disclosed BLOCKING residuals** (RD-67 f1, RD-68 f1 — false-`READY` paths reachable only by an adversarial record author), **F5 not promoted**. Ten `REVISE` verdicts across v2.0–v2.4 stand as recorded; this is approval-with-residuals, not a clean review verdict. A bounded v2.5 is an owner option, not a gate. | `decisions/LAUNCH-GATE-AUTHORITY-DECISION.md` (the recorded approval); instrument `launch-gate-pre-specifications.md`; `round-2026-08h/reviews/DISPOSITION-REGISTER.md` |
 | P-41 + P-42, offered jointly | **PERFORMED — acts 6 and 7, 2026-08-17, one sitting** (the joint-sitting requirement satisfied). CC-SPEC-1…11 and CC-IMPACT-1…7 are **in force as owner-confirmed craft** at their reviewed digests; the files bind at their committed homes, uncopied and unedited. Review chain: RD-51 (`REVISE`) → repair → RD-69 (`REVISE`, one launch blocker) → the one blocker-only repair → RD-70 (`CONFIRM WITH EXCEPTIONS`). Nine non-blocking findings traveled into force disclosed. | `decisions/ACCEPTANCE-ACT-RECORD.md`; `.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md`; tag `craft-acts-6-7-confirmed-2026-08-17` |
-| Formal launch administration | **Not performed.** The only administration on record is the 2026-08-09 **pilot** (v1.3), `GATE VERDICT: NOT READY`. Now runnable under approved v2.4 — by an out-of-family model or a human, in fresh context, knowingly against the residuals. | `round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md` |
+| Formal launch administration | **Administration 1 performed 2026-08-18 — verdict `NOT READY`** (10 plain Not-met, 2 scoped, 5 Unknown, 0 reopened). Out-of-family (OpenAI GPT-5.6 Pro), fresh context with disclosed limitations, against commit `71e5986` at approved v2.4; the record validated and its verdict computed by the committed scripts. The strongest findings are stale current-state claims on the default path (since repaired), the contract-index drift (since regenerated), Wave A rejection collapsing the launch path (B4), clone-unreachable D1 rationale (C7), and unbounded governance effort (F6). The 2026-08-09 v1.3 **pilot** (`NOT READY`) remains steering evidence only. | `decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json` (the record); `decisions/launch-gate/TREND-LOG.md` |
 | OpenSpec (`openspec/`) | **No specification content.** A tool-created scaffold (config plus empty trees) exists and is not specification work; authoring is forbidden until the owner's launch decision. | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` |
 | Implementation | **Does not exist.** Blocked on accepted specifications. | — |
 
@@ -73,10 +73,18 @@ The remaining launch path, in order — each step's owning record governs:
 2. ~~**P-41 + P-42**: perform craft acts 6 and 7 in one sitting~~ —
    **done 2026-08-17**, same day as the wave acts, one sitting
    (`decisions/ACCEPTANCE-ACT-RECORD.md`).
-3. **Formal Capability 1 administration** under approved v2.4 — an
-   out-of-family model or a human, never an authoring session.
-4. The owner's separate **launch decision**. Specification authoring only
-   after it; implementation only after specifications are accepted.
+3. ~~**Formal Capability 1 administration** under approved v2.4~~ —
+   **Administration 1 run 2026-08-18, verdict `NOT READY`**
+   (`decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json`).
+   Repair of its repairable findings, then a second administration at a
+   descendant commit declaring this record as prior, is the gate's own
+   path to `READY`; several findings (A6, C7, F6, B5) want owner input,
+   not session work.
+4. The owner's separate **launch decision** — lawfully the owner's to make
+   with the `NOT READY` verdict in hand; the gate is the evidence bar this
+   pass's charter chose, not a lock on the owner. Specification authoring
+   only after the decision; implementation only after specifications are
+   accepted.
 
 ## How to verify this page
 

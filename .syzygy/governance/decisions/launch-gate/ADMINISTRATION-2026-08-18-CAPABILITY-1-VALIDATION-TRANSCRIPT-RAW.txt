@@ -1,0 +1,69 @@
+Launch-gate v2.4 retry validation transcript
+================================================
+Date: 2026-08-18
+Repository: Tzeusy/syzygy
+Current main commit: 71e598607d8db161a34e99eae453253152692915
+Root tree: b379eb4f075d3ec7535ac47bb18ec7a484ac8580
+
+Packet admission bindings
+-------------------------
+PASS  full 40-character repository commit recorded
+PASS  instrument version v2.4
+PASS  instrument sha256 1852c2c3d31eff3afa0924b6b72e855481ab2516ba8fde5eda7b2ae8772f01e8
+PASS  parameter-block sha256 01209c0f052971f794e1f35827a002aa8d80420aad471d10fde000abb6366ff6
+PASS  schema sha256 e0167fb8af6a903c527d402d56c4fb85ebdfed9608de1a485f4f1563aa6a69fb
+PASS  packet-declared validator sha256 047098326af2f415558f0ca748a98a5889d91e9cfecaa67d700ef1ba883ba497
+PASS  packet-declared renderer sha256 44d568e397271ff897dc13fd4cc46a9d1a9404d0d32db19b5b22dad69fa351c5
+PASS  current GitHub Actions checkout independently resolved 71e598607d8db161a34e99eae453253152692915
+
+Record validation
+-----------------
+PASS  JSON parses and conforms to Draft 2020-12 schema: 0 errors
+PASS  exact 39-row roster, in instrument order
+PASS  closed verdict vocabulary and verdict/scope agreement
+PASS  evidence/counterexample/Unknown field discipline
+PASS  E1 five-subrow rollup
+PASS  E3 concept trace present; reopen list empty
+PASS  E4 six fixed cases present and in agreement
+PASS  scoped rows disclosed by deferred-wave findings with zero blocking conditions
+PASS  pilot recurrence check performed: CG-2a examined 486 files, 2 retired phrases, 0 live/unmarked findings
+PASS  no Unicode category So or U+2800 in JSON or report
+
+Current repository checks used as evidence
+------------------------------------------
+OBSERVED  check_governance: 32 OK, 19 WARN, 0 FAIL (51 checks)
+OBSERVED  CG-2a: 486 files examined, 0 findings; 0 retired phrases presented current, 0 unmarked
+OBSERVED  verify_final_prespec: PASS
+OBSERVED  build_contract_index --check: FAIL — 05-CONTRACT-INDEX.yaml differs from regeneration (367 clauses regenerated)
+
+Execution limitations
+---------------------
+NOT RUN  literal local `git clone` (sandbox outbound HTTPS refused)
+NOT RUN  committed scripts/validate_launch_administration.py
+NOT RUN  committed scripts/render_launch_administration.py
+SUBSTITUTE  exact-commit GitHub object reads, current hosted checkout/logs, exact schema validation, local semantic/formula checks, deterministic local report generation
+DISCLOSED  retry follows an aborted pass in the same conversation; strict fresh-context isolation is limited
+
+Computed diagnostic figures
+---------------------------
+Plain Not met: 10
+Scoped: 2
+Unknown: 5
+Deferred: 0
+Reopened: 0
+New findings vs prior: n/a (no prior formal record)
+Row/formula outcome: NOT READY
+Owner launch decision: NOT MADE
+
+Trend row
+---------
+| 2026-08-18 | 71e5986 | 10 | 2 | 5 | 0 | 0 | n/a (no prior record) | NOT READY |
+
+Artifact digests
+----------------
+JSON sha256: 3a7a038293b56f9f6c47cd4c202eeb5d68bd6017f75056119fcd2739bc8bcd75
+Markdown sha256: d11978e71c4e65727f5b7cfd997444c06f3438e24bf9d6c250a2fde7747f3fdc
+
+Validation conclusion
+---------------------
+The canonical JSON is schema-valid and passes the locally reproduced record-discipline and section 4 formula checks. The diagnostic formula outcome is NOT READY. Because the exact committed validator/renderer could not be executed from a literal local clone, this transcript does not claim byte-for-byte execution equivalence with those entrypoints. No repository file was modified.
