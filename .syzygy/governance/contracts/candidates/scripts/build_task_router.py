@@ -59,7 +59,43 @@ except CharterError as _exc:
           f"route cannot be generated:\n  {_exc}", file=sys.stderr)
     raise SystemExit(1)
 
-CAP1_CLAUSES = {cid: f"{C}/{rel}" for cid, rel in CAP1["clauses"].items()}
+#: Administration 1 (2026-08-18) D2 counterexample: two of the three fixed
+#: routing tasks ended at candidate copies although their governing Wave
+#: A/B modules were installed and accepted 2026-08-17. A route must end at
+#: the governed home. Modules named by the Wave A/B manifests therefore
+#: route to the installed tree (`contracts/rfcs/`, install shape (M));
+#: deferred-wave modules keep their candidate home. The mapping is guarded
+#: by existence — if the installed copy is absent the candidate path
+#: stands, and validation still checks whichever path is emitted.
+ACCEPTED = ".syzygy/governance/contracts"
+
+
+def _accepted_wave_rels():
+    rels = set()
+    for wave in ("A", "B"):
+        man = CAND / "wave-manifests" / f"WAVE-{wave}-MANIFEST.txt"
+        for line in man.read_text(encoding="utf-8").splitlines():
+            parts = line.split()
+            if len(parts) == 2 and len(parts[0]) == 64:
+                rels.add(parts[1])
+    return rels
+
+
+_ACCEPTED_RELS = _accepted_wave_rels()
+
+
+def governed_home(path):
+    """Candidate-tree path -> accepted-home path, for accepted modules only."""
+    prefix = f"{C}/"
+    if path.startswith(prefix):
+        rel = path[len(prefix):]
+        if rel in _ACCEPTED_RELS and (REPO / ACCEPTED / rel).is_file():
+            return f"{ACCEPTED}/{rel}"
+    return path
+
+
+CAP1_CLAUSES = {cid: governed_home(f"{C}/{rel}")
+                for cid, rel in CAP1["clauses"].items()}
 CAP1_CLAUSE_MODULES = sorted(set(CAP1_CLAUSES.values()))
 
 #: One entry per task class. `clauses` maps clause-id -> repo-relative path
@@ -408,6 +444,15 @@ TASKS = [
     ),
 ]
 
+#: Apply the accepted-home mapping to every route (see governed_home above).
+#: Done once, here, so no task entry can bypass it by being typed with the
+#: candidate prefix — the Capability 1 payload got the same mapping at
+#: CAP1_CLAUSES. Deferred routes are untouched by construction: no RFC-0010
+#: or RFC-0011 module is named by a Wave A/B manifest.
+for _t in TASKS:
+    _t["modules"] = [governed_home(p) for p in _t["modules"]]
+    _t["clauses"] = {cid: governed_home(p) for cid, p in _t["clauses"].items()}
+
 FRONT_DEP = re.compile(r"^depends_on:\s*\[([^\]]*)\]", re.M)
 
 
@@ -522,7 +567,8 @@ def render(tasks):
         "> every measurement; this file only routes. Every path and clause",
         "> below is existence-checked at generation. Where this file and a",
         "> clause disagree, the clause wins. It supersedes",
-        "> `TASK-TO-CONTRACT-INDEX.md` and the load map's reader-map table",
+        "> the historical task index (`history/TASK-TO-CONTRACT-INDEX.md`)",
+        "> and the load map's reader-map table",
         "> as the routing answer; `06-CONTEXT-LOAD-MAP.md` remains the",
         "> context-budget instrument.",
         "",

@@ -50,7 +50,7 @@ are that round's record and are not the current package's state.
 | `fixtures/` | Context-selection fixtures for the RFC-0011 Context Compiler |
 | `reviews/` | Raw review reports and dispositions for this package — stored verbatim, never edited |
 | `scripts/` | Self-rooted, portable verification and generation (`verify_final_prespec.py`, `build_contract_index.py`, `build_dependency_index.py`, `build_budget_report.py`, `build_task_router.py`, `build_active_manifest.py`, `context_load.py`) |
-| `TASK-ROUTER.md` | **The one current task router** — generated navigation by `scripts/build_task_router.py`, never authority; supersedes `TASK-TO-CONTRACT-INDEX.md` (bannered) and the load map's reader table |
+| `TASK-ROUTER.md` | **The one current task router** — generated navigation by `scripts/build_task_router.py`, never authority; supersedes the historical task index (now `history/TASK-TO-CONTRACT-INDEX.md`) and the load map's reader table |
 | `CONTRACT-DEPENDENCY-INDEX.md` | Derived module-graph index (generated; never authority) |
 | `DEFERRED-WAVE-POSTURE.md` | Current owner-directed posture of Waves C1/C2/D1/D2 (deferred from the Capability 1 launch) |
 | `FIRST-OPENSPEC-SEQUENCE.md` | The single current first-spec sequence (revision 3) with per-prerequisite states |
@@ -72,7 +72,7 @@ fact). The former `topology/` directory is tracked at
 
 ```sh
 cd .syzygy/governance/contracts/candidates
-sha256sum -c ACTIVE-CONTRACT-MANIFEST.txt          # all 39 modules OK
+sha256sum -c ACTIVE-CONTRACT-MANIFEST.txt          # every listed module OK
 sha256sum -c wave-manifests/WAVE-A-MANIFEST.txt    # per wave, before its act
 sha256sum wave-manifests/WAVE-A-MANIFEST.txt       # that wave's act argument
 python3 scripts/build_active_manifest.py --check   # all 7 manifests, partition

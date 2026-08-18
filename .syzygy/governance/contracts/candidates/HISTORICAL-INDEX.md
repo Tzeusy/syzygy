@@ -16,7 +16,7 @@
 | `round-2026-08d/FIRST-OPENSPEC-SEQUENCE.md` (rev 2) | `FIRST-OPENSPEC-SEQUENCE.md` (rev 3, candidates root) | 2026-08-10 |
 | `round-2026-08d/OWNER-DECISION-PACKETS.md` packets 2/7/8/10/11 | the five `decisions/*-DECISION.md` packets | 2026-08-10 |
 | `SURFACE-CLAUSE-ROUTING-MATRIX-REV10.md` | `SURFACE-CLAUSE-ROUTING-MATRIX.md` | round-2026-08b |
-| `TASK-TO-CONTRACT-INDEX.md` + the load map's reader table | `TASK-ROUTER.md` (generated) | 2026-08-10 |
+| `history/TASK-TO-CONTRACT-INDEX.md` (moved off the active lane 2026-08-18, Administration 1 F2) + the load map's reader table | `TASK-ROUTER.md` (generated) | 2026-08-10 |
 | `round-2026-08c/OWNER-DECISION-PACKETS.md` | round-08d packets, then the `decisions/` packets | 2026-08-09 |
 
 ## Historical rounds (whole directories; each has its own banners)

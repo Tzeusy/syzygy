@@ -13,7 +13,7 @@
 |---|---|---|
 | **Has the owner decided this?** | the **recorded decisions** below | Doctrine, craft, SDR-1…37, and the 2026-08-16 rulings are recorded. The rest is not |
 | **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **Yes — four, all 2026-08-17:** Wave A, Wave B, and craft acts 6 + 7 (CC-SPEC, CC-IMPACT). The record file exists since the first act and owns every performed act |
-| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **20** rows in the open section, plus **5** open acceptance-act rows *(measured 2026-08-17, after the acts, by the predicate the generators use: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`; P-1's row stays open for the deferred C/D waves)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
+| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **24** rows in the open section, plus **5** open acceptance-act rows *(measured 2026-08-18, after the repair pass added P-45…P-48, by the predicate the generators use: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`; P-1's row stays open for the deferred C/D waves)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
 | **Which decisions were resolved, and how?** | [`DECISION-HISTORY.md`](DECISION-HISTORY.md) | The resolved rows — the nine 2026-08-16 rulings and the 2026-08-17 act dispositions (P-41/P-42 executed, P-22/P-28 ratified) — and the register's chronology |
 | **Where is the history?** | [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md), [`DECISION-HISTORY.md`](DECISION-HISTORY.md), and the round trees under `contracts/candidates/` | Deliberately off the default path |
 
@@ -63,6 +63,7 @@ launch-critical rows each have a prepared packet here:
 |---|---|---|
 | **P-12** | The knowledge-hygiene craft policy | [`KNOWLEDGE-HYGIENE-DECISION.md`](KNOWLEDGE-HYGIENE-DECISION.md) |
 | **P-14** | Which license? | [`LICENSE-DECISION-PACKET.md`](LICENSE-DECISION-PACKET.md) |
+| **P-45…P-48** | The four Administration-1 owner inputs (resource envelope, effort ceiling, F2 disposition, stop condition) | [`ADMINISTRATION-1-OWNER-INPUTS-DECISION.md`](ADMINISTRATION-1-OWNER-INPUTS-DECISION.md) |
 
 Packets whose question the owner has since ruled or executed (P-41's
 `SPECIFICATION-ACCEPTANCE-DECISION.md` and P-42's

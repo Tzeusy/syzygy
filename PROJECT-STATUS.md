@@ -76,10 +76,15 @@ The remaining launch path, in order — each step's owning record governs:
 3. ~~**Formal Capability 1 administration** under approved v2.4~~ —
    **Administration 1 run 2026-08-18, verdict `NOT READY`**
    (`decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json`).
-   Repair of its repairable findings, then a second administration at a
-   descendant commit declaring this record as prior, is the gate's own
-   path to `READY`; several findings (A6, C7, F6, B5) want owner input,
-   not session work.
+   **The repair pass ran the same day** (round 2026-08j): every
+   session-repairable finding is repaired or settled by artifact, and the
+   four owner-input findings are queued as **P-45…P-48**
+   (`decisions/ADMINISTRATION-1-OWNER-INPUTS-DECISION.md`); the
+   finding-by-finding record is
+   `contracts/candidates/round-2026-08j/ADMINISTRATION-1-DISPOSITION-REGISTER.md`.
+   **Administration 2** — at a descendant commit, declaring the
+   Administration 1 record as its prior, out-of-family as before — is the
+   gate's own path to `READY` and is commissionable now.
 4. The owner's separate **launch decision** — lawfully the owner's to make
    with the `NOT READY` verdict in hand; the gate is the evidence bar this
    pass's charter chose, not a lock on the owner. Specification authoring

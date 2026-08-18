@@ -12,11 +12,13 @@
 
 ## The corpus, as loadable modules
 
-11 contracts; **the module count is owned by the generated
-`ACTIVE-CONTRACT-MANIFEST.txt` and `05-CONTRACT-INDEX.yaml`** — this
-sentence previously carried "32 modules" while the manifest held 39 (the
-round-08d RFC-0010/0011 splits), the stale-count class this file's own
-preamble warns about. Machine lookup: `05-CONTRACT-INDEX.yaml`
+**Both the contract count and the module count are owned by the generated
+`ACTIVE-CONTRACT-MANIFEST.txt` and `05-CONTRACT-INDEX.yaml`** — an earlier
+revision of this sentence carried a hardcoded module count that had gone
+stale against the manifest (the round-08d RFC-0010/0011 splits), the
+stale-count class this file's own preamble warns about, and a contract
+count survived here until Administration 1's F2 counted it (2026-08-18).
+Machine lookup: `05-CONTRACT-INDEX.yaml`
 (regenerable: `scripts/build_contract_index.py --check`).
 
 **Module sizes are not listed here.** They were, per contract, and eleven of

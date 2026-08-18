@@ -4008,14 +4008,19 @@ def selftest():
     cases.append(("CG-21 examines the real corpus without error",
                   c.rows[0][2] > 0 and c.rows[0][0] == "OK"))
 
-    # The load map fed to CG-21 as if it were a module. This fixture asserted
-    # `OK` while calling itself "measurement in prose detected" — true only
-    # because `CONTRACT_MEASUREMENT` could not see a count of *modules* or
-    # *contracts*, which is review RD-17 finding 4's whole subject. With the
-    # regex widened the same input trips the predicate, which is what the
-    # fixture's name always claimed.
-    c = Cap()
-    cg21_contract_prose_states_no_measurement(c, modules=[LOAD_MAP])
+    # A synthetic module carrying a corpus count. This fixture used to feed
+    # the real load map, whose "11 contracts" figure was its live trigger —
+    # true only while the load map violated the rule. The 2026-08-18 repair
+    # pass (Administration 1 F2) removed that figure, so the fixture now
+    # writes its own violating input instead of depending on a defect
+    # surviving in the tree.
+    import tempfile as _tf21
+    with _tf21.TemporaryDirectory(prefix="cg21-selftest-") as _d21:
+        _m21 = os.path.join(_d21, "synthetic-module.md")
+        with open(_m21, "w", encoding="utf-8") as _f21:
+            _f21.write("The corpus spans 11 contracts and 32 modules.\n")
+        c = Cap()
+        cg21_contract_prose_states_no_measurement(c, modules=[_m21])
     cases.append(("CG-21 corpus count in prose detected",
                   c.rows[0][0] == "FAIL"))
 
@@ -4824,7 +4829,11 @@ def _selftest_dangling():
 ROUTING_ARTIFACTS = (
     LOAD_MAP,
     f"{CANDIDATES}/README.md",
-    f"{CANDIDATES}/TASK-TO-CONTRACT-INDEX.md",
+    #: TASK-TO-CONTRACT-INDEX.md left this population 2026-08-18: already
+    #: SUPERSEDED-bannered since 2026-08-10, it moved to `history/` when
+    #: Administration 1's F2 counted its 49 embedded historical figures as
+    #: active-lane measurement findings. The history lane is off the active
+    #: path by convention; the file's rows remain history, not routes.
 )
 
 
