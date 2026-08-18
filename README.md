@@ -158,9 +158,9 @@ doctrine and should be reported as a finding, not read as a promise.
 
 ## License
 
-**No open-source license has yet been adopted.** Public viewing is permitted
-by GitHub; reuse rights are not yet granted. A decision packet for the owner
-is at
-[`.syzygy/governance/decisions/LICENSE-DECISION-PACKET.md`](.syzygy/governance/decisions/LICENSE-DECISION-PACKET.md).
-Until a license lands, external code contributions cannot be accepted
-(see [`CONTRIBUTING.md`](CONTRIBUTING.md)).
+**MIT** — ruled by the owner 2026-08-18 (P-14), granted by the root
+[`LICENSE`](LICENSE) file. The decision record is
+[`.syzygy/governance/decisions/LICENSE-CHOICE-DECISION.md`](.syzygy/governance/decisions/LICENSE-CHOICE-DECISION.md).
+A license grant does not open an implementation backlog: contribution
+posture stays governed by [`CONTRIBUTING.md`](CONTRIBUTING.md) and the
+pre-specification boundary.

@@ -18,6 +18,14 @@
 > Waves A and B, then craft acts 6 and 7 (P-41/P-42, one sitting). The
 > executed rows moved to `DECISION-HISTORY.md`; P-22 and P-28 resolved by
 > §7 ratification at the acts; P-21 stays open (sub-question (a) unruled).
+>
+> **Updated 2026-08-19:** four rulings from the owner's 2026-08-18
+> questionnaire sitting applied on explicit request — P-14 (MIT), P-16
+> (term registry as drafting vocabulary), P-24 (D4: inside VIS-4's
+> bounds), P-44 (CC-REV-2 exception declined). Rows moved to
+> `DECISION-HISTORY.md`; each has its own decision record in this
+> directory. P-45…P-48 were added 2026-08-18 by the Administration-1
+> repair pass.
 
 ## The acceptance acts (four performed; the rest open)
 
@@ -35,7 +43,7 @@ CG-7 failure means "do not perform that act." The acceptance record's §7
 | P-2 | **Act 2** — confirm craft amendment CC-TEST-2 | acceptance record §1 row 2; digest block in `../policies/craft-and-care/INSTALL-RECORD.md` (**2026-08-06 correction** block holds the current argument) |
 | P-3 | **Act 3** — accept the topology bundle | acceptance record §1 row 3; `../../map/topology-candidates/BUNDLE-MANIFEST.md` |
 | P-4 | **Act 4** — adopt the project overview | acceptance record §1 row 4; `../../intent/OVERVIEW.md` |
-| P-5 | **Optional act 5** — adopt, amend, or decline the D3 bounded-mission doctrine amendment. Rule **P-24 (D4)** first — adopting D3 as written settles D4 by stipulation | `../contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1) |
+| P-5 | **Optional act 5** — adopt, amend, or decline the D3 bounded-mission doctrine amendment. **P-24 (D4) was ruled 2026-08-18: inside VIS-4's bounds, with the reviewer's §1.2 wording designated for act 5** (`D4-RULING-DECISION.md`) — a D3 rev2 carrying that wording, plus the VIS-3 fresh-reader review D3 §5 requires, precede the act | `../contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1); `D4-RULING-DECISION.md` |
 
 **Act ordering:** A → B (P-1). Under the current deferred-wave posture no
 C/D act is offered; perform the wave acts before act 5 so bounded-mission
@@ -62,7 +70,8 @@ table through this lens:
   decision is separate.
 - **Gate a deferral-bearing administration:** P-43.
 - **Deferred with their waves (no C/D act is offered):** P-19, P-23, P-27,
-  P-29, P-30, P-32, and the D3/D4 doctrine questions — see
+  P-29, P-30, P-32, and the D3 adoption question (D4 itself was ruled
+  2026-08-18 — `D4-RULING-DECISION.md`; act 5 stays open as P-5) — see
   `DEFERRED-WAVE-POSTURE.md`.
 - **Open but not launch-gating:** everything else below; each row states
   its own earliest gate where one exists.
@@ -75,16 +84,13 @@ Where this index and a row disagree, the row wins and this index is stale.
 |---|---|---|---|---|
 | P-10 | Commission a confirming review of `SURFACE-CLAUSE-ROUTING-MATRIX.md`'s final bytes (all 199 routes) and the six newest RFC-0010 clauses, or knowingly defer | review posture | none — not launch-gating | the matrix; `round-2026-08/reviews/` |
 | P-12 | Knowledge-hygiene craft policy — pick the 22-rule original or the ten-rule compaction; own `CONFIRM CRAFT AMENDMENT` act. Would also give CG-20/21/27 an authoritative home | craft act | not launch-gating | `KNOWLEDGE-HYGIENE-DECISION.md`; `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` + `…-COMPACT.md` |
-| P-14 | License choice — four candidates, three `[Unknown]`s incl. copyleft reach; wants qualified legal review, never chosen autonomously | owner/legal decision | none stated | `LICENSE-DECISION-PACKET.md` (this directory) |
 | P-15 | Whether a compact FD register follows the two extracted warrants into this directory, while the founder decision log stays founder-local | decision | none | queue entry only; FD-037 |
-| P-16 | Approve the term registry (31 terms, T-01…T-31, six-plane state model) as working vocabulary, or amend. Doctrine's three-state thesis stays governing either way | decision | none — the registry stays candidate | `policy-candidates/TERM-REGISTRY.md` |
 | P-17 | Eight foundational public terms have no adopted definition anywhere; the wave acts close this. Accepting the surface before then is a knowing deferral | knowing deferral | the wave acts / act 4 | term registry §authority coverage; `round-2026-08b/TERM-CLOSURE-REPORT.md` §9.3 |
 | P-18 | Three doctrine/contract vocabulary seams (C-1…C-6): governance-category counts, "Claim" outside doctrine's frozen nouns, `evidence tier` vs `rendering tier` | ruling | before OpenSpec multiplies them (advisory) | `round-2026-08/TERM-MIGRATION-REPORT.md` |
 | P-19 | Mission-envelope residuals — the RFC-0010 correction plane (RFC10-17…22) closes them only if the D-wave acts are performed | deferred with waves | D1/D2 offer | `DEFERRED-WAVE-POSTURE.md`; `round-2026-08b/reviews/RC-7-mission-safety-RAW.md` |
 | P-20 | The fixture-set acceptance posture — the residue P-29 owns; coverage itself is closed (ten fixtures) | deferred | with P-29 | `round-2026-08/ROUND-DISPOSITIONS.md`; `round-2026-08b/FINAL-CONTEXT-COMPILER-FIXTURE-REPORT.md` |
 | P-21 | Is `constrains:` the right relation for one-way constraints (arm a)? The declaration's **presence** was ratified when the Wave A and B acts were performed 2026-08-17 (§7 item 18: "the acts ratify its presence" while (a) rides in **unruled**) — the sub-question itself remains open; its consumer clause sits in deferred Wave C2 | ruling | before Wave C2 is offered, or at the first consumer of the relation | `round-2026-08c/CONTRACT-RELATION-CLOSURE-REPORT.md`; acceptance record §7 item 18 |
 | P-23 | Mission-safety stage placement — hold the correction plane for V1 (propose-only V0), or ship it with V0; the ceiling and the plane move together | deferred with waves | D1/D2 offer | `round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md`; `round-2026-08b/reviews/RC-7-mission-safety-RAW.md` |
-| P-24 | Rule doctrine question **D4** before act 5 — D3's `vision.md` insertion otherwise settles D4 by stipulation; the reviewer's alternative text is carried in the packet | doctrine ruling | act 5 | `DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` §6; RC-7 F10 |
 | P-25 | Editorial doctrine amendment qualifying the three "README glossary" citations (drafted, not performed); three terms remain undefined anywhere reachable | doctrine amendment — only the owner applies | none | `policy-candidates/DOCTRINE-EDITORIAL-AMENDMENT-GLOSSARY-CITATION.md` |
 | P-25(c) | The `actuator` definition — a minimal doctrine amendment with the exact glossary insertion, one inferred sentence flagged for the owner | doctrine amendment — only the owner applies | none | `policy-candidates/DOCTRINE-AMENDMENT-ACTUATOR-DEFINITION.md` |
 | P-27 | RFC10-18's correction-plane routing defects (RC-11) and RC-10's undisclosed residue — all inside deferred D-wave modules | deferred with waves | D1/D2 offer | `round-2026-08b/DISPOSITIONS-RC-11-RC-12.md` |
@@ -92,7 +98,6 @@ Where this index and a row disagree, the row wins and this index is stale.
 | P-30 | Form of the stop/containment repair — D1-side floor limbs (i), move RFC10-20 to D1 (ii), or merge the D acts (iii) | deferred with waves | D1/D2 re-offer | `round-2026-08d/reviews/RD-20…RD-21…RD-13…RD-14` raw reviews |
 | P-32 | RFC11-15 ownership metadata at V0 — author the schema, or rule the honest-fallback limb permanent and say so plainly | deferred with waves | Wave C2 re-offer | `round-2026-08d/reviews/RD-23-wave-c2-RAW.md` M2 |
 | P-43 | What marks a file as recording a **made** owner decision — `SDR-n` only, an `**Executed.**` marker, a front-matter field? LA-11's shape classification is defensible and unruled | convention ruling | before any administration rests on a deferral | this row; `round-2026-08g/reviews/RD-56-launch-machinery-v2.1-RAW.md` f5 |
-| P-44 | A lagging-specification exception to CC-REV-2 — amend in place (arm a) or decline (arm b); declining costs nothing while no specification exists. **Reviewed in the P-41/P-42 cycle (RD-69): the offer itself needs repair before any arm-(a) act** — its "Owner charter §9.6" warrant resolves nowhere in-tree, and arm (a)'s appended text contradicts the "one structural carve-out" sentence it follows (RD-69 N4); arm (b) is verified costless and needs no repair | policy amendment offer | not launch-critical | `policy-candidates/CC-REV-2-LAGGING-SPECIFICATION-AMENDMENT-OFFER.md`; RD-69 register (`../contracts/candidates/round-2026-08i/reviews/`) |
 | P-45 | The A6 resource envelope — state hours/review-cadence/budget/concurrency and **name the first proving project**, or knowingly re-affirm the Unknowns dated. Settles Administration 1's A6; the proving-project name is what lets Capability 1 retire thesis risk R1 | owner statement | Administration 2's A6 | `ADMINISTRATION-1-OWNER-INPUTS-DECISION.md` §P-45; `../contracts/candidates/round-2026-08j/THESIS-RISK-ORDERING.md` |
 | P-46 | The F6 governance-effort ceiling — declare a ceiling and its cut, or record that case-by-case judgment is the posture (F6 then stays Not met knowingly) | owner ruling | Administration 2's F6 | `ADMINISTRATION-1-OWNER-INPUTS-DECISION.md` §P-46 |
 | P-47 | The F2 disposition — adopt the governance-reduction plan as directed work (arm a), or defer F2 knowingly via the instrument's `owner_deferrals` path (arm b) | owner ruling | Administration 2's F2 | `ADMINISTRATION-1-OWNER-INPUTS-DECISION.md` §P-47; `../contracts/candidates/round-2026-08i/GOVERNANCE-REDUCTION-PLAN.md` |

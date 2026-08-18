@@ -1,6 +1,6 @@
 # Project status
 
-> **As-of: 2026-08-18** (the commit introducing this revision —
+> **As-of: 2026-08-19** (the commit introducing this revision —
 > `git log -1 --format=%h PROJECT-STATUS.md`). A hand-authored pointer page:
 > it **must not be the sole source** for any fact it states. Each row cites
 > the record that owns it, and where they disagree the record wins and this
@@ -48,7 +48,9 @@ unperformed.
 | Doctrine adoption | ✅ Adopted 2026-07-30, amendment D1 in force | tag `doctrine-adopted-2026-07-30`; `.syzygy/governance/doctrine/README.md` |
 | Craft-and-care approval | ✅ Approved (owner decision D2) | `.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md` |
 | Surface decisions | ✅ Recorded SDR-1…37 | `.syzygy/governance/decisions/SURFACE-DECISION-RECORD.md` |
-| The 2026-08-16 rulings | ✅ See the launch-path table above | `decisions/PENDING-OWNER-DECISIONS.md` §"Resolved on 2026-08-16" |
+| The 2026-08-16 rulings | ✅ See the launch-path table above | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-16" |
+| The 2026-08-18 questionnaire rulings | ✅ P-14 (MIT), P-16 (term registry as drafting vocabulary), P-24 (D4: inside VIS-4's bounds), P-44 (CC-REV-2 exception declined) — applied 2026-08-19 | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-19"; each row's own decision record |
+| License | ✅ **MIT** — root `LICENSE`; contributor-agreement posture remains a separate open question | `decisions/LICENSE-CHOICE-DECISION.md` |
 
 ## Gates still open, beyond the launch path
 
@@ -57,11 +59,10 @@ unperformed.
 | Craft amendment CC-TEST-2 | Awaiting confirmation at the current digest | `INSTALL-RECORD.md` **2026-08-06** correction block |
 | Topology bundle | Candidate — no act performed | `.syzygy/map/topology-candidates/BUNDLE-MANIFEST.md` |
 | Project overview | Draft — awaiting adoption | `.syzygy/intent/OVERVIEW.md` |
-| Doctrine amendment D3 (bounded missions) | Proposed — adopt, amend, or decline | `contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1) |
+| Doctrine amendment D3 (bounded missions) | Proposed — adopt, amend, or decline. **D4 was ruled 2026-08-18** (inside VIS-4's bounds; reviewer's §1.2 wording designated) — a D3 rev2 and its VIS-3 fresh-reader review precede act 5 | `contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1); `decisions/D4-RULING-DECISION.md` |
 | Knowledge-hygiene craft policy | Candidate — own craft act (P-12) | `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
 | Decision-record convention (P-43) | Open — not launch-gating; earliest gate is a deferral-bearing administration | `decisions/PENDING-OWNER-DECISIONS.md` row P-43 |
-| CC-REV-2 lagging-spec exception (P-44) | Offered, two arms, declining is one of them — not launch-gating | `policy-candidates/CC-REV-2-LAGGING-SPECIFICATION-AMENDMENT-OFFER.md` |
-| License | Undecided — owner/legal | `.syzygy/governance/decisions/LICENSE-DECISION-PACKET.md` |
+| Administration-1 owner inputs (P-45…P-48) | Open — resource envelope + proving project, effort ceiling, F2 disposition, repair-cycle stop condition | `decisions/ADMINISTRATION-1-OWNER-INPUTS-DECISION.md` |
 
 ## Next lawful step
 

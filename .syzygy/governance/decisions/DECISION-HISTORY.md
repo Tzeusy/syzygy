@@ -12,6 +12,22 @@
 > cells — are preserved verbatim in git history at commit `9c43fc5`
 > (`git show 9c43fc5:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`).
 
+## Resolved on 2026-08-19 (the 2026-08-18 questionnaire rulings, applied on explicit owner request)
+
+Four rulings the owner recorded in the 2026-08-18 local questionnaire
+sitting (items 10–13; the packet's own process note discloses that their
+adversarial reviews were coordinator-direct rather than clean
+independent-subagent passes). Each was applied canonically 2026-08-19,
+on the owner's explicit apply instruction; each names its own decision
+record, which owns the full detail.
+
+| # | What happened |
+|---|---|
+| P-14 | **Ruled — MIT** (option B, owner-selected directly over the recommended legal-review-first arm; the copyleft-reach `[Unknown]` knowingly accepted unresolved by counsel). Applied: root `LICENSE` created, `README.md` §License and `CONTRIBUTING.md` posture updated. Record: `LICENSE-CHOICE-DECISION.md`; context: `LICENSE-DECISION-PACKET.md`. |
+| P-16 | **Ruled — option A**: the term registry's 31 entries designated **non-binding working drafting vocabulary**; the registry stays candidate, banner unchanged, no entry citable as binding; P-17/P-18 stay open. Record: `TERM-REGISTRY-DRAFTING-VOCABULARY-DECISION.md`. |
+| P-24 | **Ruled — option A**: doctrine question **D4** ruled *inside VIS-4's bounds*, and the reviewer's reason-stating §1.2 wording designated as the text act 5 would carry — clearing RC-7 F10 by an owner ruling rather than a side-effect sentence. Act 5 (P-5) stays open; the §1.1 autonomy-ceiling question stays unruled; no doctrine byte moved. Record: `D4-RULING-DECISION.md`. |
+| P-44 | **Ruled — arm (b), declined**: no lagging-specification exception is added to CC-REV-2. Arm (a) was not lawfully choosable (RD-69 N4, offer defects) and was not chosen; any future exception is a fresh offer with a fresh review. The offer file is unedited. Record: `CC-REV-2-LAGGING-SPEC-EXCEPTION-DECISION.md`. |
+
 ## Resolved on 2026-08-17 (the four owner acts, and their §7 ratifications)
 
 The acts themselves are recorded in
@@ -72,6 +88,10 @@ repository.
 
 ## The register's as-of chronology (oldest last)
 
+- **2026-08-19** — the 2026-08-18 questionnaire rulings applied: P-14
+  (MIT), P-16, P-24 (D4), P-44 moved to resolved on the owner's explicit
+  apply request. P-45…P-48 had been added 2026-08-18 by the
+  Administration-1 repair pass (round 2026-08j).
 - **2026-08-17** — the four owner acts: Waves A and B accepted (A then B),
   then craft acts 6 and 7 performed in one sitting. P-41/P-42 executed;
   P-22/P-28 resolved by §7 ratification; P-21 narrowed to its open

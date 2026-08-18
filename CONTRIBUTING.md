@@ -1,12 +1,16 @@
 # Contributing
 
-## Current posture: not accepting external contributions
+## Current posture: licensed, but not accepting code contributions
 
-Syzygy is in **final pre-specification**. There is no application code, and
-**no license has been declared** — so there is no grant under which an
-external code contribution could be made or accepted. Until the owner
-declares a license, all rights are reserved. Issues and discussion are
-welcome; pull requests cannot yet be accepted.
+Syzygy is in **final pre-specification**. The repository is licensed
+**MIT** (owner ruling P-14, 2026-08-18 — see the root `LICENSE` and
+`.syzygy/governance/decisions/LICENSE-CHOICE-DECISION.md`), so reuse
+rights are granted. External **code** contributions still cannot be
+accepted — not for license reasons any more, but because there is no
+application code and the no-implementation boundary below binds
+everyone. Contributor-agreement posture is a separate, still-open owner
+decision. Issues and discussion are welcome; documentation and
+governance proposals follow the disciplines below.
 
 ## The no-implementation boundary
 

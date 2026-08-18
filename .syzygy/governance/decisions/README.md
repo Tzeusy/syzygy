@@ -13,7 +13,7 @@
 |---|---|---|
 | **Has the owner decided this?** | the **recorded decisions** below | Doctrine, craft, SDR-1…37, and the 2026-08-16 rulings are recorded. The rest is not |
 | **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **Yes — four, all 2026-08-17:** Wave A, Wave B, and craft acts 6 + 7 (CC-SPEC, CC-IMPACT). The record file exists since the first act and owns every performed act |
-| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **24** rows in the open section, plus **5** open acceptance-act rows *(measured 2026-08-18, after the repair pass added P-45…P-48, by the predicate the generators use: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`; P-1's row stays open for the deferred C/D waves)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
+| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **20** rows in the open section, plus **5** open acceptance-act rows *(measured 2026-08-19, after the 2026-08-18 questionnaire rulings were applied, by the predicate the generators use: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`; P-1's row stays open for the deferred C/D waves)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
 | **Which decisions were resolved, and how?** | [`DECISION-HISTORY.md`](DECISION-HISTORY.md) | The resolved rows — the nine 2026-08-16 rulings and the 2026-08-17 act dispositions (P-41/P-42 executed, P-22/P-28 ratified) — and the register's chronology |
 | **Where is the history?** | [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md), [`DECISION-HISTORY.md`](DECISION-HISTORY.md), and the round trees under `contracts/candidates/` | Deliberately off the default path |
 
@@ -36,6 +36,10 @@ These carry rulings the owner has actually made.
 | [`PROJECT-OPERATING-CONSTRAINTS-DECISION.md`](PROJECT-OPERATING-CONSTRAINTS-DECISION.md) | **P-35 ruled 2026-08-16** — the operating-constraints table, Unknowns kept |
 | [`HUMAN-ENTRY-DECISION.md`](HUMAN-ENTRY-DECISION.md) | **P-38 ruled 2026-08-16** — human entry as drafted (option a) |
 | `../policies/GOVERNANCE-SUBSTRATE-LOCK.yaml` `openspec` block | **P-39 ruled 2026-08-16** — OpenSpec pinned at 1.9.0 |
+| [`LICENSE-CHOICE-DECISION.md`](LICENSE-CHOICE-DECISION.md) | **P-14 ruled 2026-08-18, applied 2026-08-19** — MIT, owner-selected; root `LICENSE` created |
+| [`TERM-REGISTRY-DRAFTING-VOCABULARY-DECISION.md`](TERM-REGISTRY-DRAFTING-VOCABULARY-DECISION.md) | **P-16 ruled 2026-08-18** — the 31-term registry designated non-binding drafting vocabulary; registry stays candidate |
+| [`D4-RULING-DECISION.md`](D4-RULING-DECISION.md) | **P-24 ruled 2026-08-18** — D4: bounded missions sit inside VIS-4's bounds; reviewer's §1.2 wording designated for act 5 |
+| [`CC-REV-2-LAGGING-SPEC-EXCEPTION-DECISION.md`](CC-REV-2-LAGGING-SPEC-EXCEPTION-DECISION.md) | **P-44 ruled 2026-08-18** — declined (arm b); the offer is superseded for routing |
 
 Doctrine itself (VIS-1…7, SEC-1…5) is adopted and lives in
 [`../doctrine/`](../doctrine/), not here.
@@ -62,12 +66,12 @@ launch-critical rows each have a prepared packet here:
 | `P-nn` | Question | Packet |
 |---|---|---|
 | **P-12** | The knowledge-hygiene craft policy | [`KNOWLEDGE-HYGIENE-DECISION.md`](KNOWLEDGE-HYGIENE-DECISION.md) |
-| **P-14** | Which license? | [`LICENSE-DECISION-PACKET.md`](LICENSE-DECISION-PACKET.md) |
 | **P-45…P-48** | The four Administration-1 owner inputs (resource envelope, effort ceiling, F2 disposition, stop condition) | [`ADMINISTRATION-1-OWNER-INPUTS-DECISION.md`](ADMINISTRATION-1-OWNER-INPUTS-DECISION.md) |
 
 Packets whose question the owner has since ruled or executed (P-41's
 `SPECIFICATION-ACCEPTANCE-DECISION.md` and P-42's
 `SHAPE-TO-SPEC-IMPACT-DECISION.md` — acts 6 and 7 performed 2026-08-17 —
+P-14's `LICENSE-DECISION-PACKET.md` — MIT ruled 2026-08-18 —
 P-31's
 `MERGED-UNRECONCILED-DECISION.md`, P-36's `UNKNOWNS-AND-GAPS-DECISION.md`,
 P-37's `PROJECT-SHAPE-FACETS-DECISION.md`, P-39's
