@@ -145,10 +145,14 @@ behavior_rows:
 # `../../decisions/ACCEPTANCE-ACT-RECORD.md`. P-22 and P-28 resolved the
 # same day by §7 ratification at the Wave B and Wave A acts and their rows
 # moved to `../../decisions/DECISION-HISTORY.md`, so they are removed too.
-# P-1 stays listed: its launch-path waves A and B were performed 2026-08-17,
-# but its row remains open for the deferred C/D waves, and the queue row is
-# what the self-check reads. P-21 stays listed: sub-question (a) is open.
-blocking_decisions: [P-1, P-21]
+# P-1 and P-21 REMOVED 2026-08-20 by the owner's launch decision
+# (`../../decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`),
+# which authorizes Capability 1 authoring with both rows still open:
+# P-1's remainder is the deferred C/D waves and P-21's open sub-question
+# (a) sits in deferred Wave C2 — neither gates this capability's
+# authoring, and the owner decided so explicitly. Their queue rows stay
+# open; nothing here disposes them.
+blocking_decisions: []
 
 # Open upstream, at a LATER gate — named so a reader is not surprised by
 # them, not because authoring consumes them.

@@ -3,14 +3,19 @@
 This file is **repository operating procedure** — never citable as authority.
 What the project *is* lives in `README.md` and `.syzygy/intent/OVERVIEW.md`.
 
-## Current lifecycle stage: final pre-specification
+## Current lifecycle stage: specification defining
 
 Doctrine is adopted; engineering policy is owner-approved. The Wave A/B
 contracts and the CC-SPEC/CC-IMPACT craft policies are **accepted/in force
 as of 2026-08-17**; deferred-wave contracts, topology, overview and the
-remaining policy additions are **candidates awaiting owner acts**. There is
-**no application code, no specification content, and no implementation
-backlog** — none may be begun before the owner's launch decision.
+remaining policy additions are **candidates awaiting owner acts**. The
+owner's launch decision of **2026-08-20**
+(`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`) authorizes
+**Capability 1 specification authoring only** — the one OpenSpec change
+`project-registration-and-honest-shape-visibility`, candidate until the
+owner's adoption act. There is **no application code and no implementation
+backlog** — implementation, implementation planning, and every other
+capability's authoring stay forbidden.
 
 ## Where authority lives
 
@@ -62,10 +67,11 @@ Load the minimum for one correct decision; never "read everything."
 | A doctrine question | the one doctrine file, via the `heart-and-soul` skill |
 | An engineering-bar question | the one craft policy that owns it |
 | A contract question | **`contracts/candidates/TASK-ROUTER.md`** — the one generated router; context-budget measurement stays with `06-CONTEXT-LOAD-MAP.md` / `scripts/context_load.py` |
-| "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until accepted OpenSpec content exists |
-| "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; authoring stays forbidden until the owner's launch decision |
+| "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until the owner adopts the specification and separately authorizes implementation |
+| "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; **Capability 1 authoring is authorized** (owner decision 2026-08-20); every other capability stays forbidden |
+| The Capability 1 specification | the change `openspec/changes/project-registration-and-honest-shape-visibility/` — **candidate**, adopted by no one; its warrants-union is generated (`build_capability_1_spec_dependencies.py`) |
 | Current status | `PROJECT-STATUS.md` |
-| "Is this ready for OpenSpec?" | **not ready** — Administration 1 (2026-08-18, out-of-family, v2.4) returned `NOT READY`. `PROJECT-STATUS.md` owns the current state; the record is in `decisions/launch-gate/`; the instrument is `launch-gate-pre-specifications.md` |
+| "Is this ready for OpenSpec?" | Authoring was authorized by the owner's 2026-08-20 launch decision, made with Administration 1's `NOT READY` verdict (2026-08-18, out-of-family, v2.4) in hand as diagnostic evidence — that record stands unaltered in `decisions/launch-gate/`. `PROJECT-STATUS.md` owns the current state |
 | A launch-gate administration | the record is **structured JSON** (`launch-gate-administration.schema.json`); the Markdown report is generated, **never parsed back**. Scripts: `validate_launch_administration.py`, `render_launch_administration.py`; `launch_gate_results.py` covers the historical Markdown records only |
 | The launch-gate repair chain | `decisions/launch-gate/HISTORY.md` — **not default context**; the current policy is the instrument itself |
 | Open owner questions | `decisions/PENDING-OWNER-DECISIONS.md` |
@@ -81,7 +87,10 @@ path, never authority.
 
 Do **not**: write application or library code, or create `src/`, `apps/`,
 `packages/`, UI components, or toolchain manifests; choose a language,
-framework, database, or platform; create OpenSpec changesets, implementation
+framework, database, or platform; create any OpenSpec changeset **other
+than the one authorized Capability 1 change**
+(`project-registration-and-honest-shape-visibility` — owner decision
+2026-08-20), or any implementation
 issues, epics, or a backlog; treat a draft, candidate, index, summary, or
 generated view as authority; adopt doctrine, accept contracts, or approve
 policy on the owner's behalf (VIS-4); install candidate material into an

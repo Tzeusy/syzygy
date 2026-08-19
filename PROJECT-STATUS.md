@@ -1,6 +1,6 @@
 # Project status
 
-> **As-of: 2026-08-19** (the commit introducing this revision —
+> **As-of: 2026-08-20** (the commit introducing this revision —
 > `git log -1 --format=%h PROJECT-STATUS.md`). A hand-authored pointer page:
 > it **must not be the sole source** for any fact it states. Each row cites
 > the record that owns it, and where they disagree the record wins and this
@@ -13,10 +13,14 @@
 
 ## Lifecycle stage
 
-**Final pre-specification.** No application code exists, and none may be
-added until behavioral specifications are authored and approved — which
-cannot begin until the owner accepts the foundational contracts and
-separately authorizes launch.
+**Specification defining.** The owner's launch decision of 2026-08-20
+(`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`) authorized
+**Capability 1 specification authoring only** — the repository left final
+pre-specification that day. No application code exists, and none may be
+added until the authored specification is **adopted by the owner** at an
+exact digest (VIS-4; CC-SPEC-10) and implementation is separately
+authorized. The Administration 1 `NOT READY` verdict stands unaltered as
+diagnostic evidence.
 
 ## The launch path, in one table
 
@@ -33,8 +37,9 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 | P-41 + P-42, offered jointly | **PERFORMED — acts 6 and 7, 2026-08-17, one sitting** (the joint-sitting requirement satisfied). CC-SPEC-1…11 and CC-IMPACT-1…7 are **in force as owner-confirmed craft** at their reviewed digests; the files bind at their committed homes, uncopied and unedited. Review chain: RD-51 (`REVISE`) → repair → RD-69 (`REVISE`, one launch blocker) → the one blocker-only repair → RD-70 (`CONFIRM WITH EXCEPTIONS`). Nine non-blocking findings traveled into force disclosed. | `decisions/ACCEPTANCE-ACT-RECORD.md`; `.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md`; tag `craft-acts-6-7-confirmed-2026-08-17` |
 | Formal launch administration | **Administration 1 performed 2026-08-18 — verdict `NOT READY`** (10 plain Not-met, 2 scoped, 5 Unknown, 0 reopened). Out-of-family (OpenAI GPT-5.6 Pro), fresh context with disclosed limitations, against commit `71e5986` at approved v2.4; the record validated and its verdict computed by the committed scripts. The strongest findings are stale current-state claims on the default path (since repaired), the contract-index drift (since regenerated), Wave A rejection collapsing the launch path (B4), clone-unreachable D1 rationale (C7), and unbounded governance effort (F6). The 2026-08-09 v1.3 **pilot** (`NOT READY`) remains steering evidence only. | `decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json` (the record); `decisions/launch-gate/TREND-LOG.md` |
 | Owner rulings, 2026-08-19 (the Administration-1 inputs) | **P-45…P-48 all ruled** in one adversarially-reviewed sitting, applied same day: the **A6 resource envelope stated** (2h/week; Claude-family + occasional GPT 5.6-family review; $200/mo ceiling; 2–3 workstreams) with **syzygy itself named the first proving project** (butlers second); **no governance ceiling** — case-by-case recorded knowingly (F6 stays `Not met`, disclosed, non-conjunct); the **governance-reduction plan adopted as directed work** (§1/§2/§4 retirements executed; §3 awaits the first accepted spec; no deferral created); the **repair cycle bounded at two further administrations** (if Administration 3 is not `READY`, the owner decides directly on the record in hand). Zero contract bytes moved. | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-19, second sitting"; records `A6-RESOURCE-ENVELOPE-`, `F6-GOVERNANCE-CEILING-`, `F2-GOVERNANCE-REDUCTION-`, `LAUNCH-REPAIR-STOP-CONDITION-DECISION.md` |
-| OpenSpec (`openspec/`) | **No specification content.** A tool-created scaffold (config plus empty trees) exists and is not specification work; authoring is forbidden until the owner's launch decision. | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` |
-| Implementation | **Does not exist.** Blocked on accepted specifications. | — |
+| Owner launch decision | **Made 2026-08-20** — Capability 1 specification authoring authorized, with the `NOT READY` verdict in hand and accepted as diagnostic evidence; the P-48 stop-condition cycle ends early by the owner deciding directly. Specification definition only — no implementation, no implementation planning. | `decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md` |
+| OpenSpec (`openspec/`) | **One candidate change exists: `project-registration-and-honest-shape-visibility`** (schema `spec-driven`, OpenSpec pinned 1.9.0) — proposal, spec (42 requirements, CAP1-REQ-001…064), design, tasks, both coverage tables, and the generated dependency declaration. **Candidate — adopted by no one**; adoption is a future owner act at an exact digest. | the change directory `openspec/changes/project-registration-and-honest-shape-visibility/`; authoring authority: `decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md` |
+| Implementation | **Does not exist.** Blocked on the owner's adoption of the specification and a separate implementation authorization. | — |
 
 **Four owner acts have been performed, all 2026-08-17:** Wave A, Wave B,
 and craft acts 6 + 7.
@@ -92,11 +97,17 @@ The remaining launch path, in order — each step's owning record governs:
    scope-versus-capacity assessment (the second half of A6's settlement)
    is performable follow-on work against the stated envelope
    (`decisions/A6-RESOURCE-ENVELOPE-DECISION.md`).
-4. The owner's separate **launch decision** — lawfully the owner's to make
-   with the `NOT READY` verdict in hand; the gate is the evidence bar this
-   pass's charter chose, not a lock on the owner. Specification authoring
-   only after the decision; implementation only after specifications are
-   accepted.
+4. ~~The owner's separate **launch decision**~~ — **made 2026-08-20**,
+   with the `NOT READY` verdict in hand and accepted as diagnostic
+   evidence (`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`).
+   Authorizes **specification definition only**.
+5. **Author the Capability 1 specification** — in progress: the one
+   OpenSpec change `project-registration-and-honest-shape-visibility`
+   drafted 2026-08-20 under the in-force CC-SPEC/CC-IMPACT standard, with
+   its bounded review passes. Then the owner's **adoption act** at an
+   exact digest (VIS-4; CC-SPEC-10) — a separate future decision (SDR-37:
+   one change, one acceptance decision). Implementation only after
+   adoption and separate authorization.
 
 ## How to verify this page
 
@@ -116,13 +127,15 @@ python3 $CS/build_task_router.py --check
 python3 $CS/build_task_router.py --selftest
 python3 $CS/build_capability_1_views.py --check      # capability 1: charter -> views
 python3 $CS/build_capability_1_views.py --selftest
+python3 scripts/build_capability_1_spec_dependencies.py --check  # capability 1 spec: warrants -> generated union
+python3 scripts/build_capability_1_spec_dependencies.py --selftest
 DR=.syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json
 python3 scripts/validate_launch_administration.py $DR
 python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
 ```
 
-The sixteen checks above are the same sixteen the hosted workflow runs
+The eighteen checks above are the same eighteen the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.

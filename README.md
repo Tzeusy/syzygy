@@ -4,14 +4,17 @@
 what should be true, evidence shows what is true, and agent fleets do bounded
 work to close the difference — with the difference always rendered honestly.**
 
-> **Current stage: final pre-specification.**
-> This repository contains **no application code, no behavioral
-> specifications, and no implementation backlog — deliberately.** What exists
-> is adopted doctrine, owner-approved engineering policy, and a
-> foundational-contract corpus whose launch-path waves (RFC 0001–0009) the
-> owner **accepted by act on 2026-08-17**, the remaining waves still
-> candidate. See [`PROJECT-STATUS.md`](PROJECT-STATUS.md) for the exact
-> gate state.
+> **Current stage: specification defining.**
+> This repository contains **no application code and no implementation
+> backlog — deliberately.** What exists is adopted doctrine, owner-approved
+> engineering policy, a foundational-contract corpus whose launch-path
+> waves (RFC 0001–0009) the owner **accepted by act on 2026-08-17** (the
+> remaining waves still candidate), and — since the owner's launch decision
+> of **2026-08-20** — one **candidate** behavioral specification under
+> authoring: the Capability 1 OpenSpec change
+> `project-registration-and-honest-shape-visibility`, binding nothing
+> until the owner adopts it. See [`PROJECT-STATUS.md`](PROJECT-STATUS.md)
+> for the exact gate state.
 
 Concretely, the intended shape is a **local-first daemon with a browser
 app**, serving the owner visually and agents through machine-queryable
@@ -91,7 +94,7 @@ Authority is **typed** — each question has one owning home:
 | Engineering and evidence bar | [`.syzygy/governance/policies/craft-and-care/`](.syzygy/governance/policies/craft-and-care/) | **Owner-approved** (D2); clause-level force begins at foundational-contract acceptance |
 | Load-bearing technical contracts | [`.syzygy/governance/contracts/`](.syzygy/governance/contracts/) | **RFC 0001–0009 accepted as of 2026-08-17** — the Wave A/B acts, modules installed at `contracts/rfcs/` ([`PROJECT-STATUS.md`](PROJECT-STATUS.md) owns this state); RFC 0010–0011 remain **candidate** in `contracts/candidates/` |
 | Intended placement | [`.syzygy/map/topology-candidates/`](.syzygy/map/topology-candidates/) | **Candidate** |
-| Required observable behavior | `openspec/` | Not begun — scaffold at most, no specification content yet |
+| Required observable behavior | `openspec/` | **Candidate** — one change under authoring since 2026-08-20 (`changes/project-registration-and-honest-shape-visibility/`); adopted by no one, binding nothing |
 | What currently exists | Code, tests, CI, runtime | Nothing exists yet |
 
 Generated indexes, summaries, and this README are presentation — they cite
@@ -163,4 +166,4 @@ doctrine and should be reported as a finding, not read as a promise.
 [`.syzygy/governance/decisions/LICENSE-CHOICE-DECISION.md`](.syzygy/governance/decisions/LICENSE-CHOICE-DECISION.md).
 A license grant does not open an implementation backlog: contribution
 posture stays governed by [`CONTRIBUTING.md`](CONTRIBUTING.md) and the
-pre-specification boundary.
+current lifecycle boundary (specification defining — no implementation).

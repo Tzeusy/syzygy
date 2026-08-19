@@ -382,17 +382,18 @@ TASKS = [
     dict(
         key="author-capability-1",
         title=f"Author Capability 1 — {CAP1['title']}",
-        note="**Authoring is forbidden today.** This route exists so the "
-             "rules are reachable *before* the owner's launch decision, "
-             "not so a spec can be written. `openspec/` holds a scaffold "
-             "only and no specification content may be created. The Wave "
-             "A and B acts were performed 2026-08-17, so every clause "
-             "below is **accepted** contract text installed at "
-             "`contracts/rfcs/` (`PROJECT-STATUS.md` owns that state; "
-             "owner-adopted bootstrap, uncorrelated — never \"verified\"). "
-             "What still withholds authoring is the launch gate, not the "
-             "clauses: the formal administration and the owner's separate "
-             "launch decision.",
+        note="**Authoring is authorized — implementation is not.** The "
+             "owner's launch decision of 2026-08-20 "
+             "(`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`) "
+             "authorizes the one change "
+             "`openspec/changes/project-registration-and-honest-shape-visibility/` "
+             "— specification definition only; it is a **candidate** until "
+             "the owner's adoption act, and no other capability may be "
+             "authored. The Wave A and B acts were performed 2026-08-17, "
+             "so every clause below is **accepted** contract text "
+             "installed at `contracts/rfcs/` (`PROJECT-STATUS.md` owns "
+             "that state; owner-adopted bootstrap, uncorrelated — never "
+             "\"verified\").",
         clauses=CAP1_CLAUSES,
         modules=[
             # what the capability must do — RD-53 f10 and G1: the route had
@@ -417,16 +418,22 @@ TASKS = [
             "Capability 1 relies on none of them; the Mission-ready facet "
             "is a future extension, not a launch facet",
             f"The specification-acceptance rules ({CC_SPEC_RANGE}) and the "
-            f"shape-to-spec impact rules ({CC_IMPACT_RANGE}) are CANDIDATE "
-            "craft policy, in force from neither. They are routed as "
-            "prerequisites, never cited as binding — which is why they are "
+            f"shape-to-spec impact rules ({CC_IMPACT_RANGE}) are IN FORCE "
+            "as of 2026-08-17 (craft acts 6 and 7, "
+            "`decisions/ACCEPTANCE-ACT-RECORD.md`), binding at their "
+            "committed policy-candidates homes, uncopied and unedited. "
+            "They govern how a specification is authored and accepted, "
+            "not what Capability 1's clauses mean — which is why they are "
             "not listed under Craft above",
             "The facet vocabulary itself is routed to no clause: swept at "
             f"generation over the {AB_MODULE_COUNT} modules the Waves A+B "
             f"manifests name, it appears in {len(FACET_HITS)} of them. "
-            "P-37 (ruled 2026-08-16, SDR-36) places the vocabulary in the "
-            "Capability 1 specification, not a Wave A amendment — the text "
-            "still needs authoring there. The sweep is for the facet names, "
+            "P-37 (ruled 2026-08-16, recorded as SDR-36 — "
+            "`decisions/PENDING-OWNER-DECISIONS.md` owns the queue state) "
+            "places the vocabulary in the Capability 1 specification, not "
+            "a Wave A amendment — authored there 2026-08-20 as "
+            "CAP1-REQ-030, candidate until the spec's adoption. The sweep "
+            "is for the facet names, "
             "not for the English word \"facet\", which occurs generically",
         ],
     ),

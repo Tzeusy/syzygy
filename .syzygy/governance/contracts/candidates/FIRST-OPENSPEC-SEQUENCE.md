@@ -1,9 +1,12 @@
-# The first specification sequence — revision 3 (launch-closure pass, 2026-08-10)
+# The first specification sequence — revision 4 (specification stage, 2026-08-20)
 
-> **Candidate plan. Binds nothing, and creates nothing.** No OpenSpec
-> changeset exists, no `openspec/` tree exists, and none may be created
-> before the owner acts. **This is the single current first-spec
-> document**: it supersedes `round-2026-08d/FIRST-OPENSPEC-SEQUENCE.md`
+> **Candidate plan. Binds nothing, and creates nothing.** The Capability 1
+> OpenSpec change `project-registration-and-honest-shape-visibility`
+> **exists since 2026-08-20** under the owner's launch decision
+> (`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`) — as a
+> **candidate**, adopted by no one; this plan neither created it nor
+> governs it. **This is the single current first-spec document**: it
+> supersedes `round-2026-08d/FIRST-OPENSPEC-SEQUENCE.md`
 > (revision 2) and, through it, the round-08c revision; the
 > banner-superseded `09-OPEN-SPEC-READINESS-REPORT.md` sequencing is
 > historical and competes with nothing. It chooses no language,
@@ -84,38 +87,56 @@ States: `satisfied` / `owner-waived` / `blocking` / `not applicable`.
 | P-38 human entry and discoverability | Owner decision | **owner-waived** — ruled 2026-08-16, option (a) as drafted; `decisions/HUMAN-ENTRY-DECISION.md` |
 | P-41 + P-42 acceptance and impact standards in force | Craft acts | **satisfied — acts 6 and 7 performed 2026-08-17, one sitting** (review cycle: RD-69 → one blocker repair → RD-70 `CONFIRM WITH EXCEPTIONS`); CC-SPEC-1…11 and CC-IMPACT-1…7 in force at their reviewed digests; recorded in `decisions/ACCEPTANCE-ACT-RECORD.md` and the craft `INSTALL-RECORD.md` |
 | P-12 knowledge hygiene (CC-BUDGET-1) | Craft act | **blocking** for Capability 2; for Capability 1 the budget rule is not consumed — **not applicable** to Capability 1's own authoring, listed for visibility |
-| P-34 launch-gate instrument authority (current version per the instrument's own header; RD34-05) + formal administration READY | Process | **blocking** for the launch decision (the owner may lawfully decide without it, but this pass's charter treats the formal administration as the evidence bar) |
+| P-34 launch-gate instrument authority (current version per the instrument's own header; RD34-05) + formal administration READY | Process | **satisfied for authoring — by the owner's launch decision, 2026-08-20**: Administration 1 (`NOT READY`, 2026-08-18) was accepted as diagnostic evidence and the owner decided directly on the record in hand, a path the gate policy and the P-48 stop condition both reserve to the owner. No `READY` verdict exists, and none is claimed |
 | P-14 license | Owner decision | **not applicable** — blocks release, not specification |
 | P-35 operating constraints | Owner decision | **owner-waived** — ruled 2026-08-16, full table recorded; `decisions/PROJECT-OPERATING-CONSTRAINTS-DECISION.md`. Still blocks the formal administration's A6/F5 verdicts, which read the recorded statement rather than the ruling event |
 | Waves C1/C2/D1/D2, P-29, P-30, P-32, D3/D4 | — | **not applicable** — deferred per `DEFERRED-WAVE-POSTURE.md`; not on Capability 1's path |
 
-**As of 2026-08-17 (post-acts):** eight of the scoped rows are
-`owner-waived` (ruled 2026-08-16, per `decisions/DECISION-HISTORY.md`) and
-**three rows are `satisfied`** — the Wave A and B acts (performed
+**As of 2026-08-20 (post-launch-decision):** eight of the scoped rows are
+`owner-waived` (ruled 2026-08-16, per `decisions/DECISION-HISTORY.md`),
+**three rows are `satisfied` by acts** — the Wave A and B acts (performed
 2026-08-17, A then B) and the P-41/P-42 craft acts (acts 6 and 7,
-performed later the same day in one sitting). Capability 1 may still not
-be authored: the formal administration has not been run and the owner's
-launch decision has not been made — the P-34 process row above is the one
-remaining blocking row.
+performed later the same day in one sitting) — and the P-34 process row
+is **satisfied for authoring** by the owner's 2026-08-20 launch decision.
+**No row blocks Capability 1 authoring.** The P-37 facet-vocabulary text
+the a2 ruling assigned to the specification is now authored there
+(CAP1-REQ-030). Adoption of the resulting specification remains a
+separate future owner act.
 The concept-level trace behind this table is
 `round-2026-08e/FIRST-SPEC-TRACE-TABLE.md` (E3), which this batch did not
 refresh — a follow-on task, not performed here.
 
-## The rest of the sequence (unchanged in substance from revision 2)
+## The rest of the sequence — later capability families (non-authoritative)
 
-- **Capability 2 — deterministic context packet generation.** Waves A,
-  C1, C2 (deferred today); plus CC-BUDGET-1 in force (P-12) and P-36.
-- **Capability 3 — minimum Polaris comprehension slice.** Waves A and B.
-  Sibling of Capability 2 deliberately.
-- **Capability 4 — integrated observatory proving slice.** All six waves
-  and Capabilities 1–3 **proven, not merely specified**; runs on one
-  real, messy project; must show one Unknown region rendering honestly.
+Restated 2026-08-20 as **capability families**, so later changes have a
+named home before any is chartered. Each family is one or more future
+OpenSpec changes under SDR-37's granularity rule; nothing below is
+chartered, scheduled, or promised, and every family waits on Capability 1
+being **adopted** first.
+
+- **Shared foundation** — Capability 1 (this change): registration,
+  consent boundary, entry, shape answers, explanation/parity,
+  discoverability. Waves A + B.
+- **Polaris family** — comprehension surfaces: the project white paper,
+  walkthrough evidence (which would also settle this spec's U-01), intent
+  views. Waves A + B.
+- **Trajectory family** — work ingestion, execution accounting,
+  reconciliation computation (retiring the uncomputed-`Reconciled`
+  posture). Waves A + B; RFC 0004's machinery.
+- **Orrery family** — the project map and aggregation views under the
+  no-composite rules. Waves A + B; RFC 0008's machinery.
+- **Cross-view family** — cross-surface integration (RFC 0009).
+- **Integrated proof** — the observatory proving slice: the prior
+  families **proven, not merely specified**, on one real, messy project,
+  showing at least one Unknown region rendering honestly.
+- **Mission Control — separate track.** Mission and deterministic-context
+  capabilities (the former Capability 2) gate on the deferred Waves
+  C1/C2/D1/D2 and their own owner acts (P-12, P-21, D3/D4); they join the
+  sequence only after those acts, never by drift.
 
 ```text
-Wave A ─┬─ Wave B ──► Capability 1 ──► Capability 3 ─┐
-        │                                             ├──► Capability 4
-        └─ Waves C1+C2 ──► Capability 2 ─────────────┘
-   (Waves D1/D2 gate Mission specification, after this sequence)
+Wave A ─┬─ Wave B ──► Shared foundation (Cap 1) ──► Polaris ──► Trajectory ──► Orrery ──► Cross-view ─► Integrated proof
+        └─ Waves C1+C2+D1+D2 (deferred) ──► Mission Control track (separate)
 ```
 
 ## What this file deliberately does not contain

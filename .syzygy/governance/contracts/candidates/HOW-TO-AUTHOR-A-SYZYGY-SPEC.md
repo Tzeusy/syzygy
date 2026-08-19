@@ -3,18 +3,22 @@
 > **Generated-style router — never authority.** Every rule here is owned
 > elsewhere; this file cites the owner and invents nothing. Where this
 > file and an owning source disagree, the source wins and this file is
-> stale. **No specification may be authored yet** — the prerequisites
-> table in `FIRST-OPENSPEC-SEQUENCE.md` (routed below at E2) is the
-> current gate state, and no specification content may be fleshed out
-> in `openspec/` until the owner authorizes it.
+> stale. **Capability 1 authoring is authorized** — the owner's launch
+> decision of 2026-08-20
+> (`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`)
+> authorizes the one change
+> `openspec/changes/project-registration-and-honest-shape-visibility/`,
+> specification definition only. Every other capability stays
+> unauthorized; the prerequisites table in `FIRST-OPENSPEC-SEQUENCE.md`
+> (routed below at E2) is the gate-state record.
 
 ## The five questions and their owners (E1)
 
 | Question | Owner | Where |
 |---|---|---|
-| **Form / version** — what medium, which OpenSpec | Owner decision **P-39** (**open — not ruled**) + the adapter contract | `decisions/OPENSPEC-FORM-AND-VERSION-DECISION.md`; RFC 0004 (adapter contract); substrate lock `openspec` pin |
+| **Form / version** — what medium, which OpenSpec | Owner decision **P-39** (**ruled 2026-08-16** — OpenSpec pinned at 1.9.0) + the adapter contract | substrate lock `openspec` block (the ruling's record); `decisions/OPENSPEC-FORM-AND-VERSION-DECISION.md` (the packet); RFC 0004 (adapter contract) |
 | **Home / identity** — where specs live, how they are identified | RFC 0003 / RFC 0004 (candidate, Wave A) | `rfcs/RFC-0003/manifests-and-namespace.md` (spec root `openspec/`, fixed; closed declaration fields; RFC3-26 migration boundary); RFC 0004 for identity-survival obligations |
-| **Granularity** — what one specification comprises | Owner decision **P-40** (**open — not ruled; current authority: none, that is the gap**) | `decisions/SPECIFICATION-GRANULARITY-DECISION.md` — the packet's `[Inferred]` recommended option (a) is "one coherent capability, one product argument, one acceptance decision"; it is a recommendation, not the answer, until P-40 is ruled |
+| **Granularity** — what one specification comprises | Owner decision **P-40** (**ruled 2026-08-16** — recorded as **SDR-37**: one change, one coherent capability, one acceptance decision) | `decisions/SURFACE-DECISION-RECORD.md` (SDR-37, the ruling); `decisions/SPECIFICATION-GRANULARITY-DECISION.md` (the packet) |
 | **Acceptance authority** — who adopts a spec | Doctrine **VIS-4** (adopted) | `doctrine/vision.md` — the owner, until the compound doctrine-amendment event VIS-4 defines; no agent adopts |
 | **Change process** — how a spec changes after adoption | Craft **CC-REV-2** (owner-approved) + `/th-projects project-feature-request` workflow | `policies/craft-and-care/review-and-documentation.md` (same-logical-change merge invariant); the th-projects workflow (referenced, never authority) |
 
@@ -40,12 +44,12 @@ judgment (N/A) is a judgment on the record, never a default.
 
 ## What an acceptable specification is (E5)
 
-Owned by the candidate craft rule set
-`policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` (ten
-conditions; candidate until its own craft act). **That act is queued as
-owner decision P-41** (`decisions/PENDING-OWNER-DECISIONS.md`): until the
-owner performs it — or knowingly authors against the candidate, as the
-sequence table's row says — no acceptance standard is in force.
+Owned by the craft rule set
+`policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` —
+**CC-SPEC-1…11, in force as of 2026-08-17** (craft act 6, P-41 executed;
+recorded in `decisions/ACCEPTANCE-ACT-RECORD.md` and the craft
+`INSTALL-RECORD.md`; the file binds at its committed home, uncopied and
+unedited).
 
 ## What happens when shape changes after specs exist (E6)
 
@@ -83,6 +87,8 @@ of every first-spec concept to its governing shape artifact is
 
 Doctrine (VIS-4, VIS-5) and every contract's phase rule: user-observable
 behavior receives an approved OpenSpec requirement **before**
-implementation; specifications are authored only after the owner's launch
-decision; `openspec/` is created by that authorized first changeset,
-never by preparation work — including this file's.
+implementation. The owner's launch decision (2026-08-20) authorized the
+Capability 1 changeset only — the authored specification **binds nothing
+until the owner adopts it** at an exact digest (VIS-4; CC-SPEC-10), and
+implementation stays forbidden until adoption plus separate
+authorization.

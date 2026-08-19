@@ -108,6 +108,12 @@ repository.
 
 ## The register's as-of chronology (oldest last)
 
+- **2026-08-20** — the owner's **launch decision**: Capability 1
+  specification authoring authorized by explicit owner instruction
+  (`CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`, which owns the
+  decision). The Administration 1 `NOT READY` verdict stands as filed;
+  the lifecycle stage moves from final pre-specification to
+  specification defining. No queue row is disposed by this decision.
 - **2026-08-19** — the 2026-08-18 questionnaire rulings applied: P-14
   (MIT), P-16, P-24 (D4), P-44 moved to resolved on the owner's explicit
   apply request. P-45…P-48 had been added 2026-08-18 by the

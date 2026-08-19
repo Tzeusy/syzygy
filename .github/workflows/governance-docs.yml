@@ -80,6 +80,15 @@ jobs:
       - name: build_capability_1_views --selftest
         run: python3 .syzygy/governance/contracts/candidates/scripts/build_capability_1_views.py --selftest
 
+      # The Capability 1 specification's CC-IMPACT-1 dependency declaration
+      # against its one source: the requirement warrant blocks in spec.md.
+      # Stdlib-only, like every checker this job runs.
+      - name: build_capability_1_spec_dependencies --check
+        run: python3 scripts/build_capability_1_spec_dependencies.py --check
+
+      - name: build_capability_1_spec_dependencies --selftest
+        run: python3 scripts/build_capability_1_spec_dependencies.py --selftest
+
       # The checkers' own fixtures. A hosted run that exercises the checks
       # but never the checks' checks reports a denominator it does not have.
       # Every one is stdlib-only, which is why they can run here at all —
