@@ -1,5 +1,19 @@
 # Formal Capability 1 launch administration — sealed packet
 
+> **⛔ RETIRED — ADMINISTERED 2026-08-18. Purpose discharged.** One full
+> formal administration was run under this packet on 2026-08-18
+> (out-of-family, instrument v2.4, against commit `71e5986`); the record
+> is `.syzygy/governance/decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json`
+> and its verdict was `NOT READY`. The banner below this one — "Prepared,
+> not administered … No administration has been run under it" — was true
+> when sealed and is **false since 2026-08-18**; it is retained unedited
+> as the sealed text. This retirement is the governance-reduction plan's
+> §4 row, executed 2026-08-19 under the owner's P-47 ruling
+> (`.syzygy/governance/decisions/F2-GOVERNANCE-REDUCTION-DECISION.md`).
+> A future administration takes its commission from
+> `PROJECT-STATUS.md` §"Next lawful step" and the instrument itself,
+> never from this packet.
+
 > **Prepared, not administered.** This packet is everything a reviewer
 > needs to run **one full, formal administration** of the launch gate
 > against the launch target below. **No administration has been run under

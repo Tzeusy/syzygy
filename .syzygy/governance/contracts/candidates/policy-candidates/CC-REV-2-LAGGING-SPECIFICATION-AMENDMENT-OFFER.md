@@ -1,5 +1,20 @@
 # Semantic delta — a lagging-specification exception, offered as an amendment to CC-REV-2
 
+> **⛔ DECLINED — this candidate offer was declined: arm (b) ruled
+> 2026-08-18, applied 2026-08-19.** The
+> owner declined this offer; no lagging-specification exception is added
+> to CC-REV-2, which stands as owner-approved: no specification may lag.
+> Arm (a) was not lawfully choosable at the ruling (RD-69 N4: an
+> unresolvable warrant, a self-contradicting carve-out sentence, and no
+> named expiry detector) and was not chosen. Any future exception is a
+> **fresh offer with a fresh review** — this file's arm (a) satisfies
+> nothing and may not be re-presented as-is. The ruling record is
+> `../../../decisions/CC-REV-2-LAGGING-SPEC-EXCEPTION-DECISION.md`;
+> this banner is the governance-reduction plan's §2 row for a declined
+> offer, executed 2026-08-19 under the owner's P-47 ruling
+> (`../../../decisions/F2-GOVERNANCE-REDUCTION-DECISION.md`). The offer
+> text below is retained unedited as history.
+
 > **Candidate offer. Binds nothing. This file performs no act.** It exists
 > because the alternative — writing the exception into a *new* candidate
 > clause beside CC-REV-2 — would weaken an owner-approved clause without

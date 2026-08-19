@@ -12,6 +12,26 @@
 > cells — are preserved verbatim in git history at commit `9c43fc5`
 > (`git show 9c43fc5:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`).
 
+## Resolved on 2026-08-19, second sitting (the Administration-1 owner inputs, P-45…P-48)
+
+The four owner inputs queued by the Administration-1 repair pass
+(2026-08-18) were ruled in one questionnaire sitting on 2026-08-19 and
+applied the same day on the owner's explicit apply instruction. Every
+item passed two rounds of independent adversarial subagent review
+(scope and recommendation verdicts each) before presentation; the
+review found and forced correction of two coordinator drafting defects
+(a candidate artifact's phrase presented as a doctrine citation, and an
+inverted claim about which arm guarantees the F2 verdict limb) — both
+corrected before the owner saw the items. Each row names its own
+decision record, which owns the full detail.
+
+| # | What happened |
+|---|---|
+| P-45 | **Ruled — arm (a), the envelope stated**: engineering attention 2 hours/week; review capacity Claude-family agents plus the owner with occasional GPT 5.6-family review, no fixed cadence; model budget ceiling $200/month (Codex subscription); 2–3 concurrent workstreams; **first proving project: the syzygy repository itself**, butlers second. Settles Administration 1's A6 `Unknown`; the proving-project name is the risk-ordering record's own R2 partial test and gives R1 a named place to accrue evidence. The scope-versus-capacity assessment remains follow-on work. Record: `A6-RESOURCE-ENVELOPE-DECISION.md`. |
+| P-46 | **Ruled — arm (b)**: no numeric governance-effort ceiling is declared; **case-by-case owner judgment is the recorded posture**. F6 stays `Not met` at future administrations knowingly and disclosed — a non-conjunct, non-blocking grade under instrument v2.4. Record: `F6-GOVERNANCE-CEILING-DECISION.md`. |
+| P-47 | **Ruled — arm (a)**: the **governance-reduction plan is adopted as directed work** — banner-and-route retirements execute at their named gates without per-artifact re-asking; no deletion, no act-bound bytes, ever. Gates §1/§2/§4 had already arrived, so the declined P-44 offer and the sealed launch packet were banner-marked at the apply; §3 awaits the first accepted specification. No deferral is created; F2's grade at Administration 2 stays the grader's call. The plan's own doctrine-misattribution defect (found by the adversarial review) is disclosed in the record and queued in beads. Record: `F2-GOVERNANCE-REDUCTION-DECISION.md`. |
+| P-48 | **Ruled — arm (a), N=2**: the repair↔administration cycle is bounded at **at most two further administrations**; if Administration 3 is not `READY`, the owner makes the launch decision directly on the record then in hand — the cycle ends either way. Answers the stop-condition half of F1's settlement; constrains when the decision stops being deferred, never its content. Record: `LAUNCH-REPAIR-STOP-CONDITION-DECISION.md`. |
+
 ## Resolved on 2026-08-19 (the 2026-08-18 questionnaire rulings, applied on explicit owner request)
 
 Four rulings the owner recorded in the 2026-08-18 local questionnaire

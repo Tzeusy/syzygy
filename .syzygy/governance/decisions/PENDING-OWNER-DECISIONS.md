@@ -26,6 +26,16 @@
 > `DECISION-HISTORY.md`; each has its own decision record in this
 > directory. P-45…P-48 were added 2026-08-18 by the Administration-1
 > repair pass.
+>
+> **Updated 2026-08-19 (later the same day):** the Administration-1
+> owner inputs **P-45…P-48 were all ruled** in one adversarially-reviewed
+> questionnaire sitting and applied on explicit request — the A6
+> envelope stated with syzygy named the first proving project (P-45), no
+> governance ceiling declared with case-by-case recorded knowingly
+> (P-46), the governance-reduction plan adopted as directed work (P-47),
+> and the launch-repair cycle bounded at two further administrations
+> (P-48). Rows moved to `DECISION-HISTORY.md`; each has its own decision
+> record in this directory.
 
 ## The acceptance acts (four performed; the rest open)
 
@@ -98,10 +108,6 @@ Where this index and a row disagree, the row wins and this index is stale.
 | P-30 | Form of the stop/containment repair — D1-side floor limbs (i), move RFC10-20 to D1 (ii), or merge the D acts (iii) | deferred with waves | D1/D2 re-offer | `round-2026-08d/reviews/RD-20…RD-21…RD-13…RD-14` raw reviews |
 | P-32 | RFC11-15 ownership metadata at V0 — author the schema, or rule the honest-fallback limb permanent and say so plainly | deferred with waves | Wave C2 re-offer | `round-2026-08d/reviews/RD-23-wave-c2-RAW.md` M2 |
 | P-43 | What marks a file as recording a **made** owner decision — `SDR-n` only, an `**Executed.**` marker, a front-matter field? LA-11's shape classification is defensible and unruled | convention ruling | before any administration rests on a deferral | this row; `round-2026-08g/reviews/RD-56-launch-machinery-v2.1-RAW.md` f5 |
-| P-45 | The A6 resource envelope — state hours/review-cadence/budget/concurrency and **name the first proving project**, or knowingly re-affirm the Unknowns dated. Settles Administration 1's A6; the proving-project name is what lets Capability 1 retire thesis risk R1 | owner statement | Administration 2's A6 | `ADMINISTRATION-1-OWNER-INPUTS-DECISION.md` §P-45; `../contracts/candidates/round-2026-08j/THESIS-RISK-ORDERING.md` |
-| P-46 | The F6 governance-effort ceiling — declare a ceiling and its cut, or record that case-by-case judgment is the posture (F6 then stays Not met knowingly) | owner ruling | Administration 2's F6 | `ADMINISTRATION-1-OWNER-INPUTS-DECISION.md` §P-46 |
-| P-47 | The F2 disposition — adopt the governance-reduction plan as directed work (arm a), or defer F2 knowingly via the instrument's `owner_deferrals` path (arm b) | owner ruling | Administration 2's F2 | `ADMINISTRATION-1-OWNER-INPUTS-DECISION.md` §P-47; `../contracts/candidates/round-2026-08i/GOVERNANCE-REDUCTION-PLAN.md` |
-| P-48 | The launch-repair stop condition — bound the repair↔administration cycle (arm a, owner sets N), or leave each `NOT READY` to a fresh commissioning choice (arm b) | process ruling | before commissioning Administration 2 (advisory) | `ADMINISTRATION-1-OWNER-INPUTS-DECISION.md` §P-48 |
 
 **Nothing in this register is self-executing.** Acts happen only by the exact
 ceremonies their owning records define, performed by the owner.

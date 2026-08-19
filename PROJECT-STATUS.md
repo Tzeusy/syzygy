@@ -32,6 +32,7 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 | Launch-gate policy | **Owner-approved process policy at v2.4** — P-34 ruled arm (a), 2026-08-16, **with two disclosed BLOCKING residuals** (RD-67 f1, RD-68 f1 — false-`READY` paths reachable only by an adversarial record author), **F5 not promoted**. Ten `REVISE` verdicts across v2.0–v2.4 stand as recorded; this is approval-with-residuals, not a clean review verdict. A bounded v2.5 is an owner option, not a gate. | `decisions/LAUNCH-GATE-AUTHORITY-DECISION.md` (the recorded approval); instrument `launch-gate-pre-specifications.md`; `round-2026-08h/reviews/DISPOSITION-REGISTER.md` |
 | P-41 + P-42, offered jointly | **PERFORMED — acts 6 and 7, 2026-08-17, one sitting** (the joint-sitting requirement satisfied). CC-SPEC-1…11 and CC-IMPACT-1…7 are **in force as owner-confirmed craft** at their reviewed digests; the files bind at their committed homes, uncopied and unedited. Review chain: RD-51 (`REVISE`) → repair → RD-69 (`REVISE`, one launch blocker) → the one blocker-only repair → RD-70 (`CONFIRM WITH EXCEPTIONS`). Nine non-blocking findings traveled into force disclosed. | `decisions/ACCEPTANCE-ACT-RECORD.md`; `.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md`; tag `craft-acts-6-7-confirmed-2026-08-17` |
 | Formal launch administration | **Administration 1 performed 2026-08-18 — verdict `NOT READY`** (10 plain Not-met, 2 scoped, 5 Unknown, 0 reopened). Out-of-family (OpenAI GPT-5.6 Pro), fresh context with disclosed limitations, against commit `71e5986` at approved v2.4; the record validated and its verdict computed by the committed scripts. The strongest findings are stale current-state claims on the default path (since repaired), the contract-index drift (since regenerated), Wave A rejection collapsing the launch path (B4), clone-unreachable D1 rationale (C7), and unbounded governance effort (F6). The 2026-08-09 v1.3 **pilot** (`NOT READY`) remains steering evidence only. | `decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json` (the record); `decisions/launch-gate/TREND-LOG.md` |
+| Owner rulings, 2026-08-19 (the Administration-1 inputs) | **P-45…P-48 all ruled** in one adversarially-reviewed sitting, applied same day: the **A6 resource envelope stated** (2h/week; Claude-family + occasional GPT 5.6-family review; $200/mo ceiling; 2–3 workstreams) with **syzygy itself named the first proving project** (butlers second); **no governance ceiling** — case-by-case recorded knowingly (F6 stays `Not met`, disclosed, non-conjunct); the **governance-reduction plan adopted as directed work** (§1/§2/§4 retirements executed; §3 awaits the first accepted spec; no deferral created); the **repair cycle bounded at two further administrations** (if Administration 3 is not `READY`, the owner decides directly on the record in hand). Zero contract bytes moved. | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-19, second sitting"; records `A6-RESOURCE-ENVELOPE-`, `F6-GOVERNANCE-CEILING-`, `F2-GOVERNANCE-REDUCTION-`, `LAUNCH-REPAIR-STOP-CONDITION-DECISION.md` |
 | OpenSpec (`openspec/`) | **No specification content.** A tool-created scaffold (config plus empty trees) exists and is not specification work; authoring is forbidden until the owner's launch decision. | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` |
 | Implementation | **Does not exist.** Blocked on accepted specifications. | — |
 
@@ -50,6 +51,7 @@ unperformed.
 | Surface decisions | ✅ Recorded SDR-1…37 | `.syzygy/governance/decisions/SURFACE-DECISION-RECORD.md` |
 | The 2026-08-16 rulings | ✅ See the launch-path table above | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-16" |
 | The 2026-08-18 questionnaire rulings | ✅ P-14 (MIT), P-16 (term registry as drafting vocabulary), P-24 (D4: inside VIS-4's bounds), P-44 (CC-REV-2 exception declined) — applied 2026-08-19 | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-19"; each row's own decision record |
+| The Administration-1 owner inputs | ✅ P-45…P-48 ruled and applied 2026-08-19 — see the launch-path table above | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-19, second sitting" |
 | License | ✅ **MIT** — root `LICENSE`; contributor-agreement posture remains a separate open question | `decisions/LICENSE-CHOICE-DECISION.md` |
 
 ## Gates still open, beyond the launch path
@@ -62,7 +64,6 @@ unperformed.
 | Doctrine amendment D3 (bounded missions) | Proposed — adopt, amend, or decline. **D4 was ruled 2026-08-18** (inside VIS-4's bounds; reviewer's §1.2 wording designated) — a D3 rev2 and its VIS-3 fresh-reader review precede act 5 | `contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1); `decisions/D4-RULING-DECISION.md` |
 | Knowledge-hygiene craft policy | Candidate — own craft act (P-12) | `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
 | Decision-record convention (P-43) | Open — not launch-gating; earliest gate is a deferral-bearing administration | `decisions/PENDING-OWNER-DECISIONS.md` row P-43 |
-| Administration-1 owner inputs (P-45…P-48) | Open — resource envelope + proving project, effort ceiling, F2 disposition, repair-cycle stop condition | `decisions/ADMINISTRATION-1-OWNER-INPUTS-DECISION.md` |
 
 ## Next lawful step
 
@@ -78,14 +79,19 @@ The remaining launch path, in order — each step's owning record governs:
    **Administration 1 run 2026-08-18, verdict `NOT READY`**
    (`decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json`).
    **The repair pass ran the same day** (round 2026-08j): every
-   session-repairable finding is repaired or settled by artifact, and the
-   four owner-input findings are queued as **P-45…P-48**
-   (`decisions/ADMINISTRATION-1-OWNER-INPUTS-DECISION.md`); the
-   finding-by-finding record is
-   `contracts/candidates/round-2026-08j/ADMINISTRATION-1-DISPOSITION-REGISTER.md`.
+   session-repairable finding is repaired or settled by artifact
+   (finding-by-finding record:
+   `contracts/candidates/round-2026-08j/ADMINISTRATION-1-DISPOSITION-REGISTER.md`),
+   and the four owner-input findings queued as P-45…P-48 were **all
+   ruled 2026-08-19** (see the launch-path table above).
    **Administration 2** — at a descendant commit, declaring the
    Administration 1 record as its prior, out-of-family as before — is the
-   gate's own path to `READY` and is commissionable now.
+   gate's own path to `READY` and is commissionable now, under the
+   ruled stop condition: at most two further administrations
+   (`decisions/LAUNCH-REPAIR-STOP-CONDITION-DECISION.md`). The A6
+   scope-versus-capacity assessment (the second half of A6's settlement)
+   is performable follow-on work against the stated envelope
+   (`decisions/A6-RESOURCE-ENVELOPE-DECISION.md`).
 4. The owner's separate **launch decision** — lawfully the owner's to make
    with the `NOT READY` verdict in hand; the gate is the evidence bar this
    pass's charter chose, not a lock on the owner. Specification authoring
