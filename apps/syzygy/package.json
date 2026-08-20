@@ -1,0 +1,11 @@
+{
+  "name": "@syzygy/app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/main.js",
+  "dependencies": {
+    "@syzygy/cap1-core": "0.0.0",
+    "@syzygy/cap1-daemon": "0.0.0"
+  }
+}

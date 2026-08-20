@@ -16,3 +16,9 @@ _bootstrap/
 # Python bytecode from the read-only check scripts
 __pycache__/
 *.pyc
+
+# Node toolchain (Capability 1 implementation, S0)
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo

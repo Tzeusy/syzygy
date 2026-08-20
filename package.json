@@ -1,0 +1,20 @@
+{
+  "name": "syzygy-workspace",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance apps/syzygy"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "typescript": "^5.5.0",
+    "vitest": "^3.2.0"
+  }
+}

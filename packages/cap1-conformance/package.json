@@ -1,0 +1,12 @@
+{
+  "name": "@syzygy/cap1-conformance",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@syzygy/cap1-core": "0.0.0"
+  }
+}
