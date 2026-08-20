@@ -66,7 +66,9 @@ proposing (never writing) a repository-entry link.
 Capability 1 does **not**: certify a project; produce any overall health
 or maturity score; implement Polaris's full project white paper;
 implement Trajectory work ingestion or execution accounting; implement
-Orrery's 3D project map; execute or monitor Missions; generate
+Orrery's 3D project map; execute or monitor Missions; define
+`Mission-ready` semantics (the facet renders only its deferred posture
+until the deferred-wave contracts exist); generate
 task-specific context packets; calculate complete intent-to-code
 convergence; modify source code; edit a repository root README; create
 Beads work; select an implementation language, framework, database,

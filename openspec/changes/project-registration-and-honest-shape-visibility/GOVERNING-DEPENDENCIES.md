@@ -8,7 +8,7 @@
 > here is overwritten and `--check` fails first. Identifiers only —
 > nothing here quotes or paraphrases any clause.
 >
-> Source: `spec.md` sha256 `34f4759eb1a4e2a3dc981222059e3c47a71482fb53f78e13e516fc5471d358eb` — 42 requirement(s), 52 distinct authorities.
+> Source: `spec.md` sha256 `72dc0fd9d10102f1cee0645bcbdaac4b998dcacb0d86eb15dcbd1973d2550ce3` — 42 requirement(s), 50 distinct authorities.
 
 ## doctrine (7)
 
@@ -22,7 +22,7 @@
 | `VIS-5` | CAP1-REQ-023, CAP1-REQ-053, CAP1-REQ-061 |
 | `VIS-7` | CAP1-REQ-005, CAP1-REQ-030, CAP1-REQ-042, CAP1-REQ-043 |
 
-## contracts (40)
+## contracts (38)
 
 | Authority | Cited by |
 |---|---|
@@ -64,8 +64,6 @@
 | `RFC7-34` | CAP1-REQ-064 |
 | `RFC7-39` | CAP1-REQ-020, CAP1-REQ-021, CAP1-REQ-022 |
 | `RFC7-40` | CAP1-REQ-050, CAP1-REQ-051, CAP1-REQ-052, CAP1-REQ-053 |
-| `RFC8-18` | CAP1-REQ-031 |
-| `RFC8-19` | CAP1-REQ-034 |
 
 ## policies (0)
 

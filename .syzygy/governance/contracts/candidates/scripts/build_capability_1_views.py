@@ -584,8 +584,11 @@ def selftest():
          "is refused", deferred_module)
 
     def missing_decision():
-        mutated = base_charter.replace("blocking_decisions: [P-1,",
-                                       "blocking_decisions: [P-999, P-1,")
+        # (Re-anchored 2026-08-20: the owner's launch decision removed
+        # P-1/P-21, emptying `blocking_decisions`, so the fixture injects
+        # into `[]`.)
+        mutated = base_charter.replace("blocking_decisions: []",
+                                       "blocking_decisions: [P-999]")
         if mutated == base_charter:
             return False, "mutation did not apply"
         errs = run(ct=mutated)
@@ -618,8 +621,10 @@ def selftest():
             "\n## Resolved synthetically (fixture only)\n\n"
             "| # | What happened |\n|---|---|\n"
             "| P-26 | **Executed.** synthetic resolved row |\n")
-        mutated = base_charter.replace("blocking_decisions: [P-1,",
-                                       "blocking_decisions: [P-26, P-1,", 1)
+        # (Re-anchored 2026-08-20: `blocking_decisions` emptied by the
+        # launch decision; the fixture injects into `[]`.)
+        mutated = base_charter.replace("blocking_decisions: []",
+                                       "blocking_decisions: [P-26]", 1)
         if mutated == base_charter or queue_with_resolved == base_queue:
             return False, "mutation did not apply"
         errs = run(ct=mutated, qt=queue_with_resolved)
@@ -763,8 +768,10 @@ def selftest():
             "\n## Resolved synthetically (fixture only)\n\n"
             "| # | What happened |\n|---|---|\n"
             "| P-6 | **Executed.** synthetic resolved row |\n")
-        mutated = base_charter.replace("blocking_decisions: [P-1,",
-                                       "blocking_decisions: [P-6, P-1,", 1)
+        # (Re-anchored 2026-08-20: `blocking_decisions` emptied by the
+        # launch decision; the fixture injects into `[]`.)
+        mutated = base_charter.replace("blocking_decisions: []",
+                                       "blocking_decisions: [P-6]", 1)
         if mutated == base_charter or queue_with_resolved == base_queue:
             return False, "mutation did not apply"
         errs = run(ct=mutated, qt=queue_with_resolved)
@@ -799,9 +806,13 @@ def selftest():
         longer produced a both-lists collision. Re-anchored again
         2026-08-17, twice: P-34 was ruled, emptying the downstream list;
         then acts 6/7 removed P-41 from `blocking_decisions`, so the
-        collision subject moved to P-21, which remains genuinely in
-        `blocking_decisions` and open in the queue.)"""
-        mutated = base_charter.replace("downstream_decisions: []",
+        collision subject moved to P-21. Re-anchored a fourth time
+        2026-08-20: the launch decision emptied `blocking_decisions`, so
+        the fixture now plants P-21 — still an open queue row — in BOTH
+        lists to synthesize the collision.)"""
+        mutated = base_charter.replace("blocking_decisions: []",
+                                       "blocking_decisions: [P-21]",
+                                       1).replace("downstream_decisions: []",
                                        "downstream_decisions: [P-21]",
                                        1)
         if mutated == base_charter:

@@ -36,6 +36,20 @@ Reader notes, binding on how this file is read:
   non-satisfaction → `Gap`. Every `Unknown` carries a primary reason
   verbatim from the closed twelve-reason vocabulary (RFC2-24). An
   "identified evaluation" is the pair (source snapshot, as-of instant).
+- **Deterministic layer.** Where a requirement speaks of the
+  "deterministic layer" of a served answer, it means the answer's fact
+  content — which facts, values, epistemic labels, reasons, identities,
+  and evaluation stamps exist — with **only display formatting
+  excluded** (RFC6-7, RFC6-15). A served wall-clock timestamp of the
+  serving itself, or a per-request identifier, is display-layer
+  material; every fact about the project is deterministic-layer.
+- **Scenario context.** The third coordinate of RFC6-18's fact-set key
+  (selection, evaluation, scenario context) functions in this
+  specification as an opaque key: the declared condition set under which
+  the selection is evaluated. Two requests share a scenario context
+  exactly when their declared condition sets are equal, and the parity
+  and determinism obligations below apply between requests whose three
+  coordinates all match.
 
 ### Requirement: CAP1-REQ-001 — A valid declaration registers exactly one project
 
@@ -131,7 +145,7 @@ warrants:
 
 ### Requirement: CAP1-REQ-003 — Missing required information is visible
 
-Group: Project declaration. Form: **state projection/query**.
+Group: Project declaration. Form: **event-response**.
 
 WHEN a declaration omits information the closed field set requires,
 Syzygy SHALL name each missing element in its validation output. A
@@ -538,23 +552,40 @@ retrieve the same boundary facts. Machine retrieval is available only to
 an admitted client, classified by credential presented — never by
 network location (RFC5-3).
 
-- **Case**: a checker retrieves the coverage boundary for one project at
-  one evaluation through the human view and through an admitted machine
-  client.
-- **Observable**: the two retrieved boundary fact sets.
-- **Oracle**: the two fact sets are equal in content (formatting aside):
-  same records, same declared scopes, same consent states. Bounded: one
-  comparison over one fact set.
+- **Case**: a checker (a) retrieves the coverage boundary for one
+  project at one evaluation through the human view and through an
+  admitted machine client; (b) presents the same admissible credential
+  from two distinct network locations; and (c) attempts machine
+  retrieval with no admissible credential.
+- **Observable**: the two retrieved boundary fact sets (a); the two
+  admission outcomes (b); the credential-less attempt's outcome (c).
+- **Oracle**: (a) the two fact sets are equal in content (formatting
+  aside): same records, same declared scopes, same consent states; (b)
+  both attempts yield the same admission outcome — location changed
+  nothing; (c) the attempt is refused and no boundary fact is served.
+  Bounded: one comparison over one fact set, plus two admission checks.
 - **Oracle independence**: equality of two independently retrieved
-  renderings is judged by comparison, not by either channel's claim.
+  renderings is judged by comparison, not by either channel's claim;
+  admission outcomes are observed responses, and the classification rule
+  (credential, never location) is the accepted contract's (RFC5-3).
 - **Falsifier**: a boundary fact present in one channel and absent from
-  the other, or boundary facts served to an unadmitted client.
+  the other, boundary facts served to an unadmitted client, or an
+  admission outcome that differs with network location under one
+  credential.
 
 #### Scenario: Same boundary through both channels
 
 - **WHEN** the coverage boundary is retrieved for one project at one
   evaluation via the human view and via an admitted machine client
 - **THEN** both retrievals expose the same boundary facts
+
+#### Scenario: Admission is by credential, never location
+
+- **WHEN** machine retrieval is attempted with no admissible credential,
+  and separately with one credential from two network locations
+- **THEN** the credential-less attempt is refused with no boundary facts
+  served, and the two same-credential attempts share one admission
+  outcome
 
 ```yaml
 warrants:
@@ -754,11 +785,15 @@ to write outside its two direct-write namespaces, `openspec/**` and
   outside the two namespaces; sweep: record all writes during an
   entry-serving and entry-drafting fixture and check each path —
   denominator: the recorded write set.
-- **Observable**: the write record (attributed writes, SEC-4).
+- **Observable**: the write record — captured **externally to Syzygy**
+  by the checking harness (filesystem comparison or harness-level write
+  tracing), cross-checked against the attributed-write record (SEC-4).
 - **Oracle**: every recorded write path is under `openspec/**` or
   `.syzygy/**`; prefix check per write. Bounded by the write set.
-- **Oracle independence**: paths are facts of the write record, judged
-  against the doctrine boundary, not against Syzygy's own classification.
+- **Oracle independence**: the write population is established by the
+  harness's own external record, never solely by Syzygy's
+  self-reported write log; paths are judged against the doctrine
+  boundary, not against Syzygy's own classification.
 - **Falsifier**: any entry-related write landing outside the two
   namespaces.
 
@@ -815,10 +850,13 @@ The vocabulary, authored here as that ruling directs:
   reconciliation chain state where carried; see requirement 037.
 
 Each answer takes its value under the two-term rule (SDR-35) over its
-constituent facts: satisfied when current evidence supports it, `Gap`
+constituent facts: `satisfied` when current evidence supports it, `Gap`
 when current admissible evidence establishes non-satisfaction, and
-otherwise `Unknown` with its reason. These labels are product
-vocabulary; no additional maturity terms are minted around them.
+otherwise `Unknown` with its reason. The satisfied state renders with
+the verbatim spelling `satisfied` — authored here per drafting site a2,
+closing the value domain at three spellings the way `Unknown` and `Gap`
+are already closed. These labels are product vocabulary; no additional
+maturity terms are minted around them.
 
 - **Case**: a checker queries the shape answers for a registered
   project.
@@ -889,7 +927,7 @@ disclose its members' composition instead.
 warrants:
   primary: SDR-36
   doctrine: [VIS-1, VIS-2]
-  contracts: [RFC6-14, RFC8-18]
+  contracts: [RFC6-14]
   policies: []
   decisions: [SDR-36]
   topology: []
@@ -907,18 +945,29 @@ Registration SHALL NOT imply that shape exists, is understandable, is
 observable, is traceable, is Mission-ready, or is reconciled.
 
 - **Case** (scope of quantification): all pairs of shape answers;
-  counterexample schema: an answer whose served value is derived from,
-  or changes with, another answer's value without its own constituent
-  facts changing; sweep: in a fixture, flip each answer's underlying
-  facts one at a time and record all seven served values — denominator:
-  the 7×7 flip matrix.
-- **Observable**: the seven served values across the flip fixtures.
-- **Oracle**: flipping one answer's facts changes only that answer's
-  value. Bounded: seven flips, forty-nine observations.
+  counterexample schema: an answer whose served value changes when a
+  fact **outside its own declared constituent-fact set** (requirement
+  030) is flipped; sweep: in a fixture, flip one underlying fact at a
+  time — for each answer, where its declared set admits one, a fact
+  constituent to it alone — and record all seven served values per
+  flip — denominator: the flip set × seven observations, with every
+  flip's declared-set membership enumerated first.
+- **Observable**: the seven served values across the flip fixtures,
+  joined to each flipped fact's declared-set memberships.
+- **Oracle**: each flip changes only the answers whose declared
+  constituent-fact sets contain the flipped fact. A shared fact (the
+  declaration itself is constituent to `Registered`, `Shape present`,
+  and `Observable`) moving its dependents together is conformance, not
+  coupling — requirement 002 mandates exactly that co-movement for an
+  invalidated declaration; a value moving with **no** declared-set
+  membership in the flipped fact is the violation. Bounded by the
+  enumerated flip set.
 - **Oracle independence**: the fixture controls the underlying facts;
-  the oracle observes served values only.
+  declared-set membership comes from requirement 030's definitions, not
+  from the implementation; the oracle observes served values only.
 - **Falsifier**: registering a project raising any other answer above
-  `Unknown` absent its own evidence.
+  `Unknown` absent its own evidence, or any answer's value moving with a
+  fact its declared constituent set does not contain.
 
 #### Scenario: Registration raises nothing else
 
@@ -950,8 +999,9 @@ not a servable answer.
 - **Case**: a checker selects one shape answer and requests its facts.
 - **Observable**: the fact set: constituent facts, declared scope,
   producing evaluation.
-- **Oracle**: the served fact set is non-empty, names the scope, and
-  every fact resolves; per-answer check. Bounded: seven answers.
+- **Oracle**: the served fact set is non-empty, names the scope, every
+  fact resolves, and the served value's stated basis references only
+  facts present in the set; per-answer check. Bounded: seven answers.
 - **Oracle independence**: resolvability is checked by following the
   served references, not by trusting the answer.
 - **Falsifier**: an answer served with no reachable constituent facts,
@@ -1017,7 +1067,7 @@ never interchanged.
 warrants:
   primary: VIS-2
   doctrine: [VIS-2]
-  contracts: [RFC2-24, RFC8-19]
+  contracts: [RFC2-24]
   policies: []
   decisions: [SDR-35]
   topology: []
@@ -1026,7 +1076,7 @@ warrants:
 
 ### Requirement: CAP1-REQ-035 — Several reasons may be visible at once; one never hides the others
 
-Group: Independent project-shape answers. Form: **invariant**.
+Group: Independent project-shape answers. Form: **event-response**.
 
 WHEN more than one Unknown condition applies to an answer or claim, the
 primary reason SHALL render with its secondary reasons beside it — all
@@ -1065,30 +1115,38 @@ warrants:
 
 ### Requirement: CAP1-REQ-036 — Mission-ready renders only its deferred posture
 
-Group: Independent project-shape answers. Form: **invariant**.
+Group: Independent project-shape answers. Form: **state projection/query**.
 
 While the governing Context and Mission contracts remain unaccepted,
-the `Mission-ready` answer SHALL render only
-`not evaluated / deferred / Unknown` — present and honest about its
-deferral, never invisible, never evaluated, and never favourable. Its
-semantics are deliberately not defined by this specification.
+the `Mission-ready` answer SHALL render only its deferred posture —
+present and honest about its deferral, never invisible, never
+evaluated, and never favourable. The posture comprises three served
+coordinates, each verbatim: value `not evaluated`, basis `deferred`,
+epistemic label `Unknown`. (SDR-36 rule 3's slash-separated phrase
+names these three coordinates; their spellings are authored here per
+drafting site a2.) The facet's semantics are deliberately not defined
+by this specification.
 
 - **Case**: a checker queries the shape answers of any project while the
   Mission contracts are unaccepted.
-- **Observable**: the `Mission-ready` answer.
-- **Oracle**: the served value is the deferred posture and nothing else;
-  string comparison. Bounded: one value.
+- **Observable**: the `Mission-ready` answer's three posture
+  coordinates.
+- **Oracle**: the served value is `not evaluated`, the basis `deferred`,
+  the epistemic label `Unknown` — string comparison per coordinate,
+  nothing else served as the answer's value. Bounded: three strings.
 - **Oracle independence**: the expected posture is the owner ruling's
-  (SDR-36 rule 3), outside the implementation.
+  (SDR-36 rule 3), its coordinate spellings fixed in this text, outside
+  the implementation.
 - **Falsifier**: a `Mission-ready` answer served as satisfied, `Gap`, a
-  score, or omitted from the answer set.
+  score, or omitted from the answer set, or a posture coordinate served
+  with a different spelling.
 
 #### Scenario: Deferred facet stays visible
 
 - **WHEN** the shape answers are served while no Mission contract is
   accepted
-- **THEN** `Mission-ready` is present and renders
-  `not evaluated / deferred / Unknown`
+- **THEN** `Mission-ready` is present and renders its deferred posture:
+  value `not evaluated`, basis `deferred`, epistemic label `Unknown`
 
 ```yaml
 warrants:
@@ -1103,7 +1161,7 @@ warrants:
 
 ### Requirement: CAP1-REQ-037 — Uncomputed reconciliation is Unknown
 
-Group: Independent project-shape answers. Form: **invariant**.
+Group: Independent project-shape answers. Form: **event-response**.
 
 WHEN reconciliation has not been computed for the declared scope, the
 `Reconciled` answer SHALL render `Unknown`, and merged-but-unreconciled
@@ -1493,6 +1551,10 @@ fixed Syzygy project entry? The answer domain is closed at four values —
 `yes` / `no` / `not-applicable` / `Unknown` — carried verbatim on every
 rendering and machine answer. The read subject is the repository's root
 README; no configurable landing document is an input to this finding.
+Applicability precedes the read: a repository satisfying the accepted
+`not-applicable` condition (no governance root — requirement 052)
+renders `not-applicable` regardless of its README's content; `yes` and
+`no` are answered only where that condition does not hold.
 
 - **Case**: a checker queries discoverability for a project declaring
   several repositories in differing conditions.
@@ -1539,12 +1601,21 @@ captured; `missing-declaration` where no declaration establishes the
 repository's membership; `unconsented-source-or-provider` where the
 repository is unconsented, cited from its upstream rule).
 
-- **Case**: fixtures with (a) a linking README, (b) a README without the
-  link, (c) an uncaptured README, and (d) an unconsented repository.
-- **Observable**: the four findings and their evidence or reasons.
+- **Case** (scope of quantification): every discoverability finding
+  served for a multi-repository fixture project whose repositories
+  include (a) a linking README, (b) a README without the link, (c) an
+  uncaptured README, and (d) an unconsented repository; counterexample
+  schema: a `yes` or `no` finding with no resolvable captured evidence
+  at the producing evaluation, or a missing-evidence finding that is not
+  `Unknown` with its verbatim reason; sweep: enumerate all served
+  findings and join each to its evidence or reason — denominator: the
+  declared repository count.
+- **Observable**: the served findings, each joined to its evidence or
+  reason.
 - **Oracle**: (a) `yes` with resolvable evidence at the evaluation; (b)
   `no` with resolvable evidence; (c) and (d) `Unknown` with the exact
-  applicable reason string. Bounded: four fixtures.
+  applicable reason string; no finding outside those joins. Bounded by
+  the declared repository count.
 - **Oracle independence**: fixtures control the conditions; spellings
   come from the closed vocabularies.
 - **Falsifier**: `yes` or `no` served with no capturable evidence at the
@@ -1639,7 +1710,9 @@ status authority.
   a `yes` finding resting on the proposal; sweep: record all writes;
   enumerate the finding and proposal renderings — denominator: the write
   set and the rendering set.
-- **Observable**: the write record; the finding value; the proposal
+- **Observable**: the write record — captured externally to Syzygy by
+  the checking harness (filesystem comparison or harness-level write
+  tracing), not solely Syzygy's own log; the finding value; the proposal
   rendering.
 - **Oracle**: no write path outside `openspec/**` and `.syzygy/**`; the
   finding over an unlinked README remains `no` while the proposal is
@@ -1725,14 +1798,21 @@ so is inoperative and renders as a contradiction routed to the owner.
   during Capability 1 fixtures, including one whose declaration carries
   a write-widening field; counterexample schema: a write outside the two
   namespaces, an external effect, or a widening field honored; sweep:
-  record all writes and effects; check the widening-field fixture's
-  rendering — denominator: the recorded effect set.
-- **Observable**: the write/effect record; the contradiction rendering.
+  record all writes and effects **externally to Syzygy** — filesystem
+  comparison for writes, plus the harness's record of every external
+  interface the fixture exposes (network, scheduler, process spawn) for
+  effects; check the widening-field fixture's rendering — denominator:
+  the harness-recorded effect set over the fixture's enumerated
+  interfaces.
+- **Observable**: the harness's external write/effect record,
+  cross-checked against Syzygy's attributed-write record; the
+  contradiction rendering.
 - **Oracle**: every effect is a permitted in-plane write; the widening
   field is not honored and renders as a contradiction. Bounded by the
   effect set.
-- **Oracle independence**: paths and effects are recorded facts; the
-  boundary is doctrine's and the contract's.
+- **Oracle independence**: the effect population is established by the
+  harness's own tracing over interfaces it controls, never solely by
+  Syzygy's self-report; the boundary is doctrine's and the contract's.
 - **Falsifier**: any external mutation during Capability 1 behavior, or
   a `write_roots:`-style field honored.
 
@@ -1767,15 +1847,22 @@ observations is visible on the primary surface. A displayed answer
 changes only through a new identified evaluation — never by the wall
 clock silently.
 
-- **Case**: fixtures with (a) evidence older than its declared bound at
-  the evaluation's as-of instant and (b) a claim class with no declared
-  bound.
-- **Observable**: the served claim values and reasons; the staleness
-  markings.
-- **Oracle**: (a) serves `Unknown` reason #4; (b) serves `Unknown`
-  reason #3; string comparison; and no served value differs between two
-  reads of one evaluation at different wall-clock times. Bounded: two
-  fixtures plus one repeated read.
+- **Case** (scope of quantification): every claim served for fixtures
+  with (a) evidence older than its declared bound at the evaluation's
+  as-of instant and (b) a claim class with no declared bound;
+  counterexample schema: a current or favourable value resting on
+  out-of-bound evidence, an unbounded claim class rendering favourably,
+  or a value differing between two reads of one evaluation; sweep:
+  enumerate the served claims in both fixtures and join each to its
+  evidence age and declared bound — denominator: the served claim set
+  per fixture, plus one repeated read of the whole set.
+- **Observable**: the served claim values and reasons, joined to
+  evidence ages and bounds; the staleness markings.
+- **Oracle**: every out-of-bound claim serves `Unknown` reason #4; every
+  unbounded-class claim serves `Unknown` reason #3; string comparison
+  per claim; and no served value differs between two reads of one
+  evaluation at different wall-clock times. Bounded by the served claim
+  sets.
 - **Oracle independence**: the fixtures control evidence age and bound
   declarations; the reason spellings are the closed vocabulary's.
 - **Falsifier**: stale evidence supporting a favourable answer, an

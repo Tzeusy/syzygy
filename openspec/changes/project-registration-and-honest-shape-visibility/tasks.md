@@ -10,17 +10,19 @@
 
 - [x] 1.1 Record the owner's launch decision in the decision system
 - [x] 1.2 Draft proposal, spec (CAP1-REQ-001…064), and design artifacts
-- [ ] 1.3 Ship the coverage artifacts: `CAPABILITY-COVERAGE.md`
+- [x] 1.3 Ship the coverage artifacts: `CAPABILITY-COVERAGE.md`
       (CC-SPEC-11) and `CONTRACT-COVERAGE.md` (CC-SPEC-8)
-- [ ] 1.4 Generate `GOVERNING-DEPENDENCIES.md` from the requirement
+- [x] 1.4 Generate `GOVERNING-DEPENDENCIES.md` from the requirement
       warrants (CC-IMPACT-1) and wire its `--check` into the battery
 
 ## 2. Review and repair (bounded)
 
-- [ ] 2.1 Three independent fresh-context reviews (comprehension;
+- [x] 2.1 Three independent fresh-context reviews (comprehension;
       behavior and testability; authority and coverage), raw output
-      preserved verbatim
-- [ ] 2.2 One consolidated repair pass
+      preserved verbatim (`round-2026-08k/reviews/`, bound at
+      `round-2026-08k/REVIEW-BINDING.md`)
+- [x] 2.2 One consolidated repair pass (Pass 3, 2026-08-20 — all five
+      blockers and the taken non-blocking findings, one edit batch)
 - [ ] 2.3 One confirming review of the repaired bytes
 
 ## 3. Validation

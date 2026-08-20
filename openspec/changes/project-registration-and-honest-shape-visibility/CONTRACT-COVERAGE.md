@@ -34,19 +34,35 @@ the generated `05-CONTRACT-INDEX.yaml`, excluding its RFC10/RFC11 rows
 | RFC5 | 27 | 1 | 26 |
 | RFC6 | 28 | 11 | 17 |
 | RFC7 | 41 | 4 | 37 |
-| RFC8 | 32 | 2 | 30 |
+| RFC8 | 32 | 0 | 32 |
 | RFC9 | 60 | 0 | 60 |
-| **Total** | **324** | **40** | **284** |
+| **Total** | **324** | **38** | **286** |
 
-The 40 mapped clauses are exactly the `contracts[]` union in the
+The 38 mapped clauses are exactly the `contracts[]` union in the
 generated `GOVERNING-DEPENDENCIES.md`; Part A gives their
-per-consequence rows. The 284 unmapped clauses are disposed in Part B.
+per-consequence rows. The 286 unmapped clauses are disposed in Part B.
+(RFC8-18 and RFC8-19 were mapped by the Pass 1 draft and moved to
+Part B in the Pass 3 repair: both are cost-scoped clauses, and this
+capability renders no cost — the round-2026-08k RS-3 review's first
+blocker.)
 
 ## Part A — mapped clauses, per observable consequence
 
 Disposition vocabulary: **covered** (the named requirements' oracles
 observe the consequence) or **Unknown** (no requirement covers it and no
 owner-reviewed N/A exists).
+
+**Row method.** `[Inferred]` Rows aim at one row per normatively
+distinct obligation limb of the clause's text, judged by the author
+from the accepted bytes; the clause text, not the row label, is the
+authority. Known folds, disclosed rather than hidden: RFC2-23's six
+closed degradation states fold into two rows; RFC6-19's thirteen fact
+content classes fold into four rows (classes 1–6 and 8–13 ride the
+general content-classes row); RFC5-3's admission rule is one row. No
+method demonstrates that every clause's limb set was exhausted — a
+reviewer who finds an unlisted limb has found a real gap, exactly as
+the round-2026-08k RS-3 review did for RFC3-1's parse-disagreement
+limb (repaired below).
 
 | Clause | Observable consequence (row label) | Disposition | Requirements |
 |---|---|---|---|
@@ -70,18 +86,19 @@ owner-reviewed N/A exists).
 | RFC2-24 | every `Unknown` carries a primary reason verbatim from the closed twelve | covered | CAP1-REQ-002, CAP1-REQ-006, CAP1-REQ-012, CAP1-REQ-013, CAP1-REQ-022, CAP1-REQ-030, CAP1-REQ-034, CAP1-REQ-051, CAP1-REQ-062 |
 | RFC2-24 | secondary reasons render beside the primary, marked, never folded | covered | CAP1-REQ-035 |
 | RFC2-24 | no reason is minted outside the closed vocabulary | covered | CAP1-REQ-012, CAP1-REQ-037 |
-| RFC3-1 | an invalid governance artifact is a named failure; dependent claims render `Unknown` | covered | CAP1-REQ-002 |
+| RFC3-1 | the declaration is a semantic contract read at the fixed path in the fixed dialect; whether a governance root exists follows from whether it parses | covered | CAP1-REQ-001, CAP1-REQ-002 |
+| RFC3-1 | two implementations disagreeing on whether one `project.yaml` parses is an owner-routed contradiction, never a kept dialect preference | **Unknown** — no requirement here exercises cross-implementation parse disagreement; would be settled by an owner-reviewed N/A or a conformance-suite capability's requirements | — |
 | RFC3-2 | drafted governance content renders unadopted | covered | CAP1-REQ-004 |
 | RFC3-3 | direct writes are confined to the two namespaces | covered | CAP1-REQ-023, CAP1-REQ-053, CAP1-REQ-061 |
 | RFC3-3 | a write-widening manifest field is inoperative and renders as a contradiction | covered | CAP1-REQ-061 |
 | RFC3-4 | the declaration file's location designates the governance root | covered | CAP1-REQ-001, CAP1-REQ-006 |
-| RFC3-5 | the closed declaration field set is validated; failures name their field | covered | CAP1-REQ-001, CAP1-REQ-003 |
+| RFC3-5 | the declaration's top-level field set is closed at the listed fields, each with its declared write authority | covered | CAP1-REQ-001, CAP1-REQ-003 — the closed set is the validation subject; naming the failed field is this specification's own authored strictness, not a consequence RFC3-5 states |
 | RFC3-6 | consent records are per repository, with repository identity never a URL/path | covered | CAP1-REQ-010, CAP1-REQ-011, CAP1-REQ-060 |
 | RFC3-6 | an unconsented repository renders per the policy rendering | covered | CAP1-REQ-012 |
 | RFC3-7 | a consent record's scope, attribution, and grant state are rendered facts | covered | CAP1-REQ-011 |
 | RFC3-7 | absence of a resolvable in-force record renders as absence of consent | covered | CAP1-REQ-011, CAP1-REQ-016 |
 | RFC3-9 | declarations are never auto-repaired; repair travels as an unadopted Proposal | covered | CAP1-REQ-004 |
-| RFC3-9 | an invalid declaration is a named failure, never partial registration | covered | CAP1-REQ-002, CAP1-REQ-003 |
+| RFC3-9 | an unparseable or invalid declaration renders every dependent claim `Unknown`, never partial registration | covered | CAP1-REQ-002, CAP1-REQ-003 — the accepted text's obligation is the `Unknown` rendering and the no-auto-repair rule; failing *by name* is this specification's own authored strictness |
 | RFC3-16 | effective status derives from the owner-act record, never the self-declared stamp | covered | CAP1-REQ-046 |
 | RFC3-16 | stamp/status disagreement is disclosed; the effective status governs | covered | CAP1-REQ-046 |
 | RFC3-16(a) | unverifiable owner-act provenance renders the artifact effectively unadopted | covered | CAP1-REQ-046 |
@@ -114,18 +131,16 @@ owner-reviewed N/A exists).
 | RFC7-40 | `yes`/`no` rest on current captured evidence; missing evidence renders `Unknown` with reason | covered | CAP1-REQ-051 |
 | RFC7-40 | `not-applicable` only under its accepted condition, with the basis served | covered | CAP1-REQ-052 |
 | RFC7-40 | the link may be proposed, never written; a proposal never flips the finding | covered | CAP1-REQ-053 |
-| RFC8-18 | no composite score is computed or served over independent answers | covered | CAP1-REQ-031 |
-| RFC8-19 | absent evidence renders `Unknown`, never zero and never favourable | covered | CAP1-REQ-034 |
 
 Part A totals `[Observed, computed by the sweep in "Verifying this
-table"]`: **66 consequence rows over 40 clauses — 65 covered, 1
+table"]`: **65 consequence rows over 38 clauses — 63 covered, 2
 Unknown.**
 
 ## Part B — accepted clauses not mapped by any requirement
 
 `[Inferred]` The author applied CC-SPEC-8's applicability test — *does
 Capability 1 use the entity, behavior, authority boundary, state
-vocabulary, or interface the clause governs?* — and believes the 284
+vocabulary, or interface the clause governs?* — and believes the 286
 unmapped clauses govern machinery Capability 1 neither renders, stores,
 transitions, queries, nor crosses. **That belief is not a reviewed N/A.**
 Until the owner records N/A judgments in `decisions/` with verifiable
@@ -141,9 +156,9 @@ RFC3-16(a) provenance, every one of these clauses' consequences renders
 | RFC 0005 remainder | 26 | auth/session/exposure machinery beyond the credential-classing rule |
 | RFC 0006 remainder | 17 | selection/query/drawer mechanics beyond the clauses mapped |
 | RFC 0007 remainder | 37 | Polaris comprehension surfaces, walkthrough machinery, white-paper composition |
-| RFC 0008 remainder | 30 | Orrery map/aggregation machinery beyond the no-composite rules |
+| RFC 0008 (all) | 32 | Orrery map/aggregation and cost machinery — including RFC8-18/RFC8-19, whose subject is cost measures this capability never renders (moved here by the Pass 3 repair) |
 | RFC 0009 (all) | 60 | cross-view/integration machinery |
-| **Total** | **284** | |
+| **Total** | **286** | |
 
 ## Verifying this table
 
@@ -151,7 +166,7 @@ RFC3-16(a) provenance, every one of these clauses' consequences renders
   return 324 for RFC1–9.
 - Mapped set: `python3 scripts/build_capability_1_spec_dependencies.py
   --check` — Part A's clause column must equal the generated
-  `contracts[]` union (40 identifiers), and 40 + 284 = 324.
+  `contracts[]` union (38 identifiers), and 38 + 286 = 324.
 - Part A totals: count rows and dispositions in this file's Part A table
   (e.g. Python over the `| RFC` rows); the printed totals above must
   match the count — they were computed that way, not transcribed.

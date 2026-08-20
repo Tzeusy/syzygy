@@ -7,6 +7,13 @@
 > **exactly one** of three sets that sum to the population. A reviewer
 > who believes an obligation is missing from this population raises that
 > against the scope statement, not against this table.
+>
+> **Other-party confirmation.** The author's obligation count was
+> checked by the round-2026-08k review cycle: RS-3's authority/coverage
+> review swept this table's sums and citations in both directions
+> (`round-2026-08k/reviews/RS-3-AUTHORITY-RAW.md`), and the Pass 4
+> confirming review re-checked the repaired bytes. Those records are the
+> confirmation mechanism this table relies on.
 
 ## Population
 
@@ -47,7 +54,7 @@ excluding non-goal named (proposal.md §Non-goals):
 
 | # | Obligation a reader might expect | Excluding non-goal |
 |---|---|---|
-| X-01 | evaluate `Mission-ready` substantively | "does not execute or monitor Missions"; SDR-36 rule 3 defers the facet's semantics — only its honest posture is in scope (O-17) |
+| X-01 | evaluate `Mission-ready` substantively | "does not … define `Mission-ready` semantics (the facet renders only its deferred posture until the deferred-wave contracts exist)" — only the honest posture is in scope (O-17); SDR-36 rule 3 is the ruling behind the non-goal |
 | X-02 | compute reconciliation / intent-to-code convergence | "does not calculate complete intent-to-code convergence" — only the honest rendering of the uncomputed state is in scope (O-17) |
 | X-03 | apply the proposed repository-entry link to a root README | "does not modify source code; does not edit a repository root README" — proposing is in scope (O-21), applying is not |
 | X-04 | onboard or register a real external project during authoring | "does not register or onboard a real external project during specification authoring" |
