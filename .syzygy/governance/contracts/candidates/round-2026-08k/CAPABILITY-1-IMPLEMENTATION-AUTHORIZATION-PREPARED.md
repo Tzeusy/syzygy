@@ -1,5 +1,13 @@
 # PREPARED owner implementation-authorization act — Capability 1
 
+> **PERFORMED 2026-08-21 — this packet is superseded history.** The owner
+> performed the act with their own complete instrument (fixing all five
+> open terms), recorded verbatim at
+> `../../../decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`.
+> That record owns the authorization; nothing below satisfies anything.
+> Preserved unchanged beneath this banner as the record of what was
+> prepared and why.
+
 > **Prepared, not performed. This file authorizes nothing.** Drafted
 > 2026-08-21 after the owner replied "Authorized" to the adoption-act
 > summary. The session declined to treat that word as the act: every

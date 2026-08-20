@@ -13,19 +13,26 @@
 
 ## Lifecycle stage
 
-**Specification adopted — implementation not authorized.** The owner's
-launch decision of 2026-08-20
-(`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`) authorized
-Capability 1 specification authoring; the specification was authored,
-carried through its bounded review cycle (RS-1…RS-5,
+**Capability 1 implementation authorized.** The specification was
+authored under the owner's 2026-08-20 launch decision, carried through
+its bounded review cycle (RS-1…RS-5,
 `contracts/candidates/round-2026-08k/`), and **adopted by the owner —
 act dated 2026-08-20, recorded verbatim at
 `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`** — at the exact
-seven digests that record quotes (VIS-4; CC-SPEC-10). No application
-code exists, and none may be added: **the adoption authorizes no
-implementation** — implementation requires a separate, subsequent owner
-authorization, which does not exist. The Administration 1 `NOT READY`
-verdict stands unaltered as diagnostic evidence.
+seven digests that record quotes (VIS-4; CC-SPEC-10). The owner then
+performed the **implementation-authorization act — dated 2026-08-21,
+recorded verbatim at
+`decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`** —
+authorizing implementation planning and implementation for
+**Capability 1 only**: one concise plan first, stack/layout delegated to
+planning (with named escalation triggers back to the owner), a bounded
+Beads backlog, code in ordinary root implementation paths (`apps/**`,
+`packages/**`, tooling; never in `openspec/**` or `.syzygy/**`), under
+the in-force craft policies and vendored `th-engineering` standards,
+within the P-35 constraints and P-45/A6 envelope. Production
+deployment, external-project onboarding, and broader release remain
+separate future decisions. The Administration 1 `NOT READY` verdict
+stands unaltered as diagnostic evidence.
 
 ## The launch path, in one table
 
@@ -44,7 +51,7 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 | Owner rulings, 2026-08-19 (the Administration-1 inputs) | **P-45…P-48 all ruled** in one adversarially-reviewed sitting, applied same day: the **A6 resource envelope stated** (2h/week; Claude-family + occasional GPT 5.6-family review; $200/mo ceiling; 2–3 workstreams) with **syzygy itself named the first proving project** (butlers second); **no governance ceiling** — case-by-case recorded knowingly (F6 stays `Not met`, disclosed, non-conjunct); the **governance-reduction plan adopted as directed work** (§1/§2/§4 retirements executed; §3 awaits the first accepted spec; no deferral created); the **repair cycle bounded at two further administrations** (if Administration 3 is not `READY`, the owner decides directly on the record in hand). Zero contract bytes moved. | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-19, second sitting"; records `A6-RESOURCE-ENVELOPE-`, `F6-GOVERNANCE-CEILING-`, `F2-GOVERNANCE-REDUCTION-`, `LAUNCH-REPAIR-STOP-CONDITION-DECISION.md` |
 | Owner launch decision | **Made 2026-08-20** — Capability 1 specification authoring authorized, with the `NOT READY` verdict in hand and accepted as diagnostic evidence; the P-48 stop-condition cycle ends early by the owner deciding directly. Specification definition only — no implementation, no implementation planning. | `decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md` |
 | OpenSpec (`openspec/`) | **One change, ADOPTED: `project-registration-and-honest-shape-visibility`** (schema `spec-driven`, OpenSpec pinned 1.9.0) — proposal, spec (42 requirements, CAP1-REQ-001…064), design, both coverage tables, and the generated dependency declaration, **adopted by the owner (act dated 2026-08-20) at the seven exact digests the act record quotes**; `tasks.md` and the review records are lifecycle/evidence material outside the adopted bytes. The accepted specification supersedes the Capability 1 charter for required behaviour. | `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md` (the act); the change directory; evidence chain `contracts/candidates/round-2026-08k/` |
-| Implementation | **Does not exist and stays forbidden.** The adoption act authorizes no implementation; a separate, subsequent owner authorization is required and has not been performed. | `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md` (its own no-implementation limb) |
+| Implementation | **AUTHORIZED for Capability 1 — act dated 2026-08-21.** Plan first (stack, layout, slices→CAP1-REQ mapping, testing/evidence, review classes), then a bounded Beads backlog and code in ordinary root paths (`apps/**`, `packages/**`, tooling) — never in the governed plane. Capability 1 only; production deployment, onboarding, and release stay separate future decisions. | `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md` |
 
 **Four owner acts have been performed, all 2026-08-17:** Wave A, Wave B,
 and craft acts 6 + 7.
@@ -115,10 +122,19 @@ The remaining launch path, in order — each step's owning record governs:
    (act dated 2026-08-20, recorded 2026-08-21) at the exact digests**
    (`decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`; SDR-37: one
    change, one acceptance decision).
-6. The owner's separate **implementation-authorization act** — not
-   performed, not prepared, and owned by no packet yet. Until it exists,
-   implementation, implementation planning, and any backlog stay
-   forbidden.
+6. ~~The owner's separate **implementation-authorization act**~~ —
+   **performed 2026-08-21** (recorded verbatim at
+   `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`; the
+   prepared packet in `round-2026-08k/` is banner-marked performed).
+   *(An earlier revision of this step said the act was "not prepared,
+   owned by no packet" — stale from the moment the packet was prepared
+   later that day; corrected here per the act's instruction 2.)*
+7. **Implement Capability 1** — in progress under the act's terms: one
+   concise plan first (`docs/CAPABILITY-1-IMPLEMENTATION-PLAN.md`), a
+   bounded Beads backlog, then code through the authorized worker
+   workflow, tracing to CAP1 requirement IDs with verification per
+   requirement. Capability 1 only; the adopted specification is the
+   behavioral authority.
 
 ## How to verify this page
 

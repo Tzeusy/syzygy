@@ -4,18 +4,20 @@
 what should be true, evidence shows what is true, and agent fleets do bounded
 work to close the difference — with the difference always rendered honestly.**
 
-> **Current stage: specification adopted — implementation not authorized.**
-> This repository contains **no application code and no implementation
-> backlog — deliberately.** What exists is adopted doctrine, owner-approved
-> engineering policy, a foundational-contract corpus whose launch-path
-> waves (RFC 0001–0009) the owner **accepted by act on 2026-08-17** (the
-> remaining waves still candidate), and one **adopted** behavioral
-> specification: the Capability 1 OpenSpec change
-> `project-registration-and-honest-shape-visibility`, **adopted by the
-> owner (act dated 2026-08-20) at exact digests**
-> (`.syzygy/governance/decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`).
-> The adoption authorizes **no implementation** — that requires a
-> separate owner act, which does not exist. See
+> **Current stage: Capability 1 implementation authorized.**
+> What exists is adopted doctrine, owner-approved engineering policy, a
+> foundational-contract corpus whose launch-path waves (RFC 0001–0009)
+> the owner **accepted by act on 2026-08-17** (the remaining waves still
+> candidate), one **adopted** behavioral specification — the Capability 1
+> OpenSpec change `project-registration-and-honest-shape-visibility`,
+> adopted by the owner (act dated 2026-08-20) at exact digests
+> (`.syzygy/governance/decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`)
+> — and, since the owner's act of **2026-08-21**
+> (`decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`), an
+> **authorized Capability 1 implementation**: plan-first, code in
+> ordinary root paths, never in the governed `openspec/**`/`.syzygy/**`
+> plane. Capability 1 only; production deployment and any release remain
+> separate future decisions. See
 > [`PROJECT-STATUS.md`](PROJECT-STATUS.md) for the exact gate state.
 
 Concretely, the intended shape is a **local-first daemon with a browser
