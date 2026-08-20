@@ -382,14 +382,16 @@ TASKS = [
     dict(
         key="author-capability-1",
         title=f"Author Capability 1 — {CAP1['title']}",
-        note="**Authoring is authorized — implementation is not.** The "
-             "owner's launch decision of 2026-08-20 "
-             "(`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`) "
-             "authorizes the one change "
+        note="**The specification is ADOPTED — implementation is not "
+             "authorized.** The owner adopted the one change "
              "`openspec/changes/project-registration-and-honest-shape-visibility/` "
-             "— specification definition only; it is a **candidate** until "
-             "the owner's adoption act, and no other capability may be "
-             "authored. The Wave A and B acts were performed 2026-08-17, "
+             "at exact digests (act dated 2026-08-20, recorded at "
+             "`decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`); it "
+             "is the accepted behavioral authority for Capability 1 and "
+             "supersedes the charter for required behaviour. The adoption "
+             "authorizes no implementation — that requires a separate "
+             "owner act, which does not exist — and no other capability "
+             "may be authored. The Wave A and B acts were performed 2026-08-17, "
              "so every clause below is **accepted** contract text "
              "installed at `contracts/rfcs/` (`PROJECT-STATUS.md` owns "
              "that state; owner-adopted bootstrap, uncorrelated — never "
@@ -432,7 +434,8 @@ TASKS = [
             "`decisions/PENDING-OWNER-DECISIONS.md` owns the queue state) "
             "places the vocabulary in the Capability 1 specification, not "
             "a Wave A amendment — authored there 2026-08-20 as "
-            "CAP1-REQ-030, candidate until the spec's adoption. The sweep "
+            "CAP1-REQ-030 and **adopted with the specification** "
+            "(2026-08-20 act). The sweep "
             "is for the facet names, "
             "not for the English word \"facet\", which occurs generically",
         ],

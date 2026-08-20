@@ -3,19 +3,22 @@
 This file is **repository operating procedure** — never citable as authority.
 What the project *is* lives in `README.md` and `.syzygy/intent/OVERVIEW.md`.
 
-## Current lifecycle stage: specification defining
+## Current lifecycle stage: specification adopted, implementation not authorized
 
 Doctrine is adopted; engineering policy is owner-approved. The Wave A/B
 contracts and the CC-SPEC/CC-IMPACT craft policies are **accepted/in force
 as of 2026-08-17**; deferred-wave contracts, topology, overview and the
-remaining policy additions are **candidates awaiting owner acts**. The
-owner's launch decision of **2026-08-20**
-(`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`) authorizes
-**Capability 1 specification authoring only** — the one OpenSpec change
-`project-registration-and-honest-shape-visibility`, candidate until the
-owner's adoption act. There is **no application code and no implementation
-backlog** — implementation, implementation planning, and every other
-capability's authoring stay forbidden.
+remaining policy additions are **candidates awaiting owner acts**. The one
+OpenSpec change `project-registration-and-honest-shape-visibility` was
+**adopted by the owner — act dated 2026-08-20, recorded at
+`decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`** at the exact
+seven digests that record quotes (VIS-4; CC-SPEC-10); it is the accepted
+behavioral authority for Capability 1 and supersedes the charter for
+required behaviour. **The adoption authorizes no implementation.** There
+is **no application code and no implementation backlog** — implementation,
+implementation planning, and every other capability's authoring stay
+forbidden until the owner's separate implementation-authorization act,
+which does not exist.
 
 ## Where authority lives
 
@@ -67,9 +70,9 @@ Load the minimum for one correct decision; never "read everything."
 | A doctrine question | the one doctrine file, via the `heart-and-soul` skill |
 | An engineering-bar question | the one craft policy that owns it |
 | A contract question | **`contracts/candidates/TASK-ROUTER.md`** — the one generated router; context-budget measurement stays with `06-CONTEXT-LOAD-MAP.md` / `scripts/context_load.py` |
-| "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*, until the owner adopts the specification and separately authorizes implementation |
-| "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; **Capability 1 authoring is authorized** (owner decision 2026-08-20); every other capability stays forbidden |
-| The Capability 1 specification | the change `openspec/changes/project-registration-and-honest-shape-visibility/` — **candidate**, adopted by no one; its warrants-union is generated (`build_capability_1_spec_dependencies.py`) |
+| "May I implement X?" | `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` — the answer is *no*: the specification is adopted, but implementation requires the owner's separate authorization act, which does not exist |
+| "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; Capability 1's spec is **authored and adopted**; every other capability's authoring stays forbidden |
+| The Capability 1 specification | the change `openspec/changes/project-registration-and-honest-shape-visibility/` — **ADOPTED by the owner (act dated 2026-08-20)** at the exact digests in `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`; the seven adopted artifacts may not be edited (an edit breaks the adopted digests — route changes through CC-REV-2's amendment path); its warrants-union is generated (`build_capability_1_spec_dependencies.py`) |
 | Current status | `PROJECT-STATUS.md` |
 | "Is this ready for OpenSpec?" | Authoring was authorized by the owner's 2026-08-20 launch decision, made with Administration 1's `NOT READY` verdict (2026-08-18, out-of-family, v2.4) in hand as diagnostic evidence — that record stands unaltered in `decisions/launch-gate/`. `PROJECT-STATUS.md` owns the current state |
 | A launch-gate administration | the record is **structured JSON** (`launch-gate-administration.schema.json`); the Markdown report is generated, **never parsed back**. Scripts: `validate_launch_administration.py`, `render_launch_administration.py`; `launch_gate_results.py` covers the historical Markdown records only |
@@ -88,9 +91,10 @@ path, never authority.
 Do **not**: write application or library code, or create `src/`, `apps/`,
 `packages/`, UI components, or toolchain manifests; choose a language,
 framework, database, or platform; create any OpenSpec changeset **other
-than the one authorized Capability 1 change**
-(`project-registration-and-honest-shape-visibility` — owner decision
-2026-08-20), or any implementation
+than the one adopted Capability 1 change**
+(`project-registration-and-honest-shape-visibility` — adopted at exact
+digests, `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`), or edit
+that change's seven adopted artifacts, or create any implementation
 issues, epics, or a backlog; treat a draft, candidate, index, summary, or
 generated view as authority; adopt doctrine, accept contracts, or approve
 policy on the owner's behalf (VIS-4); install candidate material into an

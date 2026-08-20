@@ -9,7 +9,7 @@
 > here belongs to a confirmed-but-unaccepted wave and binds nothing.
 > No `openspec/` exists and none may be created.
 >
-> Charter sha256 `72148f8214d15aed0f362ffe4a63169839ca3b8748d8f3f6348a685b1f4a3cd2`.
+> Charter sha256 `acb6290f904c9cd8f8c07a2e1759645b59e0b2ae64a6f41aeaceedfb88ebad01`.
 
 **CAP-1 — Project registration and honest shape visibility**
 

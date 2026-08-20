@@ -56,9 +56,14 @@
       (This checkbox lives outside that binding by design; see the
       binding's tasks.md exclusion note)
 
-## 4. Owner adoption — not performed by this change
+## 4. Owner adoption
 
-- [ ] 4.1 **Owner-only:** adoption of this specification at an exact
-      digest (VIS-4; CC-SPEC-10). This task belongs to the owner; no
-      session may check it off. Until it is done, this change binds
-      nothing and authorizes no implementation.
+- [x] 4.1 **Owner-only:** adoption of this specification at an exact
+      digest (VIS-4; CC-SPEC-10). **Performed by the owner, act dated
+      2026-08-20** — recorded verbatim at
+      `.syzygy/governance/decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`,
+      at exactly the seven digests of the FINAL binding (checkbox
+      checked 2026-08-21 on the owner's explicit instruction in that
+      act). The adoption authorizes **no implementation** —
+      implementation requires a separate, subsequent owner
+      authorization, which does not exist.

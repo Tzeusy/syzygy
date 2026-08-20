@@ -1,5 +1,15 @@
 # CAPABILITY-1-CHARTER — candidate planning metadata, not product authority.
 #
+# *** SUPERSEDED FOR REQUIRED BEHAVIOUR, 2026-08-20 (recorded 2026-08-21).
+# *** The owner adopted the Capability 1 specification
+# *** (`openspec/changes/project-registration-and-honest-shape-visibility/`)
+# *** at exact digests — the act record is
+# *** `../../decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`. Per this
+# *** charter's own terms below, the accepted specification now supersedes
+# *** it for required behaviour and this file is history: kept as the record
+# *** of how the capability was scoped, generating its views unchanged,
+# *** answering no behavioral question the adopted specification owns.
+#
 # WHAT THIS IS. One machine-readable source for everything the repository
 # says about Capability 1's shape. Five views are generated from it and none
 # of them is edited by hand:

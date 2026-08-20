@@ -3,9 +3,12 @@
 > **Candidate plan. Binds nothing, and creates nothing.** The Capability 1
 > OpenSpec change `project-registration-and-honest-shape-visibility`
 > **exists since 2026-08-20** under the owner's launch decision
-> (`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`) — as a
-> **candidate**, adopted by no one; this plan neither created it nor
-> governs it. **This is the single current first-spec document**: it
+> (`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`) and was
+> **adopted by the owner (act dated 2026-08-20; recorded at
+> `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`)** at exact
+> digests — the accepted behavioral authority for Capability 1;
+> implementation stays separately unauthorized. This plan neither created
+> it nor governs it. **This is the single current first-spec document**: it
 > supersedes `round-2026-08d/FIRST-OPENSPEC-SEQUENCE.md`
 > (revision 2) and, through it, the round-08c revision; the
 > banner-superseded `09-OPEN-SPEC-READINESS-REPORT.md` sequencing is

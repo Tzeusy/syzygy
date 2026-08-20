@@ -3,14 +3,16 @@
 > **Generated-style router — never authority.** Every rule here is owned
 > elsewhere; this file cites the owner and invents nothing. Where this
 > file and an owning source disagree, the source wins and this file is
-> stale. **Capability 1 authoring is authorized** — the owner's launch
-> decision of 2026-08-20
-> (`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`)
-> authorizes the one change
-> `openspec/changes/project-registration-and-honest-shape-visibility/`,
-> specification definition only. Every other capability stays
-> unauthorized; the prerequisites table in `FIRST-OPENSPEC-SEQUENCE.md`
-> (routed below at E2) is the gate-state record.
+> stale. **Capability 1's specification is authored and ADOPTED** — the
+> owner's launch decision of 2026-08-20 authorized the authoring
+> (`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`) and the
+> owner's adoption act (dated 2026-08-20, recorded at
+> `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`) adopted the one
+> change `openspec/changes/project-registration-and-honest-shape-visibility/`
+> at exact digests. Implementation stays separately unauthorized. Every
+> other capability's authoring stays unauthorized; the prerequisites table
+> in `FIRST-OPENSPEC-SEQUENCE.md` (routed below at E2) is the gate-state
+> record.
 
 ## The five questions and their owners (E1)
 
@@ -87,8 +89,9 @@ of every first-spec concept to its governing shape artifact is
 
 Doctrine (VIS-4, VIS-5) and every contract's phase rule: user-observable
 behavior receives an approved OpenSpec requirement **before**
-implementation. The owner's launch decision (2026-08-20) authorized the
-Capability 1 changeset only — the authored specification **binds nothing
-until the owner adopts it** at an exact digest (VIS-4; CC-SPEC-10), and
-implementation stays forbidden until adoption plus separate
-authorization.
+implementation. The Capability 1 specification **was adopted by the owner
+at an exact digest** (act dated 2026-08-20;
+`decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`, per VIS-4 and
+CC-SPEC-10) — and **implementation stays forbidden**: the adoption
+authorizes none, and the separate implementation-authorization act has
+not been performed.
