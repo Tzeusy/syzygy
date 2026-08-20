@@ -23,14 +23,30 @@
       `round-2026-08k/REVIEW-BINDING.md`)
 - [x] 2.2 One consolidated repair pass (Pass 3, 2026-08-20 — all five
       blockers and the taken non-blocking findings, one edit batch)
-- [ ] 2.3 One confirming review of the repaired bytes
+- [x] 2.3 One confirming review of the repaired bytes (RS-4, 2026-08-20,
+      raw at `round-2026-08k/reviews/RS-4-CONFIRMING-RAW.md` — verdict
+      copied exactly: **REVISE**; all five Pass 2 blockers verified
+      repaired; one remaining blocker, CAP1-REQ-038's Form line, which
+      the owner then disposed by authorizing one final bounded
+      correction; RS-4's non-blocking observations are deferred by that
+      same owner instruction)
+- [ ] 2.4 One fresh targeted confirmation of the final bounded
+      correction only: the CAP1-REQ-038 Form relabel, all 42 form
+      classifications, the exact final digests, generated-artifact
+      consistency, and the final validation evidence — no broader
+      review
 
-## 3. Validation
+## 3. Validation (rerun against the final bytes, 2026-08-20)
 
-- [ ] 3.1 `openspec validate --strict` clean
-- [ ] 3.2 Full governance battery green (per `PROJECT-STATUS.md` §"How to
-      verify this page"), outputs and denominators read
-- [ ] 3.3 Clean-clone validation at the exact reviewed commit
+- [x] 3.1 `openspec validate --strict` clean — rerun after the REQ-038
+      correction: "Change 'project-registration-and-honest-shape-
+      visibility' is valid"
+- [x] 3.2 Full governance battery green (per `PROJECT-STATUS.md` §"How to
+      verify this page"), outputs and denominators read — rerun after
+      the REQ-038 correction: 18/18 lines green, 33 OK / 18 WARN /
+      0 FAIL on `check_governance.py`, every selftest 0 failing
+- [ ] 3.3 Clean-clone validation at the exact final commit (recorded
+      here with its commit hash once run)
 
 ## 4. Owner adoption — not performed by this change
 

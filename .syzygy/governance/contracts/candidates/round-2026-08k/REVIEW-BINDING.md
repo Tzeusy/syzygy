@@ -54,3 +54,48 @@ bd43e21a5930fada26549b1f6ab16be72b9d2f622a682dd07e88fccd11af7548  CONTRACT-COVER
 The Pass 4 review's commit is named in its raw record. If Pass 4 finds
 a real blocker, the bounded workflow stops and the specification goes
 to the owner with the blocker stated — no second repair pass.
+
+## Pass 4 outcome and the owner-authorized final bounded correction (2026-08-20)
+
+Pass 4 (RS-4) returned **REVISE**: all five Pass 2 blockers verified
+repaired; one remaining blocker — CAP1-REQ-038 declared `invariant`
+without the CC-SPEC-4 sweep triple (pre-existing, outside RS-2's named
+set). The workflow stopped and the blocker was presented to the owner.
+**The owner then authorized one final bounded correction** (instruction
+of 2026-08-20): change only CAP1-REQ-038's Form line to
+`state projection/query`, altering no behavior, scenario, oracle,
+falsifier, warrant, or coverage. RS-4's raw record stands verbatim as
+review evidence over the commit-`696a9eb` bytes; **RS-4's non-blocking
+observations are deferred by the same owner instruction.**
+
+The correction was applied and `GOVERNING-DEPENDENCIES.md` regenerated
+(only its embedded spec digest changed — 42 requirements, 50
+authorities, unchanged). Form census after: 7 event-response,
+11 prohibition, 13 invariant, 11 state projection/query = 42 — exactly
+one moved, invariant → state projection/query.
+
+## FINAL exact-byte binding — the semantic specification artifacts
+
+The owner adoption act (CC-SPEC-10) and the one targeted confirmation
+bind to these exact bytes (sha256, scripted this session; paths
+relative to `openspec/changes/project-registration-and-honest-shape-visibility/`):
+
+```text
+727fc3b35bb3eb09ccede6d08cbc829ea0044b031816d47842ec2573bff99290  .openspec.yaml
+a9e170909acb672d7c46d02a6a8456511680feef4ef994ab5c297315961b735e  proposal.md
+a7a90828ed51fd5e98d8cbc9f35f2aa88b5cdd75f6a53f905b816dcc11267652  design.md
+2f6f4de4650b6800b968d243dd5887919ea7d4da550413db570d6928ac7646e9  CAPABILITY-COVERAGE.md
+bd43e21a5930fada26549b1f6ab16be72b9d2f622a682dd07e88fccd11af7548  CONTRACT-COVERAGE.md
+a00ccbf24f2e106ec3a396b8ae637097b4aaca9965548aab6d1cda0f37851c8e  GOVERNING-DEPENDENCIES.md
+65b66c913cd2650881a9df8cb34a3c63b3f518041e83f45d2451980d9f1d0448  specs/project-registration-and-honest-shape-visibility/spec.md
+```
+
+**`tasks.md` is deliberately outside this binding.** It is the change's
+mutable lifecycle ledger (checkbox state), not a semantic specification
+artifact; CC-SPEC-10 binds adoption to "what was adopted at which
+digest," and no in-force clause names the task file — a sweep of the
+in-force CC-SPEC/CC-IMPACT policy text finds zero mentions of it. Its
+entries may therefore record later lifecycle facts (the clean-clone
+commit hash, the targeted confirmation) without retiring this binding.
+Any edit to the seven bound files above **does** retire the targeted
+confirmation and reopens the adoption question (verification rule 10).

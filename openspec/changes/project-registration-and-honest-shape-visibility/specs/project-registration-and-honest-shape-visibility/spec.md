@@ -1203,7 +1203,7 @@ warrants:
 
 ### Requirement: CAP1-REQ-038 — A negative or Unknown answer never erases the others
 
-Group: Independent project-shape answers. Form: **invariant**.
+Group: Independent project-shape answers. Form: **state projection/query**.
 
 A `Gap` or `Unknown` value on one shape answer SHALL NOT suppress,
 hide, or degrade the rendering of any other answer. All seven answers
