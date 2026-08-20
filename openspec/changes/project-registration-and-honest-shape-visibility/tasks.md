@@ -45,8 +45,13 @@
       verify this page"), outputs and denominators read — rerun after
       the REQ-038 correction: 18/18 lines green, 33 OK / 18 WARN /
       0 FAIL on `check_governance.py`, every selftest 0 failing
-- [ ] 3.3 Clean-clone validation at the exact final commit (recorded
-      here with its commit hash once run)
+- [x] 3.3 Clean-clone validation at the exact final commit — run
+      2026-08-20 in a fresh clone checked out at `26e1b51`: all 18
+      battery lines green, `openspec validate --strict` valid, and the
+      clone's spec.md / GOVERNING-DEPENDENCIES.md sha256 digests equal
+      the FINAL binding in `round-2026-08k/REVIEW-BINDING.md` exactly.
+      (This checkbox lives outside that binding by design; see the
+      binding's tasks.md exclusion note)
 
 ## 4. Owner adoption — not performed by this change
 
