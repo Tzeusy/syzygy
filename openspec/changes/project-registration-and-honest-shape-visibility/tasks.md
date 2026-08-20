@@ -30,11 +30,14 @@
       the owner then disposed by authorizing one final bounded
       correction; RS-4's non-blocking observations are deferred by that
       same owner instruction)
-- [ ] 2.4 One fresh targeted confirmation of the final bounded
+- [x] 2.4 One fresh targeted confirmation of the final bounded
       correction only: the CAP1-REQ-038 Form relabel, all 42 form
       classifications, the exact final digests, generated-artifact
       consistency, and the final validation evidence — no broader
-      review
+      review (RS-5, 2026-08-20, raw at
+      `round-2026-08k/reviews/RS-5-TARGETED-CONFIRMATION-RAW.md` —
+      verdict copied exactly: **CONFIRM**; all five checks PASS, no
+      blockers)
 
 ## 3. Validation (rerun against the final bytes, 2026-08-20)
 
