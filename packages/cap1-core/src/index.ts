@@ -10,3 +10,7 @@ export * from './staleness.js';
 export * from './proposal.js';
 export * from './facets.js';
 export * from './stable-identity.js';
+export * from './epistemic.js';
+export * from './authority.js';
+export * from './drawer.js';
+export * from './parity.js';
