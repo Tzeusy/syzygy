@@ -8,4 +8,5 @@ export * from './admission.js';
 export * from './evaluation.js';
 export * from './staleness.js';
 export * from './proposal.js';
+export * from './facets.js';
 export * from './stable-identity.js';
