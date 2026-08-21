@@ -5,3 +5,7 @@ export * from './declaration.js';
 export * from './consent.js';
 export * from './coverage.js';
 export * from './admission.js';
+export * from './evaluation.js';
+export * from './staleness.js';
+export * from './proposal.js';
+export * from './stable-identity.js';
