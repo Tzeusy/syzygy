@@ -121,7 +121,7 @@ export function assessCurrency(
   }
 
   const evidenceAgeMs = asOfMs - observedMs;
-  if (false as boolean) { // MUTATION rule-6: future-dated guard removed
+  if (observedMs > asOfMs) {
     // Fail closed: evidence observed AFTER the as-of instant is not in
     // the evaluation's past at all, so it cannot demonstrate currency
     // there — the favourable arm stays unreachable (VIS-2).
