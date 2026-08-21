@@ -214,3 +214,48 @@ bd close <id>         # Complete work
 NEVER stop before pushing — that strands work locally. If push fails,
 resolve and retry until it succeeds.
 <!-- END BEADS INTEGRATION -->
+
+## Notes to self
+
+### Capability 1 implementation status
+
+All slices S0–S7 are committed and pushed (main at a52c81c, 2026-08-22).
+296 tests across 44 files, typecheck clean. Every risk-floor slice
+independently reviewed (all CONFIRM WITH EXCEPTIONS, zero blockers).
+The CAP1 epic (syzygy-7op) is closed.
+
+### Implementation architecture
+
+- 14 pure domain modules in `packages/cap1-core/src/`, re-exported via
+  `index.ts`. Zero I/O, zero clock reads, zero side effects.
+- Conformance tests in `packages/cap1-conformance/src/`, one file per
+  CAP1-REQ-NNN plus `req-integration.conformance.test.ts`.
+- Closed vocabularies as `as const` tuples; branded ID types (`ProjectId`,
+  `RepositoryId`, `EvaluationId`); discriminated-union results with named
+  failure arms.
+- Parity by construction: one `FactModel`, `serveMachine`/`renderHuman`
+  both from the same source; independent oracle compares channel outputs.
+
+### Lessons learned (durable)
+
+- **FROZEN rule**: workers must declare files FROZEN after final report;
+  orchestrator re-verifies staged bytes match tested bytes before commit
+  (the S3 mutation race, fixed in bd84cf0).
+- **Fail-closed polarity**: withdrawal defeats grant (consent); future-dated
+  evidence fails to stale; no evidence → Unknown, never green.
+- **Oracle independence in tests**: expected values are hard-coded string
+  literals in conformance tests, never imported from vocabulary modules.
+- **Rule-6 mutation check**: temporarily break the fix, confirm the
+  falsifier test fails, restore — proves the test can catch the defect.
+
+### Open follow-up work
+
+- Bead syzygy-ydr: non-blocking S2/S5 review findings (consent-reference
+  resolution, oracle Map-collapse hardening for duplicate-named facts in
+  compareRenderings, admissibility bar, grant-state rendering citations,
+  unreachable-vs-observer-failure split).
+- Review WARNING: `compareRenderings` uses name-keyed Maps that collapse
+  duplicate-named facts — unreachable by construction but weakens
+  defense-in-depth. Fix: positional or multiset comparison.
+- Review WARNING: `authorizeWrite` uses raw `startsWith` — path traversal
+  like `openspec/../README.md` passes. Caller must normalize.
