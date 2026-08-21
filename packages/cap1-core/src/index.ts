@@ -14,3 +14,5 @@ export * from './epistemic.js';
 export * from './authority.js';
 export * from './drawer.js';
 export * from './parity.js';
+export * from './entry.js';
+export * from './discoverability.js';
