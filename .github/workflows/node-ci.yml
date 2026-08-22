@@ -1,0 +1,71 @@
+# Node implementation battery.
+#
+# This workflow is the hosted denominator for the Capability 1
+# implementation code: on a fresh checkout it installs, builds,
+# typechecks, runs the unit/conformance suites, and runs the system-test
+# suite, which spawns the real daemon and drives it over HTTP — the
+# epic's fresh-clone demonstration, automated on every push.
+#
+# It is deliberately separate from governance-docs.yml: that workflow is
+# the governance battery's hosted denominator (compared by CG-26) and
+# runs the stdlib-only documentation checkers; this one runs the Node
+# toolchain. The two lists measure different populations and must not be
+# merged or cross-copied.
+#
+# The job runs as the default unprivileged runner user. Several unit
+# tests chmod fixtures to 000 to provoke permission failures, and those
+# tests skip themselves under root (root ignores mode bits) — running
+# privileged would silently shrink the denominator.
+#
+# Each step is named for the stage it owns, so a red run shows WHICH
+# stage failed: the stage is the diagnosis (verification rule 4).
+name: node-ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # Fresh install from the lockfile — a drifted or missing lockfile
+      # fails here, before any code runs.
+      - name: install (npm ci)
+        run: npm ci
+
+      # Compile all packages; emit errors are build failures, not test noise.
+      - name: build (npm run build)
+        run: npm run build
+
+      # Type errors surface here even where build output would still emit.
+      - name: typecheck (npm run typecheck)
+        run: npm run typecheck
+
+      # Unit and conformance suites: the pure domain model against the
+      # adopted Capability 1 requirements.
+      - name: unit + conformance tests (npm test)
+        run: npm test
+
+      # System tests: spawn the real daemon, load real credentials and
+      # consent references from disk, and exercise the machine and human
+      # endpoints over HTTP. SYZYGY_FRESH_CLONE=1 enables the guarded
+      # fresh-clone test; the timeout bounds a daemon that hangs instead
+      # of failing.
+      - name: system tests (npm run test:system)
+        run: npm run test:system
+        env:
+          SYZYGY_FRESH_CLONE: '1'
+        timeout-minutes: 20
