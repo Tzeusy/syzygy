@@ -219,10 +219,27 @@ resolve and retry until it succeeds.
 
 ### Capability 1 implementation status
 
-All slices S0–S7 are committed and pushed (main at a52c81c, 2026-08-22).
-296 tests across 44 files, typecheck clean. Every risk-floor slice
-independently reviewed (all CONFIRM WITH EXCEPTIONS, zero blockers).
-The CAP1 epic (syzygy-7op) is closed.
+**Domain model and conformance suite complete; runtime vertical slice is
+not** (owner correction, 2026-08-22). S0–S7 are committed and pushed
+(main at a52c81c): 296 tests across 44 files, typecheck clean, every
+risk-floor slice independently reviewed (all CONFIRM WITH EXCEPTIONS,
+zero blockers). But everything is pure/in-memory — no real
+repository/filesystem observation, no consent-reference loading from
+disk, no daemon, no HTTP endpoints, no served human page, no
+process/filesystem/HTTP system tests, no CI. The CAP1 domain epic
+(syzygy-7op) is closed with a correction note; the runtime remainder is
+epic **syzygy-zal** (RT1–RT9: observation, consent loading,
+credential-backed daemon, JSON machine endpoint, server-rendered human
+page + "Why this answer?", true system tests, write-boundary
+normalization/traversal protection, Node CI, fresh runtime
+review→repair→confirmation).
+
+**Do not call Capability 1 implemented** until a fresh clone can start
+the daemon and demonstrate the same facts through a browser and an
+authenticated machine request. Runtime-epic worker rules: isolated git
+worktrees per concurrent worker; rule-6 mutation testing only on
+disposable copies; staged bytes verified against tested bytes before
+commit.
 
 ### Implementation architecture
 
