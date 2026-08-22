@@ -55,7 +55,8 @@ registerHooks({
 // Imported AFTER the hook is registered, so the bare specifier resolves
 // to the compiled entry at runtime (types still come from the source).
 const daemonModule = await import('@syzygy/cap1-daemon');
-const { createDaemon, evaluateProject, minimalRootRoute } = daemonModule;
+const { createDaemon, evaluateProject, humanRoutes, machineRoutes } = daemonModule;
+type EntrySourceRead = import('@syzygy/cap1-daemon').EntrySourceRead;
 
 const DEFAULT_PORT = 7477;
 const DEFAULT_STATE_DIR_NAME = '.syzygy-daemon-state';
@@ -154,10 +155,37 @@ async function main(): Promise<number> {
 
   const projectEvaluation = await evaluateProject(root, { evaluation });
 
+  // Both channels serve from this ONE evaluation — parity by construction
+  // (CAP1-REQ-041/043): the human page and the machine endpoint share the
+  // same FactModel source, never two computations.
+  const getEvaluation = () => projectEvaluation;
+
+  // Entry content is read from the observed root at request time; ENOENT
+  // renders the named absent finding, everything else the named unreadable
+  // arm (CAP1-REQ-022) — never a fabricated page.
+  const readEntrySource = async (entryPath: string): Promise<EntrySourceRead> => {
+    const { readFile } = await import('node:fs/promises');
+    try {
+      const text = await readFile(path.join(root, entryPath), 'utf8');
+      return { state: 'present', text };
+    } catch (cause: unknown) {
+      if ((cause as NodeJS.ErrnoException).code === 'ENOENT') {
+        return { state: 'absent' };
+      }
+      const reason =
+        (cause as NodeJS.ErrnoException).code ??
+        (cause instanceof Error ? cause.message : String(cause));
+      return { state: 'unreadable', reason };
+    }
+  };
+
   const start = await createDaemon({
     stateDir,
     port,
-    routes: [minimalRootRoute(projectEvaluation)],
+    routes: [
+      ...humanRoutes({ getEvaluation, readEntrySource }),
+      ...machineRoutes({ getEvaluation }),
+    ],
   });
   if (!start.started) {
     process.stderr.write(
