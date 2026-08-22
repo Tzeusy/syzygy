@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "test": "vitest run",
+    "build": "tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance apps/syzygy",
     "typecheck": "tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance apps/syzygy"
   },
   "devDependencies": {
