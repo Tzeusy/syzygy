@@ -1,5 +1,5 @@
 # R-RT Runtime Review — Capability 1 vertical slice
-**Commit:** f0a0f45 (verified `git rev-parse HEAD` = f0a0f45af69309d…) / **Reviewer:** rt9-reviewer (independent fresh-context agent) / **Date:** 2026-08-23
+**Commit:** f0a0f45 (verified `git rev-parse HEAD` = f0a0f45af69309d7fdab49c5a989cdf5b0ee171c) / **Reviewer:** rt9-reviewer (independent fresh-context agent) / **Date:** 2026-08-23
 
 ## Verdict: CONFIRM WITH EXCEPTIONS
 One non-blocking defense-in-depth finding; no BLOCKING findings. Every risk-floor property holds; all acceptance criteria are demonstrated, including the guarded fresh-clone end-to-end test.
@@ -32,3 +32,11 @@ Daemon src (9): observation.ts, consent-loading.ts, write-guard.ts, credentials.
 - **Core `authorizeWrite` raw `startsWith`** (write-boundary.ts:41-48) is the documented core weakness; the runtime correctly compensates by never handing it an un-normalized path (property 1). Reported as core context per instructions, not a runtime finding. [Observed]
 
 **Bottom line:** the slice meets epic syzygy-zal's definition of done — a fresh clone installs, builds, starts the daemon, and demonstrates the same seven facts through a browser-equivalent GET and an authenticated machine request, with consent exact and fail-closed, writes boundary-guarded and externally verified, and CI running build/typecheck/unit/system (fresh-clone enabled). The single exception (RTF-1) is a non-blocking startup-config hardening item. I made no edits (strictly read-only).
+
+---
+*Editorial note (coordinator, 2026-08-23): the header line's commit sha,
+which the reviewer emitted as a 15-hex prefix ending in an ellipsis, was
+expanded in place to the full 40-hex sha to satisfy CG-15's
+truncated-digest-quote sweep. No other byte of the reviewer's raw output
+was altered; the semantic content is unchanged (the full sha names the
+same commit the reviewer verified).*
