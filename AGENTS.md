@@ -219,27 +219,32 @@ resolve and retry until it succeeds.
 
 ### Capability 1 implementation status
 
-**Domain model and conformance suite complete; runtime vertical slice is
-not** (owner correction, 2026-08-22). S0–S7 are committed and pushed
-(main at a52c81c): 296 tests across 44 files, typecheck clean, every
-risk-floor slice independently reviewed (all CONFIRM WITH EXCEPTIONS,
-zero blockers). But everything is pure/in-memory — no real
-repository/filesystem observation, no consent-reference loading from
-disk, no daemon, no HTTP endpoints, no served human page, no
-process/filesystem/HTTP system tests, no CI. The CAP1 domain epic
-(syzygy-7op) is closed with a correction note; the runtime remainder is
-epic **syzygy-zal** (RT1–RT9: observation, consent loading,
-credential-backed daemon, JSON machine endpoint, server-rendered human
-page + "Why this answer?", true system tests, write-boundary
-normalization/traversal protection, Node CI, fresh runtime
-review→repair→confirmation).
+**Complete end-to-end (2026-08-23).** [Observed] Domain: S0–S7
+(296 conformance tests). Runtime vertical slice: epic syzygy-zal RT1–RT9
+all closed — real filesystem observation, exact fail-closed
+consent-reference loading, credential-backed local daemon (127.0.0.1,
+bearer token 0600, constant-time compare), JSON machine endpoint
+(`GET /api/project`), server-rendered human page + "Why this answer?"
+(`GET /`, `GET /entry`), write-boundary normalization/traversal/symlink
+protection, true process/filesystem/HTTP system tests
+(`npm run test:system`; fresh-clone test gated by `SYZYGY_FRESH_CLONE=1`),
+and hosted `node-ci` (green on main; verified by step output, not exit
+code). The fresh-clone bar is met and automated: clone → `npm ci` →
+`npm run build` → daemon start → same seven facts via browser-equivalent
+GET and authenticated machine request, wire-parity sweep 7/7. Runtime
+review cycle: R-RT review **CONFIRM WITH EXCEPTIONS** at f0a0f45 (one
+non-blocking finding RTF-1), one repair (00d6020), confirmation
+**CONFIRMED** — records in `docs/reviews/R-RT-*.md`. 408 unit + 15
+system tests. Node floor is >=22.15 (`registerHooks`; Node 20 is EOL) —
+CI runs Node 24.
 
-**Do not call Capability 1 implemented** until a fresh clone can start
-the daemon and demonstrate the same facts through a browser and an
-authenticated machine request. Runtime-epic worker rules: isolated git
-worktrees per concurrent worker; rule-6 mutation testing only on
-disposable copies; staged bytes verified against tested bytes before
-commit.
+Known honest gaps (follow-up bead, not defects): pipeline does not yet
+compute discoverability findings / authority exposures (page renders
+disclosed absence); `evaluateProject` runs once at startup (snapshot
+semantics, as-of disclosed); dangling-symlink state dir refuses via
+`credential-unprovisionable` rather than the governed-plane arm;
+`PROJECT-STATUS.md` §7 still says "in progress" pending a governance-page
+pass.
 
 ### Implementation architecture
 
