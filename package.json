@@ -2,7 +2,7 @@
   "name": "syzygy-workspace",
   "private": true,
   "engines": {
-    "node": ">=20"
+    "node": ">=22.15"
   },
   "workspaces": [
     "packages/*",

@@ -13,7 +13,9 @@
 
 ## Selected stack, with rationale
 
-**TypeScript on Node.js (≥20), npm workspaces, Vitest, and the `yaml`
+**TypeScript on Node.js (≥22.15 — raised from ≥20 on 2026-08-23: the
+runtime entry uses `node:module` `registerHooks`, absent before 22.15,
+and Node 20 left maintenance 2026-04), npm workspaces, Vitest, and the `yaml`
 package pinned exact.** `[Inferred — one defensible choice, reasoning
 stated so the owner can disagree with the reasoning]`
 
