@@ -1,7 +1,8 @@
 # Capability 1 runtime-hardening follow-ups — design
 
-**Status:** Revised after deep review; pending user approval before
-implementation planning.
+**Status:** Approved by the user for detailed implementation planning and
+packet-complete Bead shaping on 2026-08-24. This approval does not release held
+rows or replace any owner act required by the escalation conditions below.
 
 **Baseline:** `main` at `0cbb8f9e0eabf7e89d023c2fe7f559465f77b2b0`; the
 baseline default suite passed 53 files / 408 tests in an isolated worktree.
