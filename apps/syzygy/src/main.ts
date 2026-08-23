@@ -25,6 +25,7 @@
 // the one place process signals are handled (clean shutdown on
 // SIGINT/SIGTERM).
 
+import * as fs from 'node:fs';
 import { registerHooks } from 'node:module';
 import * as path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -122,6 +123,8 @@ function parseCli(argv: readonly string[], env: NodeJS.ProcessEnv): CliParse {
   // The state directory may never lie inside the governed plane: the
   // daemon's state writes are outside `openspec/**` and `.syzygy/**`
   // by construction, so pointing state INTO them is refused, named.
+  // This lexical pass keeps parseCli pure (no filesystem); symlink
+  // reality is judged by `governedPlaneViolation` in main() (RTF-1).
   for (const governed of ['openspec', '.syzygy']) {
     const governedRoot = path.join(root, governed);
     if (stateDir === governedRoot || stateDir.startsWith(governedRoot + path.sep)) {
@@ -135,8 +138,69 @@ function parseCli(argv: readonly string[], env: NodeJS.ProcessEnv): CliParse {
   return { kind: 'run', config: { root, stateDir, port } };
 }
 
+// --- Governed-plane containment by symlink reality (RTF-1) ---------------
+
+/** Nearest existing ancestor of an absolute path (always terminates at '/'). */
+function nearestExistingAncestor(absolutePath: string): string {
+  let current = absolutePath;
+  for (;;) {
+    if (fs.existsSync(current)) {
+      return current;
+    }
+    const parent = path.dirname(current);
+    if (parent === current) {
+      return current;
+    }
+    current = parent;
+  }
+}
+
+/**
+ * Real filesystem location of a (possibly not-yet-created) absolute
+ * path: realpath the nearest EXISTING ancestor, re-append the unbuilt
+ * tail — the same discipline as the two write-guards
+ * (packages/cap1-daemon credentials.ts / write-guard.ts).
+ */
+function realLocation(absolutePath: string): string {
+  const ancestor = nearestExistingAncestor(absolutePath);
+  const realAncestor = fs.realpathSync(ancestor);
+  const tail = path.relative(ancestor, absolutePath);
+  return tail === '' ? realAncestor : path.join(realAncestor, tail);
+}
+
+/**
+ * Judge the state directory's REAL location against the REAL governed
+ * roots. The lexical pass in parseCli is not enough: an
+ * operator-supplied symlink (`ln -s <root>/.syzygy/x /tmp/sd;
+ * --state-dir /tmp/sd`) resolves lexically outside the governed plane
+ * while its real target lies inside it — the credential write would
+ * land in the governed plane via the link (RTF-1). Returns the named
+ * refusal detail, or null when the real state dir is outside both real
+ * governed roots. Read-only: no write, no directory creation.
+ */
+function governedPlaneViolation(root: string, stateDir: string): string | null {
+  const realRoot = realLocation(root);
+  const realStateDir = realLocation(stateDir);
+  for (const governed of ['openspec', '.syzygy']) {
+    const governedRoot = path.join(realRoot, governed);
+    if (realStateDir === governedRoot || realStateDir.startsWith(governedRoot + path.sep)) {
+      return `state directory ${stateDir} really resolves to ${realStateDir}, inside the governed plane (${governedRoot}); choose a location outside openspec/ and .syzygy/`;
+    }
+  }
+  return null;
+}
+
 async function main(): Promise<number> {
-  const parsed = parseCli(process.argv.slice(2), process.env);
+  let parsed = parseCli(process.argv.slice(2), process.env);
+  if (parsed.kind === 'run') {
+    // Symlink reality (RTF-1): the pure lexical check in parseCli
+    // cannot see links; judge the real locations here, where fs is
+    // available — same named 'invalid' arm, before anything starts.
+    const violation = governedPlaneViolation(parsed.config.root, parsed.config.stateDir);
+    if (violation !== null) {
+      parsed = { kind: 'invalid', detail: violation };
+    }
+  }
   if (parsed.kind === 'help') {
     process.stdout.write(USAGE);
     return 0;
