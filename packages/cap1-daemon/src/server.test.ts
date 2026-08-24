@@ -87,26 +87,26 @@ function snapshotFiles(base: string): readonly string[] {
 }
 
 describe('RT3 — credential-classed admission at the transport', () => {
-  it('a machine-credentialed route without a credential refuses, named, handler NOT invoked', async () => {
-    const spy = machineRoute('/machine');
-    const daemon = await startDaemon(join(tempDir('rt3-srv-'), 'state'), [spy.route]);
-
-    const response = await fetch(`http://127.0.0.1:${daemon.port}/machine`);
-    expect(response.status).toBe(401);
-    // The named refusal, verbatim core vocabulary — hard-coded literal.
-    expect(await response.json()).toEqual({ admitted: false, served: 'nothing' });
-    expect(spy.invoked).toBe(0);
-  });
-
-  it('a wrong bearer token refuses, named, handler NOT invoked', async () => {
+  it.each([
+    ['missing', undefined],
+    ['scheme without separator', 'Bearer'],
+    ['empty bearer token', 'Bearer '],
+    ['wrong scheme', 'Basic x'],
+    ['whitespace-only bearer token', 'Bearer    '],
+    ['malformed scheme casing', `bearer ${'a'.repeat(64)}`],
+    ['wrong-length bearer token', 'Bearer definitely-not-the-minted-token'],
+    ['wrong bearer token', `Bearer ${'f'.repeat(64)}`],
+  ])('refuses %s credentials before invoking the handler', async (_case, authorization) => {
     const spy = machineRoute('/machine');
     const daemon = await startDaemon(join(tempDir('rt3-srv-'), 'state'), [spy.route]);
 
     const response = await fetch(`http://127.0.0.1:${daemon.port}/machine`, {
-      headers: { authorization: `Bearer ${'f'.repeat(64)}` },
+      ...(authorization === undefined ? {} : { headers: { authorization } }),
     });
     expect(response.status).toBe(401);
-    expect(await response.json()).toEqual({ admitted: false, served: 'nothing' });
+    expect(response.headers.get('content-type')).toBe('application/json');
+    // The named refusal bytes, verbatim core vocabulary — hard-coded literal.
+    expect(await response.text()).toBe('{"admitted":false,"served":"nothing"}');
     expect(spy.invoked).toBe(0);
   });
 

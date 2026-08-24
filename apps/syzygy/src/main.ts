@@ -140,32 +140,91 @@ function parseCli(argv: readonly string[], env: NodeJS.ProcessEnv): CliParse {
 
 // --- Governed-plane containment by symlink reality (RTF-1) ---------------
 
-/** Nearest existing ancestor of an absolute path (always terminates at '/'). */
-function nearestExistingAncestor(absolutePath: string): string {
-  let current = absolutePath;
-  for (;;) {
-    if (fs.existsSync(current)) {
-      return current;
+type PathIntentResolution =
+  | {
+      readonly resolved: true;
+      readonly intendedRealPath: string;
+      readonly dangling: boolean;
     }
-    const parent = path.dirname(current);
-    if (parent === current) {
-      return current;
-    }
-    current = parent;
-  }
+  | {
+      readonly resolved: false;
+      readonly reason: 'symlink-loop' | 'path-unreadable';
+      readonly detail: string;
+    };
+
+function filesystemFailureCode(cause: unknown): string {
+  return (cause as NodeJS.ErrnoException).code ?? 'unknown-error';
 }
 
 /**
- * Real filesystem location of a (possibly not-yet-created) absolute
- * path: realpath the nearest EXISTING ancestor, re-append the unbuilt
- * tail — the same discipline as the two write-guards
- * (packages/cap1-daemon credentials.ts / write-guard.ts).
+ * Resolve symlinks component-by-component without requiring their target to
+ * exist. This preserves the intended landing path of a dangling link, while
+ * reporting loops and unreadable components as named failures before effects.
  */
-function realLocation(absolutePath: string): string {
-  const ancestor = nearestExistingAncestor(absolutePath);
-  const realAncestor = fs.realpathSync(ancestor);
-  const tail = path.relative(ancestor, absolutePath);
-  return tail === '' ? realAncestor : path.join(realAncestor, tail);
+function resolvePathIntent(absolutePath: string): PathIntentResolution {
+  let candidate = path.resolve(absolutePath);
+  const visitedLinks = new Set<string>();
+
+  for (;;) {
+    const parsed = path.parse(candidate);
+    const components = candidate
+      .slice(parsed.root.length)
+      .split(path.sep)
+      .filter((component) => component !== '');
+    let current = parsed.root;
+    let rewritten = false;
+
+    for (let index = 0; index < components.length; index++) {
+      current = path.join(current, components[index] ?? '');
+      let stats: fs.Stats;
+      try {
+        stats = fs.lstatSync(current);
+      } catch (cause) {
+        const code = filesystemFailureCode(cause);
+        if (code === 'ENOENT') {
+          return { resolved: true, intendedRealPath: candidate, dangling: true };
+        }
+        return {
+          resolved: false,
+          reason: 'path-unreadable',
+          detail: `filesystem inspection failed at ${current} (${code})`,
+        };
+      }
+
+      if (!stats.isSymbolicLink()) {
+        continue;
+      }
+      if (visitedLinks.has(current)) {
+        return {
+          resolved: false,
+          reason: 'symlink-loop',
+          detail: `symbolic link cycle revisits ${current}`,
+        };
+      }
+      visitedLinks.add(current);
+
+      let targetText: string;
+      try {
+        targetText = fs.readlinkSync(current);
+      } catch (cause) {
+        return {
+          resolved: false,
+          reason: 'path-unreadable',
+          detail: `symbolic link target could not be read at ${current} (${filesystemFailureCode(cause)})`,
+        };
+      }
+      const target = path.isAbsolute(targetText)
+        ? path.resolve(targetText)
+        : path.resolve(path.dirname(current), targetText);
+      candidate = path.resolve(target, ...components.slice(index + 1));
+      rewritten = true;
+      break;
+    }
+
+    if (!rewritten) {
+      return { resolved: true, intendedRealPath: candidate, dangling: false };
+    }
+  }
 }
 
 /**
@@ -179,10 +238,23 @@ function realLocation(absolutePath: string): string {
  * governed roots. Read-only: no write, no directory creation.
  */
 function governedPlaneViolation(root: string, stateDir: string): string | null {
-  const realRoot = realLocation(root);
-  const realStateDir = realLocation(stateDir);
+  const rootResolution = resolvePathIntent(root);
+  if (!rootResolution.resolved) {
+    return `observed root is invalid (${rootResolution.reason}): ${rootResolution.detail}`;
+  }
+  const stateResolution = resolvePathIntent(stateDir);
+  if (!stateResolution.resolved) {
+    return `state directory is invalid (${stateResolution.reason}): ${stateResolution.detail}`;
+  }
+
+  const realRoot = rootResolution.intendedRealPath;
+  const realStateDir = stateResolution.intendedRealPath;
   for (const governed of ['openspec', '.syzygy']) {
-    const governedRoot = path.join(realRoot, governed);
+    const governedResolution = resolvePathIntent(path.join(realRoot, governed));
+    if (!governedResolution.resolved) {
+      return `governed root is invalid (${governedResolution.reason}): ${governedResolution.detail}`;
+    }
+    const governedRoot = governedResolution.intendedRealPath;
     if (realStateDir === governedRoot || realStateDir.startsWith(governedRoot + path.sep)) {
       return `state directory ${stateDir} really resolves to ${realStateDir}, inside the governed plane (${governedRoot}); choose a location outside openspec/ and .syzygy/`;
     }
