@@ -191,6 +191,8 @@ export interface ParityDisagreement {
   readonly facet: ParityFacet;
   readonly inFirst: string;
   readonly inSecond: string;
+  /** The canonical semantic tuple when the disagreement is an occurrence count. */
+  readonly tupleDigest?: string;
 }
 
 // The comparison result. Two renderings whose envelopes differ are not
@@ -257,6 +259,51 @@ function facetPairs(a: ServedFact, b: ServedFact): readonly {
   ];
 }
 
+// Counts complete canonical tuples without treating any tuple field as a
+// uniqueness key. The returned map is deliberately generic so downstream
+// projections can share the same multiplicity-preserving comparison seam.
+export function canonicalTupleMultiset<T>(
+  values: readonly T[],
+  canonicalize: (value: T) => string,
+): ReadonlyMap<string, number> {
+  const counts = new Map<string, number>();
+  for (const value of values) {
+    const key = canonicalize(value);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return counts;
+}
+
+// A fact's semantic tuple excludes only presentation/channel formatting. The
+// full epistemic state remains in the key, including Unknown reasons, basis,
+// freshness, and tier.
+function canonicalFactTuple(fact: ServedFact): string {
+  return deterministicLayer({
+    name: fact.name,
+    value: fact.value,
+    epistemic: {
+      label: fact.epistemic.label,
+      reasons: 'reasons' in fact.epistemic ? fact.epistemic.reasons : undefined,
+      basis: 'basis' in fact.epistemic ? fact.epistemic.basis : undefined,
+      freshness: fact.epistemic.freshness,
+      tier: fact.epistemic.tier,
+    },
+  });
+}
+
+function factsByName(facts: readonly ServedFact[]): Map<string, ServedFact[]> {
+  const grouped = new Map<string, ServedFact[]>();
+  for (const fact of facts) {
+    const named = grouped.get(fact.name);
+    if (named === undefined) {
+      grouped.set(fact.name, [fact]);
+    } else {
+      named.push(fact);
+    }
+  }
+  return grouped;
+}
+
 // Compares two renderings of what should be one (selection, evaluation,
 // scenario context). The judgment consults ONLY the two disclosures —
 // no implementation state, no self-report, no shared-source claim
@@ -288,28 +335,36 @@ export function compareRenderings(
   }
 
   const disagreements: ParityDisagreement[] = [];
-  const firstByName = new Map(first.facts.map((fact) => [fact.name, fact]));
-  const secondByName = new Map(second.facts.map((fact) => [fact.name, fact]));
+  const firstByName = factsByName(first.facts);
+  const secondByName = factsByName(second.facts);
+  const names = [...new Set([...firstByName.keys(), ...secondByName.keys()])].sort();
 
-  for (const [name, factInFirst] of firstByName) {
-    const factInSecond = secondByName.get(name);
-    if (factInSecond === undefined) {
+  // Preserve the existing per-facet diagnostics where each name identifies
+  // exactly one fact in each channel. Duplicate names are intentionally not
+  // paired by position or by last-write-wins lookup; their complete tuples
+  // are diagnosed below.
+  for (const name of names) {
+    const factsInFirst = firstByName.get(name) ?? [];
+    const factsInSecond = secondByName.get(name) ?? [];
+    if (factsInFirst.length === 1 && factsInSecond.length === 1) {
+      const factInFirst = factsInFirst[0];
+      const factInSecond = factsInSecond[0];
+      if (factInFirst === undefined || factInSecond === undefined) {
+        throw new Error('fact grouping lost a unique fact');
+      }
+      for (const pair of facetPairs(factInFirst, factInSecond)) {
+        if (pair.inFirst !== pair.inSecond) {
+          disagreements.push({ factName: name, ...pair });
+        }
+      }
+    } else if (factsInFirst.length === 1 && factsInSecond.length === 0) {
       disagreements.push({
         factName: name,
         facet: 'existence',
         inFirst: 'present',
         inSecond: 'absent',
       });
-      continue;
-    }
-    for (const pair of facetPairs(factInFirst, factInSecond)) {
-      if (pair.inFirst !== pair.inSecond) {
-        disagreements.push({ factName: name, ...pair });
-      }
-    }
-  }
-  for (const name of secondByName.keys()) {
-    if (!firstByName.has(name)) {
+    } else if (factsInFirst.length === 0 && factsInSecond.length === 1) {
       disagreements.push({
         factName: name,
         facet: 'existence',
@@ -318,16 +373,39 @@ export function compareRenderings(
       });
     }
   }
-  // A count over one declared scope is itself an equivalence facet
-  // (CAP1-REQ-043). This also catches duplicate-named facts one channel
-  // serves and the other does not, which the name-keyed maps above
-  // would otherwise collapse.
-  if (first.facts.length !== second.facts.length) {
+
+  const firstTuples = canonicalTupleMultiset(first.facts, canonicalFactTuple);
+  const secondTuples = canonicalTupleMultiset(second.facts, canonicalFactTuple);
+  const tupleDigests = [
+    ...new Set([...firstTuples.keys(), ...secondTuples.keys()]),
+  ].sort();
+  for (const tupleDigest of tupleDigests) {
+    const inFirst = firstTuples.get(tupleDigest) ?? 0;
+    const inSecond = secondTuples.get(tupleDigest) ?? 0;
+    if (inFirst === inSecond) {
+      continue;
+    }
+
+    const fact =
+      first.facts.find((candidate) => canonicalFactTuple(candidate) === tupleDigest) ??
+      second.facts.find((candidate) => canonicalFactTuple(candidate) === tupleDigest);
+    if (fact === undefined) {
+      throw new Error('tuple grouping lost a mismatched fact');
+    }
+    const factsWithNameInFirst = firstByName.get(fact.name) ?? [];
+    const factsWithNameInSecond = secondByName.get(fact.name) ?? [];
+    // A unique-name difference already has the source-compatible, focused
+    // diagnostics above. Tuple counts are reserved for duplicate names so
+    // neither occurrence is silently selected or paired.
+    if (factsWithNameInFirst.length <= 1 && factsWithNameInSecond.length <= 1) {
+      continue;
+    }
     disagreements.push({
-      factName: '(fact count over the declared scope)',
+      factName: fact.name,
       facet: 'count',
-      inFirst: String(first.facts.length),
-      inSecond: String(second.facts.length),
+      inFirst: String(inFirst),
+      inSecond: String(inSecond),
+      tupleDigest,
     });
   }
 

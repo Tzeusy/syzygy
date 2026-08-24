@@ -94,6 +94,60 @@ describe('CAP1-REQ-043 — a parity disagreement is visible and fails', () => {
     ).toBe(true);
   });
 
+  it('equal-count duplicate divergence fails without selecting the final name-mapped occurrence', () => {
+    const earlierInFirst: ServedFact = {
+      name: 'answer',
+      value: 'first occurrence',
+      epistemic: { label: 'Observed' },
+    };
+    const earlierInSecond: ServedFact = {
+      name: 'answer',
+      value: 'changed occurrence',
+      epistemic: { label: 'Observed' },
+    };
+    // The final occurrence is intentionally identical. A name-keyed Map
+    // therefore collapses the changed earlier occurrence and incorrectly
+    // returns parity.
+    const finalOccurrence: ServedFact = {
+      name: 'answer',
+      value: 'final occurrence',
+      epistemic: { label: 'Observed' },
+    };
+    const first = disclosure([earlierInFirst, finalOccurrence]);
+    const second = disclosure([earlierInSecond, finalOccurrence]);
+    const comparison = compareRenderings(first, second);
+
+    if (comparison.comparable !== true || comparison.verdict !== 'parity-defect') {
+      throw new Error('an equal-count duplicate divergence must fail parity');
+    }
+    expect(comparison.disagreements).toEqual([
+      {
+        factName: 'answer',
+        facet: 'count',
+        inFirst: '0',
+        inSecond: '1',
+        tupleDigest:
+          '{"epistemic":{"label":"Observed"},"name":"answer","value":"changed occurrence"}',
+      },
+      {
+        factName: 'answer',
+        facet: 'count',
+        inFirst: '1',
+        inSecond: '0',
+        tupleDigest:
+          '{"epistemic":{"label":"Observed"},"name":"answer","value":"first occurrence"}',
+      },
+    ]);
+
+    // Input order is presentation-only; diagnostics remain stable.
+    expect(
+      compareRenderings(
+        disclosure([finalOccurrence, earlierInFirst]),
+        disclosure([finalOccurrence, earlierInSecond]),
+      ),
+    ).toEqual(comparison);
+  });
+
   it('a reason disagreement fails — carrying the primary alone drops the marked secondary', () => {
     const full = disclosure([
       {
@@ -154,10 +208,11 @@ describe('CAP1-REQ-043 — a parity disagreement is visible and fails', () => {
       throw new Error('the count split must fail');
     }
     expect(comparison.disagreements[0]).toEqual({
-      factName: '(fact count over the declared scope)',
+      factName: 'answer',
       facet: 'count',
       inFirst: '1',
       inSecond: '2',
+      tupleDigest: '{"epistemic":{"label":"Observed"},"name":"answer","value":"satisfied"}',
     });
   });
 
