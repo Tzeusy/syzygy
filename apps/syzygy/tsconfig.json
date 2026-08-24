@@ -6,8 +6,5 @@
     "tsBuildInfoFile": "dist/.tsbuildinfo"
   },
   "include": ["src"],
-  "references": [
-    { "path": "../../packages/cap1-core" },
-    { "path": "../../packages/cap1-daemon" }
-  ]
+  "references": [{ "path": "../../packages/cap1-daemon" }]
 }

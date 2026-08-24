@@ -13,9 +13,8 @@
 
 ## Selected stack, with rationale
 
-**TypeScript on Node.js (≥22.15 — raised from ≥20 on 2026-08-23: the
-runtime entry uses `node:module` `registerHooks`, absent before 22.15,
-and Node 20 left maintenance 2026-04), npm workspaces, Vitest, and the `yaml`
+**TypeScript on Node.js (≥22.15 — raised from ≥20 on 2026-08-23: Node 20
+left maintenance 2026-04), npm workspaces, Vitest, and the `yaml`
 package pinned exact.** `[Inferred — one defensible choice, reasoning
 stated so the owner can disagree with the reasoning]`
 
@@ -59,7 +58,7 @@ packages/cap1-conformance/  the requirement-keyed verification suite: one
 apps/syzygy/                the runnable entry point (config, startup, local
                             demo wiring)
 docs/                       implementation guidance and retained evidence
-package.json, tsconfig.base.json, vitest.workspace.ts   root manifests
+package.json, tsconfig.base.json, vitest.config.ts       root manifests
 ```
 
 `openspec/**` and `.syzygy/**` stay the governed plane — no

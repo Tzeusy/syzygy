@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
 // RT6 — the system-test suite's own vitest config. Deliberately NOT
-// part of vitest.workspace.ts: the default `npm test` unit suite must
+// part of the root `test.projects`: the default `npm test` unit suite must
 // never spawn daemon processes. This suite runs only via
 // `npm run test:system` (which builds first — the tests execute the
 // COMPILED daemon at apps/syzygy/dist/main.js, never in-process code).
