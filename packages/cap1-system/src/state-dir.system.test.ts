@@ -7,23 +7,20 @@
 // filesystem sweep of the fixture's governed tree — never the
 // daemon's self-report.
 
-import { spawn } from 'node:child_process';
 import {
   chmodSync,
   existsSync,
-  mkdtempSync,
   mkdirSync,
-  readFileSync,
   readdirSync,
   realpathSync,
   rmSync,
   statSync,
   symlinkSync,
 } from 'node:fs';
-import { tmpdir } from 'node:os';
 import { join, relative } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { observeProcessEffects } from './effect-observer.js';
 import {
   daemonEntry,
   REPO_ROOT,
@@ -163,46 +160,16 @@ function runDaemonToExit(args: readonly string[]): Promise<{
   stderr: string;
   effects: ObservedEffects;
 }> {
-  return new Promise((resolve, reject) => {
-    const traceDir = mkdtempSync(join(tmpdir(), 'syz-effect-trace-'));
-    const tracePath = join(traceDir, 'effects.strace');
-    const child = spawn(
-      'strace',
-      [
-        '-f',
-        '-qq',
-        '-e',
-        'trace=%file,%network,%process',
-        '-o',
-        tracePath,
-        process.execPath,
-        daemonEntry(REPO_ROOT),
-        ...args,
-      ],
-      { stdio: ['ignore', 'pipe', 'pipe'] },
-    );
-    let out = '';
-    let err = '';
-    child.stdout?.setEncoding('utf8');
-    child.stderr?.setEncoding('utf8');
-    child.stdout?.on('data', (chunk: string) => {
-      out += chunk;
-    });
-    child.stderr?.on('data', (chunk: string) => {
-      err += chunk;
-    });
-    child.once('error', reject);
-    const deadline = setTimeout(() => {
-      child.kill('SIGKILL');
-      reject(new Error(`daemon did not exit in time.\nstdout:\n${out}\nstderr:\n${err}`));
-    }, 30_000);
-    child.once('close', (code) => {
-      clearTimeout(deadline);
-      const trace = readFileSync(tracePath, 'utf8');
-      rmSync(traceDir, { recursive: true, force: true });
-      resolve({ code, stdout: out, stderr: err, effects: observedEffects(trace) });
-    });
-  });
+  return observeProcessEffects({
+    targetExecutable: process.execPath,
+    targetArgs: [daemonEntry(REPO_ROOT), ...args],
+    parseTrace: observedEffects,
+  }).then((observation) => ({
+    code: observation.code,
+    stdout: observation.stdout,
+    stderr: observation.stderr,
+    effects: observation.trace,
+  }));
 }
 
 function expectTreeUnchanged(

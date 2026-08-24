@@ -41,6 +41,14 @@ jobs:
           node-version: 24
           cache: npm
 
+      # The CAP1-REQ-061 system oracle traces filesystem, network, and process
+      # effects externally. This is a required host capability: fail closed
+      # here with a named stage instead of silently shrinking the denominator.
+      - name: effect-observer prerequisite (strace)
+        run: |
+          command -v strace
+          strace --version
+
       # Fresh install from the lockfile — a drifted or missing lockfile
       # fails here, before any code runs.
       - name: install (npm ci)
