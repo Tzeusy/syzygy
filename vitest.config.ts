@@ -4,6 +4,9 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   resolve: {
     alias: {
+      '@syzygy/cap1-core': fileURLToPath(
+        new URL('./packages/cap1-core/src/index.ts', import.meta.url),
+      ),
       '@syzygy/cap1-daemon': fileURLToPath(
         new URL('./packages/cap1-daemon/src/index.ts', import.meta.url),
       ),
