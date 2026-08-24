@@ -8,8 +8,20 @@
 // daemon's self-report.
 
 import { spawn } from 'node:child_process';
-import { chmodSync, existsSync, mkdirSync, rmSync, symlinkSync } from 'node:fs';
-import { join } from 'node:path';
+import {
+  chmodSync,
+  existsSync,
+  mkdtempSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  realpathSync,
+  rmSync,
+  statSync,
+  symlinkSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, relative } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
@@ -29,16 +41,146 @@ afterEach(async () => {
   }
 });
 
-/** Spawn the built daemon and await exit: code, stdout, stderr. */
+interface ObservedEffects {
+  readonly entryExecveCount: number;
+  readonly filesystemMutations: readonly string[];
+  readonly networkCalls: readonly string[];
+  readonly processSpawns: readonly string[];
+}
+
+const FILE_MUTATION_SYSCALLS = new Set([
+  'chmod',
+  'chown',
+  'fchmod',
+  'fchmodat',
+  'fchown',
+  'fchownat',
+  'ftruncate',
+  'futimesat',
+  'lchown',
+  'link',
+  'linkat',
+  'mkdir',
+  'mkdirat',
+  'mknod',
+  'mknodat',
+  'rename',
+  'renameat',
+  'renameat2',
+  'rmdir',
+  'symlink',
+  'symlinkat',
+  'truncate',
+  'unlink',
+  'unlinkat',
+  'utime',
+  'utimensat',
+  'utimes',
+]);
+const NETWORK_SYSCALLS = new Set([
+  'accept',
+  'accept4',
+  'bind',
+  'connect',
+  'listen',
+  'recvfrom',
+  'recvmmsg',
+  'recvmsg',
+  'sendmmsg',
+  'sendmsg',
+  'sendto',
+  'shutdown',
+  'socket',
+  'socketpair',
+]);
+
+function observedEffects(trace: string): ObservedEffects {
+  const filesystemMutations: string[] = [];
+  const networkCalls: string[] = [];
+  const processSpawns: string[] = [];
+  let entryExecveCount = 0;
+
+  for (const line of trace.split('\n').filter((candidate) => candidate.trim() !== '')) {
+    const syscall = /^\d+\s+([a-zA-Z0-9_]+)\(/.exec(line)?.[1];
+    if (syscall === undefined) {
+      continue;
+    }
+    if (NETWORK_SYSCALLS.has(syscall)) {
+      networkCalls.push(line);
+    }
+    if (
+      FILE_MUTATION_SYSCALLS.has(syscall) ||
+      (['open', 'openat', 'openat2'].includes(syscall) &&
+        /\bO_(?:WRONLY|RDWR|CREAT|TRUNC|APPEND)\b/.test(line)) ||
+      syscall === 'creat'
+    ) {
+      filesystemMutations.push(line);
+    }
+    if (syscall === 'execve' || syscall === 'execveat') {
+      if (entryExecveCount === 0) {
+        entryExecveCount += 1;
+      } else {
+        processSpawns.push(line);
+      }
+    } else if (
+      syscall === 'fork' ||
+      syscall === 'vfork' ||
+      ((syscall === 'clone' || syscall === 'clone3') && !line.includes('CLONE_THREAD'))
+    ) {
+      processSpawns.push(line);
+    }
+  }
+
+  return { entryExecveCount, filesystemMutations, networkCalls, processSpawns };
+}
+
+function expectNoExternalEffects(effects: ObservedEffects): void {
+  // The harness starts the daemon with exactly one entry execve. It is the
+  // observation boundary, not an effect caused by Capability 1 behavior.
+  expect(effects.entryExecveCount).toBe(1);
+  expect(effects.filesystemMutations).toEqual([]);
+  expect(effects.networkCalls).toEqual([]);
+  expect(effects.processSpawns).toEqual([]);
+}
+
+function expectNoSuccessfulExternalEffects(effects: ObservedEffects): void {
+  expect(effects.entryExecveCount).toBe(1);
+  expect(
+    effects.filesystemMutations.filter((line) => !/= -1\s/.test(line)),
+  ).toEqual([]);
+  expect(effects.networkCalls).toEqual([]);
+  expect(effects.processSpawns).toEqual([]);
+}
+
+/**
+ * Spawn the built daemon under a harness-owned syscall observer and await
+ * exit. The trace enumerates file mutation, network, and process interfaces;
+ * it is produced by strace outside the daemon, never by Syzygy self-report.
+ */
 function runDaemonToExit(args: readonly string[]): Promise<{
   code: number | null;
   stdout: string;
   stderr: string;
+  effects: ObservedEffects;
 }> {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [daemonEntry(REPO_ROOT), ...args], {
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
+    const traceDir = mkdtempSync(join(tmpdir(), 'syz-effect-trace-'));
+    const tracePath = join(traceDir, 'effects.strace');
+    const child = spawn(
+      'strace',
+      [
+        '-f',
+        '-qq',
+        '-e',
+        'trace=%file,%network,%process',
+        '-o',
+        tracePath,
+        process.execPath,
+        daemonEntry(REPO_ROOT),
+        ...args,
+      ],
+      { stdio: ['ignore', 'pipe', 'pipe'] },
+    );
     let out = '';
     let err = '';
     child.stdout?.setEncoding('utf8');
@@ -49,13 +191,16 @@ function runDaemonToExit(args: readonly string[]): Promise<{
     child.stderr?.on('data', (chunk: string) => {
       err += chunk;
     });
+    child.once('error', reject);
     const deadline = setTimeout(() => {
       child.kill('SIGKILL');
       reject(new Error(`daemon did not exit in time.\nstdout:\n${out}\nstderr:\n${err}`));
     }, 30_000);
-    child.once('exit', (code) => {
+    child.once('close', (code) => {
       clearTimeout(deadline);
-      resolve({ code, stdout: out, stderr: err });
+      const trace = readFileSync(tracePath, 'utf8');
+      rmSync(traceDir, { recursive: true, force: true });
+      resolve({ code, stdout: out, stderr: err, effects: observedEffects(trace) });
     });
   });
 }
@@ -117,6 +262,7 @@ describe('RTF-1 — state-dir governed-plane check resolves symlink reality', ()
     expect(result.stderr).toContain(governedTarget);
     // It never announced an address — it refused before serving.
     expect(result.stdout).not.toContain('listening at');
+    expectNoExternalEffects(result.effects);
 
     // AFTER (harness-external): nothing was written inside .syzygy/ —
     // no additions, no deletions, no modifications, full denominator.
@@ -149,6 +295,7 @@ describe('RTF-1 — state-dir governed-plane check resolves symlink reality', ()
     expect(result.stderr).toContain('inside the governed plane');
     expect(result.stderr).toContain(governedTarget);
     expect(result.stdout).not.toContain('listening at');
+    expectNoExternalEffects(result.effects);
     expect(existsSync(governedTarget)).toBe(false);
     expectTreeUnchanged(before, snapshotTree(join(fixtureRoot, '.syzygy')));
   });
@@ -165,15 +312,22 @@ describe('RTF-1 — state-dir governed-plane check resolves symlink reality', ()
     mkdirSync(benignTarget, { recursive: true });
     const linkPath = join(base, 'state-link');
     symlinkSync(benignTarget, linkPath);
+    const before = snapshotTree(fixtureRoot);
 
     const daemon = await startDaemon({ fixtureRoot, stateDir: linkPath });
     cleanups.push(async () => {
       await daemon.stop();
     });
 
-    // It serves: the human page answers 200.
+    // It serves, and the only state effect lands through the symlink at the
+    // requested benign target with the credential's required owner-only mode.
     expect((await fetch(`${daemon.baseUrl}/`)).status).toBe(200);
+    const realCredentialPath = realpathSync(daemon.credentialPath);
+    expect(relative(benignTarget, realCredentialPath)).toBe('machine-credential.token');
+    expect(readdirSync(benignTarget)).toEqual(['machine-credential.token']);
+    expect((statSync(realCredentialPath).mode & 0o777).toString(8)).toBe('600');
     expect(await daemon.stop()).toBe(0);
+    expectTreeUnchanged(before, snapshotTree(fixtureRoot));
   });
 
   it('keeps a dangling benign outside target credential-unprovisionable, with no listener or writes', async () => {
@@ -200,6 +354,7 @@ describe('RTF-1 — state-dir governed-plane check resolves symlink reality', ()
     expect(result.stderr).toContain('credential-unprovisionable');
     expect(result.stderr).not.toContain('inside the governed plane');
     expect(result.stdout).not.toContain('listening at');
+    expectNoSuccessfulExternalEffects(result.effects);
     expect(existsSync(benignTarget)).toBe(false);
     expectTreeUnchanged(before, snapshotTree(base));
   });
@@ -227,6 +382,7 @@ describe('RTF-1 — state-dir governed-plane check resolves symlink reality', ()
     expect(result.code).toBe(1);
     expect(result.stderr).toContain('symlink-loop');
     expect(result.stdout).not.toContain('listening at');
+    expectNoExternalEffects(result.effects);
     expectTreeUnchanged(before, snapshotTree(base));
   });
 
@@ -254,6 +410,7 @@ describe('RTF-1 — state-dir governed-plane check resolves symlink reality', ()
     expect(result.code).toBe(1);
     expect(result.stderr).toContain('path-unreadable');
     expect(result.stdout).not.toContain('listening at');
+    expectNoExternalEffects(result.effects);
     expectTreeUnchanged(before, snapshotTree(base));
   });
 });
