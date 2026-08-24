@@ -120,6 +120,9 @@ export function observeProcessEffects<T>(
     let stderr = '';
     let settled = false;
     let deadline: NodeJS.Timeout | undefined;
+    let exitState:
+      | { readonly code: number | null; readonly signal: NodeJS.Signals | null }
+      | undefined;
 
     const settle = (
       outcome:
@@ -233,8 +236,13 @@ export function observeProcessEffects<T>(
         ),
       });
     });
-    child.once('exit', finishFromTrace);
-    child.once('close', finishFromTrace);
+    child.once('exit', (code, signal) => {
+      exitState = { code, signal };
+    });
+    child.once('close', (code, signal) => {
+      const completed = exitState ?? { code, signal };
+      finishFromTrace(completed.code, completed.signal);
+    });
 
     deadline = setTimeout(() => {
       child?.kill('SIGKILL');

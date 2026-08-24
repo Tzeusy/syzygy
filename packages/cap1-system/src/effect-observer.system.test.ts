@@ -117,10 +117,11 @@ describe('system effect-observer lifecycle', () => {
     expect(rig.readTrace).not.toHaveBeenCalled();
   });
 
-  it('returns a nonzero tracee exit and ignores duplicate exit/close/error settlement', async () => {
+  it('waits for close to include data emitted after nonzero exit and settles duplicate events once', async () => {
     const rig = observerRig((child) => {
-      child.stderr.write('named daemon refusal');
       child.emit('exit', 1, null);
+      child.stdout.write('late-stdout');
+      child.stderr.write('late-stderr');
       child.emit('close', 1, null);
       child.emit('error', new Error('late duplicate event'));
     });
@@ -129,7 +130,8 @@ describe('system effect-observer lifecycle', () => {
     expect(observation).toMatchObject({
       code: 1,
       signal: null,
-      stderr: 'named daemon refusal',
+      stdout: 'late-stdout',
+      stderr: 'late-stderr',
       trace: 'trace-record',
     });
     expect(rig.readTrace).toHaveBeenCalledOnce();
@@ -149,7 +151,10 @@ describe('system effect-observer lifecycle', () => {
   });
 
   it('cleans before rejecting a trace parser failure', async () => {
-    const rig = observerRig((child) => child.emit('exit', 0, null));
+    const rig = observerRig((child) => {
+      child.emit('exit', 0, null);
+      child.emit('close', 0, null);
+    });
 
     await expect(
       observe(rig, () => {
