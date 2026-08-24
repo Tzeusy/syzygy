@@ -9,7 +9,7 @@
 // + build is minutes, not seconds); skipped otherwise.
 
 import { execFileSync } from 'node:child_process';
-import { rmSync } from 'node:fs';
+import { existsSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -50,7 +50,31 @@ describe('RT6 — fresh-clone demonstration', () => {
         cwd: cloneDir,
         stdio: 'pipe',
       });
+
+      // The clone starts with no generated output. The package runtime
+      // resolution proof below must therefore use the outputs of this build,
+      // not an ignored local artifact carried into the clone.
+      expect(existsSync(join(cloneDir, 'apps', 'syzygy', 'dist'))).toBe(false);
+
       execFileSync('npm', ['run', 'build'], { cwd: cloneDir, stdio: 'pipe' });
+
+      // Node consumers resolve the workspace packages through their built
+      // conditional exports, independently of the app's composition root.
+      const resolvedExports = execFileSync(
+        process.execPath,
+        [
+          '--input-type=module',
+          '-e',
+          "console.log(await import.meta.resolve('@syzygy/cap1-core')); console.log(await import.meta.resolve('@syzygy/cap1-daemon'));",
+        ],
+        { cwd: cloneDir, encoding: 'utf8' },
+      );
+      expect(resolvedExports).toContain(
+        join('packages', 'cap1-core', 'dist', 'index.js'),
+      );
+      expect(resolvedExports).toContain(
+        join('packages', 'cap1-daemon', 'dist', 'index.js'),
+      );
 
       // The clone's OWN built daemon over a fixture repository.
       const fixtureRoot = join(base, 'fixture');

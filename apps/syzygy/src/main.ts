@@ -26,38 +26,14 @@
 // SIGINT/SIGTERM).
 
 import * as fs from 'node:fs';
-import { registerHooks } from 'node:module';
 import * as path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
-
-// The workspace packages export TypeScript SOURCE (`./src/index.ts`)
-// for vitest and tsc; plain `node` cannot execute those (its type
-// stripping does not remap `./x.js` specifiers to `./x.ts` sources).
-// This bootstrap therefore redirects the two workspace bare specifiers
-// to their COMPILED `dist/` entries — built by `npm run build` — before
-// anything imports them. Confined to this composition root; no package
-// manifest is altered.
-const HERE = path.dirname(fileURLToPath(import.meta.url)); // apps/syzygy/{src,dist}
-const REPO_ROOT = path.resolve(HERE, '..', '..', '..');
-const WORKSPACE_DIST_ENTRIES: Readonly<Record<string, string>> = {
-  '@syzygy/cap1-core': path.join(REPO_ROOT, 'packages', 'cap1-core', 'dist', 'index.js'),
-  '@syzygy/cap1-daemon': path.join(REPO_ROOT, 'packages', 'cap1-daemon', 'dist', 'index.js'),
-};
-registerHooks({
-  resolve(specifier, context, nextResolve) {
-    const mapped = WORKSPACE_DIST_ENTRIES[specifier];
-    if (mapped !== undefined) {
-      return { url: pathToFileURL(mapped).href, shortCircuit: true };
-    }
-    return nextResolve(specifier, context);
-  },
-});
-
-// Imported AFTER the hook is registered, so the bare specifier resolves
-// to the compiled entry at runtime (types still come from the source).
-const daemonModule = await import('@syzygy/cap1-daemon');
-const { createDaemon, evaluateProject, humanRoutes, machineRoutes } = daemonModule;
-type EntrySourceRead = import('@syzygy/cap1-daemon').EntrySourceRead;
+import {
+  createDaemon,
+  evaluateProject,
+  humanRoutes,
+  machineRoutes,
+  type EntrySourceRead,
+} from '@syzygy/cap1-daemon';
 
 const DEFAULT_PORT = 7477;
 const DEFAULT_STATE_DIR_NAME = '.syzygy-daemon-state';
