@@ -219,7 +219,8 @@ resolve and retry until it succeeds.
 
 ### Capability 1 implementation status
 
-**Complete end-to-end (2026-08-23).** [Observed] Domain: S0–S7
+**Complete end-to-end (2026-08-23), with the first runtime-hardening leaves
+merged 2026-08-24.** [Observed] Domain: S0–S7
 (296 conformance tests). Runtime vertical slice: epic syzygy-zal RT1–RT9
 all closed — real filesystem observation, exact fail-closed
 consent-reference loading, credential-backed local daemon (127.0.0.1,
@@ -234,17 +235,19 @@ code). The fresh-clone bar is met and automated: clone → `npm ci` →
 GET and authenticated machine request, wire-parity sweep 7/7. Runtime
 review cycle: R-RT review **CONFIRM WITH EXCEPTIONS** at f0a0f45 (one
 non-blocking finding RTF-1), one repair (00d6020), confirmation
-**CONFIRMED** — records in `docs/reviews/R-RT-*.md`. 408 unit + 15
-system tests. Node floor is >=22.15 (`registerHooks`; Node 20 is EOL) —
-CI runs Node 24.
+**CONFIRMED** — records in `docs/reviews/R-RT-*.md`. Current verified
+denominator: 53 unit/conformance files with 417 tests, plus 8 system files
+with 33 tests when the guarded fresh-clone case is enabled. Node floor is
+>=22.15 (Node 20 is EOL); CI runs Node 24.
 
 Known honest gaps (follow-up bead, not defects): pipeline does not yet
 compute discoverability findings / authority exposures (page renders
 disclosed absence); `evaluateProject` runs once at startup (snapshot
-semantics, as-of disclosed); dangling-symlink state dir refuses via
-`credential-unprovisionable` rather than the governed-plane arm;
-`PROJECT-STATUS.md` §7 still says "in progress" pending a governance-page
-pass.
+semantics, as-of disclosed); `PROJECT-STATUS.md` §7 still says "in progress"
+pending a governance-page pass. The snapshot/coverage/discoverability chain
+remains blocked on human gate `syzygy-u2a.1`: a lawful independently kept
+RFC5-25 consent-audit source must be identified before repository observation
+can be authorized.
 
 ### Implementation architecture
 
@@ -269,15 +272,15 @@ pass.
   literals in conformance tests, never imported from vocabulary modules.
 - **Rule-6 mutation check**: temporarily break the fix, confirm the
   falsifier test fails, restore — proves the test can catch the defect.
+- **No-build Vitest seam**: root `test.projects` must alias both
+  `@syzygy/cap1-core` and `@syzygy/cap1-daemon` to source. Built `dist/`
+  output can mask a missing alias, so verify after `npm ci` with every project
+  `dist/` absent; the current denominator is 53 files / 417 tests.
 
 ### Open follow-up work
 
 - Bead syzygy-ydr: non-blocking S2/S5 review findings (consent-reference
-  resolution, oracle Map-collapse hardening for duplicate-named facts in
-  compareRenderings, admissibility bar, grant-state rendering citations,
+  resolution, admissibility bar, grant-state rendering citations, and
   unreachable-vs-observer-failure split).
-- Review WARNING: `compareRenderings` uses name-keyed Maps that collapse
-  duplicate-named facts — unreachable by construction but weakens
-  defense-in-depth. Fix: positional or multiset comparison.
 - Review WARNING: `authorizeWrite` uses raw `startsWith` — path traversal
   like `openspec/../README.md` passes. Caller must normalize.
