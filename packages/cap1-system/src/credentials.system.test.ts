@@ -36,20 +36,25 @@ async function startFixtureDaemon(): Promise<DaemonProcess> {
 }
 
 describe('RT6 — credential enforcement from outside the process', () => {
-  it('no credential: 401 with the named refusal body, nothing served', async () => {
-    const daemon = await startFixtureDaemon();
-    const response = await fetch(`${daemon.baseUrl}/api/project`);
-    expect(response.status).toBe(401);
-    expect(await response.text()).toBe('{"admitted":false,"served":"nothing"}');
-  });
-
-  it('wrong token: the same named refusal, never a partial answer', async () => {
+  it.each([
+    ['missing', undefined],
+    ['scheme without separator', 'Bearer'],
+    ['empty bearer token', 'Bearer '],
+    ['wrong scheme', 'Basic x'],
+    ['whitespace-only bearer token', 'Bearer    '],
+    ['malformed scheme casing', `bearer ${'a'.repeat(64)}`],
+    ['wrong-length bearer token', 'Bearer definitely-not-the-minted-token'],
+    ['wrong bearer token', `Bearer ${'f'.repeat(64)}`],
+  ])('refuses %s credentials with no facts served', async (_case, authorization) => {
     const daemon = await startFixtureDaemon();
     const response = await fetch(`${daemon.baseUrl}/api/project`, {
-      headers: { authorization: 'Bearer definitely-not-the-minted-token' },
+      ...(authorization === undefined ? {} : { headers: { authorization } }),
     });
     expect(response.status).toBe(401);
-    expect(await response.text()).toBe('{"admitted":false,"served":"nothing"}');
+    expect(response.headers.get('content-type')).toBe('application/json');
+    const body = await response.text();
+    expect(body).toBe('{"admitted":false,"served":"nothing"}');
+    expect(body).not.toContain('project-evaluated');
   });
 
   it('the correct token from the state-dir file admits: 200 with the evaluated body', async () => {
