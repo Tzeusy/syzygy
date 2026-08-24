@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   EPISTEMIC_LABELS,
   RENDERING_TIERS,
+  canonicalTupleMultiset,
   citeBasis,
   compareRenderings,
   deterministicLayer,
@@ -56,6 +57,22 @@ function model(facts: readonly ServedFact[]): FactModel {
 }
 
 describe('CAP1-REQ-045 — inferred is distinguishable from observed; generated presentation is never the source', () => {
+  it('canonical tuple multisets retain duplicate occurrence counts', () => {
+    const counts = canonicalTupleMultiset(
+      [
+        { name: 'answer', value: 'same' },
+        { name: 'answer', value: 'same' },
+        { name: 'answer', value: 'different' },
+      ],
+      (fact) => `${fact.name}:${fact.value}`,
+    );
+
+    expect([...counts.entries()]).toEqual([
+      ['answer:same', 2],
+      ['answer:different', 1],
+    ]);
+  });
+
   it('the three-label vocabulary is closed and verbatim', () => {
     expect([...EPISTEMIC_LABELS]).toEqual(['Observed', 'Inferred', 'Unknown']);
   });

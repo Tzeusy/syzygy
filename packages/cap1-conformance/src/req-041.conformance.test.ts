@@ -216,6 +216,30 @@ describe('CAP1-REQ-041 — humans and machines receive the same facts', () => {
     expect(plain.sections[0]?.heading).toBe('Further facts');
   });
 
+  it('lawful fact permutation remains parity because presentation order is not semantic', () => {
+    const model: FactModel = {
+      selection: 'permutation-test',
+      evaluation: EVALUATION,
+      scenarioContext: 'base',
+      declaredFilters: {},
+      facts: [
+        { name: 'first', value: 'one', epistemic: { label: 'Observed' } },
+        { name: 'second', value: 'two', epistemic: { label: 'Observed' } },
+      ],
+    };
+    const machine = serveMachine(model);
+    const permuted = {
+      ...machine,
+      facts: [...machine.facts].reverse(),
+    };
+
+    expect(compareRenderings(disclosureOf(machine), disclosureOf(permuted))).toEqual({
+      comparable: true,
+      verdict: 'parity',
+      comparedFacts: machine.facts.length,
+    });
+  });
+
   it('a partial presentation cannot subtract a fact — minimal display never subtracts (RFC6-21)', () => {
     const [model] = answerSet();
     if (model === undefined) throw new Error('fixture must serve');
