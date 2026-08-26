@@ -1932,7 +1932,8 @@ def cg7e_act_digest_copies(paths, res):
             details=findings + [f"[registered] {r}" for r in registered])
 
 
-def cg7d_quoted_elsewhere(paths, res):
+def cg7d_quoted_elsewhere(paths, res, act_subjects=None,
+                          subject_digests=None, corpus=None):
     """Any file quoting an act phrase must quote its subject's current digest.
 
     A digest is owned by the artifact it names. Quoting one elsewhere is
@@ -1951,20 +1952,29 @@ def cg7d_quoted_elsewhere(paths, res):
     #: acceptance record's own rows say "the rev9 argument is stale" after
     #: offering the current one, and those offers must stay checked.
     LOOKBEHIND = 60
+    act_subjects = tuple(ACT_SUBJECTS if act_subjects is None
+                         else act_subjects)
     subjects = {}
-    for label, rel, pat in ACT_SUBJECTS:
-        full = os.path.join(ROOT, rel)
-        subjects[label] = sha256_file(full) if os.path.exists(full) else None
+    if subject_digests is None:
+        for label, rel, pat in act_subjects:
+            full = os.path.join(ROOT, rel)
+            subjects[label] = (sha256_file(full)
+                               if os.path.exists(full) else None)
+    else:
+        subjects = dict(subject_digests)
     findings, examined = [], 0
-    for rel in paths:
+    counts = {label: 0 for label, _rel, _pat in act_subjects}
+    subject_findings = {label: 0 for label, _rel, _pat in act_subjects}
+    source = (((rel, read(rel)) for rel in paths)
+              if corpus is None else corpus)
+    for rel, body in source:
         if _act_quote_exempt(rel):
             continue
         if not rel.endswith(".md"):
             continue
-        body = read(rel)
         if not body:
             continue
-        for label, subj_rel, pat in ACT_SUBJECTS:
+        for label, subj_rel, pat in act_subjects:
             for line_no, line in enumerate(body.splitlines(), 1):
                 for m in pat.finditer(line):
                     arg = m.group(1)
@@ -1972,23 +1982,39 @@ def cg7d_quoted_elsewhere(paths, res):
                                            m.start()]):
                         continue
                     examined += 1
-                    current = subjects[label]
+                    counts[label] += 1
+                    current = subjects.get(label)
                     if current is None:
+                        subject_findings[label] += 1
                         findings.append(
                             f"{rel}:{line_no} — quotes `{label}` but its "
                             f"subject {subj_rel} does not exist")
                     elif arg != current:
+                        subject_findings[label] += 1
                         findings.append(
                             f"{rel}:{line_no} — quotes `{label}: {arg[:12]}…` "
                             f"but {subj_rel} hashes to {current[:12]}… — this "
                             f"copy is stale")
-    res.add("FAIL" if findings else ("OK" if examined else "WARN"),
+    zero_subjects = [label for label, count in counts.items() if count == 0]
+    subject_details = [
+        f"[subject] {label} — {counts[label]} quotation(s), "
+        f"{subject_findings[label]} finding(s)"
+        for label in counts
+    ]
+    if findings:
+        severity = "FAIL"
+    elif zero_subjects:
+        severity = "WARN"
+    else:
+        severity = "OK"
+    note = (f"{len(counts) - len(zero_subjects)} of {len(counts)} "
+            f"digest-bearing subject(s) have quotations"
+            + (f"; zero: {', '.join(zero_subjects)}"
+               if zero_subjects else ""))
+    res.add(severity,
             "CG-7d  act digests quoted anywhere match their subjects",
             examined, len(findings), "quotation",
-            note=(None if examined else
-                  "no act digest quoted outside the exempt history — "
-                  "nothing examined"),
-            details=findings)
+            note=note, details=findings + subject_details)
 
 
 # --------------------------------------------------------------- CG-8
@@ -4660,6 +4686,17 @@ def selftest():
     cases.append(("CG-1i unresolved candidate fallback detected",
                   row[0] == "FAIL" and row[3] == 1))
 
+    row = _selftest_cg7d_quotation("zero-subject")
+    cases.append(("CG-7d zero subject denominator is disclosed",
+                  row[0] == "WARN"
+                  and any("ADOPT DOCTRINE AMENDMENT: D3 — 0 quotation"
+                          in d for d in row[4])))
+
+    row = _selftest_cg7d_quotation("stale-d3")
+    cases.append(("CG-7d stale D3-form quotation detected",
+                  row[0] == "FAIL"
+                  and any("copy is stale" in d for d in row[4])))
+
     # CG-7e — the first fixture the CG-7 family has ever had. Review RD-6
     # mutation-proved that falsifying every act argument in the owner-facing
     # offering left the battery green; these two reproduce that mutation and
@@ -4796,6 +4833,52 @@ def _selftest_installed_fallback(kind):
         cg1_links(paths, c)
         return c.row("CG-1i")
     finally:
+        ROOT = keep
+        shutil.rmtree(d, ignore_errors=True)
+
+
+def _selftest_cg7d_quotation(kind):
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, severity, name, examined, n, unit, note=None,
+                details=None):
+            self.rows.append((severity, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows
+                         if r[1].startswith(prefix)), None)
+
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp(prefix="cg7d-selftest-")
+    global ROOT
+    keep = ROOT
+    cache = dict(_ActSubjects._cache)
+    try:
+        specs = (
+            ("ACCEPT A", "a.md",
+             re.compile(r"ACCEPT A:\s*`?([0-9a-f]{64})")),
+            ("ADOPT DOCTRINE AMENDMENT: D3", "d3.md",
+             re.compile(r"ADOPT DOCTRINE AMENDMENT:\s*D3:\s*`?([0-9a-f]{64})")),
+        )
+        for rel, body in (("a.md", "subject A\n"), ("d3.md", "subject D3\n")):
+            full = os.path.join(d, rel)
+            os.makedirs(os.path.dirname(full), exist_ok=True)
+            with open(full, "w", encoding="utf-8") as fh:
+                fh.write(body)
+        a_digest = sha256_file(os.path.join(d, "a.md"))
+        body = (f"ACCEPT A: {a_digest}\n" if kind == "zero-subject"
+                else "ADOPT DOCTRINE AMENDMENT: D3: " + "e" * 64 + "\n")
+        with open(os.path.join(d, "f.md"), "w", encoding="utf-8") as fh:
+            fh.write(body)
+        ROOT = d
+        _ActSubjects._cache[d] = specs
+        c = Cap()
+        cg7d_quoted_elsewhere(["f.md"], c)
+        return c.row("CG-7d")
+    finally:
+        _ActSubjects._cache.clear()
+        _ActSubjects._cache.update(cache)
         ROOT = keep
         shutil.rmtree(d, ignore_errors=True)
 
