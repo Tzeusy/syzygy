@@ -375,6 +375,9 @@ def words(rel):
 
 # --------------------------------------------------------------- CG-1
 
+INSTALLED_RFCS = ".syzygy/governance/contracts/rfcs/"
+CANDIDATE_RFCS = f"{CANDIDATES}/rfcs/"
+
 MD_LINK = re.compile(r"\[[^\]]*\]\(\s*(?P<t>[^)\s]+)")
 #: Path references in this corpus are overwhelmingly inline code spans, not
 #: markdown links (39 relative links against 478 code-span paths at the time
@@ -619,6 +622,14 @@ def _resolve(citing, target, all_paths):
     return any(p == t or p.endswith("/" + t) for p in all_paths)
 
 
+def _candidate_twin(installed_rel, all_paths):
+    if not installed_rel.startswith(INSTALLED_RFCS):
+        return None
+    suffix = installed_rel[len(INSTALLED_RFCS):]
+    candidate = CANDIDATE_RFCS + suffix
+    return candidate if candidate in all_paths else None
+
+
 def cg1_links(paths, res):
     all_paths = set(paths)
     n_links = n_paths = 0
@@ -626,20 +637,28 @@ def cg1_links(paths, res):
         [], [], set(), [], [], []
     dead_routes = []
 
-    INSTALLED_RFCS = ".syzygy/governance/contracts/rfcs/"
-    installed_disclosed = []
+    installed_examined = []
+    installed_verified = []
+    installed_findings = []
 
     def classify(rel, t, bucket):
         """Where an unresolvable reference belongs. One place, so CG-1a and
         CG-1b cannot disagree about the same target."""
         if rel.startswith(INSTALLED_RFCS):
-            # P-33 install shape (M), ruled 2026-08-16: the installed tree
-            # holds accepted modules only, and the modules' path strings
-            # resolve in the candidates tree rather than beside the
-            # installed copies — a disclosed property of the ruling,
-            # accepted knowingly at the act. The measurement (88 strings)
-            # is owned by decisions/WAVE-A-INSTALL-SHAPE-DECISION.md.
-            installed_disclosed.append(f"{rel} -> {t}")
+            reference = f"{rel} -> {t}"
+            installed_examined.append(reference)
+            candidate = _candidate_twin(rel, all_paths)
+            if candidate is None:
+                installed_findings.append(
+                    f"{reference} — installed module has no candidate twin; "
+                    f"shape (M)'s fallback cannot be evaluated")
+            elif not _resolve(candidate, t, all_paths):
+                installed_findings.append(
+                    f"{reference} — candidate twin `{candidate}` does not "
+                    f"resolve the same relative target; shape (M)'s disclosed "
+                    f"fallback is false")
+            else:
+                installed_verified.append(reference)
         elif _is_vendored_gap(rel, t):
             vendor_gap.append(f"{rel} -> {t}")
         elif RFCS_ROUTE.match(t) and _is_active_lane(rel):
@@ -698,14 +717,21 @@ def cg1_links(paths, res):
     res.add("WARN", "CG-1c  declared forward references", len(forward), 0, "target",
             note="skipped by design — an owner act creates these",
             details=sorted(forward))
-    uniq_inst = sorted(set(installed_disclosed))
-    res.add("WARN", "CG-1i  installed-tree path strings (P-33 shape (M))",
-            len(uniq_inst), 0, "reference",
-            note="disclosed at the act — installed modules' path strings "
-                 "resolve in the candidates tree, never beside the installed "
-                 "copies; decisions/WAVE-A-INSTALL-SHAPE-DECISION.md owns "
-                 "the measurement",
-            details=uniq_inst)
+    uniq_inst = sorted(set(installed_examined))
+    uniq_inst_findings = sorted(set(installed_findings))
+    uniq_inst_verified = sorted(set(installed_verified))
+    res.add("FAIL" if uniq_inst_findings else "WARN",
+            "CG-1i  installed-tree path strings (P-33 shape (M))",
+            len(uniq_inst), len(uniq_inst_findings), "reference",
+            note=("candidate-tree fallback verified for every installed "
+                  "reference; installed modules remain non-self-contained "
+                  "under P-33 shape (M)"
+                  if not uniq_inst_findings else
+                  "one or more installed references lack the candidate-tree "
+                  "fallback promised by P-33 shape (M)"),
+            details=(uniq_inst_findings
+                     + [f"[verified candidate fallback] {r}"
+                        for r in uniq_inst_verified]))
     uniq_hist = sorted(set(historical))
     res.add("WARN", "CG-1d  frozen-packet references", len(uniq_hist), 0,
             "reference",
@@ -4622,6 +4648,18 @@ def selftest():
                   "not failed",
                   _selftest_dead_route(active=False)))
 
+    row = _selftest_installed_fallback("valid")
+    cases.append(("CG-1i valid candidate fallback is verified and disclosed",
+                  row[0] == "WARN" and row[2] == 1 and row[3] == 0))
+
+    row = _selftest_installed_fallback("missing-twin")
+    cases.append(("CG-1i missing candidate twin detected",
+                  row[0] == "FAIL" and row[3] == 1))
+
+    row = _selftest_installed_fallback("wrong-depth")
+    cases.append(("CG-1i unresolved candidate fallback detected",
+                  row[0] == "FAIL" and row[3] == 1))
+
     # CG-7e — the first fixture the CG-7 family has ever had. Review RD-6
     # mutation-proved that falsifying every act argument in the owner-facing
     # offering left the battery green; these two reproduce that mutation and
@@ -4716,6 +4754,47 @@ def _selftest_dead_route(active):
         cg1_links([rel], c)
         row = c.row("CG-1g")
         return bool(row) and (row[0] == "FAIL") == bool(active)
+    finally:
+        ROOT = keep
+        shutil.rmtree(d, ignore_errors=True)
+
+
+def _selftest_installed_fallback(kind):
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, severity, name, examined, n, unit, note=None,
+                details=None):
+            self.rows.append(
+                (severity, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows
+                         if r[1].startswith(prefix)), None)
+
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp(prefix="cg1i-selftest-")
+    global ROOT
+    keep = ROOT
+    try:
+        installed = f"{INSTALLED_RFCS}RFC-0001/module.md"
+        candidate = f"{CANDIDATE_RFCS}RFC-0001/module.md"
+        history = f"{CANDIDATES}/history/source.md"
+        target = ("../../../history/source.md" if kind == "wrong-depth"
+                  else "../../history/source.md")
+        paths = [installed, history]
+        if kind != "missing-twin":
+            paths.append(candidate)
+        for rel in paths:
+            full = os.path.join(d, rel)
+            os.makedirs(os.path.dirname(full), exist_ok=True)
+            with open(full, "w", encoding="utf-8") as fh:
+                fh.write((f"source: `{target}`\n"
+                          if rel in (installed, candidate) else "source\n"))
+        ROOT = d
+        c = Cap()
+        cg1_links(paths, c)
+        return c.row("CG-1i")
     finally:
         ROOT = keep
         shutil.rmtree(d, ignore_errors=True)
