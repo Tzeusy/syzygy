@@ -2003,7 +2003,7 @@ def cg7d_quoted_elsewhere(paths, res, act_subjects=None,
     ]
     if findings:
         severity = "FAIL"
-    elif zero_subjects:
+    elif zero_subjects or not examined:
         severity = "WARN"
     else:
         severity = "OK"
@@ -2011,6 +2011,8 @@ def cg7d_quoted_elsewhere(paths, res, act_subjects=None,
             f"digest-bearing subject(s) have quotations"
             + (f"; zero: {', '.join(zero_subjects)}"
                if zero_subjects else ""))
+    if not examined:
+        note += "; no quotations examined"
     res.add(severity,
             "CG-7d  act digests quoted anywhere match their subjects",
             examined, len(findings), "quotation",
@@ -4685,6 +4687,12 @@ def selftest():
     row = _selftest_installed_fallback("wrong-depth")
     cases.append(("CG-1i unresolved candidate fallback detected",
                   row[0] == "FAIL" and row[3] == 1))
+
+    c = Cap()
+    cg7d_quoted_elsewhere([], c, act_subjects=(), subject_digests={}, corpus=[])
+    cases.append(("CG-7d empty subject population warns, never passes",
+                  c.rows[0][0] == "WARN" and c.rows[0][2] == 0
+                  and c.rows[0][3] == 0))
 
     row = _selftest_cg7d_quotation("zero-subject")
     cases.append(("CG-7d zero subject denominator is disclosed",
