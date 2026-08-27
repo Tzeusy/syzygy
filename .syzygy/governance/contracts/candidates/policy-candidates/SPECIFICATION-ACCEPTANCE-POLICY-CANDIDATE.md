@@ -38,21 +38,24 @@ The two acceptance units are distinct:
 
 1. **Whole-capability acceptance.** The owner-readable argument covers the
    complete capability declared by the specification. The CC-SPEC-11 coverage
-   population is every obligation in that declared capability scope, and the
-   acceptance decision applies to that complete population at the exact digest
-   recorded under CC-SPEC-10.
+   population is every obligation the argument evaluates for that capability:
+   each in-scope obligation and each considered obligation explicitly excluded
+   by a non-goal. The acceptance decision applies to that classified population
+   at the exact digest recorded under CC-SPEC-10.
 2. **Focused-change acceptance.** The owner-readable argument names the
    accepted capability baseline being changed and the exact obligations the
    change adds, modifies, retires, or makes newly relevant. The CC-SPEC-11
-   coverage population is that declared change population. It also identifies
-   every previously accepted obligation whose meaning or coverage the change
-   affects. The acceptance decision applies only to this coherent change at
-   the exact digest recorded under CC-SPEC-10; it does not silently re-accept
-   the whole capability or widen the change's declared scope.
+   coverage population includes those obligations, every previously accepted
+   obligation whose meaning or coverage the change affects, and each considered
+   obligation the change explicitly excludes by a non-goal. The acceptance
+   decision applies only to this classified coherent change at the exact digest
+   recorded under CC-SPEC-10; it does not silently re-accept the whole
+   capability or widen the change's declared scope.
 
 Both units must satisfy CC-SPEC-2 through CC-SPEC-11. If a reviewer finds an
-obligation omitted from the declared population, the scope statement is
-incomplete; narrowing the population does not make the change acceptable.
+obligation omitted from the declared coverage population, the acceptance-unit
+statement is incomplete; narrowing the population does not make the change
+acceptable.
 
 **CC-SPEC-2 — Requirement provenance names every material governing
 authority.** In this rule, a *governing warrant* means the accepted authority
@@ -93,14 +96,15 @@ Four rules govern the declaration:
    declarations (CC-IMPACT-1). A hand-authored second list at
    specification level is a defect, not a convenience.
 
-**Authorization to start work is separate.** A work-warrant record names the
-authority to begin a particular piece of work. An approved requirement may
-warrant work, and a confirmed review finding may warrant corrective work, but
-the finding is not a seventh requirement-provenance class. It is recorded in
-the work authorization, not inserted into the six fields above. If an adopted,
-accepted, approved, or recorded authority later incorporates the finding's
-substance, a requirement cites that authority in the matching field. Drafting
-or review authorization never makes proposed requirement text accepted.
+**A work warrant is separate.** RFC1-25 defines the `motivates` edge from a
+permitted authority to a work item or proposal as the work-warrant carrier. A
+confirmed review finding may warrant corrective work through that edge, but it
+is not a seventh requirement-provenance class and is not inserted into the six
+fields above. RFC1-25 requires a recorded confirmation act before a
+finding-class warrant can motivate work. If an adopted, accepted, approved, or
+recorded authority later incorporates the finding's substance, a requirement
+cites that authority in the matching provenance field. A work warrant never
+makes proposed requirement text accepted.
 
 **`lawfully admitted user need` is deliberately not a class.** This policy
 defines no authority or record that could admit such an entry. Adding it first
@@ -252,34 +256,42 @@ obligations; CC-SPEC-8 separately covers contract observable consequences.
 
 A specification demonstrates that its requirements cover the acceptance unit
 declared under CC-SPEC-1, with a **coverage table** produced with the
-specification. The population is counted and declared by the specification:
+specification. The **coverage population** is the bounded set of obligations
+the acceptance argument evaluates before classification. It includes
+candidates for inclusion and obligations the argument explicitly considers but
+excludes; membership in the population does not itself place an obligation in
+scope. The population is counted and declared by the specification:
 
-- for **whole-capability acceptance**, it is every obligation in the declared
-  capability scope — each thing the specification says the capability does,
-  renders, records, or refuses;
+- for **whole-capability acceptance**, it is every obligation the argument
+  evaluates for the capability — each in-scope obligation and each considered
+  obligation explicitly excluded by a non-goal;
 - for **focused-change acceptance**, it is every obligation the change adds,
   modifies, retires, or makes newly relevant, plus every previously accepted
-  obligation whose meaning or coverage the change affects.
+  obligation whose meaning or coverage the change affects and each considered
+  obligation the change explicitly excludes by a non-goal.
 
-Each obligation in the declared acceptance-unit population is placed in
+Each obligation in the declared coverage population is placed in
 **exactly one** of three sets, which sum to that population:
 
 ```text
-covered                 named requirement IDs satisfy it
-lawfully out of scope   excluded by the acceptance unit's non-goals (CC-SPEC-5),
+covered                 included in the acceptance unit; named requirement IDs
+                        satisfy it
+lawfully out of scope   excluded from the acceptance unit by a non-goal
+                        (CC-SPEC-5),
                         with the excluding non-goal named
-Unknown / unresolved    rendered with what would settle it, never
+Unknown / unresolved    inclusion or coverage is unresolved; rendered with
+                        what would settle it, never
                         silently omitted (VIS-2)
 ```
 
-The completeness test is **bounded to the declared acceptance unit**: no proof
-is demanded over obligations outside that unit. A reviewer who believes an
-obligation is missing from the declared population raises that against
-CC-SPEC-1's acceptance-unit statement, not against this table. The table is
-**confirmed by a party other than the specification's author** (the CC-TEST-4
-pattern). A fresh engineer applies this clause by reading the capability scope,
-the acceptance-unit statement, and the coverage table — no authoring context is
-required.
+The completeness test is **bounded to the declared coverage population**: no
+proof is demanded over obligations the argument does not evaluate. A reviewer
+who believes an obligation is missing from that population raises the omission
+against CC-SPEC-1's acceptance-unit statement, not against this table. The
+table is **confirmed by a party other than the specification's author** (the
+CC-TEST-4 pattern). A fresh engineer applies this clause by reading the
+capability scope, the non-goals, the acceptance-unit statement, and the
+coverage table — no authoring context is required.
 
 ## What this policy is not
 

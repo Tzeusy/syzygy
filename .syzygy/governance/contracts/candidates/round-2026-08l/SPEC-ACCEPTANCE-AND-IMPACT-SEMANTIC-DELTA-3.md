@@ -13,8 +13,8 @@ result that the policy subject did not itself let a fresh reader verify.
 **After, if the owner adopts this exact proposal:** a specification change must
 declare whether acceptance covers the whole capability or one focused change,
 and each unit has an explicit coverage population. The six provenance fields
-remain closed; a confirmed finding may authorize corrective work through a
-separate work-warrant record but does not become a seventh provenance field.
+remain closed; a confirmed finding may warrant corrective work through
+RFC1-25's `motivates` edge but does not become a seventh provenance field.
 The durable rules remain in the policies, while volatile measurements and
 review provenance live in this record. The two policies identify the currently
 binding predecessor bytes and state plainly that this successor draft does not
@@ -81,21 +81,23 @@ values.
 | Delta | Stable ID or carrier | Class | Meaning |
 |---|---|---|---|
 | D3-1 | CC-SPEC-1, CC-SPEC-10, and CC-SPEC-11 | **Normative** | Adds separate acceptance criteria, candidate-state handling, and matching coverage populations for a whole capability and for one focused change to an accepted capability. |
-| D3-2 | CC-SPEC-2 | **Clarifying/corrective** | Names the six fields as requirement provenance, separates work authorization, and places confirmed findings without widening the closed set. |
+| D3-2 | CC-SPEC-2 | **Clarifying** | Names the six fields as requirement provenance, separates the work warrant, and places confirmed findings on RFC1-25's `motivates` edge without widening the closed set. |
 | D3-3 | CC-SPEC-2 evidence note | **Clarifying** | Keeps the durable exclusion rule and removes volatile corpus counts from policy prose. |
-| D3-4 | CC-SPEC-8 | **Clarifying/corrective** | Makes heading, opening sentence, applicability test, and matrix row unit consistently per observable consequence; marks five contract citations as examples. |
-| D3-5 | CC-SPEC-11 | **Editorial with reviewed semantic claim** | Removes a stale CC-SPEC-8 cross-reference while retaining the CC-TEST-4 confirmer requirement. |
+| D3-4 | CC-SPEC-8 | **Clarifying** | Makes heading, opening sentence, applicability test, and matrix row unit consistently per observable consequence; marks five contract citations as examples. |
+| D3-5 | CC-SPEC-11 | **Clarifying** | Removes a stale CC-SPEC-8 cross-reference while retaining the CC-TEST-4 confirmer requirement and making that unchanged obligation harder to misread. |
 | D3-6 | CC-IMPACT evidence carrier | **Clarifying** | Replaces an unverifiable repeated pass claim with a resolvable evidence pointer and no repeated verdict. |
-| D3-7 | both status carriers | **Clarifying/corrective** | Distinguishes binding predecessor bytes from the non-binding successor draft and removes stale pre-act queue language. |
-| D3-8 | CC-IMPACT-6 and limits | **Clarifying/corrective** | Records that the declined lag exception supplies no authority and removes the stale claim that all specifications are future. |
-| D3-9 | policy history carriers | **Structural; meanings preserved** | Removes finding codes and authoring-history parentheticals from reader-facing rule bodies; prior semantic deltas and frozen reviews remain the evidence homes. |
+| D3-7 | both status carriers | **Clarifying** | Distinguishes binding predecessor bytes from the non-binding successor draft and removes stale pre-act queue language. |
+| D3-8 | CC-IMPACT-6 and limits | **Clarifying** | Records that the declined lag exception supplies no authority and removes the stale claim that all specifications are future. |
+| D3-9 | policy history carriers | **Structural** | Removes finding codes and authoring-history parentheticals from reader-facing rule bodies while preserving their meanings in prior semantic deltas and frozen reviews. |
 
-## Exact current and proposed text
+## Readable current and proposed excerpts
 
-The excerpts below are the complete operative text changed for each semantic
-correction. Historical review narration removed from the top banners remains
-preserved in the predecessor bytes and the prior semantic-delta records; it is
-not rewritten here as policy.
+The excerpts below explain the changed obligations in reading order. They are
+not the completeness mechanism: **Appendix D defines the mechanically exact
+current-to-proposed mapping over both policy files and every changed hunk.**
+Historical review narration removed from the top banners remains preserved in
+the predecessor bytes and the prior semantic-delta records; it is not rewritten
+here as policy.
 
 ### D3-1 — acceptance unit
 
@@ -139,21 +141,24 @@ The two acceptance units are distinct:
 
 1. Whole-capability acceptance. The owner-readable argument covers the
    complete capability declared by the specification. The CC-SPEC-11 coverage
-   population is every obligation in that declared capability scope, and the
-   acceptance decision applies to that complete population at the exact digest
-   recorded under CC-SPEC-10.
+   population is every obligation the argument evaluates for that capability:
+   each in-scope obligation and each considered obligation explicitly excluded
+   by a non-goal. The acceptance decision applies to that classified population
+   at the exact digest recorded under CC-SPEC-10.
 2. Focused-change acceptance. The owner-readable argument names the
    accepted capability baseline being changed and the exact obligations the
    change adds, modifies, retires, or makes newly relevant. The CC-SPEC-11
-   coverage population is that declared change population. It also identifies
-   every previously accepted obligation whose meaning or coverage the change
-   affects. The acceptance decision applies only to this coherent change at
-   the exact digest recorded under CC-SPEC-10; it does not silently re-accept
-   the whole capability or widen the change's declared scope.
+   coverage population includes those obligations, every previously accepted
+   obligation whose meaning or coverage the change affects, and each considered
+   obligation the change explicitly excludes by a non-goal. The acceptance
+   decision applies only to this classified coherent change at the exact digest
+   recorded under CC-SPEC-10; it does not silently re-accept the whole
+   capability or widen the change's declared scope.
 
 Both units must satisfy CC-SPEC-2 through CC-SPEC-11. If a reviewer finds an
-obligation omitted from the declared population, the scope statement is
-incomplete; narrowing the population does not make the change acceptable.
+obligation omitted from the declared coverage population, the acceptance-unit
+statement is incomplete; narrowing the population does not make the change
+acceptable.
 
 CC-SPEC-11 — The requirement set covers the declared acceptance unit, and
 the coverage is demonstrated. This clause covers the acceptance unit's own
@@ -161,28 +166,31 @@ obligations; CC-SPEC-8 separately covers contract observable consequences.
 
 A specification demonstrates that its requirements cover the acceptance unit
 declared under CC-SPEC-1, with a coverage table produced with the
-specification. The population is counted and declared by the specification:
+specification. The coverage population is the bounded set of obligations the
+acceptance argument evaluates before classification. It includes candidates
+for inclusion and obligations the argument explicitly considers but excludes;
+membership in the population does not itself place an obligation in scope. The
+population is counted and declared by the specification:
 
-- for whole-capability acceptance, it is every obligation in the declared
-  capability scope — each thing the specification says the capability does,
-  renders, records, or refuses;
+- for whole-capability acceptance, it is every obligation the argument
+  evaluates for the capability — each in-scope obligation and each considered
+  obligation explicitly excluded by a non-goal;
 - for focused-change acceptance, it is every obligation the change adds,
   modifies, retires, or makes newly relevant, plus every previously accepted
-  obligation whose meaning or coverage the change affects.
+  obligation whose meaning or coverage the change affects and each considered
+  obligation the change explicitly excludes by a non-goal.
 
-Each obligation in the declared acceptance-unit population is placed in
-exactly one of covered, lawfully out of scope, or Unknown / unresolved, and
-the sets sum to that population. The completeness test is bounded to the
-declared acceptance unit. A reviewer who believes an obligation is missing
-raises that against CC-SPEC-1's acceptance-unit statement. The table is
-confirmed by a party other than the specification's author under the
-CC-TEST-4 pattern.
+Each obligation in the declared coverage population is placed in exactly one
+of covered, lawfully out of scope, or Unknown / unresolved, and the sets sum to
+that population. The completeness test is bounded to the declared coverage
+population. A reviewer who believes an obligation is missing raises that
+against CC-SPEC-1's acceptance-unit statement. The table is confirmed by a
+party other than the specification's author under the CC-TEST-4 pattern.
 ```
 
 The existing exact SDR-37 quotation between the opening paragraph and the two
-units remains unchanged. The three-set definitions in CC-SPEC-11 remain
-unchanged except that `lawfully out of scope` now names the acceptance unit's
-non-goals rather than the whole specification's non-goals.
+units remains unchanged. Appendix D provides the complete exact mapping,
+including the full three-set definitions.
 
 CC-SPEC-10's current closing sentence, `Until the adoption record exists the
 spec is a candidate like everything else`, is proposed as:
@@ -193,7 +201,7 @@ For a focused change, the accepted capability baseline keeps its prior state;
 only the proposed change remains a candidate.
 ```
 
-### D3-2 — requirement provenance and work authorization
+### D3-2 — requirement provenance and work warrants
 
 **Current text:**
 
@@ -222,14 +230,15 @@ Every requirement names all material governing warrants. One may be
 marked primary for navigation; none may be hidden merely because another
 is more specific.
 
-Authorization to start work is separate. A work-warrant record names the
-authority to begin a particular piece of work. An approved requirement may
-warrant work, and a confirmed review finding may warrant corrective work, but
-the finding is not a seventh requirement-provenance class. It is recorded in
-the work authorization, not inserted into the six fields above. If an adopted,
-accepted, approved, or recorded authority later incorporates the finding's
-substance, a requirement cites that authority in the matching field. Drafting
-or review authorization never makes proposed requirement text accepted.
+A work warrant is separate. RFC1-25 defines the `motivates` edge from a
+permitted authority to a work item or proposal as the work-warrant carrier. A
+confirmed review finding may warrant corrective work through that edge, but it
+is not a seventh requirement-provenance class and is not inserted into the six
+fields above. RFC1-25 requires a recorded confirmation act before a
+finding-class warrant can motivate work. If an adopted, accepted, approved, or
+recorded authority later incorporates the finding's substance, a requirement
+cites that authority in the matching provenance field. A work warrant never
+makes proposed requirement text accepted.
 ```
 
 ### D3-3 — durable rule, volatile evidence removed
@@ -498,8 +507,8 @@ the 2026 acceptance cycle; the exact finding-to-delta mapping is in Appendix A.
 - VIS-4 reserves craft-policy adoption to the owner and distinguishes drafting
   from adoption.
 - Doctrine's trust-and-evidence rule distinguishes requirement/evidence status
-  from a work warrant and explicitly allows a confirmed finding to warrant
-  work.
+  from a work warrant; RFC1-25 defines the `motivates` edge as its carrier and
+  requires a recorded confirmation act for a finding-class warrant.
 - SDR-37 defines one owner-readable product argument and one acceptance decision
   for one coherent capability or one coherent change to one.
 - The 2026-08-17 acts identify the exact predecessor policy bytes that remain
@@ -508,10 +517,11 @@ the 2026 acceptance cycle; the exact finding-to-delta mapping is in Appendix A.
 ## Terms introduced or retired
 
 None. *Acceptance unit*, *whole-capability acceptance*, *focused-change
-acceptance*, *requirement provenance*, and *work warrant* are explanatory uses
-of existing concepts, not new closed-vocabulary values. Independent review
-must challenge this classification if any phrase functions as a new durable
-term.
+acceptance*, and *requirement provenance* are explanatory uses of existing
+concepts, not new closed-vocabulary values. *Work warrant* and `motivates` use
+the existing doctrine and RFC1-25 terms rather than minting a record class.
+Independent review must challenge this classification if any phrase functions
+as a new durable term.
 
 ## Downstream impact
 
@@ -574,11 +584,12 @@ invalidated the earlier draft digest.
 On the repaired bytes, the author's restatement is:
 
 - a proposed spec change declares whole-capability or focused-change
-  acceptance; the corresponding CC-SPEC-11 population is complete for that
-  unit, and only that unit is candidate before its adoption record;
-- the six CC-SPEC-2 fields explain requirement provenance, while a separate
-  work-warrant record authorizes work; a confirmed finding belongs in the
-  latter unless an accepted authority incorporates it;
+  acceptance; the corresponding CC-SPEC-11 coverage population evaluates both
+  in-scope obligations and explicit exclusions before classifying each once,
+  and only that acceptance unit is candidate before its adoption record;
+- the six CC-SPEC-2 fields explain requirement provenance, while RFC1-25's
+  `motivates` edge carries the separate work warrant; a confirmed finding can
+  motivate corrective work only after its recorded confirmation act;
 - CC-SPEC-8 evaluates and records coverage per observable consequence, and
   its five contract citations are explicitly examples;
 - CC-SPEC-11's independent confirmer rests on CC-TEST-4, not CC-SPEC-8;
@@ -620,7 +631,7 @@ without review-history jargon.
 | Source | Finding | This proposal's disposition |
 |---|---|---|
 | `../round-2026-08i/reviews/RD-69-DISPOSITION-REGISTER.md` | RD69-N1 | D3-1 defines focused-change acceptance separately from whole-capability acceptance. |
-| same register | RD69-N3 | D3-2 distinguishes requirement provenance from work authorization and places confirmed findings without adding a seventh field. |
+| same register | RD69-N3 | D3-2 distinguishes requirement provenance from the work warrant and places confirmed findings on RFC1-25's `motivates` edge without adding a seventh field. |
 | same register | policy-owned part of RD69-N5 | D3-3 removes volatile sweep counts; D3-6 removes the repeated exercise verdict. |
 | same register | RD70-N1 | D3-5 removes the stale CC-SPEC-8 cross-reference. |
 | same register | RD70-N2 | D3-4 aligns CC-SPEC-8's heading, opening, applicability test, and row unit. |
@@ -698,9 +709,16 @@ Python `str.count` and `rg -F -o`; every count agreed:
 | whole-capability acceptance unit | 1 |
 | focused-change acceptance unit | 1 |
 | acceptance-unit CC-SPEC-11 heading | 1 |
-| confirmed-finding work-warrant placement | 1 |
+| confirmed-finding `motivates`-edge placement | 1 |
+| undefined `work-warrant record` carrier | 0 |
+| RFC1-25 `motivates`-edge carrier in policy prose | 1 |
+| pre-classification coverage-population definition | 1 |
+| old `declared acceptance-unit population` phrase | 0 |
 | removed volatile values `371 files`, `784 files`, `398-file` | 0 each |
 | review finding codes matching `RD-[0-9]` | 0 |
+
+The classification-table sweep parsed 9 of 9 D3 rows and found only the
+canonical values: one `Normative`, seven `Clarifying`, and one `Structural`.
 
 `[Observed]` The five example citations were then resolved independently in
 the accepted contract tree. RFC1-33, RFC6-28, RFC7-38, RFC8-32, and RFC9-52
@@ -737,3 +755,66 @@ Anything else — unresolved links, vocabulary drift, missing identifiers,
 malformed Markdown, stale non-act prose, self-test failure, denominator loss,
 or a canonical battery failure unrelated to the two predecessor digests — is
 an amendment defect, not an expected exception.
+
+## Appendix D — complete exact current-to-proposed mapping
+
+This appendix owns the exact-text requirement for every changed rule and
+carrier in both policy subjects. The readable excerpts above are explanatory;
+they are not substitutes for this mapping.
+
+**Current text identity.** The baseline is annotated tag
+`craft-acts-6-7-confirmed-2026-08-17`, commit
+`71e598607d8db161a34e99eae453253152692915`. Scripted reads of the two tagged
+subjects produce the act-record digests:
+
+```text
+CC-SPEC   9889b7e311ad941eec84d01dc2c035c7e2502a57cf18e68a1028a76d5b814871
+CC-IMPACT cd6ec838e701f0258889d0c3c2776fc91fe1686829379b789ae5b151b04c27c0
+```
+
+**Proposed text identity.** The proposed text is the complete content of the
+same two paths at the exact review head containing this delta. A reviewer uses
+the PR's exact head SHA in place of `HEAD`; a moved head invalidates the output.
+
+**Mechanically complete mapping.** This command emits every current and
+proposed line, not only changed-line context, for exactly the two subjects:
+
+```sh
+BASE=craft-acts-6-7-confirmed-2026-08-17
+git diff --no-ext-diff --unified=100000 "$BASE" HEAD -- \
+  .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md \
+  .syzygy/governance/contracts/candidates/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md
+```
+
+Completeness checks:
+
+```sh
+git diff --name-only craft-acts-6-7-confirmed-2026-08-17 HEAD -- \
+  .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md \
+  .syzygy/governance/contracts/candidates/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md
+git diff --check craft-acts-6-7-confirmed-2026-08-17 HEAD -- \
+  .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md \
+  .syzygy/governance/contracts/candidates/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md
+```
+
+The first command must enumerate exactly two paths, the two policy subjects;
+the second must print nothing. Because the full-file diff is generated from the
+act-bound baseline and exact review head, it covers the full CC-SPEC-11
+three-set text, every removed historical parenthetical, the CC-SPEC-8 repair
+history carrier, both banners, and every other changed hunk without relying on
+an author's excerpt selection.
+
+## Appendix E — correction-review dispositions
+
+The independent review examined PR head
+`31422229bbdf646f53a3f81fb33b331bce40b9b3` and returned four inline
+`correction-required` findings. It stated no overall verdict, so this record
+does not infer or supply one. The corrections below move the head and therefore
+require a new independent exact-head review.
+
+| Thread | Verified basis | Correction |
+|---|---|---|
+| [work-warrant carrier](https://github.com/Tzeusy/syzygy/pull/5#discussion_r3874165236) | Doctrine defines the authorization class; RFC1-25 defines `motivates` as its carrier. The draft's `work-warrant record` existed nowhere authoritative. | CC-SPEC-2 now cites the `motivates` edge consistently and requires RFC1-25's recorded confirmation act for a finding-class warrant. |
+| [coverage-population contradiction](https://github.com/Tzeusy/syzygy/pull/5#discussion_r3874165462) | The draft defined the population as in-unit obligations while also placing explicit exclusions inside it. | CC-SPEC-1 and CC-SPEC-11 now define one pre-classification coverage population containing candidates for inclusion and explicit exclusions, then partition it exactly once. |
+| [incomplete exact-text mapping](https://github.com/Tzeusy/syzygy/pull/5#discussion_r3874165726) | The normative-change workflow requires exact current and proposed text; the readable excerpts omitted changed carrier text. | Appendix D now generates a full-file diff from the act-bound tag to the exact review head and mechanically checks its two-path denominator. |
+| [non-canonical change classes](https://github.com/Tzeusy/syzygy/pull/5#discussion_r3874165999) | The semantic-delta template closes the class vocabulary to Editorial, Clarifying, Normative, and Structural. | Every D3 row now selects exactly one canonical class; D3-5 is Clarifying because the unchanged confirmer obligation is made harder to misread. |
