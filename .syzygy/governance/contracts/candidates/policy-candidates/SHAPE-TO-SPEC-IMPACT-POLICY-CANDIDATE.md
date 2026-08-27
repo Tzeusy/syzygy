@@ -43,10 +43,12 @@ Three rules:
    invisibility is exactly what this rule set exists to prevent.
 
 **CC-IMPACT-2 — A shape delta performs a reverse-reference sweep, and the
-trigger set is the warrant set.**
+trigger set is the requirement-provenance set.**
 
-> **The identities that can trigger a sweep are exactly the identities that
-> can warrant a requirement** — CC-SPEC-2's six classes, and no others.
+> **The identities that can trigger a sweep are exactly the identities a
+> requirement may cite as governing provenance** — CC-SPEC-2's six fields,
+> and no others. This set explains why requirement text belongs; it is not the
+> work-warrant set that authorizes creating or prioritizing work.
 
 When an adopted doctrine rule, an accepted contract clause, an approved
 craft/policy clause, a recorded owner decision, an accepted topology
@@ -56,10 +58,16 @@ specification whose CC-IMPACT-1 declarations name the changed identity, or
 whose requirements consume its vocabulary. **The sweep is part of the
 change, not a follow-up task.**
 
+**`Consumes its vocabulary` remains undefined by accepted authority.** This
+amendment does not decide that pre-existing ambiguity. Declaration matching is
+still usable; any additional relationship whose answer depends on the
+undefined phrase is `undecidable` under CC-IMPACT-4 and renders Unknown with
+what would settle it. It may not be classified as unaffected.
+
 Stating the trigger set as an *identity* rather than as a second enumeration
-is deliberate: two lists drift, and the drift is silent. Any class that
-becomes warrantable becomes sweepable in the same act; any class that cannot
-trigger a sweep may not warrant a requirement.
+is deliberate: two lists drift, and the drift is silent. Any class added to
+requirement provenance becomes sweepable in the same act; any class that
+cannot trigger a sweep may not serve as requirement provenance.
 
 **CC-IMPACT-3 — The sweep records four sets, with its denominator and its
 method.** The sweep's output names:
@@ -82,11 +90,10 @@ carried by a denominator and full compliance, is the failure mode this limb
 exists to prevent.
 
 A sweep that reports only the affected set has reported a numerator without
-a denominator, and satisfies nothing. The denominator discipline itself is
-**CC-KNOW-16**'s (candidate, P-12, `CRAFT-KNOWLEDGE-HYGIENE-POLICY.md`) —
-cited, not restated; this clause is that rule's application to the
-specification corpus, and if CC-KNOW-16 is not approved the discipline still
-rests on VIS-2.
+a denominator, and satisfies nothing. The denominator discipline is also
+stated by **CC-KNOW-16**; whether or not that separate clause is in force at
+the sweep's act, this clause applies the discipline to the specification
+corpus and VIS-2 supplies its governing basis.
 
 **CC-IMPACT-4 — Undecidable impact renders as Unknown or contradiction,
 never as unaffected.** A specification the sweep could not settle is
@@ -99,17 +106,19 @@ answer, and "not listed as affected" is never evidence of being unaffected
 names one too.** Each affected specification's amendment is owned by a named
 actor before the change lands. **The sweep itself has an actor**: the shape
 change's author performs it, and a party other than that author confirms it
-is adequate — the CC-TEST-4 pattern, because a sweeper grading their own
-denominator is the unassigned judgment E5 exists to remove. "The author" is
-a name; "someone" is not. Where the actor is the owner (VIS-4), the
+is adequate. The confirmer's independence from the sweep author is the rule;
+no external pattern is needed to interpret it, because a sweeper grading their
+own denominator is the unassigned judgment E5 exists to remove. "The author"
+is a name; "someone" is not. Where the actor is the owner (VIS-4), the
 amendment waits on the owner and the wait is visible.
 
-**CC-IMPACT-6 — Affected specs move in the same logical change. There is no
-exception today.** CC-REV-2's merge invariant governs, unmodified and
-uncarved: the shape change and its spec amendments land together, so
-mainline never asserts the old truth, and **behavioral specs are the first
-population CC-REV-2 names**. CC-REV-2 admits no exception limb of its own;
-its only carve-out is doctrine's owner gate.
+**CC-IMPACT-6 — Affected specs move in the same logical change; this policy
+creates no exception.** *Same logical change* means the shape delta and every
+specification amendment it requires land in one merge transaction, so mainline
+never contains one without the other. CC-REV-2's merge invariant governs,
+unmodified and uncarved, and **behavioral specs are the first population
+CC-REV-2 names**. CC-REV-2 admits no exception limb of its own; its only
+carve-out is doctrine's owner gate.
 
 **This clause creates no alternative.** The owner declined the previously
 offered lagging-specification exception, so it supplies no authority and this
@@ -118,9 +127,9 @@ if CC-REV-2 were itself amended in place through a new craft act. Until such an
 act is performed, no lawful lag exists, and a shape change whose specification
 amendments cannot land with it does not merge.
 
-**CC-IMPACT-7 — The path is exercised before it is relied on.** Before the
-first real shape amendment after specifications exist, the propagation path
-is run **blind** against a named fixture with a known answer:
+**CC-IMPACT-7 — The path is exercised before it is relied on.** Before any
+shape amendment relies on the propagation path, a passing **blind** run must
+exist against this named fixture with a known answer:
 
 ```text
 fixture   ../round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md
@@ -129,7 +138,7 @@ answer    ../round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2-ANSWER-KEY.md
           — a separate file, which the administrator does not open
 ```
 
-Four requirements, each of which the clause previously lacked:
+The exercise has four requirements:
 
 1. **The administrator is fresh-context** per CC-REV-1 — not the author of
    the sweep method, not sharing its session.
@@ -149,17 +158,14 @@ supersede the fixture rather than editing it.
 
 ## What this rule set does not do
 
-- It does not define *how* the sweep is implemented. There is no script
-  today, and this policy does not pretend one exists: the sweep may be
-  mechanical or manual, and either way CC-IMPACT-3's four sets, its
-  denominator and its **method** are what make it checkable. Claiming a
-  mechanical detector before one exists would be the precise failure VIS-2
-  forbids.
-- It does not define **"consumes its vocabulary"**. `[Unknown]` — the term
-  is undefined, and its undefinedness decides real cases: a requirement
-  impacted at one remove through another clause's composition rule can be
-  read either way. CC-IMPACT-4 is what keeps that honest — such a case is
-  `undecidable`, never `unaffected` — but the term itself remains unresolved.
+- It does not require or assert the existence of a sweep script. A sweep may be
+  mechanical or manual, and either way CC-IMPACT-3's four sets, its denominator
+  and its **method** are what make it checkable. Each sweep record says which
+  method it actually used.
+- It does not define **"consumes its vocabulary"**. The operative rule above
+  exposes that pre-existing ambiguity and routes dependent cases to
+  `undecidable`, never `unaffected`; a separate authorized amendment is needed
+  to define the term.
 - It does not govern shape changes to *candidates*. Until a contract is
   accepted, changing it propagates to nothing, because no specification may
   cite an unaccepted clause.
@@ -172,7 +178,7 @@ supersede the fixture rather than editing it.
 | Rule | The failure it prevents |
 |---|---|
 | CC-IMPACT-1 | a specification no sweep can see, and a declaration that may disagree with the requirements it summarizes |
-| CC-IMPACT-2 | a warrant class that can authorize a requirement but cannot trigger a sweep |
+| CC-IMPACT-2 | a requirement-provenance class that cannot trigger a sweep |
 | CC-IMPACT-3 | a numerator with no denominator, and a true reason producing a wrong answer |
 | CC-IMPACT-4 | "not listed" quietly reading as "not affected" |
 | CC-IMPACT-5 | an amendment everyone agrees is needed and nobody owns; a sweeper grading their own sweep |

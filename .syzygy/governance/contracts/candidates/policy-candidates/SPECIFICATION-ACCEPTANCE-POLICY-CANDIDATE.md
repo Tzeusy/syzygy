@@ -37,20 +37,20 @@ The rule is cited from its recorded home, never restated normatively here.
 The two acceptance units are distinct:
 
 1. **Whole-capability acceptance.** The owner-readable argument covers the
-   complete capability declared by the specification. The CC-SPEC-11 coverage
-   population is every obligation the argument evaluates for that capability:
-   each in-scope obligation and each considered obligation explicitly excluded
-   by a non-goal. The acceptance decision applies to that classified population
-   at the exact digest recorded under CC-SPEC-10.
+   complete capability declared by the specification. CC-SPEC-11 independently
+   enumerates the coverage population from the scope, complete requirement
+   inventory (including retired entries), and non-goals. The acceptance
+   decision applies to that classified population at the exact digest recorded
+   under CC-SPEC-10.
 2. **Focused-change acceptance.** The owner-readable argument names the
    accepted capability baseline being changed and the exact obligations the
-   change adds, modifies, retires, or makes newly relevant. The CC-SPEC-11
-   coverage population includes those obligations, every previously accepted
-   obligation whose meaning or coverage the change affects, and each considered
-   obligation the change explicitly excludes by a non-goal. The acceptance
-   decision applies only to this classified coherent change at the exact digest
-   recorded under CC-SPEC-10; it does not silently re-accept the whole
-   capability or widen the change's declared scope.
+   change adds, modifies, retires, or makes newly relevant. CC-SPEC-11
+   independently enumerates the coverage population from the exact
+   baseline-to-proposal difference, the change scope and non-goals, and a stated
+   affected-baseline sweep. The acceptance decision applies only to this
+   classified coherent change at the exact digest recorded under CC-SPEC-10;
+   it does not silently re-accept the whole capability or widen the change's
+   declared scope.
 
 Both units must satisfy CC-SPEC-2 through CC-SPEC-11. If a reviewer finds an
 obligation omitted from the declared coverage population, the acceptance-unit
@@ -202,10 +202,11 @@ the capability neither renders, stores, transitions, queries, nor crosses is
 not applicable, and saying so is an N/A judgment, not an omission.
 
 **The reviewed-N/A judgment's home, gate, unit, and effect rule are the
-contract's, not this clause's.** Examples of confirmed contract modules that
-state the rule include **RFC1-33, RFC6-28, RFC7-38, RFC8-32, and RFC9-52**;
-this is an examples list, not a completeness claim. A reviewed N/A judgment
-is a recorded **owner** judgment homed in `decisions/`
+contract's, not this clause's.** Here, *reviewed N/A* means a recorded
+**owner** judgment, not an author's or reviewer's sign-off. Examples of
+confirmed contract modules that state the rule include **RFC1-33, RFC6-28,
+RFC7-38, RFC8-32, and RFC9-52**; this is an examples list, not a completeness
+claim. The judgment is homed in `decisions/`
 (RFC3-15), honored only where its owner-act provenance is verifiable under
 **RFC3-16(a)**; where that provenance does not verify, the judgment maps
 nothing — the consequence remains unmapped and **renders Unknown, never
@@ -233,13 +234,15 @@ the obligation is CC-REV-4's.
 > Lawful adoption under VIS-4 is recorded at the exact digest, and the
 > record quotes what was adopted at which digest.
 >
-> **Under the current doctrine state this means owner adoption**, because
-> VIS-4 opens the delegated gate only on **both** of two conditions —
+> Apply VIS-4's gate at the adoption act. Owner adoption is required unless
+> the act can verify **both** delegated-gate conditions —
 > *"an accepted adjudication RFC (defining what makes adversarial judgment
 > independent, how the ambiguity determination is recorded, and how each
 > adopted change stays individually revertable)* ***and*** *the owner's
 > explicit doctrine amendment recording that the gate opens; RFC acceptance
-> alone never opens it"* — and neither exists.
+> alone never opens it"*. This policy makes no time-sensitive claim that the
+> conditions are present or absent; the exact-digest adoption record must show
+> the authority it applies.
 >
 > **One class is always human-gated, gate open or not:** VIS-4 —
 > *"spec changes touching security posture, privacy or retention
@@ -256,19 +259,31 @@ obligations; CC-SPEC-8 separately covers contract observable consequences.
 
 A specification demonstrates that its requirements cover the acceptance unit
 declared under CC-SPEC-1, with a **coverage table** produced with the
-specification. The **coverage population** is the bounded set of obligations
-the acceptance argument evaluates before classification. It includes
-candidates for inclusion and obligations the argument explicitly considers but
-excludes; membership in the population does not itself place an obligation in
-scope. The population is counted and declared by the specification:
+specification. The **coverage population** is independently enumerated before
+classification; the table author may not define it merely by listing the rows
+they chose to include. Membership in the population does not itself place an
+obligation in scope.
 
-- for **whole-capability acceptance**, it is every obligation the argument
-  evaluates for the capability — each in-scope obligation and each considered
-  obligation explicitly excluded by a non-goal;
-- for **focused-change acceptance**, it is every obligation the change adds,
-  modifies, retires, or makes newly relevant, plus every previously accepted
-  obligation whose meaning or coverage the change affects and each considered
-  obligation the change explicitly excludes by a non-goal.
+For **whole-capability acceptance**, enumerate:
+
+1. each obligation in the CC-SPEC-1 capability-scope statement;
+2. every stable requirement ID in the proposed specification, including every
+   entry marked retired under CC-SPEC-3; and
+3. each explicit non-goal.
+
+For **focused-change acceptance**, enumerate:
+
+1. every requirement ID added, modified, or retired by the exact
+   baseline-to-proposal difference;
+2. each obligation in the change scope and each explicit non-goal; and
+3. every unchanged baseline requirement found affected by a stated sweep over
+   references, governing-provenance declarations, coverage mappings, and
+   defined vocabulary. The sweep records its method and denominator; a
+   relationship the method cannot settle enters `Unknown / unresolved`.
+
+Deduplicate the sources into one row per obligation. Each row carries the
+stable requirement ID when one exists; otherwise it carries a table-local ID,
+its source locator, and the discovery method that put it in the population.
 
 Each obligation in the declared coverage population is placed in
 **exactly one** of three sets, which sum to that population:
@@ -276,28 +291,31 @@ Each obligation in the declared coverage population is placed in
 ```text
 covered                 included in the acceptance unit; named requirement IDs
                         satisfy it
-lawfully out of scope   excluded from the acceptance unit by a non-goal
-                        (CC-SPEC-5),
-                        with the excluding non-goal named
+lawfully out of scope
+  / retired             excluded by a named non-goal (CC-SPEC-5), or retired
+                        in place under CC-SPEC-3 with the requirement ID and
+                        retired entry named
 Unknown / unresolved    inclusion or coverage is unresolved; rendered with
                         what would settle it, never
                         silently omitted (VIS-2)
 ```
 
-The completeness test is **bounded to the declared coverage population**: no
-proof is demanded over obligations the argument does not evaluate. A reviewer
-who believes an obligation is missing from that population raises the omission
-against CC-SPEC-1's acceptance-unit statement, not against this table. The
-table is **confirmed by a party other than the specification's author** (the
-CC-TEST-4 pattern). A fresh engineer applies this clause by reading the
-capability scope, the non-goals, the acceptance-unit statement, and the
-coverage table — no authoring context is required.
+The completeness test is **bounded to the independently enumerated coverage
+population**. A reviewer who finds a source item absent from that population
+raises the omission against CC-SPEC-1's acceptance-unit statement. The table is
+**confirmed by a party other than the specification's author**; that explicit
+separation is the rule, with no external pattern needed to interpret it. A
+fresh engineer reproduces the population from the named baseline and proposed
+digests, scope, complete requirement inventory, non-goals, and affected-baseline
+sweep, then checks that every member appears in exactly one set — no authoring
+context is required.
 
 ## What this policy is not
 
 Not a workflow (the th-projects feature-request workflow is referenced
-process, never authority); not a format (P-39 owns the medium); not a
-review procedure (CC-REV-1/2/4 own review). One fact, one home.
+process, never authority); not a format (the specification's adopted format
+authority owns the medium); not a review procedure (CC-REV-1/2/4 own review).
+One fact, one home.
 
 ## Amendment status
 
