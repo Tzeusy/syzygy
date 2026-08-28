@@ -1,12 +1,14 @@
-# Specification acceptance policy — candidate craft rule set
+# Specification acceptance policy — craft rule set
 
-> **Proposed post-act amendment — non-binding.** Acts 6 and 7 confirmed the
-> predecessor CC-SPEC bytes at sha256
-> `9889b7e311ad941eec84d01dc2c035c7e2502a57cf18e68a1028a76d5b814871`.
-> Those predecessor bytes remain the binding mainline policy. The edited
-> bytes below are a draft successor: they do not bind, replace, or amend the
-> confirmed policy unless an independent review is completed and the owner
-> confirms the exact proposed digest in a new act.
+> **Candidate before an exact-digest act; confirmed successor after one.**
+> Authority state resolves from the active acceptance record. These bytes are a
+> proposal while no performed owner act names their exact sha256. If such an
+> act later names this exact digest, these same bytes are the confirmed
+> successor from that act; no banner edit is needed. The
+> 2026 acts identify the predecessor digests they confirmed and do not bind a
+> different digest. Whether those predecessor bytes are current or superseded
+> is likewise answered by the act record, never inferred from this banner.
+> Drafting, review, a commit, or a pull request changes no authority state.
 >
 > Identifiers `CC-SPEC-1…11` remain stable and are never renumbered. This
 > file and `SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` remain one model:
@@ -65,6 +67,16 @@ authorize drafting, implementation, scheduling, or any other work. The rule:
 > Every requirement names all material governing warrants. One may be
 > marked primary for navigation; none may be hidden merely because another
 > is more specific.
+
+**"Material", defined.** An authority is material when it supplies or changes
+any part of the requirement's obligation, boundary, normative vocabulary,
+success/failure oracle, or acceptance scope. Test the classification by
+removing that authority: if the requirement would lose an accepted basis or
+could be read to require, permit, or prohibit something different, the
+authority is material. A reviewer checks this trace one normative statement
+and field at a time. If materiality cannot be settled, the requirement records
+`Unknown` beside its six-field declaration, names the authority in question and
+what would settle it, and cannot pass acceptance.
 
 The warrant classes are a **closed set of six**, and a requirement's
 declaration is machine-readable, one field per class:
@@ -169,7 +181,13 @@ requirement.
 **CC-SPEC-5 — Non-goals and Unknowns are explicit.** What the capability
 deliberately does not do is listed; what is not yet known renders
 Unknown with its reason, never silently omitted (VIS-2 and CC-REV-5
-applied to the spec itself — cited, not restated).
+applied to the spec itself — cited, not restated). A requirement-level Unknown
+is recorded beside that requirement; a contract-coverage Unknown is recorded
+in its CC-SPEC-8 matrix row; an acceptance-coverage Unknown is recorded in its
+CC-SPEC-11 table row. Each names what would settle it. The specification's
+primary human view and machine projection render the same Unknown and link to
+that owning row; an acceptance review records the result as `Unknown` and
+defers acceptance.
 
 **CC-SPEC-6 — No unresolved shape decision is silently selected.** If a
 requirement's content would settle an open owner question, the spec is
@@ -221,6 +239,13 @@ home for the contract rule. The repair removed that duplicate and retained
 only this specification-side production obligation and the definition of
 "applicable"; the evidence and review history remain in the amendment
 records.
+
+An applicable consequence that is neither mapped to a requirement nor covered
+by a provenance-verifiable owner N/A judgment remains **unmapped**. Its matrix
+row records `Unknown`, identifies the unmapped consequence, names what would
+settle it, and blocks acceptance: the acceptance review records the result as
+`Unknown`, defers acceptance, and leaves the proposed acceptance unit a
+candidate.
 
 **CC-SPEC-9 — A fresh technical reader can restate it.** A specification is
 a normative artifact, so **CC-REV-4** and **VIS-3** apply unmodified: a
@@ -276,14 +301,21 @@ For **focused-change acceptance**, enumerate:
 1. every requirement ID added, modified, or retired by the exact
    baseline-to-proposal difference;
 2. each obligation in the change scope and each explicit non-goal; and
-3. every unchanged baseline requirement found affected by a stated sweep over
-   references, governing-provenance declarations, coverage mappings, and
-   defined vocabulary. The sweep records its method and denominator; a
-   relationship the method cannot settle enters `Unknown / unresolved`.
+3. an affected-baseline sweep whose input population is **every unchanged
+   requirement in the accepted baseline**, enumerated before matching. For each
+   input, test references, governing-provenance declarations, coverage
+   mappings, and defined vocabulary against the changed items. The sweep
+   records its method and denominator and places each input in exactly one of
+   `affected`, `unaffected` (with reason), or `undecidable` (with what would
+   settle it). Add the `affected` and `undecidable` inputs to the coverage
+   population; retain the full sweep as the enumeration evidence.
 
-Deduplicate the sources into one row per obligation. Each row carries the
-stable requirement ID when one exists; otherwise it carries a table-local ID,
-its source locator, and the discovery method that put it in the population.
+Each enumerated source item becomes a row. Repeated occurrences of the same
+stable requirement ID share one row with every source locator; no other two
+source items are collapsed merely because the author considers them equivalent.
+A scope or non-goal item without a stable requirement ID receives a table-local
+ID. Every row records its source locator and the discovery method that put it in
+the population.
 
 Each obligation in the declared coverage population is placed in
 **exactly one** of three sets, which sum to that population:
@@ -309,6 +341,15 @@ fresh engineer reproduces the population from the named baseline and proposed
 digests, scope, complete requirement inventory, non-goals, and affected-baseline
 sweep, then checks that every member appears in exactly one set — no authoring
 context is required.
+
+Acceptance is determinate only when every population member is `covered` or
+`lawfully out of scope / retired`, every CC-SPEC-8 applicable consequence is
+mapped or covered by a lawful N/A judgment, and no requirement carries an
+unsettled-provenance `Unknown`. If any `Unknown / unresolved` or unmapped row
+remains, the table does not demonstrate coverage: the acceptance review records
+`Unknown`, names every blocking row and settling condition, defers acceptance,
+and leaves the proposed acceptance unit a candidate. This policy defines no
+exception that turns an Unknown into acceptance.
 
 ## What this policy is not
 
