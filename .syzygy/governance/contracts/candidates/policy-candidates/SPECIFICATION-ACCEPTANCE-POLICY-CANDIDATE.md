@@ -184,10 +184,11 @@ Unknown with its reason, never silently omitted (VIS-2 and CC-REV-5
 applied to the spec itself — cited, not restated). A requirement-level Unknown
 is recorded beside that requirement; a contract-coverage Unknown is recorded
 in its CC-SPEC-8 matrix row; an acceptance-coverage Unknown is recorded in its
-CC-SPEC-11 table row. Each names what would settle it. The specification's
-primary human view and machine projection render the same Unknown and link to
-that owning row; an acceptance review records the result as `Unknown` and
-defers acceptance.
+CC-SPEC-11 table row. An adoption-record selection Unknown is recorded in that
+table's `adoption-record selection` section. Each names what would settle it.
+The specification's primary human view and machine projection render the same
+Unknown and link to that owning row or section; an acceptance review records
+the result as `Unknown` and defers acceptance.
 
 **CC-SPEC-6 — No unresolved shape decision is silently selected.** If a
 requirement's content would settle an open owner question, the spec is
@@ -212,21 +213,53 @@ observable consequence, not per clause** (RFC1-33, RFC6-28) — a clause with
 five observable consequences and one mapped requirement is not covered.
 
 **Build the consequence population before classifying applicability.** At one
-named source revision, enumerate every accepted contract module from the active
-exact-digest contract manifest and its owning acceptance record, then enumerate
-every defined clause in those modules. Within each clause, take source units in
-order: the clause's normative lead text, each numbered or bulleted item, and
-each table row that states a required, permitted, or prohibited outcome. Split
-a source unit only when it states separately falsifiable observable outcomes;
-quote the exact source span for every split. Assign each row a stable local ID
-from `(clause ID, source-unit ordinal, outcome ordinal)` and record the source
-revision, module count, clause count, consequence count, and extraction method.
+named source revision, select the accepted installed contract modules before
+extracting clauses:
+
+1. Read the candidate-package inventory at
+   `.syzygy/governance/contracts/candidates/ACTIVE-CONTRACT-MANIFEST.txt`. Its
+   rows are an upper bound, not evidence of acceptance.
+2. Apply CC-SPEC-10's governing-record selection to contract-acceptance owner
+   Decisions at that revision. For each selected act, resolve the exact wave
+   manifest identity and path named by its argument under
+   `.syzygy/governance/contracts/candidates/wave-manifests/`.
+3. Union the selected wave-manifest rows. Require every row to appear with the
+   same digest in the candidate-package inventory and at the corresponding
+   installed path under `.syzygy/governance/contracts/`; require the installed
+   bytes to hash to that digest. Only this verified intersection is the
+   accepted module population. Candidate-package rows absent from selected
+   acts are excluded.
+
+Record the source revision, selected act and manifest identities, package-row
+count, accepted installed-module count, excluded candidate-row count, and every
+digest comparison in the coverage matrix's **population-construction** section.
+If act selection is contradictory, a selected manifest is unresolved, or any
+row/path/digest check fails, that section records `Unknown`, the conflicting or
+missing inputs, and what would settle them. The specification's human and
+machine projections render the same Unknown and link to this section;
+acceptance is deferred before clause enumeration begins.
+
+For every defined clause in the accepted module population, define its **clause
+span** as all Markdown from the clause heading through the byte before the next
+defined-clause heading, or through end of module. Partition the entire span in
+source order into non-overlapping Markdown block units: every paragraph
+(including later standalone prose), numbered or bulleted item with its
+continuation text, table row, blockquote, fenced block, and intervening heading.
+Every byte in the clause span belongs to exactly one source unit. Classify each
+unit as consequence-bearing, non-normative (with reason), or `Unknown` (with the
+selection question and what would settle it); the three source-unit sets are
+disjoint and exhaustive.
+
+Split a consequence-bearing source unit only when it states separately
+falsifiable observable outcomes; quote the exact source span for every split.
+Assign each consequence row a stable local ID from `(clause ID, source-unit
+ordinal, outcome ordinal)` and record the module count, clause count, source-unit
+count, consequence count, and extraction method. If source-unit selection or
+segmentation cannot be decided, retain the full uncertain unit as one
+`Unknown` row and defer acceptance.
 
 This full consequence population is the denominator. No applicability result,
-declaration match, or zero-hit search may remove a row. If a reader cannot
-deterministically decide how a source unit segments into observable
-consequences, keep the source unit as one row, record `Unknown` with the
-segmentation question and what would settle it, and defer acceptance.
+declaration match, or zero-hit search may remove a row.
 
 **"Applicable", defined.** A contract clause's observable consequence is
 applicable to a specification when **the capability uses the entity, behavior,
@@ -313,10 +346,14 @@ the effective record is the candidate that no other candidate explicitly
 supersedes or revokes. File order, commit order, and timestamps alone never
 select a winner. No candidate record means the unit is still a proposal. Two
 incompatible candidates with no explicit relationship are a contradiction:
-record `Unknown`, link both records, and neither adopt the unit nor use either
-record to enumerate accepted specifications until the owner resolves it. This
-paragraph selects among records; RFC3-15 and RFC3-16 remain the authority for
-their home, provenance, bindings, and lifecycle.
+the CC-SPEC-11 coverage table's **adoption-record selection** section records
+`Unknown`, the named source revision, both record identities and digests, the
+missing supersession relationship, and what owner Decision would settle it.
+The specification's human and machine projections render that same Unknown and
+link to the section. Neither adopt the unit nor use either record to enumerate
+accepted specifications until the owner resolves it. This paragraph selects
+among records; RFC3-15 and RFC3-16 remain the authority for their home,
+provenance, bindings, and lifecycle.
 
 Until the selection rule above yields a governing record that names the exact
 proposed digest, the acceptance unit is a candidate. For a focused change, the

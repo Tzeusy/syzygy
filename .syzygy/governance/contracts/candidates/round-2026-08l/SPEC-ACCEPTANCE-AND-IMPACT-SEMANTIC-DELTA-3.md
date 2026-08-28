@@ -107,14 +107,14 @@ meaning:
 | D3-1 | CC-SPEC-1, CC-SPEC-5, CC-SPEC-8, CC-SPEC-10, and CC-SPEC-11 | **Normative** | Adds separate acceptance criteria, deterministic source extraction, independently enumerable coverage populations, explicit retirement handling, Unknown/unmapped deferral, and candidate-state handling for whole-capability and focused-change acceptance. |
 | D3-2 | CC-SPEC-2 and CC-IMPACT-2 | **Normative** | Defines material provenance, adds an acceptance-blocking Unknown when materiality is unsettled, separates the six fields from the RFC1-25 work warrant, and removes work-authorization language from the impact trigger set. |
 | D3-3 | CC-SPEC-2 evidence note | **Clarifying** | Keeps the durable exclusion rule and removes volatile corpus counts from policy prose. |
-| D3-4 | CC-SPEC-8 | **Normative** | Makes the row unit consistently per observable consequence, adds a reproducible pre-applicability consequence denominator and segmentation blocker, states the reviewed-N/A verification decision, and marks five contract citations as examples. |
+| D3-4 | CC-SPEC-8 | **Normative** | Selects the accepted installed manifest intersection, exhaustively partitions every clause span before extracting consequences, adds segmentation/population Unknown homes, states the reviewed-N/A verification decision, and marks five contract citations as examples. |
 | D3-5 | CC-SPEC-11 | **Clarifying** | Removes stale confirmer shorthand while retaining the explicit requirement that a party other than the author confirms the table. |
 | D3-6 | CC-IMPACT evidence carrier | **Clarifying** | Replaces an unverifiable repeated pass claim with a resolvable evidence pointer and no repeated verdict. |
-| D3-7 | both status carriers | **Clarifying** | Makes exact-digest authority state conditional so the same bytes remain truthful before and after a later owner act. |
+| D3-7 | both status carriers and CC-SPEC-10 | **Normative** | Makes exact-digest authority state conditional, defines owner-Decision record selection and supersession, and gives selection contradiction a durable CC-SPEC-11 Unknown home that blocks adoption and corpus enumeration. |
 | D3-8 | CC-IMPACT-6 and limits | **Clarifying** | Records that the declined lag exception supplies no authority and removes the stale claim that all specifications are future. |
 | D3-9 | policy history carriers | **Structural** | Removes finding codes and authoring-history parentheticals from reader-facing rule bodies while preserving their meanings in prior semantic deltas and frozen reviews. |
 | D3-10 | CC-IMPACT-2, CC-IMPACT-5, CC-IMPACT-6, and current-state carriers | **Clarifying** | Defines necessary local reading terms, makes time-sensitive claims conditional or method-recorded, and exposes the unresolved vocabulary-consumption ambiguity without deciding it. |
-| D3-11 | CC-IMPACT-3 and CC-IMPACT-4 | **Normative** | Freezes an independently enumerable two-level impact corpus, makes result sets disjoint and exhaustive, propagates requirement results to specifications, records Unknown locally, and blocks merge on undecidable or contradicted impact. |
+| D3-11 | CC-IMPACT-3 and CC-IMPACT-4 | **Normative** | Freezes requirement and direct-specification inputs, partitions both plus parent specifications exhaustively with contradicted precedence, gives pre-enumeration Unknown a durable home, defines owner-Decision adjudication, and blocks merge on unresolved impact. |
 
 ## Readable current and proposed excerpts
 
@@ -871,7 +871,7 @@ Python `str.count` and `rg -F -o`; every count agreed:
 | review finding codes matching `RD-[0-9]` | 0 |
 
 The classification-table sweep parsed 11 of 11 D3 rows and found only the
-canonical values: four `Normative`, six `Clarifying`, and one `Structural`.
+canonical values: five `Normative`, five `Clarifying`, and one `Structural`.
 
 `[Observed]` The five example citations were then resolved independently in
 the accepted contract tree. RFC1-33, RFC6-28, RFC7-38, RFC8-32, and RFC9-52
@@ -879,6 +879,16 @@ all define an OpenSpec-seam phase rule that requires observable consequences
 to map to approved requirements or to a reviewed N/A owner judgment with
 verifiable provenance; RFC1-33 and RFC6-28 also state the row unit explicitly
 as one row per observable consequence.
+
+`[Observed]` Manifest selection was reproduced at source revision
+`cddcd2dc9790e0afeba419b090c4333b0fe90113`. A byte-reading Python method found
+39 candidate-package rows, 19 Wave A rows, 11 Wave B rows, a disjoint selected
+union of 30, and 9 excluded candidate rows (the six RFC-0010 and three RFC-0011
+modules). Every selected row matched the candidate inventory and an installed
+file digest; missing paths and digest mismatches were both zero. A second
+`sed`/`wc` method reproduced the 39/19/11 row counts, and independent
+`sha256sum -c` runs over the Wave A and B manifests reported installed rows OK.
+These figures are evidence for this draft, not binding policy prose.
 
 `[Observed]` The CC-SPEC-2 declaration block still says `closed set of six`,
 contains each of `doctrine[]`, `contracts[]`, `policies[]`, `decisions[]`,
@@ -1043,3 +1053,27 @@ issue carries only their structured summary.
 These corrections alter no accepted contract and introduce no owner-selected
 precedence. They move the head and require another entirely new semantic and
 fresh-reader review; this correction pass claims neither pass.
+
+## Appendix H — Option A correction-cycle-2 dispositions
+
+At `cddcd2dc9790e0afeba419b090c4333b0fe90113`, the entirely new semantic
+review returned **`VERDICT: REVISE`** and the entirely new reader returned
+**`FRESH-READER REVISE`**. The six semantic threads are resolvable below; the
+complete raw reports are not stored in a clone-resolvable home, and the review
+issue carries only their structured summary. This is the final correction
+cycle authorized before another owner stop.
+
+| Finding | Disposition in this correction |
+|---|---|
+| [Clause extraction omits later normative prose](https://github.com/Tzeusy/syzygy/pull/5#discussion_r3876932346) | D3-4 defines the full clause span and partitions every Markdown block, including later standalone paragraphs, into consequence-bearing, non-normative, or Unknown units before extraction. Every byte belongs to one unit; selection or segmentation uncertainty becomes a blocking Unknown row. |
+| [Manifest selection conflates 39 candidate and 30 accepted modules](https://github.com/Tzeusy/syzygy/pull/5#discussion_r3876933357) | D3-4 names the 39-row candidate-package inventory as an upper bound only, selects performed contract acts and their wave manifests, intersects those rows with hash-matching installed files, and excludes unaccepted candidate rows. Population-construction Unknown owns any selection/path/digest contradiction. |
+| [Direct specification relationships are not enumerable](https://github.com/Tzeusy/syzygy/pull/5#discussion_r3876932308) | D3-11 enumerates every entry in CC-IMPACT-1's six fields plus empty-field counts before matching, partitions every direct row with the same four-result precedence, and derives each specification result over direct rows plus child requirements. |
+| [Adoption-record contradiction has no durable home](https://github.com/Tzeusy/syzygy/pull/5#discussion_r3876932345) | D3-7 uses the CC-SPEC-11 table's `adoption-record selection` section as owner, records both record IDs/digests and the missing supersession relation, and requires matching human/machine Unknown projections linked to that section. |
+| [Pre-enumeration impact Unknown has no durable home](https://github.com/Tzeusy/syzygy/pull/5#discussion_r3876932398) | D3-11 creates the sweep record before rows; its `population-construction` section owns record-selection Unknown with revision, conflicting inputs, and settling owner Decision. Projections link there and no result rows emit until settled. |
+| [Merge-relevant adjudication is undefined](https://github.com/Tzeusy/syzygy/pull/5#discussion_r3876932375) | D3-11 defines adjudication as a selected owner Decision in `decisions/` that names the contradiction and resolution. A review disposition cannot clear the row; a new sweep at the new revision must link the Decision and produce a non-Unknown, non-contradicted result before CC-IMPACT-6 can be satisfied. |
+
+The semantic class audit also keeps D3-2 and D3-4 `Normative` and classifies
+D3-7 `Normative` because its new selection Unknown can block adoption and
+impact-corpus enumeration. No accepted contract, owner question, or new
+subsystem is changed. This moved head requires entirely new semantic and
+fresh-reader reviews; this pass claims neither verdict.

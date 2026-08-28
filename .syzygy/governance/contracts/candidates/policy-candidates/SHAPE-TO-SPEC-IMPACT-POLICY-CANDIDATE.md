@@ -83,8 +83,15 @@ selection to the owner-Decision corpus at that revision, not from declaration
 matches or a filesystem guess; then enumerate every stable requirement entry
 in each selected specification. Record the revision, record-selection results,
 enumeration method, specification count, and requirement count. An unresolved
-record contradiction stops the sweep with `Unknown`; a missing declaration or
-zero-match result never removes an item from this input corpus.
+record contradiction stops population construction before result rows exist.
+The durable sweep record is created first; its **population-construction**
+section owns this `Unknown` and records the source revision, candidate adoption
+record identities and digests, conflicting or missing supersession facts, and
+what owner Decision would settle them. Human and machine impact projections
+render the same Unknown and link to that section. No requirement or
+specification result rows are emitted until the contradiction is settled. A
+missing declaration or zero-match result never removes an item from this input
+corpus.
 
 For each requirement in that fixed corpus, **affected** means the method
 establishes either that its CC-SPEC-2 provenance names the changed identity or
@@ -117,14 +124,34 @@ undecidable             the method cannot settle the relationship — each with
 ```
 
 The four result sets are disjoint and exhaustive: every requirement in the
-population appears in exactly one. Then derive one specification result:
+population appears in exactly one.
 
-1. **contradicted** if a direct specification relationship is contradicted or
-   at least one child requirement is `contradicted`;
-2. otherwise **affected** if its generated CC-IMPACT-1 declaration names the
-   changed identity or at least one child requirement is `affected`;
-3. otherwise **undecidable** if a direct specification relationship is
-   unsettled or at least one child requirement is `undecidable`; or
+**Enumerate direct specification relationships before deriving the
+specification result.** For each specification, read exactly CC-IMPACT-1's six
+generated fields. Record every `(specification identity, field name, authority
+identity)` entry in source order, plus the per-field entry counts; an empty
+field contributes a recorded zero, while an absent field contributes one
+`undecidable` sentinel row because CC-IMPACT-1 makes absence a defect. This
+direct-relationship population is fixed before matching.
+
+Classify every direct row in the same four result sets and precedence as
+requirements: `affected` when its authority identity equals the changed
+identity; `explicitly unaffected` when well-formed exact-identity comparison
+establishes inequality; `undecidable` when the entry is absent, malformed, or
+unresolvable; and `contradicted` when the generated entry disagrees with the
+requirements' CC-SPEC-2 union or another authoritative specification entry.
+Record the comparison method and reason on every row. The direct-row sets are
+disjoint and exhaustive.
+
+Then derive one specification result over its direct rows and child requirement
+rows:
+
+1. **contradicted** if at least one direct row or child requirement is
+   `contradicted`;
+2. otherwise **affected** if at least one direct row or child requirement is
+   `affected`;
+3. otherwise **undecidable** if at least one direct row or child requirement is
+   `undecidable`; or
 4. otherwise **explicitly unaffected**, with the method and reason.
 
 Every specification in the frozen corpus appears in exactly one of those
@@ -162,6 +189,17 @@ shape delta from satisfying CC-IMPACT-6: the delta does not merge until the
 relationship is settled or adjudicated and every required specification
 amendment can land in the same logical change. This policy defines no exception
 that treats an undecidable specification as unaffected.
+
+**Merge-relevant adjudication is an owner Decision, not a review
+disposition.** The Decision lives in `.syzygy/governance/decisions/`, is
+selected under CC-SPEC-10's governing-record rule, names the contradiction row
+and both conflicting claims, and records the owner's resolution and any
+superseded Decision (RFC3-15, RFC3-16). After that Decision and every authority
+amendment it requires exist, run a new sweep at the new source revision. The
+prior sweep retains its historical `contradicted` row; the new sweep links the
+Decision and classifies the relationship by the four-set precedence above.
+Only that new non-Unknown, non-contradicted current result can satisfy this
+gate before CC-IMPACT-6 is evaluated.
 
 **CC-IMPACT-5 — Every required amendment names its actor, and the sweep
 names one too.** Each affected specification's amendment is owned by a named
