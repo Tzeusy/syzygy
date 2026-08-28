@@ -60,27 +60,31 @@ specification whose CC-IMPACT-1 declarations name the changed identity, or
 whose requirements consume its vocabulary. **The sweep is part of the
 change, not a follow-up task.**
 
-**`Consumes its vocabulary` remains undefined by accepted authority.** This
-amendment does not decide that pre-existing ambiguity. Declaration matching is
-still usable; any additional relationship whose answer depends on the
-undefined phrase is `undecidable` under CC-IMPACT-4 and renders Unknown with
-what would settle it. It may not be classified as unaffected.
+**Resolve `consumes its vocabulary` at the sweep's named source revision.**
+This amendment supplies no definition. If an adopted, accepted, approved, or
+recorded authority eligible under CC-SPEC-2 at that revision supplies a
+definition, the sweep cites and applies its exact identity and digest. If none
+does, declaration matching remains
+usable but every additional relationship whose answer depends on the phrase is
+`undecidable` under CC-IMPACT-4 and renders Unknown with what would settle it.
+It may not be classified as unaffected.
 
 Stating the trigger set as an *identity* rather than as a second enumeration
 is deliberate: two lists drift, and the drift is silent. Any class added to
 requirement provenance becomes sweepable in the same act; any class that
 cannot trigger a sweep may not serve as requirement provenance.
 
-**CC-IMPACT-3 — The sweep records four sets, with its denominator and its
-method.** Before matching any identity or vocabulary, freeze the **input
+**CC-IMPACT-3 — The sweep records a fixed population and four result sets,
+with its denominator and method.** Before matching any identity or vocabulary, freeze the **input
 corpus**: every accepted specification at one named source revision and every
 stable requirement entry in those specifications, including entries marked
-retired. Enumerate specifications from the active exact-digest adoption records
-at that revision, not from declaration matches or a filesystem guess; then
-enumerate every stable requirement entry in each named specification. Record
-the revision, adoption-record enumeration method, specification count, and
-requirement count. A missing declaration or a zero-match result never removes
-an item from this input corpus.
+retired. Enumerate specifications by applying CC-SPEC-10's governing-record
+selection to the owner-Decision corpus at that revision, not from declaration
+matches or a filesystem guess; then enumerate every stable requirement entry
+in each selected specification. Record the revision, record-selection results,
+enumeration method, specification count, and requirement count. An unresolved
+record contradiction stops the sweep with `Unknown`; a missing declaration or
+zero-match result never removes an item from this input corpus.
 
 For each requirement in that fixed corpus, **affected** means the method
 establishes either that its CC-SPEC-2 provenance names the changed identity or
@@ -92,6 +96,11 @@ denominator and may be explicitly unaffected with retirement as the reason,
 unless the delta changes the retirement fact or any condition for interpreting
 or reversing it.
 
+**`Contradicted`, defined.** The method establishes that the changed
+authoritative claim and the requirement cannot both be satisfied in the same
+declared scope. Classification precedence is deterministic: `contradicted`
+first, then `affected`, then `undecidable`, then `explicitly unaffected`.
+
 The requirement-level output names:
 
 ```text
@@ -99,26 +108,31 @@ population              every stable requirement entry in the frozen input
                         corpus, counted
 affected                a declaration match or other relationship established
                         by the stated method
+contradicted            the changed authority and requirement cannot both be
+                        satisfied — each with both conflicting claims
 explicitly unaffected   the method establishes no tie — each with the reason
                         AND the method that established untiedness
 undecidable             the method cannot settle the relationship — each with
                         what would settle it
 ```
 
-The three result sets are disjoint and exhaustive: every requirement in the
+The four result sets are disjoint and exhaustive: every requirement in the
 population appears in exactly one. Then derive one specification result:
 
-1. **affected** if its generated CC-IMPACT-1 declaration names the changed
-   identity or at least one child requirement is `affected`;
-2. otherwise **undecidable** if a direct specification relationship is
+1. **contradicted** if a direct specification relationship is contradicted or
+   at least one child requirement is `contradicted`;
+2. otherwise **affected** if its generated CC-IMPACT-1 declaration names the
+   changed identity or at least one child requirement is `affected`;
+3. otherwise **undecidable** if a direct specification relationship is
    unsettled or at least one child requirement is `undecidable`; or
-3. otherwise **explicitly unaffected**, with the method and reason.
+4. otherwise **explicitly unaffected**, with the method and reason.
 
 Every specification in the frozen corpus appears in exactly one of those
-three specification sets. This is the requirement-to-specification propagation
-rule: an affected requirement always makes its parent specification affected;
-an undecidable requirement makes its parent specification undecidable unless
-another child already makes it affected.
+four specification sets. This is the requirement-to-specification propagation
+rule: a contradicted requirement makes its parent specification contradicted;
+otherwise an affected requirement makes its parent specification affected; an
+undecidable requirement makes its parent specification undecidable unless a
+higher-precedence child result applies.
 
 **The reason and the method are two different things, and both are
 required.** "Does not declare the changed identity" is an *observation*; if
@@ -134,16 +148,14 @@ stated by **CC-KNOW-16**; whether or not that separate clause is in force at
 the sweep's act, this clause applies the discipline to the specification
 corpus and VIS-2 supplies its governing basis.
 
-**CC-IMPACT-4 — Undecidable impact renders as Unknown or contradiction,
-never as unaffected.** The sweep record's `undecidable` requirement or
-specification row is the owning record: it names the unsettled relationship and
-what would settle it. The parent specification's impact result is recorded as
-`Unknown`, identified as an impact result, and every human view and machine
-projection renders that same result with a link to the row. Where the shape
-change and requirement are known to disagree, record `contradicted` instead —
-meaning the two authoritative claims cannot be satisfied together — and link
-the conflicting claims. Silence is not an answer, and "not listed as affected"
-is never
+**CC-IMPACT-4 — Undecidable impact renders as Unknown; contradiction remains
+inside the exhaustive partition.** The sweep record's `undecidable` requirement
+or specification row is the owning record: it names the unsettled relationship
+and what would settle it. The parent specification's impact result is recorded
+as `Unknown`, identified as an impact result, and every human view and machine
+projection renders that same result with a link to the row. A `contradicted`
+row instead links the two authoritative claims that cannot be satisfied
+together. Silence is not an answer, and "not listed as affected" is never
 evidence of being unaffected (VIS-2, applied to the sweep's own output).
 A specification whose impact result is `Unknown` or `contradicted` prevents the
 shape delta from satisfying CC-IMPACT-6: the delta does not merge until the
@@ -212,9 +224,9 @@ supersede the fixture rather than editing it.
   and its **method** are what make it checkable. Each sweep record says which
   method it actually used.
 - It does not define **"consumes its vocabulary"**. The operative rule above
-  exposes that pre-existing ambiguity and routes dependent cases to
-  `undecidable`, never `unaffected`; a separate authorized amendment is needed
-  to define the term.
+  resolves definition availability at the named source revision and routes a
+  missing definition to `undecidable`, never `unaffected`; a separate
+  authorized amendment is needed to add a definition.
 - It does not govern shape changes to *candidates*. Until a contract is
   accepted, changing it propagates to nothing, because no specification may
   cite an unaccepted clause.

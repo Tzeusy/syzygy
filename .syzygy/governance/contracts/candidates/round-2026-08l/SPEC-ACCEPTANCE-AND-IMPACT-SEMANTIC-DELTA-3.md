@@ -91,23 +91,23 @@ meaning:
 | requirement provenance | Why requirement text belongs in the specification, recorded in CC-SPEC-2's six fields. It does not authorize work. |
 | material governing authority | An authority whose removal would remove an accepted basis or change what the requirement can be read to require, permit, or prohibit. Unsettled materiality records `Unknown` beside the provenance declaration and blocks acceptance. |
 | work warrant | Traceable authority to create or prioritize work. RFC1-25's `motivates` edge is the carrier; a finding-class warrant requires a recorded confirmation act. |
-| reviewed N/A | An owner judgment recorded in `decisions/` with verifiable owner-act provenance, not an author's or reviewer's sign-off. Without that provenance the consequence remains Unknown. |
+| reviewed N/A | Honor only when the owner Decision names the exact consequence/scope and independently kept evidence matches the local RFC3-16(b) bindings; absent, unresolvable, or mismatched evidence means no, leaving the row Unknown/unmapped. |
 | coverage population | A source-enumerated set fixed before classification. Unknown, unmapped, or provenance-Unknown rows defer acceptance; retired entries receive an explicit retired disposition. |
 | affected | An impact relationship established by a declaration match or the stated method. Requirement results propagate to exactly one parent-specification result. |
 | Unknown / unmapped | Recorded in the owning requirement, coverage row, or impact-sweep row; human and machine views render the same result and link to what would settle it. |
 | independent confirmation | The CC-SPEC-11 table and CC-IMPACT-5 sweep are checked by a party other than their author. The policies state that separation directly; no shorthand pattern must be imported. |
 | same logical change | One merge transaction containing the shape delta and every required specification amendment, so mainline never contains one without the other (CC-REV-2, CC-IMPACT-6). |
-| consumes its vocabulary | `[Unknown]` — no accepted authority defines the phrase. This amendment does not decide it; dependent cases route to `undecidable` under CC-IMPACT-4. |
-| act / predecessor / successor | Exact bytes are a proposal while no performed act names their digest and a confirmed successor from an act that does. The act record, not a static banner, determines whether predecessor bytes remain current. |
+| consumes its vocabulary | This amendment adds no definition. At each sweep's named revision, use an exact accepted definition if one exists; otherwise dependent cases route to `undecidable`/Unknown under CC-IMPACT-4. |
+| act / predecessor / successor | Select exact-digest owner Decisions at the named revision and follow only explicit RFC3-16(b) supersession/revocation links. No record means proposal; one unsuperseded record supplies authority; incompatible unsuperseded records render contradiction/Unknown. |
 
 ## Change classifications
 
 | Delta | Stable ID or carrier | Class | Meaning |
 |---|---|---|---|
-| D3-1 | CC-SPEC-1, CC-SPEC-5, CC-SPEC-8, CC-SPEC-10, and CC-SPEC-11 | **Normative** | Adds separate acceptance criteria, independently enumerable coverage populations, explicit retirement handling, Unknown/unmapped deferral, and candidate-state handling for whole-capability and focused-change acceptance. |
-| D3-2 | CC-SPEC-2 and CC-IMPACT-2 | **Clarifying** | Defines material provenance, separates the six fields from the RFC1-25 work warrant, and removes work-authorization language from the impact trigger set. |
+| D3-1 | CC-SPEC-1, CC-SPEC-5, CC-SPEC-8, CC-SPEC-10, and CC-SPEC-11 | **Normative** | Adds separate acceptance criteria, deterministic source extraction, independently enumerable coverage populations, explicit retirement handling, Unknown/unmapped deferral, and candidate-state handling for whole-capability and focused-change acceptance. |
+| D3-2 | CC-SPEC-2 and CC-IMPACT-2 | **Normative** | Defines material provenance, adds an acceptance-blocking Unknown when materiality is unsettled, separates the six fields from the RFC1-25 work warrant, and removes work-authorization language from the impact trigger set. |
 | D3-3 | CC-SPEC-2 evidence note | **Clarifying** | Keeps the durable exclusion rule and removes volatile corpus counts from policy prose. |
-| D3-4 | CC-SPEC-8 | **Clarifying** | Makes heading, opening sentence, applicability test, and matrix row unit consistently per observable consequence; marks five contract citations as examples. |
+| D3-4 | CC-SPEC-8 | **Normative** | Makes the row unit consistently per observable consequence, adds a reproducible pre-applicability consequence denominator and segmentation blocker, states the reviewed-N/A verification decision, and marks five contract citations as examples. |
 | D3-5 | CC-SPEC-11 | **Clarifying** | Removes stale confirmer shorthand while retaining the explicit requirement that a party other than the author confirms the table. |
 | D3-6 | CC-IMPACT evidence carrier | **Clarifying** | Replaces an unverifiable repeated pass claim with a resolvable evidence pointer and no repeated verdict. |
 | D3-7 | both status carriers | **Clarifying** | Makes exact-digest authority state conditional so the same bytes remain truthful before and after a later owner act. |
@@ -521,8 +521,9 @@ repository state changes.
   ambient claim that the delegated-gate prerequisites are present or absent.
 - CC-IMPACT-2 calls its six identities the requirement-provenance set and says
   explicitly that this is not the work-warrant set.
-- `Consumes its vocabulary` remains `[Unknown]`; dependent cases route to
-  `undecidable` under CC-IMPACT-4 pending a separately authorized definition.
+- This amendment adds no definition for `consumes its vocabulary`; each sweep
+  resolves definition availability at its named revision and routes dependent
+  cases to `undecidable` under CC-IMPACT-4 when none exists.
 - CC-SPEC-11 and CC-IMPACT-5 state non-author confirmation directly rather
   than importing a test-policy shorthand.
 - CC-IMPACT-6 defines *same logical change* as one merge transaction and states
@@ -565,7 +566,8 @@ CC-IMPACT-6.
   change.
 - CC-REV-2's same-logical-change rule remains unmodified and uncarved.
 - This amendment does not define `consumes its vocabulary`; it records the
-  pre-existing ambiguity and preserves CC-IMPACT-4's fail-closed route.
+  pre-existing ambiguity, requires a revision-bound definition lookup, and
+  preserves CC-IMPACT-4's fail-closed route when none exists.
 - VIS-4's delegated-gate conditions, RFC1-25's work-warrant classes,
   the contract-owned reviewed-N/A gate, and the independent-confirmation
   obligations are explained locally but not changed.
@@ -607,8 +609,9 @@ the existing doctrine and RFC1-25 terms rather than minting a record class.
 operationally independent by D3-1. *Same logical change* is CC-REV-2's existing
 term. D3-11 gives *affected* and the impact input corpus local operational
 tests for this policy without admitting new closed-vocabulary values.
-`Consumes its vocabulary` remains explicitly undefined and is not admitted as
-a new term by this amendment.
+`Consumes its vocabulary` receives no definition from this amendment and is
+not admitted as a new term; each sweep resolves availability at its named
+revision.
 Independent review must challenge this classification if any phrase functions
 as a new durable term.
 
@@ -691,8 +694,8 @@ restatement is:
 - CC-SPEC-11 and CC-IMPACT-5 state their independent-confirmer rule directly,
   without requiring a reader to import a CC-TEST-4 shorthand;
 - CC-IMPACT-6 defines *same logical change* as one merge transaction;
-  `consumes its vocabulary` remains an explicit pre-existing Unknown whose
-  dependent cases route to `undecidable`;
+  this amendment adds no `consumes its vocabulary` definition, so a sweep with
+  none at its named revision routes dependent cases to `undecidable`;
 - CC-IMPACT-3 freezes the accepted specification and stable-requirement corpus
   before matching, partitions both requirement and specification populations
   exactly once, and propagates every requirement result to its parent;
@@ -789,7 +792,7 @@ Python and `rg -l -F` returned identical file sets for every reference:
 | CC-SPEC-2 | 21 | exact set equality |
 | CC-SPEC-5 | 8 | exact set equality |
 | CC-SPEC-8 | 26 | exact set equality |
-| CC-SPEC-10 | 21 | exact set equality |
+| CC-SPEC-10 | 22 | exact set equality |
 | CC-SPEC-11 | 19 | exact set equality |
 | CC-IMPACT-2 | 13 | exact set equality |
 | CC-IMPACT-3 | 10 | exact set equality |
@@ -840,6 +843,12 @@ Python `str.count` and `rg -F -o`; every count agreed:
 | no-Unknown-to-acceptance-exception sentence | 1 |
 | unmapped-coverage blocker | 1 |
 | requirement/matrix/table Unknown ownership paragraph | 1 |
+| pre-applicability contract-consequence population | 1 |
+| contract-consequence local-ID rule | 1 |
+| consequence-segmentation Unknown blocker | 1 |
+| deterministic scope/non-goal extraction rule | 1 |
+| non-semantic deduplication prohibition | 1 |
+| active requirement cannot self-cover | 1 |
 | old `declared acceptance-unit population` phrase | 0 |
 | requirement-provenance trigger heading | 1 |
 | old `trigger set is the warrant set` heading | 0 |
@@ -850,14 +859,19 @@ Python `str.count` and `rg -F -o`; every count agreed:
 | requirement result-set disjoint/exhaustive rule | 1 |
 | specification result-set exhaustive rule | 1 |
 | requirement-to-parent propagation rule | 1 |
+| contradicted-in-partition precedence rule | 1 |
 | impact Unknown owning-row rule | 1 |
 | impact Unknown/contradiction merge blocker | 1 |
+| owner-Decision adoption corpus rule | 1 |
+| explicit-supersession-only selection rule | 1 |
+| reviewed-N/A local yes/no rule | 1 |
+| revision-bound vocabulary-definition lookup | 1 |
 | stale `current doctrine state`, `neither exists`, `no script today`, `exception today`, `candidate, P-12` phrases | 0 each |
 | removed volatile values `371 files`, `784 files`, `398-file` | 0 each |
 | review finding codes matching `RD-[0-9]` | 0 |
 
 The classification-table sweep parsed 11 of 11 D3 rows and found only the
-canonical values: two `Normative`, eight `Clarifying`, and one `Structural`.
+canonical values: four `Normative`, six `Clarifying`, and one `Structural`.
 
 `[Observed]` The five example citations were then resolved independently in
 the accepted contract tree. RFC1-33, RFC6-28, RFC7-38, RFC8-32, and RFC9-52
@@ -1000,9 +1014,32 @@ creating a subsystem or deciding excluded owner questions.
 | Unknown has no operational record/render home. | D3-1 uses the requirement, CC-SPEC-8 matrix row, and CC-SPEC-11 table row as owners; D3-11 uses the impact-sweep row. Human and machine projections render the same Unknown and link to that row. |
 | Mutable current-state prose remains in the active path. | D3-7 and D3-10 make authority claims act-conditional, make sweep methods record-owned, remove queue-state prose, and state historical evidence as a fixed record pointer rather than a repeated current verdict. |
 | Necessary external terms cannot be applied locally. | CC-SPEC-2 defines materiality and the work/provenance split; CC-SPEC-8 states the reviewed-N/A owner gate; CC-IMPACT-3 defines affected; CC-IMPACT-6 defines same logical change; the reading guide gives the local consequence for each. |
-| Vocabulary consumption remains undefined. | Explicit residual, not repaired by invention: CC-IMPACT-2 and CC-IMPACT-4 route every relationship depending on `consumes its vocabulary` to `undecidable`/Unknown pending separately authorized definition. |
+| Vocabulary consumption has no definition in this amendment. | Explicit residual, not repaired by invention: CC-IMPACT-2 checks the named revision for an eligible accepted definition and, when none exists, CC-IMPACT-4 routes every dependent relationship to `undecidable`/Unknown pending separately authorized definition. |
 
 No row above changes accepted contract text, decides P-43, revives P-44, or
 opens deferred Mission or context-selection scope. These corrections move the
 head and require entirely new semantic and fresh-reader reviews; this authoring
 pass claims neither verdict.
+
+## Appendix G — Option A correction-cycle-1 dispositions
+
+At `5f4e6a9cf7fbbe4c12db84dfe63bb36a569e120d`, the entirely new semantic
+review returned **`VERDICT: REVISE`** and the entirely new reader returned
+**`FRESH-READER REVISE`**. The semantic inline thread is resolvable below; the
+complete raw reports are not stored in a clone-resolvable home, and the review
+issue carries only their structured summary.
+
+| Finding | Disposition in this correction |
+|---|---|
+| [D3-2 class is not Clarifying](https://github.com/Tzeusy/syzygy/pull/5#discussion_r3876818681) | Verified against the act-bound predecessor: the materiality test and acceptance-blocking Unknown are new obligations. D3-2 is now `Normative`. The same class test makes D3-4 `Normative` because it adds a mandatory consequence denominator and segmentation blocker. |
+| CC-SPEC-8 has no reproducible initial consequence population. | D3-4 enumerates every accepted contract module, defined clause, and deterministic source unit before applicability; assigns local consequence IDs; records module/clause/consequence denominators; and makes segmentation uncertainty Unknown that defers acceptance. |
+| CC-SPEC-11 extraction, segmentation, and deduplication remain subjective. | D3-1 defines source units, falsifiable splitting, source ordinals, stable/table-local IDs, exact-locator deduplication only, and an Unknown result for unsettled segmentation. |
+| CC-SPEC-11 source relationships permit circular self-mapping. | D3-1 states source-type relations: scope rows map to requirement IDs; active requirement rows map back to independently extracted scope/change rows and cannot self-cover; non-goals must not be claimed by active requirements; retired rows stay retired; circular or contradictory relations are Unknown and block acceptance. |
+| `contradicted` floats outside CC-IMPACT's exhaustive partition. | D3-11 adds `contradicted` as the highest-precedence fourth result at both requirement and specification level. Each population member occupies exactly one result set. |
+| Active adoption records have no locally applicable corpus or supersession selection. | D3-7 selects owner Decisions in `.syzygy/governance/decisions/` at the named revision, matches stable artifact identity/digest, follows only explicit RFC3-16(b) supersession/revocation, and treats incompatible unsuperseded records as contradiction/Unknown. CC-IMPACT-3 reuses that selection for its accepted-specification corpus. |
+| Reviewed-N/A verification lacks a local yes/no decision. | D3-4 says yes only when exact consequence/scope and independently kept evidence resolve and match the local RFC3-16(b) bindings; any absent, unresolvable, or mismatched binding means no, records Unknown, and leaves the consequence unmapped. |
+| Mutable current-state claims remain. | Definition availability is now resolved at each sweep's named revision; authority state and supersession are record-derived; queue and ambient script/gate claims remain absent. Historical evidence stays a fixed record pointer rather than a repeated current verdict. |
+
+These corrections alter no accepted contract and introduce no owner-selected
+precedence. They move the head and require another entirely new semantic and
+fresh-reader review; this correction pass claims neither pass.

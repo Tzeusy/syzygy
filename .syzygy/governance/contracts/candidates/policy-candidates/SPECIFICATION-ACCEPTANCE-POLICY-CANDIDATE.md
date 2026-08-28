@@ -211,6 +211,23 @@ covered by requirements or carries a reviewed N/A judgment. **Rows are per
 observable consequence, not per clause** (RFC1-33, RFC6-28) — a clause with
 five observable consequences and one mapped requirement is not covered.
 
+**Build the consequence population before classifying applicability.** At one
+named source revision, enumerate every accepted contract module from the active
+exact-digest contract manifest and its owning acceptance record, then enumerate
+every defined clause in those modules. Within each clause, take source units in
+order: the clause's normative lead text, each numbered or bulleted item, and
+each table row that states a required, permitted, or prohibited outcome. Split
+a source unit only when it states separately falsifiable observable outcomes;
+quote the exact source span for every split. Assign each row a stable local ID
+from `(clause ID, source-unit ordinal, outcome ordinal)` and record the source
+revision, module count, clause count, consequence count, and extraction method.
+
+This full consequence population is the denominator. No applicability result,
+declaration match, or zero-hit search may remove a row. If a reader cannot
+deterministically decide how a source unit segments into observable
+consequences, keep the source unit as one row, record `Unknown` with the
+segmentation question and what would settle it, and defer acceptance.
+
 **"Applicable", defined.** A contract clause's observable consequence is
 applicable to a specification when **the capability uses the entity, behavior,
 authority boundary, state vocabulary, or interface that consequence
@@ -239,6 +256,19 @@ home for the contract rule. The repair removed that duplicate and retained
 only this specification-side production obligation and the definition of
 "applicable"; the evidence and review history remain in the amendment
 records.
+
+**Local provenance decision.** Verification returns **yes** only when the
+decision record identifies the exact consequence and N/A scope and the
+independently kept owner-act evidence resolves and matches the RFC3-16(b)
+bindings needed here: project, decision identity, exact decision digest, act
+type, owner, act instant, scope, any superseded act, and the independently kept
+audit-record identity. If every required binding resolves and matches, honor
+the N/A. If any binding is absent,
+unresolvable, or mismatched, the answer is **no**: do not honor the N/A, record
+`Unknown` in that consequence row with the failed binding and what would settle
+it, and treat the consequence as unmapped. RFC3-16 remains the authority for
+the provenance predicate and binding set; this paragraph states only the local
+yes/no consequence.
 
 An applicable consequence that is neither mapped to a requirement nor covered
 by a provenance-verifiable owner N/A judgment remains **unmapped**. Its matrix
@@ -274,9 +304,24 @@ the obligation is CC-REV-4's.
 > obligations, or normative data contracts."* No delegated mechanism ever
 > reaches this class.
 
-Until the adoption record exists, the proposed acceptance unit is a candidate.
-For a focused change, the accepted capability baseline keeps its prior state;
-only the proposed change remains a candidate.
+**Select the governing adoption record fail closed.** The owning corpus is the
+tracked owner Decisions in `.syzygy/governance/decisions/` at the named source
+revision (RFC3-15). A record enters the candidate set for an acceptance unit
+only when it identifies that unit's stable artifact identity, exact digest, and
+owner act. Apply RFC3-16(b)'s explicit supersession/revocation relationship:
+the effective record is the candidate that no other candidate explicitly
+supersedes or revokes. File order, commit order, and timestamps alone never
+select a winner. No candidate record means the unit is still a proposal. Two
+incompatible candidates with no explicit relationship are a contradiction:
+record `Unknown`, link both records, and neither adopt the unit nor use either
+record to enumerate accepted specifications until the owner resolves it. This
+paragraph selects among records; RFC3-15 and RFC3-16 remain the authority for
+their home, provenance, bindings, and lifecycle.
+
+Until the selection rule above yields a governing record that names the exact
+proposed digest, the acceptance unit is a candidate. For a focused change, the
+accepted capability baseline keeps the state supplied by its own governing
+record; only the proposed change remains a candidate.
 
 **CC-SPEC-11 — The requirement set covers the declared acceptance unit, and
 the coverage is demonstrated.** This clause covers the acceptance unit's own
@@ -288,6 +333,17 @@ specification. The **coverage population** is independently enumerated before
 classification; the table author may not define it merely by listing the rows
 they chose to include. Membership in the population does not itself place an
 obligation in scope.
+
+**Extract source items deterministically at the named baseline and proposed
+digests.** For a capability scope or non-goal list, each numbered item, bullet,
+or table row is one source item. In prose outside those structures, each
+sentence that says the capability does, renders, records, refuses, requires,
+permits, or prohibits something is one source item. Split a source item only
+when it states separately falsifiable outcomes; quote the exact source span for
+each split and assign source-order ordinals. If segmentation cannot be decided,
+keep the unsplit source item, record `Unknown` with the segmentation question,
+and defer acceptance. For the requirement inventory, every stable requirement
+ID is one source item, including an entry marked retired.
 
 For **whole-capability acceptance**, enumerate:
 
@@ -311,13 +367,14 @@ For **focused-change acceptance**, enumerate:
    population; retain the full sweep as the enumeration evidence.
 
 Each enumerated source item becomes a row. Repeated occurrences of the same
-stable requirement ID share one row with every source locator; no other two
-source items are collapsed merely because the author considers them equivalent.
-A scope or non-goal item without a stable requirement ID receives a table-local
-ID. Every row records its source locator and the discovery method that put it in
-the population.
+stable requirement ID share one row with every source locator; exact duplicate
+source locators share one row. No other two source items are collapsed merely
+because the author considers them equivalent. A scope or non-goal item without
+a stable requirement ID receives a table-local ID from `(source section,
+source-unit ordinal, outcome ordinal)`. Every row records its source locator and
+the discovery method that put it in the population.
 
-Each obligation in the declared coverage population is placed in
+Each row in the declared coverage population is placed in
 **exactly one** of three sets, which sum to that population:
 
 ```text
@@ -331,6 +388,18 @@ Unknown / unresolved    inclusion or coverage is unresolved; rendered with
                         what would settle it, never
                         silently omitted (VIS-2)
 ```
+
+**Classify relationships without self-mapping.** A scope-obligation row is
+`covered` only when it names one or more stable requirement IDs that satisfy
+it. An active requirement-ID row is `covered` only when it links back to an
+independently extracted scope or focused-change obligation row; its own ID
+cannot cover itself. A non-goal row is `lawfully out of scope` only when no
+active requirement claims or contradicts it. A retired requirement-ID row is
+`retired` and names its retired entry; it is never counted as active coverage.
+An affected-baseline requirement row must link to the changed source item that
+affects it. A missing, circular, or contradictory relation enters
+`Unknown / unresolved`, names the rows involved and what would settle it, and
+blocks acceptance.
 
 The completeness test is **bounded to the independently enumerated coverage
 population**. A reviewer who finds a source item absent from that population
