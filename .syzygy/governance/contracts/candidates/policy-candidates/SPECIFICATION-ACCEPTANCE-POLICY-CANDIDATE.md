@@ -114,9 +114,9 @@ format.
 - **Purpose:** Prevent uncertainty or exclusions from disappearing.
 - **Inputs/population:** Non-goals and every Unknown produced by this policy.
 - **Decision:** Record each Unknown at its owning requirement, CC-SPEC-8 row or
-  population section, CC-SPEC-11 `adoption-record selection` section, or
-  CC-SPEC-11 row. Name the reason and settling condition. The primary human and
-  machine views render the same result and link to that home.
+  population section, CC-SPEC-10 purpose-specific selection section, or
+  CC-SPEC-11 row. Name the reason and settling condition. Human and machine
+  views render the same result and link to that home.
 - **Possible results:** Satisfied when every item has one durable home and parity;
   Not satisfied for a proved omission or mismatch; otherwise Unknown.
 - **Missing evidence:** Missing ownership, link, or projection parity is Unknown
@@ -160,22 +160,25 @@ format.
   at `.syzygy/governance/contracts/candidates/ACTIVE-CONTRACT-MANIFEST.txt`.
   Select performed contract-acceptance Decisions by CC-SPEC-10. Match each act's
   argument digest to exactly one file under
-  `.syzygy/governance/contracts/candidates/wave-manifests/`, then union those
-  manifest rows. A row is accepted only when the identical `sha256  rfcs/...`
+  `.syzygy/governance/contracts/candidates/wave-manifests/`; union their rows.
+  A row is accepted only when the identical `sha256  rfcs/...`
   row exists in the upper bound and the installed path made by prefixing that
   `rfcs/...` path with `.syzygy/governance/contracts/` hashes to it.
-- **Decision:** Before applicability, enumerate the clause IDs declared by each
-  accepted module and locate each ID's definition marker in its installed bytes;
-  zero or multiple definition markers are Unknown. Tokenize from each marker to
-  the next marker or file end into non-overlapping byte spans covering the whole
-  range: headings, paragraphs, list items with continuations, table rows,
-  blockquotes, fenced blocks, separators, and an `other syntax` fallback.
-  Classify every span
-  consequence-bearing, non-normative with reason, or Unknown. Split only
-  separately falsifiable outcomes and assign `(clause, span ordinal, outcome
-  ordinal)`. A consequence is applicable when the capability uses the entity,
-  behavior, boundary, vocabulary, or interface it governs. Map each applicable
-  row to requirements or to a reviewed N/A.
+- **Decision:** The checked contract-index parser emits each clause ID, module
+  path, and ordered definition offset; retain its revision and digest.
+  A missing/duplicate marker or index drift is Unknown. First partition every
+  module byte into physical line spans, including line endings and the final
+  unterminated line. Mark the bytes before the first definition `preamble`, and
+  each later range by its clause until the next definition or file end. A module
+  with no clause is all preamble. Then place every line span exactly once in a
+  consequence row (contiguous spans may share one), non-normative/non-clause
+  with reason, or Unknown. This line-first partition precedes Markdown
+  interpretation, so nested or overlapping constructs cannot drop bytes; any
+  grouping dispute is Unknown. Split only separately falsifiable outcomes and
+  assign `(clause, first-line ordinal, outcome ordinal)`. Normative-looking
+  preamble is Unknown until an accepted clause owns it. A consequence is
+  applicable when the capability uses what it governs. Map each applicable row
+  to requirements or reviewed N/A.
 - **Possible results:** Satisfied when every applicable row is mapped or has a
   lawful N/A; Not satisfied for a proved omission or invalid N/A; Unknown for
   selection, path, digest, tokenization, segmentation, applicability, or mapping
@@ -187,10 +190,9 @@ format.
   matches project, decision identity/digest, act type, owner, instant, scope,
   supersession, and audit-record identity; any missing or mismatched binding
   means Unknown and unmapped.
-- **Retained evidence:** Revision; selected Decisions/manifests; candidate,
-  accepted, and excluded counts; every path/digest comparison; clause/span/
-  consequence counts; extraction method; rows, mappings, N/A Decisions, and
-  Unknowns.
+- **Retained evidence:** Revision; selected Decisions/manifests; path/digest
+  comparisons; index parser/digest; module, preamble, clause, line, and
+  consequence counts; rows, mappings, N/A Decisions, and Unknowns.
 - **Sources:** RFC1-33, RFC3-15, RFC3-16, RFC6-28, RFC7-38, RFC8-32, RFC9-52.
 
 ## **CC-SPEC-9 — Pass fresh-reader review**
@@ -235,10 +237,13 @@ format.
   adopted specification, confirmed policy, resolved contradiction, or Unknown—
   is faithfully reported; Not satisfied for a false state claim; Unknown when
   selection cannot resolve.
-- **Missing evidence:** Record contradiction in the CC-SPEC-11 table's
-  `adoption-record selection` section with revision, records/digests, missing
-  relationship, and settling owner Decision. Render and link the same Unknown;
-  do not adopt or enumerate it as accepted.
+- **Missing evidence:** Before consuming a result, retain a `decision-selection`
+  section in that consumer: specification adoption in CC-SPEC-11; contract
+  population or reviewed N/A in CC-SPEC-8; accepted-spec population in
+  CC-IMPACT-3; adjudication in CC-IMPACT-4; policy confirmation in its
+  authority-state projection. Record purpose, revision, candidates/digests,
+  missing relationship, and settling owner Decision. Render/link the same
+  Unknown; take no dependent effect.
 - **Retained evidence:** Candidate set, selection trace, exact digest and quote,
   act authority, supersession links, and Unknown section.
 - **Sources:** VIS-4; RFC3-15; RFC3-16.
@@ -251,11 +256,11 @@ format.
   items, bullets, table rows, or normative prose sentences; split only separately
   falsifiable outcomes. Include every stable requirement entry, including
   retired entries. Whole-capability input is all scope items, requirements, and
-  non-goals. Focused-change input is every added/changed/retired requirement,
-  every change-scope item and non-goal, plus every unchanged baseline requirement
-  classified by a recorded sweep as affected, unaffected with reason, or
-  undecidable after testing references, provenance, mappings, and defined
-  vocabulary.
+  non-goals. Focused-change input is every added/changed/retired requirement and
+  every change-scope item/non-goal, plus the affected and undecidable results of
+  a sweep over every unchanged baseline requirement. The sweep tests references,
+  provenance, mappings, and defined vocabulary; its unaffected rows stay in the
+  retained denominator but outside the focused acceptance population.
 - **Decision:** Preserve every extracted occurrence with revision, exact locator,
   span, and discovery method. Group only identical `(revision, locator, span,
   outcome)` occurrences; stable IDs link evidence but do not erase distinct

@@ -89,10 +89,14 @@ placed in exactly one result, using this precedence:
   a reconciliation row for every identity in the union of expected and actual
   entries, recording presence on both sides; add a field-absent sentinel when
   the field is absent. Thus a present empty field cannot hide an expected
-  identity. Expected/actual disagreement is contradicted; malformed,
-  unresolvable, or absent input is undecidable; an equal row is affected when its
-  identity is changed and otherwise explicitly unaffected. Record method and
-  reason for every row.
+  identity. Mark each row's projection check `match`, `generated-missing`, or
+  `generated-extra`. Either mismatch makes CC-IMPACT-1 Not satisfied and blocks
+  CC-IMPACT-6; it is not a contradiction because the generated field is not
+  authority. Classify impact from the expected authoritative identity when
+  present: affected if it changed, otherwise explicitly unaffected. An
+  actual-only, malformed, unresolvable, or field-absent row is undecidable.
+  Use contradicted only for two incompatible authoritative claims. Record method
+  and reason on every row.
 
   Derive each specification once over its reconciliation and child-requirement
   rows using the same precedence.
@@ -114,7 +118,9 @@ placed in exactly one result, using this precedence:
   requirement row, reconciliation row, and specification result.
 - **Decision:** The owning row records unsettled facts or both conflicting claims
   and a settling condition. Human and machine views render the same linked
-  Unknown/contradiction. A merge-relevant contradiction exits only through an
+  Unknown/contradiction. A generated-declaration defect exits by correcting the
+  generator/output and rerunning CC-IMPACT-1 and the sweep, never by owner
+  adjudication. A merge-relevant contradiction exits only through an
   eligible owner Decision selected for the purpose `adjudicate` by CC-SPEC-10's
   generic act-type/subject/digest/scope and explicit-supersession rule. The
   Decision names the contradiction and resolution; a review disposition is not
@@ -151,9 +157,10 @@ placed in exactly one result, using this precedence:
 - **Inputs/population:** The shape delta and every amendment required by its
   current sweep.
 - **Decision:** Land all of them in one merge transaction. An undecidable or
-  contradicted specification blocks that transaction. This policy creates no
-  lagging-specification exception; the declined proposal supplies no authority.
-  Only an owner-approved amendment to CC-REV-2 could change that rule.
+  contradicted specification, or any CC-IMPACT-1 Not satisfied/Unknown result,
+  blocks that transaction. This policy creates no lagging-specification
+  exception; the declined proposal supplies no authority. Only an owner-approved
+  amendment to CC-REV-2 could change that rule.
 - **Possible results:** Satisfied only by the atomic transaction; Not satisfied by
   a partial merge; Unknown while impact or authority remains unresolved.
 - **Missing evidence:** Without exact transaction membership and current sweep
@@ -168,15 +175,19 @@ placed in exactly one result, using this precedence:
 - **Inputs/population:** Fixture
   `../round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md` at SHA-256
   `685a71f7a52652a314f144ba1599982812921ede88220e69a0d5d327272ed4e0`
-  and its separate answer key, which the administrator does not open.
-- **Decision:** A fresh-context administrator runs the path blind. Grade only by
-  the answer key: all golden affected requirements are affected, its designated
-  undecidable case is not unaffected, and every requirement appears in exactly
-  one result. Disposition every divergence.
+  and answer key
+  `../round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2-ANSWER-KEY.md` at
+  SHA-256 `48286cc113ddfb797eb368c624122c77dc509cf7f036ab44f404109b98da4e3e`.
+- **Decision:** A fresh-context administrator who cannot open the answer key runs
+  blind and freezes the result digest. A different named CC-IMPACT-5 confirmer
+  then verifies both input digests, opens the key, and grades: all golden
+  affected requirements are affected, its designated undecidable case is not
+  unaffected, and every requirement appears once. Disposition every divergence.
 - **Possible results:** Satisfied only by a passing run; Not satisfied by a
   failing run or digest mismatch; Unknown when evidence is absent or invalid.
-- **Missing evidence:** Do not rely on the path. Supersede a changed fixture;
-  never edit it under the recorded digest.
-- **Retained evidence:** Fixture digest, administrator independence, method,
-  complete results, answer-key comparison, verbatim verdict, and dispositions.
+- **Missing evidence:** Do not rely on the path. Supersede a changed fixture or
+  key; never edit one under its recorded digest.
+- **Retained evidence:** Both paths/digests, administrator and grader identities,
+  frozen result digest, method, complete results, key comparison, verbatim
+  verdict, and dispositions.
 - **Sources:** CC-REV-1; CC-REV-6.
