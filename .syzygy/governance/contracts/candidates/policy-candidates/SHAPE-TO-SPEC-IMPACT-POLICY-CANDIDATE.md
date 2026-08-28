@@ -19,6 +19,13 @@ or accepted parent requirement/specification. An **impact sweep** fixes its
 inputs at one source revision before matching. It creates its durable record
 before population rows.
 
+A **direct specification relationship** is exactly one authoritative
+`(specification ID, CC-SPEC-2 field, authority ID)` row for every identity in
+the expected requirement union of the six fields. Fix this denominator before
+matching. Reconciliation adds every actual-only generated identity and one
+sentinel for each absent field; those additions expose projection defects but
+are not authoritative inputs.
+
 Every requirement, direct specification relationship, and specification is
 placed in exactly one result, using this precedence:
 

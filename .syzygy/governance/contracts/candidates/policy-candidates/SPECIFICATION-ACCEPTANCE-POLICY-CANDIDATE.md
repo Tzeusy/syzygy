@@ -1,27 +1,25 @@
 # Specification acceptance policy
 
-> **Authority depends on an exact-digest owner act, not this banner.** These
-> bytes are a proposal while no performed owner Decision names their SHA-256.
-> From an act that names that digest, the same bytes are the confirmed
-> successor; no edit is needed. The governing Decision is selected by the rule
-> below. Drafting, review, a commit, or a pull request changes no authority.
+> **Authority comes only from an exact-digest owner act.** These bytes are a
+> candidate until a performed owner Decision names their SHA-256, then the same
+> bytes are the confirmed successor. CC-SPEC-10 selects the Decision. Drafting,
+> review, commits, and pull requests change no authority.
 >
-> IDs `CC-SPEC-1` through `CC-SPEC-11` stay stable. This policy and
-> `SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` form one model. The proposal,
-> history, exact mapping, and review contract are in
+> IDs `CC-SPEC-1` through `CC-SPEC-11` stay stable. The sibling impact policy
+> completes this model. Proposal history, exact mapping, and review contract:
 > `../round-2026-08l/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA-3.md`.
 
 ## Shared terms and results
 
-An **acceptance unit** is either a complete capability (**whole-capability
+An **acceptance unit** is a complete capability (**whole-capability
 acceptance**) or one coherent change to an accepted capability
 (**focused-change acceptance**). **Requirement provenance** is the accepted
 authority that explains why requirement text belongs; it is not permission to
-start work. A **coverage population** is a source-enumerated set fixed before
-classification. A **reviewed N/A** is an owner Decision that lawfully says one
-contract consequence needs no behavioral requirement.
+start work. A **coverage population** is source-enumerated before classification.
+A **reviewed N/A** is an owner Decision lawfully saying one contract consequence
+needs no behavioral requirement.
 
-Every rule below returns **Satisfied** only when its decision can be reproduced,
+Each rule returns **Satisfied** only when reproducible,
 **Not satisfied** when evidence proves a violation, or **Unknown** when required
 evidence or a decision is missing, stale, contradictory, or unresolvable.
 Unknown never counts as Satisfied and blocks acceptance. Each rule uses the same
@@ -38,7 +36,7 @@ format.
   obligation added, changed, retired, or made newly relevant and does not
   re-accept or widen the baseline. Apply CC-SPEC-2 through CC-SPEC-11 to either
   unit.
-- **Possible results:** Satisfied, Not satisfied, or Unknown.
+- **Possible results:** The shared three results.
 - **Missing evidence:** An unnamed baseline, unclear unit, or omitted obligation
   is Unknown; narrowing the stated population does not cure the omission.
 - **Retained evidence:** Capability identity, unit, scope, non-goals, baseline
@@ -84,7 +82,7 @@ format.
 - **Inputs/population:** Every requirement entry in baseline and proposal.
 - **Decision:** Mint an ID once; amend in place; never renumber, reuse, or delete
   it. Mark a withdrawn requirement retired in its retained entry.
-- **Possible results:** Satisfied, Not satisfied, or Unknown.
+- **Possible results:** The shared three results.
 - **Missing evidence:** Untraceable continuity or a missing retired entry is
   Unknown and blocks acceptance.
 - **Retained evidence:** ID inventory, baseline/proposal mapping, and retired
@@ -102,7 +100,7 @@ format.
   prohibitions, the case is the quantified population, counterexample schema,
   sweep method, and denominator. Reject tautologies, unbounded semantic
   equivalence, unreachable cases, and implementation-defined oracles.
-- **Possible results:** Satisfied, Not satisfied, or Unknown.
+- **Possible results:** The shared three results.
 - **Missing evidence:** An absent form, element, bound, denominator, or
   independence basis is Unknown.
 - **Retained evidence:** Form, five elements, oracle procedure, population, and
@@ -146,7 +144,7 @@ format.
 - **Inputs/population:** Every stack, schema, or mechanism named by a requirement.
 - **Decision:** Retain it only when changing it would change required behavior;
   otherwise remove it from the specification.
-- **Possible results:** Satisfied, Not satisfied, or Unknown.
+- **Possible results:** The shared three results.
 - **Missing evidence:** Unsettled behavioral necessity is Unknown.
 - **Retained evidence:** Named detail and the behavior that requires it, or its
   removal disposition.
@@ -164,20 +162,29 @@ format.
   A row is accepted only when the identical `sha256  rfcs/...`
   row exists in the upper bound and the installed path made by prefixing that
   `rfcs/...` path with `.syzygy/governance/contracts/` hashes to it.
-- **Decision:** The checked contract-index parser emits each clause ID, module
-  path, and ordered definition offset; retain its revision and digest.
-  A missing/duplicate marker or index drift is Unknown. First partition every
-  module byte into physical line spans, including line endings and the final
-  unterminated line. Mark the bytes before the first definition `preamble`, and
-  each later range by its clause until the next definition or file end. A module
-  with no clause is all preamble. Then place every line span exactly once in a
-  consequence row (contiguous spans may share one), non-normative/non-clause
-  with reason, or Unknown. This line-first partition precedes Markdown
-  interpretation, so nested or overlapping constructs cannot drop bytes; any
-  grouping dispute is Unknown. Split only separately falsifiable outcomes and
-  assign `(clause, first-line ordinal, outcome ordinal)`. Normative-looking
-  preamble is Unknown until an accepted clause owns it. A consequence is
-  applicable when the capability uses what it governs. Map each applicable row
+- **Decision:** Pin in the matrix the Git blob and SHA-256 of
+  `.syzygy/governance/contracts/candidates/scripts/build_contract_index.py` for
+  clause markers, and CommonMark 0.31.2 block parsing on UTF-8,
+  four-column tabs, no extensions, and no newline normalization. Offsets are
+  zero-based half-open byte ranges `[start,end)` in original bytes; convert
+  character positions by UTF-8 prefix length. Missing/duplicate markers
+  or index drift is Unknown.
+
+  Partition before extracting. Parse each module into non-overlapping CommonMark
+  leaf-block ranges, split them at clause-marker
+  offsets, and fill every uncovered byte range—including blank separators and
+  syntax outside leaf blocks—as separator units. Require no overlap,
+  `sum(end-start) == module byte length`, and union exactly
+  `[0,module byte length)`. Bytes before the first clause are preamble; a module
+  with no clause is all preamble. Any parse, offset, overlap, gap, or equality
+  failure is `population-construction` Unknown.
+
+  Classify each unit once as consequence-bearing, non-normative/
+  non-clause with reason, or Unknown. Only then extract zero or more separately
+  falsifiable consequence rows from it. Rows reference the unit ID and exact
+  subspan, so several outcomes may share one unit without duplicating its bytes;
+  IDs are `(clause, unit ordinal, outcome ordinal)`. Normative-looking preamble
+  is Unknown until an accepted clause owns it. Map each applicable consequence
   to requirements or reviewed N/A.
 - **Possible results:** Satisfied when every applicable row is mapped or has a
   lawful N/A; Not satisfied for a proved omission or invalid N/A; Unknown for
@@ -191,8 +198,9 @@ format.
   supersession, and audit-record identity; any missing or mismatched binding
   means Unknown and unmapped.
 - **Retained evidence:** Revision; selected Decisions/manifests; path/digest
-  comparisons; index parser/digest; module, preamble, clause, line, and
-  consequence counts; rows, mappings, N/A Decisions, and Unknowns.
+  comparisons; both parser identities/configurations; module byte totals;
+  source-unit spans, total-equality result, clause/unit/consequence counts; rows,
+  mappings, N/A Decisions, and Unknowns.
 - **Sources:** RFC1-33, RFC3-15, RFC3-16, RFC6-28, RFC7-38, RFC8-32, RFC9-52.
 
 ## **CC-SPEC-9 — Pass fresh-reader review**
@@ -240,10 +248,10 @@ format.
 - **Missing evidence:** Before consuming a result, retain a `decision-selection`
   section in that consumer: specification adoption in CC-SPEC-11; contract
   population or reviewed N/A in CC-SPEC-8; accepted-spec population in
-  CC-IMPACT-3; adjudication in CC-IMPACT-4; policy confirmation in its
-  authority-state projection. Record purpose, revision, candidates/digests,
-  missing relationship, and settling owner Decision. Render/link the same
-  Unknown; take no dependent effect.
+  CC-IMPACT-3; adjudication in CC-IMPACT-4; policy confirmation in
+  `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md`. Record purpose,
+  revision, candidates/digests, missing relationship, and settling owner
+  Decision. Render/link the same Unknown; take no dependent effect.
 - **Retained evidence:** Candidate set, selection trace, exact digest and quote,
   act authority, supersession links, and Unknown section.
 - **Sources:** VIS-4; RFC3-15; RFC3-16.

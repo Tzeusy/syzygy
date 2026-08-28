@@ -42,45 +42,46 @@ the rules.
 
 ## Exact mainline-to-proposal mapping
 
-The mainline baseline is commit
-`4ee5847bd68344d671e72677b828dd5520cecb21`. Its two policy subjects are
-byte-identical to tag `craft-acts-6-7-confirmed-2026-08-17` and reproduce the
-performed-act digests:
+The mapping binds immutable Git blobs, not a movable branch, `HEAD`, or a
+self-referential proposal commit. The baseline blobs are the two policy subjects
+at mainline commit `4ee5847bd68344d671e72677b828dd5520cecb21`; they are
+byte-identical to tag `craft-acts-6-7-confirmed-2026-08-17`. The proposal blobs
+are the complete policy bytes mapped below.
 
-```text
-CC-SPEC   9889b7e311ad941eec84d01dc2c035c7e2502a57cf18e68a1028a76d5b814871
-CC-IMPACT cd6ec838e701f0258889d0c3c2776fc91fe1686829379b789ae5b151b04c27c0
-```
+| Subject | Baseline Git blob | Baseline SHA-256 | Proposed Git blob | Proposed SHA-256 (`8x8`; remove `:`) |
+|---|---|---|---|---|
+| CC-SPEC | `1f08afbf5445a56330e56410dbbed4e6e7d53934` | `9889b7e311ad941eec84d01dc2c035c7e2502a57cf18e68a1028a76d5b814871` | `10de3dae74936cc4e70de2aaba9cea363d10d520` | `bfa26ebc:6775c541:ec49d6c6:5049776b:ade58b4d:0589fd6a:1171d93a:fc4aa10e` |
+| CC-IMPACT | `e5b0e65b4dd1da52b8aa60451cecb3d4b7be3f70` | `cd6ec838e701f0258889d0c3c2776fc91fe1686829379b789ae5b151b04c27c0` | `6697155af3ba64dd1b9db32e95bf2b435782cb43` | `d3326138:cf8133ab:dc630b05:37fa7973:67409c13:c21297c2:68c8c1eb:16170fa6` |
 
-The proposal is the complete content of the same paths at the exact review
-head. This command emits every old and new line, so no excerpt selection can
-hide a changed obligation:
-
-```sh
-BASE=4ee5847bd68344d671e72677b828dd5520cecb21
-REVIEW_HEAD=$(git rev-parse HEAD)
-git diff --no-ext-diff --unified=100000 "$BASE" "$REVIEW_HEAD" -- \
-  .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md \
-  .syzygy/governance/contracts/candidates/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md
-```
-
-Completeness is checked independently by requiring the path census below to
-emit exactly the two subjects and `git diff --check` to emit nothing:
+`git cat-file blob <blob>` emits each exact current or proposed text. Recompute
+each SHA-256 over those bytes, and require `git hash-object <policy-path>` to
+equal its proposed blob before review. The canonical full patch is the byte
+stream below, in CC-SPEC then CC-IMPACT order; it emits every old/new line and
+must hash to
+`368c53d1ad55c0da222de539cb478e99d12f5cf9788279318cac61b930800893`:
 
 ```sh
-git diff --name-only "$BASE" "$REVIEW_HEAD" -- \
-  .syzygy/governance/contracts/candidates/policy-candidates/
-git diff --check "$BASE" "$REVIEW_HEAD" -- \
-  .syzygy/governance/contracts/candidates/policy-candidates/
+SPEC=.syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md
+IMPACT=.syzygy/governance/contracts/candidates/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md
+SPEC_BASE=1f08afbf5445a56330e56410dbbed4e6e7d53934
+SPEC_PROP=10de3dae74936cc4e70de2aaba9cea363d10d520
+IMPACT_BASE=e5b0e65b4dd1da52b8aa60451cecb3d4b7be3f70
+IMPACT_PROP=6697155af3ba64dd1b9db32e95bf2b435782cb43
+{
+  printf 'path %s\n' "$SPEC"
+  git diff --no-color --no-ext-diff --no-textconv --no-renames \
+    --diff-algorithm=myers --full-index --binary "$SPEC_BASE" "$SPEC_PROP"
+  printf 'path %s\n' "$IMPACT"
+  git diff --no-color --no-ext-diff --no-textconv --no-renames \
+    --diff-algorithm=myers --full-index --binary "$IMPACT_BASE" "$IMPACT_PROP"
+} | sha256sum
 ```
 
-The repository-level proposal diff must contain exactly these two subjects and
-this record—three tracked files, no fourth file.
-
-`[Observed]` `git show | sha256sum` and an independent Python byte read both
-reproduced the two baseline digests above and byte equality between mainline
-and the act-bound tag. `sha256sum` and Python also independently reproduced the
-CC-IMPACT-7 fixture and answer-key digests printed in that rule.
+The proposal scope remains those two mapped policies plus this record: exactly
+three tracked files, no fourth. `[Observed]` shell and independent Python byte
+reads reproduced every blob/SHA pair, baseline/tag equality, and the fixture/
+answer-key digests. Shell and independent Python orchestration yielded the same
+canonical patch digest.
 
 ## Complete obligation map and canonical classes
 
@@ -96,13 +97,13 @@ full-file mapping above owns exact text.
 | CC-SPEC-5 | Explicit non-goals and Unknown. | Preserved; adds durable rule-owned homes and human/machine link parity. | Normative |
 | CC-SPEC-6 | Never select an unresolved shape decision; author cannot finally classify their own work. | Preserved with a revision-bound question population and explicit results. | Clarifying |
 | CC-SPEC-7 | Implementation detail only when behavior requires it. | Preserved with a reproducible removal test. | Clarifying |
-| CC-SPEC-8 | Applicable observable consequences map to requirements or contract-owned reviewed N/A. | Preserved and completed with exact manifest/path selection, index-bound clause offsets, byte-total module/line spans including preamble, deterministic rows, local N/A verification, Unknown homes, and denominators. | Normative |
-| CC-SPEC-9 | Fresh-reader review under VIS-3/CC-REV-4. | Preserved; states exact evidence, results, and missing-review behavior. | Clarifying |
-| CC-SPEC-10 | Exact-digest lawful adoption under VIS-4. | Preserved; adds one purpose-bound owner-Decision selection algorithm, consumer-specific durable selection homes, durable banner semantics, and current-state reporting. | Normative |
+| CC-SPEC-8 | Applicable observable consequences map to requirements or contract-owned reviewed N/A. | Preserved and completed with exact manifest/path selection, pinned index/CommonMark parsers, half-open byte offsets, byte-total source units separate from multi-row outcome extraction, N/A verification, Unknown homes, and denominators. | Normative |
+| CC-SPEC-9 | Fresh-reader review under VIS-3/CC-REV-4. | Adds acceptance-blocking results and retained exact-digest, independence, raw-report, verdict, and disposition evidence. | Normative |
+| CC-SPEC-10 | Exact-digest lawful adoption under VIS-4. | Preserved; adds one purpose-bound owner-Decision selection algorithm, consumer-specific durable selection homes including the existing acceptance-act record for policy confirmation, durable banners, and current-state reporting. | Normative |
 | CC-SPEC-11 | Coverage table over capability obligations, three result sets, non-author confirmation. | Preserved and completed for both units with deterministic extraction, occurrence-preserving deduplication, retirement, non-circular mappings, unaffected-baseline evidence outside the focused population, and determinate acceptance. | Normative |
 | CC-IMPACT-1 | Generated six-field specification union; one capability; empty differs from absent. | Preserved with explicit expected/actual comparison evidence. | Clarifying |
 | CC-IMPACT-2 | Shape changes sweep the same six classes; vocabulary consumption also triggers. | Preserved; separates provenance from work permission and makes the undefined vocabulary relationship revision-bound and fail-closed. | Normative |
-| CC-IMPACT-3 | Sweep reports population, affected, unaffected, undecidable, reason, and method. | Preserved and completed with exact accepted corpus, retired entries, expected/actual rows, projection-defect validation separate from authoritative contradiction, exhaustive partitions, and deterministic parent propagation. | Normative |
+| CC-IMPACT-3 | Sweep reports population, affected, unaffected, undecidable, reason, and method. | Preserved and completed with exact accepted corpus, retired entries, a defined authoritative direct-relationship denominator plus actual-only/sentinel reconciliation rows, projection-defect validation separate from contradiction, exhaustive partitions, and parent propagation. | Normative |
 | CC-IMPACT-4 | Undecidable renders Unknown or contradiction, never unaffected. | Preserved; gives every early/late result a home, routes projection defects through regeneration, blocks merge, and reserves contradiction exit for a purpose-eligible owner adjudication Decision plus a new sweep. | Normative |
 | CC-IMPACT-5 | Named amendment/sweep actors and a confirmer other than the author. | Preserved with explicit evidence and result handling. | Clarifying |
 | CC-IMPACT-6 | Shape and required spec amendments land together; no side-policy exception. | Preserved; defines one merge transaction, blocks invalid generated declarations, and records that the declined exception supplies no authority. | Clarifying |
@@ -131,6 +132,8 @@ Additional carriers:
 | governing warrant / warrant set for provenance | Retired from active policy prose because it conflated provenance with work authority; historical uses remain untouched. |
 | `CC-TEST-4 pattern` shorthand | Retired from active policy prose; the two non-author confirmation obligations are stated directly. |
 | `consumes its vocabulary` | Neither introduced nor defined. It remains an explicitly undefined external relationship and therefore routes dependent cases to undecidable/Unknown. |
+| source unit / consequence row | Introduced as CC-SPEC-8 local terms: bytes partition into source units exactly once; each unit may yield zero or more separately falsifiable consequence rows. |
+| direct specification relationship | Introduced and closed by CC-IMPACT to expected six-field `(specification, field, authority)` rows; generated extras and absent-field sentinels are reconciliation-only. |
 
 These policy-local terms do not add a value to a closed enum and require no
 term-registry row for this proposal. Reusing one as project-wide closed
@@ -155,7 +158,7 @@ findings without inline-comment authority:
 | Finding | Compact-rewrite disposition |
 |---|---|
 | Ambiguous policy-act selection | CC-SPEC-10 selects eligible Decisions by stated purpose, act type, subject, digest, scope, and explicit supersession/revocation only. |
-| Incomplete Markdown unit accounting | CC-SPEC-8 uses checked clause-definition offsets, partitions every module byte into physical line spans first, records preamble/no-clause bytes, and makes any marker, grouping, overlap, or gap uncertainty Unknown. |
+| Incomplete Markdown unit accounting | CC-SPEC-8 uses pinned clause/CommonMark parsers and half-open offsets, partitions every module byte into exact-once source units including preamble/gaps, and makes marker, parse, overlap, gap, or total-equality failure Unknown. |
 | Undefined installed-path correspondence | CC-SPEC-8 states the literal correspondence: prefix each manifest `rfcs/...` path with `.syzygy/governance/contracts/`. |
 | Deduplication conflicts with relationship evidence | CC-SPEC-11 preserves every source occurrence and groups only an identical revision/locator/span/outcome tuple; stable IDs link but never erase evidence. |
 | Missing direct rows | CC-IMPACT-3 reconciles the union of expected and actual identities and emits missing/extra discrepancies before parent derivation; mismatch fails CC-IMPACT-1 without pretending a generated projection is authority. |
@@ -170,16 +173,34 @@ review returned **`VERDICT: REVISE`** and the blind reader returned
 
 | Finding | Correction |
 |---|---|
-| CC-SPEC-8 lacked total module accounting and parsing precedence. | The line-first population now covers every byte before Markdown interpretation, uses checked index offsets, retains preamble/no-clause spans, and routes any marker/grouping uncertainty to Unknown. |
-| Decision-selection contradictions all pointed to a specification-adoption home. | CC-SPEC-10 now requires a purpose-specific `decision-selection` section in each consumer: CC-SPEC-8, CC-SPEC-11, CC-IMPACT-3, CC-IMPACT-4, or the policy authority-state projection. |
+| CC-SPEC-8 lacked total module accounting and parsing precedence. | The source-unit population now pins index and CommonMark parsers, uses half-open byte offsets, proves byte-total equality, retains preamble/no-clause spans, and separates byte ownership from consequence extraction. |
+| Decision-selection contradictions all pointed to a specification-adoption home. | CC-SPEC-10 requires a purpose-specific `decision-selection` section in CC-SPEC-8, CC-SPEC-11, CC-IMPACT-3, or CC-IMPACT-4; the existing acceptance-act record owns policy confirmation. |
 | CC-IMPACT-7 omitted answer-key identity and the grading actor. | It now names and hashes the answer key, freezes the blind administrator's result, and assigns a different CC-IMPACT-5 confirmer to verify inputs and grade. |
 | Focused acceptance did not dispose unaffected baseline requirements. | Unaffected rows remain in the complete sweep denominator but explicitly stay outside the focused acceptance population; affected and undecidable rows enter it. |
 | Generated-union mismatch was falsely called a doctrine contradiction. | The row records match/missing/extra; mismatch makes CC-IMPACT-1 Not satisfied and blocks merge. Impact derives from the authoritative expected identity; only two authoritative claims can be contradicted. |
 | RD-70's verdict lost its prefix. | The verbatim table below now records `VERDICT: CONFIRM WITH EXCEPTIONS`. |
 
-This is the single bounded compact-rewrite correction cycle authorized after
-the two reviews. It changes no authority source and requires entirely new
-semantic and fresh-reader review of the corrected exact bytes.
+That bounded correction changed no authority source and required entirely new
+semantic and fresh-reader review of its exact bytes.
+
+## Final bounded-review dispositions
+
+At exact head `0b2441d67fa69a2745b8aade7ac90419a8c61fca`, semantic review returned
+**`VERDICT: REVISE`** and blind review returned **`FRESH-READER REVISE`**. The
+coordinator authorized one final correction of exactly their six findings:
+
+| Finding | Final correction |
+|---|---|
+| Mapping depended on movable `HEAD` and omitted mandatory exact text. | Immutable baseline/proposal Git blobs and SHA-256s now identify all four byte streams; the canonical full patch has fixed inputs, flags, order, and SHA-256, with no proposal commit reference. |
+| CC-SPEC-9 was under-classified Clarifying. | It is Normative; every class census and summary now reports eleven Normative, five Clarifying, and two Structural IDs. |
+| Exact-once line ownership conflicted with multiple outcomes. | CC-SPEC-8 partitions bytes into source units first, then permits zero or more consequence rows to reference one unit and exact subspans. |
+| Markdown parser, offsets, and total equality were undefined. | CC-SPEC-8 pins the index parser blob/SHA and CommonMark 0.31.2 configuration, defines UTF-8 half-open byte offsets, requires union/length equality, and returns population-construction Unknown on failure. |
+| Direct-specification relationship lacked a denominator. | CC-IMPACT defines it as every expected six-field `(specification, field, authority)` row, then adds actual-only rows and absent-field sentinels for reconciliation. |
+| Policy-confirmation selection lacked a durable home. | CC-SPEC-10 names the existing `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md`; this proposal edits no act record and asserts no confirmation. |
+
+This is the final authorized authoring cycle. It creates no fourth file,
+authority source, owner Decision, or subsystem. The coordinator commissions
+new exact-head reviews after the frozen handoff.
 
 ## What explicitly does not change
 
@@ -233,7 +254,7 @@ path sets for every downstream literal:
 | CC-SPEC-10 | 22 | CC-IMPACT-5 | 5 |
 | CC-SPEC-11 | 19 | CC-IMPACT-6 | 13 |
 | CC-SPEC subject filename | 37 | CC-IMPACT-7 | 18 |
-| CC-IMPACT subject filename | 25 | | |
+| CC-IMPACT subject filename | 24 | | |
 
 `[Observed]` Python heading extraction and anchored `rg` independently found
 exactly CC-SPEC-1…11 once and CC-IMPACT-1…7 once. Literal counting by Python
@@ -241,19 +262,21 @@ and `rg -o -F` independently found 18 occurrences of every rule-format label:
 `Purpose`, `Inputs/population`, `Decision`, `Possible results`, `Missing
 evidence`, `Retained evidence`, and `Sources`. A Python table parser and an
 independent `awk` projection found all 18 stable-ID delta rows using one
-canonical class: ten Normative, six Clarifying, two Structural, and zero
+canonical class: eleven Normative, five Clarifying, two Structural, and zero
 Editorial; all three carrier rows also use one canonical class.
 
 `[Observed]` `wc -w` and Python whitespace splitting agreed on 2,200 words for
-CC-SPEC and 1,482 for CC-IMPACT. Python literal counting and `rg -o -F` also
+CC-SPEC and 1,537 for CC-IMPACT. Python literal counting and `rg -o -F` also
 agreed that the two active policies contain zero occurrences of each retired or
 time-bound phrase: `CC-TEST-4`, `warrant set`, `work-warrant record`, `Nothing
 in it binds today`, `no script today`, `current doctrine state`, `neither
 exists`, `Amended 2026`, `Reviewed 2026`, `CC-KNOW-16`, `RD-`, `P-43`, and
 `P-44`. The deliberately unresolved phrase `consumes its vocabulary` occurs
 once, in its fail-closed rule. The active policies contain the expected single
-`line-first partition`, `generated-missing`, and `one merge transaction`
-definitions, plus the exact answer-key path once.
+`CommonMark 0.31.2`, `sum(end-start)`, `generated-missing`, and `one merge
+transaction` definitions; `direct specification relationship` occurs twice
+(definition and exhaustive-population use); the exact answer-key and
+policy-confirmation record paths occur once each.
 
 `[Observed]` `git diff --check` emitted nothing. The working-tree status and an
 independent `git diff --name-only` projection both enumerated exactly the two
@@ -286,6 +309,7 @@ authority or historical file is edited in anticipation of an act.
 | PR head `cddcd2dc9790e0afeba419b090c4333b0fe90113` | `VERDICT: REVISE`; `FRESH-READER REVISE` |
 | PR head `0edc9a86aaea1aad658e03300a90acbe3e375ac4` | `VERDICT: REVISE`; `FRESH-READER REVISE` |
 | PR head `413ce020587ec8638ba16dc25ca099e55b3e30d3` | `VERDICT: REVISE`; `FRESH-READER REVISE` |
+| PR head `0b2441d67fa69a2745b8aade7ac90419a8c61fca` | `VERDICT: REVISE`; `FRESH-READER REVISE` |
 
 The first row is RD-51, RD-69, then RD-70. Complete raw reports for the later
 off-thread reviews are not stored in a clone-resolvable home; the canonical
