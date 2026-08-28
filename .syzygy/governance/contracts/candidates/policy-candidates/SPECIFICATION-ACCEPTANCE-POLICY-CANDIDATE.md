@@ -1,473 +1,281 @@
-# Specification acceptance policy — craft rule set
+# Specification acceptance policy
 
-> **Candidate before an exact-digest act; confirmed successor after one.**
-> Authority state resolves from the active acceptance record. These bytes are a
-> proposal while no performed owner act names their exact sha256. If such an
-> act later names this exact digest, these same bytes are the confirmed
-> successor from that act; no banner edit is needed. The
-> 2026 acts identify the predecessor digests they confirmed and do not bind a
-> different digest. Whether those predecessor bytes are current or superseded
-> is likewise answered by the act record, never inferred from this banner.
-> Drafting, review, a commit, or a pull request changes no authority state.
+> **Authority depends on an exact-digest owner act, not this banner.** These
+> bytes are a proposal while no performed owner Decision names their SHA-256.
+> From an act that names that digest, the same bytes are the confirmed
+> successor; no edit is needed. The governing Decision is selected by the rule
+> below. Drafting, review, a commit, or a pull request changes no authority.
 >
-> Identifiers `CC-SPEC-1…11` remain stable and are never renumbered. This
-> file and `SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` remain one model:
-> CC-SPEC-2 owns requirement provenance, and CC-IMPACT-1 generates the
-> specification-level declaration from it. The plain-language change summary,
-> exact before/after text, evidence, non-goals, and review requirements are in
+> IDs `CC-SPEC-1` through `CC-SPEC-11` stay stable. This policy and
+> `SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` form one model. The proposal,
+> history, exact mapping, and review contract are in
 > `../round-2026-08l/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA-3.md`.
 
-## The rule
+## Shared terms and results
 
-**CC-SPEC-1 — Capability, scope, and acceptance unit are clear.** The
-specification names one coherent capability, what is in it, and what is out.
-A reader can say what the capability is in one sentence without reading the
-requirements. Each proposed specification change also says whether its
-acceptance unit is the whole capability or one focused change to that
-capability.
+An **acceptance unit** is either a complete capability (**whole-capability
+acceptance**) or one coherent change to an accepted capability
+(**focused-change acceptance**). **Requirement provenance** is the accepted
+authority that explains why requirement text belongs; it is not permission to
+start work. A **coverage population** is a source-enumerated set fixed before
+classification. A **reviewed N/A** is an owner Decision that lawfully says one
+contract consequence needs no behavioral requirement.
 
-*"One coherent capability" is the granularity rule the owner ruled on
-2026-08-16 as **SDR-37** (`../../../decisions/SURFACE-DECISION-RECORD.md`),
-quoted exactly:*
+Every rule below returns **Satisfied** only when its decision can be reproduced,
+**Not satisfied** when evidence proves a violation, or **Unknown** when required
+evidence or a decision is missing, stale, contradictory, or unresolvable.
+Unknown never counts as Satisfied and blocks acceptance. Each rule uses the same
+format.
 
-> the specification-granularity rule — **one OpenSpec change governs one
-> coherent capability, or one coherent change to one**: one owner-readable
-> product argument, one acceptance decision per change.
+## **CC-SPEC-1 — Declare the capability and acceptance unit**
 
-The rule is cited from its recorded home, never restated normatively here.
+- **Purpose:** Bound one owner-readable product argument and one acceptance
+  decision.
+- **Inputs/population:** The proposed specification; for a focused change, the
+  accepted baseline and exact baseline-to-proposal difference.
+- **Decision:** Name one coherent capability, its scope and non-goals, then mark
+  the unit `whole-capability` or `focused-change`. A focused change lists every
+  obligation added, changed, retired, or made newly relevant and does not
+  re-accept or widen the baseline. Apply CC-SPEC-2 through CC-SPEC-11 to either
+  unit.
+- **Possible results:** Satisfied, Not satisfied, or Unknown.
+- **Missing evidence:** An unnamed baseline, unclear unit, or omitted obligation
+  is Unknown; narrowing the stated population does not cure the omission.
+- **Retained evidence:** Capability identity, unit, scope, non-goals, baseline
+  digest when used, and proposal digest.
+- **Sources:** SDR-37; CC-SPEC-11.
 
-The two acceptance units are distinct:
+## **CC-SPEC-2 — Record complete requirement provenance**
 
-1. **Whole-capability acceptance.** The owner-readable argument covers the
-   complete capability declared by the specification. CC-SPEC-11 independently
-   enumerates the coverage population from the scope, complete requirement
-   inventory (including retired entries), and non-goals. The acceptance
-   decision applies to that classified population at the exact digest recorded
-   under CC-SPEC-10.
-2. **Focused-change acceptance.** The owner-readable argument names the
-   accepted capability baseline being changed and the exact obligations the
-   change adds, modifies, retires, or makes newly relevant. CC-SPEC-11
-   independently enumerates the coverage population from the exact
-   baseline-to-proposal difference, the change scope and non-goals, and a stated
-   affected-baseline sweep. The acceptance decision applies only to this
-   classified coherent change at the exact digest recorded under CC-SPEC-10;
-   it does not silently re-accept the whole capability or widen the change's
-   declared scope.
+- **Purpose:** Make every material governing authority visible without confusing
+  provenance with work permission.
+- **Inputs/population:** Every requirement and every normative statement that
+  can supply or change its obligation, boundary, vocabulary, oracle, or scope.
+- **Decision:** For each requirement, populate exactly these six fields with
+  stable identities:
 
-Both units must satisfy CC-SPEC-2 through CC-SPEC-11. If a reviewer finds an
-obligation omitted from the declared coverage population, the acceptance-unit
-statement is incomplete; narrowing the population does not make the change
-acceptable.
+  ```text
+  doctrine[]  contracts[]  policies[]  decisions[]  topology[]
+  parent_requirements[]
+  ```
 
-**CC-SPEC-2 — Requirement provenance names every material governing
-authority.** In this rule, a *governing warrant* means the accepted authority
-that explains why a requirement belongs in the specification. It does not
-authorize drafting, implementation, scheduling, or any other work. The rule:
+  An authority is material if removing it removes an accepted basis or changes
+  what the requirement may require, permit, or prohibit. Record all material
+  adopted, accepted, approved, or recorded authorities; one may be primary for
+  navigation. Exclude candidates and pending decisions. Generate the
+  specification declaration from these fields under CC-IMPACT-1; never maintain
+  a second list.
+- **Possible results:** Satisfied when all and only eligible material authority
+  is recorded; Not satisfied for a proved omission, ineligible entry, empty
+  basis, or duplicate home; Unknown when materiality cannot be settled.
+- **Missing evidence:** Record Unknown beside the requirement, name the disputed
+  authority and settling evidence, and block acceptance.
+- **Retained evidence:** Six-field declaration, materiality checks, primary
+  marker if any, and Unknown records.
+- **Sources:** VIS-2; RFC1-25; CC-REV-3. RFC1-25's `motivates` relation separately
+  carries work warrants; a finding warrants work only after recorded
+  confirmation and never becomes a seventh provenance field. `Lawfully admitted
+  user need` remains excluded because no accepted authority defines its
+  admission.
 
-> Every requirement names all material governing warrants. One may be
-> marked primary for navigation; none may be hidden merely because another
-> is more specific.
+## **CC-SPEC-3 — Preserve requirement identity**
 
-**"Material", defined.** An authority is material when it supplies or changes
-any part of the requirement's obligation, boundary, normative vocabulary,
-success/failure oracle, or acceptance scope. Test the classification by
-removing that authority: if the requirement would lose an accepted basis or
-could be read to require, permit, or prohibit something different, the
-authority is material. A reviewer checks this trace one normative statement
-and field at a time. If materiality cannot be settled, the requirement records
-`Unknown` beside its six-field declaration, names the authority in question and
-what would settle it, and cannot pass acceptance.
+- **Purpose:** Keep citations stable through change and retirement.
+- **Inputs/population:** Every requirement entry in baseline and proposal.
+- **Decision:** Mint an ID once; amend in place; never renumber, reuse, or delete
+  it. Mark a withdrawn requirement retired in its retained entry.
+- **Possible results:** Satisfied, Not satisfied, or Unknown.
+- **Missing evidence:** Untraceable continuity or a missing retired entry is
+  Unknown and blocks acceptance.
+- **Retained evidence:** ID inventory, baseline/proposal mapping, and retired
+  entries.
+- **Sources:** CC-REV-7.
 
-The warrant classes are a **closed set of six**, and a requirement's
-declaration is machine-readable, one field per class:
+## **CC-SPEC-4 — Make every requirement falsifiable**
 
-```text
-doctrine[]              adopted doctrine rule, by rule ID
-contracts[]             accepted contract clause, by clause ID
-policies[]              approved craft/policy clause, by clause ID
-decisions[]             recorded owner product decision, by decision identifier
-topology[]              accepted topology identity, by identity
-parent_requirements[]   accepted parent requirement or specification,
-                        by specification and requirement ID
-```
+- **Purpose:** Ensure evidence could disprove every requirement.
+- **Inputs/population:** Every active requirement.
+- **Decision:** Name one form—event-response, state projection/query, invariant,
+  prohibition, or lifecycle transition—and state a reproducible case, observable
+  consequence or violation, bounded success/failure oracle, oracle independent
+  of the implementation, and concrete falsifier. For invariants and
+  prohibitions, the case is the quantified population, counterexample schema,
+  sweep method, and denominator. Reject tautologies, unbounded semantic
+  equivalence, unreachable cases, and implementation-defined oracles.
+- **Possible results:** Satisfied, Not satisfied, or Unknown.
+- **Missing evidence:** An absent form, element, bound, denominator, or
+  independence basis is Unknown.
+- **Retained evidence:** Form, five elements, oracle procedure, population, and
+  falsifier.
+- **Sources:** VIS-2.
 
-Four rules govern the declaration:
+## **CC-SPEC-5 — Expose non-goals and Unknowns**
 
-1. **All material warrants, not one.** A requirement genuinely serving
-   VIS-2, a reason-vocabulary clause and an owner decision names all
-   three. Marking one `primary` is a navigation aid and removes nothing.
-2. **Only accepted, adopted, approved or recorded authorities.** A
-   candidate contract, an unapproved policy clause, an unaccepted topology
-   identity and a **pending owner decision** are not warrants. A pending
-   decision cited as a warrant is the CC-SPEC-6 violation with a citation
-   attached.
-3. **A requirement serving nothing on this list is a finding against the
-   spec, not a bonus.**
-4. **This declaration is the only home.** The specification-level
-   dependency declaration is *generated* as the union of its requirements'
-   declarations (CC-IMPACT-1). A hand-authored second list at
-   specification level is a defect, not a convenience.
+- **Purpose:** Prevent uncertainty or exclusions from disappearing.
+- **Inputs/population:** Non-goals and every Unknown produced by this policy.
+- **Decision:** Record each Unknown at its owning requirement, CC-SPEC-8 row or
+  population section, CC-SPEC-11 `adoption-record selection` section, or
+  CC-SPEC-11 row. Name the reason and settling condition. The primary human and
+  machine views render the same result and link to that home.
+- **Possible results:** Satisfied when every item has one durable home and parity;
+  Not satisfied for a proved omission or mismatch; otherwise Unknown.
+- **Missing evidence:** Missing ownership, link, or projection parity is Unknown
+  and blocks acceptance.
+- **Retained evidence:** Non-goals, owning records, links, and both projections.
+- **Sources:** VIS-2; CC-REV-5.
 
-**A work warrant is separate.** RFC1-25 defines the `motivates` edge from a
-permitted authority to a work item or proposal as the work-warrant carrier. A
-confirmed review finding may warrant corrective work through that edge, but it
-is not a seventh requirement-provenance class and is not inserted into the six
-fields above. RFC1-25 requires a recorded confirmation act before a
-finding-class warrant can motivate work. If an adopted, accepted, approved, or
-recorded authority later incorporates the finding's substance, a requirement
-cites that authority in the matching provenance field. A work warrant never
-makes proposed requirement text accepted.
+## **CC-SPEC-6 — Do not decide an open shape question implicitly**
 
-**`lawfully admitted user need` is deliberately not a class.** This policy
-defines no authority or record that could admit such an entry. Adding it first
-requires a shape-layer definition of the admitting authority and record, then
-an amendment to this closed set. Exact sweep evidence belongs in the amendment
-record, not in this binding rule.
+- **Purpose:** Keep specification authorship inside existing authority.
+- **Inputs/population:** Every requirement and every open owner question at the
+  named revision.
+- **Decision:** Test whether the requirement would select an answer. The author
+  records the questions believed untouched; a reviewer or owner, not the author
+  alone, may settle or reclassify the test.
+- **Possible results:** Satisfied when no question is selected; Not satisfied
+  when one is selected without its owner Decision; otherwise Unknown.
+- **Missing evidence:** An unsettled classification is Unknown and blocks the
+  requirement.
+- **Retained evidence:** Revision, question inventory, classifications, reviewer,
+  and any governing Decision.
+- **Sources:** VIS-4.
 
-**CC-SPEC-3 — Every requirement has a stable identity.** Identifiers are
-minted once, amended in place, never renumbered or reused, and a withdrawn
-requirement's identifier is **retired in place with its entry marked
-retired**, never deleted and never reissued — CC-REV-7's discipline
-extended to requirement identifiers, including its retirement limb.
+## **CC-SPEC-7 — Keep implementation detail out unless behavior requires it**
 
-**CC-SPEC-4 — Every requirement is falsifiable in a named form.** A
-specification's requirements take one of **five forms**, and the
-requirement states which:
+- **Purpose:** Specify observable behavior rather than an accidental solution.
+- **Inputs/population:** Every stack, schema, or mechanism named by a requirement.
+- **Decision:** Retain it only when changing it would change required behavior;
+  otherwise remove it from the specification.
+- **Possible results:** Satisfied, Not satisfied, or Unknown.
+- **Missing evidence:** Unsettled behavioral necessity is Unknown.
+- **Retained evidence:** Named detail and the behavior that requires it, or its
+  removal disposition.
+- **Sources:** `architecture.md`, Typed authority.
 
-```text
-event-response          a trigger occurs; a response is then observable
-state projection/query  a query is made; the projected state is observable
-invariant               a stated property holds across a stated scope
-prohibition             a stated act or state never occurs within a scope
-lifecycle transition    an entity moves between named states under stated
-                        conditions
-```
+## **CC-SPEC-8 — Cover every applicable accepted-contract consequence**
 
-**Every form, without exception, names five things:**
+- **Purpose:** Prevent contract prose from becoming unspecifiable behavior or
+  disappearing behind a clause-level summary.
+- **Inputs/population:** At one revision, read the candidate upper-bound manifest
+  at `.syzygy/governance/contracts/candidates/ACTIVE-CONTRACT-MANIFEST.txt`.
+  Select performed contract-acceptance Decisions by CC-SPEC-10. Match each act's
+  argument digest to exactly one file under
+  `.syzygy/governance/contracts/candidates/wave-manifests/`, then union those
+  manifest rows. A row is accepted only when the identical `sha256  rfcs/...`
+  row exists in the upper bound and the installed path made by prefixing that
+  `rfcs/...` path with `.syzygy/governance/contracts/` hashes to it.
+- **Decision:** Before applicability, enumerate the clause IDs declared by each
+  accepted module and locate each ID's definition marker in its installed bytes;
+  zero or multiple definition markers are Unknown. Tokenize from each marker to
+  the next marker or file end into non-overlapping byte spans covering the whole
+  range: headings, paragraphs, list items with continuations, table rows,
+  blockquotes, fenced blocks, separators, and an `other syntax` fallback.
+  Classify every span
+  consequence-bearing, non-normative with reason, or Unknown. Split only
+  separately falsifiable outcomes and assign `(clause, span ordinal, outcome
+  ordinal)`. A consequence is applicable when the capability uses the entity,
+  behavior, boundary, vocabulary, or interface it governs. Map each applicable
+  row to requirements or to a reviewed N/A.
+- **Possible results:** Satisfied when every applicable row is mapped or has a
+  lawful N/A; Not satisfied for a proved omission or invalid N/A; Unknown for
+  selection, path, digest, tokenization, segmentation, applicability, or mapping
+  uncertainty.
+- **Missing evidence:** Record Unknown in `population-construction` before rows
+  exist, or in the affected row later, name what settles it, and defer
+  acceptance. Select a reviewed-N/A owner Decision by CC-SPEC-10. Honor it only
+  when it names the exact consequence and scope and independently kept evidence
+  matches project, decision identity/digest, act type, owner, instant, scope,
+  supersession, and audit-record identity; any missing or mismatched binding
+  means Unknown and unmapped.
+- **Retained evidence:** Revision; selected Decisions/manifests; candidate,
+  accepted, and excluded counts; every path/digest comparison; clause/span/
+  consequence counts; extraction method; rows, mappings, N/A Decisions, and
+  Unknowns.
+- **Sources:** RFC1-33, RFC3-15, RFC3-16, RFC6-28, RFC7-38, RFC8-32, RFC9-52.
 
-```text
-reachable/producible case      the case can be produced by a party performing
-                               the check, using means the requirement names
-observable consequence         what is then visible, and where — human view,
-  or violation                 machine endpoint, or both
-effective success/failure      how one decides the observation IS (or is not)
-  oracle                       the expected one, by a stated procedure that
-                               terminates in bounded effort, without judgment
-oracle independence            the oracle is not defined by, and does not
-                               consult, the implementation under test
-concrete falsifying evidence   the specific observation that would show the
-                               requirement unmet
-```
+## **CC-SPEC-9 — Pass fresh-reader review**
 
-For an **invariant** or a **prohibition** the "reachable case" is the
-**scope of quantification, a counterexample schema, and the sweep whose
-denominator bounds it** — a prohibition is satisfied by an exhausted
-population, never by an absence of complaints.
+- **Purpose:** Keep the specification usable without authoring history.
+- **Inputs/population:** Exact proposed bytes and their stated constraints.
+- **Decision:** A reader with no authoring context accurately restates intent,
+  constraints, failure paths, and exclusions.
+- **Possible results:** Satisfied only by a passing independent review; Not
+  satisfied by a failing review; Unknown when no valid review exists.
+- **Missing evidence:** Unknown blocks adoption; record failure on the
+  specification surface.
+- **Retained evidence:** Exact digest, reviewer independence, raw report, verbatim
+  verdict, and dispositions.
+- **Sources:** VIS-3; CC-REV-4; CC-REV-6.
 
-**Four oracle forms are rejected outright:**
+## **CC-SPEC-10 — Select authority and adopt only exact bytes**
 
-```text
-tautological oracle                    "the value equals the value"
-unbounded semantic-equivalence oracle  "the corpus and the code mean the same"
-unreachable initiating condition       a case no party performing the check
-                                       can produce
-oracle equal to "whatever the          the implementation is its own judge
-  implementation computes"
-```
+- **Purpose:** Make lifecycle force reproducible without editing acted-on bytes.
+- **Inputs/population:** At a named revision, every performed tracked owner
+  Decision. Eligibility is purpose-specific: an adoption act names the
+  specification identity and digest; a policy-confirmation act names the policy
+  identity and digest; a contract-acceptance act names contract or wave
+  identities and its exact manifest argument; a reviewed-N/A act names the exact
+  consequence and scope; an adjudication act names the contradiction identity
+  and conflicting claims. Every candidate also supplies its own Decision
+  digest, act type, owner, instant, scope, and explicit supersession/revocation
+  link.
+- **Decision:** Select only candidates whose act type and subject fields match
+  the stated purpose. Follow only explicit supersession or revocation links;
+  choose the eligible Decision no other eligible Decision supersedes or revokes.
+  Never use file order, commit order, or timestamp as precedence. No candidate
+  means proposal or unresolved contradiction, as the purpose requires. Multiple
+  incompatible unsuperseded candidates mean contradiction. Specification
+  adoption records the exact specification digest and quoted content. For a
+  focused change, select the proposed change separately; no proposal act changes
+  the selected state of its accepted baseline. Apply VIS-4 at the adoption act:
+  delegation requires both its accepted adjudication RFC and explicit doctrine
+  gate-opening amendment; security, privacy/retention, and normative-data changes
+  always require the owner.
+- **Possible results:** Satisfied when the purpose-specific state—candidate,
+  adopted specification, confirmed policy, resolved contradiction, or Unknown—
+  is faithfully reported; Not satisfied for a false state claim; Unknown when
+  selection cannot resolve.
+- **Missing evidence:** Record contradiction in the CC-SPEC-11 table's
+  `adoption-record selection` section with revision, records/digests, missing
+  relationship, and settling owner Decision. Render and link the same Unknown;
+  do not adopt or enumerate it as accepted.
+- **Retained evidence:** Candidate set, selection trace, exact digest and quote,
+  act authority, supersession links, and Unknown section.
+- **Sources:** VIS-4; RFC3-15; RFC3-16.
 
-A requirement whose satisfaction no evidence could ever contradict is not a
-requirement.
+## **CC-SPEC-11 — Demonstrate coverage of the acceptance unit**
 
-**CC-SPEC-5 — Non-goals and Unknowns are explicit.** What the capability
-deliberately does not do is listed; what is not yet known renders
-Unknown with its reason, never silently omitted (VIS-2 and CC-REV-5
-applied to the spec itself — cited, not restated). A requirement-level Unknown
-is recorded beside that requirement; a contract-coverage Unknown is recorded
-in its CC-SPEC-8 matrix row; an acceptance-coverage Unknown is recorded in its
-CC-SPEC-11 table row. An adoption-record selection Unknown is recorded in that
-table's `adoption-record selection` section. Each names what would settle it.
-The specification's primary human view and machine projection render the same
-Unknown and link to that owning row or section; an acceptance review records
-the result as `Unknown` and defers acceptance.
-
-**CC-SPEC-6 — No unresolved shape decision is silently selected.** If a
-requirement's content would settle an open owner question, the spec is
-blocked on that question — authoring around it by implication is the
-violation this rule exists to name. Following VIS-4's own rule for the
-analogous judgment, **this classification is contested by default and is
-never finally made by the party authoring the requirement**: the spec
-records which open questions it believes it does not settle, so a
-misclassification is findable after the fact, and a reviewer or the owner
-may reclassify at any time.
-
-**CC-SPEC-7 — Implementation detail appears only when it is required
-behavior.** A stack, schema, or mechanism appears in a spec only if the
-behavior being specified is genuinely about it; otherwise it belongs to
-implementation, later.
-
-**CC-SPEC-8 — Applicable contract observable consequences are covered or
-lawfully N/A.** The observable-consequence-to-requirement coverage matrix is
-produced with the specification; every applicable observable consequence is
-covered by requirements or carries a reviewed N/A judgment. **Rows are per
-observable consequence, not per clause** (RFC1-33, RFC6-28) — a clause with
-five observable consequences and one mapped requirement is not covered.
-
-**Build the consequence population before classifying applicability.** At one
-named source revision, select the accepted installed contract modules before
-extracting clauses:
-
-1. Read the candidate-package inventory at
-   `.syzygy/governance/contracts/candidates/ACTIVE-CONTRACT-MANIFEST.txt`. Its
-   rows are an upper bound, not evidence of acceptance.
-2. Apply CC-SPEC-10's governing-record selection to contract-acceptance owner
-   Decisions at that revision. For each selected act, resolve the exact wave
-   manifest identity and path named by its argument under
-   `.syzygy/governance/contracts/candidates/wave-manifests/`.
-3. Union the selected wave-manifest rows. Require every row to appear with the
-   same digest in the candidate-package inventory and at the corresponding
-   installed path under `.syzygy/governance/contracts/`; require the installed
-   bytes to hash to that digest. Only this verified intersection is the
-   accepted module population. Candidate-package rows absent from selected
-   acts are excluded.
-
-Record the source revision, selected act and manifest identities, package-row
-count, accepted installed-module count, excluded candidate-row count, and every
-digest comparison in the coverage matrix's **population-construction** section.
-If act selection is contradictory, a selected manifest is unresolved, or any
-row/path/digest check fails, that section records `Unknown`, the conflicting or
-missing inputs, and what would settle them. The specification's human and
-machine projections render the same Unknown and link to this section;
-acceptance is deferred before clause enumeration begins.
-
-For every defined clause in the accepted module population, define its **clause
-span** as all Markdown from the clause heading through the byte before the next
-defined-clause heading, or through end of module. Partition the entire span in
-source order into non-overlapping Markdown block units: every paragraph
-(including later standalone prose), numbered or bulleted item with its
-continuation text, table row, blockquote, fenced block, and intervening heading.
-Every byte in the clause span belongs to exactly one source unit. Classify each
-unit as consequence-bearing, non-normative (with reason), or `Unknown` (with the
-selection question and what would settle it); the three source-unit sets are
-disjoint and exhaustive.
-
-Split a consequence-bearing source unit only when it states separately
-falsifiable observable outcomes; quote the exact source span for every split.
-Assign each consequence row a stable local ID from `(clause ID, source-unit
-ordinal, outcome ordinal)` and record the module count, clause count, source-unit
-count, consequence count, and extraction method. If source-unit selection or
-segmentation cannot be decided, retain the full uncertain unit as one
-`Unknown` row and defer acceptance.
-
-This full consequence population is the denominator. No applicability result,
-declaration match, or zero-hit search may remove a row.
-
-**"Applicable", defined.** A contract clause's observable consequence is
-applicable to a specification when **the capability uses the entity, behavior,
-authority boundary, state vocabulary, or interface that consequence
-governs**. A reviewer applies this test consequence by consequence against the
-specification's CC-SPEC-1 scope statement. A consequence governing something
-the capability neither renders, stores, transitions, queries, nor crosses is
-not applicable, and saying so is an N/A judgment, not an omission.
-
-**The reviewed-N/A judgment's home, gate, unit, and effect rule are the
-contract's, not this clause's.** Here, *reviewed N/A* means a recorded
-**owner** judgment, not an author's or reviewer's sign-off. Examples of
-confirmed contract modules that state the rule include **RFC1-33, RFC6-28,
-RFC7-38, RFC8-32, and RFC9-52**; this is an examples list, not a completeness
-claim. The judgment is homed in `decisions/`
-(RFC3-15), honored only where its owner-act provenance is verifiable under
-**RFC3-16(a)**; where that provenance does not verify, the judgment maps
-nothing — the consequence remains unmapped and **renders Unknown, never
-covered** (VIS-2). This clause adds only the specification-side
-**production obligation**: the specification ships with its coverage
-matrix, and every N/A row in that matrix cites the owner judgment's record
-in `decisions/`, so the RFC3-16(a) check has something to verify. A matrix
-whose N/A rows rest on anything less — the author's or a reviewer's
-say-so, a judgment recorded only inside the spec — does not discharge this
-clause. An earlier amendment incorrectly made this clause a second, weaker
-home for the contract rule. The repair removed that duplicate and retained
-only this specification-side production obligation and the definition of
-"applicable"; the evidence and review history remain in the amendment
-records.
-
-**Local provenance decision.** Verification returns **yes** only when the
-decision record identifies the exact consequence and N/A scope and the
-independently kept owner-act evidence resolves and matches the RFC3-16(b)
-bindings needed here: project, decision identity, exact decision digest, act
-type, owner, act instant, scope, any superseded act, and the independently kept
-audit-record identity. If every required binding resolves and matches, honor
-the N/A. If any binding is absent,
-unresolvable, or mismatched, the answer is **no**: do not honor the N/A, record
-`Unknown` in that consequence row with the failed binding and what would settle
-it, and treat the consequence as unmapped. RFC3-16 remains the authority for
-the provenance predicate and binding set; this paragraph states only the local
-yes/no consequence.
-
-An applicable consequence that is neither mapped to a requirement nor covered
-by a provenance-verifiable owner N/A judgment remains **unmapped**. Its matrix
-row records `Unknown`, identifies the unmapped consequence, names what would
-settle it, and blocks acceptance: the acceptance review records the result as
-`Unknown`, defers acceptance, and leaves the proposed acceptance unit a
-candidate.
-
-**CC-SPEC-9 — A fresh technical reader can restate it.** A specification is
-a normative artifact, so **CC-REV-4** and **VIS-3** apply unmodified: a
-reader with no authoring context restates intent and constraints correctly,
-and failure is recorded on the artifact's surface. This clause adds nothing
-and exists only so that E5's comprehensibility limb has a routed answer;
-the obligation is CC-REV-4's.
-
-**CC-SPEC-10 — Lawful adoption is recorded at the exact digest.**
-
-> Lawful adoption under VIS-4 is recorded at the exact digest, and the
-> record quotes what was adopted at which digest.
->
-> Apply VIS-4's gate at the adoption act. Owner adoption is required unless
-> the act can verify **both** delegated-gate conditions —
-> *"an accepted adjudication RFC (defining what makes adversarial judgment
-> independent, how the ambiguity determination is recorded, and how each
-> adopted change stays individually revertable)* ***and*** *the owner's
-> explicit doctrine amendment recording that the gate opens; RFC acceptance
-> alone never opens it"*. This policy makes no time-sensitive claim that the
-> conditions are present or absent; the exact-digest adoption record must show
-> the authority it applies.
->
-> **One class is always human-gated, gate open or not:** VIS-4 —
-> *"spec changes touching security posture, privacy or retention
-> obligations, or normative data contracts."* No delegated mechanism ever
-> reaches this class.
-
-**Select the governing adoption record fail closed.** The owning corpus is the
-tracked owner Decisions in `.syzygy/governance/decisions/` at the named source
-revision (RFC3-15). A record enters the candidate set for an acceptance unit
-only when it identifies that unit's stable artifact identity, exact digest, and
-owner act. Apply RFC3-16(b)'s explicit supersession/revocation relationship:
-the effective record is the candidate that no other candidate explicitly
-supersedes or revokes. File order, commit order, and timestamps alone never
-select a winner. No candidate record means the unit is still a proposal. Two
-incompatible candidates with no explicit relationship are a contradiction:
-the CC-SPEC-11 coverage table's **adoption-record selection** section records
-`Unknown`, the named source revision, both record identities and digests, the
-missing supersession relationship, and what owner Decision would settle it.
-The specification's human and machine projections render that same Unknown and
-link to the section. Neither adopt the unit nor use either record to enumerate
-accepted specifications until the owner resolves it. This paragraph selects
-among records; RFC3-15 and RFC3-16 remain the authority for their home,
-provenance, bindings, and lifecycle.
-
-Until the selection rule above yields a governing record that names the exact
-proposed digest, the acceptance unit is a candidate. For a focused change, the
-accepted capability baseline keeps the state supplied by its own governing
-record; only the proposed change remains a candidate.
-
-**CC-SPEC-11 — The requirement set covers the declared acceptance unit, and
-the coverage is demonstrated.** This clause covers the acceptance unit's own
-obligations; CC-SPEC-8 separately covers contract observable consequences.
-
-A specification demonstrates that its requirements cover the acceptance unit
-declared under CC-SPEC-1, with a **coverage table** produced with the
-specification. The **coverage population** is independently enumerated before
-classification; the table author may not define it merely by listing the rows
-they chose to include. Membership in the population does not itself place an
-obligation in scope.
-
-**Extract source items deterministically at the named baseline and proposed
-digests.** For a capability scope or non-goal list, each numbered item, bullet,
-or table row is one source item. In prose outside those structures, each
-sentence that says the capability does, renders, records, refuses, requires,
-permits, or prohibits something is one source item. Split a source item only
-when it states separately falsifiable outcomes; quote the exact source span for
-each split and assign source-order ordinals. If segmentation cannot be decided,
-keep the unsplit source item, record `Unknown` with the segmentation question,
-and defer acceptance. For the requirement inventory, every stable requirement
-ID is one source item, including an entry marked retired.
-
-For **whole-capability acceptance**, enumerate:
-
-1. each obligation in the CC-SPEC-1 capability-scope statement;
-2. every stable requirement ID in the proposed specification, including every
-   entry marked retired under CC-SPEC-3; and
-3. each explicit non-goal.
-
-For **focused-change acceptance**, enumerate:
-
-1. every requirement ID added, modified, or retired by the exact
-   baseline-to-proposal difference;
-2. each obligation in the change scope and each explicit non-goal; and
-3. an affected-baseline sweep whose input population is **every unchanged
-   requirement in the accepted baseline**, enumerated before matching. For each
-   input, test references, governing-provenance declarations, coverage
-   mappings, and defined vocabulary against the changed items. The sweep
-   records its method and denominator and places each input in exactly one of
-   `affected`, `unaffected` (with reason), or `undecidable` (with what would
-   settle it). Add the `affected` and `undecidable` inputs to the coverage
-   population; retain the full sweep as the enumeration evidence.
-
-Each enumerated source item becomes a row. Repeated occurrences of the same
-stable requirement ID share one row with every source locator; exact duplicate
-source locators share one row. No other two source items are collapsed merely
-because the author considers them equivalent. A scope or non-goal item without
-a stable requirement ID receives a table-local ID from `(source section,
-source-unit ordinal, outcome ordinal)`. Every row records its source locator and
-the discovery method that put it in the population.
-
-Each row in the declared coverage population is placed in
-**exactly one** of three sets, which sum to that population:
-
-```text
-covered                 included in the acceptance unit; named requirement IDs
-                        satisfy it
-lawfully out of scope
-  / retired             excluded by a named non-goal (CC-SPEC-5), or retired
-                        in place under CC-SPEC-3 with the requirement ID and
-                        retired entry named
-Unknown / unresolved    inclusion or coverage is unresolved; rendered with
-                        what would settle it, never
-                        silently omitted (VIS-2)
-```
-
-**Classify relationships without self-mapping.** A scope-obligation row is
-`covered` only when it names one or more stable requirement IDs that satisfy
-it. An active requirement-ID row is `covered` only when it links back to an
-independently extracted scope or focused-change obligation row; its own ID
-cannot cover itself. A non-goal row is `lawfully out of scope` only when no
-active requirement claims or contradicts it. A retired requirement-ID row is
-`retired` and names its retired entry; it is never counted as active coverage.
-An affected-baseline requirement row must link to the changed source item that
-affects it. A missing, circular, or contradictory relation enters
-`Unknown / unresolved`, names the rows involved and what would settle it, and
-blocks acceptance.
-
-The completeness test is **bounded to the independently enumerated coverage
-population**. A reviewer who finds a source item absent from that population
-raises the omission against CC-SPEC-1's acceptance-unit statement. The table is
-**confirmed by a party other than the specification's author**; that explicit
-separation is the rule, with no external pattern needed to interpret it. A
-fresh engineer reproduces the population from the named baseline and proposed
-digests, scope, complete requirement inventory, non-goals, and affected-baseline
-sweep, then checks that every member appears in exactly one set — no authoring
-context is required.
-
-Acceptance is determinate only when every population member is `covered` or
-`lawfully out of scope / retired`, every CC-SPEC-8 applicable consequence is
-mapped or covered by a lawful N/A judgment, and no requirement carries an
-unsettled-provenance `Unknown`. If any `Unknown / unresolved` or unmapped row
-remains, the table does not demonstrate coverage: the acceptance review records
-`Unknown`, names every blocking row and settling condition, defers acceptance,
-and leaves the proposed acceptance unit a candidate. This policy defines no
-exception that turns an Unknown into acceptance.
-
-## What this policy is not
-
-Not a workflow (the th-projects feature-request workflow is referenced
-process, never authority); not a format (the specification's adopted format
-authority owns the medium); not a review procedure (CC-REV-1/2/4 own review).
-One fact, one home.
-
-## Amendment status
-
-The review findings that warrant this proposed amendment, their evidence, and
-their excluded routes are recorded in the amendment record linked in the top
-banner. This policy surface states the durable rules rather than repeating a
-review disposition ledger. The sibling policy's CC-IMPACT-6 remains the rule
-for shape changes whose specification amendments cannot move with them.
+- **Purpose:** Prove that the specification covers its own declared obligations;
+  CC-SPEC-8 separately covers contract consequences.
+- **Inputs/population:** Tokenize scope, change scope, and non-goals into numbered
+  items, bullets, table rows, or normative prose sentences; split only separately
+  falsifiable outcomes. Include every stable requirement entry, including
+  retired entries. Whole-capability input is all scope items, requirements, and
+  non-goals. Focused-change input is every added/changed/retired requirement,
+  every change-scope item and non-goal, plus every unchanged baseline requirement
+  classified by a recorded sweep as affected, unaffected with reason, or
+  undecidable after testing references, provenance, mappings, and defined
+  vocabulary.
+- **Decision:** Preserve every extracted occurrence with revision, exact locator,
+  span, and discovery method. Group only identical `(revision, locator, span,
+  outcome)` occurrences; stable IDs link evidence but do not erase distinct
+  occurrences, and semantic similarity never deduplicates. Give other items
+  `(section, unit ordinal, outcome ordinal)` IDs. Place each row exactly once in
+  `covered`, `lawfully out of scope / retired`, or `Unknown / unresolved`.
+  Scope rows name satisfying requirement IDs; active requirement rows link to an
+  independently extracted scope/change row and never cover themselves; non-goals
+  conflict with no active requirement; retired rows retain their ID and entry;
+  affected-baseline rows link to the change. Missing, circular, or contradictory
+  relationships are Unknown. A party other than the author reproduces and
+  confirms the population and partition.
+- **Possible results:** Satisfied only when every row is covered or lawfully out
+  of scope/retired, every applicable CC-SPEC-8 row is mapped or lawful N/A, and
+  no provenance Unknown remains; Not satisfied for a proved violation; otherwise
+  Unknown.
+- **Missing evidence:** Record every blocking row and settling condition, defer
+  acceptance, and leave the proposed unit a candidate. No exception converts
+  Unknown to acceptance.
+- **Retained evidence:** Baseline/proposal digests, extraction and affected-
+  baseline methods, all occurrences and rows, mappings, three-set totals,
+  reviewer, result, and adoption-selection section.
+- **Sources:** VIS-2; CC-SPEC-1; CC-SPEC-3; CC-SPEC-8.

@@ -1,294 +1,182 @@
-# Shape-to-spec impact policy — craft rule set
+# Shape-to-spec impact policy
 
-> **Candidate before an exact-digest act; confirmed successor after one.**
-> Authority state resolves from the active acceptance record. These bytes are a
-> proposal while no performed owner act names their exact sha256. If such an
-> act later names this exact digest, these same bytes are the confirmed
-> successor from that act; no banner edit is needed. The
-> 2026 acts identify the predecessor digests they confirmed and do not bind a
-> different digest. Whether those predecessor bytes are current or superseded
-> is likewise answered by the act record, never inferred from this banner.
-> Drafting, review, a commit, or a pull request changes no authority state.
+> **Authority depends on an exact-digest owner act, not this banner.** These
+> bytes are a proposal while no performed owner Decision names their SHA-256.
+> From an act that names that digest, the same bytes are the confirmed
+> successor; no edit is needed. Decisions are selected under CC-SPEC-10.
+> Drafting, review, a commit, or a pull request changes no authority.
 >
-> Identifiers `CC-IMPACT-1…7` remain stable and are never renumbered. This
-> file and `SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` remain one model.
-> The plain-language change summary, exact before/after text, evidence,
-> non-goals, and review requirements are in
+> IDs `CC-IMPACT-1` through `CC-IMPACT-7` stay stable. This policy and
+> `SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` form one model. The proposal,
+> history, exact mapping, and review contract are in
 > `../round-2026-08l/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA-3.md`.
-> The historical blind-propagation evidence record is
-> `../round-2026-08g/reviews/DISPOSITION-REGISTER.md`; this banner does not
-> repeat or independently assert that record's verdict.
 
-## The rule
+## Shared terms and results
 
-**CC-IMPACT-1 — Every accepted specification declares what governs it, and
-the declaration is generated.** A specification carries, in a fixed and
-machine-readable place, a declaration over the **same six classes**
-CC-SPEC-2 defines for a requirement:
+A **shape delta** changes an adopted doctrine rule, accepted contract clause,
+approved policy clause, recorded owner Decision, accepted topology identity,
+or accepted parent requirement/specification. An **impact sweep** fixes its
+inputs at one source revision before matching. It creates its durable record
+before population rows.
 
-```text
-doctrine[]              contracts[]             policies[]
-decisions[]             topology[]              parent_requirements[]
-```
+Every requirement, direct specification relationship, and specification is
+placed in exactly one result, using this precedence:
 
-Three rules:
+1. **contradicted** — two authoritative claims in one scope cannot both hold;
+2. **affected** — the stated method establishes a relationship to the delta;
+3. **undecidable** — the method cannot settle the relationship; or
+4. **explicitly unaffected** — the method establishes no relationship and
+   records why.
 
-1. **The specification-level declaration is the union of its requirements'
-   CC-SPEC-2 declarations, generated — never hand-authored.** A declaration
-   narrower than that union is a defect, and a second hand-maintained list
-   beside it is the duplicate-authority CC-REV-3 forbids.
-2. **A specification specifies one capability** (CC-SPEC-1). The capability
-   identity is a property of the specification, not a list.
-3. An **empty** field asserts that the specification relies on nothing of
-   that kind, and is reviewable as such. An **absent** declaration is a
-   defect: it makes the specification invisible to every sweep below, and
-   invisibility is exactly what this rule set exists to prevent.
+`Undecidable` renders Unknown. It is not an unaffected result.
 
-**CC-IMPACT-2 — A shape delta performs a reverse-reference sweep, and the
-trigger set is the requirement-provenance set.**
+## **CC-IMPACT-1 — Generate each specification's authority declaration**
 
-> **The identities that can trigger a sweep are exactly the identities a
-> requirement may cite as governing provenance** — CC-SPEC-2's six fields,
-> and no others. This set explains why requirement text belongs; it is not the
-> work-warrant set that authorizes creating or prioritizing work.
+- **Purpose:** Make every accepted specification discoverable without a second
+  authority list.
+- **Inputs/population:** All requirement declarations under CC-SPEC-2.
+- **Decision:** For each of the same six fields—`doctrine`, `contracts`,
+  `policies`, `decisions`, `topology`, and `parent_requirements`—generate the
+  set union of stable identities from all requirements. Never hand-author it.
+  A present empty field asserts an empty union; an absent field is a defect.
+  Record one capability identity as a specification property, not a list.
+- **Possible results:** Satisfied when all six generated fields equal their
+  requirement unions; Not satisfied for a proved mismatch or second list;
+  otherwise Unknown.
+- **Missing evidence:** An absent field, requirement declaration, or resolvable
+  identity is Unknown and cannot support an unaffected result.
+- **Retained evidence:** Generator/version, requirement inputs, six expected
+  unions, six actual fields, comparison, and capability identity.
+- **Sources:** CC-SPEC-1; CC-SPEC-2; CC-REV-3.
 
-When an adopted doctrine rule, an accepted contract clause, an approved
-craft/policy clause, a recorded owner decision, an accepted topology
-identity, or an accepted parent requirement or specification changes, the
-change carries a sweep over the specification corpus for every
-specification whose CC-IMPACT-1 declarations name the changed identity, or
-whose requirements consume its vocabulary. **The sweep is part of the
-change, not a follow-up task.**
+## **CC-IMPACT-2 — Sweep every provenance-triggered relationship**
 
-**Resolve `consumes its vocabulary` at the sweep's named source revision.**
-This amendment supplies no definition. If an adopted, accepted, approved, or
-recorded authority eligible under CC-SPEC-2 at that revision supplies a
-definition, the sweep cites and applies its exact identity and digest. If none
-does, declaration matching remains
-usable but every additional relationship whose answer depends on the phrase is
-`undecidable` under CC-IMPACT-4 and renders Unknown with what would settle it.
-It may not be classified as unaffected.
+- **Purpose:** Ensure every authority class that can govern a requirement can
+  also trigger propagation.
+- **Inputs/population:** The changed identities and CC-SPEC-2's same closed six
+  provenance classes.
+- **Decision:** The shape-delta author carries a reverse-reference sweep in the
+  same change. Match declarations and test other authority-defined relationships.
+  The phrase `consumes its vocabulary` has no definition in this policy: at the
+  sweep revision, apply only an eligible accepted definition with exact identity
+  and digest. Without one, every case depending on that phrase is undecidable.
+- **Possible results:** Satisfied when every changed identity and dependent
+  relationship enters the exhaustive sweep; Not satisfied for a proved
+  omission; otherwise Unknown.
+- **Missing evidence:** A missing definition or unresolvable relationship is
+  undecidable, records what would settle it, and never becomes unaffected.
+- **Retained evidence:** Revision, changed identities, definition identity/
+  digest if any, match method, and unresolved relationships.
+- **Sources:** VIS-2; CC-SPEC-2. These provenance fields explain why text belongs;
+  RFC1-25 separately governs permission to create or prioritize work.
 
-Stating the trigger set as an *identity* rather than as a second enumeration
-is deliberate: two lists drift, and the drift is silent. Any class added to
-requirement provenance becomes sweepable in the same act; any class that
-cannot trigger a sweep may not serve as requirement provenance.
+## **CC-IMPACT-3 — Freeze populations and partition every item**
 
-**CC-IMPACT-3 — The sweep records a fixed population and four result sets,
-with its denominator and method.** Before matching any identity or vocabulary, freeze the **input
-corpus**: every accepted specification at one named source revision and every
-stable requirement entry in those specifications, including entries marked
-retired. Enumerate specifications by applying CC-SPEC-10's governing-record
-selection to the owner-Decision corpus at that revision, not from declaration
-matches or a filesystem guess; then enumerate every stable requirement entry
-in each selected specification. Record the revision, record-selection results,
-enumeration method, specification count, and requirement count. An unresolved
-record contradiction stops population construction before result rows exist.
-The durable sweep record is created first; its **population-construction**
-section owns this `Unknown` and records the source revision, candidate adoption
-record identities and digests, conflicting or missing supersession facts, and
-what owner Decision would settle them. Human and machine impact projections
-render the same Unknown and link to that section. No requirement or
-specification result rows are emitted until the contradiction is settled. A
-missing declaration or zero-match result never removes an item from this input
-corpus.
+- **Purpose:** Produce a reproducible denominator and deterministic parent result.
+- **Inputs/population:** First select every accepted specification at one revision
+  by CC-SPEC-10's Decision rule, then enumerate every stable requirement entry,
+  including retired entries. Do not select from declaration matches or filesystem
+  presence. Before rows exist, `population-construction` records revision,
+  candidate Decisions/digests, selection trace, method, and both counts.
+- **Decision:** Classify every requirement by the shared precedence. A provenance
+  match or an authority-defined changed obligation, boundary, oracle, mapping, or
+  vocabulary is affected; incompatible claims are contradicted; unsupported
+  relationship tests are undecidable; a retired row may be unaffected only with
+  retirement as reason unless the delta changes retirement.
 
-For each requirement in that fixed corpus, **affected** means the method
-establishes either that its CC-SPEC-2 provenance names the changed identity or
-that the shape delta changes an authority-defined obligation, boundary,
-oracle, coverage mapping, or defined vocabulary the requirement uses. A
-relationship that depends on the undefined `consumes its vocabulary` phrase is
-`undecidable`, not affected or unaffected. A retired entry stays in the
-denominator and may be explicitly unaffected with retirement as the reason,
-unless the delta changes the retirement fact or any condition for interpreting
-or reversing it.
+  For each specification and field, compute the expected CC-SPEC-2 requirement
+  union and read the actual CC-IMPACT-1 field. Before matching the delta, create
+  a reconciliation row for every identity in the union of expected and actual
+  entries, recording presence on both sides; add a field-absent sentinel when
+  the field is absent. Thus a present empty field cannot hide an expected
+  identity. Expected/actual disagreement is contradicted; malformed,
+  unresolvable, or absent input is undecidable; an equal row is affected when its
+  identity is changed and otherwise explicitly unaffected. Record method and
+  reason for every row.
 
-**`Contradicted`, defined.** The method establishes that the changed
-authoritative claim and the requirement cannot both be satisfied in the same
-declared scope. Classification precedence is deterministic: `contradicted`
-first, then `affected`, then `undecidable`, then `explicitly unaffected`.
+  Derive each specification once over its reconciliation and child-requirement
+  rows using the same precedence.
+- **Possible results:** Four disjoint, exhaustive requirement sets; four disjoint,
+  exhaustive reconciliation sets; and four disjoint, exhaustive specification
+  sets. A numerator without all denominators is Not satisfied.
+- **Missing evidence:** Record pre-enumeration failure in `population-construction`,
+  render/link it in human and machine projections, and emit no child rows. Later
+  uncertainty is an undecidable row. Zero matches never shrink a population.
+- **Retained evidence:** Selection record; specification, requirement, and per-
+  field expected/actual counts; every row and reason; method; four-set totals;
+  parent derivation; and projection links.
+- **Sources:** VIS-2; CC-SPEC-10.
 
-The requirement-level output names:
+## **CC-IMPACT-4 — Keep Unknown and contradiction durable until lawful exit**
 
-```text
-population              every stable requirement entry in the frozen input
-                        corpus, counted
-affected                a declaration match or other relationship established
-                        by the stated method
-contradicted            the changed authority and requirement cannot both be
-                        satisfied — each with both conflicting claims
-explicitly unaffected   the method establishes no tie — each with the reason
-                        AND the method that established untiedness
-undecidable             the method cannot settle the relationship — each with
-                        what would settle it
-```
+- **Purpose:** Stop silence, review opinion, or an old result from enabling merge.
+- **Inputs/population:** Every undecidable or contradicted population section,
+  requirement row, reconciliation row, and specification result.
+- **Decision:** The owning row records unsettled facts or both conflicting claims
+  and a settling condition. Human and machine views render the same linked
+  Unknown/contradiction. A merge-relevant contradiction exits only through an
+  eligible owner Decision selected for the purpose `adjudicate` by CC-SPEC-10's
+  generic act-type/subject/digest/scope and explicit-supersession rule. The
+  Decision names the contradiction and resolution; a review disposition is not
+  eligible. After required authority amendments, run a new sweep at a new
+  revision. Only its non-undecidable, non-contradicted result may proceed; retain
+  the earlier row as history.
+- **Possible results:** Satisfied when every open result is rendered and blocks;
+  Not satisfied when one is hidden or bypassed; otherwise Unknown.
+- **Missing evidence:** Missing owner Decision, authority amendment, or new sweep
+  keeps the result open and prevents CC-IMPACT-6.
+- **Retained evidence:** Owning rows, links, selected adjudication Decision and
+  supersession trace, old/new revisions, amendments, and new result.
+- **Sources:** Typed-authority contradiction rule; RFC1-25 `adjudicates`;
+  RFC3-15; RFC3-16.
 
-The four result sets are disjoint and exhaustive: every requirement in the
-population appears in exactly one.
+## **CC-IMPACT-5 — Assign authors and independent confirmation**
 
-**Enumerate direct specification relationships before deriving the
-specification result.** For each specification, read exactly CC-IMPACT-1's six
-generated fields. Record every `(specification identity, field name, authority
-identity)` entry in source order, plus the per-field entry counts; an empty
-field contributes a recorded zero, while an absent field contributes one
-`undecidable` sentinel row because CC-IMPACT-1 makes absence a defect. This
-direct-relationship population is fixed before matching.
+- **Purpose:** Give every sweep and required amendment accountable actors.
+- **Inputs/population:** The sweep and every affected specification amendment.
+- **Decision:** Name the shape-delta author as sweep author, a different named
+  party as confirmer, and one named actor for each amendment. Owner-only work
+  waits visibly for the owner.
+- **Possible results:** Satisfied when all actors are named and independence is
+  established; Not satisfied for self-confirmation or an unassigned amendment;
+  otherwise Unknown.
+- **Missing evidence:** Unknown actor identity or independence blocks reliance.
+- **Retained evidence:** Actor assignments, confirmation record, exact sweep
+  revision/digest, verdict, and dispositions.
+- **Sources:** VIS-4; CC-REV-1; CC-REV-6.
 
-Classify every direct row in the same four result sets and precedence as
-requirements: `affected` when its authority identity equals the changed
-identity; `explicitly unaffected` when well-formed exact-identity comparison
-establishes inequality; `undecidable` when the entry is absent, malformed, or
-unresolvable; and `contradicted` when the generated entry disagrees with the
-requirements' CC-SPEC-2 union or another authoritative specification entry.
-Record the comparison method and reason on every row. The direct-row sets are
-disjoint and exhaustive.
+## **CC-IMPACT-6 — Land shape and specification changes atomically**
 
-Then derive one specification result over its direct rows and child requirement
-rows:
+- **Purpose:** Keep mainline from asserting the new shape with old specifications.
+- **Inputs/population:** The shape delta and every amendment required by its
+  current sweep.
+- **Decision:** Land all of them in one merge transaction. An undecidable or
+  contradicted specification blocks that transaction. This policy creates no
+  lagging-specification exception; the declined proposal supplies no authority.
+  Only an owner-approved amendment to CC-REV-2 could change that rule.
+- **Possible results:** Satisfied only by the atomic transaction; Not satisfied by
+  a partial merge; Unknown while impact or authority remains unresolved.
+- **Missing evidence:** Without exact transaction membership and current sweep
+  evidence, do not merge.
+- **Retained evidence:** Sweep, amendment set, exact revisions, merge transaction,
+  and unresolved blockers.
+- **Sources:** CC-REV-2; VIS-4.
 
-1. **contradicted** if at least one direct row or child requirement is
-   `contradicted`;
-2. otherwise **affected** if at least one direct row or child requirement is
-   `affected`;
-3. otherwise **undecidable** if at least one direct row or child requirement is
-   `undecidable`; or
-4. otherwise **explicitly unaffected**, with the method and reason.
+## **CC-IMPACT-7 — Prove the path before relying on it**
 
-Every specification in the frozen corpus appears in exactly one of those
-four specification sets. This is the requirement-to-specification propagation
-rule: a contradicted requirement makes its parent specification contradicted;
-otherwise an affected requirement makes its parent specification affected; an
-undecidable requirement makes its parent specification undecidable unless a
-higher-precedence child result applies.
-
-**The reason and the method are two different things, and both are
-required.** "Does not declare the changed identity" is an *observation*; if
-declaration-matching is the whole method, the sweep says so, and everything
-that method cannot decide routes to `undecidable` under CC-IMPACT-4 rather
-than to `explicitly unaffected`. A true reason producing a wrong answer,
-carried by a denominator and full compliance, is the failure mode this limb
-exists to prevent.
-
-A sweep that reports only the affected set has reported a numerator without
-a denominator, and satisfies nothing. The denominator discipline is also
-stated by **CC-KNOW-16**; whether or not that separate clause is in force at
-the sweep's act, this clause applies the discipline to the specification
-corpus and VIS-2 supplies its governing basis.
-
-**CC-IMPACT-4 — Undecidable impact renders as Unknown; contradiction remains
-inside the exhaustive partition.** The sweep record's `undecidable` requirement
-or specification row is the owning record: it names the unsettled relationship
-and what would settle it. The parent specification's impact result is recorded
-as `Unknown`, identified as an impact result, and every human view and machine
-projection renders that same result with a link to the row. A `contradicted`
-row instead links the two authoritative claims that cannot be satisfied
-together. Silence is not an answer, and "not listed as affected" is never
-evidence of being unaffected (VIS-2, applied to the sweep's own output).
-A specification whose impact result is `Unknown` or `contradicted` prevents the
-shape delta from satisfying CC-IMPACT-6: the delta does not merge until the
-relationship is settled or adjudicated and every required specification
-amendment can land in the same logical change. This policy defines no exception
-that treats an undecidable specification as unaffected.
-
-**Merge-relevant adjudication is an owner Decision, not a review
-disposition.** The Decision lives in `.syzygy/governance/decisions/`, is
-selected under CC-SPEC-10's governing-record rule, names the contradiction row
-and both conflicting claims, and records the owner's resolution and any
-superseded Decision (RFC3-15, RFC3-16). After that Decision and every authority
-amendment it requires exist, run a new sweep at the new source revision. The
-prior sweep retains its historical `contradicted` row; the new sweep links the
-Decision and classifies the relationship by the four-set precedence above.
-Only that new non-Unknown, non-contradicted current result can satisfy this
-gate before CC-IMPACT-6 is evaluated.
-
-**CC-IMPACT-5 — Every required amendment names its actor, and the sweep
-names one too.** Each affected specification's amendment is owned by a named
-actor before the change lands. **The sweep itself has an actor**: the shape
-change's author performs it, and a party other than that author confirms it
-is adequate. The confirmer's independence from the sweep author is the rule;
-no external pattern is needed to interpret it, because a sweeper grading their
-own denominator is the unassigned judgment E5 exists to remove. "The author"
-is a name; "someone" is not. Where the actor is the owner (VIS-4), the
-amendment waits on the owner and the wait is visible.
-
-**CC-IMPACT-6 — Affected specs move in the same logical change; this policy
-creates no exception.** *Same logical change* means the shape delta and every
-specification amendment it requires land in one merge transaction, so mainline
-never contains one without the other. CC-REV-2's merge invariant governs,
-unmodified and uncarved, and **behavioral specs are the first population
-CC-REV-2 names**. CC-REV-2 admits no exception limb of its own; its only
-carve-out is doctrine's owner gate.
-
-**This clause creates no alternative.** The owner declined the previously
-offered lagging-specification exception, so it supplies no authority and this
-amendment does not revive it. A lagging specification could become lawful only
-if CC-REV-2 were itself amended in place through a new craft act. Until such an
-act is performed, no lawful lag exists, and a shape change whose specification
-amendments cannot land with it does not merge.
-
-**CC-IMPACT-7 — The path is exercised before it is relied on.** Before any
-shape amendment relies on the propagation path, a passing **blind** run must
-exist against this named fixture with a known answer:
-
-```text
-fixture   ../round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md
-sha256    685a71f7a52652a314f144ba1599982812921ede88220e69a0d5d327272ed4e0
-answer    ../round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2-ANSWER-KEY.md
-          — a separate file, which the administrator does not open
-```
-
-The exercise has four requirements:
-
-1. **The administrator is fresh-context** per CC-REV-1 — not the author of
-   the sweep method, not sharing its session.
-2. **The pass criterion is the answer key's**, quoted there and not
-   restated here: the derived `affected` set contains every golden affected
-   requirement, the designated undecidable relationship is never filed as
-   `explicitly unaffected`, and the population is stated with every
-   requirement placed in exactly one set.
-3. **Every divergence carries a recorded disposition** (CC-REV-6), whether
-   the run passes or fails.
-4. **The consequence of failure is stated: the path is not relied on until
-   a passing run exists.** A recorded failing run satisfies this clause's
-   *record* obligation and does not satisfy the clause.
-
-If the fixture's bytes no longer match the digest above, the run is void:
-supersede the fixture rather than editing it.
-
-## What this rule set does not do
-
-- It does not require or assert the existence of a sweep script. A sweep may be
-  mechanical or manual, and either way CC-IMPACT-3's four sets, its denominator
-  and its **method** are what make it checkable. Each sweep record says which
-  method it actually used.
-- It does not define **"consumes its vocabulary"**. The operative rule above
-  resolves definition availability at the named source revision and routes a
-  missing definition to `undecidable`, never `unaffected`; a separate
-  authorized amendment is needed to add a definition.
-- It does not govern shape changes to *candidates*. Until a contract is
-  accepted, changing it propagates to nothing, because no specification may
-  cite an unaccepted clause.
-- It does not create, imply, or authorize specification work. Specification
-  authoring, adoption, and implementation each require their own authority;
-  this policy only governs propagation once the relevant artifacts exist.
-
-## Why each rule is here, in one line each
-
-| Rule | The failure it prevents |
-|---|---|
-| CC-IMPACT-1 | a specification no sweep can see, and a declaration that may disagree with the requirements it summarizes |
-| CC-IMPACT-2 | a requirement-provenance class that cannot trigger a sweep |
-| CC-IMPACT-3 | a numerator with no denominator, and a true reason producing a wrong answer |
-| CC-IMPACT-4 | "not listed" quietly reading as "not affected" |
-| CC-IMPACT-5 | an amendment everyone agrees is needed and nobody owns; a sweeper grading their own sweep |
-| CC-IMPACT-6 | an approved clause weakened by a side-clause nobody had to amend |
-| CC-IMPACT-7 | a propagation path first exercised on the day it is needed, with no pass mark |
-
-## Amendment acceptance
-
-The active acceptance record determines this exact file's state as the top
-banner describes: proposal when no performed owner act names its digest,
-confirmed successor from an act that does. It must be reviewed and offered
-with the specification-acceptance policy: CC-IMPACT-1 generates from
-CC-SPEC-2, and CC-IMPACT-2's trigger set is CC-SPEC-2's provenance set.
-Drafting, review, a commit, or a pull request is not that act.
+- **Purpose:** Exercise propagation against a known answer before real use.
+- **Inputs/population:** Fixture
+  `../round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md` at SHA-256
+  `685a71f7a52652a314f144ba1599982812921ede88220e69a0d5d327272ed4e0`
+  and its separate answer key, which the administrator does not open.
+- **Decision:** A fresh-context administrator runs the path blind. Grade only by
+  the answer key: all golden affected requirements are affected, its designated
+  undecidable case is not unaffected, and every requirement appears in exactly
+  one result. Disposition every divergence.
+- **Possible results:** Satisfied only by a passing run; Not satisfied by a
+  failing run or digest mismatch; Unknown when evidence is absent or invalid.
+- **Missing evidence:** Do not rely on the path. Supersede a changed fixture;
+  never edit it under the recorded digest.
+- **Retained evidence:** Fixture digest, administrator independence, method,
+  complete results, answer-key comparison, verbatim verdict, and dispositions.
+- **Sources:** CC-REV-1; CC-REV-6.
