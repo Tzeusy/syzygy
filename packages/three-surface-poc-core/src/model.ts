@@ -1,3 +1,7 @@
+import { createHash } from 'node:crypto';
+import { readFileSync, statSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 export type PocEpistemic =
   | { readonly label: 'Observed'; readonly basis: string }
   | { readonly label: 'Unknown'; readonly reason: string };
@@ -71,6 +75,7 @@ export class PocObservationError extends Error {
   constructor(
     readonly kind:
       | 'required-artifact-missing'
+      | 'required-artifact-semantic-mismatch'
       | 'required-artifact-unreadable',
     readonly artifactPath?: string,
   ) {
@@ -88,6 +93,16 @@ const ARTIFACT_PATHS = {
   test: 'tests/core/test_identity.py',
 } as const;
 
+const INTENT_MARKERS = {
+  design: ['Approved for implementation'],
+  proposal: ['owner approved the design and end-to-end implementation on 2026-08-24'],
+  requirement: [
+    'REQ-switchboard-identity-001',
+    'whatsapp_user_client',
+    'whatsapp_jid',
+  ],
+} as const;
+
 interface ObservedArtifact {
   readonly path: string;
   readonly digest: string;
@@ -97,13 +112,21 @@ function sha256(bytes: Uint8Array | string): string {
   return createHash('sha256').update(bytes).digest('hex');
 }
 
-function observeArtifact(repoRoot: string, artifactPath: string): ObservedArtifact {
+function observeArtifact(
+  repoRoot: string,
+  artifactPath: string,
+  requiredMarkers: readonly string[] = [],
+): ObservedArtifact {
   const absolutePath = resolve(repoRoot, artifactPath);
   try {
     if (!statSync(absolutePath).isFile()) {
       throw new PocObservationError('required-artifact-unreadable', artifactPath);
     }
-    return { path: artifactPath, digest: sha256(readFileSync(absolutePath)) };
+    const bytes = readFileSync(absolutePath);
+    if (requiredMarkers.some((marker) => !bytes.includes(Buffer.from(marker, 'utf8')))) {
+      throw new PocObservationError('required-artifact-semantic-mismatch', artifactPath);
+    }
+    return { path: artifactPath, digest: sha256(bytes) };
   } catch (cause) {
     if (cause instanceof PocObservationError) {
       throw cause;
@@ -137,16 +160,30 @@ function unknown(reason: string): PocEpistemic {
 
 export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel {
   const repoRoot = resolve(input.repoRoot);
-  const design = observeArtifact(repoRoot, ARTIFACT_PATHS.design);
-  const proposal = observeArtifact(repoRoot, ARTIFACT_PATHS.proposal);
-  const requirement = observeArtifact(repoRoot, ARTIFACT_PATHS.requirement);
+  const design = observeArtifact(repoRoot, ARTIFACT_PATHS.design, INTENT_MARKERS.design);
+  const proposal = observeArtifact(repoRoot, ARTIFACT_PATHS.proposal, INTENT_MARKERS.proposal);
+  const requirement = observeArtifact(
+    repoRoot,
+    ARTIFACT_PATHS.requirement,
+    INTENT_MARKERS.requirement,
+  );
   const code = observeArtifact(repoRoot, ARTIFACT_PATHS.code);
   const test = observeArtifact(repoRoot, ARTIFACT_PATHS.test);
+  const mappingDigest = sha256(JSON.stringify({ ARTIFACT_PATHS, INTENT_MARKERS }));
+  const inputDigest = sha256(
+    JSON.stringify({
+      repoRoot,
+      repositoryRevision: input.repositoryRevision,
+      observerRevision: input.observerRevision,
+      artifacts: [design, proposal, requirement, code, test],
+      mappingDigest,
+    }),
+  );
   const mappingProvenance: PocProvenance = {
     kind: 'manual-mapping',
     source: 'packages/three-surface-poc-core/src/model.ts#ARTIFACT_PATHS',
     revision: input.observerRevision,
-    digest: `sha256:${sha256(JSON.stringify(ARTIFACT_PATHS))}`,
+    digest: `sha256:${mappingDigest}`,
   };
   const gitProvenance: PocProvenance = {
     kind: 'git-revision',
@@ -169,7 +206,7 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
       title: 'WhatsApp transport identity normalization',
       detail:
         'Preserve transport metadata while resolving identity through canonical WhatsApp JIDs.',
-      epistemic: observed('The selected capability is named by the approved intent artifact.'),
+      epistemic: observed('Validated intent markers name this capability and record approval.'),
       provenance: [
         fileProvenance(design, input.repositoryRevision),
         fileProvenance(requirement, input.repositoryRevision),
@@ -179,8 +216,8 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
       id: 'intent:req-switchboard-identity-001',
       kind: 'intent',
       title: 'REQ-switchboard-identity-001',
-      detail: 'The active approved intent revision selected for this POC.',
-      epistemic: observed('The selected intent artifacts were read and hashed.'),
+      detail: 'The selected intent revision records owner approval for implementation.',
+      epistemic: observed('Required approval, identifier, and relationship markers were validated.'),
       provenance: [
         fileProvenance(design, input.repositoryRevision),
         fileProvenance(proposal, input.repositoryRevision),
@@ -192,7 +229,7 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
       kind: 'code-region',
       title: 'Identity resolution code region',
       detail: ARTIFACT_PATHS.code,
-      epistemic: observed('The manually mapped code file exists at the observed revision.'),
+      epistemic: observed('The manually mapped code file was captured and hashed.'),
       provenance: [fileProvenance(code, input.repositoryRevision), mappingProvenance],
     },
     {
@@ -200,7 +237,7 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
       kind: 'test-definition',
       title: 'Identity regression test definition',
       detail: ARTIFACT_PATHS.test,
-      epistemic: observed('The manually mapped test file exists at the observed revision.'),
+      epistemic: observed('The manually mapped test file was captured and hashed.'),
       provenance: [fileProvenance(test, input.repositoryRevision), mappingProvenance],
     },
     {
@@ -323,7 +360,10 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
 
   return {
     schema: 'syzygy-three-surface-poc/v1',
-    evaluation: input.evaluation,
+    evaluation: {
+      ...input.evaluation,
+      snapshot: `${input.evaluation.snapshot}|inputs:sha256:${inputDigest}`,
+    },
     project: { name: 'Butlers', root: repoRoot, revision: input.repositoryRevision },
     observerRevision: input.observerRevision,
     capabilityId: 'capability:whatsapp-transport-identity',
@@ -372,6 +412,3 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     ],
   };
 }
-import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
-import { resolve } from 'node:path';

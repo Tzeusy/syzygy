@@ -31,9 +31,10 @@ function modelFixture(): PocModel {
   const files: Readonly<Record<string, string>> = {
     'docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md':
       '# design\nStatus: Approved for implementation\n',
-    'openspec/changes/repair-whatsapp-identity-reconciliation/proposal.md': '# proposal\n',
+    'openspec/changes/repair-whatsapp-identity-reconciliation/proposal.md':
+      '# proposal\n- Sign-off: owner approved the design and end-to-end implementation on 2026-08-24.\n',
     'openspec/changes/repair-whatsapp-identity-reconciliation/specs/switchboard-identity/spec.md':
-      '# REQ-switchboard-identity-001\n',
+      '# REQ-switchboard-identity-001\nwhatsapp_user_client -> whatsapp_jid\n',
     'src/butlers/identity.py': 'def canonical_identity(): pass\n',
     'tests/core/test_identity.py': 'def test_identity(): pass\n',
   };
@@ -54,6 +55,34 @@ function idsFromHtml(html: string, attribute: string): string[] {
   return [...html.matchAll(new RegExp(`(?:\\s|<)${attribute}="([^"]+)"`, 'g'))]
     .map((match) => match[1])
     .filter((value): value is string => value !== undefined);
+}
+
+function parityTuples(model: PocModel): string[] {
+  return [
+    ...model.entities.map((entity) =>
+      JSON.stringify([
+        'entity',
+        entity.id,
+        entity.kind,
+        entity.title,
+        entity.detail,
+        entity.epistemic,
+        entity.provenance,
+      ]),
+    ),
+    ...model.relationships.map((relationship) =>
+      JSON.stringify([
+        'relationship',
+        relationship.id,
+        relationship.kind,
+        relationship.from,
+        relationship.to,
+        relationship.statement,
+        relationship.epistemic,
+        relationship.provenance,
+      ]),
+    ),
+  ].sort();
 }
 
 async function startPoc(model: PocModel): Promise<{
@@ -105,6 +134,20 @@ describe('three-surface POC routes', () => {
       }
     }
 
+    const sameOrigin = await fetch(`${baseUrl}/`, { headers: { origin: baseUrl } });
+    expect(sameOrigin.status).toBe(200);
+    const rebound = await fetch(`${baseUrl}/`, {
+      headers: {
+        host: 'poc.attacker.invalid',
+        origin: 'http://poc.attacker.invalid',
+      },
+    });
+    expect(rebound.status).toBe(403);
+    expect(await rebound.json()).toEqual({
+      served: 'nothing',
+      reason: 'browser-origin-refused',
+    });
+
     const refused = await fetch(`${baseUrl}${POC_MACHINE_PATH}`);
     expect(refused.status).toBe(401);
     expect(await refused.json()).toEqual({ admitted: false, served: 'nothing' });
@@ -114,7 +157,12 @@ describe('three-surface POC routes', () => {
     });
     expect(machineResponse.status).toBe(200);
     expect(machineResponse.headers.get('content-type')).toBe('application/json');
-    expect(await machineResponse.json()).toEqual(model);
+    const wireModel = (await machineResponse.json()) as PocModel;
+    expect(wireModel).toEqual(model);
+    const humanTuples = idsFromHtml(html, 'data-parity-tuple')
+      .map((tuple) => decodeURIComponent(tuple))
+      .sort();
+    expect(humanTuples).toEqual(parityTuples(wireModel));
   });
 
   it('escapes observed text before rendering it into HTML', () => {

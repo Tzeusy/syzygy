@@ -1,5 +1,4 @@
 import { createHash } from 'node:crypto';
-import { execFileSync } from 'node:child_process';
 import { realpathSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -11,6 +10,7 @@ import {
 } from '@syzygy/three-surface-poc-core';
 
 import { parsePocCli } from './cli.js';
+import { observeGitRepository } from './git-observation.js';
 import { pocRoutes } from './routes.js';
 
 const USAGE = `syzygy three-surface POC (local, non-release)
@@ -45,20 +45,14 @@ if (parsed.kind === 'help') {
     let observerRevision: string;
     let workingTreeDigest: string;
     try {
-      repositoryRevision = execFileSync('git', ['-C', repoRoot, 'rev-parse', 'HEAD'], {
-        encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'ignore'],
-      }).trim();
-      observerRevision = execFileSync('git', ['-C', process.cwd(), 'rev-parse', 'HEAD'], {
-        encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'ignore'],
-      }).trim();
-      const workingTreeRecord = execFileSync(
-        'git',
-        ['-C', repoRoot, 'status', '--porcelain=v1', '-z'],
-        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] },
-      );
-      workingTreeDigest = createHash('sha256').update(workingTreeRecord).digest('hex');
+      const repository = observeGitRepository(repoRoot);
+      const observer = observeGitRepository(process.cwd());
+      if (!observer.clean) {
+        throw new Error('observer-checkout-dirty');
+      }
+      repositoryRevision = repository.revision;
+      observerRevision = observer.revision;
+      workingTreeDigest = repository.worktreeMetadataDigest;
     } catch {
       process.stderr.write('syzygy POC: a required git revision could not be observed\n');
       process.exitCode = 1;
@@ -71,7 +65,7 @@ if (parsed.kind === 'help') {
       const asOf = new Date().toISOString();
       const snapshot = [
         `butlers:${repositoryRevision}`,
-        `working-tree:sha256:${workingTreeDigest}`,
+        `working-tree:${workingTreeDigest}`,
         `observer:${observerRevision}`,
       ].join('|');
       const defaultStateDir = join(

@@ -8,6 +8,27 @@ import type {
 
 export const POC_HUMAN_PATH = '/' as const;
 export const POC_MACHINE_PATH = '/api/poc' as const;
+export const BROWSER_ORIGIN_REFUSAL = {
+  served: 'nothing',
+  reason: 'browser-origin-refused',
+} as const;
+
+function singleHeader(
+  value: string | readonly string[] | undefined,
+): string | undefined {
+  return typeof value === 'string' ? value : undefined;
+}
+
+function browserRequestAllowed(
+  headers: Readonly<Record<string, string | readonly string[] | undefined>>,
+): boolean {
+  const host = singleHeader(headers['host']);
+  if (host === undefined || !/^(?:127\.0\.0\.1|localhost):[0-9]+$/.test(host)) {
+    return false;
+  }
+  const origin = singleHeader(headers['origin']);
+  return origin === undefined || origin === `http://${host}`;
+}
 
 function epistemicText(
   item: Pick<PocEntity | PocRelationship, 'epistemic'>,
@@ -56,10 +77,39 @@ function provenanceList(item: PocEntity | PocRelationship): string {
     .join('')}</ul>`;
 }
 
+function entityParityTuple(entity: PocEntity): string {
+  return encodeURIComponent(
+    JSON.stringify([
+      'entity',
+      entity.id,
+      entity.kind,
+      entity.title,
+      entity.detail,
+      entity.epistemic,
+      entity.provenance,
+    ]),
+  );
+}
+
+function relationshipParityTuple(relationship: PocRelationship): string {
+  return encodeURIComponent(
+    JSON.stringify([
+      'relationship',
+      relationship.id,
+      relationship.kind,
+      relationship.from,
+      relationship.to,
+      relationship.statement,
+      relationship.epistemic,
+      relationship.provenance,
+    ]),
+  );
+}
+
 function entityRows(model: PocModel): string {
   return model.entities
     .map(
-      (entity) => `<tr id="${escapeHtml(entity.id)}" data-entity-id="${escapeHtml(entity.id)}">
+      (entity) => `<tr id="${escapeHtml(entity.id)}" data-entity-id="${escapeHtml(entity.id)}" data-parity-tuple="${escapeHtml(entityParityTuple(entity))}">
         <td><span class="kind">${escapeHtml(entity.kind)}</span></td>
         <td><strong>${escapeHtml(entity.title)}</strong><br><small>${escapeHtml(entity.detail)}</small></td>
         <td><span class="epistemic epistemic-${entity.epistemic.label.toLowerCase()}">${escapeHtml(entity.epistemic.label)}</span><br><small>${escapeHtml(epistemicText(entity))}</small></td>
@@ -72,7 +122,7 @@ function entityRows(model: PocModel): string {
 function relationshipRows(model: PocModel): string {
   return model.relationships
     .map(
-      (relationship) => `<tr id="${escapeHtml(relationship.id)}" data-relationship-id="${escapeHtml(relationship.id)}">
+      (relationship) => `<tr id="${escapeHtml(relationship.id)}" data-relationship-id="${escapeHtml(relationship.id)}" data-parity-tuple="${escapeHtml(relationshipParityTuple(relationship))}">
         <td><span class="kind">${escapeHtml(relationship.kind)}</span></td>
         <td><a href="#${escapeHtml(relationship.from)}">${escapeHtml(relationship.from)}</a><br>→ <a href="#${escapeHtml(relationship.to)}">${escapeHtml(relationship.to)}</a></td>
         <td>${escapeHtml(relationship.statement)}</td>
@@ -140,7 +190,7 @@ export function renderPocPage(model: PocModel): string {
 </head>
 <body>
   <header>
-    <div class="eyebrow">Syzygy · local experiment · ${escapeHtml(model.evaluation.snapshot)}</div>
+    <div class="eyebrow">Syzygy · local experiment · Butlers ${escapeHtml(model.project.revision.slice(0, 12))}</div>
     <h1>One capability. Three honest views.</h1>
     <p class="lede">${escapeHtml(model.project.name)} · ${escapeHtml(model.entities.find((entity) => entity.id === model.capabilityId)?.title ?? model.capabilityId)}</p>
     <p class="notice"><strong>POC, not product status.</strong> Desired, execution, and observed state remain distinct. Merge is not verification. Missing evidence is rendered Unknown.</p>
@@ -168,11 +218,18 @@ export function pocRoutes(getModel: () => PocModel): readonly Route[] {
       method: 'GET',
       path: POC_HUMAN_PATH,
       credentialClass: 'human-open',
-      handle: () => ({
-        status: 200,
-        contentType: 'text/html; charset=utf-8',
-        body: renderPocPage(getModel()),
-      }),
+      handle: ({ request }) =>
+        browserRequestAllowed(request.headers)
+          ? {
+              status: 200,
+              contentType: 'text/html; charset=utf-8',
+              body: renderPocPage(getModel()),
+            }
+          : {
+              status: 403,
+              contentType: 'application/json',
+              body: JSON.stringify(BROWSER_ORIGIN_REFUSAL),
+            },
     },
     {
       method: 'GET',

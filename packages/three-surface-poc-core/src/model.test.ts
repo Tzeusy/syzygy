@@ -25,9 +25,9 @@ function butlersFixture(): string {
     'docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md':
       '# WhatsApp identity design\nStatus: Approved for implementation\n',
     'openspec/changes/repair-whatsapp-identity-reconciliation/proposal.md':
-      '# Repair WhatsApp identity reconciliation\nowner-approved-intent-marker\n',
+      '# Repair WhatsApp identity reconciliation\n- Sign-off: owner approved the design and end-to-end implementation on 2026-08-24.\nowner-approved-intent-marker\n',
     'openspec/changes/repair-whatsapp-identity-reconciliation/specs/switchboard-identity/spec.md':
-      '# switchboard identity\nREQ-switchboard-identity-001\n',
+      '# switchboard identity\nREQ-switchboard-identity-001\nwhatsapp_user_client -> whatsapp_jid\n',
     'src/butlers/identity.py': 'def canonical_identity():\n    return "private-source-marker"\n',
     'tests/core/test_identity.py': 'def test_identity():\n    assert "private-test-marker"\n',
   };
@@ -60,6 +60,9 @@ describe('three-surface Butlers POC model', () => {
     const second = buildButlersPocModel(input);
 
     expect(second).toEqual(first);
+    expect(first.evaluation.snapshot).toMatch(
+      /^butlers@c1389423\|inputs:sha256:[0-9a-f]{64}$/,
+    );
     expect(first.project.name).toBe('Butlers');
     expect(first.capabilityId).toBe('capability:whatsapp-transport-identity');
     expect(first.surfaces.map((surface) => surface.id)).toEqual([
@@ -114,6 +117,14 @@ describe('three-surface Butlers POC model', () => {
     expect(serialized).not.toContain('private-source-marker');
     expect(serialized).not.toContain('private-test-marker');
     expect(serialized).not.toContain('owner-approved-intent-marker');
+
+    writeFileSync(
+      join(repoRoot, 'src/butlers/identity.py'),
+      'def canonical_identity():\n    return "changed-working-tree-bytes"\n',
+      'utf8',
+    );
+    const changedBytes = buildButlersPocModel(input);
+    expect(changedBytes.evaluation.snapshot).not.toBe(first.evaluation.snapshot);
   });
 
   it('fails closed when a required mapped artifact is absent', () => {
@@ -136,5 +147,43 @@ describe('three-surface Butlers POC model', () => {
         artifactPath: 'tests/core/test_identity.py',
       }),
     );
+  });
+
+  it('fails closed when the selected intent no longer carries its approval contract', () => {
+    const mutations = [
+      {
+        path: 'docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md',
+        contents: '# WhatsApp identity design\nStatus: Draft\n',
+      },
+      {
+        path: 'openspec/changes/repair-whatsapp-identity-reconciliation/proposal.md',
+        contents: '# proposal without owner sign-off\n',
+      },
+      {
+        path: 'openspec/changes/repair-whatsapp-identity-reconciliation/specs/switchboard-identity/spec.md',
+        contents: '# unrelated requirement\n',
+      },
+    ] as const;
+
+    for (const mutation of mutations) {
+      const repoRoot = butlersFixture();
+      writeFileSync(join(repoRoot, mutation.path), mutation.contents, 'utf8');
+      expect(() =>
+        buildButlersPocModel({
+          repoRoot,
+          repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
+          observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
+          evaluation: {
+            snapshot: 'butlers@c1389423',
+            asOf: '2026-08-29T12:00:00Z',
+          },
+        }),
+      ).toThrowError(
+        expect.objectContaining({
+          kind: 'required-artifact-semantic-mismatch',
+          artifactPath: mutation.path,
+        }),
+      );
+    }
   });
 });
