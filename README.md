@@ -4,27 +4,24 @@
 what should be true, evidence shows what is true, and agent fleets do bounded
 work to close the difference — with the difference always rendered honestly.**
 
-> **Current stage: Capability 1 implementation authorized.**
-> What exists is adopted doctrine, owner-approved engineering policy, a
-> foundational-contract corpus whose launch-path waves (RFC 0001–0009)
-> the owner **accepted by act on 2026-08-17** (the remaining waves still
-> candidate), one **adopted** behavioral specification — the Capability 1
-> OpenSpec change `project-registration-and-honest-shape-visibility`,
-> adopted by the owner (act dated 2026-08-20) at exact digests
-> (`.syzygy/governance/decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`)
-> — and, since the owner's act of **2026-08-21**
-> (`decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`), an
-> **authorized Capability 1 implementation**: plan-first, code in
-> ordinary root paths, never in the governed `openspec/**`/`.syzygy/**`
-> plane. Capability 1 only; production deployment and any release remain
-> separate future decisions. See
-> [`PROJECT-STATUS.md`](PROJECT-STATUS.md) for the exact gate state.
+> **Current stage: bounded Three-Surface POC mode (non-release).**
+> Capability 1 and its local runtime are implemented groundwork. On
+> 2026-08-29 the owner directly authorized a deliberately bounded product
+> experiment across Polaris, Trajectory, and Orrery, using Butlers as the
+> first external proving project. For this experiment only, that direction
+> supersedes the prior Capability-1-only and no-external-onboarding limits;
+> it does not authorize production release or deployment, autonomous intent
+> adoption, Syzygy-authored implementation code, broad remote access, or
+> changes to adopted doctrine or accepted contracts. See the concise
+> [owner-direction record](.syzygy/governance/decisions/THREE-SURFACE-POC-MODE-DIRECTION.md)
+> and [`PROJECT-STATUS.md`](PROJECT-STATUS.md).
 
-Concretely, the intended shape is a **local-first daemon with a browser
-app**, serving the owner visually and agents through machine-queryable
-endpoints. Nothing of it is built yet (see *Current stage* above); the
-platform commitment itself is doctrine-level, while language, framework, and
-database are deliberately unchosen.
+Concretely, Syzygy has a TypeScript/Node local daemon, a server-rendered human
+view, and an authenticated machine endpoint for Capability 1. The POC now asks
+the narrower product question: can one shared project model make one real
+capability substantially easier to understand and operate through all three
+surfaces? The POC command and surfaces are not runnable yet; the active bounded
+backlog is delivering that vertical slice.
 
 ## Why it exists
 
@@ -80,12 +77,13 @@ flowchart LR
     V -.->|evidence may indict the spec| I
 ```
 
-This diagram, like everything on this page, describes **intended shape,
-not current capability** — nothing below the specification layer exists
-yet. The loop is human-triggered. Syzygy writes project content directly
-only under `openspec/**` and `.syzygy/**`; it never writes implementation
-code, and it reaches every other system through typed, explicitly
-authorized adapters (VIS-5).
+Capability 1 implements trusted observation groundwork, but the complete loop
+shown here is not current capability. The Three-Surface POC is the first
+bounded attempt to exercise one end-to-end slice. The loop remains
+human-triggered. Syzygy writes project content directly only under
+`openspec/**` and `.syzygy/**`; it never writes implementation code, and it
+reaches every other system through typed, explicitly authorized adapters
+(VIS-5).
 
 ## What is authoritative here
 
@@ -98,8 +96,8 @@ Authority is **typed** — each question has one owning home:
 | Engineering and evidence bar | [`.syzygy/governance/policies/craft-and-care/`](.syzygy/governance/policies/craft-and-care/) | **Owner-approved** (D2); clause-level force begins at foundational-contract acceptance |
 | Load-bearing technical contracts | [`.syzygy/governance/contracts/`](.syzygy/governance/contracts/) | **RFC 0001–0009 accepted as of 2026-08-17** — the Wave A/B acts, modules installed at `contracts/rfcs/` ([`PROJECT-STATUS.md`](PROJECT-STATUS.md) owns this state); RFC 0010–0011 remain **candidate** in `contracts/candidates/` |
 | Intended placement | [`.syzygy/map/topology-candidates/`](.syzygy/map/topology-candidates/) | **Candidate** |
-| Required observable behavior | `openspec/` | **Adopted** — the one change `changes/project-registration-and-honest-shape-visibility/`, adopted by the owner (act dated 2026-08-20) at the exact digests in `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`; implementation separately unauthorized |
-| What currently exists | Code, tests, CI, runtime | Nothing exists yet |
+| Required observable behavior | `openspec/` | **Adopted for Capability 1** — the one change `changes/project-registration-and-honest-shape-visibility/`, adopted by the owner (act dated 2026-08-20) at the exact digests in `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`; the POC is explicitly experimental, not a new conformance claim |
+| What currently exists | Code, tests, CI, runtime | Capability 1 domain/runtime implementation and its evidence; Three-Surface POC implementation is in progress |
 
 Generated indexes, summaries, and this README are presentation — they cite
 authority and are never themselves authoritative.
@@ -156,18 +154,19 @@ truth.
 
 ## What is not implemented
 
-Everything. There is no daemon, no UI, no graph store, no adapter, no 3D
-view, no endpoint, and no chosen language, framework, or database — stack
-choices require an accepted contract. No claim of alignment, convergence, or
-regeneration capability is intended by this repository — doctrine (VIS-2)
-forbids the class — and any document appearing to make one is wrong by that
-doctrine and should be reported as a finding, not read as a promise.
+There is no released Three-Surface product, generalized project graph,
+production deployment, remote or multi-user service, general Beads adapter,
+general spatial-layout engine, or broad project onboarding. The current POC
+command and end-to-end Butlers story are not runnable until their bounded
+implementation items land. No claim of alignment, convergence, regeneration,
+deployment health, conformance, or release is intended; without current
+evidence those relationships remain Unknown (VIS-2).
 
 ## License
 
 **MIT** — ruled by the owner 2026-08-18 (P-14), granted by the root
 [`LICENSE`](LICENSE) file. The decision record is
 [`.syzygy/governance/decisions/LICENSE-CHOICE-DECISION.md`](.syzygy/governance/decisions/LICENSE-CHOICE-DECISION.md).
-A license grant does not open an implementation backlog: contribution
-posture stays governed by [`CONTRIBUTING.md`](CONTRIBUTING.md) and the
-current lifecycle boundary (specification defining — no implementation).
+A license grant does not broaden the bounded POC authorization: contribution
+posture stays governed by [`CONTRIBUTING.md`](CONTRIBUTING.md) and the current
+lifecycle boundary recorded in [`PROJECT-STATUS.md`](PROJECT-STATUS.md).

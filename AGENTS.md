@@ -3,7 +3,7 @@
 This file is **repository operating procedure** — never citable as authority.
 What the project *is* lives in `README.md` and `.syzygy/intent/OVERVIEW.md`.
 
-## Current lifecycle stage: Capability 1 implementation authorized
+## Current lifecycle stage: bounded Three-Surface POC mode
 
 Doctrine is adopted; engineering policy is owner-approved. The Wave A/B
 contracts and the CC-SPEC/CC-IMPACT craft policies are **accepted/in force
@@ -17,14 +17,23 @@ behavioral authority for Capability 1 and supersedes the charter for
 required behaviour. The owner's **implementation-authorization act —
 dated 2026-08-21, recorded at
 `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`** —
-authorizes implementation planning and implementation for **Capability 1
-only**: plan first (`docs/CAPABILITY-1-IMPLEMENTATION-PLAN.md` names the
+authorized implementation planning and implementation for **Capability 1**:
+plan first (`docs/CAPABILITY-1-IMPLEMENTATION-PLAN.md` names the
 selected stack and layout), bounded Beads backlog, code in ordinary root
 implementation paths (`apps/**`, `packages/**`, tooling, root
 manifests) — **never inside `openspec/**` or `.syzygy/**`**, which stay
 the governed project-artifact plane. The in-force craft policies and the
-vendored `th-engineering` standards govern implementation; every other
-capability's authoring and implementation stay forbidden.
+vendored `th-engineering` standards govern implementation.
+
+The owner's direct direction dated **2026-08-29**, recorded at
+`decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`, now authorizes a bounded,
+non-release proof of concept across Polaris, Trajectory, and Orrery using one
+external Butlers repository. For this experiment only, it supersedes the
+Capability-1-only and no-external-project-onboarding restrictions. It does not
+authorize production release/deployment, autonomous intent adoption,
+Syzygy-authored implementation code, broad remote access, multi-user support,
+or changes to adopted doctrine or accepted contracts. All other prohibitions
+and truth/evidence boundaries below remain in force.
 
 ## Where authority lives
 
@@ -76,7 +85,7 @@ Load the minimum for one correct decision; never "read everything."
 | A doctrine question | the one doctrine file, via the `heart-and-soul` skill |
 | An engineering-bar question | the one craft policy that owns it |
 | A contract question | **`contracts/candidates/TASK-ROUTER.md`** — the one generated router; context-budget measurement stays with `06-CONTEXT-LOAD-MAP.md` / `scripts/context_load.py` |
-| "May I implement X?" | If X is a Capability 1 requirement: **yes** — under `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md` (plan-first, trace to CAP1-REQ IDs, verification per requirement). Anything else: *no* — `contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` |
+| "May I implement X?" | Capability 1 remains authorized under `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`. The bounded Three-Surface POC and its one Butlers proving slice are additionally authorized by `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`. Anything outside both scopes remains forbidden. |
 | "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; Capability 1's spec is **authored and adopted**; every other capability's authoring stays forbidden |
 | The Capability 1 specification | the change `openspec/changes/project-registration-and-honest-shape-visibility/` — **ADOPTED by the owner (act dated 2026-08-20)** at the exact digests in `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`; the seven adopted artifacts may not be edited (an edit breaks the adopted digests — route changes through CC-REV-2's amendment path); its warrants-union is generated (`build_capability_1_spec_dependencies.py`) |
 | Current status | `PROJECT-STATUS.md` |
@@ -97,10 +106,12 @@ path, never authority.
 Do **not**: place implementation code inside `openspec/**` or
 `.syzygy/**` (the governed plane — Capability 1 code lives in the plan's
 named root paths, `apps/**`/`packages/**`/tooling, per the 2026-08-21
-authorization act); implement, plan, or backlog **anything beyond
-Capability 1** — no other capability, no deferred Waves C1/C2/D1/D2, no
-substantive Mission Control, no production deployment, no
-external-project onboarding; create any OpenSpec changeset **other than
+authorization act); implement, plan, or backlog anything beyond Capability 1
+**except the eight-item Three-Surface POC authorized on 2026-08-29**; extend
+that POC beyond one configured Butlers repository; implement deferred Waves
+C1/C2/D1/D2 or substantive Mission Control; perform production deployment,
+release, broad remote access, or multi-user support; allow Syzygy to write
+implementation code; autonomously adopt intent; create any OpenSpec changeset **other than
 the one adopted Capability 1 change**
 (`project-registration-and-honest-shape-visibility` — adopted at exact
 digests, `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`), or edit
@@ -169,13 +180,13 @@ prints coverage).
 
 ## Beads scope in this phase
 
-`bd` tracks process housekeeping **plus the bounded Capability 1
-implementation backlog** the 2026-08-21 authorization act permits —
-issues trace to CAP1 requirement IDs and stay within Capability 1; no
-other capability's issues, epics, or backlog. Unknowns become open
-questions in `decisions/PENDING-OWNER-DECISIONS.md`. Commits land at
-stable gates; **never commit a normative artifact while its adoption
-gate is unresolved.**
+`bd` tracks process housekeeping, the bounded Capability 1 backlog, **and at
+most eight outcome-oriented Three-Surface POC items** authorized on 2026-08-29.
+POC shared-model changes have WIP one. Apart from the initial mode-switch item,
+each POC item must alter the runnable demonstration or falsify a named product
+assumption. Unknowns remain explicit; they do not authorize synthetic positive
+evidence. Commits land at stable gates; **never commit a normative artifact
+while its adoption gate is unresolved.**
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
 ## Beads Issue Tracker

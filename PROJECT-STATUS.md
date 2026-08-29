@@ -1,6 +1,6 @@
 # Project status
 
-> **As-of: 2026-08-21** (the commit introducing this revision —
+> **As-of: 2026-08-29** (the commit introducing this revision —
 > `git log -1 --format=%h PROJECT-STATUS.md`). A hand-authored pointer page:
 > it **must not be the sole source** for any fact it states. Each row cites
 > the record that owns it, and where they disagree the record wins and this
@@ -13,26 +13,23 @@
 
 ## Lifecycle stage
 
-**Capability 1 implementation authorized.** The specification was
-authored under the owner's 2026-08-20 launch decision, carried through
-its bounded review cycle (RS-1…RS-5,
-`contracts/candidates/round-2026-08k/`), and **adopted by the owner —
-act dated 2026-08-20, recorded verbatim at
-`decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`** — at the exact
-seven digests that record quotes (VIS-4; CC-SPEC-10). The owner then
-performed the **implementation-authorization act — dated 2026-08-21,
-recorded verbatim at
-`decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`** —
-authorizing implementation planning and implementation for
-**Capability 1 only**: one concise plan first, stack/layout delegated to
-planning (with named escalation triggers back to the owner), a bounded
-Beads backlog, code in ordinary root implementation paths (`apps/**`,
-`packages/**`, tooling; never in `openspec/**` or `.syzygy/**`), under
-the in-force craft policies and vendored `th-engineering` standards,
-within the P-35 constraints and P-45/A6 envelope. Production
-deployment, external-project onboarding, and broader release remain
-separate future decisions. The Administration 1 `NOT READY` verdict
-stands unaltered as diagnostic evidence.
+**Bounded Three-Surface POC mode (non-release).** Capability 1 and its local
+runtime are implemented trusted groundwork. On 2026-08-29 the owner directly
+authorized a deliberately bounded proof of concept across Polaris,
+Trajectory, and Orrery, using Butlers as the initial external proving project.
+For this experiment only, the direction supersedes the Capability-1-only and
+no-external-project-onboarding restrictions. It authorizes implementation
+outside Capability 1 only where required by the experiment; it does not amend
+doctrine, accepted contracts, or the adopted Capability 1 specification.
+
+The POC remains local, single-project, file-backed, human-triggered, and
+experimental. It does not authorize production release or deployment,
+autonomous adoption of intent, Syzygy-authored implementation code, broad
+remote access, or multi-user support. Desired, execution, and observed state
+remain distinct; no evidence means Unknown; activity or merge state is never
+intent satisfaction; human and machine views consume one shared fact model;
+every positive claim has resolvable provenance. The owning record is
+`decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`.
 
 ## The launch path, in one table
 
@@ -52,6 +49,7 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 | Owner launch decision | **Made 2026-08-20** — Capability 1 specification authoring authorized, with the `NOT READY` verdict in hand and accepted as diagnostic evidence; the P-48 stop-condition cycle ends early by the owner deciding directly. Specification definition only — no implementation, no implementation planning. | `decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md` |
 | OpenSpec (`openspec/`) | **One change, ADOPTED: `project-registration-and-honest-shape-visibility`** (schema `spec-driven`, OpenSpec pinned 1.9.0) — proposal, spec (42 requirements, CAP1-REQ-001…064), design, both coverage tables, and the generated dependency declaration, **adopted by the owner (act dated 2026-08-20) at the seven exact digests the act record quotes**; `tasks.md` and the review records are lifecycle/evidence material outside the adopted bytes. The accepted specification supersedes the Capability 1 charter for required behaviour. | `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md` (the act); the change directory; evidence chain `contracts/candidates/round-2026-08k/` |
 | Implementation | **AUTHORIZED for Capability 1 — act dated 2026-08-21.** Plan first (stack, layout, slices→CAP1-REQ mapping, testing/evidence, review classes), then a bounded Beads backlog and code in ordinary root paths (`apps/**`, `packages/**`, tooling) — never in the governed plane. Capability 1 only; production deployment, onboarding, and release stay separate future decisions. | `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md` |
+| Three-Surface POC | **AUTHORIZED 2026-08-29, non-release and bounded.** One live Butlers proving project; up to eight outcome-oriented work items; WIP one for shared-model changes; one product review, one consolidated repair, one confirmation. The experiment may cross the prior Capability 1 and external-onboarding limits only within the recorded scope. | `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md` |
 
 **Four owner acts have been performed, all 2026-08-17:** Wave A, Wave B,
 and craft acts 6 + 7.
@@ -129,12 +127,15 @@ The remaining launch path, in order — each step's owning record governs:
    *(An earlier revision of this step said the act was "not prepared,
    owned by no packet" — stale from the moment the packet was prepared
    later that day; corrected here per the act's instruction 2.)*
-7. **Implement Capability 1** — in progress under the act's terms: one
-   concise plan first (`docs/CAPABILITY-1-IMPLEMENTATION-PLAN.md`), a
-   bounded Beads backlog, then code through the authorized worker
-   workflow, tracing to CAP1 requirement IDs with verification per
-   requirement. Capability 1 only; the adopted specification is the
-   behavioral authority.
+7. ~~**Implement Capability 1**~~ — complete end-to-end, including the local
+   runtime and its bounded hardening leaves. The adopted specification remains
+   its behavioral authority.
+8. **Run the bounded Three-Surface POC** — in progress under the owner's
+   2026-08-29 direction. The next deliverable is one command that starts a
+   local demonstration against Butlers and serves minimal Polaris,
+   Trajectory, Orrery, and authenticated JSON from one shared experimental
+   fact model. Until that item lands, the command and three-surface story are
+   not runnable.
 
 ## How to verify this page
 
