@@ -10,6 +10,9 @@ export default defineConfig({
       '@syzygy/cap1-daemon': fileURLToPath(
         new URL('./packages/cap1-daemon/src/index.ts', import.meta.url),
       ),
+      '@syzygy/three-surface-poc-core': fileURLToPath(
+        new URL('./packages/three-surface-poc-core/src/index.ts', import.meta.url),
+      ),
     },
   },
   test: {
@@ -26,6 +29,20 @@ export default defineConfig({
         test: {
           name: '@syzygy/cap1-daemon',
           include: ['packages/cap1-daemon/src/**/*.test.ts'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: '@syzygy/three-surface-poc-core',
+          include: ['packages/three-surface-poc-core/src/**/*.test.ts'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: '@syzygy/three-surface-poc-app',
+          include: ['apps/three-surface-poc/src/**/*.test.ts'],
         },
       },
     ],

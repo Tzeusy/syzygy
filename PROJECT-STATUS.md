@@ -131,11 +131,12 @@ The remaining launch path, in order — each step's owning record governs:
    runtime and its bounded hardening leaves. The adopted specification remains
    its behavioral authority.
 8. **Run the bounded Three-Surface POC** — in progress under the owner's
-   2026-08-29 direction. The next deliverable is one command that starts a
-   local demonstration against Butlers and serves minimal Polaris,
-   Trajectory, Orrery, and authenticated JSON from one shared experimental
-   fact model. Until that item lands, the command and three-surface story are
-   not runnable.
+   2026-08-29 direction. The first read-only slice is runnable with the one
+   command in `docs/THREE-SURFACE-POC.md`: it observes one named Butlers
+   capability and serves minimal Polaris, Trajectory, Orrery, and
+   authenticated JSON from one shared experimental fact model. Work
+   materialization, worker/change observation, and test-evidence ingestion
+   remain open; those relationships render Unknown.
 
 ## How to verify this page
 

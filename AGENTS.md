@@ -228,6 +228,20 @@ resolve and retry until it succeeds.
 
 ## Notes to self
 
+### Three-Surface POC architecture
+
+- The bounded POC lives in `packages/three-surface-poc-core/` (one concrete,
+  immutable Butlers graph) and `apps/three-surface-poc/` (SSR HTML plus
+  authenticated `GET /api/poc`). Both human and machine routes consume the
+  same model instance; do not split surface truth stores.
+- `npm ci && npm run poc -- --repo /home/tze/GitHub/butlers` is the fresh
+  checkout command. Observation is fixed to five configured intent/code/test
+  files, outputs hashes and metadata only, and writes credentials solely to an
+  OS-temp state directory unless `--state-dir` is explicit.
+- The first slice intentionally keeps the work item, test-run evidence, live
+  runtime relationship, and unmapped code region Unknown. Later POC items may
+  raise only the relationship whose authoritative artifact they actually add.
+
 ### Capability 1 implementation status
 
 **Complete end-to-end (2026-08-23), with the first runtime-hardening leaves
@@ -247,15 +261,15 @@ GET and authenticated machine request, wire-parity sweep 7/7. Runtime
 review cycle: R-RT review **CONFIRM WITH EXCEPTIONS** at f0a0f45 (one
 non-blocking finding RTF-1), one repair (00d6020), confirmation
 **CONFIRMED** — records in `docs/reviews/R-RT-*.md`. Current verified
-denominator: 53 unit/conformance files with 417 tests, plus 8 system files
+denominator including the POC slice: 56 unit/conformance files with 422 tests,
+plus 8 system files
 with 33 tests when the guarded fresh-clone case is enabled. Node floor is
 >=22.15 (Node 20 is EOL); CI runs Node 24.
 
 Known honest gaps (follow-up bead, not defects): pipeline does not yet
 compute discoverability findings / authority exposures (page renders
 disclosed absence); `evaluateProject` runs once at startup (snapshot
-semantics, as-of disclosed); `PROJECT-STATUS.md` §7 still says "in progress"
-pending a governance-page pass. The snapshot/coverage/discoverability chain
+semantics, as-of disclosed). The snapshot/coverage/discoverability chain
 remains blocked on human gate `syzygy-u2a.1`: a lawful independently kept
 RFC5-25 consent-audit source must be identified before repository observation
 can be authorized.
@@ -286,7 +300,7 @@ can be authorized.
 - **No-build Vitest seam**: root `test.projects` must alias both
   `@syzygy/cap1-core` and `@syzygy/cap1-daemon` to source. Built `dist/`
   output can mask a missing alias, so verify after `npm ci` with every project
-  `dist/` absent; the current denominator is 53 files / 417 tests.
+  `dist/` absent; the pre-POC denominator was 53 files / 417 tests.
 
 ### Open follow-up work
 

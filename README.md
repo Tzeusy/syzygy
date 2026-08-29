@@ -20,8 +20,8 @@ Concretely, Syzygy has a TypeScript/Node local daemon, a server-rendered human
 view, and an authenticated machine endpoint for Capability 1. The POC now asks
 the narrower product question: can one shared project model make one real
 capability substantially easier to understand and operate through all three
-surfaces? The POC command and surfaces are not runnable yet; the active bounded
-backlog is delivering that vertical slice.
+surfaces? The first read-only Butlers slice is runnable; work materialization,
+worker progress, and verification evidence remain later bounded items.
 
 ## Why it exists
 
@@ -104,6 +104,22 @@ authority and are never themselves authoritative.
 
 ## Start here
 
+### Run the first Three-Surface slice
+
+From a fresh Syzygy checkout, one command installs dependencies, builds the
+bounded POC, and starts it against the local Butlers proving repository:
+
+```sh
+npm ci && npm run poc -- --repo /home/tze/GitHub/butlers
+```
+
+The daemon binds only to loopback and prints the human URL plus the
+authenticated machine endpoint and credential-file location. See
+[`docs/THREE-SURFACE-POC.md`](docs/THREE-SURFACE-POC.md) for the ten-minute
+first-slice walkthrough and its deliberately absent relationships.
+
+### Project source map
+
 **Unfamiliar word?** Which glossary depends on what kind of word it is:
 
 | Kind of word | Where |
@@ -156,9 +172,9 @@ truth.
 
 There is no released Three-Surface product, generalized project graph,
 production deployment, remote or multi-user service, general Beads adapter,
-general spatial-layout engine, or broad project onboarding. The current POC
-command and end-to-end Butlers story are not runnable until their bounded
-implementation items land. No claim of alignment, convergence, regeneration,
+general spatial-layout engine, or broad project onboarding. The first POC
+slice is read-only: it does not yet materialize work, observe a worker change,
+or ingest a test-run artifact. No claim of alignment, convergence, regeneration,
 deployment health, conformance, or release is intended; without current
 evidence those relationships remain Unknown (VIS-2).
 
