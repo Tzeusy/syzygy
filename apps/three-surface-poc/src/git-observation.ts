@@ -29,7 +29,9 @@ export function observeGitRepository(root: string): GitObservation {
     '--untracked-files=all',
   ]);
   const changedPaths = [
-    ...nulSeparatedPaths(readGit(root, ['diff', '--name-only', '-z', 'HEAD', '--'])),
+    ...nulSeparatedPaths(
+      readGit(root, ['diff', '--no-renames', '--name-only', '-z', 'HEAD', '--']),
+    ),
     ...nulSeparatedPaths(
       readGit(root, ['ls-files', '--others', '--exclude-standard', '-z']),
     ),

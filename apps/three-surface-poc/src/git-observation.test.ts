@@ -1,7 +1,14 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  renameSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
@@ -24,6 +31,20 @@ function git(root: string, args: readonly string[]): string {
   }).trim();
 }
 
+function repositoryWithFile(relativePath: string): string {
+  const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-git-'));
+  cleanups.push(root);
+  const absolutePath = join(root, relativePath);
+  mkdirSync(dirname(absolutePath), { recursive: true });
+  writeFileSync(absolutePath, 'export const value = 1;\n', 'utf8');
+  git(root, ['init', '-q']);
+  git(root, ['config', 'user.email', 'poc-test@example.invalid']);
+  git(root, ['config', 'user.name', 'POC Test']);
+  git(root, ['add', relativePath]);
+  git(root, ['commit', '-qm', 'fixture']);
+  return root;
+}
+
 describe('read-only Git observation', () => {
   it('allows unrelated dirty files while protecting POC runtime inputs', () => {
     expect(pocObserverInputsAreClean({ changedPaths: ['.gitignore'] })).toBe(true);
@@ -44,15 +65,7 @@ describe('read-only Git observation', () => {
   });
 
   it('identifies clean and dirty states without refreshing the index', () => {
-    const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-git-'));
-    cleanups.push(root);
-    mkdirSync(join(root, 'src'));
-    writeFileSync(join(root, 'src', 'example.ts'), 'export const value = 1;\n', 'utf8');
-    git(root, ['init', '-q']);
-    git(root, ['config', 'user.email', 'poc-test@example.invalid']);
-    git(root, ['config', 'user.name', 'POC Test']);
-    git(root, ['add', 'src/example.ts']);
-    git(root, ['commit', '-qm', 'fixture']);
+    const root = repositoryWithFile('src/example.ts');
 
     const indexPath = join(root, '.git', 'index');
     const before = statSync(indexPath, { bigint: true }).mtimeNs;
@@ -71,5 +84,22 @@ describe('read-only Git observation', () => {
     expect(dirty.changedPaths).toEqual(['src/example.ts']);
     expect(dirty.worktreeMetadataDigest).not.toBe(clean.worktreeMetadataDigest);
     expect(afterDirty).toBe(before);
+  });
+
+  it('retains a protected source path when it is renamed out', () => {
+    const protectedPath = 'apps/three-surface-poc/src/main.ts';
+    for (const staged of [true, false]) {
+      const root = repositoryWithFile(protectedPath);
+      mkdirSync(join(root, 'notes'), { recursive: true });
+      if (staged) {
+        git(root, ['mv', protectedPath, 'notes/main.ts']);
+      } else {
+        renameSync(join(root, protectedPath), join(root, 'notes/main.ts'));
+      }
+
+      const observation = observeGitRepository(root);
+      expect(observation.changedPaths).toContain(protectedPath);
+      expect(pocObserverInputsAreClean(observation)).toBe(false);
+    }
   });
 });
