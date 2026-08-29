@@ -67,52 +67,23 @@ function provenanceList(item: PocEntity | PocRelationship): string {
   }
   return `<ul class="provenance">${item.provenance
     .map(
-      (provenance) => `<li>
-        <span>${escapeHtml(provenance.kind)}</span>
-        <code>${escapeHtml(provenance.source)}</code>
-        <code>${escapeHtml(provenance.revision)}</code>
-        ${provenance.digest === undefined ? '' : `<code>${escapeHtml(provenance.digest)}</code>`}
+      (provenance) => `<li data-parity-provenance>
+        <span data-parity-field="provenance-kind">${escapeHtml(provenance.kind)}</span>
+        <code data-parity-field="provenance-source">${escapeHtml(provenance.source)}</code>
+        <code data-parity-field="provenance-revision">${escapeHtml(provenance.revision)}</code>
+        ${provenance.digest === undefined ? '' : `<code data-parity-field="provenance-digest">${escapeHtml(provenance.digest)}</code>`}
       </li>`,
     )
     .join('')}</ul>`;
 }
 
-function entityParityTuple(entity: PocEntity): string {
-  return encodeURIComponent(
-    JSON.stringify([
-      'entity',
-      entity.id,
-      entity.kind,
-      entity.title,
-      entity.detail,
-      entity.epistemic,
-      entity.provenance,
-    ]),
-  );
-}
-
-function relationshipParityTuple(relationship: PocRelationship): string {
-  return encodeURIComponent(
-    JSON.stringify([
-      'relationship',
-      relationship.id,
-      relationship.kind,
-      relationship.from,
-      relationship.to,
-      relationship.statement,
-      relationship.epistemic,
-      relationship.provenance,
-    ]),
-  );
-}
-
 function entityRows(model: PocModel): string {
   return model.entities
     .map(
-      (entity) => `<tr id="${escapeHtml(entity.id)}" data-entity-id="${escapeHtml(entity.id)}" data-parity-tuple="${escapeHtml(entityParityTuple(entity))}">
-        <td><span class="kind">${escapeHtml(entity.kind)}</span></td>
-        <td><strong>${escapeHtml(entity.title)}</strong><br><small>${escapeHtml(entity.detail)}</small></td>
-        <td><span class="epistemic epistemic-${entity.epistemic.label.toLowerCase()}">${escapeHtml(entity.epistemic.label)}</span><br><small>${escapeHtml(epistemicText(entity))}</small></td>
+      (entity) => `<tr id="${escapeHtml(entity.id)}" data-entity-id="${escapeHtml(entity.id)}">
+        <td><span class="kind" data-parity-field="entity-kind">${escapeHtml(entity.kind)}</span></td>
+        <td><code data-parity-field="entity-id">${escapeHtml(entity.id)}</code><br><strong data-parity-field="entity-title">${escapeHtml(entity.title)}</strong><br><small data-parity-field="entity-detail">${escapeHtml(entity.detail)}</small></td>
+        <td><span class="epistemic epistemic-${entity.epistemic.label.toLowerCase()}" data-parity-field="epistemic-label">${escapeHtml(entity.epistemic.label)}</span><br><small data-parity-field="epistemic-explanation">${escapeHtml(epistemicText(entity))}</small></td>
         <td>${provenanceList(entity)}</td>
       </tr>`,
     )
@@ -122,11 +93,11 @@ function entityRows(model: PocModel): string {
 function relationshipRows(model: PocModel): string {
   return model.relationships
     .map(
-      (relationship) => `<tr id="${escapeHtml(relationship.id)}" data-relationship-id="${escapeHtml(relationship.id)}" data-parity-tuple="${escapeHtml(relationshipParityTuple(relationship))}">
-        <td><span class="kind">${escapeHtml(relationship.kind)}</span></td>
-        <td><a href="#${escapeHtml(relationship.from)}">${escapeHtml(relationship.from)}</a><br>→ <a href="#${escapeHtml(relationship.to)}">${escapeHtml(relationship.to)}</a></td>
-        <td>${escapeHtml(relationship.statement)}</td>
-        <td><span class="epistemic epistemic-${relationship.epistemic.label.toLowerCase()}">${escapeHtml(relationship.epistemic.label)}</span><br><small>${escapeHtml(epistemicText(relationship))}</small></td>
+      (relationship) => `<tr id="${escapeHtml(relationship.id)}" data-relationship-id="${escapeHtml(relationship.id)}">
+        <td><span class="kind" data-parity-field="relationship-kind">${escapeHtml(relationship.kind)}</span></td>
+        <td><code data-parity-field="relationship-id">${escapeHtml(relationship.id)}</code><br><a data-parity-field="relationship-from" href="#${escapeHtml(relationship.from)}">${escapeHtml(relationship.from)}</a><br>→ <a data-parity-field="relationship-to" href="#${escapeHtml(relationship.to)}">${escapeHtml(relationship.to)}</a></td>
+        <td><span data-parity-field="relationship-statement">${escapeHtml(relationship.statement)}</span></td>
+        <td><span class="epistemic epistemic-${relationship.epistemic.label.toLowerCase()}" data-parity-field="epistemic-label">${escapeHtml(relationship.epistemic.label)}</span><br><small data-parity-field="epistemic-explanation">${escapeHtml(epistemicText(relationship))}</small></td>
         <td>${provenanceList(relationship)}</td>
       </tr>`,
     )

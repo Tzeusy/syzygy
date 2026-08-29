@@ -85,6 +85,86 @@ function parityTuples(model: PocModel): string[] {
   ].sort();
 }
 
+function decodeHtmlText(text: string): string {
+  return text
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&#39;', "'")
+    .replaceAll('&amp;', '&');
+}
+
+function visibleField(row: string, field: string): string {
+  const match = new RegExp(`data-parity-field="${field}"[^>]*>([^<]*)</`).exec(row);
+  if (match?.[1] === undefined) {
+    throw new Error(`visible parity field missing: ${field}`);
+  }
+  return decodeHtmlText(match[1]);
+}
+
+function visibleProvenance(row: string): PocModel['entities'][number]['provenance'] {
+  return [...row.matchAll(/<li data-parity-provenance>([\s\S]*?)<\/li>/g)].map(
+    (match) => {
+      const item = match[1] ?? '';
+      const digestMatch = /data-parity-field="provenance-digest">([^<]*)</.exec(item);
+      return {
+        kind: visibleField(item, 'provenance-kind') as
+          | 'repository-file'
+          | 'git-revision'
+          | 'manual-mapping',
+        source: visibleField(item, 'provenance-source'),
+        revision: visibleField(item, 'provenance-revision'),
+        ...(digestMatch?.[1] === undefined
+          ? {}
+          : { digest: decodeHtmlText(digestMatch[1]) }),
+      };
+    },
+  );
+}
+
+function visibleEpistemic(row: string): PocModel['entities'][number]['epistemic'] {
+  const label = visibleField(row, 'epistemic-label');
+  const explanation = visibleField(row, 'epistemic-explanation');
+  return label === 'Observed'
+    ? { label: 'Observed', basis: explanation }
+    : { label: 'Unknown', reason: explanation };
+}
+
+function visibleParityTuples(html: string): string[] {
+  const entityRows = [
+    ...html.matchAll(/<tr[^>]*data-entity-id="[^"]+"[^>]*>([\s\S]*?)<\/tr>/g),
+  ].map((match) => {
+    const row = match[1] ?? '';
+    return JSON.stringify([
+      'entity',
+      visibleField(row, 'entity-id'),
+      visibleField(row, 'entity-kind'),
+      visibleField(row, 'entity-title'),
+      visibleField(row, 'entity-detail'),
+      visibleEpistemic(row),
+      visibleProvenance(row),
+    ]);
+  });
+  const relationshipRows = [
+    ...html.matchAll(
+      /<tr[^>]*data-relationship-id="[^"]+"[^>]*>([\s\S]*?)<\/tr>/g,
+    ),
+  ].map((match) => {
+    const row = match[1] ?? '';
+    return JSON.stringify([
+      'relationship',
+      visibleField(row, 'relationship-id'),
+      visibleField(row, 'relationship-kind'),
+      visibleField(row, 'relationship-from'),
+      visibleField(row, 'relationship-to'),
+      visibleField(row, 'relationship-statement'),
+      visibleEpistemic(row),
+      visibleProvenance(row),
+    ]);
+  });
+  return [...entityRows, ...relationshipRows].sort();
+}
+
 async function startPoc(model: PocModel): Promise<{
   readonly daemon: RunningDaemon;
   readonly token: string;
@@ -159,10 +239,7 @@ describe('three-surface POC routes', () => {
     expect(machineResponse.headers.get('content-type')).toBe('application/json');
     const wireModel = (await machineResponse.json()) as PocModel;
     expect(wireModel).toEqual(model);
-    const humanTuples = idsFromHtml(html, 'data-parity-tuple')
-      .map((tuple) => decodeURIComponent(tuple))
-      .sort();
-    expect(humanTuples).toEqual(parityTuples(wireModel));
+    expect(visibleParityTuples(html)).toEqual(parityTuples(wireModel));
   });
 
   it('escapes observed text before rendering it into HTML', () => {
