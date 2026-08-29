@@ -241,6 +241,10 @@ resolve and retry until it succeeds.
 - The first slice intentionally keeps the work item, test-run evidence, live
   runtime relationship, and unmapped code region Unknown. Later POC items may
   raise only the relationship whose authoritative artifact they actually add.
+- The launcher permits unrelated dirty Syzygy files (for example `.gitignore`)
+  but refuses uncommitted changes to the POC, reused Capability 1 runtime
+  packages, or root build manifests; keep that classification path-based and
+  covered by the real-Git regression test.
 
 ### Capability 1 implementation status
 
@@ -261,7 +265,7 @@ GET and authenticated machine request, wire-parity sweep 7/7. Runtime
 review cycle: R-RT review **CONFIRM WITH EXCEPTIONS** at f0a0f45 (one
 non-blocking finding RTF-1), one repair (00d6020), confirmation
 **CONFIRMED** — records in `docs/reviews/R-RT-*.md`. Current verified
-denominator including the POC slice: 57 unit/conformance files with 424 tests,
+denominator including the POC slice: 57 unit/conformance files with 425 tests,
 plus 8 system files
 with 33 tests when the guarded fresh-clone case is enabled. Node floor is
 >=22.15 (Node 20 is EOL); CI runs Node 24.

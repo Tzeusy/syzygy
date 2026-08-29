@@ -10,7 +10,10 @@ import {
 } from '@syzygy/three-surface-poc-core';
 
 import { parsePocCli } from './cli.js';
-import { observeGitRepository } from './git-observation.js';
+import {
+  observeGitRepository,
+  pocObserverInputsAreClean,
+} from './git-observation.js';
 import { pocRoutes } from './routes.js';
 
 const USAGE = `syzygy three-surface POC (local, non-release)
@@ -47,14 +50,18 @@ if (parsed.kind === 'help') {
     try {
       const repository = observeGitRepository(repoRoot);
       const observer = observeGitRepository(process.cwd());
-      if (!observer.clean) {
+      if (!pocObserverInputsAreClean(observer)) {
         throw new Error('observer-checkout-dirty');
       }
       repositoryRevision = repository.revision;
       observerRevision = observer.revision;
       workingTreeDigest = repository.worktreeMetadataDigest;
-    } catch {
-      process.stderr.write('syzygy POC: a required git revision could not be observed\n');
+    } catch (cause) {
+      process.stderr.write(
+        cause instanceof Error && cause.message === 'observer-checkout-dirty'
+          ? 'syzygy POC: POC runtime inputs have uncommitted changes\n'
+          : 'syzygy POC: a required git revision could not be observed\n',
+      );
       process.exitCode = 1;
       repositoryRevision = '';
       observerRevision = '';

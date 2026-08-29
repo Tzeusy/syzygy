@@ -4,7 +4,10 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { observeGitRepository } from './git-observation.js';
+import {
+  observeGitRepository,
+  pocObserverInputsAreClean,
+} from './git-observation.js';
 
 const cleanups: string[] = [];
 
@@ -22,6 +25,24 @@ function git(root: string, args: readonly string[]): string {
 }
 
 describe('read-only Git observation', () => {
+  it('allows unrelated dirty files while protecting POC runtime inputs', () => {
+    expect(pocObserverInputsAreClean({ changedPaths: ['.gitignore'] })).toBe(true);
+    expect(
+      pocObserverInputsAreClean({
+        changedPaths: ['apps/three-surface-poc/src/main.ts'],
+      }),
+    ).toBe(false);
+    expect(
+      pocObserverInputsAreClean({
+        changedPaths: ['packages/three-surface-poc-core/src/model.ts'],
+      }),
+    ).toBe(false);
+    expect(
+      pocObserverInputsAreClean({ changedPaths: ['packages/cap1-daemon/src/server.ts'] }),
+    ).toBe(false);
+    expect(pocObserverInputsAreClean({ changedPaths: ['package.json'] })).toBe(false);
+  });
+
   it('identifies clean and dirty states without refreshing the index', () => {
     const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-git-'));
     cleanups.push(root);
@@ -38,6 +59,7 @@ describe('read-only Git observation', () => {
     const clean = observeGitRepository(root);
     const afterClean = statSync(indexPath, { bigint: true }).mtimeNs;
     expect(clean.clean).toBe(true);
+    expect(clean.changedPaths).toEqual([]);
     expect(clean.revision).toMatch(/^[0-9a-f]{40}$/);
     expect(clean.worktreeMetadataDigest).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(afterClean).toBe(before);
@@ -46,6 +68,7 @@ describe('read-only Git observation', () => {
     const dirty = observeGitRepository(root);
     const afterDirty = statSync(indexPath, { bigint: true }).mtimeNs;
     expect(dirty.clean).toBe(false);
+    expect(dirty.changedPaths).toEqual(['src/example.ts']);
     expect(dirty.worktreeMetadataDigest).not.toBe(clean.worktreeMetadataDigest);
     expect(afterDirty).toBe(before);
   });
