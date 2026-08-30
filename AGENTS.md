@@ -107,7 +107,9 @@ Do **not**: place implementation code inside `openspec/**` or
 `.syzygy/**` (the governed plane — Capability 1 code lives in the plan's
 named root paths, `apps/**`/`packages/**`/tooling, per the 2026-08-21
 authorization act); implement, plan, or backlog anything beyond Capability 1
-**except the eight-item Three-Surface POC authorized on 2026-08-29**; extend
+**except the Three-Surface POC authorized on 2026-08-29 and its
+improvement cycles authorized on 2026-08-30
+(`decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md`)**; extend
 that POC beyond one configured Butlers repository; implement deferred Waves
 C1/C2/D1/D2 or substantive Mission Control; perform production deployment,
 release, broad remote access, or multi-user support; allow Syzygy to write
@@ -186,11 +188,14 @@ prints coverage).
 
 ## Beads scope in this phase
 
-`bd` tracks process housekeeping, the bounded Capability 1 backlog, **and at
-most eight outcome-oriented Three-Surface POC items** authorized on 2026-08-29.
-POC shared-model changes have WIP one. Apart from the initial mode-switch item,
-each POC item must alter the runnable demonstration or falsify a named product
-assumption. Unknowns remain explicit; they do not authorize synthetic positive
+`bd` tracks process housekeeping, the bounded Capability 1 backlog, the
+**closed eight-item Three-Surface POC** (2026-08-29), **and POC
+improvement-cycle items** (owner direction 2026-08-30,
+`decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md`): each cycle is
+review → repair beads derived only from recorded findings → confirmation,
+reported to the owner before the next cycle starts. POC shared-model changes
+have WIP one. Each POC item must alter the runnable demonstration or
+falsify/repair a named, recorded product finding. Unknowns remain explicit; they do not authorize synthetic positive
 evidence. Commits land at stable gates; **never commit a normative artifact
 while its adoption gate is unresolved.**
 
