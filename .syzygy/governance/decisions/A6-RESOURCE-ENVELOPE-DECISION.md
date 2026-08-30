@@ -47,7 +47,8 @@ question now has a concrete referent.
   assessment"* — that assessment is separate follow-on work, and its
   outcome is not presumed. Nothing in this record claims the V0 scope
   fits 2 hours/week; that is exactly the question the assessment must
-  answer honestly.
+  answer honestly. Performed at
+  [`A6-SCOPE-VS-CAPACITY-ASSESSMENT.md`](A6-SCOPE-VS-CAPACITY-ASSESSMENT.md).
 - **No registration, onboarding, or access occurs.** Registering either
   proving project awaits its own separately authorized workflow after
   the owner's launch decision.
