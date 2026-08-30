@@ -19,15 +19,27 @@ function singleHeader(
   return typeof value === 'string' ? value : undefined;
 }
 
+// Exposed only via `tailscale serve` (TLS-terminated at the tailnet edge,
+// proxying to the loopback-bound daemon), never a direct public bind — see
+// AGENTS.md "Hard prohibitions" (no broad remote access).
+const TAILNET_HOST = 'tzeusy.parrot-hen.ts.net' as const;
+
+function expectedOrigin(host: string): string {
+  return host === TAILNET_HOST ? `https://${host}` : `http://${host}`;
+}
+
 function browserRequestAllowed(
   headers: Readonly<Record<string, string | readonly string[] | undefined>>,
 ): boolean {
   const host = singleHeader(headers['host']);
-  if (host === undefined || !/^(?:127\.0\.0\.1|localhost):[0-9]+$/.test(host)) {
+  const hostAllowed =
+    host !== undefined &&
+    (/^(?:127\.0\.0\.1|localhost):[0-9]+$/.test(host) || host === TAILNET_HOST);
+  if (!hostAllowed) {
     return false;
   }
   const origin = singleHeader(headers['origin']);
-  return origin === undefined || origin === `http://${host}`;
+  return origin === undefined || origin === expectedOrigin(host);
 }
 
 function epistemicText(
