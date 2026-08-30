@@ -1852,6 +1852,23 @@ def _head_commit():
         return None
 
 
+class _MutStr(str):
+    """A selftest fixture base string whose `.replace()` raises instead of
+    silently discriminating nothing when `old` no longer occurs (syzygy-e84
+    — this bit twice for real: a no-op replace once reported a false pass).
+    Every fixture below is built by chaining `.replace()` off one of a
+    handful of root strings, so wrapping just the roots — `good`,
+    `good_head`, `good_real` — propagates the guard through every fixture
+    derived from them without touching each of the ~200 call sites."""
+
+    def replace(self, old, new, count=-1):
+        result = str.replace(self, old, new, count)
+        if result == self:
+            raise AssertionError(
+                f"mutation did not apply: {old!r} not found")
+        return _MutStr(result)
+
+
 def selftest():
     import tempfile
     fails = []
@@ -1884,7 +1901,7 @@ def selftest():
     sha = "0" * 40
     inst = "1" * 64
     param = "2" * 64
-    good = GOOD.format(sha=sha, inst=inst, param=param)
+    good = _MutStr(GOOD.format(sha=sha, inst=inst, param=param))
 
     case("well-formed full-template record validates (git checks off)",
          good, None)
@@ -2285,12 +2302,12 @@ def selftest():
         _blob_v = git_show(head, INSTRUMENT_DEFAULT)
         _iv_v = (re.search(rb"^\s*effective_version:\s*(v[\d.]+)",
                            _blob_v, re.M) if _blob_v else None)
-        good_head = GOOD.format(sha=head, inst=inst, param=param)
+        good_head = _MutStr(GOOD.format(sha=head, inst=inst, param=param))
         if _iv_v:
-            good_head = re.sub(r"Instrument version: v[\d.]+",
+            good_head = _MutStr(re.sub(r"Instrument version: v[\d.]+",
                                f"Instrument version: "
                                f"{_iv_v.group(1).decode()}",
-                               good_head, count=1)
+                               good_head, count=1))
         # RD41-11: built from a REAL commit, so the mutation is what
         # makes the assertion true. The v1.13 form mutated `good`, whose
         # template sha is a `0`*40 placeholder that does not exist
@@ -2343,13 +2360,13 @@ def selftest():
             # Version-agnostic substitution (the RD34-05 lesson): the
             # template's version literal must never strand this builder
             # across a bump, so it is matched by shape, not by value.
-            good_real = (re.sub(
+            good_real = (_MutStr(re.sub(
                 r"Instrument version: v[\d.]+",
                 f"Instrument version: {_iv_m.group(1).decode()}",
                 GOOD.format(
                     sha=head, inst=sha256_bytes(blob_head),
                     param=sha256_bytes(param_block_bytes(blob_head))),
-                count=1)
+                count=1))
                 if _iv_m else None)
         else:
             good_real = None
@@ -3000,8 +3017,8 @@ def selftest():
             ("Deferred count",
              "Deferred count (owner-deferred findings this "
              "administration): 0", "no `Deferred count:` field")):
-        _base = "\n".join(l for l in good.split("\n")
-                           if not l.startswith(_lbl))
+        _base = _MutStr("\n".join(l for l in good.split("\n")
+                                  if not l.startswith(_lbl)))
         case(f"`{_lbl}:` carried only inside a `<details>` block is an "
              "absent field, not a supplied value (RD41-02)",
              _base.replace("GATE VERDICT:",
@@ -3107,8 +3124,8 @@ def selftest():
     # its counter. Each carrier below hid a declared field from the reader
     # while the validator read it as the record's own.
     _e3 = "E3 reopen-list: empty"
-    _no_e3 = "\n".join(l for l in good.split("\n")
-                       if not l.startswith("E3 reopen-list"))
+    _no_e3 = _MutStr("\n".join(l for l in good.split("\n")
+                               if not l.startswith("E3 reopen-list")))
     for _open, _close, _name in (
             ('<div style="display:none">', "</div>", "div"),
             ('<p style="display:none">', "</p>", "p"),
