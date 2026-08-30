@@ -42,12 +42,43 @@ REPAIR_ROW_RE = re.compile(
     r"\s*(covered:[^|]+|unknown-uncovered|believed-not-applicable)\s*\|$",
     re.M,
 )
-CONSEQUENCE_LIKE_RE = re.compile(r"^\|\s*[^|]+\.c\d+[a-z]?\s*\|", re.M)
 REQ_ID_RE = re.compile(r"PWB-REQ-\d{3}")
+COUNT_ROW_RE = re.compile(
+    r"^\|\s*RFC\s*(?:000)?([1-9])\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|"
+    r"\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|$",
+    re.M,
+)
 
 
 def digest(text):
     return hashlib.sha256(text.encode()).hexdigest()
+
+
+def table_data_lines(text, header, expected_columns):
+    lines = text.splitlines()
+    header_indexes = [i for i, line in enumerate(lines) if line.strip() == header]
+    if not header_indexes:
+        raise ValueError(f"missing matrix table header: {header}")
+    rows = []
+    for header_index in header_indexes:
+        if header_index + 1 >= len(lines) or not re.fullmatch(
+            r"\|(?:\s*:?-+:?\s*\|){%d}" % expected_columns,
+            lines[header_index + 1].strip(),
+        ):
+            raise ValueError(f"invalid matrix table separator after: {header}")
+        for line_number, line in enumerate(lines[header_index + 2 :], start=header_index + 3):
+            if not line.startswith("|"):
+                break
+            cells = [cell.strip() for cell in line.strip()[1:-1].split("|")]
+            if len(cells) != expected_columns:
+                raise ValueError(
+                    f"invalid matrix column count at line {line_number}: "
+                    f"{len(cells)} != {expected_columns}"
+                )
+            rows.append((line_number, line))
+    if not rows:
+        raise ValueError(f"matrix table has no data rows: {header}")
+    return rows
 
 
 def parse_inputs(part_texts=None, repair_text=None):
@@ -65,14 +96,15 @@ def parse_inputs(part_texts=None, repair_text=None):
 
     base_rows = {}
     for part_text in part_texts:
-        matches = list(BASE_ROW_RE.finditer(part_text))
-        consequence_like_count = len(CONSEQUENCE_LIKE_RE.findall(part_text))
-        if len(matches) != consequence_like_count:
-            raise ValueError(
-                "unparseable consequence rows: "
-                f"{consequence_like_count - len(matches)} of {consequence_like_count}"
-            )
-        for match in matches:
+        data_lines = table_data_lines(
+            part_text,
+            "| Consequence ID | Clause | Authority file:lines | Consequence | Applicability | Reason | Disposition |",
+            7,
+        )
+        for line_number, line in data_lines:
+            match = BASE_ROW_RE.fullmatch(line)
+            if match is None:
+                raise ValueError(f"unparseable consequence row at line {line_number}: {line}")
             consequence_id, clause, authority, consequence, applicability, reason, disposition = (
                 value.strip() for value in match.groups()
             )
@@ -90,9 +122,56 @@ def parse_inputs(part_texts=None, repair_text=None):
                 "disposition": disposition,
             }
 
+        declared_counts = {
+            int(family): tuple(int(value) for value in values)
+            for family, *values in COUNT_ROW_RE.findall(part_text)
+        }
+        actual_counts = {}
+        for _line_number, line in data_lines:
+            match = BASE_ROW_RE.fullmatch(line)
+            clause = match.group(2)
+            disposition = match.group(7)
+            family = int(clause[3])
+            row = actual_counts.setdefault(
+                family,
+                {"clauses": set(), "consequences": 0, "covered": 0, "unknown": 0, "not_applicable": 0},
+            )
+            row["clauses"].add(clause)
+            row["consequences"] += 1
+            if disposition.startswith("covered:"):
+                row["covered"] += 1
+            elif disposition == "unknown-uncovered":
+                row["unknown"] += 1
+            else:
+                row["not_applicable"] += 1
+        if set(declared_counts) != set(actual_counts):
+            raise ValueError(
+                f"embedded family count set mismatch: {sorted(declared_counts)} != {sorted(actual_counts)}"
+            )
+        for family, actual in actual_counts.items():
+            expected = (
+                len(actual["clauses"]),
+                actual["consequences"],
+                actual["covered"],
+                actual["unknown"],
+                actual["not_applicable"],
+            )
+            if declared_counts[family] != expected:
+                raise ValueError(
+                    f"embedded RFC{family} counts mismatch: {declared_counts[family]} != {expected}"
+                )
+
     repair_rows = {}
     superseded = set()
-    for match in REPAIR_ROW_RE.finditer(repair_text):
+    repair_data_lines = table_data_lines(
+        repair_text,
+        "| Repair consequence ID | Supersedes | Clause | Effective consequence | Disposition |",
+        5,
+    )
+    for line_number, line in repair_data_lines:
+        match = REPAIR_ROW_RE.fullmatch(line)
+        if match is None:
+            raise ValueError(f"unparseable repair row at line {line_number}: {line}")
         consequence_id, prior_id, clause, consequence, disposition = (
             value.strip() for value in match.groups()
         )
@@ -228,7 +307,9 @@ def selftest():
     if first_repair is None:
         print("SELFTEST FAILED: no repair rows")
         return 1
-    duplicated = repair_text + "\n" + first_repair.group(0) + "\n"
+    duplicated = repair_text.replace(
+        first_repair.group(0), first_repair.group(0) + "\n" + first_repair.group(0), 1
+    )
     try:
         render(part_texts, duplicated)
     except ValueError as error:
@@ -251,21 +332,97 @@ def selftest():
         return 1
 
     malformed_parts = list(part_texts)
-    malformed_parts[0] = malformed_parts[0].replace("| yes |", "| yes/no |", 1)
+    first_base = BASE_ROW_RE.search(malformed_parts[0])
+    if first_base is None:
+        print("SELFTEST FAILED: no base rows")
+        return 1
+    malformed_parts[0] = malformed_parts[0].replace(first_base.group(1), "BROKEN-ID", 1)
     try:
         render(malformed_parts, repair_text)
     except ValueError as error:
-        if "unparseable consequence rows" not in str(error):
+        if "unparseable consequence row" not in str(error):
             print(f"SELFTEST FAILED: wrong malformed-row error: {error}")
             return 1
     else:
         print("SELFTEST FAILED: malformed consequence row passed")
         return 1
 
+    broken_columns = list(part_texts)
+    broken_columns[0] = broken_columns[0].replace(
+        first_base.group(0), first_base.group(0).replace(" | ", " ", 1), 1
+    )
+    try:
+        render(broken_columns, repair_text)
+    except ValueError as error:
+        if "column count" not in str(error):
+            print(f"SELFTEST FAILED: wrong column-count error: {error}")
+            return 1
+    else:
+        print("SELFTEST FAILED: broken base columns passed")
+        return 1
+
+    covered_repair = next(
+        match
+        for match in REPAIR_ROW_RE.finditer(repair_text)
+        if match.group(5).strip().startswith("covered:")
+    )
+    invalid_disposition = repair_text.replace(
+        covered_repair.group(0), covered_repair.group(0).replace("covered:", "maybe:"), 1
+    )
+    try:
+        render(part_texts, invalid_disposition)
+    except ValueError as error:
+        if "unparseable repair row" not in str(error):
+            print(f"SELFTEST FAILED: wrong repair-disposition error: {error}")
+            return 1
+    else:
+        print("SELFTEST FAILED: invalid repair disposition passed")
+        return 1
+
+    invalid_repair_id = repair_text.replace(first_repair.group(1), "BROKEN-REPAIR-ID", 1)
+    try:
+        render(part_texts, invalid_repair_id)
+    except ValueError as error:
+        if "unparseable repair row" not in str(error):
+            print(f"SELFTEST FAILED: wrong repair-ID error: {error}")
+            return 1
+    else:
+        print("SELFTEST FAILED: invalid repair ID passed")
+        return 1
+
+    broken_repair_columns = repair_text.replace(
+        first_repair.group(0), first_repair.group(0).replace(" | ", " ", 1), 1
+    )
+    try:
+        render(part_texts, broken_repair_columns)
+    except ValueError as error:
+        if "column count" not in str(error):
+            print(f"SELFTEST FAILED: wrong repair-column error: {error}")
+            return 1
+    else:
+        print("SELFTEST FAILED: broken repair columns passed")
+        return 1
+
+    stale_counts = list(part_texts)
+    stale_counts[0] = stale_counts[0].replace(
+        "| RFC 0001 | 39 | 100 | 7 | 55 | 38 |",
+        "| RFC 0001 | 39 | 99 | 7 | 55 | 38 |",
+        1,
+    )
+    try:
+        render(stale_counts, repair_text)
+    except ValueError as error:
+        if "embedded RFC1 counts mismatch" not in str(error):
+            print(f"SELFTEST FAILED: wrong embedded-count error: {error}")
+            return 1
+    else:
+        print("SELFTEST FAILED: stale embedded counts passed")
+        return 1
+
     if output != render(part_texts, repair_text):
         print("SELFTEST FAILED: output is nondeterministic")
         return 1
-    print("selftest: duplicate repair, warrant mismatch, malformed row and determinism predicates hold")
+    print("selftest: base/repair IDs, columns, disposition, counts, warrants and determinism hold")
     return 0
 
 

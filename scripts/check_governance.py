@@ -532,8 +532,11 @@ RAW_REVIEW_DIRS = (
 #: tuple above is retained as the record of which rounds were registered by
 #: hand and why; it is no longer the population.
 def _is_raw_review(rel):
-    return (rel.startswith(f"{CANDIDATES}/")
-            and "reviews" in rel.split("/")[:-1])
+    candidate_raw = (rel.startswith(f"{CANDIDATES}/")
+                     and "reviews" in rel.split("/")[:-1])
+    implementation_raw = (rel.startswith("docs/reviews/")
+                          and rel.endswith("-RAW.md"))
+    return candidate_raw or implementation_raw
 
 
 #: The two exemption enumerations below (`ACT_QUOTE_EXEMPT`,
@@ -3952,6 +3955,12 @@ def selftest():
                   not _is_raw_review("scripts/reviews/x.md")
                   and not _is_raw_review(
                       ".syzygy/governance/decisions/reviews/x.md")))
+    cases.append(("implementation-review raw output is verbatim by suffix",
+                  _is_raw_review(
+                      "docs/reviews/R-POLARIS-SPEC-CONFIRMATION-RAW.md")
+                  and not _is_raw_review(
+                      "docs/reviews/R-POLARIS-SPEC-CONFIRMATION.md")
+                  and not _is_raw_review("docs/reviews/RAW.md")))
     cases.append(("raw review is exempt from both quote-currency lanes",
                   _act_quote_exempt(
                       f"{CANDIDATES}/round-2026-08f/reviews/RD-47-x-RAW.md")

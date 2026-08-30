@@ -27,6 +27,38 @@ Reader definitions:
 - Stable item identity is `(item class, declared key)`. Repository-relative path
   and content hash are source-anchor state, never identity. A duplicate key in
   one class is a contradiction rather than a path-based disambiguation.
+- The extraction grammar is literal:
+  - `project-account-section` mints exactly six aggregate keys: purpose from
+    vision.md H2 “What Butlers Is”; promises from vision.md H2 “What Success
+    Looks Like”; refusals from vision.md H2 “What Butlers Is Not”; architecture
+    from every H2 in architecture.md; V1 scope from v1.md H2 “What v1 Ships”
+    and “What v1 Defers”; V1 success from v1.md H2 “Success Criteria”.
+  - `principle` is each top-level decimal-list item under vision.md H2
+    “Non-Negotiable Rules”; its literal leading bold phrase is the key.
+  - `success-criterion` is each top-level list item under vision.md H2 “What
+    Success Looks Like” (`vision:<one-based ordinal>`) and v1.md H2 “Success
+    Criteria” (`v1:<one-based ordinal>`).
+  - `catalog-entry` is each top-level unordered-list item beneath the exact V1
+    H3 headings Core Infrastructure, Staffers, Butlers, Modules, Connectors,
+    Dashboard, Identity System, Situational Awareness and Observability; the
+    leading bold or code span before the first dash is the literal key.
+  - `design-contract` is each body row under the Index table in the Legends and
+    Lore README; the first-column RFC link text is the key.
+  - `baseline-spec` is each Git-tree path matching
+    openspec/specs/<one-directory>/spec.md; the one directory is the key.
+  - `topology-component` is each H2 in lay-and-land/components.md matching a
+    leading decimal plus optional lowercase suffix and each first-column bold
+    label in tables before the next H2; key is `<H2 ordinal>:<literal label>`.
+  - `craft-policy` is each body row in the Craft and Care README “Reading
+    Order” table; the File-column link target basename is the key.
+  - `roster-identity` is each Git-tree path roster/<one-directory>/butler.toml;
+    the directory is the key and the TOML `[butler].name` must be non-empty.
+  Heading levels/text, top-level list depth, table column counts, one-based
+  ordinals and literal keys are exact. Unicode is NFC-normalized; no case
+  folding, stemming or punctuation rewriting occurs. A missing heading,
+  malformed row/list/TOML, unexpected duplicate key or ambiguous leading label
+  makes the enclosing source's item denominator Unknown; it never produces a
+  partial item set.
 - The source-path denominator remains known through body-read failures. An
   unavailable body's within-source item denominator is Unknown, never copied
   from a fixture or prior ambient state.
@@ -46,13 +78,16 @@ population. Every emitted project-shape fact SHALL carry its source identity,
 scope, capture instant and observer identity/version.
 
 - **Case**: observe a repository at a known revision whose five-pillar index
-  and roster population are known independently.
+  and roster population are known independently, including a source-claimed
+  instant distinct from the capture instant.
 - **Observable**: the machine answer and Polaris expose the revision, source
   paths, source count, capture instant and every deterministic input and
   per-emission identity.
 - **Oracle**: compare the exposed paths and revision to an independent Git tree
-  listing and the closed discovery rules; exact set and input-identity equality
-  decides.
+  listing and the closed discovery rules; exhaust every emitted fact's source,
+  scope, capture-instant and observer-version stamp; verify capture time remains
+  distinct from source-claimed time. Exact set, stamp and input-identity
+  equality decides.
 - **Oracle independence**: the expected set comes from Git and the Butlers
   indexes, not from the POC model.
 - **Falsifier**: one source is absent, one arbitrary source is included, one
@@ -92,12 +127,14 @@ retain its source identity while its item denominator renders Unknown.
   an unreadable source case.
 - **Observable**: per-category identities and reconciling counts are visible in
   the machine answer and reachable from Polaris.
-- **Oracle**: independent extraction from the revision-bound source population
-  produces denominator D; modeled + Unknown + contradicted equals D, with each
-  identity appearing once; unreadable sources carry an Unknown item denominator.
+- **Oracle**: two independent extractors apply the literal grammar to the
+  revision-bound source population and must produce the same identities and D;
+  modeled + Unknown + contradicted equals D, with each identity appearing once;
+  malformed/unreadable sources carry an Unknown item denominator.
 - **Oracle independence**: the expected denominator is extracted from the
   source files, not from the POC's coverage object.
-- **Falsifier**: a known source disappears, an admitted item appears twice or
+- **Falsifier**: the independent extractors disagree, a malformed source emits
+  a partial population, a known source disappears, an admitted item appears twice or
   lacks a state, a known count does not reconcile, or an unavailable body's
   item denominator is presented as known.
 
@@ -174,14 +211,18 @@ SHALL produce zero body reads and a project-model Unknown.
 The consent subject SHALL be the exact `(observing Syzygy project, configured
 Butlers repository)` pair; a consent for another project, repository or content
 class SHALL not match.
+The observer registry entry SHALL live in Syzygy's governance plane, name that
+same project/repository pair and declare the observer's read-only authority and
+empty write surface.
 
 - **Case (counterexample sweep)**: provide absent, mismatched, stale,
   unverifiable and valid consent/policy/registry triples to an observer with an
   injected read spy.
 - **Observable**: invalid triples yield zero read calls and fixed Unknown reasons;
   only the all-valid triple permits reads.
-- **Oracle**: independently verify all three owner-act provenances, compare read
-  calls and evaluation inputs across all cases.
+- **Oracle**: independently verify all three owner-act provenances, registry
+  home/project/scope/write-surface fields, read calls and evaluation inputs
+  across all cases.
 - **Oracle independence**: authority fixtures and the read spy live outside
   the observer.
 - **Falsifier**: any body is read before all three authorities verify, any
@@ -249,8 +290,8 @@ warrants:
 
 Group: Truth. Form: **invariant**.
 
-Every project-fact claim SHALL have a stable semantic Claim identity plus an
-evaluation instance, be challengeable with resolvable support, and carry the
+Every project entity and project-fact claim SHALL have a stable semantic Claim
+identity plus an evaluation instance, be challengeable with resolvable support, and carry the
 closed label, tier, exactly one primary reason, zero or more closed secondary
 reasons, freshness, challenge state and evaluation identity that govern it.
 Unknown reasons SHALL use RFC2-24 values verbatim and expose their resolution
@@ -259,15 +300,17 @@ secondary reason counts without a headline status, composite maturity or
 inferred success. Default Polaris status presentation SHALL not render trends,
 metric walls or count walls; coverage counts remain available on demand.
 
-- **Case (sweep)**: enumerate every project-fact claim and aggregate at one
-  evaluation, including fixtures for every admitted label, tier, reason and
-  freshness value plus out-of-vocabulary and missing-currency cases.
+- **Case (sweep)**: enumerate every project entity, claim and aggregate across
+  two evaluations of the same semantic subjects, including fixtures for every
+  admitted label, tier, reason, freshness, challenge and sibling state plus
+  out-of-vocabulary and missing-currency cases.
 - **Observable**: human and machine views expose identical complete tuples;
   invalid/missing currency stays Unknown and aggregates expand to members.
-- **Oracle**: compare each tuple to independent literal vocabularies and
-  provenance-verified currency inputs; exhaust identity stability, aggregate
-  label/tier/freshness/reason counts and supports
-  links; zero invalid, missing or folded values decides.
+- **Oracle**: compare each tuple and tier meaning to independent literal
+  vocabularies and provenance-verified currency inputs; verify stable semantic
+  identity across the two evaluation instances; exhaust challenge/sibling
+  separation, aggregate label/tier/freshness/reason counts and supports links;
+  zero invalid, missing or folded values decides.
 - **Oracle independence**: the checker hard-codes the accepted vocabularies and
   reads captured authority/evidence, importing no production vocabulary.
 - **Falsifier**: a positive claim lacks current support, a tuple field is
@@ -495,18 +538,25 @@ authority. Each anchor SHALL retain the target's captured label, tier and
 reason and SHALL not rewrite that target state on later reads. Narrative claim
 blocks SHALL use a machine type distinct from kernel Claim. Personal view state
 SHALL remain outside the truth model.
+Anchor targets SHALL use the closed classes doctrine, contract, requirement,
+decision, evidence and work with durable target identity; labels, file paths
+and coordinates SHALL never serve as anchor identity.
 
 - **Case (sweep)**: enumerate every narrative unit, claim and anchor, then
   enumerate every citation/reference emitted by the Syzygy and Butlers source
-  populations at the evaluated revisions.
+  populations at the evaluated revisions. Repeat after deleting Polaris
+  presentation and after injecting personal view state and a later-read target
+  mutation.
 - **Observable**: claim roles and non-authority attributes are machine-readable;
   every claim has exact/minimal anchors and no downstream authority reference
   targets Polaris.
-- **Oracle**: independent claim-to-source mapping establishes covering and
-  minimality and captured target state; removing any used anchor fails one
+- **Oracle**: independent claim-to-source mapping establishes covering,
+  minimality, closed target class, durable identity, exact narrative-vs-kernel
+  machine type and captured target state; removing any used anchor fails one
   claim and adding an unused anchor fails surplus; a later-read mutation cannot
   rewrite the captured state; a complete downstream-reference scan has zero
-  Polaris authority targets.
+  Polaris authority targets; deletion leaves truth unchanged and injected
+  personal state never enters the truth model.
 - **Oracle independence**: expected source spans and reference targets come
   from captured artifacts, not the rendered claim blocks.
 - **Falsifier**: an unclassified narrative unit, uncovered claim, surplus or
@@ -540,15 +590,21 @@ governing doctrine and non-goal text, and a `reality` band sourced only from
 the shared model. Draft capabilities SHALL remain unadopted. Proposed deltas SHALL be adjacent to current text,
 visibly distinct, non-anchorable and unable to grant status; competing
 proposals SHALL remain separate candidate futures.
+The default reading mode SHALL be `Base` and include observed reality. Every
+block SHALL carry exactly one of the three band-class attributes. No
+reorganized or stored normative copy of doctrine, non-goal, requirement or
+scenario text SHALL exist outside its owning artifact.
 
 - **Case (sweep)**: enumerate every capability deep dive at an evaluation that
   includes current intent, a draft capability and two incompatible proposals.
-- **Observable**: band class/order, verbatim current text, proposal lifecycle,
+- **Observable**: Base mode, band class/order, verbatim current text, proposal lifecycle,
   non-anchorability and separate futures are recoverable in both channels.
 - **Oracle**: compare current requirement/scenario, doctrine and non-goal bytes
   to their owning artifacts, compare
-  proposal identities/exclusivity to captured changes, and exhaust band and
-  anchor populations; exact bytes/order and zero proposal authority decide.
+  proposal identities/exclusivity to captured changes, exhaust band and anchor
+  populations and perform a static-source sweep for normative copies; exact
+  bytes/order, exactly one class per block, zero stored copies and zero proposal
+  authority decide.
 - **Oracle independence**: current/proposed artifacts and exclusivity inputs
   come from captured OpenSpec state, not Polaris.
 - **Falsifier**: a missing/misordered band, summarized normative text, draft
@@ -706,7 +762,8 @@ SHALL render the criterion Unknown, never met.
   nonvisual/keyboard mode and paths; the judgment names verdict, rationale,
   judging party and run record. Only the valid pair may carry the owner's
   verdict; every invalid case records `verdict-unlawful` and renders Unknown.
-- **Oracle**: compare record identities and owner-act provenance to the
+- **Oracle**: compare every run-record field, every judgment field, exact
+  `verdict-unlawful` state, record identities and owner-act provenance to the
   controlled inputs for all cases.
 - **Oracle independence**: record validity is checked outside the surface
   using RFC3-16 owner-act provenance.

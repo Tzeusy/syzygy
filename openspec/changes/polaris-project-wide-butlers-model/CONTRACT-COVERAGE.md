@@ -8,7 +8,7 @@
 ## Effective population
 
 Accepted RFC 0001–0009 clauses: **324**.
-Effective consequence rows: **618** — 142 covered, 230 Unknown uncovered, 246 believed not applicable.
+Effective consequence rows: **619** — 136 covered, 235 Unknown uncovered, 248 believed not applicable.
 
 Every accepted clause has at least one effective consequence row. A
 `believed-not-applicable` row is an author/reviewer judgment, never an
@@ -18,14 +18,14 @@ owner-reviewed N/A. Every `unknown-uncovered` row remains a disclosed gap.
 
 | Artifact | sha256 | Base consequences |
 |---|---|---:|
-| `contract-coverage-matrix/RFC-0001-0003.md` | `8b8e0a321efc8213c3b9294794beea47f6fce837f6d9819c3079bfdeb2883264` | 210 |
+| `contract-coverage-matrix/RFC-0001-0003.md` | `31174ca2d6a5e9c2bcb7e2973f3f53c978496dad32a22ea49bf69d8107039b68` | 210 |
 | `contract-coverage-matrix/RFC-0004-0006.md` | `e7e4eed310e9cc16888d3d097e68a9a64bd2d073e0018fd8bfc679dd50c73332` | 220 |
 | `contract-coverage-matrix/RFC-0007-0009.md` | `fa272738b85c64b6e455c06da26c01d6f3b80aab504c68ad18f57918d1e953ea` | 183 |
 
 ## Repair overlay
 
-`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `b8a29c2ffba48e53a491bcfb2cd57673237c304fbd357e63ab1fb44036e3eae3`
-supersedes 62 base rows with 67 effective rows.
+`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `c94f67675c38bb582c77f059a5fcaba8d9a0f3d0b58abc921fff6c03dc6b7c6a`
+supersedes 62 base rows with 68 effective rows.
 
 ## Verification
 

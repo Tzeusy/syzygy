@@ -13,7 +13,7 @@ the exact repaired bytes require an independent confirmation pass.
 
 | # | Severity | Finding | Disposition |
 |---|---|---|---|
-| 1 | BLOCKER | Matrix partitions clause IDs without consequence review | **Repaired, awaiting confirmation.** Three independent clause-text audits produced 613 normalized consequence rows covering all 324 accepted clauses. A repair overlay supersedes 62 rows with 67 repaired consequences. The generator now verifies identities, dispositions and warrant agreement only; it makes no semantic judgment. Effective matrix: 618 consequences, 142 covered, 230 Unknown uncovered, 246 believed not applicable. |
+| 1 | BLOCKER | Matrix partitions clause IDs without consequence review | **Repaired, awaiting confirmation.** Three independent clause-text audits produced 613 normalized consequence rows covering all 324 accepted clauses. A repair overlay supersedes 62 rows with 68 repaired consequences. The generator now verifies identities, dispositions and warrant agreement only; it makes no semantic judgment. Effective matrix: 619 consequences, 136 covered, 235 Unknown uncovered, 248 believed not applicable. |
 | 2 | BLOCKER | Requirement warrants overclaim clause coverage | **Repaired, awaiting confirmation.** Warrant lists were reduced to exercised limbs, and PWB-REQ-007/014/015/016 close the essential epistemic, anchor, deep-dive and nonvisual gaps. Partial sibling consequences remain individually `unknown-uncovered`; no clause-level “covered” state exists. |
 | 3 | BLOCKER | Capability denominator omits refusals | **Repaired, awaiting confirmation.** `CAPABILITY-COVERAGE.md` now derives 27 positive obligations/refusals from proposal, design and definitions: 20 covered, 7 named out of scope. |
 | 4 | BLOCKER | No lawful observation consent or concrete secret policy | **Specification repaired; owner gates remain open.** PWB-REQ-005 requires both owner-provenance checks before the first body read and zero reads on every invalid case. Task 1.5 makes both separate acts dispatch blockers; sign-off mints neither. |
@@ -60,3 +60,30 @@ Verdict: **REVISE**
 | N3 — judgment inside run record | DEFECT | Repaired: PWB-REQ-021 records only answers/paths/identities/mode; separate owner decision carries verdict/rationale/judging party. |
 
 These are author dispositions. A second exact-head confirmation is required.
+
+## Confirmation pass 2
+
+Subject: `b4470708b7752b48acb5df81fe9a707b296fead6`
+
+Raw report: `R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-2-RAW.md`
+
+Raw sha256: `79c15dc57bd748872df0a7dd145bcac63b05ea00c4532387bd841bbbeed24d5f`
+
+Verdict: **REVISE**
+
+| Finding | Pass-2 verdict | Repair disposition |
+|---|---|---|
+| Original 1 / pass-1 N1 | NOT CONFIRMED | Repaired: parser now walks every data row inside every base/repair table independently of ID grammar, rejects malformed IDs/columns/dispositions, validates embedded family totals and mutation-tests each escape. RFC3-7 observation/egress row split. |
+| Original 2 | NOT CONFIRMED | Repaired conservatively: six unsupported overlay rows moved to Unknown/not-applicable; exact oracles added for emission stamps, registry scope, Claim identity/challenge state, tier/sibling semantics, deletion invariance, anchor target classes/state, normative-copy absence, band classes/Base mode, personal-state exclusion, machine claim types and complete judgment fields. |
+| Original 3 | CONFIRMED | No change. |
+| Original 4 | CONFIRMED | No change. |
+| Original 5 | PARTIAL | Repaired: item grammar now binds exact source files, heading text/levels, list/table/TOML syntax, key extraction/normalization, duplicate behavior and fail-closed malformed-source output. |
+| Original 6–9 | CONFIRMED | No change. |
+| Pass-1 N2/N3 | CONFIRMED | No change. |
+| N4 malformed-row escape | BLOCKER | Repaired with table-structure parsing and expanded mutations. |
+| N5 23 semantic overclaims | BLOCKER | Repaired as original finding 2 above; unsupported consequences remain disclosed Unknown rather than receiving broader machinery. |
+| N6 parser-ambiguous item grammar | BLOCKER | Repaired as original finding 5 above. |
+| N7 embedded matrix totals | DEFECT | Repaired and now mechanically checked against parsed rows. |
+| N8 sibling-state applicability | DEFECT | Repaired: `unadopted-draft` aggregate composition is Unknown/applicable; unused challenge/chain/work composition is separately believed not applicable. |
+
+These are author dispositions. A third exact-head confirmation is required.
