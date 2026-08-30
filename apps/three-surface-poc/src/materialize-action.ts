@@ -12,7 +12,7 @@ import {
 } from '@syzygy/three-surface-poc-core';
 
 import { browserRequestAllowed } from './browser-origin.js';
-import { mountPrefixForPath, TAILNET_MOUNT_PREFIX, withMountPrefix } from './tailnet.js';
+import { mountPrefixForRequest, TAILNET_MOUNT_PREFIX, withMountPrefix } from './tailnet.js';
 
 export const MATERIALIZE_HUMAN_PATH = '/trajectory/materialize' as const;
 export const MATERIALIZE_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}/trajectory/materialize` as const;
@@ -141,7 +141,7 @@ export function materializeRoutes(options: MaterializeRoutesOptions): readonly R
       };
     }
 
-    const mountPrefix = mountPrefixForPath(request.path);
+    const mountPrefix = mountPrefixForRequest(request.headers);
     const result = runMaterialize(options);
     if (result.kind === 'unknown') {
       const suffix =

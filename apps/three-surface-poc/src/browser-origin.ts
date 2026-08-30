@@ -5,8 +5,13 @@ export const BROWSER_ORIGIN_REFUSAL = {
 
 // Exposed only via `tailscale serve` (TLS-terminated at the tailnet edge,
 // proxying to the loopback-bound daemon), never a direct public bind — see
-// AGENTS.md "Hard prohibitions" (no broad remote access).
-const TAILNET_HOST = 'tzeusy.parrot-hen.ts.net' as const;
+// AGENTS.md "Hard prohibitions" (no broad remote access). Exported: it is
+// also the one reliable signal (via the Host header) that a request arrived
+// through the tailnet mount rather than direct loopback access — see
+// `tailnet.ts`'s `mountPrefixForRequest`. `tailscale serve --set-path`
+// strips the mount prefix from the forwarded request path, so the path
+// itself cannot be used for that distinction.
+export const TAILNET_HOST = 'tzeusy.parrot-hen.ts.net' as const;
 
 function singleHeader(
   value: string | readonly string[] | undefined,

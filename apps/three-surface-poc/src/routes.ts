@@ -6,7 +6,7 @@ import { epistemicText, exactTablesSection } from './exact-tables.js';
 import { ORRERY_HUMAN_PATH, ORRERY_TAILNET_PATH, renderOrreryPage } from './orrery.js';
 import { pageShell } from './page-shell.js';
 import { POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, renderPolarisPage } from './polaris.js';
-import { mountPrefixForPath, TAILNET_MOUNT_PREFIX } from './tailnet.js';
+import { mountPrefixForRequest, TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { renderTrajectoryPage, TRAJECTORY_HUMAN_PATH, TRAJECTORY_TAILNET_PATH } from './trajectory.js';
 
 export { BROWSER_ORIGIN_REFUSAL } from './browser-origin.js';
@@ -84,7 +84,7 @@ export function pocRoutes(getModel: () => PocModel): readonly Route[] {
       ? {
           status: 200,
           contentType: 'text/html; charset=utf-8',
-          body: renderPocPage(getModel(), mountPrefixForPath(request.path)),
+          body: renderPocPage(getModel(), mountPrefixForRequest(request.headers)),
         }
       : {
           status: 403,
@@ -107,7 +107,7 @@ export function pocRoutes(getModel: () => PocModel): readonly Route[] {
         ? {
             status: 200,
             contentType: 'text/html; charset=utf-8',
-            body: render(getModel(), mountPrefixForPath(request.path)),
+            body: render(getModel(), mountPrefixForRequest(request.headers)),
           }
         : {
             status: 403,

@@ -6,14 +6,15 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
 import { readMaterializationRecordFile } from '@syzygy/three-surface-poc-core';
 
+import { TAILNET_HOST } from './browser-origin.js';
 import {
   MATERIALIZE_HUMAN_PATH,
-  MATERIALIZE_TAILNET_PATH,
   materializeRoutes,
   renderMaterializePanel,
 } from './materialize-action.js';
 import { pocRoutes } from './routes.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
+import { fetchWithHost } from './test-http-client.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import { renderTrajectoryPage } from './trajectory.js';
 
@@ -128,7 +129,11 @@ describe('materializeRoutes', () => {
     expect(readMaterializationRecordFile(dir)?.beadId).toBe('bu-http-materialized1');
   });
 
-  it('keeps the result page\'s back-link under the tailnet mount when triggered there (AC2)', async () => {
+  it('keeps the result page\'s back-link under the tailnet mount when the tailnet-Host-headered request `tailscale serve` actually forwards triggers it (AC2)', async () => {
+    // `tailscale serve --set-path` strips the mount prefix from the
+    // forwarded path (see tailnet.ts), so the real tailnet-routed POST
+    // arrives at the plain MATERIALIZE_HUMAN_PATH with Host set to the
+    // tailnet hostname — never at a `/butlers-syzygy`-prefixed path.
     const dir = tempDir('syzygy-poc-materialize-state-');
     const baseUrl = await startDaemon({
       stateDir: dir,
@@ -137,7 +142,10 @@ describe('materializeRoutes', () => {
       runCreate: () => JSON.stringify({ id: 'bu-http-tailnet' }),
     });
 
-    const response = await fetch(`${baseUrl}${MATERIALIZE_TAILNET_PATH}`, { method: 'POST' });
+    const response = await fetchWithHost(`${baseUrl}${MATERIALIZE_HUMAN_PATH}`, TAILNET_HOST, {
+      method: 'POST',
+      origin: `https://${TAILNET_HOST}`,
+    });
     expect(response.status).toBe(200);
     const html = await response.text();
     expect(html).toContain(`href="${TAILNET_MOUNT_PREFIX}/trajectory"`);

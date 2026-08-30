@@ -6,12 +6,14 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
 
-import { ORRERY_HUMAN_PATH, ORRERY_TAILNET_PATH } from './orrery.js';
-import { POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH } from './polaris.js';
+import { TAILNET_HOST } from './browser-origin.js';
+import { ORRERY_HUMAN_PATH } from './orrery.js';
+import { POLARIS_HUMAN_PATH } from './polaris.js';
 import { POC_HUMAN_PATH, pocRoutes } from './routes.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
+import { fetchWithHost } from './test-http-client.js';
 import { buildFixtureModel } from './test-model-fixture.js';
-import { TRAJECTORY_HUMAN_PATH, TRAJECTORY_TAILNET_PATH } from './trajectory.js';
+import { TRAJECTORY_HUMAN_PATH } from './trajectory.js';
 
 const cleanups: string[] = [];
 const running: RunningDaemon[] = [];
@@ -97,7 +99,13 @@ describe('surface routes', () => {
     }
   });
 
-  it('nav links stay inside the current mount — root-relative when served directly, prefixed under the tailnet mount', async () => {
+  it('nav links stay inside the current mount — root-relative for direct loopback access, prefixed for the tailnet-Host-headered request `tailscale serve` actually forwards', async () => {
+    // `tailscale serve --set-path` strips the mount prefix from the
+    // forwarded path (verified empirically — see tailnet.ts), so the
+    // signal this test exercises is the Host header, never the request
+    // path: every tailnet-routed request the daemon ever actually
+    // receives arrives at one of the plain (unprefixed) paths below, with
+    // Host set to the tailnet hostname.
     const model = buildFixtureModel(cleanups);
     const start = await createDaemon({
       stateDir: join(tempDir('syzygy-poc-surface-state-'), 'state'),
@@ -113,27 +121,21 @@ describe('surface routes', () => {
       return [...nav.matchAll(/href="([^"]*)"/g)].map((match) => match[1] ?? '');
     }
 
-    const directPaths = [POC_HUMAN_PATH, POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH];
-    for (const path of directPaths) {
-      const html = await (await fetch(`${baseUrl}${path}`)).text();
-      const hrefs = navHrefs(html);
-      expect(hrefs.length).toBeGreaterThan(0);
-      for (const href of hrefs) {
+    const paths = [POC_HUMAN_PATH, POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH];
+    for (const path of paths) {
+      const directHtml = await (await fetch(`${baseUrl}${path}`)).text();
+      const directHrefs = navHrefs(directHtml);
+      expect(directHrefs.length).toBeGreaterThan(0);
+      for (const href of directHrefs) {
         expect(href.startsWith(TAILNET_MOUNT_PREFIX)).toBe(false);
       }
-    }
 
-    const tailnetPaths = [
-      TAILNET_MOUNT_PREFIX,
-      POLARIS_TAILNET_PATH,
-      TRAJECTORY_TAILNET_PATH,
-      ORRERY_TAILNET_PATH,
-    ];
-    for (const path of tailnetPaths) {
-      const html = await (await fetch(`${baseUrl}${path}`)).text();
-      const hrefs = navHrefs(html);
-      expect(hrefs.length).toBeGreaterThan(0);
-      for (const href of hrefs) {
+      const tailnetHtml = await (
+        await fetchWithHost(`${baseUrl}${path}`, TAILNET_HOST, { origin: `https://${TAILNET_HOST}` })
+      ).text();
+      const tailnetHrefs = navHrefs(tailnetHtml);
+      expect(tailnetHrefs.length).toBeGreaterThan(0);
+      for (const href of tailnetHrefs) {
         expect(href.startsWith(TAILNET_MOUNT_PREFIX)).toBe(true);
       }
     }
