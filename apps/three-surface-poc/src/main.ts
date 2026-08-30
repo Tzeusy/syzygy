@@ -7,6 +7,7 @@ import { createDaemon } from '@syzygy/cap1-daemon';
 import {
   buildButlersPocModel,
   PocObservationError,
+  readMaterializationRecordFile,
 } from '@syzygy/three-surface-poc-core';
 
 import { parsePocCli } from './cli.js';
@@ -14,6 +15,7 @@ import {
   observeGitRepository,
   pocObserverInputsAreClean,
 } from './git-observation.js';
+import { materializeRoutes } from './materialize-action.js';
 import { pocRoutes } from './routes.js';
 
 const USAGE = `syzygy three-surface POC (local, non-release)
@@ -69,7 +71,6 @@ if (parsed.kind === 'help') {
     }
 
     if (repositoryRevision !== '' && observerRevision !== '') {
-      const asOf = new Date().toISOString();
       const snapshot = [
         `butlers:${repositoryRevision}`,
         `working-tree:${workingTreeDigest}`,
@@ -80,18 +81,45 @@ if (parsed.kind === 'help') {
         'syzygy-three-surface-poc',
         createHash('sha256').update(repoRoot).digest('hex').slice(0, 16),
       );
+      const stateDir = resolve(parsed.config.stateDir ?? defaultStateDir);
 
-      try {
-        const model = buildButlersPocModel({
+      function buildModel(): ReturnType<typeof buildButlersPocModel> {
+        let materializationRecord;
+        try {
+          materializationRecord = readMaterializationRecordFile(stateDir);
+        } catch {
+          // A corrupt record must not crash startup or silently look
+          // unmaterialized — model.ts's own confirmation step already
+          // renders Unknown for a record that fails to resolve, so an
+          // unreadable record here is simply treated the same way: no
+          // positive claim is made without it.
+          materializationRecord = null;
+        }
+        return buildButlersPocModel({
           repoRoot,
           repositoryRevision,
           observerRevision,
-          evaluation: { snapshot, asOf },
+          evaluation: { snapshot, asOf: new Date().toISOString() },
+          materializationRecord,
         });
+      }
+
+      try {
+        let model = buildModel();
         const start = await createDaemon({
-          stateDir: resolve(parsed.config.stateDir ?? defaultStateDir),
+          stateDir,
           port: parsed.config.port,
-          routes: pocRoutes(() => model),
+          routes: [
+            ...pocRoutes(() => model),
+            ...materializeRoutes({
+              getModel: () => model,
+              targetRepoRoot: repoRoot,
+              stateDir: () => stateDir,
+              onMaterialized: () => {
+                model = buildModel();
+              },
+            }),
+          ],
         });
         if (!start.started) {
           process.stderr.write(`syzygy POC: daemon did not start (${start.failure.kind})\n`);

@@ -6,6 +6,7 @@ import { observeCodeStructure, type CodeStructureResult } from './code-structure
 import { observeWorkItems, type WorkItemsResult } from './work-items.js';
 import { projectOrrery, type OrreryProjection } from './orrery-projection.js';
 import { projectTrajectory, type TrajectoryProjection } from './trajectory-projection.js';
+import type { MaterializationRecord } from './materialization.js';
 
 const RECENT_CLOSED_WINDOW = 50;
 const BEAD_PREFIX = 'bu' as const;
@@ -15,7 +16,7 @@ export type PocEpistemic =
   | { readonly label: 'Unknown'; readonly reason: string };
 
 export interface PocProvenance {
-  readonly kind: 'repository-file' | 'git-revision' | 'manual-mapping';
+  readonly kind: 'repository-file' | 'git-revision' | 'manual-mapping' | 'materialization-record';
   readonly source: string;
   readonly revision: string;
   readonly digest?: string | undefined;
@@ -83,6 +84,7 @@ export interface BuildButlersPocModelInput {
   readonly evaluation: { readonly snapshot: string; readonly asOf: string };
   readonly runGit?: (repoRoot: string, args: readonly string[]) => string;
   readonly runWorkItemQuery?: (repoRoot: string, sql: string) => string;
+  readonly materializationRecord?: MaterializationRecord | null;
 }
 
 export class PocObservationError extends Error {
@@ -98,7 +100,7 @@ export class PocObservationError extends Error {
   }
 }
 
-const ARTIFACT_PATHS = {
+export const ARTIFACT_PATHS = {
   design: 'docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md',
   proposal: 'openspec/changes/repair-whatsapp-identity-reconciliation/proposal.md',
   requirement:
@@ -172,6 +174,60 @@ function unknown(reason: string): PocEpistemic {
   return { label: 'Unknown', reason };
 }
 
+interface MaterializationEpistemic {
+  readonly epistemic: PocEpistemic;
+  readonly beadId: string | null;
+  readonly provenance: readonly PocProvenance[];
+}
+
+/**
+ * A materialization record is local, human-authored state — it becomes
+ * an Observed claim only once the named Bead is confirmed present in
+ * this same evaluation's live-observed work items, never from the
+ * record file alone (VIS-2: a claim needs resolvable, current
+ * provenance, not a memory of a past write).
+ */
+function resolveMaterializationEpistemic(
+  record: MaterializationRecord | null,
+  workItems: WorkItemsResult,
+): MaterializationEpistemic {
+  if (record === null) {
+    return { epistemic: unknown('No POC work item has been materialized.'), beadId: null, provenance: [] };
+  }
+  if (workItems.kind === 'unknown') {
+    return {
+      epistemic: unknown(
+        'A materialization record exists but work items could not be observed to confirm it.',
+      ),
+      beadId: null,
+      provenance: [],
+    };
+  }
+  const found = workItems.items.find((item) => item.id === record.beadId);
+  if (found === undefined) {
+    return {
+      epistemic: unknown(
+        'A materialization record names a Bead that was not found among the observed work items.',
+      ),
+      beadId: null,
+      provenance: [],
+    };
+  }
+  return {
+    epistemic: observed(
+      `The materialized Bead ${found.id} was confirmed present in the observed work items.`,
+    ),
+    beadId: found.id,
+    provenance: [
+      {
+        kind: 'materialization-record',
+        source: `Beads (${workItems.beadPrefix}) — ${found.id}`,
+        revision: workItems.doltRevision,
+      },
+    ],
+  };
+}
+
 export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel {
   const repoRoot = resolve(input.repoRoot);
   const design = observeArtifact(repoRoot, ARTIFACT_PATHS.design, INTENT_MARKERS.design);
@@ -204,6 +260,23 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     source: 'Butlers repository',
     revision: input.repositoryRevision,
   };
+
+  const codeStructure = observeCodeStructure({
+    repoRoot,
+    revision: input.repositoryRevision,
+    capturedAt: input.evaluation.asOf,
+    ...(input.runGit === undefined ? {} : { runGit: input.runGit }),
+  });
+  const workItems = observeWorkItems({
+    repoRoot,
+    beadPrefix: BEAD_PREFIX,
+    capturedAt: input.evaluation.asOf,
+    ...(input.runWorkItemQuery === undefined ? {} : { runQuery: input.runWorkItemQuery }),
+  });
+  const materialization = resolveMaterializationEpistemic(
+    input.materializationRecord ?? null,
+    workItems,
+  );
 
   const entities: readonly PocEntity[] = [
     {
@@ -258,9 +331,12 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
       id: 'work:whatsapp-single-event-normalization',
       kind: 'work-item',
       title: 'Single-event sender normalization work',
-      detail: 'Planned demonstration work has not been materialized.',
-      epistemic: unknown('No POC work item has been materialized.'),
-      provenance: [],
+      detail:
+        materialization.beadId === null
+          ? 'Planned demonstration work has not been materialized.'
+          : `Materialized as Beads item ${materialization.beadId}.`,
+      epistemic: materialization.epistemic,
+      provenance: materialization.provenance,
     },
     {
       id: 'evidence:focused-pytest',
@@ -331,8 +407,13 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
       from: 'intent:req-switchboard-identity-001',
       to: 'work:whatsapp-single-event-normalization',
       statement: 'Approved intent materializes as a work item.',
-      epistemic: unknown('The human-triggered materialization step has not run.'),
-      provenance: [],
+      epistemic:
+        materialization.beadId === null
+          ? unknown('The human-triggered materialization step has not run.')
+          : observed(
+              `The human-triggered materialization step created Beads item ${materialization.beadId}.`,
+            ),
+      provenance: materialization.provenance,
     },
     {
       id: 'relationship:work-to-code',
@@ -372,18 +453,6 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     },
   ];
 
-  const codeStructure = observeCodeStructure({
-    repoRoot,
-    revision: input.repositoryRevision,
-    capturedAt: input.evaluation.asOf,
-    ...(input.runGit === undefined ? {} : { runGit: input.runGit }),
-  });
-  const workItems = observeWorkItems({
-    repoRoot,
-    beadPrefix: BEAD_PREFIX,
-    capturedAt: input.evaluation.asOf,
-    ...(input.runWorkItemQuery === undefined ? {} : { runQuery: input.runWorkItemQuery }),
-  });
   const orreryProjection = projectOrrery(codeStructure, [
     {
       id: 'code:identity-resolution',

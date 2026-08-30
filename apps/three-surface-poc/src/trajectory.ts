@@ -2,6 +2,7 @@ import { escapeHtml } from '@syzygy/cap1-daemon';
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 import type { TrajectoryColumn, TrajectoryLaneItem } from '@syzygy/three-surface-poc-core';
 
+import { MATERIALIZE_PANEL_STYLE, renderMaterializePanel } from './materialize-action.js';
 import { pageShell } from './page-shell.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 
@@ -73,6 +74,7 @@ const TRAJECTORY_STYLE = `
   .wi-status { font-family: var(--font-mono); font-size: .7rem; color: var(--muted); text-transform: uppercase; }
   .lane-track { position: relative; height: .35rem; background: #1a2c30; margin-top: .3rem; }
   .lane-bar { position: absolute; top: 0; height: 100%; left: var(--lane-left); width: var(--lane-width); background: var(--cyan); }
+  ${MATERIALIZE_PANEL_STYLE}
 `;
 
 export function renderTrajectoryPage(model: PocModel): string {
@@ -103,6 +105,8 @@ export function renderTrajectoryPage(model: PocModel): string {
       </p>
       <div class="board" role="list" aria-label="Work-item board by status column">${columns}</div>`;
   }
+
+  body += renderMaterializePanel(model);
 
   return pageShell({
     title: 'Trajectory · Syzygy three-surface POC',

@@ -127,6 +127,84 @@ describe('three-surface Butlers POC model', () => {
     expect(changedBytes.evaluation.snapshot).not.toBe(first.evaluation.snapshot);
   });
 
+  it('shows the materialized work item Observed only once the recorded Bead is confirmed present (AC4)', () => {
+    const repoRoot = butlersFixture();
+    const baseInput = {
+      repoRoot,
+      repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
+      observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
+      evaluation: { snapshot: 'butlers@c1389423', asOf: '2026-08-29T12:00:00Z' },
+    } as const;
+    const materializationRecord = {
+      beadId: 'bu-materialized1',
+      externalRef: 'syzygy-poc:work:whatsapp-single-event-normalization',
+      targetRepoRoot: repoRoot,
+      createdAt: '2026-08-30T00:00:00Z',
+      doltRevisionAtCreation: 'dolt-rev-1',
+      attribution: 'test-actor',
+    } as const;
+
+    const confirmedRows = [
+      {
+        revision: 'dolt-rev-2',
+        id: 'bu-materialized1',
+        title: 'Single-event WhatsApp sender normalization (Syzygy POC materialization)',
+        status: 'open',
+        issue_type: 'task',
+        priority: 2,
+        created_at: '2026-08-30T00:00:00Z',
+        updated_at: '2026-08-30T00:00:00Z',
+        closed_at: null,
+      },
+    ];
+
+    const confirmed = buildButlersPocModel({
+      ...baseInput,
+      materializationRecord,
+      runWorkItemQuery: (_repoRoot, sql) =>
+        sql.includes('WHERE id LIKE') ? JSON.stringify(confirmedRows) : JSON.stringify([{ revision: 'dolt-rev-2' }]),
+    });
+    const confirmedEntities = byId(confirmed.entities);
+    expect(confirmedEntities.get('work:whatsapp-single-event-normalization')?.epistemic.label).toBe(
+      'Observed',
+    );
+    expect(
+      confirmedEntities.get('work:whatsapp-single-event-normalization')?.detail,
+    ).toContain('bu-materialized1');
+    expect(
+      confirmedEntities.get('work:whatsapp-single-event-normalization')?.provenance,
+    ).toHaveLength(1);
+    const confirmedRelationships = byId(confirmed.relationships);
+    expect(confirmedRelationships.get('relationship:intent-to-work')?.epistemic.label).toBe(
+      'Observed',
+    );
+    // the untouched follow-on relationship stays Unknown — this bead
+    // materializes the Bead, not a code/test change
+    expect(confirmedRelationships.get('relationship:work-to-code')?.epistemic.label).toBe(
+      'Unknown',
+    );
+
+    // a record naming a Bead that is NOT present in the live-observed
+    // work items must never be rendered as Observed (VIS-2, fail-closed)
+    const stale = buildButlersPocModel({
+      ...baseInput,
+      materializationRecord,
+      runWorkItemQuery: (_repoRoot, sql) => (sql.includes('WHERE id LIKE') ? JSON.stringify([]) : JSON.stringify([{ revision: 'dolt-rev-3' }])),
+    });
+    const staleEntities = byId(stale.entities);
+    expect(staleEntities.get('work:whatsapp-single-event-normalization')?.epistemic.label).toBe(
+      'Unknown',
+    );
+
+    // no record at all: unchanged from the pre-existing default behaviour
+    const none = buildButlersPocModel(baseInput);
+    const noneEntities = byId(none.entities);
+    expect(noneEntities.get('work:whatsapp-single-event-normalization')?.epistemic).toEqual({
+      label: 'Unknown',
+      reason: 'No POC work item has been materialized.',
+    });
+  });
+
   it('fails closed when a required mapped artifact is absent', () => {
     const repoRoot = butlersFixture();
     rmSync(join(repoRoot, 'tests/core/test_identity.py'));

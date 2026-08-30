@@ -1,6 +1,7 @@
 import { escapeHtml, type Route } from '@syzygy/cap1-daemon';
 import type { PocEntity, PocModel, PocSurface } from '@syzygy/three-surface-poc-core';
 
+import { BROWSER_ORIGIN_REFUSAL, browserRequestAllowed } from './browser-origin.js';
 import { epistemicText, exactTablesSection } from './exact-tables.js';
 import { ORRERY_HUMAN_PATH, ORRERY_TAILNET_PATH, renderOrreryPage } from './orrery.js';
 import { pageShell } from './page-shell.js';
@@ -8,41 +9,10 @@ import { POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, renderPolarisPage } from './p
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { renderTrajectoryPage, TRAJECTORY_HUMAN_PATH, TRAJECTORY_TAILNET_PATH } from './trajectory.js';
 
+export { BROWSER_ORIGIN_REFUSAL } from './browser-origin.js';
+
 export const POC_HUMAN_PATH = '/' as const;
 export const POC_MACHINE_PATH = '/api/poc' as const;
-export const BROWSER_ORIGIN_REFUSAL = {
-  served: 'nothing',
-  reason: 'browser-origin-refused',
-} as const;
-
-function singleHeader(
-  value: string | readonly string[] | undefined,
-): string | undefined {
-  return typeof value === 'string' ? value : undefined;
-}
-
-// Exposed only via `tailscale serve` (TLS-terminated at the tailnet edge,
-// proxying to the loopback-bound daemon), never a direct public bind — see
-// AGENTS.md "Hard prohibitions" (no broad remote access).
-const TAILNET_HOST = 'tzeusy.parrot-hen.ts.net' as const;
-
-function expectedOrigin(host: string): string {
-  return host === TAILNET_HOST ? `https://${host}` : `http://${host}`;
-}
-
-function browserRequestAllowed(
-  headers: Readonly<Record<string, string | readonly string[] | undefined>>,
-): boolean {
-  const host = singleHeader(headers['host']);
-  const hostAllowed =
-    host !== undefined &&
-    (/^(?:127\.0\.0\.1|localhost):[0-9]+$/.test(host) || host === TAILNET_HOST);
-  if (!hostAllowed) {
-    return false;
-  }
-  const origin = singleHeader(headers['origin']);
-  return origin === undefined || origin === expectedOrigin(host);
-}
 
 function surfacePanel(surface: PocSurface, model: PocModel): string {
   const entities = new Map(model.entities.map((entity) => [entity.id, entity]));
