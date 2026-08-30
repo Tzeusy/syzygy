@@ -7,7 +7,8 @@
 >
 > **Candidate planning metadata, not authority.** Every clause named
 > here belongs to a confirmed-but-unaccepted wave and binds nothing.
-> No `openspec/` exists and none may be created.
+> No further capability spec may be authored beyond the adopted
+> Capability 1 scope without a new owner act.
 >
 > Charter sha256 `acb6290f904c9cd8f8c07a2e1759645b59e0b2ae64a6f41aeaceedfb88ebad01`.
 
