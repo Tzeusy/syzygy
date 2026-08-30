@@ -33,17 +33,26 @@ instead of choosing whichever value is easier to render.
 
 ## Decisions
 
-### 1. Observe the declared shape, not the whole filesystem
+### 1. Discover a closed source population
 
-The source population starts from Butlers' own about/README.md five-pillar
-index and the roster identity rule it declares. The observer reads only
-allowlisted project-shape artifacts and inventories referenced baseline specs,
-RFCs and roster identities. It never treats arbitrary Markdown or source code
-as project intent.
+The source population is finite and revision-bound:
+
+1. the five pillar roots named by Butlers' about/README.md;
+2. the files named by each pillar's own README index, restricted to that pillar
+   root;
+3. baseline `openspec/specs/*/spec.md` files listed by the exact Git tree; and
+4. top-level roster directories that contain `butler.toml`, plus their
+   `MANIFESTO.md` when present.
+
+Narrative links do not recurse. Active changes are inventoried separately for
+capability drill-down and never enter the current project account.
 
 The source manifest is observation scope, not a second copy of Butlers facts.
-It stores paths, extraction classes and the source revision. Entity names and
-project statements come from the referenced Butlers artifacts.
+It stores paths, extraction classes and the source revision. A declared item
+identity is `(source class, repository-relative path, declared key)`, where the
+key is a specification directory, RFC identifier, roster directory or indexed
+heading. Content hashes record source state; they do not replace stable item
+identity.
 
 Rejected alternatives:
 
@@ -56,12 +65,16 @@ Rejected alternatives:
 
 ### 2. Model coverage as data
 
-Each declared category carries `declared`, `modeled`, `unknown` and
-`contradicted` populations. Their identities and totals reconcile against the
-source manifest. A missing or unreadable source does not shrink the declared
-population. When two declarations disagree, the model retains both anchors,
-applies documented precedence only when it is explicit, and discloses the
-conflict either way.
+Coverage separates two populations. The source-path denominator is known from
+Git and never shrinks. The within-source item denominator exists only for a
+body admitted by consent and classification. If a body is unavailable, the
+source remains counted but its item denominator is Unknown; the model never
+reuses a fixture count as current truth. Admitted items carry `modeled`,
+`unknown` or `contradicted` state and reconcile within each source.
+
+When two declarations disagree, the model retains both anchors, applies
+documented precedence only when it is explicit, and discloses the conflict
+either way.
 
 The machine answer and Polaris consume the same coverage object. A page cannot
 claim whole-project coverage from a smaller hidden model.
@@ -81,30 +94,49 @@ The Polaris entry follows the accepted RFC7 progression:
 The existing WhatsApp material moves under capability detail. Active and
 proposed OpenSpec work appears only there, marked with its lifecycle state.
 
-### 4. Use direct copy
+### 4. Use direct copy with a finite rubric
 
-Headings name Butlers concepts. Supporting sentences state project facts,
-Unknowns, contradictions or actions. Copy does not explain “the reading,” “the
-document,” “movements,” or the presentation mechanism. Provenance remains
-available without being repeated in every sentence.
+Every owner-visible string has one role: `project-fact`,
+`epistemic-disclosure`, `action-label` or `scope-instruction`. Headings use at
+most six words; entry ledes use at most twenty. Heading, lede and notice text
+may not use “page,” “document,” “reading,” “section,” “movement” or
+“presentation.” One scope instruction may state the POC boundary at entry;
+action labels name their action. Provenance remains available without being
+repeated in every sentence.
 
-### 5. Fail closed at the content boundary
+### 5. Gate body reads on owner authority
 
-Only allowlisted project-shape files are opened. Secret detection and content
-classification run before content enters the model. Suspected or
-unclassifiable content is excluded with hash-not-body provenance and renders
-Unknown. No observed-project code executes.
+Before the first body read, the evaluation verifies a per-repository Butlers
+observation-consent record and the exact digest/version of a concrete
+owner-approved secret-classification policy. Both identities are deterministic
+inputs. Missing, mismatched, stale or unverifiable authority produces zero body
+reads and a project-model Unknown. Specification sign-off does not mint either
+artifact.
+
+### 6. Fail closed at the content boundary
+
+Only exact Git objects under normalized repository-relative paths are read.
+Absolute paths, traversal, NULs, working-tree symlinks, submodule traversal and
+repository escape are rejected. Markdown is parsed as inert text; raw HTML,
+SVG, scripts, event handlers and unsafe URL schemes never reach browser output.
+
+The adapter declares source-count, byte, depth, parse-time and rendered-output
+budgets in the model. A limit leaves the affected source counted and Unknown.
+Secret detection and content classification cover the model, caches, logs,
+HTML, JSON and walkthrough records. Exclusions carry hash-not-body provenance.
+No observed-project code executes.
 
 ## Data Flow
 
 1. Bind the configured Butlers repository to an exact Git revision.
-2. Load the project-shape source manifest.
-3. Read and classify allowlisted sources; record exclusions.
-4. Extract declared entities, statements, catalogs and source anchors.
-5. Reconcile coverage and contradictions.
-6. Add the existing capability deep-dive facts.
-7. Freeze one shared model for the human and machine surfaces.
-8. Render project-level Polaris and capability drill-down from that model.
+2. Verify observation consent and secret-policy owner provenance.
+3. Discover and expose the closed source-path population.
+4. Read exact Git objects and classify content; record exclusions.
+5. Extract declared entities, statements, catalogs and source anchors.
+6. Reconcile coverage and contradictions.
+7. Add the existing capability deep-dive facts.
+8. Freeze one shared model for the human and machine surfaces.
+9. Render project-level Polaris and capability drill-down from that model.
 
 ## Risks / Trade-offs
 
@@ -117,6 +149,10 @@ Unknown. No observed-project code executes.
   first read concise while catalogs and exact artifacts remain reachable.
 - **Sensitive text enters a surface** → allowlisting and fail-closed secret
   classification precede model construction.
+- **A source escapes or becomes active content** → exact-object containment,
+  inert parsing and context-aware encoding reject it before model admission.
+- **A corpus exceeds local budgets** → the affected source stays counted and
+  renders Unknown with the breached limit.
 - **A stale summary conflicts with a higher authority** → both are retained;
   explicit Butlers precedence selects the effective statement and Polaris
   discloses the disagreement.

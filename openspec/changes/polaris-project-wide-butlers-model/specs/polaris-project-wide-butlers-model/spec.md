@@ -5,28 +5,47 @@
 Polaris explains the full declared shape of the configured Butlers project in
 plain language, with complete coverage, exact sources and visible gaps.
 
+Reader definitions:
+
+- The **source-path population** is closed by four rules: the five pillar roots
+  named in Butlers' root project-shape index; files named by each pillar's own
+  index within that root; baseline `openspec/specs/*/spec.md` Git-tree entries;
+  and top-level roster directories containing `butler.toml`, with their
+  `MANIFESTO.md` when present. Narrative links do not recurse.
+- A **declared item** is identified by source class, repository-relative path
+  and declared key (spec directory, RFC identifier, roster directory or indexed
+  heading). Items exist only after the body is lawfully admitted and parsed.
+- The source-path denominator remains known through body-read failures. An
+  unavailable body's within-source item denominator is Unknown, never copied
+  from a fixture or prior ambient state.
+
 ## ADDED Requirements
 
 ### Requirement: PWB-REQ-001 — Project-shape observation is revision-bound and explicitly scoped
 
 Group: Observation. Form: **state projection/query**.
 
-WHEN the POC observes Butlers, it SHALL bind the project-shape source manifest
-and every admitted source to the configured repository's exact Git revision,
-and SHALL expose the complete admitted source-path population to both human and
-machine readers.
+WHEN the POC observes Butlers, it SHALL bind the complete source-path
+population to the configured repository's exact Git revision and SHALL bind
+the consent record, secret-policy version, source-discovery version and
+observer/parser version as deterministic evaluation inputs. Human and machine
+readers SHALL receive those identities, the capture instant and the same source
+population. Every emitted project-shape fact SHALL carry its source identity,
+scope, capture instant and observer identity/version.
 
 - **Case**: observe a repository at a known revision whose five-pillar index
   and roster population are known independently.
-- **Observable**: the machine answer and Polaris expose the revision, admitted
-  source paths and source count.
+- **Observable**: the machine answer and Polaris expose the revision, source
+  paths, source count, capture instant and every deterministic input and
+  per-emission identity.
 - **Oracle**: compare the exposed paths and revision to an independent Git tree
-  listing and the declared five-pillar/roster indexes; exact set equality
+  listing and the closed discovery rules; exact set and input-identity equality
   decides.
 - **Oracle independence**: the expected set comes from Git and the Butlers
   indexes, not from the POC model.
-- **Falsifier**: one admitted source is absent, one undeclared arbitrary source
-  is included, or two exposed sources use different revisions.
+- **Falsifier**: one source is absent, one arbitrary source is included, one
+  deterministic input identity is missing, or exposed sources use different
+  revisions.
 
 #### Scenario: Source population is complete at one revision
 
@@ -38,7 +57,7 @@ machine readers.
 warrants:
   primary: VIS-7
   doctrine: [VIS-1, VIS-7, SEC-3]
-  contracts: [RFC2-1, RFC2-2, RFC2-3, RFC2-6, RFC2-7, RFC3-27, RFC4-1, RFC4-2, RFC4-3, RFC4-7, RFC4-8, RFC4-10, RFC4-11, RFC6-13, RFC6-15, RFC7-10]
+  contracts: [RFC2-1, RFC4-1, RFC4-2, RFC4-3, RFC4-11, RFC6-15, RFC7-10]
   policies: [CC-SPEC-4, CC-TEST-3]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []
@@ -49,22 +68,26 @@ warrants:
 
 Group: Coverage. Form: **invariant**.
 
-Polaris SHALL account for every item declared by the configured Butlers
-project-shape population across Heart and Soul, Legends and Lore, Spec and
-Spine, Lay and Land, Craft and Care and roster identity. Each item SHALL be in
-exactly one coverage state: modeled, Unknown or contradicted.
+For every lawfully admitted source body, Polaris SHALL account for each
+declared item discovered by the closed extraction rule across Heart and Soul,
+Legends and Lore, Spec and Spine, Lay and Land, Craft and Care and roster
+identity. Each admitted item SHALL be in exactly one coverage state: modeled,
+Unknown or contradicted. A source whose item population cannot be read SHALL
+retain its source identity while its item denominator renders Unknown.
 
 - **Case (sweep)**: enumerate the source population and every declared item in
-  each category at one revision, then compare it to the model.
+  each readable category at one revision, then compare it to the model; include
+  an unreadable source case.
 - **Observable**: per-category identities and reconciling counts are visible in
   the machine answer and reachable from Polaris.
 - **Oracle**: independent extraction from the revision-bound source population
   produces denominator D; modeled + Unknown + contradicted equals D, with each
-  identity appearing once.
+  identity appearing once; unreadable sources carry an Unknown item denominator.
 - **Oracle independence**: the expected denominator is extracted from the
   source files, not from the POC's coverage object.
-- **Falsifier**: an item disappears, appears twice, lacks a coverage state, or
-  the counts do not reconcile.
+- **Falsifier**: a known source disappears, an admitted item appears twice or
+  lacks a state, a known count does not reconcile, or an unavailable body's
+  item denominator is presented as known.
 
 #### Scenario: Declared shape reconciles
 
@@ -77,7 +100,7 @@ exactly one coverage state: modeled, Unknown or contradicted.
 warrants:
   primary: VIS-2
   doctrine: [VIS-1, VIS-2, VIS-7]
-  contracts: [RFC1-5, RFC1-7, RFC1-14, RFC2-6, RFC2-23, RFC2-24, RFC4-27, RFC6-16, RFC6-17, RFC6-21, RFC7-5, RFC7-6, RFC7-9, RFC7-15, RFC7-16, RFC7-19]
+  contracts: [RFC1-14, RFC2-23, RFC6-16, RFC6-17, RFC7-15]
   policies: [CC-SPEC-4, CC-SPEC-11, CC-TEST-5, CC-TEST-6]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []
@@ -88,38 +111,165 @@ warrants:
 
 Group: Coverage. Form: **prohibition**.
 
-The POC SHALL NOT shrink the declared denominator when a project-shape source
-is missing, unreadable, unclassifiable or excluded by the secret policy. The
-affected item SHALL render Unknown with a fixed reason and exclusion
-provenance that contains no excluded body content.
+The POC SHALL NOT shrink the source-path denominator when a project-shape
+source is missing, unreadable, unclassifiable or excluded by the secret policy.
+The affected source SHALL render Unknown with a fixed reason; its item
+denominator SHALL render Unknown unless an identified, lawfully admitted
+observation supplies that exact population. Exclusion provenance SHALL contain
+no excluded body content.
 
 - **Case (counterexample + sweep)**: remove one admitted source, deny one read,
   and supply one source that the content classifier excludes.
 - **Observable**: each case remains in coverage as Unknown; the machine answer
   and Polaris expose the reason without sensitive content.
-- **Oracle**: compare the pre-fault denominator to the post-fault denominator
-  and scan response bytes for sentinels; equal denominators, expected reasons
-  and zero sensitive sentinels decide.
+- **Oracle**: compare the Git source-path population to the post-fault source
+  population and scan every model, cache, log, HTML, JSON and record sink for
+  sentinels; equal source denominators, Unknown item denominator, expected
+  reasons and zero sensitive sentinels decide.
 - **Oracle independence**: injected filesystem faults and sentinel values are
   controlled outside the observer.
-- **Falsifier**: a faulted item disappears, becomes modeled, loses its reason,
+- **Falsifier**: a faulted source disappears, becomes modeled, loses its reason,
   or reproduces excluded content.
 
 #### Scenario: Excluded source fails closed
 
 - **WHEN** an admitted shape source cannot be classified as safe to index
-- **THEN** its declared item remains counted as Unknown
+- **THEN** its source identity remains counted as Unknown
+- **AND** its within-source item denominator is Unknown
 - **AND** only hash-not-body exclusion provenance is exposed
 
 ```yaml
 warrants:
   primary: SEC-5
   doctrine: [VIS-1, VIS-2, VIS-7, SEC-5]
-  contracts: [RFC2-23, RFC2-24, RFC3-30, RFC4-4, RFC5-16, RFC5-17, RFC6-27, RFC7-11, RFC7-19]
+  contracts: [RFC2-2, RFC2-23, RFC4-4, RFC5-16, RFC5-17, RFC6-27]
   policies: [CC-BAR-5, CC-TEST-6]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []
   parent_requirements: [three-surface-poc-experience/POC-REQ-032]
+```
+
+### Requirement: PWB-REQ-005 — Consent and policy authority precede every body read
+
+Group: Admission. Form: **prohibition**.
+
+The POC SHALL NOT read any Butlers project-shape body until an exact
+per-repository observation-consent record, a concrete secret-classification
+policy and the project-shape observer's registered adapter entry all have
+verifiable owner-act provenance. Their identities and versions SHALL be
+evaluation inputs. Absence, mismatch, staleness or unverifiable provenance
+SHALL produce zero body reads and a project-model Unknown.
+
+- **Case (counterexample sweep)**: provide absent, mismatched, stale,
+  unverifiable and valid consent/policy/registry triples to an observer with an
+  injected read spy.
+- **Observable**: invalid pairs yield zero read calls and fixed Unknown reasons;
+  only the valid pair permits reads.
+- **Oracle**: independently verify the two owner-act provenances, compare read
+  calls and evaluation inputs across all cases.
+- **Oracle independence**: authority fixtures and the read spy live outside
+  the observer.
+- **Falsifier**: any body is read before all three authorities verify, any
+  identity is absent from the evaluation, or invalid authority yields a fact.
+
+#### Scenario: Missing observation consent blocks content reads
+
+- **WHEN** no lawful Butlers observation-consent record exists
+- **THEN** the project-shape observer performs zero body reads
+- **AND** the project model reports Unknown with the consent reason
+
+```yaml
+warrants:
+  primary: SEC-5
+  doctrine: [VIS-2, VIS-4, SEC-2, SEC-5]
+  contracts: [RFC2-1, RFC3-16, RFC3-30, RFC4-3, RFC4-7, RFC5-12, RFC5-16]
+  policies: [CC-BAR-5, CC-SEC-5, CC-SEC-6, CC-TEST-6]
+  decisions: [POLARIS-DIR-2026-08-31]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: PWB-REQ-006 — Project-shape content stays contained, inert and bounded
+
+Group: Admission. Form: **prohibition**.
+
+The POC SHALL read only exact Git objects addressed by normalized
+repository-relative paths inside the consented repository. It SHALL NOT follow
+absolute paths, traversal, NUL-bearing paths, working-tree symlinks or
+submodules; execute observed content; or emit active Markdown, HTML, SVG,
+scripts, event handlers or unsafe URL schemes. Declared source-count, byte,
+depth, parse-time and rendered-output limits SHALL be evaluation inputs;
+breaches SHALL leave the source counted and Unknown.
+
+- **Case (counterexample sweep)**: exercise every prohibited path/content form
+  and each declared limit with controlled sentinels.
+- **Observable**: no request escapes the Git object reader, no active sentinel
+  reaches a sink, and every rejected/limited source stays visible as Unknown.
+- **Oracle**: injected Git/read/render spies plus complete sink-byte scans and
+  limit-boundary cases decide.
+- **Oracle independence**: malicious paths, content, limits and spies are
+  supplied outside production parsing/rendering code.
+- **Falsifier**: host filesystem access, submodule/symlink traversal, executed
+  active content, unsafe URL output, an unbounded operation, or a vanished
+  rejected source.
+
+#### Scenario: Active repository content remains inert
+
+- **WHEN** an admitted Markdown source contains raw active HTML or an unsafe URL
+- **THEN** no active content reaches Polaris, JSON, logs, caches or records
+- **AND** the affected source remains counted with an exclusion or Unknown reason
+
+```yaml
+warrants:
+  primary: SEC-3
+  doctrine: [VIS-1, VIS-2, VIS-7, SEC-3, SEC-5]
+  contracts: [RFC2-1, RFC2-23, RFC4-4, RFC5-16, RFC5-17, RFC5-19]
+  policies: [CC-BAR-5, CC-SEC-5, CC-SEC-6, CC-TEST-6]
+  decisions: [POLARIS-DIR-2026-08-31]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: PWB-REQ-007 — Every project claim carries its complete epistemic state
+
+Group: Truth. Form: **invariant**.
+
+Every project-fact claim SHALL be a challengeable Claim with resolvable
+support and SHALL carry the closed label, tier, exactly one primary reason,
+zero or more closed secondary reasons, freshness and evaluation identity that
+govern it. Unknown reasons SHALL use RFC2-24 values verbatim and expose their
+resolution routes. Aggregates SHALL disclose primary and secondary reason
+counts without a headline status, composite maturity or inferred success.
+
+- **Case (sweep)**: enumerate every project-fact claim and aggregate at one
+  evaluation, including fixtures for every admitted label, tier, reason and
+  freshness value plus out-of-vocabulary and missing-currency cases.
+- **Observable**: human and machine views expose identical complete tuples;
+  invalid/missing currency stays Unknown and aggregates expand to members.
+- **Oracle**: compare each tuple to independent literal vocabularies and
+  provenance-verified currency inputs; exhaust reason counts and supports
+  links; zero invalid, missing or folded values decides.
+- **Oracle independence**: the checker hard-codes the accepted vocabularies and
+  reads captured authority/evidence, importing no production vocabulary.
+- **Falsifier**: a positive claim lacks current support, a tuple field is
+  absent/out of vocabulary, a reason has no route, Unknown is folded into a
+  total, or an aggregate claims its own headline status.
+
+#### Scenario: Missing current evidence remains explicit Unknown
+
+- **WHEN** a declared project fact lacks evidence under its current currency bound
+- **THEN** its claim renders Unknown with the exact primary reason and route
+- **AND** its tier, freshness and evaluation identity remain visible
+
+```yaml
+warrants:
+  primary: VIS-2
+  doctrine: [VIS-1, VIS-2, VIS-7]
+  contracts: [RFC1-18, RFC1-19, RFC1-24, RFC2-9, RFC2-10, RFC2-23, RFC2-24, RFC2-25, RFC6-14, RFC6-17, RFC7-16, RFC7-33]
+  policies: [CC-BAR-3, CC-BAR-4, CC-TEST-5, CC-TEST-6]
+  decisions: [POLARIS-DIR-2026-08-31]
+  topology: []
+  parent_requirements: []
 ```
 
 ### Requirement: PWB-REQ-004 — Conflicting declarations are disclosed and precedence is explicit
@@ -152,7 +302,7 @@ otherwise the fact SHALL remain Unknown.
 warrants:
   primary: VIS-1
   doctrine: [VIS-1, VIS-2, VIS-7]
-  contracts: [RFC1-24, RFC2-7, RFC2-24, RFC7-2, RFC7-10, RFC7-11, RFC7-11(a)]
+  contracts: []
   policies: [CC-BAR-3, CC-TEST-6]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []
@@ -188,7 +338,7 @@ single capability's detail.
 warrants:
   primary: RFC7-1
   doctrine: [VIS-1, VIS-3]
-  contracts: [RFC7-1, RFC7-6, RFC7-13, RFC7-15, RFC7-17, RFC7-29]
+  contracts: [RFC7-1, RFC7-6, RFC7-13, RFC7-15]
   policies: [CC-BAR-3]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []
@@ -224,7 +374,7 @@ levels. A reader who stops at any level SHALL retain a true, coarser account.
 warrants:
   primary: RFC7-13
   doctrine: [VIS-1, VIS-3, VIS-7]
-  contracts: [RFC1-26, RFC3-27, RFC3-28, RFC6-20, RFC6-21, RFC7-3, RFC7-9, RFC7-10, RFC7-13, RFC7-14, RFC7-17, RFC7-34]
+  contracts: [RFC1-26, RFC3-27, RFC3-28, RFC6-20, RFC6-21, RFC7-13]
   policies: [CC-BAR-3]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []
@@ -235,25 +385,27 @@ warrants:
 
 Group: Presentation. Form: **prohibition**.
 
-Polaris SHALL use short headings that name Butlers concepts and direct
-sentences that state project facts, gaps or actions. It SHALL NOT use
-owner-facing meta-narration whose subject is the page, document, reading,
-section, movement or presentation mechanism, except a necessary scope or
-interaction instruction.
+Every owner-visible Polaris string SHALL carry exactly one role from the closed
+set `project-fact`, `epistemic-disclosure`, `action-label`,
+`scope-instruction`. Headings SHALL contain at most six words and entry ledes
+at most twenty. Heading, lede and notice strings SHALL NOT contain the
+case-insensitive words `page`, `document`, `reading`, `section`, `movement` or
+`presentation`. At most one entry `scope-instruction` may state the POC bound;
+each interactive control may carry one `action-label`.
 
 - **Case (counterexample + sweep)**: enumerate every owner-facing heading,
   lede, notice and explanatory sentence on Polaris, including a fixture with
   meta-narration.
-- **Observable**: project copy names Butlers concepts directly; the injected
-  meta-copy is rejected by the review oracle.
-- **Oracle**: a fresh reader classifies each string by its subject and purpose,
-  then performs the cold-open reading; zero unnecessary meta-narration and no
-  required rereading decide.
-- **Oracle independence**: the reviewer receives only rendered copy, the
-  direct-copy criteria and the project facts, not implementation labels or the
-  author's rationale.
-- **Falsifier**: unnecessary copy explains how to read the page instead of
-  explaining Butlers, or the owner must reread it to identify the project fact.
+- **Observable**: every string exposes one role; word limits, prohibited terms
+  and cardinalities are recoverable in the machine and human outputs.
+- **Oracle**: exhaust the owner-visible string population and apply the closed
+  role, word, term and cardinality rules; zero violations decides the
+  mechanical copy criterion. Cold-open comprehension is judged separately by
+  PWB-REQ-021.
+- **Oracle independence**: a plain DOM/text extractor with an independent word
+  counter and prohibited-term set performs the sweep.
+- **Falsifier**: an unclassified/multiply classified string, a limit breach, a
+  prohibited term or an extra scope/action instruction.
 
 #### Scenario: Section headings name project concepts
 
@@ -266,7 +418,7 @@ interaction instruction.
 warrants:
   primary: VIS-3
   doctrine: [VIS-1, VIS-3]
-  contracts: [RFC7-1, RFC7-13, RFC7-30]
+  contracts: []
   policies: [CC-BAR-3, CC-REV-4]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []
@@ -302,11 +454,136 @@ detail, with its lifecycle state and current authoritative requirement adjacent.
 warrants:
   primary: VIS-4
   doctrine: [VIS-1, VIS-2, VIS-4]
-  contracts: [RFC1-31, RFC6-24, RFC7-14, RFC7-26, RFC7-27]
+  contracts: [RFC1-14, RFC1-22, RFC1-25, RFC1-31, RFC7-14, RFC7-26]
   policies: [CC-BAR-5]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []
   parent_requirements: []
+```
+
+### Requirement: PWB-REQ-014 — Every narrative claim is bounded, anchored and non-authoritative
+
+Group: Presentation. Form: **invariant**.
+
+Every owner-visible narrative unit SHALL carry `presentation-artifact` and
+`non-citable` attributes and exactly one claim role: anchored project fact,
+explicitly non-normative framing, or epistemically labeled claim. Every
+anchored claim block SHALL have a typed, revision-bound anchor set that covers
+all its claims, contains no unused anchors and is small enough for a reader to
+identify which anchor supports which claim. No project artifact, evidence,
+snapshot input, work warrant or internal relation SHALL cite Polaris as its
+authority.
+
+- **Case (sweep)**: enumerate every narrative unit, claim and anchor, then
+  enumerate every citation/reference emitted by the Syzygy and Butlers source
+  populations at the evaluated revisions.
+- **Observable**: claim roles and non-authority attributes are machine-readable;
+  every claim has exact/minimal anchors and no downstream authority reference
+  targets Polaris.
+- **Oracle**: independent claim-to-source mapping establishes covering and
+  minimality; removing any used anchor fails one claim and adding an unused
+  anchor fails surplus; a complete downstream-reference scan has zero Polaris
+  authority targets.
+- **Oracle independence**: expected source spans and reference targets come
+  from captured artifacts, not the rendered claim blocks.
+- **Falsifier**: an unclassified narrative unit, uncovered claim, surplus or
+  ambiguous anchor, missing non-citable attribute, or downstream citation to
+  Polaris.
+
+#### Scenario: A project claim is supported without making Polaris authority
+
+- **WHEN** Polaris states one project fact
+- **THEN** the fact's bounded claim block identifies its exact source anchor
+- **AND** both human and machine forms mark the block non-citable presentation
+
+```yaml
+warrants:
+  primary: RFC7-2
+  doctrine: [VIS-1, VIS-2, VIS-7]
+  contracts: [RFC7-1, RFC7-2, RFC7-3, RFC7-5, RFC7-9, RFC7-10, RFC7-12, RFC7-29, RFC7-33]
+  policies: [CC-BAR-3, CC-REV-3, CC-TEST-5]
+  decisions: [POLARIS-DIR-2026-08-31]
+  topology: []
+  parent_requirements: [three-surface-poc-experience/POC-REQ-031]
+```
+
+### Requirement: PWB-REQ-015 — Capability detail preserves authority bands and exact intent
+
+Group: Presentation. Form: **invariant**.
+
+Every capability deep dive SHALL contain, in order, an `argument` band marked
+non-normative, a `contract` band with exact current requirement/scenario text,
+and a `reality` band sourced only from the shared model. Draft capabilities
+SHALL remain unadopted. Proposed deltas SHALL be adjacent to current text,
+visibly distinct, non-anchorable and unable to grant status; competing
+proposals SHALL remain separate candidate futures.
+
+- **Case (sweep)**: enumerate every capability deep dive at an evaluation that
+  includes current intent, a draft capability and two incompatible proposals.
+- **Observable**: band class/order, verbatim current text, proposal lifecycle,
+  non-anchorability and separate futures are recoverable in both channels.
+- **Oracle**: compare current requirement/scenario bytes to OpenSpec, compare
+  proposal identities/exclusivity to captured changes, and exhaust band and
+  anchor populations; exact bytes/order and zero proposal authority decide.
+- **Oracle independence**: current/proposed artifacts and exclusivity inputs
+  come from captured OpenSpec state, not Polaris.
+- **Falsifier**: a missing/misordered band, summarized normative text, draft
+  rendered adopted, proposal substituted/interleaved/anchored/green, or
+  competing proposals collapsed.
+
+#### Scenario: Proposed work stays beside exact current intent
+
+- **WHEN** a declared capability has an active proposal
+- **THEN** the contract band renders current requirement text verbatim
+- **AND** the proposal remains adjacent, distinct, non-anchorable and non-status-bearing
+
+```yaml
+warrants:
+  primary: RFC7-17
+  doctrine: [VIS-1, VIS-2, VIS-4]
+  contracts: [RFC1-14, RFC1-27, RFC7-12, RFC7-13, RFC7-14, RFC7-15, RFC7-17, RFC7-18, RFC7-26, RFC7-27, RFC7-29, RFC7-33]
+  policies: [CC-BAR-3, CC-BAR-5, CC-TEST-5]
+  decisions: [POLARIS-DIR-2026-08-31]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: PWB-REQ-016 — Project comprehension works without vision or a pointing device
+
+Group: Evaluation. Form: **invariant**.
+
+Every project distinction and summary-to-source path SHALL be recoverable by
+text and operable by keyboard without relying on color, position or layout. A
+nonvisual or keyboard-only cold-open walkthrough SHALL run for this material
+narrative change, and its record SHALL identify that mode.
+
+- **Case (sweep)**: traverse every disclosure, catalog, capability, anchor and
+  exact-source path by keyboard and through the nonvisual representation, then
+  perform the complete cold-open prompt set.
+- **Observable**: every distinction has text, focus order reaches every target,
+  no pointer-only action exists, and the walkthrough record names its mode.
+- **Oracle**: compare the complete interactive/path population to keyboard and
+  accessibility-tree traces, then apply PWB-REQ-021's prompt oracle.
+- **Oracle independence**: DOM/accessibility-tree enumeration and input events
+  come from a browser driver outside the renderer.
+- **Falsifier**: a color/layout-only distinction, unreachable target, pointer-
+  only action, keyboard trap, missing mode flag or failed cold-open path.
+
+#### Scenario: Keyboard-only owner reaches exact intent
+
+- **WHEN** the owner performs the material-change walkthrough without a pointing device
+- **THEN** every prompt and exact-source path remains operable and understandable
+- **AND** the retained run record identifies keyboard-only mode
+
+```yaml
+warrants:
+  primary: RFC7-34
+  doctrine: [VIS-1, VIS-3, VIS-7]
+  contracts: [RFC7-30, RFC7-31, RFC7-32, RFC7-34]
+  policies: [CC-BAR-3, CC-REV-4, CC-TEST-5]
+  decisions: [POLARIS-DIR-2026-08-31]
+  topology: []
+  parent_requirements: [three-surface-poc-experience/POC-REQ-061]
 ```
 
 ### Requirement: PWB-REQ-020 — Project-wide facts remain identical across human and machine views
@@ -337,7 +614,7 @@ same evaluation in the machine answer, preserving multiplicity.
 warrants:
   primary: RFC6-22
   doctrine: [VIS-1, VIS-7]
-  contracts: [RFC6-13, RFC6-14, RFC6-15, RFC6-17, RFC6-21, RFC6-22, RFC6-23, RFC7-18, RFC7-33, RFC7-34]
+  contracts: [RFC6-13, RFC6-14, RFC6-15, RFC6-22, RFC6-23, RFC7-1, RFC7-18, RFC7-33]
   policies: [CC-TEST-5]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []
@@ -349,18 +626,21 @@ warrants:
 Group: Evaluation. Form: **event-response**.
 
 WHEN the owner performs a cold-open Polaris walkthrough with no repository or
-authoring context, POC success SHALL require the reader to explain why Butlers
-exists, what it promises and refuses, its major architecture and capability
-groups, its V1 success criteria, where exact requirements live, and one current
-Unknown or contradiction with its source.
+authoring context, the complete RFC7-30 prompt set SHALL remain mandatory. In
+addition, POC success SHALL require the reader to explain Butlers' major
+architecture and capability groups and its V1 success criteria. The retained
+answer SHALL include why Butlers exists, what it promises and refuses, where
+exact requirements live, one current Unknown or contradiction with its source,
+and for one chosen fact how strongly Polaris claims to know it and what would
+make that claim stronger.
 
 - **Case**: an owner reads only Polaris at a named evaluation and answers the
   RFC7-30 prompts in their own words.
 - **Observable**: a retained walkthrough record contains the answers, paths,
-  evaluation identity and owner judgment.
+  evaluation identity, nonvisual/keyboard flag and owner judgment.
 - **Oracle**: compare each answer to its authoritative Butlers artifact and
-  require every named prompt to be answered without a confident error caused by
-  the surface.
+  exhaust the complete RFC7-30 prompt list plus the two project-wide additions;
+  every prompt answered without a confident surface-caused error decides.
 - **Oracle independence**: answer checking uses Butlers artifacts; the owner,
   not the implementation, supplies the judgment.
 - **Falsifier**: the reader cannot explain Butlers as a whole, confidently
@@ -377,7 +657,7 @@ Unknown or contradiction with its source.
 warrants:
   primary: RFC7-30
   doctrine: [VIS-1, VIS-2, VIS-3]
-  contracts: [RFC3-15, RFC3-16, RFC7-30, RFC7-31, RFC7-32]
+  contracts: [RFC7-25, RFC7-30, RFC7-31]
   policies: [CC-REV-4]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []
@@ -389,14 +669,17 @@ warrants:
 Group: Evaluation. Form: **prohibition**.
 
 The POC SHALL NOT render the project-wide Polaris evaluation successful unless
-a retained walkthrough execution record and a lawful owner judgment both bind
-the exact surface version and evaluation identity. Absent, stale or unverifiable
-judgment SHALL render the criterion Unknown, never met.
+a retained walkthrough execution record in `.syzygy/governance/records/` and a
+lawful owner judgment in `.syzygy/governance/decisions/` both bind the exact
+surface version and evaluation identity. Absent, stale or unverifiable judgment
+SHALL render the criterion Unknown, never met.
 
 - **Case (counterexample + sweep)**: evaluate absent, mismatched, stale and
   unverifiable judgment records plus one valid pair.
-- **Observable**: only the valid pair may carry the owner's verdict; every
-  invalid case renders Unknown with its reason.
+- **Observable**: the run record names surface version, evaluation identity,
+  nonvisual/keyboard mode and paths; the judgment names verdict, rationale,
+  judging party and run record. Only the valid pair may carry the owner's
+  verdict; every invalid case records `verdict-unlawful` and renders Unknown.
 - **Oracle**: compare record identities and owner-act provenance to the
   controlled inputs for all cases.
 - **Oracle independence**: record validity is checked outside the surface

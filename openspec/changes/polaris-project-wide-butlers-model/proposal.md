@@ -14,7 +14,12 @@ coverage explicit POC evaluation criteria.
 - The shared model accounts for every declared staffer, domain butler, module,
   connector and major interface in the configured Butlers revision.
 - Coverage reports a complete denominator. Missing or unreadable declarations
-  remain visible as Unknown; they never disappear from the count.
+  remain visible as Unknown; they never disappear from the known-source count.
+- Repository bodies are not read until a Butlers observation-consent record and
+  the observing project's concrete secret-classification policy both pass
+  owner-provenance checks.
+- Shape reads are bounded, repository-contained and inert: exact Git objects
+  only, no symlink/submodule escape, no active browser content and no execution.
 - Capability material becomes drill-down content beneath the project account.
   The existing WhatsApp slice remains a proving example, not the definition of
   Butlers.
@@ -22,6 +27,12 @@ coverage explicit POC evaluation criteria.
   capability's drill-down; it does not dominate the project-level narrative.
 - Polaris copy uses short headings and direct project language. It does not
   narrate the page's own structure or use prose to restate evidence mechanics.
+- Every project claim carries its complete epistemic tuple and a minimal,
+  typed source-anchor set; Polaris remains explicitly non-citable.
+- Capability detail preserves argument, exact contract and observed-reality
+  bands, with proposals visibly separate and unable to grant status.
+- Every distinction and source path remains text-recoverable and keyboard-
+  operable, including a nonvisual cold-open run.
 - The POC evaluation includes an owner cold-open walkthrough that tests whether
   the reader can explain Butlers as a whole.
 
@@ -66,16 +77,19 @@ provenance, parity, authentication or one-repository POC boundaries.
 
 ## Authority and sign-off
 
-This is a candidate change. It binds nothing and authorizes no implementation
-until the owner signs it off. The six signed
+This is a candidate change. It binds nothing. Owner sign-off is necessary but
+not sufficient for implementation: work must also remain inside a recorded,
+finding-derived POC improvement cycle and all security prerequisites must be
+satisfied. The six signed
 `three-surface-poc-experience` artifacts remain unchanged at their recorded
 digests.
 
 ## Authoring evidence
 
-- `CAPABILITY-COVERAGE.md` accounts for all 12 declared capability obligations.
+- `CAPABILITY-COVERAGE.md` accounts for every positive obligation and refusal
+  declared by this proposal and design.
 - `CONTRACT-COVERAGE.md` partitions all 324 accepted RFC 0001–0009 clauses.
-- `GOVERNING-DEPENDENCIES.md` is generated from the 11 requirement warrant
+- `GOVERNING-DEPENDENCIES.md` is generated from the requirement warrant
   blocks.
 - `docs/reviews/R-POC-OWNER-WALKTHROUGH-POLARIS.md` records the product finding
   that triggered this change.
