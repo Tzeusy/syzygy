@@ -3641,6 +3641,16 @@ def cg27_default_path_currency(res, corpus=None):
             "claim", note=note, details=findings)
 
 
+def _mutate(text, old, new):
+    """Apply a selftest fixture mutation, raising loudly instead of
+    silently discriminating nothing when `old` no longer occurs in
+    `text` (syzygy-e84 — a no-op replace once reported a false pass)."""
+    result = text.replace(old, new)
+    if result == text:
+        raise AssertionError(f"mutation did not apply: {old!r} not found")
+    return result
+
+
 def selftest():
     """Prove each new check can fail. A validator with no failing fixture is
     indistinguishable from a no-op, and this repository has shipped one.
@@ -4181,7 +4191,7 @@ def selftest():
         # P7 — visibility
         ("F7a CG-19 private substrate detected", gitpin(vis="private"), "FAIL"),
         ("F7b CG-19 undeclared visibility detected",
-         gitpin().replace("  visibility: public\n", ""), "FAIL"),
+         _mutate(gitpin(), "  visibility: public\n", ""), "FAIL"),
     ]
 
     def drift(a_commit=H40, i_commit=H40B, a_sha=H64, i_sha=H64B,
@@ -4227,10 +4237,9 @@ def selftest():
                            "      - path: skills/th/bar.md\n"
                            "        material: true\n"), "FAIL"),
         ("F8f CG-19 path present in one revision group only detected",
-         drift().replace("  installed:\n    commit: " + H40B,
-                         "  installed:\n    commit: " + H40B, 1)
-         .replace("      - path: skills/th/bar.md\n        sha256: " + H64B,
-                  "      - path: skills/th/added.md\n        sha256: " + H64B),
+         _mutate(drift(),
+                 "      - path: skills/th/bar.md\n        sha256: " + H64B,
+                 "      - path: skills/th/added.md\n        sha256: " + H64B),
          "FAIL"),
     ]
     for label, body, want in F:

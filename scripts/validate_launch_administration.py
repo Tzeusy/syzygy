@@ -1677,6 +1677,16 @@ def _deferral(citation, qid="F2"):
                 "the Wave A act closes this limb; reviewed at that act"}
 
 
+def _mutate(text, old, new):
+    """Apply a selftest fixture mutation, raising loudly instead of
+    silently discriminating nothing when `old` no longer occurs in
+    `text` (syzygy-e84 — a no-op replace once reported a false pass)."""
+    result = text.replace(old, new)
+    if result == text:
+        raise AssertionError(f"mutation did not apply: {old!r} not found")
+    return result
+
+
 def _selftest():
     import tempfile
     n_cases = [0]
@@ -2297,10 +2307,12 @@ def _selftest():
             txt = blob.decode()
             # Every parameter rewritten into a form the parsers cannot read,
             # none of them deleted — the fail-open case, not the absent case.
-            broken = (txt
-                      .replace("REQUIRED_WAVES: [", "REQUIRED_WAVES:\n  - [")
-                      .replace("DEFERRED_WAVES: [", "DEFERRED_WAVES:\n  - [")
-                      .replace("effective_version:", "effective-version:"))
+            broken = _mutate(
+                _mutate(
+                    _mutate(txt, "REQUIRED_WAVES: [",
+                            "REQUIRED_WAVES:\n  - ["),
+                    "DEFERRED_WAVES: [", "DEFERRED_WAVES:\n  - ["),
+                "effective_version:", "effective-version:")
             schema_bytes = _default_schema().read_text()
             with tempfile.TemporaryDirectory() as td:
                 d = Path(td)
@@ -2404,8 +2416,8 @@ def _selftest():
                     rec = _base_record(True)
                     # Every anchor in the record — evidence rows included —
                     # moves with the commit, or LA-6 rightly objects.
-                    rec = json.loads(json.dumps(rec).replace(
-                        rec["repository_commit"], head))
+                    rec = json.loads(_mutate(
+                        json.dumps(rec), rec["repository_commit"], head))
                     rec["instrument"]["sha256"] = hashlib.sha256(
                         inst_blob).hexdigest()
                     mutate(rec)
@@ -2520,7 +2532,8 @@ def _selftest():
                 # record will declare), and it lives in a SECOND commit so
                 # the record can name c1 while the prior names its ancestor.
                 prior_rec = _base_record(True)
-                prior_rec = json.loads(json.dumps(prior_rec).replace(
+                prior_rec = json.loads(_mutate(
+                    json.dumps(prior_rec),
                     prior_rec["repository_commit"], c0))
                 # prior: every row Met (the base record's default) — the
                 # record under test will regress A1, giving exactly one new.
@@ -2536,8 +2549,9 @@ def _selftest():
 
                 def _sv2(mutate, at_commit, prior_path=None):
                     rec = _base_record(True)
-                    rec = json.loads(json.dumps(rec).replace(
-                        rec["repository_commit"], at_commit))
+                    rec = json.loads(_mutate(
+                        json.dumps(rec), rec["repository_commit"],
+                        at_commit))
                     rec["instrument"]["sha256"] = inst_sha2
                     mutate(rec)
                     global REPO

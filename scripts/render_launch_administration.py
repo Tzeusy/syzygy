@@ -458,6 +458,16 @@ def render(record_path, computed, valid, notes=(), errors=()):
     return "\n".join(L) + "\n"
 
 
+def _mutate(text, old, new):
+    """Apply a selftest fixture mutation, raising loudly instead of
+    silently discriminating nothing when `old` no longer occurs in
+    `text` (syzygy-e84 — a no-op replace once reported a false pass)."""
+    result = text.replace(old, new)
+    if result == text:
+        raise AssertionError(f"mutation did not apply: {old!r} not found")
+    return result
+
+
 def _selftest():
     import tempfile
     from validate_launch_administration import _base_record
@@ -634,7 +644,7 @@ def _selftest():
         # and `_quoted` neutralized only `\n`. One quoted site, one inline
         # site, one table-cell site; `splitlines()` sees what a Markdown
         # renderer sees.
-        FORGERY_CR = FORGERY.replace("\n", "\r")
+        FORGERY_CR = _mutate(FORGERY, "\n", "\r")
         CR_SITES = (
             ("falsification_summary (quoted, \\r)", lambda r: r.__setitem__(
                 "falsification_summary", FORGERY_CR)),
@@ -706,7 +716,7 @@ def _selftest():
         leaf_paths = list(_string_leaves(_maximal()))
         swept, covered_prior_path = 0, False
         for spelling, forgery in (("\\n", FORGERY),
-                                  ("\\r", FORGERY.replace("\n", "\r"))):
+                                  ("\\r", _mutate(FORGERY, "\n", "\r"))):
             for path in leaf_paths:
                 recL = _maximal()
                 _set_leaf(recL, path, forgery)
@@ -889,7 +899,7 @@ def _selftest():
         # --check must detect a hand-edited report.
         with tempfile.NamedTemporaryFile("w", suffix=".md",
                                          delete=False) as f4:
-            f4.write(out1.replace("GATE VERDICT: ", "GATE VERDICT: READY "))
+            f4.write(_mutate(out1, "GATE VERDICT: ", "GATE VERDICT: READY "))
             p4 = Path(f4.name)
         try:
             check("--check detects a hand-edited report",
