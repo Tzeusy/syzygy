@@ -5,3 +5,4 @@ export * from './worker-change-observation.js';
 export * from './orrery-projection.js';
 export * from './trajectory-projection.js';
 export * from './materialization.js';
+export * from './test-artifact-verification.js';

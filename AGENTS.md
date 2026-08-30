@@ -363,3 +363,49 @@ can be authorized.
   exhaustive marker sweep like `routes.test.ts` already does for the home
   page); the fresh-checkout demo was run manually against the real Butlers
   repo this session, not from a truly fresh `git clone`.
+
+### Test-artifact verification (syzygy-0r9)
+
+- `packages/three-surface-poc-core/src/test-artifact-verification.ts` is the
+  ingestion/verification module: a file-backed `TestArtifactRecord` (command,
+  exit status, capture time, commit, scope, digest, safe summary — never raw
+  test body/exceptions, AC5), parsed from a real JUnit artifact by reading
+  only the opening `<testsuite>`/`<testsuites>` tag's attributes (never
+  descending into `<testcase>`/`<failure>` content). `resolveTestArtifactVerification`
+  is pure and fail-closed: Verified only when the record's commit exactly
+  matches the git-observed `changed-or-merged` commit from
+  `worker-change-observation.ts`, the scope matches the bounded seam, the
+  exit code is 0, and capture time is neither future-dated nor earlier than
+  the commit itself.
+- **This evidence is scoped to the `WORKER_CHANGE_SEAM`
+  (`whatsapp_user_client.py`, intent `REQ-connector-base-spec-001`, exported
+  as `WORKER_CHANGE_INTENT_ID`) — a different capability/code file than
+  `code:identity-resolution`/`REQ-switchboard-identity-001`.** It is
+  surfaced only through the top-level `PocModel.testArtifactVerification`
+  field and the Trajectory worker-change badge; it must never be wired into
+  the `evidence:focused-pytest` entity or `relationship:code-to-evidence` in
+  `model.ts`, since those belong to the unrelated identity-resolution
+  capability — doing so would render a false "Verified" claim against code
+  the captured test never touches. (First implementation pass made exactly
+  this mistake and had to be reverted before commit — watch for it in
+  review.)
+- Real capture tool: `apps/three-surface-poc/src/capture-test-artifact.ts`
+  (pure orchestration, injectable) + `capture-test-artifact-main.ts` (real
+  CLI, `npm run poc:capture-test-artifact -- --repo <butlers> --scope <path>
+  --state-dir <dir> [--python <bin>]`). It is a separate, manually-invoked
+  binary — `main.ts` (the running daemon) never imports it and never shells
+  the observed test suite itself (SEC-3). Butlers' pytest needs its own venv
+  interpreter (`/home/tze/GitHub/butlers/.venv/bin/python`, not bare
+  `python3`) or collection fails with `ModuleNotFoundError: No module named
+  'butlers'` before any JUnit file is written.
+- Verified end-to-end this session with a real, live-gated test
+  (`test-artifact-verification.live.test.ts`, `SYZYGY_POC_BUTLERS_REPO`- and
+  `SYZYGY_POC_BUTLERS_PYTHON`-gated): ran the real focused pytest suite
+  against real Butlers HEAD (83 passed), ingested the real artifact, and
+  rendered Verified through the full shared model. Because the git-based
+  worker-change observer only matches commits carrying a literal
+  `[<materialized-bead-id>]` marker, and no real historical Butlers commit
+  carries a live Syzygy bead marker, the *composed* live proof injects
+  `runGit` to bind the observer to the real captured commit — the observer's
+  own real-git marker-matching is separately covered by
+  `worker-change-observation.test.ts`.

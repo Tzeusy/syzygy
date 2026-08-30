@@ -8,6 +8,11 @@ import { observeWorkerChange, type WorkerChangeResult, type WorkerChangeSeam } f
 import { projectOrrery, type OrreryProjection } from './orrery-projection.js';
 import { projectTrajectory, type TrajectoryProjection } from './trajectory-projection.js';
 import type { MaterializationRecord } from './materialization.js';
+import {
+  resolveTestArtifactVerification,
+  type TestArtifactRecord,
+  type TestArtifactVerificationResult,
+} from './test-artifact-verification.js';
 
 const RECENT_CLOSED_WINDOW = 50;
 const BEAD_PREFIX = 'bu' as const;
@@ -21,12 +26,26 @@ const WORKER_CHANGE_SEAM: WorkerChangeSeam = {
   testPath: 'tests/connectors/test_whatsapp_user_client.py',
 } as const;
 
+// The intent this bounded seam's change and test evidence bind to, per
+// syzygy-8e1's own governing-intent description — distinct from
+// intent:req-switchboard-identity-001 below, which governs the separate
+// capability:whatsapp-transport-identity code region. Exported so the
+// Trajectory surface can name it on the one place this evidence is
+// honestly scoped to: the worker-change badge, never the identity-
+// resolution entity graph above.
+export const WORKER_CHANGE_INTENT_ID = 'REQ-connector-base-spec-001' as const;
+
 export type PocEpistemic =
   | { readonly label: 'Observed'; readonly basis: string }
   | { readonly label: 'Unknown'; readonly reason: string };
 
 export interface PocProvenance {
-  readonly kind: 'repository-file' | 'git-revision' | 'manual-mapping' | 'materialization-record';
+  readonly kind:
+    | 'repository-file'
+    | 'git-revision'
+    | 'manual-mapping'
+    | 'materialization-record'
+    | 'test-artifact-record';
   readonly source: string;
   readonly revision: string;
   readonly digest?: string | undefined;
@@ -84,6 +103,7 @@ export interface PocModel {
   readonly codeStructure: CodeStructureResult;
   readonly workItems: WorkItemsResult;
   readonly workerChange: WorkerChangeResult;
+  readonly testArtifactVerification: TestArtifactVerificationResult;
   readonly orrery: OrreryProjection;
   readonly trajectory: TrajectoryProjection;
 }
@@ -96,6 +116,7 @@ export interface BuildButlersPocModelInput {
   readonly runGit?: (repoRoot: string, args: readonly string[]) => string;
   readonly runWorkItemQuery?: (repoRoot: string, sql: string) => string;
   readonly materializationRecord?: MaterializationRecord | null;
+  readonly testArtifactRecord?: TestArtifactRecord | null;
 }
 
 export class PocObservationError extends Error {
@@ -294,6 +315,19 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     seam: WORKER_CHANGE_SEAM,
     capturedAt: input.evaluation.asOf,
     ...(input.runGit === undefined ? {} : { runGit: input.runGit }),
+  });
+  const observedChangeCommit =
+    workerChange.kind === 'observed' && workerChange.state === 'changed-or-merged' && workerChange.commit !== null
+      ? workerChange.commit.sha
+      : null;
+  const observedChangeCommitAuthoredAt =
+    workerChange.kind === 'observed' && workerChange.commit !== null ? workerChange.commit.authoredAt : null;
+  const testArtifactVerification = resolveTestArtifactVerification({
+    record: input.testArtifactRecord ?? null,
+    expectedScope: WORKER_CHANGE_SEAM.testPath,
+    observedCommit: observedChangeCommit,
+    commitAuthoredAt: observedChangeCommitAuthoredAt,
+    evaluationAsOf: input.evaluation.asOf,
   });
 
   const entities: readonly PocEntity[] = [
@@ -496,6 +530,7 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     codeStructure,
     workItems,
     workerChange,
+    testArtifactVerification,
     orrery: orreryProjection,
     trajectory: trajectoryProjection,
     surfaces: [
