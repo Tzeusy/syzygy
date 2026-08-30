@@ -261,6 +261,23 @@ is **superseded by a fixture 3, never edited** — filed as work, not fixed
 here. Until then CC-IMPACT-7 continues to name fixture 2, and this record is
 what a reader needs to know its limits.
 
+**Superseded-by note (2026-08-30), recorded here rather than in fixture 2's
+own bytes, per the same rule stated above.** `../SHAPE-TO-SPEC-PROPAGATION-FIXTURE-3.md`
+now exists, with a separate `../SHAPE-TO-SPEC-PROPAGATION-FIXTURE-3-ANSWER-KEY.md`,
+and repairs all three defects this run and the two above it found: `CAP-3`
+declares `topology: [TOPO-1]` and the shape change amends `TOPO-1`, so all
+six CC-SPEC-2 warrant classes are exercised, one of them (topology) as a
+live sweep trigger for the first time; the task block quotes CC-IMPACT-2 and
+CC-IMPACT-3 directly rather than only the four-set schema; and the
+FAC-3-equivalent requirement's authority-table entry (`DIS-3`/`RFC6-20`) is
+rewritten to settle in one hop, with no undecidable/affected split. Fixture
+2's bytes remain exactly as RD-59 read them — this note is fixture 3's
+supersession banner, kept out of fixture 2's digest. **CC-IMPACT-7 still
+names fixture 2 by path and sha256 today**; retargeting it to fixture 3
+requires a fresh, independent blind run against fixture 3, graded by an
+administrator who has not read its answer key, and that run is explicitly
+out of scope for the change that authored fixture 3.
+
 `[Inferred]` — that the path works. One passing run against one fixture
 built by the session that wrote the clause it exercises is weak evidence, and
 the administrator shares the corpus authors' model family. It is more than
