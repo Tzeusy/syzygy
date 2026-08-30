@@ -60,12 +60,33 @@ export function extractDistinctions(fact: ServedFact): readonly MachineReadableD
   return distinctions;
 }
 
+// A cited consent/withdrawal record, machine-readable as structure —
+// mirrors extractAuthorityDistinctions' two-entries-one-name pattern
+// below (a text-attribute summary plus a structure-recoverable detail),
+// so citing a record never mints a distinction name outside the closed
+// nine (CAP1-REQ-064). `citation` is omitted whenever the coverage state
+// has no specific record to name (R-S2 finding #4: capture-failed,
+// stale, and unconsented-by-withdrawal DO have one to cite).
 export function extractConsentDistinction(
   consentState: string,
+  citation?: {
+    readonly recordId: string;
+    readonly scope: string;
+    readonly attribution: string;
+    readonly grantState: string;
+  },
 ): readonly MachineReadableDistinction[] {
-  return [
+  const distinctions: MachineReadableDistinction[] = [
     { name: 'consent-state', value: consentState, recoverableBy: 'text-attribute' },
   ];
+  if (citation !== undefined) {
+    distinctions.push({
+      name: 'consent-state',
+      value: `record:${citation.recordId} scope:${citation.scope} attribution:${citation.attribution} grantState:${citation.grantState}`,
+      recoverableBy: 'structure',
+    });
+  }
+  return distinctions;
 }
 
 export function extractProposalDistinctions(

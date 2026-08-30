@@ -15,6 +15,7 @@ import {
 
 import { evaluateProject, type ProjectEvaluation } from './pipeline.js';
 import { machineRoutes, MACHINE_PROJECT_PATH } from './routes-machine.js';
+import { humanRoutes, HUMAN_PAGE_PATH, type EntrySourceRead } from './routes-human.js';
 import { createDaemon, type RunningDaemon } from './server.js';
 
 // RT4 — machine-endpoint tests over a REAL daemon, real sockets, and a
@@ -424,5 +425,149 @@ describe('RT4 — the authenticated JSON machine endpoint', () => {
     const first = await (await fetch(url, authed(token))).text();
     const second = await (await fetch(url, authed(token))).text();
     expect(second).toBe(first);
+  });
+});
+
+// R-S2 non-blocking finding #4 — a consented-but-capture-failed
+// repository and a withdrawn pair each cite a specific consent/
+// withdrawal record now, and the human page (RT5) and the machine
+// endpoint (RT4) must cite the SAME record for the SAME repository. Both
+// route sets are mounted on one REAL daemon over one REAL evaluated
+// fixture (real filesystem observation, real consent-record files); the
+// two fetched outputs are compared directly — neither channel's claim
+// is consulted, only what each actually served (CAP1-REQ-041 parity by
+// construction, judged by an independent comparison).
+describe('R-S2 finding #4 — human/machine citation parity for capture-failed and withdrawn repositories', () => {
+  const CITATION_PROJECT_ID = 'prj-rt4-citation';
+  const CITATION_DECLARATION_SOURCE = `
+schema_version: "1"
+project:
+  id: ${CITATION_PROJECT_ID}
+  name: RT4 Citation Fixture
+owner: test-owner@example.com
+repositories:
+  - id: repo-governance-root
+    role: governance-root
+    consent: consent-gov-root
+  - id: repo-capture-failed
+    role: observed-source
+    consent: consent-capture-failed
+  - id: repo-withdrawn
+    role: observed-source
+    consent: consent-withdrawn
+consents:
+  - consent-gov-root
+  - consent-capture-failed
+  - consent-withdrawn
+declarations:
+  spec_root: openspec/
+relations: []
+profiles: []
+`;
+
+  function writeCitationConsentRecord(
+    decisionsDir: string,
+    id: string,
+    repository: string,
+    grantState: 'in-force' | 'withdrawn',
+  ): void {
+    writeFileSync(
+      join(decisionsDir, `${id}.yaml`),
+      [
+        `id: ${id}`,
+        `project: ${CITATION_PROJECT_ID}`,
+        `repository: ${repository}`,
+        'scope: full',
+        'attribution: test-owner',
+        `grant_state: ${grantState}`,
+        '',
+      ].join('\n'),
+      'utf8',
+    );
+  }
+
+  async function citationFixture(): Promise<
+    Extract<ProjectEvaluation, { kind: 'project-evaluated' }>
+  > {
+    const root = tempDir('rt4-citation-root-');
+    const decisionsDir = join(root, '.syzygy', 'governance', 'decisions');
+    mkdirSync(decisionsDir, { recursive: true });
+    writeFileSync(join(root, '.syzygy', 'project.yaml'), CITATION_DECLARATION_SOURCE, 'utf8');
+    writeCitationConsentRecord(decisionsDir, 'consent-gov-root', 'repo-governance-root', 'in-force');
+    writeCitationConsentRecord(
+      decisionsDir,
+      'consent-capture-failed',
+      'repo-capture-failed',
+      'in-force',
+    );
+    writeCitationConsentRecord(decisionsDir, 'consent-withdrawn', 'repo-withdrawn', 'withdrawn');
+
+    // repo-capture-failed is deliberately given NO on-disk root — it
+    // never reaches an observation outcome, so core renders it
+    // capture-failed (source-uncaptured-or-unreachable) even though it
+    // IS consented; repo-withdrawn resolves unconsented on consent
+    // grounds alone, before any observation is consulted.
+    const result = await evaluateProject(root, {
+      evaluation: EVALUATION,
+      repositoryRoots: { 'repo-governance-root': root },
+    });
+    if (result.kind !== 'project-evaluated') {
+      throw new Error(`fixture did not evaluate: ${result.kind}`);
+    }
+    return result;
+  }
+
+  const absentEntrySource: (entryPath: unknown) => EntrySourceRead = () => ({ state: 'absent' });
+
+  it('capture-failed and withdrawal citations agree between the human page and the machine endpoint', async () => {
+    const evaluation = await citationFixture();
+
+    const routes = [
+      ...humanRoutes({ getEvaluation: () => evaluation, readEntrySource: absentEntrySource }),
+      ...machineRoutes({ getEvaluation: () => evaluation }),
+    ];
+    const start = await createDaemon({
+      stateDir: join(tempDir('rt4-citation-state-'), 'state'),
+      routes,
+      port: 0,
+    });
+    if (!start.started) {
+      throw new Error(`daemon failed to start: ${start.failure.kind}: ${start.failure.detail}`);
+    }
+    running.push(start.daemon);
+    const token = readFileSync(start.daemon.credentialPath, 'utf8').trim();
+    const base = `http://127.0.0.1:${start.daemon.port}`;
+
+    const humanHtml = await (await fetch(`${base}${HUMAN_PAGE_PATH}`)).text();
+    const machineBody = await jsonOf(
+      await fetch(`${base}${MACHINE_PROJECT_PATH}`, authed(token)),
+    );
+
+    function machineCitation(repositoryId: string): string | undefined {
+      const entry = machineBody.distinctions.perRepositoryConsent.find(
+        (candidate: { repositoryId: string }) => candidate.repositoryId === repositoryId,
+      );
+      const structureEntry = entry?.distinctions.find(
+        (d: { recoverableBy: string }) => d.recoverableBy === 'structure',
+      );
+      return structureEntry?.value;
+    }
+
+    // capture-failed: both channels cite the same in-force record.
+    expect(humanHtml).toContain('data-repository-id="repo-capture-failed"');
+    expect(humanHtml).toMatch(
+      /repo-capture-failed:[^<]*consent consent-capture-failed in-force/,
+    );
+    expect(machineCitation('repo-capture-failed')).toBe(
+      'record:consent-capture-failed scope:full attribution:test-owner grantState:in-force',
+    );
+
+    // unconsented-by-withdrawal: both channels cite the WITHDRAWAL
+    // record, never a favourable or absent citation.
+    expect(humanHtml).toContain('data-withdrawn-record-id="consent-withdrawn"');
+    expect(humanHtml).toContain('Withdrawn consent consent-withdrawn (withdrawn).');
+    expect(machineCitation('repo-withdrawn')).toBe(
+      'record:consent-withdrawn scope:full attribution:test-owner grantState:withdrawn',
+    );
   });
 });

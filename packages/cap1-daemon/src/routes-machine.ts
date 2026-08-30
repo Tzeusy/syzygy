@@ -14,6 +14,7 @@ import {
   type MachineAnswer,
   type MachineReadableDistinction,
   type Proposal,
+  type RepositoryCoverage,
   type StateRendering,
 } from '@syzygy/cap1-core';
 
@@ -39,6 +40,30 @@ import type { Route } from './server.js';
 // Honesty on the non-evaluated arms (VIS-2): a declaration that failed
 // to validate or was never observed is served as its NAMED arm with its
 // verbatim reasons — never a 500, never an empty or favourable 200.
+
+// R-S2 finding #4 parity fix: the consent/withdrawal record a coverage
+// entry cites, threaded onto the machine channel's per-repository
+// distinction the same way routes-human.ts's renderBoundaryRecord cites
+// it (CAP1-REQ-041 parity by construction — both channels read this
+// citation off the SAME `RepositoryCoverage` entry core computed, never
+// off each other). Scoped to exactly the states this fix touches
+// (capture-failed, stale, unconsented-by-withdrawal): observed and
+// degraded-partial already have their own established machine-channel
+// shape and are out of this fix's scope.
+function consentCitationForDistinction(
+  entry: RepositoryCoverage,
+): { recordId: string; scope: string; attribution: string; grantState: string } | undefined {
+  switch (entry.state) {
+    case 'capture-failed':
+    case 'stale':
+      return entry.consent;
+    case 'unconsented':
+      return entry.basis === 'withdrawn' ? entry.consent : undefined;
+    case 'observed':
+    case 'degraded-partial':
+      return undefined;
+  }
+}
 
 // The one machine route this wave mounts. Exact pathname; the daemon's
 // route registry matches it byte-for-byte.
@@ -164,7 +189,10 @@ export function machineProjectBody(evaluation: ProjectEvaluation): MachineProjec
           })),
           perRepositoryConsent: evaluation.coverage.repositories.map((entry) => ({
             repositoryId: entry.repositoryId,
-            distinctions: extractConsentDistinction(entry.state),
+            distinctions: extractConsentDistinction(
+              entry.state,
+              consentCitationForDistinction(entry),
+            ),
           })),
           perProposal: state.proposed.map((rendering) =>
             extractProposalDistinctions(rendering),
@@ -198,7 +226,7 @@ function sweepOver(
     [],
     [],
     evaluation.coverage.repositories.flatMap((entry) =>
-      extractConsentDistinction(entry.state),
+      extractConsentDistinction(entry.state, consentCitationForDistinction(entry)),
     ),
   );
 }

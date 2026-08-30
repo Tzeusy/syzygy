@@ -347,16 +347,28 @@ function renderBoundaryRecord(record: RepositoryCoverage): string {
         `<span class="coverage-record"${base}${attr('data-coverage-state', record.state)}${attr('data-consent-state', record.consent.grantState)}>` +
         `${escapeHtml(record.repositoryId)}: observed; consent ${escapeHtml(record.consent.recordId)} ${escapeHtml(record.consent.grantState)}; captured scope ${escapeHtml(record.capturedScope)}</span> `
       );
-    case 'unconsented':
+    case 'unconsented': {
+      // R-S2 finding #4: a withdrawn pair cites WHICH withdrawal record
+      // defeated the grant, the same way an in-force citation names its
+      // record below — a record-absence unconsented entry has no record
+      // to cite, so it renders exactly as before.
+      const citation = record.basis === 'withdrawn' ? record.consent : undefined;
+      const citationAttrs =
+        citation !== undefined ? attr('data-withdrawn-record-id', citation.recordId) : '';
+      const citationText =
+        citation !== undefined
+          ? ` Withdrawn consent ${escapeHtml(citation.recordId)} (${escapeHtml(citation.grantState)}).`
+          : '';
       return (
-        `<span class="coverage-record"${base}${attr('data-coverage-state', record.state)}${attr('data-consent-state', 'unconsented')}${attr('data-epistemic-label', record.label)}${attr('data-unknown-reason', record.reason)}${attr('data-presentation', record.presentation)}>` +
-        `${escapeHtml(record.repositoryId)}: ${escapeHtml(record.label)} — ${escapeHtml(record.reason)} (a standing policy state; resolution route: ${escapeHtml(record.resolutionRoute)})</span> `
+        `<span class="coverage-record"${base}${attr('data-coverage-state', record.state)}${attr('data-consent-state', 'unconsented')}${citationAttrs}${attr('data-epistemic-label', record.label)}${attr('data-unknown-reason', record.reason)}${attr('data-presentation', record.presentation)}>` +
+        `${escapeHtml(record.repositoryId)}: ${escapeHtml(record.label)} — ${escapeHtml(record.reason)} (a standing policy state; resolution route: ${escapeHtml(record.resolutionRoute)}).${citationText}</span> `
       );
+    }
     case 'capture-failed':
     case 'stale':
       return (
-        `<span class="coverage-record"${base}${attr('data-coverage-state', record.state)}${attr('data-epistemic-label', record.label)}${attr('data-unknown-reason', record.reason)}>` +
-        `${escapeHtml(record.repositoryId)}: ${escapeHtml(record.label)} — ${escapeHtml(record.reason)}</span> `
+        `<span class="coverage-record"${base}${attr('data-coverage-state', record.state)}${attr('data-consent-state', record.consent.grantState)}${attr('data-epistemic-label', record.label)}${attr('data-unknown-reason', record.reason)}>` +
+        `${escapeHtml(record.repositoryId)}: ${escapeHtml(record.label)} — ${escapeHtml(record.reason)}; consent ${escapeHtml(record.consent.recordId)} ${escapeHtml(record.consent.grantState)}</span> `
       );
     case 'degraded-partial':
       return (
