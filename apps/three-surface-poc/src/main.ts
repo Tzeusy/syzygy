@@ -8,6 +8,7 @@ import {
   buildButlersPocModel,
   PocObservationError,
   readMaterializationRecordFile,
+  readTestArtifactRecordFile,
 } from '@syzygy/three-surface-poc-core';
 
 import { parsePocCli } from './cli.js';
@@ -95,12 +96,22 @@ if (parsed.kind === 'help') {
           // positive claim is made without it.
           materializationRecord = null;
         }
+        let testArtifactRecord;
+        try {
+          testArtifactRecord = readTestArtifactRecordFile(stateDir);
+        } catch {
+          // Same fail-closed posture as the materialization record above:
+          // an unreadable ingested artifact must never be treated as
+          // "not yet ingested" (which would be silently more permissive).
+          testArtifactRecord = null;
+        }
         return buildButlersPocModel({
           repoRoot,
           repositoryRevision,
           observerRevision,
           evaluation: { snapshot, asOf: new Date().toISOString() },
           materializationRecord,
+          testArtifactRecord,
         });
       }
 

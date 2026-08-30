@@ -1,6 +1,7 @@
 import { escapeHtml } from '@syzygy/cap1-daemon';
 import type { PocModel, WorkerChangeObserved } from '@syzygy/three-surface-poc-core';
 import type { TrajectoryColumn, TrajectoryLaneItem } from '@syzygy/three-surface-poc-core';
+import { WORKER_CHANGE_INTENT_ID, type TestArtifactVerificationResult } from '@syzygy/three-surface-poc-core';
 
 import { MATERIALIZE_PANEL_STYLE, renderMaterializePanel } from './materialize-action.js';
 import { pageShell } from './page-shell.js';
@@ -53,7 +54,17 @@ const WORKER_CHANGE_STATE_LABEL = {
   'changed-or-merged': 'Changed / merged',
 } as const;
 
-function workerChangeBadge(workerChange: WorkerChangeObserved | null): string {
+function verificationBadge(verification: TestArtifactVerificationResult): string {
+  if (verification.kind === 'verified') {
+    return `<span class="epistemic epistemic-observed" data-parity-field="worker-change-verification" title="A captured, passing focused-pytest artifact bound to commit ${escapeHtml(verification.record.repositoryCommit)} and the governing intent ${escapeHtml(WORKER_CHANGE_INTENT_ID)}.">Verification: Verified — ${escapeHtml(verification.record.summary)}</span>`;
+  }
+  return `<span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification" title="${escapeHtml(verification.reason)}">Verification: Not verified</span>`;
+}
+
+function workerChangeBadge(
+  workerChange: WorkerChangeObserved | null,
+  verification: TestArtifactVerificationResult,
+): string {
   if (workerChange === null) {
     return '';
   }
@@ -71,7 +82,7 @@ function workerChangeBadge(workerChange: WorkerChangeObserved | null): string {
   return `<div class="worker-change" data-parity-field="worker-change-state">
     <span class="wi-status">External worker: ${escapeHtml(label)}</span>
     ${detail === '' ? '' : `<span class="worker-change-detail">${detail}</span>`}
-    <span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification" title="Git activity or a merge is not verification: no test artifact has been ingested for this change.">Verification: Not verified</span>
+    ${verificationBadge(verification)}
   </div>`;
 }
 
@@ -79,13 +90,14 @@ function itemCard(
   item: TrajectoryLaneItem,
   range: { readonly earliest: string; readonly latest: string } | null,
   workerChange: WorkerChangeObserved | null,
+  testArtifactVerification: TestArtifactVerificationResult,
 ): string {
   return `<li class="wi-card" id="workitem-${escapeHtml(item.id)}" data-work-item-id="${escapeHtml(item.id)}">
     <a class="wi-title" href="#workitem-${escapeHtml(item.id)}" data-parity-field="work-item-title">${escapeHtml(item.title)}</a>
     <code class="wi-id" data-parity-field="work-item-id">${escapeHtml(item.id)}</code>
     <span class="wi-status" data-parity-field="work-item-status">${escapeHtml(item.status)}</span>
     <span class="epistemic epistemic-unknown" data-parity-field="work-item-verification" title="Activity is not verification: no test evidence has been ingested for this item.">Verification: Unknown</span>
-    ${workerChangeBadge(workerChange)}
+    ${workerChangeBadge(workerChange, testArtifactVerification)}
     ${laneBar(item, range)}
   </li>`;
 }
@@ -128,7 +140,14 @@ export function renderTrajectoryPage(model: PocModel): string {
       return `<section class="board-column" aria-label="${escapeHtml(column)} column">
         <h2>${escapeHtml(column)} <span class="count">(${items.length})</span></h2>
         <ol class="wi-list">${items
-          .map((item) => itemCard(item, trajectory.timeRange, workerChange !== null && workerChange.beadId === item.id ? workerChange : null))
+          .map((item) =>
+            itemCard(
+              item,
+              trajectory.timeRange,
+              workerChange !== null && workerChange.beadId === item.id ? workerChange : null,
+              model.testArtifactVerification,
+            ),
+          )
           .join('')}</ol>
       </section>`;
     }).join('');

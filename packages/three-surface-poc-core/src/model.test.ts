@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -9,6 +10,7 @@ import {
   type PocEntity,
   type PocRelationship,
 } from './model.js';
+import type { TestArtifactRecord } from './test-artifact-verification.js';
 
 const cleanups: string[] = [];
 
@@ -41,6 +43,105 @@ function butlersFixture(): string {
 
 function byId<T extends PocEntity | PocRelationship>(items: readonly T[]): Map<string, T> {
   return new Map(items.map((item) => [item.id, item]));
+}
+
+function git(root: string, args: readonly string[]): string {
+  return execFileSync('git', ['-C', root, ...args], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'ignore'],
+  }).trim();
+}
+
+const WORKER_CHANGE_SOURCE_PATH = 'src/butlers/connectors/whatsapp_user_client.py';
+const WORKER_CHANGE_TEST_PATH = 'tests/connectors/test_whatsapp_user_client.py';
+
+/** The same five required artifacts as {@link butlersFixture}, but as a
+ * real committed git repository with a simulated fetched `origin/main`,
+ * plus the bounded worker-change seam files — everything the test-artifact
+ * verification wiring needs to observe a real changed-or-merged commit. */
+function butlersGitFixture(): {
+  readonly repoRoot: string;
+  readonly changedCommit: string;
+  readonly changedCommitAuthoredAt: string;
+} {
+  const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-butlers-git-'));
+  cleanups.push(root);
+  const files: Readonly<Record<string, string>> = {
+    'docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md':
+      '# WhatsApp identity design\nStatus: Approved for implementation\n',
+    'openspec/changes/repair-whatsapp-identity-reconciliation/proposal.md':
+      '# Repair WhatsApp identity reconciliation\n- Sign-off: owner approved the design and end-to-end implementation on 2026-08-24.\n',
+    'openspec/changes/repair-whatsapp-identity-reconciliation/specs/switchboard-identity/spec.md':
+      '# switchboard identity\nREQ-switchboard-identity-001\nwhatsapp_user_client -> whatsapp_jid\n',
+    'src/butlers/identity.py': 'def canonical_identity():\n    return "id"\n',
+    'tests/core/test_identity.py': 'def test_identity():\n    assert True\n',
+    [WORKER_CHANGE_SOURCE_PATH]: 'x = 1\n',
+    [WORKER_CHANGE_TEST_PATH]: 'def test_normalization(): pass\n',
+  };
+  for (const [relativePath, contents] of Object.entries(files)) {
+    const absolutePath = join(root, relativePath);
+    mkdirSync(dirname(absolutePath), { recursive: true });
+    writeFileSync(absolutePath, contents, 'utf8');
+  }
+  git(root, ['init', '-q', '-b', 'main']);
+  git(root, ['config', 'user.email', 'poc-test@example.invalid']);
+  git(root, ['config', 'user.name', 'POC Test']);
+  git(root, ['add', '-A']);
+  git(root, ['commit', '-qm', 'base']);
+  writeFileSync(join(root, WORKER_CHANGE_SOURCE_PATH), 'x = 2\n', 'utf8');
+  git(root, ['add', '-A']);
+  git(root, ['commit', '-qm', 'fix(whatsapp): normalize single-event sender [bu-artifact-1]']);
+  const changedCommit = git(root, ['rev-parse', 'HEAD']);
+  const changedCommitAuthoredAt = git(root, ['log', '-1', '--format=%aI', changedCommit]);
+  git(root, ['update-ref', 'refs/remotes/origin/main', changedCommit]);
+  git(root, ['symbolic-ref', 'refs/remotes/origin/HEAD', 'refs/remotes/origin/main']);
+  return { repoRoot: root, changedCommit, changedCommitAuthoredAt };
+}
+
+const WORK_ITEM_ROWS = [
+  {
+    revision: 'dolt-rev-artifact',
+    id: 'bu-artifact-1',
+    title: 'Materialized work item',
+    status: 'in_progress',
+    issue_type: 'task',
+    priority: 2,
+    created_at: '2026-08-30T00:00:00Z',
+    updated_at: '2026-08-30T00:00:00Z',
+    closed_at: null,
+  },
+];
+
+function runWorkItemQueryFixture(_repoRoot: string, sql: string): string {
+  return sql.includes('WHERE id LIKE')
+    ? JSON.stringify(WORK_ITEM_ROWS)
+    : JSON.stringify([{ revision: 'dolt-rev-artifact' }]);
+}
+
+const MATERIALIZATION_RECORD_FIXTURE = {
+  beadId: 'bu-artifact-1',
+  externalRef: 'syzygy-poc:work:whatsapp-single-event-normalization',
+  targetRepoRoot: '',
+  createdAt: '2026-08-30T00:00:00Z',
+  doltRevisionAtCreation: 'dolt-rev-artifact',
+  attribution: 'test-actor',
+} as const;
+
+function passingTestArtifactRecord(
+  commit: string,
+  capturedAt: string,
+  overrides: Partial<TestArtifactRecord> = {},
+): TestArtifactRecord {
+  return {
+    command: ['python3', '-m', 'pytest', WORKER_CHANGE_TEST_PATH, '-q'],
+    exitCode: 0,
+    capturedAt,
+    repositoryCommit: commit,
+    scope: WORKER_CHANGE_TEST_PATH,
+    digest: 'sha256:' + '1'.repeat(64),
+    summary: '3 passed, 0 failed, 0 errored, 0 skipped in 0.42s',
+    ...overrides,
+  };
 }
 
 describe('three-surface Butlers POC model', () => {
@@ -263,5 +364,64 @@ describe('three-surface Butlers POC model', () => {
         }),
       );
     }
+  });
+
+  it('shows Verified only once a real, ingested test artifact binds to the observed changed commit (AC3, syzygy-0r9)', () => {
+    const { repoRoot, changedCommit, changedCommitAuthoredAt } = butlersGitFixture();
+    const capturedAt = new Date(Date.parse(changedCommitAuthoredAt) + 60 * 60 * 1000).toISOString();
+    const evaluationAsOf = new Date(Date.parse(capturedAt) + 60 * 60 * 1000).toISOString();
+    const baseInput = {
+      repoRoot,
+      repositoryRevision: changedCommit,
+      observerRevision: changedCommit,
+      evaluation: { snapshot: 'butlers@artifact', asOf: evaluationAsOf },
+      materializationRecord: { ...MATERIALIZATION_RECORD_FIXTURE, targetRepoRoot: repoRoot },
+      runWorkItemQuery: runWorkItemQueryFixture,
+    } as const;
+
+    const withoutArtifact = buildButlersPocModel(baseInput);
+    expect(withoutArtifact.workerChange.kind).toBe('observed');
+    if (withoutArtifact.workerChange.kind !== 'observed') throw new Error('unreachable');
+    expect(withoutArtifact.workerChange.state).toBe('changed-or-merged');
+    expect(withoutArtifact.testArtifactVerification.kind).toBe('unknown');
+
+    // The identity-resolution entity graph (a different capability, a
+    // different code file) must never be perturbed by this seam's
+    // verification — it stays Unknown throughout this test regardless of
+    // whether the worker-change seam's own evidence is verified.
+    const identityEntities = byId(withoutArtifact.entities);
+    expect(identityEntities.get('evidence:focused-pytest')?.epistemic.label).toBe('Unknown');
+
+    const verified = buildButlersPocModel({
+      ...baseInput,
+      testArtifactRecord: passingTestArtifactRecord(changedCommit, capturedAt),
+    });
+    expect(verified.testArtifactVerification.kind).toBe('verified');
+    if (verified.testArtifactVerification.kind !== 'verified') throw new Error('unreachable');
+    expect(verified.testArtifactVerification.record.repositoryCommit).toBe(changedCommit);
+    // still untouched — this is the honest boundary between the two
+    // capabilities sharing this bounded POC model.
+    expect(byId(verified.entities).get('evidence:focused-pytest')?.epistemic.label).toBe('Unknown');
+
+    // The serialized model must never leak raw test body content — only
+    // the safe numeric summary and commit (AC5).
+    const serialized = JSON.stringify(verified);
+    expect(serialized).not.toContain('Traceback');
+
+    // Mismatch/failure case (AC4, AC6): a passing artifact bound to a
+    // different commit must never render Verified.
+    const mismatched = buildButlersPocModel({
+      ...baseInput,
+      testArtifactRecord: passingTestArtifactRecord('a-different-commit-entirely', capturedAt),
+    });
+    expect(mismatched.testArtifactVerification.kind).toBe('unknown');
+
+    // A failing exit status must never be shown Verified even when the
+    // commit and scope both match (AC4).
+    const failed = buildButlersPocModel({
+      ...baseInput,
+      testArtifactRecord: passingTestArtifactRecord(changedCommit, capturedAt, { exitCode: 1 }),
+    });
+    expect(failed.testArtifactVerification.kind).toBe('unknown');
   });
 });

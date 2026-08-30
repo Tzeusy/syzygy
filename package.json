@@ -14,6 +14,7 @@
     "build": "tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system",
     "build:poc": "tsc -b --force packages/cap1-core packages/cap1-daemon packages/three-surface-poc-core apps/three-surface-poc",
     "poc": "npm run build:poc --silent && node apps/three-surface-poc/dist/main.js",
+    "poc:capture-test-artifact": "npm run build:poc --silent && node apps/three-surface-poc/dist/capture-test-artifact-main.js",
     "typecheck": "tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system"
   },
   "devDependencies": {

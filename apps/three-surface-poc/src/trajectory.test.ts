@@ -165,6 +165,67 @@ describe('Trajectory', () => {
     expect(card).not.toContain('Verification: Verified');
   });
 
+  it('renders Verified on the card only once a real matching test artifact is ingested (AC3, syzygy-0r9)', () => {
+    const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
+    writeWorkerChangeSeam(repoRoot, 'x = 1\n');
+    git(repoRoot, ['add', '-A']);
+    git(repoRoot, ['commit', '-qm', 'fix(whatsapp): normalize single-event sender [bu-verified-1]']);
+    const changedRevision = git(repoRoot, ['rev-parse', 'HEAD']);
+    const changedCommitAuthoredAt = git(repoRoot, ['log', '-1', '--format=%aI', changedRevision]);
+    git(repoRoot, ['update-ref', 'refs/remotes/origin/main', changedRevision]);
+    git(repoRoot, ['symbolic-ref', 'refs/remotes/origin/HEAD', 'refs/remotes/origin/main']);
+
+    const materializationRecord = {
+      beadId: 'bu-verified-1',
+      externalRef: 'syzygy-poc:work:whatsapp-single-event-normalization',
+      targetRepoRoot: repoRoot,
+      createdAt: '2026-08-30T00:00:00Z',
+      doltRevisionAtCreation: 'dolt-rev-1',
+      attribution: 'test-actor',
+    } as const;
+    const rows = [
+      {
+        revision: 'dolt-rev-2',
+        id: 'bu-verified-1',
+        title: 'Materialized work item',
+        status: 'in_progress',
+        issue_type: 'task',
+        priority: 2,
+        created_at: '2026-08-30T00:00:00Z',
+        updated_at: '2026-08-30T00:00:00Z',
+        closed_at: null,
+      },
+    ];
+    const capturedAt = new Date(Date.parse(changedCommitAuthoredAt) + 60 * 60 * 1000).toISOString();
+    const evaluationAsOf = new Date(Date.parse(capturedAt) + 60 * 60 * 1000).toISOString();
+
+    const model = buildButlersPocModel({
+      repoRoot,
+      repositoryRevision: changedRevision,
+      observerRevision: revision,
+      evaluation: { snapshot: 'butlers@verified', asOf: evaluationAsOf },
+      materializationRecord,
+      runWorkItemQuery: (_repoRoot, sql) =>
+        sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: 'dolt-rev-2' }]),
+      testArtifactRecord: {
+        command: ['python3', '-m', 'pytest', 'tests/connectors/test_whatsapp_user_client.py', '-q'],
+        exitCode: 0,
+        capturedAt,
+        repositoryCommit: changedRevision,
+        scope: 'tests/connectors/test_whatsapp_user_client.py',
+        digest: 'sha256:' + '2'.repeat(64),
+        summary: '4 passed, 0 failed, 0 errored, 0 skipped in 0.5s',
+      },
+    });
+    expect(model.testArtifactVerification.kind).toBe('verified');
+
+    const html = renderTrajectoryPage(model);
+    const card = cardBody(html, 'bu-verified-1');
+    expect(card).toContain('Verification: Verified');
+    expect(card).toContain('4 passed, 0 failed, 0 errored, 0 skipped in 0.5s');
+    expect(card).not.toContain('Verification: Not verified');
+  });
+
   it('mutation check: a falsified reconciliation would be caught', () => {
     const model = buildFixtureModel(cleanups);
     if (model.trajectory.kind !== 'observed') throw new Error('unreachable');
