@@ -1,9 +1,9 @@
 # Tasks — three-surface-poc-experience
 
-> Gated: no task below is authorized until the owner signs off this
-> candidate change
-> (`.syzygy/governance/decisions/THREE-SURFACE-POC-SPEC-AUTHORIZATION.md`).
-> All tasks execute under the one existing work item `syzygy-z2b` (the
+> Signed off by the owner on 2026-08-30
+> (`.syzygy/governance/decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`);
+> implementation tasks below are authorized under work item
+> `syzygy-z2b`. All tasks execute under the one existing work item `syzygy-z2b` (the
 > eight-item POC cap admits no new items), WIP one for shared-model
 > changes.
 
@@ -15,7 +15,9 @@
   they are owner acts that ride the sign-off decision (1.3).
 - [x] 1.2 Fill `contracts[]` warrants from that sweep; generate the
   CC-IMPACT dependency union (`GOVERNING-DEPENDENCIES.md`).
-- [ ] 1.3 Owner sign-off act recorded in `.syzygy/governance/decisions/`.
+- [x] 1.3 Owner sign-off act recorded:
+  `.syzygy/governance/decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`
+  (2026-08-30, six artifacts frozen at commit `db5eaee` digests).
 
 ## Prerequisite infrastructure (POC-REQ-001…022)
 

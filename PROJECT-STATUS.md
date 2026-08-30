@@ -134,9 +134,16 @@ The remaining launch path, in order — each step's owning record governs:
    2026-08-29 direction. The first read-only slice is runnable with the one
    command in `docs/THREE-SURFACE-POC.md`: it observes one named Butlers
    capability and serves minimal Polaris, Trajectory, Orrery, and
-   authenticated JSON from one shared experimental fact model. Work
-   materialization, worker/change observation, and test-evidence ingestion
-   remain open; those relationships render Unknown.
+   authenticated JSON from one shared experimental fact model. The
+   surface-redesign specification `three-surface-poc-experience` was
+   **signed off by the owner 2026-08-30**
+   (`decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`), authorizing
+   implementation of work item `syzygy-z2b`. Work materialization,
+   worker/change observation, and test-evidence ingestion remain open;
+   those relationships render Unknown. Separately, the owner's
+   2026-08-30 direction `decisions/OPENSPEC-MULTI-CHANGE-DIRECTION.md`
+   now permits multiple OpenSpec changes (non-overlapping,
+   well-categorized; candidates until sign-off).
 
 ## How to verify this page
 

@@ -85,7 +85,7 @@ Load the minimum for one correct decision; never "read everything."
 | A doctrine question | the one doctrine file, via the `heart-and-soul` skill |
 | An engineering-bar question | the one craft policy that owns it |
 | A contract question | **`contracts/candidates/TASK-ROUTER.md`** — the one generated router; context-budget measurement stays with `06-CONTEXT-LOAD-MAP.md` / `scripts/context_load.py` |
-| "May I implement X?" | Capability 1 remains authorized under `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`. The bounded Three-Surface POC and its one Butlers proving slice are additionally authorized by `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`. Anything outside both scopes remains forbidden. |
+| "May I implement X?" | Capability 1 remains authorized under `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`. The bounded Three-Surface POC and its one Butlers proving slice are additionally authorized by `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`; the surface-redesign item `syzygy-z2b` is authorized by the signed-off `three-surface-poc-experience` spec (`decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`). Anything outside these scopes remains forbidden. |
 | "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; Capability 1's spec is **authored and adopted**; every other capability's authoring stays forbidden |
 | The Capability 1 specification | the change `openspec/changes/project-registration-and-honest-shape-visibility/` — **ADOPTED by the owner (act dated 2026-08-20)** at the exact digests in `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`; the seven adopted artifacts may not be edited (an edit breaks the adopted digests — route changes through CC-REV-2's amendment path); its warrants-union is generated (`build_capability_1_spec_dependencies.py`) |
 | Current status | `PROJECT-STATUS.md` |
@@ -111,17 +111,18 @@ authorization act); implement, plan, or backlog anything beyond Capability 1
 that POC beyond one configured Butlers repository; implement deferred Waves
 C1/C2/D1/D2 or substantive Mission Control; perform production deployment,
 release, broad remote access, or multi-user support; allow Syzygy to write
-implementation code; autonomously adopt intent; create any OpenSpec changeset **other than
-the one adopted Capability 1 change**
-(`project-registration-and-honest-shape-visibility` — adopted at exact
-digests, `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`) **and
-the one owner-authorized candidate POC change**
-(`three-surface-poc-experience` — authoring authorized 2026-08-30,
-`decisions/THREE-SURFACE-POC-SPEC-AUTHORIZATION.md`; candidate, binds
-nothing until owner sign-off, which also gates syzygy-z2b
-implementation), or edit
-that change's seven adopted artifacts (spec changes route through
-CC-REV-2's amendment path); exceed the escalation triggers the
+implementation code; autonomously adopt intent; create an OpenSpec
+changeset that overlaps another change or is not a coherent, clearly
+scoped category (the owner's 2026-08-30 direction
+`decisions/OPENSPEC-MULTI-CHANGE-DIRECTION.md` permits multiple
+changes under exactly those two conditions; every new change is a
+candidate binding nothing until owner sign-off, VIS-4); edit the
+adopted Capability 1 change's seven adopted artifacts
+(`decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`) or the six
+signed `three-surface-poc-experience` artifacts
+(`decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md` — signed off
+2026-08-30, which also unblocked syzygy-z2b implementation; spec
+changes route through CC-REV-2's amendment path); exceed the escalation triggers the
 authorization act names (doctrine/contract change, spec amendment,
 security/privacy/retention posture, constraints/envelope, scope beyond
 Capability 1) without a new owner act; treat a draft, candidate, index,
