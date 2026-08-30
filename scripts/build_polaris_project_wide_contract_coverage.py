@@ -31,17 +31,18 @@ OUT = os.path.join(CHANGE, "CONTRACT-COVERAGE.md")
 
 INDEX_RE = re.compile(r"^\s+- \{id: (RFC[1-9]-\d+(?:\([a-z]\))?),", re.M)
 BASE_ROW_RE = re.compile(
-    r"^\|\s*([^|]+\.c\d+)\s*\|\s*(RFC[1-9]-\d+(?:\([a-z]\))?)\s*\|"
+    r"^\|\s*([^|]+\.c\d+[a-z]?)\s*\|\s*(RFC[1-9]-\d+(?:\([a-z]\))?)\s*\|"
     r"\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*(yes|no|unknown)\s*\|"
     r"\s*([^|]+)\s*\|\s*(covered:[^|]+|unknown-uncovered|believed-not-applicable)\s*\|$",
     re.M,
 )
 REPAIR_ROW_RE = re.compile(
-    r"^\|\s*([^|]+\.r\d+)\s*\|\s*([^|]+\.c\d+)\s*\|"
+    r"^\|\s*([^|]+\.r\d+)\s*\|\s*([^|]+\.c\d+[a-z]?)\s*\|"
     r"\s*(RFC[1-9]-\d+(?:\([a-z]\))?)\s*\|\s*([^|]+)\s*\|"
     r"\s*(covered:[^|]+|unknown-uncovered|believed-not-applicable)\s*\|$",
     re.M,
 )
+CONSEQUENCE_LIKE_RE = re.compile(r"^\|\s*[^|]+\.c\d+[a-z]?\s*\|", re.M)
 REQ_ID_RE = re.compile(r"PWB-REQ-\d{3}")
 
 
@@ -64,7 +65,14 @@ def parse_inputs(part_texts=None, repair_text=None):
 
     base_rows = {}
     for part_text in part_texts:
-        for match in BASE_ROW_RE.finditer(part_text):
+        matches = list(BASE_ROW_RE.finditer(part_text))
+        consequence_like_count = len(CONSEQUENCE_LIKE_RE.findall(part_text))
+        if len(matches) != consequence_like_count:
+            raise ValueError(
+                "unparseable consequence rows: "
+                f"{consequence_like_count - len(matches)} of {consequence_like_count}"
+            )
+        for match in matches:
             consequence_id, clause, authority, consequence, applicability, reason, disposition = (
                 value.strip() for value in match.groups()
             )
@@ -242,10 +250,22 @@ def selftest():
         print("SELFTEST FAILED: missing requirement passed")
         return 1
 
+    malformed_parts = list(part_texts)
+    malformed_parts[0] = malformed_parts[0].replace("| yes |", "| yes/no |", 1)
+    try:
+        render(malformed_parts, repair_text)
+    except ValueError as error:
+        if "unparseable consequence rows" not in str(error):
+            print(f"SELFTEST FAILED: wrong malformed-row error: {error}")
+            return 1
+    else:
+        print("SELFTEST FAILED: malformed consequence row passed")
+        return 1
+
     if output != render(part_texts, repair_text):
         print("SELFTEST FAILED: output is nondeterministic")
         return 1
-    print("selftest: duplicate repair, warrant mismatch and determinism predicates hold")
+    print("selftest: duplicate repair, warrant mismatch, malformed row and determinism predicates hold")
     return 0
 
 

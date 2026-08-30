@@ -49,10 +49,13 @@ capability drill-down and never enter the current project account.
 
 The source manifest is observation scope, not a second copy of Butlers facts.
 It stores paths, extraction classes and the source revision. A declared item
-identity is `(source class, repository-relative path, declared key)`, where the
-key is a specification directory, RFC identifier, roster directory or indexed
-heading. Content hashes record source state; they do not replace stable item
-identity.
+identity is `(item class, declared key)`; repository-relative paths and content
+hashes are source-anchor state, not identity. The closed extraction classes are
+the six project-account sections, numbered non-negotiables, success list items,
+top-level V1 catalog entries, RFC index rows, baseline spec directories,
+topology component-table identities, craft policy-file identities and roster
+directories containing butler.toml. No arbitrary heading or narrative link
+mints an item. Duplicate keys in one class surface a contradiction.
 
 Rejected alternatives:
 

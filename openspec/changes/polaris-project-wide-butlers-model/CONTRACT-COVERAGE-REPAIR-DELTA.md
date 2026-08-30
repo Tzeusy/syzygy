@@ -35,6 +35,7 @@ broader audited consequence use distinct repair IDs and jointly supersede it.
 | RFC7-16.r1 | RFC7-16.c1 | RFC7-16 | Status is evaluation-bound and carries label, tier, reason and freshness with visible staleness | covered:PWB-REQ-007 |
 | RFC7-16.r2 | RFC7-16.c2 | RFC7-16 | Polaris renders no composite maturity, inferred-success headline or metric wall | covered:PWB-REQ-007 |
 | RFC7-16.r3 | RFC7-16.c2 | RFC7-16 | Minimal density and drawer/Trajectory handoff for every status | unknown-uncovered |
+| RFC7-16.r4 | RFC7-16.c2 | RFC7-16 | Default Polaris status presentation renders no trend or count wall | covered:PWB-REQ-007 |
 | RFC7-33.r1 | RFC7-33.c3 | RFC7-33 | Label, tier, reason and freshness travel identically in human and machine views | covered:PWB-REQ-007 |
 | RFC7-1.r1 | RFC7-1.c3 | RFC7-1 | Polaris remains a non-authoritative projection | covered:PWB-REQ-014 |
 | RFC7-2.r1 | RFC7-2.c1 | RFC7-2 | Every load-bearing narrative claim is anchored | covered:PWB-REQ-014 |

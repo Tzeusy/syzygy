@@ -12,9 +12,21 @@ Reader definitions:
   index within that root; baseline `openspec/specs/*/spec.md` Git-tree entries;
   and top-level roster directories containing `butler.toml`, with their
   `MANIFESTO.md` when present. Narrative links do not recurse.
-- A **declared item** is identified by source class, repository-relative path
-  and declared key (spec directory, RFC identifier, roster directory or indexed
-  heading). Items exist only after the body is lawfully admitted and parsed.
+- A **declared item** has one class from this closed set and one extraction rule:
+  `project-account-section` uses the six keys purpose, promises, refusals,
+  architecture, V1 scope and V1 success; `principle` uses each numbered
+  non-negotiable; `success-criterion` uses each list item in the two success
+  sections; `catalog-entry` uses each top-level named entry under the V1
+  Staffers, Butlers, Modules, Connectors, Dashboard, Identity System,
+  Situational Awareness and Observability headings; `design-contract` uses each
+  RFC index-table identity; `baseline-spec` uses each baseline spec directory;
+  `topology-component` uses each first-column identity in the component tables;
+  `craft-policy` uses each policy-file identity in the craft index; and
+  `roster-identity` uses each top-level roster directory containing
+  butler.toml. No other prose, heading, link or file mints an item.
+- Stable item identity is `(item class, declared key)`. Repository-relative path
+  and content hash are source-anchor state, never identity. A duplicate key in
+  one class is a contradiction rather than a path-based disambiguation.
 - The source-path denominator remains known through body-read failures. An
   unavailable body's within-source item denominator is Unknown, never copied
   from a fixture or prior ambient state.
@@ -159,13 +171,16 @@ policy and the project-shape observer's registered adapter entry all have
 verifiable owner-act provenance. Their identities and versions SHALL be
 evaluation inputs. Absence, mismatch, staleness or unverifiable provenance
 SHALL produce zero body reads and a project-model Unknown.
+The consent subject SHALL be the exact `(observing Syzygy project, configured
+Butlers repository)` pair; a consent for another project, repository or content
+class SHALL not match.
 
 - **Case (counterexample sweep)**: provide absent, mismatched, stale,
   unverifiable and valid consent/policy/registry triples to an observer with an
   injected read spy.
-- **Observable**: invalid pairs yield zero read calls and fixed Unknown reasons;
-  only the valid pair permits reads.
-- **Oracle**: independently verify the two owner-act provenances, compare read
+- **Observable**: invalid triples yield zero read calls and fixed Unknown reasons;
+  only the all-valid triple permits reads.
+- **Oracle**: independently verify all three owner-act provenances, compare read
   calls and evaluation inputs across all cases.
 - **Oracle independence**: authority fixtures and the read spy live outside
   the observer.
@@ -182,7 +197,7 @@ SHALL produce zero body reads and a project-model Unknown.
 warrants:
   primary: SEC-5
   doctrine: [VIS-2, VIS-4, SEC-2, SEC-5]
-  contracts: [RFC2-1, RFC3-16, RFC3-30, RFC4-3, RFC4-7, RFC5-12, RFC5-16]
+  contracts: [RFC2-1, RFC3-7, RFC3-16, RFC3-30, RFC4-3, RFC4-7, RFC5-12, RFC5-16]
   policies: [CC-BAR-5, CC-SEC-5, CC-SEC-6, CC-TEST-6]
   decisions: [POLARIS-DIR-2026-08-31]
   topology: []
@@ -234,12 +249,15 @@ warrants:
 
 Group: Truth. Form: **invariant**.
 
-Every project-fact claim SHALL be a challengeable Claim with resolvable
-support and SHALL carry the closed label, tier, exactly one primary reason,
-zero or more closed secondary reasons, freshness and evaluation identity that
-govern it. Unknown reasons SHALL use RFC2-24 values verbatim and expose their
-resolution routes. Aggregates SHALL disclose primary and secondary reason
-counts without a headline status, composite maturity or inferred success.
+Every project-fact claim SHALL have a stable semantic Claim identity plus an
+evaluation instance, be challengeable with resolvable support, and carry the
+closed label, tier, exactly one primary reason, zero or more closed secondary
+reasons, freshness, challenge state and evaluation identity that govern it.
+Unknown reasons SHALL use RFC2-24 values verbatim and expose their resolution
+routes. Aggregates SHALL disclose label, tier, freshness and separate primary/
+secondary reason counts without a headline status, composite maturity or
+inferred success. Default Polaris status presentation SHALL not render trends,
+metric walls or count walls; coverage counts remain available on demand.
 
 - **Case (sweep)**: enumerate every project-fact claim and aggregate at one
   evaluation, including fixtures for every admitted label, tier, reason and
@@ -247,7 +265,8 @@ counts without a headline status, composite maturity or inferred success.
 - **Observable**: human and machine views expose identical complete tuples;
   invalid/missing currency stays Unknown and aggregates expand to members.
 - **Oracle**: compare each tuple to independent literal vocabularies and
-  provenance-verified currency inputs; exhaust reason counts and supports
+  provenance-verified currency inputs; exhaust identity stability, aggregate
+  label/tier/freshness/reason counts and supports
   links; zero invalid, missing or folded values decides.
 - **Oracle independence**: the checker hard-codes the accepted vocabularies and
   reads captured authority/evidence, importing no production vocabulary.
@@ -472,7 +491,10 @@ anchored claim block SHALL have a typed, revision-bound anchor set that covers
 all its claims, contains no unused anchors and is small enough for a reader to
 identify which anchor supports which claim. No project artifact, evidence,
 snapshot input, work warrant or internal relation SHALL cite Polaris as its
-authority.
+authority. Each anchor SHALL retain the target's captured label, tier and
+reason and SHALL not rewrite that target state on later reads. Narrative claim
+blocks SHALL use a machine type distinct from kernel Claim. Personal view state
+SHALL remain outside the truth model.
 
 - **Case (sweep)**: enumerate every narrative unit, claim and anchor, then
   enumerate every citation/reference emitted by the Syzygy and Butlers source
@@ -481,9 +503,10 @@ authority.
   every claim has exact/minimal anchors and no downstream authority reference
   targets Polaris.
 - **Oracle**: independent claim-to-source mapping establishes covering and
-  minimality; removing any used anchor fails one claim and adding an unused
-  anchor fails surplus; a complete downstream-reference scan has zero Polaris
-  authority targets.
+  minimality and captured target state; removing any used anchor fails one
+  claim and adding an unused anchor fails surplus; a later-read mutation cannot
+  rewrite the captured state; a complete downstream-reference scan has zero
+  Polaris authority targets.
 - **Oracle independence**: expected source spans and reference targets come
   from captured artifacts, not the rendered claim blocks.
 - **Falsifier**: an unclassified narrative unit, uncovered claim, surplus or
@@ -512,9 +535,9 @@ warrants:
 Group: Presentation. Form: **invariant**.
 
 Every capability deep dive SHALL contain, in order, an `argument` band marked
-non-normative, a `contract` band with exact current requirement/scenario text,
-and a `reality` band sourced only from the shared model. Draft capabilities
-SHALL remain unadopted. Proposed deltas SHALL be adjacent to current text,
+non-normative, a `contract` band with verbatim current requirement/scenario,
+governing doctrine and non-goal text, and a `reality` band sourced only from
+the shared model. Draft capabilities SHALL remain unadopted. Proposed deltas SHALL be adjacent to current text,
 visibly distinct, non-anchorable and unable to grant status; competing
 proposals SHALL remain separate candidate futures.
 
@@ -522,7 +545,8 @@ proposals SHALL remain separate candidate futures.
   includes current intent, a draft capability and two incompatible proposals.
 - **Observable**: band class/order, verbatim current text, proposal lifecycle,
   non-anchorability and separate futures are recoverable in both channels.
-- **Oracle**: compare current requirement/scenario bytes to OpenSpec, compare
+- **Oracle**: compare current requirement/scenario, doctrine and non-goal bytes
+  to their owning artifacts, compare
   proposal identities/exclusivity to captured changes, and exhaust band and
   anchor populations; exact bytes/order and zero proposal authority decide.
 - **Oracle independence**: current/proposed artifacts and exclusivity inputs
@@ -636,8 +660,10 @@ make that claim stronger.
 
 - **Case**: an owner reads only Polaris at a named evaluation and answers the
   RFC7-30 prompts in their own words.
-- **Observable**: a retained walkthrough record contains the answers, paths,
-  evaluation identity, nonvisual/keyboard flag and owner judgment.
+- **Observable**: a retained walkthrough execution record contains only the
+  answers, paths, surface/evaluation identity and nonvisual/keyboard flag. A
+  separate owner-judgment decision records verdict, rationale and judging party
+  and references that execution record.
 - **Oracle**: compare each answer to its authoritative Butlers artifact and
   exhaust the complete RFC7-30 prompt list plus the two project-wide additions;
   every prompt answered without a confident surface-caused error decides.

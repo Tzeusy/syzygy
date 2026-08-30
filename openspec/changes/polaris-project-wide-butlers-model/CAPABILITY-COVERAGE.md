@@ -33,7 +33,7 @@ Population: 27 positive obligations and refusals declared by `proposal.md`,
 | 26 | Refuse autonomous or multi-user behavior | lawfully out of scope — proposal `Out of scope`, “autonomous behavior; multi-user support” |
 | 27 | Refuse weakening Unknown, provenance, parity, authentication or one-repository floors | covered — PWB-REQ-003, PWB-REQ-005, PWB-REQ-006, PWB-REQ-007, PWB-REQ-014, PWB-REQ-020, PWB-REQ-022 |
 
-Totals: 20 covered, 7 lawfully out of scope, 0 Unknown/unresolved; 27 total.
+Totals: 21 covered, 6 lawfully out of scope, 0 Unknown/unresolved; 27 total.
 
 This table is author-produced and requires confirmation by a fresh reviewer as
 required by CC-SPEC-11.

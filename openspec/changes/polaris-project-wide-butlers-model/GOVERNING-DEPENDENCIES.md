@@ -8,7 +8,7 @@
 > here is overwritten and `--check` fails first. Identifiers only —
 > nothing here quotes or paraphrases any clause.
 >
-> Source: `spec.md` sha256 `ea5c9933aaec00706ae2a1bd750f128628336ceb5caecdb0c0ce743ff755fbee` — 17 requirement(s), 91 distinct authorities.
+> Source: `spec.md` sha256 `c9f041076949054fdc2396e80f175003cf26d1ce506182c21cb05d46afe5be8e` — 17 requirement(s), 92 distinct authorities.
 
 ## doctrine (8)
 
@@ -23,7 +23,7 @@
 | `VIS-4` | PWB-REQ-005, PWB-REQ-013, PWB-REQ-015, PWB-REQ-022 |
 | `VIS-7` | PWB-REQ-001, PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-006, PWB-REQ-007, PWB-REQ-011, PWB-REQ-014, PWB-REQ-016, PWB-REQ-020 |
 
-## contracts (64)
+## contracts (65)
 
 | Authority | Cited by |
 |---|---|
@@ -43,6 +43,7 @@
 | `RFC2-23` | PWB-REQ-002, PWB-REQ-003, PWB-REQ-006, PWB-REQ-007 |
 | `RFC2-24` | PWB-REQ-007 |
 | `RFC2-25` | PWB-REQ-007 |
+| `RFC3-7` | PWB-REQ-005 |
 | `RFC3-15` | PWB-REQ-022 |
 | `RFC3-16` | PWB-REQ-005, PWB-REQ-022 |
 | `RFC3-27` | PWB-REQ-011 |

@@ -13,7 +13,7 @@ the exact repaired bytes require an independent confirmation pass.
 
 | # | Severity | Finding | Disposition |
 |---|---|---|---|
-| 1 | BLOCKER | Matrix partitions clause IDs without consequence review | **Repaired, awaiting confirmation.** Three independent clause-text audits produced 611 normalized consequence rows covering all 324 accepted clauses. A repair overlay supersedes 62 rows with 66 repaired consequences. The generator now verifies identities, dispositions and warrant agreement only; it makes no semantic judgment. Effective matrix: 615 consequences, 140 covered, 230 Unknown uncovered, 245 believed not applicable. |
+| 1 | BLOCKER | Matrix partitions clause IDs without consequence review | **Repaired, awaiting confirmation.** Three independent clause-text audits produced 613 normalized consequence rows covering all 324 accepted clauses. A repair overlay supersedes 62 rows with 67 repaired consequences. The generator now verifies identities, dispositions and warrant agreement only; it makes no semantic judgment. Effective matrix: 618 consequences, 142 covered, 230 Unknown uncovered, 246 believed not applicable. |
 | 2 | BLOCKER | Requirement warrants overclaim clause coverage | **Repaired, awaiting confirmation.** Warrant lists were reduced to exercised limbs, and PWB-REQ-007/014/015/016 close the essential epistemic, anchor, deep-dive and nonvisual gaps. Partial sibling consequences remain individually `unknown-uncovered`; no clause-level “covered” state exists. |
 | 3 | BLOCKER | Capability denominator omits refusals | **Repaired, awaiting confirmation.** `CAPABILITY-COVERAGE.md` now derives 27 positive obligations/refusals from proposal, design and definitions: 20 covered, 7 named out of scope. |
 | 4 | BLOCKER | No lawful observation consent or concrete secret policy | **Specification repaired; owner gates remain open.** PWB-REQ-005 requires both owner-provenance checks before the first body read and zero reads on every invalid case. Task 1.5 makes both separate acts dispatch blockers; sign-off mints neither. |
@@ -33,3 +33,30 @@ the exact repaired bytes require an independent confirmation pass.
 
 No implementation is authorized or dispatchable while these gates remain
 open.
+
+## Confirmation pass 1
+
+Subject: `8069742258e4affcb813cfa69c545c8453c167cb`
+
+Raw report: `R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-1-RAW.md`
+
+Raw sha256: `b58286e3328028d64c273cae0450c5be397e0d1160537333d44eb727b59d1d29`
+
+Verdict: **REVISE**
+
+| Finding | Pass-1 verdict | Repair disposition |
+|---|---|---|
+| Original 1 — consequence matrix | NOT CONFIRMED | Repaired: split malformed RFC3-7 row, added fail-closed unparseable-row detection/mutation test, regenerated true population. |
+| Original 2 — warrant overclaims | NOT CONFIRMED | Repaired: strengthened Claim identity/challenge tuple, aggregate composition, anchor target-state immutability, verbatim doctrine/non-goal comparison, personal-state separation and narrative machine type; added missing RFC7-16 metric/count-wall consequence. |
+| Original 3 — capability totals | PARTIAL | Repaired: corrected 27-row totals to 21 covered + 6 lawfully out of scope. |
+| Original 4 — consent/policy | CONFIRMED | No change. |
+| Original 5 — closed discovery | PARTIAL | Repaired: added a closed nine-class item grammar, exact extraction syntax and path-independent item identity; arbitrary headings/links mint nothing. |
+| Original 6 — input safety | CONFIRMED | No change. |
+| Original 7 — plain copy | CONFIRMED | No change. |
+| Original 8 — complete cold-open | CONFIRMED | No change. |
+| Original 9 — authority language | CONFIRMED | No change. |
+| N1 — silently dropped row | BLOCKER | Repaired as original finding 1 above. |
+| N2 — triple/pair inconsistency | DEFECT | Repaired: case, observable, oracle and falsifier consistently require all three authorities. |
+| N3 — judgment inside run record | DEFECT | Repaired: PWB-REQ-021 records only answers/paths/identities/mode; separate owner decision carries verdict/rationale/judging party. |
+
+These are author dispositions. A second exact-head confirmation is required.
