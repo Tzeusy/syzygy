@@ -1,5 +1,5 @@
 import { escapeHtml } from '@syzygy/cap1-daemon';
-import type { PocModel } from '@syzygy/three-surface-poc-core';
+import type { PocModel, WorkerChangeObserved } from '@syzygy/three-surface-poc-core';
 import type { TrajectoryColumn, TrajectoryLaneItem } from '@syzygy/three-surface-poc-core';
 
 import { MATERIALIZE_PANEL_STYLE, renderMaterializePanel } from './materialize-action.js';
@@ -47,15 +47,45 @@ function laneBar(
   return `<div class="lane-track" aria-hidden="true"><div class="lane-bar" data-parity-field="time-lane" style="--lane-left:${left.toFixed(3)}%;--lane-width:${width.toFixed(3)}%"></div></div>`;
 }
 
+const WORKER_CHANGE_STATE_LABEL = {
+  planned: 'Planned',
+  active: 'Active',
+  'changed-or-merged': 'Changed / merged',
+} as const;
+
+function workerChangeBadge(workerChange: WorkerChangeObserved | null): string {
+  if (workerChange === null) {
+    return '';
+  }
+  const label = WORKER_CHANGE_STATE_LABEL[workerChange.state];
+  const detail =
+    workerChange.state === 'planned'
+      ? 'No git activity observed yet on the bounded source seam.'
+      : workerChange.commit === null
+        ? ''
+        : `<code class="wi-id">${escapeHtml(workerChange.commit.sha.slice(0, 12))}</code>${
+            workerChange.commit.containingRef === null
+              ? ''
+              : ` on <code class="wi-id">${escapeHtml(workerChange.commit.containingRef)}</code>`
+          }`;
+  return `<div class="worker-change" data-parity-field="worker-change-state">
+    <span class="wi-status">External worker: ${escapeHtml(label)}</span>
+    ${detail === '' ? '' : `<span class="worker-change-detail">${detail}</span>`}
+    <span class="epistemic epistemic-unknown" data-parity-field="worker-change-verification" title="Git activity or a merge is not verification: no test artifact has been ingested for this change.">Verification: Not verified</span>
+  </div>`;
+}
+
 function itemCard(
   item: TrajectoryLaneItem,
   range: { readonly earliest: string; readonly latest: string } | null,
+  workerChange: WorkerChangeObserved | null,
 ): string {
   return `<li class="wi-card" id="workitem-${escapeHtml(item.id)}" data-work-item-id="${escapeHtml(item.id)}">
     <a class="wi-title" href="#workitem-${escapeHtml(item.id)}" data-parity-field="work-item-title">${escapeHtml(item.title)}</a>
     <code class="wi-id" data-parity-field="work-item-id">${escapeHtml(item.id)}</code>
     <span class="wi-status" data-parity-field="work-item-status">${escapeHtml(item.status)}</span>
     <span class="epistemic epistemic-unknown" data-parity-field="work-item-verification" title="Activity is not verification: no test evidence has been ingested for this item.">Verification: Unknown</span>
+    ${workerChangeBadge(workerChange)}
     ${laneBar(item, range)}
   </li>`;
 }
@@ -74,11 +104,14 @@ const TRAJECTORY_STYLE = `
   .wi-status { font-family: var(--font-mono); font-size: .7rem; color: var(--muted); text-transform: uppercase; }
   .lane-track { position: relative; height: .35rem; background: #1a2c30; margin-top: .3rem; }
   .lane-bar { position: absolute; top: 0; height: 100%; left: var(--lane-left); width: var(--lane-width); background: var(--cyan); }
+  .worker-change { display: grid; gap: .2rem; padding-top: .2rem; border-top: 1px dashed var(--line); }
+  .worker-change-detail { font-size: .72rem; color: var(--muted); }
   ${MATERIALIZE_PANEL_STYLE}
 `;
 
 export function renderTrajectoryPage(model: PocModel): string {
   const trajectory = model.trajectory;
+  const workerChange = model.workerChange.kind === 'observed' ? model.workerChange : null;
   let body: string;
   if (trajectory.kind === 'unknown') {
     body = `<p class="unavailable-notice" data-unknown-disclosure="region:work-items">Unknown — ${escapeHtml(trajectory.reason)}. This is a distinct state from an observed-empty board: no board is rendered because the work-item region could not be observed.</p>`;
@@ -94,7 +127,9 @@ export function renderTrajectoryPage(model: PocModel): string {
       const items = byColumn.get(column) ?? [];
       return `<section class="board-column" aria-label="${escapeHtml(column)} column">
         <h2>${escapeHtml(column)} <span class="count">(${items.length})</span></h2>
-        <ol class="wi-list">${items.map((item) => itemCard(item, trajectory.timeRange)).join('')}</ol>
+        <ol class="wi-list">${items
+          .map((item) => itemCard(item, trajectory.timeRange, workerChange !== null && workerChange.beadId === item.id ? workerChange : null))
+          .join('')}</ol>
       </section>`;
     }).join('');
 

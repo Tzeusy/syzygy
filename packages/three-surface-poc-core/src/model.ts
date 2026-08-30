@@ -4,12 +4,22 @@ import { resolve } from 'node:path';
 
 import { observeCodeStructure, type CodeStructureResult } from './code-structure.js';
 import { observeWorkItems, type WorkItemsResult } from './work-items.js';
+import { observeWorkerChange, type WorkerChangeResult, type WorkerChangeSeam } from './worker-change-observation.js';
 import { projectOrrery, type OrreryProjection } from './orrery-projection.js';
 import { projectTrajectory, type TrajectoryProjection } from './trajectory-projection.js';
 import type { MaterializationRecord } from './materialization.js';
 
 const RECENT_CLOSED_WINDOW = 50;
 const BEAD_PREFIX = 'bu' as const;
+
+// The bounded source seam an external Butlers worker fixes for the
+// approved WhatsApp single-event sender-normalization gap — distinct
+// from ARTIFACT_PATHS.code/test below, which map the broader identity
+// capability this POC slice already renders on Polaris/Orrery.
+const WORKER_CHANGE_SEAM: WorkerChangeSeam = {
+  sourcePath: 'src/butlers/connectors/whatsapp_user_client.py',
+  testPath: 'tests/connectors/test_whatsapp_user_client.py',
+} as const;
 
 export type PocEpistemic =
   | { readonly label: 'Observed'; readonly basis: string }
@@ -73,6 +83,7 @@ export interface PocModel {
   readonly surfaces: readonly PocSurface[];
   readonly codeStructure: CodeStructureResult;
   readonly workItems: WorkItemsResult;
+  readonly workerChange: WorkerChangeResult;
   readonly orrery: OrreryProjection;
   readonly trajectory: TrajectoryProjection;
 }
@@ -277,6 +288,13 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     input.materializationRecord ?? null,
     workItems,
   );
+  const workerChange = observeWorkerChange({
+    repoRoot,
+    beadId: materialization.beadId,
+    seam: WORKER_CHANGE_SEAM,
+    capturedAt: input.evaluation.asOf,
+    ...(input.runGit === undefined ? {} : { runGit: input.runGit }),
+  });
 
   const entities: readonly PocEntity[] = [
     {
@@ -477,6 +495,7 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     relationships,
     codeStructure,
     workItems,
+    workerChange,
     orrery: orreryProjection,
     trajectory: trajectoryProjection,
     surfaces: [
