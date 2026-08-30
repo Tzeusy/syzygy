@@ -397,7 +397,6 @@ FORWARD_REFS = (
     ".syzygy/governance/contracts/matrix-rows/",              # first-wave companion
     ".syzygy/map/topology/",                                  # act-3 install home
     ".syzygy/project.yaml",                                   # no governed project yet
-    "openspec/",                                              # does not exist yet
     "RFC-000n",                                               # glob placeholder
     "RFC-000N",                                               # same, uppercased
 )
