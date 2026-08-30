@@ -114,7 +114,7 @@ const CLIENT_SCRIPT = `
 })();
 `;
 
-export function renderOrreryPage(model: PocModel): string {
+export function renderOrreryPage(model: PocModel, mountPrefix = ''): string {
   const orrery = model.orrery;
   let body: string;
 
@@ -162,5 +162,6 @@ export function renderOrreryPage(model: PocModel): string {
         ? `Code-structure revision <code>${escapeHtml(orrery.revision)}</code>.`
         : 'Code-structure region: Unknown.',
     escapeHtml,
+    mountPrefix,
   });
 }

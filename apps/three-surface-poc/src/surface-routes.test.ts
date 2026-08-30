@@ -6,11 +6,12 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
 
-import { ORRERY_HUMAN_PATH } from './orrery.js';
-import { POLARIS_HUMAN_PATH } from './polaris.js';
-import { pocRoutes } from './routes.js';
+import { ORRERY_HUMAN_PATH, ORRERY_TAILNET_PATH } from './orrery.js';
+import { POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH } from './polaris.js';
+import { POC_HUMAN_PATH, pocRoutes } from './routes.js';
+import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { buildFixtureModel } from './test-model-fixture.js';
-import { TRAJECTORY_HUMAN_PATH } from './trajectory.js';
+import { TRAJECTORY_HUMAN_PATH, TRAJECTORY_TAILNET_PATH } from './trajectory.js';
 
 const cleanups: string[] = [];
 const running: RunningDaemon[] = [];
@@ -93,6 +94,48 @@ describe('surface routes', () => {
     for (const page of pages) {
       expect(page.html).toContain('epistemic-observed { color: var(--cyan); }');
       expect(page.html).toContain('epistemic-unknown { color: var(--unknown)');
+    }
+  });
+
+  it('nav links stay inside the current mount — root-relative when served directly, prefixed under the tailnet mount', async () => {
+    const model = buildFixtureModel(cleanups);
+    const start = await createDaemon({
+      stateDir: join(tempDir('syzygy-poc-surface-state-'), 'state'),
+      routes: pocRoutes(() => model),
+      port: 0,
+    });
+    if (!start.started) throw new Error(`daemon failed to start: ${start.failure.kind}`);
+    running.push(start.daemon);
+    const baseUrl = `http://${start.daemon.host}:${start.daemon.port}`;
+
+    function navHrefs(html: string): string[] {
+      const nav = html.match(/<nav aria-label="Three-surface POC sections">.*?<\/nav>/s)?.[0] ?? '';
+      return [...nav.matchAll(/href="([^"]*)"/g)].map((match) => match[1] ?? '');
+    }
+
+    const directPaths = [POC_HUMAN_PATH, POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH];
+    for (const path of directPaths) {
+      const html = await (await fetch(`${baseUrl}${path}`)).text();
+      const hrefs = navHrefs(html);
+      expect(hrefs.length).toBeGreaterThan(0);
+      for (const href of hrefs) {
+        expect(href.startsWith(TAILNET_MOUNT_PREFIX)).toBe(false);
+      }
+    }
+
+    const tailnetPaths = [
+      TAILNET_MOUNT_PREFIX,
+      POLARIS_TAILNET_PATH,
+      TRAJECTORY_TAILNET_PATH,
+      ORRERY_TAILNET_PATH,
+    ];
+    for (const path of tailnetPaths) {
+      const html = await (await fetch(`${baseUrl}${path}`)).text();
+      const hrefs = navHrefs(html);
+      expect(hrefs.length).toBeGreaterThan(0);
+      for (const href of hrefs) {
+        expect(href.startsWith(TAILNET_MOUNT_PREFIX)).toBe(true);
+      }
     }
   });
 });

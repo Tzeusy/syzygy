@@ -126,7 +126,7 @@ const POLARIS_STYLE = `
   .relationships li { margin-bottom: .5rem; }
 `;
 
-export function renderPolarisPage(model: PocModel): string {
+export function renderPolarisPage(model: PocModel, mountPrefix = ''): string {
   const entitiesById = new Map(model.entities.map((entity) => [entity.id, entity]));
   const movementsByAnchor = new Map(MOVEMENTS.map((movement) => [movement.beforeEntityId, movement]));
   const sections = model.entities
@@ -170,5 +170,6 @@ export function renderPolarisPage(model: PocModel): string {
     body,
     footer: `Evaluation <code>${escapeHtml(model.evaluation.snapshot)}</code> as of <code>${escapeHtml(model.evaluation.asOf)}</code>.`,
     escapeHtml,
+    mountPrefix,
   });
 }

@@ -12,10 +12,14 @@ import {
 } from '@syzygy/three-surface-poc-core';
 
 import { browserRequestAllowed } from './browser-origin.js';
-import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
+import { mountPrefixForPath, TAILNET_MOUNT_PREFIX, withMountPrefix } from './tailnet.js';
 
 export const MATERIALIZE_HUMAN_PATH = '/trajectory/materialize' as const;
 export const MATERIALIZE_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}/trajectory/materialize` as const;
+
+// Kept as a local literal, not imported from `trajectory.ts`, to avoid a
+// cycle (`trajectory.ts` imports `renderMaterializePanel` from this file).
+const TRAJECTORY_BACK_PATH = '/trajectory' as const;
 
 // Identifies the mechanism in Butlers' own audit trail (`bd`'s
 // `--actor`), distinct from the machine's real account (which `bd`
@@ -48,7 +52,7 @@ export const MATERIALIZE_PANEL_STYLE = `
 `;
 
 /** Preview panel — read-only, embedded on the Trajectory page (AC1). */
-export function renderMaterializePanel(model: PocModel): string {
+export function renderMaterializePanel(model: PocModel, mountPrefix = ''): string {
   const packet = buildTrajectoryMaterializationPacket(model);
   const beadId = currentMaterializedBeadId(model);
 
@@ -71,13 +75,14 @@ export function renderMaterializePanel(model: PocModel): string {
         <dt>External reference</dt><dd data-parity-field="materialize-external-ref"><code>${escapeHtml(packet.externalRef)}</code></dd>
       </dl>
       ${status}
-      <form method="POST" action="${escapeHtml(MATERIALIZE_HUMAN_PATH)}">
+      <form method="POST" action="${escapeHtml(withMountPrefix(mountPrefix, MATERIALIZE_HUMAN_PATH))}">
         <button type="submit" data-parity-field="materialize-trigger">${beadId === null ? 'Materialize this work item' : 'Re-run materialize (idempotent)'}</button>
       </form>
     </section>`;
 }
 
-function resultPage(input: { readonly heading: string; readonly body: string }): string {
+function resultPage(input: { readonly heading: string; readonly body: string; readonly mountPrefix: string }): string {
+  const backHref = withMountPrefix(input.mountPrefix, TRAJECTORY_BACK_PATH);
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -89,7 +94,7 @@ function resultPage(input: { readonly heading: string; readonly body: string }):
 <body style="font-family: system-ui, sans-serif; background: #06171a; color: #e7f3f2; padding: 2rem; max-width: 60ch; margin: 0 auto;">
   <h1>${escapeHtml(input.heading)}</h1>
   ${input.body}
-  <p><a href="/trajectory" data-parity-field="materialize-back-link">Back to Trajectory</a></p>
+  <p><a href="${escapeHtml(backHref)}" data-parity-field="materialize-back-link">Back to Trajectory</a></p>
 </body>
 </html>`;
 }
@@ -136,6 +141,7 @@ export function materializeRoutes(options: MaterializeRoutesOptions): readonly R
       };
     }
 
+    const mountPrefix = mountPrefixForPath(request.path);
     const result = runMaterialize(options);
     if (result.kind === 'unknown') {
       const suffix =
@@ -148,6 +154,7 @@ export function materializeRoutes(options: MaterializeRoutesOptions): readonly R
         body: resultPage({
           heading: 'Materialization did not complete',
           body: `<p>Unknown — ${escapeHtml(result.reason)}. ${suffix}</p>`,
+          mountPrefix,
         }),
       };
     }
@@ -160,6 +167,7 @@ export function materializeRoutes(options: MaterializeRoutesOptions): readonly R
       body: resultPage({
         heading: `${verb} Beads item ${result.beadId}`,
         body: `<p data-parity-field="materialize-result-bead-id">${verb} <code>${escapeHtml(result.beadId)}</code> in the configured Butlers repository. Trajectory now shows it as planned.</p>`,
+        mountPrefix,
       }),
     };
   };

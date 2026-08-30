@@ -1,4 +1,5 @@
 import { DESIGN_TOKENS_CSS, legendHtml, skipLinkHtml } from './design-tokens.js';
+import { withMountPrefix } from './tailnet.js';
 
 export type SurfaceRouteId = 'home' | 'polaris' | 'trajectory' | 'orrery';
 
@@ -9,10 +10,15 @@ const NAV_ITEMS: readonly { readonly id: SurfaceRouteId; readonly href: string; 
   { id: 'orrery', href: '/orrery', label: 'Orrery' },
 ];
 
-function siteNav(current: SurfaceRouteId, escapeHtml: (value: string) => string): string {
+function siteNav(
+  current: SurfaceRouteId,
+  mountPrefix: string,
+  escapeHtml: (value: string) => string,
+): string {
   const items = NAV_ITEMS.map((item) => {
     const current_ = item.id === current ? ' aria-current="page"' : '';
-    return `<li><a href="${escapeHtml(item.href)}"${current_}>${escapeHtml(item.label)}</a></li>`;
+    const href = withMountPrefix(mountPrefix, item.href);
+    return `<li><a href="${escapeHtml(href)}"${current_}>${escapeHtml(item.label)}</a></li>`;
   }).join('');
   return `<nav aria-label="Three-surface POC sections"><ul>${items}</ul></nav>`;
 }
@@ -27,10 +33,15 @@ export interface PageShellInput {
   readonly body: string;
   readonly footer: string;
   readonly escapeHtml: (value: string) => string;
+  /** The mount this page is being rendered under (`''` direct, or
+   * `TAILNET_MOUNT_PREFIX` when reached via `tailscale serve`) — every
+   * nav link is built relative to it. Defaults to `''`. */
+  readonly mountPrefix?: string;
 }
 
 export function pageShell(input: PageShellInput): string {
   const escapeHtml = input.escapeHtml;
+  const mountPrefix = input.mountPrefix ?? '';
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -46,7 +57,7 @@ export function pageShell(input: PageShellInput): string {
     <h1>${escapeHtml(input.heading)}</h1>
     <p class="lede">${escapeHtml(input.lede)}</p>
   </header>
-  ${siteNav(input.current, escapeHtml)}
+  ${siteNav(input.current, mountPrefix, escapeHtml)}
   <main id="main-content">
     ${legendHtml(escapeHtml)}
     ${input.body}

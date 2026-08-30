@@ -133,7 +133,7 @@ const TRAJECTORY_STYLE = `
   ${MATERIALIZE_PANEL_STYLE}
 `;
 
-export function renderTrajectoryPage(model: PocModel): string {
+export function renderTrajectoryPage(model: PocModel, mountPrefix = ''): string {
   const trajectory = model.trajectory;
   const workerChange = model.workerChange.kind === 'observed' ? model.workerChange : null;
   let body: string;
@@ -184,7 +184,7 @@ export function renderTrajectoryPage(model: PocModel): string {
       <div class="board" role="group" aria-label="Work-item board by status column">${columns}</div>`;
   }
 
-  body += renderMaterializePanel(model);
+  body += renderMaterializePanel(model, mountPrefix);
 
   return pageShell({
     title: 'Trajectory · Syzygy three-surface POC',
@@ -199,5 +199,6 @@ export function renderTrajectoryPage(model: PocModel): string {
         ? `Beads Dolt revision <code>${escapeHtml(trajectory.doltRevision)}</code>.`
         : 'Work-item region: Unknown.',
     escapeHtml,
+    mountPrefix,
   });
 }

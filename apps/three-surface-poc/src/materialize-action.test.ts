@@ -8,10 +8,12 @@ import { readMaterializationRecordFile } from '@syzygy/three-surface-poc-core';
 
 import {
   MATERIALIZE_HUMAN_PATH,
+  MATERIALIZE_TAILNET_PATH,
   materializeRoutes,
   renderMaterializePanel,
 } from './materialize-action.js';
 import { pocRoutes } from './routes.js';
+import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import { renderTrajectoryPage } from './trajectory.js';
 
@@ -49,6 +51,12 @@ describe('renderMaterializePanel', () => {
     const model = buildFixtureModel(cleanups);
     const html = renderTrajectoryPage(model);
     expect(html).toContain('data-materialize-panel');
+  });
+
+  it('posts to the tailnet-mounted action when rendered under the tailnet mount', () => {
+    const model = buildFixtureModel(cleanups);
+    const html = renderMaterializePanel(model, TAILNET_MOUNT_PREFIX);
+    expect(html).toContain(`<form method="POST" action="${TAILNET_MOUNT_PREFIX}/trajectory/materialize">`);
   });
 });
 
@@ -118,6 +126,21 @@ describe('materializeRoutes', () => {
     expect(createCalls).toBe(1);
     expect(refreshed).toBe(1);
     expect(readMaterializationRecordFile(dir)?.beadId).toBe('bu-http-materialized1');
+  });
+
+  it('keeps the result page\'s back-link under the tailnet mount when triggered there (AC2)', async () => {
+    const dir = tempDir('syzygy-poc-materialize-state-');
+    const baseUrl = await startDaemon({
+      stateDir: dir,
+      runQuery: (_repoRoot, sql) =>
+        sql.includes('external_ref') ? JSON.stringify([]) : JSON.stringify([{ revision: 'dolt-rev-http' }]),
+      runCreate: () => JSON.stringify({ id: 'bu-http-tailnet' }),
+    });
+
+    const response = await fetch(`${baseUrl}${MATERIALIZE_TAILNET_PATH}`, { method: 'POST' });
+    expect(response.status).toBe(200);
+    const html = await response.text();
+    expect(html).toContain(`href="${TAILNET_MOUNT_PREFIX}/trajectory"`);
   });
 
   it('is idempotent over HTTP: a second POST reuses the same Bead without a second create (AC3)', async () => {

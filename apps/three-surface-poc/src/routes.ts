@@ -6,7 +6,7 @@ import { epistemicText, exactTablesSection } from './exact-tables.js';
 import { ORRERY_HUMAN_PATH, ORRERY_TAILNET_PATH, renderOrreryPage } from './orrery.js';
 import { pageShell } from './page-shell.js';
 import { POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, renderPolarisPage } from './polaris.js';
-import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
+import { mountPrefixForPath, TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { renderTrajectoryPage, TRAJECTORY_HUMAN_PATH, TRAJECTORY_TAILNET_PATH } from './trajectory.js';
 
 export { BROWSER_ORIGIN_REFUSAL } from './browser-origin.js';
@@ -57,7 +57,7 @@ const HOME_STYLE = `
   @media (max-width: 800px) { .surface-polaris, .surface-trajectory, .surface-orrery { grid-column: 1 / -1; margin-top: 0; } }
 `;
 
-export function renderPocPage(model: PocModel): string {
+export function renderPocPage(model: PocModel, mountPrefix = ''): string {
   const surfaces = model.surfaces.map((surface) => surfacePanel(surface, model)).join('');
   const body = `
     <p class="notice"><strong>POC, not product status.</strong> Desired, execution, and observed state remain distinct. Merge is not verification. Missing evidence is rendered Unknown.</p>
@@ -74,6 +74,7 @@ export function renderPocPage(model: PocModel): string {
     body,
     footer: `Evaluation <code>${escapeHtml(model.evaluation.snapshot)}</code> as of <code>${escapeHtml(model.evaluation.asOf)}</code>. Machine facts: authenticated <code>GET ${POC_MACHINE_PATH}</code>.`,
     escapeHtml,
+    mountPrefix,
   });
 }
 
@@ -83,7 +84,7 @@ export function pocRoutes(getModel: () => PocModel): readonly Route[] {
       ? {
           status: 200,
           contentType: 'text/html; charset=utf-8',
-          body: renderPocPage(getModel()),
+          body: renderPocPage(getModel(), mountPrefixForPath(request.path)),
         }
       : {
           status: 403,
@@ -99,11 +100,15 @@ export function pocRoutes(getModel: () => PocModel): readonly Route[] {
   function humanSurfaceRoutes(
     directPath: string,
     tailnetPath: string,
-    render: (model: PocModel) => string,
+    render: (model: PocModel, mountPrefix: string) => string,
   ): readonly Route[] {
     const handle: Route['handle'] = ({ request }) =>
       browserRequestAllowed(request.headers)
-        ? { status: 200, contentType: 'text/html; charset=utf-8', body: render(getModel()) }
+        ? {
+            status: 200,
+            contentType: 'text/html; charset=utf-8',
+            body: render(getModel(), mountPrefixForPath(request.path)),
+          }
         : {
             status: 403,
             contentType: 'application/json',
