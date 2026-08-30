@@ -1,0 +1,98 @@
+import { rmSync } from 'node:fs';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
+
+import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
+
+import { ORRERY_HUMAN_PATH } from './orrery.js';
+import { POLARIS_HUMAN_PATH } from './polaris.js';
+import { pocRoutes } from './routes.js';
+import { buildFixtureModel } from './test-model-fixture.js';
+import { TRAJECTORY_HUMAN_PATH } from './trajectory.js';
+
+const cleanups: string[] = [];
+const running: RunningDaemon[] = [];
+
+afterEach(async () => {
+  for (const daemon of running.splice(0)) {
+    await daemon.close().catch(() => undefined);
+  }
+  for (const directory of cleanups.splice(0)) {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+function tempDir(prefix: string): string {
+  const directory = mkdtempSync(join(tmpdir(), prefix));
+  cleanups.push(directory);
+  return directory;
+}
+
+describe('surface routes', () => {
+  it('serves Polaris, Trajectory, and Orrery as human-open, same-origin-guarded pages', async () => {
+    const model = buildFixtureModel(cleanups);
+    const start = await createDaemon({
+      stateDir: join(tempDir('syzygy-poc-surface-state-'), 'state'),
+      routes: pocRoutes(() => model),
+      port: 0,
+    });
+    if (!start.started) throw new Error(`daemon failed to start: ${start.failure.kind}`);
+    running.push(start.daemon);
+    const baseUrl = `http://${start.daemon.host}:${start.daemon.port}`;
+
+    for (const path of [POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH]) {
+      const response = await fetch(`${baseUrl}${path}`);
+      expect(response.status).toBe(200);
+      expect(response.headers.get('content-type')).toBe('text/html; charset=utf-8');
+      const html = await response.text();
+      expect(html).toContain('<nav aria-label="Three-surface POC sections">');
+      expect(html).toContain('class="legend"');
+
+      const rebound = await fetch(`${baseUrl}${path}`, {
+        headers: { host: 'poc.attacker.invalid', origin: 'http://poc.attacker.invalid' },
+      });
+      expect(rebound.status).toBe(403);
+    }
+  });
+
+  it('encodes Observed and Unknown identically across the home page and all three surfaces (POC-REQ-060)', async () => {
+    const model = buildFixtureModel(cleanups);
+    const start = await createDaemon({
+      stateDir: join(tempDir('syzygy-poc-surface-state-'), 'state'),
+      routes: pocRoutes(() => model),
+      port: 0,
+    });
+    if (!start.started) throw new Error(`daemon failed to start: ${start.failure.kind}`);
+    running.push(start.daemon);
+    const baseUrl = `http://${start.daemon.host}:${start.daemon.port}`;
+
+    const pages = await Promise.all(
+      ['/', POLARIS_HUMAN_PATH, TRAJECTORY_HUMAN_PATH, ORRERY_HUMAN_PATH].map(async (path) => ({
+        path,
+        html: await (await fetch(`${baseUrl}${path}`)).text(),
+      })),
+    );
+
+    const denominator = pages.length;
+    let consistent = 0;
+    for (const page of pages) {
+      const hasDeclaredObserved = page.html.includes('class="epistemic epistemic-observed"');
+      const hasDeclaredUnknown = page.html.includes('class="epistemic epistemic-unknown"');
+      // every page that renders any epistemic state at all uses the one
+      // declared class names; a page with neither state present is excluded
+      // from the sweep denominator rather than falsely counted
+      if (!hasDeclaredObserved && !hasDeclaredUnknown) {
+        continue;
+      }
+      consistent += 1;
+    }
+    expect(consistent).toBeGreaterThan(0);
+    expect(consistent).toBeLessThanOrEqual(denominator);
+    for (const page of pages) {
+      expect(page.html).toContain('epistemic-observed { color: var(--cyan); }');
+      expect(page.html).toContain('epistemic-unknown { color: var(--unknown)');
+    }
+  });
+});

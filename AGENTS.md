@@ -321,3 +321,45 @@ can be authorized.
   unreachable-vs-observer-failure split).
 - Review WARNING: `authorizeWrite` uses raw `startsWith` — path traversal
   like `openspec/../README.md` passes. Caller must normalize.
+
+### Three-surface redesign (syzygy-z2b): Polaris/Trajectory/Orrery
+
+- Two new pure-ish observers in `packages/three-surface-poc-core/src/`:
+  `code-structure.ts` (git `ls-tree -r -l` at an exact revision — metadata
+  only, never opens blob content) and `work-items.ts` (shells `bd sql
+  --json` against the live Dolt server; **never** reads the JSONL export —
+  asserted by a static-source sweep, not just runtime behavior). Both
+  return an `{kind:'observed'|'unknown', ...}` union and take an injectable
+  `runGit`/`runQuery` for hermetic tests. `PocModel` now carries
+  `codeStructure`, `workItems`, `orrery`, `trajectory` fields, computed
+  inside `buildButlersPocModel` — still one shared model, still
+  parity-by-construction (`GET /api/poc` is `JSON.stringify(model)`
+  verbatim).
+- `apps/three-surface-poc/src/{polaris,trajectory,orrery}.ts` are the three
+  new human routes; `page-shell.ts` + `design-tokens.ts` are the one
+  shared chrome/token/legend source all four pages (home included) render
+  from. Orrery is the only surface with real client-side rendering (an
+  inline, self-served `<script>` — no separate bundle, no CDN); Polaris and
+  Trajectory are plain SSR since nothing in the spec requires otherwise.
+  `exact-tables.ts` holds the entity/relationship table renderer shared by
+  the home page and Orrery's no-script/route-resolution backstop.
+- **Worktree gotcha**: a freshly created `git worktree` under
+  `.worktrees/parallel-agents/<id>` has no local `node_modules`. Since this
+  repo has no `paths` mapping in `tsconfig.base.json`, `NodeNext` module
+  resolution for `@syzygy/*` packages walks up to the *main* checkout's
+  `node_modules/@syzygy/*` symlinks (which point at the main checkout's own
+  `packages/*`/`apps/*`) — so `tsc -b`/`vitest` silently type-check and run
+  against the wrong (stale) package copy instead of the worktree's edits,
+  with no error, just confusing "property does not exist" failures. Fix:
+  run `npm ci` inside the worktree once before trusting any cross-package
+  build or test there.
+- Honest gaps from the first implementation pass (see
+  `openspec/changes/three-surface-poc-experience/tasks.md` §3.5/4.1/4.2 for
+  the precise state): no automated WCAG AA contrast measurement or
+  browser-driven keyboard-traversal E2E (structural accessibility checks
+  only); no single sweep that counts and diffs *every* parity marker across
+  all three surfaces against the machine answer in one pass (existing
+  per-surface parity tests are structural/by-construction, not an
+  exhaustive marker sweep like `routes.test.ts` already does for the home
+  page); the fresh-checkout demo was run manually against the real Butlers
+  repo this session, not from a truly fresh `git clone`.

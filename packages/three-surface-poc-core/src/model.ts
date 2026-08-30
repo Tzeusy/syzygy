@@ -2,6 +2,14 @@ import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 
+import { observeCodeStructure, type CodeStructureResult } from './code-structure.js';
+import { observeWorkItems, type WorkItemsResult } from './work-items.js';
+import { projectOrrery, type OrreryProjection } from './orrery-projection.js';
+import { projectTrajectory, type TrajectoryProjection } from './trajectory-projection.js';
+
+const RECENT_CLOSED_WINDOW = 50;
+const BEAD_PREFIX = 'bu' as const;
+
 export type PocEpistemic =
   | { readonly label: 'Observed'; readonly basis: string }
   | { readonly label: 'Unknown'; readonly reason: string };
@@ -62,6 +70,10 @@ export interface PocModel {
   readonly entities: readonly PocEntity[];
   readonly relationships: readonly PocRelationship[];
   readonly surfaces: readonly PocSurface[];
+  readonly codeStructure: CodeStructureResult;
+  readonly workItems: WorkItemsResult;
+  readonly orrery: OrreryProjection;
+  readonly trajectory: TrajectoryProjection;
 }
 
 export interface BuildButlersPocModelInput {
@@ -69,6 +81,8 @@ export interface BuildButlersPocModelInput {
   readonly repositoryRevision: string;
   readonly observerRevision: string;
   readonly evaluation: { readonly snapshot: string; readonly asOf: string };
+  readonly runGit?: (repoRoot: string, args: readonly string[]) => string;
+  readonly runWorkItemQuery?: (repoRoot: string, sql: string) => string;
 }
 
 export class PocObservationError extends Error {
@@ -358,6 +372,29 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     },
   ];
 
+  const codeStructure = observeCodeStructure({
+    repoRoot,
+    revision: input.repositoryRevision,
+    capturedAt: input.evaluation.asOf,
+    ...(input.runGit === undefined ? {} : { runGit: input.runGit }),
+  });
+  const workItems = observeWorkItems({
+    repoRoot,
+    beadPrefix: BEAD_PREFIX,
+    capturedAt: input.evaluation.asOf,
+    ...(input.runWorkItemQuery === undefined ? {} : { runQuery: input.runWorkItemQuery }),
+  });
+  const orreryProjection = projectOrrery(codeStructure, [
+    {
+      id: 'code:identity-resolution',
+      path: ARTIFACT_PATHS.code,
+      capabilityId: 'capability:whatsapp-transport-identity',
+    },
+  ]);
+  const trajectoryProjection = projectTrajectory(workItems, {
+    recentClosedWindow: RECENT_CLOSED_WINDOW,
+  });
+
   return {
     schema: 'syzygy-three-surface-poc/v1',
     evaluation: {
@@ -369,6 +406,10 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     capabilityId: 'capability:whatsapp-transport-identity',
     entities,
     relationships,
+    codeStructure,
+    workItems,
+    orrery: orreryProjection,
+    trajectory: trajectoryProjection,
     surfaces: [
       {
         id: 'polaris',
