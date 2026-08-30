@@ -114,7 +114,12 @@ release, broad remote access, or multi-user support; allow Syzygy to write
 implementation code; autonomously adopt intent; create any OpenSpec changeset **other than
 the one adopted Capability 1 change**
 (`project-registration-and-honest-shape-visibility` — adopted at exact
-digests, `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`), or edit
+digests, `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`) **and
+the one owner-authorized candidate POC change**
+(`three-surface-poc-experience` — authoring authorized 2026-08-30,
+`decisions/THREE-SURFACE-POC-SPEC-AUTHORIZATION.md`; candidate, binds
+nothing until owner sign-off, which also gates syzygy-z2b
+implementation), or edit
 that change's seven adopted artifacts (spec changes route through
 CC-REV-2's amendment path); exceed the escalation triggers the
 authorization act names (doctrine/contract change, spec amendment,

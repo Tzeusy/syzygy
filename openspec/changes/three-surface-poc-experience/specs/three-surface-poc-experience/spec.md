@@ -1,0 +1,1005 @@
+# Specification — three-surface-poc-experience
+
+> **Candidate.** Binds nothing until owner sign-off
+> (`.syzygy/governance/decisions/THREE-SURFACE-POC-SPEC-AUTHORIZATION.md`).
+
+## Purpose
+
+Lets a person and a machine read one observed external project through
+three honest, visually distinct surface experiences — Polaris as a
+long-form white-paper, Trajectory as a work-item board with time
+visualization over the project's Beads Dolt database, Orrery as a
+deterministic spatial code map — all consuming one shared fact model,
+with every Unknown visible with its reason and every positive claim
+carrying resolvable provenance.
+
+## ADDED Requirements
+
+Reader notes, binding on how this file is read:
+
+- **Subject.** "The POC" names the Three-Surface POC application and
+  core packages under specification. "The shared model" is the one
+  in-memory fact model both `GET /api/poc` and every human surface
+  consume. "The configured project" is the single Butlers repository
+  the 2026-08-29 direction bounds the POC to. A "human surface" is any
+  rendering a person reads (server- or client-rendered); the "machine
+  answer" is the authenticated `GET /api/poc` response. Both are
+  observation points for every oracle below.
+- **Groups.** Requirements are organized into seven literal groups,
+  named in each requirement's `Group` line: *Code-structure
+  observation* (001–004), *Work-item observation* (010–013), *Client
+  rendering and parity* (020–022), *Polaris* (030–032), *Trajectory*
+  (040–043), *Orrery* (050–053), *Cross-cutting experience* (060–061).
+  Identifiers are stable and literal: minted once, amended in place,
+  retired rather than reused, never renumbered (CC-SPEC-3). Gaps in the
+  numbering are deliberate.
+- **Warrants.** Each requirement ends with a machine-readable
+  `warrants` block in CC-SPEC-2's six classes. `decisions` entries cite
+  recorded owner directions by their record file in
+  `.syzygy/governance/decisions/`: `POC-DIR-2026-08-29` names
+  `THREE-SURFACE-POC-MODE-DIRECTION.md` and `POC-DIR-2026-08-30` names
+  `THREE-SURFACE-POC-REDESIGN-DIRECTION.md`. **Empty `contracts[]`
+  fields are an open authoring gap, not an assertion of
+  non-applicability** — see the proposal's "Open authoring
+  obligations".
+- **Vocabulary.** No verifying evidence → `Unknown`, never success
+  (VIS-2); every Unknown rendered by a surface carries its reason. An
+  "identified observation" is the pair (source revision, capture
+  instant). The "registered bead-prefix" is the issue-identifier prefix
+  the configured project's Beads database is registered under (for
+  Butlers: `bu`).
+- **Determinism.** Where a requirement says "deterministic", it means:
+  two runs over identical source revisions and identical declared
+  inputs produce identical fact content and identical layout
+  assignments, with only display formatting and serving timestamps
+  excluded.
+
+### Requirement: POC-REQ-001 — Code-structure observation is bound to an exact revision
+
+Group: Code-structure observation. Form: **event-response**.
+
+WHEN the POC observes the configured project's code structure, it SHALL
+produce one identified observation naming the exact git revision
+observed, containing a directory and file inventory (paths, sizes,
+per-file content digests, and declared language classifications) whose
+every entry carries that revision as provenance.
+
+- **Case**: a checker runs the POC against the configured repository at
+  a known commit.
+- **Observable**: the observation's revision and inventory appear in
+  the machine answer; Orrery renders from it (POC-REQ-050).
+- **Oracle**: compare the served revision against `git rev-parse HEAD`
+  of the observed checkout, and a sampled file's served size and digest
+  against `stat` and an independent digest of the same path at that
+  commit; equality decides. Bounded: one revision, sampled entries.
+- **Oracle independence**: expected values come from git and the
+  filesystem directly, never from the POC's own output.
+- **Falsifier**: a served inventory entry whose revision, size, or
+  digest differs from the repository's own state at the named commit,
+  or an observation served without a revision.
+
+#### Scenario: Structure observed at a commit
+
+- **WHEN** the POC observes the configured project checked out at
+  commit R
+- **THEN** the machine answer serves one code-structure observation
+  identified by R, and every inventory entry cites R as its provenance
+  revision
+
+```yaml
+warrants:
+  primary: VIS-2
+  doctrine: [VIS-2, VIS-6, VIS-7]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-002 — Structure observation captures metadata, never indexed contents
+
+Group: Code-structure observation. Form: **prohibition**.
+
+The POC SHALL NOT index, store, or serve observed file contents from
+the code-structure observation. Scope of quantification: every field of
+every served code-structure fact. Only paths, sizes, counts, language
+classifications, digests, revisions, and capture instants may appear.
+
+- **Case (counterexample schema + sweep)**: a checker plants a file
+  containing a unique sentinel string in the observed repository,
+  triggers observation, then sweeps the entire machine answer and every
+  human surface for the sentinel. The denominator is the full byte
+  content of both channels.
+- **Observable**: the sentinel appears nowhere in either channel.
+- **Oracle**: substring search for the sentinel over the complete
+  served bytes; absence over the exhausted population decides.
+- **Oracle independence**: the sentinel is authored by the checker,
+  unknown to the implementation.
+- **Falsifier**: the sentinel — or any observed file's body text —
+  appearing in any served output.
+
+#### Scenario: Planted content never served
+
+- **WHEN** an observed file contains a checker-authored sentinel and
+  observation runs
+- **THEN** no served human or machine output contains the sentinel;
+  the file appears only as path, size, digest, and classification
+
+```yaml
+warrants:
+  primary: SEC-5
+  doctrine: [SEC-2, SEC-3, SEC-5]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-29, POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-003 — Failed structure observation renders Unknown with its reason
+
+Group: Code-structure observation. Form: **event-response**.
+
+WHEN the code-structure observation cannot be produced (repository
+unreadable, revision unresolvable, observer failure), the POC SHALL
+serve the code-structure region as Unknown carrying a named reason, and
+SHALL NOT serve a partial inventory as if complete.
+
+- **Case**: a checker points the POC at an unreadable or absent
+  repository path and requests both channels.
+- **Observable**: both channels serve Unknown with a reason for the
+  code-structure region; Orrery renders its Unknown state
+  (POC-REQ-051), never an empty-but-green map.
+- **Oracle**: the served epistemic label equals `Unknown` and the
+  reason field is non-empty and names the failure class; string
+  comparison decides.
+- **Oracle independence**: the checker induced the failure and knows
+  its class independently of the POC's report.
+- **Falsifier**: a green or populated structure rendering, a
+  reason-less Unknown, or a partial inventory served without
+  distinguishing itself from a complete one.
+
+#### Scenario: Unreadable repository
+
+- **WHEN** the configured repository path is unreadable at observation
+  time
+- **THEN** the code-structure region is served Unknown with a named
+  reason on both channels
+
+```yaml
+warrants:
+  primary: VIS-2
+  doctrine: [VIS-1, VIS-2]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-29]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-004 — Structure facts are deterministic per revision
+
+Group: Code-structure observation. Form: **invariant**.
+
+For any revision R of the configured project, two code-structure
+observations of R SHALL produce identical fact content. Scope of
+quantification: all served code-structure facts across repeated runs at
+the same revision.
+
+- **Case (sweep)**: a checker runs observation twice at the same
+  commit, holding declared inputs fixed, and diffs the two machine
+  answers' code-structure regions in full — the denominator is every
+  field of both.
+- **Observable**: the two fact sets are byte-identical outside
+  capture-instant fields.
+- **Oracle**: structural diff excluding declared capture-instant
+  fields; emptiness decides.
+- **Oracle independence**: the diff tool is generic, not POC code.
+- **Falsifier**: any fact field differing between the two runs.
+
+#### Scenario: Repeated observation at one commit
+
+- **WHEN** observation runs twice at commit R with identical inputs
+- **THEN** the served code-structure facts are identical apart from
+  capture instants
+
+```yaml
+warrants:
+  primary: VIS-7
+  doctrine: [VIS-6, VIS-7]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-010 — Work items are read from the Dolt database and revision-stamped
+
+Group: Work-item observation. Form: **event-response**.
+
+WHEN the POC observes the configured project's work items, it SHALL
+read them from the project's Beads database hosted on Dolt, and SHALL
+serve the observation identified by the exact Dolt revision read, with
+every served work-item fact carrying that revision as provenance.
+
+- **Case**: a checker runs work-item observation against the configured
+  Beads Dolt database at a known Dolt head.
+- **Observable**: the machine answer names the Dolt revision; a sampled
+  item's served status and timestamps match the database.
+- **Oracle**: compare the served Dolt revision against the database's
+  own head revision queried directly, and a sampled item's fields
+  against a direct SQL read at that revision; equality decides.
+- **Oracle independence**: expected values come from querying Dolt
+  directly, never from the POC's output.
+- **Falsifier**: a served work-item observation with no Dolt revision,
+  or a sampled field differing from the database's value at the named
+  revision.
+
+#### Scenario: Items read at a Dolt head
+
+- **WHEN** work-item observation runs while the Beads Dolt database is
+  at revision D
+- **THEN** the served observation is identified by D and sampled item
+  facts equal direct reads at D
+
+```yaml
+warrants:
+  primary: VIS-6
+  doctrine: [VIS-2, VIS-6, VIS-7]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-011 — Work-item observation is scoped to the registered bead-prefix
+
+Group: Work-item observation. Form: **invariant**.
+
+Every served work item SHALL carry an identifier under the configured
+project's registered bead-prefix. Scope of quantification: all work
+items in the machine answer and on every human surface.
+
+- **Case (sweep)**: a checker enumerates every served work-item
+  identifier from the machine answer — the denominator is the complete
+  served item set — and checks each against the registered prefix.
+- **Observable**: every identifier matches `<prefix>-*`.
+- **Oracle**: prefix match per enumerated item; an exhausted population
+  with zero mismatches decides.
+- **Oracle independence**: the registered prefix comes from the
+  project's registration, not from the observation output.
+- **Falsifier**: one served item whose identifier is outside the
+  registered prefix.
+
+#### Scenario: Only prefix-scoped items served
+
+- **WHEN** the machine answer serves N work items for a project
+  registered under prefix `bu`
+- **THEN** all N identifiers begin `bu-`
+
+```yaml
+warrants:
+  primary: POC-DIR-2026-08-30
+  doctrine: [VIS-6, VIS-7]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-012 — The passive export is never a work-item source
+
+Group: Work-item observation. Form: **prohibition**.
+
+The POC SHALL NOT read work-item facts from the Beads JSONL export or
+any derived file; the Dolt database is the only work-item source. Scope
+of quantification: every work-item fact served in either channel.
+
+- **Case (counterexample schema + sweep)**: a checker mutates the JSONL
+  export to disagree with the Dolt database on one item's status, then
+  triggers observation and reads both channels. The denominator is
+  every served fact about that item.
+- **Observable**: served facts follow the database, never the mutated
+  export.
+- **Oracle**: compare the served status against both sources; equality
+  with the database and inequality with the export decides.
+- **Oracle independence**: both expected values are read directly from
+  the two sources by the checker.
+- **Falsifier**: any served fact matching the mutated export against
+  the database, or observation failing because the export is absent.
+
+#### Scenario: Divergent export ignored
+
+- **WHEN** the JSONL export disagrees with the Dolt database on an
+  item's status and observation runs
+- **THEN** the served status equals the database's value, and deleting
+  the export entirely does not change the observation
+
+```yaml
+warrants:
+  primary: POC-DIR-2026-08-30
+  doctrine: [VIS-6, VIS-7]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-013 — An unreadable work-item source renders Unknown
+
+Group: Work-item observation. Form: **event-response**.
+
+WHEN the Beads Dolt database is absent, unreachable, or unreadable, the
+POC SHALL serve the work-item region as Unknown with a named reason on
+both channels, and Trajectory SHALL render that Unknown state — never
+an empty board presented as "no work".
+
+- **Case**: a checker makes the database unreachable and requests both
+  channels.
+- **Observable**: the work-item region carries `Unknown` and a reason;
+  Trajectory shows its Unknown rendering, visually distinct from an
+  empty-but-observed board.
+- **Oracle**: the served epistemic label equals `Unknown` with a
+  non-empty reason naming the failure class; and the Trajectory
+  rendering carries the Unknown marker, not the zero-items marker.
+- **Oracle independence**: the checker induced and independently knows
+  the failure.
+- **Falsifier**: an empty kanban rendered without an Unknown marker, a
+  reason-less Unknown, or stale items served as current without their
+  observation revision.
+
+#### Scenario: Database unreachable
+
+- **WHEN** the Dolt database cannot be read at observation time
+- **THEN** both channels serve the work-item region Unknown with a
+  named reason, and Trajectory renders that state distinctly from an
+  observed-empty board
+
+```yaml
+warrants:
+  primary: VIS-2
+  doctrine: [VIS-1, VIS-2]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-29]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-020 — Client-rendered facts are the shared model's facts
+
+Group: Client rendering and parity. Form: **invariant**.
+
+Every fact a client-rendered surface presents SHALL be present, with
+equal value, in the machine answer for the same evaluation. Scope of
+quantification: all facts rendered by client-side code across the three
+surfaces.
+
+- **Case (sweep)**: a checker loads each surface, extracts every
+  rendered fact through the surfaces' declared parity markers — the
+  denominator is the complete marker population, which the check counts
+  and reports — and compares each against the machine answer.
+- **Observable**: every marked rendered fact has an equal counterpart
+  in the machine answer.
+- **Oracle**: field-by-field equality over the exhausted marker
+  population; the independent parity comparator (not surface code)
+  decides.
+- **Oracle independence**: the comparator reads the wire outputs of
+  both channels; it imports no rendering code.
+- **Falsifier**: one rendered fact absent from, or unequal to, the
+  machine answer at the same evaluation.
+
+#### Scenario: Surface and machine answer agree
+
+- **WHEN** a surface renders N marked facts at evaluation E
+- **THEN** all N appear with equal values in `GET /api/poc` for E, and
+  the check reports N as its denominator
+
+```yaml
+warrants:
+  primary: VIS-1
+  doctrine: [VIS-1, VIS-3, VIS-7]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-29, POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-021 — Client code is a build output, never fetched at runtime
+
+Group: Client rendering and parity. Form: **prohibition**.
+
+The POC SHALL NOT load executable client code from outside its own
+built, version-controlled outputs: no runtime fetch of scripts from
+external origins. Scope of quantification: every script the served
+pages cause a browser to execute.
+
+- **Case (sweep)**: a checker enumerates every script reference in the
+  served pages and every network origin contacted during page load —
+  the denominator is the complete reference set.
+- **Observable**: all executable references resolve to the POC's own
+  served build outputs.
+- **Oracle**: origin check per enumerated reference over the exhausted
+  set; zero external executable origins decides.
+- **Oracle independence**: the enumeration reads served bytes and
+  observed network activity, not the build configuration.
+- **Falsifier**: one script reference to an origin outside the POC's
+  own serving.
+
+#### Scenario: Offline page load
+
+- **WHEN** a served page loads with all external network origins
+  blocked
+- **THEN** every surface still renders fully from the POC's own served
+  assets
+
+```yaml
+warrants:
+  primary: SEC-3
+  doctrine: [SEC-1, SEC-3]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-29]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-022 — Script-less reading still gets honest facts
+
+Group: Client rendering and parity. Form: **event-response**.
+
+WHEN a human surface is read without script execution, the POC SHALL
+still serve the surface's facts in exact, accessible form (the
+server-rendered exact tables/routes), or an explicit statement that the
+enhanced rendering is unavailable — never a blank or silently degraded
+region presented as complete.
+
+- **Case**: a checker requests each surface with scripting disabled and
+  reads the served HTML.
+- **Observable**: the facts remain reachable through server-rendered
+  exact form, or the region explicitly states its unavailability.
+- **Oracle**: for a sampled fact set, presence in the no-script served
+  HTML (or presence of the explicit unavailability statement); string
+  comparison decides.
+- **Oracle independence**: the sampled expected facts come from the
+  machine answer.
+- **Falsifier**: a region that renders empty without an unavailability
+  statement when scripts are disabled.
+
+#### Scenario: No-script request
+
+- **WHEN** a surface page is fetched and rendered without JavaScript
+- **THEN** its facts are served in exact server-rendered form, or the
+  region explicitly discloses that the spatial/board rendering is
+  unavailable without script
+
+```yaml
+warrants:
+  primary: VIS-3
+  doctrine: [VIS-1, VIS-2, VIS-3]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-030 — Polaris renders a multi-page long-form narrative from intent facts
+
+Group: Polaris. Form: **state projection/query**.
+
+WHEN Polaris is read, it SHALL project the shared model's intent
+entities as a long-form narrative document in multiple titled
+pages/sections, each section traceable to the entity or entities it
+presents.
+
+- **Case**: a checker loads Polaris at a known evaluation with a known
+  entity set.
+- **Observable**: a paginated/sectioned document whose sections carry
+  entity references.
+- **Oracle**: for each intent entity in the machine answer, at least
+  one Polaris section references it, and each section's references
+  resolve to model entities; resolution over the enumerated entity set
+  decides.
+- **Oracle independence**: the entity list comes from the machine
+  answer, not from Polaris's rendering.
+- **Falsifier**: an intent entity absent from every section, or a
+  section presenting substantive content traceable to no entity.
+
+#### Scenario: Narrative covers the intent entities
+
+- **WHEN** the shared model holds N intent entities and Polaris is
+  loaded
+- **THEN** the document presents titled sections in which each of the N
+  entities is referenced, and no section's substantive claims lack an
+  entity reference
+
+```yaml
+warrants:
+  primary: VIS-3
+  doctrine: [VIS-1, VIS-3]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-031 — Every positive Polaris claim carries resolvable provenance
+
+Group: Polaris. Form: **invariant**.
+
+Every positive claim Polaris presents SHALL cite provenance that
+resolves to an identified observation or governed artifact in the
+shared model. Scope of quantification: all claim-bearing elements
+Polaris marks (its declared claim markers).
+
+- **Case (sweep)**: a checker enumerates Polaris's claim markers — the
+  denominator is the complete marker population, counted and reported —
+  and resolves each citation against the machine answer.
+- **Observable**: every marked claim's citation resolves.
+- **Oracle**: resolution per marker over the exhausted population; zero
+  dangling citations decides.
+- **Oracle independence**: resolution targets come from the machine
+  answer.
+- **Falsifier**: one marked positive claim with no citation, or a
+  citation resolving to nothing.
+
+#### Scenario: Claims resolve
+
+- **WHEN** Polaris renders M marked claims
+- **THEN** all M citations resolve against the shared model, and the
+  check reports M as its denominator
+
+```yaml
+warrants:
+  primary: VIS-2
+  doctrine: [VIS-1, VIS-2, VIS-7]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-29]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-032 — Polaris never fills evidence gaps with narrative
+
+Group: Polaris. Form: **prohibition**.
+
+Polaris SHALL NOT present prose asserting states of the project for
+which the shared model holds no evidence; where the model is Unknown,
+the narrative SHALL disclose the Unknown and its reason in place. Scope
+of quantification: every substantive assertion in the rendered
+document.
+
+- **Case (counterexample schema + sweep)**: a checker takes a model
+  whose relationships include declared Unknowns, renders Polaris, and
+  sweeps every marked assertion — the denominator is the marked
+  assertion population — verifying that no assertion speaks positively
+  about an Unknown relationship.
+- **Observable**: Unknown regions appear as disclosed Unknowns inside
+  the narrative flow.
+- **Oracle**: for each model Unknown, the document's corresponding
+  section carries the Unknown disclosure and no positive assertion
+  cites that relationship; the marker sweep decides.
+- **Oracle independence**: the Unknown list comes from the machine
+  answer.
+- **Falsifier**: prose asserting verification, health, or completion
+  for a relationship the model holds as Unknown.
+
+#### Scenario: Unknown disclosed in the narrative
+
+- **WHEN** the shared model holds the test-evidence relationship as
+  Unknown
+- **THEN** Polaris's corresponding section states the Unknown and its
+  reason, and no section asserts test success
+
+```yaml
+warrants:
+  primary: VIS-1
+  doctrine: [VIS-1, VIS-2]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-29]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-040 — Trajectory columns come from the closed status vocabulary
+
+Group: Trajectory. Form: **state projection/query**.
+
+WHEN Trajectory is read, it SHALL project observed work items onto
+board columns drawn from a declared closed mapping of the Beads status
+vocabulary, with every rendered item placed by its observed status and
+carrying its identifier.
+
+- **Case**: a checker loads Trajectory at a known Dolt revision with
+  known item statuses.
+- **Observable**: each rendered item sits in the column its observed
+  status maps to.
+- **Oracle**: per sampled item, the rendered column equals the declared
+  mapping applied to the status read directly from Dolt at the served
+  revision; equality decides.
+- **Oracle independence**: expected statuses are direct database reads.
+- **Falsifier**: an item rendered in a column that contradicts its
+  observed status, or a column outside the declared mapping.
+
+#### Scenario: Items placed by observed status
+
+- **WHEN** an item's status in the Dolt database at revision D is
+  `in_progress`
+- **THEN** Trajectory at the observation of D renders that item in the
+  column the declared mapping assigns to `in_progress`
+
+```yaml
+warrants:
+  primary: VIS-6
+  doctrine: [VIS-3, VIS-6]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-041 — Trajectory's time visualization uses recorded instants only
+
+Group: Trajectory. Form: **invariant**.
+
+Every temporal position, duration, or ordering Trajectory renders SHALL
+derive from instants recorded in the observed work-item facts (created,
+updated, closed), never from render-time clocks or inferred ordering.
+Scope of quantification: all temporal encodings on the surface.
+
+- **Case (sweep)**: a checker enumerates Trajectory's temporal markers
+  — the denominator is the marker population — and recomputes each
+  position from the machine answer's recorded instants.
+- **Observable**: rendered positions match recomputation; re-rendering
+  later without a new observation changes nothing.
+- **Oracle**: recomputation equality per marker, and byte-equality of
+  temporal encodings across two renders of one observation at different
+  wall-clock times.
+- **Oracle independence**: recomputation uses the machine answer's
+  instants and a checker-owned formula.
+- **Falsifier**: a temporal encoding that shifts between renders of the
+  same observation, or one not derivable from recorded instants.
+
+#### Scenario: Same observation, later render
+
+- **WHEN** one observation is rendered at two different wall-clock
+  times
+- **THEN** every temporal encoding is identical across the two renders
+
+```yaml
+warrants:
+  primary: VIS-6
+  doctrine: [VIS-2, VIS-6, VIS-7]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-042 — Trajectory declares its scope and denominator
+
+Group: Trajectory. Form: **invariant**.
+
+Trajectory SHALL visibly declare which work-item population it renders
+(its selection rule) and the counts inside and outside that selection,
+so an excluded-item population is never silently invisible. Scope of
+quantification: the rendered scope statement against the full observed
+item set.
+
+- **Case**: a checker loads Trajectory over a database whose total item
+  count exceeds the rendered selection.
+- **Observable**: the surface states the selection rule, the rendered
+  count, and the excluded count.
+- **Oracle**: rendered count + excluded count equals the total count
+  read directly from Dolt at the served revision; arithmetic decides.
+- **Oracle independence**: the total comes from a direct database
+  count.
+- **Falsifier**: a board whose counts do not reconcile with the
+  database total, or no visible scope statement.
+
+#### Scenario: Bounded board over a large history
+
+- **WHEN** the database holds 6,964 items and Trajectory renders a
+  selection of 192
+- **THEN** the surface states the selection rule and that 6,772 items
+  are outside it, and the three numbers reconcile
+
+```yaml
+warrants:
+  primary: VIS-2
+  doctrine: [VIS-1, VIS-2, VIS-3]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-043 — Activity is never rendered as satisfaction
+
+Group: Trajectory. Form: **prohibition**.
+
+Trajectory SHALL NOT render work-item activity, closure, or merge state
+as intent satisfaction or verification. Scope of quantification: every
+satisfaction/verification encoding on the surface.
+
+- **Case (counterexample schema + sweep)**: a checker closes an
+  observed item whose governing relationship holds no verification
+  evidence, re-observes, and sweeps Trajectory's rendered encodings for
+  that item — the denominator is that item's full rendered marker set.
+- **Observable**: the item shows closed/merged state and the
+  verification relationship stays visibly not-verified/Unknown.
+- **Oracle**: the rendered verification encoding equals the machine
+  answer's relationship state (not the item's activity state); equality
+  decides.
+- **Oracle independence**: the relationship state comes from the
+  machine answer; the checker induced the mismatch.
+- **Falsifier**: a closed or merged item rendered with a verified,
+  satisfied, or green encoding while its relationship lacks evidence.
+
+#### Scenario: Closed but unverified
+
+- **WHEN** an observed item is closed and no verification artifact has
+  been ingested
+- **THEN** Trajectory renders the closure as activity and the
+  verification state as not verified/Unknown, distinctly encoded
+
+```yaml
+warrants:
+  primary: VIS-2
+  doctrine: [VIS-1, VIS-2]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-29, POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-050 — Orrery projects declared mappings deterministically
+
+Group: Orrery. Form: **state projection/query**.
+
+WHEN Orrery is read, it SHALL render a spatial projection of the
+observed code structure in which regions derive from the directory
+structure and declared capability-to-path mappings, with a
+deterministic layout per observation.
+
+- **Case**: a checker loads Orrery twice over one observation and once
+  over a second observation at the same revision.
+- **Observable**: spatial regions correspond to observed directories
+  and declared mappings; layout assignments repeat exactly.
+- **Oracle**: per sampled region, the backing directory/mapping exists
+  in the machine answer; and layout assignments are equal across
+  renders of equal observations. Equality decides.
+- **Oracle independence**: expected structure comes from the machine
+  answer; layout comparison is a generic diff.
+- **Falsifier**: a rendered region backed by no observed directory or
+  declared mapping, or two renders of one observation with differing
+  layouts.
+
+#### Scenario: Stable city over one observation
+
+- **WHEN** Orrery renders the same code-structure observation twice
+- **THEN** every region's position and extent is identical, and every
+  region resolves to an observed path or declared mapping
+
+```yaml
+warrants:
+  primary: VIS-7
+  doctrine: [VIS-3, VIS-6, VIS-7]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-051 — Unmapped code is a visible Unknown region with a denominator
+
+Group: Orrery. Form: **invariant**.
+
+Orrery SHALL render observed code outside every declared mapping as an
+explicit unmapped/Unknown region, and SHALL state the mapped and
+unmapped counts against the observed total. Scope of quantification:
+every observed file in the structure observation.
+
+- **Case (sweep)**: a checker counts observed files directly from the
+  machine answer, and reads Orrery's mapped/unmapped counts — the
+  denominator is the observed file total.
+- **Observable**: an explicit unmapped region with counts that
+  reconcile.
+- **Oracle**: mapped + unmapped equals the observed total; arithmetic
+  over the exhausted file population decides.
+- **Oracle independence**: the total is recomputed from the machine
+  answer's inventory.
+- **Falsifier**: observed files absent from both the mapped regions and
+  the unmapped count, or no visible unmapped region when unmapped files
+  exist.
+
+#### Scenario: Partial mapping disclosed
+
+- **WHEN** 1,240 files are observed and declared mappings cover 310
+- **THEN** Orrery renders the mapped regions, an explicit Unknown
+  region for the 930 unmapped files, and the counts reconcile to 1,240
+
+```yaml
+warrants:
+  primary: VIS-2
+  doctrine: [VIS-1, VIS-2]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-29, POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-052 — Orrery never infers relationships
+
+Group: Orrery. Form: **prohibition**.
+
+Orrery SHALL NOT render an edge, adjacency, grouping, or emphasis
+encoding a relationship the shared model does not hold. Scope of
+quantification: every relationship encoding the surface's legend
+declares.
+
+- **Case (sweep)**: a checker enumerates every rendered relationship
+  encoding per the legend — the denominator is the enumerated encoding
+  population — and resolves each against the machine answer's
+  relationship set.
+- **Observable**: every encoded relationship exists in the model.
+- **Oracle**: resolution per encoding over the exhausted population;
+  zero unresolved encodings decides.
+- **Oracle independence**: the relationship set comes from the machine
+  answer.
+- **Falsifier**: one rendered edge or declared-meaning adjacency with
+  no backing model relationship.
+
+#### Scenario: No proximity-invented edges
+
+- **WHEN** two code regions are rendered adjacent for layout reasons
+  only
+- **THEN** no legend-declared relationship encoding connects them, and
+  every rendered edge resolves to a model relationship
+
+```yaml
+warrants:
+  primary: VIS-1
+  doctrine: [VIS-1, VIS-2, VIS-6]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-053 — Every Orrery entity resolves to its exact route
+
+Group: Orrery. Form: **invariant**.
+
+Every entity Orrery renders SHALL link to the same entity route the
+exact tables serve, so the spatial view and the exact view are two
+projections of one graph. Scope of quantification: all interactive
+entity elements on the surface.
+
+- **Case (sweep)**: a checker enumerates every interactive entity
+  element — the denominator is that population — and follows each link.
+- **Observable**: each link resolves to the entity's exact
+  representation.
+- **Oracle**: HTTP/anchor resolution per enumerated element; zero
+  dangling links over the exhausted population decides.
+- **Oracle independence**: the route table comes from the served exact
+  view, not Orrery's code.
+- **Falsifier**: one spatial entity whose link is dangling or resolves
+  to a different entity.
+
+#### Scenario: Spatial and exact agree
+
+- **WHEN** Orrery renders K interactive entities
+- **THEN** all K links resolve to the matching exact-table routes, and
+  the check reports K as its denominator
+
+```yaml
+warrants:
+  primary: VIS-3
+  doctrine: [VIS-1, VIS-3]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-060 — One design language, one epistemic encoding
+
+Group: Cross-cutting experience. Form: **invariant**.
+
+The three surfaces SHALL draw from one declared set of design tokens,
+and SHALL encode epistemic states (Observed, Unknown, and their
+reasons) identically wherever they appear. Scope of quantification:
+every epistemic encoding across the three surfaces.
+
+- **Case (sweep)**: a checker enumerates every epistemic encoding on
+  all three surfaces — the denominator is that population — and
+  compares each against the declared token/encoding table.
+- **Observable**: identical states render with identical declared
+  encodings on every surface.
+- **Oracle**: per-encoding equality with the declared table over the
+  exhausted population; the table is a checked-in declaration.
+- **Oracle independence**: the declared table is the expected value;
+  the sweep reads served output.
+- **Falsifier**: one surface encoding Unknown (or Observed) differently
+  from the declared table, or a surface styling epistemic state ad hoc.
+
+#### Scenario: Unknown looks the same everywhere
+
+- **WHEN** the same Unknown relationship appears on Polaris,
+  Trajectory, and Orrery
+- **THEN** all three render it with the declared Unknown encoding from
+  the shared token set
+
+```yaml
+warrants:
+  primary: VIS-3
+  doctrine: [VIS-1, VIS-3]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
+
+### Requirement: POC-REQ-061 — The accessibility floor holds on every surface
+
+Group: Cross-cutting experience. Form: **invariant**.
+
+Every surface SHALL be navigable by keyboard with visible focus, SHALL
+meet WCAG AA contrast for text and epistemic encodings, SHALL respect
+reduced-motion preferences, and SHALL carry legends whose text matches
+every visual encoding in use. Scope of quantification: all interactive
+elements, text/encoding color pairs, animated behaviors, and
+legend-declared encodings on the three surfaces.
+
+- **Case (sweep)**: a checker runs keyboard traversal, automated
+  contrast measurement over the enumerated color pairs,
+  reduced-motion-preference rendering, and a legend-to-encoding
+  comparison; each sweep reports its denominator.
+- **Observable**: full traversal reaches every interactive element with
+  visible focus; measured pairs meet AA; animations are absent under
+  reduced motion; every legend entry matches a live encoding and vice
+  versa.
+- **Oracle**: per-sweep pass over its exhausted population; measured
+  ratios and element counts decide.
+- **Oracle independence**: contrast is measured from served styles by a
+  generic tool; the legend comparison reads served output.
+- **Falsifier**: an unreachable interactive element, a failing measured
+  pair, an animation surviving reduced-motion preference, or a legend
+  entry matching no rendered encoding.
+
+#### Scenario: Keyboard-only reading
+
+- **WHEN** a keyboard-only reader traverses each surface
+- **THEN** every interactive element is reachable with visible focus,
+  in an order that follows the surface's reading structure
+
+```yaml
+warrants:
+  primary: VIS-3
+  doctrine: [VIS-1, VIS-3]
+  contracts: []
+  policies: []
+  decisions: [POC-DIR-2026-08-30]
+  topology: []
+  parent_requirements: []
+```
