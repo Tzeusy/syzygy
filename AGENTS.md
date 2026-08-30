@@ -348,6 +348,23 @@ can be authorized.
   Trajectory are plain SSR since nothing in the spec requires otherwise.
   `exact-tables.ts` holds the entity/relationship table renderer shared by
   the home page and Orrery's no-script/route-resolution backstop.
+- **`tailscale serve --set-path /butlers-syzygy <target>` strips the mount
+  prefix before forwarding and adds no header naming it** — verified
+  empirically (a throwaway second `--set-path` mount to a raw echo
+  listener). A browser request to `.../butlers-syzygy/polaris` reaches the
+  daemon as literal path `/polaris`; the `TAILNET_MOUNT_PREFIX`-prefixed
+  routes registered in `routes.ts`/`polaris.ts`/`trajectory.ts`/`orrery.ts`/
+  `materialize-action.ts` are therefore unreachable through this real
+  deployment (harmless leftovers for a hypothetical path-preserving proxy).
+  The one signal that survives the hop is the Host header, which `tailscale
+  serve` does forward faithfully — `tailnet.ts`'s `mountPrefixForRequest`
+  keys off it (via `browser-origin.ts`'s exported `TAILNET_HOST`, the same
+  constant its origin-admission check already uses) to decide whether
+  every internal href/form-action a page renders needs the
+  `/butlers-syzygy` prefix. A **Fetch API/undici test client silently
+  drops an overridden `Host` header** — `apps/three-surface-poc/src/
+  test-http-client.ts`'s `fetchWithHost` uses `node:http` directly to
+  simulate a request that genuinely carries a different Host.
 - **Worktree gotcha**: a freshly created `git worktree` under
   `.worktrees/parallel-agents/<id>` has no local `node_modules`. Since this
   repo has no `paths` mapping in `tsconfig.base.json`, `NodeNext` module
