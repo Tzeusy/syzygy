@@ -195,34 +195,59 @@ export function renderPocPage(model: PocModel): string {
 </html>`;
 }
 
+// `tailscale serve --set-path` forwards the full, unstripped request path to
+// this loopback-bound daemon (verified: a request to
+// https://tzeusy.parrot-hen.ts.net/butlers-syzygy arrives here as literal
+// path `/butlers-syzygy`, not `/`). The daemon's router matches paths by
+// exact string equality with no prefix support, so the mount prefix is
+// registered here as additional exact routes rather than taught to the
+// shared router.
+const TAILNET_MOUNT_PREFIX = '/butlers-syzygy' as const;
+
 export function pocRoutes(getModel: () => PocModel): readonly Route[] {
+  const humanHandle: Route['handle'] = ({ request }) =>
+    browserRequestAllowed(request.headers)
+      ? {
+          status: 200,
+          contentType: 'text/html; charset=utf-8',
+          body: renderPocPage(getModel()),
+        }
+      : {
+          status: 403,
+          contentType: 'application/json',
+          body: JSON.stringify(BROWSER_ORIGIN_REFUSAL),
+        };
+  const machineHandle: Route['handle'] = () => ({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify(getModel()),
+  });
+
   return [
+    { method: 'GET', path: POC_HUMAN_PATH, credentialClass: 'human-open', handle: humanHandle },
     {
       method: 'GET',
-      path: POC_HUMAN_PATH,
+      path: TAILNET_MOUNT_PREFIX,
       credentialClass: 'human-open',
-      handle: ({ request }) =>
-        browserRequestAllowed(request.headers)
-          ? {
-              status: 200,
-              contentType: 'text/html; charset=utf-8',
-              body: renderPocPage(getModel()),
-            }
-          : {
-              status: 403,
-              contentType: 'application/json',
-              body: JSON.stringify(BROWSER_ORIGIN_REFUSAL),
-            },
+      handle: humanHandle,
+    },
+    {
+      method: 'GET',
+      path: `${TAILNET_MOUNT_PREFIX}/`,
+      credentialClass: 'human-open',
+      handle: humanHandle,
     },
     {
       method: 'GET',
       path: POC_MACHINE_PATH,
       credentialClass: 'machine-credentialed',
-      handle: () => ({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(getModel()),
-      }),
+      handle: machineHandle,
+    },
+    {
+      method: 'GET',
+      path: `${TAILNET_MOUNT_PREFIX}${POC_MACHINE_PATH}`,
+      credentialClass: 'machine-credentialed',
+      handle: machineHandle,
     },
   ];
 }
