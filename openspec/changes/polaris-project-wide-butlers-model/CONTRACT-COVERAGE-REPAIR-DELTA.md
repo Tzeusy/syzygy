@@ -8,6 +8,9 @@ added. Unlisted matrix rows remain unchanged.
 Each effective consequence has exactly one disposition. Rows that split a
 broader audited consequence use distinct repair IDs and jointly supersede it.
 
+Declared totals: **69 rows; 62 superseded base rows; 52 covered; 14 Unknown
+uncovered; 3 believed not applicable.**
+
 | Repair consequence ID | Supersedes | Clause | Effective consequence | Disposition |
 |---|---|---|---|---|
 | RFC4-3.r1 | RFC4-3.c2 | RFC4-3 | Every emitted project-shape fact carries a capture instant distinct from source-claimed time | unknown-uncovered |
@@ -16,14 +19,14 @@ broader audited consequence use distinct repair IDs and jointly supersede it.
 | RFC4-7.r1 | RFC4-7.c1 | RFC4-7 | The project-shape observer has a versioned per-project registry entry | covered:PWB-REQ-005 |
 | RFC4-7.r2 | RFC4-7.c2 | RFC4-7 | Observer registry identity/version is an evaluation input | covered:PWB-REQ-005 |
 | RFC4-7.r3 | RFC4-7.c3 | RFC4-7 | Missing or unverifiable registry provenance blocks reads and facts to Unknown | covered:PWB-REQ-005 |
-| RFC1-18.r1 | RFC1-18.c1 | RFC1-18 | Every project Claim has durable identity and an evaluation instance | covered:PWB-REQ-007 |
-| RFC1-18.r2 | RFC1-18.c2 | RFC1-18 | Every project Claim instance carries label, tier, reason, evidence support, freshness, challenge state and evaluation identity | covered:PWB-REQ-007 |
+| RFC1-18.r1 | RFC1-18.c1 | RFC1-18 | Every project Claim has the accepted durable-identity derivation and an evaluation instance | unknown-uncovered |
+| RFC1-18.r2 | RFC1-18.c2 | RFC1-18 | Every project Claim instance has deterministic same-evaluation identity and the complete accepted tuple | unknown-uncovered |
 | RFC1-19.r1 | RFC1-19.c1 | RFC1-19 | Positive project status requires current support; absence remains Unknown | covered:PWB-REQ-007 |
 | RFC1-19.r2 | RFC1-19.c2 | RFC1-19 | Narrative prose doing badge work is held to the same evidence rule | covered:PWB-REQ-007 |
 | RFC1-24.r1 | RFC1-24.c1 | RFC1-24 | Positive status flows through a challengeable Claim with resolvable support | covered:PWB-REQ-007 |
 | RFC1-24.r2 | RFC1-24.c2 | RFC1-24 | Edges or source presence alone cannot create positive status | covered:PWB-REQ-007 |
 | RFC2-9.r1 | RFC2-9.c1 | RFC2-9 | A claim cannot leave Unknown without a provenance-verified currency input | covered:PWB-REQ-007 |
-| RFC2-10.r1 | RFC2-10.c1 | RFC2-10 | Freshness uses the closed vocabulary, is evaluation-deterministic and remains distinct from label/tier | covered:PWB-REQ-007 |
+| RFC2-10.r1 | RFC2-10.c1 | RFC2-10 | Freshness uses the closed vocabulary, is evaluation-deterministic and remains distinct from label/tier | unknown-uncovered |
 | RFC2-24.r1 | RFC2-24.c1 | RFC2-24 | Unknown reasons use the closed twelve, one primary, closed secondaries, distinct routes and complete aggregate disclosure | covered:PWB-REQ-007 |
 | RFC2-25.r1 | RFC2-25.c1 | RFC2-25 | Claim tiers retain their closed meanings and stay distinct from labels and sibling states | covered:PWB-REQ-007 |
 | RFC6-14.r1 | RFC6-14.c2 | RFC6-14 | Every project claim carries label, tier, primary/secondary reasons and freshness | covered:PWB-REQ-007 |
@@ -31,7 +34,8 @@ broader audited consequence use distinct repair IDs and jointly supersede it.
 | RFC6-14.r3 | RFC6-14.c4 | RFC6-14 | Machine answers retain the complete epistemic tuple and never fold Unknown into totals | covered:PWB-REQ-007 |
 | RFC6-17.r1 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains label, tier, reason and freshness counts | covered:PWB-REQ-007 |
 | RFC6-17.r2 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains the used `unadopted-draft` sibling state | unknown-uncovered |
-| RFC6-17.r5 | RFC6-17.c2 | RFC6-17 | Aggregate composition of challenge, reconciliation-chain and work states | believed-not-applicable |
+| RFC6-17.r5 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains challenge state carried by project claims | unknown-uncovered |
+| RFC6-17.r6 | RFC6-17.c2 | RFC6-17 | Aggregate composition of reconciliation-chain and work states | believed-not-applicable |
 | RFC6-17.r3 | RFC6-17.c3 | RFC6-17 | Primary and secondary Unknown-reason counts remain distinct | covered:PWB-REQ-007 |
 | RFC7-16.r1 | RFC7-16.c1 | RFC7-16 | Status is evaluation-bound and carries label, tier, reason and freshness with visible staleness | covered:PWB-REQ-007 |
 | RFC7-16.r2 | RFC7-16.c2 | RFC7-16 | Polaris renders no composite maturity, inferred-success headline or metric wall | covered:PWB-REQ-007 |
@@ -50,7 +54,7 @@ broader audited consequence use distinct repair IDs and jointly supersede it.
 | RFC7-9.r1 | RFC7-9.c1 | RFC7-9 | Every claim's anchor set covers the claim and makes support reader-identifiable | covered:PWB-REQ-014 |
 | RFC7-9.r2 | RFC7-9.c2 | RFC7-9 | No claim block carries an unused anchor | covered:PWB-REQ-014 |
 | RFC7-9.r3 | RFC7-9.c3 | RFC7-9 | Claim blocks are bounded so attribution remains recoverable | covered:PWB-REQ-014 |
-| RFC7-10.r1 | RFC7-10.c1 | RFC7-10 | Anchors use the closed typed form and durable identity rather than labels or coordinates | covered:PWB-REQ-014 |
+| RFC7-10.r1 | RFC7-10.c1 | RFC7-10 | Anchors use every accepted target class and durable identity rather than labels, paths or coordinates | unknown-uncovered |
 | RFC7-10.r2 | RFC7-10.c3 | RFC7-10 | Anchors carry evaluation label/tier/reason and are not rewritten on later reads | covered:PWB-REQ-014 |
 | RFC7-12.r1 | RFC7-12.c1 | RFC7-12 | Every claim's owning source is one step away through its anchor | covered:PWB-REQ-014 |
 | RFC7-12.r2 | RFC7-12.c2 | RFC7-12 | Operative doctrine, non-goal and requirement text is verbatim | covered:PWB-REQ-015 |

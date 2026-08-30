@@ -53,9 +53,10 @@ identity is `(item class, declared key)`; repository-relative paths and content
 hashes are source-anchor state, not identity. The closed extraction classes are
 the six project-account sections, numbered non-negotiables, success list items,
 top-level V1 catalog entries, RFC index rows, baseline spec directories,
-topology component-table identities, craft policy-file identities and roster
-directories containing butler.toml. No arbitrary heading or narrative link
-mints an item. Duplicate keys in one class surface a contradiction.
+topology component-table first-column identities (qualifying H2s provide
+context and mint nothing), craft policy-file identities and roster directories
+containing butler.toml. No arbitrary heading or narrative link mints an item.
+Duplicate keys in one class surface a contradiction.
 
 Rejected alternatives:
 

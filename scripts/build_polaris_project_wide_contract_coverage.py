@@ -30,16 +30,17 @@ REPAIR = os.path.join(CHANGE, "CONTRACT-COVERAGE-REPAIR-DELTA.md")
 OUT = os.path.join(CHANGE, "CONTRACT-COVERAGE.md")
 
 INDEX_RE = re.compile(r"^\s+- \{id: (RFC[1-9]-\d+(?:\([a-z]\))?),", re.M)
+COVERED_DISPOSITION = r"covered:PWB-REQ-\d{3}(?:,PWB-REQ-\d{3})*"
 BASE_ROW_RE = re.compile(
     r"^\|\s*([^|]+\.c\d+[a-z]?)\s*\|\s*(RFC[1-9]-\d+(?:\([a-z]\))?)\s*\|"
     r"\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*(yes|no|unknown)\s*\|"
-    r"\s*([^|]+)\s*\|\s*(covered:[^|]+|unknown-uncovered|believed-not-applicable)\s*\|$",
+    rf"\s*([^|]+)\s*\|\s*({COVERED_DISPOSITION}|unknown-uncovered|believed-not-applicable)\s*\|$",
     re.M,
 )
 REPAIR_ROW_RE = re.compile(
     r"^\|\s*([^|]+\.r\d+)\s*\|\s*([^|]+\.c\d+[a-z]?)\s*\|"
     r"\s*(RFC[1-9]-\d+(?:\([a-z]\))?)\s*\|\s*([^|]+)\s*\|"
-    r"\s*(covered:[^|]+|unknown-uncovered|believed-not-applicable)\s*\|$",
+    rf"\s*({COVERED_DISPOSITION}|unknown-uncovered|believed-not-applicable)\s*\|$",
     re.M,
 )
 REQ_ID_RE = re.compile(r"PWB-REQ-\d{3}")
@@ -48,10 +49,27 @@ COUNT_ROW_RE = re.compile(
     r"\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|$",
     re.M,
 )
+TOTAL_ROW_RE = re.compile(
+    r"^\|\s*\*\*Total\*\*\s*\|\s*\*\*(\d+)\*\*\s*\|"
+    r"\s*\*\*(\d+)\*\*\s*\|\s*\*\*(\d+)\*\*\s*\|"
+    r"\s*\*\*(\d+)\*\*\s*\|\s*\*\*(\d+)\*\*\s*\|$",
+    re.M,
+)
+REPAIR_TOTAL_RE = re.compile(
+    r"Declared totals:\s*\*\*(\d+) rows; (\d+) superseded base rows; "
+    r"(\d+) covered; (\d+) Unknown\s+uncovered; (\d+) believed not applicable\.\*\*",
+    re.M,
+)
 
 
 def digest(text):
     return hashlib.sha256(text.encode()).hexdigest()
+
+
+def consequence_id_matches_clause(consequence_id, clause, marker):
+    stem = consequence_id.rsplit(marker, 1)[0]
+    compact_clause = clause.replace("(", "").replace(")", "")
+    return stem in {clause, compact_clause}
 
 
 def table_data_lines(text, header, expected_columns):
@@ -112,6 +130,10 @@ def parse_inputs(part_texts=None, repair_text=None):
                 raise ValueError(f"duplicate base consequence ID: {consequence_id}")
             if clause not in accepted_set:
                 raise ValueError(f"base row uses unaccepted clause: {clause}")
+            if not consequence_id_matches_clause(consequence_id, clause, ".c"):
+                raise ValueError(
+                    f"base consequence ID prefix does not match clause: {consequence_id} / {clause}"
+                )
             base_rows[consequence_id] = {
                 "id": consequence_id,
                 "clause": clause,
@@ -160,6 +182,16 @@ def parse_inputs(part_texts=None, repair_text=None):
                 raise ValueError(
                     f"embedded RFC{family} counts mismatch: {declared_counts[family]} != {expected}"
                 )
+        total_rows = TOTAL_ROW_RE.findall(part_text)
+        if len(total_rows) != 1:
+            raise ValueError(f"embedded Total row count must be 1, got {len(total_rows)}")
+        declared_total = tuple(int(value) for value in total_rows[0])
+        actual_total = tuple(
+            sum(values[index] for values in declared_counts.values())
+            for index in range(5)
+        )
+        if declared_total != actual_total:
+            raise ValueError(f"embedded Total counts mismatch: {declared_total} != {actual_total}")
 
     repair_rows = {}
     superseded = set()
@@ -183,6 +215,10 @@ def parse_inputs(part_texts=None, repair_text=None):
             raise ValueError(
                 f"repair clause mismatch for {consequence_id}: {clause} != {base_rows[prior_id]['clause']}"
             )
+        if not consequence_id_matches_clause(consequence_id, clause, ".r"):
+            raise ValueError(
+                f"repair consequence ID prefix does not match clause: {consequence_id} / {clause}"
+            )
         repair_rows[consequence_id] = {
             "id": consequence_id,
             "clause": clause,
@@ -194,6 +230,32 @@ def parse_inputs(part_texts=None, repair_text=None):
             "supersedes": prior_id,
         }
         superseded.add(prior_id)
+
+    declared_repair_totals = REPAIR_TOTAL_RE.findall(repair_text)
+    if len(declared_repair_totals) != 1:
+        raise ValueError(
+            f"declared repair totals count must be 1, got {len(declared_repair_totals)}"
+        )
+    repair_dispositions = {"covered": 0, "unknown": 0, "not_applicable": 0}
+    for row in repair_rows.values():
+        if row["disposition"].startswith("covered:"):
+            repair_dispositions["covered"] += 1
+        elif row["disposition"] == "unknown-uncovered":
+            repair_dispositions["unknown"] += 1
+        else:
+            repair_dispositions["not_applicable"] += 1
+    actual_repair_totals = (
+        len(repair_rows),
+        len(superseded),
+        repair_dispositions["covered"],
+        repair_dispositions["unknown"],
+        repair_dispositions["not_applicable"],
+    )
+    declared_repair_total = tuple(int(value) for value in declared_repair_totals[0])
+    if declared_repair_total != actual_repair_totals:
+        raise ValueError(
+            f"declared repair totals mismatch: {declared_repair_total} != {actual_repair_totals}"
+        )
 
     effective = {
         consequence_id: row
@@ -390,6 +452,31 @@ def selftest():
         print("SELFTEST FAILED: invalid repair ID passed")
         return 1
 
+    wrong_prefix_base = list(part_texts)
+    wrong_prefix_base[0] = wrong_prefix_base[0].replace(
+        first_base.group(1), "RFC9-99.c1", 1
+    )
+    try:
+        render(wrong_prefix_base, repair_text)
+    except ValueError as error:
+        if "base consequence ID prefix" not in str(error):
+            print(f"SELFTEST FAILED: wrong base-prefix error: {error}")
+            return 1
+    else:
+        print("SELFTEST FAILED: wrong-prefix base ID passed")
+        return 1
+
+    wrong_prefix_repair = repair_text.replace(first_repair.group(1), "RFC9-99.r1", 1)
+    try:
+        render(part_texts, wrong_prefix_repair)
+    except ValueError as error:
+        if "repair consequence ID prefix" not in str(error):
+            print(f"SELFTEST FAILED: wrong repair-prefix error: {error}")
+            return 1
+    else:
+        print("SELFTEST FAILED: wrong-prefix repair ID passed")
+        return 1
+
     broken_repair_columns = repair_text.replace(
         first_repair.group(0), first_repair.group(0).replace(" | ", " ", 1), 1
     )
@@ -401,6 +488,40 @@ def selftest():
             return 1
     else:
         print("SELFTEST FAILED: broken repair columns passed")
+        return 1
+
+    junk_covered = repair_text.replace(
+        covered_repair.group(0),
+        covered_repair.group(0).replace(
+            covered_repair.group(5).strip(), covered_repair.group(5).strip() + "junk"
+        ),
+        1,
+    )
+    try:
+        render(part_texts, junk_covered)
+    except ValueError as error:
+        if "unparseable repair row" not in str(error):
+            print(f"SELFTEST FAILED: wrong covered-junk error: {error}")
+            return 1
+    else:
+        print("SELFTEST FAILED: covered junk suffix passed")
+        return 1
+
+    semicolon_covered = repair_text.replace(
+        covered_repair.group(0),
+        covered_repair.group(0).replace(
+            covered_repair.group(5).strip(), "covered:PWB-REQ-001;PWB-REQ-005"
+        ),
+        1,
+    )
+    try:
+        render(part_texts, semicolon_covered)
+    except ValueError as error:
+        if "unparseable repair row" not in str(error):
+            print(f"SELFTEST FAILED: wrong covered-separator error: {error}")
+            return 1
+    else:
+        print("SELFTEST FAILED: covered semicolon separator passed")
         return 1
 
     stale_counts = list(part_texts)
@@ -419,10 +540,49 @@ def selftest():
         print("SELFTEST FAILED: stale embedded counts passed")
         return 1
 
+    missing_total = list(part_texts)
+    total_line = TOTAL_ROW_RE.search(missing_total[0])
+    if total_line is None:
+        print("SELFTEST FAILED: no embedded Total row")
+        return 1
+    missing_total[0] = missing_total[0].replace(total_line.group(0) + "\n", "", 1)
+    try:
+        render(missing_total, repair_text)
+    except ValueError as error:
+        if "Total row count" not in str(error):
+            print(f"SELFTEST FAILED: wrong missing-Total error: {error}")
+            return 1
+    else:
+        print("SELFTEST FAILED: missing Total row passed")
+        return 1
+
+    stale_total = list(part_texts)
+    stale_total[0] = stale_total[0].replace("**210**", "**209**", 1)
+    try:
+        render(stale_total, repair_text)
+    except ValueError as error:
+        if "Total counts mismatch" not in str(error):
+            print(f"SELFTEST FAILED: wrong stale-Total error: {error}")
+            return 1
+    else:
+        print("SELFTEST FAILED: stale Total row passed")
+        return 1
+
+    deleted_repair = repair_text.replace(first_repair.group(0) + "\n", "", 1)
+    try:
+        render(part_texts, deleted_repair)
+    except ValueError as error:
+        if "declared repair totals mismatch" not in str(error):
+            print(f"SELFTEST FAILED: wrong deleted-repair error: {error}")
+            return 1
+    else:
+        print("SELFTEST FAILED: deleted repair row passed")
+        return 1
+
     if output != render(part_texts, repair_text):
         print("SELFTEST FAILED: output is nondeterministic")
         return 1
-    print("selftest: base/repair IDs, columns, disposition, counts, warrants and determinism hold")
+    print("selftest: exact IDs/dispositions, columns, family/total/repair counts, warrants and determinism hold")
     return 0
 
 

@@ -46,9 +46,10 @@ Reader definitions:
     Lore README; the first-column RFC link text is the key.
   - `baseline-spec` is each Git-tree path matching
     openspec/specs/<one-directory>/spec.md; the one directory is the key.
-  - `topology-component` is each H2 in lay-and-land/components.md matching a
-    leading decimal plus optional lowercase suffix and each first-column bold
-    label in tables before the next H2; key is `<H2 ordinal>:<literal label>`.
+  - `topology-component` is each first-column bold label in tables under an H2
+    in lay-and-land/components.md whose text begins with a decimal plus optional
+    lowercase suffix. The H2 establishes the literal ordinal context but mints
+    no item itself; key is `<H2 ordinal>:<literal first-column label>`.
   - `craft-policy` is each body row in the Craft and Care README “Reading
     Order” table; the File-column link target basename is the key.
   - `roster-identity` is each Git-tree path roster/<one-directory>/butler.toml;

@@ -13,7 +13,7 @@ the exact repaired bytes require an independent confirmation pass.
 
 | # | Severity | Finding | Disposition |
 |---|---|---|---|
-| 1 | BLOCKER | Matrix partitions clause IDs without consequence review | **Repaired, awaiting confirmation.** Three independent clause-text audits produced 613 normalized consequence rows covering all 324 accepted clauses. A repair overlay supersedes 62 rows with 68 repaired consequences. The generator now verifies identities, dispositions and warrant agreement only; it makes no semantic judgment. Effective matrix: 619 consequences, 136 covered, 235 Unknown uncovered, 248 believed not applicable. |
+| 1 | BLOCKER | Matrix partitions clause IDs without consequence review | **Repaired, awaiting confirmation.** Three independent clause-text audits produced 613 normalized consequence rows covering all 324 accepted clauses. A repair overlay supersedes 62 rows with 69 repaired consequences. The generator now verifies identities, dispositions and warrant agreement only; it makes no semantic judgment. Effective matrix: 620 consequences, 132 covered, 240 Unknown uncovered, 248 believed not applicable. |
 | 2 | BLOCKER | Requirement warrants overclaim clause coverage | **Repaired, awaiting confirmation.** Warrant lists were reduced to exercised limbs, and PWB-REQ-007/014/015/016 close the essential epistemic, anchor, deep-dive and nonvisual gaps. Partial sibling consequences remain individually `unknown-uncovered`; no clause-level “covered” state exists. |
 | 3 | BLOCKER | Capability denominator omits refusals | **Repaired, awaiting confirmation.** `CAPABILITY-COVERAGE.md` now derives 27 positive obligations/refusals from proposal, design and definitions: 20 covered, 7 named out of scope. |
 | 4 | BLOCKER | No lawful observation consent or concrete secret policy | **Specification repaired; owner gates remain open.** PWB-REQ-005 requires both owner-provenance checks before the first body read and zero reads on every invalid case. Task 1.5 makes both separate acts dispatch blockers; sign-off mints neither. |
@@ -87,3 +87,28 @@ Verdict: **REVISE**
 | N8 sibling-state applicability | DEFECT | Repaired: `unadopted-draft` aggregate composition is Unknown/applicable; unused challenge/chain/work composition is separately believed not applicable. |
 
 These are author dispositions. A third exact-head confirmation is required.
+
+## Confirmation pass 3
+
+Subject: `a89956847ecbc26b1529f205d115146e7b21723c`
+
+Raw report: `R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-3-RAW.md`
+
+Raw sha256: `c24fb7b7c345cb2dac79c316db3642216fd2ef08c11716bfe41dc62002091068`
+
+Verdict: **REVISE**
+
+| Finding | Pass-3 verdict | Repair disposition |
+|---|---|---|
+| Original 1 / pass N1/N4 | NOT CONFIRMED | Repaired: table parser now enforces canonical clause-derived base/repair IDs, exact covered syntax, every family row and bold Total row, declared repair row/supersession/disposition totals, and mutations for wrong-prefix IDs, junk/separator dispositions, missing/corrupt totals and deleted repairs. |
+| Original 2 / N5 | NOT CONFIRMED | Repaired conservatively: four disputed identity/freshness/anchor rows and two release-only rows moved to Unknown/not-applicable; remaining exact oracles strengthened for emission stamps, registry scope, challenge/sibling semantics, deletion invariance, anchor target state/type, normative-copy absence, band classes/Base mode, personal-state exclusion and judgment fields. |
+| Original 3–4, 6–9, pass-1 N2/N3 | CONFIRMED | No change. |
+| Original 5 / N6 | NOT CONFIRMED | Repaired: qualifying topology H2 establishes ordinal context but mints no item; only first-column table labels mint topology identities. |
+| N7 embedded totals | PARTIAL | Repaired: all embedded family and bold Total rows are now parsed, recomputed and mutation-tested. |
+| N8 sibling applicability | NOT CONFIRMED | Repaired: used `unadopted-draft` and challenge aggregate composition are separately applicable/Unknown; only reconciliation-chain/work composition remains believed not applicable. |
+| N9 exact identity/disposition validation | BLOCKER | Repaired as the first row above. |
+| N10 four unsupported rows | BLOCKER | Repaired as the second row above. |
+| N11 topology ambiguity | BLOCKER | Repaired as original finding 5 above. |
+| N12 challenge applicability | BLOCKER | Repaired as N8 above. |
+
+These are author dispositions. A fourth exact-head confirmation is required.
