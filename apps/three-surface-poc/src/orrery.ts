@@ -54,6 +54,7 @@ const ORRERY_STYLE = `
   .orrery-block.unmapped { border-style: dashed; border-color: var(--unknown); }
   .orrery-block.unmapped a { color: var(--unknown); font-size: .78rem; text-decoration: none; }
   .orrery-scope { max-width: 78ch; }
+  .orrery-height-legend { color: var(--muted); font-size: .78rem; max-width: 78ch; margin: 0 0 1rem; }
 `;
 
 /**
@@ -142,6 +143,7 @@ export function renderOrreryPage(model: PocModel): string {
         <p class="unavailable-notice">The spatial city rendering requires JavaScript and is unavailable without it. The same facts are in the exact tables below.</p>
       </noscript>
       <section id="orrery-canvas" aria-label="Spatial code city (JavaScript-rendered; see exact tables for the no-script form)"></section>
+      <p class="orrery-height-legend">District block height is proportional to the directory's total size in bytes, relative to the largest district. File counts and sizes are also in the exact tables below.</p>
       <script type="application/json" id="orrery-data">${islandJson}</script>
       <script>${CLIENT_SCRIPT}</script>
       ${exactTablesSection(model)}`;

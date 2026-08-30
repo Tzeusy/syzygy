@@ -110,6 +110,12 @@ describe('Trajectory', () => {
     expect(emptyHtml).toContain('class="board"');
     expect(emptyHtml).not.toContain('data-unknown-disclosure="region:work-items"');
     expect(emptyHtml).not.toBe(unknownHtml);
+
+    // C3-4: the board's <section> columns are not listitems, so the
+    // wrapper must not claim role="list" (invalid required-owned-elements
+    // ARIA); role="group" keeps the accessible name valid.
+    expect(emptyHtml).toContain('class="board" role="group"');
+    expect(emptyHtml).not.toContain('role="list"');
   });
 
   it('renders the observed worker-change lifecycle state on the matching card, never as verified (AC3/AC4)', () => {

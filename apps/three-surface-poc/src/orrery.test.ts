@@ -89,6 +89,14 @@ describe('Orrery', () => {
     expect(html).toContain('id="relationships"');
   });
 
+  it('explains the block-height encoding with an on-page legend (C3-3)', () => {
+    const model = buildFixtureModel(cleanups);
+    const html = renderOrreryPage(model);
+    expect(html).toContain(
+      "District block height is proportional to the directory's total size in bytes",
+    );
+  });
+
   it('renders Unknown with a reason, never an empty-but-green map, when code structure fails (POC-REQ-003 rendering)', () => {
     const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
     const model = buildButlersPocModel({

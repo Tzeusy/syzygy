@@ -164,6 +164,13 @@ describe('three-surface Butlers POC model', () => {
     expect(first.evaluation.snapshot).toMatch(
       /^butlers@c1389423\|inputs:sha256:[0-9a-f]{64}$/,
     );
+    // C3-5: both halves of the composite are structured fields of their
+    // own — a machine consumer never splits the display string.
+    expect(first.evaluation.snapshotLabel).toBe('butlers@c1389423');
+    expect(first.evaluation.inputsDigest).toMatch(/^[0-9a-f]{64}$/);
+    expect(first.evaluation.snapshot).toBe(
+      `${first.evaluation.snapshotLabel}|inputs:sha256:${first.evaluation.inputsDigest}`,
+    );
     expect(first.project.name).toBe('Butlers');
     expect(first.capabilityId).toBe('capability:whatsapp-transport-identity');
     expect(first.surfaces.map((surface) => surface.id)).toEqual([
@@ -198,6 +205,15 @@ describe('three-surface Butlers POC model', () => {
       reason: 'No current runtime observation was supplied.',
     });
     expect(entities.get('region:unmapped-code')?.epistemic.label).toBe('Unknown');
+
+    // C3-1: the code/test entities carry a sentence naming the path, not a
+    // bare path constant for the renderer to show without context.
+    expect(entities.get('code:identity-resolution')?.detail).toBe(
+      'The manually mapped code file at src/butlers/identity.py implements sender-identity resolution.',
+    );
+    expect(entities.get('test:identity-regression-definition')?.detail).toBe(
+      'The manually mapped test file at tests/core/test_identity.py defines the identity regression check.',
+    );
 
     const relationships = byId(first.relationships);
     expect(relationships.get('relationship:intent-to-work')?.epistemic.label).toBe('Unknown');

@@ -89,7 +89,18 @@ export interface PocSurface {
 
 export interface PocModel {
   readonly schema: 'syzygy-three-surface-poc/v1';
-  readonly evaluation: { readonly snapshot: string; readonly asOf: string };
+  readonly evaluation: {
+    /** Human-oriented composite identity,
+     * `<snapshotLabel>|inputs:sha256:<inputsDigest>`. Machine consumers
+     * should read `snapshotLabel` and `inputsDigest` directly instead of
+     * splitting this string. */
+    readonly snapshot: string;
+    /** The evaluation's human label, without the input-digest suffix. */
+    readonly snapshotLabel: string;
+    /** SHA-256 hex digest of the canonical observation inputs. */
+    readonly inputsDigest: string;
+    readonly asOf: string;
+  };
   readonly project: {
     readonly name: 'Butlers';
     readonly root: string;
@@ -378,7 +389,7 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
       id: 'code:identity-resolution',
       kind: 'code-region',
       title: 'Identity resolution code region',
-      detail: ARTIFACT_PATHS.code,
+      detail: `The manually mapped code file at ${ARTIFACT_PATHS.code} implements sender-identity resolution.`,
       epistemic: observed('The manually mapped code file was captured and hashed.'),
       provenance: [fileProvenance(code, input.repositoryRevision), mappingProvenance],
     },
@@ -386,7 +397,7 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
       id: 'test:identity-regression-definition',
       kind: 'test-definition',
       title: 'Identity regression test definition',
-      detail: ARTIFACT_PATHS.test,
+      detail: `The manually mapped test file at ${ARTIFACT_PATHS.test} defines the identity regression check.`,
       epistemic: observed('The manually mapped test file was captured and hashed.'),
       provenance: [fileProvenance(test, input.repositoryRevision), mappingProvenance],
     },
@@ -536,8 +547,10 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
   return {
     schema: 'syzygy-three-surface-poc/v1',
     evaluation: {
-      ...input.evaluation,
       snapshot: `${input.evaluation.snapshot}|inputs:sha256:${inputDigest}`,
+      snapshotLabel: input.evaluation.snapshot,
+      inputsDigest: inputDigest,
+      asOf: input.evaluation.asOf,
     },
     project: { name: 'Butlers', root: repoRoot, revision: input.repositoryRevision },
     observerRevision: input.observerRevision,

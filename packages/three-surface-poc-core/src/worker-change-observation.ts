@@ -9,14 +9,23 @@ export interface WorkerChangeSeam {
   readonly testPath: string;
 }
 
+/** Where this commit was found, stated distinctly in the JSON itself:
+ * `default-branch` — no ref search was needed, the commit is already
+ * reachable from the default branch; `ref` — a containing ref was found
+ * by search; `none-found` — the search ran and found no containing ref.
+ * A machine consumer never has to cross-reference the sibling `state`
+ * field to tell "trivially the default branch" from "search came back
+ * empty". */
+export type WorkerChangeContainingRef =
+  | { readonly kind: 'default-branch' }
+  | { readonly kind: 'ref'; readonly ref: string }
+  | { readonly kind: 'none-found' };
+
 export interface WorkerChangeCommit {
   readonly sha: string;
   readonly authoredAt: string;
   readonly subject: string;
-  /** The ref that was found to contain this commit (branch/tag), when one
-   * could be identified; `null` for a commit already reachable from the
-   * default branch, where "the default branch" is the answer itself. */
-  readonly containingRef: string | null;
+  readonly containingRef: WorkerChangeContainingRef;
 }
 
 export interface WorkerChangeObserved {
@@ -135,7 +144,7 @@ function findContainingRef(
   repoRoot: string,
   runGit: (repoRoot: string, args: readonly string[]) => string,
   sha: string,
-): string | null {
+): WorkerChangeContainingRef {
   let raw: string;
   try {
     raw = runGit(repoRoot, [
@@ -146,10 +155,11 @@ function findContainingRef(
       'refs/remotes/origin',
     ]);
   } catch {
-    return null;
+    return { kind: 'none-found' };
   }
   const refs = raw.split('\n').map((line) => line.trim()).filter((line) => line !== '');
-  return refs[0] ?? null;
+  const first = refs[0];
+  return first === undefined ? { kind: 'none-found' } : { kind: 'ref', ref: first };
 }
 
 /**
@@ -207,7 +217,12 @@ export function observeWorkerChange(input: ObserveWorkerChangeInput): WorkerChan
       defaultBranchRevision,
       state: 'changed-or-merged',
       verification: 'not-verified',
-      commit: { sha: merged.sha, authoredAt: merged.authoredAt, subject: merged.subject, containingRef: null },
+      commit: {
+        sha: merged.sha,
+        authoredAt: merged.authoredAt,
+        subject: merged.subject,
+        containingRef: { kind: 'default-branch' },
+      },
       capturedAt: input.capturedAt,
     };
   }

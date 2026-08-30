@@ -129,8 +129,33 @@ describe('worker-change observer', () => {
     if (result.kind !== 'observed') throw new Error('unreachable');
     expect(result.state).toBe('active');
     expect(result.commit?.sha).toBe(workerSha);
-    expect(result.commit?.containingRef).toBe('origin/agent/bu-1');
+    expect(result.commit?.containingRef).toEqual({ kind: 'ref', ref: 'origin/agent/bu-1' });
     expect(result.verification).toBe('not-verified');
+  });
+
+  it('states none-found distinctly when an active commit is on no fetched origin ref (C3-6)', () => {
+    const root = initRepo();
+    git(root, ['checkout', '-qb', 'tmp-worker']);
+    writeSeam(root, 'x = 2\n');
+    git(root, ['add', '-A']);
+    git(root, ['commit', '-qm', 'fix(whatsapp): normalize single-event sender [bu-1]']);
+    const workerSha = git(root, ['rev-parse', 'HEAD']);
+    git(root, ['checkout', '-q', 'main']);
+    // The local branch keeps the commit reachable for `git log --all`, but
+    // no refs/remotes/origin/* ref contains it — the search runs and finds
+    // nothing, which must be distinguishable from "trivially on the
+    // default branch".
+    const result = observeWorkerChange({
+      repoRoot: root,
+      beadId: 'bu-1',
+      seam: SEAM,
+      capturedAt: '2026-08-30T00:00:00Z',
+    });
+    expect(result.kind).toBe('observed');
+    if (result.kind !== 'observed') throw new Error('unreachable');
+    expect(result.state).toBe('active');
+    expect(result.commit?.sha).toBe(workerSha);
+    expect(result.commit?.containingRef).toEqual({ kind: 'none-found' });
   });
 
   it('renders changed-or-merged for a matching commit reachable from the default branch, and never claims verification (AC4)', () => {
@@ -151,6 +176,9 @@ describe('worker-change observer', () => {
     if (result.kind !== 'observed') throw new Error('unreachable');
     expect(result.state).toBe('changed-or-merged');
     expect(result.commit?.sha).toBe(mergedSha);
+    // C3-6: the JSON itself says "trivially the default branch" — never a
+    // bare null a consumer must disambiguate against `state`.
+    expect(result.commit?.containingRef).toEqual({ kind: 'default-branch' });
     expect(result.verification).toBe('not-verified');
   });
 

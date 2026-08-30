@@ -79,9 +79,9 @@ function workerChangeBadge(
       : workerChange.commit === null
         ? ''
         : `<code class="wi-id">${escapeHtml(workerChange.commit.sha.slice(0, 12))}</code>${
-            workerChange.commit.containingRef === null
-              ? ''
-              : ` on <code class="wi-id">${escapeHtml(workerChange.commit.containingRef)}</code>`
+            workerChange.commit.containingRef.kind === 'ref'
+              ? ` on <code class="wi-id">${escapeHtml(workerChange.commit.containingRef.ref)}</code>`
+              : ''
           }`;
   return `<div class="worker-change" data-parity-field="worker-change-state">
     <span class="worker-change-label">External worker: ${escapeHtml(label)}</span>
@@ -181,7 +181,7 @@ export function renderTrajectoryPage(model: PocModel): string {
         <span data-parity-field="trajectory-excluded-count">${trajectory.excludedCount}</span> items are outside this selection and not shown.
       </p>
       ${demonstratedCallout}
-      <div class="board" role="list" aria-label="Work-item board by status column">${columns}</div>`;
+      <div class="board" role="group" aria-label="Work-item board by status column">${columns}</div>`;
   }
 
   body += renderMaterializePanel(model);
