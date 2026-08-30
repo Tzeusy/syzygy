@@ -166,6 +166,65 @@ describe('CAP1-REQ-064 — machine-readable distinctions', () => {
     });
   });
 
+  describe('extractConsentDistinction R-S2 finding #4: an optional citation adds structure detail without minting a new distinction name', () => {
+    it('with no citation, only the text-attribute consent-state entry is returned (unchanged shape)', () => {
+      const distinctions = extractConsentDistinction('capture-failed');
+      expect(distinctions).toEqual([
+        { name: 'consent-state', value: 'capture-failed', recoverableBy: 'text-attribute' },
+      ]);
+    });
+
+    it('with a citation, a second consent-state entry carries the record as structure', () => {
+      const distinctions = extractConsentDistinction('capture-failed', {
+        recordId: 'consent-xyz',
+        scope: 'observe',
+        attribution: 'owner',
+        grantState: 'in-force',
+      });
+      expect(distinctions).toEqual([
+        { name: 'consent-state', value: 'capture-failed', recoverableBy: 'text-attribute' },
+        {
+          name: 'consent-state',
+          value: 'record:consent-xyz scope:observe attribution:owner grantState:in-force',
+          recoverableBy: 'structure',
+        },
+      ]);
+    });
+
+    it('a cited withdrawal names the withdrawal record, not an in-force one', () => {
+      const distinctions = extractConsentDistinction('unconsented', {
+        recordId: 'consent-withdrawn-1',
+        scope: 'observe',
+        attribution: 'owner',
+        grantState: 'withdrawn',
+      });
+      const structureD = distinctions.find((d) => d.recoverableBy === 'structure');
+      expect(structureD?.value).toBe(
+        'record:consent-withdrawn-1 scope:observe attribution:owner grantState:withdrawn',
+      );
+    });
+
+    it('the closed nine-distinction set is unaffected: consent-state still counts once whether or not a citation is present', () => {
+      const withoutCitation = sweepDistinctions([], [], [], [], extractConsentDistinction('stale'));
+      const withCitation = sweepDistinctions(
+        [],
+        [],
+        [],
+        [],
+        extractConsentDistinction('stale', {
+          recordId: 'consent-xyz',
+          scope: 'observe',
+          attribution: 'owner',
+          grantState: 'in-force',
+        }),
+      );
+      expect(withoutCitation.totalDistinctions).toBe(9);
+      expect(withCitation.totalDistinctions).toBe(9);
+      expect(withoutCitation.coveredDistinctions).toEqual(['consent-state']);
+      expect(withCitation.coveredDistinctions).toEqual(['consent-state']);
+    });
+  });
+
   describe('extractDiscoverabilityDistinctions recovers discoverability value', () => {
     it('recovers discoverability value as text attribute', () => {
       const distinctions = extractDiscoverabilityDistinctions(DISCOVERABILITY_FINDING);

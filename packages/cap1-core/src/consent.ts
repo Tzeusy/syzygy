@@ -33,9 +33,18 @@ export interface ConsentRecord {
 // visibly rather than as mere absence).
 export type ConsentAbsenceBasis = 'no-resolvable-in-force-record' | 'withdrawn';
 
+// A withdrawn resolution names the withdrawn record it was defeated by
+// (RFC2-23 "Consent withdrawn": the withdrawal renders visibly, not as
+// mere absence) — record absence carries no record to cite, so only the
+// 'withdrawn' arm carries one.
 export type ConsentResolution =
   | { readonly consented: true; readonly record: ConsentRecord }
-  | { readonly consented: false; readonly basis: ConsentAbsenceBasis };
+  | { readonly consented: false; readonly basis: 'no-resolvable-in-force-record' }
+  | {
+      readonly consented: false;
+      readonly basis: 'withdrawn';
+      readonly withdrawnRecord: ConsentRecord;
+    };
 
 // Resolves the consent state for one (project, repository) pair from the
 // record set, and from nothing else.
@@ -75,9 +84,16 @@ export function resolveConsent(
 
   // Withdrawal first: a withdrawn record for this exact pair renders the
   // pair unconsented whatever else the pair's record set holds — never
-  // decided by list order, never in favor of access.
-  if (forThisPair.some((record) => record.grantState === 'withdrawn')) {
-    return { consented: false, basis: 'withdrawn' };
+  // decided by list order, never in favor of access. When several
+  // withdrawn records exist for one pair (a possibility the record shape
+  // does not forbid), the first in record order is cited — the same
+  // stable, caller-order tie-break the in-force resolution below uses;
+  // it decides only WHICH withdrawal is named, never whether the pair is
+  // unconsented (any withdrawn record for the pair is already fail-closed
+  // by construction).
+  const withdrawn = forThisPair.find((record) => record.grantState === 'withdrawn');
+  if (withdrawn !== undefined) {
+    return { consented: false, basis: 'withdrawn', withdrawnRecord: withdrawn };
   }
 
   const inForce = forThisPair.find((record) => record.grantState === 'in-force');

@@ -1,6 +1,6 @@
 import type { ProjectDeclaration } from './declaration.js';
 import type { ProjectId, RepositoryId } from './identity.js';
-import { resolveConsent, type ConsentAbsenceBasis, type ConsentRecord } from './consent.js';
+import { resolveConsent, type ConsentRecord, type GrantState } from './consent.js';
 import { UNKNOWN_REASONS } from './vocabulary.js';
 
 // Per-repository coverage — every declared repository gets an explicit
@@ -50,6 +50,19 @@ export type ObservationOutcome =
   | { readonly repositoryId: RepositoryId; readonly outcome: 'unreachable' }
   | { readonly repositoryId: RepositoryId; readonly outcome: 'stale' };
 
+// A consent record cited by a rendered coverage entry — scope,
+// attribution, and grant state, by the record's own id (REQ-011: never a
+// bare boolean, always the record it derives from). Shared by every
+// arm below that has a specific record to name: the in-force record
+// behind observed/degraded-partial/capture-failed/stale, and the
+// withdrawn record behind an unconsented-by-withdrawal entry.
+export interface ConsentCitation {
+  readonly recordId: string;
+  readonly scope: string;
+  readonly attribution: string;
+  readonly grantState: GrantState;
+}
+
 // The per-repository coverage result: a discriminated union over
 // `state`, so any two of REQ-013's conditions are distinguishable in the
 // machine-readable field itself, not only in prose.
@@ -63,12 +76,7 @@ export type RepositoryCoverage =
       // REQ-011: the served consent state derives from the record and
       // renders with the coverage boundary — scope, attribution, grant
       // state, citing the record by id.
-      readonly consent: {
-        readonly recordId: string;
-        readonly scope: string;
-        readonly attribution: string;
-        readonly grantState: 'in-force';
-      };
+      readonly consent: ConsentCitation;
     }
   | {
       readonly repositoryId: RepositoryId;
@@ -80,19 +88,38 @@ export type RepositoryCoverage =
       // readably, and the resolution route travels with it.
       readonly presentation: 'policy';
       readonly resolutionRoute: typeof UNCONSENTED_RESOLUTION_ROUTE;
-      readonly basis: ConsentAbsenceBasis;
+      readonly basis: 'no-resolvable-in-force-record';
+    }
+  | {
+      readonly repositoryId: RepositoryId;
+      readonly state: 'unconsented';
+      readonly label: 'Unknown';
+      readonly reason: typeof UNCONSENTED;
+      readonly presentation: 'policy';
+      readonly resolutionRoute: typeof UNCONSENTED_RESOLUTION_ROUTE;
+      readonly basis: 'withdrawn';
+      // R-S2 finding #4: WHICH withdrawal record defeated the grant —
+      // the render already says the pair is withdrawn; this names the
+      // record so the claim is checkable, not just assertable.
+      readonly consent: ConsentCitation;
     }
   | {
       readonly repositoryId: RepositoryId;
       readonly state: 'capture-failed';
       readonly label: 'Unknown';
       readonly reason: typeof UNCAPTURED;
+      // Reachable only when the pair IS consented (an unconsented pair
+      // never reaches an observation outcome — see computeCoverage) — the
+      // in-force record standing behind the failed capture, cited by id.
+      readonly consent: ConsentCitation;
     }
   | {
       readonly repositoryId: RepositoryId;
       readonly state: 'stale';
       readonly label: 'Unknown';
       readonly reason: typeof STALE;
+      // Same reachability note as capture-failed above.
+      readonly consent: ConsentCitation;
     }
   | {
       readonly repositoryId: RepositoryId;
@@ -103,12 +130,7 @@ export type RepositoryCoverage =
       readonly capturedScope: string;
       readonly declaredScope: string;
       readonly uncaptured: { readonly label: 'Unknown'; readonly reason: typeof UNCAPTURED };
-      readonly consent: {
-        readonly recordId: string;
-        readonly scope: string;
-        readonly attribution: string;
-        readonly grantState: 'in-force';
-      };
+      readonly consent: ConsentCitation;
     };
 
 export type RepositoryCoverageState = RepositoryCoverage['state'];
@@ -149,6 +171,24 @@ export function computeCoverage(
     const resolution = resolveConsent(consents, projectId, entry.id);
 
     if (!resolution.consented) {
+      if (resolution.basis === 'withdrawn') {
+        const withdrawn = resolution.withdrawnRecord;
+        return {
+          repositoryId: entry.id,
+          state: 'unconsented',
+          label: 'Unknown',
+          reason: UNCONSENTED,
+          presentation: 'policy',
+          resolutionRoute: UNCONSENTED_RESOLUTION_ROUTE,
+          basis: 'withdrawn',
+          consent: {
+            recordId: withdrawn.id,
+            scope: withdrawn.scope,
+            attribution: withdrawn.attribution,
+            grantState: withdrawn.grantState,
+          },
+        };
+      }
       return {
         repositoryId: entry.id,
         state: 'unconsented',
@@ -156,16 +196,16 @@ export function computeCoverage(
         reason: UNCONSENTED,
         presentation: 'policy',
         resolutionRoute: UNCONSENTED_RESOLUTION_ROUTE,
-        basis: resolution.basis,
+        basis: 'no-resolvable-in-force-record',
       };
     }
 
-    const consent = {
+    const consent: ConsentCitation = {
       recordId: resolution.record.id,
       scope: resolution.record.scope,
       attribution: resolution.record.attribution,
       grantState: 'in-force',
-    } as const;
+    };
 
     // First outcome for this repository, in caller order — reproducible
     // per evaluation; a repository with none is a capture failure.
@@ -176,6 +216,7 @@ export function computeCoverage(
         state: 'capture-failed',
         label: 'Unknown',
         reason: UNCAPTURED,
+        consent,
       };
     }
     if (outcome.outcome === 'stale') {
@@ -184,6 +225,7 @@ export function computeCoverage(
         state: 'stale',
         label: 'Unknown',
         reason: STALE,
+        consent,
       };
     }
     if (outcome.outcome === 'captured-partial') {

@@ -166,6 +166,95 @@ describe('CAP1-REQ-011 — consent is a visible recorded fact, never an assumpti
   });
 });
 
+// R-S2 non-blocking finding #4: a consented-but-capture-failed/stale
+// repository's in-force record was never cited, and a withdrawn pair
+// never named WHICH withdrawal record defeated it. This fixture pairs a
+// consented repository with each of 'unreachable' and 'stale' outcomes,
+// so both failure states carry an in-force record to cite.
+
+const CITATION_PROJECT = 'prj-citation-blo' as ProjectId;
+
+const CITATION_SOURCE = `
+schema_version: "1"
+project:
+  id: prj-citation-blo
+  name: Citation Fixture
+owner: uniquosity@gmail.com
+repositories:
+  - id: repo-capture-failed
+    role: observed-source
+    consent: consent-capture-failed
+  - id: repo-stale
+    role: observed-source
+    consent: consent-stale
+consents:
+  - consent-capture-failed
+  - consent-stale
+declarations:
+  spec_root: openspec/
+relations: []
+profiles: []
+`;
+
+function citationDeclaration(): ProjectDeclaration {
+  const read = readDeclaration(CITATION_SOURCE);
+  if (!read.ok) throw new Error('fixture must be valid');
+  return read.declaration;
+}
+
+const CAPTURE_FAILED_RECORD: ConsentRecord = {
+  id: 'consent-capture-failed',
+  projectId: CITATION_PROJECT,
+  repositoryId: 'repo-capture-failed' as RepositoryId,
+  scope: 'observe',
+  attribution: 'owner',
+  grantState: 'in-force',
+};
+
+const STALE_RECORD: ConsentRecord = {
+  id: 'consent-stale',
+  projectId: CITATION_PROJECT,
+  repositoryId: 'repo-stale' as RepositoryId,
+  scope: 'observe',
+  attribution: 'owner',
+  grantState: 'in-force',
+};
+
+const CITATION_CONSENTS: ConsentRecord[] = [CAPTURE_FAILED_RECORD, STALE_RECORD];
+
+const CITATION_OBSERVATIONS: ObservationOutcome[] = [
+  { repositoryId: 'repo-capture-failed' as RepositoryId, outcome: 'unreachable' },
+  { repositoryId: 'repo-stale' as RepositoryId, outcome: 'stale' },
+];
+
+describe('CAP1-REQ-011 R-S2 finding #4 — capture-failed and stale cite their in-force record', () => {
+  it('consented + capture-failed cites the in-force record that stands behind the failed capture', () => {
+    const result = computeCoverage(citationDeclaration(), CITATION_CONSENTS, CITATION_OBSERVATIONS);
+    const entry = result.repositories.find(
+      (e) => e.repositoryId === ('repo-capture-failed' as RepositoryId),
+    );
+    expect(entry?.state).toBe('capture-failed');
+    if (entry?.state === 'capture-failed') {
+      expect(entry.consent.recordId).toBe('consent-capture-failed');
+      expect(entry.consent.scope).toBe('observe');
+      expect(entry.consent.attribution).toBe('owner');
+      expect(entry.consent.grantState).toBe('in-force');
+    }
+  });
+
+  it('consented + stale cites the in-force record that stands behind the stale capture', () => {
+    const result = computeCoverage(citationDeclaration(), CITATION_CONSENTS, CITATION_OBSERVATIONS);
+    const entry = result.repositories.find((e) => e.repositoryId === ('repo-stale' as RepositoryId));
+    expect(entry?.state).toBe('stale');
+    if (entry?.state === 'stale') {
+      expect(entry.consent.recordId).toBe('consent-stale');
+      expect(entry.consent.scope).toBe('observe');
+      expect(entry.consent.attribution).toBe('owner');
+      expect(entry.consent.grantState).toBe('in-force');
+    }
+  });
+});
+
 // Conflict fixture: ONE pair carrying BOTH an in-force grant and a
 // withdrawal. Records are append-only (RFC2-23 "Consent withdrawn":
 // prior records remain, immutable, with the withdrawal visible), so
@@ -227,7 +316,7 @@ const CONFLICT_OBSERVATIONS: ObservationOutcome[] = [
 ];
 
 describe('CAP1-REQ-011 falsifier — a pair holding both a grant and a withdrawal resolves closed', () => {
-  it('in-force listed FIRST, withdrawal after: the withdrawal still defeats the grant', () => {
+  it('in-force listed FIRST, withdrawal after: the withdrawal still defeats the grant — and names the withdrawal record', () => {
     const resolution = resolveConsent(
       [CONFLICT_GRANT, CONFLICT_WITHDRAWAL],
       CONFLICT_PROJECT,
@@ -236,10 +325,13 @@ describe('CAP1-REQ-011 falsifier — a pair holding both a grant and a withdrawa
     expect(resolution.consented).toBe(false);
     if (!resolution.consented) {
       expect(resolution.basis).toBe('withdrawn');
+      if (resolution.basis === 'withdrawn') {
+        expect(resolution.withdrawnRecord.id).toBe('consent-conflict-withdrawal');
+      }
     }
   });
 
-  it('withdrawal listed FIRST, in-force after: same answer — list order never decides the conflict', () => {
+  it('withdrawal listed FIRST, in-force after: same answer, same cited record — list order never decides the conflict or its citation', () => {
     const resolution = resolveConsent(
       [CONFLICT_WITHDRAWAL, CONFLICT_GRANT],
       CONFLICT_PROJECT,
@@ -248,10 +340,13 @@ describe('CAP1-REQ-011 falsifier — a pair holding both a grant and a withdrawa
     expect(resolution.consented).toBe(false);
     if (!resolution.consented) {
       expect(resolution.basis).toBe('withdrawn');
+      if (resolution.basis === 'withdrawn') {
+        expect(resolution.withdrawnRecord.id).toBe('consent-conflict-withdrawal');
+      }
     }
   });
 
-  it('coverage over the conflicted pair renders unconsented with the verbatim reason — no captured content surfaces, in either record order', () => {
+  it('coverage over the conflicted pair renders unconsented with the verbatim reason, citing the withdrawal record — no captured content surfaces, in either record order', () => {
     for (const records of [
       [CONFLICT_GRANT, CONFLICT_WITHDRAWAL],
       [CONFLICT_WITHDRAWAL, CONFLICT_GRANT],
@@ -264,6 +359,12 @@ describe('CAP1-REQ-011 falsifier — a pair holding both a grant and a withdrawa
         // implementation's vocabulary module.
         expect(entry.reason).toBe('unconsented-source-or-provider');
         expect(entry.basis).toBe('withdrawn');
+        // R-S2 finding #4: the withdrawal record IS the one cited —
+        // never the in-force record it defeated, whatever list order.
+        if (entry.basis === 'withdrawn') {
+          expect(entry.consent.recordId).toBe('consent-conflict-withdrawal');
+          expect(entry.consent.grantState).toBe('withdrawn');
+        }
       }
       expect(entry !== undefined && 'capturedScope' in entry).toBe(false);
       expect(JSON.stringify(entry)).not.toContain('full-tree');
