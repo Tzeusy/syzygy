@@ -73,6 +73,36 @@ describe('Polaris', () => {
     }
   });
 
+  it('frames the reading with movements, an honest computed tally, and a relationships lede (C3-2)', () => {
+    const model = buildFixtureModel(cleanups);
+    const html = renderPolarisPage(model);
+
+    // Three movement headers, each anchored before its entity section.
+    for (const anchor of [
+      'project:butlers',
+      'code:identity-resolution',
+      'work:whatsapp-single-event-normalization',
+    ]) {
+      const movementIndex = html.indexOf(`data-polaris-movement="${anchor}"`);
+      const sectionIndex = html.indexOf(`data-polaris-section="${anchor}"`);
+      expect(movementIndex).toBeGreaterThan(-1);
+      expect(sectionIndex).toBeGreaterThan(movementIndex);
+    }
+    expect(html).toContain('data-polaris-movement="region:code-structure"');
+
+    // The framing tally is arithmetic over the shared model, recomputed
+    // here independently — a hand-edited number fails this.
+    const claims = [...model.entities, ...model.relationships];
+    const observed = claims.filter((claim) => claim.epistemic.label === 'Observed').length;
+    expect(html).toContain(
+      `Of the ${claims.length} entity and relationship claims it makes, ${observed} are Observed with citations and ${claims.length - observed} are disclosed Unknown.`,
+    );
+
+    // Connective lede inside the relationships section.
+    expect(html).toContain('class="relationships-lede"');
+    expect(html).toContain('never bridged by prose');
+  });
+
   it('mutation check: removing an entity from coverage would fail the sweep', () => {
     const model = buildFixtureModel(cleanups);
     const html = renderPolarisPage(model);

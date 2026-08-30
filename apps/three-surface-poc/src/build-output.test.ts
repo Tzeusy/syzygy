@@ -29,6 +29,10 @@ describe('POC build output integrity', () => {
         writeFileSync(MAIN_OUTPUT, original, 'utf8');
       }
     },
-    15_000,
+    // Two sequential `tsc -b --force` builds run here (~7.5s each on an
+    // unloaded machine); 15s intermittently timed out under load
+    // (syzygy-gk9). The forced rebuild itself is the trust boundary and
+    // must stay — only the budget was too tight.
+    60_000,
   );
 });
