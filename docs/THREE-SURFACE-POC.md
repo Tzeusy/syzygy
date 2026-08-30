@@ -25,22 +25,65 @@ local credential directory.
    for WhatsApp transport identity normalization.
 2. Confirm the live-runtime relationship is visibly Unknown. Repository state
    is not deployment evidence.
-3. In Trajectory, confirm work materialization and captured test evidence are
-   Unknown. A test definition is not a test run.
-4. In Orrery, follow the selected capability to its intent, manually mapped
+3. In Trajectory, review the materialize panel's preview of the exact Bead a
+   human-triggered action would create, then optionally click "Materialize
+   this work item" (or, if already materialized, "Re-run materialize
+   (idempotent)") to actually create — or, on a repeat run, reuse — that Bead
+   in the configured Butlers repository. This is the one state-changing,
+   human-only action in the POC; Syzygy never triggers it on its own.
+4. After materializing, Trajectory's board shows the worker-change observer's
+   state for that item ("External worker: Planned / Active / Changed /
+   merged", tracking real git activity against it) alongside its independent
+   Bead status — these are two separately honest fields, not one. A
+   captured, verified test-run artifact (see below) additionally renders a
+   "Verification: Verified — …" badge once a real, matching JUnit artifact
+   has been ingested for the governing seam; absent that, it stays
+   "Verification: Not verified".
+5. Test-run evidence is not captured automatically. Run
+   `npm run poc:capture-test-artifact -- --repo <butlers> --scope <path>
+   --state-dir <dir>` separately (see "Capturing test-run evidence" below) to
+   ingest a real JUnit artifact; Trajectory and the machine endpoint then
+   reflect it.
+6. In Orrery, follow the selected capability to its intent, manually mapped
    code region, and test definition. The rest of Butlers code remains visible
-   as an Unknown region.
-5. Query authenticated `GET /api/poc` using the credential at the printed path.
+   as an Unknown region. Orrery's spatial city view is the one surface with
+   real client-side rendering (an inline, self-served script, no build step
+   or CDN); without JavaScript it falls back to the same facts in exact
+   tables.
+7. Query authenticated `GET /api/poc` using the credential at the printed path.
    The JSON entity and relationship facts are the same objects rendered by the
    human page.
 
+## Capturing test-run evidence
+
+Test-run capture is a separate, manually invoked step — the running daemon
+never shells the observed test suite itself:
+
+```sh
+npm run poc:capture-test-artifact -- \
+  --repo /home/tze/GitHub/butlers \
+  --scope <path-under-test> \
+  --state-dir <dir> [--python <bin>]
+```
+
+This runs the real focused pytest suite against the configured Butlers
+checkout, ingests the resulting JUnit artifact (command, exit status, capture
+time, commit, scope, digest, and a safe summary only — never raw test output),
+and verification renders `Verified` only when the captured commit exactly
+matches the git-observed worker-change commit for the same seam, the exit
+code is 0, and the capture time is neither future-dated nor earlier than the
+commit itself. This evidence is scoped to the worker-change seam
+(`whatsapp_user_client.py`) — a different code path than the identity
+normalization capability Polaris and Orrery describe.
+
 ## Deliberately absent in this slice
 
-- No Beads item is materialized yet.
-- No worker is dispatched and no implementation code is changed.
-- No test-run artifact is captured or ingested.
+- No worker is dispatched and no implementation code is changed by Syzygy.
 - No deployment or live-runtime observation is supplied.
-- No broad code inventory or generalized spatial layout is computed.
+- No broad code inventory or generalized spatial layout is computed — Orrery's
+  city view is deterministic over observed structure and declared mappings
+  only, and unmapped code stays visibly Unknown.
+- Test-run capture is a separate, manually invoked step, never automatic.
 
 Those absences are product facts, not setup failures. They remain Unknown until
-the later bounded POC items produce the corresponding authoritative records.
+a later bounded POC item produces the corresponding authoritative record.
