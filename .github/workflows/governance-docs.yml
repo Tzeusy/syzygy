@@ -1,10 +1,13 @@
 # Documentation and governance checks only.
 #
-# This repository is pre-specification: there is no application code, no
-# toolchain manifest, and no product tooling to run. This workflow therefore
-# installs nothing beyond a Python interpreter and runs the read-only checkers
-# that already exist. Adding a linter, a build, or a dependency step here
-# would be a stack choice, which requires an accepted contract.
+# The repository now holds application code and an npm toolchain (Capability
+# 1's `packages/cap1-core`/`cap1-daemon`, the Three-Surface POC, and their
+# build/test scripts) alongside the still-pre-specification governance
+# plane. This workflow covers only the governance plane: it installs nothing
+# beyond a Python interpreter and runs the read-only, stdlib-only checkers
+# below. It does not install npm, build, lint, or run the application test
+# suites — those gates live in the repo's other hosted workflow(s); adding
+# them here would duplicate that coverage rather than add to it.
 #
 # The step list below is the hosted denominator. It is meant to match the
 # battery `PROJECT-STATUS.md` publishes, so that "hosted CI is green" and
