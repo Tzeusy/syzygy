@@ -8,7 +8,7 @@ added. Unlisted matrix rows remain unchanged.
 Each effective consequence has exactly one disposition. Rows that split a
 broader audited consequence use distinct repair IDs and jointly supersede it.
 
-Declared totals: **69 rows; 62 superseded base rows; 52 covered; 14 Unknown
+Declared totals: **71 rows; 62 superseded base rows; 52 covered; 16 Unknown
 uncovered; 3 believed not applicable.**
 
 | Repair consequence ID | Supersedes | Clause | Effective consequence | Disposition |
@@ -36,6 +36,8 @@ uncovered; 3 believed not applicable.**
 | RFC6-17.r2 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains the used `unadopted-draft` sibling state | unknown-uncovered |
 | RFC6-17.r5 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains challenge state carried by project claims | unknown-uncovered |
 | RFC6-17.r6 | RFC6-17.c2 | RFC6-17 | Aggregate composition of reconciliation-chain and work states | believed-not-applicable |
+| RFC6-17.r7 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains `dismissed-by-decision` sibling state | unknown-uncovered |
+| RFC6-17.r8 | RFC6-17.c2 | RFC6-17 | Aggregate composition retains `editorial-draft` sibling state | unknown-uncovered |
 | RFC6-17.r3 | RFC6-17.c3 | RFC6-17 | Primary and secondary Unknown-reason counts remain distinct | covered:PWB-REQ-007 |
 | RFC7-16.r1 | RFC7-16.c1 | RFC7-16 | Status is evaluation-bound and carries label, tier, reason and freshness with visible staleness | covered:PWB-REQ-007 |
 | RFC7-16.r2 | RFC7-16.c2 | RFC7-16 | Polaris renders no composite maturity, inferred-success headline or metric wall | covered:PWB-REQ-007 |

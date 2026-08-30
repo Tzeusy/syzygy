@@ -11,7 +11,7 @@ Population: 27 positive obligations and refusals declared by `proposal.md`,
 | 4 | Account for every admitted declared item exactly once | covered — PWB-REQ-002 |
 | 5 | Keep unavailable sources counted while their item denominator is Unknown | covered — PWB-REQ-002, PWB-REQ-003 |
 | 6 | Preserve contradictions and apply only explicit precedence | covered — PWB-REQ-004 |
-| 7 | Verify observation consent and secret-policy authority before body reads | covered — PWB-REQ-005 |
+| 7 | Verify observation consent, secret-policy authority and observer registration before body reads | covered — PWB-REQ-005 |
 | 8 | Keep repository content contained, inert, bounded and secret-safe | covered — PWB-REQ-003, PWB-REQ-006 |
 | 9 | Present the whole project before capability detail | covered — PWB-REQ-010 |
 | 10 | Preserve progressive paths to catalogs, deep dives and exact sources | covered — PWB-REQ-011 |

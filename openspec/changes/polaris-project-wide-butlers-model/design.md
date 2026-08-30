@@ -111,11 +111,12 @@ repeated in every sentence.
 ### 5. Gate body reads on owner authority
 
 Before the first body read, the evaluation verifies a per-repository Butlers
-observation-consent record and the exact digest/version of a concrete
-owner-approved secret-classification policy. Both identities are deterministic
-inputs. Missing, mismatched, stale or unverifiable authority produces zero body
-reads and a project-model Unknown. Specification sign-off does not mint either
-artifact.
+observation-consent record, the exact digest/version of a concrete
+owner-approved secret-classification policy and the project-shape observer's
+governance-plane registered adapter entry. All three identities are
+deterministic inputs. Missing, mismatched, stale or unverifiable authority
+produces zero body reads and a project-model Unknown. Specification sign-off
+mints none of these artifacts.
 
 ### 6. Fail closed at the content boundary
 

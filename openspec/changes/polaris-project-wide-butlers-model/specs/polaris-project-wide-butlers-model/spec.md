@@ -16,8 +16,8 @@ Reader definitions:
   `project-account-section` uses the six keys purpose, promises, refusals,
   architecture, V1 scope and V1 success; `principle` uses each numbered
   non-negotiable; `success-criterion` uses each list item in the two success
-  sections; `catalog-entry` uses each top-level named entry under the V1
-  Staffers, Butlers, Modules, Connectors, Dashboard, Identity System,
+  sections; `catalog-entry` uses each top-level named entry under the V1 Core
+  Infrastructure, Staffers, Butlers, Modules, Connectors, Dashboard, Identity System,
   Situational Awareness and Observability headings; `design-contract` uses each
   RFC index-table identity; `baseline-spec` uses each baseline spec directory;
   `topology-component` uses each first-column identity in the component tables;

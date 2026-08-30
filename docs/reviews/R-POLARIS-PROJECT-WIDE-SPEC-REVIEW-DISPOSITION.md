@@ -13,7 +13,7 @@ the exact repaired bytes require an independent confirmation pass.
 
 | # | Severity | Finding | Disposition |
 |---|---|---|---|
-| 1 | BLOCKER | Matrix partitions clause IDs without consequence review | **Repaired, awaiting confirmation.** Three independent clause-text audits produced 613 normalized consequence rows covering all 324 accepted clauses. A repair overlay supersedes 62 rows with 69 repaired consequences. The generator now verifies identities, dispositions and warrant agreement only; it makes no semantic judgment. Effective matrix: 620 consequences, 132 covered, 240 Unknown uncovered, 248 believed not applicable. |
+| 1 | BLOCKER | Matrix partitions clause IDs without consequence review | **Repaired, awaiting confirmation.** Three independent clause-text audits produced 613 normalized consequence rows covering all 324 accepted clauses. A repair overlay supersedes 62 rows with 71 repaired consequences. The generator now verifies identities, dispositions and warrant agreement only; it makes no semantic judgment. Effective matrix: 622 consequences, 132 covered, 242 Unknown uncovered, 248 believed not applicable. |
 | 2 | BLOCKER | Requirement warrants overclaim clause coverage | **Repaired, awaiting confirmation.** Warrant lists were reduced to exercised limbs, and PWB-REQ-007/014/015/016 close the essential epistemic, anchor, deep-dive and nonvisual gaps. Partial sibling consequences remain individually `unknown-uncovered`; no clause-level “covered” state exists. |
 | 3 | BLOCKER | Capability denominator omits refusals | **Repaired, awaiting confirmation.** `CAPABILITY-COVERAGE.md` now derives 27 positive obligations/refusals from proposal, design and definitions: 20 covered, 7 named out of scope. |
 | 4 | BLOCKER | No lawful observation consent or concrete secret policy | **Specification repaired; owner gates remain open.** PWB-REQ-005 requires both owner-provenance checks before the first body read and zero reads on every invalid case. Task 1.5 makes both separate acts dispatch blockers; sign-off mints neither. |
@@ -112,3 +112,27 @@ Verdict: **REVISE**
 | N12 challenge applicability | BLOCKER | Repaired as N8 above. |
 
 These are author dispositions. A fourth exact-head confirmation is required.
+
+## Confirmation pass 4
+
+Subject: `f441517e5c036608ff9af1f2b76b8fd9828c2c84`
+
+Raw report: `R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-4-RAW.md`
+
+Raw sha256: `56965025354f87872dea486bb572dbee372f6726b0b6dc8d06a50e48b8a9366d`
+
+Verdict: **REVISE**
+
+| Finding | Pass-4 verdict | Repair disposition |
+|---|---|---|
+| Original 1 / N1/N4/N9 | NOT CONFIRMED | All matrix/checker attacks now confirmed closed; remaining semantic closure repaired by adding the two omitted sibling-state consequences as separate Unknown rows. |
+| Original 2 / N5/N10 | CONFIRMED | No change. |
+| Original 3–4, 6–9, N2/N3/N7/N10–N12 | CONFIRMED | No change. |
+| Original 5 / N6 | NOT CONFIRMED | Repaired: the reader-definition catalog set now includes Core Infrastructure exactly like the literal grammar. |
+| N8 sibling applicability | NOT CONFIRMED | Repaired: `unadopted-draft`, `dismissed-by-decision`, `editorial-draft` and challenge aggregation each have their own applicable Unknown rows; only unused reconciliation/work composition remains believed not applicable. |
+| N13 catalog heading conflict | BLOCKER | Repaired as original finding 5 above. |
+| N14 missing sibling states | BLOCKER | Repaired as N8 above. |
+| N15 two-versus-three authority summaries | DEFECT | Repaired: proposal, design, capability table, requirement and tasks all name consent + secret policy + observer registry. |
+
+These are author dispositions. Confirmation pass 5 is the sixth and final
+reconciliation pass permitted by the convergence ceiling.

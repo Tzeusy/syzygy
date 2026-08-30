@@ -15,9 +15,10 @@ coverage explicit POC evaluation criteria.
   connector and major interface in the configured Butlers revision.
 - Coverage reports a complete denominator. Missing or unreadable declarations
   remain visible as Unknown; they never disappear from the known-source count.
-- Repository bodies are not read until a Butlers observation-consent record and
-  the observing project's concrete secret-classification policy both pass
-  owner-provenance checks.
+- Repository bodies are not read until a Butlers observation-consent record,
+  the observing project's concrete secret-classification policy and the
+  project-shape observer's registered adapter entry all pass owner-provenance
+  checks.
 - Shape reads are bounded, repository-contained and inert: exact Git objects
   only, no symlink/submodule escape, no active browser content and no execution.
 - Capability material becomes drill-down content beneath the project account.
