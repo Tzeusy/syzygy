@@ -34,7 +34,7 @@ export function buildTrajectoryMaterializationPacket(model: PocModel): Materiali
   });
 }
 
-function currentBeadId(model: PocModel): string | null {
+export function currentMaterializedBeadId(model: PocModel): string | null {
   const entity = model.entities.find((candidate) => candidate.id === WORK_ITEM_ENTITY_ID);
   if (entity === undefined || entity.epistemic.label !== 'Observed') {
     return null;
@@ -57,7 +57,7 @@ export const MATERIALIZE_PANEL_STYLE = `
 /** Preview panel — read-only, embedded on the Trajectory page (AC1). */
 export function renderMaterializePanel(model: PocModel): string {
   const packet = buildTrajectoryMaterializationPacket(model);
-  const beadId = currentBeadId(model);
+  const beadId = currentMaterializedBeadId(model);
 
   const status =
     beadId === null

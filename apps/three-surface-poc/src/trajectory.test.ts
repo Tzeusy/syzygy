@@ -226,6 +226,86 @@ describe('Trajectory', () => {
     expect(card).not.toContain('Verification: Not verified');
   });
 
+  it('calls out and highlights the demonstrated item, and separates Bead status from worker-change state (PRF-2, PRF-3)', () => {
+    const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
+    writeWorkerChangeSeam(repoRoot, 'x = 1\n');
+    git(repoRoot, ['add', '-A']);
+    git(repoRoot, ['commit', '-qm', 'fix(whatsapp): normalize single-event sender [bu-demo-1]']);
+    const changedRevision = git(repoRoot, ['rev-parse', 'HEAD']);
+    git(repoRoot, ['update-ref', 'refs/remotes/origin/main', changedRevision]);
+    git(repoRoot, ['symbolic-ref', 'refs/remotes/origin/HEAD', 'refs/remotes/origin/main']);
+
+    const rows = [
+      {
+        revision: 'dolt-rev-2',
+        id: 'bu-demo-1',
+        title: 'Materialized work item',
+        status: 'in_progress',
+        issue_type: 'task',
+        priority: 2,
+        created_at: '2026-08-30T00:00:00Z',
+        updated_at: '2026-08-30T00:00:00Z',
+        closed_at: null,
+      },
+      {
+        revision: 'dolt-rev-2',
+        id: 'bu-unrelated-1',
+        title: 'Unrelated backlog item',
+        status: 'open',
+        issue_type: 'task',
+        priority: 3,
+        created_at: '2026-08-30T00:00:00Z',
+        updated_at: '2026-08-30T00:00:00Z',
+        closed_at: null,
+      },
+    ];
+    const model = buildButlersPocModel({
+      repoRoot,
+      repositoryRevision: changedRevision,
+      observerRevision: revision,
+      evaluation: { snapshot: 'butlers@demo', asOf: '2026-08-30T12:00:00Z' },
+      materializationRecord: {
+        beadId: 'bu-demo-1',
+        externalRef: 'syzygy-poc:work:whatsapp-single-event-normalization',
+        targetRepoRoot: repoRoot,
+        createdAt: '2026-08-30T00:00:00Z',
+        doltRevisionAtCreation: 'dolt-rev-1',
+        attribution: 'test-actor',
+        origin: 'created',
+      },
+      runWorkItemQuery: (_repoRoot, sql) =>
+        sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: 'dolt-rev-2' }]),
+    });
+    const html = renderTrajectoryPage(model);
+
+    // PRF-3: intro line names and links the demonstrated item; only its
+    // card is highlighted and badged
+    expect(html).toContain('The demonstrated item is <a href="#workitem-bu-demo-1">');
+    const demoCard = cardBody(html, 'bu-demo-1');
+    const unrelatedCard = cardBody(html, 'bu-unrelated-1');
+    expect(demoCard).toContain('Demonstrated item');
+    expect(html).toMatch(/wi-card wi-card-demonstrated" id="workitem-bu-demo-1"/);
+    expect(unrelatedCard).not.toContain('Demonstrated item');
+    expect(html).not.toMatch(/wi-card-demonstrated" id="workitem-bu-unrelated-1"/);
+
+    // PRF-2: the dual-badge card states the two fields are independent
+    expect(demoCard).toContain('Independent of the Bead status above');
+    expect(unrelatedCard).not.toContain('Independent of the Bead status above');
+
+    // no demonstrated item: neither callout variant renders
+    const noneModel = buildButlersPocModel({
+      repoRoot,
+      repositoryRevision: changedRevision,
+      observerRevision: revision,
+      evaluation: { snapshot: 'butlers@demo-none', asOf: '2026-08-30T12:00:00Z' },
+      runWorkItemQuery: (_repoRoot, sql) =>
+        sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: 'dolt-rev-2' }]),
+    });
+    const noneHtml = renderTrajectoryPage(noneModel);
+    expect(noneHtml).not.toContain('class="demo-callout');
+    expect(noneHtml).not.toContain('Demonstrated item');
+  });
+
   it('mutation check: a falsified reconciliation would be caught', () => {
     const model = buildFixtureModel(cleanups);
     if (model.trajectory.kind !== 'observed') throw new Error('unreachable');

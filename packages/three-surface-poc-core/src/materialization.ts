@@ -71,6 +71,10 @@ export interface MaterializationRecord {
   readonly createdAt: string;
   readonly doltRevisionAtCreation: string | null;
   readonly attribution: string;
+  /** Whether the action created the Bead or adopted one found by
+   * external_ref. Absent on records written before this field existed —
+   * readers must render that as "created or reused", never guess. */
+  readonly origin?: 'created' | 'reused';
 }
 
 // --- File-backed record state --------------------------------------------
@@ -100,7 +104,8 @@ function isMaterializationRecord(value: unknown): value is MaterializationRecord
     typeof record.targetRepoRoot === 'string' &&
     typeof record.createdAt === 'string' &&
     (record.doltRevisionAtCreation === null || typeof record.doltRevisionAtCreation === 'string') &&
-    typeof record.attribution === 'string'
+    typeof record.attribution === 'string' &&
+    (record.origin === undefined || record.origin === 'created' || record.origin === 'reused')
   );
 }
 
@@ -322,6 +327,7 @@ export function materializeWorkItem(input: MaterializeWorkItemInput): Materializ
       createdAt: input.now(),
       doltRevisionAtCreation: captureDoltRevision(input.targetRepoRoot, runQuery),
       attribution: input.attribution,
+      origin: 'reused',
     };
     try {
       input.writeRecord(record);
@@ -361,6 +367,7 @@ export function materializeWorkItem(input: MaterializeWorkItemInput): Materializ
     createdAt: input.now(),
     doltRevisionAtCreation: captureDoltRevision(input.targetRepoRoot, runQuery),
     attribution: input.attribution,
+    origin: 'created',
   };
   try {
     input.writeRecord(record);

@@ -306,6 +306,56 @@ describe('three-surface Butlers POC model', () => {
     });
   });
 
+  it('words the intent-to-work basis by the record origin: created, reused, or the honest legacy both (PRF-4)', () => {
+    const repoRoot = butlersFixture();
+    const baseInput = {
+      repoRoot,
+      repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
+      observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
+      evaluation: { snapshot: 'butlers@c1389423', asOf: '2026-08-29T12:00:00Z' },
+    } as const;
+    const record = {
+      beadId: 'bu-materialized1',
+      externalRef: 'syzygy-poc:work:whatsapp-single-event-normalization',
+      targetRepoRoot: repoRoot,
+      createdAt: '2026-08-30T00:00:00Z',
+      doltRevisionAtCreation: 'dolt-rev-1',
+      attribution: 'test-actor',
+    } as const;
+    const rows = [
+      {
+        revision: 'dolt-rev-2',
+        id: 'bu-materialized1',
+        title: 'Single-event WhatsApp sender normalization (Syzygy POC materialization)',
+        status: 'open',
+        issue_type: 'task',
+        priority: 2,
+        created_at: '2026-08-30T00:00:00Z',
+        updated_at: '2026-08-30T00:00:00Z',
+        closed_at: null,
+      },
+    ];
+    const runWorkItemQuery = (_repoRoot: string, sql: string) =>
+      sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: 'dolt-rev-2' }]);
+    const basisFor = (materializationRecord: typeof record & { origin?: 'created' | 'reused' }) => {
+      const model = buildButlersPocModel({ ...baseInput, materializationRecord, runWorkItemQuery });
+      const epistemic = byId(model.relationships).get('relationship:intent-to-work')?.epistemic;
+      if (epistemic?.label !== 'Observed') throw new Error('expected Observed');
+      return epistemic.basis;
+    };
+
+    expect(basisFor({ ...record, origin: 'created' })).toBe(
+      'The human-triggered materialization step created Beads item bu-materialized1.',
+    );
+    expect(basisFor({ ...record, origin: 'reused' })).toBe(
+      'The human-triggered materialization step reused the existing Beads item bu-materialized1.',
+    );
+    // a record written before the origin field existed must not guess
+    expect(basisFor(record)).toBe(
+      'The human-triggered materialization step created or reused Beads item bu-materialized1.',
+    );
+  });
+
   it('fails closed when a required mapped artifact is absent', () => {
     const repoRoot = butlersFixture();
     rmSync(join(repoRoot, 'tests/core/test_identity.py'));

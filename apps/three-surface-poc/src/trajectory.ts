@@ -3,7 +3,11 @@ import type { PocModel, WorkerChangeObserved } from '@syzygy/three-surface-poc-c
 import type { TrajectoryColumn, TrajectoryLaneItem } from '@syzygy/three-surface-poc-core';
 import { WORKER_CHANGE_INTENT_ID, type TestArtifactVerificationResult } from '@syzygy/three-surface-poc-core';
 
-import { MATERIALIZE_PANEL_STYLE, renderMaterializePanel } from './materialize-action.js';
+import {
+  MATERIALIZE_PANEL_STYLE,
+  currentMaterializedBeadId,
+  renderMaterializePanel,
+} from './materialize-action.js';
 import { pageShell } from './page-shell.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 
@@ -81,6 +85,7 @@ function workerChangeBadge(
           }`;
   return `<div class="worker-change" data-parity-field="worker-change-state">
     <span class="wi-status">External worker: ${escapeHtml(label)}</span>
+    <span class="worker-change-note">Independent of the Bead status above: this row is the worker-change state observed from git on the bounded seam, not the Beads status.</span>
     ${detail === '' ? '' : `<span class="worker-change-detail">${detail}</span>`}
     ${verificationBadge(verification)}
   </div>`;
@@ -91,8 +96,10 @@ function itemCard(
   range: { readonly earliest: string; readonly latest: string } | null,
   workerChange: WorkerChangeObserved | null,
   testArtifactVerification: TestArtifactVerificationResult,
+  demonstrated: boolean,
 ): string {
-  return `<li class="wi-card" id="workitem-${escapeHtml(item.id)}" data-work-item-id="${escapeHtml(item.id)}">
+  return `<li class="wi-card${demonstrated ? ' wi-card-demonstrated' : ''}" id="workitem-${escapeHtml(item.id)}" data-work-item-id="${escapeHtml(item.id)}">
+    ${demonstrated ? '<span class="demo-badge">Demonstrated item</span>' : ''}
     <a class="wi-title" href="#workitem-${escapeHtml(item.id)}" data-parity-field="work-item-title">${escapeHtml(item.title)}</a>
     <code class="wi-id" data-parity-field="work-item-id">${escapeHtml(item.id)}</code>
     <span class="wi-status" data-parity-field="work-item-status">${escapeHtml(item.status)}</span>
@@ -118,6 +125,10 @@ const TRAJECTORY_STYLE = `
   .lane-bar { position: absolute; top: 0; height: 100%; left: var(--lane-left); width: var(--lane-width); background: var(--cyan); }
   .worker-change { display: grid; gap: .2rem; padding-top: .2rem; border-top: 1px dashed var(--line); }
   .worker-change-detail { font-size: .72rem; color: var(--muted); }
+  .worker-change-note { font-size: .68rem; color: var(--muted); }
+  .wi-card-demonstrated { border-color: var(--cyan); }
+  .demo-badge { color: var(--cyan); font-family: var(--font-mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .04em; }
+  .demo-callout { max-width: 78ch; }
   ${MATERIALIZE_PANEL_STYLE}
 `;
 
@@ -135,6 +146,9 @@ export function renderTrajectoryPage(model: PocModel): string {
     for (const item of trajectory.rendered) {
       byColumn.get(item.column)?.push(item);
     }
+    const demonstratedId = currentMaterializedBeadId(model);
+    const demonstratedRendered =
+      demonstratedId !== null && trajectory.rendered.some((item) => item.id === demonstratedId);
     const columns = COLUMN_ORDER.map((column) => {
       const items = byColumn.get(column) ?? [];
       return `<section class="board-column" aria-label="${escapeHtml(column)} column">
@@ -146,17 +160,26 @@ export function renderTrajectoryPage(model: PocModel): string {
               trajectory.timeRange,
               workerChange !== null && workerChange.beadId === item.id ? workerChange : null,
               model.testArtifactVerification,
+              item.id === demonstratedId,
             ),
           )
           .join('')}</ol>
       </section>`;
     }).join('');
 
+    const demonstratedCallout =
+      demonstratedId === null
+        ? ''
+        : demonstratedRendered
+          ? `<p class="demo-callout notice">The demonstrated item is <a href="#workitem-${escapeHtml(demonstratedId)}"><code>${escapeHtml(demonstratedId)}</code></a> — the one work item this POC materialized through its human-triggered action. Every other card is real, unrelated Butlers backlog shown for context.</p>`
+          : `<p class="demo-callout notice">The demonstrated item <code>${escapeHtml(demonstratedId)}</code> was materialized by this POC but falls outside the current board selection, so no card is shown for it.</p>`;
+
     body = `
       <p class="scope-statement notice" data-parity-field="trajectory-scope">
         Rendering ${trajectory.renderedCount} of ${trajectory.totalCount} observed work items (${trajectory.selectionRule});
         <span data-parity-field="trajectory-excluded-count">${trajectory.excludedCount}</span> items are outside this selection and not shown.
       </p>
+      ${demonstratedCallout}
       <div class="board" role="list" aria-label="Work-item board by status column">${columns}</div>`;
   }
 

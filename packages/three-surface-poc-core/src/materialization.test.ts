@@ -93,6 +93,7 @@ describe('materializeWorkItem', () => {
     expect(persisted?.beadId).toBe('bu-materialized1');
     expect(persisted?.doltRevisionAtCreation).toBe('dolt-rev-1');
     expect(persisted?.attribution).toBe('test-actor');
+    expect(persisted?.origin).toBe('created');
 
     // 0600/0700 posture, matching the daemon credential file (POC-REQ:
     // state writes stay inside the state directory with owner-only mode).
@@ -152,6 +153,7 @@ describe('materializeWorkItem', () => {
     expect(result.beadId).toBe('bu-already-exists');
     expect(createCount).toBe(0);
     expect(readMaterializationRecordFile(dir)?.beadId).toBe('bu-already-exists');
+    expect(readMaterializationRecordFile(dir)?.origin).toBe('reused');
   });
 
   it('renders Unknown, never a partial success, when bd is missing (AC5)', () => {

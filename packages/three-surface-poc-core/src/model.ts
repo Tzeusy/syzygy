@@ -209,6 +209,9 @@ function unknown(reason: string): PocEpistemic {
 interface MaterializationEpistemic {
   readonly epistemic: PocEpistemic;
   readonly beadId: string | null;
+  /** From the record's origin field; null for pre-origin records, where
+   * only "created or reused" can be honestly claimed. */
+  readonly origin: 'created' | 'reused' | null;
   readonly provenance: readonly PocProvenance[];
 }
 
@@ -224,7 +227,7 @@ function resolveMaterializationEpistemic(
   workItems: WorkItemsResult,
 ): MaterializationEpistemic {
   if (record === null) {
-    return { epistemic: unknown('No POC work item has been materialized.'), beadId: null, provenance: [] };
+    return { epistemic: unknown('No POC work item has been materialized.'), beadId: null, origin: null, provenance: [] };
   }
   if (workItems.kind === 'unknown') {
     return {
@@ -232,6 +235,7 @@ function resolveMaterializationEpistemic(
         'A materialization record exists but work items could not be observed to confirm it.',
       ),
       beadId: null,
+      origin: null,
       provenance: [],
     };
   }
@@ -242,6 +246,7 @@ function resolveMaterializationEpistemic(
         'A materialization record names a Bead that was not found among the observed work items.',
       ),
       beadId: null,
+      origin: null,
       provenance: [],
     };
   }
@@ -250,6 +255,7 @@ function resolveMaterializationEpistemic(
       `The materialized Bead ${found.id} was confirmed present in the observed work items.`,
     ),
     beadId: found.id,
+    origin: record.origin ?? null,
     provenance: [
       {
         kind: 'materialization-record',
@@ -463,7 +469,13 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
         materialization.beadId === null
           ? unknown('The human-triggered materialization step has not run.')
           : observed(
-              `The human-triggered materialization step created Beads item ${materialization.beadId}.`,
+              `The human-triggered materialization step ${
+                materialization.origin === 'created'
+                  ? 'created'
+                  : materialization.origin === 'reused'
+                    ? 'reused the existing'
+                    : 'created or reused'
+              } Beads item ${materialization.beadId}.`,
             ),
       provenance: materialization.provenance,
     },
