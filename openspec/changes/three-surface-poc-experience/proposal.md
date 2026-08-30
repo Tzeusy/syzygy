@@ -83,17 +83,21 @@ throughout.
 
 ## Open authoring obligations (stated, not hidden)
 
-- **CC-SPEC-8 contract-coverage matrix**: not yet produced. The
-  clause-by-clause applicability sweep of RFC 0001–0009 against this
-  scope statement, with owner-recorded N/A judgments, must be completed
-  before sign-off. Until then, contract coverage is **Unknown** — this
-  proposal claims no coverage.
-- **`contracts[]` warrants**: requirement warrants below cite adopted
-  doctrine and recorded owner decisions. Accepted contract clauses that
-  materially govern individual requirements have not been swept and are
-  not yet declared; the empty `contracts[]` fields are an authoring gap
-  to close in the same pre-sign-off pass, not an assertion that no such
-  clause applies.
-- **CC-IMPACT generated dependency union**: to be generated once
-  warrants are complete; no hand-maintained specification-level list is
-  introduced meanwhile.
+- **CC-SPEC-8 contract-coverage matrix**: produced — `CONTRACT-COVERAGE.md`
+  in this change directory. All 324 accepted clauses (RFC 0001–0009)
+  were judged once each: 74 mapped to requirements (Part A), 27
+  applicable but uncovered (Part B1, all Unknown pending owner-reviewed
+  N/A — chiefly RFC5 authentication/audit obligations riding the reused
+  Capability 1 runtime spine), 223 believed not applicable (Part B2,
+  the author's non-binding reading, per clause). **No owner-reviewed
+  N/A judgment exists yet**; recording them is part of the sign-off
+  decision, not this authoring pass.
+- **`contracts[]` warrants**: filled from the sweep. Each requirement
+  cites exactly the clauses whose consequences its oracle observes;
+  POC-REQ-021's empty list is a sweep result, not a gap.
+- **CC-IMPACT generated dependency union**: generated —
+  `GOVERNING-DEPENDENCIES.md`, the computed union of every
+  requirement's warrants block (24 requirements, 85 distinct
+  authorities), produced and drift-checked by
+  `scripts/build_three_surface_poc_spec_dependencies.py`; no
+  hand-maintained specification-level list exists.

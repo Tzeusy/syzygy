@@ -9,11 +9,12 @@
 
 ## Pre-sign-off (spec authoring completion)
 
-- [ ] 1.1 Sweep RFC 0001–0009 clause-by-clause against the scope
-  statement; produce the CC-SPEC-8 coverage matrix with owner-recorded
-  N/A judgments.
-- [ ] 1.2 Fill `contracts[]` warrants from that sweep; generate the
-  CC-IMPACT dependency union.
+- [x] 1.1 Sweep RFC 0001–0009 clause-by-clause against the scope
+  statement; produce the CC-SPEC-8 coverage matrix
+  (`CONTRACT-COVERAGE.md`). Owner-recorded N/A judgments remain open —
+  they are owner acts that ride the sign-off decision (1.3).
+- [x] 1.2 Fill `contracts[]` warrants from that sweep; generate the
+  CC-IMPACT dependency union (`GOVERNING-DEPENDENCIES.md`).
 - [ ] 1.3 Owner sign-off act recorded in `.syzygy/governance/decisions/`.
 
 ## Prerequisite infrastructure (POC-REQ-001…022)

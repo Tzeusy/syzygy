@@ -38,10 +38,13 @@ Reader notes, binding on how this file is read:
   recorded owner directions by their record file in
   `.syzygy/governance/decisions/`: `POC-DIR-2026-08-29` names
   `THREE-SURFACE-POC-MODE-DIRECTION.md` and `POC-DIR-2026-08-30` names
-  `THREE-SURFACE-POC-REDESIGN-DIRECTION.md`. **Empty `contracts[]`
-  fields are an open authoring gap, not an assertion of
-  non-applicability** — see the proposal's "Open authoring
-  obligations".
+  `THREE-SURFACE-POC-REDESIGN-DIRECTION.md`. `contracts[]` entries come
+  from the CC-SPEC-8 sweep recorded in this change's
+  `CONTRACT-COVERAGE.md`: a clause is listed exactly where the sweep
+  found the requirement's oracle observes one of that clause's
+  consequences. POC-REQ-021's empty `contracts[]` is a sweep result
+  (no accepted clause maps to it; it rests on doctrine and decisions),
+  not an authoring gap.
 - **Vocabulary.** No verifying evidence → `Unknown`, never success
   (VIS-2); every Unknown rendered by a surface carries its reason. An
   "identified observation" is the pair (source revision, capture
@@ -90,7 +93,7 @@ every entry carries that revision as provenance.
 warrants:
   primary: VIS-2
   doctrine: [VIS-2, VIS-6, VIS-7]
-  contracts: []
+  contracts: [RFC1-5, RFC2-1, RFC4-3, RFC4-11, RFC4-12, RFC6-15, RFC9-38]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -130,7 +133,7 @@ classifications, digests, revisions, and capture instants may appear.
 warrants:
   primary: SEC-5
   doctrine: [SEC-2, SEC-3, SEC-5]
-  contracts: []
+  contracts: [RFC1-5, RFC4-12, RFC5-16]
   policies: []
   decisions: [POC-DIR-2026-08-29, POC-DIR-2026-08-30]
   topology: []
@@ -171,7 +174,7 @@ SHALL NOT serve a partial inventory as if complete.
 warrants:
   primary: VIS-2
   doctrine: [VIS-1, VIS-2]
-  contracts: []
+  contracts: [RFC1-31, RFC2-2, RFC2-23, RFC2-24, RFC4-2, RFC4-4, RFC4-12, RFC9-24, RFC9-27, RFC9-29]
   policies: []
   decisions: [POC-DIR-2026-08-29]
   topology: []
@@ -208,7 +211,7 @@ the same revision.
 warrants:
   primary: VIS-7
   doctrine: [VIS-6, VIS-7]
-  contracts: []
+  contracts: [RFC1-5, RFC2-1, RFC2-3, RFC4-2, RFC6-15, RFC9-14, RFC9-17]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -248,7 +251,7 @@ every served work-item fact carrying that revision as provenance.
 warrants:
   primary: VIS-6
   doctrine: [VIS-2, VIS-6, VIS-7]
-  contracts: []
+  contracts: [RFC1-5, RFC1-9, RFC2-1, RFC4-3, RFC4-5, RFC4-15, RFC6-15]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -284,7 +287,7 @@ items in the machine answer and on every human surface.
 warrants:
   primary: POC-DIR-2026-08-30
   doctrine: [VIS-6, VIS-7]
-  contracts: []
+  contracts: [RFC6-16]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -323,7 +326,7 @@ of quantification: every work-item fact served in either channel.
 warrants:
   primary: POC-DIR-2026-08-30
   doctrine: [VIS-6, VIS-7]
-  contracts: []
+  contracts: [RFC1-5, RFC1-9, RFC4-15]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -364,7 +367,7 @@ an empty board presented as "no work".
 warrants:
   primary: VIS-2
   doctrine: [VIS-1, VIS-2]
-  contracts: []
+  contracts: [RFC1-31, RFC2-2, RFC2-23, RFC2-24, RFC4-2, RFC4-4, RFC4-15, RFC9-24, RFC9-27]
   policies: []
   decisions: [POC-DIR-2026-08-29]
   topology: []
@@ -404,7 +407,7 @@ surfaces.
 warrants:
   primary: VIS-1
   doctrine: [VIS-1, VIS-3, VIS-7]
-  contracts: []
+  contracts: [RFC6-13, RFC6-14, RFC6-18, RFC6-22, RFC6-23, RFC7-18, RFC7-33, RFC9-1, RFC9-46, RFC9-48]
   policies: []
   decisions: [POC-DIR-2026-08-29, POC-DIR-2026-08-30]
   topology: []
@@ -483,7 +486,7 @@ region presented as complete.
 warrants:
   primary: VIS-3
   doctrine: [VIS-1, VIS-2, VIS-3]
-  contracts: []
+  contracts: [RFC6-13, RFC7-33, RFC7-34, RFC9-24]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -524,7 +527,7 @@ presents.
 warrants:
   primary: VIS-3
   doctrine: [VIS-1, VIS-3]
-  contracts: []
+  contracts: [RFC1-7, RFC7-5, RFC7-6, RFC7-9, RFC7-13]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -561,7 +564,7 @@ Polaris marks (its declared claim markers).
 warrants:
   primary: VIS-2
   doctrine: [VIS-1, VIS-2, VIS-7]
-  contracts: []
+  contracts: [RFC1-7, RFC1-24, RFC1-26, RFC6-19, RFC6-20, RFC7-2, RFC7-5, RFC7-9, RFC7-10, RFC7-11, RFC7-29]
   policies: []
   decisions: [POC-DIR-2026-08-29]
   topology: []
@@ -604,7 +607,7 @@ document.
 warrants:
   primary: VIS-1
   doctrine: [VIS-1, VIS-2]
-  contracts: []
+  contracts: [RFC1-7, RFC1-19, RFC7-2, RFC7-13, RFC7-19, RFC7-29, RFC9-24]
   policies: []
   decisions: [POC-DIR-2026-08-29]
   topology: []
@@ -642,7 +645,7 @@ carrying its identifier.
 warrants:
   primary: VIS-6
   doctrine: [VIS-3, VIS-6]
-  contracts: []
+  contracts: [RFC4-6, RFC8-12]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -681,7 +684,7 @@ Scope of quantification: all temporal encodings on the surface.
 warrants:
   primary: VIS-6
   doctrine: [VIS-2, VIS-6, VIS-7]
-  contracts: []
+  contracts: [RFC2-3, RFC6-22, RFC6-23]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -720,7 +723,7 @@ item set.
 warrants:
   primary: VIS-2
   doctrine: [VIS-1, VIS-2, VIS-3]
-  contracts: []
+  contracts: [RFC2-6, RFC6-14, RFC6-16, RFC6-17, RFC6-22, RFC6-23]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -760,7 +763,7 @@ satisfaction/verification encoding on the surface.
 warrants:
   primary: VIS-2
   doctrine: [VIS-1, VIS-2]
-  contracts: []
+  contracts: [RFC1-19, RFC1-22, RFC1-23, RFC1-24, RFC2-20, RFC8-2, RFC8-15, RFC8-30]
   policies: []
   decisions: [POC-DIR-2026-08-29, POC-DIR-2026-08-30]
   topology: []
@@ -799,7 +802,7 @@ deterministic layout per observation.
 warrants:
   primary: VIS-7
   doctrine: [VIS-3, VIS-6, VIS-7]
-  contracts: []
+  contracts: [RFC1-16, RFC1-25, RFC4-26, RFC9-3, RFC9-4, RFC9-5, RFC9-9, RFC9-14, RFC9-17]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -838,7 +841,7 @@ every observed file in the structure observation.
 warrants:
   primary: VIS-2
   doctrine: [VIS-1, VIS-2]
-  contracts: []
+  contracts: [RFC1-14, RFC2-6, RFC2-24, RFC4-27, RFC6-14, RFC6-17, RFC6-23, RFC9-5, RFC9-7, RFC9-24, RFC9-27, RFC9-29, RFC9-42, RFC9-43, RFC9-44]
   policies: []
   decisions: [POC-DIR-2026-08-29, POC-DIR-2026-08-30]
   topology: []
@@ -877,7 +880,7 @@ declares.
 warrants:
   primary: VIS-1
   doctrine: [VIS-1, VIS-2, VIS-6]
-  contracts: []
+  contracts: [RFC1-16, RFC1-25, RFC1-26, RFC4-26, RFC9-3]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -914,7 +917,7 @@ entity elements on the surface.
 warrants:
   primary: VIS-3
   doctrine: [VIS-1, VIS-3]
-  contracts: []
+  contracts: [RFC1-26, RFC6-20, RFC9-3, RFC9-46, RFC9-48]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -953,7 +956,7 @@ every epistemic encoding across the three surfaces.
 warrants:
   primary: VIS-3
   doctrine: [VIS-1, VIS-3]
-  contracts: []
+  contracts: [RFC6-18, RFC6-22, RFC8-31]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []
@@ -997,7 +1000,7 @@ legend-declared encodings on the three surfaces.
 warrants:
   primary: VIS-3
   doctrine: [VIS-1, VIS-3]
-  contracts: []
+  contracts: [RFC7-34, RFC8-31, RFC9-48]
   policies: []
   decisions: [POC-DIR-2026-08-30]
   topology: []

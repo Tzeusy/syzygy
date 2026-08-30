@@ -1,0 +1,123 @@
+# Governing dependencies — three-surface-poc-experience
+
+> **GENERATED — do not edit.** This file is the candidate change's CC-IMPACT-1
+> specification-level dependency declaration: the computed union of
+> every requirement's `warrants` block in `specs/…/spec.md`. Edit the
+> requirement warrants and regenerate with
+> `python3 scripts/build_three_surface_poc_spec_dependencies.py`; an edit
+> here is overwritten and `--check` fails first. Identifiers only —
+> nothing here quotes or paraphrases any clause.
+>
+> Source: `spec.md` sha256 `f0eda5b9ec8766e2b4b961fb2940c4ece7aa97b1c397e10d570abb04f5dd960e` — 24 requirement(s), 85 distinct authorities.
+
+## doctrine (9)
+
+| Authority | Cited by |
+|---|---|
+| `SEC-1` | POC-REQ-021 |
+| `SEC-2` | POC-REQ-002 |
+| `SEC-3` | POC-REQ-002, POC-REQ-021 |
+| `SEC-5` | POC-REQ-002 |
+| `VIS-1` | POC-REQ-003, POC-REQ-013, POC-REQ-020, POC-REQ-022, POC-REQ-030, POC-REQ-031, POC-REQ-032, POC-REQ-042, POC-REQ-043, POC-REQ-051, POC-REQ-052, POC-REQ-053, POC-REQ-060, POC-REQ-061 |
+| `VIS-2` | POC-REQ-001, POC-REQ-003, POC-REQ-010, POC-REQ-013, POC-REQ-022, POC-REQ-031, POC-REQ-032, POC-REQ-041, POC-REQ-042, POC-REQ-043, POC-REQ-051, POC-REQ-052 |
+| `VIS-3` | POC-REQ-020, POC-REQ-022, POC-REQ-030, POC-REQ-040, POC-REQ-042, POC-REQ-050, POC-REQ-053, POC-REQ-060, POC-REQ-061 |
+| `VIS-6` | POC-REQ-001, POC-REQ-004, POC-REQ-010, POC-REQ-011, POC-REQ-012, POC-REQ-040, POC-REQ-041, POC-REQ-050, POC-REQ-052 |
+| `VIS-7` | POC-REQ-001, POC-REQ-004, POC-REQ-010, POC-REQ-011, POC-REQ-012, POC-REQ-020, POC-REQ-031, POC-REQ-041, POC-REQ-050 |
+
+## contracts (74)
+
+| Authority | Cited by |
+|---|---|
+| `RFC1-5` | POC-REQ-001, POC-REQ-002, POC-REQ-004, POC-REQ-010, POC-REQ-012 |
+| `RFC1-7` | POC-REQ-030, POC-REQ-031, POC-REQ-032 |
+| `RFC1-9` | POC-REQ-010, POC-REQ-012 |
+| `RFC1-14` | POC-REQ-051 |
+| `RFC1-16` | POC-REQ-050, POC-REQ-052 |
+| `RFC1-19` | POC-REQ-032, POC-REQ-043 |
+| `RFC1-22` | POC-REQ-043 |
+| `RFC1-23` | POC-REQ-043 |
+| `RFC1-24` | POC-REQ-031, POC-REQ-043 |
+| `RFC1-25` | POC-REQ-050, POC-REQ-052 |
+| `RFC1-26` | POC-REQ-031, POC-REQ-052, POC-REQ-053 |
+| `RFC1-31` | POC-REQ-003, POC-REQ-013 |
+| `RFC2-1` | POC-REQ-001, POC-REQ-004, POC-REQ-010 |
+| `RFC2-2` | POC-REQ-003, POC-REQ-013 |
+| `RFC2-3` | POC-REQ-004, POC-REQ-041 |
+| `RFC2-6` | POC-REQ-042, POC-REQ-051 |
+| `RFC2-20` | POC-REQ-043 |
+| `RFC2-23` | POC-REQ-003, POC-REQ-013 |
+| `RFC2-24` | POC-REQ-003, POC-REQ-013, POC-REQ-051 |
+| `RFC4-2` | POC-REQ-003, POC-REQ-004, POC-REQ-013 |
+| `RFC4-3` | POC-REQ-001, POC-REQ-010 |
+| `RFC4-4` | POC-REQ-003, POC-REQ-013 |
+| `RFC4-5` | POC-REQ-010 |
+| `RFC4-6` | POC-REQ-040 |
+| `RFC4-11` | POC-REQ-001 |
+| `RFC4-12` | POC-REQ-001, POC-REQ-002, POC-REQ-003 |
+| `RFC4-15` | POC-REQ-010, POC-REQ-012, POC-REQ-013 |
+| `RFC4-26` | POC-REQ-050, POC-REQ-052 |
+| `RFC4-27` | POC-REQ-051 |
+| `RFC5-16` | POC-REQ-002 |
+| `RFC6-13` | POC-REQ-020, POC-REQ-022 |
+| `RFC6-14` | POC-REQ-020, POC-REQ-042, POC-REQ-051 |
+| `RFC6-15` | POC-REQ-001, POC-REQ-004, POC-REQ-010 |
+| `RFC6-16` | POC-REQ-011, POC-REQ-042 |
+| `RFC6-17` | POC-REQ-042, POC-REQ-051 |
+| `RFC6-18` | POC-REQ-020, POC-REQ-060 |
+| `RFC6-19` | POC-REQ-031 |
+| `RFC6-20` | POC-REQ-031, POC-REQ-053 |
+| `RFC6-22` | POC-REQ-020, POC-REQ-041, POC-REQ-042, POC-REQ-060 |
+| `RFC6-23` | POC-REQ-020, POC-REQ-041, POC-REQ-042, POC-REQ-051 |
+| `RFC7-2` | POC-REQ-031, POC-REQ-032 |
+| `RFC7-5` | POC-REQ-030, POC-REQ-031 |
+| `RFC7-6` | POC-REQ-030 |
+| `RFC7-9` | POC-REQ-030, POC-REQ-031 |
+| `RFC7-10` | POC-REQ-031 |
+| `RFC7-11` | POC-REQ-031 |
+| `RFC7-13` | POC-REQ-030, POC-REQ-032 |
+| `RFC7-18` | POC-REQ-020 |
+| `RFC7-19` | POC-REQ-032 |
+| `RFC7-29` | POC-REQ-031, POC-REQ-032 |
+| `RFC7-33` | POC-REQ-020, POC-REQ-022 |
+| `RFC7-34` | POC-REQ-022, POC-REQ-061 |
+| `RFC8-2` | POC-REQ-043 |
+| `RFC8-12` | POC-REQ-040 |
+| `RFC8-15` | POC-REQ-043 |
+| `RFC8-30` | POC-REQ-043 |
+| `RFC8-31` | POC-REQ-060, POC-REQ-061 |
+| `RFC9-1` | POC-REQ-020 |
+| `RFC9-3` | POC-REQ-050, POC-REQ-052, POC-REQ-053 |
+| `RFC9-4` | POC-REQ-050 |
+| `RFC9-5` | POC-REQ-050, POC-REQ-051 |
+| `RFC9-7` | POC-REQ-051 |
+| `RFC9-9` | POC-REQ-050 |
+| `RFC9-14` | POC-REQ-004, POC-REQ-050 |
+| `RFC9-17` | POC-REQ-004, POC-REQ-050 |
+| `RFC9-24` | POC-REQ-003, POC-REQ-013, POC-REQ-022, POC-REQ-032, POC-REQ-051 |
+| `RFC9-27` | POC-REQ-003, POC-REQ-013, POC-REQ-051 |
+| `RFC9-29` | POC-REQ-003, POC-REQ-051 |
+| `RFC9-38` | POC-REQ-001 |
+| `RFC9-42` | POC-REQ-051 |
+| `RFC9-43` | POC-REQ-051 |
+| `RFC9-44` | POC-REQ-051 |
+| `RFC9-46` | POC-REQ-020, POC-REQ-053 |
+| `RFC9-48` | POC-REQ-020, POC-REQ-053, POC-REQ-061 |
+
+## policies (0)
+
+*(none declared)*
+
+## decisions (2)
+
+| Authority | Cited by |
+|---|---|
+| `POC-DIR-2026-08-29` | POC-REQ-002, POC-REQ-003, POC-REQ-013, POC-REQ-020, POC-REQ-021, POC-REQ-031, POC-REQ-032, POC-REQ-043, POC-REQ-051 |
+| `POC-DIR-2026-08-30` | POC-REQ-001, POC-REQ-002, POC-REQ-004, POC-REQ-010, POC-REQ-011, POC-REQ-012, POC-REQ-020, POC-REQ-022, POC-REQ-030, POC-REQ-040, POC-REQ-041, POC-REQ-042, POC-REQ-043, POC-REQ-050, POC-REQ-051, POC-REQ-052, POC-REQ-053, POC-REQ-060, POC-REQ-061 |
+
+## topology (0)
+
+*(none declared)*
+
+## parent_requirements (0)
+
+*(none declared)*
