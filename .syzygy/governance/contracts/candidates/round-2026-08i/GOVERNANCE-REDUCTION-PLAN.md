@@ -10,9 +10,10 @@
 >
 > **Why it exists:** the governance corpus was built to make one launch
 > decision safe. Left alone after that decision, it becomes exactly the
-> "process for its own sake" the doctrine warns against — every artifact
-> below states what supersedes it, so the corpus can shrink on evidence
-> rather than nostalgia.
+> kind of "process for its own sake" this plan itself warns against, not
+> a phrase drawn from doctrine — every artifact below states what
+> supersedes it, so the corpus can shrink on evidence rather than
+> nostalgia.
 
 ## Principle
 
