@@ -48,7 +48,122 @@ function butlersFixtureWithGit(): { repoRoot: string; revision: string } {
   return { repoRoot: root, revision: git(root, ['rev-parse', 'HEAD']) };
 }
 
+function writeSeamFiles(root: string, sourceContents: string): void {
+  const seam = {
+    source: 'src/butlers/connectors/whatsapp_user_client.py',
+    test: 'tests/connectors/test_whatsapp_user_client.py',
+  } as const;
+  for (const [path, contents] of [
+    [seam.source, sourceContents],
+    [seam.test, 'def test_normalization(): pass\n'],
+  ] as const) {
+    const absolute = join(root, path);
+    mkdirSync(dirname(absolute), { recursive: true });
+    writeFileSync(absolute, contents, 'utf8');
+  }
+}
+
 describe('shared model observation wiring', () => {
+  it('folds the worker-change lifecycle observation into the one shared model, scoped to the materialized Bead (AC3)', () => {
+    const { repoRoot, revision } = butlersFixtureWithGit();
+    writeSeamFiles(repoRoot, 'x = 1\n');
+    git(repoRoot, ['add', '-A']);
+    git(repoRoot, ['commit', '-qm', 'add bounded worker-change seam files']);
+    const mergedRevision = git(repoRoot, ['rev-parse', 'HEAD']);
+    git(repoRoot, ['update-ref', 'refs/remotes/origin/main', mergedRevision]);
+    git(repoRoot, ['symbolic-ref', 'refs/remotes/origin/HEAD', 'refs/remotes/origin/main']);
+
+    const materializationRecord = {
+      beadId: 'bu-worker-change-1',
+      externalRef: 'syzygy-poc:work:whatsapp-single-event-normalization',
+      targetRepoRoot: repoRoot,
+      createdAt: '2026-08-30T00:00:00Z',
+      doltRevisionAtCreation: 'dolt-rev-1',
+      attribution: 'test-actor',
+    } as const;
+    const confirmedRows = [
+      {
+        revision: 'dolt-rev-2',
+        id: 'bu-worker-change-1',
+        title: 'Single-event WhatsApp sender normalization (Syzygy POC materialization)',
+        status: 'open',
+        issue_type: 'task',
+        priority: 2,
+        created_at: '2026-08-30T00:00:00Z',
+        updated_at: '2026-08-30T00:00:00Z',
+        closed_at: null,
+      },
+    ];
+    const runWorkItemQuery = (_repoRoot: string, sql: string): string =>
+      sql.includes('WHERE id LIKE') ? JSON.stringify(confirmedRows) : JSON.stringify([{ revision: 'dolt-rev-2' }]);
+
+    // Planned: bead is materialized (confirmed present) but no matching
+    // git activity has landed yet on the bounded seam.
+    const plannedModel = buildButlersPocModel({
+      repoRoot,
+      repositoryRevision: mergedRevision,
+      observerRevision: mergedRevision,
+      evaluation: { snapshot: 'butlers@worker-change-planned', asOf: '2026-08-30T12:00:00Z' },
+      materializationRecord,
+      runWorkItemQuery,
+    });
+    expect(plannedModel.workerChange).toEqual({
+      kind: 'observed',
+      beadId: 'bu-worker-change-1',
+      seam: {
+        sourcePath: 'src/butlers/connectors/whatsapp_user_client.py',
+        testPath: 'tests/connectors/test_whatsapp_user_client.py',
+      },
+      defaultBranch: 'main',
+      defaultBranchRevision: mergedRevision,
+      state: 'planned',
+      verification: 'not-verified',
+      commit: null,
+      capturedAt: '2026-08-30T12:00:00Z',
+    });
+
+    // Changed-or-merged: a commit naming this exact Bead lands on the
+    // default branch, but never renders verified (AC4/AC5).
+    writeSeamFiles(repoRoot, 'x = 2\n');
+    git(repoRoot, ['add', '-A']);
+    git(repoRoot, ['commit', '-qm', 'fix(whatsapp): normalize single-event sender [bu-worker-change-1]']);
+    const changedRevision = git(repoRoot, ['rev-parse', 'HEAD']);
+    git(repoRoot, ['update-ref', 'refs/remotes/origin/main', changedRevision]);
+
+    const changedModel = buildButlersPocModel({
+      repoRoot,
+      repositoryRevision: changedRevision,
+      observerRevision: changedRevision,
+      evaluation: { snapshot: 'butlers@worker-change-merged', asOf: '2026-08-30T13:00:00Z' },
+      materializationRecord,
+      runWorkItemQuery,
+    });
+    expect(changedModel.workerChange.kind).toBe('observed');
+    if (changedModel.workerChange.kind !== 'observed') throw new Error('unreachable');
+    expect(changedModel.workerChange.state).toBe('changed-or-merged');
+    expect(changedModel.workerChange.commit?.sha).toBe(changedRevision);
+    expect(changedModel.workerChange.verification).toBe('not-verified');
+    // production/runtime satisfaction remains a separate, still-Unknown claim (AC5)
+    expect(
+      changedModel.entities.find((entity) => entity.id === 'runtime:live-satisfaction')?.epistemic
+        .label,
+    ).toBe('Unknown');
+
+    // No materialization at all: Unknown, distinct reason.
+    const unmaterializedModel = buildButlersPocModel({
+      repoRoot,
+      repositoryRevision: changedRevision,
+      observerRevision: changedRevision,
+      evaluation: { snapshot: 'butlers@worker-change-none', asOf: '2026-08-30T13:00:00Z' },
+      runWorkItemQuery,
+    });
+    expect(unmaterializedModel.workerChange).toEqual({
+      kind: 'unknown',
+      reason: 'no materialized work item to observe git activity against',
+    });
+  });
+
+
   it('folds code-structure and work-item observations into the one shared model', () => {
     const { repoRoot, revision } = butlersFixtureWithGit();
     const runWorkItemQuery = (_repoRoot: string, sql: string): string =>
