@@ -84,7 +84,7 @@ function workerChangeBadge(
               : ` on <code class="wi-id">${escapeHtml(workerChange.commit.containingRef)}</code>`
           }`;
   return `<div class="worker-change" data-parity-field="worker-change-state">
-    <span class="wi-status">External worker: ${escapeHtml(label)}</span>
+    <span class="worker-change-label">External worker: ${escapeHtml(label)}</span>
     <span class="worker-change-note">Independent of the Bead status above: this row is the worker-change state observed from git on the bounded seam, not the Beads status.</span>
     ${detail === '' ? '' : `<span class="worker-change-detail">${detail}</span>`}
     ${verificationBadge(verification)}
@@ -126,6 +126,7 @@ const TRAJECTORY_STYLE = `
   .worker-change { display: grid; gap: .2rem; padding-top: .2rem; border-top: 1px dashed var(--line); }
   .worker-change-detail { font-size: .72rem; color: var(--muted); }
   .worker-change-note { font-size: .68rem; color: var(--muted); }
+  .worker-change-label { font-family: var(--font-mono); font-size: .7rem; text-transform: uppercase; color: var(--cyan); }
   .wi-card-demonstrated { border-color: var(--cyan); }
   .demo-badge { color: var(--cyan); font-family: var(--font-mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .04em; }
   .demo-callout { max-width: 78ch; }

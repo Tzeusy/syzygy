@@ -24,8 +24,6 @@ export const MATERIALIZE_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}/trajectory/mate
 export const MATERIALIZE_ATTRIBUTION =
   'syzygy-three-surface-poc:human-triggered-materialize-action' as const;
 
-const WORK_ITEM_ENTITY_ID = 'work:whatsapp-single-event-normalization' as const;
-
 export function buildTrajectoryMaterializationPacket(model: PocModel): MaterializationPacket {
   return buildMaterializationPacket({
     targetRepoRoot: model.project.root,
@@ -35,12 +33,7 @@ export function buildTrajectoryMaterializationPacket(model: PocModel): Materiali
 }
 
 export function currentMaterializedBeadId(model: PocModel): string | null {
-  const entity = model.entities.find((candidate) => candidate.id === WORK_ITEM_ENTITY_ID);
-  if (entity === undefined || entity.epistemic.label !== 'Observed') {
-    return null;
-  }
-  const match = /Beads item (\S+)\.$/.exec(entity.detail);
-  return match?.[1] ?? null;
+  return model.materializedBeadId;
 }
 
 export const MATERIALIZE_PANEL_STYLE = `

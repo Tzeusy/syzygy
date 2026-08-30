@@ -292,6 +292,14 @@ describe('Trajectory', () => {
     expect(demoCard).toContain('Independent of the Bead status above');
     expect(unrelatedCard).not.toContain('Independent of the Bead status above');
 
+    // N-2: the demonstrated id comes from the typed model field
+    expect(model.materializedBeadId).toBe('bu-demo-1');
+
+    // N-3: the external-worker label carries its own class, visually
+    // distinct from the Bead-status field
+    expect(demoCard).toContain('class="worker-change-label">External worker:');
+    expect(demoCard).not.toContain('class="wi-status">External worker:');
+
     // no demonstrated item: neither callout variant renders
     const noneModel = buildButlersPocModel({
       repoRoot,
@@ -304,6 +312,63 @@ describe('Trajectory', () => {
     const noneHtml = renderTrajectoryPage(noneModel);
     expect(noneHtml).not.toContain('class="demo-callout');
     expect(noneHtml).not.toContain('Demonstrated item');
+  });
+
+  it('states honestly when the materialized item falls outside the board selection (N-1)', () => {
+    const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
+    // the materialized bead closed long ago; 50 newer closed items fill
+    // the recent-closed window and push it out of the selection
+    const rows = [
+      {
+        revision: 'dolt-rev-2',
+        id: 'bu-old-closed',
+        title: 'Materialized long-closed item',
+        status: 'closed',
+        issue_type: 'task',
+        priority: 2,
+        created_at: '2026-01-01T00:00:00Z',
+        updated_at: '2026-01-01T00:00:00Z',
+        closed_at: '2026-01-01T00:00:00Z',
+      },
+      ...Array.from({ length: 50 }, (_, i) => ({
+        revision: 'dolt-rev-2',
+        id: `bu-newer-closed-${String(i).padStart(2, '0')}`,
+        title: `Newer closed item ${i}`,
+        status: 'closed',
+        issue_type: 'task',
+        priority: 3,
+        created_at: '2026-08-01T00:00:00Z',
+        updated_at: '2026-08-01T00:00:00Z',
+        closed_at: `2026-08-0${(i % 9) + 1}T0${i % 10}:00:00Z`,
+      })),
+    ];
+    const model = buildButlersPocModel({
+      repoRoot,
+      repositoryRevision: revision,
+      observerRevision: revision,
+      evaluation: { snapshot: 'butlers@excluded', asOf: '2026-08-30T12:00:00Z' },
+      materializationRecord: {
+        beadId: 'bu-old-closed',
+        externalRef: 'syzygy-poc:work:whatsapp-single-event-normalization',
+        targetRepoRoot: repoRoot,
+        createdAt: '2026-01-01T00:00:00Z',
+        doltRevisionAtCreation: 'dolt-rev-1',
+        attribution: 'test-actor',
+        origin: 'created',
+      },
+      runWorkItemQuery: (_repoRoot, sql) =>
+        sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: 'dolt-rev-2' }]),
+    });
+    expect(model.materializedBeadId).toBe('bu-old-closed');
+    if (model.trajectory.kind !== 'observed') throw new Error('unreachable');
+    expect(model.trajectory.rendered.some((item) => item.id === 'bu-old-closed')).toBe(false);
+
+    const html = renderTrajectoryPage(model);
+    expect(html).toContain(
+      'The demonstrated item <code>bu-old-closed</code> was materialized by this POC but falls outside the current board selection',
+    );
+    expect(html).not.toContain('data-work-item-id="bu-old-closed"');
+    expect(html).not.toContain('The demonstrated item is <a');
   });
 
   it('mutation check: a falsified reconciliation would be caught', () => {

@@ -106,6 +106,11 @@ export interface PocModel {
   readonly testArtifactVerification: TestArtifactVerificationResult;
   readonly orrery: OrreryProjection;
   readonly trajectory: TrajectoryProjection;
+  /** The confirmed materialized Bead id, or null when nothing has been
+   * materialized (or the record could not be confirmed against the
+   * live-observed work items). The typed source for renderers — never
+   * re-derived from human-readable entity text. */
+  readonly materializedBeadId: string | null;
 }
 
 export interface BuildButlersPocModelInput {
@@ -545,6 +550,7 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     testArtifactVerification,
     orrery: orreryProjection,
     trajectory: trajectoryProjection,
+    materializedBeadId: materialization.beadId,
     surfaces: [
       {
         id: 'polaris',
