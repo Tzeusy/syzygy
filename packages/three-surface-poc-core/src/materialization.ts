@@ -144,7 +144,7 @@ export type ClearMaterializationRecord = () => void;
 export type MaterializeResult =
   | { readonly kind: 'created'; readonly beadId: string; readonly record: MaterializationRecord }
   | { readonly kind: 'reused'; readonly beadId: string; readonly record: MaterializationRecord }
-  | { readonly kind: 'unknown'; readonly reason: string };
+  | { readonly kind: 'unknown'; readonly reason: string; readonly beadId?: string };
 
 export interface MaterializeWorkItemInput {
   readonly targetRepoRoot: string;
@@ -331,6 +331,7 @@ export function materializeWorkItem(input: MaterializeWorkItemInput): Materializ
         reason: `an existing materialized Bead ${record.beadId} was found but its record could not be persisted: ${
           cause instanceof Error ? cause.message : String(cause)
         }`,
+        beadId: record.beadId,
       };
     }
     return { kind: 'reused', beadId: record.beadId, record };
@@ -369,6 +370,7 @@ export function materializeWorkItem(input: MaterializeWorkItemInput): Materializ
       reason: `Bead ${beadId} was created but its record could not be persisted; a retry will reconcile it via external_ref: ${
         cause instanceof Error ? cause.message : String(cause)
       }`,
+      beadId,
     };
   }
   return { kind: 'created', beadId, record };

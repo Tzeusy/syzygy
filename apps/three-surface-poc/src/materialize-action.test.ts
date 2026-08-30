@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -159,5 +159,28 @@ describe('materializeRoutes', () => {
     const html = await response.text();
     expect(html).toContain('bd CLI is not available');
     expect(readMaterializationRecordFile(dir)).toBeNull();
+  });
+
+  it('states the Bead exists when it was created but only the local record write failed, instead of the generic no-Bead suffix (AC5)', async () => {
+    // A regular file at the state-dir path makes writeMaterializationRecordFile's
+    // mkdirSync throw, simulating "the Bead mutation succeeded, only persisting
+    // the local record failed" without needing to fake the filesystem module.
+    const parent = tempDir('syzygy-poc-materialize-state-');
+    const dir = join(parent, 'not-a-directory');
+    writeFileSync(dir, 'occupied');
+
+    const baseUrl = await startDaemon({
+      stateDir: dir,
+      runQuery: (_repoRoot, sql) =>
+        sql.includes('external_ref') ? JSON.stringify([]) : JSON.stringify([{ revision: 'dolt-rev-http' }]),
+      runCreate: () => JSON.stringify({ id: 'bu-http-created-unpersisted' }),
+    });
+
+    const response = await fetch(`${baseUrl}${MATERIALIZE_HUMAN_PATH}`, { method: 'POST' });
+    expect(response.status).toBe(502);
+    const html = await response.text();
+    expect(html).toContain('bu-http-created-unpersisted');
+    expect(html).toContain('exists in the configured Butlers repository');
+    expect(html).not.toContain('No Bead was left in a partially-created state');
   });
 });

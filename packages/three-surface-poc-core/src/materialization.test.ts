@@ -196,6 +196,56 @@ describe('materializeWorkItem', () => {
     expect(readMaterializationRecordFile(dir)).toBeNull();
   });
 
+  it('names the found Bead in Unknown when its record cannot be persisted, distinct from a partial-create failure (AC5)', () => {
+    const dir = stateDir();
+    const result = materializeWorkItem({
+      targetRepoRoot: '/repo/butlers',
+      packet: PACKET,
+      attribution: 'test-actor',
+      now: () => NOW,
+      readRecord: () => null,
+      writeRecord: () => {
+        throw new Error('disk full');
+      },
+      runQuery: (_repoRoot, sql) =>
+        sql.includes('external_ref')
+          ? JSON.stringify([{ id: 'bu-already-exists' }])
+          : JSON.stringify([{ revision: 'dolt-rev-2' }]),
+      runCreate: () => {
+        throw new Error('should not be called: Bead already exists');
+      },
+    });
+
+    expect(result.kind).toBe('unknown');
+    if (result.kind !== 'unknown') throw new Error('unreachable');
+    expect(result.reason).toContain('an existing materialized Bead bu-already-exists was found');
+    expect(result.beadId).toBe('bu-already-exists');
+    expect(readMaterializationRecordFile(dir)).toBeNull();
+  });
+
+  it('names the created Bead in Unknown when its record cannot be persisted, distinct from a partial-create failure (AC5)', () => {
+    const dir = stateDir();
+    const result = materializeWorkItem({
+      targetRepoRoot: '/repo/butlers',
+      packet: PACKET,
+      attribution: 'test-actor',
+      now: () => NOW,
+      readRecord: () => null,
+      writeRecord: () => {
+        throw new Error('disk full');
+      },
+      runQuery: (_repoRoot, sql) =>
+        sql.includes('external_ref') ? JSON.stringify([]) : JSON.stringify([{ revision: 'dolt-rev-1' }]),
+      runCreate: () => JSON.stringify({ id: 'bu-created-then-unpersisted' }),
+    });
+
+    expect(result.kind).toBe('unknown');
+    if (result.kind !== 'unknown') throw new Error('unreachable');
+    expect(result.reason).toContain('Bead bu-created-then-unpersisted was created but its record could not be persisted');
+    expect(result.beadId).toBe('bu-created-then-unpersisted');
+    expect(readMaterializationRecordFile(dir)).toBeNull();
+  });
+
   it('renders Unknown on a target-repository mismatch (AC5) without calling bd', () => {
     const dir = stateDir();
     let called = false;

@@ -145,12 +145,16 @@ export function materializeRoutes(options: MaterializeRoutesOptions): readonly R
 
     const result = runMaterialize(options);
     if (result.kind === 'unknown') {
+      const suffix =
+        result.beadId === undefined
+          ? 'No Bead was left in a partially-created state; the local record was not written.'
+          : `Bead <code>${escapeHtml(result.beadId)}</code> exists in the configured Butlers repository, but the local record of it could not be written; a retry will reconcile via that existing Bead rather than creating a duplicate.`;
       return {
         status: 502,
         contentType: 'text/html; charset=utf-8',
         body: resultPage({
           heading: 'Materialization did not complete',
-          body: `<p>Unknown — ${escapeHtml(result.reason)}. No Bead was left in a partially-created state; the local record was not written.</p>`,
+          body: `<p>Unknown — ${escapeHtml(result.reason)}. ${suffix}</p>`,
         }),
       };
     }
