@@ -136,3 +136,32 @@ Verdict: **REVISE**
 
 These are author dispositions. Confirmation pass 5 is the sixth and final
 reconciliation pass permitted by the convergence ceiling.
+
+## Sixth and final reconciliation pass
+
+Subject: `4b16f0c9127ac1d91268b7ec22a9b55c02cd12e7`
+
+Raw report: `R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-FINAL-RAW.md`
+
+Raw sha256: `3f98fbc8bdbb39bbae5e27b4f6b0222d2f80d8db8a656090b742fcd8023326e5`
+
+Verdict: **REVISE**
+
+Twenty-four findings are **CONFIRMED**. One remains:
+
+- **N15 — NOT CONFIRMED (DEFECT, security-significant).** Proposal, design
+  decision §5, capability coverage, PWB-REQ-005 and task 1.5 all require the
+  consent + secret policy + observer registration triple. The numbered data
+  flow in `design.md` still says only “Verify observation consent and
+  secret-policy owner provenance” before discovery and body reads, omitting
+  observer registration. The flow can therefore be read as a two-gate
+  implementation sequence in conflict with the three-gate requirement.
+
+No repair was made after this verdict. The six-pass convergence ceiling is
+exhausted. The candidate remains unconverged and cannot be offered for sign-off
+or implementation without a new owner direction.
+
+Recommended owner action: authorize exactly one bounded post-ceiling correction
+to add observer-registry owner provenance to the numbered data-flow gate, then
+one fresh confirmation of that correction only. This recommendation is not
+authorization.
