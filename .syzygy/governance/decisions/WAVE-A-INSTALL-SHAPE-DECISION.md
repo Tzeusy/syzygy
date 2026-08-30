@@ -187,8 +187,35 @@ clause, all of them resolvable in the source repository — resolve one more
 place.
 
 **Where this departs from the charter's steer, and why.** The owner charter
-directs preferring the clean typed layout *unless* confirmation preservation is
-explicitly chosen over installed-tree self-containment. That instruction
+names four typed homes (quoted verbatim, `syzygy_fable_opus_owner_spec_launch_closure_prompt.md:337–349`):
+
+```text
+governance/contracts/rfcs/
+    accepted normative modules only
+
+governance/decisions/ or governance/records/
+    owner act and integrity-bearing membership manifest
+
+.syzygy/cache/
+    rebuildable generated indexes and measurements
+
+governance/history/ or immutable Git identities
+    non-authoritative rationale and review evidence
+```
+
+and states the steer itself (quoted verbatim,
+`syzygy_fable_opus_owner_spec_launch_closure_prompt.md:367–369`):
+
+> Given Syzygy's stated priority of human interpretability and typed authority,
+> prefer the clean typed layout **unless** the owner explicitly chooses
+> confirmation preservation over installed-tree self-containment.
+
+(The root file is untracked, so this quote is additionally corroborated by
+`contracts/candidates/round-2026-08g/reviews/RD-54-p33-install-shape-RAW.md:244–262`,
+which independently read the same file this round and reproduced the same
+text at the same line numbers.)
+
+That steer is the instruction this decision departs from. It
 assumed typing and preservation were in tension. **They are not** — the
 measurement shows the clean typed layout is reachable without moving an
 accepted byte. What remains is self-containment alone, and that is the narrower

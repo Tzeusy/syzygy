@@ -298,6 +298,27 @@ with a rule):
   from one occupant class to three is widening with a fence around it; whether
   the fence changes the character of the move is exactly the question, and
   this analysis does not answer it by assertion. `[Inferred]`, and contested.
+- **Route the wave manifest to `records/`.** Rejected: RFC3-15's `records/`
+  cell admits only kernel-minted facts — challenge submissions and their
+  admission/rejection/withdrawal records, and walkthrough execution records —
+  minted "on a non-owner actor's submission" or by the pre-declared
+  expiry-sweep policy, never by an owner decision. An owner-act membership
+  manifest is neither; it is the argument of an owner act. RFC3-15's `records/`
+  cell, Install gate column, quoted in full
+  (`contracts/rfcs/RFC-0003/governance-homes-and-owner-acts.md:89`):
+
+  > **No install gate — these are recorded facts, not authorizations.** Minted
+  > by the kernel under its own rules; the *submission* they record is
+  > attributed, and the record itself is neither adopted nor adoptable. The
+  > one non-submission member — the sweep's expiry-resolution record — answers
+  > to a gate all the same: the resolving policy's owner-approval gate in
+  > `policies/` and its RFC3-16(a) provenance, carried into the record by the
+  > kernel's verification, so no authorization enters this category by riding
+  > a record
+
+  An owner-act membership manifest fits none of the category's admitted
+  members and rides in on no gate the category defines — the same defect
+  the "widen `contracts/`" rejection above answers for a different cell.
 
 ## 8. The two finalist strategies (charter §6.4)
 
