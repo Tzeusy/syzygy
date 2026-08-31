@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "registryVersion": "1.0.0-candidate.1",
+  "status": "candidate-unadopted",
+  "entries": [
+    {
+      "observerId": "polaris-butlers-project-shape",
+      "observerVersion": "1.0.0",
+      "role": "adapter",
+      "implementationId": "three-surface-poc-core/project-shape-observer",
+      "implementationVersion": "1.0.0",
+      "contractId": "RFC-0004/general-contract",
+      "contractVersion": "sha256:2b5072a2b718e4609b279b130ef39daeb49fc6079c8da9c01e14aa12021149d4",
+      "governingBehaviorContract": {
+        "id": "polaris-project-wide-butlers-model",
+        "version": "sha256:07392c115e3a63bb3aceb259362a70e0d1ee11d6ba2621492fd03cf1893aca61"
+      },
+      "subject": {
+        "observingProject": "project:syzygy",
+        "observedRepository": "repository:butlers-configured-poc"
+      },
+      "implementation": "packages/three-surface-poc-core/src/project-shape-observer.ts",
+      "inputClasses": [
+        {
+          "class": "git-revision",
+          "identityScheme": "git-object-id"
+        },
+        {
+          "class": "git-tree-entry",
+          "identityScheme": "repository-id-plus-revision-plus-repository-relative-path-plus-object-id"
+        },
+        {
+          "class": "git-blob",
+          "identityScheme": "repository-id-plus-blob-object-id"
+        },
+        {
+          "class": "project-shape-source-manifest",
+          "identityScheme": "sha256-content-digest"
+        },
+        {
+          "class": "observation-consent",
+          "identityScheme": "record-id-plus-provenance-state"
+        },
+        {
+          "class": "secret-classification-policy",
+          "identityScheme": "policy-id-plus-version-plus-content-digest-plus-provenance-state"
+        },
+        {
+          "class": "observer-registry-entry",
+          "identityScheme": "observer-id-plus-version-plus-content-digest-plus-provenance-state"
+        },
+        {
+          "class": "resource-limits",
+          "identityScheme": "canonical-json-sha256"
+        }
+      ],
+      "outputFactClasses": [
+        {
+          "class": "project-account-statement",
+          "identityScheme": "section-plus-declared-key"
+        },
+        {
+          "class": "declared-catalog-item",
+          "identityScheme": "item-class-plus-declared-key"
+        },
+        {
+          "class": "source-coverage",
+          "identityScheme": "repository-relative-path-at-git-revision"
+        },
+        {
+          "class": "contradiction",
+          "identityScheme": "claim-identity-plus-sorted-source-anchors"
+        },
+        {
+          "class": "content-exclusion",
+          "identityScheme": "content-digest-plus-policy-version-plus-redaction-class"
+        },
+        {
+          "class": "unknown",
+          "identityScheme": "claim-identity-plus-closed-reason"
+        }
+      ],
+      "determinismClass": "derivation-deterministic",
+      "determinism": "same exact inputs produce byte-equivalent deterministic facts",
+      "typedAuthority": {
+        "authorityType": "version-control",
+        "questions": ["What currently exists?"],
+        "readAuthority": "only normalized repository-relative paths addressed as exact Git objects in a revision-bound manifest validated against the signed PWB grammar",
+        "writeSurface": [],
+        "databaseAccess": [],
+        "networkAccess": [],
+        "executeObservedCode": false,
+        "workingTreeRead": false
+      },
+      "resourceLimits": {
+        "maxSources": 512,
+        "maxBytesPerSource": 1048576,
+        "maxTotalBytes": 16777216,
+        "maxIndexDepth": 4,
+        "maxParseMillisecondsPerSource": 250,
+        "maxRenderedBytes": 2097152
+      },
+      "admissionFailureMapping": {
+        "missingConsent": "unconsented-source-or-provider",
+        "mismatchedStaleOrUnverifiableConsent": "unconsented-source-or-provider",
+        "missingSecretPolicy": "missing-declaration",
+        "mismatchedStaleOrUnverifiableSecretPolicy": "source-uncaptured-or-unreachable",
+        "missingRegistryEntry": "source-uncaptured-or-unreachable",
+        "mismatchedStaleOrUnverifiableRegistryEntry": "source-uncaptured-or-unreachable"
+      },
+      "failureStates": {
+        "gitCaptureFailed": {
+          "degradationState": "Observer failed",
+          "unknownReason": "source-uncaptured-or-unreachable"
+        },
+        "sourceMissingOrUnreadable": {
+          "degradationState": "Source unreachable",
+          "unknownReason": "source-uncaptured-or-unreachable"
+        },
+        "someSourcesUncapturedOrOverLimit": {
+          "degradationState": "Partial snapshot",
+          "unknownReason": "source-uncaptured-or-unreachable"
+        },
+        "secretMatchedOrUnclassifiable": {
+          "degradationState": "Excluded content",
+          "unknownReason": "excluded-content"
+        },
+        "consentWithdrawn": {
+          "degradationState": "Consent withdrawn",
+          "unknownReason": "unconsented-source-or-provider"
+        }
+      },
+      "claimStateMapping": {
+        "unresolvedContradiction": "contradicted-pending-adjudication"
+      },
+      "adoptionStatus": "candidate-unadopted"
+    }
+  ]
+}
