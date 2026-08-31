@@ -6,7 +6,7 @@
 
 **Artifacts:** accepted RFC 0001–0009 modules that hard-code A1-only owner-act effects; candidate RFC 0010 mission modules; affected package summaries, manifests, indexes and signed coverage artifacts
 
-**Stable IDs affected:** `RFC3-16(a)`, `RFC3-16(b)`, `RFC3-16(c)`, `RFC2-9`, `RFC2-13`, `RFC4-7`, `RFC4-13(b)`, `RFC5-15`, `RFC5-16`, `RFC5-18(c)`, `RFC7-21`, `RFC7-25`, `RFC7-31`, `RFC9-18`, `RFC9-26`, `RFC9-45`, phase rules `RFC1-33`, `RFC2-26`, `RFC3-33`, `RFC4-30`, `RFC5-27`, `RFC6-28`, `RFC7-38`, `RFC8-32`, `RFC9-52`; candidate `RFC10-4`, `RFC10-9`, `RFC10-21`, `RFC10-24`; no ID is added, retired or renumbered
+**Stable IDs affected:** `RFC3-2`, `RFC3-15`, `RFC3-16(a)`, `RFC3-16(b)`, `RFC3-16(c)`, `RFC2-9`, `RFC2-13`, `RFC4-7`, `RFC4-12`, `RFC4-13(b)`, `RFC4-26`, `RFC5-15`, `RFC5-16`, `RFC5-18(c)`, `RFC7-21`, `RFC7-25`, `RFC7-31`, `RFC9-8(a)`, `RFC9-18`, `RFC9-26`, `RFC9-45`, phase rules `RFC1-33`, `RFC2-26`, `RFC3-33`, `RFC4-30`, `RFC5-27`, `RFC6-28`, `RFC7-38`, `RFC8-32`, `RFC9-52`; candidate `RFC10-4`, `RFC10-9`, `RFC10-21`, `RFC10-24`; no ID is added, retired or renumbered
 
 **Change class:** Normative — a real human state-(1) act can authorize effects that currently require state (2)
 
@@ -42,8 +42,11 @@ load-bearing current phrases include:
 |---|---|
 | `RFC2-9` | a currency-bound declaration without verifiable owner-act provenance does not unblock its claim class |
 | `RFC2-13` | an unverifiable challenge resolution or sweep policy cannot resolve/suspend claims |
+| `RFC3-2/15` | kernel sweep-resolution records require a provenance-verified policy |
 | `RFC4-7` | an adapter entry whose owner-act provenance does not verify admits nothing |
+| `RFC4-12` | code observation requires a secret policy whose owner-act provenance verifies |
 | `RFC4-13(b)` | a governed checker definition is honored only with verifiable owner-act/governance provenance |
+| `RFC4-26` | marker-sourced declarations require a verifiable marker-adoption owner act |
 | `RFC5-15` | classification policy and egress consent provenance must verify before transmission |
 | `RFC5-16` | an unverifiable secret policy blocks ingest |
 | `RFC5-18(c)` | an execution approval without verifiable provenance blocks launch and mints a contradiction |
@@ -54,6 +57,7 @@ load-bearing current phrases include:
 | `RFC9-26` | an unverified channel entry is treated as absent |
 | `RFC9-45` | unverified release policy, waiver or judgment cannot clear the walkthrough/release gate |
 | Phase rules | reviewed N/A judgments map nothing unless owner-act provenance verifies |
+| `RFC9-8(a)` | a portfolio registry entry whose provenance does not verify is treated as absent |
 | Candidate `RFC10-4/9/21` | mission, envelope and cross-project consent effects require verified/A1 provenance |
 | Candidate `RFC10-24` | mission operation remains blocked until D3 or an owner doctrine-interpretation ruling |
 
@@ -186,6 +190,19 @@ replaced.
   certification separation, declared satisfaction semantics and the
   `return PASS` falsifier remain unchanged.
 
+### RFC3-2, RFC3-15, RFC4-12 and RFC4-26
+
+- Kernel resolution records remain kernel facts. Their authority comes from
+  checking that the pre-declared resolving policy has an effective owner act
+  under RFC3-16(a), with its exact state carried into the record; the record
+  never authorizes itself.
+- The code-structure observer continues to use only the observing project's
+  own secret policy. That policy must have an effective owner act; every SEC-5
+  exclusion and fail-closed ingest rule remains unchanged.
+- A marker-adoption policy requires an effective exact-digest owner act in
+  either state. Markers remain untrusted code-tree text and anchor nothing
+  without that separately adopted policy.
+
 ### RFC5-15, RFC5-16 and RFC5-18(c)
 
 - Egress still requires in-force per-provider consent, determinable consented
@@ -206,12 +223,12 @@ replaced.
   classification, nonvisual execution record and `verdict-unlawful` behavior
   for invalid acts remain unchanged. Agents still cannot adopt their own prose.
 
-### RFC9-18, RFC9-26 and RFC9-45
+### RFC9-8(a), RFC9-18, RFC9-26 and RFC9-45
 
-- Layout/channel registries and release policies/waivers/judgments require
-  effective exact-digest owner acts in either state. State (1) changes no
-  legend, layout, walkthrough, trust-floor or release requirement besides the
-  A1-only provenance result.
+- Portfolio/layout/channel registries and release policies/waivers/judgments
+  require effective exact-digest owner acts in either state. State (1) changes
+  no legend, layout, walkthrough, trust-floor or release requirement besides
+  the A1-only provenance result.
 - Missing/invalid entries remain absent; unlawful verdicts remain fail-closed.
   RFC9-45 remains a walkthrough/release-policy gate, not a generic deployment
   or recovery contract. This amendment creates no deployment or recovery
@@ -316,7 +333,8 @@ contain `state-(1)`, and 6 contain “A1-mechanism act”. A generated impact
 ledger must union and classify every member as edit, re-review or no impact.
 
 Direct edits include installed and candidate-mirror modules for every accepted
-clause named above; candidate RFC10 modules; affected package summaries;
+clause named above, including every additional explicit A1-only phrase in those
+clauses; candidate RFC10 modules; affected package summaries;
 Wave-A/B manifests as applicable; active manifest, indexes, context budgets and
 task router; governance checks whose assertions hard-code A1-only effect;
 signed OpenSpec coverage/spec artifacts whose consequence text or behavior is
@@ -356,4 +374,4 @@ observation, public interface and execution; CC-REV-4 material amendment
 **Reviewer:** independent fresh-context security and contract review; raw passes
 are stored in `docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-SEMANTIC-DELTA-*.md`
 
-**Verdict:** **CONFIRM** after two repair passes
+**Verdict:** **CONFIRM**, including the expanded direct-consumer set
