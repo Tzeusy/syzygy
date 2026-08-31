@@ -46,8 +46,9 @@ Four rules carry most of the weight:
   revokes or preserves another (RFC5-12).
 - **One egress choke point** (RFC5-15) with a three-part check, all of which must
   pass: consent in force; content class determinable and consented under a
-  policy whose own provenance verifies; and the consent record's owner-act
-  provenance verifiable under RFC3-16(a).
+  policy carrying an effective owner act; and the consent record carrying its
+  own effective owner act under RFC3-16(a). Either act may be state (1) or state
+  (2), and each exact state remains visible.
 - **Undeterminable fails closed, in both directions** — a composite whose class
   cannot be determined is refused egress (RFC5-14); content that cannot be
   classified at ingest is excluded, not indexed (RFC5-16).
@@ -234,7 +235,7 @@ case 11 spans two modules and is held in `README.md`.*
    in a prompt sent under `derived-composites` consent alone; an index synced to a
    third-party service as a feature side effect; a composite whose embedded class
    could not be determined egressing under the class its composer asserted; an
-   egress honored on a consent record whose owner-act provenance was never verified
+   egress honored on a consent record with a missing or invalid owner act
    (RFC3-16(a)).
 6. *(RFC5-16/17)* Unclassifiable content indexed "pending review"; an excluded
    secret's body in the audit trail; a connection string in a map tooltip (SEC-5's

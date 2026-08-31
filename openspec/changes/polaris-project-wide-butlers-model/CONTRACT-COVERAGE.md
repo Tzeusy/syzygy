@@ -19,8 +19,8 @@ owner-reviewed N/A. Every `unknown-uncovered` row remains a disclosed gap.
 | Artifact | sha256 | Base consequences |
 |---|---|---:|
 | `contract-coverage-matrix/RFC-0001-0003.md` | `d03eebe142d9cc8b9046243d33bcd498debc6235ec9f8700b114834987aeb88e` | 210 |
-| `contract-coverage-matrix/RFC-0004-0006.md` | `bccadc7d5218eb5fa5b2a008747a9f90a2d62cac08f7dd604f6c90872d5a347d` | 220 |
-| `contract-coverage-matrix/RFC-0007-0009.md` | `b09abdb8aaf8d54f378139d1e4f93e053d5fa7d721c9e4dbd1f750f5a7987d9c` | 183 |
+| `contract-coverage-matrix/RFC-0004-0006.md` | `531114ffc18eae70ee610aca903be3a57ea84c95580599a1e6a997907348fdd7` | 220 |
+| `contract-coverage-matrix/RFC-0007-0009.md` | `69c3b542edadb97b744ab1503bb882d73e68dec9679eecf1b4234b2445c306aa` | 183 |
 
 ## Repair overlay
 

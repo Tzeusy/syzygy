@@ -89,11 +89,14 @@ existence outlive the processes they describe [Observed]. Therefore:
    contract yields no admissible liveness input, so `active` cannot be
    rendered from it** (the surface-side statement of the same obligation is
    RFC8-16, a parallel-obligation pointer, not this rule's source) — so it
-   is honored **only under RFC3-16(a)**: a
+   is honored only through an **effective owner act under RFC3-16(a)**: a
    bound an untrusted writer could mint would make `active` renderable, and a
    generous one would hold a dead worker green indefinitely on a signal that
-   never comes. An unverifiable bound is no declaration: liveness stays
-   unrenderable rather than degrading to a permissive default.
+   never comes. A valid state-(1) or state-(2) act is effective and its exact
+   provenance state is rendered; a bound with a missing or invalid act is no
+   declaration, so liveness stays unrenderable rather than degrading to a
+   permissive default. The act warrants use of the bound; it is never liveness
+   evidence.
 3. Between signals, worker liveness renders **Unknown**; past the bound, the
    item renders stale-or-dead with the last-signal instant shown — never
    "active", never green.

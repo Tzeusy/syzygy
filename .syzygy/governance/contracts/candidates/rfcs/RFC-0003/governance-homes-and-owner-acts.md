@@ -45,13 +45,12 @@ here rather than restating the obligation.
 - **§1.1** the five constitutional `governance/` categories, closed except by
   recorded owner widening (RFC3-15, RFC3-15(a)).
 - **§1.2** category-appropriate lifecycles; the self-declared stamp versus
-  effective status; **RFC3-16(a)** the owner-act provenance predicate — an
-  artifact that *authorizes* something is honored only if its provenance is
-  verifiable by a mechanism the governed tree cannot forge, because untrusted
-  fleet workers commit into that tree; **RFC3-16(b)** what any conforming
-  mechanism must bind; **RFC3-16(c)** the two provenance states an owner-act
-  record may hold, which is what keeps a bootstrap act from being rendered as
-  independently verified.
+  effective status; **RFC3-16(a)** the effective-owner-act predicate — an
+  authorization needs a real human act, exact-digest and scope bound, in state
+  (1) or state (2), with its state rendered; independent correlation is what
+  permits state (2), not what makes the human act effective; **RFC3-16(b)**
+  what every act must bind; **RFC3-16(c)** the two provenance states, which
+  keeps a bootstrap act visibly uncorrelated and never independently verified.
 - **§1.3** the reserved `declarations/` category and the home of challenge
   submissions and their admission records (RFC3-17, RFC3-17(a)).
 - **§2** violation cases; **§5** the open owner question carried here (q4).
@@ -145,7 +144,7 @@ retains. Consequences that bind:
 - An artifact with **no** owner-act record at all has effective status
   **unadopted** whatever its stamp claims: it binds nothing, anchors nothing,
   and renders unadopted everywhere (v1.md drafting rule; RFC2-25
-  `unadopted-draft`; RFC3-16(a)'s effect rule for the stamped-but-unverifiable
+  `unadopted-draft`; RFC3-16(a)'s effect rule for the stamped-but-no-act
   case).
 
 **Scope.** This clause and the RFC3-16(a) predicate govern
@@ -435,8 +434,8 @@ package-wide; this module carries 7, 13, 14 and the challenge-record limb of
 13. *(RFC3-16(a))* A fleet worker commits an egress-consent record naming a
     new provider plus the matching `consents[]` reference, and the next
     evaluation honors it because the record's attribution field says "owner";
-    or an unverifiable authorization is quietly dropped from the plane
-    instead of rendering Unknown and minting a contradiction.
+    or an authorization with a missing or invalid human act is quietly dropped
+    from the plane instead of rendering Unknown and minting a contradiction.
 14. *(RFC3-16(c))* An artifact carrying only a bootstrap-act record — phrase,
     digest, commit and tag, no correlation — renders as "verified"; or the
     committed acceptance-act record in `governance/decisions/` is treated as

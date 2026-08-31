@@ -6,7 +6,7 @@
 
 **Artifacts:** accepted RFC 0001–0009 modules that hard-code A1-only owner-act effects; candidate RFC 0010 mission modules; affected package summaries, manifests, indexes and signed coverage artifacts
 
-**Stable IDs affected:** `RFC3-2`, `RFC3-15`, `RFC3-16(a)`, `RFC3-16(b)`, `RFC3-16(c)`, `RFC2-9`, `RFC2-13`, `RFC4-7`, `RFC4-12`, `RFC4-13(b)`, `RFC4-26`, `RFC5-15`, `RFC5-16`, `RFC5-18(c)`, `RFC7-21`, `RFC7-25`, `RFC7-31`, `RFC9-8(a)`, `RFC9-18`, `RFC9-26`, `RFC9-45`, phase rules `RFC1-33`, `RFC2-26`, `RFC3-33`, `RFC4-30`, `RFC5-27`, `RFC6-28`, `RFC7-38`, `RFC8-32`, `RFC9-52`; candidate `RFC10-4`, `RFC10-9`, `RFC10-21`, `RFC10-24`; no ID is added, retired or renumbered
+**Stable IDs affected:** `RFC3-2`, `RFC3-15`, `RFC3-16(a)`, `RFC3-16(b)`, `RFC3-16(c)`, `RFC2-9`, `RFC2-13`, `RFC4-7`, `RFC4-12`, `RFC4-13(b)`, `RFC4-23`, `RFC4-26`, `RFC5-15`, `RFC5-16`, `RFC5-18(c)`, `RFC7-21`, `RFC7-25`, `RFC7-31`, `RFC8-16`, `RFC9-8(a)`, `RFC9-18`, `RFC9-26`, `RFC9-45`, phase rules `RFC1-33`, `RFC2-26`, `RFC3-33`, `RFC4-30`, `RFC5-27`, `RFC6-28`, `RFC7-38`, `RFC8-32`, `RFC9-52`; candidate `RFC10-4`, `RFC10-9`, `RFC10-21`, `RFC10-24`; policy `CC-SPEC-8`; no ID is added, retired or renumbered
 
 **Change class:** Normative — a real human state-(1) act can authorize effects that currently require state (2)
 
@@ -203,6 +203,15 @@ replaced.
   either state. Markers remain untrusted code-tree text and anchor nothing
   without that separately adopted policy.
 
+### RFC4-23 and RFC8-16
+
+- The worker-liveness staleness bound remains an authorization-bearing policy
+  under RFC3-16(a). A valid state-(1) or state-(2) act makes it effective and
+  its exact provenance state renders; a missing or invalid act leaves the
+  bound undeclared and `active` unrenderable.
+- The act warrants use of the bound. It is never evidence that a worker is
+  alive, that a progress signal occurred, or that any work succeeded.
+
 ### RFC5-15, RFC5-16 and RFC5-18(c)
 
 - Egress still requires in-force per-provider consent, determinable consented
@@ -366,12 +375,11 @@ Rollback before adoption is deletion of this candidate. After adoption, a new
 owner amendment restores A1-only effectiveness; prior effect/audit records
 remain immutable and disclose the provenance state used.
 
-## Review
+## Review routing
 
 **Required class:** CC-REV-1 authority boundary, security, deterministic
 observation, public interface and execution; CC-REV-4 material amendment
 
-**Reviewer:** independent fresh-context security and contract review; raw passes
-are stored in `docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-SEMANTIC-DELTA-*.md`
-
-**Verdict:** **CONFIRM**, including the expanded direct-consumer set
+**Reviewer:** independent fresh-context security and contract review. Raw
+passes and their exact verdicts are stored in `docs/reviews/`; this candidate
+does not carry a desired verdict for a future reviewer.

@@ -338,7 +338,7 @@ are listed so the owner can review or contest each one directly.
 | RFC4-20 | Enrichment-optionality and derivation-collision handling for run records; no run records exist to collide |
 | RFC4-21 | Model/timing/token/cost semantics on run records; no cost/token/run accounting in POC scope |
 | RFC4-22 | The change-accounting chain's join bases (work item↔branch↔commit↔PR↔merge↔gate); Trajectory reads raw work items only, no branch/commit/PR correlation |
-| RFC4-23 | Worker-liveness rendering from progress signals vs coordinator heartbeat; Trajectory renders item status/instants, not live worker liveness — live-runtime relationship stays Unknown |
+| RFC4-23 | Worker-liveness rendering from progress signals and a staleness bound carrying an effective state-(1) or state-(2) owner act, never the act itself as liveness evidence; Trajectory renders item status/instants, not live worker liveness — live-runtime relationship stays Unknown |
 | RFC4-24 | The reduced-fidelity granularity/cause labeling schema (RFC2-25 tiers); POC renders binary Observed/Unknown, not tiered reduced-fidelity facts |
 | RFC4-25 | Per-observer degradation-state registry declarations and cross-evaluation staleness rendering; no registry, no multi-evaluation staleness in the single-snapshot POC |
 | RFC4-28 | The derivation-first invariant's specific derivable-fact list (branch/commit/PR joins, lead time, run boundaries); keyed to change-accounting infrastructure the raw work-item kanban doesn't build |
@@ -409,7 +409,7 @@ are listed so the owner can review or contest each one directly.
 | RFC8-11 | Divergence-rendering for substrate-side warrant-pointer edits; no warrant pointers exist in POC's Trajectory |
 | RFC8-13 | Per-value derivation logic (dispatch-eligibility queries, PR-lane facts, VCS merge facts, liveness); POC's kanban columns derive from Beads' own status field only |
 | RFC8-14 | Raw-status-visibility/`state-undetermined` resolution routed through the RFC3-16(a)-authorized governance-plane derivation mapping; POC's status mapping isn't a `.syzygy/governance/**` authorization-bearing artifact |
-| RFC8-16 | `active`/`stale-or-dead` liveness classification against a declared staleness bound; POC's time visualization displays recorded instants, not a claim-liveness state machine |
+| RFC8-16 | `active`/`stale-or-dead` liveness classification against a staleness bound with an effective state-(1) or state-(2) owner act and fail-closed missing/invalid behavior; POC's time visualization displays recorded instants, not a claim-liveness state machine |
 | RFC8-17 | Closed blocked-cause taxonomy; POC's kanban has no `blocked`-cause rendering |
 | RFC8-18 | Independent cost measures, no composite "effort" score; POC scope excludes cost accounting |
 | RFC8-19 | Absent-cost-means-Unknown-never-zero aggregation; same cost-machinery exclusion as RFC8-18 |

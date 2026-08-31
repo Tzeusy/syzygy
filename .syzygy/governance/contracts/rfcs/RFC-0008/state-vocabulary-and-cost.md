@@ -239,9 +239,10 @@ chain; the closure event stays queryable execution history.
 **RFC8-16.** `active` requires a **progress signal within a declared staleness
 bound** (bound value: quality-policy material; the obligation to declare is
 binding — RFC4-23(2), **including that clause's requirement that the bound be
-honored only under RFC3-16(a)**: a worker-minted bound is what turns `active`
-from unrenderable into renderable, so an unverifiable one leaves this clause's
-floor exactly where an undeclared one does). Until the bound is declared,
+honored only through an effective owner act under RFC3-16(a)**: a valid
+state-(1) or state-(2) act is effective with state rendered, while a
+worker-minted bound with a missing or invalid act leaves this clause's floor
+exactly where an undeclared one does). Until the bound is declared,
 `active` is unrenderable: claimed items render **`activity-undetermined`** on
 RFC2-9's mechanics applied to liveness (the condition RFC2-24 reason
 `no-currency-bound-declared` names for claims; the *state* value is

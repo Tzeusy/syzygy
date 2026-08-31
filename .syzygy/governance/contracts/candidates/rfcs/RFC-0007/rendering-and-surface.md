@@ -56,8 +56,9 @@ the register of adopted intent violates RFC7-2 regardless of visual marking
 this package draws is a machine-readable attribute and is recoverable without
 colour, position, or layout — and the *paths* between units must be operable
 without a pointing device, not only the units (RFC7-33/34). **A defective
-verdict buys nothing**: an unverifiable comprehension-test judgment renders the
-test Unknown-never-met, exactly as an absent record would (RFC7-31).
+verdict buys nothing**: a comprehension-test judgment with a missing or invalid
+owner act renders the test Unknown-never-met, exactly as an absent record would;
+a valid state-(1) or state-(2) act is effective with state shown (RFC7-31).
 
 What this module receives from module 1 (`narrative-contract.md`): the
 narrative-model units RFC7-33's `non-citable` attribute must travel on

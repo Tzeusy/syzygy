@@ -132,8 +132,9 @@ count: those two registries; the **portfolio layout version registry** at
 workspace scope (RFC9-8(a)); the promotion of lenses, analytical planes and
 profile relations (RFC9-35); the **walkthrough judgment** and, separately, the
 **release policy** (RFC9-45); and RFC9-52's reviewed N/A judgment. Each is
-honored only under the predicate, and an artifact whose owner-act provenance
-does not verify is treated exactly as an absent one.
+honored only through an effective owner act under the predicate: valid state
+(1) and state (2) acts are effective with exact state rendered, and an artifact
+with a missing or invalid act is treated exactly as an absent one.
 
 **One package-spanning maintenance obligation.** **RFC9-47(a)** (module 3)
 requires that any amendment creating, removing, or changing a release-blocking

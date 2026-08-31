@@ -2,10 +2,10 @@
 # 7 bound subjects; order is protocol-defined, not inferred.
 # This file's own sha256 is the sole argument of the owner ceremony.
 # A changed subject, row, order or digest retires the offering.
-c649a6849241027da46f8e5299696a92061bc9118a60bd3a2a19b84b61533d15  .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/ACT-SEMANTICS.md
+3d97fd30c592e70d4255d0f0155dd62357f056611484f3a88c6ae159f1a8c6e4  .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/ACT-SEMANTICS.md
 4144b8499966062852b7092c97a61df507e194c48cc484fe0302385d40c61911  .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/IMPACT-LEDGER.md
-c2c3b7087d39696061385fcc5a4ca2f9cbec327619e6b09859e86ee77396d818  .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/CONTRACT-AMENDMENT-MANIFEST.txt
-cf485f39b375bdfb7038161a97b0d4c0ffa3731c177837af6ee9ecacc575d1ba  .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/PWB-COVERAGE-AMENDMENT-MANIFEST.txt
+480c06d79f237f3a8d18d40a3de97e772a2da70db6cf976578eeab5c177cc4b1  .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/CONTRACT-AMENDMENT-MANIFEST.txt
+5cda673c604f298cc45d05ca358b2cc410b6a74f1664c55f4f1056ce8c1f45ea  .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/PWB-COVERAGE-AMENDMENT-MANIFEST.txt
 15431d8ba1fe25a61e4dc2713c4d51fad1cf6d25ef7a9103cc616265102289c9  openspec/changes/project-registration-and-honest-shape-visibility/CONTRACT-COVERAGE.md
-9904e93cf38fdcfb9fa95407d6f77de289075f414c9a18505ce2d7561d53369a  openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
-cd2511a00d391e5e61410a65ab7a215264064ab5d0e6e1618ee83224c8a8f503  .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md
+f29a01f6a5725f4ac7085fa04a62de757fd16153d507ae5e415ae0b501fdc0a4  openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
+6093dbbe519dad6c35a5aaeeb31355d2e435d76ec4f0c2c9affb0d1e5b6b5621  .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md

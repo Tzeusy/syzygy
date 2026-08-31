@@ -7,7 +7,7 @@
 ## Transaction
 
 `TRANSACTION-MANIFEST.txt` sha256:
-`9dc975399ee5859f7a585c10b8bc4e0d5184fe70887e825d83bc5f0593409f6d`.
+`1885a323c659364f98e81cdf04479cebfecf5b22d350928d046ebb5b7c5268f6`.
 
 The manifest binds `ACT-SEMANTICS.md`, the complete impact ledger, the
 30-module contract-amendment manifest, the five-artifact PWB coverage manifest,

@@ -154,8 +154,9 @@ The five rows are one same-logical-change transaction under CC-REV-2. A
 partial ceremony performs none of them. Editing any subject, manifest or this
 mapping retires the offering and requires fresh exact-byte review.
 
-This transaction performs no consent, policy approval, registry adoption,
-write, egress, execution, deployment, release, recovery or mission act. It
+Apart from row 5's CC-SPEC craft amendment, this transaction performs no
+effect-specific consent or policy approval, registry adoption, write, egress,
+execution, deployment, release, recovery or mission act. It
 does not accept RFC 0010 or RFC 0011, sign Mission Control behavior, amend
 doctrine, implement PWB, or authorize observation of a repository body.
 """

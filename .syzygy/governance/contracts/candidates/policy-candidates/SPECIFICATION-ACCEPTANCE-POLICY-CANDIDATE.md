@@ -243,9 +243,10 @@ renders, stores, transitions, queries, nor crosses is not applicable, and
 saying so is an N/A judgment, not an omission.
 
 **The reviewed-N/A judgment's home, gate, unit, and effect rule are the
-contract's, not this clause's.** They are stated by the confirmed contract
-modules **RFC1-33, RFC6-28, RFC7-38, RFC8-32, and RFC9-52**: a reviewed
-N/A judgment is a recorded **owner** judgment homed in `decisions/`
+contract's, not this clause's.** They are stated by the nine confirmed
+contract phase rules **RFC1-33, RFC2-26, RFC3-33, RFC4-30, RFC5-27, RFC6-28,
+RFC7-38, RFC8-32, and RFC9-52**: a reviewed N/A judgment is a recorded
+**owner** judgment homed in `decisions/`
 (RFC3-15), honored only through an effective owner act under **RFC3-16(a)**,
 in state (1) or state (2), with that state rendered; absent or invalid acts
 map nothing — the consequence remains unmapped and **renders Unknown, never

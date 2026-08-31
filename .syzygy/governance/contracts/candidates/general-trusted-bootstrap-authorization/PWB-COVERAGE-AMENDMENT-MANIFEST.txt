@@ -2,7 +2,7 @@
 # 5 signed coverage artifacts; rows sorted by codepoint path.
 # The behavioral specification, proposal and design are not changed by this manifest.
 732053ce53814f65a65d940c3ea65e0117b837fc375004d57d08c25ed3bd7a87  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
-4226fc38d7a8434a948cb350729eef9b23dfc44660f5122d6834e3ac89468a30  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
+91b51cf64a41b899d159cb910fd6ecc8cdea7017816cd1cc89f1e0ea5653f8a7  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
 d03eebe142d9cc8b9046243d33bcd498debc6235ec9f8700b114834987aeb88e  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0001-0003.md
-bccadc7d5218eb5fa5b2a008747a9f90a2d62cac08f7dd604f6c90872d5a347d  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md
-b09abdb8aaf8d54f378139d1e4f93e053d5fa7d721c9e4dbd1f750f5a7987d9c  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md
+531114ffc18eae70ee610aca903be3a57ea84c95580599a1e6a997907348fdd7  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md
+69c3b542edadb97b744ab1503bb882d73e68dec9679eecf1b4234b2445c306aa  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md
