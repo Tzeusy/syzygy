@@ -134,7 +134,7 @@ No observed-project code executes.
 ## Data Flow
 
 1. Bind the configured Butlers repository to an exact Git revision.
-2. Verify observation consent and secret-policy owner provenance.
+2. Verify observation consent, secret-policy and observer-registry owner provenance.
 3. Discover and expose the closed source-path population.
 4. Read exact Git objects and classify content; record exclusions.
 5. Extract declared entities, statements, catalogs and source anchors.
