@@ -1,12 +1,12 @@
 ## 1. Candidate specification and owner gate
 
-- [ ] 1.1 Confirm the 27-item capability-coverage table against the proposal
+- [x] 1.1 Confirm the 27-item capability-coverage table against the proposal
   and requirement set in fresh context.
-- [ ] 1.2 Confirm the 324-clause contract-coverage partition and generated
+- [x] 1.2 Confirm the 324-clause contract-coverage partition and generated
   dependency union; disposition every revise finding.
-- [ ] 1.3 Run a fresh-reader review of the proposal, design, requirements and
+- [x] 1.3 Run a fresh-reader review of the proposal, design, requirements and
   plain-copy criteria against VIS-1, VIS-3, RFC 0007 and the owner walkthrough.
-- [ ] 1.4 Obtain owner sign-off at the exact candidate artifact digests before
+- [x] 1.4 Obtain owner sign-off at the exact candidate artifact digests before
   any implementation task begins.
 - [ ] 1.5 Obtain and verify separate Butlers observation consent and a concrete,
   owner-approved secret-classification policy, and register the project-shape
