@@ -1,0 +1,25 @@
+REVISE
+
+Review bound to SHA-256 `da14c86b651e263e144975bfedcc59b800d5dc0600de7280a071403e6e07fa8a`. No files were edited, and no external repository was accessed.
+
+[Observed] The draft accurately identifies the current prohibition, quotes the relevant current text, uses the correct four subject-file digests, and scopes the proposed exception narrowly. Its identifier counts also reproduce exactly by two independent repository sweeps: 187, 43, 32, 37, and 20.
+
+Revise findings:
+
+1. **The amendment cannot bootstrap itself as a state-(1) constraint.** The draft describes itself as permitting a prohibited body read, then claims its state-(1) acceptance binds because the amended contract is “consumed as a constraint” ([candidate:12, 165–168]). RFC3-16(a) classifies an artifact that authorizes a dangerous act or widens an effect as authorization-bearing ([RFC3:158–162]); RFC3-16(b)’s state-(1) constraint carve-out applies only where refusing the constraint would widen authority ([RFC3:268–281]). Refusing this amendment preserves zero-read behavior and therefore narrows authority. The exception amendment is itself authorization-for-effect, so its state-(1) act cannot make the exception machine-effective.
+
+2. **Same-tree provenance collapse remains.** The exception selects its mode solely from four state-(1), same-tree acts ([candidate:130–147]). RFC3-16(a) establishes that such records are forgeable by the governed-tree writer class ([RFC3:205–236, 319–337]). A writer can mint a matching consent, permissive secret policy, arbitrary registry entry, and matching acts. That recreates exactly RFC4-7’s deterministic-fact laundering attack and RFC5-16’s secret-policy bypass ([RFC4:147–160]; [RFC5:172–192]). Visible “not independently verified” metadata reports the risk but does not prevent false facts or secrets entering the model, so it does not preserve VIS-1, VIS-7, or SEC-5.
+
+3. **The proposed PWB replacement is internally contradictory.** The draft replaces only PWB-REQ-005’s leading prose and adds scenarios ([candidate:192–232]). It does not replace the existing Case, Observable, Oracle, Oracle-independence, and Falsifier, which still say only the independently verified all-valid triple permits reads and any earlier read falsifies the requirement ([PWB:219–230]). The new exception would therefore satisfy the new prose while failing the retained oracle. Line 227 also still requires a nonexistent `flag`, contradicting lines 145–147.
+
+4. **The exception act is missing from deterministic evaluation and testing.** RFC text requires the contract-amendment act plus three artifact acts ([candidate:136–139]), but the PWB body, scenario, and oracle enumerate only the consent/policy/registry triple ([candidate:196–232]). The amended contract digest, amendment-act identity/provenance, and its absent/mismatched/revoked cases must be explicit evaluation inputs and oracle limbs.
+
+5. **The exact failure consequences are ambiguous.** RFC3-16(a)’s current failure rule bundles three consequences: block the dependent effect, render the authorization Unknown, and mint a contradiction. “The only exception” ([candidate:122–126]) does not state whether it waives only the first consequence or all three. The draft must say explicitly whether the three authorization artifacts remain Unknown and whether their contradictions remain active while observation proceeds.
+
+6. **Expiry is not invocation-safe as specified.** Expiry is judged only at the evaluation’s as-of instant ([candidate:149–160]), but the draft does not bind that instant to a trusted invocation/capture event. A post-expiry invocation using a pre-expiry as-of value can therefore remain eligible. The temporal model requires explicit as-of identity, but this authorization effect additionally needs an unbackdateable capture rule.
+
+7. **Blast-radius discovery is accurate but not yet complete disposition.** The draft gives correct populations and broad propagation categories, then says every member “must” be dispositioned ([candidate:287–325]); it does not actually disposition them. CC-REV-2 closure requires a per-member edit/review/no-impact determination before the owner act, especially for every signed PWB oracle and consequence row.
+
+[Inferred] The exception is not proportionate. It requires foundational RFC amendments, mirrored modules, generated indexes, fresh acceptance, and replacement of eleven signed PWB digests for a short-lived POC path, while retaining the exact threat A1 exists to close. Keeping the model Unknown is safe and doctrinally correct. Implementing a minimal owner-attended, independently kept correlation is the sound alternative.
+
+An exact-revision, atomic, one-shot two-phase capture would reduce replay and scope risk, but not authenticate the root tuple if its approval and consumed state remain inside the writable tree. If it binds the contract, authority artifacts, PWB grammar, evaluator/source revision, effect, and expiry in an owner-attended out-of-tree record, it is a bounded A1 implementation and should be specified as such—not as state-(1) authorization.
