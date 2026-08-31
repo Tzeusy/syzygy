@@ -1,357 +1,294 @@
-# Specification acceptance policy — candidate craft rule set
+# Specification acceptance policy
 
-> **Candidate. Binds nothing until its own `CONFIRM CRAFT AMENDMENT`
-> act.** Proposed at the 2026-08-10 launch-closure pass to close
-> launch-gate question E5 (no acceptance criteria existed for a
-> specification itself — "spec acceptance would be a vibe check").
-> Identifiers `CC-SPEC-1…11`; amended in place, never renumbered. The
-> testability sub-criterion (CC-SPEC-4) is the one E5 limb that had no
-> criterion even in candidate form before this file.
+> **Authority comes only from an exact-digest owner act.** These bytes are a
+> candidate until a performed owner Decision names their SHA-256, then the same
+> bytes are the confirmed successor. CC-SPEC-10 selects the Decision. Drafting,
+> review, commits, and pull requests change no authority.
 >
-> **Amended 2026-08-13** — the warrant rule, the requirement forms, the
-> adoption clause and the dependency declaration. The delta is
-> `../round-2026-08g/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA.md`, which
-> quotes every before/after text; the findings it answers are RD-51's,
-> raw at `../round-2026-08f/reviews/RD-51-spec-acceptance-and-impact-RAW.md`.
-> **This file and `SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` are one
-> model** and are reviewed and offered together: CC-SPEC-2 is the single
-> home of a requirement's governing identities, and CC-IMPACT-1 generates
-> the specification-level declaration from it.
->
-> **Amended 2026-08-17** (convergence pass, round 2026-08i, on the owner's
-> convergence direction §9) — CC-SPEC-1 re-grounded on the ruled **SDR-37**
-> (P-40, 2026-08-16), discharging the "may not be frozen" conditional;
-> **CC-SPEC-11** minted, closing RD-51 f14's completeness gap; **CC-SPEC-8**
-> completed, closing f15's two open limbs. The delta is
-> `../round-2026-08i/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA-2.md`.
->
-> **Reviewed 2026-08-17: RD-69, `VERDICT: REVISE`** (raw at
-> `../round-2026-08i/reviews/RD-69-p41-p42-combined-RAW.md`) — one launch
-> blocker: the f15 completion had wrongly declared CC-SPEC-8 the reviewed-
-> N/A rule's one home over the nine contract modules that already state it
-> with a stricter owner gate. **Blocker repaired same day** (D2-6 in the
-> same delta): CC-SPEC-8 now cites RFC1-33/RFC6-28/RFC7-38/RFC8-32/RFC9-52
-> for the judgment's home, gate, unit, and effect, keeping only the
-> production obligation and the "applicable" definition. The repair awaits
-> its one confirming review — a repair session cannot confirm its own
-> repairs. RD-69's five non-blocking findings are dispositioned open in
-> `../round-2026-08i/reviews/RD-69-DISPOSITION-REGISTER.md`.
+> IDs `CC-SPEC-1` through `CC-SPEC-11` stay stable. The sibling impact policy
+> completes this model. Proposal history, exact mapping, and review contract:
+> `../round-2026-08l/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA-3.md`.
 
-## The rule
+## Shared terms and results
 
-**CC-SPEC-1 — Capability and scope are clear.** The specification names
-one coherent capability, what is in it, and what is out. A reader can say
-what the capability is in one sentence without reading the requirements.
+An **acceptance unit** is a complete capability (**whole-capability
+acceptance**) or one coherent change to an accepted capability
+(**focused-change acceptance**). **Requirement provenance** is the accepted
+authority that explains why requirement text belongs; it is not permission to
+start work. A **coverage population** is source-enumerated before classification.
+A **reviewed N/A** is an owner Decision lawfully saying one contract consequence
+needs no behavioral requirement.
 
-*"One coherent capability" is the granularity rule the owner ruled on
-2026-08-16 as **SDR-37** (`../../../decisions/SURFACE-DECISION-RECORD.md`),
-quoted exactly:*
+Each rule returns **Satisfied** only when reproducible,
+**Not satisfied** when evidence proves a violation, or **Unknown** when required
+evidence or a decision is missing, stale, contradictory, or unresolvable.
+Unknown never counts as Satisfied and blocks acceptance. Each rule uses the same
+format.
 
-> the specification-granularity rule — **one OpenSpec change governs one
-> coherent capability, or one coherent change to one**: one owner-readable
-> product argument, one acceptance decision per change.
+## **CC-SPEC-1 — Declare the capability and acceptance unit**
 
-The rule is cited from its recorded home, never restated normatively here.
-*(Re-grounded 2026-08-17: P-40 was ruled in the confirming direction — the
-drafted rule recorded as SDR-37 — so the 2026-08-13 conditional, "this
-clause may not be frozen before P-40 is ruled", is discharged and removed;
-the clause now stands on a recorded owner decision. The 2026-08-13
-restatement history (RD-51 f3 — a bound clause must not silently re-point)
-is preserved in that amendment's delta.)*
+- **Purpose:** Bound one owner-readable product argument and one acceptance
+  decision.
+- **Inputs/population:** The proposed specification; for a focused change, the
+  accepted baseline and exact baseline-to-proposal difference.
+- **Decision:** Name one coherent capability, its scope and non-goals, then mark
+  the unit `whole-capability` or `focused-change`. A focused change lists every
+  obligation added, changed, retired, or made newly relevant and does not
+  re-accept or widen the baseline. Apply CC-SPEC-2 through CC-SPEC-11 to either
+  unit.
+- **Possible results:** The shared three results.
+- **Missing evidence:** An unnamed baseline, unclear unit, or omitted obligation
+  is Unknown; narrowing the stated population does not cure the omission.
+- **Retained evidence:** Capability identity, unit, scope, non-goals, baseline
+  digest when used, and proposal digest.
+- **Sources:** SDR-37; CC-SPEC-11.
 
-**CC-SPEC-2 — Every requirement names all its material governing
-warrants.** The rule:
+## **CC-SPEC-2 — Record complete requirement provenance**
 
-> Every requirement names all material governing warrants. One may be
-> marked primary for navigation; none may be hidden merely because another
-> is more specific.
+- **Purpose:** Make every material governing authority visible without confusing
+  provenance with work permission.
+- **Inputs/population:** Every requirement and every normative statement that
+  can supply or change its obligation, boundary, vocabulary, oracle, or scope.
+- **Decision:** For each requirement, populate exactly these six fields with
+  stable identities:
 
-The warrant classes are a **closed set of six**, and a requirement's
-declaration is machine-readable, one field per class:
+  ```text
+  doctrine[]  contracts[]  policies[]  decisions[]  topology[]
+  parent_requirements[]
+  ```
 
-```text
-doctrine[]              adopted doctrine rule, by rule ID
-contracts[]             accepted contract clause, by clause ID
-policies[]              approved craft/policy clause, by clause ID
-decisions[]             recorded owner product decision, by decision identifier
-topology[]              accepted topology identity, by identity
-parent_requirements[]   accepted parent requirement or specification,
-                        by specification and requirement ID
-```
+  An authority is material if removing it removes an accepted basis or changes
+  what the requirement may require, permit, or prohibit. Record all material
+  adopted, accepted, approved, or recorded authorities; one may be primary for
+  navigation. Exclude candidates and pending decisions. Generate the
+  specification declaration from these fields under CC-IMPACT-1; never maintain
+  a second list.
+- **Possible results:** Satisfied when all and only eligible material authority
+  is recorded; Not satisfied for a proved omission, ineligible entry, empty
+  basis, or duplicate home; Unknown when materiality cannot be settled.
+- **Missing evidence:** Record Unknown beside the requirement, name the disputed
+  authority and settling evidence, and block acceptance.
+- **Retained evidence:** Six-field declaration, materiality checks, primary
+  marker if any, and Unknown records.
+- **Sources:** VIS-2; RFC1-25; CC-REV-3. RFC1-25's `motivates` relation separately
+  carries work warrants; a finding warrants work only after recorded
+  confirmation and never becomes a seventh provenance field. `Lawfully admitted
+  user need` remains excluded because no accepted authority defines its
+  admission.
 
-Four rules govern the declaration:
+## **CC-SPEC-3 — Preserve requirement identity**
 
-1. **All material warrants, not one.** A requirement genuinely serving
-   VIS-2, a reason-vocabulary clause and an owner decision names all
-   three. Marking one `primary` is a navigation aid and removes nothing.
-2. **Only accepted, adopted, approved or recorded authorities.** A
-   candidate contract, an unapproved policy clause, an unaccepted topology
-   identity and a **pending owner decision** are not warrants. A pending
-   decision cited as a warrant is the CC-SPEC-6 violation with a citation
-   attached.
-3. **A requirement serving nothing on this list is a finding against the
-   spec, not a bonus.**
-4. **This declaration is the only home.** The specification-level
-   dependency declaration is *generated* as the union of its requirements'
-   declarations (CC-IMPACT-1). A hand-authored second list at
-   specification level is a defect, not a convenience.
+- **Purpose:** Keep citations stable through change and retirement.
+- **Inputs/population:** Every requirement entry in baseline and proposal.
+- **Decision:** Mint an ID once; amend in place; never renumber, reuse, or delete
+  it. Mark a withdrawn requirement retired in its retained entry.
+- **Possible results:** The shared three results.
+- **Missing evidence:** Untraceable continuity or a missing retired entry is
+  Unknown and blocks acceptance.
+- **Retained evidence:** ID inventory, baseline/proposal mapping, and retired
+  entries.
+- **Sources:** CC-REV-7.
 
-**`lawfully admitted user need` is deliberately not a class.** It appeared
-in this clause until 2026-08-13 and is removed: no admission act, register,
-or record class for a user need is defined by any authority in this
-repository. `[Observed]` — the sweep, re-run 2026-08-13 in the session that
-made this amendment rather than quoted from the review that prompted it.
-Python `re` `user\s+need`,
-case-insensitive, over `.syzygy/**` `*.md|*.yaml|*.json` — **371 files
-scanned, 2 files with hits**: this clause's own discussion of the class, and
-the review that found it. Second method, repo-wide over
-`.md|.py|.json|.yaml|.yml|.txt` — **784 files scanned, 3 files with hits**:
-those two, plus an untracked file absent from every commit. **No admission
-act, register, or record class is defined by any authority.** A class whose
-satisfying record
-an author may name at will is an unbounded escape hatch in the clause whose
-purpose is to close one. **Admitting the class requires first defining the
-admitting authority and record in the shape layer** — queued as a question,
-not assumed here.
+## **CC-SPEC-4 — Make every requirement falsifiable**
 
-*(Widened and restated 2026-08-13, RD-51 f2/f4/f5/f6. The clause previously
-required a requirement to trace "to exactly one" of five sources. Three
-defects: (i) "exactly one" was ambiguous between "one warrant exists" and
-"name one", and supplied no tie-break either way; (ii) approved craft
-clauses and accepted topology identities were unwarrantable although the
-sibling policy made topology both declarable and sweepable — the two
-policies named different authority sets; (iii) the rationale asserted that
-P-31, P-36, P-37, P-38 and P-40 "are all owner rulings", which was false —
-every one is pending — and that "the first specification is full of them",
-describing a specification that does not exist. Those claims are withdrawn.
-The true statement: these are **queued** decisions whose rulings, once made,
-would become citable under `decisions[]`.)*
+- **Purpose:** Ensure evidence could disprove every requirement.
+- **Inputs/population:** Every active requirement.
+- **Decision:** Name one form—event-response, state projection/query, invariant,
+  prohibition, or lifecycle transition—and state a reproducible case, observable
+  consequence or violation, bounded success/failure oracle, oracle independent
+  of the implementation, and concrete falsifier. For invariants and
+  prohibitions, the case is the quantified population, counterexample schema,
+  sweep method, and denominator. Reject tautologies, unbounded semantic
+  equivalence, unreachable cases, and implementation-defined oracles.
+- **Possible results:** The shared three results.
+- **Missing evidence:** An absent form, element, bound, denominator, or
+  independence basis is Unknown.
+- **Retained evidence:** Form, five elements, oracle procedure, population, and
+  falsifier.
+- **Sources:** VIS-2.
 
-**CC-SPEC-3 — Every requirement has a stable identity.** Identifiers are
-minted once, amended in place, never renumbered or reused, and a withdrawn
-requirement's identifier is **retired in place with its entry marked
-retired**, never deleted and never reissued — CC-REV-7's discipline
-extended to requirement identifiers, including its retirement limb.
-*(Retirement limb added 2026-08-13, RD-51's finding that the clause
-extended CC-REV-7 to a new population while dropping half of it, leaving a
-withdrawn requirement with no lawful disposition.)*
+## **CC-SPEC-5 — Expose non-goals and Unknowns**
 
-**CC-SPEC-4 — Every requirement is falsifiable in a named form.** A
-specification's requirements take one of **five forms**, and the
-requirement states which:
+- **Purpose:** Prevent uncertainty or exclusions from disappearing.
+- **Inputs/population:** Non-goals and every Unknown produced by this policy.
+- **Decision:** Record each Unknown at its owning requirement, CC-SPEC-8 row or
+  population section, CC-SPEC-10 purpose-specific selection section, or
+  CC-SPEC-11 row. Name the reason and settling condition. Human and machine
+  views render the same result and link to that home.
+- **Possible results:** Satisfied when every item has one durable home and parity;
+  Not satisfied for a proved omission or mismatch; otherwise Unknown.
+- **Missing evidence:** Missing ownership, link, or projection parity is Unknown
+  and blocks acceptance.
+- **Retained evidence:** Non-goals, owning records, links, and both projections.
+- **Sources:** VIS-2; CC-REV-5.
 
-```text
-event-response          a trigger occurs; a response is then observable
-state projection/query  a query is made; the projected state is observable
-invariant               a stated property holds across a stated scope
-prohibition             a stated act or state never occurs within a scope
-lifecycle transition    an entity moves between named states under stated
-                        conditions
-```
+## **CC-SPEC-6 — Do not decide an open shape question implicitly**
 
-**Every form, without exception, names five things:**
+- **Purpose:** Keep specification authorship inside existing authority.
+- **Inputs/population:** Every requirement and every open owner question at the
+  named revision.
+- **Decision:** Test whether the requirement would select an answer. The author
+  records the questions believed untouched; a reviewer or owner, not the author
+  alone, may settle or reclassify the test.
+- **Possible results:** Satisfied when no question is selected; Not satisfied
+  when one is selected without its owner Decision; otherwise Unknown.
+- **Missing evidence:** An unsettled classification is Unknown and blocks the
+  requirement.
+- **Retained evidence:** Revision, question inventory, classifications, reviewer,
+  and any governing Decision.
+- **Sources:** VIS-4.
 
-```text
-reachable/producible case      the case can be produced by a party performing
-                               the check, using means the requirement names
-observable consequence         what is then visible, and where — human view,
-  or violation                 machine endpoint, or both
-effective success/failure      how one decides the observation IS (or is not)
-  oracle                       the expected one, by a stated procedure that
-                               terminates in bounded effort, without judgment
-oracle independence            the oracle is not defined by, and does not
-                               consult, the implementation under test
-concrete falsifying evidence   the specific observation that would show the
-                               requirement unmet
-```
+## **CC-SPEC-7 — Keep implementation detail out unless behavior requires it**
 
-For an **invariant** or a **prohibition** the "reachable case" is the
-**scope of quantification, a counterexample schema, and the sweep whose
-denominator bounds it** — a prohibition is satisfied by an exhausted
-population, never by an absence of complaints.
+- **Purpose:** Specify observable behavior rather than an accidental solution.
+- **Inputs/population:** Every stack, schema, or mechanism named by a requirement.
+- **Decision:** Retain it only when changing it would change required behavior;
+  otherwise remove it from the specification.
+- **Possible results:** The shared three results.
+- **Missing evidence:** Unsettled behavioral necessity is Unknown.
+- **Retained evidence:** Named detail and the behavior that requires it, or its
+  removal disposition.
+- **Sources:** `architecture.md`, Typed authority.
 
-**Four oracle forms are rejected outright:**
+## **CC-SPEC-8 — Cover every applicable accepted-contract consequence**
 
-```text
-tautological oracle                    "the value equals the value"
-unbounded semantic-equivalence oracle  "the corpus and the code mean the same"
-unreachable initiating condition       a case no party performing the check
-                                       can produce
-oracle equal to "whatever the          the implementation is its own judge
-  implementation computes"
-```
+- **Purpose:** Prevent contract prose from becoming unspecifiable behavior or
+  disappearing behind a clause-level summary.
+- **Inputs/population:** At one revision, read the candidate upper-bound manifest
+  at `.syzygy/governance/contracts/candidates/ACTIVE-CONTRACT-MANIFEST.txt`.
+  Select performed contract-acceptance Decisions by CC-SPEC-10. Match each act's
+  argument digest to exactly one file under
+  `.syzygy/governance/contracts/candidates/wave-manifests/`; union their rows.
+  A row is accepted only when the identical `sha256  rfcs/...`
+  row exists in the upper bound and the installed path made by prefixing that
+  `rfcs/...` path with `.syzygy/governance/contracts/` hashes to it.
+- **Decision:** Pin in the matrix the Git blob and SHA-256 of
+  `.syzygy/governance/contracts/candidates/scripts/build_contract_index.py` for
+  clause markers, and CommonMark 0.31.2 block parsing on UTF-8,
+  four-column tabs, no extensions, and no newline normalization. Offsets are
+  zero-based half-open byte ranges `[start,end)` in original bytes; convert
+  character positions by UTF-8 prefix length. Missing/duplicate markers
+  or index drift is Unknown.
 
-A requirement whose satisfaction no evidence could ever contradict is not a
-requirement.
+  Partition before extracting. Parse each module into non-overlapping CommonMark
+  leaf-block ranges, split them at clause-marker
+  offsets, and fill every uncovered byte range—including blank separators and
+  syntax outside leaf blocks—as separator units. Require no overlap,
+  `sum(end-start) == module byte length`, and union exactly
+  `[0,module byte length)`. Bytes before the first clause are preamble; a module
+  with no clause is all preamble. Any parse, offset, overlap, gap, or equality
+  failure is `population-construction` Unknown.
 
-*(Rewritten 2026-08-13, RD-51 f7. The clause previously demanded four parts
-— initiating condition, observable result, positive success oracle,
-falsifying evidence — of "a testable observable requirement", and was wrong
-at both ends. **Under-inclusive:** a prohibition such as "no surface renders
-a green status from evidence whose currency bound is undeclared" — VIS-2's
-own shape, and the dominant requirement shape this doctrine generates — has
-no initiating condition and no positive success oracle, so the four-part
-test rejected it while the clause's own closing sentence admitted it. Either
-prohibitions were observable requirements and the clause wrongly rejected
-them, or they were not and **no clause stated any testability bar for the
-largest requirement class in the corpus**. **Over-inclusive:** the four
-parts admitted an unreachable initiating condition ("a repository whose
-evidence set has been continuously current for one year") and a tautological
-oracle ("the flag equals what the reconciliation engine computes") — the
-canonical bar's no-tautologies rule governs *tests*, and a spec's oracle is
-not a test, so nothing forbade it. The five forms and the five universal
-obligations replace the four parts; the oracle's **effectiveness** and
-**independence** are the two additions that close the over-inclusive end.)*
+  Classify each unit once as consequence-bearing, non-normative/
+  non-clause with reason, or Unknown. Only then extract zero or more separately
+  falsifiable consequence rows from it. Rows reference the unit ID and exact
+  subspan, so several outcomes may share one unit without duplicating its bytes;
+  IDs are `(clause, unit ordinal, outcome ordinal)`. Normative-looking preamble
+  is Unknown until an accepted clause owns it. Map each applicable consequence
+  to requirements or reviewed N/A.
+- **Possible results:** Satisfied when every applicable row is mapped or has a
+  lawful N/A; Not satisfied for a proved omission or invalid N/A; Unknown for
+  selection, path, digest, tokenization, segmentation, applicability, or mapping
+  uncertainty.
+- **Missing evidence:** Record Unknown in `population-construction` before rows
+  exist, or in the affected row later, name what settles it, and defer
+  acceptance. Select a reviewed-N/A owner Decision by CC-SPEC-10. Honor it only
+  when it names the exact consequence and scope and independently kept evidence
+  matches project, decision identity/digest, act type, owner, instant, scope,
+  supersession, and audit-record identity; any missing or mismatched binding
+  means Unknown and unmapped.
+- **Retained evidence:** Revision; selected Decisions/manifests; path/digest
+  comparisons; both parser identities/configurations; module byte totals;
+  source-unit spans, total-equality result, clause/unit/consequence counts; rows,
+  mappings, N/A Decisions, and Unknowns.
+- **Sources:** RFC1-33, RFC3-15, RFC3-16, RFC6-28, RFC7-38, RFC8-32, RFC9-52.
 
-**CC-SPEC-5 — Non-goals and Unknowns are explicit.** What the capability
-deliberately does not do is listed; what is not yet known renders
-Unknown with its reason, never silently omitted (VIS-2 and CC-REV-5
-applied to the spec itself — cited, not restated).
+## **CC-SPEC-9 — Pass fresh-reader review**
 
-**CC-SPEC-6 — No unresolved shape decision is silently selected.** If a
-requirement's content would settle an open owner question, the spec is
-blocked on that question — authoring around it by implication is the
-violation this rule exists to name. Following VIS-4's own rule for the
-analogous judgment, **this classification is contested by default and is
-never finally made by the party authoring the requirement**: the spec
-records which open questions it believes it does not settle, so a
-misclassification is findable after the fact, and a reviewer or the owner
-may reclassify at any time. *(Confirmer limb added 2026-08-13, RD-51's
-finding that the clause's trigger was a counterfactual with nobody assigned
-to evaluate it — the spec's own author was both the only party positioned
-to notice and the party least able to.)*
+- **Purpose:** Keep the specification usable without authoring history.
+- **Inputs/population:** Exact proposed bytes and their stated constraints.
+- **Decision:** A reader with no authoring context accurately restates intent,
+  constraints, failure paths, and exclusions.
+- **Possible results:** Satisfied only by a passing independent review; Not
+  satisfied by a failing review; Unknown when no valid review exists.
+- **Missing evidence:** Unknown blocks adoption; record failure on the
+  specification surface.
+- **Retained evidence:** Exact digest, reviewer independence, raw report, verbatim
+  verdict, and dispositions.
+- **Sources:** VIS-3; CC-REV-4; CC-REV-6.
 
-**CC-SPEC-7 — Implementation detail appears only when it is required
-behavior.** A stack, schema, or mechanism appears in a spec only if the
-behavior being specified is genuinely about it; otherwise it belongs to
-implementation, later.
+## **CC-SPEC-10 — Select authority and adopt only exact bytes**
 
-**CC-SPEC-8 — Applicable contract clauses are covered or lawfully N/A.**
-The clause-to-requirement coverage matrix (the phase-rule clauses'
-obligation) is produced with the spec; every applicable clause is covered
-by requirements or carries a reviewed N/A judgment. The matrix's unit is
-the contract's, not this clause's: **rows are per observable consequence,
-not per clause** (RFC1-33, RFC6-28) — a clause with five observable
-consequences and one mapped requirement is not covered.
+- **Purpose:** Make lifecycle force reproducible without editing acted-on bytes.
+- **Inputs/population:** At a named revision, every performed tracked owner
+  Decision. Eligibility is purpose-specific: an adoption act names the
+  specification identity and digest; a policy-confirmation act names the policy
+  identity and digest; a contract-acceptance act names contract or wave
+  identities and its exact manifest argument; a reviewed-N/A act names the exact
+  consequence and scope; an adjudication act names the contradiction identity
+  and conflicting claims. Every candidate also supplies its own Decision
+  digest, act type, owner, instant, scope, and explicit supersession/revocation
+  link.
+- **Decision:** Select only candidates whose act type and subject fields match
+  the stated purpose. Follow only explicit supersession or revocation links;
+  choose the eligible Decision no other eligible Decision supersedes or revokes.
+  Never use file order, commit order, or timestamp as precedence. No candidate
+  means proposal or unresolved contradiction, as the purpose requires. Multiple
+  incompatible unsuperseded candidates mean contradiction. Specification
+  adoption records the exact specification digest and quoted content. For a
+  focused change, select the proposed change separately; no proposal act changes
+  the selected state of its accepted baseline. Apply VIS-4 at the adoption act:
+  delegation requires both its accepted adjudication RFC and explicit doctrine
+  gate-opening amendment; security, privacy/retention, and normative-data changes
+  always require the owner.
+- **Possible results:** Satisfied when the purpose-specific state—candidate,
+  adopted specification, confirmed policy, resolved contradiction, or Unknown—
+  is faithfully reported; Not satisfied for a false state claim; Unknown when
+  selection cannot resolve.
+- **Missing evidence:** Before consuming a result, retain a `decision-selection`
+  section in that consumer: specification adoption in CC-SPEC-11; contract
+  population or reviewed N/A in CC-SPEC-8; accepted-spec population in
+  CC-IMPACT-3; adjudication in CC-IMPACT-4; policy confirmation in
+  `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md`. Record purpose,
+  revision, candidates/digests, missing relationship, and settling owner
+  Decision. Render/link the same Unknown; take no dependent effect.
+- **Retained evidence:** Candidate set, selection trace, exact digest and quote,
+  act authority, supersession links, and Unknown section.
+- **Sources:** VIS-4; RFC3-15; RFC3-16.
 
-**"Applicable", defined.** A contract clause is applicable to a
-specification when **the capability uses the entity, behavior, authority
-boundary, state vocabulary, or interface the clause governs**. A reviewer
-applies this test clause by clause against the specification's CC-SPEC-1
-scope statement; a clause governing something the capability neither
-renders, stores, transitions, queries, nor crosses is not applicable, and
-saying so is an N/A judgment, not an omission.
+## **CC-SPEC-11 — Demonstrate coverage of the acceptance unit**
 
-**The reviewed-N/A judgment's home, gate, unit, and effect rule are the
-contract's, not this clause's.** They are stated by the confirmed contract
-modules **RFC1-33, RFC6-28, RFC7-38, RFC8-32, and RFC9-52**: a reviewed
-N/A judgment is a recorded **owner** judgment homed in `decisions/`
-(RFC3-15), honored only where its owner-act provenance is verifiable under
-**RFC3-16(a)**; where that provenance does not verify, the judgment maps
-nothing — the consequence remains unmapped and **renders Unknown, never
-covered** (VIS-2). This clause adds only the specification-side
-**production obligation**: the specification ships with its coverage
-matrix, and every N/A row in that matrix cites the owner judgment's record
-in `decisions/`, so the RFC3-16(a) check has something to verify. A matrix
-whose N/A rows rest on anything less — the author's or a reviewer's
-say-so, a judgment recorded only inside the spec — does not discharge this
-clause. *(History: a confirmer limb was added 2026-08-13 against RD-51
-f15; the 2026-08-17 completion then declared this clause the rule's one
-home, with a reviewer-grade confirmer and no provenance predicate, over
-the nine contract modules that already state the rule with the owner gate
-— and defended that with an absence claim a 398-file sweep falsifies.
-RD-69 BLOCKER 1. Repaired 2026-08-17: the clause is reduced to a citation
-of those modules, keeping only the production obligation and the
-"applicable" definition; the contract's owner gate subsumes the 2026-08-13
-confirmer limb.)*
-
-**CC-SPEC-9 — A fresh technical reader can restate it.** A specification is
-a normative artifact, so **CC-REV-4** and **VIS-3** apply unmodified: a
-reader with no authoring context restates intent and constraints correctly,
-and failure is recorded on the artifact's surface. This clause adds nothing
-and exists only so that E5's comprehensibility limb has a routed answer;
-the obligation is CC-REV-4's. *(Reduced to a citation 2026-08-13, RD-51
-f17 — the clause previously restated CC-REV-4 normatively, which CC-REV-3
-forbids: "documentation cites authoritative artifacts, it does not restate
-them normatively — a restated rule drifts and becomes a shadow authority.")*
-
-**CC-SPEC-10 — Lawful adoption is recorded at the exact digest.**
-
-> Lawful adoption under VIS-4 is recorded at the exact digest, and the
-> record quotes what was adopted at which digest.
->
-> **Under the current doctrine state this means owner adoption**, because
-> VIS-4 opens the delegated gate only on **both** of two conditions —
-> *"an accepted adjudication RFC (defining what makes adversarial judgment
-> independent, how the ambiguity determination is recorded, and how each
-> adopted change stays individually revertable)* ***and*** *the owner's
-> explicit doctrine amendment recording that the gate opens; RFC acceptance
-> alone never opens it"* — and neither exists.
->
-> **One class is always human-gated, gate open or not:** VIS-4 —
-> *"spec changes touching security posture, privacy or retention
-> obligations, or normative data contracts."* No delegated mechanism ever
-> reaches this class.
-
-Until the adoption record exists the spec is a candidate like everything
-else. *(Restated 2026-08-13, RD-51 f12. The clause previously read "Lawful
-adoption under VIS-4 is recorded at the exact digest. Under the current
-doctrine state, this means owner adoption." Word-by-word against VIS-4 it
-**added** the digest binding — its genuine contribution — **paraphrased
-correctly** for today, and **subtracted** two limbs: the two conjoined
-preconditions, and the always-human-gated class. The subtracted sentence is
-precisely the rule that binds in the future the restatement was written to
-anticipate: a reader in a gate-open future, reading CC-SPEC-10 alone, would
-conclude the entire spec corpus is LLM-adoptable at a digest. The clause now
-quotes both limbs rather than glossing them.)*
-
-**CC-SPEC-11 — The requirement set covers the capability, and the coverage
-is demonstrated.** *(Minted 2026-08-17, on the owner's convergence
-direction §9.2, closing RD-51 f14 — E5's "complete" limb. Distinct from
-CC-SPEC-8, which covers contract **clauses**; this clause covers the
-**capability's own obligations**.)*
-
-A specification demonstrates that its requirements cover the capability it
-declares, with a **coverage table** produced with the spec. The table's
-**population is the declared capability obligations** — each thing the
-CC-SPEC-1 scope statement says the capability does, renders, records, or
-refuses — counted, and declared by the spec itself. Each declared
-obligation is placed in **exactly one** of three sets, which sum to the
-population:
-
-```text
-covered                 named requirement IDs satisfy it
-lawfully out of scope   excluded by the spec's own non-goals (CC-SPEC-5),
-                        with the excluding non-goal named
-Unknown / unresolved    rendered with what would settle it, never
-                        silently omitted (VIS-2)
-```
-
-The completeness test is **bounded to the declared scope**: no proof is
-demanded over obligations the specification does not declare, and a
-reviewer who believes an obligation is missing from the population raises
-that against CC-SPEC-1's scope statement, not against this table. The
-table is **confirmed by a party other than the specification's author**
-(the CC-TEST-4 pattern, as CC-SPEC-8). A fresh engineer applies this
-clause by reading the scope statement, listing its obligations, and
-checking each against the table — no other context is required.
-
-## What this policy is not
-
-Not a workflow (the th-projects feature-request workflow is referenced
-process, never authority); not a format (P-39 owns the medium); not a
-review procedure (CC-REV-1/2/4 own review). One fact, one home.
-
-## Known open findings against this file
-
-`[Observed]` — from RD-51, raw at
-`../round-2026-08f/reviews/RD-51-spec-acceptance-and-impact-RAW.md`;
-dispositioned in `../round-2026-08g/reviews/DISPOSITION-REGISTER.md`.
-Listed here because a candidate that hides its own open findings is the
-failure VIS-2 names.
-
-| Finding | State |
-|---|---|
-| f14 | **Repaired 2026-08-17; RD-69 raised no finding against CC-SPEC-11** — the confirming review of the blocker repair has the last word, not this file |
-| f15 | **Repaired 2026-08-17, twice** — the first repair ("applicable" defined; CC-SPEC-8 declared the reviewed-N/A rule's one home) was itself RD-69's BLOCKER 1: the home claim was false against nine contract modules. The blocker repair reduces CC-SPEC-8 to a citation of those modules; "applicable" stays defined. Awaits the confirming review |
-| f1 (sibling) | **Open** — the lagging-specification exception is not lawful until CC-REV-2 is itself amended — see `SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md` CC-IMPACT-6 and the P-44 offer it names |
+- **Purpose:** Prove that the specification covers its own declared obligations;
+  CC-SPEC-8 separately covers contract consequences.
+- **Inputs/population:** Tokenize scope, change scope, and non-goals into numbered
+  items, bullets, table rows, or normative prose sentences; split only separately
+  falsifiable outcomes. Include every stable requirement entry, including
+  retired entries. Whole-capability input is all scope items, requirements, and
+  non-goals. Focused-change input is every added/changed/retired requirement and
+  every change-scope item/non-goal, plus the affected and undecidable results of
+  a sweep over every unchanged baseline requirement. The sweep tests references,
+  provenance, mappings, and defined vocabulary; its unaffected rows stay in the
+  retained denominator but outside the focused acceptance population.
+- **Decision:** Preserve every extracted occurrence with revision, exact locator,
+  span, and discovery method. Group only identical `(revision, locator, span,
+  outcome)` occurrences; stable IDs link evidence but do not erase distinct
+  occurrences, and semantic similarity never deduplicates. Give other items
+  `(section, unit ordinal, outcome ordinal)` IDs. Place each row exactly once in
+  `covered`, `lawfully out of scope / retired`, or `Unknown / unresolved`.
+  Scope rows name satisfying requirement IDs; active requirement rows link to an
+  independently extracted scope/change row and never cover themselves; non-goals
+  conflict with no active requirement; retired rows retain their ID and entry;
+  affected-baseline rows link to the change. Missing, circular, or contradictory
+  relationships are Unknown. A party other than the author reproduces and
+  confirms the population and partition.
+- **Possible results:** Satisfied only when every row is covered or lawfully out
+  of scope/retired, every applicable CC-SPEC-8 row is mapped or lawful N/A, and
+  no provenance Unknown remains; Not satisfied for a proved violation; otherwise
+  Unknown.
+- **Missing evidence:** Record every blocking row and settling condition, defer
+  acceptance, and leave the proposed unit a candidate. No exception converts
+  Unknown to acceptance.
+- **Retained evidence:** Baseline/proposal digests, extraction and affected-
+  baseline methods, all occurrences and rows, mappings, three-set totals,
+  reviewer, result, and adoption-selection section.
+- **Sources:** VIS-2; CC-SPEC-1; CC-SPEC-3; CC-SPEC-8.
