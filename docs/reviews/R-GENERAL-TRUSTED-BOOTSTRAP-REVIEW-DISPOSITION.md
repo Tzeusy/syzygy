@@ -21,6 +21,6 @@ fresh exact-byte confirmation remains required.
 | Contract blocker 1 — CC-SPEC-8 named only five of nine phase rules | **FIXED.** CC-SPEC-8 now enumerates RFC1-33, RFC2-26, RFC3-33, RFC4-30, RFC5-27, RFC6-28, RFC7-38, RFC8-32 and RFC9-52. |
 | Contract non-blocker 1 — semantic-delta affected-ID list omitted new consumers and CC-SPEC-8 | **FIXED.** RFC4-23, RFC8-16 and CC-SPEC-8 are named, with a dedicated liveness-policy amendment section. |
 | Contract non-blocker 2 — semantic delta embedded a prior desired verdict | **FIXED.** The subject carries review routing only; exact verdicts remain in raw review evidence. |
-| Impact exception 2 — no owner-facing fixed invocation sentence | **QUEUED IN PACKET.** The owner sign-off packet will quote one exact phrase containing the repaired transaction-manifest digest and state that all five rows occur together or none do. This does not alter the bound transaction bytes. |
+| Impact exception 2 — no owner-facing fixed invocation sentence | **FIXED IN PACKET.** `OWNER-SIGNOFF-PACKET.md` quotes one exact phrase containing the repaired transaction-manifest digest and states that all five rows occur together or none do. The packet does not alter the bound transaction bytes. |
 
 No finding was overruled or dropped.

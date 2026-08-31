@@ -431,3 +431,19 @@ can be authorized.
   `runGit` to bind the observer to the real captured commit — the observer's
   own real-git marker-matching is separately covered by
   `worker-change-observation.test.ts`.
+
+### Contract-amendment manifest discipline
+
+- Performed Wave A/B manifests are immutable act-time arguments. Current
+  amendments to accepted RFC modules use a separate amendment manifest;
+  `build_active_manifest.py` regenerates the active view and unperformed waves,
+  but verifies performed manifests by recorded digest and path membership
+  without rewriting or comparing their historical row digests to current
+  module bytes.
+- The generalized trusted-bootstrap candidate keeps state (1) and state (2)
+  distinct: both may carry a real effective human act only after the exact
+  owner transaction is performed, only state (2) is independently verified,
+  and an act is always a warrant rather than evidence of effect success. The
+  project-wide Polaris spec intentionally remains stricter at state (2) until
+  a separate signed amendment; inspect the current act record before relying
+  on the candidate transaction.
