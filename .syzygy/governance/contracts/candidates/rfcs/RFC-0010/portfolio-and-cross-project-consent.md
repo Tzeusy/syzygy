@@ -14,10 +14,9 @@ tags: [portfolio, consent, egress, fail-closed, prevention-plane]
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until
-the independent A1 correlation mechanism exists, and as a Syzygy-verified
-effective act only after correlation (RFC3-16). Absent such a record, this
-contract binds nothing.
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds nothing.
 
 **Package:** module 5 of 5 of the RFC 0010 contract package. Index, clause
 map, lookup rule, package-level integration and deferrals: `README.md`.
@@ -69,9 +68,12 @@ the rule on declared scope would let the composing party choose whether the
 rule applies by choosing how to declare its own target — the party the rule
 exists to bind. A composite embedding content from a
 project for which the naming (project, provider) consent is absent, not in
-force, or of unverifiable provenance **fails closed and the refusal renders**,
-exactly as an undeterminable content class does (RFC5-14); so does a composite
-whose embedded content cannot be attributed to a project of origin at all.
+force, or lacks an effective exact-digest owner act under RFC3-16(a) **fails
+closed and the refusal renders**, exactly as an undeterminable content class
+does (RFC5-14); so does a composite whose embedded content cannot be
+attributed to a project of origin at all. State (1) and state (2) consent acts
+are both effective, and the exact provenance state is rendered at the refusal
+or transmission decision.
 Evidence gathered
 within one project never satisfies a completion predicate scoped to another.
 Where the workspace governance store's per-project budget and an envelope's

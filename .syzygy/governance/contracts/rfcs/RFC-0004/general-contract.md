@@ -12,9 +12,9 @@ tags: [observation, adapters, registry, determinism-class, sdr-6, vis-5, vis-7, 
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until the
-independent A1 correlation mechanism exists, and as a Syzygy-verified effective
-act only after correlation (RFC3-16). Absent such a record, this contract binds
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds
 nothing.
 
 **Package:** module 1 of 4 of the RFC 0004 contract package. Index, clause map,
@@ -155,9 +155,10 @@ self-authenticating** (RFC3-16): admitting an adapter is what makes its output
 a deterministic fact at all, so an entry is honored **only under RFC3-16(a)** —
 an entry an untrusted writer could mint would register an arbitrary adapter
 and launder whatever it emits into the deterministic base graph, which no
-downstream tier or freshness check inspects. An entry whose owner-act
-provenance does not verify admits nothing: outputs attributed to it render
-Unknown exactly as if the adapter were unregistered.
+downstream tier or freshness check inspects. An entry without an effective
+owner act admits nothing: outputs attributed to it render Unknown exactly as
+if the adapter were unregistered. State-(1) and state-(2) acts both admit the
+entry, with the exact provenance state carried on every resulting fact.
 
 **RFC4-8 — Version skew.** (a) Observation records permanently carry the
 observer/adapter versions that produced them; an upgrade never reinterprets

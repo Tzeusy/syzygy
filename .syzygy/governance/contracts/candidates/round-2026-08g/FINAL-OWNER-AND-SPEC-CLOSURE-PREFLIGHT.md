@@ -97,8 +97,8 @@ record's §1 names and the two reviews confirm.
 not exist, and that absence is correct. Wave A's offer is withheld **solely by
 P-33**; Wave B is withheld by nothing except its own ordering behind Wave A.
 
-The four deferred manifests also digest cleanly (C1 `a5d3ba1f…`, C2
-`acd27bb8…`, D1 `570e6170…`, D2 `ab590e3e…`); they are recorded here only so
+The four deferred manifests also digest cleanly (C1 `ad083c73…`, C2
+`a0387663…`, D1 `ae431661…`, D2 `61745617…`); they are recorded here only so
 the population is 6 of 6, not 2 of 6.
 
 ## 4. The eight round-08f reviews — all obtained, verdicts copied exactly

@@ -14,9 +14,9 @@ tags: [surface, legend-fidelity, unknown, sdr-19, sdr-20, sdr-24, sdr-25, sdr-26
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until the
-independent A1 correlation mechanism exists, and as a Syzygy-verified effective
-act only after correlation (RFC3-16). Absent such a record, this contract binds
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds
 nothing.
 
 **Package:** module 2 of 3 of the RFC 0009 contract package. Index and lookup
@@ -111,13 +111,15 @@ would put meaning on the scene that no generated legend can account for.
 
 **An entry present is not thereby an entry authorized:** because all legend text
 is generated from this registry, an entry fixes what an encoding *means*, so
-entries are honored **only under RFC3-16(a)**, and an entry whose owner-act
-provenance does not verify is treated exactly as an absent one — the channel does
-not render. [Inferred] A forged entry is the sharper failure than a missing one:
-absence stops the render, while a re-declared meaning leaves every claim, tier
-and freshness check passing and re-points the legend under a correct scene, which
-is a direct attack on the VIS-7 trust floor that no downstream status check
-inspects.
+entries are honored only through an **effective owner act under RFC3-16(a)**
+bound to the registry's exact digest. A valid state-(1) or state-(2) act is
+effective, with its exact provenance state rendered; state (1) remains visibly
+uncorrelated. An entry without a valid act is treated exactly as an absent one —
+the channel does not render. [Inferred] A forged entry is the sharper failure
+than a missing one: absence stops the render, while a re-declared meaning leaves
+every claim, tier and freshness check passing and re-points the legend under a
+correct scene, which is a direct attack on the VIS-7 trust floor that no
+downstream status check inspects.
 
 *(RFC9-26's channel registry is one of two artifacts RFC3-16(a) cites as
 encoding-meaning-fixing; the other is RFC9-18's **layout version registry**, in
@@ -515,55 +517,70 @@ Inferred.]
    insufficient-to-judge**), the rationale, the execution record(s) judged, the
    scope the judgment covers, its instant, and any earlier judgment it supersedes.
    *(Attribution ruled at acceptance by owner decision B12(b), escalating v1.md's
-   success test to a gate.)* The judgment is honored **only under RFC3-16(a)** —
-   it is an adjudication Decision in `decisions/`, squarely inside that
-   predicate's example list, and the home establishes durability, never
-   authorship: an owner judgment a fleet worker could commit is not an owner
-   judgment. An unattributed or unreasoned verdict is not a lawful gate outcome in
-   either direction — a false pass must be findable afterward, and it is only
-   findable with a name and reasoning attached. The judgment is **never rendered
-   Observed** and is **never evidence about the project**: it is a recorded human
-   judgment about the surface, and no claim instance, gate outcome, or
-   reconciliation verdict may consume it as project implementation evidence.
+   success test to a gate.)* The judgment is honored only through an **effective
+   owner act under RFC3-16(a)** bound to the judgment's exact digest. State (1)
+   or state (2) may supply the judgment, with its exact provenance state rendered;
+   state (1) remains visibly uncorrelated. It is an adjudication Decision in
+   `decisions/`, squarely inside that predicate's example list, and the home
+   establishes durability, never authorship: an owner judgment a fleet worker
+   could commit is not an owner judgment. An unattributed or unreasoned verdict
+   is not a lawful gate outcome in either direction — a false pass must be
+   findable afterward, and it is only findable with a name and reasoning
+   attached. The judgment is **never rendered Observed** and is **never evidence
+   about the project**: it is a recorded human judgment about the surface, and
+   no claim instance, gate outcome, or reconciliation verdict may consume it as
+   project implementation evidence.
 3. The **release policy** — an owner-approved, authorization-bearing policy under
-   **`.syzygy/governance/policies/`** (honored only under RFC3-16(a)) that says
-   whether a walkthrough is required for a given release class, **which judgment
-   classes qualify and who may judge**, what freshness and scope the judgment must
-   have, and that a lawful qualifying pass clears the gate. **Release authority
-   comes from this adopted policy — never from the kernel having stored a
-   verdict.** **Absence of an adopted policy is not a permissive default**: with
-   no adopted — or no RFC3-16(a)-verifiable — release policy, **owner decision
-   B12(b) binds directly**: the comprehension walkthrough is required at every
-   release milestone, the owner judges, and release requires a lawful qualifying
-   pass. An adopted policy **configures and may narrow** that default (release
-   classes, qualifying judgment classes, freshness, scope); only an explicit,
-   RFC3-16(a)-verified owner act may waive the walkthrough for a release class,
-   and no policy silence ever does.
+   **`.syzygy/governance/policies/`**, honored only through an effective owner act
+   under RFC3-16(a) bound to the policy's exact digest. State (1) or state (2) is
+   effective, with its exact provenance state rendered; state (1) remains visibly
+   uncorrelated. The policy says whether a walkthrough is required for a given
+   release class, **which judgment classes qualify and who may judge**, what
+   freshness and scope the judgment must have, and that a lawful qualifying pass
+   clears this walkthrough gate. **Authority to configure or clear this
+   walkthrough gate comes from the effective policy — never from the kernel
+   having stored a verdict.** **Absence of an effective policy is not a permissive
+   default**: with no effective release policy, **owner decision B12(b) binds
+   directly**: the comprehension walkthrough is required at every release
+   milestone, the owner judges, and the walkthrough gate requires a lawful
+   qualifying pass. An effective policy **configures and may narrow** that default
+   (release classes, qualifying judgment classes, freshness, scope); only an
+   explicit effective owner act under RFC3-16(a), in either state and bound to the
+   waiver's exact digest, may waive the walkthrough for a release class, and no
+   policy silence ever does. Release policies and waivers are warrants for this
+   gate, never project evidence or evidence that any release, deployment or
+   recovery effect succeeded.
 
 Orrery **references** the execution record and judgment (drawer-linkable per
 RFC6-19); it owns neither, and nothing gate-bearing lives under `.syzygy/map/**`.
 
 **An unlawful outcome does not clear the gate.** The gate is **fail-closed, like
-every other closure on this surface** (RFC9-26's registry, RFC9-18's unverified
+every other closure on this surface** (RFC9-26's registry, RFC9-18's invalid
 entry, RFC9-27's absent coverage record; and v1.md for this very test: "absent
 its artifact, a test renders Unknown, never met"). Concretely: **where the
-walkthrough is required — by the adopted release policy, or by B12(b)'s default
-when no policy is adopted — release requires a lawful qualifying pass.** An
+walkthrough is required — by the effective release policy, or by B12(b)'s default
+when no policy is effective — the walkthrough gate requires a lawful qualifying
+pass.** An
 unattributed or unreasoned verdict — in either direction — is not a lawful pass,
 so it blocks release exactly as a fail does. It is recorded as
 **verdict-unlawful** — a state of the judgment record, *not* an RFC2-24 Unknown
 reason (that vocabulary is closed at twelve and governs claims about the project,
 not outcomes of Syzygy's own release gates) — rather than converted into a fail,
 because the walkthrough's actual outcome is not thereby known and recording a
-fail would assert something no one judged. **A judgment whose owner-act
-provenance does not verify under RFC3-16(a) is unlawful in exactly the same way**
-— attributed and reasoned prose a fleet worker could commit clears nothing — and
-is recorded as **verdict-unlawful** likewise. Absence of an execution record,
+fail would assert something no one judged. **A judgment without an effective
+owner act under RFC3-16(a) is unlawful in exactly the same way** — attributed
+and reasoned prose a fleet worker could commit clears nothing — and is recorded
+as **verdict-unlawful** likewise. Absence of an execution record,
 absence of a judgment, and a judgment whose scope or freshness the policy rejects
 are likewise not a pass. In every one of these cases the walkthrough test renders
 **Unknown, never met** (v1.md's own words), the gate stays closed, and the remedy
 is to re-run the walkthrough and record it lawfully. *(This paragraph and RFC7-31
 state one protocol, with the same outcome on both surfaces.)*
+
+**This clause is only a walkthrough/release-policy gate.** Clearing it never
+authorizes release or proves that a release occurred. This amendment creates no
+deployment or recovery authority; those effects remain unavailable until
+separately contracted, specified and authorized.
 
 ---
 

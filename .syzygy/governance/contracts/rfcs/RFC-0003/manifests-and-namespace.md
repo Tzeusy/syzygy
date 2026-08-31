@@ -15,9 +15,9 @@ tags: [project-declaration, consent, workspace-manifest, schema-migration, opens
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until the
-independent A1 correlation mechanism exists, and as a Syzygy-verified
-effective act only after correlation (RFC3-16). Absent such a record, this
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this
 contract binds nothing.
 
 **Package:** one of two modules of RFC 0003; see `README.md` for the clause-set
@@ -154,7 +154,7 @@ instant** — *when* the suspension lifted is derivable from no snapshot
 input the tree already held, and that instant is exactly what the record
 fixes as the new snapshot's authoritative input. And the record authorizes
 nothing of itself: its authority is the kernel's verification that the
-resolving policy was provenance-verified under **RFC3-16(a)** and declared
+resolving policy carries an effective owner act under **RFC3-16(a)** and was declared
 before the challenge was admitted (RFC2-13's pre-declaration requirement)
 — never the record's own say-so — so an unbacked resolution record is
 inadmissible and the suspension holds. (Shape-parallel with RFC3-17(a)'s
@@ -520,10 +520,11 @@ consequence either maps to an approved OpenSpec requirement and scenario in
 the governance root's `openspec/**` plane, or carries a reviewed N/A judgment
 proving it purely structural with no independently testable behavior. **The
 reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a recorded
-owner judgment homed in `decisions/` (RFC3-15), and it is honored only where
-its owner-act provenance is verifiable under RFC3-16(a). Where that provenance
-does not verify, the judgment maps nothing: the consequence remains unmapped
-and renders Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2).
+owner judgment homed in `decisions/` (RFC3-15), and the judgment is honored
+only through an effective owner act under RFC3-16(a), in state (1) or state
+(2), with that state rendered; absent or invalid acts map nothing and leave
+the consequence unmapped and Unknown, never covered (RFC3-16(a)'s effect
+rule; VIS-2).
 
 **Rows are per observable consequence, not per clause.** A clause with five
 observable consequences and one mapped requirement is not covered; the matrix

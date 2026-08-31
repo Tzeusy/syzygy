@@ -8,12 +8,16 @@
 >
 > **No N/A is minted on the author's authority.** Under CC-SPEC-8 a
 > reviewed N/A judgment is a recorded **owner** judgment homed in
-> `decisions/`, honored only where RFC3-16(a) provenance verifies. **No
-> such judgment exists for any clause today**, so every consequence not
-> covered by a requirement renders **Unknown pending owner-reviewed
-> N/A** — never covered, never silently omitted (VIS-2). "Believed not
-> applicable" below is the author's application of CC-SPEC-8's
-> applicability test, offered to the owner; it settles nothing.
+> `decisions/`, honored only through an effective owner act under
+> RFC3-16(a). Valid state (1) and state (2) acts are both effective and
+> their exact state is disclosed; a missing or invalid act maps nothing
+> and leaves the consequence Unknown. The act is a warrant, never evidence
+> that the consequence is satisfied. **No such judgment exists for any
+> clause today**, so every consequence not covered by a requirement renders
+> **Unknown pending owner-reviewed N/A** — never covered, never silently
+> omitted (VIS-2). "Believed not applicable" below is the author's
+> application of CC-SPEC-8's applicability test, offered to the owner; it
+> settles nothing.
 
 ## Population and denominator
 
@@ -101,7 +105,8 @@ limb (repaired below).
 | RFC3-9 | an unparseable or invalid declaration renders every dependent claim `Unknown`, never partial registration | covered | CAP1-REQ-002, CAP1-REQ-003 — the accepted text's obligation is the `Unknown` rendering and the no-auto-repair rule; failing *by name* is this specification's own authored strictness |
 | RFC3-16 | effective status derives from the owner-act record, never the self-declared stamp | covered | CAP1-REQ-046 |
 | RFC3-16 | stamp/status disagreement is disclosed; the effective status governs | covered | CAP1-REQ-046 |
-| RFC3-16(a) | unverifiable owner-act provenance renders the artifact effectively unadopted | covered | CAP1-REQ-046 |
+| RFC3-16(a) | a missing owner-act record renders the artifact effectively unadopted | covered | CAP1-REQ-046 |
+| RFC3-16(a) | valid state (1) or state (2) acts are effective and disclosed; other invalid acts fail closed | **Unknown** — CAP1-REQ-046 exercises only the missing-record case; no adopted requirement covers valid-state admission or the other invalid-act cases | — |
 | RFC3-30 | consent scope admits exactly the granted (project, repository) access, no cross-project bleed | covered | CAP1-REQ-016 |
 | RFC5-3 | clients are classified by presented credential, never network location; facts go only to admitted clients | covered | CAP1-REQ-015 |
 | RFC6-7 | answers pin to an evaluation identity; a repeated equivalent query is stable | covered | CAP1-REQ-005, CAP1-REQ-042 |
@@ -143,9 +148,10 @@ Capability 1 use the entity, behavior, authority boundary, state
 vocabulary, or interface the clause governs?* — and believes the 286
 unmapped clauses govern machinery Capability 1 neither renders, stores,
 transitions, queries, nor crosses. **That belief is not a reviewed N/A.**
-Until the owner records N/A judgments in `decisions/` with verifiable
-RFC3-16(a) provenance, every one of these clauses' consequences renders
-**Unknown pending owner-reviewed N/A**:
+Until the owner records N/A judgments in `decisions/` with an effective
+RFC3-16(a) act in state (1) or state (2), with that state disclosed, every one
+of these clauses' consequences renders **Unknown pending owner-reviewed N/A**;
+missing or invalid acts map nothing:
 
 | Module group | Unmapped clauses | Chiefly governs (author's reading, non-binding) |
 |---|---|---|

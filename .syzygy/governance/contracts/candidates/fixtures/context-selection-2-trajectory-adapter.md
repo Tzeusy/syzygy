@@ -115,7 +115,7 @@ scope.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`02f0afecfe4b6f81…`.
+`0373065bc820a125…`.
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a

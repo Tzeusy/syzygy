@@ -18,9 +18,9 @@ tags: [context, provenance, memory, selection, agents]
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-each module file's exact content digest — as an owner-adopted bootstrap act
-until the independent A1 correlation mechanism exists, and as a
-Syzygy-verified effective act only after correlation (RFC3-16). Absent such
+each module file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such
 a record, this contract binds nothing.
 
 **Serves:** VIS-7/trust floor (what an agent saw is a provable fact, not a

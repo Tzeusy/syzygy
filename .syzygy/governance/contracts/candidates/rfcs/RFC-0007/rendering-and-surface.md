@@ -12,9 +12,9 @@ tags: [presentation, proposed-scenario, comprehension-test, verdict-unlawful, ma
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until the
-independent A1 correlation mechanism exists, and as a Syzygy-verified effective
-act only after correlation (RFC3-16). Absent such a record, this contract binds
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds
 nothing.
 
 **Package:** module 2 of 2 of the RFC 0007 contract package. Index, clause map,
@@ -178,13 +178,16 @@ rationale, judging party — is an owner adjudication recorded in
 human judgment, not narrative content, and a decision is a warrant, never
 evidence. Storing either under `.syzygy/intent/**` would let deletion of that
 tree flip a v1.md-tracked success test from a recorded verdict to Unknown —
-exactly what RFC7-3's deletion invariant forbids. The judgment is honored
-**under RFC3-16(a)**: the home establishes durability, never authorship, and an
-owner judgment a fleet worker could commit is not an owner judgment. A
-judgment whose owner-act provenance does not verify — like one unattributed or
-unreasoned — is recorded as **verdict-unlawful** and leaves the test rendering
-**Unknown, never met**, the identical outcome assigned to an absent record, so
-an unverifiable verdict buys nothing a missing one would not. *(RFC9-45 states
+exactly what RFC7-3's deletion invariant forbids. The judgment is honored only
+through an **effective owner act under RFC3-16(a)**: state (1) or state (2) may
+supply the judgment, and its exact provenance state is rendered; state (1)
+remains visibly uncorrelated. The home establishes durability, never
+authorship, and an owner judgment a fleet worker could commit is not an owner
+judgment. A judgment without an effective owner act, or one that is
+unattributed or unreasoned, is recorded as **verdict-unlawful** and leaves the
+test rendering **Unknown, never met**, the identical outcome assigned to an
+absent record, so an invalid verdict buys nothing a missing one would not.
+*(RFC9-45 states
 the same protocol in the same terms: defective verdict → recorded
 `verdict-unlawful`, test renders Unknown-never-met, gate fail-closed; the
 shared release-policy leg is stated at RFC9-45.)*
@@ -326,10 +329,10 @@ requirement or scenario** in the governance root's `openspec/**` plane, or
 carry an **explicit, reviewed N/A judgment** recording why that consequence
 needs no requirement. **The
 reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a recorded
-owner judgment homed in `decisions/` (RFC3-15), and it is honored only where
-its owner-act provenance is verifiable under RFC3-16(a). Where that provenance
-does not verify, the judgment maps nothing: the consequence remains unmapped
-and renders Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2). The
+owner judgment homed in `decisions/` (RFC3-15), and it is honored only through
+an effective owner act under RFC3-16(a), in state (1) or state (2), with that
+state rendered. Absent or invalid acts map nothing and leave the consequence
+unmapped and Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2). The
 surface-specification phase must produce, as a
 deliverable, a **clause-to-requirement coverage matrix** for this RFC — every
 clause mapped to requirement identities or to its reviewed N/A — and that

@@ -18,9 +18,9 @@ tags: [foundational, temporal, epistemic, evidence, closed-vocabulary, v0-v1-sta
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-each module file's exact content digest — as an owner-adopted bootstrap act
-until the independent A1 correlation mechanism exists, and as a Syzygy-verified
-effective act only after correlation (RFC3-16). Absent such a record, this
+each module file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this
 contract binds nothing.
 
 **Date:** 2026-07-30 (amended through 2026-08-02; compacted and split into a
@@ -137,8 +137,8 @@ held here.*
 5. *(RFC2-15/25)* A gap rendered resolved on a dismissal, or green on anything
    but gate-backed Observed evidence.
 11. *(RFC2-9/13; RFC3-16(a))* A currency bound, admission-latency bound,
-    resolution policy, or sweep policy honored without verifiable owner-act
-    provenance.
+    resolution policy, or sweep policy honored without an effective owner act,
+    or with its exact provenance state hidden.
 
 ## 5. Integration — package-level
 

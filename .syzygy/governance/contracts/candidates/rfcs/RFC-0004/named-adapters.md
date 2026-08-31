@@ -12,9 +12,9 @@ tags: [adapters, gate-tiering, provenance, capture-before-horizon, anchors, sdr-
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until the
-independent A1 correlation mechanism exists, and as a Syzygy-verified effective
-act only after correlation (RFC3-16). Absent such a record, this contract binds
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds
 nothing.
 
 **Package:** module 2 of 4 of the RFC 0004 contract package. Index, clause map,
@@ -115,8 +115,8 @@ evidence deleted.
 structure only, never semantic ownership (SDR-3). *Reads:* file inventory
 within consented scope (secret exclusions applied and counted, SEC-5, **under
 the observing project's own secret-detection policy — never the observed
-source's**, RFC3-30 — and only a version of that policy whose owner-act
-provenance verifies under **RFC3-16(a)**, since a worker-minted policy would
+source's**, RFC3-30 — and only a version of that policy carrying an effective
+owner act under **RFC3-16(a)**, since a worker-minted policy would
 let this observer index the content SEC-5 requires excluded); symbols,
 modules, containment; deterministically observed structural relations
 (`calls`, `exposes`, `accesses`) with parser version identified.
@@ -263,8 +263,8 @@ minimum:
 
 Because a checker that can unblock positive status **fixes the meaning of a
 certification**, its definition is authorization-bearing under RFC3-16(a)'s
-own predicate and is honored only with verifiable owner-act/governance
-provenance; its applicability and satisfaction semantics must be stated so a
+own predicate and is honored only with an effective owner act, in state (1) or
+state (2); its applicability and satisfaction semantics must be stated so a
 human reviewer can judge whether the check means what the clause requires.
 
 A **checker execution artifact** records, at minimum: the **exact diff or
@@ -280,7 +280,7 @@ the checker definition that certifies that same change — a change and the
 authority that certifies it may not originate in the same untrusted act, and a
 checker definition edit rides the same adoption gate as any other
 authorization-bearing artifact, never lands silently. An execution artifact
-naming a checker version whose adoption provenance does not verify, or whose
+naming a checker version without an effective owner act, or whose
 declared applicability does not cover the clause certified, is not route 4 and
 caps at `report-fact`. **Acceptance test this clause must survive:** a checker
 whose body is `return PASS` — deterministic, re-runnable, and certifying every

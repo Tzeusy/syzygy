@@ -246,13 +246,14 @@ saying so is an N/A judgment, not an omission.
 contract's, not this clause's.** They are stated by the confirmed contract
 modules **RFC1-33, RFC6-28, RFC7-38, RFC8-32, and RFC9-52**: a reviewed
 N/A judgment is a recorded **owner** judgment homed in `decisions/`
-(RFC3-15), honored only where its owner-act provenance is verifiable under
-**RFC3-16(a)**; where that provenance does not verify, the judgment maps
-nothing — the consequence remains unmapped and **renders Unknown, never
+(RFC3-15), honored only through an effective owner act under **RFC3-16(a)**,
+in state (1) or state (2), with that state rendered; absent or invalid acts
+map nothing — the consequence remains unmapped and **renders Unknown, never
 covered** (VIS-2). This clause adds only the specification-side
 **production obligation**: the specification ships with its coverage
 matrix, and every N/A row in that matrix cites the owner judgment's record
-in `decisions/`, so the RFC3-16(a) check has something to verify. A matrix
+in `decisions/`, so the RFC3-16(a) gate can evaluate the act and expose its
+exact provenance state. A matrix
 whose N/A rows rest on anything less — the author's or a reviewer's
 say-so, a judgment recorded only inside the spec — does not discharge this
 clause. *(History: a confirmer limb was added 2026-08-13 against RD-51

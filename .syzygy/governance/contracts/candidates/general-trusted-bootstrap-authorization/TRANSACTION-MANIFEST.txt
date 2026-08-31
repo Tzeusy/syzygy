@@ -1,0 +1,11 @@
+# GENERAL-TRUSTED-BOOTSTRAP AUTHORIZATION TRANSACTION MANIFEST
+# 7 bound subjects; order is protocol-defined, not inferred.
+# This file's own sha256 is the sole argument of the owner ceremony.
+# A changed subject, row, order or digest retires the offering.
+c649a6849241027da46f8e5299696a92061bc9118a60bd3a2a19b84b61533d15  .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/ACT-SEMANTICS.md
+4144b8499966062852b7092c97a61df507e194c48cc484fe0302385d40c61911  .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/IMPACT-LEDGER.md
+c2c3b7087d39696061385fcc5a4ca2f9cbec327619e6b09859e86ee77396d818  .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/CONTRACT-AMENDMENT-MANIFEST.txt
+cf485f39b375bdfb7038161a97b0d4c0ffa3731c177837af6ee9ecacc575d1ba  .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/PWB-COVERAGE-AMENDMENT-MANIFEST.txt
+15431d8ba1fe25a61e4dc2713c4d51fad1cf6d25ef7a9103cc616265102289c9  openspec/changes/project-registration-and-honest-shape-visibility/CONTRACT-COVERAGE.md
+9904e93cf38fdcfb9fa95407d6f77de289075f414c9a18505ce2d7561d53369a  openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
+cd2511a00d391e5e61410a65ab7a215264064ab5d0e6e1618ee83224c8a8f503  .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md

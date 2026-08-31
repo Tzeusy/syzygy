@@ -14,10 +14,9 @@ tags: [correction-plane, adjudication, compensation, stop, partial-failure]
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until
-the independent A1 correlation mechanism exists, and as a Syzygy-verified
-effective act only after correlation (RFC3-16). Absent such a record, this
-contract binds nothing.
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds nothing.
 
 **Package:** module 4 of 5 of the RFC 0010 contract package. Index, clause
 map, lookup rule, package-level integration and deferrals: `README.md`.

@@ -18,13 +18,13 @@ owner-reviewed N/A. Every `unknown-uncovered` row remains a disclosed gap.
 
 | Artifact | sha256 | Base consequences |
 |---|---|---:|
-| `contract-coverage-matrix/RFC-0001-0003.md` | `31174ca2d6a5e9c2bcb7e2973f3f53c978496dad32a22ea49bf69d8107039b68` | 210 |
-| `contract-coverage-matrix/RFC-0004-0006.md` | `e7e4eed310e9cc16888d3d097e68a9a64bd2d073e0018fd8bfc679dd50c73332` | 220 |
-| `contract-coverage-matrix/RFC-0007-0009.md` | `fa272738b85c64b6e455c06da26c01d6f3b80aab504c68ad18f57918d1e953ea` | 183 |
+| `contract-coverage-matrix/RFC-0001-0003.md` | `d03eebe142d9cc8b9046243d33bcd498debc6235ec9f8700b114834987aeb88e` | 210 |
+| `contract-coverage-matrix/RFC-0004-0006.md` | `bccadc7d5218eb5fa5b2a008747a9f90a2d62cac08f7dd604f6c90872d5a347d` | 220 |
+| `contract-coverage-matrix/RFC-0007-0009.md` | `b09abdb8aaf8d54f378139d1e4f93e053d5fa7d721c9e4dbd1f750f5a7987d9c` | 183 |
 
 ## Repair overlay
 
-`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `1f8996db614e8cd463c7e887e3444663721e9b1d661f75020d566058d033b436`
+`CONTRACT-COVERAGE-REPAIR-DELTA.md` sha256 `732053ce53814f65a65d940c3ea65e0117b837fc375004d57d08c25ed3bd7a87`
 supersedes 62 base rows with 71 effective rows.
 
 ## Verification

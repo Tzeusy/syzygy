@@ -12,9 +12,9 @@ tags: [sec-2, sec-5, vis-1, egress-choke-point, fail-closed, hash-not-body, rfc3
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until the
-independent A1 correlation mechanism exists, and as a Syzygy-verified effective
-act only after correlation (RFC3-16). Absent such a record, this contract binds
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds
 nothing.
 
 **Package:** module 2 of 3 of the RFC 0005 contract package. Index, clause map,
@@ -154,18 +154,22 @@ RFC5-15 field nominally satisfied.
 transmission of governed-project content passes one consent check naming
 (provider, content classes, project) and emits an audit record (RFC5-25). Three
 parts must all pass: the consent record is **in force**; the content's class is
-**determinable and within the consented set** under a classification policy whose
-own owner-act provenance verifies (RFC5-14 — undeterminable fails closed, and so
-does unverifiable, since a forged classification passes this part while telling
-the truth about the consent record); and the consent record's **owner-act
-provenance is verifiable under RFC3-16(a)** — a consent record present in the
-governed tree without it does not authorize an egress, blocks the transmission,
-and mints a contradiction, because the tree the consent lives in is writable by
-fleet workers, SEC-3's untrusted actor class, extended to committed artifacts by
-the premise RFC3-16(a) states. A feature that transmits as a side effect without
-traversing the choke point is the SEC-2 violation, whatever its intent. Remote
-backing dependencies (a remote database, FD-009) are permitted under the same
-rule — a backing store the owner does not control is a provider.
+**determinable and within the consented set** under a classification policy
+carrying an effective owner act under RFC3-16(a) (RFC5-14 — undeterminable fails
+closed, and so does a missing or invalid act, since a forged classification
+passes this part while telling the truth about the consent record); and the
+consent record carries an **effective owner act under RFC3-16(a)**. State (1)
+and state (2) are both effective, and the exact state of each act is disclosed.
+A consent record present in the governed tree without a valid act does not
+authorize an egress, blocks the transmission, and mints a contradiction, because
+the tree the consent lives in is writable by fleet workers, SEC-3's untrusted
+actor class, extended to committed artifacts by the premise RFC3-16(a) states.
+The classification-policy and consent acts warrant only the scoped
+classification and egress; they are never evidence that the transmission
+succeeded or any transmitted claim is true. A feature that transmits as a side
+effect without traversing the choke point is the SEC-2 violation, whatever its
+intent. Remote backing dependencies (a remote database, FD-009) are permitted
+under the same rule — a backing store the owner does not control is a provider.
 
 ### 3.8 Secret handling at ingest boundaries
 
@@ -184,12 +188,15 @@ governing policy for A. Screening is fail-closed: content matching the policy is
 excluded; content that **cannot be classified is excluded, not indexed**. The
 policy version is a snapshot input (RFC2-1 item 7), so what was screened is part
 of every evaluation's identity — and the policy is honored **only under
-RFC3-16(a)**: it is an owner-approved declaration whose effect is to widen what
-Syzygy may take in, so a permissive version an untrusted writer could mint would
-admit at every ingest boundary exactly the content SEC-5 requires excluded, and
-the exclusion counts would render honest about a screen that never screened. An
-unverifiable policy does not fail open: the ingest is blocked on RFC3-16(a)'s
-effect rule, never performed under the unverified policy.
+RFC3-16(a)**, through an effective owner act bound to its exact digest: it is an
+owner-approved declaration whose effect is to widen what Syzygy may take in, so
+a permissive version an untrusted writer could mint would admit at every ingest
+boundary exactly the content SEC-5 requires excluded, and the exclusion counts
+would render honest about a screen that never screened. State (1) and state (2)
+are both effective, with the exact state disclosed. A missing or invalid act
+does not fail open: the ingest is blocked on RFC3-16(a)'s effect rule, never
+performed under that policy. The act warrants use of the policy; it is never
+evidence that screening succeeded or that admitted content is secret-free.
 
 **RFC5-17.** Exclusions carry **hash-not-body provenance**: an excluded item is
 recorded as (content digest, location reference, policy version, redaction

@@ -12,9 +12,9 @@ tags: [foundational, epistemic, inference, challenge, fail-closed, owner-act-pre
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until the
-independent A1 correlation mechanism exists, and as a Syzygy-verified effective
-act only after correlation (RFC3-16). Absent such a record, this contract binds
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds
 nothing.
 
 **Package:** module 2 of 4 of the RFC 0002 contract package. Index, clause map,
@@ -51,9 +51,9 @@ expiry-eligible challenge keeps suspending until a recorded act resolves it,
 since automatic expiry would improve a claim over an unchanged snapshot.
 And every declared bound or policy here — admission latency, resolution, sweep —
 is **authorization-bearing under RFC3-16(a)**: the governance plane is writable
-by fleet workers, so committed presence in the tree is forgeable from inside it
-and is not provenance. Where provenance does not verify, the class carries no
-challenges and the suspensions stand.
+by fleet workers, so committed presence in the tree is never an owner act by
+itself. Without an effective owner act, the class carries no challenges and
+the suspensions stand; state (1) remains visibly uncorrelated.
 
 ---
 
@@ -140,10 +140,13 @@ worker-minted latency bound widens the window in which a claim renders its
 deterministic status while a challenge against it sits unadmitted — disclosed
 but not yet biting; a worker-minted resolution or sweep policy would un-suspend
 wholesale, without any human act, every claim an admitted challenge
-conservatively suspended to Unknown. Where provenance does not verify, the
-claim class **does not carry challenges at all** rather than carrying them
-under an unverified bound, and an unverifiable resolution or sweep policy
-resolves nothing — the suspensions stand (RFC3-16(a)'s effect rule).
+conservatively suspended to Unknown. Without an effective owner act, the claim
+class **does not carry challenges at all** rather than carrying them under an
+invalid bound, and an invalid resolution or sweep policy resolves nothing —
+the suspensions stand (RFC3-16(a)'s effect rule). State-(1) and state-(2) acts
+are both effective; kernel-recorded admission, rejection and deterministic
+sweep-resolution facts remain facts, never owner acts, and carry the policy's
+act provenance.
 
 **Admission authority is split by who minted the challenge** *(ruled at
 acceptance by owner decision B2, amending the drafted uniform-mechanical

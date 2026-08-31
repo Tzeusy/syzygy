@@ -14,9 +14,9 @@ tags: [presentation, non-authoritative, claim-block, source-anchor, target-state
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until the
-independent A1 correlation mechanism exists, and as a Syzygy-verified effective
-act only after correlation (RFC3-16). Absent such a record, this contract binds
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds
 nothing.
 
 **Package:** module 1 of 2 of the RFC 0007 contract package. Index, clause map,
@@ -413,9 +413,11 @@ The loop this closes is specific: RFC7-20 lets an agent generate the draft and
 this clause lets an attributed act adopt it, so without the predicate the same
 untrusted actor class (SEC-3, as RFC3-16(a) extends it to committed artifacts)
 writes the draft *and* the record saying a human adopted it, and no later
-reader can tell. Adoption whose owner-act provenance does not verify **does not
-bind**: the draft stays a draft and renders unadopted (RFC3-16), never curated
-narrative.
+reader can tell. An effective owner act in state (1) or state (2) binds the
+adoption, and the act's exact provenance state is rendered; state (1) remains
+visibly uncorrelated. Adoption without an effective owner act under
+RFC3-16(a) **does not bind**: the draft stays a draft and renders unadopted
+(RFC3-16), never curated narrative.
 
 **RFC7-22 — Rejection and the queue.** The pending-draft queue is
 **Trajectory's** (SDR-18): drafting is work with an owner and a lifecycle,
@@ -478,17 +480,21 @@ review-failure record — whose effect is to freeze autonomous adoption — insi
 the tree RFC7-3 says may be deleted without changing any truth, status, work,
 consent, or normative fact.
 
-**The verdict is honored only under RFC3-16(a).** The record's home makes it
-governance-plane content, and that plane is writable by the untrusted actor
-class (SEC-3's class, extended to committed artifacts by the premise
-RFC3-16(a) states), so a *pass* in `decisions/` is a claim by whoever wrote the
-file until its owner-act provenance verifies. The stake: the verdict's effect
-under VIS-3 is to lift or hold the freeze on autonomous adoption, so a
-worker-committed pass would lift the freeze that exists to stop that same
-actor class from adopting its own prose. A verdict whose provenance does not
-verify **does not clear the freeze** — the failure stands rendered and the
-condition mints a contradiction (RFC3-16(a)'s effect rule), rather than the
-freeze quietly resolving in the author's favor.
+**The verdict is honored only through an effective owner act under
+RFC3-16(a).** The record's home makes it governance-plane content, and that
+plane is writable by the untrusted actor class (SEC-3's class, extended to
+committed artifacts by the premise RFC3-16(a) states), so a *pass* in
+`decisions/` is only a stored assertion until a real human owner act makes it
+effective. A valid state-(1) or state-(2) act may clear or hold the freeze as
+the verdict directs, with its exact provenance state rendered; state (1)
+remains visibly uncorrelated. The verdict is a warrant governing the review
+freeze, never project evidence. The stake: the verdict's effect under VIS-3 is
+to lift or hold the freeze on autonomous adoption, so a worker-committed pass
+would lift the freeze that exists to stop that same actor class from adopting
+its own prose. A verdict without an effective owner act **does not clear the
+freeze** — the failure stands rendered and the condition mints a contradiction
+(RFC3-16(a)'s effect rule), rather than the freeze quietly resolving in the
+author's favor.
 
 Agents may draft repairs freely (VIS-3's freeze reaches adoption, never
 authorship) — freely as to *permission*, never as to conformance: a drafted

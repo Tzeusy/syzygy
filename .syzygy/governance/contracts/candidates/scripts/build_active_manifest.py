@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
-"""Generate the active-contract manifest and the six wave manifests.
+"""Maintain the current manifest and the six wave-manifest act arguments.
 
 Round-2026-08d replaced the all-in-one act 1 with six independently
 acceptable waves (owner work order §4; design record:
 `round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md`). Each wave manifest's own
 sha256 is that wave act's argument, exactly as the active manifest's
 digest was the old act-1 argument.
+
+A performed wave manifest is an immutable historical act argument. Its rows
+retain the module digests accepted at the act even when a later, separately
+authorized amendment changes those modules. This script verifies the
+performed manifest's own digest against `decisions/ACCEPTANCE-ACT-RECORD.md`
+and verifies that its paths still equal the wave's current path membership;
+it never rewrites the performed bytes. `ACTIVE-CONTRACT-MANIFEST.txt` and
+unperformed wave manifests continue to track current candidate bytes. A
+current amendment is bound by its own amendment manifest, never by rewriting
+the historical wave argument.
 
 Rules this script makes executable:
 
@@ -17,19 +27,21 @@ Rules this script makes executable:
 2. **Digests are scripted, never transcribed; the sort is defined.** Rows
    are `sha256sum`-style, ordered by Python string sort (codepoint order)
    on the repo-relative path — locale-independent, unlike `find | sort`.
-3. **The waves partition the package.** The union of the six wave
-   manifests equals the active manifest, with no overlap; the partition is
-   recomputed and asserted on every run.
+3. **The waves partition the package by path.** The union of the six wave
+   manifest path sets equals the active manifest path set, with no overlap;
+   the partition is recomputed and asserted on every run. Row digests in a
+   performed manifest are act-time history, not current-byte assertions.
 
 Usage:
-  build_active_manifest.py            rewrite all seven manifests
-  build_active_manifest.py --check    recompute and diff; nonzero on drift
+  build_active_manifest.py            rewrite current manifests; preserve acts
+  build_active_manifest.py --check    verify current and performed manifests
   build_active_manifest.py --selftest mutate a copy, confirm --check fails
   build_active_manifest.py --root D   operate on candidates tree D (tests)
 """
 import argparse
 import hashlib
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -69,6 +81,7 @@ WAVE_OF_MODULE = {
     "rfcs/RFC-0010/effects-recovery-and-stop.md": "D2",
 }
 WAVES = ("A", "B", "C1", "C2", "D1", "D2")
+PERFORMED_WAVES_REQUIRED = ("A", "B")
 WAVE_TITLE = {
     "A": "kernel, evidence, storage, admission, cross-surface selection "
          "(RFC 0001-0006)",
@@ -81,6 +94,17 @@ WAVE_TITLE = {
     "D2": "mission control correction plane (RFC-0010 module 4)",
 }
 
+ACT_ARGUMENT_RE = re.compile(
+    r"^ACCEPT FOUNDATIONAL WAVE (A|B|C1|C2|D1|D2): "
+    r"([0-9a-f]{64})$", re.MULTILINE)
+DIGEST_ROW = re.compile(r"^(?P<sha>[0-9a-f]{64})  (?P<path>rfcs/\S+)$")
+
+
+def default_act_record(root):
+    """Performed-act record paired with a candidates root."""
+    return os.path.normpath(os.path.join(
+        root, "..", "..", "decisions", "ACCEPTANCE-ACT-RECORD.md"))
+
 
 def sha256_file(path):
     h = hashlib.sha256()
@@ -88,6 +112,101 @@ def sha256_file(path):
         for chunk in iter(lambda: fh.read(65536), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def performed_wave_arguments(act_record):
+    """Return performed wave -> immutable manifest digest from the act record.
+
+    The performed record, not the still-editable offering record and not a
+    constant in this generator, owns the historical argument.
+    """
+    try:
+        with open(act_record, encoding="utf-8") as fh:
+            body = fh.read()
+    except OSError as exc:
+        return None, [f"{act_record} — performed-act record unreadable: {exc}"]
+    found = {}
+    errors = []
+    for wave, digest in ACT_ARGUMENT_RE.findall(body):
+        if wave in found:
+            errors.append(
+                f"{act_record} — performed Wave {wave} phrase occurs more "
+                "than once; the immutable act argument is ambiguous")
+        else:
+            found[wave] = digest
+    for wave in PERFORMED_WAVES_REQUIRED:
+        if wave not in found:
+            errors.append(
+                f"{act_record} — performed Wave {wave} act argument missing")
+    return (found if not errors else None), errors
+
+
+def manifest_rows(path, display):
+    """Parse one manifest strictly, returning ordered `(path, digest)` rows."""
+    rows, errors = [], []
+    try:
+        with open(path, encoding="utf-8") as fh:
+            lines = fh.read().splitlines()
+    except OSError as exc:
+        return None, [f"{display} — manifest unreadable: {exc}"]
+    for line_no, line in enumerate(lines, 1):
+        if not line or line.startswith("#"):
+            continue
+        match = DIGEST_ROW.fullmatch(line)
+        if not match:
+            errors.append(
+                f"{display}:{line_no} — malformed manifest row; expected "
+                "`<64 lowercase hex><two spaces><rfcs/path>`")
+            continue
+        rows.append((match.group("path"), match.group("sha")))
+    paths = [rel for rel, _sha in rows]
+    if len(paths) != len(set(paths)):
+        errors.append(f"{display} — duplicate module path in manifest")
+    if paths != sorted(paths):
+        errors.append(
+            f"{display} — rows are not in codepoint path order")
+    if not rows:
+        errors.append(f"{display} — manifest has no module rows")
+    return (rows if not errors else None), errors
+
+
+def validate_performed_manifests(root, per_wave, act_record):
+    """Validate immutable act arguments without re-hashing historical rows.
+
+    The manifest's own recorded digest proves its bytes are the act-time
+    bytes. Only row *paths* are compared with today's wave assignment. Row
+    digests deliberately remain the content digests accepted at the act.
+    """
+    arguments, errors = performed_wave_arguments(act_record)
+    if errors:
+        return None, errors
+    for wave, recorded_digest in sorted(arguments.items()):
+        rel = f"wave-manifests/WAVE-{wave}-MANIFEST.txt"
+        full = os.path.join(root, rel)
+        if not os.path.exists(full):
+            errors.append(
+                f"{rel} — performed Wave {wave} manifest is missing")
+            continue
+        actual_digest = sha256_file(full)
+        if actual_digest != recorded_digest:
+            errors.append(
+                f"{rel} — sha256 {actual_digest} does not equal performed "
+                f"act argument {recorded_digest}; refuse to rewrite history")
+            continue
+        rows, row_errors = manifest_rows(full, rel)
+        errors.extend(row_errors)
+        if rows is None:
+            continue
+        actual_paths = [path for path, _sha in rows]
+        expected_paths = [path for path, _sha in per_wave[wave]]
+        if actual_paths != expected_paths:
+            missing = sorted(set(expected_paths) - set(actual_paths))
+            extra = sorted(set(actual_paths) - set(expected_paths))
+            errors.append(
+                f"{rel} — performed manifest path membership differs from "
+                f"current Wave {wave} assignment; missing={missing}, "
+                f"unexpected={extra}")
+    return (arguments if not errors else None), errors
 
 
 def declaring_waves(rel):
@@ -161,7 +280,7 @@ def manifest_text(rows, header_lines):
     return "\n".join(out) + "\n"
 
 
-def build(root):
+def build(root, act_record):
     assigned, errors = enumerate_modules(root)
     if errors:
         return None, errors
@@ -208,35 +327,44 @@ def build(root):
     if empty:
         return None, [f"wave {w} is empty — a wave act with no subject is "
                       f"an error" for w in empty]
+    performed, performed_errors = validate_performed_manifests(
+        root, per_wave, act_record)
+    if performed_errors:
+        return None, performed_errors
     files = {}
     files["ACTIVE-CONTRACT-MANIFEST.txt"] = manifest_text(all_rows, [
-        "ACTIVE-CONTRACT-MANIFEST — final pre-specification package "
-        "(round-2026-08d wave structure)",
+        "ACTIVE-CONTRACT-MANIFEST — current candidate contract bytes "
+        "(round-2026-08d wave path structure)",
         f"sha256 per active module, {len(all_rows)} modules; rows sorted by "
         "codepoint order of the path.",
         "Generated by scripts/build_active_manifest.py — regenerate with it; "
         "never hand-edit.",
-        "The six wave manifests in wave-manifests/ partition this set; each "
-        "wave manifest's own sha256 is that wave act's argument "
-        "(FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md).",
+        "The six wave manifests partition this set by path. Performed wave "
+        "manifests preserve act-time content digests; unperformed wave "
+        "manifests track current candidate bytes.",
+        "Current amendments use a separate amendment manifest; they never "
+        "rewrite a performed wave manifest or its recorded act argument.",
     ])
     for w in WAVES:
+        if w in performed:
+            continue
         files[f"wave-manifests/WAVE-{w}-MANIFEST.txt"] = manifest_text(
             per_wave[w], [
                 f"WAVE-{w}-MANIFEST — {WAVE_TITLE[w]}",
                 f"{len(per_wave[w])} module(s); subset of "
                 "ACTIVE-CONTRACT-MANIFEST.txt; rows sorted by codepoint "
                 "order of the path.",
-                "Generated by scripts/build_active_manifest.py — regenerate "
-                "with it; never hand-edit.",
-                f"This file's own sha256 is the argument of the phrase "
-                f"`ACCEPT FOUNDATIONAL WAVE {w}: <sha256>`.",
+                "Generated while this wave is unperformed; after a recorded "
+                "owner act, these exact bytes become immutable history.",
+                f"While unperformed, this file's current sha256 is the "
+                f"offered argument of `ACCEPT FOUNDATIONAL WAVE {w}: "
+                "<sha256>`.",
             ])
-    return files, []
+    return (files, performed), []
 
 
-def stray_wave_manifests(root, generated):
-    """Files sitting in `wave-manifests/` that this script did not write.
+def stray_wave_manifests(root):
+    """Files outside the closed six-manifest wave population.
 
     Review RD-17 finding 5: the directory was never a population. A seventh,
     internally false `WAVE-C-MANIFEST.txt` dropped into it produced *all 7
@@ -247,23 +375,25 @@ def stray_wave_manifests(root, generated):
     home = os.path.join(root, "wave-manifests")
     if not os.path.isdir(home):
         return []
-    expected = {os.path.basename(r) for r in generated
-                if r.startswith("wave-manifests/")}
+    expected = {f"WAVE-{wave}-MANIFEST.txt" for wave in WAVES}
     return sorted(f"wave-manifests/{n} — sits in the wave-manifest home and "
-                  f"is not one of the {len(expected)} files this generator "
-                  f"writes; a file here reads as a wave act's argument"
+                  f"is not one of the {len(expected)} manifests this script "
+                  f"maintains or preserves; a file here reads as a wave "
+                  f"act's argument"
                   for n in os.listdir(home)
                   if os.path.isfile(os.path.join(home, n))
                   and n not in expected)
 
 
-def run(root, check):
-    files, errors = build(root)
+def run(root, check, act_record=None):
+    act_record = act_record or default_act_record(root)
+    built, errors = build(root, act_record)
     if errors:
         for e in errors:
             print(f"ERROR: {e}")
         return 2
-    strays = stray_wave_manifests(root, files)
+    files, performed = built
+    strays = stray_wave_manifests(root)
     if strays:
         for s in strays:
             print(f"ERROR: {s}")
@@ -291,21 +421,26 @@ def run(root, check):
         # smaller manifest and still print agreement.
         n_modules = sum(1 for ln in files["ACTIVE-CONTRACT-MANIFEST.txt"]
                         .splitlines() if not ln.startswith("#"))
-        pop = (f"{len(files)} manifest(s) over {n_modules} module(s) in "
-               f"{len(WAVES)} wave(s)")
+        pop = (f"{len(files)} current manifest(s) regenerated over "
+               f"{n_modules} module(s), {len(performed)} performed wave "
+               f"manifest(s) preserved, {len(WAVES)} wave path sets checked")
         if drift:
             print(f"population: {pop}")
             return 1
-        print(f"all {len(files)} manifests match regeneration — {pop}")
+        print("current manifests match regeneration and performed wave "
+              f"arguments verify — {pop}")
         return 0
     for rel in files:
         sha = hashlib.sha256(files[rel].encode()).hexdigest()
         print(f"{'rewrote' if rel in drift else 'unchanged'}  {rel}  "
               f"sha256 {sha}")
+    for wave, digest in sorted(performed.items()):
+        print(f"preserved  wave-manifests/WAVE-{wave}-MANIFEST.txt  "
+              f"performed-act sha256 {digest}")
     return 0
 
 
-def selftest(root):
+def selftest(root, act_record=None):
     """Mutate a copy of the tree per failure class; confirm --check fails.
 
     Verification rule 6: a check nobody has seen fail is not evidence.
@@ -314,27 +449,61 @@ def selftest(root):
     import tempfile
     ok = True
     cases = []
+    act_record = act_record or default_act_record(root)
+    performed, argument_errors = performed_wave_arguments(act_record)
+    assert not argument_errors, (
+        "selftest setup: performed act arguments unavailable: "
+        + "; ".join(argument_errors))
 
     def clone():
         d = tempfile.mkdtemp(prefix="manifest-selftest-")
         shutil.copytree(os.path.join(root, "rfcs"), os.path.join(d, "rfcs"))
-        rc = run(d, check=False)
+        os.makedirs(os.path.join(d, "wave-manifests"))
+        for wave in performed:
+            shutil.copy2(
+                os.path.join(root, f"wave-manifests/WAVE-{wave}-MANIFEST.txt"),
+                os.path.join(d, f"wave-manifests/WAVE-{wave}-MANIFEST.txt"))
+        rc = run(d, check=False, act_record=act_record)
         assert rc == 0, "selftest setup: clean generation failed"
         return d
 
-    # 1. Module content mutated → active + wave manifests both drift.
+    # 1. A performed-wave module changes under a later amendment. Regeneration
+    # updates the active manifest but preserves the historical act argument.
+    d = clone()
+    target_rel = "rfcs/RFC-0002/challenge-lifecycle.md"
+    target = os.path.join(d, target_rel)
+    wave_a = os.path.join(d, "wave-manifests/WAVE-A-MANIFEST.txt")
+    before = sha256_file(wave_a)
+    with open(target, "a", encoding="utf-8") as fh:
+        fh.write("\nperformed-wave amendment\n")
+    rc = run(d, check=False, act_record=act_record)
+    active_rows, active_errors = manifest_rows(
+        os.path.join(d, "ACTIVE-CONTRACT-MANIFEST.txt"),
+        "ACTIVE-CONTRACT-MANIFEST.txt")
+    current = dict(active_rows or []).get(target_rel)
+    cases.append((
+        "performed-wave amendment updates active without rewriting act manifest",
+        rc == 0 and not active_errors and before == sha256_file(wave_a)
+        and before == performed["A"] and current == sha256_file(target)
+        and run(d, check=True, act_record=act_record) == 0))
+    shutil.rmtree(d)
+
+    # 1b. An unperformed-wave module mutation still drifts both current
+    # manifests until regeneration.
     d = clone()
     target = os.path.join(d, "rfcs/RFC-0010/effects-recovery-and-stop.md")
     with open(target, "a", encoding="utf-8") as fh:
         fh.write("\nmutation\n")
-    cases.append(("module content mutation detected", run(d, check=True) != 0))
+    cases.append(("unperformed module content mutation detected",
+                  run(d, check=True, act_record=act_record) == 1))
     shutil.rmtree(d)
 
     # 2. Unassigned module added → hard error, not silent inclusion.
     d = clone()
     with open(os.path.join(d, "rfcs/RFC-9999-unassigned.md"), "w") as fh:
         fh.write("stray\n")
-    cases.append(("unassigned module rejected", run(d, check=True) == 2))
+    cases.append(("unassigned module rejected",
+                  run(d, check=True, act_record=act_record) == 2))
     shutil.rmtree(d)
 
     # 2b. **The colliding name.** Case 2's `RFC-9999` collides with no wave
@@ -346,7 +515,7 @@ def selftest(root):
     d = clone()
     with open(os.path.join(d, "rfcs/RFC-0006-scratch.md"), "w") as fh:
         fh.write("stray\n")
-    rc = run(d, check=True)
+    rc = run(d, check=True, act_record=act_record)
     assigned_now, errs = enumerate_modules(d)
     cases.append(("colliding stray name rejected, not admitted to Wave A",
                   rc == 2 and "rfcs/RFC-0006-scratch.md" not in assigned_now
@@ -360,7 +529,7 @@ def selftest(root):
     saved = dict(WAVE_OF_RFC)
     WAVE_OF_RFC["RFC-0011"] = "A"
     try:
-        _files, errs = build(d)
+        _files, errs = build(d, act_record)
         cases.append(("double-claimed module fails the partition assertion",
                       _files is None
                       and any("claim it 2 time(s)" in e for e in errs)))
@@ -376,23 +545,26 @@ def selftest(root):
     with open(os.path.join(d, "wave-manifests/WAVE-C-MANIFEST.txt"), "w") as fh:
         fh.write("0" * 64 + "  rfcs/forged.md\n")
     cases.append(("stray file in wave-manifests/ rejected",
-                  run(d, check=True) == 2))
+                  run(d, check=True, act_record=act_record) == 2))
     shutil.rmtree(d)
 
     # 3. Non-.md file under rfcs/ → hard error.
     d = clone()
     with open(os.path.join(d, "rfcs/RFC-0010/notes.txt"), "w") as fh:
         fh.write("stray\n")
-    cases.append(("non-.md file rejected", run(d, check=True) == 2))
+    cases.append(("non-.md file rejected",
+                  run(d, check=True, act_record=act_record) == 2))
     shutil.rmtree(d)
 
-    # 4. Hand-edited wave manifest → drift.
+    # 4. Tampering a performed manifest is an act-argument failure. The
+    # generator refuses to rewrite it even in write mode.
     d = clone()
     wm = os.path.join(d, "wave-manifests/WAVE-A-MANIFEST.txt")
     with open(wm, "a", encoding="utf-8") as fh:
         fh.write("0" * 64 + "  rfcs/forged.md\n")
-    cases.append(("hand-edited wave manifest detected",
-                  run(d, check=True) != 0))
+    cases.append(("tampered performed manifest rejected",
+                  run(d, check=True, act_record=act_record) == 2
+                  and sha256_file(wm) != performed["A"]))
     shutil.rmtree(d)
 
     for label, passed in cases:
@@ -406,7 +578,10 @@ if __name__ == "__main__":
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--root", default=DEFAULT_ROOT)
+    ap.add_argument("--act-record", default=None,
+                    help="performed ACCEPTANCE-ACT-RECORD.md paired with "
+                         "--root (defaults to the repository location)")
     args = ap.parse_args()
     if args.selftest:
-        sys.exit(selftest(args.root))
-    sys.exit(run(args.root, args.check))
+        sys.exit(selftest(args.root, args.act_record))
+    sys.exit(run(args.root, args.check, args.act_record))

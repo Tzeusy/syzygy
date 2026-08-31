@@ -40,9 +40,11 @@ Checks
          acceptance (CG-4b)
   CG-5   canonical craft banners are truthful
   CG-6   accepted homes do not exist yet (created only by owner acts)
-  CG-7   ACTIVE-CONTRACT-MANIFEST digests are valid; every act argument
-         matches its subject; each wave row's stated module count matches
-         its manifest (CG-7f); `wave-manifests/` holds exactly six (CG-7g)
+  CG-7   ACTIVE-CONTRACT-MANIFEST and unperformed-wave row digests are
+         current; performed-wave manifests match their recorded act arguments
+         and all six path sets partition the active set; each wave row's
+         stated module count matches its manifest (CG-7f);
+         `wave-manifests/` holds exactly six (CG-7g)
   CG-8   default-load size and context budgets reported, never enforced
          (charter §7.3 figures every run; §11.4 decomposition triggers)
   CG-9   duplicate authority homes absent
@@ -1404,16 +1406,17 @@ def cg6_accepted_homes(res):
 
 MANIFEST = f"{CANDIDATES}/ACTIVE-CONTRACT-MANIFEST.txt"
 DIGEST_ROW = re.compile(r"^(?P<sha>[0-9a-f]{64})\s+(?P<path>\S.*)$")
-#: The manifest's *own* sha256 is the argument of owner act 1, so the
-#: acceptance record and the manifest must agree. They are edited by
-#: different hands at different times; nothing but a check keeps them
-#: together.
+#: The current active manifest is no act's argument. Wave manifests are act
+#: arguments: unperformed waves track current candidate bytes, while performed
+#: waves are immutable historical subjects whose own digest is recorded here.
 ACCEPTANCE_RECORD = f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md"
+PERFORMED_ACT_RECORD = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
 #: Round-2026-08d wave structure: the all-in-one act-1 phrase is retired;
 #: six wave manifests partition the active set and each one's own sha256 is
 #: that wave act's argument (ACCEPTANCE-WAVE-DESIGN.md). The active manifest
 #: remains the package identity and is no act's argument.
 WAVE_IDS = ("A", "B", "C1", "C2", "D1", "D2")
+PERFORMED_WAVE_IDS_REQUIRED = ("A", "B")
 WAVE_MANIFESTS = {w: f"{CANDIDATES}/wave-manifests/WAVE-{w}-MANIFEST.txt"
                   for w in WAVE_IDS}
 
@@ -1503,10 +1506,11 @@ def cg7f_wave_counts(res, record=None, wave_rows=None):
 
 
 def cg7g_wave_manifest_population(paths, res, listing=None):
-    """`wave-manifests/` holds exactly the six generated manifests.
+    """`wave-manifests/` holds exactly the six maintained manifests.
 
-    The generator diffs only the seven files it writes and CG-7a reads only
-    the six paths it names, so neither treats the directory as a population.
+    The generator diffs current manifests and validates performed ones while
+    CG-7a reads only the six paths it names, so neither operation alone treats
+    the directory as a population.
     Review RD-17 finding 5 dropped a seventh, internally false
     `WAVE-C-MANIFEST.txt` into it: the generator reported *all 7 manifests
     match regeneration* and the battery reported zero findings. The directory
@@ -1526,14 +1530,15 @@ def cg7g_wave_manifest_population(paths, res, listing=None):
             actual = {f"{home}/{n}" for n in sorted(os.listdir(base))
                       if os.path.isfile(os.path.join(base, n))}
     findings = [f"{p} — sits in `{home}/` and is not one of the six generated "
-                f"wave manifests; a file here reads as a wave act's argument"
+                f"or preserved wave manifests; a file here reads as a wave "
+                f"act's argument"
                 for p in sorted(actual - expected)]
     findings += [f"{p} — declared wave manifest is missing from `{home}/`"
                  for p in sorted(expected - actual)]
     res.add("FAIL" if findings else ("OK" if actual else "WARN"),
             "CG-7g  wave-manifests/ population closed", len(actual),
             len(findings), "file",
-            note=(f"{len(expected)} generated manifests expected"
+            note=(f"{len(expected)} maintained manifests expected"
                   if actual else f"`{home}/` is empty or absent — "
                                  f"nothing examined"),
             details=findings)
@@ -1549,11 +1554,24 @@ def sha256_file(abspath):
 
 def cg7_manifest(paths, res):
     if MANIFEST not in set(paths):
-        res.add("WARN", "CG-7a  manifest digests valid", 0, 0, "entry",
+        res.add("WARN", "CG-7a  current digests and wave paths valid",
+                0, 0, "entry",
                 note=f"{MANIFEST} not present — nothing examined")
-        res.add("WARN", "CG-7b  act-1 argument matches the manifest", 0, 0,
-                "record", note="no manifest to compare against — nothing examined")
+        res.add("WARN", "CG-7b  wave arguments match immutable/current "
+                "manifests", 0, 0, "record",
+                note="no manifest to compare against — nothing examined")
         return
+    performed_text = (read(PERFORMED_ACT_RECORD)
+                      if PERFORMED_ACT_RECORD in set(paths) else "")
+    detected_performed = {
+        wave for wave in WAVE_IDS
+        if wave_arg_pat(wave).findall(performed_text)}
+    performed_wave_ids = tuple(
+        wave for wave in WAVE_IDS
+        if wave in PERFORMED_WAVE_IDS_REQUIRED
+        or wave in detected_performed)
+    unperformed_wave_ids = tuple(
+        wave for wave in WAVE_IDS if wave not in performed_wave_ids)
     findings, n = [], 0
     active_paths = set()
     for i, ln in enumerate(read(MANIFEST).splitlines(), 1):
@@ -1570,11 +1588,12 @@ def cg7_manifest(paths, res):
         if actual != m.group("sha"):
             findings.append(f"{MANIFEST}:{i} — {m.group('path')} digest "
                             f"{actual[:12]}… != manifest {m.group('sha')[:12]}…")
-    # The six wave manifests: every row valid, and together they partition
-    # the active set — no overlap, nothing uncovered, nothing extra. The
-    # generator asserts this too; asserting it here as well means a
-    # hand-edited wave manifest fails a check instead of waiting for a
-    # regeneration to notice.
+    # The six wave manifests partition the active set **by path** — no
+    # overlap, nothing uncovered, nothing extra. Unperformed-wave row digests
+    # still describe current candidate bytes. Performed A/B row digests are
+    # the bytes accepted at the act and are deliberately not compared to
+    # amended current files; CG-7b validates each historical manifest's own
+    # digest against the performed-act record instead.
     wave_of = {}
     for w in WAVE_IDS:
         rel = WAVE_MANIFESTS[w]
@@ -1591,8 +1610,10 @@ def cg7_manifest(paths, res):
             target = os.path.join(ROOT, CANDIDATES, p)
             if not os.path.exists(target):
                 findings.append(f"{rel}:{i} — {p} does not exist")
-            elif sha256_file(target) != m.group("sha"):
-                findings.append(f"{rel}:{i} — {p} digest != manifest "
+            elif (w in unperformed_wave_ids
+                  and sha256_file(target) != m.group("sha")):
+                findings.append(f"{rel}:{i} — {p} current digest != "
+                                f"unperformed manifest "
                                 f"{m.group('sha')[:12]}…")
     for p, ws in sorted(wave_of.items()):
         if len(ws) > 1:
@@ -1606,17 +1627,21 @@ def cg7_manifest(paths, res):
                         f"manifest")
     manifest_sha = sha256_file(os.path.join(ROOT, MANIFEST))
     status = "FAIL" if findings else ("OK" if n else "WARN")
-    res.add(status, "CG-7a  manifest digests valid; waves partition the set",
+    res.add(status,
+            "CG-7a  current digests valid; wave paths partition the set",
             n, len(findings), "entry",
             note=(f"active manifest sha256 {manifest_sha} (package identity, "
-                  f"no act's argument)"
+                  f"no act's argument); {len(performed_wave_ids)} performed "
+                  "wave(s) checked by path only, "
+                  f"{len(unperformed_wave_ids)} by current row digest"
                   if n else "no digest rows parsed — nothing examined"),
             details=findings)
 
     cg7g_wave_manifest_population(paths, res)
 
     if ACCEPTANCE_RECORD not in set(paths):
-        res.add("WARN", "CG-7b  wave-act arguments match the wave manifests",
+        res.add("WARN", "CG-7b  wave arguments match immutable/current "
+                "manifests",
                 0, 0, "record",
                 note=f"{ACCEPTANCE_RECORD} not present — nothing examined")
         return
@@ -1624,25 +1649,39 @@ def cg7_manifest(paths, res):
     cg7f_wave_counts(res, record=record_text)
     bfind, bexam = [], 0
     for w in WAVE_IDS:
-        stated = set(wave_arg_pat(w).findall(record_text))
+        is_performed = w in performed_wave_ids
+        source = performed_text if is_performed else record_text
+        source_name = (PERFORMED_ACT_RECORD if is_performed
+                       else ACCEPTANCE_RECORD)
+        stated = set(wave_arg_pat(w).findall(source))
         full = os.path.join(ROOT, WAVE_MANIFESTS[w])
         actual = sha256_file(full) if os.path.exists(full) else None
         if not stated:
             bexam += 1
             bfind.append(f"wave {w} — no `ACCEPT FOUNDATIONAL WAVE {w}: "
-                         f"<sha>` found in the record; the act cannot be "
-                         f"performed as written")
+                         f"<sha>` found in {source_name}; "
+                         + ("the performed act argument is missing"
+                            if is_performed else
+                            "the act cannot be performed as written"))
             continue
         for s in sorted(stated):
             bexam += 1
             if s != actual:
-                bfind.append(f"wave {w} — record offers {s[:12]}… but the "
-                             f"wave manifest hashes to "
-                             f"{(actual or 'absent')[:12]}… — the act would "
-                             f"bind a package that no longer exists")
+                action = ("performed record binds" if is_performed
+                          else "offering record offers")
+                bfind.append(f"wave {w} — {action} {s[:12]}… but the wave "
+                             f"manifest hashes to "
+                             f"{(actual or 'absent')[:12]}… — "
+                             + ("immutable act history was tampered"
+                                if is_performed else
+                                "the offered package no longer exists"))
     res.add("FAIL" if bfind else "OK",
-            "CG-7b  wave-act arguments match the wave manifests",
-            bexam, len(bfind), "argument", details=bfind)
+            "CG-7b  wave arguments match immutable/current manifests",
+            bexam, len(bfind), "argument",
+            note=(f"{len(performed_wave_ids)} performed argument(s) from "
+                  f"{PERFORMED_ACT_RECORD}; {len(unperformed_wave_ids)} "
+                  f"unperformed offer(s) from {ACCEPTANCE_RECORD}"),
+            details=bfind)
 
     # CG-7c — the other three digest-bound acts. Act 1 alone was checked until
     # 2026-08-05, so a truthful "1 examined" covered a population of 4 and
@@ -1835,6 +1874,10 @@ ACT_DIGEST_COPY_FILES = {
     # "it was true when written" is how a stale digest survives unnoticed.
     f"{CANDIDATES}/round-2026-08g/FINAL-OWNER-AND-SPEC-CLOSURE-PREFLIGHT.md":
         ("ACCEPT FOUNDATIONAL WAVE A", "ACCEPT FOUNDATIONAL WAVE B"),
+    f"{CANDIDATES}/general-trusted-bootstrap-authorization/ACT-SEMANTICS.md":
+        ("CONFIRM CRAFT AMENDMENT: CC-SPEC",),
+    f"{CANDIDATES}/general-trusted-bootstrap-authorization/TRANSACTION-MANIFEST.txt":
+        ("CONFIRM CRAFT AMENDMENT: CC-SPEC",),
     # The P-41 offering packet (2026-08-17) quotes act 6's exact phrase so
     # the owner sees what would be performed; registered so a regenerated
     # argument turns this copy into a finding, not a silent misstatement.
@@ -3809,6 +3852,10 @@ def selftest():
                   _selftest_wave_partition("gap")))
     cases.append(("CG-7b stale wave argument in the record detected",
                   _selftest_wave_partition("stale-arg")))
+    cases.append(("CG-7a performed-wave current amendment is lawful",
+                  _selftest_wave_partition("performed-current-amendment")))
+    cases.append(("CG-7b tampered performed manifest detected",
+                  _selftest_wave_partition("tampered-performed")))
 
     # ---- CG-7f: the count predicate finding 1 asked for. A wave row may
     # bind twenty modules under the words "the 19 modules" with every digest
@@ -4917,8 +4964,12 @@ def _selftest_wave_partition(kind):
     reviewer's mutation in a scratch clone and never by the battery itself.
 
     `kind` is the mutation: `overlap` puts one module in two waves, `gap`
-    leaves one in the active manifest and no wave, `stale-arg` gives the
-    acceptance record a digest the wave manifest does not hash to.
+    leaves one in the active manifest and no wave, `stale-arg` gives an
+    unperformed offering a digest its manifest does not hash to,
+    `performed-current-amendment` changes current Wave-A bytes and the active
+    manifest while preserving the performed manifest, and
+    `tampered-performed` mutates the performed manifest after recording its
+    act argument.
     """
     class Cap:
         def __init__(self): self.rows = []
@@ -4946,6 +4997,23 @@ def _selftest_wave_partition(kind):
             mods[w] = (rel, sha256_file(full))
             paths.append(f"{CANDIDATES}/{rel}")
         active = [mods[w] for w in WAVE_IDS]
+        for w in WAVE_IDS:
+            rows = [mods[w]]
+            if kind == "overlap" and w == "B":
+                rows.append(mods["A"])
+            p = os.path.join(cand, f"wave-manifests/WAVE-{w}-MANIFEST.txt")
+            with open(p, "w", encoding="utf-8") as fh:
+                fh.write("".join(f"{s}  {r}\n" for r, s in rows))
+            paths.append(WAVE_MANIFESTS[w])
+
+        # A later amendment changes current Wave-A bytes. ACTIVE follows the
+        # new bytes; the performed A manifest deliberately retains act-time
+        # row digests.
+        if kind == "performed-current-amendment":
+            a_rel, _old_sha = mods["A"]
+            with open(os.path.join(cand, a_rel), "a", encoding="utf-8") as fh:
+                fh.write("amendment\n")
+            active[0] = (a_rel, sha256_file(os.path.join(cand, a_rel)))
         if kind == "gap":
             active.append(("rfcs/orphan.md", "0" * 64))
             with open(os.path.join(cand, "rfcs/orphan.md"), "w") as fh:
@@ -4955,27 +5023,46 @@ def _selftest_wave_partition(kind):
         with open(os.path.join(cand, "ACTIVE-CONTRACT-MANIFEST.txt"), "w") as fh:
             fh.write("".join(f"{s}  {r}\n" for r, s in sorted(active)))
         paths.append(MANIFEST)
+
+        manifest_args = {
+            w: sha256_file(os.path.join(
+                cand, f"wave-manifests/WAVE-{w}-MANIFEST.txt"))
+            for w in WAVE_IDS
+        }
+        offer_lines = []
         for w in WAVE_IDS:
-            rows = [mods[w]]
-            if kind == "overlap" and w == "B":
-                rows.append(mods["A"])
-            p = os.path.join(cand, f"wave-manifests/WAVE-{w}-MANIFEST.txt")
-            with open(p, "w", encoding="utf-8") as fh:
-                fh.write("".join(f"{s}  {r}\n" for r, s in rows))
-            paths.append(WAVE_MANIFESTS[w])
+            digest = ("0" * 64 if kind == "stale-arg" and w == "C1"
+                      else manifest_args[w])
+            offer_lines.append(
+                f"| {w} | `ACCEPT FOUNDATIONAL WAVE {w}: {digest}` | "
+                "one module |")
+        with open(os.path.join(cand, os.path.basename(ACCEPTANCE_RECORD)),
+                  "w", encoding="utf-8") as fh:
+            fh.write("\n".join(offer_lines) + "\n")
+        paths.append(ACCEPTANCE_RECORD)
+
+        performed_full = os.path.join(d, PERFORMED_ACT_RECORD)
+        os.makedirs(os.path.dirname(performed_full), exist_ok=True)
+        with open(performed_full, "w", encoding="utf-8") as fh:
+            for w in PERFORMED_WAVE_IDS_REQUIRED:
+                fh.write(f"ACCEPT FOUNDATIONAL WAVE {w}: "
+                         f"{manifest_args[w]}\n")
+        paths.append(PERFORMED_ACT_RECORD)
+
+        if kind == "tampered-performed":
+            with open(os.path.join(
+                    cand, "wave-manifests/WAVE-A-MANIFEST.txt"),
+                    "a", encoding="utf-8") as fh:
+                fh.write("0" * 64 + "  rfcs/forged.md\n")
         ROOT = d
-        if kind == "stale-arg":
-            lines = []
-            for w in WAVE_IDS:
-                lines.append(f"| {w} | `ACCEPT FOUNDATIONAL WAVE {w}: "
-                             f"{'0' * 64}` | one module |")
-            with open(os.path.join(cand, os.path.basename(ACCEPTANCE_RECORD)),
-                      "w", encoding="utf-8") as fh:
-                fh.write("\n".join(lines) + "\n")
-            paths.append(ACCEPTANCE_RECORD)
         c = Cap()
         cg7_manifest(paths, c)
-        want = "CG-7b" if kind == "stale-arg" else "CG-7a"
+        if kind == "performed-current-amendment":
+            row_a, row_b = c.row("CG-7a"), c.row("CG-7b")
+            return (bool(row_a) and row_a[0] == "OK"
+                    and bool(row_b) and row_b[0] == "OK")
+        want = ("CG-7b" if kind in ("stale-arg", "tampered-performed")
+                else "CG-7a")
         row = c.row(want)
         return bool(row) and row[0] == "FAIL"
     finally:

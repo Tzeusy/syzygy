@@ -18,10 +18,9 @@ tags: [autonomy, human-control, budgets, escalation, platform]
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-each module file's exact content digest — as an owner-adopted bootstrap act
-until the independent A1 correlation mechanism exists, and as a
-Syzygy-verified effective act only after correlation (RFC3-16). Absent such
-a record, this contract binds nothing.
+each module file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds nothing.
 
 **Serves:** VIS-4 (always-human decision classes), VIS-5 (adapter
 authorization), SEC-1..SEC-5; owner direction OD-R10-1/OD-R10-2 (recorded
@@ -115,14 +114,12 @@ mission** rather than one work item at a time — high-level human control,
 not silent default autonomy. [Observed] Nothing in RFCs 0001–0009 gives that
 act a home: work is one-item-grained (RFC 0008) and the workspace manifest
 is presentation-only (RFC 0003). This package supplies the missing
-authority shape without weakening the doctrine posture. A narrow doctrine
-clarification is drafted separately (proposed amendment **D3**, delivered
-with the rev10 packet; if adopted it lands in the doctrine amendment log)
-and **is not applied by this RFC**; until the owner rules on it, this
-contract's reading of human-triggered propagation stands only as far as
-doctrine already permits — which means missions can be *specified* under
-this contract but cannot lawfully *operate* under unamended doctrine's
-one-pass trigger.
+authority shape without weakening the doctrine posture. Owner ruling
+`BOUNDED-MISSION-DOCTRINE-INTERPRETATION-2026-08-31` records that exact
+human-approved missions and envelopes satisfy doctrine's human-triggered
+boundary, as RFC10-24 now states. The ruling does not accept this candidate,
+sign its required OpenSpec behavior, or approve a mission; operation remains
+unavailable until those independent gates and every mission gate pass.
 
 ## 4. Violation cases
 

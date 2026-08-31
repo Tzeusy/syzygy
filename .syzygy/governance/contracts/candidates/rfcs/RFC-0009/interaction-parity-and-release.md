@@ -14,9 +14,9 @@ tags: [surface, equivalence, accessibility, release-gate, sdr-26, sdr-27, vis-1,
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until the
-independent A1 correlation mechanism exists, and as a Syzygy-verified effective
-act only after correlation (RFC3-16). Absent such a record, this contract binds
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds
 nothing.
 
 **Package:** module 3 of 3 of the RFC 0009 contract package. Index and lookup
@@ -311,10 +311,10 @@ OpenSpec requirement or scenario** in the governance root's `openspec/**` plane,
 or carry an **explicit, reviewed N/A judgment** recording why that consequence
 needs no requirement. **The
 reviewed N/A judgment's home and gate.** A reviewed N/A judgment is a recorded
-owner judgment homed in `decisions/` (RFC3-15), and it is honored only where
-its owner-act provenance is verifiable under RFC3-16(a). Where that provenance
-does not verify, the judgment maps nothing: the consequence remains unmapped
-and renders Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2). The
+owner judgment homed in `decisions/` (RFC3-15), and it is honored only through
+an effective owner act under RFC3-16(a), in state (1) or state (2), with that
+state rendered. Absent or invalid acts map nothing and leave the consequence
+unmapped and Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2). The
 surface-specification phase must produce, as a
 deliverable, a **clause-to-requirement coverage matrix** for this RFC — every
 clause mapped to requirement identities or to its reviewed N/A — and that matrix

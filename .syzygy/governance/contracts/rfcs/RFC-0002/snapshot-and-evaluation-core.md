@@ -12,9 +12,9 @@ tags: [foundational, temporal, epistemic, determinism, vis-7, vis-2, vis-6, sdr-
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until the
-independent A1 correlation mechanism exists, and as a Syzygy-verified effective
-act only after correlation (RFC3-16). Absent such a record, this contract binds
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds
 nothing.
 
 **Package:** module 1 of 4 of the RFC 0002 contract package. Index, clause map,
@@ -198,10 +198,11 @@ artifact** — it is the act that lets a claim class leave Unknown — and is
 therefore honored only under the owner-act provenance predicate (RFC3-16(a) —
 a load-bearing citation, not a forward reference: this package does not bind
 unless RFC 0003 is bound by the same act or an earlier one, `README.md` §5).
-A currency bound present in the tree
-without verifiable owner-act provenance does not unblock its class: the claims
-continue to render Unknown, and the unverifiable declaration is routed to the
-owner as a contradiction rather than silently honored. [Inferred — composition
+A currency bound present in the tree without an effective owner act does not
+unblock its class: the claims continue to render Unknown, and the invalid
+declaration is routed to the owner as a contradiction rather than silently
+honored. A valid state-(1) or state-(2) act is effective, with its exact
+provenance state rendered. [Inferred — composition
 with RFC3-16(a); the alternative would let an untrusted writer widen what counts
 as current.]
 

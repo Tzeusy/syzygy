@@ -1,0 +1,8 @@
+# PWB CONTRACT-COVERAGE AMENDMENT MANIFEST
+# 5 signed coverage artifacts; rows sorted by codepoint path.
+# The behavioral specification, proposal and design are not changed by this manifest.
+732053ce53814f65a65d940c3ea65e0117b837fc375004d57d08c25ed3bd7a87  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
+4226fc38d7a8434a948cb350729eef9b23dfc44660f5122d6834e3ac89468a30  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
+d03eebe142d9cc8b9046243d33bcd498debc6235ec9f8700b114834987aeb88e  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0001-0003.md
+bccadc7d5218eb5fa5b2a008747a9f90a2d62cac08f7dd604f6c90872d5a347d  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md
+b09abdb8aaf8d54f378139d1e4f93e053d5fa7d721c9e4dbd1f750f5a7987d9c  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md

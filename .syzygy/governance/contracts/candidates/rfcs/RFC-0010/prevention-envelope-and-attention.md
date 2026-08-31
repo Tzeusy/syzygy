@@ -14,10 +14,9 @@ tags: [autonomy, human-control, no-self-widening, escalation, prevention-plane]
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until
-the independent A1 correlation mechanism exists, and as a Syzygy-verified
-effective act only after correlation (RFC3-16). Absent such a record, this
-contract binds nothing.
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds nothing.
 
 **Package:** module 2 of 5 of the RFC 0010 contract package. Index, clause
 map, lookup rule, package-level integration and deferrals: `README.md`.
@@ -147,22 +146,21 @@ mission's terminal record as a workspace-level attention fact, and the
 terminal reason of a mission that expired with the item outstanding records
 the violation as unresolved-at-expiry. Waiting clears nothing.
 
-**RFC10-9.** The envelope (and every amendment to it) is an
-**authorization-bearing governance artifact** under RFC3-16(a): it is
-honored only with **verifiable** owner-act provenance. Mission approval is
-a *runtime* act performed while Syzygy exists, so it is always an
-A1-mechanism act — an owner-attended, Syzygy-mediated ceremony correlated
-to the external audit trail — never a bootstrap-shaped tree record: an
-approval resting on a state-(1) record (RFC3-16(c)) has **not** satisfied
-the predicate, and its mission does not leave `awaiting-approval`.
-Shipping that ceremony is therefore a hard precondition of Mission Control
-operating at V0 — the same pre-A1 posture RFC5-15 and RFC5-18(c) already
-impose on egress and execution. The two-state rendering vocabulary
-("owner-adopted (bootstrap, uncorrelated)") applies to the *foundational
-corpus a mission cites*, never to the mission's own authorization. An
-envelope present in a governed tree without verifiable act provenance
-authorizes nothing (RFC3-16(a)'s effect rule); its mission cannot leave
-`awaiting-approval`.
+**RFC10-9.** The envelope, every amendment to it, and mission approval are
+**authorization-bearing governance artifacts** under RFC3-16(a). Each is
+honored only through an effective human owner act that is current,
+attributable, scope-matched, and bound to the exact artifact digest under
+RFC3-16(b). State (1), `owner-adopted (bootstrap, uncorrelated)`, and state
+(2), `Syzygy-verified`, are both effective; every surface and API renders the
+exact provenance state, and state (1) is never described as independently
+verified. Mission approval and every envelope amendment remain exact human
+acts: a machine-submitted record is not an act, and a failed, unavailable, or
+indeterminate A1 attempt never creates state (1) or silently downgrades a
+record claiming state (2). An absent, invalid, stale, revoked, superseded,
+wrong-scope, or digest-mismatched act authorizes nothing, and the mission does
+not leave `awaiting-approval`. No act may widen a child beyond its parent or
+relax any other envelope, consent, execution, evidence, stop, recovery, or
+escalation gate.
 
 ### 2.2 The guardrail policy runtime
 

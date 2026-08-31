@@ -18,9 +18,9 @@ tags: [surface, spatial, legend-fidelity, unknown, determinism, sdr-19, sdr-20, 
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-each module file's exact content digest — as an owner-adopted bootstrap act
-until the independent A1 correlation mechanism exists, and as a Syzygy-verified
-effective act only after correlation (RFC3-16). Absent such a record, this
+each module file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this
 contract binds nothing.
 
 **Date:** 2026-07-30 (amended through 2026-08-02; compacted and split into a
@@ -121,10 +121,11 @@ genuinely package-spanning items are held here.*
 **Two registries are cited by RFC3-16(a) as encoding-meaning-fixing artifacts**,
 and they sit in different modules: **RFC9-18** (layout version registry, module
 1) fixes which layout version a scene's positions *mean*; **RFC9-26** (channel
-registry, module 2) fixes what every rendered channel *means*. For both, an entry
-whose owner-act provenance does not verify is treated exactly as an absent one —
-the version is not established, the channel does not render. Each module states
-the rule for its own registry and names the other.
+registry, module 2) fixes what every rendered channel *means*. For both, a valid
+state-(1) or state-(2) owner act is effective and its exact provenance state is
+rendered; an entry without an effective owner act is treated exactly as an
+absent one — the version is not established, the channel does not render. Each
+module states the rule for its own registry and names the other.
 
 **RFC3-16(a) gates artifacts in every module of this package**, without a
 count: those two registries; the **portfolio layout version registry** at

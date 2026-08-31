@@ -1,9 +1,21 @@
 # Contract-coverage repair delta
 
-The three normalized consequence matrices are frozen audit outputs. This delta
+The three normalized consequence matrices are signed audit inputs. The general
+trusted-bootstrap amendment updates only their stale contract summaries while
+preserving consequence identities, dispositions and counts. This delta
 supersedes only the listed consequence dispositions after requirements
 PWB-REQ-007 and PWB-REQ-014…016 and the strengthened PWB-REQ-001/005/022 were
-added. Unlisted matrix rows remain unchanged.
+added. Unlisted matrix rows remain unchanged except for those semantic-summary
+reconciliations.
+
+Across every effective row, the amended contract treats a valid state-(1) or
+state-(2) human owner act as effective and requires the exact state to remain
+visible; missing or invalid acts retain the existing fail-closed consequence.
+The act is a warrant, never evidence that the authorized effect succeeded or a
+claim is true. `PWB-REQ-005` and `PWB-REQ-022` deliberately remain narrower:
+they require independently verified state (2). That is candidate-spec
+strictness, not a contract requirement, and no coverage row may present it as
+one.
 
 Each effective consequence has exactly one disposition. Rows that split a
 broader audited consequence use distinct repair IDs and jointly supersede it.
@@ -15,17 +27,17 @@ uncovered; 3 believed not applicable.**
 |---|---|---|---|---|
 | RFC4-3.r1 | RFC4-3.c2 | RFC4-3 | Every emitted project-shape fact carries a capture instant distinct from source-claimed time | unknown-uncovered |
 | RFC4-3.r2 | RFC4-3.c3 | RFC4-3 | Every emitted project-shape fact carries observer identity and version | covered:PWB-REQ-001 |
-| RFC4-3.r3 | RFC4-3.c4 | RFC4-3 | Output from an unregistered or unverifiable observer cannot influence the model | covered:PWB-REQ-005 |
+| RFC4-3.r3 | RFC4-3.c4 | RFC4-3 | Output from an unregistered observer or a registry entry with a missing or invalid owner act cannot influence the model; the contract accepts valid state (1) or state (2), while PWB-REQ-005 deliberately requires state (2) | covered:PWB-REQ-005 |
 | RFC4-7.r1 | RFC4-7.c1 | RFC4-7 | The project-shape observer has a versioned per-project registry entry | covered:PWB-REQ-005 |
 | RFC4-7.r2 | RFC4-7.c2 | RFC4-7 | Observer registry identity/version is an evaluation input | covered:PWB-REQ-005 |
-| RFC4-7.r3 | RFC4-7.c3 | RFC4-7 | Missing or unverifiable registry provenance blocks reads and facts to Unknown | covered:PWB-REQ-005 |
+| RFC4-7.r3 | RFC4-7.c3 | RFC4-7 | Valid state-(1) or state-(2) registry acts admit outputs with state carried; missing or invalid acts block reads and facts to Unknown, while PWB-REQ-005 deliberately requires state (2) | covered:PWB-REQ-005 |
 | RFC1-18.r1 | RFC1-18.c1 | RFC1-18 | Every project Claim has the accepted durable-identity derivation and an evaluation instance | unknown-uncovered |
 | RFC1-18.r2 | RFC1-18.c2 | RFC1-18 | Every project Claim instance has deterministic same-evaluation identity and the complete accepted tuple | unknown-uncovered |
 | RFC1-19.r1 | RFC1-19.c1 | RFC1-19 | Positive project status requires current support; absence remains Unknown | covered:PWB-REQ-007 |
 | RFC1-19.r2 | RFC1-19.c2 | RFC1-19 | Narrative prose doing badge work is held to the same evidence rule | covered:PWB-REQ-007 |
 | RFC1-24.r1 | RFC1-24.c1 | RFC1-24 | Positive status flows through a challengeable Claim with resolvable support | covered:PWB-REQ-007 |
 | RFC1-24.r2 | RFC1-24.c2 | RFC1-24 | Edges or source presence alone cannot create positive status | covered:PWB-REQ-007 |
-| RFC2-9.r1 | RFC2-9.c1 | RFC2-9 | A claim cannot leave Unknown without a provenance-verified currency input | covered:PWB-REQ-007 |
+| RFC2-9.r1 | RFC2-9.c1 | RFC2-9 | A claim cannot leave Unknown without a currency input carrying an effective state-(1) or state-(2) owner act with state disclosed; missing or invalid acts remain Unknown | covered:PWB-REQ-007 |
 | RFC2-10.r1 | RFC2-10.c1 | RFC2-10 | Freshness uses the closed vocabulary, is evaluation-deterministic and remains distinct from label/tier | unknown-uncovered |
 | RFC2-24.r1 | RFC2-24.c1 | RFC2-24 | Unknown reasons use the closed twelve, one primary, closed secondaries, distinct routes and complete aggregate disclosure | covered:PWB-REQ-007 |
 | RFC2-25.r1 | RFC2-25.c1 | RFC2-25 | Claim tiers retain their closed meanings and stay distinct from labels and sibling states | covered:PWB-REQ-007 |
@@ -78,7 +90,7 @@ uncovered; 3 believed not applicable.**
 | RFC7-30.r1 | RFC7-30.c5 | RFC7-30 | A release-milestone walkthrough runs nonvisually or keyboard-only and exercises paths | believed-not-applicable |
 | RFC7-31.r1 | RFC7-31.c4 | RFC7-31 | The walkthrough record states nonvisual/keyboard-only mode | covered:PWB-REQ-016,PWB-REQ-022 |
 | RFC7-31.r2 | RFC7-31.c5 | RFC7-31 | Owner judgment records verdict, rationale, judging party and exact run record | covered:PWB-REQ-022 |
-| RFC7-31.r3 | RFC7-31.c7 | RFC7-31 | Invalid owner judgment records verdict-unlawful | covered:PWB-REQ-022 |
+| RFC7-31.r3 | RFC7-31.c7 | RFC7-31 | A judgment with a missing or invalid owner act records verdict-unlawful; PWB-REQ-022 additionally rejects state (1) under its deliberately stricter state-(2)-only rule | covered:PWB-REQ-022 |
 | RFC7-32.r1 | RFC7-32.c1 | RFC7-32 | This material narrative change triggers a walkthrough | covered:PWB-REQ-016 |
 | RFC7-32.r2 | RFC7-32.c1 | RFC7-32 | Every future material narrative change and release milestone triggers a walkthrough | unknown-uncovered |
 | RFC7-32.r3 | RFC7-32.c2 | RFC7-32 | At least one release-milestone walkthrough is nonvisual or keyboard-only | believed-not-applicable |

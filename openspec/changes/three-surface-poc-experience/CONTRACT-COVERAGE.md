@@ -9,12 +9,16 @@
 >
 > **No N/A is minted on the author's authority.** Under CC-SPEC-8 a
 > reviewed N/A judgment is a recorded **owner** judgment homed in
-> `decisions/`, honored only where RFC3-16(a) provenance verifies. **No
-> such judgment exists for any clause today**, so every consequence not
-> covered by a requirement renders **Unknown pending owner-reviewed
-> N/A** — never covered, never silently omitted (VIS-2). "Believed not
-> applicable" (Part B2) is the author's application of CC-SPEC-8's
-> applicability test, offered to the owner; it settles nothing.
+> `decisions/`, honored only through an effective owner act under
+> RFC3-16(a). Valid state (1) and state (2) acts are both effective and
+> their exact state is disclosed; a missing or invalid act maps nothing
+> and leaves the consequence Unknown. The act is a warrant, never evidence
+> that the consequence is satisfied. **No such judgment exists for any
+> clause today**, so every consequence not covered by a requirement renders
+> **Unknown pending owner-reviewed N/A** — never covered, never silently
+> omitted (VIS-2). "Believed not applicable" (Part B2) is the author's
+> application of CC-SPEC-8's applicability test, offered to the owner; it
+> settles nothing.
 
 ## Population and denominator
 
@@ -298,9 +302,9 @@ are listed so the owner can review or contest each one directly.
 | RFC3-15 | Five constitutional governance/ categories — POC renders/writes no governance-home categories |
 | RFC3-15(a) | Why records/ exists — POC mints no kernel records |
 | RFC3-16 | Self-declared vs effective lifecycle status — POC renders no adoption-status content |
-| RFC3-16(a) | Owner-act provenance predicate — POC checks no artifact provenance at runtime |
+| RFC3-16(a) | Effective-owner-act gate — valid state (1) and state (2) acts take effect with exact state disclosed; missing or invalid acts fail closed; POC checks no artifact act at runtime |
 | RFC3-16(b) | What an owner act binds — not exercised |
-| RFC3-16(c) | Bootstrap vs Syzygy-verified provenance states — not exercised |
+| RFC3-16(c) | Two effective provenance states, owner-adopted bootstrap/uncorrelated and Syzygy-verified; correlation upgrades state without changing earlier owner-trusted effects — not exercised |
 | RFC3-17 | declarations/ category artifacts — POC reads/writes none |
 | RFC3-17(a) | Challenge submission/admission record homes — POC has no challenge mechanism |
 | RFC3-18 | intent/, work/, map/ namespace class — POC's "intent entities" are shared-model vocabulary, not these namespaces |

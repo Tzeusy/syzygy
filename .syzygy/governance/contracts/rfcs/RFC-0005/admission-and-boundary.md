@@ -14,9 +14,9 @@ tags: [sec-1, sec-4, sec-5, vis-5, client-classes, acts-versus-claims, audit-tra
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until the
-independent A1 correlation mechanism exists, and as a Syzygy-verified effective
-act only after correlation (RFC3-16). Absent such a record, this contract binds
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds
 nothing.
 
 **Package:** module 1 of 3 of the RFC 0005 contract package. Index, clause map,
@@ -345,9 +345,9 @@ and scenario in the governance root's `openspec/**` plane, or carries a
 reviewed N/A judgment proving it purely structural with no independently
 testable behavior. **The reviewed N/A judgment's home and gate.** A reviewed
 N/A judgment is a recorded owner judgment homed in `decisions/` (RFC3-15), and
-it is honored only where its owner-act provenance is verifiable under
-RFC3-16(a). Where that provenance does not verify, the judgment maps nothing:
-the consequence remains unmapped and renders Unknown, never covered
+the judgment is honored only through an effective owner act under RFC3-16(a),
+in state (1) or state (2), with that state rendered; absent or invalid acts map
+nothing and leave the consequence unmapped and Unknown, never covered
 (RFC3-16(a)'s effect rule; VIS-2).
 
 **Rows are per observable consequence, not per clause.** A clause with five

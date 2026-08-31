@@ -14,9 +14,9 @@ tags: [surface, spatial, determinism, sdr-21, sdr-22, sdr-23, vis-7, sec-2, sec-
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until the
-independent A1 correlation mechanism exists, and as a Syzygy-verified effective
-act only after correlation (RFC3-16). Absent such a record, this contract binds
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds
 nothing.
 
 **Package:** module 1 of 3. Index and lookup rule: `README.md`. Rationale,
@@ -151,9 +151,12 @@ reorganisation events, and their recorded rationale are
 the meaning of a rendered encoding rather than report a fact under it, the
 same limb that puts RFC9-18 inside the predicate. So they live in a **typed,
 owner-gated governance store**: an artifact of the governance class RFC3-15
-fixes, durable, honored **only under RFC3-16(a)**, an entry whose owner-act
-provenance does not verify treated exactly as an absent one (RFC9-18's rule,
-at portfolio scope). **Never the workspace manifest and never `local/`:** both
+fixes, durable, and honored only through an **effective owner act under
+RFC3-16(a)** bound to the registry's exact digest. A valid state-(1) or
+state-(2) act is effective, with its exact provenance state rendered; state
+(1) remains visibly uncorrelated. An entry without a valid act is treated
+exactly as an absent one (RFC9-18's rule, at portfolio scope). **Never the
+workspace manifest and never `local/`:** both
 are personal presentation state under VIS-6 exception (a) and are **never
 snapshot inputs** (RFC3-10, RFC3-11, RFC3-21), while the layout version and
 baseline **are** (RFC2-1 item 7; RFC9-14(a)) — so a personal-state home is
@@ -629,11 +632,14 @@ RFC9-4/14; reserved-extent device adopted from the research disposition of O-F3.
 computed geometry is rebuildable projection (`cache/`, RFC3-20); camera and view
 state are personal (`local/`, RFC3-21). **Registry entries fix which layout
 version a scene's positions *mean*** — the reference every reorganisation event
-and every stability guarantee (§4) is read against — so they are honored **only
-under RFC3-16(a)**; an entry whose owner-act provenance does not verify does not
-establish a version, and scenes resolving against it render Unknown rather than
-silently against a version an untrusted writer declared. [Inferred] Nothing in
-`map/` becomes independently authoritative over kernel semantics.
+and every stability guarantee (§4) is read against — so they are honored only
+through an **effective owner act under RFC3-16(a)**, bound to the registry's
+exact digest. A valid state-(1) or state-(2) act establishes the version, with
+its exact provenance state rendered; state (1) remains visibly uncorrelated.
+Without a valid act, the entry does not establish a version, and scenes
+resolving against it render Unknown rather than silently against a version an
+untrusted writer declared. [Inferred] Nothing in `map/` becomes independently
+authoritative over kernel semantics.
 
 *(RFC9-18 is one of two artifacts RFC3-16(a) cites as encoding-meaning-fixing —
 the **layout version registry**; the other is RFC9-26's **channel registry**.)*

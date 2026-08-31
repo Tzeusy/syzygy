@@ -12,9 +12,9 @@ tags: [sec-3, vis-4, vis-7, blocking, execution-blocked, no-none-class, fail-clo
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until the
-independent A1 correlation mechanism exists, and as a Syzygy-verified effective
-act only after correlation (RFC3-16). Absent such a record, this contract binds
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds
 nothing.
 
 **Package:** module 3 of 3 of the RFC 0005 contract package. Index, clause map,
@@ -81,14 +81,17 @@ identifiers named inline (A5, FD-018/FD-029) remain binding provenance here.
 this RFC is accepted; (b) an **execution profile** for the project exists as a
 declared, versioned artifact in the governed plane; (c) the owner has approved
 that exact profile version by a recorded Decision (the execution-consent record,
-RFC5-12) **whose owner-act provenance the gate cross-checks under RFC3-16(a)
-before launching** — an approval Decision present in the governed tree without
-verifiable provenance approves nothing, blocks the launch, and mints a
-contradiction, since the plane the Decision lives in is writable by the untrusted
-actor class (SEC-3); (d) the launching principal is authenticated and authorized;
-(e) the run is captured as an Execution record citing the profile identity and
-version (SDR-8). Absent any of these the run does not launch, and claims needing
-the evidence it would have produced render Unknown with the **primary** reason
+RFC5-12) **whose effective owner act the gate cross-checks under RFC3-16(a)
+before launching** — state (1) and state (2) are both effective, with the exact
+state disclosed; an approval Decision present in the governed tree with a
+missing or invalid act approves nothing, blocks the launch, and mints a
+contradiction, since the plane the Decision lives in is writable by the
+untrusted actor class (SEC-3); (d) the launching principal is authenticated and
+authorized; (e) the run is captured as an Execution record citing the profile
+identity and version (SDR-8). The effective approval act is a warrant to launch,
+never evidence that launch or execution succeeded or that any produced claim is
+true. Absent any of these the run does not launch, and claims needing the
+evidence it would have produced render Unknown with the **primary** reason
 **`execution-blocked`** (RFC2-24 #12), routed to its resolving action — unblock
 or authorize the run — and expandable to which of (a)…(e) failed. *(Amended at
 acceptance by owner decision A5, answering this RFC's q3 and RFC 0002's

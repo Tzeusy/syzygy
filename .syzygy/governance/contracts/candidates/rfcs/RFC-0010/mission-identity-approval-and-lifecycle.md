@@ -14,10 +14,9 @@ tags: [autonomy, human-control, platform, identity, lifecycle]
 
 **Status:** Proposed foundational contract (self-declaration at authoring
 time). Effective status is established solely by an owner-act record binding
-this file's exact content digest — as an owner-adopted bootstrap act until
-the independent A1 correlation mechanism exists, and as a Syzygy-verified
-effective act only after correlation (RFC3-16). Absent such a record, this
-contract binds nothing.
+this file's exact content digest — either owner-adopted (bootstrap,
+uncorrelated) or Syzygy-verified, with the exact provenance state always
+visible (RFC3-16). Absent such a record, this contract binds nothing.
 
 **Package:** module 1 of 5 of the RFC 0010 contract package. Index, clause
 map, lookup rule, package-level integration and deferrals: `README.md`.
@@ -86,8 +85,9 @@ rationale**; its **target** (workspace, projects, capabilities, and/or
 requirements); its **exact pinned inputs** — the doctrine, contract,
 specification, policy, and evaluation revisions it runs under, by digest or
 revision identity; its **initiating owner act** (mission approval is an
-authorization-bearing act under RFC3-16(a) — a mission without verifiable
-owner-act provenance authorizes nothing); its **parent mission**, if any;
+authorization-bearing act under RFC3-16(a) — a valid state-(1) or state-(2)
+act is effective and its exact provenance state is rendered; an absent,
+invalid, or machine-submitted record authorizes nothing); its **parent mission**, if any;
 its lifecycle state and terminal outcome. Pinned inputs are immutable for
 the mission's life: a change to any pinned input does not silently retarget
 a running mission — it raises an escalation (RFC10-13) whose choices include
@@ -201,17 +201,19 @@ with RFC6-28, RFC7-38, RFC8-32, RFC9-52.)
 
 ### 2.5 Doctrine precondition on operation
 
-**RFC10-24.** Until a doctrine amendment governing bounded multi-pass
-autonomous propagation (proposed amendment **D3**, or a successor packet) is
-adopted by owner act — or the owner records a ruling that unamended doctrine
-already permits such operation — **no mission leaves `awaiting-approval`**:
-mission approval ceremonies for operation are inadmissible, and this
-contract's operative clauses govern *specification* only. This precondition
-is carried as a clause because a precondition stated only in motivation
-prose binds nothing; the reachable state it forecloses is a contract
-accepted, OpenSpec written, RFC10-16 satisfied, and missions operating with
-the doctrine question never ruled. RFC10-16's OpenSpec gate is independent
-of this clause, and satisfying either never discharges the other.
+**RFC10-24.** Owner ruling
+`BOUNDED-MISSION-DOCTRINE-INTERPRETATION-2026-08-31` records that unamended
+doctrine permits bounded multi-pass mission operation after a human owner
+approves the exact mission and exact envelope. That ruling satisfies this
+clause's owner-ruling alternative; it does not accept RFC 0010, sign any
+OpenSpec behavior, or approve or start a mission. RFC 0010 remains candidate
+and binds nothing, so no mission may operate or leave `awaiting-approval`
+unless this contract is accepted, its required OpenSpec behavior is signed,
+RFC10-16 is satisfied, the exact mission and envelope carry effective owner
+acts under RFC3-16(a), and every other independent mission gate passes.
+State (1) and state (2) acts may satisfy the owner-act gate with their exact
+provenance state rendered. Satisfaction of the doctrine alternative never
+discharges RFC10-16 or any effect-specific gate.
 
 ## 8. Owner questions
 
