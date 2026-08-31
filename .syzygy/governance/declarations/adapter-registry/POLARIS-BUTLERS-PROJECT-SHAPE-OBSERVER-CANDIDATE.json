@@ -1,29 +1,50 @@
 {
   "schemaVersion": 1,
-  "registryVersion": "1.0.0-candidate.1",
-  "status": "candidate-unadopted",
+  "registryVersion": "1.0.0-candidate.2",
+  "status": "candidate-awaiting-amended-rfc4-and-pwb-digests-not-act-ready",
   "entries": [
     {
       "observerId": "polaris-butlers-project-shape",
-      "observerVersion": "1.0.0",
+      "observerVersion": "1.0.0-candidate.2",
+      "discoveryVersion": "pwb-discovery-v1-candidate.2",
       "role": "adapter",
       "implementationId": "three-surface-poc-core/project-shape-observer",
       "implementationVersion": "1.0.0",
       "contractId": "RFC-0004/general-contract",
       "contractVersion": "sha256:2b5072a2b718e4609b279b130ef39daeb49fc6079c8da9c01e14aa12021149d4",
+      "contractVersionStatus": "current baseline only; replace with superseding accepted RFC4 digest before act",
       "governingBehaviorContract": {
         "id": "polaris-project-wide-butlers-model",
-        "version": "sha256:07392c115e3a63bb3aceb259362a70e0d1ee11d6ba2621492fd03cf1893aca61"
+        "currentBaselineVersion": "sha256:07392c115e3a63bb3aceb259362a70e0d1ee11d6ba2621492fd03cf1893aca61",
+        "mustReplaceWithSupersedingSignedDigestBeforeAct": true
       },
       "subject": {
         "observingProject": "project:syzygy",
         "observedRepository": "repository:butlers-configured-poc"
       },
+      "authorizationModes": [
+        "independently-verified",
+        "owner-trusted-bootstrap"
+      ],
+      "authorizationModeDerivation": "every artifact must have a current exact digest-bound owner act; independently-verified only when all three acts verify through A1; owner-trusted-bootstrap when at least one valid act remains owner-adopted bootstrap and the others are valid state-(1) or state-(2) acts; every other combination rejects before body reads",
+      "provenanceDisclosure": "Observation uses owner-trusted records; independent audit is not configured.",
       "implementation": "packages/three-surface-poc-core/src/project-shape-observer.ts",
       "inputClasses": [
         {
           "class": "git-revision",
           "identityScheme": "git-object-id"
+        },
+        {
+          "class": "repository-locator-mapping",
+          "identityScheme": "opaque-repository-id-plus-normalized-approved-locator"
+        },
+        {
+          "class": "git-object-database",
+          "identityScheme": "repository-id-plus-resolved-git-common-dir"
+        },
+        {
+          "class": "governing-behavior-contract",
+          "identityScheme": "contract-id-plus-sha256-content-digest"
         },
         {
           "class": "git-tree-entry",
@@ -60,6 +81,10 @@
           "identityScheme": "section-plus-declared-key"
         },
         {
+          "class": "project-shape-source-manifest",
+          "identityScheme": "repository-id-plus-revision-plus-discovery-version-plus-sha256-content-digest"
+        },
+        {
           "class": "declared-catalog-item",
           "identityScheme": "item-class-plus-declared-key"
         },
@@ -85,7 +110,7 @@
       "typedAuthority": {
         "authorityType": "version-control",
         "questions": ["What currently exists?"],
-        "readAuthority": "only normalized repository-relative paths addressed as exact Git objects in a revision-bound manifest validated against the signed PWB grammar",
+        "readAuthority": "within the one resolved Git object database for the approved opaque-repository locator mapping, phase A reads only the fixed root index, its declared pillar README indexes and Git tree metadata needed to derive the manifest; phase B reads only normalized repository-relative paths addressed as exact Git objects in that revision-bound manifest",
         "writeSurface": [],
         "databaseAccess": [],
         "networkAccess": [],
@@ -102,11 +127,11 @@
       },
       "admissionFailureMapping": {
         "missingConsent": "unconsented-source-or-provider",
-        "mismatchedStaleOrUnverifiableConsent": "unconsented-source-or-provider",
+        "mismatchedStaleRevokedOrUnattributedConsent": "unconsented-source-or-provider",
         "missingSecretPolicy": "missing-declaration",
-        "mismatchedStaleOrUnverifiableSecretPolicy": "source-uncaptured-or-unreachable",
+        "mismatchedStaleRevokedOrUnattributedSecretPolicy": "source-uncaptured-or-unreachable",
         "missingRegistryEntry": "source-uncaptured-or-unreachable",
-        "mismatchedStaleOrUnverifiableRegistryEntry": "source-uncaptured-or-unreachable"
+        "mismatchedStaleRevokedOrUnattributedRegistryEntry": "source-uncaptured-or-unreachable"
       },
       "failureStates": {
         "gitCaptureFailed": {
@@ -133,7 +158,7 @@
       "claimStateMapping": {
         "unresolvedContradiction": "contradicted-pending-adjudication"
       },
-      "adoptionStatus": "candidate-unadopted"
+      "adoptionStatus": "candidate-not-act-ready"
     }
   ]
 }
