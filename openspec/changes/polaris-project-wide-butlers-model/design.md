@@ -47,8 +47,21 @@ The source population is finite and revision-bound:
 Narrative links do not recurse. Active changes are inventoried separately for
 capability drill-down and never enter the current project account.
 
-The source manifest is observation scope, not a second copy of Butlers facts.
-It stores paths, extraction classes and the source revision. A declared item
+Discovery is one deterministic transaction at one exact revision. Phase A
+reads only the Butlers path “about/README.md”, the README index under each of its five declared
+pillar roots and Git-tree metadata needed to enumerate baseline specs and
+roster candidates. Every transient body is secret-screened before parsing.
+Phase A emits a manifest containing normalized paths, exact Git object
+identities, extraction classes, discovery version and digest. An independent
+validator checks that manifest against the signed PWB grammar at the same
+repository identity, approved locator, object database and revision before
+Phase B reads any manifest object. A Phase-A or validation failure blocks all
+Phase-B reads and leaves the project model Unknown.
+
+The source manifest is derived evaluation scope, not an authorization artifact
+or a second copy of Butlers facts. Owner acts bind the signed grammar and
+discovery algorithm; the derived manifest digest becomes an evaluation input
+only after validation. A declared item
 identity is `(item class, declared key)`; repository-relative paths and content
 hashes are source-anchor state, not identity. The closed extraction classes are
 the six project-account sections, numbered non-negotiables, success list items,
@@ -110,20 +123,31 @@ repeated in every sentence.
 
 ### 5. Gate body reads on owner authority
 
-Before the first body read, the evaluation verifies a per-repository Butlers
-observation-consent record, the exact digest/version of a concrete
-owner-approved secret-classification policy and the project-shape observer's
-governance-plane registered adapter entry. All three identities are
-deterministic inputs. Missing, mismatched, stale or unverifiable authority
-produces zero body reads and a project-model Unknown. Specification sign-off
-mints none of these artifacts.
+Before the first body read, the evaluation resolves exact digest-bound owner
+acts for a per-repository Butlers observation-consent record, the observing
+project's concrete secret-classification policy and the project-shape
+observer's governance-plane registered adapter entry. All three A1-correlated
+acts select `independently-verified`; an otherwise-valid tuple with at least one
+uncorrelated act selects `owner-trusted-bootstrap` under the signed owner
+direction. No other tuple permits reads. Missing, mismatched, stale, revoked,
+wrong-scope or effect-widening authority produces zero body reads and a
+project-model Unknown.
+
+Trusted mode remains visibly `owner-adopted (bootstrap, uncorrelated)` in
+Polaris and `/api/poc`; it is never called independently verified. It authorizes
+only the declared read-only Git observation. Write, database, network, egress,
+credential, environment and execution surfaces remain empty. Specification
+sign-off itself mints none of the three authority artifacts.
 
 ### 6. Fail closed at the content boundary
 
-Only exact Git objects under normalized repository-relative paths are read.
-Absolute paths, traversal, NULs, working-tree symlinks, submodule traversal and
-repository escape are rejected. Markdown is parsed as inert text; raw HTML,
-SVG, scripts, event handlers and unsafe URL schemes never reach browser output.
+Both phases read only exact Git objects under normalized repository-relative
+paths from the approved locator and object database at one revision. Absolute
+paths, traversal, NULs, working-tree reads, symlinks, submodule traversal,
+filters, credential helpers, alternate object databases, remote fetches and
+repository escape are rejected. Markdown is secret-screened before parsing as
+inert text; raw HTML, SVG, scripts, event handlers and unsafe URL schemes never
+reach browser output.
 
 The adapter declares source-count, byte, depth, parse-time and rendered-output
 budgets in the model. A limit leaves the affected source counted and Unknown.
@@ -133,15 +157,20 @@ No observed-project code executes.
 
 ## Data Flow
 
-1. Bind the configured Butlers repository to an exact Git revision.
-2. Verify observation consent, secret-policy and observer-registry owner provenance.
-3. Discover and expose the closed source-path population.
-4. Read exact Git objects and classify content; record exclusions.
-5. Extract declared entities, statements, catalogs and source anchors.
-6. Reconcile coverage and contradictions.
-7. Add the existing capability deep-dive facts.
-8. Freeze one shared model for the human and machine surfaces.
-9. Render project-level Polaris and capability drill-down from that model.
+1. Bind the opaque Butlers identity, approved locator and object database to an
+   exact Git revision.
+2. Resolve the consent, secret-policy and observer-registry acts and select the
+   closed authorization mode.
+3. Run Phase A over the fixed seed objects and Git-tree metadata under the
+   secret policy.
+4. Derive, digest and independently validate the closed source manifest.
+5. Run Phase B over only the manifest's exact Git objects; classify content and
+   record exclusions.
+6. Extract declared entities, statements, catalogs and source anchors.
+7. Reconcile coverage and contradictions.
+8. Add the existing capability deep-dive facts.
+9. Freeze one shared model for the human and machine surfaces.
+10. Render project-level Polaris and capability drill-down from that model.
 
 ## Risks / Trade-offs
 
@@ -153,9 +182,13 @@ No observed-project code executes.
 - **The primary page becomes encyclopedic** → progressive disclosure keeps the
   first read concise while catalogs and exact artifacts remain reachable.
 - **Sensitive text enters a surface** → allowlisting and fail-closed secret
-  classification precede model construction.
+  classification precede parsing in both discovery phases and model
+  construction.
 - **A source escapes or becomes active content** → exact-object containment,
   inert parsing and context-aware encoding reject it before model admission.
+- **The trusted act is forged in-tree** → the owner explicitly accepts that
+  risk for read-only observation; every channel discloses the uncorrelated
+  basis and no non-read effect inherits it.
 - **A corpus exceeds local budgets** → the affected source stays counted and
   renders Unknown with the breached limit.
 - **A stale summary conflicts with a higher authority** → both are retained;

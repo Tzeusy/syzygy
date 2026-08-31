@@ -5,14 +5,14 @@ Population: 27 positive obligations and refusals declared by `proposal.md`,
 
 | # | Declared obligation or refusal | Disposition |
 |---|---|---|
-| 1 | Bind every source to one exact Butlers revision | covered — PWB-REQ-001 |
-| 2 | Bind consent, policy, discovery and parser identities as evaluation inputs | covered — PWB-REQ-001, PWB-REQ-005 |
-| 3 | Discover a closed, complete source-path population | covered — PWB-REQ-001 |
+| 1 | Bind every source to one opaque repository identity, approved locator/object database and exact Butlers revision | covered — PWB-REQ-001, PWB-REQ-006 |
+| 2 | Bind trust-rule, PWB, consent, policy, registry, authorization-mode, discovery, manifest, limit and parser identities as evaluation inputs | covered — PWB-REQ-001, PWB-REQ-005, PWB-REQ-006 |
+| 3 | Discover and independently validate a closed, complete source-path population through the bounded two-phase transaction | covered — PWB-REQ-001, PWB-REQ-005, PWB-REQ-006 |
 | 4 | Account for every admitted declared item exactly once | covered — PWB-REQ-002 |
 | 5 | Keep unavailable sources counted while their item denominator is Unknown | covered — PWB-REQ-002, PWB-REQ-003 |
 | 6 | Preserve contradictions and apply only explicit precedence | covered — PWB-REQ-004 |
-| 7 | Verify observation consent, secret-policy authority and observer registration before body reads | covered — PWB-REQ-005 |
-| 8 | Keep repository content contained, inert, bounded and secret-safe | covered — PWB-REQ-003, PWB-REQ-006 |
+| 7 | Admit body reads only through all-A1 or visibly owner-trusted exact digest-bound consent, policy and observer acts | covered — PWB-REQ-005 |
+| 8 | Keep both discovery phases repository-contained, inert, bounded and secret-safe | covered — PWB-REQ-003, PWB-REQ-005, PWB-REQ-006 |
 | 9 | Present the whole project before capability detail | covered — PWB-REQ-010 |
 | 10 | Preserve progressive paths to catalogs, deep dives and exact sources | covered — PWB-REQ-011 |
 | 11 | Use finite, direct owner-facing copy rules | covered — PWB-REQ-012 |
@@ -31,7 +31,7 @@ Population: 27 positive obligations and refusals declared by `proposal.md`,
 | 24 | Refuse support for a second project | lawfully out of scope — proposal `Out of scope`, “supporting another project” |
 | 25 | Refuse production release/deployment | lawfully out of scope — proposal `Out of scope`, “production release” |
 | 26 | Refuse autonomous or multi-user behavior | lawfully out of scope — proposal `Out of scope`, “autonomous behavior; multi-user support” |
-| 27 | Refuse weakening Unknown, provenance, parity, authentication or one-repository floors | covered — PWB-REQ-003, PWB-REQ-005, PWB-REQ-006, PWB-REQ-007, PWB-REQ-014, PWB-REQ-020, PWB-REQ-022 |
+| 27 | Refuse weakening Unknown, provenance disclosure, parity, authentication, SEC-5 or one-repository/non-read authority floors | covered — PWB-REQ-003, PWB-REQ-005, PWB-REQ-006, PWB-REQ-007, PWB-REQ-014, PWB-REQ-020, PWB-REQ-022 |
 
 Totals: 21 covered, 6 lawfully out of scope, 0 Unknown/unresolved; 27 total.
 

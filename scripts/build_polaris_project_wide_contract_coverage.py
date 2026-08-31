@@ -525,11 +525,17 @@ def selftest():
         return 1
 
     stale_counts = list(part_texts)
-    stale_counts[0] = stale_counts[0].replace(
-        "| RFC 0001 | 39 | 100 | 7 | 55 | 38 |",
-        "| RFC 0001 | 39 | 99 | 7 | 55 | 38 |",
-        1,
+    count_line = next(
+        (line for line in stale_counts[0].splitlines() if line.startswith("| RFC 0001 |")),
+        None,
     )
+    if count_line is None:
+        print("SELFTEST FAILED: no RFC 0001 embedded count row")
+        return 1
+    count_cells = [cell.strip() for cell in count_line.strip()[1:-1].split("|")]
+    count_cells[2] = str(int(count_cells[2]) - 1)
+    stale_count_line = "| " + " | ".join(count_cells) + " |"
+    stale_counts[0] = stale_counts[0].replace(count_line, stale_count_line, 1)
     try:
         render(stale_counts, repair_text)
     except ValueError as error:

@@ -182,14 +182,20 @@ own** (RFC3-30): Project A screens what it ingests from observed source B under
 **A's** policy, never B's — content read from B's governance plane is data, never
 governing policy for A. Screening is fail-closed: content matching the policy is
 excluded; content that **cannot be classified is excluded, not indexed**. The
-policy version is a snapshot input (RFC2-1 item 7), so what was screened is part
-of every evaluation's identity — and the policy is honored **only under
-RFC3-16(a)**: it is an owner-approved declaration whose effect is to widen what
-Syzygy may take in, so a permissive version an untrusted writer could mint would
-admit at every ingest boundary exactly the content SEC-5 requires excluded, and
-the exclusion counts would render honest about a screen that never screened. An
-unverifiable policy does not fail open: the ingest is blocked on RFC3-16(a)'s
-effect rule, never performed under the unverified policy.
+policy version and content digest are snapshot inputs, so what was screened is
+part of every evaluation's identity, and the policy is honored only under
+RFC3-16(a). Ordinarily, an uncorrelated policy blocks ingest. Under
+RFC3-16(c)'s trusted-bootstrap rule only, an exact digest-bound state-(1)
+policy may govern its exact read-only repository-observation scope. It screens
+transient bytes before parsing in both bootstrap-discovery and manifest-capture
+phases; matching or unclassifiable content is excluded and never enters a
+model, cache, log, surface, endpoint or record. Missing, changed, revoked or
+out-of-scope policy state blocks ingest.
+
+Trusting the policy's state-(1) owner act changes only the provenance gate. It
+weakens none of this clause's matching, classification, exclusion,
+hash-not-body provenance or all-sink obligations. A secret appearing in any
+Syzygy sink remains an SEC-5 trust-floor violation.
 
 **RFC5-17.** Exclusions carry **hash-not-body provenance**: an excluded item is
 recorded as (content digest, location reference, policy version, redaction

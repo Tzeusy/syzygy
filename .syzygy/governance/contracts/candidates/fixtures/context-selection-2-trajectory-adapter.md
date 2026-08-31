@@ -47,7 +47,7 @@ scripts/context_load.py rfcs/RFC-0004/README.md \
   doctrine:security.md
 ```
 
-Measured: **19,775 words ≈ 26,696 estimated tokens** — above the proposed
+Measured: **20,202 words ≈ 27,273 estimated tokens** — above the proposed
 20,000-token decomposition trigger, disclosed as a risk-class exception
 (RFC11-11): an authorization-bearing change may not shed its authorization
 contract (the RFC3-16(a) module) or the mapping's consuming vocabulary
@@ -115,7 +115,7 @@ scope.
 ## Packet digest
 
 sha256 over the mandatory files concatenated in listed order:
-`02f0afecfe4b6f81…`.
+`c1988f85a23ee731…`.
 
 **Selection: hand-authored golden selection. Measurement: mechanical.
 Compiler implementation: absent.** `scripts/context_load.py` resolves a

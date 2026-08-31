@@ -71,35 +71,49 @@ Reader definitions:
 Group: Observation. Form: **state projection/query**.
 
 WHEN the POC observes Butlers, it SHALL bind the complete source-path
-population to the configured repository's exact Git revision and SHALL bind
-the consent record, secret-policy version, source-discovery version and
-observer/parser version as deterministic evaluation inputs. Human and machine
-readers SHALL receive those identities, the capture instant and the same source
-population. Every emitted project-shape fact SHALL carry its source identity,
-scope, capture instant and observer identity/version.
+population to one opaque repository identity, approved locator mapping,
+resolved Git object database and exact Git revision. It SHALL bind the signed
+PWB source-grammar digest and superseding sign-off act; accepted RFC3/RFC4/
+RFC5 trust-rule module digests and superseding owner-act identities;
+authorization mode; consent, policy and registry artifact/act identities,
+versions, digests and provenance states; source-discovery algorithm/version;
+resource limits; observer/parser version; and the Phase-A-derived manifest
+digest as deterministic evaluation inputs.
 
-- **Case**: observe a repository at a known revision whose five-pillar index
-  and roster population are known independently, including a source-claimed
-  instant distinct from the capture instant.
-- **Observable**: the machine answer and Polaris expose the revision, source
-  paths, source count, capture instant and every deterministic input and
-  per-emission identity.
-- **Oracle**: compare the exposed paths and revision to an independent Git tree
-  listing and the closed discovery rules; exhaust every emitted fact's source,
-  scope, capture-instant and observer-version stamp; verify capture time remains
-  distinct from source-claimed time. Exact set, stamp and input-identity
-  equality decides.
-- **Oracle independence**: the expected set comes from Git and the Butlers
-  indexes, not from the POC model.
-- **Falsifier**: one source is absent, one arbitrary source is included, one
-  deterministic input identity is missing, or exposed sources use different
-  revisions.
+Human and machine readers SHALL receive those identities, the capture instant
+and the same source population. Every emitted project-shape fact SHALL carry
+its source identity, scope, capture instant, observer identity/version,
+authorization mode and act basis. The manifest digest becomes an evaluation
+input only after Phase A derives and independently validates it; no ambient or
+prior manifest may substitute.
+
+- **Case**: observe a controlled repository at one known revision through both
+  authorization modes, including an alternate locator/object database, a
+  source-claimed instant distinct from capture, and a mutated Phase-A manifest.
+- **Observable**: Polaris and `/api/poc` expose identical repository, revision,
+  source paths/count, capture instant, authorization inputs, discovery identity
+  and validated manifest digest; substitutions and invalid manifests never
+  enter Phase B.
+- **Oracle**: compare repository identity, approved locator, object database,
+  revision and Phase-A/Phase-B paths to an independent controlled Git tree;
+  independently derive and digest the manifest from the literal signed grammar;
+  exhaust every emitted fact's source, scope, capture, observer and
+  authorization stamps. Exact set, digest, stamp and input equality decides.
+- **Oracle independence**: the Git tree, source population, manifest extractor,
+  digester and expected input tuple live outside the POC model, observer, parser
+  and renderers.
+- **Falsifier**: one source is absent or arbitrary, one deterministic input is
+  missing, the two channels differ, Phase B uses an unvalidated manifest, or
+  any source crosses locator, object-database or revision boundaries.
 
 #### Scenario: Source population is complete at one revision
 
-- **WHEN** Butlers is observed at revision R
-- **THEN** every admitted project-shape source resolves at R
-- **AND** the human and machine views expose the same complete source set
+- **WHEN** Butlers is observed at revision R through a valid authorization mode
+  and validated Phase-A manifest
+- **THEN** every admitted project-shape source resolves from the approved object
+  database at R
+- **AND** human and machine views expose the same complete source set, manifest
+  digest and authorization basis
 
 ```yaml
 warrants:
@@ -107,7 +121,7 @@ warrants:
   doctrine: [VIS-1, VIS-7, SEC-3]
   contracts: [RFC2-1, RFC4-1, RFC4-2, RFC4-3, RFC4-11, RFC6-15, RFC7-10]
   policies: [CC-SPEC-4, CC-TEST-3]
-  decisions: [POLARIS-DIR-2026-08-31]
+  decisions: [POLARIS-DIR-2026-08-31, TRUSTED-BOOTSTRAP-OBSERVATION-DIR-2026-08-31]
   topology: []
   parent_requirements: [three-surface-poc-experience/POC-REQ-020]
 ```
@@ -203,45 +217,145 @@ warrants:
 
 Group: Admission. Form: **prohibition**.
 
-The POC SHALL NOT read any Butlers project-shape body until an exact
-per-repository observation-consent record, a concrete secret-classification
-policy and the project-shape observer's registered adapter entry all have
-verifiable owner-act provenance. Their identities and versions SHALL be
-evaluation inputs. Absence, mismatch, staleness or unverifiable provenance
-SHALL produce zero body reads and a project-model Unknown.
-The consent subject SHALL be the exact `(observing Syzygy project, configured
-Butlers repository)` pair; a consent for another project, repository or content
-class SHALL not match.
-The observer registry entry SHALL live in Syzygy's governance plane, name that
-same project/repository pair and declare the observer's read-only authority and
-empty write surface.
+The POC SHALL perform zero Butlers project-shape body reads until it resolves
+an exact observation-consent record, secret-classification policy and
+registered project-shape adapter entry for the same
+`(project:syzygy, repository:butlers-configured-poc)` subject.
 
-- **Case (counterexample sweep)**: provide absent, mismatched, stale,
-  unverifiable and valid consent/policy/registry triples to an observer with an
-  injected read spy.
-- **Observable**: invalid triples yield zero read calls and fixed Unknown reasons;
-  only the all-valid triple permits reads.
-- **Oracle**: independently verify all three owner-act provenances, registry
-  home/project/scope/write-surface fields, read calls and evaluation inputs
-  across all cases.
-- **Oracle independence**: authority fixtures and the read spy live outside
-  the observer.
-- **Falsifier**: any body is read before all three authorities verify, any
-  identity is absent from the evaluation, or invalid authority yields a fact.
+Each artifact SHALL have a current, attributable owner act bound to its exact
+digest. The authorization mode SHALL be `independently-verified` when all three
+acts correlate through A1. Otherwise it SHALL be `owner-trusted-bootstrap` only
+when every artifact has an exact digest-bound owner act, at least one act
+remains uncorrelated, and the amended PWB behavior signed under
+`TRUSTED-BOOTSTRAP-OBSERVATION-DIR-2026-08-31` permits that mode. No other
+combination authorizes a read. Lack of independent correlation alone SHALL NOT
+block the trusted mode and SHALL NOT be represented as independent
+verification.
 
-#### Scenario: Missing observation consent blocks content reads
+The consent record SHALL live in Syzygy's decisions plane and name the
+observation class, exact subject, declared-project-shape content scope,
+principal, grant instant and revocation state. The governing policy SHALL be
+the observing Syzygy project's exact policy and SHALL apply before every ingest,
+parse, store, log, surface, endpoint and record boundary. The registry entry
+SHALL live in Syzygy's governance plane, name the same subject and declare
+read-only Git authority with empty write, database, network, credential,
+process-environment and observed-code-execution surfaces. The observer SHALL
+NOT write, migrate or repair the observed repository or its governance plane.
 
-- **WHEN** no lawful Butlers observation-consent record exists
-- **THEN** the project-shape observer performs zero body reads
-- **AND** the project model reports Unknown with the consent reason
+Every artifact identity, version and digest; owner-act identity and provenance
+state; A1 correlation identity or its explicit absence; authorization mode;
+accepted RFC3/RFC4/RFC5 trust-rule module digests and their superseding owner
+act identities; signed PWB source-grammar digest and superseding sign-off act;
+source-discovery algorithm and version; opaque repository identity; approved
+locator mapping; exact Git revision; and permitted Git object database SHALL be
+deterministic evaluation inputs. Missing, mismatched, stale, revoked,
+unattributed, wrong-subject, wrong-scope or effect-widening authority SHALL
+produce zero body reads and a project-model Unknown.
+
+When `owner-trusted-bootstrap` is active, Polaris SHALL show the persistent
+project-account notice “Observation uses owner-trusted records; independent
+audit is not configured.” Each affected claim SHALL expose the same basis on
+demand, and `/api/poc` SHALL carry the authorization mode, act identities,
+artifact digests and uncorrelated provenance state on every admitted
+project-shape fact. Neither channel may label that basis verified or infer a
+positive security, conformance, release or certification claim from it.
+
+After authority admission, discovery SHALL run within one identified
+evaluation at one exact Git revision in two phases. Phase A SHALL read only the
+exact Git object for the Butlers path “about/README.md”, then only the README
+index under each of the five normalized pillar roots that index declares, plus
+Git-tree metadata needed to enumerate baseline `openspec/specs/*/spec.md` paths
+and top-level `roster/*/butler.toml` and corresponding `MANIFESTO.md`
+candidates. Narrative links SHALL NOT recurse. The secret policy SHALL screen
+each transient body before parsing; raw bodies SHALL never be stored, logged,
+rendered or returned.
+
+Phase A SHALL emit a revision-bound manifest containing normalized
+repository-relative paths, Git object identities, extraction classes, the
+source-discovery version and a manifest digest. The manifest is derived
+evaluation data, not a separate authorization artifact: the owner acts bind the
+signed grammar and discovery algorithm, while the manifest digest becomes an
+evaluation input after derivation. Phase B SHALL begin only after an independent
+validator confirms that the manifest exactly satisfies the signed PWB grammar
+at the same repository identity, revision and object database. Phase B SHALL
+read only exact Git objects named by that manifest. A Phase-A parse,
+containment, limit or manifest-validation failure SHALL produce zero Phase-B
+body reads and a project-model Unknown; it does not erase already admitted
+Phase-A read calls. PWB-REQ-006 applies to both phases.
+
+Revocation or supersession SHALL stop new reads at the next evaluation. Prior
+observation records remain immutable and visibly withdrawn or stale. No later
+act retroactively authorizes an earlier read.
+
+- **Case (counterexample sweep)**: for each artifact and act, exercise absent,
+  mismatched, stale, revoked, unattributed, wrong-subject, wrong-scope and
+  digest-mismatch cases; exercise valid all-A1, all-uncorrelated and mixed
+  A1/uncorrelated tuples; exercise every non-empty authority surface; then, for
+  each valid mode, exercise Phase-A seed widening, recursive-link widening,
+  malformed discovery output, manifest/revision/object-database mismatch and
+  Phase-B path widening with separate injected phase read spies.
+- **Observable**: every invalid authority tuple yields zero Phase-A and Phase-B
+  body calls and a fixed Unknown reason; both valid modes permit only the exact
+  Phase-A seed set and validated Phase-B manifest; a Phase-A or manifest failure
+  yields zero Phase-B calls; trusted mode is identical across human and machine
+  views and is never rendered as verified.
+- **Oracle**: independently compare artifact bytes and digests, act fields,
+  subjects, scopes, lifecycle states, A1 correlations, adapter authority and
+  mode derivation. Derive the expected Phase-A set from the literal signed
+  grammar and controlled Git tree, derive the expected manifest with an
+  independent extractor, and compare both phase spies, evaluation inputs and
+  every human/machine provenance marker. Exact equality, zero out-of-set reads
+  and the phase-specific zero-read rules decide.
+- **Oracle independence**: authority fixtures, literal authorization-mode
+  vocabulary, expected discovery algorithm, independent manifest extractor,
+  controlled Git tree and both read spies live outside the observer, production
+  parser and renderers.
+- **Falsifier**: any body read under invalid authority; incorrect mode
+  selection; a missing deterministic input; a trusted basis hidden or called
+  verified; a Phase-A read outside the closed seed algorithm; a Phase-B read
+  before manifest validation or outside the manifest; cross-revision,
+  alternate-locator or alternate-object-database substitution; raw-body
+  persistence; or admission of any non-read authority.
+
+#### Scenario: Owner-trusted bootstrap acts permit read-only observation
+
+- **WHEN** every matching consent, policy and empty-authority registry artifact
+  has a current exact digest-bound owner act and at least one act remains
+  uncorrelated
+- **THEN** the two-phase observation may run in `owner-trusted-bootstrap` mode
+  at one exact Git revision
+- **AND** Polaris and `/api/poc` disclose the owner-trusted, uncorrelated basis
+  without calling it verified
+
+#### Scenario: A1-correlated acts render independently verified
+
+- **WHEN** all three matching owner acts correlate through A1
+- **THEN** the same bounded observation may run in independently-verified mode
+- **AND** the trusted-bootstrap notice is absent
+
+#### Scenario: Invalid authority blocks before discovery
+
+- **WHEN** any required artifact or act is absent, mismatched, stale, revoked,
+  unattributed, wrong-subject, wrong-scope or effect-widening
+- **THEN** both discovery phases perform zero body reads
+- **AND** the project model reports Unknown with the exact failed gate and
+  resolution route
+
+#### Scenario: Discovery failure blocks manifest reads
+
+- **WHEN** valid authority admits Phase A but its seed parsing or derived
+  manifest fails the signed grammar, containment, revision or limit checks
+- **THEN** Phase B performs zero body reads
+- **AND** the project model reports Unknown without claiming a complete source
+  population
 
 ```yaml
 warrants:
   primary: SEC-5
-  doctrine: [VIS-2, VIS-4, SEC-2, SEC-5]
-  contracts: [RFC2-1, RFC3-7, RFC3-16, RFC3-30, RFC4-3, RFC4-7, RFC5-12, RFC5-16]
+  doctrine: [VIS-1, VIS-2, VIS-4, VIS-7, SEC-2, SEC-3, SEC-5]
+  contracts: [RFC1-3, RFC2-1, RFC2-23, RFC3-7, RFC3-8, RFC3-16, "RFC3-16(a)", "RFC3-16(c)", RFC3-30, RFC4-3, RFC4-7, RFC4-11, RFC5-12, RFC5-13, RFC5-16, RFC5-17, RFC5-19, RFC6-13, RFC6-22, RFC7-33]
   policies: [CC-BAR-5, CC-SEC-5, CC-SEC-6, CC-TEST-6]
-  decisions: [POLARIS-DIR-2026-08-31]
+  decisions: [POLARIS-DIR-2026-08-31, TRUSTED-BOOTSTRAP-OBSERVATION-DIR-2026-08-31]
   topology: []
   parent_requirements: []
 ```
@@ -250,31 +364,56 @@ warrants:
 
 Group: Admission. Form: **prohibition**.
 
-The POC SHALL read only exact Git objects addressed by normalized
-repository-relative paths inside the consented repository. It SHALL NOT follow
-absolute paths, traversal, NUL-bearing paths, working-tree symlinks or
-submodules; execute observed content; or emit active Markdown, HTML, SVG,
-scripts, event handlers or unsafe URL schemes. Declared source-count, byte,
-depth, parse-time and rendered-output limits SHALL be evaluation inputs;
-breaches SHALL leave the source counted and Unknown.
+Both discovery phases SHALL read only exact Git objects addressed by normalized
+repository-relative paths within the consented opaque repository, approved
+locator, resolved object database and one exact revision. Phase A SHALL stay
+inside PWB-REQ-005's closed seed algorithm; Phase B SHALL start only after
+independent manifest validation and stay inside that manifest.
 
-- **Case (counterexample sweep)**: exercise every prohibited path/content form
-  and each declared limit with controlled sentinels.
-- **Observable**: no request escapes the Git object reader, no active sentinel
-  reaches a sink, and every rejected/limited source stays visible as Unknown.
-- **Oracle**: injected Git/read/render spies plus complete sink-byte scans and
-  limit-boundary cases decide.
-- **Oracle independence**: malicious paths, content, limits and spies are
-  supplied outside production parsing/rendering code.
-- **Falsifier**: host filesystem access, submodule/symlink traversal, executed
-  active content, unsafe URL output, an unbounded operation, or a vanished
-  rejected source.
+Neither phase SHALL follow absolute paths, traversal, NUL-bearing paths,
+working-tree files, symlinks, submodules, filters, credential helpers,
+environment-selected locators, alternate object databases or remote fetches;
+execute observed content; or emit active Markdown, HTML, SVG, scripts, event
+handlers or unsafe URL schemes. The secret policy SHALL screen transient bytes
+before parsing in both phases. Declared source-count, byte, depth, parse-time
+and rendered-output limits SHALL be evaluation inputs; breaches SHALL keep the
+affected source visible and Unknown.
+
+- **Case (counterexample sweep)**: exercise every prohibited path, object
+  database, revision, Git helper/filter/fetch and active-content form plus each
+  limit; include valid authority followed by malformed Phase-A output and
+  manifest validation failure.
+- **Observable**: no request escapes the phase-specific Git object reader; no
+  prohibited helper, fetch, execution or active sentinel runs or reaches a
+  sink; rejected/limited sources remain visible; invalid authority yields zero
+  Phase-A/Phase-B calls, while Phase-A/manifest failure yields zero Phase-B
+  calls.
+- **Oracle**: separate injected Phase-A and Phase-B read spies, Git helper/
+  fetch/execute spies, independent manifest validator, complete sink-byte scans
+  and every limit boundary decide.
+- **Oracle independence**: malicious paths, repositories, object databases,
+  manifests, content, limits and spies are supplied outside production
+  discovery, parsing and rendering code.
+- **Falsifier**: host working-tree access, alternate locator/object database,
+  cross-revision read, submodule/symlink/traversal, Git helper/filter/fetch,
+  observed execution, unsafe output, an unbounded operation, a vanished rejected
+  source or any Phase-B call after failed manifest validation.
 
 #### Scenario: Active repository content remains inert
 
-- **WHEN** an admitted Markdown source contains raw active HTML or an unsafe URL
-- **THEN** no active content reaches Polaris, JSON, logs, caches or records
-- **AND** the affected source remains counted with an exclusion or Unknown reason
+- **WHEN** either phase encounters raw active HTML, an unsafe URL or secret
+  sentinel in an otherwise admitted Markdown source
+- **THEN** no active or secret content reaches Polaris, JSON, logs, caches or
+  records
+- **AND** the affected source remains counted with its exclusion or Unknown
+  reason
+
+#### Scenario: Invalid manifest blocks Phase B
+
+- **WHEN** valid authority admits Phase A but the derived manifest changes
+  locator, object database, revision, path scope or signed grammar
+- **THEN** Phase B performs zero body reads
+- **AND** the project model remains Unknown with the failed validation route
 
 ```yaml
 warrants:
@@ -282,7 +421,7 @@ warrants:
   doctrine: [VIS-1, VIS-2, VIS-7, SEC-3, SEC-5]
   contracts: [RFC2-1, RFC2-23, RFC4-4, RFC5-16, RFC5-17, RFC5-19]
   policies: [CC-BAR-5, CC-SEC-5, CC-SEC-6, CC-TEST-6]
-  decisions: [POLARIS-DIR-2026-08-31]
+  decisions: [POLARIS-DIR-2026-08-31, TRUSTED-BOOTSTRAP-OBSERVATION-DIR-2026-08-31]
   topology: []
   parent_requirements: []
 ```

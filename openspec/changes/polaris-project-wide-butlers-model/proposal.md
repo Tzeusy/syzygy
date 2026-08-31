@@ -15,12 +15,17 @@ coverage explicit POC evaluation criteria.
   connector and major interface in the configured Butlers revision.
 - Coverage reports a complete denominator. Missing or unreadable declarations
   remain visible as Unknown; they never disappear from the known-source count.
-- Repository bodies are not read until a Butlers observation-consent record,
-  the observing project's concrete secret-classification policy and the
-  project-shape observer's registered adapter entry all pass owner-provenance
-  checks.
-- Shape reads are bounded, repository-contained and inert: exact Git objects
-  only, no symlink/submodule escape, no active browser content and no execution.
+- Repository bodies are not read until exact digest-bound owner acts exist for
+  Butlers observation consent, the observing project's concrete secret policy
+  and the project-shape observer's registered adapter entry. All-A1 acts select
+  independently verified mode; any otherwise-valid uncorrelated act selects a
+  visibly owner-trusted bootstrap mode for read-only observation only.
+- Source discovery is a two-phase transaction at one exact revision: a closed
+  seed set derives and validates the revision-bound manifest before manifest
+  reads begin. Both phases are bounded, repository-contained, secret-screened
+  and inert, with no symlink/submodule escape, active content or execution.
+- Human and machine views disclose the selected authorization mode and never
+  call owner-trusted bootstrap provenance independently verified.
 - Capability material becomes drill-down content beneath the project account.
   The existing WhatsApp slice remains a proving example, not the definition of
   Butlers.
@@ -72,8 +77,10 @@ staffer, domain-butler, module, connector and major-interface catalogs.
 
 Out of scope: reading arbitrary implementation-file contents; claiming that
 every source file or active proposal is a project capability; inferring missing
-capabilities; modifying Butlers; supporting another project; production
-release; autonomous behavior; multi-user support; or weakening visible Unknown,
+capabilities; modifying Butlers; supporting another project; external egress or
+model-provider disclosure; observed-code execution; credential or environment
+access; production release, certification or positive security claims;
+autonomous behavior; multi-user support; or weakening visible Unknown,
 provenance, parity, authentication or one-repository POC boundaries.
 
 ## Authority and sign-off
@@ -81,9 +88,10 @@ provenance, parity, authentication or one-repository POC boundaries.
 This is a candidate change. It binds nothing. Owner sign-off is necessary but
 not sufficient for implementation: work must also remain inside a recorded,
 finding-derived POC improvement cycle and all security prerequisites must be
-satisfied. The six signed
-`three-surface-poc-experience` artifacts remain unchanged at their recorded
-digests.
+satisfied. The signed `three-surface-poc-experience` requirement, proposal,
+design, task and capability-coverage bytes remain unchanged; its contract-
+coverage artifact receives only the digest-bound scope clarification needed to
+exclude separately governed child changes from original-slice absence claims.
 
 ## Authoring evidence
 

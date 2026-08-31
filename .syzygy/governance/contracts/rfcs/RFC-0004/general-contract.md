@@ -152,12 +152,31 @@ output attributed to an adapter absent from the snapshot's registry state is
 inadmissible as a deterministic fact and renders Unknown
 (`source-uncaptured-or-unreachable`). An entry's **adoption status is not
 self-authenticating** (RFC3-16): admitting an adapter is what makes its output
-a deterministic fact at all, so an entry is honored **only under RFC3-16(a)** —
-an entry an untrusted writer could mint would register an arbitrary adapter
-and launder whatever it emits into the deterministic base graph, which no
-downstream tier or freshness check inspects. An entry whose owner-act
-provenance does not verify admits nothing: outputs attributed to it render
-Unknown exactly as if the adapter were unregistered.
+a deterministic fact at all, so an entry an untrusted writer could mint could
+launder whatever it emits into the deterministic base graph, which no
+downstream tier or freshness check inspects.
+
+An entry is honored only under RFC3-16(a). Ordinarily, an entry whose owner-act
+provenance does not independently verify admits nothing and its outputs render
+Unknown exactly as if the adapter were unregistered. Under RFC3-16(c)'s
+trusted-bootstrap rule only, an exact digest-bound state-(1) entry may admit
+deterministic facts solely within its recorded read-only repository-observation
+scope. The entry must declare an empty observed-repository and
+external-authority write surface, no egress, no credential or
+process-environment access, and no observed-code execution. Every admitted
+fact and evaluation carries the entry identity, digest, provenance state and
+selected authorization mode.
+
+Where the complete source manifest is itself derived through observation, the
+entry declares one deterministic transaction at one exact repository revision:
+phase A may read only the fixed bootstrap seed set and Git-tree metadata
+declared by the governing behavior contract, under the same secret policy; it
+produces a revision-bound manifest and digest. Phase B may read only exact Git
+objects selected by that manifest from the same object database and revision.
+No alternate locator, working tree, symlink, submodule, traversal, environment
+value, remote fetch or runtime default may widen either phase. Missing,
+changed, revoked or out-of-scope entry state follows the ordinary no-admission
+rule.
 
 **RFC4-8 — Version skew.** (a) Observation records permanently carry the
 observer/adapter versions that produced them; an upgrade never reinterprets

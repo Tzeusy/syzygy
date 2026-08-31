@@ -1835,6 +1835,12 @@ ACT_DIGEST_COPY_FILES = {
     # "it was true when written" is how a stale digest survives unnoticed.
     f"{CANDIDATES}/round-2026-08g/FINAL-OWNER-AND-SPEC-CLOSURE-PREFLIGHT.md":
         ("ACCEPT FOUNDATIONAL WAVE A", "ACCEPT FOUNDATIONAL WAVE B"),
+    f"{CANDIDATES}/trusted-bootstrap-observation/CANDIDATE-TRANSACTION-REPORT.md":
+        ("ACCEPT FOUNDATIONAL WAVE A",),
+    f"{CANDIDATES}/trusted-bootstrap-observation/OWNER-SIGNOFF-PACKET.md":
+        ("ACCEPT FOUNDATIONAL WAVE A",),
+    f"{CANDIDATES}/trusted-bootstrap-observation/TRANSACTION-MANIFEST.txt":
+        ("ACCEPT FOUNDATIONAL WAVE A",),
     # The P-41 offering packet (2026-08-17) quotes act 6's exact phrase so
     # the owner sees what would be performed; registered so a regenerated
     # argument turns this copy into a finding, not a silent misstatement.

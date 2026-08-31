@@ -6,7 +6,7 @@ Owner: Tzeusy
 
 Record ID: `PWB-CONSENT-2026-08-31`
 
-Record version: `1.0.0-candidate.2`
+Record version: `1.0.0`
 
 Consent class: observation
 
@@ -15,7 +15,7 @@ Subject: `(project:syzygy, repository:butlers-configured-poc)`
 Current locator: `/home/tze/GitHub/butlers` (configuration, not repository
 identity)
 
-Status: **candidate awaiting amended PWB bytes; not act-ready**
+Status: **candidate awaiting an exact digest-bound owner consent act**
 
 Statement date: 2026-08-31; the future act records its exact grant instant
 
@@ -30,7 +30,7 @@ The owner stated in this Codex project walkthrough:
 
 The consent scope is the bounded, read-only project-shape observation defined
 by `polaris-project-wide-butlers-model` at signed specification digest
-`07392c115e3a63bb3aceb259362a70e0d1ee11d6ba2621492fd03cf1893aca61`.
+`cf6e1378bcfa2d3439001b9d9bb47d590c2e0aa481630a0f2ddc2845fb1f22d8`.
 It covers exact Git objects selected by that specification's closed source
 population at each identified Butlers revision observed by the POC.
 
@@ -50,8 +50,6 @@ later recorded act; revocation does not erase prior observation records.
 
 [Observed] This candidate preserves the owner phrase, attribution, date,
 subject and scope. It has no effect until the owner acts on its exact digest.
-Its current PWB digest is the signed pre-amendment baseline and must be replaced
-with the superseding signed PWB digest before review or owner action.
 
 If acted on, its initial provenance state is **owner-adopted (bootstrap,
 uncorrelated)**. Under the proposed trusted-bootstrap observation amendment,

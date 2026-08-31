@@ -109,10 +109,13 @@ Two invariants span the package. **No credential to Syzygy, and no route to
 Syzygy**: RFC5-24's injection prohibition (module 1) and RFC5-20/RFC5-21's
 network-policy exclusion and isolation floor (module 3) bind together, so
 observed code can never hold an authenticated route to the authorized surface.
-And **the untrusted-tree premise**: the governed plane is writable by fleet
-workers, so a consent record, a classification policy, a secret-detection policy,
-and an execution-approval Decision are each honored **only under RFC3-16(a)** —
-which in turn is why the audit trail must live outside that tree (RFC5-25).
+The **untrusted-tree premise** remains: consent, classification policy,
+secret-detection policy and execution approval are honored under RFC3-16(a).
+A1 correlation remains mandatory for egress, execution and every
+non-observation effect. RFC3-16(c) permits only its explicitly disclosed,
+digest-bound state-(1) trust mode for read-only repository observation; it
+grants no egress, execution, write, credential or environment authority and
+makes no independently verified or positive security claim.
 
 ## Scope
 

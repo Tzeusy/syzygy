@@ -1,22 +1,20 @@
 {
   "schemaVersion": 1,
-  "registryVersion": "1.0.0-candidate.2",
-  "status": "candidate-awaiting-amended-rfc4-and-pwb-digests-not-act-ready",
+  "registryVersion": "1.0.0",
+  "status": "candidate-awaiting-exact-owner-adoption",
   "entries": [
     {
       "observerId": "polaris-butlers-project-shape",
-      "observerVersion": "1.0.0-candidate.2",
-      "discoveryVersion": "pwb-discovery-v1-candidate.2",
+      "observerVersion": "1.0.0",
+      "discoveryVersion": "pwb-discovery-v1",
       "role": "adapter",
       "implementationId": "three-surface-poc-core/project-shape-observer",
       "implementationVersion": "1.0.0",
       "contractId": "RFC-0004/general-contract",
-      "contractVersion": "sha256:2b5072a2b718e4609b279b130ef39daeb49fc6079c8da9c01e14aa12021149d4",
-      "contractVersionStatus": "current baseline only; replace with superseding accepted RFC4 digest before act",
+      "contractVersion": "sha256:46e4e07ad8b022d1859982f129ad2a0b6c16c1165b8155d2e8c1b95235f551e7",
       "governingBehaviorContract": {
         "id": "polaris-project-wide-butlers-model",
-        "currentBaselineVersion": "sha256:07392c115e3a63bb3aceb259362a70e0d1ee11d6ba2621492fd03cf1893aca61",
-        "mustReplaceWithSupersedingSignedDigestBeforeAct": true
+        "version": "sha256:cf6e1378bcfa2d3439001b9d9bb47d590c2e0aa481630a0f2ddc2845fb1f22d8"
       },
       "subject": {
         "observingProject": "project:syzygy",
@@ -158,7 +156,7 @@
       "claimStateMapping": {
         "unresolvedContradiction": "contradicted-pending-adjudication"
       },
-      "adoptionStatus": "candidate-not-act-ready"
+      "adoptionStatus": "candidate-unadopted"
     }
   ]
 }

@@ -15,10 +15,10 @@ uncovered; 3 believed not applicable.**
 |---|---|---|---|---|
 | RFC4-3.r1 | RFC4-3.c2 | RFC4-3 | Every emitted project-shape fact carries a capture instant distinct from source-claimed time | unknown-uncovered |
 | RFC4-3.r2 | RFC4-3.c3 | RFC4-3 | Every emitted project-shape fact carries observer identity and version | covered:PWB-REQ-001 |
-| RFC4-3.r3 | RFC4-3.c4 | RFC4-3 | Output from an unregistered or unverifiable observer cannot influence the model | covered:PWB-REQ-005 |
+| RFC4-3.r3 | RFC4-3.c4 | RFC4-3 | Output from an unregistered observer or one whose authority is neither A1-verified nor validly owner-trusted cannot influence the model | covered:PWB-REQ-005 |
 | RFC4-7.r1 | RFC4-7.c1 | RFC4-7 | The project-shape observer has a versioned per-project registry entry | covered:PWB-REQ-005 |
 | RFC4-7.r2 | RFC4-7.c2 | RFC4-7 | Observer registry identity/version is an evaluation input | covered:PWB-REQ-005 |
-| RFC4-7.r3 | RFC4-7.c3 | RFC4-7 | Missing or unverifiable registry provenance blocks reads and facts to Unknown | covered:PWB-REQ-005 |
+| RFC4-7.r3 | RFC4-7.c3 | RFC4-7 | Missing registry authority or provenance neither A1-verified nor validly owner-trusted blocks reads and facts to Unknown | covered:PWB-REQ-005 |
 | RFC1-18.r1 | RFC1-18.c1 | RFC1-18 | Every project Claim has the accepted durable-identity derivation and an evaluation instance | unknown-uncovered |
 | RFC1-18.r2 | RFC1-18.c2 | RFC1-18 | Every project Claim instance has deterministic same-evaluation identity and the complete accepted tuple | unknown-uncovered |
 | RFC1-19.r1 | RFC1-19.c1 | RFC1-19 | Positive project status requires current support; absence remains Unknown | covered:PWB-REQ-007 |

@@ -202,9 +202,10 @@ as the boundary:
   render means, so no downstream status check can catch it (VIS-7's trust
   floor).
 
-**The predicate.** Such an artifact is honored **only when its owner-act
-provenance is independently verifiable to Syzygy by a mechanism the governed
-tree cannot forge**. Being present, well-formed, and correctly attributed *in
+**The predicate.** Except for the trusted-bootstrap read-only
+repository-observation rule defined in RFC3-16(c), such an artifact is honored
+only when its owner-act provenance is independently verifiable to Syzygy by a
+mechanism the governed tree cannot forge. Being present, well-formed, and correctly attributed *in
 the tree* is not sufficient. The premise, stated honestly: the plane is
 in-tree by design (architecture.md, FD-034), and changes materialize through
 fleet workers executing scheduled work (architecture.md's
@@ -271,30 +272,36 @@ their owner acts recorded as chat-phrase ceremonies plus git commits/tags.
 When the mechanism first exists, the owner performs a **one-time recorded
 correlation act** binding each already-adopted artifact's exact digest to its
 historical act; until then those artifacts render with their gap stated
-honestly (the A9 posture), not as verified. Rendering is the only effect
-this paragraph adds; what a state-(1) record *suffices for* splits by role
-(RFC3-16(c)): an artifact consumed as a **constraint** binds at full
-strength — refusing to apply a constraint over uncorrelated provenance
-would widen, not narrow — while an artifact consumed as an **authorization
-for an effect** (a consent, an autonomy envelope, a write-expanding policy)
-has not satisfied the RFC3-16(a) predicate on a state-(1) record alone, and
-*Effect when the predicate fails* governs that effect until the correlation
-act (RFC10-9 is the worked example). **A git tag or commit alone is
+honestly (the A9 posture), not as verified. Rendering is the only effect this
+paragraph adds; what a state-(1) record suffices for splits by role
+(RFC3-16(c)): an artifact consumed as a constraint binds at full strength —
+refusing to apply a constraint over uncorrelated provenance would widen, not
+narrow — while an artifact consumed as an authorization for an effect has not
+satisfied the RFC3-16(a) predicate on a state-(1) record alone. The sole
+exception is RFC3-16(c)'s trusted-bootstrap read-only repository-observation
+rule. That rule may unblock only its exact observation effect; every other
+dependent effect remains governed by *Effect when the predicate fails* until
+correlation. **A git tag or commit alone is
 never silently sufficient**: the governed tree cannot prove who pushed it; it
 may serve as *evidence within* a correlation, never as the mechanism.
 [Inferred — the binding set; Observed — the path-vs-content and
 untrusted-tree premises from RFC3-16(a).]
 
-**Effect when the predicate fails.** An authorization present in the tree
-without verifiable owner-act provenance is **never silently honored and never
-silently deleted**. Its **dependent effect is blocked** — the egress is
-refused, the run does not launch, the adapter write does not proceed, the
-adoption does not bind, the policy does not widen anything — the
-**authorization itself renders Unknown**, and the condition **mints a
-contradiction routed to owner adjudication**: exactly the posture RFC3-3
-takes for an inoperative write-expanding field and RFC3-9 takes for a
-governance artifact Syzygy did not author. Blocking is not deletion: the
-artifact and its unverifiable state both remain rendered.
+**Effect when the predicate fails.** Except where RFC3-16(c)'s
+trusted-bootstrap read-only repository-observation rule applies, an
+authorization present in the tree without verifiable owner-act provenance is
+never silently honored and never silently deleted. Its dependent effect is
+blocked — the egress is refused, the run does not launch, the adapter write
+does not proceed, the adoption does not bind, the policy does not widen
+anything — the authorization itself renders Unknown, and the condition mints
+a contradiction routed to owner adjudication. Under the trusted-bootstrap
+rule, absence of independent correlation alone does not block the exact
+read-only observation effect, render its authorization Unknown, or mint that
+contradiction: the authorization instead renders as `owner-adopted (bootstrap,
+uncorrelated)` with the trusted basis disclosed. Absence, digest or scope
+mismatch, revocation, expiry where declared, or any requested effect outside
+that rule follows the normal blocked/Unknown/contradiction posture. Blocking is
+not deletion: the artifact and its provenance state remain rendered.
 
 **One predicate, one home.** Every consuming gate **cites this clause rather
 than restating the obligation**. The gates today: RFC5-15 and RFC5-18(c)
@@ -336,6 +343,36 @@ Syzygy-mediated ceremony correlated to an audit trail living outside
 RFC3-16(b)'s nine items. **Only this state supports the claim "independently
 verified."**
 
+**Trusted-bootstrap read-only repository observation.** State (1) remains
+uncorrelated and does not satisfy independent verification. It may nevertheless
+be trusted for one dependent effect only: read-only observation of repository
+content within the exact project, repository, content-class and adapter scope
+bound by the owner act.
+
+Eligibility requires every authorization-bearing input consumed by the
+observation — including observation consent, secret-detection policy and
+adapter-registry entry — to have a current state-(1) or state-(2) owner act
+over its exact content digest. Each state-(1) act binds RFC3-16(b) items 1–8;
+item 9 is absent and that absence is disclosed. A mixed set selects the
+trusted-bootstrap mode whenever at least one required act remains state (1).
+Missing, mismatched, stale, superseded or revoked authority selects neither
+mode.
+
+This is an authorization mode, not a third provenance state. Human and machine
+views disclose, at project-account and per-claim provenance level,
+`owner-adopted (bootstrap, uncorrelated); trusted for read-only repository
+observation; not independently verified`. They never call the act, artifact,
+observation or resulting fact independently verified.
+
+The allowance authorizes no write to an observed repository or external
+authority; no RFC5-15 egress or model-provider disclosure; no observed-code
+execution or execution consent; no credential, credential-API or
+process-environment access; no deployment, release, certificate, conformance
+or positive security claim; and no autonomous owner act, mission effect or
+multi-user authority. Those effects remain subject to the ordinary RFC3-16(a)
+failure rule until A1 correlation exists. SEC-5 remains outcome-binding under
+either provenance state.
+
 Consequences that bind:
 
 - Syzygy **never claims independent verification for an uncorrelated
@@ -355,12 +392,11 @@ Consequences that bind:
   a bootstrap record or within a correlation, never as the mechanism
   (RFC3-16(b)). An artifact with **no owner-act record at all** is in neither
   state and is effectively unadopted whatever its stamp claims (RFC3-16).
-- Nothing here weakens RFC3-16(a): an authorization-bearing artifact resting
-  on a state-(1) record has not satisfied the predicate, and RFC3-16(a)'s
-  *Effect when the predicate fails* governs its dependent effects. The
-  constraint half of the same split — a state-(1) artifact consumed as a
-  constraint binds at full strength — is stated in RFC3-16(b)'s *Bootstrap
-  correlation* paragraph; the two halves are one rule read from either end.
+- Nothing here otherwise weakens RFC3-16(a): outside the trusted-bootstrap
+  read-only repository-observation rule, an authorization-bearing artifact
+  resting on a state-(1) record has not satisfied the predicate and
+  RFC3-16(a)'s *Effect when the predicate fails* governs every dependent
+  effect. The constraint half of the split remains unchanged.
 
 [Inferred — the two-state distinction and its render vocabulary; Observed —
 the untrusted-tree premise (RFC3-16(a)), the A1 mechanism class and A9

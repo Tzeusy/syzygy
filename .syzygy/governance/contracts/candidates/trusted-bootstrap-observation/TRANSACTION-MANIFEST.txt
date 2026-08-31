@@ -1,0 +1,16 @@
+505c46c6702ebde0908328fd67e684c26501a7f26dbb37e451ca05661a2c9034  .syzygy/governance/contracts/candidates/wave-manifests/WAVE-A-MANIFEST.txt
+bd2504cb580ca73eeb2510481ca4665ee11e2127360fc0be12c104f347fb515f  openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml
+0590850eae3bb6233fe8d080422584c85d756e10810e7ff4bfa03b05a1fe646c  openspec/changes/polaris-project-wide-butlers-model/proposal.md
+17acc4993cf6d87a1324254e5bc8b1114fa5111d6db23d66c5bf2587fd89e5c7  openspec/changes/polaris-project-wide-butlers-model/design.md
+cf6e1378bcfa2d3439001b9d9bb47d590c2e0aa481630a0f2ddc2845fb1f22d8  openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+975b691f4e53ee486ea69d0b839e16e4425d7a62b15fc43da22836d1e0ccaaa0  openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+f1105fd51cf2599fd0685ff76ad9aca71db922db522aed4a0809cebc528a978d  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
+c2b8e2f56b2d3ff004a7ac10523f945fc92dbbedcff027783101d2307f7b42d7  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
+f5586674ed9d82a02a66d4dbf910aefaffccd7a3f3e2db4eaece40fe5bceb7cb  openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
+e15f2a974f9063dfb73e7a5132b59cc6b9401292c0a05547fa274664b7dfed93  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0001-0003.md
+d5cd15470bc721b449543a18a84110df749c02f33984b9c3eedf55772fab29b7  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md
+fa272738b85c64b6e455c06da26c01d6f3b80aab504c68ad18f57918d1e953ea  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md
+858e5f1af675eef82fad70b20702aca14e24c54edec6e1b4845038b5e507749f  openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md
+766f1fb9b031fc04f2c814bdf0c464911e943890ceb71e94111cec52971538cc  .syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md
+67a5f00d321afe746eb739fedaeb477a02dc57ce198ce8fb615bcf028e1b26f3  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json
+c8bbc200da492d54410cd72a2f24952ca71fa020953d0a0d8ad93f30f8400629  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json

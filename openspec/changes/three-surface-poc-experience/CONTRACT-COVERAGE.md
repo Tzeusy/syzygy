@@ -15,6 +15,15 @@
 > N/A** — never covered, never silently omitted (VIS-2). "Believed not
 > applicable" (Part B2) is the author's application of CC-SPEC-8's
 > applicability test, offered to the owner; it settles nothing.
+>
+> **Amendment scope clarification — candidate, binds nothing until owner
+> sign-off.** Every “POC” scope or absence claim in this matrix describes only
+> the original `three-surface-poc-experience` behavior signed at this artifact's
+> prior digest. It does not describe separately governed child changes,
+> including `polaris-project-wide-butlers-model`. A child change may add its own
+> consent, provenance evaluation, adapter registry, secret policy or body-read
+> observer without making these original-slice dispositions claims about the
+> current combined POC. No row disposition changes under this clarification.
 
 ## Population and denominator
 

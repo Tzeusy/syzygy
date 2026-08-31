@@ -8,21 +8,26 @@
   plain-copy criteria against VIS-1, VIS-3, RFC 0007 and the owner walkthrough.
 - [x] 1.4 Obtain owner sign-off at the exact candidate artifact digests before
   any implementation task begins.
-- [ ] 1.5 Obtain and verify separate Butlers observation consent and a concrete,
-  owner-approved secret-classification policy, and register the project-shape
-  observer with verified owner provenance before any body-read implementation
-  is dispatchable (PWB-REQ-005).
+- [ ] 1.5 Obtain exact digest-bound owner acts for separate Butlers observation
+  consent, the concrete secret-classification policy and the registered
+  project-shape observer. Verify either all-A1 provenance or the signed
+  owner-trusted bootstrap mode, including visible disclosure and empty non-read
+  authority, before any body-read implementation is dispatchable (PWB-REQ-005).
 
 ## 2. Project-shape observation and model
 
-- [ ] 2.1 Add a revision-bound Butlers project-shape source manifest covering
-  the five pillar indexes and roster identities (PWB-REQ-001).
-- [ ] 2.2 Add a deterministic, injectable observer that reads only allowlisted
-  shape sources and records observer identity, version, capture instant and
-  source anchors (PWB-REQ-001).
-- [ ] 2.3 Read exact Git objects through normalized contained paths; reject
-  traversal, symlinks, submodules, active content and declared resource-limit
-  breaches without shrinking the source population (PWB-REQ-006).
+- [ ] 2.1 Add Phase-A discovery over the fixed root/pillar seed objects and
+  Git-tree metadata; derive, digest and independently validate the revision-
+  bound source manifest before Phase B (PWB-REQ-001, PWB-REQ-005).
+- [ ] 2.2 Add a deterministic, injectable two-phase observer that binds opaque
+  repository identity, approved locator/object database, exact revision,
+  authorization inputs, manifest digest, capture instant and source anchors
+  (PWB-REQ-001).
+- [ ] 2.3 Read exact phase-specific Git objects through normalized contained
+  paths; reject working-tree reads, alternate locators/object databases,
+  cross-revision access, helpers, fetches, traversal, symlinks, submodules,
+  active content and resource-limit breaches without shrinking the known
+  source population (PWB-REQ-006).
 - [ ] 2.4 Apply the observing project's secret policy before model admission;
   retain hash-not-body exclusions and fixed Unknown reasons (PWB-REQ-003).
 - [ ] 2.5 Extract project statements and catalogs without LLM inference, with
@@ -59,8 +64,9 @@
 
 ## 4. Verification
 
-- [ ] 4.1 Add behavior tests for every PWB-REQ oracle, including missing,
-  unreadable, excluded, contradictory and stale-summary cases.
+- [ ] 4.1 Add behavior tests for every PWB-REQ oracle, including both authority
+  modes, every invalid authority limb, Phase-A/Phase-B widening and failure,
+  missing, unreadable, excluded, contradictory and stale-summary cases.
 - [ ] 4.2 Add mutation checks for the source denominator, coverage partition,
   precedence guard, secret sentinel, capability-first regression and meta-copy
   prohibition.
@@ -68,8 +74,9 @@
   project-wide human marker against `/api/poc` (PWB-REQ-020).
 - [ ] 4.4 Run keyboard/non-visual navigation and WCAG AA contrast checks over
   the project summary, catalogs, capability detail and exact-source paths.
-- [ ] 4.5 Run a fresh-checkout demonstration against the configured Butlers
-  revision and retain the exact test/runtime artifacts.
+- [ ] 4.5 After the three exact authority acts bind, run a fresh-checkout
+  demonstration against the configured Butlers revision and retain the exact
+  authorization, phase-read, manifest, test and runtime artifacts.
 - [ ] 4.6 Perform the RFC7-30 owner cold-open walkthrough and record the
   execution and owner judgment separately; absent lawful judgment remains
   Unknown (PWB-REQ-021…022).
