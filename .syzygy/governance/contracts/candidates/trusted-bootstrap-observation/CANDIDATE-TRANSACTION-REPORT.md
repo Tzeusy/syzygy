@@ -1,8 +1,9 @@
-# Trusted-bootstrap observation candidate transaction
+# SUPERSEDED — trusted-bootstrap observation candidate transaction
 
-> **Candidate — binds nothing.** Baseline: `1f9851a`. Accepted contract and
-> signed-spec bytes on main remain unchanged until the owner signs the final
-> transaction manifest.
+> **Historical candidate; never signed and never effective.** Baseline:
+> `1f9851a`. The owner generalized trusted-bootstrap authorization before this
+> read-only transaction was acted on. Accepted contract and signed-spec bytes
+> on main were never changed by this offering.
 
 ## What changes
 

@@ -1,7 +1,9 @@
-# Owner sign-off — trusted-bootstrap observation transaction
+# SUPERSEDED BEFORE ACT — trusted-bootstrap observation transaction
 
-> **Candidate — binds nothing.** No listed act has occurred. Main remains on
-> the prior accepted/signed bytes until the owner uses the exact phrase below.
+> **Do not use the phrase below. It signs nothing.** No listed act occurred.
+> On 2026-08-31 the owner generalized trusted-bootstrap authorization beyond
+> read-only observation before this candidate was signed. A fresh generalized
+> transaction must replace it; these bytes remain historical candidate evidence.
 
 Transaction manifest:
 `.syzygy/governance/contracts/candidates/trusted-bootstrap-observation/TRANSACTION-MANIFEST.txt`
@@ -52,6 +54,9 @@ passes.
 ```text
 SIGN OFF TRUSTED-BOOTSTRAP OBSERVATION TRANSACTION: 1b0424ab27e0fedbcb13653796f8a55101761438a8b79f0c9be46d2ba814696a
 ```
+
+**Retired without effect.** The phrase above is preserved only to identify the
+offering that never took effect.
 
 Any different digest signs nothing. An edit to any manifest subject retires
 the review and this offering.
