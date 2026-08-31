@@ -6,8 +6,10 @@
   dependency union; disposition every revise finding.
 - [x] 1.3 Run a fresh-reader review of the proposal, design, requirements and
   plain-copy criteria against VIS-1, VIS-3, RFC 0007 and the owner walkthrough.
-- [x] 1.4 Obtain owner sign-off at the exact candidate artifact digests before
-  any implementation task begins.
+- [x] 1.4 Record the initial project-wide candidate sign-off at the prior eleven
+  digests; that historical act remains append-only.
+- [ ] 1.4a Obtain superseding owner sign-off on the trusted-bootstrap
+  transaction manifest before any amended implementation task begins.
 - [ ] 1.5 Obtain exact digest-bound owner acts for separate Butlers observation
   consent, the concrete secret-classification policy and the registered
   project-shape observer. Verify either all-A1 provenance or the signed
