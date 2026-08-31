@@ -7,7 +7,11 @@ Transaction manifest:
 `.syzygy/governance/contracts/candidates/trusted-bootstrap-observation/TRANSACTION-MANIFEST.txt`
 
 Manifest sha256:
-`0f36be65688f3cfa5b779e18412278aea70076dd032b8e26c03bc5130ab38c67`
+`6034e607a36ac1375084be3650a8eadc51b7d5ab3e91ccabfb313b1f520c0689`
+
+The manifest's first row binds `ACT-SEMANTICS.md` sha256
+`75b4fb8ecca05198df357244587cf7090c4eba7e7444b55c8ef277ff4316531a`,
+which fixes the six act types, subjects, scopes and supersession rules below.
 
 ## Acts carried by one ceremony
 
@@ -44,7 +48,7 @@ passes.
 ## Exact owner phrase
 
 ```text
-SIGN OFF TRUSTED-BOOTSTRAP OBSERVATION TRANSACTION: 0f36be65688f3cfa5b779e18412278aea70076dd032b8e26c03bc5130ab38c67
+SIGN OFF TRUSTED-BOOTSTRAP OBSERVATION TRANSACTION: 6034e607a36ac1375084be3650a8eadc51b7d5ab3e91ccabfb313b1f520c0689
 ```
 
 Any different digest signs nothing. An edit to any manifest subject retires

@@ -1,3 +1,4 @@
+75b4fb8ecca05198df357244587cf7090c4eba7e7444b55c8ef277ff4316531a  .syzygy/governance/contracts/candidates/trusted-bootstrap-observation/ACT-SEMANTICS.md
 505c46c6702ebde0908328fd67e684c26501a7f26dbb37e451ca05661a2c9034  .syzygy/governance/contracts/candidates/wave-manifests/WAVE-A-MANIFEST.txt
 bd2504cb580ca73eeb2510481ca4665ee11e2127360fc0be12c104f347fb515f  openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml
 0590850eae3bb6233fe8d080422584c85d756e10810e7ff4bfa03b05a1fe646c  openspec/changes/polaris-project-wide-butlers-model/proposal.md

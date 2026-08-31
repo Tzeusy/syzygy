@@ -1837,6 +1837,8 @@ ACT_DIGEST_COPY_FILES = {
         ("ACCEPT FOUNDATIONAL WAVE A", "ACCEPT FOUNDATIONAL WAVE B"),
     f"{CANDIDATES}/trusted-bootstrap-observation/CANDIDATE-TRANSACTION-REPORT.md":
         ("ACCEPT FOUNDATIONAL WAVE A",),
+    f"{CANDIDATES}/trusted-bootstrap-observation/ACT-SEMANTICS.md":
+        ("ACCEPT FOUNDATIONAL WAVE A",),
     f"{CANDIDATES}/trusted-bootstrap-observation/OWNER-SIGNOFF-PACKET.md":
         ("ACCEPT FOUNDATIONAL WAVE A",),
     f"{CANDIDATES}/trusted-bootstrap-observation/TRANSACTION-MANIFEST.txt":
