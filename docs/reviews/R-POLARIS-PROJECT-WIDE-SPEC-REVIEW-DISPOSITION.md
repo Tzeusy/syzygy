@@ -165,3 +165,27 @@ Recommended owner action: authorize exactly one bounded post-ceiling correction
 to add observer-registry owner provenance to the numbered data-flow gate, then
 one fresh confirmation of that correction only. This recommendation is not
 authorization.
+
+## Authorized post-ceiling correction
+
+Authorization record:
+`.syzygy/governance/decisions/POLARIS-POST-CEILING-CORRECTION-AUTHORIZATION.md`
+
+Corrected subject: `5c52c0d0ff49bb123fc9fd0efb11397dcc90a595`
+
+Raw targeted confirmation:
+`R-POLARIS-PROJECT-WIDE-POST-CEILING-CONFIRMATION-RAW.md`
+
+Raw sha256: `0f8402366f9c763991d91a1ac3afb902435d56bc1a681c25b521eb61b2f22d5a`
+
+Verdict: **CONFIRMED**
+
+N15 is closed. The proposal, design decision, numbered data flow, capability
+coverage, PWB-REQ-005 and task 1.5 all require observation consent + secret
+policy + observer registration before discovery or body reads. The exact
+base-to-subject candidate diff is the one authorized design line; no other
+candidate artifact changed.
+
+All findings in the review chain are now confirmed. This confirmation is not
+candidate sign-off, does not mint any security-authority artifact and does not
+authorize implementation.
