@@ -46,7 +46,7 @@ before these confirmations; they are not erased or reworded.
 - The performed 2026-09-01 transaction remains frozen and valid over 30
   contract paths, 5 historical PWB paths and 5 act rows; all 10 transaction
   mutations pass.
-- Governance self-tests pass 178 fixtures. The ordinary governance run remains
+- Governance self-tests pass 180 fixtures. The ordinary governance run remains
   deliberately `32 OK / 19 WARN / 1 FAIL`: CG-7h rejects the five unsigned
   current PWB coverage paths until matching aggregate and dedicated successor
   act records exist.

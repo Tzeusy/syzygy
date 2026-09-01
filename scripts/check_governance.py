@@ -2017,6 +2017,27 @@ ACT_DIGEST_COPY_FILES = {
         (CC_SPEC_LABEL, GENERAL_BOOTSTRAP_LABEL),
 }
 
+
+def _activate_pwb_state1_act_copy_registry():
+    """Require both performed-record copies once the dedicated act exists.
+
+    The dedicated decision file is the structural transition signal. Merely
+    quoting the candidate phrase in the packet/report must not require an act
+    record that does not exist yet; once the dedicated file exists, however,
+    both it and the append-only aggregate record must carry the exact current
+    argument or CG-7e fails closed.
+    """
+    if not os.path.isfile(os.path.join(ROOT, PWB_STATE1_ACT)):
+        return
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+    if PWB_STATE1_LABEL not in labels:
+        ACT_DIGEST_COPY_FILES[aggregate] = labels + (PWB_STATE1_LABEL,)
+    ACT_DIGEST_COPY_FILES[PWB_STATE1_ACT] = (PWB_STATE1_LABEL,)
+
+
+_activate_pwb_state1_act_copy_registry()
+
 #: A performed digest remains valid historical evidence even after its
 #: subject is amended. These one-time offerings are not current copies and
 #: must not be rewritten to the successor digest. Each file is bound to the
@@ -5281,6 +5302,15 @@ def selftest():
                   row[0] == "FAIL"
                   and any("exact act-time quotation" in d for d in row[4])))
 
+    row = _selftest_pwb_act_copy_registry("valid")
+    cases.append(("CG-7e performed PWB act registers both record copies",
+                  row[0] == "OK" and row[2] == 2 and row[3] == 0))
+
+    row = _selftest_pwb_act_copy_registry("missing-aggregate")
+    cases.append(("CG-7e performed PWB act requires aggregate record copy",
+                  row[0] == "FAIL"
+                  and any(PERFORMED_ACT_RECORD in d for d in row[4])))
+
     row = _selftest_cg7h("missing-act")
     cases.append(("CG-7h missing current amendment act rejected",
                   row[0] == "FAIL"
@@ -5612,6 +5642,59 @@ def _selftest_cg7e_wrong_historical():
         ACT_DIGEST_COPY_FILES.update(current_files)
         ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
         ACT_HISTORICAL_DIGEST_COPY_FILES.update(history_files)
+        _ActSubjects._cache.clear()
+        _ActSubjects._cache.update(cache)
+        ROOT = keep
+        shutil.rmtree(d, ignore_errors=True)
+
+
+def _selftest_pwb_act_copy_registry(kind):
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, status, name, examined, n, unit, note=None, details=None):
+            self.rows.append((status, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows if r[1].startswith(prefix)), None)
+
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp(prefix="cg7e-pwb-act-selftest-")
+    global ROOT
+    keep = ROOT
+    cache = dict(_ActSubjects._cache)
+    current_files = dict(ACT_DIGEST_COPY_FILES)
+    try:
+        manifest = os.path.join(d, PWB_STATE1_SUBJECT)
+        os.makedirs(os.path.dirname(manifest), exist_ok=True)
+        with open(manifest, "w", encoding="utf-8") as fh:
+            fh.write("successor manifest\n")
+        argument = sha256_file(manifest)
+        phrase = f"{PWB_STATE1_LABEL}: {argument}\n"
+
+        aggregate = os.path.join(d, PERFORMED_ACT_RECORD)
+        dedicated = os.path.join(d, PWB_STATE1_ACT)
+        os.makedirs(os.path.dirname(aggregate), exist_ok=True)
+        with open(aggregate, "w", encoding="utf-8") as fh:
+            fh.write("unrelated performed act\n" if kind == "missing-aggregate" else phrase)
+        with open(dedicated, "w", encoding="utf-8") as fh:
+            fh.write(phrase)
+
+        ROOT = d
+        _ActSubjects._cache[d] = ((
+            PWB_STATE1_LABEL,
+            PWB_STATE1_SUBJECT,
+            re.compile(re.escape(PWB_STATE1_LABEL)
+                       + r"\s*:\s*`?([0-9a-f]{64})"),
+        ),)
+        ACT_DIGEST_COPY_FILES.clear()
+        _activate_pwb_state1_act_copy_registry()
+        c = Cap()
+        cg7e_act_digest_copies(list(ACT_DIGEST_COPY_FILES), c)
+        return c.row("CG-7e")
+    finally:
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES.update(current_files)
         _ActSubjects._cache.clear()
         _ActSubjects._cache.update(cache)
         ROOT = keep

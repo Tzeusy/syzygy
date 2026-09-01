@@ -84,6 +84,14 @@ def render(
 
 def verify(text: str, root: pathlib.Path = ROOT) -> list[str]:
     findings: list[str] = []
+    for line_number, line in enumerate(text.splitlines(), 1):
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if ROW_RE.fullmatch(stripped) is None:
+            findings.append(
+                f"manifest line {line_number} is neither a comment nor a digest row"
+            )
     rows = ROW_RE.findall(text)
     expected_paths = [path.as_posix() for path in SUBJECTS]
     actual_paths = [path for _, path in rows]
@@ -103,6 +111,28 @@ def verify(text: str, root: pathlib.Path = ROOT) -> list[str]:
                 f"manifest digest mismatch: {path} {actual_digest} != {expected_digest}"
             )
     return findings
+
+
+def review_binds_exact(body: str, commit: str, manifest_sha: str) -> bool:
+    commit_pattern = re.compile(
+        r"^- \[Observed\] (?:Exact reviewed|Reviewed) commit:\s*\n"
+        + r"\s*`" + re.escape(commit) + r"`\.$",
+        re.M,
+    )
+    manifest_pattern = re.compile(
+        r"^- \[Observed\] Manifest SHA-256:\s*\n"
+        + r"\s*`" + re.escape(manifest_sha) + r"`\.$",
+        re.M,
+    )
+    verdicts = re.findall(
+        r"^\*\*(?:EXACT )?VERDICT: ([A-Z][A-Z ]*)\*\*$", body, re.M
+    )
+    return (
+        commit_pattern.search(body) is not None
+        and manifest_pattern.search(body) is not None
+        and bool(verdicts)
+        and all(verdict == "CONFIRM" for verdict in verdicts)
+    )
 
 
 def git_output(root: pathlib.Path, *args: str) -> bytes:
@@ -136,10 +166,11 @@ def final_review_rows(
             raise ValueError(f"required final review missing: {rel}")
         data = target.read_bytes()
         body = data.decode()
-        if commit not in body or manifest_sha not in body:
-            raise ValueError(f"final review does not bind exact subject: {rel}")
-        if re.search(r"\*\*(?:EXACT )?VERDICT: CONFIRM\*\*", body) is None:
-            raise ValueError(f"final review does not carry exact CONFIRM: {rel}")
+        if not review_binds_exact(body, commit, manifest_sha):
+            raise ValueError(
+                f"final review lacks exact structural subject binding or "
+                f"unanimous structural CONFIRM: {rel}"
+            )
         rows.append((rel, digest(data)))
     return rows
 
@@ -154,6 +185,8 @@ def finalized_outputs(root: pathlib.Path, commit_value: str) -> dict[pathlib.Pat
     findings = verify(manifest_text, root)
     if findings:
         raise ValueError("current PWB manifest does not verify: " + " | ".join(findings))
+    if manifest_text != render(root):
+        raise ValueError("current PWB manifest differs from exact regeneration")
     if committed_blob(root, commit, OUT) != manifest_bytes:
         raise ValueError("candidate commit does not carry the current manifest bytes")
 
@@ -222,7 +255,7 @@ before these confirmations; they are not erased or reworded.
 - The performed 2026-09-01 transaction remains frozen and valid over 30
   contract paths, 5 historical PWB paths and 5 act rows; all 10 transaction
   mutations pass.
-- Governance self-tests pass 178 fixtures. The ordinary governance run remains
+- Governance self-tests pass 180 fixtures. The ordinary governance run remains
   deliberately `32 OK / 19 WARN / 1 FAIL`: CG-7h rejects the five unsigned
   current PWB coverage paths until matching aggregate and dedicated successor
   act records exist.
@@ -366,7 +399,39 @@ def selftest() -> int:
         print("SELFTEST FAILED: path mutation was not rejected")
         return 1
 
-    print("selftest: 11-row population, determinism, byte mutation and path mutation hold")
+    if not verify(first + "uncontrolled manifest text\n"):
+        print("SELFTEST FAILED: uncontrolled manifest line was not rejected")
+        return 1
+
+    review_commit = "1" * 40
+    review_manifest = "2" * 64
+    valid_review = (
+        "- [Observed] Reviewed commit:\n"
+        f"  `{review_commit}`.\n"
+        "- [Observed] Manifest SHA-256:\n"
+        f"  `{review_manifest}`.\n"
+        "**VERDICT: CONFIRM**\n"
+    )
+    decoy_review = (
+        "- [Observed] Reviewed commit:\n"
+        f"  `{'3' * 40}`.\n"
+        "- [Observed] Manifest SHA-256:\n"
+        f"  `{'4' * 64}`.\n"
+        f"historical identifiers: {review_commit} {review_manifest}\n"
+        "example: **VERDICT: CONFIRM**\n"
+        "**VERDICT: REVISE**\n"
+    )
+    if not review_binds_exact(valid_review, review_commit, review_manifest):
+        print("SELFTEST FAILED: exact structural review binding was rejected")
+        return 1
+    if review_binds_exact(decoy_review, review_commit, review_manifest):
+        print("SELFTEST FAILED: decoy subject/CONFIRM accepted a REVISE review")
+        return 1
+
+    print(
+        "selftest: 11-row population, determinism, byte/path/uncontrolled-line "
+        "mutations and exact review binding hold"
+    )
     return 0
 
 
