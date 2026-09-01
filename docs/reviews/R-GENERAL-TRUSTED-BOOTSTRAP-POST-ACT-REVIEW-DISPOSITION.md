@@ -51,3 +51,23 @@ Raw confirmations:
 The recording-tag follow-up remains deliberately withheld until fresh
 confirmation of the repaired exact head. No finding was overruled or dropped,
 and no transaction-bound subject was edited.
+
+## Final targeted confirmation at `1aa0cf1`
+
+- `R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-CHECKER-FINAL-CONFIRMATION-RAW.md`
+  — `CONFIRM`
+- `R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-READER-FINAL-CONFIRMATION-RAW.md`
+  — `CONFIRM`
+- `R-GENERAL-TRUSTED-BOOTSTRAP-INTEGRATION-READINESS-RAW.md` — no
+  integration blocker; tag/main were conditionally ready after the two
+  confirmations.
+
+Both confirmations were received with no findings. The annotated recording
+tag `general-trusted-bootstrap-authorized-2026-09-01` was then created and
+pushed at exact confirmed commit `1aa0cf1`. The tag is a preservation pointer,
+not independent verification and not effect authority. The final evidence-only
+commit adds these raw outputs and this disposition; it changes no reviewed
+transaction, act, checker, default-path, or implementation byte.
+
+All findings are closed. No finding was overruled or dropped, and no
+transaction-bound subject was edited after the owner act.
