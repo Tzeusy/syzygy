@@ -72,9 +72,9 @@
 ## 4. Verification
 
 - [ ] 4.1 Add behavior tests for every PWB-REQ oracle, including all eight
-  valid consent/policy/registry state combinations, the closed 159-case
+  valid consent/policy/registry state combinations, the closed 195-case
   admission-invalid denominator, both valid judgment states, the closed
-  72-case present-invalid judgment denominator, both absent judgment cases,
+  84-case present-invalid judgment denominator, both absent judgment cases,
   failed state-(2) correlation without fallback, later-correlation history,
   missing, unreadable, excluded, contradictory and stale-summary cases.
 - [ ] 4.2 Add mutation checks for the source denominator, coverage partition,
@@ -92,7 +92,7 @@
   revision and retain the exact test/runtime artifacts.
 - [ ] 4.6 Perform the RFC7-30 owner cold-open walkthrough and record the
   execution and owner judgment separately; exercise valid state (1), valid
-  state (2), all 72 present-invalid judgment cases, both absent cases and
+  state (2), all 84 present-invalid judgment cases, both absent cases and
   failed-state-(2) no-fallback; absent or invalid judgment remains Unknown
   (PWB-REQ-021…022).
 

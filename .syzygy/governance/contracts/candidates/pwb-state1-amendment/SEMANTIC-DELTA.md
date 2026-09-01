@@ -47,6 +47,13 @@ empty-write. An act warrants use of its artifact and is not evidence that a
 read occurred, screening succeeded, content is secret-free or a claim is true.
 Later correlation does not rewrite the provenance of an earlier read.
 
+The invalid denominator is closed at 195 cases: 55 common owner-act cases for
+each of the three authorities plus 30 authority-specific field cases. The
+common set includes complete RFC3-16(b), act-record identity, provenance-state
+input, false-substitute, lifecycle, state-mechanics and state-(1) exact owner
+phrase/recording-context cases. Another-human and non-human owner attribution
+are independent cases.
+
 ### PWB-REQ-022
 
 The walkthrough criterion accepts an exact-scope human owner judgment in valid
@@ -61,6 +68,11 @@ never a score. Its act, digest, correlation and execution record do not prove
 comprehension succeeded. Later correlation does not rewrite the provenance of
 an earlier judgment.
 
+The judgment denominator is closed at 84 present-invalid cases: the same 55
+common owner-act cases plus 15 run-record, 12 judgment-field and 2
+governance-home cases. Two absent cases remain separate because absence
+invents no verdict.
+
 ### PWB-REQ-020
 
 The exhaustive parity population now includes every PWB-REQ-005 authority
@@ -70,11 +82,11 @@ human and machine channels preserve multiplicity and exact provenance state.
 ## Required tests
 
 - Exercise all eight valid consent/policy/registry state combinations.
-- Exercise the closed 159-case admission-invalid denominator independently,
+- Exercise the closed 195-case admission-invalid denominator independently,
   including missing, malformed and wrong-but-present values for every
   RFC3-16(b) and authority-specific field.
 - Prove zero reads and Unknown for any invalid admission limb.
-- Exercise valid state-(1), valid state-(2), the closed 72-case present-invalid
+- Exercise valid state-(1), valid state-(2), the closed 84-case present-invalid
   judgment denominator and both absent cases, including exact
   `verdict-unlawful` behavior.
 - Prove the state-(1) oracle checks record semantics and disclosure without

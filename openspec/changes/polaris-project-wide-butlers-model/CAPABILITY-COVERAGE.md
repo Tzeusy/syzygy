@@ -11,7 +11,7 @@ Population: 27 positive obligations and refusals declared by `proposal.md`,
 | 4 | Account for every admitted declared item exactly once | covered — PWB-REQ-002 |
 | 5 | Keep unavailable sources counted while their item denominator is Unknown | covered — PWB-REQ-002, PWB-REQ-003 |
 | 6 | Preserve contradictions and apply only explicit precedence | covered — PWB-REQ-004 |
-| 7 | Accept valid state-(1), state-(2) or mixed consent/policy/registry acts with exact states visible, and reject the closed 159-case invalid population before body reads | covered — PWB-REQ-005 |
+| 7 | Accept valid state-(1), state-(2) or mixed consent/policy/registry acts with exact states visible, and reject the closed 195-case invalid population before body reads | covered — PWB-REQ-005 |
 | 8 | Keep repository content contained, inert, bounded and secret-safe | covered — PWB-REQ-003, PWB-REQ-006 |
 | 9 | Present the whole project before capability detail | covered — PWB-REQ-010 |
 | 10 | Preserve progressive paths to catalogs, deep dives and exact sources | covered — PWB-REQ-011 |
@@ -19,7 +19,7 @@ Population: 27 positive obligations and refusals declared by `proposal.md`,
 | 12 | Keep active/proposed work subordinate and visibly distinct | covered — PWB-REQ-013 |
 | 13 | Preserve project-wide human/machine parity | covered — PWB-REQ-020 |
 | 14 | Make complete RFC7-30 whole-project comprehension a POC criterion | covered — PWB-REQ-021 |
-| 15 | Accept valid state-(1) or state-(2) owner judgment with exact state visible, and fail closed for the 72 present-invalid and 2 absent cases | covered — PWB-REQ-022 |
+| 15 | Accept valid state-(1) or state-(2) owner judgment with exact state visible, and fail closed for the 84 present-invalid and 2 absent cases | covered — PWB-REQ-022 |
 | 16 | Carry the complete epistemic tuple and closed Unknown reasons on every claim | covered — PWB-REQ-007 |
 | 17 | Keep every narrative claim bounded, minimally anchored and non-authoritative | covered — PWB-REQ-014 |
 | 18 | Preserve argument/contract/reality bands, verbatim intent and proposal separation in capability detail | covered — PWB-REQ-015 |

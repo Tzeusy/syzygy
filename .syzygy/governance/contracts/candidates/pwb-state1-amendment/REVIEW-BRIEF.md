@@ -27,15 +27,17 @@ retired.
 ## Acceptance criteria
 
 1. PWB-REQ-005 accepts all eight valid state-(1)/state-(2) triples and rejects
-   the closed 159-case admission-invalid denominator with zero reads, Unknown
+   the closed 195-case admission-invalid denominator with zero reads, Unknown
    and contradiction.
 2. State (1) is effective but never called independently verified; the exact
    same-tree-forgeability disclosure appears identically in human and machine
    behavior.
 3. A failed, unavailable or indeterminate record claiming state (2) never
    downgrades to state (1).
-4. Each act binds RFC3-16(b)'s nine fields; exact identities, digests, scope,
-   state and audit identity/absence are evaluation inputs.
+4. Each act binds RFC3-16(b)'s nine fields; act-record identity, exact
+   provenance-state input and state-(1) exact owner phrase/recording context
+   are closed too. Another-human and non-human wrong owners are separate
+   cases, while state-(1) record checks never claim to prove attendance.
 5. Exact pair/class, observing-project policy, governance-home,
    read-only/empty-write, containment, secret, authentication and no-execution
    gates are not weakened.
@@ -43,7 +45,7 @@ retired.
    comprehension or success occurred.
 7. PWB-REQ-022 accepts valid state-(1) and state-(2) judgments, keeps the
    execution record separate, never fabricates either absent-case verdict and
-   records exact `verdict-unlawful` for every case in the closed 72-case
+   records exact `verdict-unlawful` for every case in the closed 84-case
    present-invalid denominator.
 8. Later correlation does not rewrite the provenance of earlier reads or
    judgments.
