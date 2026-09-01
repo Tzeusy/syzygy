@@ -70,19 +70,23 @@ human and machine channels preserve multiplicity and exact provenance state.
 ## Required tests
 
 - Exercise all eight valid consent/policy/registry state combinations.
-- Exercise every named invalid act arm independently, including a claimed
-  state (2) with failed correlation and no fallback.
+- Exercise the closed 159-case admission-invalid denominator independently,
+  including missing, malformed and wrong-but-present values for every
+  RFC3-16(b) and authority-specific field.
 - Prove zero reads and Unknown for any invalid admission limb.
-- Exercise valid state-(1), valid state-(2), absent and every invalid judgment
-  case, including exact `verdict-unlawful` behavior.
+- Exercise valid state-(1), valid state-(2), the closed 72-case present-invalid
+  judgment denominator and both absent cases, including exact
+  `verdict-unlawful` behavior.
 - Prove the state-(1) oracle checks record semantics and disclosure without
   claiming to prove human attendance.
-- Mutate exact state, disclosure, audit identity/absence, act scope, digest,
-  no-fallback and prior-evaluation history and show the independent oracle
-  fails.
-- Compare every authorization and judgment marker across the human, machine
-  and export channels with an order-insensitive, multiplicity-preserving
-  oracle.
+- For every invalid case, mutate the implementation toward unlawful admission
+  or success and retain fail-then-restore evidence. Separately mutate exact
+  state, disclosure, audit identity/absence, act scope, digest, no-fallback and
+  prior-evaluation history one predicate at a time.
+- Compare every authorization and judgment marker across the human and machine
+  channels with an order-insensitive, multiplicity-preserving oracle and
+  mutation-prove missing, duplicate, changed, collapsed and wrong-evaluation
+  markers.
 
 ## Accepted risk
 
@@ -126,4 +130,3 @@ amendment; earlier acts and evaluations retain their historical provenance.
 - `openspec/changes/polaris-project-wide-butlers-model/`
 - independent amendment-map and security-design reviews prepared from baseline
   `bef7f8d`
-

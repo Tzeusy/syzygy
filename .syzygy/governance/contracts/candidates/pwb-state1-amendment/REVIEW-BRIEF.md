@@ -27,10 +27,11 @@ retired.
 ## Acceptance criteria
 
 1. PWB-REQ-005 accepts all eight valid state-(1)/state-(2) triples and rejects
-   every named invalid arm with zero reads, Unknown and contradiction.
+   the closed 159-case admission-invalid denominator with zero reads, Unknown
+   and contradiction.
 2. State (1) is effective but never called independently verified; the exact
-   same-tree-forgeability disclosure appears identically in human, machine and
-   export behavior.
+   same-tree-forgeability disclosure appears identically in human and machine
+   behavior.
 3. A failed, unavailable or indeterminate record claiming state (2) never
    downgrades to state (1).
 4. Each act binds RFC3-16(b)'s nine fields; exact identities, digests, scope,
@@ -41,12 +42,15 @@ retired.
 6. Acts remain warrants, never evidence that a read, screening, truth,
    comprehension or success occurred.
 7. PWB-REQ-022 accepts valid state-(1) and state-(2) judgments, keeps the
-   execution record separate, never fabricates an absent verdict and records
-   exact `verdict-unlawful` for a present invalid judgment.
+   execution record separate, never fabricates either absent-case verdict and
+   records exact `verdict-unlawful` for every case in the closed 72-case
+   present-invalid denominator.
 8. Later correlation does not rewrite the provenance of earlier reads or
    judgments.
 9. PWB-REQ-020 exhausts every authority/judgment state and disclosure across
-   human and machine channels with multiplicity preserved.
+   human and machine channels with multiplicity preserved, and every new
+   invalid/parity predicate requires fail-then-restore mutation evidence in
+   the signed requirements.
 10. Every proposal, design, capability-coverage, dependency, effective-matrix
     and test obligation invalidated by the behavioral change moves in the same
     logical change.
@@ -73,4 +77,3 @@ retired.
 
 Return raw findings with exact verdict words. Do not edit the subject. A repair
 requires a new frozen commit and fresh confirmation of the repaired bytes.
-

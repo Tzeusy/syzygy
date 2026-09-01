@@ -226,12 +226,31 @@ perspective. Digest detects drift, not authorship or attendance.`
 A state-(1) act SHALL be valid only when the human act explicitly selected
 state (1) and records the A1 audit-record identity as absent. A record claiming
 state (2) whose correlation is failed, unavailable or indeterminate SHALL be
-invalid and SHALL NOT downgrade to state (1). A missing, malformed, non-human,
-unattributed, wrong-project, wrong-repository, wrong-class, wrong-scope,
-wrong-act-type, digest-mismatched, stale, expired, superseded or revoked act in
-any limb SHALL produce zero body reads, a project-model Unknown and the
-RFC3-16(a) contradiction while retaining the authority artifact and invalid
-act state visibly.
+invalid and SHALL NOT downgrade to state (1).
+
+The closed invalid-case population SHALL contain exactly 159 independently
+decided cases. “Malformed” below means type- or shape-invalid; “wrong but
+present” means well-formed but semantically different from the controlled
+evaluation input.
+
+| Case group | Required independent cases | Count |
+|---|---|---:|
+| RFC3-16(b) binding fields, per consent/policy/registry act | For each of project identity, stable artifact identity, exact digest, act type, owner attribution, act instant, scope, supersession/revocation target and A1 identity-or-explicit-absence: missing, malformed and wrong but present. Wrong owner includes another human and a non-human principal; wrong instant includes a future instant; wrong A1 includes a mismatched but present identity. | 27 × 3 acts = 81 |
+| Evaluation association, per act | Wrong but present act-record identity; act paired to a different authority artifact. | 2 × 3 acts = 6 |
+| False substitutes, per act | Tree attribution only; Git commit/tag only; specification sign-off only; machine submission; agent assertion. | 5 × 3 acts = 15 |
+| Lifecycle, per act | Stale; expired; superseded; revoked. | 4 × 3 acts = 12 |
+| Provenance-state mechanics, per act | State (1) not explicitly selected; state (1) with a non-absent A1 identity; claimed state (2) with failed, unavailable or indeterminate correlation. | 5 × 3 acts = 15 |
+| Consent-specific fields | For observing project, configured repository and observation content class: missing, malformed and wrong but present. | 9 |
+| Policy-specific fields | For policy-owning project and policy version: missing, malformed and wrong but present. | 6 |
+| Registry-specific fields | For governance home, project, repository, read-only authority and empty write surface: missing, malformed and wrong but present. | 15 |
+| **Total** | **Every case above, no “other invalid” bucket.** | **159** |
+
+The first five groups form the closed common owner-act population of 43 cases
+per act. The last three groups add 30 authority-specific cases.
+
+Any one of those 159 cases in any limb SHALL produce zero body reads, a
+project-model Unknown and the RFC3-16(a) contradiction while retaining the
+authority artifact and invalid act state visibly.
 
 The consent subject SHALL be exactly `(observing Syzygy project, configured
 Butlers repository)` with the observation content class. The policy SHALL be
@@ -243,15 +262,15 @@ screening succeeded, admitted content is secret-free or a derived claim is
 true. Later A1 correlation MAY change a later evaluation to state (2), but
 SHALL NOT rewrite the state under which an earlier read occurred.
 
-- **Case (state and invalid-arm sweep)**: sweep each of the three acts through
-  valid state (1), valid state (2), explicit mixed all-valid combinations and
-  every invalid arm above, including failed state-(2) correlation and later
-  correlation of a prior state-(1) act, using an injected read spy.
+- **Case (state and invalid-arm sweep)**: exercise all eight valid
+  state-(1)/state-(2) consent/policy/registry triples, all 159 invalid cases
+  above and later correlation of a prior state-(1) act, using an injected read
+  spy; report all three denominators separately.
 - **Observable**: any invalid limb yields zero read calls, Unknown and the
   contradiction; state-(1), state-(2) and mixed all-valid triples permit reads;
   the per-authority states and state-(1) disclosure are identical in the human
-  surface, machine answer and export; later correlation leaves the earlier
-  evaluation recorded as state (1).
+  surface and machine answer; later correlation leaves the earlier evaluation
+  recorded as state (1).
 - **Oracle**: compare a hard-coded expected table, every RFC3-16(b) field,
   explicit A1 identity or absence, registry home/pair/scope/write-surface,
   evaluation inputs, disclosures and read-spy calls across all cases.
@@ -259,6 +278,12 @@ SHALL NOT rewrite the state under which an earlier read occurred.
   live outside the observer and do not import its validator or state
   vocabulary; for state (1), the oracle verifies record semantics and
   disclosure without claiming to prove human attendance.
+- **Mutation proof**: for each of the 159 invalid case instances, temporarily
+  mutate the implementation to permit the read or suppress Unknown or the
+  contradiction and confirm the independent test fails before restoration.
+  Separately mutate exact state, exact disclosure, failed-state-(2)
+  no-fallback and prior-evaluation history one predicate at a time and retain
+  fail-then-restore evidence.
 - **Falsifier**: any body is read or fact emitted before all three acts are
   effective; valid state (1) or a mixed triple is rejected; an invalid or
   failed-state-(2) act is accepted or downgraded; a state is hidden, collapsed
@@ -749,6 +774,10 @@ state.
   comparator reports both denominators and zero differences.
 - **Oracle independence**: the comparator extracts each channel separately and
   imports no production vocabulary or rendering code.
+- **Mutation proof**: for each fact, authority-state, judgment-state and
+  disclosure marker class, independently inject a missing, duplicated,
+  changed, collapsed and wrong-evaluation marker and confirm the comparator
+  fails before restoration; report both channel denominators for every run.
 - **Falsifier**: one fact, authority state, judgment state or disclosure is
   missing, duplicated, changed, collapsed or associated with a different
   evaluation in either channel.
@@ -843,36 +872,50 @@ The execution-record identity, judgment artifact identity and digest,
 act-record identity, act type and scope, provenance state, and A1 audit-record
 identity or explicit absence SHALL be evaluation inputs.
 
-An absent run record or absent judgment SHALL render Unknown, never met,
-without inventing a verdict. A present judgment with any missing field,
-run/surface/evaluation mismatch, non-human or missing attribution, missing
-rationale, wrong project, scope or act type, digest mismatch, staleness,
-expiry, revocation, supersession, invalid state-(1) selection or invalid
-state-(2) correlation SHALL record `verdict-unlawful`, render
-Unknown-never-met and mint or retain the RFC3-16(a) contradiction. The owner
-act warrants honoring the judgment; neither the act, its digest, its
-correlation nor the run record is evidence that comprehension succeeded. The
-verdict remains recorded human judgment, never Observed and never a score.
-Tests, code, an agent report or page availability SHALL NOT substitute. Later
-correlation SHALL NOT rewrite the provenance under which an earlier judgment
-took effect.
+The closed judgment-case population SHALL contain exactly 72 present-invalid
+cases plus 2 absent cases. “Malformed” and “wrong but present” have the same
+meanings as in PWB-REQ-005.
 
-- **Case (state and invalid-arm sweep)**: evaluate an absent run; absent
-  judgment; run identity, surface, evaluation, mode and path mismatches;
-  missing judgment fields; valid state (1); valid state (2); every invalid act
-  arm above; failed state-(2) correlation; and later correlation of a prior
-  state-(1) judgment.
+| Case group | Required independent cases | Count |
+|---|---|---:|
+| RFC3-16(b), association, false-substitute, lifecycle and provenance-state cases | Apply PWB-REQ-005's exact 43-case per-act population to the judgment act, including wrong owner, stable artifact identity, instant, supersession target, act-record identity and A1 identity. | 43 |
+| Run-record fields | For each of run-record identity, surface version, evaluation identity, nonvisual/keyboard-only mode and traversed paths: missing, malformed and wrong but present. | 15 |
+| Judgment fields | For each of verdict, rationale, judging party and exact run-record reference: missing, malformed and wrong but present. | 12 |
+| Governance homes | Run record outside `.syzygy/governance/records/`; judgment outside `.syzygy/governance/decisions/`. | 2 |
+| **Present-invalid total** | **Every present invalid case above.** | **72** |
+| Absent cases | No run record; no judgment. | 2 |
+
+Either absent case SHALL render Unknown, never met, without inventing a
+verdict. Any of the 72 present-invalid cases SHALL record
+`verdict-unlawful`, render Unknown-never-met and mint or retain the
+RFC3-16(a) contradiction. The owner act warrants honoring the judgment;
+neither the act, its digest, its correlation nor the run record is evidence
+that comprehension succeeded. The verdict remains recorded human judgment,
+never Observed and never a score. Tests, code, an agent report or page
+availability SHALL NOT substitute. Later correlation SHALL NOT rewrite the
+provenance under which an earlier judgment took effect.
+
+- **Case (state and invalid-arm sweep)**: exercise valid state (1), valid state
+  (2), all 72 present-invalid cases, both absent cases and later correlation of
+  a prior state-(1) judgment; report the valid, present-invalid and absent
+  denominators separately.
 - **Observable**: absence yields Unknown-never-met without a fabricated
   verdict; a present invalid judgment records exact `verdict-unlawful`; valid
   state-(1) and state-(2) judgments may carry the owner's verdict with exact
   state; the state-(1) disclosure is identical in the human surface, machine
-  answer and export; later correlation preserves the earlier state history.
+  answer; later correlation preserves the earlier state history.
 - **Oracle**: compare controlled run, judgment and act fixtures to a hard-coded
   expected table outside the surface and provenance validator, including every
   field, record identity, state, disclosure and `verdict-unlawful` value.
 - **Oracle independence**: the expected table and fixtures do not import the
   production validator or state vocabulary; for state (1), the oracle checks
   record semantics and disclosure without claiming to prove human attendance.
+- **Mutation proof**: for each of the 72 present-invalid cases, temporarily
+  mutate the implementation to carry the owner verdict or render success and
+  confirm the independent test fails before restoration. Mutate each absent
+  case to fabricate a verdict, then mutate exact state, disclosure,
+  failed-state-(2) no-fallback and prior-evaluation history one predicate at a
+  time; every mutation SHALL fail before restoration and retain evidence.
 - **Falsifier**: an absent or invalid pair renders successful; valid state (1)
   is rejected; a state is hidden or state (1) called verified; absence
   fabricates a verdict; failed state (2) downgrades; implementation, tests,

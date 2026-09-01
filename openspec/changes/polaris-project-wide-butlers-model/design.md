@@ -125,7 +125,9 @@ state (1). Human and machine outputs expose the exact state for each authority,
 and state (1) carries the same-tree-forgeability limitation. These acts warrant
 use of the consent, policy and registration; they are not evidence that
 screening or reading succeeded. Specification sign-off mints none of these
-artifacts.
+artifacts. The admission oracle closes the invalid population at 159 cases:
+43 owner-act/provenance cases for each of the three acts plus 30
+authority-specific field cases.
 
 ### 6. Fail closed at the content boundary
 
@@ -151,6 +153,8 @@ back to state (1), and later correlation never rewrites the state under which
 an earlier judgment took effect. The judgment remains recorded human judgment,
 never Observed evidence or a score; neither its act nor the execution record
 proves comprehension succeeded.
+The judgment oracle closes its invalid population at 72 present-invalid cases
+plus two absent cases.
 
 ## Data Flow
 
