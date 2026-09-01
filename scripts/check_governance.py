@@ -2002,6 +2002,10 @@ ACT_DIGEST_COPY_FILES = {
         ("CONFIRM CRAFT AMENDMENT: CC-SPEC",),
     f"{CANDIDATES}/general-trusted-bootstrap-authorization/TRANSACTION-MANIFEST.txt":
         ("CONFIRM CRAFT AMENDMENT: CC-SPEC",),
+    f"{PWB_STATE1_DIR}/OWNER-SIGNOFF-PACKET.md":
+        (PWB_STATE1_LABEL,),
+    f"{PWB_STATE1_DIR}/CANDIDATE-REPORT.md":
+        (PWB_STATE1_LABEL,),
     # The owner-act record quotes each performed act's exact phrase and
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
