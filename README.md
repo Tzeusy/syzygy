@@ -31,8 +31,13 @@ Concretely, Syzygy has a TypeScript/Node local daemon, a server-rendered human
 view, and an authenticated machine endpoint for Capability 1. The POC now asks
 the narrower product question: can one shared project model make one real
 capability substantially easier to understand and operate through all three
-surfaces? The first read-only Butlers slice is runnable; work materialization,
-worker progress, and verification evidence remain later bounded items.
+surfaces? The bounded Butlers POC is runnable and now exposes three distinct
+operator-facing paths: an explicit human-triggered action that creates or
+reuses one bounded Bead, Git observation of worker changes associated with
+that item, and a separately invoked file-backed JUnit capture, ingestion and
+verification path. Their implementation does not assert that any of those
+facts is present or current on a given run; the surfaces render the
+actual record state, including absent, Unknown and not-verified outcomes.
 
 ## Why it exists
 
@@ -115,7 +120,7 @@ authority and are never themselves authoritative.
 
 ## Start here
 
-### Run the first Three-Surface slice
+### Run the bounded Three-Surface POC
 
 From a fresh Syzygy checkout, one command installs dependencies, builds the
 bounded POC, and starts it against the local Butlers proving repository:
@@ -127,7 +132,8 @@ npm ci && npm run poc -- --repo /home/tze/GitHub/butlers
 The daemon binds only to loopback and prints the human URL plus the
 authenticated machine endpoint and credential-file location. See
 [`docs/THREE-SURFACE-POC.md`](docs/THREE-SURFACE-POC.md) for the ten-minute
-first-slice walkthrough and its deliberately absent relationships.
+walkthrough, the implemented materialization/observation/evidence paths, and
+the relationships that remain deliberately absent.
 
 ### Project source map
 
@@ -184,11 +190,16 @@ truth.
 
 There is no released Three-Surface product, generalized project graph,
 production deployment, remote or multi-user service, general Beads adapter,
-general spatial-layout engine, or broad project onboarding. The first POC
-slice is read-only: it does not yet materialize work, observe a worker change,
-or ingest a test-run artifact. No claim of alignment, convergence, regeneration,
-deployment health, conformance, or release is intended; without current
-evidence those relationships remain Unknown (VIS-2).
+general spatial-layout engine, or broad project onboarding. The POC does
+implement its one human-triggered Beads materialization action, a bounded
+worker-change observer, and file-backed test-artifact capture, ingestion and
+verification. The running daemon never executes the test suite automatically;
+the separate operator command does. Those implemented mechanisms do not
+dispatch a worker, let Syzygy change implementation code, supply deployment or
+live-runtime observation, or make absent and mismatched evidence positive. No
+claim of alignment, convergence, regeneration, deployment health, conformance,
+or release is intended; without current evidence those relationships remain
+Unknown (VIS-2).
 
 The trusted-bootstrap transaction does not change that boundary. The signed
 PWB behavior remains deliberately stricter for PWB-REQ-005 and PWB-REQ-022:

@@ -46,6 +46,9 @@ ACT_REL = pathlib.Path(
     ".syzygy/governance/decisions/"
     "GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md"
 )
+AGGREGATE_ACT_REL = pathlib.Path(
+    ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md"
+)
 ACT_LABEL = "SIGN OFF GENERAL TRUSTED-BOOTSTRAP AUTHORIZATION TRANSACTION"
 ACT_PATTERN = re.compile(
     r"^" + re.escape(ACT_LABEL) + r": ([0-9a-f]{64})$", re.M
@@ -129,16 +132,34 @@ def sha256_file(path: pathlib.Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def performed_digest(root: pathlib.Path) -> str | None:
-    act = root / ACT_REL
-    if not act.is_file():
+def record_digest(root: pathlib.Path, rel: pathlib.Path) -> str | None:
+    record = root / rel
+    if not record.is_file():
         return None
-    matches = ACT_PATTERN.findall(act.read_text())
+    matches = ACT_PATTERN.findall(record.read_text())
     if not matches:
         return None
     if len(set(matches)) != 1:
-        raise ValueError(f"{ACT_REL}: conflicting performed transaction digests")
+        raise ValueError(f"{rel}: conflicting performed transaction digests")
     return matches[-1]
+
+
+def performed_digest(root: pathlib.Path) -> str | None:
+    dedicated = record_digest(root, ACT_REL)
+    aggregate = record_digest(root, AGGREGATE_ACT_REL)
+    if dedicated is None and aggregate is None:
+        return None
+    if dedicated is None or aggregate is None:
+        missing = ACT_REL if dedicated is None else AGGREGATE_ACT_REL
+        raise ValueError(
+            f"conflicting post-act state: performed signal missing from {missing}"
+        )
+    if dedicated != aggregate:
+        raise ValueError(
+            f"conflicting performed digests: {ACT_REL}={dedicated}, "
+            f"{AGGREGATE_ACT_REL}={aggregate}"
+        )
+    return dedicated
 
 
 def transaction_subject_digest(root: pathlib.Path, subject: pathlib.Path) -> str:
@@ -370,7 +391,11 @@ def execute(
     root: pathlib.Path = ROOT,
     populations: dict[str, set[str]] | None = None,
 ) -> int:
-    frozen = performed_digest(root)
+    try:
+        frozen = performed_digest(root)
+    except ValueError as exc:
+        print(f"DRIFT: post-act state — {exc}")
+        return 1
     target = root / OUT_REL
     if frozen is not None:
         try:
@@ -408,7 +433,9 @@ def selftest() -> int:
     checks = []
     with tempfile.TemporaryDirectory(prefix="general-bootstrap-impact-") as temp:
         clone = pathlib.Path(temp)
-        for rel in (OUT_REL, TRANSACTION_MANIFEST_REL, ACT_REL):
+        for rel in (
+            OUT_REL, TRANSACTION_MANIFEST_REL, ACT_REL, AGGREGATE_ACT_REL
+        ):
             target = clone / rel
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / rel, target)
@@ -419,6 +446,22 @@ def selftest() -> int:
             "performed clean write mode is a no-op success",
             clean and (clone / OUT_REL).read_bytes() == before,
         ))
+
+        (clone / ACT_REL).unlink()
+        missing_dedicated = execute(False, clone, populations=populations) == 1
+        checks.append((
+            "missing dedicated act record fails closed",
+            missing_dedicated and (clone / OUT_REL).read_bytes() == before,
+        ))
+        shutil.copy2(ROOT / ACT_REL, clone / ACT_REL)
+
+        (clone / AGGREGATE_ACT_REL).unlink()
+        missing_aggregate = execute(False, clone, populations=populations) == 1
+        checks.append((
+            "missing aggregate act record fails closed",
+            missing_aggregate and (clone / OUT_REL).read_bytes() == before,
+        ))
+        shutil.copy2(ROOT / AGGREGATE_ACT_REL, clone / AGGREGATE_ACT_REL)
 
         mutation = before + b"\npost-act mutation\n"
         (clone / OUT_REL).write_bytes(mutation)

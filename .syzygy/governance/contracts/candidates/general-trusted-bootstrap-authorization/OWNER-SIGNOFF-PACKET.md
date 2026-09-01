@@ -1,4 +1,4 @@
-# Owner sign-off packet — general trusted-bootstrap authorization
+# Historical owner sign-off packet — general trusted-bootstrap authorization
 
 > **PERFORMED 2026-09-01 — exact owner ceremony satisfied.** The owner
 > performed the indivisible five-row transaction at the manifest digest below.
@@ -34,7 +34,7 @@ uncorrelated)`, or in state (2), `Syzygy-verified`. Only state (2) may be called
 independently verified. Invalid acts fail closed. Owner acts remain warrants,
 never evidence that an effect occurred or succeeded.
 
-## Review outcome
+## Historical pre-act review outcome
 
 First pass at `ecf16fb`: security `REVISE`, contract/fresh-reader `REVISE`,
 impact/transaction `CONFIRM WITH EXCEPTIONS`. Every finding is preserved raw
@@ -53,7 +53,7 @@ normative CC-SPEC-8 clause correctly and exhaustively names all nine. The
 confirming reviewer judged the operative rule unambiguous and did not reopen
 CC-REV-2 closure.
 
-## Verification state
+## Historical pre-act verification state
 
 - 30/30 installed RFC modules equal their candidate mirrors.
 - All seven top-level transaction subjects, 30 contract rows and five PWB
@@ -75,7 +75,7 @@ deployment, release, recovery, implementation, or mission act. It does not
 accept RFC 0010 or RFC 0011, sign Mission Control behavior, or implement PWB.
 Every later effect still requires its own exact conjunctive gates and evidence.
 
-## Exact owner ceremony
+## Historical pre-act ceremony — performed 2026-09-01
 
 To perform all five rows as one state-(1) owner act, write exactly:
 

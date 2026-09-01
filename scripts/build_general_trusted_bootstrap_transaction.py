@@ -60,6 +60,9 @@ ACT_REL = pathlib.Path(
     ".syzygy/governance/decisions/"
     "GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md"
 )
+AGGREGATE_ACT_REL = pathlib.Path(
+    ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md"
+)
 ACT_LABEL = "SIGN OFF GENERAL TRUSTED-BOOTSTRAP AUTHORIZATION TRANSACTION"
 ACT_PATTERN = re.compile(
     r"^" + re.escape(ACT_LABEL) + r": ([0-9a-f]{64})$", re.M
@@ -77,16 +80,34 @@ def read_bytes(root: pathlib.Path, rel: pathlib.Path) -> bytes:
     return target.read_bytes()
 
 
-def performed_digest(root: pathlib.Path) -> str | None:
-    act = root / ACT_REL
-    if not act.is_file():
+def record_digest(root: pathlib.Path, rel: pathlib.Path) -> str | None:
+    record = root / rel
+    if not record.is_file():
         return None
-    matches = ACT_PATTERN.findall(act.read_text())
+    matches = ACT_PATTERN.findall(record.read_text())
     if not matches:
         return None
     if len(set(matches)) != 1:
-        raise ValueError(f"{ACT_REL}: conflicting performed transaction digests")
+        raise ValueError(f"{rel}: conflicting performed transaction digests")
     return matches[-1]
+
+
+def performed_digest(root: pathlib.Path) -> str | None:
+    dedicated = record_digest(root, ACT_REL)
+    aggregate = record_digest(root, AGGREGATE_ACT_REL)
+    if dedicated is None and aggregate is None:
+        return None
+    if dedicated is None or aggregate is None:
+        missing = ACT_REL if dedicated is None else AGGREGATE_ACT_REL
+        raise ValueError(
+            f"conflicting post-act state: performed signal missing from {missing}"
+        )
+    if dedicated != aggregate:
+        raise ValueError(
+            f"conflicting performed digests: {ACT_REL}={dedicated}, "
+            f"{AGGREGATE_ACT_REL}={aggregate}"
+        )
+    return dedicated
 
 
 def manifest_text(title: str, notes: tuple[str, ...], rows: list[tuple[str, str]]) -> str:
@@ -245,7 +266,7 @@ def run(check: bool, root: pathlib.Path = ROOT) -> int:
     drift = []
     for rel, content in outputs.items():
         target = root / rel
-        if not target.exists() or target.read_text() != content:
+        if not target.is_file() or target.read_bytes() != content.encode():
             drift.append(rel)
     act_drift = None
     if frozen is not None:
@@ -353,9 +374,10 @@ def selftest() -> int:
             target = clone / rel
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(content)
-        act = clone / ACT_REL
-        act.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(ROOT / ACT_REL, act)
+        for rel in (ACT_REL, AGGREGATE_ACT_REL):
+            record = clone / rel
+            record.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(ROOT / rel, record)
 
         frozen_before = {
             rel: (clone / rel).read_bytes() for rel in baseline
@@ -369,6 +391,42 @@ def selftest() -> int:
             f"{'PASS' if clean_noop and clean_unchanged else 'FAIL'} "
             "performed clean write mode is a no-op success"
         )
+
+        (clone / ACT_REL).unlink()
+        missing_dedicated = run(False, clone) == 1
+        missing_dedicated_unchanged = all(
+            (clone / rel).read_bytes() == content
+            for rel, content in frozen_before.items()
+        )
+        print(
+            f"{'PASS' if missing_dedicated and missing_dedicated_unchanged else 'FAIL'} "
+            "missing dedicated act record refuses rewrite"
+        )
+        shutil.copy2(ROOT / ACT_REL, clone / ACT_REL)
+
+        (clone / AGGREGATE_ACT_REL).unlink()
+        missing_aggregate = run(False, clone) == 1
+        missing_aggregate_unchanged = all(
+            (clone / rel).read_bytes() == content
+            for rel, content in frozen_before.items()
+        )
+        print(
+            f"{'PASS' if missing_aggregate and missing_aggregate_unchanged else 'FAIL'} "
+            "missing aggregate act record refuses rewrite"
+        )
+        shutil.copy2(ROOT / AGGREGATE_ACT_REL, clone / AGGREGATE_ACT_REL)
+
+        semantics = clone / ACT_SEMANTICS_REL
+        crlf = semantics.read_bytes().replace(b"\n", b"\r\n")
+        semantics.write_bytes(crlf)
+        crlf_refused = run(False, clone) == 1
+        crlf_unchanged = semantics.read_bytes() == crlf
+        print(
+            f"{'PASS' if crlf_refused and crlf_unchanged else 'FAIL'} "
+            "CRLF generated-subject drift rejected byte-exactly"
+        )
+        for rel, content in baseline.items():
+            (clone / rel).write_text(content)
 
         cap1.write_text(cap1.read_text() + "\npost-act coverage mutation\n")
         frozen_before_drift = {
@@ -385,8 +443,12 @@ def selftest() -> int:
         )
     passed = (
         parity_fails and digest_changes and clean_noop and clean_unchanged
+        and missing_dedicated and missing_dedicated_unchanged
+        and missing_aggregate and missing_aggregate_unchanged
+        and crlf_refused and crlf_unchanged
         and rewrite_refused and drift_unchanged
     )
+    print(f"7 transaction mutations, {0 if passed else 1} failing")
     return 0 if passed else 1
 
 

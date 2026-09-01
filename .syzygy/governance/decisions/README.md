@@ -12,8 +12,8 @@
 | You want to know | Ask | Short answer today |
 |---|---|---|
 | **Has the owner decided this?** | the **recorded decisions** below | Doctrine, craft, SDR-1…37, and the 2026-08-16 rulings are recorded. The rest is not |
-| **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **Yes — four original foundational acts, all 2026-08-17, plus a separate indivisible five-row amendment transaction performed 2026-09-01.** The transaction amended RFC 0001–0009, seven coverage artifacts and CC-SPEC-8; it granted no effect-specific or implementation authority. Nine foundational offerings remain open |
-| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **20** rows in the open section, plus **5** open acceptance-act rows *(measured 2026-08-19, after the 2026-08-18 questionnaire rulings were applied, by the predicate the generators use: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`; P-1's row stays open for the deferred C/D waves)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
+| **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **Yes — four original foundational acts, all 2026-08-17, plus a separate indivisible five-row amendment transaction performed 2026-09-01.** The transaction amended RFC 0001–0009, seven coverage artifacts and CC-SPEC-8; it granted no effect-specific or implementation authority. Nine foundational offerings remain open: four deferred waves, CC-TEST-2, topology, overview, D3, and **P-12 knowledge hygiene** as the ninth |
+| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **21** rows in the open decision section, plus **5** open acceptance-act rows — **26 total** *(measured 2026-09-01 by the generator predicate: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`; independently recounted by section; P-1's row stays open for the deferred C/D waves)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
 | **Which decisions were resolved, and how?** | [`DECISION-HISTORY.md`](DECISION-HISTORY.md) | The resolved rows — the nine 2026-08-16 rulings and the 2026-08-17 act dispositions (P-41/P-42 executed, P-22/P-28 ratified) — and the register's chronology |
 | **Where is the history?** | [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md), [`DECISION-HISTORY.md`](DECISION-HISTORY.md), and the round trees under `contracts/candidates/` | Deliberately off the default path |
 
@@ -59,7 +59,9 @@ trusted-bootstrap amendment transaction performed 2026-09-01. The transaction
 left RFC 0010/0011 candidate, left PWB-REQ-005 and PWB-REQ-022 deliberately
 state-(2)-only, and granted no consent, observation, write, egress, execution,
 deployment, release, recovery, mission or implementation authority. Entries
-are appended, never edited. Nine foundational offerings remain unperformed.
+are appended, never edited. Nine foundational offerings remain unperformed:
+four deferred waves, CC-TEST-2, topology, overview, D3, and **P-12 knowledge
+hygiene** as the ninth.
 The original foundational acts themselves — their exact phrases and arguments
 — are owned by
 [`../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`](../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md),
@@ -119,19 +121,15 @@ belongs in `bd`.
 
 ### A note on this file's own lawfulness
 
-Candidate clause **RFC3-15** says the `decisions/` category holds *"Recorded
-owner decisions: adoptions, dismissals (reason + expiry), adjudications,
-consent records (RFC3-7), overrules"* — **exclusively**. This README is
-navigation, not a recorded owner decision, so under a strict reading of that
-clause it does not belong here.
+Accepted clause **RFC3-15**, bound at its current module bytes by the
+2026-09-01 contract-amendment manifest, says the `decisions/` category holds
+*"Recorded owner decisions: adoptions, dismissals (reason + expiry),
+adjudications, consent records (RFC3-7), overrules"* — **exclusively**. This
+README is navigation, not a recorded owner decision, so under a strict reading
+it remains in tension with the binding clause.
 
-It is written anyway, on explicit owner instruction, and the tension is
-recorded rather than hidden. Two facts bear on it: RFC3-15 is a **candidate**
-and binds nothing today, and the tree already contains `doctrine/README.md`
-and `launch-gate/README.md` on the same footing.
-
-**This is the same question as P-33**, at smaller scale — whether a
-constitutional category may hold a navigation lane beside the content it
-names. Whatever the owner rules for `contracts/` should govern this file too,
-and if the ruling excludes navigation lanes, this file moves. That
-consequence is recorded in the P-33 analysis so the ruling is made knowing it.
+The file remains here on explicit owner instruction, and the tension is
+recorded rather than hidden. Neither its location nor the existence of sibling
+navigation files is treated as an inferred exception to RFC3-15. A durable
+resolution requires an owner amendment or owner direction to move this page;
+until then this router remains navigation only and never authority.

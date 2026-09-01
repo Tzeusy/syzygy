@@ -1,4 +1,4 @@
-# Candidate transaction report — general trusted-bootstrap authorization
+# Historical candidate transaction report — general trusted-bootstrap authorization
 
 > **PERFORMED 2026-09-01 — transaction ceremony satisfied.** The owner
 > performed the exact indivisible transaction and its act is recorded at
@@ -46,7 +46,7 @@ CC-SPEC policy. Its five act rows are indivisible.
   over 62 superseded base rows: 52 covered, 16 Unknown, 3 believed not
   applicable.
 
-## Verification before fresh review
+## Historical pre-act verification before fresh review
 
 - All three OpenSpec changes validate `--strict`.
 - Current manifest, contract index, dependency index, context-budget report,
@@ -64,7 +64,7 @@ CC-SPEC policy. Its five act rows are indivisible.
   ceremony, a new append-only act entry and current-state check semantics must
   reconcile it.
 
-## No authorization yet
+## Historical pre-act authorization state
 
 This candidate does not consent to repository observation or writes, approve a
 secret policy or adapter registry entry, authorize egress or execution, accept

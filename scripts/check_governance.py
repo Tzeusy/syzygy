@@ -1812,6 +1812,19 @@ class _ActSubjects:
 
 ACT_SUBJECTS = _ActSubjects()
 
+#: Nested transaction acts have no independent ceremony phrase, so each
+#: recognized record line is registered with its full stable grammar. Never
+#: infer performance from a basename plus a digest: a reviewer mutation proved
+#: that an arbitrary Wave-A table row could otherwise forge history.
+NESTED_PERFORMED_ARGUMENT_PATTERNS = {
+    CC_SPEC_LABEL: re.compile(
+        r"^\| 5 \| `confirm-craft-amendment` \| in-force policy "
+        r"`SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE\.md` "
+        r"\(CC-SPEC-1\.\.11\) \| `([0-9a-f]{64})` \| "
+        r"[^|]+ \| [^|]+ \|$"
+    ),
+}
+
 
 def _performed_act_digests(act_subjects=None, record=None):
     """Return every performed digest, in record order, for each act label.
@@ -1820,11 +1833,11 @@ def _performed_act_digests(act_subjects=None, record=None):
     have more than one lawful historical digest, and dropping the earlier one
     would turn correct act-time evidence into a false stale-copy finding.
 
-    Two record shapes are intentional. Older acts repeat their exact ceremony
-    phrase on a line of its own. An indivisible transaction records its nested
-    acts as table rows, so a row containing the stable subject basename and a
-    single exact digest also records that subject's performed argument. Only
-    the owner-act record is parsed; an offering or review can never populate
+    Two record shapes are intentional and both are explicitly registered.
+    Older acts repeat their exact ceremony phrase on a line of its own. An
+    indivisible transaction records nested acts using the exact line grammars
+    in `NESTED_PERFORMED_ARGUMENT_PATTERNS`. Only the owner-act record is
+    parsed; an offering, review, or arbitrary table row can never populate
     this set.
     """
     specs = tuple(ACT_SUBJECTS if act_subjects is None else act_subjects)
@@ -1836,25 +1849,18 @@ def _performed_act_digests(act_subjects=None, record=None):
         return {label: tuple(values) for label, values in found.items()}
 
     lines = record.splitlines()
-    for label, subject, phrase_arg in specs:
+    for label, _subject, phrase_arg in specs:
         values = found[label]
         for line in lines:
             m = phrase_arg.fullmatch(line.strip())
             if m and m.group(1) not in values:
                 values.append(m.group(1))
-
-        # Transaction rows carry the stable subject and exact digest, but no
-        # second pseudo-ceremony phrase. Requiring the act-type table shape
-        # prevents prose or review hashes elsewhere in the record from being
-        # mistaken for performance.
-        basename = os.path.basename(subject)
-        for line in lines:
-            if (not line.lstrip().startswith("|") or basename not in line
-                    or "act type" in line.lower()):
-                continue
-            digests = re.findall(r"`([0-9a-f]{64})`", line)
-            if len(digests) == 1 and digests[0] not in values:
-                values.append(digests[0])
+        nested = NESTED_PERFORMED_ARGUMENT_PATTERNS.get(label)
+        if nested:
+            for line in lines:
+                m = nested.fullmatch(line.strip())
+                if m and m.group(1) not in values:
+                    values.append(m.group(1))
     return {label: tuple(values) for label, values in found.items()}
 
 #: Files that quote a stale act argument *as* a retired value, on purpose —
@@ -1969,17 +1975,22 @@ ACT_DIGEST_COPY_FILES = {
 
 #: A performed digest remains valid historical evidence even after its
 #: subject is amended. These one-time offerings are not current copies and
-#: must not be rewritten to the successor digest; they are nevertheless an
-#: enumerated population, so CG-7e still rejects an unperformed substitution.
+#: must not be rewritten to the successor digest. Each file is bound to the
+#: exact act-time digest it historically quoted; accepting any performed
+#: digest for the same label would let a later amendment rewrite history.
+CC_SPEC_ACT_6_DIGEST = (
+    "9889b7e311ad941eec84d01dc2c035c7e2502a57cf18e68a1028a76d5b814871")
+GENERAL_BOOTSTRAP_ACT_DIGEST = (
+    "1885a323c659364f98e81cdf04479cebfecf5b22d350928d046ebb5b7c5268f6")
 ACT_HISTORICAL_DIGEST_COPY_FILES = {
     f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md":
-        (CC_SPEC_LABEL,),
+        {CC_SPEC_LABEL: (CC_SPEC_ACT_6_DIGEST,)},
     f"{DECISIONS}/SPECIFICATION-ACCEPTANCE-DECISION.md":
-        (CC_SPEC_LABEL,),
+        {CC_SPEC_LABEL: (CC_SPEC_ACT_6_DIGEST,)},
     f"{GENERAL_BOOTSTRAP_DIR}/OWNER-SIGNOFF-PACKET.md":
-        (GENERAL_BOOTSTRAP_LABEL,),
+        {GENERAL_BOOTSTRAP_LABEL: (GENERAL_BOOTSTRAP_ACT_DIGEST,)},
     f"{GENERAL_BOOTSTRAP_DIR}/CANDIDATE-TRANSACTION-REPORT.md":
-        (GENERAL_BOOTSTRAP_LABEL,),
+        {GENERAL_BOOTSTRAP_LABEL: (GENERAL_BOOTSTRAP_ACT_DIGEST,)},
 }
 
 
@@ -2033,18 +2044,19 @@ def cg7e_act_digest_copies(paths, res):
         body = read(rel)
         if not body:
             continue
-        # A banner-marked historical record may hold whatever digests it held
-        # when it was written; CG-15b owns that population. Registering one
-        # here would make it a live offer and history at once, which review
-        # RD-6 named as its own defect.
-        if re.search(r"^>?\s*[#*\s]*(SUPERSEDED|Superseded|Historical|"
-                     r"RETIRED|Retired)\b", "\n".join(body.splitlines()[:12]),
-                     re.M):
+        current_declared = ACT_DIGEST_COPY_FILES.get(rel, ())
+        historical_declared = ACT_HISTORICAL_DIGEST_COPY_FILES.get(rel, {})
+        # Unregistered banner-marked records remain CG-15b's population.
+        # Explicit historical registrations are checked here despite their
+        # banner: the registration's purpose is to pin their exact act-time
+        # digest without pretending they are current offers.
+        if (not current_declared and not historical_declared
+                and re.search(r"^>?\s*[#*\s]*(SUPERSEDED|Superseded|Historical|"
+                              r"RETIRED|Retired)\b",
+                              "\n".join(body.splitlines()[:12]), re.M)):
             continue
         held = {lab for digest, labels in recognized.items() if digest in body
                 for lab in labels}
-        current_declared = ACT_DIGEST_COPY_FILES.get(rel, ())
-        historical_declared = ACT_HISTORICAL_DIGEST_COPY_FILES.get(rel, ())
         if current_declared or historical_declared:
             examined += 1
             by_label = {lab: d for lab, _sub, d in phrases}
@@ -2059,15 +2071,24 @@ def cg7e_act_digest_copies(paths, res):
                     f"the owner is sent to")
 
             missing_historical = []
-            for lab in historical_declared:
-                lawful = performed.get(lab, ())
-                if not lawful or not any(d in body for d in lawful):
+            for lab, exact_digests in historical_declared.items():
+                performed_for_label = performed.get(lab, ())
+                unperformed_bindings = [
+                    digest for digest in exact_digests
+                    if digest not in performed_for_label
+                ]
+                if unperformed_bindings:
                     missing_historical.append(lab)
                     findings.append(
-                        f"{rel} — declared to carry performed history for act "
-                        f"`{lab}` but contains none of its arguments recorded "
-                        f"in {PERFORMED_ACT_RECORD}. An unperformed stale "
-                        f"digest is not historical evidence")
+                        f"{rel} — historical registration for `{lab}` names "
+                        f"digest(s) never performed in {PERFORMED_ACT_RECORD}: "
+                        f"{[d[:12] + '…' for d in unperformed_bindings]}")
+                elif not any(d in body for d in exact_digests):
+                    missing_historical.append(lab)
+                    findings.append(
+                        f"{rel} — historical copy for `{lab}` does not contain "
+                        f"its exact act-time digest(s) "
+                        f"{[d[:12] + '…' for d in exact_digests]}")
 
             declared = set(current_declared) | set(historical_declared)
             undeclared = sorted(held - declared)
@@ -5093,6 +5114,10 @@ def selftest():
     cases.append(("CG-7d old performed digest accepted as history",
                   row[0] == "OK" and row[3] == 0))
 
+    row = _selftest_fake_performed_table()
+    cases.append(("CG-7d fake Wave-A table row cannot whitelist a digest",
+                  row[0] == "FAIL" and row[3] == 1))
+
     # CG-7e — the first fixture the CG-7 family has ever had. Review RD-6
     # mutation-proved that falsifying every act argument in the owner-facing
     # offering left the battery green; these two reproduce that mutation and
@@ -5113,6 +5138,11 @@ def selftest():
         ACT_DIGEST_COPY_FILES.update(saved)
     cases.append(("CG-7e file declaring an act it does not carry detected",
                   c.rows[0][0] == "FAIL"))
+
+    row = _selftest_cg7e_wrong_historical()
+    cases.append(("CG-7e later CC-SPEC digest cannot replace act-6 history",
+                  row[0] == "FAIL"
+                  and any("exact act-time digest" in d for d in row[4])))
 
     row = _selftest_cg7h("missing-act")
     cases.append(("CG-7h missing current amendment act rejected",
@@ -5321,6 +5351,93 @@ def _selftest_cg7d_quotation(kind):
         shutil.rmtree(d, ignore_errors=True)
 
 
+def _selftest_fake_performed_table():
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, status, name, examined, n, unit, note=None, details=None):
+            self.rows.append((status, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows if r[1].startswith(prefix)), None)
+
+    label = "ACCEPT FOUNDATIONAL WAVE A"
+    fake = "e" * 64
+    specs = ((
+        label,
+        "wave-manifests/WAVE-A-MANIFEST.txt",
+        re.compile(re.escape(label) + r":\s*`?([0-9a-f]{64})"),
+    ),)
+    forged_record = (
+        "| 99 | `forged-history` | `WAVE-A-MANIFEST.txt` | "
+        f"`{fake}` |\n"
+    )
+    performed = _performed_act_digests(specs, record=forged_record)
+    c = Cap()
+    cg7d_quoted_elsewhere(
+        [], c, act_subjects=specs, subject_digests={label: "a" * 64},
+        corpus=[("f.md", f"{label}: {fake}\n")],
+        performed_digests=performed,
+    )
+    return c.row("CG-7d")
+
+
+def _selftest_cg7e_wrong_historical():
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, status, name, examined, n, unit, note=None, details=None):
+            self.rows.append((status, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows if r[1].startswith(prefix)), None)
+
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp(prefix="cg7e-history-selftest-")
+    global ROOT
+    keep = ROOT
+    cache = dict(_ActSubjects._cache)
+    current_files = dict(ACT_DIGEST_COPY_FILES)
+    history_files = dict(ACT_HISTORICAL_DIGEST_COPY_FILES)
+    try:
+        subject = "policy.md"
+        full = os.path.join(d, subject)
+        with open(full, "w", encoding="utf-8") as fh:
+            fh.write("current policy\n")
+        current = sha256_file(full)
+        old = "9" * 64
+        record = os.path.join(d, PERFORMED_ACT_RECORD)
+        os.makedirs(os.path.dirname(record), exist_ok=True)
+        with open(record, "w", encoding="utf-8") as fh:
+            fh.write(f"{CC_SPEC_LABEL}@{old}\n{CC_SPEC_LABEL}@{current}\n")
+        with open(os.path.join(d, "historical.md"), "w", encoding="utf-8") as fh:
+            fh.write(f"{CC_SPEC_LABEL}@{current}\n")
+
+        specs = ((
+            CC_SPEC_LABEL, subject,
+            re.compile(re.escape(CC_SPEC_LABEL)
+                       + r"\s*@\s*`?([0-9a-f]{64})"),
+        ),)
+        ROOT = d
+        _ActSubjects._cache[d] = specs
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        ACT_HISTORICAL_DIGEST_COPY_FILES["historical.md"] = {
+            CC_SPEC_LABEL: (old,),
+        }
+        c = Cap()
+        cg7e_act_digest_copies(["historical.md"], c)
+        return c.row("CG-7e")
+    finally:
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES.update(current_files)
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        ACT_HISTORICAL_DIGEST_COPY_FILES.update(history_files)
+        _ActSubjects._cache.clear()
+        _ActSubjects._cache.update(cache)
+        ROOT = keep
+        shutil.rmtree(d, ignore_errors=True)
+
+
 def _selftest_cg7h(kind):
     class Cap:
         def __init__(self): self.rows = []
@@ -5339,7 +5456,8 @@ def _selftest_cg7h(kind):
     outer = f"{GENERAL_BOOTSTRAP_LABEL}: {transaction}\n"
     policy_row = (
         "| 5 | `confirm-craft-amendment` | in-force policy "
-        f"`{os.path.basename(CC_SPEC_SUBJECT)}` | `{{digest}}` | scope | end |\n")
+        f"`{os.path.basename(CC_SPEC_SUBJECT)}` (CC-SPEC-1..11) | "
+        "`{digest}` | scope | end |\n")
     performed = outer + policy_row.format(digest=policy)
     if kind == "missing-act":
         dedicated = ""

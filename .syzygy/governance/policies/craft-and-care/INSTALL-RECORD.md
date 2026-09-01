@@ -190,7 +190,7 @@ audit-record identity required by RFC3-16(b) item 9 is explicitly absent, so
 the act is owner-trusted and effective for this exact craft amendment but is
 not independently verified. The reviewed subject was
 `92cfbf3e3a644bff7ac738d2cf7084c06548381c`; the owner-packet head was
-`a5f2c4fe22f9ae3c50ee8902a0b7d78207f910a2`. The planned recording tag is
+`a5f2c4fe22f9ae3c50ee8902a0b7d78207f910a2`. The recording tag is
 `general-trusted-bootstrap-authorized-2026-09-01` on the commit carrying the
 act and install records.
 

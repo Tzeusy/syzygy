@@ -105,7 +105,7 @@ CONFIRM CRAFT AMENDMENT: CC-SPEC@6093dbbe519dad6c35a5aaeeb31355d2e435d76ec4f0c2c
 | Owner-packet head | `a5f2c4fe22f9ae3c50ee8902a0b7d78207f910a2`; it changed no transaction-bound subject after review |
 | Review outcome | security `CONFIRM`; contract/fresh-reader and impact/transaction `CONFIRM WITH EXCEPTIONS`, no blockers |
 | Ceremony verification | 7 of 7 top-level subjects, 30 of 30 contract rows and 5 of 5 PWB coverage rows verified at their recorded digests `[Observed, this act]` |
-| Recording | `.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`; planned annotated tag `general-trusted-bootstrap-authorized-2026-09-01` on the commit carrying these records |
+| Recording | `.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`; annotated tag `general-trusted-bootstrap-authorized-2026-09-01` on the commit carrying these records |
 
 All five rows below were performed together. Their wording is copied exactly
 from the transaction-bound `ACT-SEMANTICS.md`.

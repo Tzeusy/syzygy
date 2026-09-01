@@ -31,6 +31,16 @@ intent satisfaction; human and machine views consume one shared fact model;
 every positive claim has resolvable provenance. The owning record is
 `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`.
 
+The runnable POC now includes an explicit human-triggered action that creates
+or reuses one bounded Bead, Git-based worker-change observation for that item,
+and a separately invoked file-backed JUnit capture, ingestion and verification
+path. These mechanisms being implemented is not evidence that a work item was
+materialized, a worker changed code, or a matching test artifact is current in
+any particular run; the shared model renders the records it actually
+has and fails closed on absent or mismatched evidence. The daemon never runs
+the observed test suite automatically and Syzygy never dispatches a worker or
+writes implementation code.
+
 On 2026-09-01 the owner separately performed the indivisible five-row general
 trusted-bootstrap authorization transaction recorded in
 `decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md` and the append-only
@@ -62,7 +72,7 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 | Owner launch decision | **Made 2026-08-20** — Capability 1 specification authoring authorized, with the `NOT READY` verdict in hand and accepted as diagnostic evidence; the P-48 stop-condition cycle ends early by the owner deciding directly. Specification definition only — no implementation, no implementation planning. | `decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md` |
 | OpenSpec (`openspec/`) | **Capability 1 remains ADOPTED: `project-registration-and-honest-shape-visibility`** (schema `spec-driven`, OpenSpec pinned 1.9.0). The owner adopted seven artifacts on 2026-08-20; the 2026-09-01 transaction superseded only `CONTRACT-COVERAGE.md`'s digest, leaving the other six adopted digests and all required behavior unchanged. The accepted specification supersedes the Capability 1 charter for required behaviour. | `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md` (original act); `decisions/ACCEPTANCE-ACT-RECORD.md` (coverage amendment); the change directory |
 | Implementation | **AUTHORIZED for Capability 1 — act dated 2026-08-21.** Plan first (stack, layout, slices→CAP1-REQ mapping, testing/evidence, review classes), then a bounded Beads backlog and code in ordinary root paths (`apps/**`, `packages/**`, tooling) — never in the governed plane. Capability 1 only; production deployment, onboarding, and release stay separate future decisions. | `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md` |
-| Three-Surface POC | **AUTHORIZED 2026-08-29, non-release and bounded.** One live Butlers proving project; WIP one for shared-model changes. The original eight items completed 2026-08-30: all three product assumptions NOT FALSIFIED (`docs/reviews/R-POC-PRODUCT-REVIEW.md`), PRF-1 repair CONFIRMED. The owner's 2026-08-30 direction extends the experiment with **improvement cycles** (review → finding-derived repairs → confirmation, owner-reported per cycle), lifting the eight-item cap and one-review budget; every other bound stands. | `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`; `decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md` |
+| Three-Surface POC | **AUTHORIZED 2026-08-29, non-release and bounded.** One live Butlers proving project; WIP one for shared-model changes. The runnable implementation exposes human-triggered Bead materialization, worker-change observation, and separate file-backed test-artifact capture/ingestion/verification; availability of those paths is not a positive evidence claim for the current run. The original eight items completed 2026-08-30: all three product assumptions NOT FALSIFIED (`docs/reviews/R-POC-PRODUCT-REVIEW.md`), PRF-1 repair CONFIRMED. The owner's 2026-08-30 direction extends the experiment with **improvement cycles** (review → finding-derived repairs → confirmation, owner-reported per cycle), lifting the eight-item cap and one-review budget; every other bound stands. | `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`; `decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md`; `docs/THREE-SURFACE-POC.md` |
 
 **Four original foundational owner acts were performed on 2026-08-17:** Wave
 A, Wave B, and craft acts 6 + 7. A separate indivisible five-row amendment
@@ -70,7 +80,8 @@ transaction was performed on 2026-09-01; it is not a fifth foundational
 offering.
 `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` exists since the
 first act and owns every performed act. The nine still-open foundational
-offerings remain open.
+offerings remain open: deferred Waves C1/C2/D1/D2, CC-TEST-2, topology,
+overview, D3, and **P-12 knowledge hygiene** as the ninth.
 
 ## Gates already closed
 
@@ -114,7 +125,7 @@ Before project-wide Polaris behavior or implementation resumes:
 
 Until those gates close, the lawful state is no body read and no PWB
 implementation resumption. RFC 0010/0011 and the nine still-open foundational
-offerings remain candidate/open.
+offerings — including P-12 knowledge hygiene — remain candidate/open.
 
 ## How to verify this page
 

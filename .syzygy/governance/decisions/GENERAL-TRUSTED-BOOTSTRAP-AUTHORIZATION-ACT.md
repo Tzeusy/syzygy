@@ -34,7 +34,7 @@ Frozen transaction provenance:
 - contract/fresh-reader confirmation: `CONFIRM WITH EXCEPTIONS`, no blockers;
 - impact/transaction confirmation: `CONFIRM WITH EXCEPTIONS`, no blockers;
   and
-- planned recording tag:
+- recording tag:
   `general-trusted-bootstrap-authorized-2026-09-01`, on the commit carrying
   this act record.
 
@@ -63,7 +63,7 @@ same-logical-change transaction under CC-REV-2; no row was performed alone.
 This is a genuine human state-(1) act. It is effective for only the exact act
 types, subjects and scopes above, is owner-trusted, and remains visibly
 uncorrelated. The A1 audit identity is explicitly absent; this act is **not
-independently verified**. The commit and planned tag preserve the record but
+independently verified**. The commit and recording tag preserve the record but
 do not establish human attendance or state (2). The act is a warrant, never
 evidence that any authorized effect occurred or succeeded.
 

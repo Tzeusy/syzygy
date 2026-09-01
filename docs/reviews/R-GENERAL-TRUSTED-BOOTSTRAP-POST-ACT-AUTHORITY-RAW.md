@@ -1,0 +1,11 @@
+CONFIRM
+
+[Observed] Blockers: none. Nonblockers: none.
+
+- The exact owner phrase and digest are recorded correctly. The act is explicitly state (1), with A1 identity absent and no independent-verification claim. The planned tag is named accurately; no tag ref exists yet. [Act record](/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md:11)
+- All five rows are byte-exact copies of `ACT-SEMANTICS.md` in both act records. [Five rows](/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md:44)
+- Independent SHA-256 checks passed for 7/7 top-level, 30/30 contract, and 5/5 PWB subjects; all 30 installed/candidate RFC pairs match. Every subject is blob-identical to reviewed commit `92cfbf3`. [Transaction manifest](/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/TRANSACTION-MANIFEST.txt:1)
+- Historical records are append-only: 6,288 prior acceptance-record bytes and 10,645 prior install-record bytes were preserved exactly; Wave A/B manifests are unchanged. [Acceptance append](/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:83) [Install append](/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md:167)
+- Verification passed: transaction check; transaction mutation selftest; governance `33 OK / 19 WARN / 0 FAIL`; governance selftest `165/165`.
+
+Plain authority statement: this state-(1) human act owner-adopts the exact RFC 0001–0009 amendments, seven coverage amendments, and CC-SPEC-8 amendment. It grants no repository observation/write, consent, registry, egress, execution, deployment, release, recovery, mission, or implementation authority, and starts no automatic follow-on work. [Scope exclusions](/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md:74)
