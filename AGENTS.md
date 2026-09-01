@@ -57,7 +57,7 @@ or implementation authority.
 | Question | Authority | Path | Binding today? |
 |---|---|---|---|
 | Why — purpose, non-negotiables | Doctrine (VIS-1…7, SEC-1…5) | `.syzygy/governance/doctrine/` | **Yes** — adopted 2026-07-30, D1 in force |
-| Prior owner rulings | Decisions (SDR-1…33, warrants, pending queue) | `.syzygy/governance/decisions/` | **Yes** |
+| Prior owner rulings | Decisions (SDR-1…37, warrants, pending queue) | `.syzygy/governance/decisions/` | **Yes** |
 | Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | **Owner-approved (D2)**; **CC-SPEC-1…11 and CC-IMPACT-1…7 are in force**. The original acts 6/7 were performed 2026-08-17; CC-SPEC-8 was amended in the separate 2026-09-01 transaction, while CC-IMPACT was unchanged. |
 | Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/` | **RFC 0001–0009: accepted and amended** — originally accepted by the 2026-08-17 Wave A/B acts; their current installed bytes are bound at the 2026-09-01 30-module contract-amendment manifest. The performed-wave manifests remain immutable act-time history. RFC 0010–0011: **candidate**, in `contracts/candidates/` (deferred waves) |
 | Intended placement | Topology bundle | `.syzygy/map/topology-candidates/` | **No — candidate.** `map/topology/` exists only after act 3 |

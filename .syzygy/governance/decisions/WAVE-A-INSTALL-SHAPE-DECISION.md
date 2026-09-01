@@ -1,5 +1,16 @@
 # Owner decision packet — Wave A installation shape (P-33)
 
+> **HISTORICAL PRE-ACT PACKET AND ACT-TIME INSTALL-SHAPE RECORD.** P-33 was
+> ruled on 2026-08-16 as shape (M), and Wave A was accepted on 2026-08-17.
+> The `Candidate clause RFC3-15` wording under "Current authority" below is
+> preserved as the packet's pre-act state; it is not current project truth.
+> RFC3-15 is now accepted and bound at its current module bytes by the
+> 2026-09-01 contract-amendment manifest. Current routing lives in
+> [`DECISION-HISTORY.md`](DECISION-HISTORY.md) §"Resolved on 2026-08-16
+> (owner ruling via adversarially-reviewed questionnaire packet)",
+> [`ACCEPTANCE-ACT-RECORD.md`](ACCEPTANCE-ACT-RECORD.md), and root
+> [`PROJECT-STATUS.md`](../../../PROJECT-STATUS.md).
+>
 > **This file decides nothing.** It is the bounded packet for **P-33**, the
 > single decision withholding the offer of an already-confirmed Wave A.
 >

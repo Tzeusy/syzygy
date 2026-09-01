@@ -50,6 +50,9 @@ AGGREGATE_ACT_REL = pathlib.Path(
     ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md"
 )
 ACT_LABEL = "SIGN OFF GENERAL TRUSTED-BOOTSTRAP AUTHORIZATION TRANSACTION"
+PRODUCTION_PERFORMED_DIGEST = (
+    "1885a323c659364f98e81cdf04479cebfecf5b22d350928d046ebb5b7c5268f6"
+)
 ACT_PATTERN = re.compile(
     r"^" + re.escape(ACT_LABEL) + r": ([0-9a-f]{64})$", re.M
 )
@@ -144,11 +147,18 @@ def record_digest(root: pathlib.Path, rel: pathlib.Path) -> str | None:
     return matches[-1]
 
 
-def performed_digest(root: pathlib.Path) -> str | None:
+def performed_digest(
+    root: pathlib.Path, *, allow_pre_act: bool = False
+) -> str | None:
     dedicated = record_digest(root, ACT_REL)
     aggregate = record_digest(root, AGGREGATE_ACT_REL)
     if dedicated is None and aggregate is None:
-        return None
+        if allow_pre_act:
+            return None
+        raise ValueError(
+            "production performed-state pin requires both act records; "
+            "neither performed signal is present"
+        )
     if dedicated is None or aggregate is None:
         missing = ACT_REL if dedicated is None else AGGREGATE_ACT_REL
         raise ValueError(
@@ -159,7 +169,12 @@ def performed_digest(root: pathlib.Path) -> str | None:
             f"conflicting performed digests: {ACT_REL}={dedicated}, "
             f"{AGGREGATE_ACT_REL}={aggregate}"
         )
-    return dedicated
+    if dedicated != PRODUCTION_PERFORMED_DIGEST:
+        raise ValueError(
+            f"performed records agree on {dedicated}, but production is "
+            f"irreversibly pinned to {PRODUCTION_PERFORMED_DIGEST}"
+        )
+    return PRODUCTION_PERFORMED_DIGEST
 
 
 def transaction_subject_digest(root: pathlib.Path, subject: pathlib.Path) -> str:
@@ -390,9 +405,11 @@ def execute(
     check: bool,
     root: pathlib.Path = ROOT,
     populations: dict[str, set[str]] | None = None,
+    *,
+    allow_pre_act: bool = False,
 ) -> int:
     try:
-        frozen = performed_digest(root)
+        frozen = performed_digest(root, allow_pre_act=allow_pre_act)
     except ValueError as exc:
         print(f"DRIFT: post-act state — {exc}")
         return 1
@@ -461,6 +478,16 @@ def selftest() -> int:
             "missing aggregate act record fails closed",
             missing_aggregate and (clone / OUT_REL).read_bytes() == before,
         ))
+        shutil.copy2(ROOT / AGGREGATE_ACT_REL, clone / AGGREGATE_ACT_REL)
+
+        (clone / ACT_REL).unlink()
+        (clone / AGGREGATE_ACT_REL).unlink()
+        both_absent = execute(False, clone, populations=populations) == 1
+        checks.append((
+            "both absent act records still fail closed in production mode",
+            both_absent and (clone / OUT_REL).read_bytes() == before,
+        ))
+        shutil.copy2(ROOT / ACT_REL, clone / ACT_REL)
         shutil.copy2(ROOT / AGGREGATE_ACT_REL, clone / AGGREGATE_ACT_REL)
 
         mutation = before + b"\npost-act mutation\n"

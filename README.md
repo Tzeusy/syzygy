@@ -180,8 +180,11 @@ content**, and are named here so they are not mistaken for either *(added
   `decisions/LAUNCH-GATE-AUTHORITY-DECISION.md`), and a `READY` verdict
   from it would authorize nothing.
 - [`FORMAL-CAPABILITY-1-LAUNCH-PACKET/`](FORMAL-CAPABILITY-1-LAUNCH-PACKET/)
-  — everything an outside reviewer would need to run that gate once,
-  formally. **Prepared, never administered.**
+  — **historical and retired after Administration 1 was performed under it
+  on 2026-08-18.** Its purpose is discharged; the canonical structured record
+  is
+  [`.syzygy/governance/decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json`](.syzygy/governance/decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json),
+  with verdict `NOT READY`.
 
 Agents: read [`AGENTS.md`](AGENTS.md) — operating procedure, not project
 truth.

@@ -64,6 +64,9 @@ AGGREGATE_ACT_REL = pathlib.Path(
     ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md"
 )
 ACT_LABEL = "SIGN OFF GENERAL TRUSTED-BOOTSTRAP AUTHORIZATION TRANSACTION"
+PRODUCTION_PERFORMED_DIGEST = (
+    "1885a323c659364f98e81cdf04479cebfecf5b22d350928d046ebb5b7c5268f6"
+)
 ACT_PATTERN = re.compile(
     r"^" + re.escape(ACT_LABEL) + r": ([0-9a-f]{64})$", re.M
 )
@@ -92,11 +95,18 @@ def record_digest(root: pathlib.Path, rel: pathlib.Path) -> str | None:
     return matches[-1]
 
 
-def performed_digest(root: pathlib.Path) -> str | None:
+def performed_digest(
+    root: pathlib.Path, *, allow_pre_act: bool = False
+) -> str | None:
     dedicated = record_digest(root, ACT_REL)
     aggregate = record_digest(root, AGGREGATE_ACT_REL)
     if dedicated is None and aggregate is None:
-        return None
+        if allow_pre_act:
+            return None
+        raise ValueError(
+            "production performed-state pin requires both act records; "
+            "neither performed signal is present"
+        )
     if dedicated is None or aggregate is None:
         missing = ACT_REL if dedicated is None else AGGREGATE_ACT_REL
         raise ValueError(
@@ -107,7 +117,12 @@ def performed_digest(root: pathlib.Path) -> str | None:
             f"conflicting performed digests: {ACT_REL}={dedicated}, "
             f"{AGGREGATE_ACT_REL}={aggregate}"
         )
-    return dedicated
+    if dedicated != PRODUCTION_PERFORMED_DIGEST:
+        raise ValueError(
+            f"performed records agree on {dedicated}, but production is "
+            f"irreversibly pinned to {PRODUCTION_PERFORMED_DIGEST}"
+        )
+    return PRODUCTION_PERFORMED_DIGEST
 
 
 def manifest_text(title: str, notes: tuple[str, ...], rows: list[tuple[str, str]]) -> str:
@@ -256,9 +271,11 @@ def build_outputs(root: pathlib.Path) -> dict[pathlib.Path, str]:
     return outputs
 
 
-def run(check: bool, root: pathlib.Path = ROOT) -> int:
+def run(
+    check: bool, root: pathlib.Path = ROOT, *, allow_pre_act: bool = False
+) -> int:
     try:
-        frozen = performed_digest(root)
+        frozen = performed_digest(root, allow_pre_act=allow_pre_act)
         outputs = build_outputs(root)
     except ValueError as exc:
         print(f"DRIFT: {exc}")
@@ -416,6 +433,20 @@ def selftest() -> int:
         )
         shutil.copy2(ROOT / AGGREGATE_ACT_REL, clone / AGGREGATE_ACT_REL)
 
+        (clone / ACT_REL).unlink()
+        (clone / AGGREGATE_ACT_REL).unlink()
+        both_absent = run(False, clone) == 1
+        both_absent_unchanged = all(
+            (clone / rel).read_bytes() == content
+            for rel, content in frozen_before.items()
+        )
+        print(
+            f"{'PASS' if both_absent and both_absent_unchanged else 'FAIL'} "
+            "both absent act records refuse production rewrite"
+        )
+        shutil.copy2(ROOT / ACT_REL, clone / ACT_REL)
+        shutil.copy2(ROOT / AGGREGATE_ACT_REL, clone / AGGREGATE_ACT_REL)
+
         semantics = clone / ACT_SEMANTICS_REL
         crlf = semantics.read_bytes().replace(b"\n", b"\r\n")
         semantics.write_bytes(crlf)
@@ -445,10 +476,11 @@ def selftest() -> int:
         parity_fails and digest_changes and clean_noop and clean_unchanged
         and missing_dedicated and missing_dedicated_unchanged
         and missing_aggregate and missing_aggregate_unchanged
+        and both_absent and both_absent_unchanged
         and crlf_refused and crlf_unchanged
         and rewrite_refused and drift_unchanged
     )
-    print(f"7 transaction mutations, {0 if passed else 1} failing")
+    print(f"8 transaction mutations, {0 if passed else 1} failing")
     return 0 if passed else 1
 
 

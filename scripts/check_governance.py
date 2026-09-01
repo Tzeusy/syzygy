@@ -1976,21 +1976,33 @@ ACT_DIGEST_COPY_FILES = {
 #: A performed digest remains valid historical evidence even after its
 #: subject is amended. These one-time offerings are not current copies and
 #: must not be rewritten to the successor digest. Each file is bound to the
-#: exact act-time digest it historically quoted; accepting any performed
-#: digest for the same label would let a later amendment rewrite history.
+#: exact act-time digest and quotation-line grammar it historically used;
+#: accepting a decoy occurrence elsewhere in the file would let a mutated
+#: ceremony line pass while appearing pinned.
 CC_SPEC_ACT_6_DIGEST = (
     "9889b7e311ad941eec84d01dc2c035c7e2502a57cf18e68a1028a76d5b814871")
 GENERAL_BOOTSTRAP_ACT_DIGEST = (
     "1885a323c659364f98e81cdf04479cebfecf5b22d350928d046ebb5b7c5268f6")
 ACT_HISTORICAL_DIGEST_COPY_FILES = {
     f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md":
-        {CC_SPEC_LABEL: (CC_SPEC_ACT_6_DIGEST,)},
+        {CC_SPEC_LABEL: ((CC_SPEC_ACT_6_DIGEST, re.compile(
+            r"^\| 6 \| `" + re.escape(CC_SPEC_LABEL) + r"@"
+            + CC_SPEC_ACT_6_DIGEST + r"` \|", re.M
+        )),)},
     f"{DECISIONS}/SPECIFICATION-ACCEPTANCE-DECISION.md":
-        {CC_SPEC_LABEL: (CC_SPEC_ACT_6_DIGEST,)},
+        {CC_SPEC_LABEL: ((CC_SPEC_ACT_6_DIGEST, re.compile(
+            r"^" + re.escape(CC_SPEC_LABEL) + r"@"
+            + CC_SPEC_ACT_6_DIGEST + r"$", re.M
+        )),)},
     f"{GENERAL_BOOTSTRAP_DIR}/OWNER-SIGNOFF-PACKET.md":
-        {GENERAL_BOOTSTRAP_LABEL: (GENERAL_BOOTSTRAP_ACT_DIGEST,)},
+        {GENERAL_BOOTSTRAP_LABEL: ((GENERAL_BOOTSTRAP_ACT_DIGEST, re.compile(
+            r"^" + re.escape(GENERAL_BOOTSTRAP_LABEL) + r": "
+            + GENERAL_BOOTSTRAP_ACT_DIGEST + r"$", re.M
+        )),)},
     f"{GENERAL_BOOTSTRAP_DIR}/CANDIDATE-TRANSACTION-REPORT.md":
-        {GENERAL_BOOTSTRAP_LABEL: (GENERAL_BOOTSTRAP_ACT_DIGEST,)},
+        {GENERAL_BOOTSTRAP_LABEL: ((GENERAL_BOOTSTRAP_ACT_DIGEST, re.compile(
+            r"^`" + GENERAL_BOOTSTRAP_ACT_DIGEST + r"`\.$", re.M
+        )),)},
 }
 
 
@@ -2071,7 +2083,9 @@ def cg7e_act_digest_copies(paths, res):
                     f"the owner is sent to")
 
             missing_historical = []
-            for lab, exact_digests in historical_declared.items():
+            for lab, bindings in historical_declared.items():
+                exact_digests = tuple(digest for digest, _pattern in bindings)
+                missing_quotes = []
                 performed_for_label = performed.get(lab, ())
                 unperformed_bindings = [
                     digest for digest in exact_digests
@@ -2083,12 +2097,17 @@ def cg7e_act_digest_copies(paths, res):
                         f"{rel} — historical registration for `{lab}` names "
                         f"digest(s) never performed in {PERFORMED_ACT_RECORD}: "
                         f"{[d[:12] + '…' for d in unperformed_bindings]}")
-                elif not any(d in body for d in exact_digests):
+                else:
+                    missing_quotes = [
+                        digest for digest, pattern in bindings
+                        if not pattern.search(body)
+                    ]
+                if not unperformed_bindings and missing_quotes:
                     missing_historical.append(lab)
                     findings.append(
                         f"{rel} — historical copy for `{lab}` does not contain "
-                        f"its exact act-time digest(s) "
-                        f"{[d[:12] + '…' for d in exact_digests]}")
+                        f"its exact act-time quotation line(s) "
+                        f"{[d[:12] + '…' for d in missing_quotes]}")
 
             declared = set(current_declared) | set(historical_declared)
             undeclared = sorted(held - declared)
@@ -5140,9 +5159,9 @@ def selftest():
                   c.rows[0][0] == "FAIL"))
 
     row = _selftest_cg7e_wrong_historical()
-    cases.append(("CG-7e later CC-SPEC digest cannot replace act-6 history",
+    cases.append(("CG-7e decoy old digest cannot mask mutated act-6 line",
                   row[0] == "FAIL"
-                  and any("exact act-time digest" in d for d in row[4])))
+                  and any("exact act-time quotation" in d for d in row[4])))
 
     row = _selftest_cg7h("missing-act")
     cases.append(("CG-7h missing current amendment act rejected",
@@ -5410,7 +5429,10 @@ def _selftest_cg7e_wrong_historical():
         with open(record, "w", encoding="utf-8") as fh:
             fh.write(f"{CC_SPEC_LABEL}@{old}\n{CC_SPEC_LABEL}@{current}\n")
         with open(os.path.join(d, "historical.md"), "w", encoding="utf-8") as fh:
-            fh.write(f"{CC_SPEC_LABEL}@{current}\n")
+            fh.write(
+                f"{CC_SPEC_LABEL}@{current}\n"
+                f"<!-- decoy old digest: {old} -->\n"
+            )
 
         specs = ((
             CC_SPEC_LABEL, subject,
@@ -5422,7 +5444,9 @@ def _selftest_cg7e_wrong_historical():
         ACT_DIGEST_COPY_FILES.clear()
         ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
         ACT_HISTORICAL_DIGEST_COPY_FILES["historical.md"] = {
-            CC_SPEC_LABEL: (old,),
+            CC_SPEC_LABEL: ((old, re.compile(
+                r"^" + re.escape(CC_SPEC_LABEL) + r"@" + old + r"$", re.M
+            )),),
         }
         c = Cap()
         cg7e_act_digest_copies(["historical.md"], c)

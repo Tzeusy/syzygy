@@ -26,3 +26,28 @@ required before creating the recording tag or fast-forwarding main.
 | Recording tag remained described as planned | **FIXED IN RECORDING BYTES.** The three records now name the recording tag without “planned”; creation of that tag remains withheld until fresh confirmation of the repaired head. |
 
 No finding was overruled or dropped. No transaction-bound subject was edited.
+
+## Confirmation pass at `8eadfc6`
+
+Raw confirmations:
+
+- `R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-AUTHORITY-CONFIRMATION-RAW.md`
+  — `CONFIRM`
+- `R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-CHECKER-CONFIRMATION-RAW.md`
+  — `REVISE`
+- `R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-READER-CONFIRMATION-RAW.md`
+  — `REVISE`
+
+| Finding | Disposition |
+|---|---|
+| Authority confirmation — no blockers | **NO CHANGE.** Exact phrase, rows, subjects, append-only prefixes and no-effect boundary remain confirmed. |
+| Checker confirmation high 1 — historical check was file-wide and a decoy digest could mask a mutated ceremony | **FIXED.** Each registered historical file/label now uses an exact quotation-line grammar bound to its exact act-time digest; the decoy mutation fails. |
+| Checker confirmation high 2 — deleting both performed records re-enabled pre-act rewrite mode | **FIXED.** Both production generators carry an irreversible performed digest pin and require matching dedicated plus aggregate records. Dedicated-only, aggregate-only and both-absent states fail closed without writes; pre-act behavior exists only in explicit test seams. |
+| Reader confirmation blocker 1 — root README called the formal packet never administered | **FIXED.** The packet is labeled historical and retired after Administration 1 performed 2026-08-18 with `NOT READY`. |
+| Reader confirmation blocker 2 — PROJECT-STATUS routed rulings to a missing pending-register section | **FIXED.** The route names the exact `DECISION-HISTORY.md` section that owns the resolved rows. |
+| Reader confirmation blocker 3 — AGENTS recorded SDR-1…33 | **FIXED.** The current range is SDR-1…37. |
+| Reader nonblocker — Wave A decision packet called RFC3-15 candidate | **FIXED.** A strong historical pre-act/act-time banner preserves that wording as history and routes current state to the accepted/amended records. |
+
+The recording-tag follow-up remains deliberately withheld until fresh
+confirmation of the repaired exact head. No finding was overruled or dropped,
+and no transaction-bound subject was edited.
