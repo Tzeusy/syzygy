@@ -8,7 +8,7 @@
   plain-copy criteria against VIS-1, VIS-3, RFC 0007 and the owner walkthrough.
 - [x] 1.4 Obtain owner sign-off at the exact candidate artifact digests before
   any implementation task begins.
-- [ ] 1.5 Complete the owner-directed state-(1)/state-(2) amendment across all
+- [x] 1.5 Complete the owner-directed state-(1)/state-(2) amendment across all
   invalidated signed artifacts and obtain fresh independent security,
   authority-boundary, deterministic-observation, public-interface, coverage
   and exact-transaction review on frozen bytes.
