@@ -1,36 +1,43 @@
 # Contract-coverage repair delta
 
-The three normalized consequence matrices are signed audit inputs. The general
-trusted-bootstrap amendment updates only their stale contract summaries while
-preserving consequence identities, dispositions and counts. This delta
-supersedes only the listed consequence dispositions after requirements
-PWB-REQ-007 and PWB-REQ-014…016 and the strengthened PWB-REQ-001/005/022 were
-added. Unlisted matrix rows remain unchanged except for those semantic-summary
-reconciliations.
+The three normalized consequence matrices are signed base audit inputs. The
+general trusted-bootstrap amendment updated their contract summaries. This
+delta now also supersedes the listed rows whose requirement dispositions were
+invalidated by the owner-directed PWB state-(1) amendment, while preserving
+their base bytes and consequence identities. Unlisted matrix rows remain
+effective.
 
 Across every effective row, the amended contract treats a valid state-(1) or
 state-(2) human owner act as effective and requires the exact state to remain
 visible; missing or invalid acts retain the existing fail-closed consequence.
 The act is a warrant, never evidence that the authorized effect succeeded or a
-claim is true. `PWB-REQ-005` and `PWB-REQ-022` deliberately remain narrower:
-they require independently verified state (2). That is candidate-spec
-strictness, not a contract requirement, and no coverage row may present it as
-one.
+claim is true. Amended PWB-REQ-005 and PWB-REQ-022 consume that shared rule:
+state (1) remains explicitly owner-trusted and uncorrelated, only state (2) may
+be called independently verified, and failed state-(2) correlation never
+silently downgrades.
 
 Each effective consequence has exactly one disposition. Rows that split a
 broader audited consequence use distinct repair IDs and jointly supersede it.
 
-Declared totals: **71 rows; 62 superseded base rows; 52 covered; 16 Unknown
+Declared totals: **80 rows; 71 superseded base rows; 61 covered; 16 Unknown
 uncovered; 3 believed not applicable.**
 
 | Repair consequence ID | Supersedes | Clause | Effective consequence | Disposition |
 |---|---|---|---|---|
+| RFC2-1.r1 | RFC2-1.c14 | RFC2-1 | Owner-act artifact, act-record and audit-correlation identities, digests, scopes and exact provenance states are deterministic evaluation inputs | covered:PWB-REQ-005,PWB-REQ-022 |
 | RFC4-3.r1 | RFC4-3.c2 | RFC4-3 | Every emitted project-shape fact carries a capture instant distinct from source-claimed time | unknown-uncovered |
 | RFC4-3.r2 | RFC4-3.c3 | RFC4-3 | Every emitted project-shape fact carries observer identity and version | covered:PWB-REQ-001 |
-| RFC4-3.r3 | RFC4-3.c4 | RFC4-3 | Output from an unregistered observer or a registry entry with a missing or invalid owner act cannot influence the model; the contract accepts valid state (1) or state (2), while PWB-REQ-005 deliberately requires state (2) | covered:PWB-REQ-005 |
+| RFC3-16.r1 | RFC3-16.c2 | RFC3-16 | Effective status comes from a digest-bound effective human owner act in valid state (1) or state (2), with exact state disclosed, and the act never edits the artifact | covered:PWB-REQ-005,PWB-REQ-022 |
+| RFC3-16.r2 | RFC3-16.c4 | RFC3-16 | Missing or invalid owner-act state binds nothing and fails closed; absence of A1 correlation alone does not invalidate an explicitly selected valid state-(1) act | covered:PWB-REQ-005,PWB-REQ-022 |
+| RFC3-16a.r1 | RFC3-16a.c1 | RFC3-16(a) | Authorization-bearing effects require an effective human owner act; valid state (1) and state (2) take effect with exact state disclosed, while missing or invalid acts fail closed | covered:PWB-REQ-005,PWB-REQ-022 |
+| RFC3-16b.r1 | RFC3-16b.c1 | RFC3-16(b) | Every owner act binds all nine exact fields including an A1 audit identity or explicit absence; state (1) is explicit, and failed state-(2) correlation never silently downgrades | covered:PWB-REQ-005,PWB-REQ-022 |
+| RFC3-16c.r1 | RFC3-16c.c1 | RFC3-16(c) | Exactly two effective provenance states remain distinct and visible; only state (2) is independently verified, later correlation does not rewrite earlier state-(1) effects, and acts remain warrants rather than substantive evidence | covered:PWB-REQ-005,PWB-REQ-020,PWB-REQ-022 |
+| RFC4-3.r3 | RFC4-3.c4 | RFC4-3 | Output from an unregistered observer or a registry entry with a missing or invalid owner act cannot influence the model; valid state (1) or state (2) is accepted with exact state visible | covered:PWB-REQ-005 |
 | RFC4-7.r1 | RFC4-7.c1 | RFC4-7 | The project-shape observer has a versioned per-project registry entry | covered:PWB-REQ-005 |
 | RFC4-7.r2 | RFC4-7.c2 | RFC4-7 | Observer registry identity/version is an evaluation input | covered:PWB-REQ-005 |
-| RFC4-7.r3 | RFC4-7.c3 | RFC4-7 | Valid state-(1) or state-(2) registry acts admit outputs with state carried; missing or invalid acts block reads and facts to Unknown, while PWB-REQ-005 deliberately requires state (2) | covered:PWB-REQ-005 |
+| RFC4-7.r3 | RFC4-7.c3 | RFC4-7 | Valid state-(1) or state-(2) registry acts admit outputs with exact state carried; missing or invalid acts block reads and facts to Unknown | covered:PWB-REQ-005 |
+| RFC5-16.r1 | RFC5-16.c4 | RFC5-16 | Secret-policy identity and version are evaluation inputs; a valid state-(1) or state-(2) exact-digest owner act is effective with exact state disclosed | covered:PWB-REQ-005 |
+| RFC5-16.r2 | RFC5-16.c5 | RFC5-16 | Missing or invalid policy acts block ingest completely; approval warrants policy use but is never evidence that screening succeeded | covered:PWB-REQ-005 |
 | RFC1-18.r1 | RFC1-18.c1 | RFC1-18 | Every project Claim has the accepted durable-identity derivation and an evaluation instance | unknown-uncovered |
 | RFC1-18.r2 | RFC1-18.c2 | RFC1-18 | Every project Claim instance has deterministic same-evaluation identity and the complete accepted tuple | unknown-uncovered |
 | RFC1-19.r1 | RFC1-19.c1 | RFC1-19 | Positive project status requires current support; absence remains Unknown | covered:PWB-REQ-007 |
@@ -90,7 +97,8 @@ uncovered; 3 believed not applicable.**
 | RFC7-30.r1 | RFC7-30.c5 | RFC7-30 | A release-milestone walkthrough runs nonvisually or keyboard-only and exercises paths | believed-not-applicable |
 | RFC7-31.r1 | RFC7-31.c4 | RFC7-31 | The walkthrough record states nonvisual/keyboard-only mode | covered:PWB-REQ-016,PWB-REQ-022 |
 | RFC7-31.r2 | RFC7-31.c5 | RFC7-31 | Owner judgment records verdict, rationale, judging party and exact run record | covered:PWB-REQ-022 |
-| RFC7-31.r3 | RFC7-31.c7 | RFC7-31 | A judgment with a missing or invalid owner act records verdict-unlawful; PWB-REQ-022 additionally rejects state (1) under its deliberately stricter state-(2)-only rule | covered:PWB-REQ-022 |
+| RFC7-31.r3 | RFC7-31.c7 | RFC7-31 | A judgment with a missing or invalid owner act records verdict-unlawful and leaves the criterion Unknown-never-met; valid state (1) is not an invalid act | covered:PWB-REQ-022 |
+| RFC7-31.r4 | RFC7-31.c6 | RFC7-31 | Valid state-(1) or state-(2) owner judgment is effective with exact state disclosed; missing, stale or otherwise invalid acts leave the criterion Unknown-never-met | covered:PWB-REQ-022 |
 | RFC7-32.r1 | RFC7-32.c1 | RFC7-32 | This material narrative change triggers a walkthrough | covered:PWB-REQ-016 |
 | RFC7-32.r2 | RFC7-32.c1 | RFC7-32 | Every future material narrative change and release milestone triggers a walkthrough | unknown-uncovered |
 | RFC7-32.r3 | RFC7-32.c2 | RFC7-32 | At least one release-milestone walkthrough is nonvisual or keyboard-only | believed-not-applicable |

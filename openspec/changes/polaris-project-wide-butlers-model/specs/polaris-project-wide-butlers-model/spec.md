@@ -203,45 +203,109 @@ warrants:
 
 Group: Admission. Form: **prohibition**.
 
-The POC SHALL NOT read any Butlers project-shape body until an exact
-per-repository observation-consent record, a concrete secret-classification
-policy and the project-shape observer's registered adapter entry all have
-verifiable owner-act provenance. Their identities and versions SHALL be
-evaluation inputs. Absence, mismatch, staleness or unverifiable provenance
-SHALL produce zero body reads and a project-model Unknown.
-The consent subject SHALL be the exact `(observing Syzygy project, configured
-Butlers repository)` pair; a consent for another project, repository or content
-class SHALL not match.
-The observer registry entry SHALL live in Syzygy's governance plane, name that
-same project/repository pair and declare the observer's read-only authority and
-empty write surface.
+The POC SHALL NOT read any Butlers project-shape body until each of the exact
+per-repository observation-consent record, the observing Syzygy project's
+concrete secret-detection/classification policy and the project-shape
+observer's governance-plane adapter-registry entry carries an effective human
+owner act under RFC3-16(a), bound under RFC3-16(b) to the artifact's exact
+digest, identity, act type, project and scope. Each act SHALL be accepted in
+state (1), `owner-adopted (bootstrap, uncorrelated)`, or state (2),
+`Syzygy-verified`. The three states SHALL be evaluated independently, and an
+all-valid triple SHALL admit reads whether its states are equal or mixed.
+Specification sign-off, tree attribution, a Git commit or tag, a machine
+submission or an agent assertion SHALL NOT substitute for any act.
 
-- **Case (counterexample sweep)**: provide absent, mismatched, stale,
-  unverifiable and valid consent/policy/registry triples to an observer with an
-  injected read spy.
-- **Observable**: invalid triples yield zero read calls and fixed Unknown reasons;
-  only the all-valid triple permits reads.
-- **Oracle**: independently verify all three owner-act provenances, registry
-  home/project/scope/write-surface fields, read calls and evaluation inputs
-  across all cases.
-- **Oracle independence**: authority fixtures and the read spy live outside
-  the observer.
-- **Falsifier**: any body is read before all three authorities verify, any
-  identity is absent from the evaluation, or invalid authority yields a fact.
+Each authority artifact identity and digest, act-record identity, act type and
+scope, provenance state, and A1 audit-record identity or explicit absence SHALL
+be an evaluation input. Every human and machine rendering of the authorization
+basis and every dependent body-derived result SHALL expose each authority's
+exact state. Only state (2) MAY be called independently verified. State (1)
+SHALL render exactly: `Owner-trusted only; same-tree forgeable from Syzygy's
+perspective. Digest detects drift, not authorship or attendance.`
+
+A state-(1) act SHALL be valid only when the human act explicitly selected
+state (1) and records the A1 audit-record identity as absent. A record claiming
+state (2) whose correlation is failed, unavailable or indeterminate SHALL be
+invalid and SHALL NOT downgrade to state (1). A missing, malformed, non-human,
+unattributed, wrong-project, wrong-repository, wrong-class, wrong-scope,
+wrong-act-type, digest-mismatched, stale, expired, superseded or revoked act in
+any limb SHALL produce zero body reads, a project-model Unknown and the
+RFC3-16(a) contradiction while retaining the authority artifact and invalid
+act state visibly.
+
+The consent subject SHALL be exactly `(observing Syzygy project, configured
+Butlers repository)` with the observation content class. The policy SHALL be
+the observing project's own exact policy. The registry entry SHALL live in
+Syzygy's governance plane, name that same pair and declare read-only authority
+with an empty write surface. These acts warrant only use of their exact
+consent, policy and registration. They are never evidence that a read occurred,
+screening succeeded, admitted content is secret-free or a derived claim is
+true. Later A1 correlation MAY change a later evaluation to state (2), but
+SHALL NOT rewrite the state under which an earlier read occurred.
+
+- **Case (state and invalid-arm sweep)**: sweep each of the three acts through
+  valid state (1), valid state (2), explicit mixed all-valid combinations and
+  every invalid arm above, including failed state-(2) correlation and later
+  correlation of a prior state-(1) act, using an injected read spy.
+- **Observable**: any invalid limb yields zero read calls, Unknown and the
+  contradiction; state-(1), state-(2) and mixed all-valid triples permit reads;
+  the per-authority states and state-(1) disclosure are identical in the human
+  surface, machine answer and export; later correlation leaves the earlier
+  evaluation recorded as state (1).
+- **Oracle**: compare a hard-coded expected table, every RFC3-16(b) field,
+  explicit A1 identity or absence, registry home/pair/scope/write-surface,
+  evaluation inputs, disclosures and read-spy calls across all cases.
+- **Oracle independence**: the expected table, authority fixtures and read spy
+  live outside the observer and do not import its validator or state
+  vocabulary; for state (1), the oracle verifies record semantics and
+  disclosure without claiming to prove human attendance.
+- **Falsifier**: any body is read or fact emitted before all three acts are
+  effective; valid state (1) or a mixed triple is rejected; an invalid or
+  failed-state-(2) act is accepted or downgraded; a state is hidden, collapsed
+  or calls state (1) verified; a digest or tag is treated as attendance proof;
+  an act is treated as read, screening or truth evidence; or the registry
+  declares a non-empty write surface.
 
 #### Scenario: Missing observation consent blocks content reads
 
-- **WHEN** no lawful Butlers observation-consent record exists
+- **WHEN** no effective Butlers observation-consent act exists
 - **THEN** the project-shape observer performs zero body reads
 - **AND** the project model reports Unknown with the consent reason
+
+#### Scenario: State-(1) authorities permit reads with the trust gap visible
+
+- **WHEN** all three exact authorities carry valid state-(1) human owner acts
+- **THEN** the project-shape observer may perform the bounded body reads
+- **AND** both surfaces expose every state as owner-adopted and the exact
+  same-tree-forgeability disclosure
+
+#### Scenario: Mixed valid authority states permit reads
+
+- **WHEN** the exact consent, policy and registry acts are all valid but use a
+  mixture of state (1) and state (2)
+- **THEN** the project-shape observer may perform the bounded body reads
+- **AND** both surfaces preserve each authority's distinct exact state
+
+#### Scenario: Failed state-(2) correlation blocks without fallback
+
+- **WHEN** any authority claims state (2) and its A1 correlation fails
+- **THEN** the project-shape observer performs zero body reads
+- **AND** the invalid act does not downgrade to state (1)
+
+#### Scenario: Later correlation preserves prior authorization history
+
+- **WHEN** a later evaluation correlates an authority previously used in
+  state (1)
+- **THEN** the later evaluation may render that authority in state (2)
+- **AND** the earlier evaluation remains recorded as state (1)
 
 ```yaml
 warrants:
   primary: SEC-5
   doctrine: [VIS-2, VIS-4, SEC-2, SEC-5]
-  contracts: [RFC2-1, RFC3-7, RFC3-16, RFC3-30, RFC4-3, RFC4-7, RFC5-12, RFC5-16]
+  contracts: [RFC2-1, RFC3-7, RFC3-16, "RFC3-16(a)", "RFC3-16(b)", "RFC3-16(c)", RFC3-30, RFC4-3, RFC4-7, RFC5-12, RFC5-16]
   policies: [CC-BAR-5, CC-SEC-5, CC-SEC-6, CC-TEST-6]
-  decisions: [POLARIS-DIR-2026-08-31]
+  decisions: [POLARIS-DIR-2026-08-31, PWB-STATE1-AMENDMENT-DIR-2026-09-02]
   topology: []
   parent_requirements: []
 ```
@@ -672,32 +736,37 @@ warrants:
 Group: Parity. Form: **invariant**.
 
 Every project-shape identity, statement, source anchor, coverage state,
-denominator and contradiction Polaris presents SHALL be recoverable from the
-same evaluation in the machine answer, preserving multiplicity.
+denominator, contradiction, body-read authority state and walkthrough-judgment
+state or disclosure Polaris presents SHALL be recoverable from the same
+evaluation in the machine answer, preserving multiplicity and exact provenance
+state.
 
 - **Case (sweep)**: enumerate every project-shape parity marker on Polaris and
-  every corresponding machine-answer fact at one evaluation.
+  every corresponding machine-answer fact at one evaluation, including every
+  PWB-REQ-005 authority state and PWB-REQ-022 judgment state and disclosure.
 - **Observable**: both populations contain equivalent multisets.
 - **Oracle**: an independent order-insensitive, multiplicity-preserving
   comparator reports both denominators and zero differences.
 - **Oracle independence**: the comparator extracts each channel separately and
   imports no production vocabulary or rendering code.
-- **Falsifier**: one fact is missing, duplicated, changed or associated with a
-  different evaluation in either channel.
+- **Falsifier**: one fact, authority state, judgment state or disclosure is
+  missing, duplicated, changed, collapsed or associated with a different
+  evaluation in either channel.
 
 #### Scenario: Complete model has wire parity
 
 - **WHEN** Polaris renders a project-wide evaluation
 - **THEN** the complete human fact multiset equals the machine fact multiset
-- **AND** the check reports both denominators
+- **AND** the check reports both denominators, including the authorization and
+  judgment provenance markers
 
 ```yaml
 warrants:
   primary: RFC6-22
   doctrine: [VIS-1, VIS-7]
-  contracts: [RFC6-13, RFC6-14, RFC6-15, RFC6-22, RFC6-23, RFC7-1, RFC7-18, RFC7-33]
+  contracts: ["RFC3-16(c)", RFC6-13, RFC6-14, RFC6-15, RFC6-22, RFC6-23, RFC7-1, RFC7-18, RFC7-33]
   policies: [CC-TEST-5]
-  decisions: [POLARIS-DIR-2026-08-31]
+  decisions: [POLARIS-DIR-2026-08-31, PWB-STATE1-AMENDMENT-DIR-2026-09-02]
   topology: []
   parent_requirements: [three-surface-poc-experience/POC-REQ-020]
 ```
@@ -753,23 +822,62 @@ Group: Evaluation. Form: **prohibition**.
 
 The POC SHALL NOT render the project-wide Polaris evaluation successful unless
 a retained walkthrough execution record in `.syzygy/governance/records/` and a
-lawful owner judgment in `.syzygy/governance/decisions/` both bind the exact
-surface version and evaluation identity. Absent, stale or unverifiable judgment
-SHALL render the criterion Unknown, never met.
+separate owner judgment in `.syzygy/governance/decisions/` both bind the exact
+walkthrough-record identity, surface version and evaluation identity. The run
+record SHALL name the surface version, evaluation identity,
+nonvisual/keyboard-only mode and traversed paths. The judgment SHALL name the
+verdict, rationale, judging party and exact run record, and SHALL carry an
+effective human owner act under RFC3-16(a) satisfying RFC3-16(b). The act SHALL
+be accepted in state (1), `owner-adopted (bootstrap, uncorrelated)`, or state
+(2), `Syzygy-verified`.
 
-- **Case (counterexample + sweep)**: evaluate absent, mismatched, stale and
-  unverifiable judgment records plus one valid pair.
-- **Observable**: the run record names surface version, evaluation identity,
-  nonvisual/keyboard mode and paths; the judgment names verdict, rationale,
-  judging party and run record. Only the valid pair may carry the owner's
-  verdict; every invalid case records `verdict-unlawful` and renders Unknown.
-- **Oracle**: compare every run-record field, every judgment field, exact
-  `verdict-unlawful` state, record identities and owner-act provenance to the
-  controlled inputs for all cases.
-- **Oracle independence**: record validity is checked outside the surface
-  using RFC3-16 owner-act provenance.
-- **Falsifier**: any invalid case renders successful or a judgment is inferred
-  from tests, code, an agent report or page availability.
+Every human and machine rendering of the criterion SHALL expose the exact act
+state. Only state (2) MAY be called independently verified. State (1) SHALL
+render exactly: `Owner-trusted only; same-tree forgeable from Syzygy's
+perspective. Digest detects drift, not authorship or attendance.` State (1)
+SHALL require explicit human selection and explicit A1 audit-record absence.
+Failed, unavailable or indeterminate state-(2) correlation SHALL be invalid
+and SHALL NOT downgrade to state (1).
+
+The execution-record identity, judgment artifact identity and digest,
+act-record identity, act type and scope, provenance state, and A1 audit-record
+identity or explicit absence SHALL be evaluation inputs.
+
+An absent run record or absent judgment SHALL render Unknown, never met,
+without inventing a verdict. A present judgment with any missing field,
+run/surface/evaluation mismatch, non-human or missing attribution, missing
+rationale, wrong project, scope or act type, digest mismatch, staleness,
+expiry, revocation, supersession, invalid state-(1) selection or invalid
+state-(2) correlation SHALL record `verdict-unlawful`, render
+Unknown-never-met and mint or retain the RFC3-16(a) contradiction. The owner
+act warrants honoring the judgment; neither the act, its digest, its
+correlation nor the run record is evidence that comprehension succeeded. The
+verdict remains recorded human judgment, never Observed and never a score.
+Tests, code, an agent report or page availability SHALL NOT substitute. Later
+correlation SHALL NOT rewrite the provenance under which an earlier judgment
+took effect.
+
+- **Case (state and invalid-arm sweep)**: evaluate an absent run; absent
+  judgment; run identity, surface, evaluation, mode and path mismatches;
+  missing judgment fields; valid state (1); valid state (2); every invalid act
+  arm above; failed state-(2) correlation; and later correlation of a prior
+  state-(1) judgment.
+- **Observable**: absence yields Unknown-never-met without a fabricated
+  verdict; a present invalid judgment records exact `verdict-unlawful`; valid
+  state-(1) and state-(2) judgments may carry the owner's verdict with exact
+  state; the state-(1) disclosure is identical in the human surface, machine
+  answer and export; later correlation preserves the earlier state history.
+- **Oracle**: compare controlled run, judgment and act fixtures to a hard-coded
+  expected table outside the surface and provenance validator, including every
+  field, record identity, state, disclosure and `verdict-unlawful` value.
+- **Oracle independence**: the expected table and fixtures do not import the
+  production validator or state vocabulary; for state (1), the oracle checks
+  record semantics and disclosure without claiming to prove human attendance.
+- **Falsifier**: an absent or invalid pair renders successful; valid state (1)
+  is rejected; a state is hidden or state (1) called verified; absence
+  fabricates a verdict; failed state (2) downgrades; implementation, tests,
+  reports or availability substitute for judgment; an act or run record is
+  presented as success evidence; or historical provenance is rewritten.
 
 #### Scenario: Missing judgment remains Unknown
 
@@ -777,13 +885,39 @@ SHALL render the criterion Unknown, never met.
 - **THEN** the POC reports the Polaris evaluation criterion as Unknown
 - **AND** it does not substitute implementation or test evidence for judgment
 
+#### Scenario: Lawful state-(1) judgment is honored with the trust gap visible
+
+- **WHEN** the exact walkthrough pair carries a valid state-(1) owner judgment
+- **THEN** the POC may carry the owner's recorded verdict
+- **AND** both surfaces expose the state as owner-adopted with the exact
+  same-tree-forgeability disclosure
+
+#### Scenario: Lawful state-(2) judgment is independently verified
+
+- **WHEN** the exact walkthrough pair carries a valid state-(2) owner judgment
+- **THEN** the POC may carry the owner's recorded verdict
+- **AND** both surfaces expose the state as Syzygy-verified
+
+#### Scenario: Invalid claimed state-(2) judgment stays unlawful
+
+- **WHEN** the judgment claims state (2) and its A1 correlation fails
+- **THEN** the POC records `verdict-unlawful` and Unknown-never-met
+- **AND** the judgment does not downgrade to state (1)
+
+#### Scenario: Later correlation preserves prior judgment history
+
+- **WHEN** a later evaluation correlates a judgment previously honored in
+  state (1)
+- **THEN** the later evaluation may render that judgment in state (2)
+- **AND** the earlier evaluation remains recorded as state (1)
+
 ```yaml
 warrants:
   primary: VIS-2
   doctrine: [VIS-2, VIS-4]
-  contracts: [RFC3-15, RFC3-16, RFC7-31]
+  contracts: [RFC2-1, RFC3-15, RFC3-16, "RFC3-16(a)", "RFC3-16(b)", "RFC3-16(c)", RFC7-31]
   policies: [CC-BAR-4, CC-TEST-2]
-  decisions: [POLARIS-DIR-2026-08-31]
+  decisions: [POLARIS-DIR-2026-08-31, PWB-STATE1-AMENDMENT-DIR-2026-09-02]
   topology: []
   parent_requirements: []
 ```

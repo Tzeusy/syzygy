@@ -110,13 +110,22 @@ repeated in every sentence.
 
 ### 5. Gate body reads on owner authority
 
-Before the first body read, the evaluation verifies a per-repository Butlers
-observation-consent record, the exact digest/version of a concrete
-owner-approved secret-classification policy and the project-shape observer's
-governance-plane registered adapter entry. All three identities are
-deterministic inputs. Missing, mismatched, stale or unverifiable authority
-produces zero body reads and a project-model Unknown. Specification sign-off
-mints none of these artifacts.
+Before the first body read, the evaluation checks the exact per-repository
+Butlers observation-consent record, the observing project's concrete
+secret-detection/classification policy and the project-shape observer's
+governance-plane registered adapter entry against effective human owner acts
+under RFC3-16(a) and RFC3-16(b). Each act may independently be valid state (1)
+or state (2); all-valid mixed states admit reads. Every artifact identity and
+digest, act-record identity, act type and scope, provenance state, and A1 audit
+identity or explicit absence is a deterministic input.
+
+Missing or invalid act state produces zero body reads and a project-model
+Unknown. Failed or indeterminate state-(2) correlation never falls back to
+state (1). Human and machine outputs expose the exact state for each authority,
+and state (1) carries the same-tree-forgeability limitation. These acts warrant
+use of the consent, policy and registration; they are not evidence that
+screening or reading succeeded. Specification sign-off mints none of these
+artifacts.
 
 ### 6. Fail closed at the content boundary
 
@@ -131,10 +140,23 @@ Secret detection and content classification cover the model, caches, logs,
 HTML, JSON and walkthrough records. Exclusions carry hash-not-body provenance.
 No observed-project code executes.
 
+### 7. Keep execution and judgment separate
+
+The cold-open execution record establishes only what walkthrough occurred. A
+separate exact-scope human owner judgment decides whether the comprehension
+criterion is met and may carry an effective state-(1) or state-(2) act. Human
+and machine outputs expose the exact judgment-act state and the state-(1)
+same-tree-forgeability limitation. Failed state-(2) correlation never falls
+back to state (1), and later correlation never rewrites the state under which
+an earlier judgment took effect. The judgment remains recorded human judgment,
+never Observed evidence or a score; neither its act nor the execution record
+proves comprehension succeeded.
+
 ## Data Flow
 
 1. Bind the configured Butlers repository to an exact Git revision.
-2. Verify observation consent, secret-policy and observer-registry owner provenance.
+2. Evaluate effective state-(1)/state-(2) consent, policy and registry acts and
+   retain each exact state.
 3. Discover and expose the closed source-path population.
 4. Read exact Git objects and classify content; record exclusions.
 5. Extract declared entities, statements, catalogs and source anchors.
@@ -142,6 +164,8 @@ No observed-project code executes.
 7. Add the existing capability deep-dive facts.
 8. Freeze one shared model for the human and machine surfaces.
 9. Render project-level Polaris and capability drill-down from that model.
+10. Evaluate the separate walkthrough record and owner judgment with the exact
+    judgment-act state retained.
 
 ## Risks / Trade-offs
 
@@ -161,10 +185,20 @@ No observed-project code executes.
 - **A stale summary conflicts with a higher authority** → both are retained;
   explicit Butlers precedence selects the effective statement and Polaris
   discloses the disagreement.
+- **State-(1) authority is same-tree forgeable from Syzygy's perspective** →
+  exact digests detect later drift but cannot establish who authored or
+  attended the act. The owner accepts that residual risk only for this bounded,
+  local, one-repository POC; the exact state and limitation remain visible and
+  every other security gate stays conjunctive.
 
 ## Migration Plan
 
-The new model fields are additive. During implementation, the current
-single-capability page remains available until the project-wide page passes
-parity and cold-open evaluation. Rollback restores the old renderer and model
-builder; it does not alter Butlers or any governed artifact.
+The new model fields are additive. This amendment remains inert until a later
+owner act signs the complete eleven-artifact package; the prior state-(2)-only
+behavior remains authoritative until then. Even after sign-off, effect-specific
+consent, policy and registry acts and separate implementation authorization are
+required before implementation or any body read. During authorized
+implementation, the current single-capability page remains available until the
+project-wide page passes parity and cold-open evaluation. Rollback restores the
+old renderer and model builder; it does not alter Butlers or any governed
+artifact.

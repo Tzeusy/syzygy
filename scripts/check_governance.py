@@ -1427,6 +1427,39 @@ GENERAL_BOOTSTRAP_PWB_MANIFEST = (
     f"{GENERAL_BOOTSTRAP_DIR}/PWB-COVERAGE-AMENDMENT-MANIFEST.txt")
 GENERAL_BOOTSTRAP_ACT = (
     f"{DECISIONS}/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md")
+PWB_STATE1_LABEL = "SIGN OFF PWB STATE-(1) AMENDMENT"
+PWB_STATE1_DIR = f"{CANDIDATES}/pwb-state1-amendment"
+PWB_STATE1_SUBJECT = f"{PWB_STATE1_DIR}/PWB-AMENDMENT-MANIFEST.txt"
+PWB_STATE1_ACT = f"{DECISIONS}/PWB-STATE1-AMENDMENT-ACT.md"
+PWB_STATE1_SUBJECTS = tuple(sorted((
+    "openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml",
+    "openspec/changes/polaris-project-wide-butlers-model/proposal.md",
+    "openspec/changes/polaris-project-wide-butlers-model/design.md",
+    "openspec/changes/polaris-project-wide-butlers-model/specs/"
+    "polaris-project-wide-butlers-model/spec.md",
+    "openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md",
+    "openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md",
+    "openspec/changes/polaris-project-wide-butlers-model/"
+    "CONTRACT-COVERAGE-REPAIR-DELTA.md",
+    "openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md",
+    "openspec/changes/polaris-project-wide-butlers-model/"
+    "contract-coverage-matrix/RFC-0001-0003.md",
+    "openspec/changes/polaris-project-wide-butlers-model/"
+    "contract-coverage-matrix/RFC-0004-0006.md",
+    "openspec/changes/polaris-project-wide-butlers-model/"
+    "contract-coverage-matrix/RFC-0007-0009.md",
+)))
+GENERAL_BOOTSTRAP_PWB_PATHS = tuple(sorted((
+    "openspec/changes/polaris-project-wide-butlers-model/"
+    "CONTRACT-COVERAGE-REPAIR-DELTA.md",
+    "openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md",
+    "openspec/changes/polaris-project-wide-butlers-model/"
+    "contract-coverage-matrix/RFC-0001-0003.md",
+    "openspec/changes/polaris-project-wide-butlers-model/"
+    "contract-coverage-matrix/RFC-0004-0006.md",
+    "openspec/changes/polaris-project-wide-butlers-model/"
+    "contract-coverage-matrix/RFC-0007-0009.md",
+)))
 CONTRACT_ROOT = ".syzygy/governance/contracts"
 CC_SPEC_LABEL = "CONFIRM CRAFT AMENDMENT: CC-SPEC"
 CC_SPEC_SUBJECT = (
@@ -1783,6 +1816,13 @@ def _act_subjects():
             GENERAL_BOOTSTRAP_LABEL,
             GENERAL_BOOTSTRAP_SUBJECT,
             re.compile(re.escape(GENERAL_BOOTSTRAP_LABEL)
+                       + r"\s*:\s*`?([0-9a-f]{64})"),
+        ))
+    if not any(label == PWB_STATE1_LABEL for label, _rel, _pat in out):
+        out.append((
+            PWB_STATE1_LABEL,
+            PWB_STATE1_SUBJECT,
+            re.compile(re.escape(PWB_STATE1_LABEL)
                        + r"\s*:\s*`?([0-9a-f]{64})"),
         ))
     return tuple(out)
@@ -2236,7 +2276,11 @@ def cg7d_quoted_elsewhere(paths, res, act_subjects=None,
 def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                                manifest_body=None, transaction_digest=None,
                                policy_digest=None, contract_manifest_body=None,
-                               pwb_manifest_body=None, current_digests=None):
+                               pwb_manifest_body=None, current_digests=None,
+                               successor_act_record=None,
+                               successor_dedicated_record=None,
+                               successor_manifest_body=None,
+                               successor_manifest_digest=None):
     """The performed transaction binds every current and nested subject.
 
     CG-7d permits old *performed* digests so append-only history remains true.
@@ -2246,8 +2290,12 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
     dedicated act record. The outer manifest's seven subjects, its nested
     30-row contract manifest, its nested five-row PWB manifest, and all 30
     installed/candidate contract pairs are then verified from their declared
-    bases. Otherwise a correct outer ceremony could be reported over drifted
-    nested bytes.
+    bases. The historical PWB rows continue to match current paths until a
+    valid later owner act supersedes them. Only matching aggregate and
+    dedicated successor records activate the eleven-row current manifest;
+    candidate bytes alone never do. Otherwise a correct outer ceremony could
+    be reported over drifted nested bytes or an unsigned candidate could
+    impersonate current authority.
     """
     def read_if_present(rel):
         full = os.path.join(ROOT, rel)
@@ -2286,6 +2334,13 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                 f"{', '.join(duplicate_paths)}")
         return rows
 
+    def require_exact_paths(rows, rel, expected_paths):
+        actual_paths = tuple(path for _sha, path, _line in rows)
+        if actual_paths != tuple(expected_paths):
+            findings.append(
+                f"{rel} — subject path population/order differs from the "
+                f"closed {len(expected_paths)}-path contract")
+
     def repo_subject(path, manifest_rel, line_no, base=""):
         if os.path.isabs(path):
             findings.append(
@@ -2311,10 +2366,18 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
             GENERAL_BOOTSTRAP_CONTRACT_MANIFEST)
     if pwb_manifest_body is None:
         pwb_manifest_body = read_if_present(GENERAL_BOOTSTRAP_PWB_MANIFEST)
+    if successor_act_record is None:
+        successor_act_record = act_record
+    if successor_dedicated_record is None:
+        successor_dedicated_record = read_if_present(PWB_STATE1_ACT)
+    if successor_manifest_body is None:
+        successor_manifest_body = read_if_present(PWB_STATE1_SUBJECT)
     if transaction_digest is None:
         transaction_digest = current_digest(GENERAL_BOOTSTRAP_SUBJECT)
     if policy_digest is None:
         policy_digest = current_digest(CC_SPEC_SUBJECT)
+    if successor_manifest_digest is None:
+        successor_manifest_digest = current_digest(PWB_STATE1_SUBJECT)
 
     specs = (
         (GENERAL_BOOTSTRAP_LABEL, GENERAL_BOOTSTRAP_SUBJECT,
@@ -2362,6 +2425,47 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         contract_expected)
     pwb_rows = manifest_rows(
         pwb_manifest_body, GENERAL_BOOTSTRAP_PWB_MANIFEST, pwb_expected)
+    require_exact_paths(
+        pwb_rows, GENERAL_BOOTSTRAP_PWB_MANIFEST,
+        GENERAL_BOOTSTRAP_PWB_PATHS)
+
+    successor_specs = ((
+        PWB_STATE1_LABEL,
+        PWB_STATE1_SUBJECT,
+        re.compile(re.escape(PWB_STATE1_LABEL)
+                   + r"\s*:\s*`?([0-9a-f]{64})"),
+    ),)
+    successor_recorded = _performed_act_digests(
+        successor_specs, record=successor_act_record)
+    successor_dedicated = _performed_act_digests(
+        successor_specs, record=successor_dedicated_record)
+    recorded_successors = successor_recorded.get(PWB_STATE1_LABEL, ())
+    dedicated_successors = successor_dedicated.get(PWB_STATE1_LABEL, ())
+    successor_attempted = bool(recorded_successors or dedicated_successors)
+    successor_rows = []
+    successor_valid = False
+    if successor_attempted:
+        findings_before_successor = len(findings)
+        require_latest(
+            PERFORMED_ACT_RECORD, recorded_successors,
+            successor_manifest_digest, PWB_STATE1_SUBJECT)
+        require_latest(
+            PWB_STATE1_ACT, dedicated_successors,
+            successor_manifest_digest, PWB_STATE1_SUBJECT)
+        successor_rows = manifest_rows(
+            successor_manifest_body, PWB_STATE1_SUBJECT,
+            len(PWB_STATE1_SUBJECTS))
+        require_exact_paths(
+            successor_rows, PWB_STATE1_SUBJECT, PWB_STATE1_SUBJECTS)
+        for expected, path, line_no in successor_rows:
+            rel = repo_subject(path, PWB_STATE1_SUBJECT, line_no)
+            actual = current_digest(rel) if rel else None
+            if actual != expected:
+                findings.append(
+                    f"{PWB_STATE1_SUBJECT}:{line_no} — `{path}` hashes to "
+                    f"{(actual or 'absent')[:12]}…, expected "
+                    f"{expected[:12]}…")
+        successor_valid = len(findings) == findings_before_successor
 
     for expected, path, line_no in top_rows:
         rel = repo_subject(path, GENERAL_BOOTSTRAP_SUBJECT, line_no)
@@ -2382,14 +2486,20 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                 f"`{path}` hashes to {(actual or 'absent')[:12]}…, expected "
                 f"{expected[:12]}…")
 
-    for expected, path, line_no in pwb_rows:
-        rel = repo_subject(path, GENERAL_BOOTSTRAP_PWB_MANIFEST, line_no)
-        actual = current_digest(rel) if rel else None
-        if actual != expected:
-            findings.append(
-                f"{GENERAL_BOOTSTRAP_PWB_MANIFEST}:{line_no} — `{path}` "
-                f"hashes to {(actual or 'absent')[:12]}…, expected "
-                f"{expected[:12]}…")
+    if successor_valid:
+        details.append(
+            f"[historical] {GENERAL_BOOTSTRAP_PWB_MANIFEST} — "
+            f"{len(pwb_rows)} act-time PWB row(s) preserved; current bytes "
+            f"are bound by {PWB_STATE1_SUBJECT}")
+    else:
+        for expected, path, line_no in pwb_rows:
+            rel = repo_subject(path, GENERAL_BOOTSTRAP_PWB_MANIFEST, line_no)
+            actual = current_digest(rel) if rel else None
+            if actual != expected:
+                findings.append(
+                    f"{GENERAL_BOOTSTRAP_PWB_MANIFEST}:{line_no} — `{path}` "
+                    f"hashes to {(actual or 'absent')[:12]}…, expected "
+                    f"{expected[:12]}…")
 
     for _expected, path, line_no in contract_rows:
         installed = repo_subject(
@@ -2412,12 +2522,16 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                 f"and candidate `{path}` differ: {installed_digest[:12]}… != "
                 f"{candidate_digest[:12]}…")
 
+    successor_examined = (
+        2 + len(successor_rows) if successor_attempted else 0)
     examined = (4 + len(top_rows) + len(contract_rows) + len(pwb_rows)
-                + len(contract_rows))
+                + len(contract_rows) + successor_examined)
     details.append(
         f"[population] 4 act-record predicates + {len(top_rows)} top-level "
         f"subjects + {len(contract_rows)} contract rows + {len(pwb_rows)} PWB "
-        f"rows + {len(contract_rows)} installed/candidate mirror pairs")
+        f"rows + {len(contract_rows)} installed/candidate mirror pairs"
+        + (f" + 2 successor act predicates + {len(successor_rows)} current "
+           "PWB rows" if successor_attempted else ""))
 
     res.add("FAIL" if findings else "OK",
             "CG-7h  performed bootstrap transaction subjects remain exact",
@@ -5191,7 +5305,45 @@ def selftest():
     row = _selftest_cg7h("nested-pwb-drift")
     cases.append(("CG-7h nested PWB row drift detected",
                   row[0] == "FAIL"
-                  and any("coverage-0.md" in d for d in row[4])))
+                  and any("CONTRACT-COVERAGE-REPAIR-DELTA.md" in d
+                          for d in row[4])))
+
+    row = _selftest_cg7h("historical-pwb-path")
+    cases.append(("CG-7h historical PWB path population is closed",
+                  row[0] == "FAIL"
+                  and any("subject path population/order" in d
+                          for d in row[4])))
+
+    row = _selftest_cg7h("candidate-successor-no-act")
+    cases.append(("CG-7h unsigned successor manifest grants no supersession",
+                  row[0] == "FAIL" and row[2] == 76))
+
+    row = _selftest_cg7h("successor-one-record")
+    cases.append(("CG-7h one-sided successor act rejected",
+                  row[0] == "FAIL"
+                  and any(PWB_STATE1_ACT in d for d in row[4])))
+
+    row = _selftest_cg7h("successor-conflict")
+    cases.append(("CG-7h conflicting successor act digests rejected",
+                  row[0] == "FAIL"
+                  and any("latest performed digest" in d for d in row[4])))
+
+    row = _selftest_cg7h("valid-successor")
+    cases.append(("CG-7h valid 11-row successor passes at 89",
+                  row[0] == "OK" and row[2] == 89 and row[3] == 0))
+
+    row = _selftest_cg7h("successor-current-drift")
+    cases.append(("CG-7h post-successor current artifact drift detected",
+                  row[0] == "FAIL"
+                  and any(PWB_STATE1_SUBJECTS[0] in d for d in row[4])))
+
+    for mutation in ("successor-10", "successor-12", "successor-duplicate",
+                     "successor-reordered", "successor-escaping"):
+        row = _selftest_cg7h(mutation)
+        cases.append((f"CG-7h {mutation} manifest rejected",
+                      row[0] == "FAIL"
+                      and any("PWB-AMENDMENT-MANIFEST.txt" in d
+                              for d in row[4])))
 
     c = Cap(); cg21_contract_prose_states_no_measurement(c, modules=[])
     cases.append(("CG-21 empty module list warns, never passes",
@@ -5497,8 +5649,10 @@ def _selftest_cg7h(kind):
         contract_rows.append(f"{stated}  {path}")
         current[f"{CONTRACT_ROOT}/{path}"] = stated
         current[f"{CANDIDATES}/{path}"] = stated
-    for i in range(5):
-        path = f"openspec/changes/pwb/coverage-{i}.md"
+    historical_paths = list(GENERAL_BOOTSTRAP_PWB_PATHS)
+    if kind == "historical-pwb-path":
+        historical_paths[0] = "openspec/changes/pwb/not-the-signed-path.md"
+    for i, path in enumerate(historical_paths):
         stated = digest(f"pwb-{i}")
         pwb_rows.append(f"{stated}  {path}")
         current[path] = stated
@@ -5524,20 +5678,68 @@ def _selftest_cg7h(kind):
         top_rows.append(f"{stated}  {path}")
     manifest = "\n".join(top_rows) + "\n"
 
+    successor_kinds = {
+        "successor-one-record", "successor-conflict", "valid-successor",
+        "successor-current-drift", "successor-10", "successor-12",
+        "successor-duplicate", "successor-reordered", "successor-escaping",
+    }
+    successor_rows = [
+        (digest(f"successor-{i}"), path)
+        for i, path in enumerate(PWB_STATE1_SUBJECTS)
+    ]
+    if kind in successor_kinds or kind == "candidate-successor-no-act":
+        for stated, path in successor_rows:
+            current[path] = stated
+
+    successor_manifest_rows = list(successor_rows)
+    if kind == "successor-10":
+        successor_manifest_rows.pop()
+    elif kind == "successor-12":
+        successor_manifest_rows.append((digest("extra"), "extra.md"))
+    elif kind == "successor-duplicate":
+        successor_manifest_rows[-1] = successor_manifest_rows[0]
+    elif kind == "successor-reordered":
+        successor_manifest_rows[0], successor_manifest_rows[1] = (
+            successor_manifest_rows[1], successor_manifest_rows[0])
+    elif kind == "successor-escaping":
+        successor_manifest_rows[0] = (successor_manifest_rows[0][0], "../escape.md")
+    successor_manifest = "".join(
+        f"{stated}  {path}\n" for stated, path in successor_manifest_rows)
+    successor_digest = digest(successor_manifest)
+    current[PWB_STATE1_SUBJECT] = successor_digest
+
+    if kind in successor_kinds:
+        performed += f"{PWB_STATE1_LABEL}: {successor_digest}\n"
+        successor_dedicated = f"{PWB_STATE1_LABEL}: {successor_digest}\n"
+        if kind == "successor-one-record":
+            successor_dedicated = ""
+        elif kind == "successor-conflict":
+            successor_dedicated = f"{PWB_STATE1_LABEL}: {mismatched}\n"
+    else:
+        successor_dedicated = ""
+
     if kind == "top-level-drift":
         current[top_paths[0]] = digest("drifted-top-level")
     elif kind == "nested-contract-drift":
         current[f"{CONTRACT_ROOT}/rfcs/RFC-0000.md"] = digest(
             "drifted-contract")
     elif kind == "nested-pwb-drift":
-        current["openspec/changes/pwb/coverage-0.md"] = digest("drifted-pwb")
+        current[GENERAL_BOOTSTRAP_PWB_PATHS[0]] = digest("drifted-pwb")
+    elif kind == "candidate-successor-no-act":
+        current[GENERAL_BOOTSTRAP_PWB_PATHS[0]] = digest("unsigned-candidate")
+    elif kind == "successor-current-drift":
+        current[PWB_STATE1_SUBJECTS[0]] = digest("post-successor-drift")
 
     c = Cap()
     cg7h_general_bootstrap_act(
         c, act_record=performed, dedicated_record=dedicated,
         manifest_body=manifest, transaction_digest=transaction,
         policy_digest=policy, contract_manifest_body=contract_manifest,
-        pwb_manifest_body=pwb_manifest, current_digests=current)
+        pwb_manifest_body=pwb_manifest, current_digests=current,
+        successor_act_record=performed,
+        successor_dedicated_record=successor_dedicated,
+        successor_manifest_body=successor_manifest,
+        successor_manifest_digest=successor_digest)
     return c.row("CG-7h")
 
 

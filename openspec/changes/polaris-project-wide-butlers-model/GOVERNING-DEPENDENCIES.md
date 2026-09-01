@@ -8,7 +8,7 @@
 > here is overwritten and `--check` fails first. Identifiers only —
 > nothing here quotes or paraphrases any clause.
 >
-> Source: `spec.md` sha256 `07392c115e3a63bb3aceb259362a70e0d1ee11d6ba2621492fd03cf1893aca61` — 17 requirement(s), 92 distinct authorities.
+> Source: `spec.md` sha256 `ec4ea4c7ec74935a8312eb9e68e7f22884983a8fc89189cc14980619d0b989d6` — 17 requirement(s), 96 distinct authorities.
 
 ## doctrine (8)
 
@@ -23,7 +23,7 @@
 | `VIS-4` | PWB-REQ-005, PWB-REQ-013, PWB-REQ-015, PWB-REQ-022 |
 | `VIS-7` | PWB-REQ-001, PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-006, PWB-REQ-007, PWB-REQ-011, PWB-REQ-014, PWB-REQ-016, PWB-REQ-020 |
 
-## contracts (65)
+## contracts (68)
 
 | Authority | Cited by |
 |---|---|
@@ -36,7 +36,7 @@
 | `RFC1-26` | PWB-REQ-011 |
 | `RFC1-27` | PWB-REQ-015 |
 | `RFC1-31` | PWB-REQ-013 |
-| `RFC2-1` | PWB-REQ-001, PWB-REQ-005, PWB-REQ-006 |
+| `RFC2-1` | PWB-REQ-001, PWB-REQ-005, PWB-REQ-006, PWB-REQ-022 |
 | `RFC2-2` | PWB-REQ-003 |
 | `RFC2-9` | PWB-REQ-007 |
 | `RFC2-10` | PWB-REQ-007 |
@@ -46,6 +46,9 @@
 | `RFC3-7` | PWB-REQ-005 |
 | `RFC3-15` | PWB-REQ-022 |
 | `RFC3-16` | PWB-REQ-005, PWB-REQ-022 |
+| `RFC3-16(a)` | PWB-REQ-005, PWB-REQ-022 |
+| `RFC3-16(b)` | PWB-REQ-005, PWB-REQ-022 |
+| `RFC3-16(c)` | PWB-REQ-005, PWB-REQ-020, PWB-REQ-022 |
 | `RFC3-27` | PWB-REQ-011 |
 | `RFC3-28` | PWB-REQ-011 |
 | `RFC3-30` | PWB-REQ-005 |
@@ -111,11 +114,12 @@
 | `CC-TEST-5` | PWB-REQ-002, PWB-REQ-007, PWB-REQ-014, PWB-REQ-015, PWB-REQ-016, PWB-REQ-020 |
 | `CC-TEST-6` | PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-005, PWB-REQ-006, PWB-REQ-007 |
 
-## decisions (1)
+## decisions (2)
 
 | Authority | Cited by |
 |---|---|
 | `POLARIS-DIR-2026-08-31` | PWB-REQ-001, PWB-REQ-002, PWB-REQ-003, PWB-REQ-004, PWB-REQ-005, PWB-REQ-006, PWB-REQ-007, PWB-REQ-010, PWB-REQ-011, PWB-REQ-012, PWB-REQ-013, PWB-REQ-014, PWB-REQ-015, PWB-REQ-016, PWB-REQ-020, PWB-REQ-021, PWB-REQ-022 |
+| `PWB-STATE1-AMENDMENT-DIR-2026-09-02` | PWB-REQ-005, PWB-REQ-020, PWB-REQ-022 |
 
 ## topology (0)
 

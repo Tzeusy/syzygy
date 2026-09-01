@@ -1,0 +1,15 @@
+# PWB STATE-(1) AMENDMENT MANIFEST
+# Candidate; binds nothing until the human owner signs this exact manifest digest.
+# 11 signed artifacts; rows sorted by codepoint path.
+# All rows take effect together or none do.
+bd2504cb580ca73eeb2510481ca4665ee11e2127360fc0be12c104f347fb515f  openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml
+af9067c45ac6f2c965dfddaae757c15b4c9d3c311bc6cd403bfc72aef32db0cb  openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+77f6b685f7a92eff39d874b92ed36b99e832ded16d1970f1242b6750641b5349  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
+ada47e4b993951873855a3055e0958bd5e0947ab51060404b0ef11eaff84c578  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
+47464d112323fce89d5c4aba08bd0ea3741f0cb8bbf1704e71f1d7dcc02355d6  openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
+f28404be66a4241503f2214757d640361751934b2ab308dafeada5c6d2152e50  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0001-0003.md
+ec091e743cb95070b30980021f2b5bdf054128161a86f6f8a8bbdf7678ffbc29  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md
+6e480d6b94734abd41b15fbdcab1e6d7df9d60f68f0f3f5b0d66f98462728cd0  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md
+f6b5a9fd92215bbaf99444ba74892dc1a63cfb0884ac93685e4a1330ea4936c8  openspec/changes/polaris-project-wide-butlers-model/design.md
+200217d307ce72de804c82b75bedaf5aae462e29d0bcbfbe5e3b6c96f952a675  openspec/changes/polaris-project-wide-butlers-model/proposal.md
+ec4ea4c7ec74935a8312eb9e68e7f22884983a8fc89189cc14980619d0b989d6  openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md

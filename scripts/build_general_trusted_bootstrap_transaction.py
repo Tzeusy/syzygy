@@ -132,6 +132,95 @@ def manifest_text(title: str, notes: tuple[str, ...], rows: list[tuple[str, str]
     return "\n".join(lines) + "\n"
 
 
+def parse_frozen_manifest(
+    root: pathlib.Path,
+    rel: pathlib.Path,
+    expected_paths: tuple[pathlib.Path, ...],
+) -> list[tuple[str, pathlib.Path]]:
+    """Parse an immutable performed manifest without following current bytes."""
+    body = read_bytes(root, rel).decode()
+    rows: list[tuple[str, pathlib.Path]] = []
+    for line_number, line in enumerate(body.splitlines(), 1):
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        match = re.fullmatch(r"([0-9a-f]{64})  (\S.*)", stripped)
+        if match is None:
+            raise ValueError(f"{rel}:{line_number}: invalid digest row")
+        path = pathlib.PurePosixPath(match.group(2))
+        if path.is_absolute() or ".." in path.parts:
+            raise ValueError(f"{rel}:{line_number}: escaping subject path {path}")
+        rows.append((match.group(1), pathlib.Path(path)))
+
+    actual_paths = tuple(path for _digest, path in rows)
+    if actual_paths != expected_paths:
+        raise ValueError(
+            f"{rel}: performed path population/order changed: "
+            f"{len(actual_paths)} row(s), expected {len(expected_paths)}"
+        )
+    if len(set(actual_paths)) != len(actual_paths):
+        raise ValueError(f"{rel}: duplicate performed subject path")
+    return rows
+
+
+def validate_frozen_transaction(root: pathlib.Path, recorded_digest: str) -> None:
+    """Validate performed transaction bytes as history, not current authority.
+
+    A later owner act may supersede an external subject at its current path.
+    The performed outer manifest therefore continues to bind its act-time row
+    digest without requiring the current path to retain those bytes. Files
+    owned by this transaction directory remain immutable and are checked
+    directly against the outer rows.
+    """
+    outer = read_bytes(root, TRANSACTION_MANIFEST_REL)
+    actual_outer_digest = sha256_bytes(outer)
+    if actual_outer_digest != recorded_digest:
+        raise ValueError(
+            f"performed transaction digest {recorded_digest} != frozen manifest "
+            f"{actual_outer_digest}"
+        )
+
+    top_subjects = (
+        ACT_SEMANTICS_REL,
+        IMPACT_LEDGER_REL,
+        CONTRACT_MANIFEST_REL,
+        PWB_MANIFEST_REL,
+        CAP1_COVERAGE_REL,
+        POC_COVERAGE_REL,
+        SPEC_POLICY_REL,
+    )
+    top_rows = parse_frozen_manifest(root, TRANSACTION_MANIFEST_REL, top_subjects)
+    top_digests = {path: stated for stated, path in top_rows}
+
+    transaction_owned = (
+        ACT_SEMANTICS_REL,
+        IMPACT_LEDGER_REL,
+        CONTRACT_MANIFEST_REL,
+        PWB_MANIFEST_REL,
+    )
+    for rel in transaction_owned:
+        actual = sha256_bytes(read_bytes(root, rel))
+        if actual != top_digests[rel]:
+            raise ValueError(
+                f"immutable performed subject {rel} hashes to {actual}, "
+                f"expected {top_digests[rel]}"
+            )
+
+    contract_root = root / ".syzygy/governance/contracts"
+    accepted_root = contract_root / "rfcs"
+    contract_paths = tuple(
+        path.relative_to(contract_root)
+        for path in sorted(accepted_root.rglob("*.md"))
+    )
+    if len(contract_paths) != EXPECTED_ACCEPTED_MODULES:
+        raise ValueError(
+            "accepted RFC path population changed: "
+            f"{len(contract_paths)} != {EXPECTED_ACCEPTED_MODULES}"
+        )
+    parse_frozen_manifest(root, CONTRACT_MANIFEST_REL, contract_paths)
+    parse_frozen_manifest(root, PWB_MANIFEST_REL, tuple(sorted(PWB_COVERAGE_RELS)))
+
+
 def contract_manifest(root: pathlib.Path) -> str:
     accepted_root = root / ".syzygy/governance/contracts"
     candidate_root = accepted_root / "candidates"
@@ -276,6 +365,31 @@ def run(
 ) -> int:
     try:
         frozen = performed_digest(root, allow_pre_act=allow_pre_act)
+    except ValueError as exc:
+        print(f"DRIFT: {exc}")
+        return 1
+
+    if frozen is not None:
+        try:
+            validate_frozen_transaction(root, frozen)
+        except ValueError as exc:
+            print(f"DRIFT: {exc}")
+            return 1
+        if check:
+            print(
+                "performed general trusted-bootstrap transaction frozen and "
+                f"valid — {EXPECTED_ACCEPTED_MODULES} contract paths, "
+                f"{len(PWB_COVERAGE_RELS)} historical PWB paths, "
+                "5 owner-act rows"
+            )
+        else:
+            print(
+                "immutable performed transaction valid — rewrite refused; "
+                "superseding current subjects do not rewrite act-time bytes"
+            )
+        return 0
+
+    try:
         outputs = build_outputs(root)
     except ValueError as exc:
         print(f"DRIFT: {exc}")
@@ -285,38 +399,6 @@ def run(
         target = root / rel
         if not target.is_file() or target.read_bytes() != content.encode():
             drift.append(rel)
-    act_drift = None
-    if frozen is not None:
-        target = root / TRANSACTION_MANIFEST_REL
-        if not target.is_file():
-            act_drift = f"performed transaction subject missing: {TRANSACTION_MANIFEST_REL}"
-        else:
-            actual = sha256_bytes(target.read_bytes())
-            if actual != frozen:
-                act_drift = (
-                    f"performed transaction digest {frozen} != current manifest "
-                    f"{actual}"
-                )
-        if drift or act_drift:
-            if act_drift:
-                print(f"DRIFT: {act_drift}")
-            for rel in drift:
-                print(f"DRIFT: immutable performed subject {rel}")
-            return 1
-        if check:
-            print(
-                "performed general trusted-bootstrap transaction frozen and "
-                f"current — {EXPECTED_ACCEPTED_MODULES} contract modules, "
-                f"{len(PWB_COVERAGE_RELS) + 2} signed coverage artifacts, "
-                "5 owner-act rows"
-            )
-        else:
-            print(
-                "immutable performed transaction unchanged — rewrite refused; "
-                "all generated subjects remain exact"
-            )
-        return 0
-
     if check:
         if drift:
             for rel in drift:
@@ -341,6 +423,9 @@ def run(
 
 def selftest() -> int:
     baseline = build_outputs(ROOT)
+    frozen_outputs = {
+        rel: (ROOT / rel).read_bytes() for rel in baseline
+    }
     with tempfile.TemporaryDirectory(prefix="general-bootstrap-tx-") as temp:
         clone = pathlib.Path(temp)
         for rel in (
@@ -387,10 +472,10 @@ def selftest() -> int:
         print(f"{'PASS' if digest_changes else 'FAIL'} subject mutation changes act and transaction")
 
         shutil.copy2(ROOT / CAP1_COVERAGE_REL, cap1)
-        for rel, content in baseline.items():
+        for rel, content in frozen_outputs.items():
             target = clone / rel
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(content)
+            target.write_bytes(content)
         for rel in (ACT_REL, AGGREGATE_ACT_REL):
             record = clone / rel
             record.parent.mkdir(parents=True, exist_ok=True)
@@ -456,21 +541,39 @@ def selftest() -> int:
             f"{'PASS' if crlf_refused and crlf_unchanged else 'FAIL'} "
             "CRLF generated-subject drift rejected byte-exactly"
         )
-        for rel, content in baseline.items():
-            (clone / rel).write_text(content)
+        for rel, content in frozen_outputs.items():
+            (clone / rel).write_bytes(content)
 
-        cap1.write_text(cap1.read_text() + "\npost-act coverage mutation\n")
-        frozen_before_drift = {
-            rel: (clone / rel).read_bytes() for rel in baseline
+        current_pwb = clone / PWB_COVERAGE_RELS[0]
+        current_pwb.write_text(current_pwb.read_text() + "\nsuperseding bytes\n")
+        frozen_before_supersession = {
+            rel: (clone / rel).read_bytes() for rel in frozen_outputs
         }
-        rewrite_refused = run(False, clone) == 1
-        drift_unchanged = all(
+        supersession_allowed = run(False, clone) == 0
+        frozen_after_supersession = all(
             (clone / rel).read_bytes() == content
-            for rel, content in frozen_before_drift.items()
+            for rel, content in frozen_before_supersession.items()
         )
         print(
-            f"{'PASS' if rewrite_refused and drift_unchanged else 'FAIL'} "
-            "performed drift rejected without rewriting bound outputs"
+            f"{'PASS' if supersession_allowed and frozen_after_supersession else 'FAIL'} "
+            "superseding current PWB bytes do not rewrite performed history"
+        )
+
+        historical_pwb = clone / PWB_MANIFEST_REL
+        historical_pwb.write_text(historical_pwb.read_text() + "# mutation\n")
+        historical_pwb_rejected = run(False, clone) == 1
+        print(
+            f"{'PASS' if historical_pwb_rejected else 'FAIL'} "
+            "historical PWB manifest mutation rejected"
+        )
+        historical_pwb.write_bytes(frozen_outputs[PWB_MANIFEST_REL])
+
+        outer = clone / TRANSACTION_MANIFEST_REL
+        outer.write_text(outer.read_text() + "# mutation\n")
+        outer_rejected = run(False, clone) == 1
+        print(
+            f"{'PASS' if outer_rejected else 'FAIL'} "
+            "outer transaction manifest mutation rejected"
         )
     passed = (
         parity_fails and digest_changes and clean_noop and clean_unchanged
@@ -478,9 +581,10 @@ def selftest() -> int:
         and missing_aggregate and missing_aggregate_unchanged
         and both_absent and both_absent_unchanged
         and crlf_refused and crlf_unchanged
-        and rewrite_refused and drift_unchanged
+        and supersession_allowed and frozen_after_supersession
+        and historical_pwb_rejected and outer_rejected
     )
-    print(f"8 transaction mutations, {0 if passed else 1} failing")
+    print(f"10 transaction mutations, {0 if passed else 1} failing")
     return 0 if passed else 1
 
 

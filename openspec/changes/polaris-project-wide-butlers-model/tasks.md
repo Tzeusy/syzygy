@@ -8,10 +8,22 @@
   plain-copy criteria against VIS-1, VIS-3, RFC 0007 and the owner walkthrough.
 - [x] 1.4 Obtain owner sign-off at the exact candidate artifact digests before
   any implementation task begins.
-- [ ] 1.5 Obtain and verify separate Butlers observation consent and a concrete,
-  owner-approved secret-classification policy, and register the project-shape
-  observer with verified owner provenance before any body-read implementation
-  is dispatchable (PWB-REQ-005).
+- [ ] 1.5 Complete the owner-directed state-(1)/state-(2) amendment across all
+  invalidated signed artifacts and obtain fresh independent security,
+  authority-boundary, deterministic-observation, public-interface, coverage
+  and exact-transaction review on frozen bytes.
+- [ ] 1.6 Obtain a superseding owner sign-off that binds all eleven PWB
+  artifacts at their exact reviewed digests; the amendment is inert before
+  this separate act.
+- [ ] 1.7 Obtain separate effective human owner acts for the exact Butlers
+  observation consent, the observing project's concrete
+  secret-detection/classification policy and the project-shape observer's
+  adapter-registry entry. Each act may be valid state (1) or state (2), but its
+  exact state must remain visible and every invalid act must fail closed
+  (PWB-REQ-005).
+- [ ] 1.8 Obtain separate implementation authorization after the amended spec
+  is signed and the effect-specific gates are satisfied. No body-read
+  implementation is dispatchable before both gates.
 
 ## 2. Project-shape observation and model
 
@@ -59,20 +71,25 @@
 
 ## 4. Verification
 
-- [ ] 4.1 Add behavior tests for every PWB-REQ oracle, including missing,
-  unreadable, excluded, contradictory and stale-summary cases.
+- [ ] 4.1 Add behavior tests for every PWB-REQ oracle, including all eight
+  valid consent/policy/registry state combinations, both valid judgment states,
+  every named invalid-act arm, failed state-(2) correlation without fallback,
+  later-correlation history, missing, unreadable, excluded, contradictory and
+  stale-summary cases.
 - [ ] 4.2 Add mutation checks for the source denominator, coverage partition,
   precedence guard, secret sentinel, capability-first regression and meta-copy
   prohibition.
 - [ ] 4.3 Add one exhaustive, multiplicity-preserving parity sweep for every
-  project-wide human marker against `/api/poc` (PWB-REQ-020).
+  project-wide human marker against `/api/poc`, including every body-read
+  authority state, judgment state and state-(1) disclosure (PWB-REQ-020).
 - [ ] 4.4 Run keyboard/non-visual navigation and WCAG AA contrast checks over
   the project summary, catalogs, capability detail and exact-source paths.
 - [ ] 4.5 Run a fresh-checkout demonstration against the configured Butlers
   revision and retain the exact test/runtime artifacts.
 - [ ] 4.6 Perform the RFC7-30 owner cold-open walkthrough and record the
-  execution and owner judgment separately; absent lawful judgment remains
-  Unknown (PWB-REQ-021…022).
+  execution and owner judgment separately; exercise valid state (1), valid
+  state (2), every invalid judgment arm and failed-state-(2) no-fallback;
+  absent or invalid judgment remains Unknown (PWB-REQ-021…022).
 
 ## 5. Independent confirmation and report
 

@@ -15,10 +15,17 @@ coverage explicit POC evaluation criteria.
   connector and major interface in the configured Butlers revision.
 - Coverage reports a complete denominator. Missing or unreadable declarations
   remain visible as Unknown; they never disappear from the known-source count.
-- Repository bodies are not read until a Butlers observation-consent record,
-  the observing project's concrete secret-classification policy and the
-  project-shape observer's registered adapter entry all pass owner-provenance
-  checks.
+- Repository bodies are not read until the Butlers observation-consent record,
+  the observing project's concrete secret-detection/classification policy and
+  the project-shape observer's registered adapter entry each carry an
+  effective exact-digest human owner act under RFC3-16(a). Each act may be
+  state (1), `owner-adopted (bootstrap, uncorrelated)`, or state (2),
+  `Syzygy-verified`; mixed valid states are allowed and each exact state remains
+  visible.
+- For state (1), Syzygy trusts the reviewed tree: the record remains same-tree
+  forgeable from Syzygy's perspective, and its digest detects drift rather than
+  authorship or attendance. Only state (2) is independently verified. Missing
+  or invalid acts fail closed.
 - Shape reads are bounded, repository-contained and inert: exact Git objects
   only, no symlink/submodule escape, no active browser content and no execution.
 - Capability material becomes drill-down content beneath the project account.
@@ -36,6 +43,9 @@ coverage explicit POC evaluation criteria.
   operable, including a nonvisual cold-open run.
 - The POC evaluation includes an owner cold-open walkthrough that tests whether
   the reader can explain Butlers as a whole.
+- The cold-open criterion accepts an exact-scope owner judgment in either valid
+  provenance state, renders the exact state and treats the verdict as human
+  judgment rather than Observed evidence.
 
 This is an additive behavioral change. It does not edit or weaken
 POC-REQ-030…032: the existing narrative, provenance and Unknown obligations
@@ -78,12 +88,20 @@ provenance, parity, authentication or one-repository POC boundaries.
 
 ## Authority and sign-off
 
-This is a candidate change. It binds nothing. Owner sign-off is necessary but
+The project-wide change was signed on 2026-08-31. This state-(1) amendment is a
+candidate and binds nothing until a later human owner sign-off supersedes all
+eleven signed artifact digests together. Until then, the currently signed
+state-(2)-only behavior remains authoritative. Sign-off remains necessary but
 not sufficient for implementation: work must also remain inside a recorded,
-finding-derived POC improvement cycle and all security prerequisites must be
-satisfied. The six signed
-`three-surface-poc-experience` artifacts remain unchanged at their recorded
-digests.
+finding-derived POC improvement cycle, receive separate implementation
+authorization and satisfy every effect-specific security prerequisite. The six
+signed `three-surface-poc-experience` artifacts remain unchanged at their
+recorded digests.
+
+This amendment changes only the PWB-REQ-005 and PWB-REQ-022 provenance gates
+and the parity behavior they expose. It creates no consent, policy, registry or
+judgment act and grants no body read, implementation, write, egress, execution,
+deployment, release, recovery or mission authority.
 
 ## Authoring evidence
 
