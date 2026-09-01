@@ -22,6 +22,26 @@ review cycle closed (RD-69 → one blocker repair → RD-70
 precedent: the argument is the policy file's own digest, and performance
 is recorded in the craft `INSTALL-RECORD.md`.
 
+**Amended 2026-09-01:** the owner performed the separate, indivisible
+five-row general trusted-bootstrap transaction recorded in
+`../../decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md` and the
+append-only `../../decisions/ACCEPTANCE-ACT-RECORD.md`. RFC 0001–0009 remain accepted;
+their current 30 installed modules are bound by
+`general-trusted-bootstrap-authorization/CONTRACT-AMENDMENT-MANIFEST.txt`.
+The transaction also amended seven signed contract-coverage artifacts and
+CC-SPEC-8. A valid exact-scope human act may be effective in state (1),
+`owner-adopted (bootstrap, uncorrelated)`, or state (2), `Syzygy-verified`;
+only state (2) is independently verified. PWB-REQ-005 and PWB-REQ-022 remain
+deliberately stricter state-(2)-only signed behavior. RFC 0010/0011 remain
+candidate. The original Wave A/B and craft-act rows below are preserved as
+act-time history; their manifests, phrases and digests were not rewritten.
+The four original foundational acts plus this separate amendment transaction
+do not close any of the nine still-open foundational offerings.
+
+The transaction grants no effect-specific consent or policy approval,
+registry adoption, repository observation or write, egress, execution,
+deployment, release, recovery, mission, or implementation authority.
+
 ## 1. The gates — exact scope, exact phrases
 
 | # | Act (exact phrase) | Accepts exactly |
@@ -209,33 +229,25 @@ one reading obligation:
    founder — which is the defect this round exists to remove. Skipping it
    loses nothing an act depends on.
 
-**What that record is, and is not (RFC3-16(c) — the two-state model).**
-The committed act record establishes an **owner-adopted bootstrap act**: a
-human/social governance fact preserved as phrase + exact digest +
-commit/tag, from which effective status *for human governance* is read.
-The owner and the humans working with them lawfully govern development by
-it. The license has a machine-side complement, stated here so the
-acceptance is knowing: until the correlation act, a state-(1) record
-satisfies no machine-enforced authorization gate. Artifacts consumed as
-**constraints** (contract clauses, doctrine rules) bind at full strength —
-refusing to apply a constraint over uncorrelated provenance would widen,
-not narrow — but anything consumed as an **authorization for an effect**
-(a consent, an autonomy envelope, a write-expanding policy) has not
-satisfied the RFC3-16(a) predicate on a state-(1) record alone and
-resolves under its effect rule, exactly as RFC10-9 leaves an uncorrelated
-mission in `awaiting-approval`. It is **not** independent verification: every tree-resident record —
-including this committed act record — lies within the untrusted actor
-class's write reach, so Syzygy never claims the act is independently
-verified. When the A1 correlation mechanism first exists, the owner
-performs the **one-time recorded correlation act** (RFC3-16(b)) binding
-each accepted artifact's exact digest to its historical act — upgrading it
-to a **Syzygy-verified effective act** without editing anything. Until
-then, every Syzygy-visible provenance render states the gap honestly:
-**"owner-adopted (bootstrap, uncorrelated)" — never "verified"** (the A9
-posture). **A git commit or tag alone is never sufficient for either
-state** — it is evidence within a record, never the mechanism. Artifacts
-are never edited after an act; an artifact edited after its act is, for
-the record, an artifact with no act (RFC3-16(b) item 3).
+**What that record is, and is not (RFC3-16(c) — the amended two-state
+model).** A valid act record preserves a real human act as phrase + exact
+digest + exact scope and may be effective in either provenance state:
+state (1), **owner-adopted (bootstrap, uncorrelated)**, or state (2),
+**Syzygy-verified**. State (1) is owner-trusted and effective at its exact
+gate, but is not independent verification; only state (2) is independently
+verified. A later valid A1 correlation upgrades provenance confidence through
+a new evaluation without changing the earlier act's effect. Invalid, missing,
+mismatched, stale, superseded, revoked, unattributed or wrong-scope acts fail
+closed. Constraints bind at full strength, and acts remain warrants rather
+than evidence that an effect occurred or succeeded. **A git commit or tag
+alone is never sufficient for either state** — it may be evidence inside a
+valid act record, never the act mechanism itself.
+
+The 2026-09-01 transaction changed which provenance state may satisfy an
+existing owner gate; it did not supply any effect-specific gate. Any consent,
+policy, registry, observation, write, egress, execution, deployment, release,
+recovery, mission or implementation effect still requires its own exact act
+and other contract predicates.
 
 **Retention before the act, stated honestly.** The package is **tracked**
 and present in every clone, at `.syzygy/governance/contracts/candidates/`
@@ -443,14 +455,14 @@ implementation, not specification — accepting with it open is a
 5. **The corpus-size outcome** (§3): the 35–50k band was refused in favor
    of preservation; the acceptance of this record accepts that trade as
    presented in the 03 report.
-6. **Mission approval is a runtime act — V0 consequence** (safety review
-   S1, resolved conservatively in RFC10-9): a mission-approval act must be
-   an A1-mechanism act (owner-attended, Syzygy-mediated, correlated to an
-   audit trail outside `.syzygy/**`); a state-(1) bootstrap-shaped record
-   never launches a mission. Consequence the owner accepts with the
-   package: **Mission Control V0 must ship the approval ceremony and
-   external audit trail as a hard precondition** — no interim
-   tree-record-approved missions exist.
+6. **Historical mission-approval disclosure at the original gate.** The
+   safety review's act-time consequence, retained here as history, was: a
+   mission-approval act had to be an A1-mechanism act and a state-(1) record
+   never launched a mission. The 2026-09-01 transaction superseded that
+   provenance rule in the current contract model, but granted no mission act
+   and accepted no Mission Control contract or behavior. RFC 0010 remains
+   candidate, so no mission authority follows from either version of this
+   disclosure.
 7. **Mission decomposition is off by default** (safety review S3, resolved
    in RFC10-8): agents mint child missions only under an explicit
    owner-approved decomposition grant in the parent envelope; the child's

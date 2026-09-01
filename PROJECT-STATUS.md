@@ -1,6 +1,6 @@
 # Project status
 
-> **As-of: 2026-08-29** (the commit introducing this revision —
+> **As-of: 2026-09-01** (the commit introducing this revision —
 > `git log -1 --format=%h PROJECT-STATUS.md`). A hand-authored pointer page:
 > it **must not be the sole source** for any fact it states. Each row cites
 > the record that owns it, and where they disagree the record wins and this
@@ -31,6 +31,18 @@ intent satisfaction; human and machine views consume one shared fact model;
 every positive claim has resolvable provenance. The owning record is
 `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`.
 
+On 2026-09-01 the owner separately performed the indivisible five-row general
+trusted-bootstrap authorization transaction recorded in
+`decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md` and the append-only
+`decisions/ACCEPTANCE-ACT-RECORD.md`. It amended the accepted RFC 0001–0009
+bytes at the exact 30-module amendment manifest, seven signed contract-coverage
+artifacts, and CC-SPEC-8. A valid exact-scope human act may now be effective in
+state (1), `owner-adopted (bootstrap, uncorrelated)`, or state (2),
+`Syzygy-verified`; only state (2) is independently verified. The transaction
+granted no effect-specific consent, policy approval, registry adoption,
+observation, write, egress, execution, deployment, release, recovery, mission,
+or implementation authority.
+
 ## The launch path, in one table
 
 The launch target is **Capability 1 — Project registration and honest shape
@@ -38,24 +50,27 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 
 | Step | State | Owning record |
 |---|---|---|
-| Wave A (RFC 0001–0006, 19 modules) | **ACCEPTED — act performed 2026-08-17.** The owner wrote the exact phrase over the RD-31b-confirmed argument `8972d963…`; the 19 modules are installed at `contracts/rfcs/` (shape (M), 19/19 digest-verified from the governed home). Owner-adopted bootstrap, uncorrelated — never "verified". | `decisions/ACCEPTANCE-ACT-RECORD.md`; tag `wave-a-accepted-2026-08-17` |
-| Wave B (RFC 0007–0009 + the three surfaces, 11 modules) | **ACCEPTED — act performed 2026-08-17, after Wave A.** The owner wrote the exact phrase over the RD-32c-confirmed argument `193e3c1e…`; the 11 modules are installed at `contracts/rfcs/` (shape (M), 11/11 digest-verified). Owner-adopted bootstrap, uncorrelated — never "verified". | `decisions/ACCEPTANCE-ACT-RECORD.md`; tag `wave-b-accepted-2026-08-17` |
+| Wave A (RFC 0001–0006, 19 modules) | **ACCEPTED — original act performed 2026-08-17.** The owner wrote the exact phrase over the RD-31b-confirmed argument `8972d963…`; the 19 modules were installed at `contracts/rfcs/` under shape (M). That act-time manifest remains immutable history. The installed modules remain accepted and their current bytes are now bound by the 2026-09-01 30-module contract-amendment manifest. | `decisions/ACCEPTANCE-ACT-RECORD.md`; historical tag `wave-a-accepted-2026-08-17`; `contracts/candidates/general-trusted-bootstrap-authorization/CONTRACT-AMENDMENT-MANIFEST.txt` |
+| Wave B (RFC 0007–0009 + the three surfaces, 11 modules) | **ACCEPTED — original act performed 2026-08-17, after Wave A.** The owner wrote the exact phrase over the RD-32c-confirmed argument `193e3c1e…`; the 11 modules were installed under shape (M). That act-time manifest remains immutable history. The installed modules remain accepted and their current bytes are now bound by the same 2026-09-01 30-module contract-amendment manifest. | `decisions/ACCEPTANCE-ACT-RECORD.md`; historical tag `wave-b-accepted-2026-08-17`; `contracts/candidates/general-trusted-bootstrap-authorization/CONTRACT-AMENDMENT-MANIFEST.txt` |
 | Waves C1/C2/D1/D2 | **Deferred** — candidate, not accepted, not used by the launch target, not offered. Not retired. | `contracts/candidates/DEFERRED-WAVE-POSTURE.md` |
 | Owner rulings, 2026-08-16 | **P-31, P-33, P-35, P-36, P-37, P-38, P-39, P-40 ruled** in one adversarially-reviewed sitting, plus P-34 below. Zero contract bytes moved; both wave confirmations survive. | `decisions/PENDING-OWNER-DECISIONS.md` §"Resolved on 2026-08-16"; each row names its owning record |
 | Launch-gate policy | **Owner-approved process policy at v2.4** — P-34 ruled arm (a), 2026-08-16, **with two disclosed BLOCKING residuals** (RD-67 f1, RD-68 f1 — false-`READY` paths reachable only by an adversarial record author), **F5 not promoted**. Ten `REVISE` verdicts across v2.0–v2.4 stand as recorded; this is approval-with-residuals, not a clean review verdict. A bounded v2.5 is an owner option, not a gate. | `decisions/LAUNCH-GATE-AUTHORITY-DECISION.md` (the recorded approval); instrument `launch-gate-pre-specifications.md`; `round-2026-08h/reviews/DISPOSITION-REGISTER.md` |
-| P-41 + P-42, offered jointly | **PERFORMED — acts 6 and 7, 2026-08-17, one sitting** (the joint-sitting requirement satisfied). CC-SPEC-1…11 and CC-IMPACT-1…7 are **in force as owner-confirmed craft** at their reviewed digests; the files bind at their committed homes, uncopied and unedited. Review chain: RD-51 (`REVISE`) → repair → RD-69 (`REVISE`, one launch blocker) → the one blocker-only repair → RD-70 (`CONFIRM WITH EXCEPTIONS`). Nine non-blocking findings traveled into force disclosed. | `decisions/ACCEPTANCE-ACT-RECORD.md`; `.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md`; tag `craft-acts-6-7-confirmed-2026-08-17` |
+| P-41 + P-42, offered jointly | **PERFORMED — original acts 6 and 7, 2026-08-17, one sitting** (the joint-sitting requirement satisfied). CC-SPEC-1…11 and CC-IMPACT-1…7 remain **in force as owner-confirmed craft**. The original act-time statements and digests remain immutable history. The 2026-09-01 transaction separately amended CC-SPEC-8 at the current policy digest; CC-IMPACT was not amended. | `decisions/ACCEPTANCE-ACT-RECORD.md`; `.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md`; historical tag `craft-acts-6-7-confirmed-2026-08-17` |
+| General trusted-bootstrap authorization transaction | **PERFORMED 2026-09-01 — one indivisible five-row transaction.** RFC 0001–0009 remain accepted at the amended 30-module manifest; the Capability 1 and Three-Surface coverage files plus five PWB coverage artifacts are amended; CC-SPEC-8 is amended. State (1) and state (2) may each carry an effective valid human act, but only state (2) is independently verified. PWB-REQ-005 and PWB-REQ-022 deliberately remain stricter, state-(2)-only signed behavior. RFC 0010/0011 remain candidate. | `decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`; `decisions/ACCEPTANCE-ACT-RECORD.md`; `contracts/candidates/general-trusted-bootstrap-authorization/TRANSACTION-MANIFEST.txt` |
 | Formal launch administration | **Administration 1 performed 2026-08-18 — verdict `NOT READY`** (10 plain Not-met, 2 scoped, 5 Unknown, 0 reopened). Out-of-family (OpenAI GPT-5.6 Pro), fresh context with disclosed limitations, against commit `71e5986` at approved v2.4; the record validated and its verdict computed by the committed scripts. The strongest findings are stale current-state claims on the default path (since repaired), the contract-index drift (since regenerated), Wave A rejection collapsing the launch path (B4), clone-unreachable D1 rationale (C7), and unbounded governance effort (F6). The 2026-08-09 v1.3 **pilot** (`NOT READY`) remains steering evidence only. | `decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json` (the record); `decisions/launch-gate/TREND-LOG.md` |
 | Owner rulings, 2026-08-19 (the Administration-1 inputs) | **P-45…P-48 all ruled** in one adversarially-reviewed sitting, applied same day: the **A6 resource envelope stated** (2h/week; Claude-family + occasional GPT 5.6-family review; $200/mo ceiling; 2–3 workstreams) with **syzygy itself named the first proving project** (butlers second); **no governance ceiling** — case-by-case recorded knowingly (F6 stays `Not met`, disclosed, non-conjunct); the **governance-reduction plan adopted as directed work** (§1/§2/§4 retirements executed; §3 awaits the first accepted spec; no deferral created); the **repair cycle bounded at two further administrations** (if Administration 3 is not `READY`, the owner decides directly on the record in hand). Zero contract bytes moved. | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-19, second sitting"; records `A6-RESOURCE-ENVELOPE-`, `F6-GOVERNANCE-CEILING-`, `F2-GOVERNANCE-REDUCTION-`, `LAUNCH-REPAIR-STOP-CONDITION-DECISION.md` |
 | Owner launch decision | **Made 2026-08-20** — Capability 1 specification authoring authorized, with the `NOT READY` verdict in hand and accepted as diagnostic evidence; the P-48 stop-condition cycle ends early by the owner deciding directly. Specification definition only — no implementation, no implementation planning. | `decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md` |
-| OpenSpec (`openspec/`) | **One change, ADOPTED: `project-registration-and-honest-shape-visibility`** (schema `spec-driven`, OpenSpec pinned 1.9.0) — proposal, spec (42 requirements, CAP1-REQ-001…064), design, both coverage tables, and the generated dependency declaration, **adopted by the owner (act dated 2026-08-20) at the seven exact digests the act record quotes**; `tasks.md` and the review records are lifecycle/evidence material outside the adopted bytes. The accepted specification supersedes the Capability 1 charter for required behaviour. | `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md` (the act); the change directory; evidence chain `contracts/candidates/round-2026-08k/` |
+| OpenSpec (`openspec/`) | **Capability 1 remains ADOPTED: `project-registration-and-honest-shape-visibility`** (schema `spec-driven`, OpenSpec pinned 1.9.0). The owner adopted seven artifacts on 2026-08-20; the 2026-09-01 transaction superseded only `CONTRACT-COVERAGE.md`'s digest, leaving the other six adopted digests and all required behavior unchanged. The accepted specification supersedes the Capability 1 charter for required behaviour. | `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md` (original act); `decisions/ACCEPTANCE-ACT-RECORD.md` (coverage amendment); the change directory |
 | Implementation | **AUTHORIZED for Capability 1 — act dated 2026-08-21.** Plan first (stack, layout, slices→CAP1-REQ mapping, testing/evidence, review classes), then a bounded Beads backlog and code in ordinary root paths (`apps/**`, `packages/**`, tooling) — never in the governed plane. Capability 1 only; production deployment, onboarding, and release stay separate future decisions. | `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md` |
 | Three-Surface POC | **AUTHORIZED 2026-08-29, non-release and bounded.** One live Butlers proving project; WIP one for shared-model changes. The original eight items completed 2026-08-30: all three product assumptions NOT FALSIFIED (`docs/reviews/R-POC-PRODUCT-REVIEW.md`), PRF-1 repair CONFIRMED. The owner's 2026-08-30 direction extends the experiment with **improvement cycles** (review → finding-derived repairs → confirmation, owner-reported per cycle), lifting the eight-item cap and one-review budget; every other bound stands. | `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`; `decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md` |
 
-**Four owner acts have been performed, all 2026-08-17:** Wave A, Wave B,
-and craft acts 6 + 7.
+**Four original foundational owner acts were performed on 2026-08-17:** Wave
+A, Wave B, and craft acts 6 + 7. A separate indivisible five-row amendment
+transaction was performed on 2026-09-01; it is not a fifth foundational
+offering.
 `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` exists since the
-first act and owns every performed act; nine offered acts remain
-unperformed.
+first act and owns every performed act. The nine still-open foundational
+offerings remain open.
 
 ## Gates already closed
 
@@ -68,6 +83,7 @@ unperformed.
 | The 2026-08-18 questionnaire rulings | ✅ P-14 (MIT), P-16 (term registry as drafting vocabulary), P-24 (D4: inside VIS-4's bounds), P-44 (CC-REV-2 exception declined) — applied 2026-08-19 | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-19"; each row's own decision record |
 | The Administration-1 owner inputs | ✅ P-45…P-48 ruled and applied 2026-08-19 — see the launch-path table above | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-19, second sitting" |
 | License | ✅ **MIT** — root `LICENSE`; contributor-agreement posture remains a separate open question | `decisions/LICENSE-CHOICE-DECISION.md` |
+| General trusted-bootstrap transaction | ✅ Five rows performed indivisibly 2026-09-01; provenance semantics, seven coverage artifacts and CC-SPEC-8 reconciled; no effect-specific or implementation authority granted | `decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`; `decisions/ACCEPTANCE-ACT-RECORD.md` |
 
 ## Gates still open, beyond the launch path
 
@@ -82,68 +98,23 @@ unperformed.
 
 ## Next lawful step
 
-The remaining launch path, in order — each step's owning record governs:
+The transaction changes provenance semantics, not the gates for any effect.
+Before project-wide Polaris behavior or implementation resumes:
 
-1. ~~Owner performs the **Wave A act**, then the **Wave B act**~~ —
-   **both done 2026-08-17**, A then B
-   (`decisions/ACCEPTANCE-ACT-RECORD.md`).
-2. ~~**P-41 + P-42**: perform craft acts 6 and 7 in one sitting~~ —
-   **done 2026-08-17**, same day as the wave acts, one sitting
-   (`decisions/ACCEPTANCE-ACT-RECORD.md`).
-3. ~~**Formal Capability 1 administration** under approved v2.4~~ —
-   **Administration 1 run 2026-08-18, verdict `NOT READY`**
-   (`decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json`).
-   **The repair pass ran the same day** (round 2026-08j): every
-   session-repairable finding is repaired or settled by artifact
-   (finding-by-finding record:
-   `contracts/candidates/round-2026-08j/ADMINISTRATION-1-DISPOSITION-REGISTER.md`),
-   and the four owner-input findings queued as P-45…P-48 were **all
-   ruled 2026-08-19** (see the launch-path table above).
-   **Administration 2** — at a descendant commit, declaring the
-   Administration 1 record as its prior, out-of-family as before — is the
-   gate's own path to `READY` and is commissionable now, under the
-   ruled stop condition: at most two further administrations
-   (`decisions/LAUNCH-REPAIR-STOP-CONDITION-DECISION.md`). The A6
-   scope-versus-capacity assessment (the second half of A6's settlement)
-   is performable follow-on work against the stated envelope
-   (`decisions/A6-RESOURCE-ENVELOPE-DECISION.md`).
-4. ~~The owner's separate **launch decision**~~ — **made 2026-08-20**,
-   with the `NOT READY` verdict in hand and accepted as diagnostic
-   evidence (`decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`).
-   Authorizes **specification definition only**.
-5. ~~**Author the Capability 1 specification**, then the owner's
-   **adoption act**~~ — **both done**: authored 2026-08-20 under the
-   in-force CC-SPEC/CC-IMPACT standard through the bounded review cycle
-   (three reviews → one repair → confirming review → owner-authorized
-   one-line correction → targeted confirmation, RS-1…RS-5,
-   `contracts/candidates/round-2026-08k/`), and **adopted by the owner
-   (act dated 2026-08-20, recorded 2026-08-21) at the exact digests**
-   (`decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`; SDR-37: one
-   change, one acceptance decision).
-6. ~~The owner's separate **implementation-authorization act**~~ —
-   **performed 2026-08-21** (recorded verbatim at
-   `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`; the
-   prepared packet in `round-2026-08k/` is banner-marked performed).
-   *(An earlier revision of this step said the act was "not prepared,
-   owned by no packet" — stale from the moment the packet was prepared
-   later that day; corrected here per the act's instruction 2.)*
-7. ~~**Implement Capability 1**~~ — complete end-to-end, including the local
-   runtime and its bounded hardening leaves. The adopted specification remains
-   its behavioral authority.
-8. **Run the bounded Three-Surface POC** — in progress under the owner's
-   2026-08-29 direction. The first read-only slice is runnable with the one
-   command in `docs/THREE-SURFACE-POC.md`: it observes one named Butlers
-   capability and serves minimal Polaris, Trajectory, Orrery, and
-   authenticated JSON from one shared experimental fact model. The
-   surface-redesign specification `three-surface-poc-experience` was
-   **signed off by the owner 2026-08-30**
-   (`decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`), authorizing
-   implementation of work item `syzygy-z2b`. Work materialization,
-   worker/change observation, and test-evidence ingestion remain open;
-   those relationships render Unknown. Separately, the owner's
-   2026-08-30 direction `decisions/OPENSPEC-MULTI-CHANGE-DIRECTION.md`
-   now permits multiple OpenSpec changes (non-overlapping,
-   well-categorized; candidates until sign-off).
+1. Amend and separately sign the PWB behavioral artifacts if PWB-REQ-005 and
+   PWB-REQ-022 are to accept state (1). Their currently signed behavior
+   deliberately remains state-(2)-only.
+2. Obtain every effect-specific act required for the intended slice, including
+   per-repository consent and the applicable policy and adapter-registry acts,
+   before any repository-body read. Add write, egress, execution, deployment,
+   release, recovery, or mission authorization only if that effect is actually
+   requested.
+3. Obtain separate implementation authorization before resuming PWB
+   implementation. The 2026-09-01 transaction supplies none.
+
+Until those gates close, the lawful state is no body read and no PWB
+implementation resumption. RFC 0010/0011 and the nine still-open foundational
+offerings remain candidate/open.
 
 ## How to verify this page
 

@@ -163,3 +163,39 @@ and they are the first post-act amendment's worklist. Owner-act record:
 `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` (acts 6 and 7);
 tag `craft-acts-6-7-confirmed-2026-08-17`. With this entry, the pending
 candidate recorded in the 2026-08-10 paragraph above is pending no longer.
+
+**CC-SPEC amendment transaction row performed — 2026-09-01.** The owner
+performed the indivisible general trusted-bootstrap authorization transaction
+by writing exactly:
+
+```text
+SIGN OFF GENERAL TRUSTED-BOOTSTRAP AUTHORIZATION TRANSACTION: 1885a323c659364f98e81cdf04479cebfecf5b22d350928d046ebb5b7c5268f6
+```
+
+Transaction row 5 confirms the amended `CC-SPEC-1…11` policy at its committed
+home, uncopied and unedited:
+
+```text
+6093dbbe519dad6c35a5aaeeb31355d2e435d76ec4f0c2c9affb0d1e5b6b5621  .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md
+```
+
+The row amends CC-SPEC-8's reviewed-N/A owner-act gate to accept a valid state
+(1) or state (2), render the exact state, and fail closed on an absent or
+invalid act. No other craft obligation changes. The prior act-6 digest and
+bytes remain immutable historical evidence; they are superseded only as the
+current CC-SPEC policy state.
+
+This is a state-(1) `owner-adopted (bootstrap, uncorrelated)` human act. The A1
+audit-record identity required by RFC3-16(b) item 9 is explicitly absent, so
+the act is owner-trusted and effective for this exact craft amendment but is
+not independently verified. The reviewed subject was
+`92cfbf3e3a644bff7ac738d2cf7084c06548381c`; the owner-packet head was
+`a5f2c4fe22f9ae3c50ee8902a0b7d78207f910a2`. The planned recording tag is
+`general-trusted-bootstrap-authorized-2026-09-01` on the commit carrying the
+act and install records.
+
+The full five-row transaction is recorded in
+`.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`
+and `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md`. This install entry
+performs no consent, registry adoption, observation, write, egress, execution,
+deployment, release, recovery, implementation or mission act.

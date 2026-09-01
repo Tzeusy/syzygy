@@ -1,8 +1,10 @@
 # Owner sign-off packet — general trusted-bootstrap authorization
 
-> **Candidate — no act has occurred.** This packet asks the human owner to
-> perform one exact, indivisible five-row transaction. The packet itself binds
-> nothing.
+> **PERFORMED 2026-09-01 — exact owner ceremony satisfied.** The owner
+> performed the indivisible five-row transaction at the manifest digest below.
+> The authoritative record is
+> `.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`;
+> this non-bound packet itself remains historical routing material.
 
 ## Frozen subject
 

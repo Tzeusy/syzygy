@@ -1,8 +1,10 @@
 # Candidate transaction report — general trusted-bootstrap authorization
 
-> **Candidate — binds nothing.** Baseline `20e5b6e`. No owner act in this
-> report has occurred, and no effect may rely on these bytes before the exact
-> transaction ceremony is performed and recorded.
+> **PERFORMED 2026-09-01 — transaction ceremony satisfied.** The owner
+> performed the exact indivisible transaction and its act is recorded at
+> `.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`.
+> This report remains non-bound historical evidence; the act record owns the
+> authority state.
 
 ## Transaction
 

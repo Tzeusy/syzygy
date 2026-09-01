@@ -12,7 +12,7 @@
 | You want to know | Ask | Short answer today |
 |---|---|---|
 | **Has the owner decided this?** | the **recorded decisions** below | Doctrine, craft, SDR-1…37, and the 2026-08-16 rulings are recorded. The rest is not |
-| **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **Yes — four, all 2026-08-17:** Wave A, Wave B, and craft acts 6 + 7 (CC-SPEC, CC-IMPACT). The record file exists since the first act and owns every performed act |
+| **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **Yes — four original foundational acts, all 2026-08-17, plus a separate indivisible five-row amendment transaction performed 2026-09-01.** The transaction amended RFC 0001–0009, seven coverage artifacts and CC-SPEC-8; it granted no effect-specific or implementation authority. Nine foundational offerings remain open |
 | **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **20** rows in the open section, plus **5** open acceptance-act rows *(measured 2026-08-19, after the 2026-08-18 questionnaire rulings were applied, by the predicate the generators use: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`; P-1's row stays open for the deferred C/D waves)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
 | **Which decisions were resolved, and how?** | [`DECISION-HISTORY.md`](DECISION-HISTORY.md) | The resolved rows — the nine 2026-08-16 rulings and the 2026-08-17 act dispositions (P-41/P-42 executed, P-22/P-28 ratified) — and the register's chronology |
 | **Where is the history?** | [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md), [`DECISION-HISTORY.md`](DECISION-HISTORY.md), and the round trees under `contracts/candidates/` | Deliberately off the default path |
@@ -41,11 +41,12 @@ These carry rulings the owner has actually made.
 | [`D4-RULING-DECISION.md`](D4-RULING-DECISION.md) | **P-24 ruled 2026-08-18** — D4: bounded missions sit inside VIS-4's bounds; reviewer's §1.2 wording designated for act 5 |
 | [`CC-REV-2-LAGGING-SPEC-EXCEPTION-DECISION.md`](CC-REV-2-LAGGING-SPEC-EXCEPTION-DECISION.md) | **P-44 ruled 2026-08-18** — declined (arm b); the offer is superseded for routing |
 | [`CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`](CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md) | **Owner launch decision, 2026-08-20** — Capability 1 specification authoring authorized; the Administration 1 `NOT READY` verdict stands unaltered; specification definition only, no implementation |
+| [`GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-DIRECTION.md`](GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-DIRECTION.md) | **Owner direction, 2026-08-31** — authorized preparation of the generalized provenance amendment; the exact five-row transaction was separately performed 2026-09-01 and is recorded in `ACCEPTANCE-ACT-RECORD.md` |
 
 Doctrine itself (VIS-1…7, SEC-1…5) is adopted and lives in
 [`../doctrine/`](../doctrine/), not here.
 
-## 2. Owner acts — four performed 2026-08-17
+## 2. Owner acts — four original acts plus one amendment transaction
 
 ```text
 ACCEPTANCE-ACT-RECORD.md      exists — created by the Wave A act, 2026-08-17
@@ -53,11 +54,20 @@ ACCEPTANCE-ACT-RECORD.md      exists — created by the Wave A act, 2026-08-17
 
 [`ACCEPTANCE-ACT-RECORD.md`](ACCEPTANCE-ACT-RECORD.md) owns the four acts
 performed 2026-08-17: Wave A, then Wave B, then craft acts 6 + 7 (CC-SPEC
-and CC-IMPACT, one sitting). Entries are appended, never edited. As of
-2026-08-17, nine offered acts remain unperformed. The acts themselves — their exact phrases and
-arguments — are owned by
+and CC-IMPACT, one sitting), and the separate indivisible five-row general
+trusted-bootstrap amendment transaction performed 2026-09-01. The transaction
+left RFC 0010/0011 candidate, left PWB-REQ-005 and PWB-REQ-022 deliberately
+state-(2)-only, and granted no consent, observation, write, egress, execution,
+deployment, release, recovery, mission or implementation authority. Entries
+are appended, never edited. Nine foundational offerings remain unperformed.
+The original foundational acts themselves — their exact phrases and arguments
+— are owned by
 [`../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`](../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md),
-never by this directory and never by this page.
+while the amendment transaction's exact five-row semantics and manifest live
+under `../contracts/candidates/general-trusted-bootstrap-authorization/` and
+its performed record is
+[`GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`](GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md).
+This page owns neither act.
 
 ## 3. Pending decisions — one bounded packet each
 

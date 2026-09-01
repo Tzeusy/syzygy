@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import pathlib
+import re
 import shutil
 import tempfile
 
@@ -55,6 +56,14 @@ PWB_COVERAGE_RELS = (
     ),
 )
 EXPECTED_ACCEPTED_MODULES = 30
+ACT_REL = pathlib.Path(
+    ".syzygy/governance/decisions/"
+    "GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md"
+)
+ACT_LABEL = "SIGN OFF GENERAL TRUSTED-BOOTSTRAP AUTHORIZATION TRANSACTION"
+ACT_PATTERN = re.compile(
+    r"^" + re.escape(ACT_LABEL) + r": ([0-9a-f]{64})$", re.M
+)
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -66,6 +75,18 @@ def read_bytes(root: pathlib.Path, rel: pathlib.Path) -> bytes:
     if not target.is_file():
         raise ValueError(f"required transaction subject missing: {rel}")
     return target.read_bytes()
+
+
+def performed_digest(root: pathlib.Path) -> str | None:
+    act = root / ACT_REL
+    if not act.is_file():
+        return None
+    matches = ACT_PATTERN.findall(act.read_text())
+    if not matches:
+        return None
+    if len(set(matches)) != 1:
+        raise ValueError(f"{ACT_REL}: conflicting performed transaction digests")
+    return matches[-1]
 
 
 def manifest_text(title: str, notes: tuple[str, ...], rows: list[tuple[str, str]]) -> str:
@@ -215,15 +236,49 @@ def build_outputs(root: pathlib.Path) -> dict[pathlib.Path, str]:
 
 
 def run(check: bool, root: pathlib.Path = ROOT) -> int:
-    outputs = build_outputs(root)
+    try:
+        frozen = performed_digest(root)
+        outputs = build_outputs(root)
+    except ValueError as exc:
+        print(f"DRIFT: {exc}")
+        return 1
     drift = []
     for rel, content in outputs.items():
         target = root / rel
         if not target.exists() or target.read_text() != content:
             drift.append(rel)
-            if not check:
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_text(content)
+    act_drift = None
+    if frozen is not None:
+        target = root / TRANSACTION_MANIFEST_REL
+        if not target.is_file():
+            act_drift = f"performed transaction subject missing: {TRANSACTION_MANIFEST_REL}"
+        else:
+            actual = sha256_bytes(target.read_bytes())
+            if actual != frozen:
+                act_drift = (
+                    f"performed transaction digest {frozen} != current manifest "
+                    f"{actual}"
+                )
+        if drift or act_drift:
+            if act_drift:
+                print(f"DRIFT: {act_drift}")
+            for rel in drift:
+                print(f"DRIFT: immutable performed subject {rel}")
+            return 1
+        if check:
+            print(
+                "performed general trusted-bootstrap transaction frozen and "
+                f"current — {EXPECTED_ACCEPTED_MODULES} contract modules, "
+                f"{len(PWB_COVERAGE_RELS) + 2} signed coverage artifacts, "
+                "5 owner-act rows"
+            )
+        else:
+            print(
+                "immutable performed transaction unchanged — rewrite refused; "
+                "all generated subjects remain exact"
+            )
+        return 0
+
     if check:
         if drift:
             for rel in drift:
@@ -236,6 +291,10 @@ def run(check: bool, root: pathlib.Path = ROOT) -> int:
             "5 owner-act rows"
         )
         return 0
+    for rel in drift:
+        target = root / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(outputs[rel])
     for rel in outputs:
         state = "rewrote" if rel in drift else "unchanged"
         print(f"{state}  {rel}  sha256 {sha256_bytes(outputs[rel].encode())}")
@@ -288,7 +347,47 @@ def selftest() -> int:
             and changed[ACT_SEMANTICS_REL] != baseline[ACT_SEMANTICS_REL]
         )
         print(f"{'PASS' if digest_changes else 'FAIL'} subject mutation changes act and transaction")
-    return 0 if parity_fails and digest_changes else 1
+
+        shutil.copy2(ROOT / CAP1_COVERAGE_REL, cap1)
+        for rel, content in baseline.items():
+            target = clone / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(content)
+        act = clone / ACT_REL
+        act.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / ACT_REL, act)
+
+        frozen_before = {
+            rel: (clone / rel).read_bytes() for rel in baseline
+        }
+        clean_noop = run(False, clone) == 0
+        clean_unchanged = all(
+            (clone / rel).read_bytes() == content
+            for rel, content in frozen_before.items()
+        )
+        print(
+            f"{'PASS' if clean_noop and clean_unchanged else 'FAIL'} "
+            "performed clean write mode is a no-op success"
+        )
+
+        cap1.write_text(cap1.read_text() + "\npost-act coverage mutation\n")
+        frozen_before_drift = {
+            rel: (clone / rel).read_bytes() for rel in baseline
+        }
+        rewrite_refused = run(False, clone) == 1
+        drift_unchanged = all(
+            (clone / rel).read_bytes() == content
+            for rel, content in frozen_before_drift.items()
+        )
+        print(
+            f"{'PASS' if rewrite_refused and drift_unchanged else 'FAIL'} "
+            "performed drift rejected without rewriting bound outputs"
+        )
+    passed = (
+        parity_fails and digest_changes and clean_noop and clean_unchanged
+        and rewrite_refused and drift_unchanged
+    )
+    return 0 if passed else 1
 
 
 def main() -> int:

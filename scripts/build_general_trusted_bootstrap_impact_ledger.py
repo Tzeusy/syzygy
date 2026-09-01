@@ -5,10 +5,14 @@ from __future__ import annotations
 
 import argparse
 import collections
+import hashlib
 import io
 import pathlib
+import re
+import shutil
 import subprocess
 import tarfile
+import tempfile
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -32,9 +36,19 @@ EXPECTED = {
     "A1-mechanism act": 6,
 }
 EXPECTED_UNION = 204
-OUT = ROOT / (
+OUT_REL = pathlib.Path(
     ".syzygy/governance/contracts/candidates/"
     "general-trusted-bootstrap-authorization/IMPACT-LEDGER.md"
+)
+OUT = ROOT / OUT_REL
+TRANSACTION_MANIFEST_REL = OUT_REL.with_name("TRANSACTION-MANIFEST.txt")
+ACT_REL = pathlib.Path(
+    ".syzygy/governance/decisions/"
+    "GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md"
+)
+ACT_LABEL = "SIGN OFF GENERAL TRUSTED-BOOTSTRAP AUTHORIZATION TRANSACTION"
+ACT_PATTERN = re.compile(
+    r"^" + re.escape(ACT_LABEL) + r": ([0-9a-f]{64})$", re.M
 )
 
 POST_ACT_EDITS = {
@@ -43,18 +57,18 @@ POST_ACT_EDITS = {
 }
 
 
-def run(*args: str) -> str:
+def run_command(root: pathlib.Path, *args: str) -> str:
     return subprocess.run(
         args,
-        cwd=ROOT,
+        cwd=root,
         check=True,
         text=True,
         stdout=subprocess.PIPE,
     ).stdout
 
 
-def paths_for(term: str) -> set[str]:
-    output = run("git", "grep", "-l", "-F", term, BASELINE, "--")
+def paths_for(term: str, root: pathlib.Path = ROOT) -> set[str]:
+    output = run_command(root, "git", "grep", "-l", "-F", term, BASELINE, "--")
     prefix = BASELINE + ":"
     paths = {
         line.removeprefix(prefix)
@@ -69,11 +83,11 @@ def paths_for(term: str) -> set[str]:
     return paths
 
 
-def archive_populations() -> dict[str, set[str]]:
+def archive_populations(root: pathlib.Path = ROOT) -> dict[str, set[str]]:
     """Read the baseline through a second, index-independent byte path."""
     archive = subprocess.run(
         ("git", "archive", "--format=tar", BASELINE),
-        cwd=ROOT,
+        cwd=root,
         check=True,
         stdout=subprocess.PIPE,
     ).stdout
@@ -91,6 +105,141 @@ def archive_populations() -> dict[str, set[str]]:
                 if needle in body:
                     populations[term].add(member.name)
     return populations
+
+
+def baseline_populations(root: pathlib.Path = ROOT) -> dict[str, set[str]]:
+    """Reproduce the seven frozen baseline path sets by two byte paths."""
+    populations = {term: paths_for(term, root) for term in TERMS}
+    archive_sets = archive_populations(root)
+    for term in TERMS:
+        if archive_sets[term] != populations[term]:
+            missing = sorted(populations[term] - archive_sets[term])
+            extra = sorted(archive_sets[term] - populations[term])
+            raise ValueError(
+                f"{term}: git-grep/archive disagreement; "
+                f"archive_missing={missing}, archive_extra={extra}"
+            )
+    union = set().union(*populations.values())
+    if len(union) != EXPECTED_UNION:
+        raise ValueError(f"union: {len(union)} paths != expected {EXPECTED_UNION}")
+    return populations
+
+
+def sha256_file(path: pathlib.Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def performed_digest(root: pathlib.Path) -> str | None:
+    act = root / ACT_REL
+    if not act.is_file():
+        return None
+    matches = ACT_PATTERN.findall(act.read_text())
+    if not matches:
+        return None
+    if len(set(matches)) != 1:
+        raise ValueError(f"{ACT_REL}: conflicting performed transaction digests")
+    return matches[-1]
+
+
+def transaction_subject_digest(root: pathlib.Path, subject: pathlib.Path) -> str:
+    manifest = root / TRANSACTION_MANIFEST_REL
+    if not manifest.is_file():
+        raise ValueError(f"required transaction manifest missing: {TRANSACTION_MANIFEST_REL}")
+    rows = []
+    for line_no, line in enumerate(manifest.read_text().splitlines(), 1):
+        if not line or line.startswith("#"):
+            continue
+        match = re.fullmatch(r"([0-9a-f]{64})  (\S.*)", line)
+        if not match:
+            raise ValueError(
+                f"{TRANSACTION_MANIFEST_REL}:{line_no}: malformed digest row"
+            )
+        if match.group(2) == subject.as_posix():
+            rows.append(match.group(1))
+    if len(rows) != 1:
+        raise ValueError(
+            f"{TRANSACTION_MANIFEST_REL}: expected one row for {subject}, "
+            f"found {len(rows)}"
+        )
+    return rows[0]
+
+
+def validate_frozen_ledger(
+    root: pathlib.Path, populations: dict[str, set[str]] | None = None
+) -> None:
+    """Verify the performed ledger without recomputing post-act dispositions."""
+    act_digest = performed_digest(root)
+    if act_digest is None:
+        raise ValueError("general trusted-bootstrap transaction is not performed")
+    transaction = root / TRANSACTION_MANIFEST_REL
+    if not transaction.is_file():
+        raise ValueError(f"required transaction manifest missing: {TRANSACTION_MANIFEST_REL}")
+    current_transaction_digest = sha256_file(transaction)
+    if act_digest != current_transaction_digest:
+        raise ValueError(
+            f"performed transaction digest {act_digest} != current manifest "
+            f"{current_transaction_digest}"
+        )
+
+    ledger = root / OUT_REL
+    if not ledger.is_file():
+        raise ValueError(f"frozen impact ledger missing: {OUT_REL}")
+    expected_ledger_digest = transaction_subject_digest(root, OUT_REL)
+    actual_ledger_digest = sha256_file(ledger)
+    if actual_ledger_digest != expected_ledger_digest:
+        raise ValueError(
+            f"frozen impact ledger digest {actual_ledger_digest} != transaction "
+            f"row {expected_ledger_digest}"
+        )
+
+    populations = populations or baseline_populations(root)
+    expected_union = set().union(*populations.values())
+    body = ledger.read_text()
+    marker = "## Complete ledger\n"
+    if marker not in body:
+        raise ValueError("frozen impact ledger has no complete-ledger section")
+    complete = body.split(marker, 1)[1]
+    row_pattern = re.compile(
+        r"^\| `([^`]+)` \| (.*?) \| "
+        r"(edit|post-act edit|re-review|no impact) \| (.+) \|$"
+    )
+    rows: dict[str, set[str]] = {}
+    duplicates: set[str] = set()
+    for line in complete.splitlines():
+        match = row_pattern.match(line)
+        if not match:
+            continue
+        path = match.group(1)
+        if path in rows:
+            duplicates.add(path)
+        cited = {term.strip() for term in match.group(2).split(",") if term.strip()}
+        rows[path] = cited
+    if duplicates:
+        raise ValueError(f"duplicate frozen ledger paths: {sorted(duplicates)}")
+    actual_paths = set(rows)
+    if actual_paths != expected_union:
+        raise ValueError(
+            "frozen ledger path set differs from baseline union; "
+            f"missing={sorted(expected_union - actual_paths)}, "
+            f"extra={sorted(actual_paths - expected_union)}"
+        )
+    for path in sorted(expected_union):
+        expected_terms = {term for term in TERMS if path in populations[term]}
+        if rows[path] != expected_terms:
+            raise ValueError(
+                f"{path}: frozen baseline memberships {sorted(rows[path])} != "
+                f"expected {sorted(expected_terms)}"
+            )
+
+    for term in TERMS:
+        match = re.search(
+            rf"^\| `{re.escape(term)}` \| (\d+) \|$", body, re.M
+        )
+        if not match or int(match.group(1)) != len(populations[term]):
+            raise ValueError(f"{term}: frozen denominator missing or incorrect")
+    union_match = re.search(r"^Unique union: \*\*(\d+) files\*\*\.$", body, re.M)
+    if not union_match or int(union_match.group(1)) != len(expected_union):
+        raise ValueError("frozen unique-union denominator missing or incorrect")
 
 
 def classify(path: str, changed: set[str]) -> tuple[str, str]:
@@ -155,21 +304,12 @@ def classify(path: str, changed: set[str]) -> tuple[str, str]:
     )
 
 
-def render() -> str:
-    populations = {term: paths_for(term) for term in TERMS}
-    archive_sets = archive_populations()
-    for term in TERMS:
-        if archive_sets[term] != populations[term]:
-            missing = sorted(populations[term] - archive_sets[term])
-            extra = sorted(archive_sets[term] - populations[term])
-            raise ValueError(
-                f"{term}: git-grep/archive disagreement; "
-                f"archive_missing={missing}, archive_extra={extra}"
-            )
+def render(root: pathlib.Path = ROOT) -> str:
+    populations = baseline_populations(root)
     union = sorted(set().union(*populations.values()))
-    if len(union) != EXPECTED_UNION:
-        raise ValueError(f"union: {len(union)} paths != expected {EXPECTED_UNION}")
-    changed = set(run("git", "diff", "--name-only", BASELINE, "--").splitlines())
+    changed = set(
+        run_command(root, "git", "diff", "--name-only", BASELINE, "--").splitlines()
+    )
 
     rows = []
     counts: collections.Counter[str] = collections.Counter()
@@ -225,24 +365,84 @@ def render() -> str:
     return "\n".join(lines)
 
 
+def execute(
+    check: bool,
+    root: pathlib.Path = ROOT,
+    populations: dict[str, set[str]] | None = None,
+) -> int:
+    frozen = performed_digest(root)
+    target = root / OUT_REL
+    if frozen is not None:
+        try:
+            validate_frozen_ledger(root, populations=populations)
+        except ValueError as exc:
+            print(f"DRIFT: immutable performed impact ledger — {exc}")
+            return 1
+        if check:
+            print(
+                "performed impact ledger frozen and valid — "
+                f"{OUT_REL}; {EXPECTED_UNION} baseline files"
+            )
+        else:
+            print(
+                "immutable performed impact ledger unchanged — rewrite refused; "
+                f"{OUT_REL}"
+            )
+        return 0
+
+    output = render(root)
+    if check:
+        if not target.exists() or target.read_text() != output:
+            print(f"DRIFT: {OUT_REL}")
+            return 1
+        print(f"impact ledger current — {OUT_REL}; {EXPECTED_UNION} baseline files")
+        return 0
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(output)
+    print(f"wrote {OUT_REL}")
+    return 0
+
+
+def selftest() -> int:
+    populations = baseline_populations(ROOT)
+    checks = []
+    with tempfile.TemporaryDirectory(prefix="general-bootstrap-impact-") as temp:
+        clone = pathlib.Path(temp)
+        for rel in (OUT_REL, TRANSACTION_MANIFEST_REL, ACT_REL):
+            target = clone / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(ROOT / rel, target)
+
+        before = (clone / OUT_REL).read_bytes()
+        clean = execute(False, clone, populations=populations) == 0
+        checks.append((
+            "performed clean write mode is a no-op success",
+            clean and (clone / OUT_REL).read_bytes() == before,
+        ))
+
+        mutation = before + b"\npost-act mutation\n"
+        (clone / OUT_REL).write_bytes(mutation)
+        refused = execute(False, clone, populations=populations) == 1
+        checks.append((
+            "performed drift is rejected without rewrite",
+            refused and (clone / OUT_REL).read_bytes() == mutation,
+        ))
+
+    for name, passed in checks:
+        print(f"{'PASS' if passed else 'FAIL'} {name}")
+    failures = sum(not passed for _name, passed in checks)
+    print(f"{len(checks)} impact freeze mutations, {failures} failing")
+    return 1 if failures else 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--selftest", action="store_true")
     args = parser.parse_args()
-    output = render()
-    if args.check:
-        if not OUT.exists() or OUT.read_text() != output:
-            print(f"DRIFT: {OUT.relative_to(ROOT)}")
-            return 1
-        print(
-            "impact ledger current — "
-            f"{OUT.relative_to(ROOT)}; {EXPECTED_UNION} baseline files"
-        )
-        return 0
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(output)
-    print(f"wrote {OUT.relative_to(ROOT)}")
-    return 0
+    if args.selftest:
+        return selftest()
+    return execute(args.check)
 
 
 if __name__ == "__main__":

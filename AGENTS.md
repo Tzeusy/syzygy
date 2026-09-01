@@ -7,13 +7,17 @@ What the project *is* lives in `README.md` and `.syzygy/intent/OVERVIEW.md`.
 
 Doctrine is adopted; engineering policy is owner-approved. The Wave A/B
 contracts and the CC-SPEC/CC-IMPACT craft policies are **accepted/in force
-as of 2026-08-17**; deferred-wave contracts, topology, overview and the
-remaining policy additions are **candidates awaiting owner acts**. The one
+through their 2026-08-17 original acts and the 2026-09-01 trusted-bootstrap
+amendment** (`PROJECT-STATUS.md` owns current state); deferred-wave contracts,
+topology, overview and the remaining
+policy additions are **candidates awaiting owner acts**. The one
 OpenSpec change `project-registration-and-honest-shape-visibility` was
 **adopted by the owner — act dated 2026-08-20, recorded at
 `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`** at the exact
-seven digests that record quotes (VIS-4; CC-SPEC-10); it is the accepted
-behavioral authority for Capability 1 and supersedes the charter for
+seven act-time digests that record quotes (VIS-4; CC-SPEC-10); its
+`CONTRACT-COVERAGE.md` digest was separately amended by the 2026-09-01
+transaction recorded in `decisions/ACCEPTANCE-ACT-RECORD.md`. It remains the
+accepted behavioral authority for Capability 1 and supersedes the charter for
 required behaviour. The owner's **implementation-authorization act —
 dated 2026-08-21, recorded at
 `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`** —
@@ -35,14 +39,27 @@ Syzygy-authored implementation code, broad remote access, multi-user support,
 or changes to adopted doctrine or accepted contracts. All other prohibitions
 and truth/evidence boundaries below remain in force.
 
+The owner separately performed the indivisible five-row general
+trusted-bootstrap authorization transaction on **2026-09-01**, recorded in
+`decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md` and
+`decisions/ACCEPTANCE-ACT-RECORD.md`. RFC 0001–0009 remain accepted and their
+current bytes are bound at the exact 30-module amendment manifest; seven signed
+coverage artifacts and CC-SPEC-8 are amended. Valid exact-scope human acts may
+be effective in state (1), `owner-adopted (bootstrap, uncorrelated)`, or state
+(2), `Syzygy-verified`; only state (2) is independently verified.
+PWB-REQ-005 and PWB-REQ-022 deliberately remain stricter state-(2)-only signed
+behavior until separately amended. The transaction granted no consent,
+observation, write, egress, execution, deployment, release, recovery, mission,
+or implementation authority.
+
 ## Where authority lives
 
 | Question | Authority | Path | Binding today? |
 |---|---|---|---|
 | Why — purpose, non-negotiables | Doctrine (VIS-1…7, SEC-1…5) | `.syzygy/governance/doctrine/` | **Yes** — adopted 2026-07-30, D1 in force |
 | Prior owner rulings | Decisions (SDR-1…33, warrants, pending queue) | `.syzygy/governance/decisions/` | **Yes** |
-| Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | **Owner-approved (D2)**; clause force begins at the acceptance acts. **CC-SPEC-1…11 and CC-IMPACT-1…7 in force as of 2026-08-17** (acts 6/7, recorded in `INSTALL-RECORD.md`; the files bind at `contracts/candidates/policy-candidates/`, uncopied and unedited) |
-| Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/` | **RFC 0001–0009: accepted** — the Wave A and B acts were performed 2026-08-17 and recorded in `decisions/ACCEPTANCE-ACT-RECORD.md`, with the 30 modules installed at `contracts/rfcs/` as of 2026-08-17 (owner-adopted bootstrap, uncorrelated). RFC 0010–0011: **candidate**, in `contracts/candidates/` (deferred waves) |
+| Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | **Owner-approved (D2)**; **CC-SPEC-1…11 and CC-IMPACT-1…7 are in force**. The original acts 6/7 were performed 2026-08-17; CC-SPEC-8 was amended in the separate 2026-09-01 transaction, while CC-IMPACT was unchanged. |
+| Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/` | **RFC 0001–0009: accepted and amended** — originally accepted by the 2026-08-17 Wave A/B acts; their current installed bytes are bound at the 2026-09-01 30-module contract-amendment manifest. The performed-wave manifests remain immutable act-time history. RFC 0010–0011: **candidate**, in `contracts/candidates/` (deferred waves) |
 | Intended placement | Topology bundle | `.syzygy/map/topology-candidates/` | **No — candidate.** `map/topology/` exists only after act 3 |
 | Public narrative | Overview | `.syzygy/intent/OVERVIEW.md` | Governed presentation — **never authority** |
 
@@ -55,10 +72,11 @@ clauses may be discussed, never cited as binding.
 
 ## Pending owner gates
 
-**Nine acts are open. Four acts have been performed — Waves A and B, then
-craft acts 6 and 7 (CC-SPEC, CC-IMPACT), all 2026-08-17**
-(`decisions/ACCEPTANCE-ACT-RECORD.md` owns the record); this file states no
-more than that.
+**Nine foundational offerings remain open. Four original foundational acts
+were performed — Waves A and B, then craft acts 6 and 7 (CC-SPEC, CC-IMPACT),
+all 2026-08-17. A separate indivisible five-row amendment transaction was
+performed 2026-09-01** (`decisions/ACCEPTANCE-ACT-RECORD.md` owns the
+record); it does not close any of the nine foundational offerings.
 
 | Question | The one record that owns the answer |
 |---|---|
@@ -72,9 +90,11 @@ Each digest belongs to the artifact it names, so verify with
 and no verdict.**
 
 `decisions/ACCEPTANCE-ACT-RECORD.md` exists since the first act (Wave A,
-2026-08-17) and owns every performed act; entries are appended, never
-edited. Superseded offerings are banner-marked and retired phrases satisfy
-nothing — never route an owner to a stale offering.
+2026-08-17) and owns every performed act and amendment transaction; the
+2026-09-01 transaction also has the dedicated
+`decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`. Entries are
+appended, never edited. Superseded offerings are banner-marked and retired
+phrases satisfy nothing — never route an owner to a stale offering.
 
 ## Task routing — context is compiled, never accumulated
 
@@ -85,9 +105,9 @@ Load the minimum for one correct decision; never "read everything."
 | A doctrine question | the one doctrine file, via the `heart-and-soul` skill |
 | An engineering-bar question | the one craft policy that owns it |
 | A contract question | **`contracts/candidates/TASK-ROUTER.md`** — the one generated router; context-budget measurement stays with `06-CONTEXT-LOAD-MAP.md` / `scripts/context_load.py` |
-| "May I implement X?" | Capability 1 remains authorized under `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`. The bounded Three-Surface POC and its one Butlers proving slice are additionally authorized by `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`; the surface-redesign item `syzygy-z2b` is authorized by the signed-off `three-surface-poc-experience` spec (`decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`). Anything outside these scopes remains forbidden. |
+| "May I implement X?" | Capability 1 remains authorized under `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`. The bounded Three-Surface POC and its one Butlers proving slice are additionally authorized by `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`; the surface-redesign item `syzygy-z2b` is authorized by the signed-off `three-surface-poc-experience` spec (`decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`). The 2026-09-01 transaction adds no implementation authority; PWB implementation remains paused pending its own behavioral amendment, effect-specific gates, and implementation authorization. Anything outside the earlier authorized scopes remains forbidden. |
 | "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; Capability 1's spec is **authored and adopted**; every other capability's authoring stays forbidden |
-| The Capability 1 specification | the change `openspec/changes/project-registration-and-honest-shape-visibility/` — **ADOPTED by the owner (act dated 2026-08-20)** at the exact digests in `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`; the seven adopted artifacts may not be edited (an edit breaks the adopted digests — route changes through CC-REV-2's amendment path); its warrants-union is generated (`build_capability_1_spec_dependencies.py`) |
+| The Capability 1 specification | the change `openspec/changes/project-registration-and-honest-shape-visibility/` — **ADOPTED by the owner (act dated 2026-08-20)**; the 2026-09-01 transaction superseded only `CONTRACT-COVERAGE.md`'s digest. The current seven-artifact set may not be edited outside CC-REV-2's amendment path; its warrants-union is generated (`build_capability_1_spec_dependencies.py`). See the original act plus `decisions/ACCEPTANCE-ACT-RECORD.md`. |
 | Current status | `PROJECT-STATUS.md` |
 | "Is this ready for OpenSpec?" | Authoring was authorized by the owner's 2026-08-20 launch decision, made with Administration 1's `NOT READY` verdict (2026-08-18, out-of-family, v2.4) in hand as diagnostic evidence — that record stands unaltered in `decisions/launch-gate/`. `PROJECT-STATUS.md` owns the current state |
 | A launch-gate administration | the record is **structured JSON** (`launch-gate-administration.schema.json`); the Markdown report is generated, **never parsed back**. Scripts: `validate_launch_administration.py`, `render_launch_administration.py`; `launch_gate_results.py` covers the historical Markdown records only |
@@ -110,18 +130,21 @@ authorization act); implement, plan, or backlog anything beyond Capability 1
 **except the Three-Surface POC authorized on 2026-08-29 and its
 improvement cycles authorized on 2026-08-30
 (`decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md`)**; extend
-that POC beyond one configured Butlers repository; implement deferred Waves
-C1/C2/D1/D2 or substantive Mission Control; perform production deployment,
-release, broad remote access, or multi-user support; allow Syzygy to write
-implementation code; autonomously adopt intent; create an OpenSpec
+that POC beyond one configured Butlers repository; resume PWB implementation
+before a separate behavioral amendment, effect-specific consent/policy/registry
+acts, and implementation authorization; read any new repository body before
+per-repository consent and the applicable registry/policy acts; implement
+deferred Waves C1/C2/D1/D2 or substantive Mission Control; perform production
+deployment, release, broad remote access, or multi-user support; allow Syzygy
+to write implementation code; autonomously adopt intent; create an OpenSpec
 changeset that overlaps another change or is not a coherent, clearly
 scoped category (the owner's 2026-08-30 direction
 `decisions/OPENSPEC-MULTI-CHANGE-DIRECTION.md` permits multiple
 changes under exactly those two conditions; every new change is a
-candidate binding nothing until owner sign-off, VIS-4); edit the
-adopted Capability 1 change's seven adopted artifacts
-(`decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`) or the six
-signed `three-surface-poc-experience` artifacts
+candidate binding nothing until owner sign-off, VIS-4); edit the current
+Capability 1 change's seven adopted artifacts (the original act plus the
+2026-09-01 coverage amendment in `decisions/ACCEPTANCE-ACT-RECORD.md`) or the
+current six signed `three-surface-poc-experience` artifacts
 (`decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md` — signed off
 2026-08-30, which also unblocked syzygy-z2b implementation; spec
 changes route through CC-REV-2's amendment path); exceed the escalation triggers the
@@ -440,10 +463,11 @@ can be authorized.
   but verifies performed manifests by recorded digest and path membership
   without rewriting or comparing their historical row digests to current
   module bytes.
-- The generalized trusted-bootstrap candidate keeps state (1) and state (2)
-  distinct: both may carry a real effective human act only after the exact
-  owner transaction is performed, only state (2) is independently verified,
-  and an act is always a warrant rather than evidence of effect success. The
-  project-wide Polaris spec intentionally remains stricter at state (2) until
-  a separate signed amendment; inspect the current act record before relying
-  on the candidate transaction.
+- The generalized trusted-bootstrap transaction was performed 2026-09-01 and
+  keeps state (1) and state (2) distinct: both may carry a valid, exact-scope
+  effective human act, only state (2) is independently verified, and an act is
+  always a warrant rather than evidence of effect success. It amended the
+  accepted 30-module RFC 0001–0009 set, seven signed coverage artifacts and
+  CC-SPEC-8, but granted no effect-specific or implementation authority. The
+  project-wide Polaris spec intentionally remains stricter at state (2) for
+  PWB-REQ-005 and PWB-REQ-022 until a separate signed behavioral amendment.

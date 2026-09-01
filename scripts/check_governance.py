@@ -1411,6 +1411,28 @@ DIGEST_ROW = re.compile(r"^(?P<sha>[0-9a-f]{64})\s+(?P<path>\S.*)$")
 #: waves are immutable historical subjects whose own digest is recorded here.
 ACCEPTANCE_RECORD = f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md"
 PERFORMED_ACT_RECORD = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+#: The 2026-09-01 transaction is an owner act outside the foundational
+#: phrase registry. Its one argument binds seven nested subjects, including
+#: the current CC-SPEC bytes. Keeping the outer act explicit here lets CG-7
+#: verify both the performed transaction and the nested policy amendment
+#: without pretending the old foundational offering owns this later act.
+GENERAL_BOOTSTRAP_LABEL = (
+    "SIGN OFF GENERAL TRUSTED-BOOTSTRAP AUTHORIZATION TRANSACTION")
+GENERAL_BOOTSTRAP_DIR = (
+    f"{CANDIDATES}/general-trusted-bootstrap-authorization")
+GENERAL_BOOTSTRAP_SUBJECT = f"{GENERAL_BOOTSTRAP_DIR}/TRANSACTION-MANIFEST.txt"
+GENERAL_BOOTSTRAP_CONTRACT_MANIFEST = (
+    f"{GENERAL_BOOTSTRAP_DIR}/CONTRACT-AMENDMENT-MANIFEST.txt")
+GENERAL_BOOTSTRAP_PWB_MANIFEST = (
+    f"{GENERAL_BOOTSTRAP_DIR}/PWB-COVERAGE-AMENDMENT-MANIFEST.txt")
+GENERAL_BOOTSTRAP_ACT = (
+    f"{DECISIONS}/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md")
+CONTRACT_ROOT = ".syzygy/governance/contracts"
+CC_SPEC_LABEL = "CONFIRM CRAFT AMENDMENT: CC-SPEC"
+CC_SPEC_SUBJECT = (
+    f"{CANDIDATES}/policy-candidates/"
+    "SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md")
+GENERAL_BOOTSTRAP_POPULATIONS = (7, 30, 5)
 #: Round-2026-08d wave structure: the all-in-one act-1 phrase is retired;
 #: six wave manifests partition the active set and each one's own sha256 is
 #: that wave act's argument (ACCEPTANCE-WAVE-DESIGN.md). The active manifest
@@ -1756,6 +1778,13 @@ def _act_subjects():
         sep = re.escape(e.get("argument_separator") or ":")
         out.append((label, e["subject"], re.compile(
             re.escape(label) + r"\s*" + sep + r"\s*`?([0-9a-f]{64})")))
+    if not any(label == GENERAL_BOOTSTRAP_LABEL for label, _rel, _pat in out):
+        out.append((
+            GENERAL_BOOTSTRAP_LABEL,
+            GENERAL_BOOTSTRAP_SUBJECT,
+            re.compile(re.escape(GENERAL_BOOTSTRAP_LABEL)
+                       + r"\s*:\s*`?([0-9a-f]{64})"),
+        ))
     return tuple(out)
 
 
@@ -1783,6 +1812,51 @@ class _ActSubjects:
 
 ACT_SUBJECTS = _ActSubjects()
 
+
+def _performed_act_digests(act_subjects=None, record=None):
+    """Return every performed digest, in record order, for each act label.
+
+    The owner-act record is append-only. An amended subject can therefore
+    have more than one lawful historical digest, and dropping the earlier one
+    would turn correct act-time evidence into a false stale-copy finding.
+
+    Two record shapes are intentional. Older acts repeat their exact ceremony
+    phrase on a line of its own. An indivisible transaction records its nested
+    acts as table rows, so a row containing the stable subject basename and a
+    single exact digest also records that subject's performed argument. Only
+    the owner-act record is parsed; an offering or review can never populate
+    this set.
+    """
+    specs = tuple(ACT_SUBJECTS if act_subjects is None else act_subjects)
+    if record is None:
+        full = os.path.join(ROOT, PERFORMED_ACT_RECORD)
+        record = read(PERFORMED_ACT_RECORD) if os.path.exists(full) else ""
+    found = {label: [] for label, _rel, _pat in specs}
+    if not record:
+        return {label: tuple(values) for label, values in found.items()}
+
+    lines = record.splitlines()
+    for label, subject, phrase_arg in specs:
+        values = found[label]
+        for line in lines:
+            m = phrase_arg.fullmatch(line.strip())
+            if m and m.group(1) not in values:
+                values.append(m.group(1))
+
+        # Transaction rows carry the stable subject and exact digest, but no
+        # second pseudo-ceremony phrase. Requiring the act-type table shape
+        # prevents prose or review hashes elsewhere in the record from being
+        # mistaken for performance.
+        basename = os.path.basename(subject)
+        for line in lines:
+            if (not line.lstrip().startswith("|") or basename not in line
+                    or "act type" in line.lower()):
+                continue
+            digests = re.findall(r"`([0-9a-f]{64})`", line)
+            if len(digests) == 1 and digests[0] not in values:
+                values.append(digests[0])
+    return {label: tuple(values) for label, values in found.items()}
+
 #: Files that quote a stale act argument *as* a retired value, on purpose —
 #: the revision table in the acceptance record and the round's own records.
 #: They are read as history, so a mismatch there is the point, not a defect.
@@ -1799,6 +1873,10 @@ ACT_QUOTE_EXEMPT = (
     #: live beside the raw files and quote the same frozen digests.
     f"{CANDIDATES}/round-2026-08e/reviews/",
     f"{CANDIDATES}/reviews/",
+    # Exact-byte review evidence for the general trusted-bootstrap
+    # transaction lives in the ordinary docs review lane. It remains frozen
+    # at the reviewed transaction digest and is never a current owner offer.
+    "docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-",
     f"{CANDIDATES}/history/",
     f"{CANDIDATES}/fixtures/",
     f"{CANDIDATES}/00-README.md",
@@ -1851,13 +1929,13 @@ ACT_DIGEST_COPY_FILES = {
     f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md":
         tuple(f"ACCEPT FOUNDATIONAL WAVE {w}" for w in WAVE_IDS) + (
          "CONFIRM CRAFT AMENDMENT: CC-TEST-2",
-         "CONFIRM CRAFT AMENDMENT: CC-SPEC",
          "CONFIRM CRAFT AMENDMENT: CC-IMPACT",
          "ACCEPT TOPOLOGY", "ADOPT PROJECT OVERVIEW"),
     f"{CRAFT}/INSTALL-RECORD.md":
         ("CONFIRM CRAFT AMENDMENT: CC-TEST-2",
          "CONFIRM CRAFT AMENDMENT: CC-SPEC",
-         "CONFIRM CRAFT AMENDMENT: CC-IMPACT"),
+         "CONFIRM CRAFT AMENDMENT: CC-IMPACT",
+         GENERAL_BOOTSTRAP_LABEL),
     # The Wave A closure report (2026-08-10) summarizes the confirmed
     # argument for the owner and therefore carries a full copy of it; if
     # the argument ever regenerates again, this registration makes the
@@ -1878,18 +1956,30 @@ ACT_DIGEST_COPY_FILES = {
         ("CONFIRM CRAFT AMENDMENT: CC-SPEC",),
     f"{CANDIDATES}/general-trusted-bootstrap-authorization/TRANSACTION-MANIFEST.txt":
         ("CONFIRM CRAFT AMENDMENT: CC-SPEC",),
-    # The P-41 offering packet (2026-08-17) quotes act 6's exact phrase so
-    # the owner sees what would be performed; registered so a regenerated
-    # argument turns this copy into a finding, not a silent misstatement.
-    f"{DECISIONS}/SPECIFICATION-ACCEPTANCE-DECISION.md":
-        ("CONFIRM CRAFT AMENDMENT: CC-SPEC",),
     # The owner-act record quotes each performed act's exact phrase and
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
     f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md":
         ("ACCEPT FOUNDATIONAL WAVE A", "ACCEPT FOUNDATIONAL WAVE B",
          "CONFIRM CRAFT AMENDMENT: CC-SPEC",
-         "CONFIRM CRAFT AMENDMENT: CC-IMPACT"),
+         "CONFIRM CRAFT AMENDMENT: CC-IMPACT", GENERAL_BOOTSTRAP_LABEL),
+    GENERAL_BOOTSTRAP_ACT:
+        (CC_SPEC_LABEL, GENERAL_BOOTSTRAP_LABEL),
+}
+
+#: A performed digest remains valid historical evidence even after its
+#: subject is amended. These one-time offerings are not current copies and
+#: must not be rewritten to the successor digest; they are nevertheless an
+#: enumerated population, so CG-7e still rejects an unperformed substitution.
+ACT_HISTORICAL_DIGEST_COPY_FILES = {
+    f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md":
+        (CC_SPEC_LABEL,),
+    f"{DECISIONS}/SPECIFICATION-ACCEPTANCE-DECISION.md":
+        (CC_SPEC_LABEL,),
+    f"{GENERAL_BOOTSTRAP_DIR}/OWNER-SIGNOFF-PACKET.md":
+        (GENERAL_BOOTSTRAP_LABEL,),
+    f"{GENERAL_BOOTSTRAP_DIR}/CANDIDATE-TRANSACTION-REPORT.md":
+        (GENERAL_BOOTSTRAP_LABEL,),
 }
 
 
@@ -1898,15 +1988,13 @@ def cg7e_act_digest_copies(paths, res):
 
     Two predicates, and the second is what keeps the first honest:
 
-    1. **A registered file that names an act carries that act's current
-       argument.** Naming means the act's phrase or its subject path appears
-       in the file. If the copy goes stale, the current digest is simply
-       absent from a file that talks about the act — which is decidable, and
-       does not require guessing whether some other 64-hex token used to be
-       an act argument.
-    2. **A file carrying a current act digest is registered.** An
-       unregistered copy is unchecked from the moment it goes stale, which is
-       exactly how the population escaped CG-7d.
+    1. **A registered current file carries that act's current argument; a
+       registered historical file carries an actually performed argument.**
+       The two populations are explicit because rewriting an append-only
+       offering is as wrong as leaving a current owner packet stale.
+    2. **A file carrying a recognized current or performed digest is
+       registered.** An unregistered copy is unchecked from the moment it
+       goes stale, which is exactly how the population escaped CG-7d.
 
     **Why not the simpler rule.** Review RD-6 (H-1) proposed treating every
     64-hex token as an act-argument copy. Tried: 47 findings, none of them
@@ -1927,8 +2015,13 @@ def cg7e_act_digest_copies(paths, res):
         if not os.path.exists(full):
             continue
         d = sha256_file(full)
-        current[d] = label
+        current.setdefault(d, set()).add(label)
         phrases.append((label, rel, d))
+    performed = _performed_act_digests()
+    recognized = {d: set(labels) for d, labels in current.items()}
+    for label, digests in performed.items():
+        for digest in digests:
+            recognized.setdefault(digest, set()).add(label)
     findings, examined, registered = [], 0, []
     for rel in paths:
         if not rel.endswith((".md", ".txt")):
@@ -1948,28 +2041,54 @@ def cg7e_act_digest_copies(paths, res):
                      r"RETIRED|Retired)\b", "\n".join(body.splitlines()[:12]),
                      re.M):
             continue
-        held = [lab for d, lab in current.items() if d in body]
-        if rel in ACT_DIGEST_COPY_FILES:
+        held = {lab for digest, labels in recognized.items() if digest in body
+                for lab in labels}
+        current_declared = ACT_DIGEST_COPY_FILES.get(rel, ())
+        historical_declared = ACT_HISTORICAL_DIGEST_COPY_FILES.get(rel, ())
+        if current_declared or historical_declared:
             examined += 1
-            declared = ACT_DIGEST_COPY_FILES[rel]
             by_label = {lab: d for lab, _sub, d in phrases}
-            missing = [lab for lab in declared
-                       if by_label.get(lab) and by_label[lab] not in body]
-            for lab in missing:
+            missing_current = [lab for lab in current_declared
+                               if by_label.get(lab)
+                               and by_label[lab] not in body]
+            for lab in missing_current:
                 findings.append(
                     f"{rel} — declared to carry act `{lab}` and does not "
                     f"contain its current argument `{by_label[lab][:12]}…`. "
                     f"The copy in this file is stale, and this file is one "
                     f"the owner is sent to")
+
+            missing_historical = []
+            for lab in historical_declared:
+                lawful = performed.get(lab, ())
+                if not lawful or not any(d in body for d in lawful):
+                    missing_historical.append(lab)
+                    findings.append(
+                        f"{rel} — declared to carry performed history for act "
+                        f"`{lab}` but contains none of its arguments recorded "
+                        f"in {PERFORMED_ACT_RECORD}. An unperformed stale "
+                        f"digest is not historical evidence")
+
+            declared = set(current_declared) | set(historical_declared)
+            undeclared = sorted(held - declared)
+            if undeclared:
+                findings.append(
+                    f"{rel} — carries recognized act argument(s) for "
+                    f"{undeclared} but does not declare those copies in the "
+                    f"current or performed-history registry")
             registered.append(
-                f"{rel} — declares {len(declared)} act(s), "
-                f"{len(declared) - len(missing)} current")
+                f"{rel} — declares {len(current_declared)} current and "
+                f"{len(historical_declared)} performed-history act(s); "
+                f"{len(current_declared) - len(missing_current)} current, "
+                f"{len(historical_declared) - len(missing_historical)} "
+                f"historical valid")
         elif held:
             examined += 1
             findings.append(
-                f"{rel} — carries the current argument for {sorted(held)} and "
-                f"is not in ACT_DIGEST_COPY_FILES; an unregistered copy goes "
-                f"unchecked the moment it goes stale")
+                f"{rel} — carries a recognized current or performed argument "
+                f"for {sorted(held)} and is not in either act-copy registry; "
+                f"an unregistered copy goes unchecked the moment it goes "
+                f"stale")
     res.add("FAIL" if findings else ("OK" if examined else "WARN"),
             "CG-7e  act-argument copies enumerated and current", examined,
             len(findings), "file",
@@ -1978,13 +2097,17 @@ def cg7e_act_digest_copies(paths, res):
 
 
 def cg7d_quoted_elsewhere(paths, res, act_subjects=None,
-                          subject_digests=None, corpus=None):
-    """Any file quoting an act phrase must quote its subject's current digest.
+                          subject_digests=None, corpus=None,
+                          performed_digests=None):
+    """An act phrase quotes current bytes or an actually performed digest.
 
     A digest is owned by the artifact it names. Quoting one elsewhere is
     convenience, and convenience goes stale silently — which is exactly how
     all four act arguments in the acceptance record came to offer packages
-    that no longer existed. This check makes every copy load-bearing.
+    that no longer existed. Once a digest has actually been performed it also
+    becomes immutable act-time evidence: a later amendment must not rewrite
+    that history. This check therefore rejects every third state — a digest
+    that is neither current nor present in the append-only performed record.
     """
     #: A digest that its own line calls retired/stale/superseded is history,
     #: not an offer. This is the one exemption granted per-line rather than
@@ -2007,6 +2130,10 @@ def cg7d_quoted_elsewhere(paths, res, act_subjects=None,
                                if os.path.exists(full) else None)
     else:
         subjects = dict(subject_digests)
+    performed = (_performed_act_digests(act_subjects, record=None)
+                 if performed_digests is None
+                 else {label: tuple(values)
+                       for label, values in performed_digests.items()})
     findings, examined = [], 0
     counts = {label: 0 for label, _rel, _pat in act_subjects}
     subject_findings = {label: 0 for label, _rel, _pat in act_subjects}
@@ -2034,16 +2161,18 @@ def cg7d_quoted_elsewhere(paths, res, act_subjects=None,
                         findings.append(
                             f"{rel}:{line_no} — quotes `{label}` but its "
                             f"subject {subj_rel} does not exist")
-                    elif arg != current:
+                    elif arg != current and arg not in performed.get(label, ()):
                         subject_findings[label] += 1
                         findings.append(
                             f"{rel}:{line_no} — quotes `{label}: {arg[:12]}…` "
-                            f"but {subj_rel} hashes to {current[:12]}… — this "
-                            f"copy is stale")
+                            f"but {subj_rel} hashes to {current[:12]}… and "
+                            f"{PERFORMED_ACT_RECORD} records no performance "
+                            f"of that argument — this copy is stale")
     zero_subjects = [label for label, count in counts.items() if count == 0]
     subject_details = [
         f"[subject] {label} — {counts[label]} quotation(s), "
-        f"{subject_findings[label]} finding(s)"
+        f"{subject_findings[label]} finding(s), "
+        f"{len(performed.get(label, ()))} performed digest(s)"
         for label in counts
     ]
     if findings:
@@ -2059,9 +2188,200 @@ def cg7d_quoted_elsewhere(paths, res, act_subjects=None,
     if not examined:
         note += "; no quotations examined"
     res.add(severity,
-            "CG-7d  act digests quoted anywhere match their subjects",
+            "CG-7d  act digests quoted anywhere are current or performed",
             examined, len(findings), "quotation",
             note=note, details=findings + subject_details)
+
+
+def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
+                               manifest_body=None, transaction_digest=None,
+                               policy_digest=None, contract_manifest_body=None,
+                               pwb_manifest_body=None, current_digests=None):
+    """The performed transaction binds every current and nested subject.
+
+    CG-7d permits old *performed* digests so append-only history remains true.
+    That permission needs an inverse current-state predicate: the latest
+    performed CC-SPEC digest and the performed transaction digest must match
+    today's exact subjects, in both the append-only act record and the
+    dedicated act record. The outer manifest's seven subjects, its nested
+    30-row contract manifest, its nested five-row PWB manifest, and all 30
+    installed/candidate contract pairs are then verified from their declared
+    bases. Otherwise a correct outer ceremony could be reported over drifted
+    nested bytes.
+    """
+    def read_if_present(rel):
+        full = os.path.join(ROOT, rel)
+        return read(rel) if os.path.exists(full) else ""
+
+    def current_digest(rel):
+        normalized = os.path.normpath(rel).replace(os.sep, "/")
+        if current_digests is not None:
+            return current_digests.get(normalized)
+        full = os.path.join(ROOT, normalized)
+        return sha256_file(full) if os.path.isfile(full) else None
+
+    def manifest_rows(body, rel, expected_count):
+        rows, bad_lines = [], []
+        for line_no, line in enumerate(body.splitlines(), 1):
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#"):
+                continue
+            m = DIGEST_ROW.match(stripped)
+            if not m:
+                bad_lines.append(
+                    f"{rel}:{line_no} — non-comment line is not a digest row")
+                continue
+            rows.append((m.group("sha"), m.group("path").strip(), line_no))
+        if bad_lines:
+            findings.extend(bad_lines)
+        if len(rows) != expected_count:
+            findings.append(
+                f"{rel} — parsed {len(rows)} digest row(s), expected "
+                f"{expected_count}; the performed population is incomplete")
+        paths = [path for _sha, path, _line in rows]
+        duplicate_paths = sorted({path for path in paths if paths.count(path) > 1})
+        if duplicate_paths:
+            findings.append(
+                f"{rel} — duplicate subject path(s): "
+                f"{', '.join(duplicate_paths)}")
+        return rows
+
+    def repo_subject(path, manifest_rel, line_no, base=""):
+        if os.path.isabs(path):
+            findings.append(
+                f"{manifest_rel}:{line_no} — absolute subject path `{path}`")
+            return None
+        normalized = os.path.normpath(path).replace(os.sep, "/")
+        if normalized == ".." or normalized.startswith("../"):
+            findings.append(
+                f"{manifest_rel}:{line_no} — subject escapes its declared "
+                f"base: `{path}`")
+            return None
+        return (f"{base}/{normalized}" if base else normalized)
+
+    findings, details = [], []
+    if act_record is None:
+        act_record = read_if_present(PERFORMED_ACT_RECORD)
+    if dedicated_record is None:
+        dedicated_record = read_if_present(GENERAL_BOOTSTRAP_ACT)
+    if manifest_body is None:
+        manifest_body = read_if_present(GENERAL_BOOTSTRAP_SUBJECT)
+    if contract_manifest_body is None:
+        contract_manifest_body = read_if_present(
+            GENERAL_BOOTSTRAP_CONTRACT_MANIFEST)
+    if pwb_manifest_body is None:
+        pwb_manifest_body = read_if_present(GENERAL_BOOTSTRAP_PWB_MANIFEST)
+    if transaction_digest is None:
+        transaction_digest = current_digest(GENERAL_BOOTSTRAP_SUBJECT)
+    if policy_digest is None:
+        policy_digest = current_digest(CC_SPEC_SUBJECT)
+
+    specs = (
+        (GENERAL_BOOTSTRAP_LABEL, GENERAL_BOOTSTRAP_SUBJECT,
+         re.compile(re.escape(GENERAL_BOOTSTRAP_LABEL)
+                    + r"\s*:\s*`?([0-9a-f]{64})")),
+        (CC_SPEC_LABEL, CC_SPEC_SUBJECT,
+         re.compile(re.escape(CC_SPEC_LABEL)
+                    + r"\s*@\s*`?([0-9a-f]{64})")),
+    )
+    recorded = _performed_act_digests(specs, record=act_record)
+    dedicated = _performed_act_digests(specs, record=dedicated_record)
+
+    def require_latest(where, values, expected, subject):
+        if expected is None:
+            findings.append(f"{where} — subject `{subject}` is absent")
+        elif not values:
+            findings.append(
+                f"{where} — no performed digest is recorded for `{subject}`")
+        elif values[-1] != expected:
+            findings.append(
+                f"{where} — latest performed digest {values[-1][:12]}… does "
+                f"not match current `{subject}` {expected[:12]}…")
+        else:
+            details.append(
+                f"[current] {where} — {subject} {expected[:12]}…")
+
+    require_latest(PERFORMED_ACT_RECORD,
+                   recorded.get(GENERAL_BOOTSTRAP_LABEL, ()),
+                   transaction_digest, GENERAL_BOOTSTRAP_SUBJECT)
+    require_latest(PERFORMED_ACT_RECORD,
+                   recorded.get(CC_SPEC_LABEL, ()),
+                   policy_digest, CC_SPEC_SUBJECT)
+    require_latest(GENERAL_BOOTSTRAP_ACT,
+                   dedicated.get(GENERAL_BOOTSTRAP_LABEL, ()),
+                   transaction_digest, GENERAL_BOOTSTRAP_SUBJECT)
+    require_latest(GENERAL_BOOTSTRAP_ACT,
+                   dedicated.get(CC_SPEC_LABEL, ()),
+                   policy_digest, CC_SPEC_SUBJECT)
+
+    top_expected, contract_expected, pwb_expected = GENERAL_BOOTSTRAP_POPULATIONS
+    top_rows = manifest_rows(
+        manifest_body, GENERAL_BOOTSTRAP_SUBJECT, top_expected)
+    contract_rows = manifest_rows(
+        contract_manifest_body, GENERAL_BOOTSTRAP_CONTRACT_MANIFEST,
+        contract_expected)
+    pwb_rows = manifest_rows(
+        pwb_manifest_body, GENERAL_BOOTSTRAP_PWB_MANIFEST, pwb_expected)
+
+    for expected, path, line_no in top_rows:
+        rel = repo_subject(path, GENERAL_BOOTSTRAP_SUBJECT, line_no)
+        actual = current_digest(rel) if rel else None
+        if actual != expected:
+            findings.append(
+                f"{GENERAL_BOOTSTRAP_SUBJECT}:{line_no} — `{path}` hashes to "
+                f"{(actual or 'absent')[:12]}…, expected {expected[:12]}…")
+
+    for expected, path, line_no in contract_rows:
+        installed = repo_subject(
+            path, GENERAL_BOOTSTRAP_CONTRACT_MANIFEST, line_no,
+            base=CONTRACT_ROOT)
+        actual = current_digest(installed) if installed else None
+        if actual != expected:
+            findings.append(
+                f"{GENERAL_BOOTSTRAP_CONTRACT_MANIFEST}:{line_no} — installed "
+                f"`{path}` hashes to {(actual or 'absent')[:12]}…, expected "
+                f"{expected[:12]}…")
+
+    for expected, path, line_no in pwb_rows:
+        rel = repo_subject(path, GENERAL_BOOTSTRAP_PWB_MANIFEST, line_no)
+        actual = current_digest(rel) if rel else None
+        if actual != expected:
+            findings.append(
+                f"{GENERAL_BOOTSTRAP_PWB_MANIFEST}:{line_no} — `{path}` "
+                f"hashes to {(actual or 'absent')[:12]}…, expected "
+                f"{expected[:12]}…")
+
+    for _expected, path, line_no in contract_rows:
+        installed = repo_subject(
+            path, GENERAL_BOOTSTRAP_CONTRACT_MANIFEST, line_no,
+            base=CONTRACT_ROOT)
+        candidate = repo_subject(
+            path, GENERAL_BOOTSTRAP_CONTRACT_MANIFEST, line_no,
+            base=CANDIDATES)
+        installed_digest = current_digest(installed) if installed else None
+        candidate_digest = current_digest(candidate) if candidate else None
+        if installed_digest is None or candidate_digest is None:
+            findings.append(
+                f"{GENERAL_BOOTSTRAP_CONTRACT_MANIFEST}:{line_no} — mirror "
+                f"pair for `{path}` is incomplete: installed "
+                f"{'present' if installed_digest else 'absent'}, candidate "
+                f"{'present' if candidate_digest else 'absent'}")
+        elif installed_digest != candidate_digest:
+            findings.append(
+                f"{GENERAL_BOOTSTRAP_CONTRACT_MANIFEST}:{line_no} — installed "
+                f"and candidate `{path}` differ: {installed_digest[:12]}… != "
+                f"{candidate_digest[:12]}…")
+
+    examined = (4 + len(top_rows) + len(contract_rows) + len(pwb_rows)
+                + len(contract_rows))
+    details.append(
+        f"[population] 4 act-record predicates + {len(top_rows)} top-level "
+        f"subjects + {len(contract_rows)} contract rows + {len(pwb_rows)} PWB "
+        f"rows + {len(contract_rows)} installed/candidate mirror pairs")
+
+    res.add("FAIL" if findings else "OK",
+            "CG-7h  performed bootstrap transaction subjects remain exact",
+            examined, len(findings), "predicate", details=findings + details)
 
 
 # --------------------------------------------------------------- CG-8
@@ -4765,9 +5085,13 @@ def selftest():
                           in d for d in row[4])))
 
     row = _selftest_cg7d_quotation("stale-d3")
-    cases.append(("CG-7d stale D3-form quotation detected",
+    cases.append(("CG-7d unperformed stale digest rejected",
                   row[0] == "FAIL"
                   and any("copy is stale" in d for d in row[4])))
+
+    row = _selftest_cg7d_quotation("old-performed")
+    cases.append(("CG-7d old performed digest accepted as history",
+                  row[0] == "OK" and row[3] == 0))
 
     # CG-7e — the first fixture the CG-7 family has ever had. Review RD-6
     # mutation-proved that falsifying every act argument in the owner-facing
@@ -4789,6 +5113,36 @@ def selftest():
         ACT_DIGEST_COPY_FILES.update(saved)
     cases.append(("CG-7e file declaring an act it does not carry detected",
                   c.rows[0][0] == "FAIL"))
+
+    row = _selftest_cg7h("missing-act")
+    cases.append(("CG-7h missing current amendment act rejected",
+                  row[0] == "FAIL"
+                  and any(GENERAL_BOOTSTRAP_ACT in d for d in row[4])))
+
+    row = _selftest_cg7h("mismatched-act")
+    cases.append(("CG-7h mismatched current amendment act rejected",
+                  row[0] == "FAIL"
+                  and any("latest performed digest" in d for d in row[4])))
+
+    row = _selftest_cg7h("valid")
+    cases.append(("CG-7h complete transaction population passes at 76",
+                  row[0] == "OK" and row[2] == 76 and row[3] == 0))
+
+    row = _selftest_cg7h("top-level-drift")
+    cases.append(("CG-7h top-level transaction subject drift detected",
+                  row[0] == "FAIL"
+                  and any("ACT-SEMANTICS.md" in d for d in row[4])))
+
+    row = _selftest_cg7h("nested-contract-drift")
+    cases.append(("CG-7h nested contract row drift detected",
+                  row[0] == "FAIL"
+                  and any("installed `rfcs/RFC-0000.md`" in d
+                          for d in row[4])))
+
+    row = _selftest_cg7h("nested-pwb-drift")
+    cases.append(("CG-7h nested PWB row drift detected",
+                  row[0] == "FAIL"
+                  and any("coverage-0.md" in d for d in row[4])))
 
     c = Cap(); cg21_contract_prose_states_no_measurement(c, modules=[])
     cases.append(("CG-21 empty module list warns, never passes",
@@ -4933,26 +5287,116 @@ def _selftest_cg7d_quotation(kind):
             ("ADOPT DOCTRINE AMENDMENT: D3", "d3.md",
              re.compile(r"ADOPT DOCTRINE AMENDMENT:\s*D3:\s*`?([0-9a-f]{64})")),
         )
+        if kind == "old-performed":
+            specs = specs[:1]
         for rel, body in (("a.md", "subject A\n"), ("d3.md", "subject D3\n")):
             full = os.path.join(d, rel)
             os.makedirs(os.path.dirname(full), exist_ok=True)
             with open(full, "w", encoding="utf-8") as fh:
                 fh.write(body)
         a_digest = sha256_file(os.path.join(d, "a.md"))
-        body = (f"ACCEPT A: {a_digest}\n" if kind == "zero-subject"
-                else "ADOPT DOCTRINE AMENDMENT: D3: " + "e" * 64 + "\n")
+        old_performed = "e" * 64
+        if kind == "zero-subject":
+            body = f"ACCEPT A: {a_digest}\n"
+        elif kind == "old-performed":
+            body = f"ACCEPT A: {old_performed}\n"
+        else:
+            body = "ADOPT DOCTRINE AMENDMENT: D3: " + old_performed + "\n"
         with open(os.path.join(d, "f.md"), "w", encoding="utf-8") as fh:
             fh.write(body)
         ROOT = d
         _ActSubjects._cache[d] = specs
         c = Cap()
-        cg7d_quoted_elsewhere(["f.md"], c)
+        performed = (_performed_act_digests(
+            specs, record=(f"ACCEPT A: {old_performed}\n"
+                           f"ACCEPT A: {a_digest}\n"))
+                     if kind == "old-performed" else {})
+        cg7d_quoted_elsewhere(
+            ["f.md"], c, performed_digests=performed)
         return c.row("CG-7d")
     finally:
         _ActSubjects._cache.clear()
         _ActSubjects._cache.update(cache)
         ROOT = keep
         shutil.rmtree(d, ignore_errors=True)
+
+
+def _selftest_cg7h(kind):
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, status, name, examined, n, unit, note=None, details=None):
+            self.rows.append((status, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows if r[1].startswith(prefix)), None)
+
+    def digest(seed):
+        return hashlib.sha256(seed.encode()).hexdigest()
+
+    transaction = digest("transaction")
+    policy = digest("policy")
+    mismatched = digest("mismatched")
+    outer = f"{GENERAL_BOOTSTRAP_LABEL}: {transaction}\n"
+    policy_row = (
+        "| 5 | `confirm-craft-amendment` | in-force policy "
+        f"`{os.path.basename(CC_SPEC_SUBJECT)}` | `{{digest}}` | scope | end |\n")
+    performed = outer + policy_row.format(digest=policy)
+    if kind == "missing-act":
+        dedicated = ""
+    elif kind == "mismatched-act":
+        dedicated = outer + policy_row.format(digest=mismatched)
+    else:
+        dedicated = performed
+
+    contract_rows, pwb_rows, current = [], [], {}
+    for i in range(30):
+        path = f"rfcs/RFC-{i:04d}.md"
+        stated = digest(f"contract-{i}")
+        contract_rows.append(f"{stated}  {path}")
+        current[f"{CONTRACT_ROOT}/{path}"] = stated
+        current[f"{CANDIDATES}/{path}"] = stated
+    for i in range(5):
+        path = f"openspec/changes/pwb/coverage-{i}.md"
+        stated = digest(f"pwb-{i}")
+        pwb_rows.append(f"{stated}  {path}")
+        current[path] = stated
+    contract_manifest = "\n".join(contract_rows) + "\n"
+    pwb_manifest = "\n".join(pwb_rows) + "\n"
+    current[GENERAL_BOOTSTRAP_CONTRACT_MANIFEST] = digest(contract_manifest)
+    current[GENERAL_BOOTSTRAP_PWB_MANIFEST] = digest(pwb_manifest)
+    current[CC_SPEC_SUBJECT] = policy
+
+    top_paths = (
+        f"{GENERAL_BOOTSTRAP_DIR}/ACT-SEMANTICS.md",
+        f"{GENERAL_BOOTSTRAP_DIR}/IMPACT-LEDGER.md",
+        GENERAL_BOOTSTRAP_CONTRACT_MANIFEST,
+        GENERAL_BOOTSTRAP_PWB_MANIFEST,
+        "openspec/changes/cap1/CONTRACT-COVERAGE.md",
+        "openspec/changes/poc/CONTRACT-COVERAGE.md",
+        CC_SPEC_SUBJECT,
+    )
+    top_rows = []
+    for path in top_paths:
+        stated = current.get(path, digest(path))
+        current[path] = stated
+        top_rows.append(f"{stated}  {path}")
+    manifest = "\n".join(top_rows) + "\n"
+
+    if kind == "top-level-drift":
+        current[top_paths[0]] = digest("drifted-top-level")
+    elif kind == "nested-contract-drift":
+        current[f"{CONTRACT_ROOT}/rfcs/RFC-0000.md"] = digest(
+            "drifted-contract")
+    elif kind == "nested-pwb-drift":
+        current["openspec/changes/pwb/coverage-0.md"] = digest("drifted-pwb")
+
+    c = Cap()
+    cg7h_general_bootstrap_act(
+        c, act_record=performed, dedicated_record=dedicated,
+        manifest_body=manifest, transaction_digest=transaction,
+        policy_digest=policy, contract_manifest_body=contract_manifest,
+        pwb_manifest_body=pwb_manifest, current_digests=current)
+    return c.row("CG-7h")
 
 
 def _selftest_wave_partition(kind):
@@ -5774,6 +6218,7 @@ def main():
     cg5_craft_banners(existing, res)
     cg6_accepted_homes(res)
     cg7_manifest(existing, res)
+    cg7h_general_bootstrap_act(res)
     cg8_budgets(existing, res)
     cg9_duplicate_homes(existing, res)
     cg10_pending_asof(existing, res)

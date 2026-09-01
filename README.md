@@ -16,6 +16,17 @@ work to close the difference — with the difference always rendered honestly.**
 > [owner-direction record](.syzygy/governance/decisions/THREE-SURFACE-POC-MODE-DIRECTION.md)
 > and [`PROJECT-STATUS.md`](PROJECT-STATUS.md).
 
+On 2026-09-01 the owner separately performed an indivisible five-row
+trusted-bootstrap amendment transaction. RFC 0001–0009 remain accepted and
+are now bound at the current 30-module amendment manifest; seven signed
+contract-coverage artifacts and CC-SPEC-8 are also amended. Valid exact-scope
+human acts may be effective in state (1), owner-adopted but uncorrelated, or
+state (2), Syzygy-verified; only state (2) is independently verified. This
+amendment granted no consent, observation, write, egress, execution,
+deployment, release, recovery, mission, or implementation authority.
+The performed record is
+[`GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`](.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md).
+
 Concretely, Syzygy has a TypeScript/Node local daemon, a server-rendered human
 view, and an authenticated machine endpoint for Capability 1. The POC now asks
 the narrower product question: can one shared project model make one real
@@ -93,10 +104,10 @@ Authority is **typed** — each question has one owning home:
 |---|---|---|
 | Why; non-negotiable rules | [`.syzygy/governance/doctrine/`](.syzygy/governance/doctrine/) (VIS-1…7, SEC-1…5) | **Adopted** 2026-07-30 |
 | Prior owner rulings | [`.syzygy/governance/decisions/`](.syzygy/governance/decisions/) | **Recorded** |
-| Engineering and evidence bar | [`.syzygy/governance/policies/craft-and-care/`](.syzygy/governance/policies/craft-and-care/) | **Owner-approved** (D2); clause-level force begins at foundational-contract acceptance |
-| Load-bearing technical contracts | [`.syzygy/governance/contracts/`](.syzygy/governance/contracts/) | **RFC 0001–0009 accepted as of 2026-08-17** — the Wave A/B acts, modules installed at `contracts/rfcs/` ([`PROJECT-STATUS.md`](PROJECT-STATUS.md) owns this state); RFC 0010–0011 remain **candidate** in `contracts/candidates/` |
+| Engineering and evidence bar | [`.syzygy/governance/policies/craft-and-care/`](.syzygy/governance/policies/craft-and-care/) | **Owner-approved** (D2); CC-SPEC and CC-IMPACT are in force, with CC-SPEC-8 amended by the 2026-09-01 transaction |
+| Load-bearing technical contracts | [`.syzygy/governance/contracts/`](.syzygy/governance/contracts/) | **RFC 0001–0009 accepted** — originally through the 2026-08-17 Wave A/B acts and amended at the current 30-module manifest by the 2026-09-01 transaction ([`PROJECT-STATUS.md`](PROJECT-STATUS.md) owns this state); RFC 0010–0011 remain **candidate** in `contracts/candidates/` |
 | Intended placement | [`.syzygy/map/topology-candidates/`](.syzygy/map/topology-candidates/) | **Candidate** |
-| Required observable behavior | `openspec/` | **Adopted for Capability 1** — the one change `changes/project-registration-and-honest-shape-visibility/`, adopted by the owner (act dated 2026-08-20) at the exact digests in `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`; the POC is explicitly experimental, not a new conformance claim |
+| Required observable behavior | `openspec/` | **Adopted for Capability 1** — the one change `changes/project-registration-and-honest-shape-visibility/`, adopted by the owner on 2026-08-20; only its coverage digest was superseded by the 2026-09-01 transaction, with required behavior unchanged. The POC is explicitly experimental, not a new conformance claim |
 | What currently exists | Code, tests, CI, runtime | Capability 1 domain/runtime implementation and its evidence; Three-Surface POC implementation is in progress |
 
 Generated indexes, summaries, and this README are presentation — they cite
@@ -138,9 +149,10 @@ first-slice walkthrough and its deliberately absent relationships.
    if `vision.md` leaves you asking "yes, but what does it *do*?"
 4. [`PROJECT-STATUS.md`](PROJECT-STATUS.md) — exact current gate state.
 5. [`.syzygy/governance/contracts/`](.syzygy/governance/contracts/)
-   — the contract corpus: accepted modules at `rfcs/` (RFC 0001–0009, the
-   2026-08-17 Wave A/B acts), the deferred candidates and the acceptance
-   record under `candidates/`.
+   — the contract corpus: accepted modules at `rfcs/` (RFC 0001–0009,
+   originally accepted by the 2026-08-17 Wave A/B acts and amended at the
+   2026-09-01 30-module manifest), the deferred RFC 0010/0011 candidates and
+   the acceptance record under `candidates/`.
 6. [`.syzygy/governance/policies/craft-and-care/`](.syzygy/governance/policies/craft-and-care/)
    — the engineering bar.
 7. [`.syzygy/governance/decisions/`](.syzygy/governance/decisions/README.md)
@@ -177,6 +189,13 @@ slice is read-only: it does not yet materialize work, observe a worker change,
 or ingest a test-run artifact. No claim of alignment, convergence, regeneration,
 deployment health, conformance, or release is intended; without current
 evidence those relationships remain Unknown (VIS-2).
+
+The trusted-bootstrap transaction does not change that boundary. The signed
+PWB behavior remains deliberately stricter for PWB-REQ-005 and PWB-REQ-022:
+both are state-(2)-only until a separate behavioral amendment is signed.
+Effect-specific consent, policy and registry acts are required before any new
+repository-body read, and separate authorization is required before PWB
+implementation can resume.
 
 ## License
 

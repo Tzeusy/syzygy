@@ -1,6 +1,8 @@
-> **Candidate — binds nothing.** This proposes a general owner-act provenance
-> model. It performs no owner act, changes no accepted byte, authorizes no
-> effect and does not revive the superseded Polaris-only transaction.
+> **SATISFIED 2026-09-01 — amendment transaction performed.** The owner
+> performed the exact indivisible transaction recorded at
+> `.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`.
+> This routing artifact remains non-bound history and grants no effect-specific
+> authority beyond the five recorded transaction rows.
 
 # Semantic delta GBA-1 — state-(1) owner acts may take effect
 
