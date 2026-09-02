@@ -72,9 +72,14 @@ project-shape observer registry entry
 (`decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md`). Each is recorded in the
 append-only act record with A1 explicitly absent; none is independently
 verified. Together they close the effect gate for the one Butlers
-project-shape content class. They grant no implementation authority: no body
-read may occur until separate PWB implementation authorization exists and an
-implementation evaluates the acts under PWB-REQ-005.
+project-shape content class. They grant no implementation authority by
+themselves. The owner then granted **PWB implementation authorization** the
+same day (`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md`, closing task
+1.8): the owner's one-word reply is recorded verbatim with the recorder's
+explicit scope reading. Implementation of tasks §2–§5 is now dispatchable
+in the ordinary implementation plane; the first Butlers body read is lawful
+only after the implementation itself evaluates the three acts under
+PWB-REQ-005, and only for the consented content class.
 
 ## The launch path, in one table
 
@@ -91,6 +96,7 @@ visibility**. Its contract prerequisite is **Waves A + B only**.
 | P-41 + P-42, offered jointly | **PERFORMED — original acts 6 and 7, 2026-08-17, one sitting** (the joint-sitting requirement satisfied). CC-SPEC-1…11 and CC-IMPACT-1…7 remain **in force as owner-confirmed craft**. The original act-time statements and digests remain immutable history. The 2026-09-01 transaction separately amended CC-SPEC-8 at the current policy digest; CC-IMPACT was not amended. | `decisions/ACCEPTANCE-ACT-RECORD.md`; `.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md`; historical tag `craft-acts-6-7-confirmed-2026-08-17` |
 | General trusted-bootstrap authorization transaction | **PERFORMED 2026-09-01 — one indivisible five-row transaction.** RFC 0001–0009 remain accepted at the amended 30-module manifest; the Capability 1 and Three-Surface coverage files plus five PWB coverage artifacts are amended; CC-SPEC-8 is amended. State (1) and state (2) may each carry an effective valid human act, but only state (2) is independently verified. At this act PWB-REQ-005/022 remained state-(2)-only; the separate 2026-09-02 act below superseded that behavior. RFC 0010/0011 remain candidate. | `decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`; `decisions/ACCEPTANCE-ACT-RECORD.md`; `contracts/candidates/general-trusted-bootstrap-authorization/TRANSACTION-MANIFEST.txt` |
 | PWB state-(1) behavioral amendment | **SIGNED 2026-09-02 — exact eleven-artifact package.** Valid state-(1) or state-(2) human acts may satisfy PWB-REQ-005 and PWB-REQ-022 with exact state visible; only state (2) is independently verified, invalid acts fail closed and acts remain warrants. This is behavioral authority only: no effect-specific act, body read or implementation authority was granted. | `decisions/PWB-STATE1-AMENDMENT-ACT.md`; `decisions/ACCEPTANCE-ACT-RECORD.md`; `contracts/candidates/pwb-state1-amendment/PWB-AMENDMENT-MANIFEST.txt` |
+| PWB implementation authorization (task 1.8) | **GRANTED 2026-09-02 — owner direction, state (1), recorded verbatim with the recorder's scope reading.** Authorizes tasks §2–§5 of the signed change as one bounded POC improvement cycle and the first body read of the one Butlers repository for content class `declared-project-shape-text`, after the implementation evaluates the three effect acts under PWB-REQ-005. No write, egress, execution, deployment, release, recovery, mission, second repository, or act-bound-artifact edit. | `decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` |
 | PWB effect-specific acts (consent, policy, registry) | **PERFORMED 2026-09-02 — three separate state-(1) acts, each bound to its artifact's SHA-256.** Observation consent for the configured Butlers repository and content class `declared-project-shape-text`; the concrete secret-classification policy approved; the read-only, empty-write-surface observer registry entry adopted. A1 explicitly absent; not independently verified; acts are warrants, not evidence of effect. No implementation authority and no body read until task 1.8's separate authorization. | `decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`; `decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md`; `decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md`; `decisions/ACCEPTANCE-ACT-RECORD.md`; `contracts/candidates/pwb-effect-acts/PWB-EFFECT-ACTS-MANIFEST.txt` |
 | Formal launch administration | **Administration 1 performed 2026-08-18 — verdict `NOT READY`** (10 plain Not-met, 2 scoped, 5 Unknown, 0 reopened). Out-of-family (OpenAI GPT-5.6 Pro), fresh context with disclosed limitations, against commit `71e5986` at approved v2.4; the record validated and its verdict computed by the committed scripts. The strongest findings are stale current-state claims on the default path (since repaired), the contract-index drift (since regenerated), Wave A rejection collapsing the launch path (B4), clone-unreachable D1 rationale (C7), and unbounded governance effort (F6). The 2026-08-09 v1.3 **pilot** (`NOT READY`) remains steering evidence only. | `decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json` (the record); `decisions/launch-gate/TREND-LOG.md` |
 | Owner rulings, 2026-08-19 (the Administration-1 inputs) | **P-45…P-48 all ruled** in one adversarially-reviewed sitting, applied same day: the **A6 resource envelope stated** (2h/week; Claude-family + occasional GPT 5.6-family review; $200/mo ceiling; 2–3 workstreams) with **syzygy itself named the first proving project** (butlers second); **no governance ceiling** — case-by-case recorded knowingly (F6 stays `Not met`, disclosed, non-conjunct); the **governance-reduction plan adopted as directed work** (§1/§2/§4 retirements executed; §3 awaits the first accepted spec; no deferral created); the **repair cycle bounded at two further administrations** (if Administration 3 is not `READY`, the owner decides directly on the record in hand). Zero contract bytes moved. | `decisions/DECISION-HISTORY.md` §"Resolved on 2026-08-19, second sitting"; records `A6-RESOURCE-ENVELOPE-`, `F6-GOVERNANCE-CEILING-`, `F2-GOVERNANCE-REDUCTION-`, `LAUNCH-REPAIR-STOP-CONDITION-DECISION.md` |
@@ -121,6 +127,7 @@ overview, D3, and **P-12 knowledge hygiene** as the ninth.
 | License | ✅ **MIT** — root `LICENSE`; contributor-agreement posture remains a separate open question | `decisions/LICENSE-CHOICE-DECISION.md` |
 | General trusted-bootstrap transaction | ✅ Five rows performed indivisibly 2026-09-01; provenance semantics, seven coverage artifacts and CC-SPEC-8 reconciled; no effect-specific or implementation authority granted | `decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`; `decisions/ACCEPTANCE-ACT-RECORD.md` |
 | PWB state-(1) amendment | ✅ Eleven artifacts signed 2026-09-02; PWB-REQ-005/022 now accept valid state (1) or state (2), with exact state visible and invalid acts fail closed; no effect-specific or implementation authority granted | `decisions/PWB-STATE1-AMENDMENT-ACT.md`; `decisions/ACCEPTANCE-ACT-RECORD.md` |
+| PWB implementation authorization | ✅ Granted 2026-09-02 by owner direction; PWB tasks §2–§5 dispatchable, body read gated on PWB-REQ-005 evaluation inside the implementation | `decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` |
 | PWB effect-specific acts | ✅ Consent, secret policy and observer registry entry each signed separately 2026-09-02 in state (1); effect gate closed for the one Butlers project-shape content class; no implementation authority granted | `decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`; `decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md`; `decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md` |
 
 ## Gates still open, beyond the launch path
@@ -136,21 +143,23 @@ overview, D3, and **P-12 knowledge hygiene** as the ninth.
 
 ## Next lawful step
 
-The PWB behavioral amendment and the three effect-specific acts (consent,
-secret policy, observer registry entry) are signed for the one Butlers
-project-shape content class. One gate remains before project-wide Polaris
-implementation or any repository-body read resumes:
+The PWB behavioral amendment, the three effect-specific acts and the
+implementation authorization are all signed for the one Butlers project-shape
+content class. Project-wide Polaris implementation is now the lawful next
+work, in this order:
 
-1. Obtain separate PWB implementation authorization (PWB task 1.8). None of
-   the 2026-09-01 transaction, the 2026-09-02 behavioral sign-off, or the
-   2026-09-02 effect acts supplies it. Once granted, the implementation must
-   itself evaluate the three acts under PWB-REQ-005 before the first body
-   read; the acts are warrants, not evidence.
-2. Add write, egress, execution, deployment, release, recovery, or mission
+1. Implementation planning first: a bounded Beads backlog derived only from
+   tasks §2–§5 of the signed change, shared-model WIP one.
+2. Before the first body read, the implementation evaluates the three effect
+   acts under PWB-REQ-005 and fails closed on any invalid act; the acts are
+   warrants, not evidence. Reads stay inside `declared-project-shape-text`
+   and the approved secret-classification policy.
+3. Review → repair → confirmation on frozen heads, then an owner report
+   before any next cycle (tasks §5).
+4. Add write, egress, execution, deployment, release, recovery, or mission
    authorization only if that effect is actually requested; none is today.
 
-Until that gate closes, the lawful state is no body read and no PWB
-implementation resumption. RFC 0010/0011 and the nine still-open foundational
+RFC 0010/0011 and the nine still-open foundational
 offerings — including P-12 knowledge hygiene — remain candidate/open.
 
 ## How to verify this page

@@ -15,13 +15,13 @@
 - [x] 1.6 Obtain a superseding owner sign-off that binds all eleven PWB
   artifacts at their exact reviewed digests; the amendment is inert before
   this separate act.
-- [ ] 1.7 Obtain separate effective human owner acts for the exact Butlers
+- [x] 1.7 Obtain separate effective human owner acts for the exact Butlers
   observation consent, the observing project's concrete
   secret-detection/classification policy and the project-shape observer's
   adapter-registry entry. Each act may be valid state (1) or state (2), but its
   exact state must remain visible and every invalid act must fail closed
   (PWB-REQ-005).
-- [ ] 1.8 Obtain separate implementation authorization after the amended spec
+- [x] 1.8 Obtain separate implementation authorization after the amended spec
   is signed and the effect-specific gates are satisfied. No body-read
   implementation is dispatchable before both gates.
 
