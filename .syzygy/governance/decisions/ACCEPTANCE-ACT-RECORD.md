@@ -160,3 +160,81 @@ This act grants no effect-specific consent or policy approval, registry
 adoption, repository-body read, write, egress, execution, deployment, release,
 recovery, implementation or mission authority. Separate effect-specific acts
 and separate PWB implementation authorization remain open.
+
+## PWB effect act — consent-observation — performed 2026-09-02
+
+**Phrase, exactly as written by the owner (in-interaction, 2026-09-02):**
+
+```text
+CONSENT TO BUTLERS PROJECT-SHAPE OBSERVATION: 5d705d75f993059d5ae5561b1a6f99d143462d9d2e5bcea8ecc9b0c258777841
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `consent-observation` / `.syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md` |
+| Argument | SHA-256 of the artifact itself, recomputed at recording and equal to the phrase and the manifest row |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Supersession | none |
+| Reviewed subject / owner-packet head | `48e0f5db645d1fb08e5e3a65c5e50dbcece40412` / `a322a60e9f2b166273a80e3fc145bc3a8193c962` |
+| Review outcome | security, confirmation and owner-packet reviews: `CONFIRM` |
+| Recording | `.syzygy/governance/decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`; annotated tag `pwb-consent-observation-signed-2026-09-02` on the commit carrying these records |
+
+Effective status: this one artifact is **effective owner authority — owner-
+adopted (bootstrap, uncorrelated)** for its own PWB-REQ-005 role only. The
+other two effect acts and PWB implementation authorization remain separate;
+no body read, write, egress, execution, deployment, release, recovery or
+mission authority follows from this act.
+
+## PWB effect act — approve-policy — performed 2026-09-02
+
+**Phrase, exactly as written by the owner (in-interaction, 2026-09-02):**
+
+```text
+APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: 513a3be75bbd417a06d475c46bb423393ac59013e307157357083f29781a2a61
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `approve-policy` / `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json` |
+| Argument | SHA-256 of the artifact itself, recomputed at recording and equal to the phrase and the manifest row |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Supersession | none |
+| Reviewed subject / owner-packet head | `48e0f5db645d1fb08e5e3a65c5e50dbcece40412` / `a322a60e9f2b166273a80e3fc145bc3a8193c962` |
+| Review outcome | security, confirmation and owner-packet reviews: `CONFIRM` |
+| Recording | `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md`; annotated tag `pwb-approve-policy-signed-2026-09-02` on the commit carrying these records |
+
+Effective status: this one artifact is **effective owner authority — owner-
+adopted (bootstrap, uncorrelated)** for its own PWB-REQ-005 role only. The
+other two effect acts and PWB implementation authorization remain separate;
+no body read, write, egress, execution, deployment, release, recovery or
+mission authority follows from this act.
+
+## PWB effect act — adopt-registry-entry — performed 2026-09-02
+
+**Phrase, exactly as written by the owner (in-interaction, 2026-09-02):**
+
+```text
+ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: d71eadb612cf657983d96ad44415b832054dc37e51ea674e569d9b8f655d05d7
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `adopt-registry-entry` / `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` |
+| Argument | SHA-256 of the artifact itself, recomputed at recording and equal to the phrase and the manifest row |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Supersession | none |
+| Reviewed subject / owner-packet head | `48e0f5db645d1fb08e5e3a65c5e50dbcece40412` / `a322a60e9f2b166273a80e3fc145bc3a8193c962` |
+| Review outcome | security, confirmation and owner-packet reviews: `CONFIRM` |
+| Recording | `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md`; annotated tag `pwb-adopt-registry-entry-signed-2026-09-02` on the commit carrying these records |
+
+Effective status: this one artifact is **effective owner authority — owner-
+adopted (bootstrap, uncorrelated)** for its own PWB-REQ-005 role only. The
+other two effect acts and PWB implementation authorization remain separate;
+no body read, write, egress, execution, deployment, release, recovery or
+mission authority follows from this act.

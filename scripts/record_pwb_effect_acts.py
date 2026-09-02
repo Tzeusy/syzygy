@@ -310,10 +310,16 @@ def record(root: pathlib.Path, act: Act, argument: str, date: str, check: bool) 
         print(f"FAILED: {exc}")
         return 1
     if check:
-        drift = [
-            rel for rel, content in outputs.items()
-            if not (root / rel).is_file() or (root / rel).read_text() != content
-        ]
+        # Acts are separable and append in owner order, so the aggregate is
+        # checked for exactly one exact copy of this act's block, not for
+        # being the tail of the file.
+        drift = []
+        dedicated = root / act.record
+        if not dedicated.is_file() or dedicated.read_text() != outputs[act.record]:
+            drift.append(act.record)
+        aggregate = (root / AGGREGATE_REL).read_text()
+        if aggregate.count(render_aggregate_block(act, argument, date)) != 1:
+            drift.append(AGGREGATE_REL)
         for rel in drift:
             print(f"recorded act differs from regeneration: {rel}")
         if drift:
