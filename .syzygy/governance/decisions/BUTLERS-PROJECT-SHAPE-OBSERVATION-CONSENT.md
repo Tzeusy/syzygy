@@ -6,16 +6,20 @@ Owner: Tzeusy
 
 Record ID: `PWB-CONSENT-2026-08-31`
 
-Record version: `1.0.0-candidate.2`
+Record version: `1.0.0-candidate.3`
 
 Consent class: observation
+
+Observation content class: `declared-project-shape-text`
 
 Subject: `(project:syzygy, repository:butlers-configured-poc)`
 
 Current locator: `/home/tze/GitHub/butlers` (configuration, not repository
 identity)
 
-Status: **candidate awaiting amended PWB bytes; not act-ready**
+Status: **candidate, act-ready; no effect until the owner acts on this exact
+digest** (self-declared stamp; effective status comes only from an owner-act
+record, RFC3-16)
 
 Statement date: 2026-08-31; the future act records its exact grant instant
 
@@ -29,8 +33,10 @@ The owner stated in this Codex project walkthrough:
 ## Scope
 
 The consent scope is the bounded, read-only project-shape observation defined
-by `polaris-project-wide-butlers-model` at signed specification digest
-`07392c115e3a63bb3aceb259362a70e0d1ee11d6ba2621492fd03cf1893aca61`.
+by `polaris-project-wide-butlers-model` as signed on 2026-09-02: specification
+digest `2e453a6ec6dbc19c5df226650c6e7a94c46e81f65d9d180f57d1dc1dce7fd07e`, one of the
+eleven artifacts bound by the act recorded at
+`.syzygy/governance/decisions/PWB-STATE1-AMENDMENT-ACT.md`.
 It covers exact Git objects selected by that specification's closed source
 population at each identified Butlers revision observed by the POC.
 
@@ -50,14 +56,19 @@ later recorded act; revocation does not erase prior observation records.
 
 [Observed] This candidate preserves the owner phrase, attribution, date,
 subject and scope. It has no effect until the owner acts on its exact digest.
-Its current PWB digest is the signed pre-amendment baseline and must be replaced
-with the superseding signed PWB digest before review or owner action.
+The act it is prepared for is one of the three separate effect-specific acts
+required by PWB-REQ-005 and PWB task 1.7; the other two (the secret policy and
+the observer registry entry) are separate artifacts with separate acts, and a
+body read requires all three to be valid.
 
-If acted on, its initial provenance state is **owner-adopted (bootstrap,
-uncorrelated)**. Under the proposed trusted-bootstrap observation amendment,
-that state may authorize only this read-only observation scope and must remain
-visible as uncorrelated; it is never “independently verified.” A later A1
-correlation may upgrade the provenance state without editing this artifact.
+If acted on, its provenance state is **owner-adopted (bootstrap,
+uncorrelated)** — state (1) under RFC3-16(c) — only if the human act explicitly
+selects state (1) and records the A1 audit-record identity as absent. That
+state authorizes only this read-only observation scope, must remain visible as
+uncorrelated, and is never “independently verified.” A later A1 correlation
+may upgrade the provenance state without editing this artifact. The act is a
+warrant to observe within this scope; it is never evidence that any read
+occurred, that screening succeeded, or that any derived claim is true.
 
 No future act over this candidate retroactively authorizes the body reads in
 `docs/reviews/R-POLARIS-PRECONDITION-READ-BOUNDARY-INCIDENT.md`.

@@ -1,0 +1,7 @@
+# PWB EFFECT-ACTS MANIFEST
+# Candidate; each row takes effect only through its own separate owner act
+# bound to that row's exact digest. No row binds anything by itself.
+# 3 artifacts; rows sorted by codepoint path.
+5d705d75f993059d5ae5561b1a6f99d143462d9d2e5bcea8ecc9b0c258777841  .syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md
+d71eadb612cf657983d96ad44415b832054dc37e51ea674e569d9b8f655d05d7  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+680daf81c9ac5d33c09a6a4b4fa7b66a0002155fa7b4b6d03ecfcc4ba78aaae0  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json
