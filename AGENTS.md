@@ -475,3 +475,30 @@ can be authorized.
   PWB-REQ-005 and PWB-REQ-022 now accept valid state (1) or state (2), preserve
   exact state, fail invalid acts closed and keep acts as warrants. The sign-off
   supplies no consent, policy, registry, body-read or implementation authority.
+
+### PWB effect-act packet (task 1.7) — offered, not performed
+
+- The three effect-specific authorities live at their final bytes:
+  `decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md`,
+  `policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json`,
+  `declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`.
+  Each is offered as a **separate state-(1) act whose argument is the
+  artifact's own SHA-256** (RFC3-16(b) item 3 binds directly); the owner may
+  perform any subset, a body read needs all three plus task 1.8. Packet,
+  report, manifest and `ACT-SEMANTICS.md` sit in
+  `contracts/candidates/pwb-effect-acts/`; `build_pwb_effect_acts_packet.py`
+  generates/verifies them and `record_pwb_effect_acts.py --record <act-type>
+  <sha> --date <date>` writes the dedicated record plus the aggregate
+  section. Both scripts hard-code the frozen subject and packet head; a new
+  freeze means editing those constants and re-running the reviews.
+- **Never quote a performed act argument (or a truncated digest of a signed
+  artifact) inside a new artifact.** CG-7e fails any file carrying a
+  recognized act argument that is not in `ACT_DIGEST_COPY_FILES`, and CG-15
+  fails a truncated digest that prefixes no current argument or manifest
+  entry. Cite the act record by path instead. Also never name a Butlers
+  file path in backticks in a packet (CG-1b resolves it as a repo path).
+- New act phrases must be registered in `check_governance.py`'s
+  `_act_subjects()` and their packet copies in `ACT_DIGEST_COPY_FILES`
+  before the packet exists, or CG-7d cannot see them go stale; generated
+  files that appear only after `--finalize` are registered from an
+  existence-gated activation function, not from import time.
