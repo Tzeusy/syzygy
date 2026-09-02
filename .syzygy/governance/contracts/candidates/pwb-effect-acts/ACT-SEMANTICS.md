@@ -29,14 +29,14 @@ record. A record claiming state (2) cannot be produced by this packet.
 | # | 4. Act type | 2. Stable artifact identity | 3. Exact digest | 7. Scope |
 |---|---|---|---|---|
 | 1 | `consent-observation` | consent record `PWB-CONSENT-2026-08-31` at `.syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md` | `5d705d75f993059d5ae5561b1a6f99d143462d9d2e5bcea8ecc9b0c258777841` | Observation consent for the pair (`project:syzygy`, `repository:butlers-configured-poc`), content class `declared-project-shape-text`, read-only Git objects in the signed PWB source population; every exclusion the record lists stands |
-| 2 | `approve-policy` | policy `polaris-butlers-project-shape-secrets` version `1.0.0-candidate.3` at `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json` | `680daf81c9ac5d33c09a6a4b4fa7b66a0002155fa7b4b6d03ecfcc4ba78aaae0` | Approve this exact secret-classification policy as the observing project's policy for that pair and content class, across every ingest boundary the policy names |
+| 2 | `approve-policy` | policy `polaris-butlers-project-shape-secrets` version `1.0.0-candidate.4` at `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json` | `513a3be75bbd417a06d475c46bb423393ac59013e307157357083f29781a2a61` | Approve this exact secret-classification policy as the observing project's policy for that pair and content class, across every ingest boundary the policy names |
 | 3 | `adopt-registry-entry` | adapter-registry entry `polaris-butlers-project-shape` version `1.0.0-candidate.3` at `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` | `d71eadb612cf657983d96ad44415b832054dc37e51ea674e569d9b8f655d05d7` | Adopt this exact entry in Syzygy's governance plane for that pair with read-only authority and an empty write surface; it admits the observer's declared output classes as deterministic facts only when an authorized implementation exists |
 
 ## Exact phrases
 
 ```text
 CONSENT TO BUTLERS PROJECT-SHAPE OBSERVATION: 5d705d75f993059d5ae5561b1a6f99d143462d9d2e5bcea8ecc9b0c258777841
-APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: 680daf81c9ac5d33c09a6a4b4fa7b66a0002155fa7b4b6d03ecfcc4ba78aaae0
+APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: 513a3be75bbd417a06d475c46bb423393ac59013e307157357083f29781a2a61
 ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: d71eadb612cf657983d96ad44415b832054dc37e51ea674e569d9b8f655d05d7
 ```
 
