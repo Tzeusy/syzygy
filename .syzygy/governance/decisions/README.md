@@ -12,7 +12,7 @@
 | You want to know | Ask | Short answer today |
 |---|---|---|
 | **Has the owner decided this?** | the **recorded decisions** below | Doctrine, craft, SDR-1…37, and the 2026-08-16 rulings are recorded. The rest is not |
-| **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **Yes — four original foundational acts, all 2026-08-17, plus a separate indivisible five-row amendment transaction performed 2026-09-01.** The transaction amended RFC 0001–0009, seven coverage artifacts and CC-SPEC-8; it granted no effect-specific or implementation authority. Nine foundational offerings remain open: four deferred waves, CC-TEST-2, topology, overview, D3, and **P-12 knowledge hygiene** as the ninth |
+| **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **Yes — four original foundational acts, a separate five-row amendment transaction performed 2026-09-01, and the separate eleven-artifact PWB amendment performed 2026-09-02.** The PWB act changed behavioral provenance only; neither amendment granted effect-specific or implementation authority. Nine foundational offerings remain open: four deferred waves, CC-TEST-2, topology, overview, D3, and **P-12 knowledge hygiene** as the ninth |
 | **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **21** rows in the open decision section, plus **5** open acceptance-act rows — **26 total** *(measured 2026-09-01 by the generator predicate: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`; independently recounted by section; P-1's row stays open for the deferred C/D waves)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
 | **Which decisions were resolved, and how?** | [`DECISION-HISTORY.md`](DECISION-HISTORY.md) | The resolved rows — the nine 2026-08-16 rulings and the 2026-08-17 act dispositions (P-41/P-42 executed, P-22/P-28 ratified) — and the register's chronology |
 | **Where is the history?** | [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md), [`DECISION-HISTORY.md`](DECISION-HISTORY.md), and the round trees under `contracts/candidates/` | Deliberately off the default path |
@@ -42,11 +42,12 @@ These carry rulings the owner has actually made.
 | [`CC-REV-2-LAGGING-SPEC-EXCEPTION-DECISION.md`](CC-REV-2-LAGGING-SPEC-EXCEPTION-DECISION.md) | **P-44 ruled 2026-08-18** — declined (arm b); the offer is superseded for routing |
 | [`CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`](CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md) | **Owner launch decision, 2026-08-20** — Capability 1 specification authoring authorized; the Administration 1 `NOT READY` verdict stands unaltered; specification definition only, no implementation |
 | [`GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-DIRECTION.md`](GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-DIRECTION.md) | **Owner direction, 2026-08-31** — authorized preparation of the generalized provenance amendment; the exact five-row transaction was separately performed 2026-09-01 and is recorded in `ACCEPTANCE-ACT-RECORD.md` |
+| [`PWB-STATE1-AMENDMENT-DIRECTION.md`](PWB-STATE1-AMENDMENT-DIRECTION.md) | **Owner direction, 2026-09-02** — selected profile A and authorized drafting/review of the two-requirement amendment; the exact package was separately signed the same day |
 
 Doctrine itself (VIS-1…7, SEC-1…5) is adopted and lives in
 [`../doctrine/`](../doctrine/), not here.
 
-## 2. Owner acts — four original acts plus one amendment transaction
+## 2. Owner acts — four original acts plus two separate amendments
 
 ```text
 ACCEPTANCE-ACT-RECORD.md      exists — created by the Wave A act, 2026-08-17
@@ -54,12 +55,14 @@ ACCEPTANCE-ACT-RECORD.md      exists — created by the Wave A act, 2026-08-17
 
 [`ACCEPTANCE-ACT-RECORD.md`](ACCEPTANCE-ACT-RECORD.md) owns the four acts
 performed 2026-08-17: Wave A, then Wave B, then craft acts 6 + 7 (CC-SPEC
-and CC-IMPACT, one sitting), and the separate indivisible five-row general
-trusted-bootstrap amendment transaction performed 2026-09-01. The transaction
-left RFC 0010/0011 candidate, left PWB-REQ-005 and PWB-REQ-022 deliberately
-state-(2)-only, and granted no consent, observation, write, egress, execution,
-deployment, release, recovery, mission or implementation authority. Entries
-are appended, never edited. Nine foundational offerings remain unperformed:
+and CC-IMPACT, one sitting), the separate indivisible five-row general
+trusted-bootstrap amendment transaction performed 2026-09-01, and the
+separate eleven-artifact PWB behavioral amendment performed 2026-09-02. The
+PWB act superseded the earlier state-(2)-only PWB behavior: valid state (1) or
+state (2) human acts may now satisfy PWB-REQ-005 and PWB-REQ-022 with exact
+state visible. Neither amendment granted consent, observation, write, egress,
+execution, deployment, release, recovery, mission or implementation authority.
+Entries are appended, never edited. Nine foundational offerings remain unperformed:
 four deferred waves, CC-TEST-2, topology, overview, D3, and **P-12 knowledge
 hygiene** as the ninth.
 The original foundational acts themselves — their exact phrases and arguments
@@ -69,7 +72,9 @@ while the amendment transaction's exact five-row semantics and manifest live
 under `../contracts/candidates/general-trusted-bootstrap-authorization/` and
 its performed record is
 [`GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`](GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md).
-This page owns neither act.
+The PWB amendment's performed record is
+[`PWB-STATE1-AMENDMENT-ACT.md`](PWB-STATE1-AMENDMENT-ACT.md). This page owns
+neither amendment act.
 
 ## 3. Pending decisions — one bounded packet each
 

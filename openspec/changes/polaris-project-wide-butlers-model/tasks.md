@@ -12,7 +12,7 @@
   invalidated signed artifacts and obtain fresh independent security,
   authority-boundary, deterministic-observation, public-interface, coverage
   and exact-transaction review on frozen bytes.
-- [ ] 1.6 Obtain a superseding owner sign-off that binds all eleven PWB
+- [x] 1.6 Obtain a superseding owner sign-off that binds all eleven PWB
   artifacts at their exact reviewed digests; the amendment is inert before
   this separate act.
 - [ ] 1.7 Obtain separate effective human owner acts for the exact Butlers

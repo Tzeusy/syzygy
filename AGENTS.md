@@ -47,10 +47,12 @@ current bytes are bound at the exact 30-module amendment manifest; seven signed
 coverage artifacts and CC-SPEC-8 are amended. Valid exact-scope human acts may
 be effective in state (1), `owner-adopted (bootstrap, uncorrelated)`, or state
 (2), `Syzygy-verified`; only state (2) is independently verified.
-PWB-REQ-005 and PWB-REQ-022 deliberately remain stricter state-(2)-only signed
-behavior until separately amended. The transaction granted no consent,
-observation, write, egress, execution, deployment, release, recovery, mission,
-or implementation authority.
+At that transaction PWB-REQ-005 and PWB-REQ-022 remained state-(2)-only. The
+owner separately signed their eleven-artifact state-(1) amendment on
+**2026-09-02**, recorded in `decisions/PWB-STATE1-AMENDMENT-ACT.md`: both now
+accept valid state (1) or state (2), preserve exact state and fail invalid acts
+closed. Neither act granted consent, observation, write, egress, execution,
+deployment, release, recovery, mission, or implementation authority.
 
 ## Where authority lives
 
@@ -105,7 +107,7 @@ Load the minimum for one correct decision; never "read everything."
 | A doctrine question | the one doctrine file, via the `heart-and-soul` skill |
 | An engineering-bar question | the one craft policy that owns it |
 | A contract question | **`contracts/candidates/TASK-ROUTER.md`** — the one generated router; context-budget measurement stays with `06-CONTEXT-LOAD-MAP.md` / `scripts/context_load.py` |
-| "May I implement X?" | Capability 1 remains authorized under `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`. The bounded Three-Surface POC and its one Butlers proving slice are additionally authorized by `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`; the surface-redesign item `syzygy-z2b` is authorized by the signed-off `three-surface-poc-experience` spec (`decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`). The 2026-09-01 transaction adds no implementation authority; PWB implementation remains paused pending its own behavioral amendment, effect-specific gates, and implementation authorization. Anything outside the earlier authorized scopes remains forbidden. |
+| "May I implement X?" | Capability 1 remains authorized under `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`. The bounded Three-Surface POC and its one Butlers proving slice are additionally authorized by `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`; the surface-redesign item `syzygy-z2b` is authorized by the signed-off `three-surface-poc-experience` spec (`decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`). The PWB behavioral amendment is signed, but PWB implementation remains paused pending effect-specific gates and separate implementation authorization. Anything outside the earlier authorized scopes remains forbidden. |
 | "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; Capability 1's spec is **authored and adopted**; every other capability's authoring stays forbidden |
 | The Capability 1 specification | the change `openspec/changes/project-registration-and-honest-shape-visibility/` — **ADOPTED by the owner (act dated 2026-08-20)**; the 2026-09-01 transaction superseded only `CONTRACT-COVERAGE.md`'s digest. The current seven-artifact set may not be edited outside CC-REV-2's amendment path; its warrants-union is generated (`build_capability_1_spec_dependencies.py`). See the original act plus `decisions/ACCEPTANCE-ACT-RECORD.md`. |
 | Current status | `PROJECT-STATUS.md` |
@@ -131,8 +133,8 @@ authorization act); implement, plan, or backlog anything beyond Capability 1
 improvement cycles authorized on 2026-08-30
 (`decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md`)**; extend
 that POC beyond one configured Butlers repository; resume PWB implementation
-before a separate behavioral amendment, effect-specific consent/policy/registry
-acts, and implementation authorization; read any new repository body before
+before effect-specific consent/policy/registry acts and separate implementation
+authorization; read any new repository body before
 per-repository consent and the applicable registry/policy acts; implement
 deferred Waves C1/C2/D1/D2 or substantive Mission Control; perform production
 deployment, release, broad remote access, or multi-user support; allow Syzygy
@@ -468,6 +470,8 @@ can be authorized.
   effective human act, only state (2) is independently verified, and an act is
   always a warrant rather than evidence of effect success. It amended the
   accepted 30-module RFC 0001–0009 set, seven signed coverage artifacts and
-  CC-SPEC-8, but granted no effect-specific or implementation authority. The
-  project-wide Polaris spec intentionally remains stricter at state (2) for
-  PWB-REQ-005 and PWB-REQ-022 until a separate signed behavioral amendment.
+  CC-SPEC-8, but granted no effect-specific or implementation authority.
+- The owner signed the eleven-artifact PWB state-(1) amendment on 2026-09-02.
+  PWB-REQ-005 and PWB-REQ-022 now accept valid state (1) or state (2), preserve
+  exact state, fail invalid acts closed and keep acts as warrants. The sign-off
+  supplies no consent, policy, registry, body-read or implementation authority.

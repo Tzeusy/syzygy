@@ -204,12 +204,12 @@ claim of alignment, convergence, regeneration, deployment health, conformance,
 or release is intended; without current evidence those relationships remain
 Unknown (VIS-2).
 
-The trusted-bootstrap transaction does not change that boundary. The signed
-PWB behavior remains deliberately stricter for PWB-REQ-005 and PWB-REQ-022:
-both are state-(2)-only until a separate behavioral amendment is signed.
-Effect-specific consent, policy and registry acts are required before any new
-repository-body read, and separate authorization is required before PWB
-implementation can resume.
+The 2026-09-02 PWB amendment signs state (1) or state (2) as valid provenance
+for PWB-REQ-005 and PWB-REQ-022, with exact state visible and only state (2)
+called independently verified. That behavioral sign-off does not create an
+effect. Effect-specific consent, policy and registry acts are still required
+before any new repository-body read, and separate authorization is required
+before PWB implementation can resume.
 
 ## License
 

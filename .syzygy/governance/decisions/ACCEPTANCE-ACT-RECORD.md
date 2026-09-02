@@ -129,3 +129,34 @@ write, egress, execution, deployment, release, recovery, implementation or
 mission authority. It does not accept RFC 0010 or RFC 0011, amend doctrine,
 sign Mission Control behavior, implement PWB or start automatic follow-on
 work.
+
+## PWB state-(1) amendment — performed 2026-09-02
+
+**Phrase, exactly as written by the owner (in-interaction, 2026-09-02):**
+
+```text
+SIGN OFF PWB STATE-(1) AMENDMENT: 14a84abadf0ba96d968e99bd5b60302895e8a44e6e005b4d2fc76345e7863b1e
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Argument | SHA-256 of `contracts/candidates/pwb-state1-amendment/PWB-AMENDMENT-MANIFEST.txt`, recomputed at recording and equal to the phrase |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Reviewed subject | `8847feef1442bf55fd5276a73248d3c58409e4db` |
+| Owner-packet / final evidence heads | `cc809f90f5cc0bacddad83adce19864a361dbc8b` / `5c2a792c7896f6cbfeb460adfb4d05276675cf8b` |
+| Review outcome | final security, deterministic-oracle, transaction and hardened owner-packet reviews: `CONFIRM`, zero open findings |
+| Ceremony verification | 11 of 11 manifest rows verified against the frozen subject; manifest digest equals the phrase `[Observed, this act]` |
+| Recording | `.syzygy/governance/decisions/PWB-STATE1-AMENDMENT-ACT.md`; annotated tag `pwb-state1-amendment-signed-2026-09-02` on the commit carrying these records |
+
+Effective status: the eleven-artifact PWB package is **signed behavioral
+authority — owner-adopted (bootstrap, uncorrelated)**. Valid state (1) and state
+(2) human acts may satisfy PWB-REQ-005 and PWB-REQ-022; only state (2) is
+independently verified. Invalid acts fail closed and acts remain warrants, not
+success evidence.
+
+This act grants no effect-specific consent or policy approval, registry
+adoption, repository-body read, write, egress, execution, deployment, release,
+recovery, implementation or mission authority. Separate effect-specific acts
+and separate PWB implementation authorization remain open.

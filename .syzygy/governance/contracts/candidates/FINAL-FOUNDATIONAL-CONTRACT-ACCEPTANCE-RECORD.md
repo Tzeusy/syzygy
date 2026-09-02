@@ -31,16 +31,20 @@ their current 30 installed modules are bound by
 The transaction also amended seven signed contract-coverage artifacts and
 CC-SPEC-8. A valid exact-scope human act may be effective in state (1),
 `owner-adopted (bootstrap, uncorrelated)`, or state (2), `Syzygy-verified`;
-only state (2) is independently verified. PWB-REQ-005 and PWB-REQ-022 remain
-deliberately stricter state-(2)-only signed behavior. RFC 0010/0011 remain
-candidate. The original Wave A/B and craft-act rows below are preserved as
+only state (2) is independently verified. At that transaction PWB-REQ-005 and
+PWB-REQ-022 remained state-(2)-only; the owner separately signed their
+eleven-artifact state-(1) amendment on 2026-09-02, recorded in
+`../../decisions/PWB-STATE1-AMENDMENT-ACT.md`. RFC 0010/0011 remain candidate.
+The original Wave A/B and craft-act rows below are preserved as
 act-time history; their manifests, phrases and digests were not rewritten.
-The four original foundational acts plus this separate amendment transaction
-do not close any of the nine still-open foundational offerings.
+The four original foundational acts plus these two separate amendments do not
+close any of the nine still-open foundational offerings.
 
 The transaction grants no effect-specific consent or policy approval,
 registry adoption, repository observation or write, egress, execution,
 deployment, release, recovery, mission, or implementation authority.
+The 2026-09-02 PWB behavioral act likewise grants none of those effects; it
+only supersedes the two state-(2)-only PWB gates at the signed manifest.
 
 ## 1. The gates — exact scope, exact phrases
 
