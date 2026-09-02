@@ -26,7 +26,14 @@ OUT = CANDIDATE / "PWB-EFFECT-ACTS-MANIFEST.txt"
 ACT_SEMANTICS = CANDIDATE / "ACT-SEMANTICS.md"
 REPORT = CANDIDATE / "CANDIDATE-REPORT.md"
 OWNER_PACKET = CANDIDATE / "OWNER-SIGNOFF-PACKET.md"
-SECURITY_REVIEW = pathlib.Path("docs/reviews/R-PWB-EFFECT-ACTS-SECURITY-RAW.md")
+#: The first fresh-context security review was bound to the original frozen
+#: subject; one non-blocking finding was repaired in a later commit, so the
+#: current frozen subject is bound by the confirmation review instead. Both
+#: are stored verbatim and both must bind their own subject exactly.
+ORIGINAL_SUBJECT = "2fda7c440d996a5c58e6cf8577361520a0f1dca0"
+ORIGINAL_MANIFEST_SHA = "b9af93fdd25dc57b99cffd7585c8222c763a56fc142d1aa6f30f58819394c849"
+SECURITY_REVIEW_ORIGINAL = pathlib.Path("docs/reviews/R-PWB-EFFECT-ACTS-SECURITY-RAW.md")
+SECURITY_REVIEW = pathlib.Path("docs/reviews/R-PWB-EFFECT-ACTS-SECURITY-CONFIRMATION-RAW.md")
 
 CONSENT = pathlib.Path(
     ".syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md"
@@ -194,13 +201,26 @@ def finalized_outputs(root: pathlib.Path, commit_value: str) -> dict[pathlib.Pat
         values[pathlib.Path(path)] = blob
     manifest_sha = digest(manifest_bytes)
 
+    original_manifest = committed_blob(root, ORIGINAL_SUBJECT, OUT)
+    if digest(original_manifest) != ORIGINAL_MANIFEST_SHA:
+        raise ValueError("original frozen subject does not carry the recorded manifest digest")
+    original_review_path = root / SECURITY_REVIEW_ORIGINAL
+    if not original_review_path.is_file():
+        raise ValueError(f"required original security review missing: {SECURITY_REVIEW_ORIGINAL}")
+    original_review_bytes = original_review_path.read_bytes()
+    if not review_binds_exact(original_review_bytes.decode(), ORIGINAL_SUBJECT, ORIGINAL_MANIFEST_SHA):
+        raise ValueError(
+            "original security review lacks exact subject binding or unanimous CONFIRM"
+        )
+    original_review_sha = digest(original_review_bytes)
+
     review_path = root / SECURITY_REVIEW
     if not review_path.is_file():
-        raise ValueError(f"required security review missing: {SECURITY_REVIEW}")
+        raise ValueError(f"required confirmation security review missing: {SECURITY_REVIEW}")
     review_bytes = review_path.read_bytes()
     if not review_binds_exact(review_bytes.decode(), commit, manifest_sha):
         raise ValueError(
-            "security review lacks exact subject binding or unanimous CONFIRM"
+            "confirmation security review lacks exact subject binding or unanimous CONFIRM"
         )
     review_sha = digest(review_bytes)
 
@@ -226,8 +246,10 @@ Three-artifact manifest SHA-256: `{manifest_sha}`
 
 The three effect-specific authorities PWB-REQ-005 requires before any Butlers
 project-shape body read are drafted at their final bytes, cite only the
-currently signed PWB package (`2e453a6e…`, manifest `14a84aba…`) and the
-currently accepted RFC-0004 general contract (`b21fc950…`), and carry the
+currently signed PWB package (the act recorded at
+`.syzygy/governance/decisions/PWB-STATE1-AMENDMENT-ACT.md`) and the
+currently accepted RFC-0004 general contract (the 2026-09-01 amendment
+manifest), and carry the
 PWB-REQ-005 authority-specific fields. Each is offered for a separate state-(1)
 human owner act bound to its own SHA-256.
 
@@ -239,9 +261,14 @@ human owner act bound to its own SHA-256.
 
 ## Independent confirmation
 
-| Raw review | Exact verdict | sha256 |
-|---|---|---|
-| `{SECURITY_REVIEW.as_posix()}` | `CONFIRM` | `{review_sha}` |
+| Raw review | Bound subject | Exact verdict | sha256 |
+|---|---|---|---|
+| `{SECURITY_REVIEW_ORIGINAL.as_posix()}` | `{ORIGINAL_SUBJECT}` (manifest `{ORIGINAL_MANIFEST_SHA}`) | `CONFIRM`, two non-blocking findings | `{original_review_sha}` |
+| `{SECURITY_REVIEW.as_posix()}` | `{commit}` (manifest `{manifest_sha}`) | `CONFIRM` | `{review_sha}` |
+
+The confirmation review covers the one repair made between the two subjects
+(the secret policy now names RFC5-17's `unclassifiable-excluded` class); the
+consent and registry bytes are identical at both subjects.
 
 ## Authority boundary
 
@@ -298,14 +325,15 @@ modeled. Denied filenames and suffixes (`.env*`, `credentials.json`,
 detectors (private-key blocks, known token formats, credential assignments,
 credential-bearing URLs), strict UTF-8 without NUL, and a closed extraction
 class per source. Any match or anything unclassifiable excludes the whole file;
-only its hash, path, policy id/version and detector id are retained. Raw bodies
+only its hash, path, policy id/version and the detector id or exclusion
+reason are retained. Raw bodies
 are never stored, logged, rendered, returned or sent anywhere.
 
 **3. Observer registry entry** — `{REGISTRY.as_posix()}`
 SHA-256 `{registry_sha}`
 
 The governance-plane entry for the observer `polaris-butlers-project-shape`.
-Read-only authority: phase A reads only `about/README.md`, the pillar README
+Read-only authority: phase A reads only the Butlers top-level README, the pillar README
 indexes it names and Git tree metadata; phase B reads only the exact Git
 objects in the resulting revision-bound manifest. Empty write surface, no
 database access, no network access, no observed-code execution, no
@@ -328,9 +356,14 @@ does not exist yet; adopting the entry authorizes no implementation.
 
 ## Evidence
 
-- Fresh-context security and authority-boundary review at this exact commit
-  and manifest: `{SECURITY_REVIEW.as_posix()}`, verdict `CONFIRM`,
-  sha256 `{review_sha}`.
+- Fresh-context security and authority-boundary review of the original
+  frozen subject `{ORIGINAL_SUBJECT}`: `{SECURITY_REVIEW_ORIGINAL.as_posix()}`,
+  verdict `CONFIRM` with two non-blocking findings, sha256
+  `{original_review_sha}`. One finding was repaired (the policy now names
+  every closed redaction class); the other is closed by the act record
+  freezing the reviewed commit.
+- Fresh-context confirmation review at this exact commit and manifest:
+  `{SECURITY_REVIEW.as_posix()}`, verdict `CONFIRM`, sha256 `{review_sha}`.
 - The manifest generator reproduces this closed three-row population and
   mutation-proves byte and path drift (`--selftest`).
 
