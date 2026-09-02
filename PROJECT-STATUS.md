@@ -148,8 +148,10 @@ implementation authorization are all signed for the one Butlers project-shape
 content class. Project-wide Polaris implementation is now the lawful next
 work, in this order:
 
-1. Implementation planning first: a bounded Beads backlog derived only from
-   tasks §2–§5 of the signed change, shared-model WIP one.
+1. Implementation follows `docs/PWB-IMPLEMENTATION-PLAN.md` (plan bead
+   closed 2026-09-03): slices P1–P8 mapped to the bounded Beads backlog under
+   `syzygy-1z3`, shared-model WIP one; the body-read authority evaluator (P1)
+   lands before any observer code.
 2. Before the first body read, the implementation evaluates the three effect
    acts under PWB-REQ-005 and fails closed on any invalid act; the acts are
    warrants, not evidence. Reads stay inside `declared-project-shape-text`
