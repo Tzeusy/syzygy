@@ -1,0 +1,1892 @@
+{
+  "subject": "PWB-REQ-005 mutation proof (docs/PWB-IMPLEMENTATION-PLAN.md task 2.5)",
+  "date": "2026-09-03",
+  "commit": "c5f59361e8e524864bb0555c6a7b1a6480f444dd",
+  "uncommittedChanges": [],
+  "testFiles": [
+    "packages/three-surface-poc-core/src/body-read-authority.test.ts",
+    "apps/three-surface-poc/src/governance-inputs.test.ts"
+  ],
+  "baseline": {
+    "total": 221,
+    "passed": 221,
+    "failed": 0
+  },
+  "sourceDigestsBefore": {
+    "packages/three-surface-poc-core/src/body-read-authority.ts": "fe6734d4cb732e192d6685084fb7635e7829693e63a360d68bbf9d8e34355a95",
+    "packages/three-surface-poc-core/src/project-shape-observer.ts": "9ff2151735897a0f5af295669240af79cdd3b038fcb4dc0a2bab50b5ecef93c6",
+    "packages/three-surface-poc-core/src/authority-disclosure.ts": "5f0a402ae9f634b39080fe3af0120eefa18ad17d6fb420a40975becc3f5b02cf"
+  },
+  "sourceDigestsAfter": {
+    "packages/three-surface-poc-core/src/body-read-authority.ts": "fe6734d4cb732e192d6685084fb7635e7829693e63a360d68bbf9d8e34355a95",
+    "packages/three-surface-poc-core/src/project-shape-observer.ts": "9ff2151735897a0f5af295669240af79cdd3b038fcb4dc0a2bab50b5ecef93c6",
+    "packages/three-surface-poc-core/src/authority-disclosure.ts": "5f0a402ae9f634b39080fe3af0120eefa18ad17d6fb420a40975becc3f5b02cf"
+  },
+  "mutations": [
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#tree-attribution-only",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "tree-attribution-only",
+      "line": 400,
+      "mustFail": [
+        "consent:tree-attribution-only →",
+        "policy:tree-attribution-only →",
+        "registry:tree-attribution-only →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 217,
+        "failed": 4
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#git-ref-only",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "git-ref-only",
+      "line": 402,
+      "mustFail": [
+        "consent:git-ref-only →",
+        "policy:git-ref-only →",
+        "registry:git-ref-only →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 217,
+        "failed": 4
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#specification-signoff-only",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "specification-signoff-only",
+      "line": 404,
+      "mustFail": [
+        "consent:specification-signoff-only →",
+        "policy:specification-signoff-only →",
+        "registry:specification-signoff-only →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#machine-submission",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "machine-submission",
+      "line": 406,
+      "mustFail": [
+        "consent:machine-submission →",
+        "policy:machine-submission →",
+        "registry:machine-submission →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#agent-assertion",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "agent-assertion",
+      "line": 408,
+      "mustFail": [
+        "consent:agent-assertion →",
+        "policy:agent-assertion →",
+        "registry:agent-assertion →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#project-identity-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "project-identity-missing",
+      "line": 415,
+      "mustFail": [
+        "consent:project-identity-missing →",
+        "policy:project-identity-missing →",
+        "registry:project-identity-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#project-identity-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "project-identity-malformed",
+      "line": 417,
+      "mustFail": [
+        "consent:project-identity-malformed →",
+        "policy:project-identity-malformed →",
+        "registry:project-identity-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#project-identity-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "project-identity-wrong",
+      "line": 419,
+      "mustFail": [
+        "consent:project-identity-wrong →",
+        "policy:project-identity-wrong →",
+        "registry:project-identity-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#artifact-identity-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "artifact-identity-missing",
+      "line": 423,
+      "mustFail": [
+        "consent:artifact-identity-missing →",
+        "policy:artifact-identity-missing →",
+        "registry:artifact-identity-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#artifact-identity-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "artifact-identity-malformed",
+      "line": 425,
+      "mustFail": [
+        "consent:artifact-identity-malformed →",
+        "policy:artifact-identity-malformed →",
+        "registry:artifact-identity-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#artifact-identity-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "artifact-identity-wrong",
+      "line": 427,
+      "mustFail": [
+        "consent:artifact-identity-wrong →",
+        "policy:artifact-identity-wrong →",
+        "registry:artifact-identity-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#exact-digest-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "exact-digest-missing",
+      "line": 431,
+      "mustFail": [
+        "consent:exact-digest-missing →",
+        "policy:exact-digest-missing →",
+        "registry:exact-digest-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#exact-digest-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "exact-digest-malformed",
+      "line": 433,
+      "mustFail": [
+        "consent:exact-digest-malformed →",
+        "policy:exact-digest-malformed →",
+        "registry:exact-digest-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#exact-digest-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "exact-digest-wrong",
+      "line": 435,
+      "mustFail": [
+        "consent:exact-digest-wrong →",
+        "policy:exact-digest-wrong →",
+        "registry:exact-digest-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 217,
+        "failed": 4
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#act-type-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "act-type-missing",
+      "line": 439,
+      "mustFail": [
+        "consent:act-type-missing →",
+        "policy:act-type-missing →",
+        "registry:act-type-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#act-type-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "act-type-malformed",
+      "line": 441,
+      "mustFail": [
+        "consent:act-type-malformed →",
+        "policy:act-type-malformed →",
+        "registry:act-type-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#act-type-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "act-type-wrong",
+      "line": 443,
+      "mustFail": [
+        "consent:act-type-wrong →",
+        "policy:act-type-wrong →",
+        "registry:act-type-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#act-instant-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "act-instant-missing",
+      "line": 447,
+      "mustFail": [
+        "consent:act-instant-missing →",
+        "policy:act-instant-missing →",
+        "registry:act-instant-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#act-instant-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "act-instant-malformed",
+      "line": 449,
+      "mustFail": [
+        "consent:act-instant-malformed →",
+        "policy:act-instant-malformed →",
+        "registry:act-instant-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#act-instant-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "act-instant-wrong",
+      "line": 451,
+      "mustFail": [
+        "consent:act-instant-wrong →",
+        "policy:act-instant-wrong →",
+        "registry:act-instant-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#owner-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "owner-missing",
+      "line": 455,
+      "mustFail": [
+        "consent:owner-missing →",
+        "policy:owner-missing →",
+        "registry:owner-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#owner-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "owner-malformed",
+      "line": 457,
+      "mustFail": [
+        "consent:owner-malformed →",
+        "policy:owner-malformed →",
+        "registry:owner-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#owner-non-human",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "owner-non-human",
+      "line": 459,
+      "mustFail": [
+        "consent:owner-non-human →",
+        "policy:owner-non-human →",
+        "registry:owner-non-human →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#owner-another-human",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "owner-another-human",
+      "line": 461,
+      "mustFail": [
+        "consent:owner-another-human →",
+        "policy:owner-another-human →",
+        "registry:owner-another-human →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#scope-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "scope-missing",
+      "line": 465,
+      "mustFail": [
+        "consent:scope-missing →",
+        "policy:scope-missing →",
+        "registry:scope-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#scope-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "scope-malformed",
+      "line": 467,
+      "mustFail": [
+        "consent:scope-malformed →",
+        "policy:scope-malformed →",
+        "registry:scope-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#scope-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "scope-wrong",
+      "line": 469,
+      "mustFail": [
+        "consent:scope-wrong →",
+        "policy:scope-wrong →",
+        "registry:scope-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#supersession-target-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "supersession-target-missing",
+      "line": 473,
+      "mustFail": [
+        "consent:supersession-target-missing →",
+        "policy:supersession-target-missing →",
+        "registry:supersession-target-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#supersession-target-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "supersession-target-malformed",
+      "line": 475,
+      "mustFail": [
+        "consent:supersession-target-malformed →",
+        "policy:supersession-target-malformed →",
+        "registry:supersession-target-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#supersession-target-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "supersession-target-wrong",
+      "line": 477,
+      "mustFail": [
+        "consent:supersession-target-wrong →",
+        "policy:supersession-target-wrong →",
+        "registry:supersession-target-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#a1-identity-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "a1-identity-missing",
+      "line": 481,
+      "mustFail": [
+        "consent:a1-identity-missing →",
+        "policy:a1-identity-missing →",
+        "registry:a1-identity-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#a1-identity-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "a1-identity-malformed",
+      "line": 483,
+      "mustFail": [
+        "consent:a1-identity-malformed →",
+        "policy:a1-identity-malformed →",
+        "registry:a1-identity-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#a1-identity-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "a1-identity-wrong",
+      "line": 485,
+      "mustFail": [
+        "consent:a1-identity-wrong →",
+        "policy:a1-identity-wrong →",
+        "registry:a1-identity-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#act-identity-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "act-identity-missing",
+      "line": 490,
+      "mustFail": [
+        "consent:act-identity-missing →",
+        "policy:act-identity-missing →",
+        "registry:act-identity-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#act-identity-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "act-identity-malformed",
+      "line": 492,
+      "mustFail": [
+        "consent:act-identity-malformed →",
+        "policy:act-identity-malformed →",
+        "registry:act-identity-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#act-identity-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "act-identity-wrong",
+      "line": 494,
+      "mustFail": [
+        "consent:act-identity-wrong →",
+        "policy:act-identity-wrong →",
+        "registry:act-identity-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#paired-to-different-authority",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "paired-to-different-authority",
+      "line": 496,
+      "mustFail": [
+        "consent:paired-to-different-authority →",
+        "policy:paired-to-different-authority →",
+        "registry:paired-to-different-authority →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#provenance-state-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "provenance-state-missing",
+      "line": 501,
+      "mustFail": [
+        "consent:provenance-state-missing →",
+        "policy:provenance-state-missing →",
+        "registry:provenance-state-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#provenance-state-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "provenance-state-malformed",
+      "line": 503,
+      "mustFail": [
+        "consent:provenance-state-malformed →",
+        "policy:provenance-state-malformed →",
+        "registry:provenance-state-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#provenance-state-outside-vocabulary",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "provenance-state-outside-vocabulary",
+      "line": 506,
+      "mustFail": [
+        "consent:provenance-state-outside-vocabulary →",
+        "policy:provenance-state-outside-vocabulary →",
+        "registry:provenance-state-outside-vocabulary →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#stale",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "stale",
+      "line": 510,
+      "mustFail": [
+        "consent:stale →",
+        "policy:stale →",
+        "registry:stale →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#expired",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "expired",
+      "line": 512,
+      "mustFail": [
+        "consent:expired →",
+        "policy:expired →",
+        "registry:expired →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#superseded",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "superseded",
+      "line": 514,
+      "mustFail": [
+        "consent:superseded →",
+        "policy:superseded →",
+        "registry:superseded →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 217,
+        "failed": 4
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#revoked",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "revoked",
+      "line": 516,
+      "mustFail": [
+        "consent:revoked →",
+        "policy:revoked →",
+        "registry:revoked →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 216,
+        "failed": 5
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#state-1-not-explicitly-selected",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "state-1-not-explicitly-selected",
+      "line": 520,
+      "mustFail": [
+        "consent:state-1-not-explicitly-selected →",
+        "policy:state-1-not-explicitly-selected →",
+        "registry:state-1-not-explicitly-selected →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#state-1-a1-present",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "state-1-a1-present",
+      "line": 522,
+      "mustFail": [
+        "consent:state-1-a1-present →",
+        "policy:state-1-a1-present →",
+        "registry:state-1-a1-present →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#state-2-correlation-failed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "state-2-correlation-failed",
+      "line": 530,
+      "mustFail": [
+        "consent:state-2-correlation-failed →",
+        "policy:state-2-correlation-failed →",
+        "registry:state-2-correlation-failed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 217,
+        "failed": 4
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#state-2-correlation-unavailable",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "state-2-correlation-unavailable",
+      "line": 532,
+      "mustFail": [
+        "consent:state-2-correlation-unavailable →",
+        "policy:state-2-correlation-unavailable →",
+        "registry:state-2-correlation-unavailable →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 217,
+        "failed": 4
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#state-2-correlation-indeterminate",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "state-2-correlation-indeterminate",
+      "line": 534,
+      "mustFail": [
+        "consent:state-2-correlation-indeterminate →",
+        "policy:state-2-correlation-indeterminate →",
+        "registry:state-2-correlation-indeterminate →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#phrase-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "phrase-missing",
+      "line": 540,
+      "mustFail": [
+        "consent:phrase-missing →",
+        "policy:phrase-missing →",
+        "registry:phrase-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#phrase-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "phrase-malformed",
+      "line": 542,
+      "mustFail": [
+        "consent:phrase-malformed →",
+        "policy:phrase-malformed →",
+        "registry:phrase-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#phrase-mismatched",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "phrase-mismatched",
+      "line": 545,
+      "mustFail": [
+        "consent:phrase-mismatched →",
+        "policy:phrase-mismatched →",
+        "registry:phrase-mismatched →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#recording-tag-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "recording-tag-missing",
+      "line": 549,
+      "mustFail": [
+        "consent:recording-tag-missing →",
+        "policy:recording-tag-missing →",
+        "registry:recording-tag-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#recording-tag-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "recording-tag-malformed",
+      "line": 551,
+      "mustFail": [
+        "consent:recording-tag-malformed →",
+        "policy:recording-tag-malformed →",
+        "registry:recording-tag-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 218,
+        "failed": 3
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#recording-tag-mismatched",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "recording-tag-mismatched",
+      "line": 553,
+      "mustFail": [
+        "consent:recording-tag-mismatched →",
+        "policy:recording-tag-mismatched →",
+        "registry:recording-tag-mismatched →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 217,
+        "failed": 4
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#observing-project-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "observing-project-missing",
+      "line": 586,
+      "mustFail": [
+        "consent:observing-project-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#observing-project-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "observing-project-malformed",
+      "line": 588,
+      "mustFail": [
+        "consent:observing-project-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#observing-project-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "observing-project-wrong",
+      "line": 590,
+      "mustFail": [
+        "consent:observing-project-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#configured-repository-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "configured-repository-missing",
+      "line": 593,
+      "mustFail": [
+        "consent:configured-repository-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#configured-repository-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "configured-repository-malformed",
+      "line": 595,
+      "mustFail": [
+        "consent:configured-repository-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#configured-repository-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "configured-repository-wrong",
+      "line": 597,
+      "mustFail": [
+        "consent:configured-repository-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#content-class-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "content-class-missing",
+      "line": 600,
+      "mustFail": [
+        "consent:content-class-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#content-class-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "content-class-malformed",
+      "line": 602,
+      "mustFail": [
+        "consent:content-class-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#content-class-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "content-class-wrong",
+      "line": 604,
+      "mustFail": [
+        "consent:content-class-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#policy-owning-project-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "policy-owning-project-missing",
+      "line": 612,
+      "mustFail": [
+        "policy:policy-owning-project-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#policy-owning-project-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "policy-owning-project-malformed",
+      "line": 614,
+      "mustFail": [
+        "policy:policy-owning-project-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#policy-owning-project-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "policy-owning-project-wrong",
+      "line": 616,
+      "mustFail": [
+        "policy:policy-owning-project-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#policy-version-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "policy-version-missing",
+      "line": 619,
+      "mustFail": [
+        "policy:policy-version-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#policy-version-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "policy-version-malformed",
+      "line": 621,
+      "mustFail": [
+        "policy:policy-version-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#policy-version-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "policy-version-wrong",
+      "line": 623,
+      "mustFail": [
+        "policy:policy-version-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#governance-home-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "governance-home-missing",
+      "line": 633,
+      "mustFail": [
+        "registry:governance-home-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#governance-home-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "governance-home-malformed",
+      "line": 635,
+      "mustFail": [
+        "registry:governance-home-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#governance-home-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "governance-home-wrong",
+      "line": 637,
+      "mustFail": [
+        "registry:governance-home-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#project-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "project-missing",
+      "line": 640,
+      "mustFail": [
+        "registry:project-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#project-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "project-malformed",
+      "line": 642,
+      "mustFail": [
+        "registry:project-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#project-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "project-wrong",
+      "line": 644,
+      "mustFail": [
+        "registry:project-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#repository-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "repository-missing",
+      "line": 647,
+      "mustFail": [
+        "registry:repository-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#repository-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "repository-malformed",
+      "line": 649,
+      "mustFail": [
+        "registry:repository-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#repository-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "repository-wrong",
+      "line": 651,
+      "mustFail": [
+        "registry:repository-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#read-only-authority-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "read-only-authority-missing",
+      "line": 654,
+      "mustFail": [
+        "registry:read-only-authority-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#read-only-authority-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "read-only-authority-malformed",
+      "line": 657,
+      "mustFail": [
+        "registry:read-only-authority-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#read-only-authority-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "read-only-authority-wrong",
+      "line": 659,
+      "mustFail": [
+        "registry:read-only-authority-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#write-surface-missing",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "write-surface-missing",
+      "line": 662,
+      "mustFail": [
+        "registry:write-surface-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#write-surface-malformed",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "write-surface-malformed",
+      "line": 664,
+      "mustFail": [
+        "registry:write-surface-malformed →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/body-read-authority.ts#write-surface-wrong",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "caseName": "write-surface-wrong",
+      "line": 666,
+      "mustFail": [
+        "registry:write-surface-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "packages/three-surface-poc-core/src/project-shape-observer.ts#gate",
+      "kind": "disable-predicate",
+      "file": "packages/three-surface-poc-core/src/project-shape-observer.ts",
+      "caseName": "gate",
+      "line": 82,
+      "mustFail": [
+        "PWB-REQ-005 invalid cases (195)"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 23,
+        "failed": 198
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "exact-state-collapse",
+      "kind": "literal",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "description": "a valid state-(2) act is recorded as state (1): exact state is not preserved",
+      "mustFail": [
+        "valid triple state-2/state-2/state-2",
+        "valid triple state-1/state-1/state-2",
+        "later correlation renders state (2)"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 213,
+        "failed": 8
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "exact-state-inflate",
+      "kind": "literal",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "description": "a valid state-(1) act is recorded as state (2): state (1) claims independent verification",
+      "mustFail": [
+        "valid triple state-1/state-1/state-1",
+        "evaluates the three real 2026-09-02 PWB acts"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 211,
+        "failed": 10
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "failed-correlation-downgrades-to-state-1",
+      "kind": "literal",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "description": "a failed A1 correlation falls back to state (1) instead of invalidating the act",
+      "mustFail": [
+        "consent:state-2-correlation-failed →",
+        "policy:state-2-correlation-failed →",
+        "registry:state-2-correlation-failed →",
+        "does not downgrade to state (1)"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 217,
+        "failed": 4
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "admits-always",
+      "kind": "literal",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "description": "the evaluation admits regardless of the three states",
+      "mustFail": [
+        "consent:project-identity-missing →",
+        "registry:write-surface-wrong →",
+        "a missing consent artifact yields zero reads"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 22,
+        "failed": 199
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "contradiction-suppressed",
+      "kind": "literal",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "description": "a non-admitting evaluation records no RFC3-16(a) contradiction",
+      "mustFail": [
+        "consent:project-identity-missing →",
+        "registry:write-surface-wrong →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 25,
+        "failed": 196
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "history-rewrite-on-later-correlation",
+      "kind": "literal",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "description": "appending a later evaluation rewrites earlier entries to the later consent state",
+      "mustFail": [
+        "later correlation renders state (2)"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "history-duplicate-accepted",
+      "kind": "literal",
+      "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "description": "a duplicate evaluation id is appended instead of rejected",
+      "mustFail": [
+        "later correlation renders state (2)"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 220,
+        "failed": 1
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "disclosure-independently-verified-forced",
+      "kind": "literal",
+      "file": "packages/three-surface-poc-core/src/authority-disclosure.ts",
+      "description": "every valid act is disclosed as independently verified",
+      "mustFail": [
+        "valid triple state-1/state-1/state-1",
+        "evaluates the three real 2026-09-02 PWB acts"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 213,
+        "failed": 8
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "disclosure-state-1-label-inflated",
+      "kind": "literal",
+      "file": "packages/three-surface-poc-core/src/authority-disclosure.ts",
+      "description": "a state-(1) act is labelled with the state-(2) label",
+      "mustFail": [
+        "valid triple state-1/state-1/state-1",
+        "evaluates the three real 2026-09-02 PWB acts"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 213,
+        "failed": 8
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "state-1-sentence-altered",
+      "kind": "literal",
+      "file": "packages/three-surface-poc-core/src/authority-disclosure.ts",
+      "description": "the exact state-(1) sentence is altered",
+      "mustFail": [
+        "the state-(1) disclosure constant is exactly the PWB-REQ-005 sentence",
+        "valid triple state-1/state-1/state-1"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 212,
+        "failed": 9
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    },
+    {
+      "id": "invalid-act-disclosed-as-verified",
+      "kind": "literal",
+      "file": "packages/three-surface-poc-core/src/authority-disclosure.ts",
+      "description": "an invalid act is disclosed as independently verified",
+      "mustFail": [
+        "consent:project-identity-missing →"
+      ],
+      "observed": {
+        "total": 221,
+        "passed": 26,
+        "failed": 195
+      },
+      "mustFailMissing": [],
+      "killed": true,
+      "restored": true
+    }
+  ],
+  "summary": {
+    "planned": 97,
+    "predicateSites": 86,
+    "literalMutations": 11,
+    "killed": 97,
+    "survived": 0,
+    "restoreFailures": 0
+  }
+}
