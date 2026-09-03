@@ -539,6 +539,30 @@ can be authorized.
   proven byte-equal to the act-bound registry/policy JSON in the test.
 - Always take tree listings with `-z`; the parser rejects quoted paths.
 
+### PWB slice P2.2 — injectable phase A observer (syzygy-1z3.3, 2026-09-03)
+
+- `packages/three-surface-poc-core/src/project-shape-observation.ts` wraps
+  the manifest with an injected `GitRunner` (`(args) => Uint8Array`, throws
+  on failure). Command order is fixed and ledgered: `rev-parse --verify
+  <rev>^{commit}` → `show -s --format=%cI` (committer instant = the
+  source-claimed instant, kept distinct from the injected `capturedAt`) →
+  `ls-tree -r -z -l` → one `cat-file blob <oid>` per admitted seed. Any
+  failure before the tree is `gitCaptureFailed` / "Observer failed".
+- `admitPhaseARead` is the allowlist and runs before every read: root index
+  or a `README.md` whose directory basename is a pillar key, tree-present,
+  object id equal to the tree's, mode 100644/100755. Returned bytes must
+  hash to the tree's object id (`gitBlobObjectId`), be NUL-free and strict
+  UTF-8; over-limit seeds (`maxBytesPerSource`, `maxTotalBytes`) are never
+  opened. Refusals leave the pillar `index-unavailable` with the reason as
+  `detail`; the population never shrinks.
+- `observationDigest` excludes `capturedAt` everywhere (top level and every
+  source stamp) so the same inputs at different capture times share a digest.
+  `PWB_OBSERVER_IDENTITY`, `PWB_RESOURCE_LIMITS`, `PWB_FAILURE_STATES` and
+  `PWB_CONTENT_CLASS` are hard-coded copies proven byte-equal to the
+  act-bound registry entry and consent record in the test.
+- `gitRunnerFor(repoRoot)` is the production binding; nothing calls it yet.
+  The first real Butlers observation stays in P4 behind the P1 gate.
+
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 
 - The three effect-specific authorities live at their final bytes:

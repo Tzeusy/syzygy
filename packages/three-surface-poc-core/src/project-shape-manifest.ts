@@ -272,8 +272,14 @@ function canonicalize(value: unknown): unknown {
   return value;
 }
 
+// Key-sorted JSON with `undefined` members dropped; the one canonical form
+// every PWB sha256 identity (manifest, resource limits, observation) uses.
+export function canonicalJson(value: unknown): string {
+  return JSON.stringify(canonicalize(value));
+}
+
 export function canonicalManifestJson(manifest: Omit<ProjectShapeSourceManifest, 'digest'>): string {
-  return JSON.stringify(canonicalize(manifest));
+  return canonicalJson(manifest);
 }
 
 function digestOf(manifest: Omit<ProjectShapeSourceManifest, 'digest'>): string {

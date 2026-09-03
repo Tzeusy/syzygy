@@ -64,6 +64,11 @@ packages/three-surface-poc-core/src/
                                indexes → Git-tree baseline specs + roster; emits the
                                revision-bound manifest (paths, extraction classes,
                                discovery version, sha256)
+  project-shape-observation.ts PWB-REQ-001 phase A observer: injectable Git runner,
+                               exact commit, committer instant as source-claimed time,
+                               admitted + ledgered seed reads, observer identity /
+                               versions / capture-instant stamps, capture-independent
+                               observation digest, registry failure states
   git-object-reader.ts         PWB-REQ-006 read guard + exact-object reader with
                                declared resource limits; injectable runGit/read spy
   content-classification.ts    PWB-REQ-003: the adopted secret policy's six-step
@@ -109,6 +114,20 @@ names only files under its own root; images, external, escaping, directory
 and self links are recorded as ignored. Extraction classes are assigned by
 (rule, pillar, path within root). `[Unknown]` whether the real Butlers
 indexes fit this grammar — §9 already routes that to the first P4 live run.
+
+P2.2 note, recorded 2026-09-03: the phase A observer landed as its own
+module, `project-shape-observation.ts`, rather than inside the registry-named
+`project-shape-observer.ts`, so the P1 gate file (and its 86-site mutation
+denominator) stays byte-stable; the gate composes it through `read`, and the
+test proves a non-admitting authority issues zero Git calls. The observer
+resolves the revision to an exact commit, takes the committer instant from
+Git metadata as the source-claimed instant PWB-REQ-001 wants kept distinct
+from capture, and admits every seed read against the tree before it happens
+(root index or pillar `README.md` only, tree-matching object id, regular blob
+mode; symlinks and submodules are refused, over-limit seeds are not opened).
+Returned bytes are verified against Git's own blob identity before use. The
+production `gitRunnerFor` binding exists but nothing in `main.ts` calls it:
+no Butlers read happens before P4.
 
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
