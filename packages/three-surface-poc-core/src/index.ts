@@ -6,3 +6,8 @@ export * from './orrery-projection.js';
 export * from './trajectory-projection.js';
 export * from './materialization.js';
 export * from './test-artifact-verification.js';
+export * from './owner-act-record.js';
+export * from './authority-artifact-fields.js';
+export * from './body-read-authority.js';
+export * from './authority-disclosure.js';
+export * from './project-shape-observer.js';

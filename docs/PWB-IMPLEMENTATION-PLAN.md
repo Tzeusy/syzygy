@@ -48,9 +48,16 @@ packages/three-surface-poc-core/src/
   owner-act-record.ts          parse a decisions/ act record into the nine RFC3-16(b)
                                items (+ state, phrase, recording tag, A1 absence);
                                parse failures are typed, never coerced to "absent"
+  authority-artifact-fields.ts extract the authority-specific fields from the
+                               consent record (Markdown) and the policy / registry
+                               JSON as present | missing; no validity
   body-read-authority.ts       PWB-REQ-005: evaluate consent / policy / registry
                                triples; closed 195-case invalid vocabulary; 8 valid
-                               triples; failed state-(2) never downgrades
+                               triples; failed state-(2) never downgrades; append-only
+                               evaluation history
+  authority-disclosure.ts      the one renderer for per-authority state text and the
+                               exact state-(1) sentence (in core, not the app, so
+                               `/api/poc`'s verbatim model JSON carries the same strings)
   project-shape-manifest.ts    PWB-REQ-001 phase A discovery: root index → pillar
                                indexes → Git-tree baseline specs + roster; emits the
                                revision-bound manifest (paths, extraction classes,
@@ -74,14 +81,21 @@ packages/three-surface-poc-core/src/
 apps/three-surface-poc/src/
   governance-inputs.ts         locate and load the act-bound artifacts and act records
                                from the observing checkout's .syzygy/governance tree
-                               (fail closed; unreadable ≠ absent)
+                               (fail closed; unreadable ≠ absent); hard-codes the
+                               controlled expectations; classifies a missing record as
+                               git-ref-only / tree-attribution-only / absent
+  pwb-mutation.ts              the PWB-REQ-005 mutation plan (pure): marked predicate
+  pwb-mutation-run-main.ts     sites + literal mutations; runner writes docs/evidence
   polaris.ts                   project-level entry: Overview, Boundaries, Architecture,
                                V1, Project catalog, Capability detail, Evidence and gaps
   polaris-copy.ts              the closed copy roles and the owner-visible string table
   capability-detail.ts         argument / contract / reality bands; WhatsApp slice moves here
-  authority-disclosure.ts      the one renderer for per-authority state text and the
-                               exact state-(1) disclosure, shared by every surface
 ```
+
+P1 deviation, recorded 2026-09-03: `authority-disclosure.ts` landed in
+`packages/three-surface-poc-core/` rather than the app so the machine channel
+inherits the strings by construction, and the field extraction split out into
+`authority-artifact-fields.ts`.
 
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
@@ -100,7 +114,8 @@ violate:
    (consent record, policy JSON, registry entry) and their three dedicated
    act records under `decisions/`. Each read yields `{kind:'present', bytes,
    sha256}` or a typed failure (`missing`, `unreadable`, `malformed`). A
-   `--governance-dir` override exists for hermetic tests only.
+   `repoRoot` option plus injectable `readFile` / `listDirectory` / `runGit`
+   serve hermetic tests (replacing the planned `--governance-dir` flag).
 2. **The act record is parsed, never trusted.** `owner-act-record.ts`
    extracts the labelled fields the 2026-09-02 records carry: act identity,
    act type, project identity, artifact identity, exact digest, provenance
@@ -110,13 +125,16 @@ violate:
 3. **Evaluation is a pure function.** `evaluateBodyReadAuthority(inputs) →
    { admits: boolean; consent: AuthorityState; policy: AuthorityState;
    registry: AuthorityState; contradiction?: … }` where `AuthorityState` is
-   `valid-state-1 | valid-state-2 | invalid(caseId)`. Per authority it
-   checks, in order: the nine RFC3-16(b) items (item 3 by recomputing the
+   `valid(state-1 | state-2) | invalid(caseId) | absent(artifact-missing |
+   artifact-unreadable | act-record-absent)`; `absent` is a non-admitting
+   outcome outside the 195 present-invalid cases. Per authority it checks,
+   in order: false substitutes first (a record that is only a tag, commit,
+   sign-off, machine submission or agent assertion has no fields to judge),
+   then the nine RFC3-16(b) items (item 3 by recomputing the
    artifact's SHA-256 from the bytes just read and comparing to the act
    argument, so an edited artifact is "wrong but present digest"); the
    association (act record names this artifact); the provenance-state input;
-   false substitutes (a record that is only a tag, commit, sign-off, machine
-   submission or agent assertion); lifecycle (stale, expired, superseded,
+   lifecycle (stale, expired, superseded,
    revoked); state mechanics (state (1) explicitly selected; A1 explicitly
    absent for state (1); claimed state (2) needs successful correlation);
    state-(1) record semantics (phrase and recording tag present, well-formed
@@ -124,7 +142,9 @@ violate:
    and content class; policy-owning project and version; registry home,
    project, repository, read-only authority and empty write surface). The
    first failing predicate names the case; every predicate is independently
-   reachable so the 195 cases are 195 predicates, not a bucket.
+   reachable. `[Observed]` 2026-09-03: 85 predicate sites — 55 common ones
+   shared by the three authorities (× 3 = 165 instances) plus 30
+   authority-specific — carry the 195 case instances; there is no bucket.
 4. **State (2) is unavailable in this repository.** `[Observed]` No RFC5-25
    audit trail exists. Correlation is an injected function whose production
    value returns `unavailable`; any record claiming state (2) is therefore
@@ -220,14 +240,21 @@ violate:
 
 **Mutation proofs** (rule 6; REQ-005/020/022 demand one per case). Each
 predicate in the two authority evaluators and each parity marker class
-carries a `// mutation-point: <case-id>` comment. A small tool in
-`apps/three-surface-poc/src/mutation-runner.ts` (tooling, not shipped
-behavior) rewrites one predicate to `return ok` at a time, runs the matching
-Vitest case, asserts it fails, restores the bytes, verifies the restore by
-digest, and appends `{caseId, mutatedDigest, restoredDigest, failed:
-true|false}` to `docs/evidence/pwb-mutation-run-<date>.json`. A run is valid
-only at a named commit and is retained as review evidence; it is never run
-against a dirty tree.
+carries a `// mutation-point: <case-id>` comment. For REQ-005 the tool is
+`apps/three-surface-poc/src/pwb-mutation.ts` (pure plan) plus
+`pwb-mutation-run-main.ts` (`npm run poc:pwb-mutation-run`; tooling, not
+shipped behavior). Per mutation it rewrites one predicate's condition to
+`false && (…)` (or applies one hand-listed literal mutation: exact-state
+collapse/inflation, failed-correlation downgrade, admits-always,
+contradiction suppression, history rewrite, duplicate append, forced
+"independently verified", altered state-(1) sentence), runs the two
+independent test files, requires every named case-instance test to fail,
+restores the bytes, verifies the restore by digest, and writes one record
+`{id, mustFail, observed, mustFailMissing, killed, restored}` per mutation
+with source digests before/after and the commit to
+`docs/evidence/pwb-mutation-run-<date>.json`. A run is valid only at a named
+commit and is retained as review evidence; it is never run against a dirty
+tree.
 
 **Retained evidence** per slice: commit, `vitest run` transcript summary,
 the three denominators reported separately, mutation-run file. Claims

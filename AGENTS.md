@@ -492,6 +492,34 @@ can be authorized.
   exact state, fail invalid acts closed and keep acts as warrants. The sign-off
   supplies no consent, policy, registry, body-read or implementation authority.
 
+### PWB slice P1 — body-read authority gate (syzygy-1z3.26, 2026-09-03)
+
+- `packages/three-surface-poc-core/src/body-read-authority.ts` is the
+  PWB-REQ-005 evaluator: 85 `// mutation-point:` predicate sites (55 common,
+  shared by the three authorities, plus 30 authority-specific) carry the 195
+  invalid case instances; the first failing predicate names the case, so
+  predicate ORDER is load-bearing (false substitutes → binding fields →
+  association → provenance → lifecycle → state mechanics → phrase/tag →
+  specific fields). Adding a predicate means adding its case to the closed
+  vocabulary, the hand-typed table in `body-read-authority.test.ts`, and
+  re-running the mutation proof. Scope anchors are matched after collapsing
+  whitespace because real act records wrap prose at 80 columns.
+- The controlled expectations live only in
+  `apps/three-surface-poc/src/governance-inputs.ts`, never read from the
+  artifacts. The real-tree test is tag-aware: hosted CI's shallow checkout
+  has no `pwb-*-signed-2026-09-02` tags, so every act fails closed on
+  `recording-tag-mismatched` there; locally all three acts evaluate as valid
+  state (1). State (2) is unreachable (`A1_CORRELATION_UNAVAILABLE`).
+- `npm run poc:pwb-mutation-run` is the rule-6 proof: 86 predicate
+  disablings + 11 literal mutations, each run against the two independent
+  test files with digest-verified restore, evidence at
+  `docs/evidence/pwb-mutation-run-<date>.json`. Never run it while editing
+  the core sources (it rewrites them in place during the run) and never
+  commit while it runs. Vitest test names contain `→`; grep on the `×`
+  glyph, not the arrow, to list failures.
+- `project-shape-observer.ts` is the registry-named module; its first
+  statement is the admits gate. No Butlers body is read anywhere in P1.
+
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 
 - The three effect-specific authorities live at their final bytes:
