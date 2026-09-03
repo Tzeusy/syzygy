@@ -1,0 +1,193 @@
+{
+ "slice": "P2.4 content classification (syzygy-1z3.5, PWB-REQ-003)",
+ "date": "2026-09-04",
+ "method": "manual loop: write one mutation, run content-classification.test.ts with the JSON reporter, restore, verify sha256",
+ "baseCommit": "9bf8901 (mutated file uncommitted at run time; its final digest is recorded)",
+ "file": "packages/three-surface-poc-core/src/content-classification.ts",
+ "sourceDigestSha256": "ec567bb72b8f58e50e4020515c518840f0b4b49bd7209031ba7ecba35d1488d4",
+ "mutations": [
+  {
+   "id": "detect-none",
+   "failedTests": 7,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "detect-last-not-first",
+   "failedTests": 2,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "detect-stop-early",
+   "failedTests": 1,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "regex-lastindex-leak",
+   "failedTests": 5,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "regex-compile-swallow",
+   "failedTests": 1,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "denied-path-unavailable",
+   "failedTests": 4,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "denied-path-class",
+   "failedTests": 3,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "over-limit-reason",
+   "failedTests": 1,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "nul-admitted",
+   "failedTests": 3,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "utf8-admitted",
+   "failedTests": 3,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "active-admitted",
+   "failedTests": 3,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "git-failed-as-unreadable",
+   "failedTests": 2,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "membership-objectid",
+   "failedTests": 1,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "membership-path",
+   "failedTests": 1,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "membership-any",
+   "failedTests": 1,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "class-unknown-admitted",
+   "failedTests": 1,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "class-duplicate-admitted",
+   "failedTests": 1,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "record-carries-text",
+   "failedTests": 4,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "exclusion-carries-body",
+   "failedTests": 2,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "population-shrinks",
+   "failedTests": 5,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "counts-swapped",
+   "failedTests": 1,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "parse-failure-reason",
+   "failedTests": 1,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "policy-version-ignored",
+   "failedTests": 1,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "consume-on-withheld",
+   "failedTests": 3,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  },
+  {
+   "id": "missing-as-excluded",
+   "failedTests": 4,
+   "totalTests": 18,
+   "killed": true,
+   "restored": true
+  }
+ ],
+ "summary": {
+  "total": 25,
+  "killed": 25,
+  "restored": 25,
+  "equivalentRemovedAsDeadCode": [
+   "population-guard-off"
+  ]
+ }
+}

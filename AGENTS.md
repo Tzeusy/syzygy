@@ -594,6 +594,31 @@ can be authorized.
   mutations killed (manual python loop, digest-verified restore); the two
   equivalent mutants found were removed as dead code, not waived.
 
+### PWB slice P2.4 — secret policy before admission (syzygy-1z3.5, 2026-09-04)
+
+- `packages/three-surface-poc-core/src/content-classification.ts` runs the
+  act-bound policy's six-step `classificationOrder` over the P2.3 reader's
+  transient body. The policy is a parameter (`PWB_SECRET_POLICY` is the
+  byte-equal default; the test proves it against the JSON); detectors are
+  compiled from the policy strings and an uncompilable policy throws.
+  Global-flag regexps have `lastIndex` reset before every test — removing
+  that reset is a killed mutation, not a nicety.
+- Three body-free outcomes: `classified` (text reaches only the consumer
+  callback), `excluded` (hash-not-body RFC5-17 record: digest, path, policy
+  id/version, `detectorId` or a closed `exclusionReason`, optional closed
+  `detail` word) and `unavailable` (missing/non-blob/unreadable; not an
+  exclusion; registry reason `source-uncaptured-or-unreachable`). A denied
+  path or never-opened over-limit source has no content digest. Over-limit
+  is `unclassifiable-excluded` per the policy but carries the registry's
+  `Partial snapshot` reason (the two act-bound artifacts differ; recorded in
+  the plan's P2.4 note).
+- `classifyManifestSources` returns one result per manifest source in order;
+  the earlier population guard was removed as unreachable (equivalent
+  mutant). 25 rule-6 mutations killed, digest-verified restore, evidence at
+  `docs/evidence/pwb-p2-4-classification-mutation-run-2026-09-04.json`.
+- The classifier is constructed by nothing before P4; no Butlers body is
+  read.
+
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 
 - The three effect-specific authorities live at their final bytes:

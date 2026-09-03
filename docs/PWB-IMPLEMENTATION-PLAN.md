@@ -151,6 +151,31 @@ order and hands each body only to the caller's `consume` callback, so no
 record this module returns can carry a body. Still no Butlers read: the
 reader is constructed by nothing before P4.
 
+P2.4 note, recorded 2026-09-04: `content-classification.ts` is the policy's
+six-step `classificationOrder` executed over the P2.3 reader's transient
+body. Decisions: (a) the policy is a parameter — `PWB_SECRET_POLICY` is the
+hard-coded copy proven byte-equal to the act-bound JSON, detectors are
+compiled from the policy document's own strings (an uncompilable policy
+throws rather than screening nothing), and every exclusion names the
+policy version it ran under; (b) every detector runs over each body and the
+first match in policy order is the one named, so a later detector's failure
+cannot hide behind an earlier match; (c) three outcomes, all body-free:
+`classified` (text handed to the extractor's callback only),
+`excluded` (an RFC5-17 hash-not-body record in one of the two emitted
+redaction classes) and `unavailable` (missing, non-blob, unreadable — the
+policy never saw a body, so it is not an exclusion but stays counted with the
+registry's `source-uncaptured-or-unreachable`); (d) a denied path is an
+`excluded-artifact` exclusion with reason `denied-path` and no content digest,
+because the body was never read; (e) a resource-limit breach is the policy's
+`unclassifiable-excluded` exclusion, but its Unknown reason follows the
+registry's `someSourcesUncapturedOrOverLimit` mapping (`Partial snapshot`,
+`source-uncaptured-or-unreachable`) rather than the policy's blanket
+`excluded-content` — the two act-bound artifacts differ here and the
+registry is the adapter's declared error mapping (RFC4-2 item 6), so it wins
+for the reason while the policy wins for the exclusion record; (f) parse
+failure (step 5) is exposed as `parseFailureExclusion` for the extractor to
+call, since only 2.5 knows when a parse failed. Still no Butlers read.
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a

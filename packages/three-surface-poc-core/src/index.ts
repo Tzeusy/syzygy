@@ -15,3 +15,4 @@ export * from './git-tree.js';
 export * from './project-shape-manifest.js';
 export * from './project-shape-observation.js';
 export * from './git-object-reader.js';
+export * from './content-classification.js';
