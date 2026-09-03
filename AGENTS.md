@@ -520,6 +520,25 @@ can be authorized.
 - `project-shape-observer.ts` is the registry-named module; its first
   statement is the admits gate. No Butlers body is read anywhere in P1.
 
+### PWB slice P2.1 — revision-bound source manifest (syzygy-1z3.2, 2026-09-03)
+
+- `packages/three-surface-poc-core/src/project-shape-manifest.ts` is phase A
+  discovery as a pure function over injected `tree` (parsed `ls-tree -r -z`
+  via `git-tree.ts`) and `readSeed`; it reads nothing itself and asks
+  `readSeed` only for tree-present blobs among the root index and the five
+  pillar READMEs, in `PILLAR_KEYS` order (`manifest.phaseAReads` records
+  exactly those). Tree-only rules (baseline specs, roster) never read.
+- The population never shrinks: a named-but-absent file is a source with
+  anchor `missing-at-revision`, a symlink/submodule is recorded by mode/type
+  (the P2.3 reader rejects it), an unreadable index leaves the pillar
+  `unknown` with its reason while the index itself stays counted.
+- Digest is sha256 over canonical (key-sorted) JSON of every field but
+  `digest`; capture instant is deliberately NOT in the manifest (it is the
+  observer's stamp, P2.2), so the same revision + indexes give the same
+  identity. Constants `PWB_DISCOVERY_VERSION`/`PWB_ROOT_INDEX_PATH` are
+  proven byte-equal to the act-bound registry/policy JSON in the test.
+- Always take tree listings with `-z`; the parser rejects quoted paths.
+
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 
 - The three effect-specific authorities live at their final bytes:

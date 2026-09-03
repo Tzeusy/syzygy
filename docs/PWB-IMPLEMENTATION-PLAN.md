@@ -58,6 +58,8 @@ packages/three-surface-poc-core/src/
   authority-disclosure.ts      the one renderer for per-authority state text and the
                                exact state-(1) sentence (in core, not the app, so
                                `/api/poc`'s verbatim model JSON carries the same strings)
+  git-tree.ts                  `ls-tree -r -z` parser, tree index, POSIX path
+                               normalization; shared by the manifest and the reader
   project-shape-manifest.ts    PWB-REQ-001 phase A discovery: root index → pillar
                                indexes → Git-tree baseline specs + roster; emits the
                                revision-bound manifest (paths, extraction classes,
@@ -96,6 +98,17 @@ P1 deviation, recorded 2026-09-03: `authority-disclosure.ts` landed in
 `packages/three-surface-poc-core/` rather than the app so the machine channel
 inherits the strings by construction, and the field extraction split out into
 `authority-artifact-fields.ts`.
+
+P2.1 note, recorded 2026-09-03: `git-tree.ts` was split out because the
+manifest (2.1) and the exact-object reader (2.3) share tree metadata. The
+manifest's index-link grammar is a closed rule under
+`pwb-discovery-v1-candidate.3`: inline links and reference definitions
+outside fenced blocks and code spans; a pillar root is a root-index link
+whose directory basename is one of the five pillar keys; a pillar index
+names only files under its own root; images, external, escaping, directory
+and self links are recorded as ignored. Extraction classes are assigned by
+(rule, pillar, path within root). `[Unknown]` whether the real Butlers
+indexes fit this grammar — §9 already routes that to the first P4 live run.
 
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording

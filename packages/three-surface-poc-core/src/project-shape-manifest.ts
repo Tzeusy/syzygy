@@ -1,0 +1,440 @@
+// Project-shape source manifest — PWB-REQ-001 phase A discovery.
+//
+// Derives the revision-bound, closed source-path population of the one
+// configured Butlers repository from (a) exact Git tree metadata and (b)
+// the two index bodies the adopted secret policy's `sourceAdmission.phaseA`
+// allows: the fixed root index and each declared pillar's README index.
+// The four population rules are the signed spec's reader definition:
+//
+//   1. the five pillar roots named by the root index;
+//   2. the files named by each pillar's own README index, restricted to
+//      that pillar root (narrative links do not recurse);
+//   3. baseline `openspec/specs/<one-directory>/spec.md` Git-tree entries;
+//   4. top-level `roster/<one-directory>/butler.toml` entries, plus that
+//      directory's `MANIFESTO.md` when present.
+//
+// The manifest is observation scope, not a copy of Butlers facts: it
+// records paths, source rules, extraction classes, tree anchors and a
+// sha256 over its canonical bytes. The population never shrinks on a
+// failure — a named file absent at the revision, an unreadable index or an
+// undeclared pillar is recorded with its reason and stays counted.
+//
+// This module reads nothing itself. Index bodies arrive through the
+// injected `readSeed`, which the observer (slice P2.2) supplies only after
+// the PWB-REQ-005 gate admits, and only for the paths listed in
+// `phaseAReads`. Rules 3 and 4 use tree metadata alone.
+
+import { createHash } from 'node:crypto';
+
+import {
+  indexGitTree,
+  normalizeRepositoryPath,
+  posixBasename,
+  posixDirname,
+  type GitTreeEntry,
+  type GitTreeIndex,
+} from './git-tree.js';
+
+// Byte-equal to the adopted registry entry's `discoveryVersion` and the
+// adopted policy's `sourceAdmission.phaseA.fixedSeedPaths`;
+// `project-shape-manifest.test.ts` proves both against the act-bound JSON.
+export const PWB_DISCOVERY_VERSION = 'pwb-discovery-v1-candidate.3';
+export const PWB_ROOT_INDEX_PATH = 'about/README.md';
+
+// Root index → pillar index → named file.
+export const PWB_INDEX_DEPTH = 3;
+
+export const PILLAR_KEYS = ['heart-and-soul', 'legends-and-lore', 'spec-and-spine', 'lay-and-land', 'craft-and-care'] as const;
+export type PillarKey = (typeof PILLAR_KEYS)[number];
+
+export const EXTRACTION_CLASSES = [
+  'project-account-section',
+  'principle',
+  'success-criterion',
+  'catalog-entry',
+  'design-contract',
+  'baseline-spec',
+  'topology-component',
+  'craft-policy',
+  'roster-identity',
+] as const;
+export type ExtractionClass = (typeof EXTRACTION_CLASSES)[number];
+
+export const SOURCE_RULES = ['root-index', 'pillar-index', 'pillar-named-file', 'baseline-spec-tree', 'roster-tree'] as const;
+export type SourceRule = (typeof SOURCE_RULES)[number];
+
+export type SourceAnchor =
+  | { readonly kind: 'blob'; readonly mode: string; readonly objectId: string }
+  | { readonly kind: 'not-a-blob'; readonly mode: string; readonly type: 'tree' | 'commit' }
+  | { readonly kind: 'missing-at-revision' };
+
+export interface ManifestSource {
+  readonly path: string;
+  readonly rule: SourceRule;
+  readonly pillar?: PillarKey;
+  // The index whose link named this source (rules 1–2 only).
+  readonly declaredBy?: string;
+  readonly extractionClasses: readonly ExtractionClass[];
+  readonly anchor: SourceAnchor;
+}
+
+export const PILLAR_UNKNOWN_REASONS = [
+  'root-index-missing-at-revision',
+  'root-index-unavailable',
+  'not-named-in-root-index',
+  'named-root-ambiguous',
+  'root-missing-at-revision',
+  'index-missing-at-revision',
+  'index-unavailable',
+] as const;
+export type PillarUnknownReason = (typeof PILLAR_UNKNOWN_REASONS)[number];
+
+export type PillarDiscovery =
+  | {
+      readonly key: PillarKey;
+      readonly state: 'discovered';
+      readonly root: string;
+      readonly indexPath: string;
+      readonly namedSources: number;
+      readonly ignoredLinks: readonly IgnoredLink[];
+    }
+  | {
+      readonly key: PillarKey;
+      readonly state: 'unknown';
+      readonly reason: PillarUnknownReason;
+      // The reader's own reason text for `index-unavailable`.
+      readonly detail?: string;
+      readonly root?: string;
+      readonly indexPath?: string;
+      readonly ignoredLinks: readonly IgnoredLink[];
+    };
+
+export const IGNORED_LINK_REASONS = ['external', 'escapes-repository', 'outside-pillar-root', 'names-a-directory', 'self'] as const;
+export interface IgnoredLink {
+  readonly target: string;
+  readonly reason: (typeof IGNORED_LINK_REASONS)[number];
+}
+
+export type RootIndexState =
+  | { readonly state: 'read'; readonly anchor: SourceAnchor }
+  | { readonly state: 'unavailable'; readonly reason: string; readonly anchor: SourceAnchor }
+  | { readonly state: 'missing-at-revision'; readonly anchor: SourceAnchor };
+
+export interface ProjectShapeSourceManifest {
+  readonly repositoryId: string;
+  readonly revision: string;
+  readonly discoveryVersion: string;
+  readonly indexDepth: number;
+  readonly rootIndex: { readonly path: string } & RootIndexState;
+  readonly pillars: readonly PillarDiscovery[];
+  // Every source-path in the population, sorted by path, unique.
+  readonly sources: readonly ManifestSource[];
+  // Exactly the paths whose bodies phase A asked `readSeed` for, in order.
+  readonly phaseAReads: readonly string[];
+  // sha256 over the canonical JSON of every field above.
+  readonly digest: string;
+}
+
+export type SeedRead =
+  | { readonly kind: 'text'; readonly text: string }
+  | { readonly kind: 'unavailable'; readonly reason: string };
+
+export interface DeriveManifestInput {
+  readonly repositoryId: string;
+  readonly revision: string;
+  readonly discoveryVersion?: string;
+  // Exact `ls-tree -r -z` metadata of `revision`; never working-tree state.
+  readonly tree: readonly GitTreeEntry[];
+  // Phase A body access, invoked only for tree-present blobs among the
+  // root index and the declared pillar indexes.
+  readonly readSeed: (seed: { readonly path: string; readonly objectId: string }) => SeedRead;
+}
+
+export type DeriveManifestResult =
+  | { readonly kind: 'manifest'; readonly manifest: ProjectShapeSourceManifest }
+  | { readonly kind: 'invalid-input'; readonly reason: string };
+
+// ---------------------------------------------------------------------
+// Closed Markdown link grammar for indexes.
+//
+// A link is an inline `[text](target "title")` outside fenced code blocks
+// and inline code spans, or a reference definition `[label]: target` at
+// line start. Images (`![...]`) are not links. Fragments and queries are
+// dropped. Nothing else in an index names a file.
+
+function stripFences(text: string): readonly string[] {
+  const kept: string[] = [];
+  let fence: string | undefined;
+  for (const line of text.split('\n')) {
+    const opener = /^\s{0,3}(`{3,}|~{3,})/.exec(line);
+    if (fence === undefined && opener !== null) {
+      fence = opener[1] ?? '';
+      continue;
+    }
+    if (fence !== undefined) {
+      if (opener !== null && (opener[1] ?? '').startsWith(fence[0] ?? '') && (opener[1] ?? '').length >= fence.length) {
+        fence = undefined;
+      }
+      continue;
+    }
+    kept.push(line.replace(/`[^`]*`/g, ''));
+  }
+  return kept;
+}
+
+const INLINE_LINK = /(!?)\[[^\]]*\]\(\s*(?:<([^>]*)>|([^\s)]+))(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/g;
+const REFERENCE_DEFINITION = /^\s{0,3}\[[^\]]+\]:\s*(?:<([^>]*)>|(\S+))(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*$/;
+
+export function indexLinkTargets(text: string): readonly string[] {
+  const targets: string[] = [];
+  for (const line of stripFences(text)) {
+    const definition = REFERENCE_DEFINITION.exec(line);
+    if (definition !== null) {
+      targets.push(definition[1] ?? definition[2] ?? '');
+      continue;
+    }
+    for (const match of line.matchAll(INLINE_LINK)) {
+      if (match[1] === '!') continue;
+      targets.push(match[2] ?? match[3] ?? '');
+    }
+  }
+  return targets;
+}
+
+const SCHEME = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
+
+type ResolvedLink =
+  | { readonly kind: 'path'; readonly target: string; readonly path: string; readonly directory: boolean }
+  | { readonly kind: 'ignored'; readonly link: IgnoredLink };
+
+function resolveLink(indexPath: string, rawTarget: string): ResolvedLink | undefined {
+  const target = rawTarget.replace(/[#?].*$/, '');
+  if (target === '') return undefined; // fragment-only: not a file reference
+  if (SCHEME.test(target) || target.startsWith('//')) return { kind: 'ignored', link: { target: rawTarget, reason: 'external' } };
+  const directory = target.endsWith('/');
+  const joined = target.startsWith('/') ? target : `${posixDirname(indexPath)}/${target}`;
+  const path = normalizeRepositoryPath(joined);
+  if (path === undefined) return { kind: 'ignored', link: { target: rawTarget, reason: 'escapes-repository' } };
+  return { kind: 'path', target: rawTarget, path, directory };
+}
+
+// ---------------------------------------------------------------------
+// Extraction classes by (rule, pillar, path within the pillar root).
+
+function extractionClassesFor(rule: SourceRule, pillar: PillarKey | undefined, relativePath: string): readonly ExtractionClass[] {
+  switch (rule) {
+    case 'baseline-spec-tree':
+      return ['baseline-spec'];
+    case 'roster-tree':
+      return relativePath === 'butler.toml' ? ['roster-identity'] : [];
+    case 'root-index':
+      return [];
+    case 'pillar-index':
+      if (pillar === 'legends-and-lore') return ['design-contract'];
+      if (pillar === 'craft-and-care') return ['craft-policy'];
+      return [];
+    case 'pillar-named-file':
+      if (pillar === 'heart-and-soul') {
+        if (relativePath === 'vision.md') return ['project-account-section', 'principle', 'success-criterion'];
+        if (relativePath === 'architecture.md') return ['project-account-section'];
+        if (relativePath === 'v1.md') return ['project-account-section', 'success-criterion', 'catalog-entry'];
+      }
+      if (pillar === 'lay-and-land' && relativePath === 'components.md') return ['topology-component'];
+      return [];
+  }
+}
+
+function anchorFor(tree: GitTreeIndex, path: string): SourceAnchor {
+  const entry = tree.entryAt(path);
+  if (entry === undefined) return { kind: 'missing-at-revision' };
+  if (entry.type === 'blob') return { kind: 'blob', mode: entry.mode, objectId: entry.objectId };
+  return { kind: 'not-a-blob', mode: entry.mode, type: entry.type };
+}
+
+function isPillarKey(value: string): value is PillarKey {
+  return (PILLAR_KEYS as readonly string[]).includes(value);
+}
+
+// ---------------------------------------------------------------------
+// Canonical JSON and digest.
+
+function canonicalize(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value !== null && typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    return Object.fromEntries(
+      Object.keys(record)
+        .filter((key) => record[key] !== undefined)
+        .sort()
+        .map((key) => [key, canonicalize(record[key])]),
+    );
+  }
+  return value;
+}
+
+export function canonicalManifestJson(manifest: Omit<ProjectShapeSourceManifest, 'digest'>): string {
+  return JSON.stringify(canonicalize(manifest));
+}
+
+function digestOf(manifest: Omit<ProjectShapeSourceManifest, 'digest'>): string {
+  return `sha256:${createHash('sha256').update(canonicalManifestJson(manifest)).digest('hex')}`;
+}
+
+// The registry's `project-shape-source-manifest` output identity:
+// repository-id-plus-revision-plus-discovery-version-plus-sha256-content-digest.
+export function manifestIdentity(manifest: ProjectShapeSourceManifest): string {
+  return `${manifest.repositoryId}@${manifest.revision}/${manifest.discoveryVersion}/${manifest.digest}`;
+}
+
+// ---------------------------------------------------------------------
+// Derivation.
+
+const BASELINE_SPEC = /^openspec\/specs\/([^/]+)\/spec\.md$/;
+const ROSTER_BUTLER = /^roster\/([^/]+)\/butler\.toml$/;
+
+export function deriveProjectShapeManifest(input: DeriveManifestInput): DeriveManifestResult {
+  if (input.repositoryId.trim() === '') return { kind: 'invalid-input', reason: 'repositoryId is empty' };
+  if (input.revision.trim() === '') return { kind: 'invalid-input', reason: 'revision is empty' };
+  const discoveryVersion = input.discoveryVersion ?? PWB_DISCOVERY_VERSION;
+  if (discoveryVersion.trim() === '') return { kind: 'invalid-input', reason: 'discoveryVersion is empty' };
+
+  const tree = indexGitTree(input.tree);
+  const sources = new Map<string, ManifestSource>();
+  const phaseAReads: string[] = [];
+  const addSource = (source: ManifestSource): void => {
+    if (!sources.has(source.path)) sources.set(source.path, source);
+  };
+
+  const readBlob = (path: string): SeedRead | { readonly kind: 'not-in-tree' } => {
+    const anchor = anchorFor(tree, path);
+    if (anchor.kind !== 'blob') return { kind: 'not-in-tree' };
+    phaseAReads.push(path);
+    return input.readSeed({ path, objectId: anchor.objectId });
+  };
+
+  // Rule 1 — the root index and the pillar roots it names.
+  const rootAnchor = anchorFor(tree, PWB_ROOT_INDEX_PATH);
+  addSource({ path: PWB_ROOT_INDEX_PATH, rule: 'root-index', extractionClasses: [], anchor: rootAnchor });
+  const rootRead = readBlob(PWB_ROOT_INDEX_PATH);
+  let rootIndex: ProjectShapeSourceManifest['rootIndex'];
+  const rootsByKey = new Map<PillarKey, { root: string; ambiguous: boolean }>();
+  if (rootRead.kind === 'not-in-tree') {
+    rootIndex = { path: PWB_ROOT_INDEX_PATH, state: 'missing-at-revision', anchor: rootAnchor };
+  } else if (rootRead.kind === 'unavailable') {
+    rootIndex = { path: PWB_ROOT_INDEX_PATH, state: 'unavailable', reason: rootRead.reason, anchor: rootAnchor };
+  } else {
+    rootIndex = { path: PWB_ROOT_INDEX_PATH, state: 'read', anchor: rootAnchor };
+    for (const target of indexLinkTargets(rootRead.text)) {
+      const resolved = resolveLink(PWB_ROOT_INDEX_PATH, target);
+      if (resolved === undefined || resolved.kind === 'ignored') continue;
+      const root = posixBasename(resolved.path) === 'README.md' ? posixDirname(resolved.path) : resolved.path;
+      const key = posixBasename(root);
+      if (!isPillarKey(key)) continue; // narrative link: does not recurse
+      const known = rootsByKey.get(key);
+      if (known === undefined) rootsByKey.set(key, { root, ambiguous: false });
+      else if (known.root !== root) known.ambiguous = true;
+    }
+  }
+
+  // Rule 2 — each declared pillar's own README index, restricted to its root.
+  const pillars: PillarDiscovery[] = PILLAR_KEYS.map((key) => {
+    if (rootIndex.state === 'missing-at-revision') {
+      return { key, state: 'unknown', reason: 'root-index-missing-at-revision', ignoredLinks: [] };
+    }
+    if (rootIndex.state === 'unavailable') return { key, state: 'unknown', reason: 'root-index-unavailable', ignoredLinks: [] };
+    const named = rootsByKey.get(key);
+    if (named === undefined) return { key, state: 'unknown', reason: 'not-named-in-root-index', ignoredLinks: [] };
+    if (named.ambiguous) return { key, state: 'unknown', reason: 'named-root-ambiguous', ignoredLinks: [] };
+    const root = named.root;
+    if (!tree.hasDirectory(root)) return { key, state: 'unknown', reason: 'root-missing-at-revision', root, ignoredLinks: [] };
+    const indexPath = `${root}/README.md`;
+    const indexAnchor = anchorFor(tree, indexPath);
+    if (indexAnchor.kind !== 'blob') {
+      return { key, state: 'unknown', reason: 'index-missing-at-revision', root, indexPath, ignoredLinks: [] };
+    }
+    addSource({
+      path: indexPath,
+      rule: 'pillar-index',
+      pillar: key,
+      declaredBy: PWB_ROOT_INDEX_PATH,
+      extractionClasses: extractionClassesFor('pillar-index', key, 'README.md'),
+      anchor: indexAnchor,
+    });
+    const read = readBlob(indexPath);
+    if (read.kind !== 'text') {
+      const detail = read.kind === 'unavailable' ? read.reason : 'not in tree';
+      return { key, state: 'unknown', reason: 'index-unavailable', detail, root, indexPath, ignoredLinks: [] };
+    }
+    const ignoredLinks: IgnoredLink[] = [];
+    const namedPaths = new Set<string>();
+    for (const target of indexLinkTargets(read.text)) {
+      const resolved = resolveLink(indexPath, target);
+      if (resolved === undefined) continue;
+      if (resolved.kind === 'ignored') {
+        ignoredLinks.push(resolved.link);
+        continue;
+      }
+      if (resolved.path === indexPath) {
+        ignoredLinks.push({ target, reason: 'self' });
+        continue;
+      }
+      if (!resolved.path.startsWith(`${root}/`)) {
+        ignoredLinks.push({ target, reason: 'outside-pillar-root' });
+        continue;
+      }
+      if (resolved.directory || tree.hasDirectory(resolved.path)) {
+        ignoredLinks.push({ target, reason: 'names-a-directory' });
+        continue;
+      }
+      namedPaths.add(resolved.path);
+    }
+    for (const path of namedPaths) {
+      addSource({
+        path,
+        rule: 'pillar-named-file',
+        pillar: key,
+        declaredBy: indexPath,
+        extractionClasses: extractionClassesFor('pillar-named-file', key, path.slice(root.length + 1)),
+        anchor: anchorFor(tree, path),
+      });
+    }
+    return { key, state: 'discovered', root, indexPath, namedSources: namedPaths.size, ignoredLinks };
+  });
+
+  // Rules 3 and 4 — tree metadata only.
+  for (const entry of input.tree) {
+    if (entry.type !== 'blob') continue;
+    if (BASELINE_SPEC.test(entry.path)) {
+      addSource({ path: entry.path, rule: 'baseline-spec-tree', extractionClasses: ['baseline-spec'], anchor: anchorFor(tree, entry.path) });
+      continue;
+    }
+    const roster = ROSTER_BUTLER.exec(entry.path);
+    if (roster !== null) {
+      addSource({ path: entry.path, rule: 'roster-tree', extractionClasses: ['roster-identity'], anchor: anchorFor(tree, entry.path) });
+      const manifesto = `roster/${roster[1] ?? ''}/MANIFESTO.md`;
+      if (tree.entryAt(manifesto)?.type === 'blob') {
+        addSource({ path: manifesto, rule: 'roster-tree', extractionClasses: [], anchor: anchorFor(tree, manifesto) });
+      }
+    }
+  }
+
+  const body: Omit<ProjectShapeSourceManifest, 'digest'> = {
+    repositoryId: input.repositoryId,
+    revision: input.revision,
+    discoveryVersion,
+    indexDepth: PWB_INDEX_DEPTH,
+    rootIndex,
+    pillars,
+    sources: [...sources.values()].sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0)),
+    phaseAReads,
+  };
+  return { kind: 'manifest', manifest: deepFreeze({ ...body, digest: digestOf(body) }) };
+}
+
+function deepFreeze<T>(value: T): T {
+  if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const inner of Object.values(value as Record<string, unknown>)) deepFreeze(inner);
+  }
+  return value;
+}
