@@ -129,6 +129,28 @@ Returned bytes are verified against Git's own blob identity before use. The
 production `gitRunnerFor` binding exists but nothing in `main.ts` calls it:
 no Butlers read happens before P4.
 
+P2.3 note, recorded 2026-09-04: `git-object-reader.ts` is the phase B
+read guard and reader. It never reuses phase A's `readSeed` (the phase A
+seed allowlist is narrower and already act-tested), but both share
+`git-tree.ts` metadata and the P2.2 `GitRunner`, `gitBlobObjectId` and
+`ResourceLimitBreach` shapes. Decisions: (a) the caller's path must already
+be normalized — a traversal-shaped path that would resolve inside the tree
+is refused as `path-not-normalized`, never silently rewritten; (b) the only
+Git command the reader issues is `cat-file blob <object-id>` taken from the
+tree entry, never a path-addressed read; (c) the policy's denied
+basename/prefix/suffix rules are compared case-insensitively on the final
+segment (strictly more refusals); (d) active content is scanned over the
+whole body, code fences and code spans included, and one finding excludes
+the whole source with a body-free finding (form, line, column) — a
+technical README quoting HTML stays counted and Unknown rather than being
+partially admitted; (e) `evaluateLimit` is the one comparison for all six
+registry limits, so index depth (observer), parse time (2.5) and rendered
+bytes (2.7/3.x) breach in the same shape as source count and bytes; (f)
+`readManifestSources` returns one result per manifest source in manifest
+order and hands each body only to the caller's `consume` callback, so no
+record this module returns can carry a body. Still no Butlers read: the
+reader is constructed by nothing before P4.
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a

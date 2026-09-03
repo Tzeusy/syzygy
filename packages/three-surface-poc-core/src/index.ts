@@ -14,3 +14,4 @@ export * from './project-shape-observer.js';
 export * from './git-tree.js';
 export * from './project-shape-manifest.js';
 export * from './project-shape-observation.js';
+export * from './git-object-reader.js';

@@ -563,6 +563,37 @@ can be authorized.
 - `gitRunnerFor(repoRoot)` is the production binding; nothing calls it yet.
   The first real Butlers observation stays in P4 behind the P1 gate.
 
+### PWB slice P2.3 — exact Git object reader (syzygy-1z3.4, 2026-09-04)
+
+- `packages/three-surface-poc-core/src/git-object-reader.ts` is the
+  PWB-REQ-006 read guard for phase B bodies. `admitExactObjectRead` refuses,
+  in order: escaping paths (absolute, NUL, `..` above root), unnormalized
+  paths (`.`/`..`/empty segments, trailing slash — the caller must already
+  hold the normalized form), the policy's denied basename/prefix/suffix
+  rules on the final segment (case-insensitive), not-in-tree, and any entry
+  that is not a regular blob (symlink 120000, submodule 160000, tree —
+  checked by type *and* mode). Only then does it issue exactly one
+  `cat-file blob <oid>`; bytes must hash to the tree's object id, be
+  NUL-free, strict UTF-8, and free of active content.
+- Active content is a closed seven-form vocabulary scanned over the whole
+  body (fences and spans included): html-tag, comment/declaration, script,
+  svg, event-handler attribute, unsafe URL scheme at a link/attribute/
+  autolink position (javascript/vbscript/data/file, whitespace-tolerant),
+  and an HTML entity inside a Markdown link destination. A finding names
+  form + line + column, never bytes. Records carry `contentDigest`
+  (sha256 of the exact bytes) and never a `text` field; the body reaches
+  only the caller's `consume` callback.
+- `evaluateLimit(limits, name, observed, path?)` is the shared comparison
+  for all six registry limits (`observed <= declared` passes). The reader
+  applies maxSources, maxBytesPerSource and maxTotalBytes (declared size
+  first; unsized listings are bounded after the read and the bytes
+  dropped). `readManifestSources` never shrinks the population: one result
+  per manifest source, in manifest order.
+- Test spy discipline: the fixture Git runner throws on anything but
+  `cat-file blob <40-hex>`, so an escaped request fails loudly. 22 rule-6
+  mutations killed (manual python loop, digest-verified restore); the two
+  equivalent mutants found were removed as dead code, not waived.
+
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 
 - The three effect-specific authorities live at their final bytes:
