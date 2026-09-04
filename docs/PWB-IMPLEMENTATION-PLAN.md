@@ -750,6 +750,44 @@ defects fixed here: the active-content rule is the act-bound policy's and
 changes only by a new act; whether the pillar-index grammar mismatch is a
 grammar question or an expected exclusion is for the review to say.
 
+P4.6 prepared 2026-09-04 (task 4.6, the owner cold-open walkthrough,
+`syzygy-1z3.22`; the walkthrough and judgment themselves are the owner's and
+remain pending). The agent-side deliverables: `apps/three-surface-poc/src/
+walkthrough-inputs.ts` is the daemon's loader for the PWB-REQ-022 pair,
+mirroring `governance-inputs.ts` (same artifact, act-record, recording-tag
+and lifecycle classification — those helpers are now exported from the
+body-read loader rather than duplicated). Its controlled expectations are
+the `PWB_WALKTHROUGH_SCHEDULE` table: serial identities
+(`PWB-WALKTHROUGH-001`, act `PWB-COLD-OPEN-WALKTHROUGH-JUDGMENT-001`, tag
+`pwb-adopt-walkthrough-judgment-signed-001`, phrase prefix `ADOPT POLARIS
+COLD-OPEN WALKTHROUGH JUDGMENT`), the criterion
+`polaris-cold-open-comprehension`, keyboard-only mode, the five human
+routes as the surface population, both governance homes, and an
+`evaluationIdentity` the recording session fixes when it writes the run
+record (the daemon's own evaluation id carries colons and is not a
+run-record identity, so the record names a slug for the run the owner
+read). `main.ts` now evaluates the pair on every model build; an absent
+record evaluates as `absent` (Unknown, never met) and only a loader throw
+leaves `not-evaluated` with the failure named. The real-tree test pins the
+current state — no run record exists — and refuses to pass by accident
+once one does. Rule-6 evidence:
+`docs/evidence/pwb-p4-6-walkthrough-inputs-mutation-run-2026-09-04.json`
+(7/7 killed: run record read from the wrong home, act text ignored, tag
+assumed resolved, A1 expected present, lifecycle ignored, judgment home
+moved, mode changed). The state and invalid-arm sweep the task names is
+`walkthrough-judgment.test.ts` (84 + 2 cases, both valid states, state-(2)
+no-fallback, verified this session) and the 4.3 parity matrix's five
+judgment states. The owner packet is
+`.syzygy/governance/contracts/candidates/pwb-walkthrough/OWNER-WALKTHROUGH-PACKET.md`:
+the nine prompts (RFC7-30's six plus PWB-REQ-021's two additions and the
+strength prompt), the keyboard-only rule, what to send back, and the five
+recording steps. Recording-session steps still to do once the owner
+replies: write the run record and set the evaluation slug; draft the
+judgment from the owner's words; register the act phrase and its packet
+copies in `check_governance.py` (`_act_subjects`, `ACT_DIGEST_COPY_FILES`)
+before the finalized packet quotes a digest; record the act, tag and
+aggregate row after the owner performs it; re-pin the real-tree test.
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a
@@ -960,6 +998,9 @@ demands it, and a review at the classes below.
 - `[Observed]` `.syzygy/governance/records/` does not exist yet; it is
   created by the recording session when the first walkthrough record is
   written, per RFC3-15's records category.
+- `[Observed]` (2026-09-04) The walkthrough pair is absent: the daemon
+  evaluates it as `absent` / Unknown-never-met until the owner performs the
+  walkthrough and judgment offered in the P4.6 packet.
 - `[Inferred]` The registry entry's `implementationVersion` is `1.0.0`; the
   observer reports that string and the entry's `discoveryVersion` as its
   identities so PWB-REQ-001's deterministic-input stamps match the adopted

@@ -11,10 +11,12 @@ import {
   readMaterializationRecordFile,
   readTestArtifactRecordFile,
   type ProjectShapeModelInput,
+  type WalkthroughJudgmentInputs,
 } from '@syzygy/three-surface-poc-core';
 
 import { parsePocCli } from './cli.js';
 import { loadBodyReadAuthorityInputs } from './governance-inputs.js';
+import { loadWalkthroughJudgmentInputs } from './walkthrough-inputs.js';
 import {
   observeGitRepository,
   pocObserverInputsAreClean,
@@ -131,6 +133,23 @@ if (parsed.kind === 'help') {
             error instanceof Error ? error.message : String(error)
           }`;
         }
+        // PWB-REQ-022: the cold-open walkthrough pair is evaluated from the
+        // same governance tree. An absent pair evaluates as `absent`
+        // (Unknown, never met); only a loader failure leaves the judgment
+        // `not-evaluated` with the failure named.
+        let walkthroughJudgment: WalkthroughJudgmentInputs | undefined;
+        let walkthroughJudgmentDetail: string | undefined;
+        try {
+          walkthroughJudgment = loadWalkthroughJudgmentInputs({
+            repoRoot: process.cwd(),
+            evaluationId: `evaluation:pwb-walkthrough-judgment:${asOf}`,
+            evaluationInstant: asOf,
+          });
+        } catch (error: unknown) {
+          walkthroughJudgmentDetail = `Walkthrough-judgment inputs could not be loaded from ${process.cwd()}: ${
+            error instanceof Error ? error.message : String(error)
+          }`;
+        }
         return buildButlersPocModel({
           repoRoot,
           repositoryRevision,
@@ -140,6 +159,8 @@ if (parsed.kind === 'help') {
           testArtifactRecord,
           projectShape,
           ...(projectShapeDetail === undefined ? {} : { projectShapeDetail }),
+          walkthroughJudgment,
+          ...(walkthroughJudgmentDetail === undefined ? {} : { walkthroughJudgmentDetail }),
         });
       }
 

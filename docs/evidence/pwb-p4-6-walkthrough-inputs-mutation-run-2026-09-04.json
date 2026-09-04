@@ -1,0 +1,68 @@
+{
+  "task": "4.6 (syzygy-1z3.22)",
+  "kind": "rule-6 mutation run",
+  "subject": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+  "subjectSha256": "0e264cfffc14a3210d6520ad4ac7e288b60913a4afc14f1e016b2e964338a004",
+  "testFile": "apps/three-surface-poc/src/walkthrough-inputs.test.ts",
+  "capturedAt": "2026-09-04T14:40:50.599427+00:00",
+  "commit": "f6df985eec84f22cc049ede89fafc4322dbd1beb",
+  "mutations": [
+    {
+      "id": "run-record-read-from-judgment-path",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 loadWalkthroughJudgmentInputs (hermetic) > loads a complete pair and evaluates it lawful in state (1) 8ms",
+        "\u00d7 loadWalkthroughJudgmentInputs (hermetic) > a missing run record is the absent no-run-record case 2ms",
+        "\u00d7 loadWalkthroughJudgmentInputs (hermetic) > a missing judgment is the absent no-judgment case 1ms"
+      ]
+    },
+    {
+      "id": "act-record-text-ignored",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 loadWalkthroughJudgmentInputs (hermetic) > loads a complete pair and evaluates it lawful in state (1) 7ms",
+        "\u00d7 loadWalkthroughJudgmentInputs (hermetic) > an unresolved recording tag on a present act record is unlawful, never lawful 1ms"
+      ]
+    },
+    {
+      "id": "recording-tag-assumed-resolved",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 loadWalkthroughJudgmentInputs (hermetic) > an unresolved recording tag on a present act record is unlawful, never lawful 7ms"
+      ]
+    },
+    {
+      "id": "a1-expected-present",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 the scheduled walkthrough > names both governance homes and the fixed act vocabulary 8ms",
+        "\u00d7 loadWalkthroughJudgmentInputs (hermetic) > loads a complete pair and evaluates it lawful in state (1) 5ms"
+      ]
+    },
+    {
+      "id": "lifecycle-ignored",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 loadWalkthroughJudgmentInputs (hermetic) > a later decision superseding the act identity is reported in the lifecycle 9ms"
+      ]
+    },
+    {
+      "id": "judgment-home-moved",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 the scheduled walkthrough > names both governance homes and the fixed act vocabulary 7ms",
+        "\u00d7 loadWalkthroughJudgmentInputs (hermetic) > loads a complete pair and evaluates it lawful in state (1) 3ms"
+      ]
+    },
+    {
+      "id": "mode-visual-pointer",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 the scheduled walkthrough > names both governance homes and the fixed act vocabulary 7ms"
+      ]
+    }
+  ],
+  "killed": 7,
+  "total": 7,
+  "restoreVerified": true
+}

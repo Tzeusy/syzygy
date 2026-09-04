@@ -252,3 +252,8 @@ export function loadBodyReadAuthorityInputs(options: LoadGovernanceInputsOptions
     correlate: A1_CORRELATION_UNAVAILABLE,
   };
 }
+
+// Shared with the walkthrough-judgment loader (task 4.6): the same
+// artifact/act-record/tag/lifecycle classification, so a judgment act is
+// read under exactly the rules the three body-read authorities are.
+export { classifyMissingRecord, lifecycleFor, actIdentityOf, defaultRunGit, readArtifact, readText, resolveRecordingTag };

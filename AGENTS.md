@@ -788,6 +788,21 @@ can be authorized.
   `test-deep-dive-markers.ts` for the marker sweeps. Copy-table rows nested
   inside a `FACT` paragraph must themselves be `project-fact`, or the copy
   test reports them never rendered under their role.
+- Task 4.6: `walkthrough-inputs.ts` loads the PWB-REQ-022 pair (run record
+  under `records/`, judgment + act record under `decisions/`) with the
+  helpers `governance-inputs.ts` now exports; `PWB_WALKTHROUGH_SCHEDULE`
+  is the controlled expectation table (serial identities, not dates). The
+  run record's `Evaluation identity:` must match `/^[a-z0-9][a-z0-9-]*$/`,
+  so the recording session assigns a slug and sets it in the schedule
+  when it writes the record — the daemon's `evaluation:…` id is not
+  usable there. `main.ts` evaluates the pair every build; absent →
+  `absent`/Unknown, loader throw → `not-evaluated`. The real-tree test
+  pins "no record yet" and must be re-pinned when one lands. The owner
+  packet is `contracts/candidates/pwb-walkthrough/OWNER-WALKTHROUGH-PACKET.md`;
+  it quotes no digest, so no act-phrase registration was needed yet —
+  register `ADOPT POLARIS COLD-OPEN WALKTHROUGH JUDGMENT` in
+  `check_governance.py` before any file quotes it with a digest. Future
+  paths in packets go unbackticked (CG-1b resolves backticked paths).
 - Task 4.5: `fresh-checkout-demo-main.ts` (`npm run poc:fresh-checkout-demo
   -- --repo <butlers>`) clones `HEAD` with tags into a temp dir, runs
   `npm ci`/`build`/the full Vitest suite (JUnit root tag only), starts the
