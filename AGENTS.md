@@ -788,6 +788,18 @@ can be authorized.
   `test-deep-dive-markers.ts` for the marker sweeps. Copy-table rows nested
   inside a `FACT` paragraph must themselves be `project-fact`, or the copy
   test reports them never rendered under their role.
+- Task 3.8: Polaris's depth list, gap-entry ids, contradiction ids and
+  named scroll regions are the keyboard/text reachability surface. Link
+  targets are page state (`activeTargets` in `polaris.ts`): a reason or
+  source path outside the rendered population renders as text, never as a
+  link — RFC7-31 makes a dangling internal link a release-blocking floor,
+  and `polaris-reachability.test.ts` sweeps every `href="#"` against the id
+  population in four shape states. Add a new in-page link only through
+  `unknownReasonRef`/`sourceRef` or with a target the same render emits.
+  `ProjectShapeModelInput.statedDeclarations`/`rules` exist for tests only
+  (the contradiction path); `main.ts` must keep passing neither until a
+  live run shows Butlers declaring them. The oracle's `text()` collapses
+  tags to spaces, so match `reason ?:`-style, not exact punctuation.
 
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 

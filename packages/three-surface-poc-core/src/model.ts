@@ -10,6 +10,7 @@ import { projectTrajectory, type TrajectoryProjection } from './trajectory-proje
 import type { MaterializationRecord } from './materialization.js';
 import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import { gitRunnerFor, type GitRunner } from './project-shape-observation.js';
+import type { Declaration, PrecedenceRule } from './project-shape-coverage.js';
 import { buildProjectShape, unevaluatedProjectShape, type ProjectShape } from './project-shape-model.js';
 import { deriveProposedWork, type ProposedWork } from './proposed-work.js';
 import {
@@ -146,6 +147,11 @@ export interface ProjectShapeModelInput {
   readonly authority: BodyReadAuthorityEvaluation;
   readonly runGit?: GitRunner;
   readonly repositoryId?: string;
+  /** Butlers-declared precedence rules and stated summaries (P2.6). The
+   * daemon passes none until a live run shows Butlers declaring some; tests
+   * inject them to reach the contradiction path. */
+  readonly rules?: readonly PrecedenceRule[];
+  readonly statedDeclarations?: readonly Declaration[];
 }
 
 export interface BuildButlersPocModelInput {
@@ -580,6 +586,8 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
           capturedAt: input.evaluation.asOf,
           runGit: input.projectShape.runGit ?? gitRunnerFor(repoRoot),
           ...(input.projectShape.repositoryId === undefined ? {} : { repositoryId: input.projectShape.repositoryId }),
+          ...(input.projectShape.rules === undefined ? {} : { rules: input.projectShape.rules }),
+          ...(input.projectShape.statedDeclarations === undefined ? {} : { statedDeclarations: input.projectShape.statedDeclarations }),
         });
   const proposedWork = deriveProposedWork({
     capabilityId: 'capability:whatsapp-transport-identity',

@@ -1,0 +1,179 @@
+{
+  "task": "PWB 3.8 (syzygy-1z3.16) PWB-REQ-011/016/020 keyboard and text reachability",
+  "date": "2026-09-04",
+  "subjects": {
+    "apps/three-surface-poc/src/polaris.ts": "0a36482a9cfcc6e0e1b127ff984aa96d3c1667347e4a2541921e96ec6bf2aa38",
+    "packages/three-surface-poc-core/src/model.ts": "ac98ddfe9384ecc3ff3d8315af57269bfd88dc1635ff761cf390800a063398c0"
+  },
+  "tests": [
+    "apps/three-surface-poc/src/polaris-reachability.test.ts",
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+    "apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts"
+  ],
+  "restoreVerified": true,
+  "mutations": [
+    {
+      "mutation": "depth-nav-dropped",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > resolves every internal link to exactly one id in every shape state (no dangling link on any path) 91ms",
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > lists the four depths as native links in document order, reaching every group, catalog class, capability deep dive and evidence heading the state renders 64ms"
+      ]
+    },
+    {
+      "mutation": "depth-levels-out-of-order",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > lists the four depths as native links in document order, reaching every group, catalog class, capability deep dive and evidence heading the state renders 68ms"
+      ]
+    },
+    {
+      "mutation": "depth-target-dangling",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > resolves every internal link to exactly one id in every shape state (no dangling link on any path) 90ms",
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > lists the four depths as native links in document order, reaching every group, catalog class, capability deep dive and evidence heading the state renders 67ms"
+      ]
+    },
+    {
+      "mutation": "depth-links-not-native",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > lists the four depths as native links in document order, reaching every group, catalog class, capability deep dive and evidence heading the state renders 67ms",
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules 64ms"
+      ]
+    },
+    {
+      "mutation": "deep-dive-id-dropped",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > resolves every internal link to exactly one id in every shape state (no dangling link on any path) 97ms",
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > lists the four depths as native links in document order, reaching every group, catalog class, capability deep dive and evidence heading the state renders 70ms"
+      ]
+    },
+    {
+      "mutation": "gap-entry-id-dropped",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > resolves every internal link to exactly one id in every shape state (no dangling link on any path) 96ms",
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > gives every contradiction and every Unknown reason a text entry with an id, links each reason mention to its gaps entry and each contradicted declaration to its exact source, matching the machine multisets (PWB-REQ-020) 66ms"
+      ]
+    },
+    {
+      "mutation": "reason-links-to-nothing",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris complete epistemic tuples (PWB-REQ-007; RFC2-24, RFC6-14, RFC7-16) > keeps Unknown apart from modeled and secondary apart from primary at the exported seams (states the fixtures cannot reach) 7ms",
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > resolves every internal link to exactly one id in every shape state (no dangling link on any path) 266ms",
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > gives every contradiction and every Unknown reason a text entry with an id, links each reason mention to its gaps entry and each contradicted declaration to its exact source, matching the machine multisets (PWB-REQ-020) 67ms"
+      ]
+    },
+    {
+      "mutation": "reason-never-linked",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > resolves every internal link to exactly one id in every shape state (no dangling link on any path) 81ms",
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > gives every contradiction and every Unknown reason a text entry with an id, links each reason mention to its gaps entry and each contradicted declaration to its exact source, matching the machine multisets (PWB-REQ-020) 68ms"
+      ]
+    },
+    {
+      "mutation": "gap-count-off-by-one",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > gives every contradiction and every Unknown reason a text entry with an id, links each reason mention to its gaps entry and each contradicted declaration to its exact source, matching the machine multisets (PWB-REQ-020) 73ms"
+      ]
+    },
+    {
+      "mutation": "fact-id-dropped",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > gives every contradiction and every Unknown reason a text entry with an id, links each reason mention to its gaps entry and each contradicted declaration to its exact source, matching the machine multisets (PWB-REQ-020) 74ms"
+      ]
+    },
+    {
+      "mutation": "fact-sources-unlinked",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > gives every contradiction and every Unknown reason a text entry with an id, links each reason mention to its gaps entry and each contradicted declaration to its exact source, matching the machine multisets (PWB-REQ-020) 80ms"
+      ]
+    },
+    {
+      "mutation": "fact-declaration-dropped",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > gives every contradiction and every Unknown reason a text entry with an id, links each reason mention to its gaps entry and each contradicted declaration to its exact source, matching the machine multisets (PWB-REQ-020) 79ms"
+      ]
+    },
+    {
+      "mutation": "table-region-not-focusable",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules 184ms"
+      ]
+    },
+    {
+      "mutation": "table-region-unlabelled",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules 189ms"
+      ]
+    },
+    {
+      "mutation": "table-region-role-dropped",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules 180ms"
+      ]
+    },
+    {
+      "mutation": "focus-outline-removed",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules 75ms"
+      ]
+    },
+    {
+      "mutation": "css-visual-reorder",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules 62ms"
+      ]
+    },
+    {
+      "mutation": "unknown-word-dropped-colour-only",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > gives every contradiction and every Unknown reason a text entry with an id, links each reason mention to its gaps entry and each contradicted declaration to its exact source, matching the machine multisets (PWB-REQ-020) 80ms",
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > names every coloured state in text: each element of a colour-bearing class carries the words that state means 60ms"
+      ]
+    },
+    {
+      "mutation": "stated-declarations-not-forwarded",
+      "file": "packages/three-surface-poc-core/src/model.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7-13, RFC7-31, RFC7-34) > gives every contradiction and every Unknown reason a text entry with an id, links each reason mention to its gaps entry and each contradicted declaration to its exact source, matching the machine multisets (PWB-REQ-020) 72ms"
+      ]
+    }
+  ],
+  "killed": 19,
+  "total": 19
+}

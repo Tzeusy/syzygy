@@ -179,7 +179,9 @@ describe('Polaris complete epistemic tuples (PWB-REQ-007; RFC2-24, RFC6-14, RFC7
           for (const [reason, count] of rendered) {
             expect(count).toBe(aggregate.reasonCounts[which][reason as never]);
             expect(REASONS).toContain(reason);
-            expect((list as string)).toContain(`data-unknown-reason="${reason}">${reason}</span>: ${count}. Route: `);
+            // The reason may be linked to its gaps-list entry (task 3.8); the
+            // text and count beside it are what this oracle compares.
+            expect((list as string)).toMatch(new RegExp(`data-unknown-reason="${reason}">${reason}</span>(</a>)?: ${count}\\. Route: `));
           }
         }
         if (Object.values(aggregate.reasonCounts.primary).every((count) => (count ?? 0) === 0) && Object.values(aggregate.reasonCounts.secondary).every((count) => (count ?? 0) === 0)) {

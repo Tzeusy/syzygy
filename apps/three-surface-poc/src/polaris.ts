@@ -100,6 +100,44 @@ const ANCHORED = roleAttr('project-fact', 'anchored-project-fact');
 let activeRegistry: NarrativeRegistry | undefined;
 let activeViewState: PolarisViewState = {};
 
+/** The one page's link targets (PWB-REQ-011/016): the Unknown reasons the
+ * gaps list enumerates and the source paths the sources table rows carry.
+ * A reason or path outside these sets renders as text, never as a link to
+ * nothing (RFC7-31's dangling-link floor). */
+interface PageTargets {
+  readonly gapReasons: ReadonlySet<string>;
+  readonly sourcePaths: ReadonlySet<string>;
+}
+const NO_TARGETS: PageTargets = { gapReasons: new Set(), sourcePaths: new Set() };
+let activeTargets: PageTargets = NO_TARGETS;
+
+function gapId(reason: string): string {
+  return `polaris-gap-${reason.replace(/[^A-Za-z0-9]+/g, '-')}`;
+}
+
+/** An Unknown reason as text, linked to its entry in the gaps list when the
+ * page enumerates it there, so every reason mention reaches its route by
+ * keyboard. */
+function unknownReasonRef(reason: string): string {
+  const span = `<span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>`;
+  return activeTargets.gapReasons.has(reason) ? `<a href="#${gapId(reason)}" data-gap-ref="${escapeHtml(reason)}">${span}</a>` : span;
+}
+
+/** A source location as text, linked to its row in the sources table when
+ * the page carries that source. */
+function sourceRef(path: string, text: string): string {
+  return activeTargets.sourcePaths.has(path)
+    ? `<a href="#polaris-source-${escapeHtml(sourceSlug(path))}" data-source-ref="${escapeHtml(path)}">${escapeHtml(text)}</a>`
+    : escapeHtml(text);
+}
+
+/** A horizontally scrollable table region is a keyboard stop of its own
+ * (tabindex 0) named by the heading above it, so a keyboard-only reader can
+ * scroll a wide table without a pointer. */
+function tableRegion(labelledBy: string, table: string): string {
+  return `<div class="table-scroll" role="region" tabindex="0" aria-labelledby="${escapeHtml(labelledBy)}">${table}</div>`;
+}
+
 function registry(): NarrativeRegistry {
   if (activeRegistry === undefined) throw new Error('renderPolarisPage is not active');
   return activeRegistry;
@@ -258,7 +296,7 @@ export function reasonCountsBlock(claimId: string, counts: ReasonCounts): string
     if (rows.length === 0) return '';
     return `<p${DISCLOSURE}>${copy(which === 'primary' ? 'label.primary-reasons' : 'label.secondary-reasons')}</p>
       <ul data-reason-counts-${which}="${escapeHtml(claimId)}"${DISCLOSURE}>${rows
-        .map(([reason, count]) => `<li data-reason="${escapeHtml(reason)}" data-count="${count}"><span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>: ${count}. ${copy('label.route')} ${escapeHtml(UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route'))}.</li>`)
+        .map(([reason, count]) => `<li data-reason="${escapeHtml(reason)}" data-count="${count}">${unknownReasonRef(reason)}: ${count}. ${copy('label.route')} ${escapeHtml(UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route'))}.</li>`)
         .join('')}</ul>`;
   };
   const primary = list('primary', counts.primary);
@@ -323,7 +361,7 @@ function unknownRoutes(claim: ProjectShapeClaim, prefix: string): string {
   const secondaryLine = secondary.length === 0
     ? ''
     : `<br><small>${copy('label.also')} ${secondary.map((reason) => `${escapeHtml(reason)} (${copy('label.route').toLowerCase()} ${escapeHtml(routeOf(claim, reason))})`).join('; ')}</small>`;
-  return `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}>${prefix}${copy('label.unknown')} — <span data-unknown-reason="${escapeHtml(primary)}">${escapeHtml(primary)}</span>. ${copy('label.route')} ${escapeHtml(routeOf(claim, primary))}.${secondaryLine}</p>`;
+  return `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}>${prefix}${copy('label.unknown')} — ${unknownReasonRef(primary)}. ${copy('label.route')} ${escapeHtml(routeOf(claim, primary))}.${secondaryLine}</p>`;
 }
 
 function accountStatement(statement: ProjectAccountStatement, revision: string): string {
@@ -373,10 +411,10 @@ function classBlock(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: Ext
     ? ''
     : items.length === 0
       ? `<p${copyAttr('sentence.no-items')}><small>${copy('sentence.no-items')}</small></p>`
-      : `<div class="table-scroll"><table>
+      : tableRegion(`polaris-class-${cls}`, `<table>
         <thead><tr><th scope="col"${copyAttr('table.key')}>${copy('table.key')}</th><th scope="col"${copyAttr('table.declared')}>${copy('table.declared')}</th><th scope="col"${copyAttr('table.epistemic-state')}>${copy('table.epistemic-state')}</th></tr></thead>
         <tbody>${items.map((item) => itemRow(item, shape.identity.revision)).join('')}</tbody>
-      </table></div>`;
+      </table>`);
   const summary = aggregate.claim.epistemic.label === 'Observed'
     ? ((): string => {
         const block = shapeClaimBlock(aggregate.claim, shape.identity.revision);
@@ -465,14 +503,14 @@ function exclusionItem(exclusion: Exclusion): string {
 
 function factItem(fact: ProjectShapeFact): string {
   const declarations = fact.fact.declarations
-    .map((declaration) => `${escapeHtml(declaration.value)} (${escapeHtml(declaration.basis)}, ${declaration.anchors.map((anchor) => escapeHtml(anchor.line === undefined ? anchor.path : `${anchor.path}:${anchor.line}`)).join(', ')})`)
+    .map((declaration) => `${escapeHtml(declaration.value)} (${escapeHtml(declaration.basis)}, ${declaration.anchors.map((anchor) => sourceRef(anchor.path, anchor.line === undefined ? anchor.path : `${anchor.path}:${anchor.line}`)).join(', ')})`)
     .join('; ');
-  return `<li data-polaris-fact="${escapeHtml(fact.claim.claimId)}"${DISCLOSURE}>${unknownRoutes(fact.claim, `${escapeHtml(fact.fact.fact)}: `)}<small>${copy('label.declarations-kept')} ${declarations}.</small><br>${claimTuple(fact.claim)}</li>`;
+  return `<li id="polaris-fact-${escapeHtml(sourceSlug(fact.claim.claimId))}" data-polaris-fact="${escapeHtml(fact.claim.claimId)}"${DISCLOSURE}>${unknownRoutes(fact.claim, `${escapeHtml(fact.fact.fact)}: `)}<small>${copy('label.declarations-kept')} ${declarations}.</small><br>${claimTuple(fact.claim)}</li>`;
 }
 
 /** The Unknown reasons across every shape claim, counted and routed, with
  * `missing-declaration` foremost (RFC7-15) and `unconsented` next. */
-function gapsList(claims: readonly ProjectShapeClaim[]): string {
+function gapReasonCounts(claims: readonly ProjectShapeClaim[]): ReadonlyMap<string, number> {
   const counts = new Map<string, number>();
   for (const claim of claims) {
     if ('reasons' in claim.epistemic) {
@@ -480,6 +518,11 @@ function gapsList(claims: readonly ProjectShapeClaim[]): string {
       counts.set(reason, (counts.get(reason) ?? 0) + 1);
     }
   }
+  return counts;
+}
+
+function gapsList(claims: readonly ProjectShapeClaim[]): string {
+  const counts = gapReasonCounts(claims);
   if (counts.size === 0) {
     return `<p data-polaris-gaps="none"${copyAttr('sentence.no-gaps')}>${copy('sentence.no-gaps')}</p>`;
   }
@@ -491,7 +534,7 @@ function gapsList(claims: readonly ProjectShapeClaim[]): string {
     return b[1] - a[1] || a[0].localeCompare(b[0]);
   });
   return `<ul data-polaris-gaps="${counts.size}"${DISCLOSURE}>${ordered
-    .map(([reason, count]) => `<li data-polaris-gap="${escapeHtml(reason)}"><span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>: ${count} claim(s). ${copy('label.route')} ${escapeHtml(UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route'))}.</li>`)
+    .map(([reason, count]) => `<li id="${gapId(reason)}" data-polaris-gap="${escapeHtml(reason)}"><span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>: ${count} claim(s). ${copy('label.route')} ${escapeHtml(UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route'))}.</li>`)
     .join('')}</ul>`;
 }
 
@@ -556,10 +599,10 @@ function shapeEvidence(shape: ProjectShape): string {
   </section>
   <section class="claim-section wide" data-polaris-section="shape:sources">
     ${heading(3, 'polaris-shape-sources', 'evidence.sources')}
-    <div class="table-scroll"><table>
+    ${tableRegion('polaris-shape-sources', `<table>
       <thead><tr>${(['table.index', 'table.source', 'table.rule', 'table.outcome', 'table.digest', 'table.items'] as const).map((id) => `<th scope="col"${copyAttr(id)}>${copy(id)}</th>`).join('')}</tr></thead>
       <tbody>${shape.sources.map((source, index) => sourceRow(source, index, shape.identity.revision)).join('')}</tbody>
-    </table></div>
+    </table>`)}
   </section>
   <section class="claim-section" data-polaris-section="shape:exclusions">
     ${heading(3, 'polaris-shape-exclusions', 'evidence.exclusions')}
@@ -588,7 +631,7 @@ function artifactCitation(artifact: ProposedWork['proposal']): string {
 }
 
 function unknownLine(marker: string, reason: string, route: string, detail: string): string {
-  return `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(marker)}"${DISCLOSURE}>${copy('label.unknown')} — <span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>. ${copy('label.route')} ${escapeHtml(route)}.<br><small>${escapeHtml(detail)}</small></p>`;
+  return `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(marker)}"${DISCLOSURE}>${copy('label.unknown')} — ${unknownReasonRef(reason)}. ${copy('label.route')} ${escapeHtml(route)}.<br><small>${escapeHtml(detail)}</small></p>`;
 }
 
 function verbatimSlot(dive: CapabilityDeepDive, resolution: VerbatimResolution | undefined, ledger: DeepDiveLedger): string {
@@ -739,7 +782,7 @@ function capabilityDeepDive(dive: CapabilityDeepDive, model: PocModel, revision:
   const resolution = leaf === undefined ? undefined : resolveVerbatim(leaf, verbatim);
   const bands = `${argumentBand(dive, ledger)}${contractBand(dive, model, revision, resolution, ledger)}${realityBand(dive, model, ledger)}`;
   registry().registerDeepDive(deepDiveMachineForm(dive, ledger, { ...(leaf === undefined ? {} : { leaf }), ...(resolution === undefined ? {} : { resolution }) }));
-  return `<section class="deep-dive" data-capability-deep-dive="${escapeHtml(dive.capabilityId)}" data-reading-mode="${DEFAULT_READING_MODE}" data-capability-adoption="${dive.adoption.kind}">
+  return `<section class="deep-dive" id="polaris-deep-dive-${escapeHtml(sourceSlug(dive.capabilityId))}" data-capability-deep-dive="${escapeHtml(dive.capabilityId)}" data-reading-mode="${DEFAULT_READING_MODE}" data-capability-adoption="${dive.adoption.kind}">
       <p${SCOPE}>${copy('label.mode')} <span data-reading-mode-value="${DEFAULT_READING_MODE}">${DEFAULT_READING_MODE}</span> — ${copy('sentence.base-mode')}</p>
       ${bands}
     </section>`;
@@ -794,6 +837,10 @@ const POLARIS_STYLE = `
   .coverage-counts summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
   .unknown-disclosure { color: var(--unknown); border-left: 3px solid var(--unknown); padding-left: .9rem; }
   .table-scroll { overflow-x: auto; }
+  .depth-nav { max-width: 74ch; margin: 0 auto 2rem; font-size: .95rem; }
+  .depth-nav p { margin: 0 0 .3rem; }
+  .depth-nav ol { margin: 0; padding-left: 1.4rem; }
+  .depth-nav li { margin-bottom: .3rem; }
   .relationships { max-width: 74ch; margin: 0 auto 3rem; }
   .relationships ul { padding-left: 1.2rem; }
   .relationships li { margin-bottom: .5rem; }
@@ -835,18 +882,53 @@ export function renderPolarisPage(model: PocModel, mountPrefix = '', viewState: 
   } finally {
     activeRegistry = undefined;
     activeViewState = {};
+    activeTargets = NO_TARGETS;
   }
+}
+
+/** The four depths PWB-REQ-011 names — summary, catalog, detail, exact
+ * source — as one list of native links in document order, so a keyboard-
+ * only reader descends by text alone. Every target is an id the same render
+ * emits; a level lists only what this shape state renders. */
+function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): string {
+  const observed = shape.kind === 'observed';
+  const link = (id: string, copyId: PolarisCopyId): string => `<a href="#${escapeHtml(id)}"${copyAttr(copyId)}>${copy(copyId)}</a>`;
+  const levels: readonly (readonly [PolarisCopyId, readonly string[]])[] = [
+    ['depth.summary', [link('polaris-group-overview', 'group.overview'), link('polaris-group-boundaries', 'group.boundaries'), link('polaris-group-architecture', 'group.architecture'), link('polaris-group-v1', 'group.v1')]],
+    ['depth.catalog', [link('polaris-group-catalog', 'group.catalog'), ...(observed ? CATALOG_CLASSES.map((cls) => link(`polaris-class-${cls}`, `class.${cls}`)) : [])]],
+    ['depth.detail', [link('polaris-group-capability-detail', 'group.capability-detail'), ...dives.map((dive) => `<a href="#polaris-deep-dive-${escapeHtml(sourceSlug(dive.capabilityId))}" data-depth-dive="${escapeHtml(dive.capabilityId)}"${FACT}>${escapeHtml(dive.capability.title)}</a>`)]],
+    ['depth.source', [
+      link('polaris-group-evidence-and-gaps', 'group.evidence-and-gaps'),
+      link('polaris-shape-sources', 'evidence.sources'),
+      ...(observed ? [link('polaris-shape-exclusions', 'evidence.exclusions'), link('polaris-shape-contradictions', 'evidence.contradictions')] : []),
+      link('polaris-shape-gaps', 'evidence.gaps'),
+    ]],
+  ];
+  return `<nav class="depth-nav" data-polaris-depth-nav aria-labelledby="polaris-depth-label">
+    <p id="polaris-depth-label"${SCOPE}>${copy('depth.label')}</p>
+    <ol>${levels.map(([copyId, links], index) => `<li data-depth-level="${index + 1}"${SCOPE}><span${copyAttr(copyId)}>${copy(copyId)}</span> — ${links.join(', ')}</li>`).join('')}</ol>
+  </nav>`;
+}
+
+function pageTargets(shape: ProjectShape): PageTargets {
+  return {
+    gapReasons: new Set(gapReasonCounts(shapeClaims(shape)).keys()),
+    sourcePaths: new Set(shape.kind === 'observed' ? shape.sources.map((source) => source.path) : []),
+  };
 }
 
 function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: NarrativeRegistry, inputs: PolarisRenderInputs): string {
   const shape = model.projectShape;
   const revision = shape.kind === 'observed' ? shape.identity.revision : '';
-  const deepDives = deriveCapabilityDeepDives(model)
+  activeTargets = pageTargets(shape);
+  const dives = deriveCapabilityDeepDives(model);
+  const deepDives = dives
     .map((dive) => capabilityDeepDive(dive, model, revision, inputs.verbatim))
     .join('');
 
   const body = `
     <p class="notice"${copyAttr('notice')}>${copy('notice')}</p>
+    ${depthNav(shape, dives)}
     ${groupHeader('overview')}
     ${projectGroupBody(shape, 'overview')}
     ${groupHeader('boundaries')}

@@ -500,6 +500,44 @@ literals — zero offenders). Rule-6 evidence:
 `docs/evidence/pwb-p3-7-bands-mutation-run-2026-09-04.json` (18/18 killed,
 digest-verified restore).
 
+P3.8 implemented 2026-09-04 (task 3.8, PWB-REQ-011/016/020, `syzygy-1z3.16`).
+Polaris now opens with a depth list (`<nav class="depth-nav">`, labelled by
+its own visible line) of native links in document order: summary (the four
+account groups), catalog (the catalog group and each of its five class
+sections), detail (the capability group and each deep dive, which now carries
+`id="polaris-deep-dive-<capability>"`), exact source (evidence group, sources,
+exclusions, contradictions, gaps — a level lists only what that shape state
+renders). Every gaps-list entry carries `id="polaris-gap-<reason>"`, and every
+other mention of an enumerated reason (`unknownRoutes`, `reasonCountsBlock`,
+the deep dive's Unknown lines) links to it; a reason the page does not
+enumerate stays text, never a link to nothing. Contradiction entries carry
+`id="polaris-fact-<claim>"` and each kept declaration's anchor links to its
+source row when the page carries that source. Wide tables render inside a
+`role="region" tabindex="0" aria-labelledby=<heading id>` container so a
+keyboard-only reader can scroll them. The page's link targets are module
+state (`activeTargets`) computed once per render from the shape population
+and cleared with the registry. `ProjectShapeModelInput` now forwards optional
+`rules`/`statedDeclarations` to the coverage step (the daemon passes none);
+the test injects one stated summary that disagrees with the derived principle
+count to reach the contradiction path. `polaris-reachability.test.ts` is the
+oracle with its own tag scanner and CSS sweep: no dangling internal link and
+no duplicate id in four shape states; the four depths in document order over
+the exact target population; the PWB-REQ-011 category sweep from depth list to
+class section to item row to the source row whose identity and claim id equal
+the machine answer (path count equals the model's Observed leaf count); gaps
+and contradiction multisets equal the oracle's own count from the serialized
+model, with every reason mention linked and every declaration anchor linked;
+no `on*` handler, no button, tabindex only `0`, every scroll region named by
+a rendered heading, `:focus-visible` outline present, and no `outline: none`,
+`display: none`, `visibility: hidden`, absolute/fixed positioning, float,
+`order`, or reversed flex outside the skip link; every element of each
+colour-bearing class (`unknown-disclosure`, `proposal`, `band`, `claim-tuple`)
+names its state in text. `[Unknown]` stays as §9 records: no browser driver
+runs focus-order or accessibility-tree traces (task 4.4); the keyboard-only
+cold-open walkthrough remains manual evidence (PWB-REQ-016's record). Rule-6
+evidence: `docs/evidence/pwb-p3-8-reachability-mutation-run-2026-09-04.json`
+(19/19 killed, digest-verified restore).
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a

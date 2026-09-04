@@ -27,6 +27,12 @@ export const POLARIS_COPY = [
   { id: 'shell.lede', role: 'scope-instruction', kind: 'lede', text: 'Purpose, promises, boundaries, architecture and V1 first; then the catalog; then one capability in depth.' },
   { id: 'notice', role: 'epistemic-disclosure', kind: 'notice', text: 'Every positive claim below cites its source. Where evidence is absent, Unknown is stated in place with its route to resolution.' },
 
+  { id: 'depth.label', role: 'scope-instruction', kind: 'label', text: 'Depths, from summary to exact source:' },
+  { id: 'depth.summary', role: 'scope-instruction', kind: 'label', text: 'Summary' },
+  { id: 'depth.catalog', role: 'scope-instruction', kind: 'label', text: 'Catalog' },
+  { id: 'depth.detail', role: 'scope-instruction', kind: 'label', text: 'Detail' },
+  { id: 'depth.source', role: 'scope-instruction', kind: 'label', text: 'Exact source' },
+
   { id: 'group.overview', role: 'project-fact', kind: 'heading', text: 'What Butlers is' },
   { id: 'group.boundaries', role: 'project-fact', kind: 'heading', text: 'What Butlers is not' },
   { id: 'group.architecture', role: 'project-fact', kind: 'heading', text: 'How Butlers is built' },
