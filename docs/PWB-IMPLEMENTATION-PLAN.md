@@ -570,6 +570,43 @@ the PWB-REQ-022 pair evaluator and its evidence is the P8 record. Not wired
 into the model or Polaris yet (4.6/4.3 own that). Rule-6 evidence:
 `docs/evidence/pwb-p4-1-judgment-mutation-run-2026-09-04.json`.
 
+P4.2 implemented 2026-09-04 (task 4.2, the consolidated rule-6 mutation
+sweep, `syzygy-1z3.18`). `apps/three-surface-poc/src/pwb-mutation-sweep.ts`
+is one re-runnable plan over the nine mutation classes the task names, each
+a group with its own subject files, independent test files and mutations:
+source denominator (PWB-REQ-001: a named-but-absent file, an unreadable
+pillar index and a non-blob source dropped from the manifest/observer
+population), coverage partition (PWB-REQ-002: the contradicted partition
+zeroed, a class denominator numbered over an Unknown source, a count fact
+modeled over an Unknown denominator), precedence guard (PWB-REQ-004: the
+anchor-population check removed, "last declaration wins" without a rule,
+disagreeing rules letting the first decide), secret sentinel (PWB-REQ-003:
+no detector matching, `lastIndex` not reset), capability-first regression
+(PWB-REQ-010: the one-capability scope marker dropped, the retired framing
+marker restored, capability detail rendered above the catalog), meta-copy
+prohibition (PWB-REQ-012: a heading naming the page, the epistemic notice
+misroled), every admission invalid case with exact state, exact
+disclosure, no fallback and append-only history (PWB-REQ-005: task 2.5's
+86 predicate sites and 11 literals reused verbatim), every judgment invalid
+case with the same four properties (PWB-REQ-022: 84 case predicates, the
+history guard and 13 literals) and parity markers (PWB-REQ-020: markers
+renamed or dropped on Polaris, Trajectory, Orrery and the home tables).
+`pwb-mutation-sweep-main.ts` (`npm run poc:pwb-mutation-sweep`, `--group`
+/ `--only` to narrow) runs each group's baseline green, applies one
+mutation at a time, runs only that group's tests, restores and
+digest-verifies the subject, and records the failing test names beside the
+must-fail names; `pwb-mutation-sweep.test.ts` keeps the plan applicable
+(every fragment occurs exactly once, every class has one group, the
+predicate subjects still expose 86 and 85 sites). The first full run found
+four survivors: two were wrong must-fail names (the coverage suite killed
+the mutation through another test), two were real oracle gaps, repaired
+in the tests rather than waived — the copy oracle's disclosure-role rule
+did not cover the page notice, and no test compared the anchor digest
+shown beside a citation with the source's exact digest in the machine
+answer. Evidence: `docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04.json`
+(per-class denominators, per-mutation failing tests, digests before and
+after).
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a

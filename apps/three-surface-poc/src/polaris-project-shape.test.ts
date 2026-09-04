@@ -206,6 +206,23 @@ describe('Polaris progressive depth (PWB-REQ-011; RFC7-16)', () => {
       const digest = source.claim.support[0]?.contentDigest;
       if (digest !== undefined) expect(row).toContain(digest.replace(/^sha256:/, '').slice(0, 12));
     }
+
+    // Every anchor digest shown beside a citation is the twelve-character
+    // prefix of that source's exact digest in the machine answer.
+    const digestBySource = new Map(
+      shape.sources.flatMap((source) => {
+        const digest = source.claim.support[0]?.contentDigest;
+        return digest === undefined ? [] : [[source.path, digest.replace(/^sha256:/, '').slice(0, 12)] as const];
+      }),
+    );
+    const anchorDigests = [
+      ...html.matchAll(/<cite data-parity-field="shape-anchor"[^>]*>([^<]+)<\/cite><\/a>@<code data-parity-field="shape-anchor-digest">([^<]+)<\/code>/g),
+    ];
+    expect(anchorDigests.length).toBeGreaterThan(0);
+    for (const shown of anchorDigests) {
+      const path = (shown[1] as string).replace(/:\d+$/, '');
+      expect(shown[2], `anchor digest for ${path}`).toBe(digestBySource.get(path));
+    }
   });
 
   it('resolves every claim marker against the shared model when the shape is observed (POC-REQ-031 extended)', () => {

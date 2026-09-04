@@ -103,7 +103,7 @@ function sweep(html: string): { strings: CopyString[]; violations: Violation[] }
         if (roleValues[0] !== 'scope-instruction') violations.push({ rule: 'scope-instruction-role', text: attrs.trim() });
       }
       const classes = attr(attrs, 'class').join(' ');
-      if (/\b(claim-tuple|unknown-disclosure)\b/.test(classes) && roleValues[0] !== 'epistemic-disclosure') {
+      if (/\b(claim-tuple|unknown-disclosure|notice)\b/.test(classes) && roleValues[0] !== 'epistemic-disclosure') {
         violations.push({ rule: 'disclosure-role', text: attrs.trim() });
       }
       const kind = /^h[1-6]$/.test(tag) ? 'heading' : /\blede\b|-lede\b/.test(classes) ? 'lede' : /\bnotice\b/.test(classes) ? 'notice' : undefined;

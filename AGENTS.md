@@ -788,6 +788,17 @@ can be authorized.
   `test-deep-dive-markers.ts` for the marker sweeps. Copy-table rows nested
   inside a `FACT` paragraph must themselves be `project-fact`, or the copy
   test reports them never rendered under their role.
+- Task 4.2: `apps/three-surface-poc/src/pwb-mutation-sweep.ts` is the one
+  rule-6 plan over the nine named mutation classes; `npm run
+  poc:pwb-mutation-sweep` (`--group <id>` / `--only <mutation-id>`) runs it
+  and writes `docs/evidence/pwb-p4-2-mutation-sweep-<date>.json`. Adding a
+  mutation means an exact fragment that occurs once in its subject plus a
+  must-fail test-name substring; `pwb-mutation-sweep.test.ts` rejects
+  drift. A killed mutation whose named test did not fail is reported as
+  SURVIVED with the actual failing names in the evidence — fix the name,
+  or, when nothing failed, strengthen the test (never waive). The full run
+  takes ~35 minutes and rewrites subjects in place: run it in the
+  background, edit nothing it lists, and never commit while it runs.
 - Task 4.1: `packages/three-surface-poc-core/src/walkthrough-judgment.ts`
   is the PWB-REQ-022 evaluator (2 absent + 84 present-invalid cases, one
   `// mutation-point:` per case, predicate order load-bearing: homes →
