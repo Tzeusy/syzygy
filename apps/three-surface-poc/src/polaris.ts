@@ -2,6 +2,7 @@ import { escapeHtml } from '@syzygy/cap1-daemon';
 import {
   EXTRACTION_CLASSES,
   UNKNOWN_REASON_ROUTES,
+  type AuthorityDisclosure,
   type Exclusion,
   type ExtractionClass,
   type PocEntity,
@@ -460,7 +461,59 @@ function shapeUnknownBlock(shape: Exclude<ProjectShape, { kind: 'observed' }>, g
   return `<section class="claim-section" data-polaris-section="shape:${escapeHtml(group)}">
     ${unknownRoutes(shape.claim, '')}
     ${detail}
+    ${shape.authority === undefined || group !== 'overview' ? '' : authorityLine(shape.authority)}
     ${tupleLine(shape.claim)}
+  </section>`;
+}
+
+/** PWB-REQ-005/020: every body-read authority's state, the authorization
+ * mode and the evaluation the states belong to, each as its own parity
+ * marker so the human channel keeps one marker per authority (multiplicity)
+ * and names the evaluation it was disclosed at. */
+function authorityLine(authority: AuthorityDisclosure): string {
+  const entries = authority.authorities
+    .map((entry) => `<span data-parity-field="authority-state" data-authority="${escapeHtml(entry.authority)}">${escapeHtml(entry.authority)} — ${escapeHtml(entry.state)}</span>`)
+    .join('; ');
+  return `<p${DISCLOSURE} data-authority-evaluation><small>${copy('label.authority')} ${entries} (<span data-parity-field="authority-mode">${escapeHtml(authority.authorizationMode)}</span>), ${copy('label.evaluated-as')} <code data-parity-field="authority-evaluation-id">${escapeHtml(authority.evaluationId)}</code>.</small></p>`;
+}
+
+/** PWB-REQ-021/022 on the one surface: the owner's cold-open walkthrough
+ * judgment exactly as the evaluator carried it. Every state, label,
+ * disclosure sentence, digest and traversed path is its own parity marker;
+ * a lawful verdict is recorded human judgment — presented under the
+ * epistemic-disclosure role, never as a project fact or a score. */
+function walkthroughJudgmentSection(model: PocModel): string {
+  const judgment = model.walkthroughJudgment;
+  const head = heading(3, 'polaris-walkthrough-judgment', 'evidence.walkthrough');
+  if (judgment.kind === 'not-evaluated') {
+    return `<section class="claim-section" data-polaris-section="walkthrough-judgment" data-judgment-state="not-evaluated">
+    ${head}
+    <p${DISCLOSURE}><small>${copy('sentence.judgment-not-evaluated')} <span data-parity-field="judgment-detail">${escapeHtml(judgment.detail)}</span></small></p>
+  </section>`;
+  }
+  const { evaluation } = judgment;
+  const outcome = evaluation.outcome;
+  const evaluated = `<p${DISCLOSURE}><small>${copy('label.judgment-evaluation')} <code data-parity-field="judgment-evaluation-id">${escapeHtml(evaluation.evaluationId)}</code> ${copy('label.at')} <code data-parity-field="judgment-evaluation-instant">${escapeHtml(evaluation.evaluationInstant)}</code>; ${copy('label.outcome')} <span data-parity-field="judgment-kind">${escapeHtml(outcome.kind)}</span>.</small></p>`;
+  let body: string;
+  switch (outcome.kind) {
+    case 'absent':
+      body = `<p${DISCLOSURE}><small>${copy('sentence.judgment-absent')} (<span data-parity-field="judgment-absent-what">${escapeHtml(outcome.what)}</span>): <span data-parity-field="judgment-detail">${escapeHtml(outcome.detail)}</span> ${copy('label.criterion')} <span data-parity-field="judgment-criterion">${escapeHtml(outcome.criterion)}</span>.</small></p>`;
+      break;
+    case 'unlawful':
+      body = `<p${DISCLOSURE}><small>${copy('sentence.judgment-unlawful')} <code data-parity-field="judgment-recorded">${escapeHtml(outcome.recorded)}</code> (<code data-parity-field="judgment-case">${escapeHtml(outcome.caseId)}</code>): <span data-parity-field="judgment-detail">${escapeHtml(outcome.detail)}</span> ${copy('label.criterion')} <span data-parity-field="judgment-criterion">${escapeHtml(outcome.criterion)}</span>. ${copy('label.contradiction')} <span data-parity-field="judgment-contradiction">${escapeHtml(outcome.contradiction.clause)}</span> — ${escapeHtml(outcome.contradiction.statement)}</small></p>
+    <p${DISCLOSURE}><small>${copy('label.run-record')} <code data-parity-field="judgment-run-record-digest">${escapeHtml(shortDigest(outcome.runRecordDigest))}</code>; ${copy('label.judgment-digest')} <code data-parity-field="judgment-digest">${escapeHtml(shortDigest(outcome.judgmentDigest))}</code>.</small></p>`;
+      break;
+    case 'lawful':
+      body = `<p${DISCLOSURE}><small>${copy('label.verdict')} <code data-parity-field="judgment-verdict">${escapeHtml(`${outcome.verdict.criterion}=${outcome.verdict.value}`)}</code>, ${copy('label.judged-by')} <span data-parity-field="judgment-judging-party">${escapeHtml(outcome.verdict.judgingParty)}</span>; <span data-parity-field="judgment-evidence-kind">${escapeHtml(outcome.evidenceKind)}</span>; <span data-parity-field="judgment-state-label">${escapeHtml(outcome.stateLabel)}</span>; ${copy('label.independently-verified')} <span data-parity-field="judgment-independently-verified">${outcome.independentlyVerified ? 'yes' : 'no'}</span>. <q data-parity-field="judgment-disclosure">${escapeHtml(outcome.disclosure)}</q></small></p>
+    <p${DISCLOSURE}><small>${copy('label.act')} <code data-parity-field="judgment-act">${escapeHtml(outcome.actIdentity)}</code> ${copy('label.at')} <code data-parity-field="judgment-act-instant">${escapeHtml(outcome.actInstant)}</code>; ${copy('label.judgment-digest')} <code data-parity-field="judgment-digest">${escapeHtml(shortDigest(outcome.judgmentDigest))}</code>.</small></p>
+    <p${DISCLOSURE}><small>${copy('label.run-record')} <code data-parity-field="judgment-run-record">${escapeHtml(`${outcome.runRecord.identity}@${shortDigest(outcome.runRecord.digest)}`)}</code>, <span data-parity-field="judgment-mode">${escapeHtml(outcome.runRecord.mode)}</span>, <code data-parity-field="judgment-surface-version">${escapeHtml(outcome.runRecord.surfaceVersion)}</code>, <code data-parity-field="judgment-run-evaluation-identity">${escapeHtml(outcome.runRecord.evaluationIdentity)}</code>; ${copy('label.traversed')} ${outcome.runRecord.traversedPaths.map((path) => `<code data-parity-field="judgment-traversed-path">${escapeHtml(path)}</code>`).join(', ')}.</small></p>
+    <p${DISCLOSURE}><small>${copy('label.rationale')} <span data-parity-field="judgment-rationale">${escapeHtml(outcome.verdict.rationale)}</span></small></p>`;
+      break;
+  }
+  return `<section class="claim-section" data-polaris-section="walkthrough-judgment" data-judgment-state="${escapeHtml(outcome.kind)}">
+    ${head}
+    ${evaluated}
+    ${body}
   </section>`;
 }
 
@@ -595,7 +648,7 @@ function shapeEvidence(shape: ProjectShape): string {
     ${reasonCountsBlock(shape.claim.claimId, countReasonsOf(shapeClaims(shape).slice(1)))}
     ${onDemandCounts(shape.claim.claimId, escapeHtml(counts))}
     <p${FACT}><small>Revision <code data-parity-field="shape-revision">${escapeHtml(identity.revision.slice(0, 12))}</code> (requested <code>${escapeHtml(identity.requestedRevision)}</code>), committed <code>${escapeHtml(identity.sourceClaimedInstant.instant)}</code>, captured <code>${escapeHtml(identity.capturedAt)}</code> by <code>${escapeHtml(identity.observer.observerId)}</code> ${escapeHtml(identity.observer.observerVersion)} under policy <code>${escapeHtml(identity.policy.policyId)}</code> ${escapeHtml(identity.policy.policyVersion)}; manifest <code data-parity-field="shape-manifest-digest">${escapeHtml(shortDigest(identity.manifestDigest))}</code>, observation <code data-parity-field="shape-observation-digest">${escapeHtml(shortDigest(identity.observationDigest))}</code>.</small></p>
-    <p${DISCLOSURE}><small>${copy('label.authority')} ${shape.authority.authorities.map((entry) => `${escapeHtml(entry.authority)} — ${escapeHtml(entry.state)}`).join('; ')} (${escapeHtml(shape.authority.authorizationMode)}).</small></p>
+    ${authorityLine(shape.authority)}
   </section>
   <section class="claim-section wide" data-polaris-section="shape:sources">
     ${heading(3, 'polaris-shape-sources', 'evidence.sources')}
@@ -944,6 +997,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     ${deepDives}
     ${groupHeader('evidence-and-gaps')}
     ${shapeEvidence(shape)}
+    ${walkthroughJudgmentSection(model)}
     ${codeStructureSection(model)}
     ${workItemsSection(model)}`;
   // The machine form of the presentation artifact precedes every group so no

@@ -13,6 +13,7 @@ import { gitRunnerFor, type GitRunner } from './project-shape-observation.js';
 import type { Declaration, PrecedenceRule } from './project-shape-coverage.js';
 import { buildProjectShape, unevaluatedProjectShape, type ProjectShape } from './project-shape-model.js';
 import { deriveProposedWork, type ProposedWork } from './proposed-work.js';
+import { evaluateWalkthroughJudgment, type WalkthroughJudgmentEvaluation, type WalkthroughJudgmentInputs } from './walkthrough-judgment.js';
 import {
   resolveTestArtifactVerification,
   type TestArtifactRecord,
@@ -137,7 +138,17 @@ export interface PocModel {
   readonly projectShape: ProjectShape;
   /** PWB-REQ-013: the one followed OpenSpec change as a distinct type, with its lifecycle and the current authority it would amend. */
   readonly proposedWork: ProposedWork;
+  /** PWB-REQ-021/022: the owner's cold-open walkthrough judgment as the
+   * PWB-REQ-022 evaluator carried it — lawful (state (1) or (2), verdict
+   * carried), unlawful (no verdict), absent (no pair) — or `not-evaluated`
+   * when the builder was given no run-record/judgment pair. Never a score,
+   * never evidence of success. */
+  readonly walkthroughJudgment: WalkthroughJudgmentPresentation;
 }
+
+export type WalkthroughJudgmentPresentation =
+  | { readonly kind: 'not-evaluated'; readonly detail: string }
+  | { readonly kind: 'evaluated'; readonly evaluation: WalkthroughJudgmentEvaluation };
 
 /** The lawful inputs of the project-shape pipeline: the PWB-REQ-005
  * evaluation the daemon performed against Syzygy's governance tree, plus
@@ -167,6 +178,10 @@ export interface BuildButlersPocModelInput {
    * optional detail says why no evaluation was supplied. */
   readonly projectShape?: ProjectShapeModelInput | undefined;
   readonly projectShapeDetail?: string;
+  /** Absent → `walkthroughJudgment.kind === 'not-evaluated'`; the optional
+   * detail says why no pair was supplied. */
+  readonly walkthroughJudgment?: WalkthroughJudgmentInputs | undefined;
+  readonly walkthroughJudgmentDetail?: string;
 }
 
 export class PocObservationError extends Error {
@@ -589,6 +604,13 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
           ...(input.projectShape.rules === undefined ? {} : { rules: input.projectShape.rules }),
           ...(input.projectShape.statedDeclarations === undefined ? {} : { statedDeclarations: input.projectShape.statedDeclarations }),
         });
+  const walkthroughJudgment: WalkthroughJudgmentPresentation =
+    input.walkthroughJudgment === undefined
+      ? {
+          kind: 'not-evaluated',
+          detail: input.walkthroughJudgmentDetail ?? 'No cold-open walkthrough run record and judgment pair was supplied to this evaluation; no judgment was evaluated.',
+        }
+      : { kind: 'evaluated', evaluation: evaluateWalkthroughJudgment(input.walkthroughJudgment) };
   const proposedWork = deriveProposedWork({
     capabilityId: 'capability:whatsapp-transport-identity',
     proposal: { path: proposal.path, revision: input.repositoryRevision, digest: `sha256:${proposal.digest}` },
@@ -619,6 +641,7 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     materializedBeadId: materialization.beadId,
     projectShape,
     proposedWork,
+    walkthroughJudgment,
     surfaces: [
       {
         id: 'polaris',

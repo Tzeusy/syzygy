@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { buildButlersPocModel, type PocModel, type ProjectShapeModelInput } from '@syzygy/three-surface-poc-core';
+import { buildButlersPocModel, type PocModel, type ProjectShapeModelInput, type WalkthroughJudgmentInputs } from '@syzygy/three-surface-poc-core';
 
 function git(root: string, args: readonly string[]): string {
   return execFileSync('git', ['-C', root, ...args], {
@@ -79,6 +79,9 @@ export interface FixtureModelOptions {
   /** Supplied → the model's `projectShape` is built through the P1 gate and
    * the injected runner; absent → `not-evaluated`, as the pre-PWB fixture. */
   readonly projectShape?: ProjectShapeModelInput;
+  /** Supplied → the model's `walkthroughJudgment` is evaluated from the
+   * pair; absent → `not-evaluated`. */
+  readonly walkthroughJudgment?: WalkthroughJudgmentInputs;
 }
 
 export function buildFixtureModel(cleanups: string[], options: FixtureModelOptions = {}): PocModel {
@@ -128,5 +131,6 @@ export function buildFixtureModel(cleanups: string[], options: FixtureModelOptio
     runWorkItemQuery: (_repoRoot, sql) =>
       sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: doltRevision }]),
     ...(options.projectShape === undefined ? {} : { projectShape: options.projectShape }),
+    ...(options.walkthroughJudgment === undefined ? {} : { walkthroughJudgment: options.walkthroughJudgment }),
   });
 }

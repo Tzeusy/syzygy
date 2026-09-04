@@ -135,6 +135,25 @@ export const POLARIS_COPY = [
   { id: 'label.authority', role: 'epistemic-disclosure', kind: 'label', text: 'Authority:' },
   { id: 'label.deferred', role: 'epistemic-disclosure', kind: 'label', text: 'deferred' },
   { id: 'label.no-route', role: 'epistemic-disclosure', kind: 'label', text: 'No route declared' },
+  { id: 'label.evaluated-as', role: 'epistemic-disclosure', kind: 'label', text: 'evaluated as' },
+  // PWB-REQ-021/022: the owner's cold-open walkthrough judgment, as carried.
+  { id: 'evidence.walkthrough', role: 'epistemic-disclosure', kind: 'heading', text: 'Owner cold-open walkthrough judgment' },
+  { id: 'sentence.judgment-not-evaluated', role: 'epistemic-disclosure', kind: 'sentence', text: 'No walkthrough run record and judgment pair reached this evaluation:' },
+  { id: 'sentence.judgment-absent', role: 'epistemic-disclosure', kind: 'sentence', text: 'No owner judgment is carried' },
+  { id: 'sentence.judgment-unlawful', role: 'epistemic-disclosure', kind: 'sentence', text: 'The recorded judgment is not lawful, so no verdict is carried:' },
+  { id: 'label.judgment-evaluation', role: 'epistemic-disclosure', kind: 'label', text: 'Judgment evaluation' },
+  { id: 'label.at', role: 'epistemic-disclosure', kind: 'label', text: 'at' },
+  { id: 'label.outcome', role: 'epistemic-disclosure', kind: 'label', text: 'outcome' },
+  { id: 'label.criterion', role: 'epistemic-disclosure', kind: 'label', text: '— criterion' },
+  { id: 'label.contradiction', role: 'epistemic-disclosure', kind: 'label', text: 'Contradiction:' },
+  { id: 'label.run-record', role: 'epistemic-disclosure', kind: 'label', text: 'Run record' },
+  { id: 'label.judgment-digest', role: 'epistemic-disclosure', kind: 'label', text: 'judgment digest' },
+  { id: 'label.verdict', role: 'epistemic-disclosure', kind: 'label', text: 'Verdict' },
+  { id: 'label.judged-by', role: 'epistemic-disclosure', kind: 'label', text: 'judged by' },
+  { id: 'label.independently-verified', role: 'epistemic-disclosure', kind: 'label', text: 'independently verified:' },
+  { id: 'label.act', role: 'epistemic-disclosure', kind: 'label', text: 'Act' },
+  { id: 'label.traversed', role: 'epistemic-disclosure', kind: 'label', text: 'traversed' },
+  { id: 'label.rationale', role: 'epistemic-disclosure', kind: 'label', text: 'Rationale:' },
 ] as const satisfies readonly PolarisCopyRow[];
 
 export type PolarisCopyId = (typeof POLARIS_COPY)[number]['id'];

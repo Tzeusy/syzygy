@@ -6,6 +6,7 @@ import type { PocModel } from '@syzygy/three-surface-poc-core';
 import { POLARIS_COPY } from './polaris-copy.js';
 import { renderPolarisPage } from './polaris.js';
 import { buildFixtureModel } from './test-model-fixture.js';
+import { walkthroughJudgmentFixture } from './test-walkthrough-judgment-fixture.js';
 import {
   ADMITTING_AUTHORITY,
   PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET,
@@ -147,8 +148,8 @@ function sweep(html: string): { strings: CopyString[]; violations: Violation[] }
 
 // ---------------------------------------------------------------------------
 
-type Variant = 'unevaluated' | 'rejected' | 'observed' | 'observed-with-secret' | 'observation-failed';
-const VARIANTS: readonly Variant[] = ['unevaluated', 'rejected', 'observed', 'observed-with-secret', 'observation-failed'];
+type Variant = 'unevaluated' | 'rejected' | 'observed' | 'observed-with-secret' | 'observation-failed' | 'judgment-absent' | 'judgment-unlawful' | 'judgment-lawful';
+const VARIANTS: readonly Variant[] = ['unevaluated', 'rejected', 'observed', 'observed-with-secret', 'observation-failed', 'judgment-absent', 'judgment-unlawful', 'judgment-lawful'];
 
 function modelFor(variant: Variant): PocModel {
   switch (variant) {
@@ -168,11 +169,17 @@ function modelFor(variant: Variant): PocModel {
       };
       return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: failing } });
     }
+    case 'judgment-absent':
+      return buildFixtureModel(cleanups, { walkthroughJudgment: walkthroughJudgmentFixture('absent-run-record') });
+    case 'judgment-unlawful':
+      return buildFixtureModel(cleanups, { walkthroughJudgment: walkthroughJudgmentFixture('unlawful') });
+    case 'judgment-lawful':
+      return buildFixtureModel(cleanups, { walkthroughJudgment: walkthroughJudgmentFixture('lawful-state-1') });
   }
 }
 
 describe('Polaris copy roles (PWB-REQ-012)', () => {
-  it('renders the five shape states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control', () => {
+  it('renders the five shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control', () => {
     const shapeKinds = new Set<string>();
     for (const variant of VARIANTS) {
       const model = modelFor(variant);
