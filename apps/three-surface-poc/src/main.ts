@@ -20,6 +20,7 @@ import { loadWalkthroughJudgmentInputs } from './walkthrough-inputs.js';
 import {
   observeGitRepository,
   pocObserverInputsAreClean,
+  resolvePwbRepositoryBinding,
 } from './git-observation.js';
 import { materializeRoutes } from './materialize-action.js';
 import { pocRoutes } from './routes.js';
@@ -49,6 +50,15 @@ if (parsed.kind === 'help') {
     process.stderr.write('syzygy POC: configured repository is not readable\n');
     process.exitCode = 1;
     repoRoot = '';
+  }
+
+  if (repoRoot !== '') {
+    const repositoryBinding = resolvePwbRepositoryBinding(repoRoot);
+    if (repositoryBinding.kind === 'rejected') {
+      process.stderr.write(`syzygy POC: configured repository authority rejected (${repositoryBinding.reason})\n`);
+      process.exitCode = 1;
+      repoRoot = '';
+    }
   }
 
   if (repoRoot !== '') {
@@ -123,6 +133,7 @@ if (parsed.kind === 'help') {
           const authority = evaluateBodyReadAuthority(
             loadBodyReadAuthorityInputs({
               repoRoot: process.cwd(),
+              governanceRevision: observerRevision,
               evaluationId: `evaluation:pwb-body-read:${asOf}`,
               evaluationInstant: asOf,
             }),
@@ -142,6 +153,7 @@ if (parsed.kind === 'help') {
         try {
           walkthroughJudgment = loadWalkthroughJudgmentInputs({
             repoRoot: process.cwd(),
+            governanceRevision: observerRevision,
             evaluationId: `evaluation:pwb-walkthrough-judgment:${asOf}`,
             evaluationInstant: asOf,
           });

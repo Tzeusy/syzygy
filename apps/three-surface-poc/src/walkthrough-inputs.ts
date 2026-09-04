@@ -23,6 +23,7 @@ import {
   actIdentityOf,
   classifyMissingRecord,
   defaultRunGit,
+  gitTreeReaders,
   lifecycleFor,
   readArtifact,
   readText,
@@ -90,9 +91,12 @@ export function pwbWalkthroughExpectations(evaluationInstant: string): Walkthrou
 
 export function loadWalkthroughJudgmentInputs(options: LoadGovernanceInputsOptions): WalkthroughJudgmentInputs {
   const runGit = options.runGit ?? defaultRunGit;
-  const read = options.readFile ?? ((path: string) => new Uint8Array(readFileSync(path)));
-  const list = options.listDirectory ?? ((path: string) => readdirSync(path));
   const repoRoot = resolve(options.repoRoot);
+  const tree = options.governanceRevision === undefined
+    ? undefined
+    : gitTreeReaders(runGit, repoRoot, options.governanceRevision);
+  const read = options.readFile ?? tree?.read ?? ((path: string) => new Uint8Array(readFileSync(path)));
+  const list = options.listDirectory ?? tree?.list ?? ((path: string) => readdirSync(path));
   const s = PWB_WALKTHROUGH_SCHEDULE;
   const expectations = pwbWalkthroughExpectations(options.evaluationInstant);
 
@@ -112,7 +116,7 @@ export function loadWalkthroughJudgmentInputs(options: LoadGovernanceInputsOptio
       artifact: judgmentArtifact,
       actRecord,
       lifecycle: lifecycleFor(read, list, repoRoot, s.judgmentActRecordPath, recordText === undefined ? undefined : actIdentityOf(recordText)),
-      recordingTag: resolveRecordingTag(runGit, repoRoot, s.recordingTag, s.judgmentActRecordPath),
+      recordingTag: resolveRecordingTag(runGit, repoRoot, s.recordingTag, s.judgmentActRecordPath, recordText),
     },
     expectations,
     correlate: JUDGMENT_CORRELATION_UNAVAILABLE,

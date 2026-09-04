@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
+import { PWB_SECRET_POLICY, classifyPhaseASeed, compileDetectors } from './content-classification.js';
 import { indexGitTree, type GitTreeEntry } from './git-tree.js';
 import { observeProjectShape } from './project-shape-observer.js';
 import {
@@ -34,6 +35,8 @@ const REPOSITORY = 'repository:butlers-configured-poc';
 const COMMIT = '3'.repeat(40);
 const COMMITTED_AT = '2026-08-15T10:00:00+00:00';
 const CAPTURED_AT = '2026-09-03T12:34:56.000Z';
+const PHASE_A_DETECTORS = compileDetectors(PWB_SECRET_POLICY);
+const classifyPhaseA = (text: string) => classifyPhaseASeed(PHASE_A_DETECTORS, text);
 
 // ---------------------------------------------------------------------
 // Fixture repository: Butlers-shaped, not Butlers.
@@ -159,6 +162,7 @@ function observe(options: RunnerOptions & { capturedAt?: string; revision?: stri
     revision: options.revision ?? 'main',
     capturedAt: options.capturedAt ?? CAPTURED_AT,
     runGit: git.runGit,
+    classifyPhaseA,
     ...(options.limits === undefined ? {} : { resourceLimits: options.limits }),
     ...(options.authority === undefined ? {} : { authority: options.authority }),
   });
@@ -420,6 +424,40 @@ describe('observeProjectShapeSources — reads only the phase A allowlist', () =
     expect(observation.manifest.pillars.find((pillar) => pillar.key === 'heart-and-soul')).toMatchObject({ state: 'unknown', reason: 'index-unavailable' });
     expect(observation.sources.map((source) => source.path)).not.toContain('about/heart-and-soul/vision.md');
   });
+
+  it('screens a secret-bearing root seed before it can derive any child path', () => {
+    const sentinel = `token=ghp_${'A'.repeat(20)}_PHASE_A_SENTINEL`;
+    const bytes = encoder.encode(`${TEXTS['about/README.md'] ?? ''}\n${sentinel}\n`);
+    const objectId = sha1Blob(bytes);
+    const tree = TREE.map((entry) => entry.path === 'about/README.md' ? { ...entry, objectId, sizeBytes: bytes.byteLength } : entry);
+    const { observation, calls } = observed({ tree, blobOverrides: { [objectId]: bytes } });
+    expect(observation.reads).toEqual([{ path: 'about/README.md', objectId, outcome: 'secret-matched', bytes: bytes.byteLength, detail: 'known-token-formats' }]);
+    expect(calls.filter((call) => call[0] === 'cat-file')).toHaveLength(1);
+    expect(observation.manifest.pillars.every((pillar) => pillar.state === 'unknown')).toBe(true);
+    expect(observation.sources.map((source) => source.path)).toEqual([
+      'about/README.md',
+      'openspec/specs/alpha/spec.md',
+      'roster/atlas/MANIFESTO.md',
+      'roster/atlas/butler.toml',
+    ]);
+    expect(observation.degradation).toMatchObject({ failureState: 'secretMatchedOrUnclassifiable', unknownReason: 'excluded-content' });
+    expect(JSON.stringify(observation)).not.toContain(sentinel);
+  });
+
+  it('screens an active-content pillar seed before it can derive that pillar children', () => {
+    const sentinel = '<script>PHASE_A_ACTIVE_SENTINEL</script>';
+    const bytes = encoder.encode(`${TEXTS['about/heart-and-soul/README.md'] ?? ''}\n${sentinel}\n`);
+    const objectId = sha1Blob(bytes);
+    const tree = TREE.map((entry) => entry.path === 'about/heart-and-soul/README.md' ? { ...entry, objectId, sizeBytes: bytes.byteLength } : entry);
+    const { observation } = observed({ tree, blobOverrides: { [objectId]: bytes } });
+    expect(observation.reads.find((read) => read.path === 'about/heart-and-soul/README.md')).toEqual({
+      path: 'about/heart-and-soul/README.md', objectId, outcome: 'active-content', bytes: bytes.byteLength, detail: '2',
+    });
+    expect(observation.sources.map((source) => source.path)).not.toContain('about/heart-and-soul/vision.md');
+    expect(observation.sources.map((source) => source.path)).not.toContain('about/heart-and-soul/missing.md');
+    expect(observation.manifest.pillars.find((pillar) => pillar.key === 'heart-and-soul')).toMatchObject({ state: 'unknown', reason: 'index-unavailable' });
+    expect(JSON.stringify(observation)).not.toContain('PHASE_A_ACTIVE_SENTINEL');
+  });
 });
 
 describe('observeProjectShapeSources — capture failures and invalid input', () => {
@@ -455,7 +493,7 @@ describe('observeProjectShapeSources — capture failures and invalid input', ()
 
   it('rejects invalid input before any git call', () => {
     const git = runner();
-    const base = { repositoryId: REPOSITORY, revision: 'main', capturedAt: CAPTURED_AT, runGit: git.runGit };
+    const base = { repositoryId: REPOSITORY, revision: 'main', capturedAt: CAPTURED_AT, runGit: git.runGit, classifyPhaseA };
     expect(observeProjectShapeSources({ ...base, repositoryId: ' ' })).toEqual({ kind: 'invalid-input', reason: 'repositoryId is empty' });
     expect(observeProjectShapeSources({ ...base, revision: '' })).toEqual({ kind: 'invalid-input', reason: 'revision is empty or option-shaped' });
     expect(observeProjectShapeSources({ ...base, revision: '--output=/tmp/x' })).toEqual({ kind: 'invalid-input', reason: 'revision is empty or option-shaped' });
@@ -520,7 +558,7 @@ describe('composition with the PWB-REQ-005 gate', () => {
     const git = runner();
     const result = observeProjectShape({
       authority: ABSENT_AUTHORITY,
-      read: ({ authority }) => observeProjectShapeSources({ repositoryId: REPOSITORY, revision: 'main', capturedAt: CAPTURED_AT, runGit: git.runGit, authority }),
+      read: ({ authority }) => observeProjectShapeSources({ repositoryId: REPOSITORY, revision: 'main', capturedAt: CAPTURED_AT, runGit: git.runGit, classifyPhaseA, authority }),
     });
     expect(result.kind).toBe('unknown');
     expect(git.calls).toEqual([]);
@@ -530,7 +568,7 @@ describe('composition with the PWB-REQ-005 gate', () => {
     const git = runner();
     const result = observeProjectShape({
       authority: ADMITTING_AUTHORITY,
-      read: ({ authority }) => observeProjectShapeSources({ repositoryId: REPOSITORY, revision: 'main', capturedAt: CAPTURED_AT, runGit: git.runGit, authority }),
+      read: ({ authority }) => observeProjectShapeSources({ repositoryId: REPOSITORY, revision: 'main', capturedAt: CAPTURED_AT, runGit: git.runGit, classifyPhaseA, authority }),
     });
     expect(result.kind).toBe('admitted');
     if (result.kind !== 'admitted' || result.result.kind !== 'observed') throw new Error('expected an observation');

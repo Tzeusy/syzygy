@@ -26,7 +26,7 @@
 // The population never shrinks: `classifyManifestSources` returns exactly one
 // result per manifest source, in manifest order.
 
-import { PWB_POLICY_IDENTITY, type ExactObjectReader, type ObjectReadRecord, readManifestSources } from './git-object-reader.js';
+import { PWB_POLICY_IDENTITY, scanActiveContent, type ExactObjectReader, type ObjectReadRecord, readManifestSources } from './git-object-reader.js';
 import { EXTRACTION_CLASSES, type ManifestSource, type ProjectShapeSourceManifest } from './project-shape-manifest.js';
 import { PWB_FAILURE_STATES, type PwbFailureState } from './project-shape-observation.js';
 
@@ -168,6 +168,20 @@ export function detectSecrets(detectors: readonly CompiledDetector[], text: stri
     if (detector.matches(text) && first === undefined) first = detector.id;
   }
   return first;
+}
+
+export type PhaseAClassification =
+  | { readonly kind: 'safe' }
+  | { readonly kind: 'excluded'; readonly reason: 'secret-matched' | 'active-content'; readonly detail: string };
+
+// Phase-A indexes derive later read paths, so the same approved detectors and
+// active-content guard must screen their transient text before link parsing.
+export function classifyPhaseASeed(detectors: readonly CompiledDetector[], text: string): PhaseAClassification {
+  const detectorId = detectSecrets(detectors, text);
+  if (detectorId !== undefined) return { kind: 'excluded', reason: 'secret-matched', detail: detectorId };
+  const active = scanActiveContent(text);
+  if (active.length > 0) return { kind: 'excluded', reason: 'active-content', detail: String(active.length) };
+  return { kind: 'safe' };
 }
 
 // ---------------------------------------------------------------------

@@ -36,6 +36,10 @@ interface FakeTree {
   readonly files: Map<string, string>;
   readonly tags: Map<string, string>;
   readonly treePaths: Set<string>;
+  readonly taggedRecords: Map<string, string>;
+  failLifecycleList?: boolean;
+  readonly unreadablePaths: Set<string>;
+  readonly invalidUtf8Paths: Set<string>;
 }
 
 function fakeTree(): FakeTree {
@@ -50,7 +54,11 @@ function fakeTree(): FakeTree {
     [expectations.authorities.policy.recordingTag, '2'.repeat(40)],
     [expectations.authorities.registry.recordingTag, '3'.repeat(40)],
   ]);
-  return { files, tags, treePaths: new Set(Object.values(PWB_ACT_RECORDS)) };
+  const taggedRecords = new Map<string, string>();
+  for (const kind of ['consent', 'policy', 'registry'] as const) {
+    taggedRecords.set(`${tags.get(expectations.authorities[kind].recordingTag)}:${PWB_ACT_RECORDS[kind]}`, files.get(PWB_ACT_RECORDS[kind]) ?? '');
+  }
+  return { files, tags, treePaths: new Set(Object.values(PWB_ACT_RECORDS)), taggedRecords, unreadablePaths: new Set(), invalidUtf8Paths: new Set() };
 }
 
 function loaderFor(tree: FakeTree) {
@@ -61,11 +69,15 @@ function loaderFor(tree: FakeTree) {
     evaluationId: 'eval-hermetic',
     evaluationInstant: EVALUATION_INSTANT,
     readFile: (absolute) => {
-      const text = tree.files.get(relative(absolute));
+      const path = relative(absolute);
+      if (tree.unreadablePaths.has(path)) throw Object.assign(new Error('EACCES'), { code: 'EACCES' });
+      if (tree.invalidUtf8Paths.has(path)) return new Uint8Array([0xff]);
+      const text = tree.files.get(path);
       if (text === undefined) throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' });
       return new TextEncoder().encode(text);
     },
     listDirectory: (absolute) => {
+      if (tree.failLifecycleList) throw new Error('list failed');
       const prefix = `${relative(absolute)}/`;
       return [...tree.files.keys()].filter((path) => path.startsWith(prefix)).map((path) => path.slice(prefix.length));
     },
@@ -79,6 +91,11 @@ function loaderFor(tree: FakeTree) {
       if (args[0] === 'ls-tree') {
         const path = args[4] ?? '';
         return tree.treePaths.has(path) ? `${path}\n` : '';
+      }
+      if (args[0] === 'show') {
+        const text = tree.taggedRecords.get(args[1] ?? '');
+        if (text === undefined) throw new Error('missing tagged record');
+        return text;
       }
       throw new Error(`unexpected git ${args.join(' ')}`);
     },
@@ -130,11 +147,28 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
 
   it('leaves a tag unresolved when its commit does not carry the act record', () => {
     const tree = fakeTree();
-    tree.treePaths.delete(PWB_ACT_RECORDS.consent);
+    tree.taggedRecords.delete(`${'1'.repeat(40)}:${PWB_ACT_RECORDS.consent}`);
     const inputs = loaderFor(tree);
     expect(inputs.consent.recordingTag).toEqual({ kind: 'unresolved' });
     const evaluation = evaluateBodyReadAuthority(inputs);
     expect(evaluation.consent.kind === 'invalid' && evaluation.consent.caseId).toBe('consent:recording-tag-mismatched');
+  });
+
+  it('rejects a current act record whose bytes drift from the exact recording-tag blob', () => {
+    const tree = fakeTree();
+    tree.files.set(PWB_ACT_RECORDS.consent, `${tree.files.get(PWB_ACT_RECORDS.consent) ?? ''}\ncoordinated drift`);
+    const evaluation = evaluateBodyReadAuthority(loaderFor(tree));
+    expect(evaluation.consent.kind === 'invalid' && evaluation.consent.caseId).toBe('consent:recording-tag-mismatched');
+  });
+
+  it.each(['list', 'read', 'decode'] as const)('fails closed when lifecycle %s fails', (failure) => {
+    const tree = fakeTree();
+    const other = '.syzygy/governance/decisions/OTHER.md';
+    tree.files.set(other, '# Other decision\n');
+    if (failure === 'list') tree.failLifecycleList = true;
+    if (failure === 'read') tree.unreadablePaths.add(other);
+    if (failure === 'decode') tree.invalidUtf8Paths.add(other);
+    expect(() => loaderFor(tree)).toThrow();
   });
 
   it('detects a later decision record that revokes or supersedes an act identity', () => {
@@ -177,8 +211,10 @@ function localTagsPresent(): boolean {
 
 describe('loadBodyReadAuthorityInputs (real Syzygy governance tree)', () => {
   it('evaluates the three real 2026-09-02 PWB acts without reading any body', () => {
+    const governanceRevision = execFileSync('git', ['-C', REPO_ROOT, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
     const inputs = loadBodyReadAuthorityInputs({
       repoRoot: REPO_ROOT,
+      governanceRevision,
       evaluationId: 'eval-real-tree',
       evaluationInstant: EVALUATION_INSTANT,
     });
