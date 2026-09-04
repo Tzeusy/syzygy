@@ -408,6 +408,24 @@ describe('PWB-REQ-002 — two independent extractors agree on every fixture', ()
       expect(json).not.toContain('"text"');
     }
   });
+
+  it('preserves every indented continuation line of a principle declaration', () => {
+    const text = VISION.replace('1. **Fail closed** — silence is Unknown.', '1. **Fail closed** — silence is Unknown.\n   The declaration continues here.\n   And remains complete.');
+    const result = extractClass('principle', 'heart-and-soul/vision.md', text);
+    expect(result.kind).toBe('items');
+    if (result.kind === 'items') expect(result.items[0]?.statement).toBe('**Fail closed** — silence is Unknown.\nThe declaration continues here.\nAnd remains complete.');
+  });
+
+  it.each([
+    ['success-criterion' as const, 'heart-and-soul/vision.md', VISION.replace('- Every promise is visible.', '- Every promise is visible.\n  Including its wrapped qualification.'), 'Every promise is visible.\nIncluding its wrapped qualification.'],
+    ['catalog-entry' as const, 'heart-and-soul/v1.md', V1.replace('- **Mail** - mail module', '- **Mail** - mail module\n  with its complete declared boundary.'), '**Mail** - mail module\nwith its complete declared boundary.'],
+    ['principle' as const, 'heart-and-soul/vision.md', VISION.replace('1. **Fail closed** — silence is Unknown.', '1. **Fail\n   closed** — silence is Unknown.'), '**Fail\nclosed** — silence is Unknown.'],
+    ['catalog-entry' as const, 'heart-and-soul/v1.md', V1.replace('- **Mail** - mail module', '- **Mail**\n  - mail module'), '**Mail**\n- mail module'],
+  ])('preserves multiline %s declarations without minting a second item', (cls, path, text, expected) => {
+    const result = extractClass(cls, path, text);
+    expect(result.kind).toBe('items');
+    if (result.kind === 'items') expect(result.items.find((item) => item.statement === expected)).toBeDefined();
+  });
 });
 
 // ---------------------------------------------------------------------

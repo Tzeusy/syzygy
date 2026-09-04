@@ -401,7 +401,9 @@ export function denominatorText(aggregate: Pick<ProjectShapeClassAggregate, 'den
 /** The aggregate's statement: which admitted sources declare this class —
  * a fact about the sources, not a count wall or a status. */
 function classStatement(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: ExtractionClass): string {
+  const aggregate = shape.classes[cls];
   const declaring = shape.sources.filter((source) => source.extractionClasses.includes(cls)).map((source) => source.path);
+  if (declaring.length === 0 && aggregate.denominator.kind === 'unknown') return 'Source discovery is incomplete for this class.';
   return declaring.length === 0 ? 'No admitted source declares this class.' : `Declared by ${declaring.join(', ')}.`;
 }
 

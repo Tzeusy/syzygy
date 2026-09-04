@@ -444,7 +444,11 @@ describe('an admitted, fully readable fixture', () => {
       });
       expect(source.itemDenominator.kind).toBe('known');
       expect(source.claim.epistemic).toEqual({ label: 'Observed', tier: 'report-fact', freshness: 'fresh' });
-      expect(source.claim.support).toEqual([{ path: source.path, sourceIdentity: source.identity, contentDigest: sha256(BASE_TEXTS[source.path] as string) }]);
+      expect(source.claim.support).toEqual([{
+        path: source.path,
+        sourceIdentity: source.identity,
+        ...(source.rule === 'baseline-spec-tree' ? {} : { contentDigest: sha256(BASE_TEXTS[source.path] as string) }),
+      }]);
     }
     const vision = shape.sources.find((s) => s.path === 'about/heart-and-soul/vision.md');
     expect(vision?.itemDenominator).toEqual({ kind: 'known', value: 7 });
@@ -574,6 +578,39 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
     for (const entry of allClaims(shape)) isValidClaim(entry);
   });
 
+  it('an undiscovered Heart and Soul root poisons all dependent denominators and account statements without claiming absence', () => {
+    const texts = { ...BASE_TEXTS, 'about/README.md': (BASE_TEXTS['about/README.md'] as string).replace('[Heart and Soul](heart-and-soul/) · ', '') };
+    const shape = observed({ texts });
+    for (const cls of ['project-account-section', 'principle', 'success-criterion', 'catalog-entry'] as const) {
+      expect(shape.classes[cls].denominator).toEqual({ kind: 'unknown', reasons: ['source-uncaptured-or-unreachable'] });
+      expect(shape.classes[cls].claim.epistemic.label).toBe('Unknown');
+      expect(shape.classes[cls].declared).toBe(0);
+    }
+    expect(shape.projectAccount.every((entry) => entry.claim.epistemic.label === 'Unknown')).toBe(true);
+    expect(shape.projectAccount.map((entry) => 'reasons' in entry.claim.epistemic ? entry.claim.epistemic.reasons.primary : '')).toEqual(Array(6).fill('source-uncaptured-or-unreachable'));
+    expect(shape.claim.epistemic.label).toBe('Unknown');
+  });
+
+  it('a missing pillar index poisons its dependent class even when no class source entered the manifest', () => {
+    const shape = observed({ texts: BASE_TEXTS, dropFromTree: ['about/legends-and-lore/README.md'] });
+    expect(shape.classes['design-contract']).toMatchObject({ declared: 0, discoveryUnknown: 1, denominator: { kind: 'unknown', reasons: ['source-uncaptured-or-unreachable'] } });
+    expect(shape.classes['design-contract'].claim.epistemic.label).toBe('Unknown');
+  });
+
+  it('derives baseline identities from exact tree paths without opening or admitting their bodies', () => {
+    const sentinel = `token AKIA${'Z'.repeat(16)}`;
+    const texts = { ...BASE_TEXTS, 'openspec/specs/alpha/spec.md': sentinel };
+    const { shape, calls, entries } = build({ texts });
+    expect(shape.kind).toBe('observed');
+    if (shape.kind !== 'observed') return;
+    const baselineOid = entries.find((entry) => entry.path === 'openspec/specs/alpha/spec.md')?.objectId;
+    expect(calls).not.toContainEqual(['cat-file', 'blob', baselineOid]);
+    expect(shape.items.find((item) => item.class === 'baseline-spec' && item.key === 'alpha')?.claim.epistemic.label).toBe('Observed');
+    expect(shape.classes['baseline-spec'].denominator).toEqual({ kind: 'known', value: 1 });
+    expect(shape.sources.find((source) => source.path === 'openspec/specs/alpha/spec.md')?.record).toMatchObject({ outcome: 'classified', basis: 'path-only', detectorsRun: 0 });
+    expect(JSON.stringify(shape)).not.toContain(sentinel);
+  });
+
   it('a named-but-absent source stays counted as Unknown and its account statement is Unknown with the same reason', () => {
     const shape = observed({ texts: BASE_TEXTS, dropFromTree: ['about/heart-and-soul/architecture.md'] });
     expect(shape.sources.map((s) => s.path).sort()).toEqual([...POPULATION]);
@@ -602,12 +639,11 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
     };
     const shape = observed({ texts, dropFromTree: ['about/heart-and-soul/architecture.md', 'about/heart-and-soul/v1.md'] });
     expect(shape.sources.length).toBe(14);
-    expect(shape.exclusions.map((e) => e.repositoryRelativePath)).toEqual(['about/craft-and-care/README.md', 'openspec/specs/alpha/spec.md']);
+    expect(shape.exclusions.map((e) => e.repositoryRelativePath)).toEqual(['about/craft-and-care/README.md']);
     expect(shape.sources.filter((s) => s.claim.epistemic.label === 'Unknown').map((s) => [s.path, (s.claim.epistemic as { reasons: { primary: string } }).reasons.primary])).toEqual([
       ['about/craft-and-care/README.md', 'excluded-content'],
       ['about/heart-and-soul/architecture.md', 'source-uncaptured-or-unreachable'],
       ['about/heart-and-soul/v1.md', 'source-uncaptured-or-unreachable'],
-      ['openspec/specs/alpha/spec.md', 'excluded-content'],
     ]);
     expect(shape.claim.epistemic).toEqual({
       label: 'Unknown',
@@ -634,6 +670,15 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
     expect(components?.claim.epistemic.label).toBe('Unknown');
     expect(shape.classes['topology-component'].denominator.kind).toBe('unknown');
     expect(shape.sources.length).toBe(15);
+    expect(shape.exclusions.map((entry) => entry.repositoryRelativePath)).toContain('about/lay-and-land/components.md');
+    expect(shape.counts.classification).toEqual({
+      sources: 15,
+      classified: 14,
+      excluded: 1,
+      unavailable: 0,
+      byRedactionClass: { 'excluded-artifact': 0, 'unclassifiable-excluded': 1 },
+    });
+    expect(shape.counts.classification.classified + shape.counts.classification.excluded + shape.counts.classification.unavailable).toBe(shape.counts.sources);
   });
 });
 

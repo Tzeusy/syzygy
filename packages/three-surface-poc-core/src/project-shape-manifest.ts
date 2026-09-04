@@ -47,6 +47,14 @@ export const PWB_INDEX_DEPTH = 3;
 export const PILLAR_KEYS = ['heart-and-soul', 'legends-and-lore', 'spec-and-spine', 'lay-and-land', 'craft-and-care'] as const;
 export type PillarKey = (typeof PILLAR_KEYS)[number];
 
+const PILLAR_LABELS: Readonly<Record<PillarKey, string>> = {
+  'heart-and-soul': 'Heart and Soul',
+  'legends-and-lore': 'Legends and Lore',
+  'spec-and-spine': 'Spec and Spine',
+  'lay-and-land': 'Lay and Land',
+  'craft-and-care': 'Craft and Care',
+};
+
 export const EXTRACTION_CLASSES = [
   'project-account-section',
   'principle',
@@ -162,7 +170,7 @@ export type DeriveManifestResult =
 // line start. Images (`![...]`) are not links. Fragments and queries are
 // dropped. Nothing else in an index names a file.
 
-function stripFences(text: string): readonly string[] {
+function stripFences(text: string, stripInlineCode = true): readonly string[] {
   const kept: string[] = [];
   let fence: string | undefined;
   for (const line of text.split('\n')) {
@@ -177,7 +185,7 @@ function stripFences(text: string): readonly string[] {
       }
       continue;
     }
-    kept.push(line.replace(/`[^`]*`/g, ''));
+    kept.push(stripInlineCode ? line.replace(/`[^`]*`/g, '') : line);
   }
   return kept;
 }
@@ -255,6 +263,52 @@ function isPillarKey(value: string): value is PillarKey {
   return (PILLAR_KEYS as readonly string[]).includes(value);
 }
 
+function pillarKeyForLabel(value: string): PillarKey | undefined {
+  const unwrapped = value.trim().replace(/^\*\*(.*?)\*\*$/, '$1').replace(/^\[(.*?)\]\([^)]*\)$/, '$1');
+  return PILLAR_KEYS.find((key) => PILLAR_LABELS[key] === unwrapped);
+}
+
+function pipeCells(line: string): readonly string[] {
+  const cells = line.split('|').map((cell) => cell.trim());
+  if (cells[0] === '') cells.shift();
+  if (cells[cells.length - 1] === '') cells.pop();
+  return cells;
+}
+
+// Butlers' root index owns a five-row table whose Directory column is the
+// declaration of each pillar root. This closed parser reads only those rows;
+// links elsewhere in the narrative remain non-recursive. Directory values are
+// repository-relative code spans (not relative Markdown links), including the
+// real Spec and Spine mapping to `openspec/`.
+export function rootIndexPillarRoots(text: string): ReadonlyMap<PillarKey, readonly string[]> {
+  const roots = new Map<PillarKey, string[]>();
+  const lines = stripFences(text, false);
+  for (let index = 0; index + 1 < lines.length; index += 1) {
+    const headerLine = lines[index] as string;
+    const delimiter = lines[index + 1] as string;
+    if (!headerLine.trimStart().startsWith('|') || !/^\|?[ \t]*:?-+:?[ \t]*(\|[ \t]*:?-+:?[ \t]*)+\|?$/.test(delimiter.trim())) continue;
+    const header = pipeCells(headerLine);
+    const pillarColumn = header.indexOf('Pillar');
+    const directoryColumn = header.indexOf('Directory');
+    if (pillarColumn < 0 || directoryColumn < 0) continue;
+    for (let rowIndex = index + 2; rowIndex < lines.length; rowIndex += 1) {
+      const row = lines[rowIndex] as string;
+      if (!row.trimStart().startsWith('|')) break;
+      const cells = pipeCells(row);
+      if (cells.length !== header.length) continue;
+      const key = pillarKeyForLabel(cells[pillarColumn] ?? '');
+      const directory = /^`([^`]+\/)`$/.exec(cells[directoryColumn] ?? '')?.[1];
+      const normalized = directory === undefined ? undefined : normalizeRepositoryPath(directory.slice(0, -1));
+      if (key === undefined || normalized === undefined) continue;
+      const known = roots.get(key);
+      if (known === undefined) roots.set(key, [normalized]);
+      else if (!known.includes(normalized)) known.push(normalized);
+    }
+    break;
+  }
+  return roots;
+}
+
 // ---------------------------------------------------------------------
 // Canonical JSON and digest.
 
@@ -330,6 +384,9 @@ export function deriveProjectShapeManifest(input: DeriveManifestInput): DeriveMa
     rootIndex = { path: PWB_ROOT_INDEX_PATH, state: 'unavailable', reason: rootRead.reason, anchor: rootAnchor };
   } else {
     rootIndex = { path: PWB_ROOT_INDEX_PATH, state: 'read', anchor: rootAnchor };
+    for (const [key, declaredRoots] of rootIndexPillarRoots(rootRead.text)) {
+      rootsByKey.set(key, { root: declaredRoots[0] as string, ambiguous: declaredRoots.length > 1 });
+    }
     for (const target of indexLinkTargets(rootRead.text)) {
       const resolved = resolveLink(PWB_ROOT_INDEX_PATH, target);
       if (resolved === undefined || resolved.kind === 'ignored') continue;

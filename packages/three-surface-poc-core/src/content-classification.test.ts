@@ -454,6 +454,7 @@ describe('PWB-REQ-003 — classifySource step by step', () => {
       policyId: 'polaris-butlers-project-shape-secrets',
       policyVersion: '1.0.0-candidate.4',
       detectorsRun: 4,
+      basis: 'body',
     });
     const excluded = parseFailureExclusion(policy, classified.record);
     expect(excluded).toEqual({

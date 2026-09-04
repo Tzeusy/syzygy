@@ -284,6 +284,20 @@ describe('PWB-REQ-002 — the source population never shrinks and every class re
     }
     expect(CONTRADICTED_REASON).toBe('contradicted-pending-adjudication');
   });
+
+  it('an upstream discovery uncertainty makes only its dependent class denominator Unknown', () => {
+    const c = buildProjectShapeCoverage({
+      sources: BASE,
+      discoveryUncertainties: [{ classes: ['baseline-spec'], unknown: UNREACHABLE }],
+    });
+    expect(c.classes['baseline-spec']).toMatchObject({
+      declared: 0,
+      discoveryUnknown: 1,
+      denominator: { kind: 'unknown', reasons: ['source-uncaptured-or-unreachable'] },
+    });
+    expect(c.classes['roster-identity'].denominator).toEqual({ kind: 'known', value: 9 });
+    expect(fact(c, countFact('baseline-spec')).state).toBe('unknown');
+  });
 });
 
 describe('PWB-REQ-004 — two declarations disagree about one fact', () => {

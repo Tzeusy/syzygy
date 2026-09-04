@@ -269,7 +269,6 @@ describe('Polaris copy roles (PWB-REQ-012)', () => {
       'sentence.no-intent-declared',
       'sentence.separate-futures',
       'sentence.missing-statement',
-      'sentence.no-body-read',
     ]);
     for (const row of POLARIS_COPY) {
       const present = rendered.some((entry) => entry.role === row.role && (entry.text === row.text || entry.text.startsWith(row.text) || entry.text.includes(row.text)));

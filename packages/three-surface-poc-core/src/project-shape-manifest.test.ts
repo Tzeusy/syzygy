@@ -20,6 +20,7 @@ import {
   deriveProjectShapeManifest,
   indexLinkTargets,
   manifestIdentity,
+  rootIndexPillarRoots,
   type ManifestSource,
   type ProjectShapeSourceManifest,
   type SeedRead,
@@ -165,6 +166,59 @@ const EXPECTED_SOURCES: readonly ManifestSource[] = [
 const EXPECTED_PHASE_A_READS = [ROOT, `${HS}/README.md`, `${LL}/README.md`, `${SS}/README.md`, `${LA}/README.md`, `${CC}/README.md`];
 
 describe('deriveProjectShapeManifest — complete population at one revision', () => {
+  it('recognizes the real-shaped five-row root table and all seven Heart and Soul sources', () => {
+    const rootText = [
+      '| Pillar | Purpose | Directory | Start here |',
+      '| --- | --- | --- | --- |',
+      '| Heart and Soul | why | `about/heart-and-soul/` | [Vision](heart-and-soul/vision.md) |',
+      '| Legends and Lore | design | `about/legends-and-lore/` | [Index](legends-and-lore/README.md) |',
+      '| Spec and Spine | behavior | `openspec/` | OpenSpec |',
+      '| Lay and Land | map | `about/lay-and-land/` | [Index](lay-and-land/README.md) |',
+      '| Craft and Care | quality | `about/craft-and-care/` | [Index](craft-and-care/README.md) |',
+      '',
+    ].join('\n');
+    const heartIndex = [
+      '[Vision](vision.md)',
+      '[Architecture](architecture.md)',
+      '[Design language](design-language.md)',
+      '[Development](development.md)',
+      '[Security](security.md)',
+      '[V1](v1.md)',
+      '',
+    ].join('\n');
+    const extra = [blob(`${HS}/design-language.md`, 60), blob(`${HS}/development.md`, 61), blob(`${HS}/security.md`, 62)];
+    const realTree = [...TREE.filter((entry) => entry.path !== `${SS}/README.md`), ...extra];
+    const { manifest } = derive({
+      tree: realTree,
+      rootText,
+      overrides: { [`${HS}/README.md`]: { kind: 'text', text: heartIndex } },
+    });
+    expect(manifest.pillars.map((pillar) => [pillar.key, pillar.root])).toEqual([
+      ['heart-and-soul', HS],
+      ['legends-and-lore', LL],
+      ['spec-and-spine', 'openspec'],
+      ['lay-and-land', LA],
+      ['craft-and-care', CC],
+    ]);
+    expect(manifest.sources.filter((source) => source.path.startsWith(`${HS}/`)).map((source) => source.path)).toEqual([
+      `${HS}/README.md`,
+      `${HS}/architecture.md`,
+      `${HS}/design-language.md`,
+      `${HS}/development.md`,
+      `${HS}/security.md`,
+      `${HS}/v1.md`,
+      `${HS}/vision.md`,
+    ]);
+    expect(manifest.pillars[2]).toMatchObject({ key: 'spec-and-spine', state: 'unknown', reason: 'index-missing-at-revision', root: 'openspec' });
+  });
+
+  it('takes roots only from the exact Pillar and Directory table columns', () => {
+    const prose = '| Name | Location |\n| --- | --- |\n| Heart and Soul | `somewhere/heart-and-soul/` |\n';
+    expect([...rootIndexPillarRoots(prose)]).toEqual([]);
+    const malformed = '| Pillar | Directory |\n| --- | --- |\n| Heart and Soul | about/heart-and-soul/ |\n';
+    expect([...rootIndexPillarRoots(malformed)]).toEqual([]);
+  });
+
   it('emits exactly the hand-typed source set, sorted, each anchored at the one revision', () => {
     const { manifest } = derive();
     expect(manifest.sources).toEqual(EXPECTED_SOURCES);

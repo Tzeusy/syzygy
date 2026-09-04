@@ -7,8 +7,9 @@
 // They never produce HTML, never resolve links, never follow anything.
 //
 // Identity is `(item class, declared key)`; the repository-relative path and
-// line are anchor state. Keys and statements are NFC-normalized and nothing
-// else: no case folding, stemming or punctuation rewriting.
+// line are anchor state. Keys and statements are NFC-normalized; line-wrapped
+// label whitespace is collapsed to one semantic space. There is no case
+// folding, stemming or punctuation rewriting.
 //
 // Any grammar failure — a missing heading, a malformed row/list/TOML, a
 // duplicate key within the source, an ambiguous leading label — makes the
@@ -174,7 +175,7 @@ function bodyText(doc: Doc, range: Range): string {
 
 interface ListItem {
   readonly ordered: boolean;
-  readonly text: string; // NFC, the item's own first line after the marker
+  readonly text: string; // NFC, the complete inert item including continuations
   readonly line: number; // 1-based
 }
 
@@ -182,8 +183,9 @@ const ORDERED_ITEM = /^(\d+)[.)][ \t]+(.*)$/;
 const UNORDERED_ITEM = /^[-*+][ \t]+(.*)$/;
 
 // Top-level list items in a range. The item patterns are anchored at column
-// 0, so indented continuations and nested lists mint nothing; paragraphs
-// between items are ignored.
+// 0, so indented continuations and nested lists mint nothing of their own.
+// Indented continuation lines remain part of the declaration instead of
+// truncating a wrapped project statement to its marker line.
 function topLevelListItems(doc: Doc, range: Range): readonly ListItem[] {
   const items: ListItem[] = [];
   for (let i = range.start; i < range.end; i += 1) {
@@ -191,11 +193,39 @@ function topLevelListItems(doc: Doc, range: Range): readonly ListItem[] {
     const line = doc.lines[i] as string;
     const ordered = ORDERED_ITEM.exec(line);
     if (ordered) {
-      items.push({ ordered: true, text: nfc((ordered[2] as string).trim()), line: i + 1 });
+      const continuation: string[] = [];
+      let cursor = i + 1;
+      while (cursor < range.end && !doc.fenced[cursor]) {
+        const next = doc.lines[cursor] as string;
+        if (ORDERED_ITEM.test(next) || UNORDERED_ITEM.test(next)) break;
+        if (next.trim() === '' || /^[ \t]+\S/.test(next)) {
+          continuation.push(next.trim());
+          cursor += 1;
+          continue;
+        }
+        break;
+      }
+      items.push({ ordered: true, text: nfc([(ordered[2] as string).trim(), ...continuation].join('\n').trim()), line: i + 1 });
+      i = cursor - 1;
       continue;
     }
     const unordered = UNORDERED_ITEM.exec(line);
-    if (unordered) items.push({ ordered: false, text: nfc((unordered[1] as string).trim()), line: i + 1 });
+    if (unordered) {
+      const continuation: string[] = [];
+      let cursor = i + 1;
+      while (cursor < range.end && !doc.fenced[cursor]) {
+        const next = doc.lines[cursor] as string;
+        if (ORDERED_ITEM.test(next) || UNORDERED_ITEM.test(next)) break;
+        if (next.trim() === '' || /^[ \t]+\S/.test(next)) {
+          continuation.push(next.trim());
+          cursor += 1;
+          continue;
+        }
+        break;
+      }
+      items.push({ ordered: false, text: nfc([(unordered[1] as string).trim(), ...continuation].join('\n').trim()), line: i + 1 });
+      i = cursor - 1;
+    }
   }
   return items;
 }
@@ -257,10 +287,11 @@ function tablesOf(doc: Doc, range: Range): readonly Table[] {
   return tables;
 }
 
-const LEADING_BOLD = /^(?:\*\*([^*\n]+?)\*\*|__([^_\n]+?)__)/;
+const LEADING_BOLD = /^(?:\*\*([\s\S]+?)\*\*|__([\s\S]+?)__)/;
 const LEADING_CODE = /^`([^`\n]+?)`/;
 const LINK = /^\[([^\]]*)\]\(([^)\s]*)(?:[ \t]+"[^"]*")?\)$/;
-const DASH_AFTER_LABEL = /^[ \t]*[-–—]/;
+const DASH_AFTER_LABEL = /^\s*[-–—]/;
+const declarationKey = (value: string): string => nfc(value.trim().replace(/\s+/g, ' '));
 
 // ---------------------------------------------------------------------
 // Failure helpers.
@@ -352,7 +383,7 @@ export function extractPrinciples(path: string, doc: Doc): ClassExtraction {
     const bold = LEADING_BOLD.exec(item.text);
     const key = bold?.[1] ?? bold?.[2];
     if (key === undefined || key.trim().length === 0) return failed('ambiguous-leading-label', cls, item.line);
-    out.push({ class: cls, key: nfc(key.trim()), path, line: item.line, statement: item.text });
+    out.push({ class: cls, key: declarationKey(key), path, line: item.line, statement: item.text });
   }
   return items(cls, out);
 }
@@ -387,7 +418,7 @@ export function extractCatalogEntries(path: string, doc: Doc): ClassExtraction {
       const label = bold ? (bold[1] ?? bold[2]) : code?.[1];
       if (match === null || match === undefined || label === undefined || label.trim().length === 0) return failed('ambiguous-leading-label', cls, item.line);
       if (!DASH_AFTER_LABEL.test(item.text.slice(match[0].length))) return failed('ambiguous-leading-label', cls, item.line);
-      out.push({ class: cls, key: nfc(label.trim()), path, line: item.line, statement: item.text, context: headingText });
+      out.push({ class: cls, key: declarationKey(label), path, line: item.line, statement: item.text, context: headingText });
     }
   }
   return items(cls, out);

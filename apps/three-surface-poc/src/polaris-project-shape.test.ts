@@ -8,6 +8,7 @@ import { DEEP_DIVE_MARKERS } from './test-deep-dive-markers.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import {
   ADMITTING_AUTHORITY,
+  PROJECT_SHAPE_FIXTURE_TEXTS,
   PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET,
   REJECTING_AUTHORITY,
   SECRET_SENTINEL,
@@ -137,6 +138,18 @@ describe('Polaris project-level sequence (PWB-REQ-010)', () => {
       expect(slice).toContain('The body-read gate refused');
       expect(slice).toContain('RFC3-16(a)');
     }
+  });
+
+  it('does not claim a complete or absent catalog when root discovery is Unknown', () => {
+    const texts = {
+      ...PROJECT_SHAPE_FIXTURE_TEXTS,
+      'about/README.md': (PROJECT_SHAPE_FIXTURE_TEXTS['about/README.md'] as string).replace('[Heart and Soul](heart-and-soul/) · ', ''),
+    };
+    const { model } = observedModel(texts);
+    const html = renderPolarisPage(model);
+    expect(html).toContain('Source discovery is incomplete for this class.');
+    expect(html).not.toContain('complete catalog above');
+    expect(html).toContain('completeness follows its disclosed denominator');
   });
 });
 
