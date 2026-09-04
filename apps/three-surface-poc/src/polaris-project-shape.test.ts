@@ -177,7 +177,7 @@ describe('Polaris progressive depth (PWB-REQ-011; RFC7-16)', () => {
     const { model, shape } = observedModel();
     const html = renderPolarisPage(model);
 
-    const anchors = [...html.matchAll(/<a href="#(polaris-source-[^"]+)"><cite data-parity-field="shape-anchor">([^<]+)<\/cite><\/a>/g)];
+    const anchors = [...html.matchAll(/<a href="#(polaris-source-[^"]+)"><cite data-parity-field="shape-anchor"[^>]*>([^<]+)<\/cite><\/a>/g)];
     expect(anchors.length).toBeGreaterThan(0);
     const sourcePaths = new Set(shape.sources.map((source) => source.path));
     let resolved = 0;
@@ -195,7 +195,7 @@ describe('Polaris progressive depth (PWB-REQ-011; RFC7-16)', () => {
       expect(leaf.claim.support.length).toBeGreaterThan(0);
       const first = leaf.claim.support[0] as { path: string; line?: number };
       const where = first.line === undefined ? first.path : `${first.path}:${first.line}`;
-      expect(html).toContain(`<cite data-parity-field="shape-anchor">${where}</cite>`);
+      expect(html).toMatch(new RegExp(`<cite data-parity-field="shape-anchor"[^>]*>${where.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</cite>`));
     }
 
     // Every source row exposes its exact digest when a body was read.

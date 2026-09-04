@@ -135,7 +135,7 @@ describe('Polaris', () => {
         expect(start).toBeGreaterThan(detailIndex);
         expect(start).toBeLessThan(evidenceIndex);
         const section = match?.[1] ?? '';
-        const sources = [...section.matchAll(/data-parity-field="provenance-source">([^<]+)</g)].map((m) => m[1]);
+        const sources = [...section.matchAll(/data-parity-field="provenance-source"[^>]*>([^<]+)</g)].map((m) => m[1]);
         const revisions = [...section.matchAll(/data-parity-field="provenance-revision">([^<]+)</g)].map((m) => m[1]);
         if (entity.epistemic.label === 'Observed') {
           expect(section).toContain(`data-claim-provenance="${entity.id}"`);

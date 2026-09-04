@@ -7,6 +7,8 @@
  * rows — their carrying element still declares the role, and the oracle in
  * `polaris-copy.test.ts` sweeps the rendered text, not this table.
  */
+import { claimRoleAttrs, type NarrativeClaimRole } from './polaris-narrative.js';
+
 export const COPY_ROLES = ['project-fact', 'epistemic-disclosure', 'action-label', 'scope-instruction'] as const;
 export type CopyRole = (typeof COPY_ROLES)[number];
 
@@ -120,8 +122,18 @@ export function copyText(id: PolarisCopyId): string {
 }
 
 /** The attribute the human output exposes the role through. */
-export function roleAttr(role: CopyRole): string {
-  return ` data-copy-role="${role}"`;
+/** Default claim role per copy role (PWB-REQ-014): disclosures are
+ * epistemic claims; everything else is non-normative framing unless a
+ * renderer marks the unit as an anchored project fact. */
+export const DEFAULT_CLAIM_ROLE: Readonly<Record<CopyRole, NarrativeClaimRole>> = {
+  'project-fact': 'non-normative-framing',
+  'epistemic-disclosure': 'epistemic-claim',
+  'action-label': 'non-normative-framing',
+  'scope-instruction': 'non-normative-framing',
+};
+
+export function roleAttr(role: CopyRole, claimRole: NarrativeClaimRole = DEFAULT_CLAIM_ROLE[role]): string {
+  return ` data-copy-role="${role}"${claimRoleAttrs(claimRole)}`;
 }
 
 /** Attribute for the element carrying a table row: its role. */

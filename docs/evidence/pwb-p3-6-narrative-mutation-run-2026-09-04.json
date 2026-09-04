@@ -1,0 +1,105 @@
+{
+  "date": "2026-09-04",
+  "subjects": {
+    "apps/three-surface-poc/src/polaris.ts": "e5367575adb5ec9db5358d1fb58144dec0efe630534752c7b08f389c3a1e5674",
+    "apps/three-surface-poc/src/polaris-narrative.ts": "0b0733ef410eb1791eaa3698c9db75a8c57bede106a9fdd0df68a4f133212e0b",
+    "apps/three-surface-poc/src/polaris-copy.ts": "f6ab0f2a6a8bf9607a81bc72d0fc03e1cebc23be2f707c225f860cafdc7c15e5",
+    "apps/three-surface-poc/src/page-shell.ts": "5fb5a4cdd2be27a515833911102232c9f5e686c37e6c6dfbf82776d849fc39fd"
+  },
+  "tests": [
+    "apps/three-surface-poc/src/polaris-narrative.test.ts",
+    "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+    "apps/three-surface-poc/src/polaris-copy.test.ts"
+  ],
+  "results": [
+    {
+      "mutation": "drop-non-citable-attr",
+      "file": "apps/three-surface-poc/src/polaris-narrative.ts",
+      "killed": true
+    },
+    {
+      "mutation": "drop-presentation-attr",
+      "file": "apps/three-surface-poc/src/polaris-narrative.ts",
+      "killed": true
+    },
+    {
+      "mutation": "unclassified-shell-unit",
+      "file": "apps/three-surface-poc/src/page-shell.ts",
+      "killed": true
+    },
+    {
+      "mutation": "two-roles-on-one-unit",
+      "file": "apps/three-surface-poc/src/polaris-copy.ts",
+      "killed": true
+    },
+    {
+      "mutation": "anchored-without-provenance",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "note": "re-run with corrected mutation / registry seam test"
+    },
+    {
+      "mutation": "drop-used-anchor-uncovered",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true
+    },
+    {
+      "mutation": "surplus-anchor",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true
+    },
+    {
+      "mutation": "open-target-class",
+      "file": "apps/three-surface-poc/src/polaris-narrative.ts",
+      "killed": true
+    },
+    {
+      "mutation": "path-as-identity",
+      "file": "apps/three-surface-poc/src/polaris-narrative.ts",
+      "killed": true
+    },
+    {
+      "mutation": "anchor-not-revision-bound",
+      "file": "apps/three-surface-poc/src/polaris-narrative.ts",
+      "killed": true
+    },
+    {
+      "mutation": "rewrite-captured-on-later-read",
+      "file": "apps/three-surface-poc/src/polaris-narrative.ts",
+      "killed": true,
+      "note": "re-run with corrected mutation / registry seam test"
+    },
+    {
+      "mutation": "kernel-claim-machine-type",
+      "file": "apps/three-surface-poc/src/polaris-narrative.ts",
+      "killed": true
+    },
+    {
+      "mutation": "view-state-into-truth",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true
+    },
+    {
+      "mutation": "drop-captured-state-attr",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true
+    },
+    {
+      "mutation": "cite-polaris-as-anchor",
+      "file": "apps/three-surface-poc/src/polaris-narrative.ts",
+      "killed": true
+    },
+    {
+      "mutation": "drop-deep-freeze",
+      "file": "apps/three-surface-poc/src/polaris-narrative.ts",
+      "killed": true
+    },
+    {
+      "mutation": "adopt-caller-supports",
+      "file": "apps/three-surface-poc/src/polaris-narrative.ts",
+      "killed": true
+    }
+  ],
+  "killed": 17,
+  "total": 17
+}

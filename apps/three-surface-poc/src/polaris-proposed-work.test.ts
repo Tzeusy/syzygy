@@ -42,7 +42,10 @@ function modelFor(variant: Variant): PocModel {
   }
 }
 
-function slices(html: string): { projectLevel: string; detail: string; evidence: string } {
+function slices(page: string): { projectLevel: string; detail: string; evidence: string } {
+  // The PWB-REQ-014 machine form (an application/json script) is not
+  // rendered narrative; it names every block on the page and is excluded here.
+  const html = page.replace(/<script type="application\/json"[^>]*>[\s\S]*?<\/script>/g, '');
   const main = html.indexOf('<main');
   const detailStart = html.indexOf('data-polaris-group="capability-detail"');
   const evidenceStart = html.indexOf('data-polaris-group="evidence-and-gaps"');

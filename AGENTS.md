@@ -761,6 +761,16 @@ can be authorized.
   `maturity`, `trend`, `on track`, `at risk` and percentages. Class-level
   Unknown/secondary reasons are unreachable via fixtures, so
   `denominatorText`/`reasonCountsBlock` are exported and tested directly.
+- Task 3.6: `roleAttr(copyRole, claimRole?)` now emits `data-claim-role`,
+  `data-presentation-artifact` and `data-non-citable` on every copy-role
+  element (page-shell/design-tokens carry the literals). An anchored project
+  fact must go through `anchoredBlock`/`shapeClaimBlock` in `polaris.ts` so
+  the `NarrativeRegistry` (module state for one synchronous render) records
+  its claims and anchors and the `<cite>` gets `anchorAttrs`. The oracle in
+  `polaris-narrative.test.ts` re-derives every block's anchor set from the
+  model — a new anchored site needs its rule added there too, or covering
+  fails. Never render `data-claim-provenance` outside an anchored block, and
+  never put narrative/anchor/view fields on `PocModel`.
 
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 

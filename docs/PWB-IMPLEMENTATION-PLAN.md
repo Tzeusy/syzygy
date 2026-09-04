@@ -419,6 +419,42 @@ seam. Rule-6 evidence:
 `docs/evidence/pwb-p3-5-tuple-mutation-run-2026-09-04.json` (10/10 killed,
 digest-verified restore).
 
+**P3.6 note (task 3.6, syzygy-1z3.14, 2026-09-04).** Every owner-visible
+narrative unit on Polaris (every element carrying a copy role, shell chrome
+included) now carries exactly one claim role — `anchored-project-fact`,
+`non-normative-framing` or `epistemic-claim` — plus `data-presentation-artifact`
+and `data-non-citable`. Anchored blocks are registered during the render by
+`apps/three-surface-poc/src/polaris-narrative.ts` (`NarrativeRegistry`): a
+block names its claims and a deduplicated anchor set, each anchor typed by the
+closed class set (doctrine, contract, requirement, decision, evidence, work),
+bound to a revision, carrying a durable target identity (the registry's
+git-tree-entry identity, a content digest, a tree or Dolt revision — never a
+bare path, label or coordinate), the claims it supports, and the target's
+captured label/tier/reason, cloned and deep-frozen at registration. Anchor
+rules: entity/relationship provenance → class by provenance kind; shape claims
+→ their support anchors as evidence (the baseline spec beside the proposal is
+cited as requirement); the whole shape → the one evaluated tree; code
+structure → the tree; work items → the Dolt revision; the proposal → its
+proposal (work) and delta (requirement) digests. The machine form is an
+`application/json` script placed before the first group (`polaris-narrative`),
+distinct from the kernel claim tuple and from `/api/poc`, which is unchanged by
+construction. Personal view state (`PolarisViewState.openCoverageCounts`) is a
+render parameter that only toggles `<details open>`.
+`polaris-narrative.test.ts` is the oracle (hand-typed roles and classes, an
+independent claim-to-anchor re-derivation from the model JSON checking exact
+covering and no surplus, ≤6 anchors per block, rendered cite per anchor,
+captured-state equality, frozen registration, view state outside truth).
+`polaris-authority-sweep.test.ts` is the downstream sweep over three
+populations with denominators: every machine reference on the model and its
+anchors; every OpenSpec warrant entry (all in hand-typed id families;
+`POLARIS-DIR-*` entries are owner decisions); and every source/authority/
+provenance-shaped line in the governance, spec, code and docs trees — zero
+Polaris-surface targets. `[Unknown]` The Butlers-side reference population:
+no Butlers body read is lawful for that purpose, so the Butlers half of the
+sweep stays Unknown until a live run under the consented class provides it.
+Rule-6 evidence: `docs/evidence/pwb-p3-6-narrative-mutation-run-2026-09-04.json`
+(17/17 killed, digest-verified restore).
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a

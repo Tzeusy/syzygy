@@ -199,7 +199,7 @@ describe('Polaris copy roles (PWB-REQ-012)', () => {
     const headers = [...html.matchAll(/<header class="group"[^>]*>([\s\S]*?)<\/header>/g)].map((match) => (match[1] as string).trim());
     expect(headers.length).toBe(7);
     for (const header of headers) {
-      expect(header).toMatch(/^<h2 id="polaris-group-[a-z0-9-]+" data-copy-role="project-fact">[^<]+<\/h2>$/);
+      expect(header).toMatch(/^<h2 id="polaris-group-[a-z0-9-]+" data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>[^<]+<\/h2>$/);
     }
     expect(html).not.toContain('group-lede');
   });

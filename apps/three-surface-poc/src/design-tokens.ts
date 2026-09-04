@@ -160,9 +160,9 @@ export function legendHtml(escapeHtml: (value: string) => string): string {
     (entry) =>
       `<li><span class="epistemic ${entry.className}">${escapeHtml(entry.symbol)} ${escapeHtml(entry.label)}</span> ${escapeHtml(entry.description)}</li>`,
   ).join('');
-  return `<ul class="legend" aria-label="Epistemic encoding legend" data-copy-role="epistemic-disclosure">${items}</ul>`;
+  return `<ul class="legend" aria-label="Epistemic encoding legend" data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable>${items}</ul>`;
 }
 
 export function skipLinkHtml(targetId: string): string {
-  return `<a class="skip-link" href="#${targetId}" data-copy-role="action-label">Skip to main content</a>`;
+  return `<a class="skip-link" href="#${targetId}" data-copy-role="action-label" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>Skip to main content</a>`;
 }
