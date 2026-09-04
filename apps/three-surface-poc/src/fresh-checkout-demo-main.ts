@@ -128,17 +128,21 @@ async function fetchRoute(baseUrl: string, path: string, token?: string): Promis
   return { status: response.status, body: new Uint8Array(await response.arrayBuffer()), contentType: response.headers.get('content-type') ?? '' };
 }
 
-/** The claim ids the machine answer carries for the project shape. */
-function machineClaimIds(shape: ProjectShape): string[] {
-  const ids = [shape.claim.claimId];
-  if (shape.kind !== 'observed') return ids;
-  for (const source of shape.sources) ids.push(source.claim.claimId);
-  for (const item of shape.items) ids.push(item.claim.claimId);
-  for (const aggregate of Object.values(shape.classes)) ids.push(aggregate.claim.claimId);
-  for (const fact of shape.facts) ids.push(fact.claim.claimId);
-  for (const fact of shape.contradictions) ids.push(fact.claim.claimId);
-  for (const statement of shape.projectAccount) ids.push(statement.claim.claimId);
-  return ids;
+/** The claim ids the machine answer carries for the project shape, split
+ * into those Polaris presents as claim tuples and those it omits by design
+ * (the 4.3 parity oracle's rule: reconciled facts are folded into their
+ * account statements, and project-account-section items into the account
+ * itself — only contradictions render as their own claims). */
+function machineClaimIds(shape: ProjectShape): { readonly presented: string[]; readonly omittedByDesign: Record<string, number> } {
+  const presented = [shape.claim.claimId];
+  if (shape.kind !== 'observed') return { presented, omittedByDesign: {} };
+  for (const source of shape.sources) presented.push(source.claim.claimId);
+  const accountItems = shape.items.filter((item) => item.class === 'project-account-section');
+  for (const item of shape.items) if (item.class !== 'project-account-section') presented.push(item.claim.claimId);
+  for (const aggregate of Object.values(shape.classes)) presented.push(aggregate.claim.claimId);
+  for (const fact of shape.contradictions) presented.push(fact.claim.claimId);
+  for (const statement of shape.projectAccount) presented.push(statement.claim.claimId);
+  return { presented, omittedByDesign: { reconciledFacts: shape.facts.length, projectAccountSectionItems: accountItems.length } };
 }
 
 /** A state-only summary of the project shape: no act digests, no Butlers text. */
@@ -260,14 +264,16 @@ async function main(): Promise<number> {
     // Parity: Polaris claim tuples versus the machine answer's claim ids.
     const polarisHtml = new TextDecoder().decode((await fetchRoute(daemon.baseUrl, '/polaris')).body);
     const humanIds = Array.from(polarisHtml.matchAll(/data-claim-id="([^"]*)"/g), (match) => (match[1] as string).replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'));
-    const machineIds = machineClaimIds(model.projectShape);
+    const machine_ = machineClaimIds(model.projectShape);
+    const machineIds = machine_.presented;
     const humanSet = new Set(humanIds);
     const machineSet = new Set(machineIds);
     const parity = {
       humanClaimTuples: humanIds.length,
       humanDistinctClaimIds: humanSet.size,
-      machineClaimIds: machineIds.length,
+      machinePresentedClaimIds: machineIds.length,
       machineDistinctClaimIds: machineSet.size,
+      machineOmittedByDesign: machine_.omittedByDesign,
       machineIdsAbsentFromHuman: [...machineSet].filter((id) => !humanSet.has(id)).length,
       humanIdsAbsentFromMachine: [...humanSet].filter((id) => !machineSet.has(id)).length,
     };
