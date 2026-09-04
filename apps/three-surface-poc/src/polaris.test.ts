@@ -73,34 +73,33 @@ describe('Polaris', () => {
     }
   });
 
-  it('frames the reading with movements, an honest computed tally, and a relationships lede (C3-2)', () => {
+  it('opens with the project-level groups in the required order, before any capability claim (PWB-REQ-010)', () => {
     const model = buildFixtureModel(cleanups);
     const html = renderPolarisPage(model);
 
-    // Three movement headers, each anchored before its entity section.
-    for (const anchor of [
-      'project:butlers',
-      'code:identity-resolution',
-      'work:whatsapp-single-event-normalization',
-    ]) {
-      const movementIndex = html.indexOf(`data-polaris-movement="${anchor}"`);
-      const sectionIndex = html.indexOf(`data-polaris-section="${anchor}"`);
-      expect(movementIndex).toBeGreaterThan(-1);
-      expect(sectionIndex).toBeGreaterThan(movementIndex);
+    // Hand-typed oracle from task 3.1: never imported from the renderer.
+    const required = ['overview', 'boundaries', 'architecture', 'v1', 'catalog', 'capability-detail', 'evidence-and-gaps'];
+    const rendered = [...html.matchAll(/data-polaris-group="([^"]+)"/g)].map((match) => match[1]);
+    expect(rendered).toEqual(required);
+
+    // Every capability entity claim is rendered after the catalog group and
+    // before the evidence group; the tally of such claims equals the model's.
+    const catalogIndex = html.indexOf('data-polaris-group="catalog"');
+    const detailIndex = html.indexOf('data-polaris-group="capability-detail"');
+    const evidenceIndex = html.indexOf('data-polaris-group="evidence-and-gaps"');
+    let placed = 0;
+    for (const entity of model.entities) {
+      const index = html.indexOf(`data-polaris-section="${entity.id}"`);
+      if (index > detailIndex && index < evidenceIndex && detailIndex > catalogIndex) placed += 1;
     }
-    expect(html).toContain('data-polaris-movement="region:code-structure"');
+    expect(placed).toBe(model.entities.length);
 
-    // The framing tally is arithmetic over the shared model, recomputed
-    // here independently — a hand-edited number fails this.
-    const claims = [...model.entities, ...model.relationships];
-    const observed = claims.filter((claim) => claim.epistemic.label === 'Observed').length;
-    expect(html).toContain(
-      `Of the ${claims.length} entity and relationship claims it makes, ${observed} are Observed with citations and ${claims.length - observed} are disclosed Unknown.`,
-    );
-
-    // Connective lede inside the relationships section.
-    expect(html).toContain('class="relationships-lede"');
-    expect(html).toContain('never bridged by prose');
+    // The slice is labeled as one capability within the catalog, and the
+    // old capability-first framing is gone.
+    expect(html).toContain('data-polaris-capability-scope');
+    expect(html).toContain('one capability within the complete catalog');
+    expect(html).not.toContain('data-polaris-movement');
+    expect(html).not.toContain('data-polaris-framing');
   });
 
   it('mutation check: removing an entity from coverage would fail the sweep', () => {

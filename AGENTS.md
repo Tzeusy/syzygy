@@ -698,6 +698,36 @@ can be authorized.
   `cc-spec.md`, directory name for roster and specs). Mutation evidence:
   `docs/evidence/pwb-p2-7-model-mutation-run-2026-09-04.json` (38/38).
 
+### PWB slice P3.1 — project-level Polaris sequence (syzygy-1z3.9, 2026-09-04)
+
+- `apps/three-surface-poc/src/polaris.ts` opens with seven groups in fixed
+  order (`POLARIS_GROUPS`: overview, boundaries, architecture, v1, catalog,
+  capability-detail, evidence-and-gaps), each rendered once with
+  `data-polaris-group`; the WhatsApp entity sections sit under
+  capability-detail behind `data-polaris-capability-scope`. The
+  movements/tally scaffolding is gone — do not reintroduce
+  `data-polaris-movement` or a hand-written claim tally.
+- Unobserved shapes render every project group as Unknown in place
+  (`data-polaris-section="shape:<group>"`, `data-unknown-disclosure=
+  "claim:project-shape"`, reason + route); an observed shape renders account
+  statements (`claim:project-account:<key>`), class blocks
+  (`claim:class:<cls>`, `data-polaris-class`), item rows
+  (`data-polaris-item`), source rows (`id="polaris-source-<slug>"`),
+  exclusions (hash-not-body) and an Unknown-by-reason list
+  (`data-polaris-gap`). Every rendered shape claim carries a `claim-tuple`
+  span (claim id, label, tier, freshness, evaluation id) that the test
+  compares to the JSON machine answer per claim id.
+- Surface tests get an `observed` shape from
+  `test-project-shape-fixture.ts` (in-memory Git runner over Butlers-shaped
+  texts + `ADMITTING_AUTHORITY`/`REJECTING_AUTHORITY`) through
+  `buildFixtureModel(cleanups, { projectShape })`; without the option the
+  fixture shape stays `not-evaluated`. Do not use `class="epistemic …"` for
+  new spans — the cross-cutting legend sweep treats that class as a legend
+  entry.
+- The model stamps every claim `fresh`, so a renderer mutation hard-coding
+  freshness is an equivalent mutant today; the tuple test still binds
+  label/tier/evaluation id per claim.
+
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 
 - The three effect-specific authorities live at their final bytes:

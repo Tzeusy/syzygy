@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { buildButlersPocModel, type PocModel } from '@syzygy/three-surface-poc-core';
+import { buildButlersPocModel, type PocModel, type ProjectShapeModelInput } from '@syzygy/three-surface-poc-core';
 
 function git(root: string, args: readonly string[]): string {
   return execFileSync('git', ['-C', root, ...args], {
@@ -75,7 +75,13 @@ function workItemRow(
 /** Builds one shared model with real, observed code-structure and
  * work-item regions, using an injected work-item query so the fixture
  * needs no live Dolt server. */
-export function buildFixtureModel(cleanups: string[]): PocModel {
+export interface FixtureModelOptions {
+  /** Supplied → the model's `projectShape` is built through the P1 gate and
+   * the injected runner; absent → `not-evaluated`, as the pre-PWB fixture. */
+  readonly projectShape?: ProjectShapeModelInput;
+}
+
+export function buildFixtureModel(cleanups: string[], options: FixtureModelOptions = {}): PocModel {
   const { repoRoot, revision } = fixtureRepoWithGit(cleanups);
   const doltRevision = 'dolt-fixture-revision';
   const rows = [
@@ -121,5 +127,6 @@ export function buildFixtureModel(cleanups: string[]): PocModel {
     evaluation: { snapshot: 'butlers@fixture', asOf: '2026-08-30T12:00:00Z' },
     runWorkItemQuery: (_repoRoot, sql) =>
       sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: doltRevision }]),
+    ...(options.projectShape === undefined ? {} : { projectShape: options.projectShape }),
   });
 }

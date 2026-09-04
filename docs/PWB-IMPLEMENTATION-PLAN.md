@@ -269,6 +269,47 @@ source is a grammar failure), so those branches are tested at the exported
 (`docs/evidence/pwb-p2-7-model-mutation-run-2026-09-04.json`). Still no
 Butlers read.
 
+P3.1 note, recorded 2026-09-04: `apps/three-surface-poc/src/polaris.ts`
+now opens with the seven project-level groups in the task's order —
+Overview, Boundaries, Architecture, V1, Project catalog, Capability detail,
+Evidence and gaps — rendered exactly once each from `PocModel.projectShape`
+(PWB-REQ-010; RFC7-1, RFC7-13). Decisions: (a) the movement scaffolding and
+the "three movements" tally are gone; the WhatsApp slice renders unchanged
+under "Capability detail" behind a scope instruction naming it one
+capability within the complete catalog; (b) group membership is fixed:
+Overview = purpose and promises plus the project-account class aggregate;
+Boundaries = refusals plus principles; Architecture = the architecture
+statement plus topology components; V1 = V1 scope, V1 success and success
+criteria; Project catalog = declared projects, roster identities, design
+contracts, baseline specs and craft policies, each class as its own block
+with declared/modeled/Unknown/contradicted counts and a denominator that
+is Unknown when a source was unreadable; (c) an unobserved shape
+(`not-evaluated`, `not-admitted`, `observation-failed`) renders every
+project group as Unknown in place with the shape claim's reason, its route
+and the kind-specific detail — never an empty group (RFC7-15); (d) every
+rendered project-shape claim carries a `claim-tuple` span with claim id,
+label, tier, freshness and evaluation id, and Observed leaves cite
+path:line plus the exact content digest, linked to a source row in
+"Evidence and gaps" that carries the source digest, rule, outcome and
+denominator (PWB-REQ-011; RFC7-16); reconciled facts that agree are not
+rendered as separate claims (their counts are the class blocks),
+contradicted facts are, with every declaration kept; (e) exclusions render
+as hash-not-body (path, redaction class, detector or reason, digest,
+policy) and an Unknown-by-reason list closes the group with
+`missing-declaration` and `unconsented-source-or-provider` foremost; (f)
+the copy for the new groups already meets PWB-REQ-012's bounds (headings
+≤ 6 words, ledes ≤ 20, no prohibited vocabulary), tested for the group
+headings, ledes, notice and shell lede only — the exhaustive `polaris-copy.ts`
+role table and independent extractor remain task 3.3; (g) surface tests
+reach an `observed` shape through `test-project-shape-fixture.ts`, an
+in-memory Butlers-shaped Git runner plus admitting/rejecting authority
+evaluations (a copy of the core fixture texts, kept in the app so the
+core's test module stays private). Five hand rule-6 mutations: four killed
+(group reorder, excluded-body leak, empty unobserved groups, omitted
+route); the fifth (hard-coding freshness to `fresh`) is equivalent because
+the model stamps every claim `fresh` — a freshness-varying claim does not
+exist yet, so no test can distinguish it. Still no Butlers read.
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a
