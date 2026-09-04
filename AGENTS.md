@@ -619,6 +619,28 @@ can be authorized.
 - The classifier is constructed by nothing before P4; no Butlers body is
   read.
 
+### PWB slice P2.5 — literal item extraction (syzygy-1z3.6, 2026-09-04)
+
+- `packages/three-surface-poc-core/src/project-shape-extraction.ts` is the
+  PWB-REQ-002 grammar: `extractSource(source, text)` dispatches each of the
+  source's manifest classes to one literal extractor and returns either
+  `extracted` (items + per-class denominators) or `unknown` (one closed
+  failure reason, class, line, detail). A failing class withholds every
+  class's items for that source — never a partial set. Duplicate keys
+  within one source are a failure here; cross-source duplicates are 2.6's
+  contradictions.
+- Parsers are column-0 anchored and fence-masked; heading text is matched
+  exactly after NFC (no case folding), so a grammar mismatch against the
+  real Butlers tree will surface in P4 as `missing-heading`, not as a
+  silently empty set. Expect to widen fixtures, never the matcher, when
+  that happens: the grammar is the spec's, not ours.
+- The test's oracle is a regex-only extractor written from the spec; both
+  must agree on identities and denominators. Test fixtures spell composed
+  characters as `\u0301` escapes so NFC is observable — the Write tool
+  emitted mixed NFC/NFD bytes for a literal "é", which is why. 35 rule-6
+  mutations killed (evidence in `docs/evidence/`); two equivalent mutants
+  (an unreachable indented-line guard) were removed as dead code.
+
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 
 - The three effect-specific authorities live at their final bytes:

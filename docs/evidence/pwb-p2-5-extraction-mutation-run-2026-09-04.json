@@ -1,0 +1,271 @@
+{
+ "slice": "P2.5 project-shape extraction (syzygy-1z3.6, PWB-REQ-002)",
+ "date": "2026-09-04",
+ "baseCommit": "bc33ed62281c6b3e0acbf1cb99aa0f719b6a2c05",
+ "subject": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+ "sourceDigestSha256": "ca6f13ec6e662ca84e82f1496d398b91ab300b9fa849588f03aa5e1409aac3fd",
+ "testFile": "packages/three-surface-poc-core/src/project-shape-extraction.test.ts",
+ "method": "For each mutation: write the single exact-string replacement into the subject, run the test file with the vitest JSON reporter, restore the original bytes and verify sha256 equality. A mutation is killed when at least one test fails. Two initial survivors (nested-counted, nested-tab-counted) were an unreachable indented-line guard, removed as dead code; three others (architecture-empty-ok, topology-tables-unchecked, craft-column-first) were fixture gaps closed by adding the missing malformed cases, then re-run.",
+ "equivalentRemovedAsDeadCode": [
+  "nested-counted",
+  "nested-tab-counted"
+ ],
+ "fixtureGapsClosed": [
+  "architecture-empty-ok",
+  "topology-tables-unchecked",
+  "craft-column-first"
+ ],
+ "totals": {
+  "mutations": 35,
+  "killed": 35,
+  "survived": 0,
+  "testsAtFinalRun": 59
+ },
+ "mutations": [
+  {
+   "mutation": "nfc-identity",
+   "failedTests": 3,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "fence-ignored",
+   "failedTests": 4,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "heading-case-fold",
+   "failedTests": 3,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "heading-level-ignored",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "section-stops-late",
+   "failedTests": 13,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "body-untrimmed",
+   "failedTests": 2,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "list-line-off-by-one",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "escaped-pipe-splits",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "delimiter-not-required",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "column-count-unchecked",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "duplicate-key-unchecked",
+   "failedTests": 5,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "duplicate-heading-unchecked",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "account-basename-unchecked",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "architecture-empty-ok",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "defers-not-required",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "principle-bullets-ok",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "principle-empty-ok",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "principle-bold-optional",
+   "failedTests": 2,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "success-prefix-swapped",
+   "failedTests": 13,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "catalog-ordered-ok",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "catalog-dash-optional",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "catalog-heading-optional",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "design-first-column-any",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "baseline-any-depth",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "ordinal-lookahead-dropped",
+   "failedTests": 3,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "topology-partial-bold-ok",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "topology-tables-unchecked",
+   "failedTests": 1,
+   "totalTests": 59,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "craft-column-first",
+   "failedTests": 1,
+   "totalTests": 59,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "craft-fragment-kept",
+   "failedTests": 2,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "roster-empty-name-ok",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "roster-two-tables-ok",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "roster-name-repeat-ok",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "roster-other-table-name",
+   "failedTests": 4,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "source-partial-set",
+   "failedTests": 38,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "crlf-kept",
+   "failedTests": 1,
+   "totalTests": 58,
+   "verdict": "killed",
+   "restored": true
+  }
+ ]
+}

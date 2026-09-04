@@ -176,6 +176,35 @@ for the reason while the policy wins for the exclusion record; (f) parse
 failure (step 5) is exposed as `parseFailureExclusion` for the extractor to
 call, since only 2.5 knows when a parse failed. Still no Butlers read.
 
+P2.5 note, recorded 2026-09-04: `project-shape-extraction.ts` implements the
+spec's "Reader definitions" literally, one function per item class, over the
+classified text 2.4 hands to its consumer. Decisions: (a) the parsers are
+inert line parsers of the plan's own making — ATX headings, column-0 list
+items, pipe tables with a required delimiter row, a leading bold or code
+span, a Markdown link, and one `[butler].name` key — fenced code blocks are
+masked, CRLF is tolerated, and nothing is rendered or resolved; (b) identity
+is `(class, key)` with the path and 1-based line as anchor state, keys and
+statements are NFC-normalized and nothing else (heading text, levels,
+top-level depth, column counts and label positions are matched exactly);
+(c) the six `project-account-section` keys are `purpose`, `promises`,
+`refusals` (vision.md), `architecture` (every H2 of architecture.md
+concatenated) and `v1-scope`, `v1-success` (v1.md); success criteria are
+keyed `vision:<n>` / `v1:<n>`; topology components `<H2 ordinal>:<label>`;
+catalog entries by their leading bold/code label, which must be followed by
+a dash; craft policies by the File-column link target's basename; baseline
+specs and roster identities by their tree directory; (d) any grammar
+failure — closed vocabulary `unsupported-source`, `missing-heading`,
+`malformed-list`, `malformed-row`, `malformed-toml`, `duplicate-key`,
+`ambiguous-leading-label` — makes the whole source Unknown (no items, no
+denominators), and a duplicate key within one source is such a failure
+while cross-source duplicates are left for 2.6's contradiction handling;
+(e) a source whose classes all succeed carries per-class item counts as its
+denominators, which 2.6/2.7 sum into the per-class D. The REQ-002 oracle is
+a regex-only second extractor inside the test file; 35 rule-6 mutations
+killed with digest-verified restore
+(`docs/evidence/pwb-p2-5-extraction-mutation-run-2026-09-04.json`). Still no
+Butlers read: extraction is called by nothing before P4.
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a
