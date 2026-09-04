@@ -7,6 +7,11 @@ import { buildButlersPocModel, type PocModel, type ProjectShapeModelInput, type 
 
 function git(root: string, args: readonly string[]): string {
   return execFileSync('git', ['-C', root, ...args], {
+    // Pinned commit instants: two fixture builds in one test must mint the
+    // same revision, or a slice-identity comparison that straddles a
+    // wall-clock second boundary fails for a reason unrelated to the page
+    // (seen once in hosted CI at ca6b28f).
+    env: { ...process.env, GIT_AUTHOR_DATE: '2026-08-24T00:00:00Z', GIT_COMMITTER_DATE: '2026-08-24T00:00:00Z' },
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'ignore'],
   }).trim();
