@@ -36,10 +36,12 @@ import {
   PWB_SECRET_POLICY,
   classifyPhaseASeed,
   classifyManifestSources,
+  classificationCounts,
   compileDetectors,
   type ClassificationCounts,
   type ClassificationRecord,
   type Exclusion,
+  type FixedUnknown,
   type SecretClassificationPolicy,
 } from './content-classification.js';
 import { createExactObjectReader } from './git-object-reader.js';
@@ -54,7 +56,7 @@ import {
   type ReconciledFact,
   type SourceCoverage,
 } from './project-shape-coverage.js';
-import { PROJECT_ACCOUNT_KEYS, extractSource, type ProjectAccountKey } from './project-shape-extraction.js';
+import { PROJECT_ACCOUNT_KEYS, extractBaselineSpec, extractSource, type ProjectAccountKey, type SourceExtraction } from './project-shape-extraction.js';
 import type { ExtractionClass, ManifestSource, PillarKey, SourceRule } from './project-shape-manifest.js';
 import {
   PWB_FAILURE_STATES,
@@ -246,7 +248,7 @@ interface ProjectShapeClaimCarrier {
 
 export interface ProjectShapeCounts {
   readonly sources: number;
-  readonly sourcesAdmitted: number;
+  readonly sourcesWithKnownItemDenominator: number;
   readonly sourcesWithUnknownDenominator: number;
   readonly items: number;
   readonly modeled: number;
@@ -396,10 +398,11 @@ function classAggregate(coverage: ClassCoverage, members: readonly ProjectShapeI
   // Reason counts over the class's members and its declaring sources: an
   // excluded or uncaptured source declares nothing, so its reason would
   // otherwise vanish from the aggregate.
-  return { ...coverage, claim: aggregate, reasonCounts: countReasons([...members, ...classSources].map((entry) => entry.claim)) };
+  const discoveryClaims = Array.from({ length: coverage.discoveryUnknown }, () => aggregate);
+  return { ...coverage, claim: aggregate, reasonCounts: countReasons([...members, ...classSources].map((entry) => entry.claim).concat(discoveryClaims)) };
 }
 
-function projectAccountOf(items: readonly ProjectShapeItem[], sources: readonly ProjectShapeSource[], evaluationId: string): readonly ProjectAccountStatement[] {
+function projectAccountOf(items: readonly ProjectShapeItem[], sources: readonly ProjectShapeSource[], classes: Readonly<Record<ExtractionClass, ProjectShapeClassAggregate>>, evaluationId: string): readonly ProjectAccountStatement[] {
   const accountSources = sources.filter((source) => source.extractionClasses.includes('project-account-section'));
   return PROJECT_ACCOUNT_KEYS.map((key) => {
     const item = items.find((candidate) => candidate.class === 'project-account-section' && candidate.key === key);
@@ -416,10 +419,13 @@ function projectAccountOf(items: readonly ProjectShapeItem[], sources: readonly 
     // with the first Unknown source's reason, or `missing-declaration`
     // when every account source was read and simply lacks it.
     const unknownSource = accountSources.find((source) => source.itemDenominator.kind === 'unknown');
+    const accountDenominator = classes['project-account-section'].denominator;
     const reason: UnknownReason =
-      unknownSource === undefined || unknownSource.itemDenominator.kind !== 'unknown'
-        ? 'missing-declaration'
-        : closedReason(unknownSource.itemDenominator.unknown.unknownReason);
+      unknownSource !== undefined && unknownSource.itemDenominator.kind === 'unknown'
+        ? closedReason(unknownSource.itemDenominator.unknown.unknownReason)
+        : accountDenominator.kind === 'unknown'
+          ? closedReason(accountDenominator.reasons[0] ?? PWB_FAILURE_STATES.sourceMissingOrUnreadable.unknownReason)
+          : 'missing-declaration';
     return {
       key,
       anchors: [],
@@ -492,11 +498,45 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
       }
       const reader = createExactObjectReader({ runGit: input.runGit, tree: indexGitTree(parsed.entries), resourceLimits: observation.resourceLimits });
       // Policy before admission (P2.4), literal grammar (P2.5) on the transient body.
-      const population = classifyManifestSources(observation.manifest, reader, (source, text) => extractSource(source, text), policy);
+      const population = classifyManifestSources<SourceExtraction>(
+        observation.manifest,
+        reader,
+        (source, text) => extractSource(source, text),
+        policy,
+        (source) => {
+          if (source.rule !== 'baseline-spec-tree') return { kind: 'body' };
+          const extracted = extractBaselineSpec(source.path);
+          const value: SourceExtraction = extracted.kind === 'items'
+            ? { kind: 'extracted', path: source.path, classes: source.extractionClasses, items: extracted.items, denominators: { 'baseline-spec': extracted.items.length } }
+            : { kind: 'unknown', path: source.path, classes: source.extractionClasses, failure: extracted.failure };
+          return { kind: 'derived', value };
+        },
+      );
+      const discoveryUnknown: FixedUnknown = {
+        failureState: 'sourceMissingOrUnreadable',
+        degradationState: PWB_FAILURE_STATES.sourceMissingOrUnreadable.degradationState,
+        unknownReason: PWB_FAILURE_STATES.sourceMissingOrUnreadable.unknownReason,
+      };
+      const classesForPillar: Readonly<Record<PillarKey, readonly ExtractionClass[]>> = {
+        'heart-and-soul': ['project-account-section', 'principle', 'success-criterion', 'catalog-entry'],
+        'legends-and-lore': ['design-contract'],
+        // Baseline-spec identity is owned by the independent exact-tree rule,
+        // not by an optional openspec/README.md body.
+        'spec-and-spine': [],
+        'lay-and-land': ['topology-component'],
+        'craft-and-care': ['craft-policy'],
+      };
+      const uncoveredDiscovery = observation.manifest.pillars.filter(
+        (pillar) => pillar.state === 'unknown' && !observation.manifest.sources.some(
+          (source) => source.pillar === pillar.key && source.extractionClasses.some((cls) => classesForPillar[pillar.key].includes(cls)),
+        ),
+      );
       // Coverage and precedence (P2.6).
       const coverage = buildProjectShapeCoverage({
         sources: population.results,
         policy,
+        discoveryUncertainties: uncoveredDiscovery
+          .map((pillar) => ({ classes: classesForPillar[pillar.key], unknown: discoveryUnknown })),
         ...(input.rules === undefined ? {} : { rules: input.rules }),
         ...(input.statedDeclarations === undefined ? {} : { statedDeclarations: input.statedDeclarations }),
       });
@@ -527,7 +567,10 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
       ) as Record<ExtractionClass, ProjectShapeClassAggregate>;
       const facts: ProjectShapeFact[] = coverage.facts.map((fact) => ({ fact, claim: factClaim(fact, identities, evaluationId) }));
       const contradictions = facts.filter((entry) => entry.fact.state === 'contradicted');
-      const projectAccount = projectAccountOf(items, sources, evaluationId);
+      const projectAccount = projectAccountOf(items, sources, classes, evaluationId);
+      const finalRecords = coverage.sources.map((source) => source.record);
+      const finalExclusions = finalRecords.flatMap((record) => record.outcome === 'excluded' ? [record.exclusion] : []);
+      const finalClassification = classificationCounts(finalRecords);
 
       // The whole-shape claim derives from its members: Observed only when
       // no source and no reconciled fact is Unknown (every item is a fact,
@@ -536,7 +579,13 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
       // reason is secondary (PWB-REQ-007: exactly one primary). Observer
       // degradation is disclosed as data beside it; the population never
       // shrinks, so every degraded source is itself an Unknown member.
-      const memberReasons = [...sources, ...facts].flatMap((entry) => ('reasons' in entry.claim.epistemic ? [entry.claim.epistemic.reasons.primary] : []));
+      const discoveryReasons = uncoveredDiscovery.length > 0
+        ? [closedReason(PWB_FAILURE_STATES.sourceMissingOrUnreadable.unknownReason)]
+        : [];
+      const memberReasons = [
+        ...discoveryReasons,
+        ...[...sources, ...facts].flatMap((entry) => ('reasons' in entry.claim.epistemic ? [entry.claim.epistemic.reasons.primary] : [])),
+      ];
       const shapeInput = { claimId: 'claim:project-shape', evaluationId, support: sources.flatMap((source) => source.claim.support) };
       const [firstReason, ...otherReasons] = memberReasons;
       const shapeClaim: ProjectShapeClaim = firstReason === undefined ? observedClaim(shapeInput) : unknownClaim(shapeInput, firstReason, otherReasons);
@@ -563,11 +612,11 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
         classes,
         facts,
         contradictions,
-        exclusions: population.exclusions,
+        exclusions: finalExclusions,
         limitBreaches: observation.limitBreaches,
         degradation: observation.degradation,
         projectAccount,
-        counts: { ...coverage.counts, exclusions: population.exclusions.length, classification: population.counts },
+        counts: { ...coverage.counts, exclusions: finalExclusions.length, classification: finalClassification },
         claim: shapeClaim,
       };
       return shape;

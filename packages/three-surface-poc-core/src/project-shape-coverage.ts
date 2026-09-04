@@ -153,6 +153,9 @@ export interface ClassCoverage {
   readonly contradicted: number;
   // Sources assigned this class whose item denominator is Unknown.
   readonly sourcesWithUnknownDenominator: number;
+  // Root/index discovery failures that prevent this class denominator from
+  // being complete even when no class source was discovered.
+  readonly discoveryUnknown: number;
   // D itself: known only when every source of the class was readable.
   readonly denominator: { readonly kind: 'known'; readonly value: number } | { readonly kind: 'unknown'; readonly reasons: readonly string[] };
 }
@@ -165,7 +168,7 @@ export interface ProjectShapeCoverage {
   readonly contradictions: readonly ReconciledFact[];
   readonly counts: {
     readonly sources: number;
-    readonly sourcesAdmitted: number;
+    readonly sourcesWithKnownItemDenominator: number;
     readonly sourcesWithUnknownDenominator: number;
     readonly items: number;
     readonly modeled: number;
@@ -259,6 +262,10 @@ export interface CoverageInput {
   // until Butlers is observed to declare one.
   readonly statedDeclarations?: readonly Declaration[];
   readonly policy?: SecretClassificationPolicy;
+  readonly discoveryUncertainties?: readonly {
+    readonly classes: readonly ExtractionClass[];
+    readonly unknown: FixedUnknown;
+  }[];
 }
 
 const itemFact = (item: Pick<ExtractedItem, 'class' | 'key'>): string => `item:${item.class}:${item.key}`;
@@ -344,7 +351,11 @@ export function buildProjectShapeCoverage(input: CoverageInput): ProjectShapeCov
   for (const cls of EXTRACTION_CLASSES) {
     const ofClass = items.filter((i) => i.class === cls);
     const unknownSources = sources.filter((s) => s.extractionClasses.includes(cls) && s.itemDenominator.kind === 'unknown');
-    const reasons = [...new Set(unknownSources.map((s) => (s.itemDenominator as { unknown: FixedUnknown }).unknown.unknownReason))];
+    const discoveryUnknowns = (input.discoveryUncertainties ?? []).filter((entry) => entry.classes.includes(cls));
+    const reasons = [...new Set([
+      ...unknownSources.map((s) => (s.itemDenominator as { unknown: FixedUnknown }).unknown.unknownReason),
+      ...discoveryUnknowns.map((entry) => entry.unknown.unknownReason),
+    ])];
     const declared = ofClass.length;
     const count = (state: CoverageState): number => ofClass.filter((i) => i.state === state).length;
     classes[cls] = {
@@ -354,7 +365,8 @@ export function buildProjectShapeCoverage(input: CoverageInput): ProjectShapeCov
       unknown: count('unknown'),
       contradicted: count('contradicted'),
       sourcesWithUnknownDenominator: unknownSources.length,
-      denominator: unknownSources.length === 0 ? { kind: 'known', value: declared } : { kind: 'unknown', reasons },
+      discoveryUnknown: discoveryUnknowns.length,
+      denominator: reasons.length === 0 ? { kind: 'known', value: declared } : { kind: 'unknown', reasons },
     };
     const fact = countFact(cls);
     const derived: Declaration = {
@@ -364,7 +376,7 @@ export function buildProjectShapeCoverage(input: CoverageInput): ProjectShapeCov
       anchors: sources.filter((s) => s.extractionClasses.includes(cls) && s.itemDenominator.kind === 'known').map((s) => ({ path: s.path })),
     };
     const declarations = [derived, ...stated.filter((d) => d.fact === fact)];
-    if (unknownSources.length > 0) {
+    if (reasons.length > 0) {
       // A count over an Unknown denominator is itself Unknown, whatever a
       // summary states; every declaration is retained.
       facts.push({ fact, state: 'unknown', declarations, unknownReason: reasons[0] as string, rulesConsidered: [] });
@@ -393,7 +405,7 @@ export function buildProjectShapeCoverage(input: CoverageInput): ProjectShapeCov
     contradictions,
     counts: {
       sources: sources.length,
-      sourcesAdmitted: population.size,
+      sourcesWithKnownItemDenominator: population.size,
       sourcesWithUnknownDenominator: sources.length - population.size,
       items: items.length,
       modeled: items.filter((i) => i.state === 'modeled').length,

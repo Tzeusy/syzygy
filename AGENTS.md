@@ -619,6 +619,23 @@ can be authorized.
 - The classifier is constructed by nothing before P4; no Butlers body is
   read.
 
+### PWB discovery truth repair (syzygy-1z3.24.2, 2026-09-05)
+
+- Butlers' root project-shape index declares pillar roots in the exact `Pillar`
+  / `Directory` table columns. Heart and Soul's start link points directly to
+  `vision.md`, while Spec and Spine maps to `openspec/`; link-target basename
+  inference is not a substitute for the directory declaration.
+- `baseline-spec` identities are exact-tree path facts. The PWB model derives
+  all 183 identities at Butlers `a3dd1fe` without opening those bodies; body
+  classification remains separate and the source record says `path-only`.
+- Under the signed active-content policy at that revision the honest manifest
+  is 255 sources (48 intent-tree files, 183 baseline specs, 24 roster files): all five
+  roots are recognized and seven Heart and Soul sources are present, while
+  Lay and Land's index remains excluded and its dependent denominator Unknown.
+  The real `v1.md` also remains whole-source Unknown because one catalog row
+  uses a colon after its bold label, outside the signed dash grammar; do not
+  relax either rule without the owner gate.
+
 ### PWB slice P2.5 — literal item extraction (syzygy-1z3.6, 2026-09-04)
 
 - `packages/three-surface-poc-core/src/project-shape-extraction.ts` is the

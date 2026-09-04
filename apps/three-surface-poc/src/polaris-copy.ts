@@ -24,7 +24,7 @@ export interface PolarisCopyRow {
 
 export const POLARIS_COPY = [
   { id: 'shell.heading', role: 'project-fact', kind: 'heading', text: 'Butlers, as it declares itself' },
-  { id: 'shell.lede', role: 'scope-instruction', kind: 'lede', text: 'Purpose, promises, boundaries, architecture and V1 first; then the catalog; then one capability in depth.' },
+  { id: 'shell.lede', role: 'scope-instruction', kind: 'lede', text: 'Purpose, promises, boundaries, architecture and V1 first; then the project catalog; then one capability in depth.' },
   { id: 'notice', role: 'epistemic-disclosure', kind: 'notice', text: 'Every positive claim below cites its source. Where evidence is absent, Unknown is stated in place with its route to resolution.' },
 
   { id: 'depth.label', role: 'scope-instruction', kind: 'label', text: 'Depths, from summary to exact source:' },
@@ -58,7 +58,7 @@ export const POLARIS_COPY = [
   { id: 'class.craft-policy', role: 'project-fact', kind: 'heading', text: 'Craft policies' },
   { id: 'class.roster-identity', role: 'project-fact', kind: 'heading', text: 'Roster identities' },
 
-  { id: 'capability.scope', role: 'scope-instruction', kind: 'sentence', text: "This is one capability within the complete catalog above, not the project's declared shape. Its claims keep their own provenance and epistemic state." },
+  { id: 'capability.scope', role: 'scope-instruction', kind: 'sentence', text: "This is one capability within the project catalog above; completeness follows its disclosed denominator. Its claims keep their own provenance and state." },
 
   { id: 'proposed.heading', role: 'project-fact', kind: 'heading', text: 'Proposed OpenSpec change' },
   { id: 'label.proposed', role: 'epistemic-disclosure', kind: 'label', text: 'Proposed change — not current authority.' },
