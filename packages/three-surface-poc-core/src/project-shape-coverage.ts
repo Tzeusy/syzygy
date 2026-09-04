@@ -168,7 +168,7 @@ export interface ProjectShapeCoverage {
   readonly contradictions: readonly ReconciledFact[];
   readonly counts: {
     readonly sources: number;
-    readonly sourcesAdmitted: number;
+    readonly sourcesWithKnownItemDenominator: number;
     readonly sourcesWithUnknownDenominator: number;
     readonly items: number;
     readonly modeled: number;
@@ -405,7 +405,7 @@ export function buildProjectShapeCoverage(input: CoverageInput): ProjectShapeCov
     contradictions,
     counts: {
       sources: sources.length,
-      sourcesAdmitted: population.size,
+      sourcesWithKnownItemDenominator: population.size,
       sourcesWithUnknownDenominator: sources.length - population.size,
       items: items.length,
       modeled: items.filter((i) => i.state === 'modeled').length,

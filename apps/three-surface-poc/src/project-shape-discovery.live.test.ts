@@ -79,6 +79,8 @@ describeLive('live Butlers project-shape discovery at the reviewed revision', ()
     expect(shape.kind).toBe('observed');
     if (shape.kind !== 'observed') return;
     expect(shape.counts.sources).toBe(255);
+    expect(shape.counts.classification.classifiedByBasis).toEqual({ body: 46, 'path-only': 183 });
+    expect(shape.counts.sourcesWithKnownItemDenominator).toBe(229);
     expect(shape.items.filter((item) => item.class === 'baseline-spec')).toHaveLength(183);
     expect(shape.classes['baseline-spec'].denominator).toEqual({ kind: 'known', value: 183 });
     expect(shape.sources.find((source) => source.path === 'about/heart-and-soul/vision.md')?.itemDenominator).toEqual({ kind: 'known', value: 15 });

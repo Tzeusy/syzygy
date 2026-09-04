@@ -247,7 +247,7 @@ export type ClassificationRecord =
       readonly policyId: string;
       readonly policyVersion: string;
       readonly detectorsRun: number;
-      readonly basis?: 'body' | 'path-only';
+      readonly basis: 'body' | 'path-only';
     }
   | {
       readonly path: string;
@@ -438,7 +438,10 @@ export interface ClassifiedSource<T> {
 
 export interface ClassificationCounts {
   readonly sources: number;
+  // Sources admitted to item extraction, split by whether a body crossed the
+  // classifier or identity was derived from exact path metadata only.
   readonly classified: number;
+  readonly classifiedByBasis: Readonly<Record<'body' | 'path-only', number>>;
   readonly excluded: number;
   readonly unavailable: number;
   readonly byRedactionClass: Readonly<Record<EmittedRedactionClass, number>>;
@@ -459,6 +462,10 @@ export function classificationCounts(records: readonly ClassificationRecord[]): 
   return {
     sources: records.length,
     classified: records.filter((record) => record.outcome === 'classified').length,
+    classifiedByBasis: {
+      body: records.filter((record) => record.outcome === 'classified' && record.basis === 'body').length,
+      'path-only': records.filter((record) => record.outcome === 'classified' && record.basis === 'path-only').length,
+    },
     excluded: exclusions.length,
     unavailable: records.filter((record) => record.outcome === 'unavailable').length,
     byRedactionClass: {

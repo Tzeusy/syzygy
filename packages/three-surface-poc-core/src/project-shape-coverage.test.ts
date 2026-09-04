@@ -105,6 +105,7 @@ function admitted(path: string, classes: readonly ExtractionClass[], text: strin
     policyId: PWB_SECRET_POLICY.policyId,
     policyVersion: PWB_SECRET_POLICY.policyVersion,
     detectorsRun: PWB_SECRET_POLICY.detectors.length,
+    basis: 'body',
   };
   return { source, read: read(path), record, value: extractSource(source, text) };
 }
@@ -195,7 +196,7 @@ describe('PWB-REQ-002 — the source population never shrinks and every class re
 
   it('lists every input source in order with a known or fixed-reason Unknown item denominator', () => {
     expect(c.sources.map((s) => s.path)).toEqual(BASE.map((s) => s.source.path));
-    expect(c.counts).toMatchObject({ sources: 14, sourcesAdmitted: 11, sourcesWithUnknownDenominator: 3 });
+    expect(c.counts).toMatchObject({ sources: 14, sourcesWithKnownItemDenominator: 11, sourcesWithUnknownDenominator: 3 });
     const byPath = new Map(c.sources.map((s) => [s.path, s]));
     expect(byPath.get('about/heart-and-soul/vision.md')?.itemDenominator).toEqual({ kind: 'known', value: 8 });
     expect(byPath.get('about/heart-and-soul/v1.md')?.itemDenominator).toEqual({ kind: 'known', value: 6 });

@@ -531,7 +531,9 @@ function anchorText(anchor: ProjectShapeSource['anchor']): string {
 }
 
 function sourceRow(source: ProjectShapeSource, index: number, revision: string): string {
-  const outcome = source.record.outcome;
+  const outcome = source.record.outcome === 'classified'
+    ? source.record.basis === 'path-only' ? 'path-only' : 'body-classified'
+    : source.record.outcome;
   const block = source.claim.epistemic.label === 'Observed' ? shapeClaimBlock(source.claim, revision) : undefined;
   const identityCell = block === undefined
     ? `<small>${escapeHtml(source.identity)}</small>`
@@ -629,7 +631,7 @@ function shapeEvidence(shape: ProjectShape): string {
     </section>`;
   }
   const identity = shape.identity;
-  const counts = `${shape.counts.sourcesAdmitted} of ${shape.counts.sources} sources readable; ${shape.counts.items} items (${shape.counts.modeled} modeled, ${shape.counts.unknown} Unknown, ${shape.counts.contradicted} contradicted); ${shape.counts.facts} facts (${shape.counts.contradictedFacts} contradicted); ${shape.counts.exclusions} exclusion(s).`;
+  const counts = `${shape.counts.classification.classifiedByBasis.body} of ${shape.counts.sources} source bodies readable; ${shape.counts.classification.classifiedByBasis['path-only']} path-only source identities; ${shape.counts.items} items (${shape.counts.modeled} modeled, ${shape.counts.unknown} Unknown, ${shape.counts.contradicted} contradicted); ${shape.counts.facts} facts (${shape.counts.contradictedFacts} contradicted); ${shape.counts.exclusions} exclusion(s).`;
   const statement = `Declared project shape of ${identity.repositoryId} at revision ${identity.revision.slice(0, 12)}.`;
   const whole = shape.claim.epistemic.label === 'Observed'
     ? ((): string => {

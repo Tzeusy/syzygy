@@ -248,7 +248,7 @@ interface ProjectShapeClaimCarrier {
 
 export interface ProjectShapeCounts {
   readonly sources: number;
-  readonly sourcesAdmitted: number;
+  readonly sourcesWithKnownItemDenominator: number;
   readonly sourcesWithUnknownDenominator: number;
   readonly items: number;
   readonly modeled: number;

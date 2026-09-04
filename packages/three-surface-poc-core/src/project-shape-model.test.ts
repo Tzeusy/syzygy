@@ -431,7 +431,7 @@ describe('an admitted, fully readable fixture', () => {
   it('carries the complete source population with stamps, identities and Observed claims', () => {
     expect(shape.sources.map((s) => s.path).sort()).toEqual([...POPULATION]);
     expect(shape.counts.sources).toBe(15);
-    expect(shape.counts.sourcesAdmitted).toBe(15);
+    expect(shape.counts.sourcesWithKnownItemDenominator).toBe(15);
     expect(shape.counts.sourcesWithUnknownDenominator).toBe(0);
     for (const source of shape.sources) {
       expect(source.identity).toBe(`repository:butlers-configured-poc@${COMMIT}:${source.path}#${source.anchor.kind === 'blob' ? source.anchor.objectId : '?'}`);
@@ -674,6 +674,7 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
     expect(shape.counts.classification).toEqual({
       sources: 15,
       classified: 14,
+      classifiedByBasis: { body: 13, 'path-only': 1 },
       excluded: 1,
       unavailable: 0,
       byRedactionClass: { 'excluded-artifact': 0, 'unclassifiable-excluded': 1 },

@@ -151,6 +151,20 @@ describe('Polaris project-level sequence (PWB-REQ-010)', () => {
     expect(html).not.toContain('complete catalog above');
     expect(html).toContain('completeness follows its disclosed denominator');
   });
+
+  it('keeps path-only identity counts distinct from body readability in the model and Polaris', () => {
+    const { model, shape } = observedModel();
+    expect(shape.counts.sources).toBe(15);
+    expect(shape.counts.sourcesWithKnownItemDenominator).toBe(15);
+    expect(shape.counts.classification.classifiedByBasis).toEqual({ body: 14, 'path-only': 1 });
+    const html = renderPolarisPage(model);
+    expect(html).toContain('14 of 15 source bodies readable; 1 path-only source identities;');
+    expect(html).not.toContain('15 of 15 sources readable');
+    const baselineRow = /data-polaris-source="claim:source:openspec\/specs\/alpha\/spec\.md"[\s\S]*?<\/tr>/.exec(html)?.[0] ?? '';
+    expect(baselineRow).toContain('path-only · blob');
+    expect(baselineRow).toContain('no body read');
+    expect(baselineRow).not.toContain('body-classified');
+  });
 });
 
 describe('Polaris progressive depth (PWB-REQ-011; RFC7-16)', () => {
