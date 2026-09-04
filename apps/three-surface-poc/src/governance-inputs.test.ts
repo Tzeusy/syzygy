@@ -7,10 +7,11 @@
 
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   discloseAuthority,
@@ -27,6 +28,33 @@ import {
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 const EVALUATION_INSTANT = '2026-09-03T00:00:00Z';
+const CURRENT_COMMIT = 'f'.repeat(40);
+const cleanups: string[] = [];
+
+afterEach(() => {
+  for (const root of cleanups.splice(0)) rmSync(root, { recursive: true, force: true });
+});
+
+function git(root: string, args: readonly string[]): string {
+  return execFileSync('git', ['-C', root, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+}
+
+function realGovernanceFixture(): string {
+  const root = mkdtempSync(join(tmpdir(), 'syzygy-pwb-governance-'));
+  cleanups.push(root);
+  git(root, ['init', '-q']);
+  git(root, ['config', 'user.email', 'pwb-test@example.invalid']);
+  git(root, ['config', 'user.name', 'PWB Test']);
+  for (const path of [...Object.values(PWB_AUTHORITY_ARTIFACTS), ...Object.values(PWB_ACT_RECORDS)]) {
+    const target = join(root, path);
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, readFileSync(join(REPO_ROOT, path)));
+  }
+  git(root, ['add', '.']);
+  git(root, ['commit', '-qm', 'governance fixture']);
+  git(root, ['tag', 'pwb-consent-observation-signed-2026-09-02']);
+  return root;
+}
 
 function sha256(bytes: Uint8Array): string {
   return createHash('sha256').update(bytes).digest('hex');
@@ -61,43 +89,50 @@ function fakeTree(): FakeTree {
   return { files, tags, treePaths: new Set(Object.values(PWB_ACT_RECORDS)), taggedRecords, unreadablePaths: new Set(), invalidUtf8Paths: new Set() };
 }
 
-function loaderFor(tree: FakeTree) {
+function loaderFor(tree: FakeTree, fromGitTree = false) {
   const root = '/fake/root';
   const relative = (absolute: string): string => absolute.slice(`${root}/`.length);
+  const bytesAt = (path: string): Uint8Array => {
+    if (tree.unreadablePaths.has(path)) throw Object.assign(new Error('EACCES'), { code: 'EACCES' });
+    if (tree.invalidUtf8Paths.has(path)) return new Uint8Array([0xff]);
+    const text = tree.files.get(path);
+    if (text === undefined) throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' });
+    return new TextEncoder().encode(text);
+  };
   return loadBodyReadAuthorityInputs({
     repoRoot: root,
     evaluationId: 'eval-hermetic',
     evaluationInstant: EVALUATION_INSTANT,
-    readFile: (absolute) => {
-      const path = relative(absolute);
-      if (tree.unreadablePaths.has(path)) throw Object.assign(new Error('EACCES'), { code: 'EACCES' });
-      if (tree.invalidUtf8Paths.has(path)) return new Uint8Array([0xff]);
-      const text = tree.files.get(path);
-      if (text === undefined) throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' });
-      return new TextEncoder().encode(text);
-    },
-    listDirectory: (absolute) => {
-      if (tree.failLifecycleList) throw new Error('list failed');
-      const prefix = `${relative(absolute)}/`;
-      return [...tree.files.keys()].filter((path) => path.startsWith(prefix)).map((path) => path.slice(prefix.length));
-    },
+    ...(fromGitTree ? { governanceRevision: 'HEAD' } : {
+      readFile: (absolute: string) => bytesAt(relative(absolute)),
+      listDirectory: (absolute: string) => {
+        if (tree.failLifecycleList) throw new Error('list failed');
+        const prefix = `${relative(absolute)}/`;
+        return [...tree.files.keys()].filter((path) => path.startsWith(prefix)).map((path) => path.slice(prefix.length));
+      },
+    }),
     runGit: (_root, args) => {
       if (args[0] === 'rev-parse') {
+        if (args[2] === 'HEAD^{commit}') return `${CURRENT_COMMIT}\n`;
         const tag = /^refs\/tags\/(.+)\^\{commit\}$/.exec(args[3] ?? '')?.[1] ?? '';
         const commit = tree.tags.get(tag);
         if (commit === undefined) throw new Error('unknown tag');
         return `${commit}\n`;
       }
       if (args[0] === 'ls-tree') {
+        if (args.includes('-r')) return `${[...tree.files.keys()].join('\0')}\0`;
         const path = args[4] ?? '';
         return tree.treePaths.has(path) ? `${path}\n` : '';
       }
-      if (args[0] === 'show') {
-        const text = tree.taggedRecords.get(args[1] ?? '');
-        if (text === undefined) throw new Error('missing tagged record');
-        return text;
-      }
       throw new Error(`unexpected git ${args.join(' ')}`);
+    },
+    readGitBlob: (_root, object) => {
+      const [commit, ...pathParts] = object.split(':');
+      const path = pathParts.join(':');
+      if (commit === CURRENT_COMMIT) return bytesAt(path);
+      const text = tree.taggedRecords.get(object);
+      if (text === undefined) throw new Error('missing tagged record');
+      return new TextEncoder().encode(text);
     },
   });
 }
@@ -157,7 +192,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
   it('rejects a current act record whose bytes drift from the exact recording-tag blob', () => {
     const tree = fakeTree();
     tree.files.set(PWB_ACT_RECORDS.consent, `${tree.files.get(PWB_ACT_RECORDS.consent) ?? ''}\ncoordinated drift`);
-    const evaluation = evaluateBodyReadAuthority(loaderFor(tree));
+    const evaluation = evaluateBodyReadAuthority(loaderFor(tree, true));
     expect(evaluation.consent.kind === 'invalid' && evaluation.consent.caseId).toBe('consent:recording-tag-mismatched');
   });
 
@@ -169,6 +204,36 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     if (failure === 'read') tree.unreadablePaths.add(other);
     if (failure === 'decode') tree.invalidUtf8Paths.add(other);
     expect(() => loaderFor(tree)).toThrow();
+  });
+
+  it('aborts lifecycle loading on invalid UTF-8 from the exact governance Git tree', () => {
+    const tree = fakeTree();
+    const other = '.syzygy/governance/decisions/INVALID-UTF8.md';
+    tree.files.set(other, '# placeholder');
+    tree.invalidUtf8Paths.add(other);
+    expect(() => loaderFor(tree, true)).toThrow();
+  });
+
+  it('preserves production Git blob bytes for tag comparison and lifecycle decoding', () => {
+    const root = realGovernanceFixture();
+    const consentRecord = join(root, PWB_ACT_RECORDS.consent);
+    writeFileSync(consentRecord, `${readFileSync(consentRecord, 'utf8')}\ncurrent-tree drift\n`);
+    git(root, ['add', '.']);
+    git(root, ['commit', '-qm', 'drift current record']);
+
+    const load = () => loadBodyReadAuthorityInputs({
+      repoRoot: root,
+      governanceRevision: git(root, ['rev-parse', 'HEAD']),
+      evaluationId: 'eval-production-bytes',
+      evaluationInstant: EVALUATION_INSTANT,
+    });
+    expect(load().consent.recordingTag).toEqual({ kind: 'unresolved' });
+
+    const invalid = join(root, '.syzygy/governance/decisions/INVALID-UTF8.md');
+    writeFileSync(invalid, new Uint8Array([0xff]));
+    git(root, ['add', '.']);
+    git(root, ['commit', '-qm', 'invalid lifecycle bytes']);
+    expect(load).toThrow();
   });
 
   it('detects a later decision record that revokes or supersedes an act identity', () => {

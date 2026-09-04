@@ -156,13 +156,13 @@ function loaderFor(tree: FakeTree) {
         const path = args[4] ?? '';
         return tree.treePaths.has(path) ? `${path}\n` : '';
       }
-      if (args[0] === 'show') {
-        const path = (args[1] ?? '').split(':').slice(1).join(':');
-        const text = tree.files.get(path);
-        if (text === undefined || !tree.treePaths.has(path)) throw new Error('missing tagged record');
-        return text;
-      }
       throw new Error(`unexpected git ${args.join(' ')}`);
+    },
+    readGitBlob: (_root, object) => {
+      const path = object.split(':').slice(1).join(':');
+      const text = tree.files.get(path);
+      if (text === undefined || !tree.treePaths.has(path)) throw new Error('missing tagged record');
+      return new TextEncoder().encode(text);
     },
   });
 }
