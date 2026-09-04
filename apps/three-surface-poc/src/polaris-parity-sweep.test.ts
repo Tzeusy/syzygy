@@ -427,6 +427,11 @@ function sweep(model: PocModel): SweepResult {
     return `<no machine subject for ${id}>`;
   });
   reports.push(compareMultisets('unknown-disclosure', disclosures, unknownExpected));
+  // …and, the other way round, every Unknown relationship and entity the
+  // machine holds is disclosed exactly once (a collapsed or dropped
+  // disclosure is a difference, not a shorter list).
+  reports.push(compareMultisets('unknown-relationships', disclosures.filter((id) => id.startsWith('relationship:')), machine.relationships.filter((r) => r.epistemic.label === 'Unknown').map((r) => r.id)));
+  reports.push(compareMultisets('unknown-entities', disclosures.filter((id) => machine.entities.some((e) => e.id === id)), machine.entities.filter((e) => e.epistemic.label === 'Unknown').map((e) => e.id)));
 
   // 4. Aggregate reason counts and on-demand coverage sentences.
   for (const which of ['primary', 'secondary'] as const) {
@@ -509,7 +514,7 @@ describe('PWB-REQ-020 exhaustive Polaris parity sweep', () => {
     const model = modelFor('observed-degraded', 'lawful-state-2');
     const { reports, parityFields } = sweep(model);
     const nonEmpty = new Set(reports.filter((report) => report.human > 0).map((report) => report.family));
-    for (const family of ['claim-tuple', 'claim-population', 'unknown-disclosure', 'reason-counts:primary', 'coverage-counts', 'item-rows', 'source-rows', 'gaps', 'judgment-state', 'parity-field:authority-state', 'parity-field:judgment-disclosure', 'parity-field:judgment-traversed-path', 'parity-field:shape-anchor', 'parity-field:shape-source-path']) {
+    for (const family of ['claim-tuple', 'claim-population', 'unknown-disclosure', 'unknown-relationships', 'reason-counts:primary', 'coverage-counts', 'item-rows', 'source-rows', 'gaps', 'judgment-state', 'parity-field:authority-state', 'parity-field:judgment-disclosure', 'parity-field:judgment-traversed-path', 'parity-field:shape-anchor', 'parity-field:shape-source-path']) {
       expect(nonEmpty.has(family), family).toBe(true);
     }
     expect(parityFields).toContain('judgment-independently-verified');

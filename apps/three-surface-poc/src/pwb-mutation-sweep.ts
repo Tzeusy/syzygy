@@ -517,7 +517,7 @@ const PARITY_MARKERS: SweepGroup = {
       POLARIS_SOURCE,
       'authority-state/changed: the state word shown is not the machine state',
       '${escapeHtml(entry.authority)} — ${escapeHtml(entry.state)}</span>',
-      '${escapeHtml(entry.authority)} — ${escapeHtml(entry.state.replace(/^valid/, \'checked\'))}</span>',
+      '${escapeHtml(entry.authority)} — ${escapeHtml(entry.state.toUpperCase())}</span>',
       ['observed shape / not-evaluated judgment'],
     ),
     literal(
