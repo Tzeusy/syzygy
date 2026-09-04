@@ -1431,6 +1431,10 @@ PWB_STATE1_LABEL = "SIGN OFF PWB STATE-(1) AMENDMENT"
 PWB_STATE1_DIR = f"{CANDIDATES}/pwb-state1-amendment"
 PWB_STATE1_SUBJECT = f"{PWB_STATE1_DIR}/PWB-AMENDMENT-MANIFEST.txt"
 PWB_STATE1_ACT = f"{DECISIONS}/PWB-STATE1-AMENDMENT-ACT.md"
+PWB_TRUTH_AMENDMENT_LABEL = "SIGN OFF PWB TRUTH-AND-READINESS AMENDMENT"
+PWB_TRUTH_AMENDMENT_DIR = f"{CANDIDATES}/pwb-truth-policy-amendment"
+PWB_TRUTH_AMENDMENT_SUBJECT = (
+    f"{PWB_TRUTH_AMENDMENT_DIR}/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt")
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -2032,6 +2036,10 @@ ACT_DIGEST_COPY_FILES = {
         (PWB_STATE1_LABEL,),
     f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md": PWB_EFFECT_ACT_LABELS,
     f"{PWB_EFFECT_ACTS_DIR}/PWB-EFFECT-ACTS-MANIFEST.txt": PWB_EFFECT_ACT_LABELS,
+    f"{PWB_TRUTH_AMENDMENT_DIR}/PWB-EFFECT-AMENDMENT-MANIFEST.txt":
+        PWB_EFFECT_ACT_LABELS[1:],
+    f"{PWB_TRUTH_AMENDMENT_DIR}/OWNER-DECISION-PACKET.md":
+        (PWB_TRUTH_AMENDMENT_LABEL,) + PWB_EFFECT_ACT_LABELS[1:],
     # The owner-act record quotes each performed act's exact phrase and
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.

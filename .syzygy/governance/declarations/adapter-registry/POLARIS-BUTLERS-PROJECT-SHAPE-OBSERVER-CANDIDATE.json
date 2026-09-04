@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "registryVersion": "1.0.0-candidate.3",
-  "status": "candidate-act-ready-no-effect-until-owner-act",
+  "registryVersion": "1.1.0-candidate.1",
+  "status": "candidate-amendment-no-effect-until-owner-act",
   "governanceHome": ".syzygy/governance/declarations/adapter-registry",
   "project": "project:syzygy",
   "entries": [
     {
       "observerId": "polaris-butlers-project-shape",
-      "observerVersion": "1.0.0-candidate.3",
-      "discoveryVersion": "pwb-discovery-v1-candidate.3",
+      "observerVersion": "1.1.0-candidate.1",
+      "discoveryVersion": "pwb-discovery-v2-candidate.1",
       "role": "adapter",
       "implementationId": "three-surface-poc-core/project-shape-observer",
       "implementationVersion": "1.0.0",
@@ -17,8 +17,8 @@
       "contractVersionSource": "accepted RFC-0004/general-contract.md as amended by the 2026-09-01 general trusted-bootstrap transaction (CONTRACT-AMENDMENT-MANIFEST.txt row)",
       "governingBehaviorContract": {
         "id": "polaris-project-wide-butlers-model",
-        "version": "sha256:2e453a6ec6dbc19c5df226650c6e7a94c46e81f65d9d180f57d1dc1dce7fd07e",
-        "signedBy": ".syzygy/governance/decisions/PWB-STATE1-AMENDMENT-ACT.md"
+        "version": "sha256:8f4681a34a442a5311cbbe7e48284be26a9a0b555be90c0422d729b176f1b908",
+        "signedBy": "pending exact owner act over the PWB truth-and-readiness amendment manifest"
       },
       "subject": {
         "observingProject": "project:syzygy",
@@ -31,7 +31,7 @@
       "authorizationModeDerivation": "every artifact must have a current exact digest-bound owner act; independently-verified only when all three acts verify through A1; owner-trusted-bootstrap when at least one valid act remains owner-adopted bootstrap and the others are valid state-(1) or state-(2) acts; every other combination rejects before body reads",
       "provenanceDisclosure": "Observation uses owner-trusted records; independent audit is not configured.",
       "implementation": "packages/three-surface-poc-core/src/project-shape-observer.ts",
-      "implementationStatus": "declared mapping only; no such module exists yet and this entry authorizes no implementation",
+      "implementationStatus": "implementation exists under the prior act-bound entry; this candidate amendment authorizes no change and its new semantics remain unavailable until separately acted and implemented",
       "inputClasses": [
         {
           "class": "git-revision",
@@ -100,6 +100,14 @@
           "identityScheme": "claim-identity-plus-sorted-source-anchors"
         },
         {
+          "class": "project-fact-declaration",
+          "identityScheme": "closed-fact-identity-plus-declaration-source-anchor"
+        },
+        {
+          "class": "precedence-rule",
+          "identityScheme": "root-precedence-table-anchor-plus-layer-ordinal"
+        },
+        {
           "class": "content-exclusion",
           "identityScheme": "content-digest-plus-policy-version-plus-redaction-class"
         },
@@ -120,13 +128,90 @@
         "executeObservedCode": false,
         "workingTreeRead": false
       },
+      "observationGrammar": {
+        "factFamilies": [
+          "item:<class>:<declared-key>",
+          "count:<class>",
+          "catalog-count:<catalog-key>",
+          "project-account:<key>"
+        ],
+        "fixedClassKeys": [
+          "project-account-section",
+          "principle",
+          "success-criterion",
+          "catalog-entry",
+          "design-contract",
+          "baseline-spec",
+          "topology-component",
+          "craft-policy",
+          "roster-identity"
+        ],
+        "fixedCatalogKeys": [
+          "Core Infrastructure",
+          "Staffers",
+          "Butlers",
+          "Modules",
+          "Connectors",
+          "Dashboard",
+          "Identity System",
+          "Situational Awareness",
+          "Observability"
+        ],
+        "fixedProjectAccountKeys": [
+          "purpose",
+          "promises",
+          "refusals",
+          "architecture",
+          "v1-scope",
+          "v1-success"
+        ],
+        "rootSummary": {
+          "heading": "Key Architectural Facts",
+          "leadingLabel": "<decimal> daemons",
+          "cardinalForm": "<decimal> staffers ... + <decimal> domain butlers",
+          "emits": [
+            "catalog-count:Staffers",
+            "catalog-count:Butlers"
+          ]
+        },
+        "precedence": {
+          "heading": "Precedence Order When Layers Disagree",
+          "columns": [
+            "#",
+            "Layer",
+            "Owns",
+            "Home"
+          ],
+          "ordinals": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "application": "a home is admitted only when it is a normalized repository-relative root with at least one admitted source at or beneath it; the unique lowest-numbered admitted home whose Owns cell names the fact family selects its declaration; the root summary is non-owning and an unlisted source owns nothing; malformed, duplicate, missing, equally ranked or mutually disagreeing rules select nothing"
+        }
+      },
       "resourceLimits": {
         "maxSources": 512,
         "maxBytesPerSource": 1048576,
         "maxTotalBytes": 16777216,
         "maxIndexDepth": 4,
-        "maxParseMillisecondsPerSource": 250,
-        "maxRenderedBytes": 2097152
+        "maxParsePassesPerSource": 16,
+        "maxHumanResponseBytes": 2097152,
+        "maxMachineResponseBytes": 8388608
+      },
+      "resourceLimitSemantics": {
+        "maxSources": "the complete revision-bound manifest; an excess preserves every tree-known source identity but admits no source body and makes every dependent fact Unknown",
+        "maxBytesPerSource": "the exact UTF-8 blob before classification or parsing; the limit plus one byte is never passed to an extractor",
+        "maxTotalBytes": "one cumulative counter across phase A and phase B; count each repository-relative-path plus object-id body once and never reset between phases",
+        "maxIndexDepth": "the complete root-to-pillar discovery traversal",
+        "maxParsePassesPerSource": "one unit is one complete traversal of one decoded source by a named classifier or extractor pass; elapsed wall-clock time is not an input",
+        "maxHumanResponseBytes": "the final encoded HTTP body for each Polaris HTML response",
+        "maxMachineResponseBytes": "the final encoded HTTP body for each authenticated Polaris machine JSON response",
+        "breachResult": "source and input breaches retain the complete population and make dependent facts Unknown; final-output breaches emit only a bounded typed failure carrying evaluation identity, limit identity, declared value, observed value and population counts; no truncated or success-shaped model is emitted; PWB-REQ-021 readiness is false"
       },
       "admissionFailureMapping": {
         "missingConsent": "unconsented-source-or-provider",
@@ -161,7 +246,7 @@
       "claimStateMapping": {
         "unresolvedContradiction": "contradicted-pending-adjudication"
       },
-      "adoptionStatus": "candidate-act-ready-unadopted"
+      "adoptionStatus": "candidate-amendment-unadopted"
     }
   ]
 }

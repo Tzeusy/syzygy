@@ -1,0 +1,15 @@
+# PWB TRUTH-AND-READINESS BEHAVIOR AMENDMENT MANIFEST
+# Candidate; this file and its rows bind nothing by themselves.
+# 11 artifacts; rows sorted by codepoint path.
+# All rows take effect together or none do.
+bd2504cb580ca73eeb2510481ca4665ee11e2127360fc0be12c104f347fb515f  openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml
+517d698b55425701919132163d316c3c891097d7a7058281b404e89bd05adcac  openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md
+77f6b685f7a92eff39d874b92ed36b99e832ded16d1970f1242b6750641b5349  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md
+ada47e4b993951873855a3055e0958bd5e0947ab51060404b0ef11eaff84c578  openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md
+e013208e8f76bbd997ddb8c0938bf4184ab5a50ac43454b2f88ed16c910b5336  openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md
+f28404be66a4241503f2214757d640361751934b2ab308dafeada5c6d2152e50  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0001-0003.md
+ec091e743cb95070b30980021f2b5bdf054128161a86f6f8a8bbdf7678ffbc29  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md
+6e480d6b94734abd41b15fbdcab1e6d7df9d60f68f0f3f5b0d66f98462728cd0  openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md
+f454a0d24115b58b5a41e34e68f9de2d8062e65c02afe2605ff82ad7a74f3b6b  openspec/changes/polaris-project-wide-butlers-model/design.md
+2054c425e02f4eaffb1a2eeec07238fe4975a8f6eb41d1bc429a4a891fb93a38  openspec/changes/polaris-project-wide-butlers-model/proposal.md
+8f4681a34a442a5311cbbe7e48284be26a9a0b555be90c0422d729b176f1b908  openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md

@@ -1,0 +1,6 @@
+# PWB POLICY-AND-REGISTRY EFFECT AMENDMENT MANIFEST
+# Candidate; this file and its rows bind nothing by themselves.
+# 2 artifacts; rows sorted by codepoint path.
+# Each row requires its own separate owner act; neither row binds the other.
+9e9e0805037dcfa1c4c4603eb7e7607986825e3144087dc2846c66f7b003ee2b  .syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json
+9d8f9283a5467193886713d73d3bd421605b86e7d6783b51311b5066ce979d1a  .syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json

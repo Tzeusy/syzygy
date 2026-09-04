@@ -27,7 +27,7 @@
 # CG-2e (wrapped current-phrase arguments), CG-7d/CG-7e (act-argument copies).
 
 version: 1
-as_of: "2026-08-17"
+as_of: "2026-09-05"
 authority: "FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md"
 status: "record — candidate material, binds nothing"
 
@@ -41,6 +41,12 @@ status: "record — candidate material, binds nothing"
 # prints. It is the phrase minus its argument.
 
 current_phrases:
+  - id: pwb-truth-readiness-amendment
+    label: "SIGN OFF PWB TRUTH-AND-READINESS AMENDMENT"
+    form: accept
+    argument: sha256
+    subject: ".syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt"
+    note: "candidate successor to the performed 2026-09-02 PWB state-(1) amendment; binds all eleven behavior artifacts together or none"
   - id: wave-a
     label: "ACCEPT FOUNDATIONAL WAVE A"
     form: accept
