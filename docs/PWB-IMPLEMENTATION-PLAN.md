@@ -607,6 +607,46 @@ answer. Evidence: `docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04.json`
 (per-class denominators, per-mutation failing tests, digests before and
 after).
 
+P4.3 implemented 2026-09-04 (task 4.3, exhaustive Polaris parity with the
+authority and judgment states, `syzygy-1z3.19`). The one `PocModel` now
+carries `walkthroughJudgment`: either `not-evaluated` with a stated detail
+(what the daemon serves until 4.6 records a run/judgment pair) or the
+PWB-REQ-022 evaluation of an injected pair, computed inside
+`buildButlersPocModel` so `/api/poc` grows by construction. Polaris renders
+the body-read authority line (one `authority-state` marker per authority,
+the mode, the evaluation id) beside every shape state that carries one, and
+a walkthrough-judgment section whose every field — kind, verdict, judging
+party, evidence kind, state label, independent-verification flag, the
+state disclosure sentence, act identity and instant, both digests, run
+record identity/mode/surface version/evaluation identity, every traversed
+path with repeats kept, rationale, or the absent/unlawful case and
+contradiction — is a leaf parity marker. The new
+`polaris-parity-sweep.test.ts` is the independent oracle PWB-REQ-020 asks
+for: it parses the rendered page back with its own extractor (no
+production vocabulary or rendering import), projects the machine answer
+itself, and compares every marker family as a multiset, reporting both
+denominators, across a 5 × 6 matrix (not-evaluated, not-admitted,
+observation-failed, observed and a degraded observed variant in which one
+phase-B body read fails, so Unknown sources, reason counts and gaps are
+exercised; times six judgment states including a fixture-only state (2)).
+Two honest scoping rules are written into the oracle: the presented claim
+population omits the reconciled facts (their content reaches the reader
+through item rows and class aggregates; only contradictions are presented
+as facts) and the project-account-section items (presented once as the
+account's own section claims), and the two capability-slice region cites
+(`git-ls-tree`, `beads-dolt`) are admitted only while the machine's
+region is observed. The mutation sweep's parity-markers group gains four
+classes × five kinds (fact, authority-state, judgment-state, disclosure ×
+missing, duplicated, changed, collapsed, wrong-evaluation) as exact-fragment
+mutations of `polaris.ts`, each named to the matrix cell that must fail.
+The first run left two survivors: an equivalent authority-state mutation
+(rewritten so it always changes the text) and a collapsed Unknown
+relationship disclosure that the one-directional disclosure check could
+not see — repaired in the oracle, which now also compares the machine's
+Unknown relationships and entities against the rendered disclosures as
+multisets. Evidence (26/26 killed):
+`docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04-parity-markers.json`.
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a

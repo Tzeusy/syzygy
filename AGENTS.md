@@ -788,6 +788,20 @@ can be authorized.
   `test-deep-dive-markers.ts` for the marker sweeps. Copy-table rows nested
   inside a `FACT` paragraph must themselves be `project-fact`, or the copy
   test reports them never rendered under their role.
+- Task 4.3: `polaris-parity-sweep.test.ts` is the exhaustive PWB-REQ-020
+  oracle: it parses Polaris back with its own attribute-tolerant extractor
+  (boolean attributes such as `data-non-citable` must be allowed, or every
+  claim tuple silently extracts as nothing) and compares each marker family
+  to the machine answer as a multiset with both denominators, across the
+  shape × judgment matrix. Add a new `data-parity-field` and the sweep
+  reports it under `<uncovered>` until an expectation names it. Keep leaf
+  markers leaf (one text node) — nested markup goes through `containers`,
+  not `leafMarkers`. `PocModel.walkthroughJudgment` is `not-evaluated` in
+  production until 4.6 supplies a run/judgment pair;
+  `test-walkthrough-judgment-fixture.ts` reaches all five judgment states
+  (state (2) via an injected correlator). The mutation sweep's
+  parity-markers group names matrix cells as must-fail substrings (e.g.
+  `observed shape / lawful-state-1 judgment`).
 - Task 4.2: `apps/three-surface-poc/src/pwb-mutation-sweep.ts` is the one
   rule-6 plan over the nine named mutation classes; `npm run
   poc:pwb-mutation-sweep` (`--group <id>` / `--only <mutation-id>`) runs it
