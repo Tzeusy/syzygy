@@ -34,7 +34,9 @@ import {
 } from './body-read-authority.js';
 import {
   PWB_SECRET_POLICY,
+  classifyPhaseASeed,
   classifyManifestSources,
+  compileDetectors,
   type ClassificationCounts,
   type ClassificationRecord,
   type Exclusion,
@@ -438,6 +440,7 @@ function observationFailed(authority: BodyReadAuthorityEvaluation, failure: Extr
 export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
   const repositoryId = input.repositoryId ?? PWB_REPOSITORY_ID;
   const policy = input.policy ?? PWB_SECRET_POLICY;
+  const phaseADetectors = compileDetectors(policy);
   const gated = observeProjectShape({
     authority: input.authority,
     read: ({ authority }) => {
@@ -448,6 +451,7 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
         capturedAt: input.capturedAt,
         runGit: input.runGit,
         authority,
+        classifyPhaseA: (text) => classifyPhaseASeed(phaseADetectors, text),
       });
       if (observation.kind === 'invalid-input') {
         return observationFailed(authority, {

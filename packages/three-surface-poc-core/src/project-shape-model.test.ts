@@ -535,10 +535,10 @@ describe('an admitted, fully readable fixture', () => {
 });
 
 describe('faults never shrink the population (PWB-REQ-003)', () => {
-  it('a secret-bearing source is excluded hash-not-body; its class denominator and the project shape go Unknown', () => {
+  it('a secret-bearing index is excluded hash-not-body before child derivation; its class denominator and the project shape go Unknown', () => {
     const texts = { ...BASE_TEXTS, 'about/craft-and-care/README.md': CRAFT_SECRET };
     const shape = observed({ texts });
-    expect(shape.sources.map((s) => s.path).sort()).toEqual([...POPULATION]);
+    expect(shape.sources.map((s) => s.path).sort()).toEqual(POPULATION.filter((path) => path !== 'about/craft-and-care/policies/cc-spec.md'));
     const craft = shape.sources.find((s) => s.path === 'about/craft-and-care/README.md');
     expect(craft?.itemDenominator.kind).toBe('unknown');
     expect(craft?.record.outcome).toBe('excluded');
@@ -563,9 +563,7 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
     expect(shape.classes['craft-policy'].claim.epistemic).toEqual({ label: 'Unknown', reasons: { primary: 'excluded-content', secondary: [] }, freshness: 'fresh' });
     expect(shape.items.some((i) => i.class === 'craft-policy')).toBe(false);
     expect(shape.counts.items).toBe(19);
-    // The whole-shape claim is Unknown only because a member is; the
-    // observation itself did not degrade (every source was captured).
-    expect(shape.degradation).toBeUndefined();
+    expect(shape.degradation).toMatchObject({ failureState: 'secretMatchedOrUnclassifiable', unknownReason: 'excluded-content' });
     expect(shape.claim.epistemic).toEqual({
       label: 'Unknown',
       reasons: { primary: 'excluded-content', secondary: [] },
@@ -603,7 +601,7 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
       'openspec/specs/alpha/spec.md': `# Alpha\n\npassword = "hunter2-${SENTINEL}"\n`,
     };
     const shape = observed({ texts, dropFromTree: ['about/heart-and-soul/architecture.md', 'about/heart-and-soul/v1.md'] });
-    expect(shape.sources.length).toBe(15);
+    expect(shape.sources.length).toBe(14);
     expect(shape.exclusions.map((e) => e.repositoryRelativePath)).toEqual(['about/craft-and-care/README.md', 'openspec/specs/alpha/spec.md']);
     expect(shape.sources.filter((s) => s.claim.epistemic.label === 'Unknown').map((s) => [s.path, (s.claim.epistemic as { reasons: { primary: string } }).reasons.primary])).toEqual([
       ['about/craft-and-care/README.md', 'excluded-content'],

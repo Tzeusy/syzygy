@@ -23,9 +23,11 @@ import {
   actIdentityOf,
   classifyMissingRecord,
   defaultRunGit,
+  defaultReadGitBlob,
+  gitTreeReaders,
   lifecycleFor,
   readArtifact,
-  readText,
+  readOptionalText,
   resolveRecordingTag,
   type LoadGovernanceInputsOptions,
 } from './governance-inputs.js';
@@ -90,15 +92,20 @@ export function pwbWalkthroughExpectations(evaluationInstant: string): Walkthrou
 
 export function loadWalkthroughJudgmentInputs(options: LoadGovernanceInputsOptions): WalkthroughJudgmentInputs {
   const runGit = options.runGit ?? defaultRunGit;
-  const read = options.readFile ?? ((path: string) => new Uint8Array(readFileSync(path)));
-  const list = options.listDirectory ?? ((path: string) => readdirSync(path));
+  const readGitBlob = options.readGitBlob ?? defaultReadGitBlob;
   const repoRoot = resolve(options.repoRoot);
+  const tree = options.governanceRevision === undefined
+    ? undefined
+    : gitTreeReaders(runGit, readGitBlob, repoRoot, options.governanceRevision);
+  const read = options.readFile ?? tree?.read ?? ((path: string) => new Uint8Array(readFileSync(path)));
+  const list = options.listDirectory ?? tree?.list ?? ((path: string) => readdirSync(path));
   const s = PWB_WALKTHROUGH_SCHEDULE;
   const expectations = pwbWalkthroughExpectations(options.evaluationInstant);
 
   const runArtifact = readArtifact(read, join(repoRoot, s.runRecordPath));
   const judgmentArtifact = readArtifact(read, join(repoRoot, s.judgmentPath));
-  const recordText = readText(read, join(repoRoot, s.judgmentActRecordPath));
+  const record = readOptionalText(read, join(repoRoot, s.judgmentActRecordPath));
+  const recordText = record?.text;
   const actRecord: ActRecordInput =
     recordText === undefined
       ? classifyMissingRecord(runGit, repoRoot, s.recordingTag, judgmentArtifact)
@@ -112,7 +119,7 @@ export function loadWalkthroughJudgmentInputs(options: LoadGovernanceInputsOptio
       artifact: judgmentArtifact,
       actRecord,
       lifecycle: lifecycleFor(read, list, repoRoot, s.judgmentActRecordPath, recordText === undefined ? undefined : actIdentityOf(recordText)),
-      recordingTag: resolveRecordingTag(runGit, repoRoot, s.recordingTag, s.judgmentActRecordPath),
+      recordingTag: resolveRecordingTag(runGit, readGitBlob, repoRoot, s.recordingTag, s.judgmentActRecordPath, record?.bytes),
     },
     expectations,
     correlate: JUDGMENT_CORRELATION_UNAVAILABLE,

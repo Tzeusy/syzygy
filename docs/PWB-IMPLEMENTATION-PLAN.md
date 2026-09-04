@@ -176,6 +176,19 @@ for the reason while the policy wins for the exclusion record; (f) parse
 failure (step 5) is exposed as `parseFailureExclusion` for the extractor to
 call, since only 2.5 knows when a parse failed. Still no Butlers read.
 
+Authority-boundary repair, recorded 2026-09-05: the launcher now rejects any
+resolved locator other than the consent record's configured Butlers locator,
+and rejects a Git common directory other than that locator's exact object
+database, before constructing the shared model. Governance inputs and
+lifecycle records are loaded from the already-observed exact Syzygy commit;
+recording tags resolve only when their act-record blob is byte-equal to that
+current-tree record, and lifecycle enumeration/read/decode failures abort the
+loader rather than producing an empty lifecycle. Phase-A root and pillar
+indexes run the approved secret detectors and active-content screen before
+their text reaches link parsing; an excluded seed remains counted Unknown and
+derives no child paths. These changes repair PWB-LIVE-01/08/09 without changing
+the consent, policy vocabulary, signed behavior, or state-(1) disclosure.
+
 P2.5 note, recorded 2026-09-04: `project-shape-extraction.ts` implements the
 spec's "Reader definitions" literally, one function per item class, over the
 classified text 2.4 hands to its consumer. Decisions: (a) the parsers are

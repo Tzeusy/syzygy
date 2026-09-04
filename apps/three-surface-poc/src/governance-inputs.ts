@@ -101,17 +101,29 @@ export interface LoadGovernanceInputsOptions {
   readonly repoRoot: string;
   readonly evaluationId: string;
   readonly evaluationInstant: string;
+  // One exact Syzygy commit whose governance tree supplies every input.
+  // Production passes the already-observed clean checkout revision.
+  readonly governanceRevision?: string;
   // Injectable for hermetic tests; defaults shell `git -C <repoRoot>`.
   readonly runGit?: (repoRoot: string, args: readonly string[]) => string;
+  readonly readGitBlob?: (repoRoot: string, object: string) => Uint8Array;
   readonly readFile?: (absolutePath: string) => Uint8Array;
   readonly listDirectory?: (absolutePath: string) => readonly string[];
 }
 
 function defaultRunGit(repoRoot: string, args: readonly string[]): string {
-  return execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {
-    encoding: 'utf8',
+  const stdout = execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {
     stdio: ['ignore', 'pipe', 'ignore'],
   });
+  return new TextDecoder('utf-8', { fatal: true }).decode(stdout);
+}
+
+function defaultReadGitBlob(repoRoot: string, object: string): Uint8Array {
+  return new Uint8Array(
+    execFileSync('git', ['--no-optional-locks', '-C', repoRoot, 'cat-file', 'blob', object], {
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }),
+  );
 }
 
 function readArtifact(read: (path: string) => Uint8Array, absolutePath: string): ArtifactInput {
@@ -126,15 +138,69 @@ function readArtifact(read: (path: string) => Uint8Array, absolutePath: string):
 function readText(read: (path: string) => Uint8Array, absolutePath: string): string | undefined {
   try {
     return new TextDecoder('utf-8', { fatal: true }).decode(read(absolutePath));
-  } catch {
-    return undefined;
+  } catch (error) {
+    if ((error as { code?: string }).code === 'ENOENT') return undefined;
+    throw error;
   }
+}
+
+function readOptionalText(read: (path: string) => Uint8Array, absolutePath: string): { readonly bytes: Uint8Array; readonly text: string } | undefined {
+  try {
+    const bytes = read(absolutePath);
+    return { bytes, text: new TextDecoder('utf-8', { fatal: true }).decode(bytes) };
+  } catch (error) {
+    if ((error as { code?: string }).code === 'ENOENT') return undefined;
+    throw error;
+  }
+}
+
+function sameBytes(left: Uint8Array, right: Uint8Array): boolean {
+  if (left.byteLength !== right.byteLength) return false;
+  return left.every((byte, index) => byte === right[index]);
+}
+
+function gitTreeReaders(
+  runGit: LoadGovernanceInputsOptions['runGit'] & {},
+  readGitBlob: LoadGovernanceInputsOptions['readGitBlob'] & {},
+  repoRoot: string,
+  requestedRevision: string,
+): {
+  readonly read: (absolutePath: string) => Uint8Array;
+  readonly list: (absolutePath: string) => readonly string[];
+} {
+  const commit = runGit(repoRoot, ['rev-parse', '--verify', `${requestedRevision}^{commit}`]).trim();
+  if (!/^[0-9a-f]{40}$|^[0-9a-f]{64}$/.test(commit)) throw new Error('governance revision did not resolve to an exact commit');
+  const listing = runGit(repoRoot, ['ls-tree', '-r', '-z', '--name-only', commit, '--', PWB_GOVERNANCE_ROOT]);
+  const paths = new Set(listing.split('\0').filter((path) => path !== ''));
+  const blobs = new Map<string, Uint8Array>();
+  const relative = (absolutePath: string): string => {
+    const prefix = `${repoRoot}/`;
+    if (!absolutePath.startsWith(prefix)) throw new Error('governance path is outside the repository root');
+    return absolutePath.slice(prefix.length);
+  };
+  return {
+    read: (absolutePath) => {
+      const path = relative(absolutePath);
+      if (!paths.has(path)) throw Object.assign(new Error(`governance path absent at ${commit}`), { code: 'ENOENT' });
+      const cached = blobs.get(path);
+      if (cached !== undefined) return cached.slice();
+      const bytes = readGitBlob(repoRoot, `${commit}:${path}`);
+      blobs.set(path, bytes.slice());
+      return bytes;
+    },
+    list: (absolutePath) => {
+      const directory = `${relative(absolutePath)}/`;
+      return [...paths]
+        .filter((path) => path.startsWith(directory) && !path.slice(directory.length).includes('/'))
+        .map((path) => path.slice(directory.length));
+    },
+  };
 }
 
 function tagExists(runGit: LoadGovernanceInputsOptions['runGit'] & {}, repoRoot: string, tag: string): string | undefined {
   try {
     const commit = runGit(repoRoot, ['rev-parse', '--verify', '--quiet', `refs/tags/${tag}^{commit}`]).trim();
-    return /^[0-9a-f]{40}$/.test(commit) ? commit : undefined;
+    return /^[0-9a-f]{40}$|^[0-9a-f]{64}$/.test(commit) ? commit : undefined;
   } catch {
     return undefined;
   }
@@ -144,15 +210,17 @@ function tagExists(runGit: LoadGovernanceInputsOptions['runGit'] & {}, repoRoot:
 // the act record at the recorded path.
 function resolveRecordingTag(
   runGit: LoadGovernanceInputsOptions['runGit'] & {},
+  readGitBlob: LoadGovernanceInputsOptions['readGitBlob'] & {},
   repoRoot: string,
   tag: string,
   recordPath: string,
+  currentRecordBytes: Uint8Array | undefined,
 ): RecordingTagResolution {
   const commit = tagExists(runGit, repoRoot, tag);
-  if (commit === undefined) return { kind: 'unresolved' };
+  if (commit === undefined || currentRecordBytes === undefined) return { kind: 'unresolved' };
   try {
-    const listing = runGit(repoRoot, ['ls-tree', '--name-only', commit, '--', recordPath]);
-    return listing.split('\n').map((line) => line.trim()).includes(recordPath)
+    const recordedBytes = readGitBlob(repoRoot, `${commit}:${recordPath}`);
+    return sameBytes(recordedBytes, currentRecordBytes)
       ? { kind: 'resolved', commit }
       : { kind: 'unresolved' };
   } catch {
@@ -192,8 +260,8 @@ function lifecycleFor(
   let names: readonly string[];
   try {
     names = list(decisionsDir);
-  } catch {
-    return {};
+  } catch (error) {
+    throw new Error(`governance lifecycle enumeration failed: ${error instanceof Error ? error.message : String(error)}`);
   }
   let supersededBy: string | undefined;
   let revokedBy: string | undefined;
@@ -202,7 +270,7 @@ function lifecycleFor(
     const relative = `${PWB_GOVERNANCE_ROOT}/decisions/${name}`;
     if (relative === ownRecordPath) continue;
     const text = readText(read, join(decisionsDir, name));
-    if (text === undefined) continue;
+    if (text === undefined) throw new Error(`governance lifecycle record disappeared: ${relative}`);
     for (const entry of supersessionTargetsOf(text)) {
       if (entry.target !== actIdentity) continue;
       if (entry.relation === 'supersedes') supersededBy ??= relative;
@@ -219,9 +287,13 @@ function actIdentityOf(text: string): string | undefined {
 
 export function loadBodyReadAuthorityInputs(options: LoadGovernanceInputsOptions): BodyReadAuthorityInputs {
   const runGit = options.runGit ?? defaultRunGit;
-  const read = options.readFile ?? ((path: string) => new Uint8Array(readFileSync(path)));
-  const list = options.listDirectory ?? ((path: string) => readdirSync(path));
+  const readGitBlob = options.readGitBlob ?? defaultReadGitBlob;
   const repoRoot = resolve(options.repoRoot);
+  const tree = options.governanceRevision === undefined
+    ? undefined
+    : gitTreeReaders(runGit, readGitBlob, repoRoot, options.governanceRevision);
+  const read = options.readFile ?? tree?.read ?? ((path: string) => new Uint8Array(readFileSync(path)));
+  const list = options.listDirectory ?? tree?.list ?? ((path: string) => readdirSync(path));
   const expectations = pwbAuthorityExpectations(options.evaluationInstant);
 
   const load = (kind: AuthorityKind): AuthorityInput => {
@@ -229,7 +301,8 @@ export function loadBodyReadAuthorityInputs(options: LoadGovernanceInputsOptions
     const recordPath = PWB_ACT_RECORDS[kind];
     const tag = expectations.authorities[kind].recordingTag;
     const artifact = readArtifact(read, join(repoRoot, artifactPath));
-    const recordText = readText(read, join(repoRoot, recordPath));
+    const record = readOptionalText(read, join(repoRoot, recordPath));
+    const recordText = record?.text;
     const actRecord: ActRecordInput =
       recordText === undefined
         ? classifyMissingRecord(runGit, repoRoot, tag, artifact)
@@ -238,7 +311,7 @@ export function loadBodyReadAuthorityInputs(options: LoadGovernanceInputsOptions
       artifact,
       actRecord,
       lifecycle: lifecycleFor(read, list, repoRoot, recordPath, recordText === undefined ? undefined : actIdentityOf(recordText)),
-      recordingTag: resolveRecordingTag(runGit, repoRoot, tag, recordPath),
+      recordingTag: resolveRecordingTag(runGit, readGitBlob, repoRoot, tag, recordPath, record?.bytes),
     };
   };
 
@@ -256,4 +329,4 @@ export function loadBodyReadAuthorityInputs(options: LoadGovernanceInputsOptions
 // Shared with the walkthrough-judgment loader (task 4.6): the same
 // artifact/act-record/tag/lifecycle classification, so a judgment act is
 // read under exactly the rules the three body-read authorities are.
-export { classifyMissingRecord, lifecycleFor, actIdentityOf, defaultRunGit, readArtifact, readText, resolveRecordingTag };
+export { classifyMissingRecord, lifecycleFor, actIdentityOf, defaultReadGitBlob, defaultRunGit, gitTreeReaders, readArtifact, readOptionalText, readText, resolveRecordingTag };

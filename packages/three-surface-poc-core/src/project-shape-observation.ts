@@ -26,6 +26,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 
 import type { AuthorityKind, AuthorityState, BodyReadAuthorityEvaluation } from './body-read-authority.js';
+import type { PhaseAClassification } from './content-classification.js';
 import { type GitTreeEntry, type GitTreeIndex, indexGitTree, parseGitLsTree, posixBasename, posixDirname } from './git-tree.js';
 import {
   PILLAR_KEYS,
@@ -168,6 +169,8 @@ export const PHASE_A_READ_OUTCOMES = [
   'object-id-mismatch',
   'not-utf-8',
   'contains-nul',
+  'secret-matched',
+  'active-content',
 ] as const;
 export type PhaseAReadOutcome = (typeof PHASE_A_READ_OUTCOMES)[number];
 
@@ -296,6 +299,7 @@ export interface ObserveProjectShapeSourcesInput {
   readonly capturedAt: string;
   readonly runGit: GitRunner;
   readonly authority?: BodyReadAuthorityEvaluation;
+  readonly classifyPhaseA: (text: string) => PhaseAClassification;
   readonly discoveryVersion?: string;
   readonly resourceLimits?: PwbResourceLimits;
 }
@@ -431,6 +435,17 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
       reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'not-utf-8', bytes: bytes.byteLength });
       return { kind: 'unavailable', reason: 'seed is not valid UTF-8' };
     }
+    const classification = input.classifyPhaseA(text);
+    if (classification.kind === 'excluded') {
+      reads.push({
+        path: seed.path,
+        objectId: seed.objectId,
+        outcome: classification.reason,
+        bytes: bytes.byteLength,
+        detail: classification.detail,
+      });
+      return { kind: 'unavailable', reason: `phase A source excluded: ${classification.reason}` };
+    }
     reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'read', bytes: bytes.byteLength });
     return { kind: 'text', text };
   };
@@ -470,7 +485,16 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
 
   // 6. Degradation, from the registry's failure states.
   let degradation: ObservationDegradation | undefined;
-  if (manifest.rootIndex.state !== 'read') {
+  const classifiedExclusion = reads.find((read) => read.outcome === 'secret-matched' || read.outcome === 'active-content');
+  if (classifiedExclusion !== undefined) {
+    const state = PWB_FAILURE_STATES.secretMatchedOrUnclassifiable;
+    degradation = {
+      failureState: 'secretMatchedOrUnclassifiable',
+      degradationState: state.degradationState,
+      unknownReason: state.unknownReason,
+      detail: `${classifiedExclusion.path} ${classifiedExclusion.outcome}`,
+    };
+  } else if (manifest.rootIndex.state !== 'read') {
     const state = PWB_FAILURE_STATES.sourceMissingOrUnreadable;
     degradation = {
       failureState: 'sourceMissingOrUnreadable',
