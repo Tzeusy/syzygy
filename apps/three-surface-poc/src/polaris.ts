@@ -21,6 +21,19 @@ import {
   type ReasonCounts,
 } from '@syzygy/three-surface-poc-core';
 
+import {
+  DEFAULT_READING_MODE,
+  DeepDiveLedger,
+  currentIntentLeaf,
+  deepDiveMachineForm,
+  deriveCapabilityDeepDives,
+  exclusiveWith,
+  resolveVerbatim,
+  type CapabilityDeepDive,
+  type DeepDiveBand,
+  type VerbatimLeafReader,
+  type VerbatimResolution,
+} from './capability-detail.js';
 import { pageShell } from './page-shell.js';
 import { copyAttr, copyText, roleAttr, type PolarisCopyId } from './polaris-copy.js';
 import {
@@ -147,16 +160,16 @@ function provenanceCitations(provenance: readonly PocProvenance[], anchors: read
   return ` <span class="citation">(${items})</span>`;
 }
 
-function entitySection(entity: PocEntity): string {
+function entitySection(entity: PocEntity, blockAttrs = ` data-polaris-section="${escapeHtml(entity.id)}"`): string {
   const title = `<h3 id="polaris-${escapeHtml(entity.id)}"${FACT}>${escapeHtml(entity.title)}</h3>`;
   if (entity.epistemic.label === 'Observed') {
     const block = anchoredBlock(`block:${entity.id}`, [{ claimId: entity.id, anchors: entity.provenance.map(provenanceAnchor), captured: entityCaptured(entity.epistemic) }]);
-    return `<section class="claim-section" data-polaris-section="${escapeHtml(entity.id)}">
+    return `<section class="claim-section"${blockAttrs}>
       ${title}
       <p${block.attrs}><span data-claim-provenance="${escapeHtml(entity.id)}">${escapeHtml(entity.detail)}</span>${provenanceCitations(entity.provenance, block.anchors)}</p>
     </section>`;
   }
-  return `<section class="claim-section" data-polaris-section="${escapeHtml(entity.id)}">
+  return `<section class="claim-section"${blockAttrs}>
     ${title}
     <p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(entity.id)}"${DISCLOSURE}>
       ${copy('label.unknown')} — ${escapeHtml(entity.epistemic.reason)}
@@ -564,18 +577,45 @@ function shapeEvidence(shape: ProjectShape): string {
 }
 
 // ---------------------------------------------------------------------------
-// Proposed work (PWB-REQ-013): a distinct type, rendered only inside the
-// affected capability's detail, labeled, with the current authority adjacent.
+// Capability deep dive (PWB-REQ-015; RFC7-17): argument, contract, reality.
+// Proposed work (PWB-REQ-013) renders inside the contract band beside the
+// current intent, as separate candidate futures that anchor nothing.
 
-function artifactCitation(artifact: ProposedWork['proposal'], anchor: NarrativeAnchor): string {
-  return `<cite data-parity-field="provenance-source"${anchorAttrs(anchor)}>${escapeHtml(artifact.path)}</cite>@<code data-parity-field="provenance-revision">${escapeHtml(artifact.revision.slice(0, 12))}</code>`;
+const SCOPE = roleAttr('scope-instruction');
+
+function artifactCitation(artifact: ProposedWork['proposal']): string {
+  return `<cite data-parity-field="provenance-source" data-proposal-artifact="${escapeHtml(artifact.digest)}">${escapeHtml(artifact.path)}</cite>@<code data-parity-field="provenance-revision">${escapeHtml(artifact.revision.slice(0, 12))}</code>`;
 }
 
-function currentAuthorityPart(work: ProposedWork, revision: string): string {
-  const current = work.currentAuthority;
-  const body = current.kind === 'baseline-spec'
+function unknownLine(marker: string, reason: string, route: string, detail: string): string {
+  return `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(marker)}"${DISCLOSURE}>${copy('label.unknown')} — <span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>. ${copy('label.route')} ${escapeHtml(route)}.<br><small>${escapeHtml(detail)}</small></p>`;
+}
+
+function verbatimSlot(dive: CapabilityDeepDive, resolution: VerbatimResolution | undefined, ledger: DeepDiveLedger): string {
+  const marker = `${dive.capabilityId}/requirement-text`;
+  const attrs = ledger.block('contract', `contract:${dive.capabilityId}/requirement-text`);
+  const body = ((): string => {
+    if (resolution === undefined) {
+      const intent = dive.currentIntent;
+      return intent.kind === 'unknown'
+        ? unknownLine(marker, intent.reason, intent.route, intent.detail)
+        : unknownLine(marker, 'reference-unresolvable', UNKNOWN_REASON_ROUTES['reference-unresolvable'], `The baseline spec ${intent.path} carries no captured identity to verify text against.`);
+    }
+    if (resolution.kind === 'not-rendered') return unknownLine(marker, resolution.reason, resolution.route, resolution.detail);
+    return `<pre class="verbatim" data-verbatim-text data-verbatim-identity="${escapeHtml(resolution.identity)}"${roleAttr('project-fact', 'anchored-project-fact')}>${escapeHtml(resolution.text)}</pre>`;
+  })();
+  return `<section class="claim-section" data-contract-part="requirement-text" data-verbatim="${resolution?.kind === 'rendered' ? 'rendered' : 'not-rendered'}"${attrs}>
+      ${heading(4, `polaris-${dive.capabilityId}-requirement-text`, 'label.requirement-text')}
+      <p class="lede"${copyAttr('contract.verbatim-lede')}>${copy('contract.verbatim-lede')}</p>
+      ${body}
+    </section>`;
+}
+
+function currentIntentPart(dive: CapabilityDeepDive, revision: string, resolution: VerbatimResolution | undefined, ledger: DeepDiveLedger): string {
+  const current = dive.currentIntent;
+  const identity = current.kind === 'baseline-spec'
     ? ((): string => {
-        const block = anchoredBlock(`block:${work.id}/current-authority`, [{
+        const block = anchoredBlock(`block:${dive.capabilityId}/current-authority`, [{
           claimId: current.claim.claimId,
           anchors: current.claim.support.map((support) => supportAnchor(support, revision, 'requirement')).filter((anchor): anchor is AnchorInput => anchor !== undefined),
           captured: capturedStateOf(current.claim),
@@ -583,41 +623,126 @@ function currentAuthorityPart(work: ProposedWork, revision: string): string {
         return `<p${block.attrs}><span data-claim-provenance="${escapeHtml(current.claim.claimId)}"><code data-parity-field="current-authority-path">${escapeHtml(current.path)}</code></span>${supportCitations(current.claim.support, block.anchors)}</p>
       ${tupleLine(current.claim)}`;
       })()
-    : `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(work.id)}/current-authority"${DISCLOSURE}>${copy('label.unknown')} — <span data-unknown-reason="${escapeHtml(current.reason)}">${escapeHtml(current.reason)}</span>. ${copy('label.route')} ${escapeHtml(current.route)}.<br><small>${escapeHtml(current.detail)}</small></p>`;
-  return `<section data-proposed-work-part="current-authority">
-      ${heading(4, 'polaris-proposed-current', 'proposed.current')}
-      ${body}
-    </section>`;
+    : unknownLine(`${dive.capabilityId}/current-authority`, current.reason, current.route, current.detail);
+  const adoption = dive.adoption.kind === 'unknown'
+    ? unknownLine(`${dive.capabilityId}/adoption`, dive.adoption.reason, dive.adoption.route, dive.adoption.detail)
+    : `<p${FACT}>${copy('label.adoption')} <span data-capability-adoption-state="${dive.adoption.kind}">${copy(dive.adoption.kind === 'adopted' ? 'adoption.adopted' : 'adoption.draft')}</span> — ${escapeHtml(dive.adoption.basis)}</p>`;
+  return `<section class="claim-section" data-proposed-work-part="current-authority"${ledger.block('contract', `contract:${dive.capabilityId}/current-authority`)}>
+      ${heading(4, `polaris-${dive.capabilityId}-current`, 'proposed.current')}
+      ${identity}
+      ${adoption}
+    </section>
+    ${verbatimSlot(dive, resolution, ledger)}`;
 }
 
-function proposalPart(work: ProposedWork): string {
-  const block = anchoredBlock(`block:${work.id}`, [{
-    claimId: work.id,
-    anchors: [artifactAnchor(work.proposal, 'work'), artifactAnchor(work.delta, 'requirement')],
-    captured: work.lifecycle.kind === 'observed'
-      ? { label: 'Observed', tier: 'report-fact', reason: 'none' }
-      : { label: 'Unknown', tier: 'unstated', reason: 'missing-evidence' },
-  }]);
+/** One proposal: adjacent to the current intent, labeled, non-anchorable and
+ * non-status-bearing. It registers no narrative block and carries no anchor. */
+function proposalPart(dive: CapabilityDeepDive, work: ProposedWork, ledger: DeepDiveLedger): string {
+  const exclusive = exclusiveWith(dive, work.changeId);
   const lifecycle = work.lifecycle.kind === 'observed'
     ? `<p${FACT}>${copy('label.lifecycle')} <span data-proposal-lifecycle-state="${escapeHtml(work.lifecycle.state)}">${escapeHtml(work.lifecycle.state)}</span> — ${escapeHtml(work.lifecycle.basis)}</p>`
     : `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(work.id)}/lifecycle"${DISCLOSURE}>${copy('label.lifecycle')} ${copy('label.unknown')} — ${escapeHtml(work.lifecycle.reason)}</p>`;
-  return `<section data-proposed-work-part="proposal">
-      ${heading(4, 'polaris-proposed-change', 'proposed.change')}
-      <p${block.attrs}><span data-claim-provenance="${escapeHtml(work.id)}"><code data-parity-field="proposal-change-id">${escapeHtml(work.changeId)}</code> ${copy('label.amends')} <code>openspec/specs/${escapeHtml(work.specKey)}/spec.md</code>.</span> <span class="citation">(${artifactCitation(work.proposal, block.anchors[0] as NarrativeAnchor)}, ${artifactCitation(work.delta, block.anchors[1] as NarrativeAnchor)})</span></p>
+  const futures = exclusive.length === 0
+    ? `<p${FACT}>${copy('label.candidate-future')} — ${copy(dive.exclusivityBasis === 'declared' ? 'sentence.no-competitor' : 'sentence.exclusivity-not-captured')}</p>`
+    : `<p${FACT}>${copy('label.candidate-future')} — ${copy('label.exclusive-with')} ${exclusive.map((other) => `<code data-exclusive-change="${escapeHtml(other)}">${escapeHtml(other)}</code>`).join(', ')}. ${copy('sentence.separate-futures')}</p>`;
+  const attrs = ledger.block('contract', `contract:${dive.capabilityId}/proposal:${work.changeId}`);
+  return `<section class="claim-section proposal" data-proposed-work-part="proposal" data-candidate-future="${escapeHtml(work.changeId)}" data-exclusive-with="${escapeHtml(exclusive.join('\t'))}" data-anchorable="false" data-status-bearing="false"${attrs}>
+      ${heading(4, `polaris-proposed-${work.changeId}`, 'proposed.change')}
+      <p class="proposal-label" data-proposal-label${copyAttr('label.proposed')}>${copy('label.proposed')}</p>
+      <p${FACT}><span data-proposal-identity="${escapeHtml(work.id)}"><code data-parity-field="proposal-change-id">${escapeHtml(work.changeId)}</code> ${copy('label.amends')} <code>openspec/specs/${escapeHtml(work.specKey)}/spec.md</code>.</span> <span class="citation">(${artifactCitation(work.proposal)}, ${artifactCitation(work.delta)})</span></p>
       ${lifecycle}
+      ${futures}
     </section>`;
 }
 
-function proposedWorkSection(work: ProposedWork, revision: string): string {
-  const lifecycleState = work.lifecycle.kind === 'observed' ? work.lifecycle.state : 'unknown';
-  return `<section class="claim-section proposal" data-polaris-section="proposed-work" data-proposal-change="${escapeHtml(work.changeId)}" data-proposal-lifecycle="${escapeHtml(lifecycleState)}" data-proposal-capability="${escapeHtml(work.capabilityId)}">
-    ${heading(3, 'polaris-proposed-work', 'proposed.heading')}
-    <p class="proposal-label" data-proposal-label${copyAttr('label.proposed')}>${copy('label.proposed')}</p>
+function proposedWorkSection(dive: CapabilityDeepDive, revision: string, resolution: VerbatimResolution | undefined, ledger: DeepDiveLedger): string {
+  const changeIds = dive.proposals.map((work) => work.changeId);
+  const lifecycles = dive.proposals.map((work) => (work.lifecycle.kind === 'observed' ? work.lifecycle.state : 'unknown'));
+  const single = dive.proposals.length === 1 ? ` data-proposal-change="${escapeHtml(changeIds[0] as string)}" data-proposal-lifecycle="${escapeHtml(lifecycles[0] as string)}"` : '';
+  return `<section class="claim-section"${ledger.block('contract', `contract:${dive.capabilityId}/proposed-work`)} data-proposal-changes="${escapeHtml(changeIds.join('\t'))}" data-proposal-count="${dive.proposals.length}"${single} data-proposal-capability="${escapeHtml(dive.capabilityId)}" data-exclusivity-basis="${dive.exclusivityBasis}">
+    ${heading(3, `polaris-${dive.capabilityId}-proposed-work`, 'proposed.heading')}
     <div class="adjacent">
-      ${currentAuthorityPart(work, revision)}
-      ${proposalPart(work)}
+      ${currentIntentPart(dive, revision, resolution, ledger)}
+      ${dive.proposals.map((work) => proposalPart(dive, work, ledger)).join('')}
     </div>
   </section>`;
+}
+
+function undeclaredContractPart(dive: CapabilityDeepDive, part: 'doctrine' | 'non-goals', shape: ProjectShape, ledger: DeepDiveLedger): string {
+  const reason = shape.kind === 'observed'
+    ? 'missing-declaration'
+    : ('reasons' in shape.claim.epistemic ? shape.claim.epistemic.reasons.primary : 'unconsented-source-or-provider');
+  const detail = shape.kind === 'observed'
+    ? `The consented sources declare no ${part === 'doctrine' ? 'doctrine' : 'non-goal'} link for ${dive.capabilityId}; none is restated here.`
+    : `The project shape is ${shape.kind}; no declaration was read.`;
+  return `<section class="claim-section" data-contract-part="${part}"${ledger.block('contract', `contract:${dive.capabilityId}/${part}`)}>
+      ${heading(4, `polaris-${dive.capabilityId}-${part}`, part === 'doctrine' ? 'label.doctrine' : 'label.non-goals')}
+      ${unknownLine(`${dive.capabilityId}/${part}`, reason, UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? 'No route recorded', detail)}
+    </section>`;
+}
+
+function bandHeader(band: DeepDiveBand, dive: CapabilityDeepDive): string {
+  return `${heading(3, `polaris-${dive.capabilityId}-band-${band}`, `band.${band}`)}
+    <p class="lede"${copyAttr(`band.${band}-lede`)}>${copy(`band.${band}-lede`)}</p>`;
+}
+
+function entityLink(entity: PocEntity): string {
+  return `<a href="#polaris-${escapeHtml(entity.id)}" data-argument-ref="${escapeHtml(entity.id)}">${escapeHtml(entity.title)}</a>`;
+}
+
+function argumentBand(dive: CapabilityDeepDive, ledger: DeepDiveLedger): string {
+  const intents = dive.related.filter((entity) => entity.kind === 'intent');
+  const why = intents.length === 0
+    ? `<p${FACT}>${copy('label.why')} — ${copy('sentence.no-intent-declared')}</p>`
+    : `<p${FACT}>${copy('label.why')} — ${intents.map(entityLink).join(', ')}. <a href="#polaris-group-overview" data-argument-ref="group:overview">${copy('group.overview')}</a>.</p>`;
+  return `<section class="band"${ledger.block('argument', `argument:${dive.capabilityId}`)}>
+      ${bandHeader('argument', dive)}
+      <p${FACT}>${copy('label.thesis')} — ${escapeHtml(dive.capability.title)}.</p>
+      ${why}
+      <p${FACT}>${copy('label.related')} — ${dive.related.filter((entity) => entity.kind !== 'intent' && entity.kind !== 'project').map(entityLink).join(', ')}.</p>
+    </section>`;
+}
+
+function contractBand(dive: CapabilityDeepDive, model: PocModel, revision: string, resolution: VerbatimResolution | undefined, ledger: DeepDiveLedger): string {
+  return `<section class="band"${ledger.block('contract', `contract:${dive.capabilityId}`)}>
+      ${bandHeader('contract', dive)}
+      ${proposedWorkSection(dive, revision, resolution, ledger)}
+      ${undeclaredContractPart(dive, 'doctrine', model.projectShape, ledger)}
+      ${undeclaredContractPart(dive, 'non-goals', model.projectShape, ledger)}
+    </section>`;
+}
+
+function realityBand(dive: CapabilityDeepDive, model: PocModel, ledger: DeepDiveLedger): string {
+  const entitiesById = new Map(model.entities.map((entity) => [entity.id, entity]));
+  const sections = model.entities
+    .filter((entity) => entity.id === dive.capabilityId || dive.related.some((related) => related.id === entity.id))
+    .map((entity) => entitySection(entity, ledger.block('reality', entity.id)))
+    .join('');
+  const relationshipList = dive.relationships.map((relationship) => relationshipBullet(relationship, entitiesById)).join('');
+  return `<section class="band"${ledger.block('reality', `reality:${dive.capabilityId}`)}>
+      ${bandHeader('reality', dive)}
+      ${sections}
+      <section class="relationships"${ledger.block('reality', 'relationships')}>
+        ${heading(3, 'polaris-relationships', 'evidence.relationships')}
+        <p class="relationships-lede"${copyAttr('evidence.relationships-lede')}>${copy('evidence.relationships-lede')}</p>
+        <ul>${relationshipList}</ul>
+      </section>
+    </section>`;
+}
+
+/** One capability deep dive: the three bands in order, Base mode, every
+ * block under exactly one band, the machine form registered beside the
+ * narrative. Verbatim text is resolved here, at render, and never stored. */
+function capabilityDeepDive(dive: CapabilityDeepDive, model: PocModel, revision: string, verbatim: VerbatimLeafReader | undefined): string {
+  const ledger = new DeepDiveLedger(escapeHtml);
+  const leaf = currentIntentLeaf(dive.currentIntent, revision);
+  const resolution = leaf === undefined ? undefined : resolveVerbatim(leaf, verbatim);
+  const bands = `${argumentBand(dive, ledger)}${contractBand(dive, model, revision, resolution, ledger)}${realityBand(dive, model, ledger)}`;
+  registry().registerDeepDive(deepDiveMachineForm(dive, ledger, { ...(leaf === undefined ? {} : { leaf }), ...(resolution === undefined ? {} : { resolution }) }));
+  return `<section class="deep-dive" data-capability-deep-dive="${escapeHtml(dive.capabilityId)}" data-reading-mode="${DEFAULT_READING_MODE}" data-capability-adoption="${dive.adoption.kind}">
+      <p${SCOPE}>${copy('label.mode')} <span data-reading-mode-value="${DEFAULT_READING_MODE}">${DEFAULT_READING_MODE}</span> — ${copy('sentence.base-mode')}</p>
+      ${bands}
+    </section>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -647,6 +772,10 @@ function projectGroupBody(shape: ProjectShape, group: Exclude<PolarisGroup, 'cap
 }
 
 const POLARIS_STYLE = `
+  .band { max-width: 74ch; margin: 0 auto 2rem; padding: 0.5rem 0 0; border-left: 3px solid var(--line); padding-left: 1rem; }
+  .band[data-band="argument"] { border-left-style: dotted; }
+  .band[data-band="contract"] { border-left-style: double; }
+  .verbatim { white-space: pre-wrap; border: 1px solid var(--line); padding: 0.75rem; overflow-x: auto; }
   .claim-section { max-width: 74ch; margin: 0 auto 3rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
   .claim-section.wide { max-width: 100ch; }
   .claim-section h3 { font-size: clamp(1.25rem, 2.4vw, 1.7rem); margin: 0 0 .8rem; }
@@ -674,24 +803,46 @@ const POLARIS_STYLE = `
   .proposal h4 { margin: 0 0 .5rem; font-size: 1.05rem; }
 `;
 
-export function renderPolarisPage(model: PocModel, mountPrefix = '', viewState: PolarisViewState = {}): string {
+/** Seam for the PWB-REQ-015 sweep: one deep dive rendered on its own with a
+ * fresh registry, so a fixture dive (draft capability, competing proposals)
+ * can be exercised without a model that carries it. Returns the fragment and
+ * the machine form the page would embed. */
+export function renderCapabilityDeepDive(dive: CapabilityDeepDive, model: PocModel, inputs: PolarisRenderInputs = {}): { readonly html: string; readonly narrative: ReturnType<NarrativeRegistry['narrative']> } {
+  if (activeRegistry !== undefined) throw new Error('renderPolarisPage re-entered');
+  activeRegistry = new NarrativeRegistry();
+  try {
+    const shape = model.projectShape;
+    const html = capabilityDeepDive(dive, model, shape.kind === 'observed' ? shape.identity.revision : '', inputs.verbatim);
+    return { html, narrative: activeRegistry.narrative() };
+  } finally {
+    activeRegistry = undefined;
+  }
+}
+
+/** Render-time inputs that are not truth: a verbatim reader for the current
+ * requirement leaf (production passes none — the leaf lies outside the
+ * consented content class, and the page says so). */
+export interface PolarisRenderInputs {
+  readonly verbatim?: VerbatimLeafReader;
+}
+
+export function renderPolarisPage(model: PocModel, mountPrefix = '', viewState: PolarisViewState = {}, inputs: PolarisRenderInputs = {}): string {
   if (activeRegistry !== undefined) throw new Error('renderPolarisPage re-entered');
   activeRegistry = new NarrativeRegistry();
   activeViewState = viewState;
   try {
-    return renderPolarisBody(model, mountPrefix, activeRegistry);
+    return renderPolarisBody(model, mountPrefix, activeRegistry, inputs);
   } finally {
     activeRegistry = undefined;
     activeViewState = {};
   }
 }
 
-function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: NarrativeRegistry): string {
+function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: NarrativeRegistry, inputs: PolarisRenderInputs): string {
   const shape = model.projectShape;
-  const entitiesById = new Map(model.entities.map((entity) => [entity.id, entity]));
-  const capabilitySections = model.entities.map(entitySection).join('');
-  const relationshipList = model.relationships
-    .map((relationship) => relationshipBullet(relationship, entitiesById))
+  const revision = shape.kind === 'observed' ? shape.identity.revision : '';
+  const deepDives = deriveCapabilityDeepDives(model)
+    .map((dive) => capabilityDeepDive(dive, model, revision, inputs.verbatim))
     .join('');
 
   const body = `
@@ -708,13 +859,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     ${projectGroupBody(shape, 'catalog')}
     ${groupHeader('capability-detail')}
     <p class="scope-instruction" data-polaris-capability-scope data-scope="poc-bound"${copyAttr('capability.scope')}>${copy('capability.scope')}</p>
-    ${capabilitySections}
-    ${proposedWorkSection(model.proposedWork, shape.kind === 'observed' ? shape.identity.revision : '')}
-    <section class="relationships" data-polaris-section="relationships">
-      ${heading(3, 'polaris-relationships', 'evidence.relationships')}
-      <p class="relationships-lede"${copyAttr('evidence.relationships-lede')}>${copy('evidence.relationships-lede')}</p>
-      <ul>${relationshipList}</ul>
-    </section>
+    ${deepDives}
     ${groupHeader('evidence-and-gaps')}
     ${shapeEvidence(shape)}
     ${codeStructureSection(model)}

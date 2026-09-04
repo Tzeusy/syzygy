@@ -16,6 +16,8 @@ import type {
   ProposedWork,
 } from '@syzygy/three-surface-poc-core';
 
+import type { DeepDiveMachineForm } from './capability-detail.js';
+
 export const NARRATIVE_CLAIM_ROLES = ['anchored-project-fact', 'non-normative-framing', 'epistemic-claim'] as const;
 export type NarrativeClaimRole = (typeof NARRATIVE_CLAIM_ROLES)[number];
 
@@ -65,6 +67,9 @@ export interface PolarisNarrative {
   readonly roles: readonly NarrativeClaimRole[];
   readonly anchorTargetClasses: readonly AnchorTargetClass[];
   readonly blocks: readonly NarrativeBlock[];
+  /** Capability deep dives: band composition, verbatim state and the
+   * proposals' non-anchorable, non-status-bearing futures (PWB-REQ-015). */
+  readonly deepDives: readonly DeepDiveMachineForm[];
 }
 
 /** Personal view state (which on-demand blocks start open). It lives here,
@@ -139,7 +144,13 @@ function deepFreeze<T>(value: T): T {
  * target state (PWB-REQ-014 later-read mutation case). */
 export class NarrativeRegistry {
   private readonly blocks: NarrativeBlock[] = [];
+  private readonly deepDives: DeepDiveMachineForm[] = [];
   private readonly seen = new Set<string>();
+
+  registerDeepDive(form: DeepDiveMachineForm): void {
+    if (this.deepDives.some((dive) => dive.capabilityId === form.capabilityId)) throw new Error(`deep dive registered twice: ${form.capabilityId}`);
+    this.deepDives.push(deepFreeze(structuredClone(form)));
+  }
 
   registerAnchored(blockId: string, claims: readonly string[], anchors: readonly (AnchorInput & { readonly supports: readonly string[]; readonly captured: CapturedTargetState })[]): NarrativeBlock {
     if (this.seen.has(blockId)) throw new Error(`narrative block registered twice: ${blockId}`);
@@ -174,6 +185,7 @@ export class NarrativeRegistry {
       roles: [...NARRATIVE_CLAIM_ROLES],
       anchorTargetClasses: [...ANCHOR_TARGET_CLASSES],
       blocks: [...this.blocks],
+      deepDives: [...this.deepDives],
     });
   }
 }

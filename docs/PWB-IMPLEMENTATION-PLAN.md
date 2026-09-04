@@ -455,6 +455,51 @@ sweep stays Unknown until a live run under the consented class provides it.
 Rule-6 evidence: `docs/evidence/pwb-p3-6-narrative-mutation-run-2026-09-04.json`
 (17/17 killed, digest-verified restore).
 
+P3.7 implemented 2026-09-04 (task 3.7, PWB-REQ-015, `syzygy-1z3.15`).
+`capability-detail.ts` owns the data side of the deep dive: the closed band
+vocabulary (`argument` / `contract` / `reality`) with one authority class each
+(`authored-non-normative` / `referenced-verbatim` / `kernel-computed`),
+`deriveCapabilityDeepDives(model)` (one dive per capability entity; adoption
+read from the observed tree — `adopted` when the shape holds the baseline
+spec, `draft` when it does not, Unknown otherwise; proposals from
+`proposedWork`; exclusivity `not-captured` because the model captures no
+OpenSpec exclusivity declaration, so every proposal is its own future),
+`resolveVerbatim` and the `DeepDiveLedger`. `polaris.ts` composes the HTML:
+every `<section>` inside the dive carries exactly one `data-band` plus its
+class and is recorded in the ledger; the machine form (`deepDives` on the
+PWB-REQ-014 narrative script) lists the band population, the intent leaf and
+verbatim state, and each proposal as `anchorable:false, statusBearing:false`.
+Base is the only mode (`data-reading-mode="Base"`, reality band always
+rendered); the proposed-scenario mode (RFC7-26) is outside this change.
+Verbatim requirement text: the plan said "loaded from the owning artifact at
+render, never stored". The leaf is the baseline spec at the shape's revision,
+which lies outside the consented `declared-project-shape-text` class, so
+production passes no reader and the contract band discloses
+`unconsented-source-or-provider` beside the leaf's captured identity
+(`PolarisRenderInputs.verbatim` is the render-time seam; bytes are rendered
+only when they hash to the captured git object id / sha256, are NUL-free
+UTF-8, and appear once on the page, never in the machine form or the model).
+`[Unknown]` The live rendering of real Butlers requirement text stays Unknown
+until an act extends consent to that class. Doctrine and non-goal parts are
+Unknown `missing-declaration` (the consented grammar declares no capability →
+doctrine/non-goal link) or the shape's own reason when the shape is not
+observed. Proposals moved from an anchored block to a non-anchored,
+non-status-bearing block (RFC1-22): no `data-anchor-*`, no narrative block, no
+tuple; artifacts cited by digest as `data-proposal-artifact`; each proposal is
+a `data-candidate-future` with `data-exclusive-with` from declared groups.
+`polaris-capability-detail.test.ts` is the oracle (hand-typed bands and
+classes, a stack walk over every `<section>` for one-band-per-block and
+enclosure, machine-form population equality, byte-equality of rendered text to
+the fixture repository's own baseline bytes, fail-closed forged/unreadable/
+binary readers, draft vs adopted from the model's own lookup, proposal
+non-anchorability against the whole anchor population, the two-incompatible-
+proposals sweep case through the exported `renderCapabilityDeepDive` seam,
+and a static-source sweep over every non-test `.ts` under `apps/` and
+`packages/` for requirement/scenario/doctrine/non-goal grammar in string
+literals — zero offenders). Rule-6 evidence:
+`docs/evidence/pwb-p3-7-bands-mutation-run-2026-09-04.json` (18/18 killed,
+digest-verified restore).
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a

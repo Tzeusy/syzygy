@@ -1,0 +1,180 @@
+{
+  "task": "PWB 3.7 (syzygy-1z3.15) PWB-REQ-015 capability deep dive bands",
+  "date": "2026-09-04",
+  "subjects": {
+    "apps/three-surface-poc/src/polaris.ts": "109084a2453f8b6d0e4a27858888d0e85dc5548f2ae4f5ab1c486c5940d0d349",
+    "apps/three-surface-poc/src/capability-detail.ts": "97314485c8334a97126877a7204231d1e51822662eaa584252caa1568ab13395"
+  },
+  "tests": [
+    "apps/three-surface-poc/src/polaris-capability-detail.test.ts",
+    "apps/three-surface-poc/src/polaris-proposed-work.test.ts",
+    "apps/three-surface-poc/src/polaris.test.ts"
+  ],
+  "restoreVerified": true,
+  "mutations": [
+    {
+      "mutation": "band-order-swapped",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris proposed work stays subordinate to current truth (PWB-REQ-013) > renders the proposal exactly once, inside capability detail, labeled, with the current authority adjacent and first 65ms",
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state 86ms"
+      ]
+    },
+    {
+      "mutation": "block-without-band",
+      "file": "apps/three-surface-poc/src/capability-detail.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris > moves the capability slice below the catalog with provenance and epistemic state unchanged (PWB-REQ-010, task 3.2) 188ms",
+        "\u00d7 Polaris proposed work stays subordinate to current truth (PWB-REQ-013) > renders the proposal exactly once, inside capability detail, labeled, with the current authority adjacent and first 65ms",
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state 85ms",
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > marks the argument band non-normative: framing only, no anchored block, no anchor, no tuple, no status headline 81ms",
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders requirement text only byte-for-byte from the owning artifact at render, or Unknown with its reason; stores nothing 82ms",
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders every proposal adjacent to the current intent, visibly distinct, non-anchorable and non-status-bearing; competing proposals stay separate futures 74ms"
+      ]
+    },
+    {
+      "mutation": "block-with-two-bands",
+      "file": "apps/three-surface-poc/src/capability-detail.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state 91ms"
+      ]
+    },
+    {
+      "mutation": "contract-class-kernel",
+      "file": "apps/three-surface-poc/src/capability-detail.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state 93ms"
+      ]
+    },
+    {
+      "mutation": "verbatim-skips-identity-check",
+      "file": "apps/three-surface-poc/src/capability-detail.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris > moves the capability slice below the catalog with provenance and epistemic state unchanged (PWB-REQ-010, task 3.2) 169ms",
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders requirement text only byte-for-byte from the owning artifact at render, or Unknown with its reason; stores nothing 102ms",
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > seam: verbatim resolution accepts only bytes that hash to the captured identity 5ms"
+      ]
+    },
+    {
+      "mutation": "verbatim-unconsented-reason-swapped",
+      "file": "apps/three-surface-poc/src/capability-detail.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders requirement text only byte-for-byte from the owning artifact at render, or Unknown with its reason; stores nothing 74ms"
+      ]
+    },
+    {
+      "mutation": "verbatim-accepts-nul",
+      "file": "apps/three-surface-poc/src/capability-detail.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > seam: verbatim resolution accepts only bytes that hash to the captured identity 9ms"
+      ]
+    },
+    {
+      "mutation": "proposal-anchored",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders every proposal adjacent to the current intent, visibly distinct, non-anchorable and non-status-bearing; competing proposals stay separate futures 86ms"
+      ]
+    },
+    {
+      "mutation": "exclusivity-dropped",
+      "file": "apps/three-surface-poc/src/capability-detail.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders every proposal adjacent to the current intent, visibly distinct, non-anchorable and non-status-bearing; competing proposals stay separate futures 128ms"
+      ]
+    },
+    {
+      "mutation": "proposals-collapsed-to-first",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders every proposal adjacent to the current intent, visibly distinct, non-anchorable and non-status-bearing; competing proposals stay separate futures 140ms"
+      ]
+    },
+    {
+      "mutation": "draft-rendered-adopted",
+      "file": "apps/three-surface-poc/src/capability-detail.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > keeps a draft capability unadopted and an adopted one adopted, from the observed tree, in both channels 75ms",
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders every proposal adjacent to the current intent, visibly distinct, non-anchorable and non-status-bearing; competing proposals stay separate futures 147ms"
+      ]
+    },
+    {
+      "mutation": "reality-drops-entities",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris > references every entity in at least one titled section (POC-REQ-030) 89ms",
+        "\u00d7 Polaris > discloses Unknown in place rather than asserting positively (POC-REQ-032) 72ms",
+        "\u00d7 Polaris > opens with the project-level groups in the required order, before any capability claim (PWB-REQ-010) 61ms",
+        "\u00d7 Polaris > moves the capability slice below the catalog with provenance and epistemic state unchanged (PWB-REQ-010, task 3.2) 131ms",
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state 88ms"
+      ]
+    },
+    {
+      "mutation": "mode-not-base",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state 83ms"
+      ]
+    },
+    {
+      "mutation": "machine-bands-empty",
+      "file": "apps/three-surface-poc/src/capability-detail.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state 92ms"
+      ]
+    },
+    {
+      "mutation": "argument-anchored",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > marks the argument band non-normative: framing only, no anchored block, no anchor, no tuple, no status headline 74ms"
+      ]
+    },
+    {
+      "mutation": "doctrine-reason-swapped",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders requirement text only byte-for-byte from the owning artifact at render, or Unknown with its reason; stores nothing 88ms"
+      ]
+    },
+    {
+      "mutation": "verbatim-after-proposals",
+      "file": "apps/three-surface-poc/src/polaris.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris proposed work stays subordinate to current truth (PWB-REQ-013) > keeps every proposed identity out of the project-level groups and the evidence group, in every shape state 89ms",
+        "\u00d7 Polaris proposed work stays subordinate to current truth (PWB-REQ-013) > renders the proposal exactly once, inside capability detail, labeled, with the current authority adjacent and first 66ms",
+        "\u00d7 Polaris proposed work stays subordinate to current truth (PWB-REQ-013) > shows the current authority as the shape's own baseline-spec claim when observed, and Unknown with its reason and route otherwise 63ms",
+        "\u00d7 Polaris proposed work stays subordinate to current truth (PWB-REQ-013) > carries the same identities and lifecycle in the machine answer as in the human attributes 79ms",
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state 91ms",
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > marks the argument band non-normative: framing only, no anchored block, no anchor, no tuple, no status headline 76ms"
+      ]
+    },
+    {
+      "mutation": "stored-text-on-machine-form",
+      "file": "apps/three-surface-poc/src/capability-detail.ts",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 Polaris capability deep dive bands (PWB-REQ-015; RFC7-17) > renders requirement text only byte-for-byte from the owning artifact at render, or Unknown with its reason; stores nothing 77ms"
+      ]
+    }
+  ],
+  "killed": 18,
+  "total": 18
+}

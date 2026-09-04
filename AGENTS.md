@@ -771,6 +771,23 @@ can be authorized.
   model — a new anchored site needs its rule added there too, or covering
   fails. Never render `data-claim-provenance` outside an anchored block, and
   never put narrative/anchor/view fields on `PocModel`.
+- Task 3.7: `capability-detail.ts` is the data side of the three-band deep
+  dive; `polaris.ts` composes it. Every `<section>` inside the dive goes
+  through `DeepDiveLedger.block(band, id)` so it carries exactly one
+  `data-band` and lands in the machine form's band population — a section
+  built without the ledger fails the exhaustion test. Proposals are
+  **non-anchored** (no `anchoredBlock`, no `data-anchor-*`, role
+  non-normative-framing); the narrative oracle throws if a proposal ever
+  registers as an anchored block. Verbatim requirement text comes only from
+  `PolarisRenderInputs.verbatim` at render (production passes none — the
+  baseline spec is outside the consented class — so the page shows
+  `unconsented-source-or-provider` beside the leaf identity); bytes must hash
+  to the leaf's `#<object id>` or `sha256:` identity or nothing renders. The
+  Unknown markers `<capabilityId>/{current-authority,adoption,
+  requirement-text,doctrine,non-goals}` are listed in
+  `test-deep-dive-markers.ts` for the marker sweeps. Copy-table rows nested
+  inside a `FACT` paragraph must themselves be `project-fact`, or the copy
+  test reports them never rendered under their role.
 
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 

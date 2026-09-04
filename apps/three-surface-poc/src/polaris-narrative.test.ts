@@ -115,12 +115,9 @@ function expectedAnchors(model: PocModel, claimId: string, blockId: string): Exp
   if (claimId === 'region:work-items' && model.workItems.kind === 'observed') {
     return [{ cls: 'work', target: `beads-dolt:${model.workItems.doltRevision}`, revision: model.workItems.doltRevision }];
   }
-  if (claimId === model.proposedWork.id) {
-    return [
-      { cls: 'work', target: model.proposedWork.proposal.digest, revision: model.proposedWork.proposal.revision },
-      { cls: 'requirement', target: model.proposedWork.delta.digest, revision: model.proposedWork.delta.revision },
-    ];
-  }
+  // A proposal is never an anchored block (PWB-REQ-015: non-anchorable); the
+  // capability-detail test asserts its absence from the anchor population.
+  if (claimId === model.proposedWork.id) throw new Error(`proposal registered as an anchored block: ${claimId}`);
   if (claimId === 'claim:project-shape') return [{ cls: 'evidence', target: `git-tree:${revision}`, revision }];
   const claim = claimsOf(shape).get(claimId);
   if (claim === undefined) throw new Error(`no oracle for ${claimId}`);

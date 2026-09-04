@@ -85,10 +85,11 @@ describe('Polaris proposed work stays subordinate to current truth (PWB-REQ-013)
       const model = modelFor(variant);
       const html = renderPolarisPage(model);
       const { detail } = slices(html);
-      expect(count(html, 'data-polaris-section="proposed-work"')).toBe(1);
-      expect(count(detail, 'data-polaris-section="proposed-work"')).toBe(1);
-      const start = detail.indexOf('data-polaris-section="proposed-work"');
-      const end = detail.indexOf('data-polaris-section="relationships"', start);
+      const marker = `data-polaris-section="contract:${model.capabilityId}/proposed-work"`;
+      expect(count(html, marker)).toBe(1);
+      expect(count(detail, marker)).toBe(1);
+      const start = detail.indexOf(marker);
+      const end = detail.indexOf('data-contract-part="doctrine"', start);
       expect(end).toBeGreaterThan(start);
       const section = detail.slice(start, end);
       // Visibly labeled as a proposal, with the change id and lifecycle state as data.
@@ -104,9 +105,10 @@ describe('Polaris proposed work stays subordinate to current truth (PWB-REQ-013)
       expect(proposal).toBeGreaterThan(current);
       expect(section).toContain(`data-parity-field="proposal-change-id">${CHANGE_ID}<`);
       expect(section).toContain(`amends <code>${CURRENT_AUTHORITY}</code>`);
-      // The capability's entity sections come before the proposal, so the
-      // proposal never leads the detail.
-      expect(detail.indexOf('data-polaris-section="capability:whatsapp-transport-identity"')).toBeLessThan(start);
+      // The capability's argument band comes before the proposal, so the
+      // proposal never leads the detail (PWB-REQ-015 puts it in the contract band).
+      expect(detail.indexOf('data-band="argument"')).toBeLessThan(start);
+      expect(detail.indexOf('data-band="argument"')).toBeGreaterThan(-1);
     }
   });
 
@@ -114,7 +116,7 @@ describe('Polaris proposed work stays subordinate to current truth (PWB-REQ-013)
     const unevaluated = renderPolarisPage(modelFor('unevaluated'));
     const currentOf = (html: string): string => {
       const start = html.indexOf('data-proposed-work-part="current-authority"');
-      return html.slice(start, html.indexOf('data-proposed-work-part="proposal"', start));
+      return html.slice(start, html.indexOf('data-contract-part="requirement-text"', start));
     };
     expect(currentOf(unevaluated)).toContain('data-unknown-reason="unconsented-source-or-provider"');
     expect(currentOf(unevaluated)).toContain('Route: Record consent');

@@ -2,6 +2,7 @@ import { rmSync } from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { renderPolarisPage } from './polaris.js';
+import { DEEP_DIVE_MARKERS } from './test-deep-dive-markers.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import { ADMITTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 
@@ -36,7 +37,7 @@ describe('Polaris', () => {
 
     const entityIds = new Set(model.entities.map((entity) => entity.id));
     const relationshipIds = new Set(model.relationships.map((relationship) => relationship.id));
-    const syntheticRegionIds = new Set(['region:code-structure', 'region:work-items', model.proposedWork.id, `${model.proposedWork.id}/current-authority`, `${model.proposedWork.id}/lifecycle`]);
+    const syntheticRegionIds = new Set(['region:code-structure', 'region:work-items', model.proposedWork.id, `${model.proposedWork.id}/lifecycle`, ...DEEP_DIVE_MARKERS(model.capabilityId)]);
 
     const markers = [...html.matchAll(/data-claim-provenance="([^"]+)"/g)].map((match) => match[1]);
     expect(markers.length).toBeGreaterThan(0);
@@ -64,7 +65,7 @@ describe('Polaris', () => {
     expect(unknownEntities.length).toBeGreaterThan(0);
     for (const entity of unknownEntities) {
       const sectionMatch = new RegExp(
-        `data-polaris-section="${entity.id}">([\\s\\S]*?)</section>`,
+        `data-polaris-section="${entity.id}"[^>]*>([\\s\\S]*?)</section>`,
       ).exec(html);
       expect(sectionMatch).not.toBeNull();
       const section = sectionMatch?.[1] ?? '';
@@ -128,7 +129,7 @@ describe('Polaris', () => {
       let checked = 0;
       for (const entity of model.entities) {
         const match = new RegExp(
-          `<section class="claim-section" data-polaris-section="${entity.id}">([\\s\\S]*?)</section>`,
+          `<section class="claim-section" data-polaris-section="${entity.id}"[^>]*>([\\s\\S]*?)</section>`,
         ).exec(html);
         expect(match).not.toBeNull();
         const start = match?.index ?? -1;
@@ -172,7 +173,8 @@ describe('Polaris', () => {
     // project groups above them change, the entity sections, the proposal
     // part and the relationships do not. Only the current-authority part of
     // the proposed-work section (PWB-REQ-013) may follow the shape, because
-    // that is where the shape's baseline spec is looked up.
+    // that is where the shape's baseline spec is looked up — and, since 3.7,
+    // the doctrine/non-goal parts, whose Unknown reason follows the shape.
     const between = (html: string, from: string, to: string): string => {
       const start = html.indexOf(from);
       const end = html.indexOf(to, start);
@@ -183,9 +185,9 @@ describe('Polaris', () => {
     const observedHtml = renderPolarisPage(observed);
     const unevaluatedHtml = renderPolarisPage(unevaluated);
     for (const [from, to] of [
-      ['data-polaris-capability-scope', 'data-polaris-section="proposed-work"'],
-      ['data-proposed-work-part="proposal"', 'data-polaris-section="relationships"'],
-      ['data-polaris-section="relationships"', 'data-polaris-group="evidence-and-gaps"'],
+      ['<section class="band"', 'data-proposed-work-part="current-authority"'],
+      ['data-proposed-work-part="proposal"', 'data-contract-part="doctrine"'],
+      ['data-band="reality"', 'data-polaris-group="evidence-and-gaps"'],
     ] as const) {
       expect(between(observedHtml, from, to)).toBe(between(unevaluatedHtml, from, to));
     }
