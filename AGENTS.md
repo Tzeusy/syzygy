@@ -732,6 +732,16 @@ can be authorized.
   byte-identical between an unevaluated and an observed shape, and each
   entity section must carry exactly the model's provenance. Any change that
   makes the slice depend on `projectShape` breaks it by design.
+- Task 3.3: every fixed Polaris string is a row of `polaris-copy.ts` with one
+  PWB-REQ-012 role; the renderer and the shared shell mark each carrying
+  element with `data-copy-role`, and `polaris-copy.test.ts` sweeps the
+  rendered text (own extractor, word counter and prohibited set) over five
+  fixtures covering all four shape arms. A new fixed string must be a table
+  row; a new element carrying model text must declare a role or the sweep
+  fails `unclassified`. No group ledes: a group header is one `<h2>` only.
+  `data-scope="poc-bound"` may appear once, on the capability scope
+  instruction. Rows the fixtures cannot reach are listed by hand in
+  `UNREACHED_IN_FIXTURES` — remove an id there when a fixture reaches it.
 
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 

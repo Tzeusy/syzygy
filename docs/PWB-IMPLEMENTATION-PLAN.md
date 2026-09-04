@@ -320,6 +320,45 @@ label implies; and that the slice's bytes are identical across the two
 shapes. Three hand mutations (an added citation, an Unknown entity
 relabeled Observed, slice copy varying with the shape) are killed.
 
+**P3.3 note (task 3.3, syzygy-1z3.11, 2026-09-04).** Every fixed Polaris
+string now lives in one table, `apps/three-surface-poc/src/polaris-copy.ts`,
+each row carrying exactly one PWB-REQ-012 role (`project-fact`,
+`epistemic-disclosure`, `action-label`, `scope-instruction`) and a kind
+(heading, lede, notice, sentence, label). The renderer takes text only from
+that table or from the shared model and marks the element carrying it with
+`data-copy-role`; the shared shell (`page-shell.ts`, `design-tokens.ts`)
+marks the nav, skip link, eyebrow, title, lede, legend and footer the same
+way, so the role is machine-readable in the served HTML. Decisions: (a) the
+seven group ledes from 3.1 were removed — each group header is one heading
+and nothing else, since a lede saying what the group is about was connective
+prose about the surface; (b) the relationships lede is the table sentence
+"Each claim above stands alone; the links below say how far the evidence
+reaches between them." (project-fact); (c) the capability scope instruction
+is the one POC-bound entry (`data-scope="poc-bound"`) and the shell lede is
+a second scope-instruction without the bound, so "at most one entry stating
+the POC bound" is checked as a count of that attribute; (d) a string's role
+is its innermost declaring ancestor, so a tuple inside a project-fact row
+keeps `epistemic-disclosure` because the tuple span declares it itself — the
+oracle additionally requires every `claim-tuple`/`unknown-disclosure`
+element to declare that role directly; (e) templated sentences (counts,
+reasons, paths) are not table rows, so the oracle sweeps rendered text, not
+the table. The oracle (`polaris-copy.test.ts`) is a plain stack extractor
+over the served HTML with its own word counter, role set, word limits
+(headings ≤6, ledes ≤20) and prohibited regex, run over five fixtures
+reaching all four shape arms (`not-evaluated`, `not-admitted`,
+`observation-failed`, `observed` with and without an excluded body). Its
+falsifiers are exercised by a meta-narration counterexample that must
+trigger every rule (unclassified, unknown role, multiply classified,
+heading/lede over limit, prohibited term, second POC-bound entry, POC-bound
+with the wrong role, two action labels on one control, tuple without the
+disclosure role). The table check restates by hand the six rows the fixtures
+cannot reach (deferred, limit-breaches, no-route, missing-statement,
+declarations-kept, no-body-read) and fails if one becomes reachable. Eight
+hand mutations of the renderer and shell (dropping a role from the tuple,
+the Unknown disclosure, a statement and the nav; a prohibited word in a
+heading; a second POC-bound entry; a group lede; a role outside the set)
+are all killed. The 3.1 copy-bounds test is superseded and removed.
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a

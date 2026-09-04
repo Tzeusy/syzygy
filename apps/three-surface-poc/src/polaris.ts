@@ -19,6 +19,7 @@ import {
 } from '@syzygy/three-surface-poc-core';
 
 import { pageShell } from './page-shell.js';
+import { copyAttr, copyText, roleAttr, type PolarisCopyId } from './polaris-copy.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 
 export const POLARIS_HUMAN_PATH = '/polaris' as const;
@@ -33,6 +34,10 @@ export const POLARIS_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}/polaris` as const;
  * order, whatever the shape's epistemic state; an unobserved shape renders
  * every project group as Unknown in place with its reason and route
  * (RFC7-15), never as an empty group.
+ *
+ * Every owner-visible string comes from `polaris-copy.ts` or from the
+ * shared model, and the element carrying it declares one `data-copy-role`
+ * (PWB-REQ-012). There is no connective prose about the surface itself.
  */
 export const POLARIS_GROUPS = [
   'overview',
@@ -45,63 +50,6 @@ export const POLARIS_GROUPS = [
 ] as const;
 export type PolarisGroup = (typeof POLARIS_GROUPS)[number];
 
-interface GroupCopy {
-  readonly heading: string;
-  readonly lede: string;
-}
-
-const GROUP_COPY: Readonly<Record<PolarisGroup, GroupCopy>> = {
-  overview: {
-    heading: 'What Butlers is',
-    lede: 'What Butlers declares itself to be, and what it promises.',
-  },
-  boundaries: {
-    heading: 'What Butlers is not',
-    lede: 'What Butlers refuses to be, and the rules it will not break.',
-  },
-  architecture: {
-    heading: 'How Butlers is built',
-    lede: 'The declared components and how they fit together.',
-  },
-  v1: {
-    heading: 'What V1 ships',
-    lede: 'What the first version ships, and how its success is judged.',
-  },
-  catalog: {
-    heading: 'Project catalog',
-    lede: 'Every declared project, roster identity, contract, spec and policy, with its declared count.',
-  },
-  'capability-detail': {
-    heading: 'One capability in depth',
-    lede: 'One capability from the catalog above, followed to its code, test, work item and evidence.',
-  },
-  'evidence-and-gaps': {
-    heading: 'Evidence and gaps',
-    lede: 'The sources behind every claim above, what was excluded or contradicted, and what stays Unknown.',
-  },
-};
-
-const ACCOUNT_TITLES: Readonly<Record<ProjectAccountKey, string>> = {
-  purpose: 'Purpose',
-  promises: 'Promises',
-  refusals: 'Refusals',
-  architecture: 'Architecture',
-  'v1-scope': 'V1 scope',
-  'v1-success': 'V1 success',
-};
-
-const CLASS_TITLES: Readonly<Record<ExtractionClass, string>> = {
-  'project-account-section': 'Project account',
-  principle: 'Non-negotiable rules',
-  'success-criterion': 'Success criteria',
-  'catalog-entry': 'Declared projects',
-  'design-contract': 'Design contracts',
-  'baseline-spec': 'Baseline specs',
-  'topology-component': 'Components',
-  'craft-policy': 'Craft policies',
-  'roster-identity': 'Roster identities',
-};
-
 const CATALOG_CLASSES: readonly ExtractionClass[] = [
   'catalog-entry',
   'roster-identity',
@@ -109,6 +57,17 @@ const CATALOG_CLASSES: readonly ExtractionClass[] = [
   'baseline-spec',
   'craft-policy',
 ];
+
+const FACT = roleAttr('project-fact');
+const DISCLOSURE = roleAttr('epistemic-disclosure');
+
+function copy(id: PolarisCopyId): string {
+  return escapeHtml(copyText(id));
+}
+
+function heading(level: 2 | 3, id: string, copyId: PolarisCopyId): string {
+  return `<h${level} id="${escapeHtml(id)}"${copyAttr(copyId)}>${copy(copyId)}</h${level}>`;
+}
 
 // ---------------------------------------------------------------------------
 // Capability-slice renderers (POC-REQ-030…032), unchanged in shape.
@@ -127,17 +86,17 @@ function provenanceCitations(provenance: readonly PocProvenance[]): string {
 }
 
 function entitySection(entity: PocEntity): string {
-  const heading = `<h3 id="polaris-${escapeHtml(entity.id)}">${escapeHtml(entity.title)}</h3>`;
+  const title = `<h3 id="polaris-${escapeHtml(entity.id)}"${FACT}>${escapeHtml(entity.title)}</h3>`;
   if (entity.epistemic.label === 'Observed') {
     return `<section class="claim-section" data-polaris-section="${escapeHtml(entity.id)}">
-      ${heading}
-      <p><span data-claim-provenance="${escapeHtml(entity.id)}">${escapeHtml(entity.detail)}</span>${provenanceCitations(entity.provenance)}</p>
+      ${title}
+      <p${FACT}><span data-claim-provenance="${escapeHtml(entity.id)}">${escapeHtml(entity.detail)}</span>${provenanceCitations(entity.provenance)}</p>
     </section>`;
   }
   return `<section class="claim-section" data-polaris-section="${escapeHtml(entity.id)}">
-    ${heading}
-    <p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(entity.id)}">
-      Unknown — ${escapeHtml(entity.epistemic.reason)}
+    ${title}
+    <p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(entity.id)}"${DISCLOSURE}>
+      ${copy('label.unknown')} — ${escapeHtml(entity.epistemic.reason)}
     </p>
   </section>`;
 }
@@ -146,37 +105,39 @@ function relationshipBullet(relationship: PocRelationship, entities: ReadonlyMap
   const fromTitle = entities.get(relationship.from)?.title ?? relationship.from;
   const toTitle = entities.get(relationship.to)?.title ?? relationship.to;
   if (relationship.epistemic.label === 'Observed') {
-    return `<li><span data-claim-provenance="${escapeHtml(relationship.id)}">${escapeHtml(fromTitle)} → ${escapeHtml(toTitle)}: ${escapeHtml(relationship.statement)}</span>${provenanceCitations(relationship.provenance)}</li>`;
+    return `<li${FACT}><span data-claim-provenance="${escapeHtml(relationship.id)}">${escapeHtml(fromTitle)} → ${escapeHtml(toTitle)}: ${escapeHtml(relationship.statement)}</span>${provenanceCitations(relationship.provenance)}</li>`;
   }
-  return `<li class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(relationship.id)}">${escapeHtml(fromTitle)} → ${escapeHtml(toTitle)}: Unknown — ${escapeHtml(relationship.epistemic.reason)}</li>`;
+  return `<li class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(relationship.id)}"${DISCLOSURE}>${escapeHtml(fromTitle)} → ${escapeHtml(toTitle)}: ${copy('label.unknown')} — ${escapeHtml(relationship.epistemic.reason)}</li>`;
 }
 
 function codeStructureSection(model: PocModel): string {
+  const title = heading(3, 'polaris-region-code-structure', 'evidence.code-structure');
   if (model.codeStructure.kind === 'unknown') {
     return `<section class="claim-section" data-polaris-section="region:code-structure">
-      <h3 id="polaris-region-code-structure">Observed code structure</h3>
-      <p class="unknown-disclosure" data-unknown-disclosure="region:code-structure">Unknown — ${escapeHtml(model.codeStructure.reason)}</p>
+      ${title}
+      <p class="unknown-disclosure" data-unknown-disclosure="region:code-structure"${DISCLOSURE}>${copy('label.unknown')} — ${escapeHtml(model.codeStructure.reason)}</p>
     </section>`;
   }
   const cs = model.codeStructure;
   return `<section class="claim-section" data-polaris-section="region:code-structure">
-    <h3 id="polaris-region-code-structure">Observed code structure</h3>
-    <p><span data-claim-provenance="region:code-structure">The configured project's code structure was inventoried at revision ${escapeHtml(cs.revision.slice(0, 12))}, covering ${cs.files.length} files.</span>
+    ${title}
+    <p${FACT}><span data-claim-provenance="region:code-structure">The configured project's code structure was inventoried at revision ${escapeHtml(cs.revision.slice(0, 12))}, covering ${cs.files.length} files.</span>
     <span class="citation">(<cite data-parity-field="provenance-source">git-ls-tree</cite>@<code data-parity-field="provenance-revision">${escapeHtml(cs.revision.slice(0, 12))}</code>)</span></p>
   </section>`;
 }
 
 function workItemsSection(model: PocModel): string {
+  const title = heading(3, 'polaris-region-work-items', 'evidence.work-items');
   if (model.workItems.kind === 'unknown') {
     return `<section class="claim-section" data-polaris-section="region:work-items">
-      <h3 id="polaris-region-work-items">Observed work items</h3>
-      <p class="unknown-disclosure" data-unknown-disclosure="region:work-items">Unknown — ${escapeHtml(model.workItems.reason)}</p>
+      ${title}
+      <p class="unknown-disclosure" data-unknown-disclosure="region:work-items"${DISCLOSURE}>${copy('label.unknown')} — ${escapeHtml(model.workItems.reason)}</p>
     </section>`;
   }
   const wi = model.workItems;
   return `<section class="claim-section" data-polaris-section="region:work-items">
-    <h3 id="polaris-region-work-items">Observed work items</h3>
-    <p><span data-claim-provenance="region:work-items">${wi.items.length} work items under the registered prefix <code>${escapeHtml(wi.beadPrefix)}-</code> were read from the Beads Dolt database at revision ${escapeHtml(wi.doltRevision.slice(0, 12))}.</span>
+    ${title}
+    <p${FACT}><span data-claim-provenance="region:work-items">${wi.items.length} work items under the registered prefix <code>${escapeHtml(wi.beadPrefix)}-</code> were read from the Beads Dolt database at revision ${escapeHtml(wi.doltRevision.slice(0, 12))}.</span>
     <span class="citation">(<cite data-parity-field="provenance-source">beads-dolt</cite>@<code data-parity-field="provenance-revision">${escapeHtml(wi.doltRevision.slice(0, 12))}</code>)</span></p>
   </section>`;
 }
@@ -190,11 +151,19 @@ function workItemsSection(model: PocModel): string {
 function claimTuple(claim: ProjectShapeClaim): string {
   const tier = claim.epistemic.tier ?? 'unstated';
   const freshness = claim.epistemic.freshness ?? 'unstated';
-  return `<span class="claim-tuple" data-claim-id="${escapeHtml(claim.claimId)}" data-epistemic-label="${escapeHtml(claim.epistemic.label)}" data-epistemic-tier="${escapeHtml(tier)}" data-epistemic-freshness="${escapeHtml(freshness)}" data-evaluation-id="${escapeHtml(claim.evaluationId)}">${escapeHtml(claim.epistemic.label)} · ${escapeHtml(tier)} · ${escapeHtml(freshness)}</span>`;
+  return `<span class="claim-tuple" data-claim-id="${escapeHtml(claim.claimId)}" data-epistemic-label="${escapeHtml(claim.epistemic.label)}" data-epistemic-tier="${escapeHtml(tier)}" data-epistemic-freshness="${escapeHtml(freshness)}" data-evaluation-id="${escapeHtml(claim.evaluationId)}"${DISCLOSURE}>${escapeHtml(claim.epistemic.label)} · ${escapeHtml(tier)} · ${escapeHtml(freshness)}</span>`;
+}
+
+function tupleLine(claim: ProjectShapeClaim): string {
+  return `<p class="tuple-line"${DISCLOSURE}>${claimTuple(claim)}</p>`;
 }
 
 function shortDigest(digest: string): string {
   return digest.replace(/^sha256:/, '').slice(0, 12);
+}
+
+function sourceSlug(path: string): string {
+  return path.replace(/[^A-Za-z0-9]+/g, '-');
 }
 
 /** Exact-source citations: path, line and the exact content digest of the
@@ -210,37 +179,33 @@ function supportCitations(support: readonly ProjectShapeSupport[]): string {
       return `<a href="#polaris-source-${escapeHtml(sourceSlug(anchor.path))}"><cite data-parity-field="shape-anchor">${escapeHtml(where)}</cite></a>${digest}`;
     })
     .join(', ');
-  return ` <span class="citation">(${items})</span>`;
+  return ` <span class="citation"${FACT}>(${items})</span>`;
 }
 
-function sourceSlug(path: string): string {
-  return path.replace(/[^A-Za-z0-9]+/g, '-');
+function routeOf(claim: ProjectShapeClaim, reason: string): string {
+  const route = claim.resolutionRoutes.find((entry) => entry.reason === reason)?.route;
+  return route ?? UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route');
 }
 
 function unknownRoutes(claim: ProjectShapeClaim, prefix: string): string {
   if (!('reasons' in claim.epistemic)) {
-    return `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}">${escapeHtml(prefix)}Unknown — deferred.</p>`;
+    return `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}>${prefix}${copy('label.unknown')} — ${copy('label.deferred')}.</p>`;
   }
   const { primary, secondary } = claim.epistemic.reasons;
-  const routeOf = (reason: string): string => {
-    const route = claim.resolutionRoutes.find((entry) => entry.reason === reason)?.route;
-    return route ?? UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? 'No route declared';
-  };
   const secondaryLine = secondary.length === 0
     ? ''
-    : `<br><small>Also: ${secondary.map((reason) => `${escapeHtml(reason)} (route: ${escapeHtml(routeOf(reason))})`).join('; ')}</small>`;
-  return `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}">${escapeHtml(prefix)}Unknown — <span data-unknown-reason="${escapeHtml(primary)}">${escapeHtml(primary)}</span>. Route: ${escapeHtml(routeOf(primary))}.${secondaryLine}</p>`;
+    : `<br><small>${copy('label.also')} ${secondary.map((reason) => `${escapeHtml(reason)} (${copy('label.route').toLowerCase()} ${escapeHtml(routeOf(claim, reason))})`).join('; ')}</small>`;
+  return `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}>${prefix}${copy('label.unknown')} — <span data-unknown-reason="${escapeHtml(primary)}">${escapeHtml(primary)}</span>. ${copy('label.route')} ${escapeHtml(routeOf(claim, primary))}.${secondaryLine}</p>`;
 }
 
 function accountStatement(statement: ProjectAccountStatement): string {
-  const title = ACCOUNT_TITLES[statement.key];
   const body = statement.claim.epistemic.label === 'Observed' && statement.statement !== undefined
-    ? `<p><span data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${escapeHtml(statement.statement)}</span>${supportCitations(statement.claim.support)}</p>`
+    ? `<p${FACT}><span data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${escapeHtml(statement.statement)}</span>${supportCitations(statement.claim.support)}</p>`
     : unknownRoutes(statement.claim, '');
   return `<section class="claim-section" data-polaris-section="${escapeHtml(statement.claim.claimId)}">
-    <h3 id="polaris-account-${escapeHtml(statement.key)}">${escapeHtml(title)}</h3>
+    ${heading(3, `polaris-account-${statement.key}`, `account.${statement.key}`)}
     ${body}
-    <p class="tuple-line">${claimTuple(statement.claim)}</p>
+    ${tupleLine(statement.claim)}
   </section>`;
 }
 
@@ -249,9 +214,9 @@ function itemRow(item: ProjectShapeItem): string {
     ? `<span data-claim-provenance="${escapeHtml(item.claim.claimId)}">${escapeHtml(item.statement ?? item.key)}</span>${supportCitations(item.claim.support)}`
     : unknownRoutes(item.claim, '');
   return `<tr data-polaris-item="${escapeHtml(item.claim.claimId)}">
-    <td><code>${escapeHtml(item.key)}</code></td>
-    <td>${statement}</td>
-    <td>${claimTuple(item.claim)}</td>
+    <td${FACT}><code>${escapeHtml(item.key)}</code></td>
+    <td${FACT}>${statement}</td>
+    <td${DISCLOSURE}>${claimTuple(item.claim)}</td>
   </tr>`;
 }
 
@@ -269,18 +234,18 @@ function classBlock(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: Ext
   const table = !withItems
     ? ''
     : items.length === 0
-      ? `<p><small>No items of this class were declared by any admitted source.</small></p>`
+      ? `<p${copyAttr('sentence.no-items')}><small>${copy('sentence.no-items')}</small></p>`
       : `<div class="table-scroll"><table>
-        <thead><tr><th scope="col">Key</th><th scope="col">Declared</th><th scope="col">Epistemic state</th></tr></thead>
+        <thead><tr><th scope="col"${copyAttr('table.key')}>${copy('table.key')}</th><th scope="col"${copyAttr('table.declared')}>${copy('table.declared')}</th><th scope="col"${copyAttr('table.epistemic-state')}>${copy('table.epistemic-state')}</th></tr></thead>
         <tbody>${items.map(itemRow).join('')}</tbody>
       </table></div>`;
   const summary = aggregate.claim.epistemic.label === 'Observed'
-    ? `<p><span data-claim-provenance="${escapeHtml(aggregate.claim.claimId)}">${escapeHtml(denominatorText(shape, cls))}</span></p>`
+    ? `<p${FACT}><span data-claim-provenance="${escapeHtml(aggregate.claim.claimId)}">${escapeHtml(denominatorText(shape, cls))}</span></p>`
     : `${unknownRoutes(aggregate.claim, `${escapeHtml(denominatorText(shape, cls))} `)}`;
   return `<section class="claim-section" data-polaris-section="${escapeHtml(aggregate.claim.claimId)}" data-polaris-class="${escapeHtml(cls)}">
-    <h3 id="polaris-class-${escapeHtml(cls)}">${escapeHtml(CLASS_TITLES[cls])}</h3>
+    ${heading(3, `polaris-class-${cls}`, `class.${cls}`)}
     ${summary}
-    <p class="tuple-line">${claimTuple(aggregate.claim)}</p>
+    ${tupleLine(aggregate.claim)}
     ${table}
   </section>`;
 }
@@ -291,8 +256,8 @@ function accountByKey(shape: Extract<ProjectShape, { kind: 'observed' }>, key: P
     // The model always carries all six keys; an absent one is a defect in
     // the model, disclosed as such rather than hidden.
     return `<section class="claim-section" data-polaris-section="claim:project-account:${escapeHtml(key)}">
-      <h3 id="polaris-account-${escapeHtml(key)}">${escapeHtml(ACCOUNT_TITLES[key])}</h3>
-      <p class="unknown-disclosure" data-unknown-disclosure="claim:project-account:${escapeHtml(key)}">Unknown — the shared model carries no statement for this key.</p>
+      ${heading(3, `polaris-account-${key}`, `account.${key}`)}
+      <p class="unknown-disclosure" data-unknown-disclosure="claim:project-account:${escapeHtml(key)}"${DISCLOSURE}>${copy('label.unknown')} — ${copy('sentence.missing-statement')}</p>
     </section>`;
   }
   return accountStatement(statement);
@@ -302,19 +267,19 @@ function shapeUnknownBlock(shape: Exclude<ProjectShape, { kind: 'observed' }>, g
   let detail: string;
   switch (shape.kind) {
     case 'not-evaluated':
-      detail = `<p><small>No body-read authority evaluation reached this evaluation: ${escapeHtml(shape.detail)}</small></p>`;
+      detail = `<p${DISCLOSURE}><small>${copy('sentence.not-evaluated')} ${escapeHtml(shape.detail)}</small></p>`;
       break;
     case 'not-admitted':
-      detail = `<p><small>The body-read gate refused (${escapeHtml(shape.reason)}${shape.secondaryReasons.length === 0 ? '' : `; also ${escapeHtml(shape.secondaryReasons.join(', '))}`}). ${escapeHtml(shape.contradiction.clause)}: ${escapeHtml(shape.contradiction.statement)}</small></p>`;
+      detail = `<p${DISCLOSURE}><small>${copy('sentence.gate-refused')} (${escapeHtml(shape.reason)}${shape.secondaryReasons.length === 0 ? '' : `; ${copy('label.also').toLowerCase()} ${escapeHtml(shape.secondaryReasons.join(', '))}`}). ${escapeHtml(shape.contradiction.clause)}: ${escapeHtml(shape.contradiction.statement)}</small></p>`;
       break;
     case 'observation-failed':
-      detail = `<p><small>The observer failed before any shape fact was read${shape.failure.failureState === undefined ? '' : ` (${escapeHtml(shape.failure.failureState)})`}: ${escapeHtml(shape.failure.detail)}</small></p>`;
+      detail = `<p${DISCLOSURE}><small>${copy('sentence.observer-failed')}${shape.failure.failureState === undefined ? '' : ` (${escapeHtml(shape.failure.failureState)})`}: ${escapeHtml(shape.failure.detail)}</small></p>`;
       break;
   }
   return `<section class="claim-section" data-polaris-section="shape:${escapeHtml(group)}">
     ${unknownRoutes(shape.claim, '')}
     ${detail}
-    <p class="tuple-line">${claimTuple(shape.claim)}</p>
+    ${tupleLine(shape.claim)}
   </section>`;
 }
 
@@ -334,13 +299,13 @@ function sourceRow(source: ProjectShapeSource, index: number): string {
   const digest = source.claim.support[0]?.contentDigest;
   const denominator = source.itemDenominator.kind === 'known'
     ? `${source.itemDenominator.value} item(s)`
-    : `Unknown — ${source.itemDenominator.unknown.unknownReason}`;
-  return `<tr id="polaris-source-${escapeHtml(sourceSlug(source.path))}" data-polaris-source="${escapeHtml(source.claim.claimId)}">
+    : `${copyText('label.unknown')} — ${source.itemDenominator.unknown.unknownReason}`;
+  return `<tr id="polaris-source-${escapeHtml(sourceSlug(source.path))}" data-polaris-source="${escapeHtml(source.claim.claimId)}"${FACT}>
     <td>${index + 1}</td>
     <td><code data-parity-field="shape-source-path">${escapeHtml(source.path)}</code><br><small>${escapeHtml(source.identity)}</small></td>
     <td>${escapeHtml(source.rule)}${source.pillar === undefined ? '' : ` · ${escapeHtml(source.pillar)}`}</td>
     <td>${escapeHtml(outcome)} · ${escapeHtml(anchorText(source.anchor))}</td>
-    <td>${digest === undefined ? '<small>no body read</small>' : `<code data-parity-field="shape-source-digest">${escapeHtml(shortDigest(digest))}</code>`}</td>
+    <td>${digest === undefined ? `<small${copyAttr('sentence.no-body-read')}>${copy('sentence.no-body-read')}</small>` : `<code data-parity-field="shape-source-digest">${escapeHtml(shortDigest(digest))}</code>`}</td>
     <td>${source.claim.epistemic.label === 'Observed' ? `<span data-claim-provenance="${escapeHtml(source.claim.claimId)}">${escapeHtml(denominator)}</span>` : unknownRoutes(source.claim, '')}<br>${claimTuple(source.claim)}</td>
   </tr>`;
 }
@@ -348,14 +313,14 @@ function sourceRow(source: ProjectShapeSource, index: number): string {
 function exclusionItem(exclusion: Exclusion): string {
   const why = exclusion.detectorId ?? exclusion.exclusionReason ?? 'unspecified';
   const digest = exclusion.contentDigest === undefined ? 'never opened' : `digest ${shortDigest(exclusion.contentDigest)}`;
-  return `<li data-polaris-exclusion="${escapeHtml(exclusion.repositoryRelativePath)}"><code>${escapeHtml(exclusion.repositoryRelativePath)}</code> — ${escapeHtml(exclusion.redactionClass)} by ${escapeHtml(why)}${exclusion.detail === undefined ? '' : ` (${escapeHtml(exclusion.detail)})`}; ${escapeHtml(digest)}; policy ${escapeHtml(exclusion.policyId)} ${escapeHtml(exclusion.policyVersion)}. The body is not shown anywhere.</li>`;
+  return `<li data-polaris-exclusion="${escapeHtml(exclusion.repositoryRelativePath)}"${DISCLOSURE}><code>${escapeHtml(exclusion.repositoryRelativePath)}</code> — ${escapeHtml(exclusion.redactionClass)} by ${escapeHtml(why)}${exclusion.detail === undefined ? '' : ` (${escapeHtml(exclusion.detail)})`}; ${escapeHtml(digest)}; policy ${escapeHtml(exclusion.policyId)} ${escapeHtml(exclusion.policyVersion)}. ${copy('sentence.body-withheld')}</li>`;
 }
 
 function factItem(fact: ProjectShapeFact): string {
   const declarations = fact.fact.declarations
     .map((declaration) => `${escapeHtml(declaration.value)} (${escapeHtml(declaration.basis)}, ${declaration.anchors.map((anchor) => escapeHtml(anchor.line === undefined ? anchor.path : `${anchor.path}:${anchor.line}`)).join(', ')})`)
     .join('; ');
-  return `<li data-polaris-fact="${escapeHtml(fact.claim.claimId)}">${unknownRoutes(fact.claim, `${escapeHtml(fact.fact.fact)}: `)}<small>Declarations kept: ${declarations}.</small><br>${claimTuple(fact.claim)}</li>`;
+  return `<li data-polaris-fact="${escapeHtml(fact.claim.claimId)}"${DISCLOSURE}>${unknownRoutes(fact.claim, `${escapeHtml(fact.fact.fact)}: `)}<small>${copy('label.declarations-kept')} ${declarations}.</small><br>${claimTuple(fact.claim)}</li>`;
 }
 
 /** The Unknown reasons across every shape claim, counted and routed, with
@@ -369,7 +334,7 @@ function gapsList(claims: readonly ProjectShapeClaim[]): string {
     }
   }
   if (counts.size === 0) {
-    return `<p data-polaris-gaps="none">Every project-shape claim above is Observed; no Unknown remains in the shape.</p>`;
+    return `<p data-polaris-gaps="none"${copyAttr('sentence.no-gaps')}>${copy('sentence.no-gaps')}</p>`;
   }
   const foremost = ['missing-declaration', 'unconsented-source-or-provider'];
   const ordered = [...counts.entries()].sort((a, b) => {
@@ -378,8 +343,8 @@ function gapsList(claims: readonly ProjectShapeClaim[]): string {
     if (ai !== bi) return (ai === -1 ? foremost.length : ai) - (bi === -1 ? foremost.length : bi);
     return b[1] - a[1] || a[0].localeCompare(b[0]);
   });
-  return `<ul data-polaris-gaps="${counts.size}">${ordered
-    .map(([reason, count]) => `<li data-polaris-gap="${escapeHtml(reason)}"><span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>: ${count} claim(s). Route: ${escapeHtml(UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? 'No route declared')}.</li>`)
+  return `<ul data-polaris-gaps="${counts.size}"${DISCLOSURE}>${ordered
+    .map(([reason, count]) => `<li data-polaris-gap="${escapeHtml(reason)}"><span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>: ${count} claim(s). ${copy('label.route')} ${escapeHtml(UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route'))}.</li>`)
     .join('')}</ul>`;
 }
 
@@ -398,44 +363,45 @@ function shapeClaims(shape: ProjectShape): readonly ProjectShapeClaim[] {
 function shapeEvidence(shape: ProjectShape): string {
   if (shape.kind !== 'observed') {
     return `<section class="claim-section" data-polaris-section="shape:evidence">
-      <h3 id="polaris-shape-evidence">Project-shape sources</h3>
-      ${unknownRoutes(shape.claim, 'No project-shape source was read. ')}
-      <p class="tuple-line">${claimTuple(shape.claim)}</p>
+      ${heading(3, 'polaris-shape-sources', 'evidence.sources')}
+      ${unknownRoutes(shape.claim, `${copy('sentence.no-source-read')} `)}
+      ${tupleLine(shape.claim)}
     </section>
     <section class="claim-section" data-polaris-section="shape:gaps">
-      <h3 id="polaris-shape-gaps">Unknown, by reason</h3>
+      ${heading(3, 'polaris-shape-gaps', 'evidence.gaps')}
       ${gapsList(shapeClaims(shape))}
     </section>`;
   }
   const identity = shape.identity;
+  const counts = `${shape.counts.sourcesAdmitted} of ${shape.counts.sources} sources readable; ${shape.counts.items} items (${shape.counts.modeled} modeled, ${shape.counts.unknown} Unknown, ${shape.counts.contradicted} contradicted); ${shape.counts.facts} facts (${shape.counts.contradictedFacts} contradicted); ${shape.counts.exclusions} exclusion(s).`;
   const whole = shape.claim.epistemic.label === 'Observed'
-    ? `<p><span data-claim-provenance="${escapeHtml(shape.claim.claimId)}">${shape.counts.sourcesAdmitted} of ${shape.counts.sources} sources readable; ${shape.counts.items} items (${shape.counts.modeled} modeled, ${shape.counts.unknown} Unknown, ${shape.counts.contradicted} contradicted); ${shape.counts.facts} facts (${shape.counts.contradictedFacts} contradicted); ${shape.counts.exclusions} exclusion(s).</span></p>`
-    : unknownRoutes(shape.claim, `${shape.counts.sourcesAdmitted} of ${shape.counts.sources} sources readable; ${shape.counts.items} items (${shape.counts.modeled} modeled, ${shape.counts.unknown} Unknown, ${shape.counts.contradicted} contradicted); ${shape.counts.exclusions} exclusion(s). `);
+    ? `<p${FACT}><span data-claim-provenance="${escapeHtml(shape.claim.claimId)}">${escapeHtml(counts)}</span></p>`
+    : unknownRoutes(shape.claim, `${escapeHtml(counts)} `);
   return `<section class="claim-section" data-polaris-section="${escapeHtml(shape.claim.claimId)}">
-    <h3 id="polaris-shape-identity">Project-shape observation</h3>
+    ${heading(3, 'polaris-shape-identity', 'evidence.observation')}
     ${whole}
-    <p class="tuple-line">${claimTuple(shape.claim)}</p>
-    <p><small>Revision <code data-parity-field="shape-revision">${escapeHtml(identity.revision.slice(0, 12))}</code> (requested <code>${escapeHtml(identity.requestedRevision)}</code>), committed <code>${escapeHtml(identity.sourceClaimedInstant.instant)}</code>, captured <code>${escapeHtml(identity.capturedAt)}</code> by <code>${escapeHtml(identity.observer.observerId)}</code> ${escapeHtml(identity.observer.observerVersion)} under policy <code>${escapeHtml(identity.policy.policyId)}</code> ${escapeHtml(identity.policy.policyVersion)}; manifest <code data-parity-field="shape-manifest-digest">${escapeHtml(shortDigest(identity.manifestDigest))}</code>, observation <code data-parity-field="shape-observation-digest">${escapeHtml(shortDigest(identity.observationDigest))}</code>.</small></p>
-    <p><small>Authority: ${shape.authority.authorities.map((entry) => `${escapeHtml(entry.authority)} — ${escapeHtml(entry.state)}`).join('; ')} (${escapeHtml(shape.authority.authorizationMode)}).</small></p>
+    ${tupleLine(shape.claim)}
+    <p${FACT}><small>Revision <code data-parity-field="shape-revision">${escapeHtml(identity.revision.slice(0, 12))}</code> (requested <code>${escapeHtml(identity.requestedRevision)}</code>), committed <code>${escapeHtml(identity.sourceClaimedInstant.instant)}</code>, captured <code>${escapeHtml(identity.capturedAt)}</code> by <code>${escapeHtml(identity.observer.observerId)}</code> ${escapeHtml(identity.observer.observerVersion)} under policy <code>${escapeHtml(identity.policy.policyId)}</code> ${escapeHtml(identity.policy.policyVersion)}; manifest <code data-parity-field="shape-manifest-digest">${escapeHtml(shortDigest(identity.manifestDigest))}</code>, observation <code data-parity-field="shape-observation-digest">${escapeHtml(shortDigest(identity.observationDigest))}</code>.</small></p>
+    <p${DISCLOSURE}><small>${copy('label.authority')} ${shape.authority.authorities.map((entry) => `${escapeHtml(entry.authority)} — ${escapeHtml(entry.state)}`).join('; ')} (${escapeHtml(shape.authority.authorizationMode)}).</small></p>
   </section>
   <section class="claim-section wide" data-polaris-section="shape:sources">
-    <h3 id="polaris-shape-sources">Project-shape sources</h3>
+    ${heading(3, 'polaris-shape-sources', 'evidence.sources')}
     <div class="table-scroll"><table>
-      <thead><tr><th scope="col">#</th><th scope="col">Source</th><th scope="col">Rule</th><th scope="col">Outcome</th><th scope="col">Digest</th><th scope="col">Items</th></tr></thead>
+      <thead><tr>${(['table.index', 'table.source', 'table.rule', 'table.outcome', 'table.digest', 'table.items'] as const).map((id) => `<th scope="col"${copyAttr(id)}>${copy(id)}</th>`).join('')}</tr></thead>
       <tbody>${shape.sources.map(sourceRow).join('')}</tbody>
     </table></div>
   </section>
   <section class="claim-section" data-polaris-section="shape:exclusions">
-    <h3 id="polaris-shape-exclusions">Excluded bodies</h3>
-    ${shape.exclusions.length === 0 ? '<p data-polaris-exclusions="0">No source body was excluded by the secret policy or a limit.</p>' : `<ul data-polaris-exclusions="${shape.exclusions.length}">${shape.exclusions.map(exclusionItem).join('')}</ul>`}
-    ${shape.limitBreaches.length === 0 ? '' : `<p><small>Limit breaches: ${shape.limitBreaches.map((breach) => `${escapeHtml(breach.limit)} ${breach.observed} &gt; ${breach.declared}${breach.path === undefined ? '' : ` (${escapeHtml(breach.path)})`}`).join('; ')}.</small></p>`}
+    ${heading(3, 'polaris-shape-exclusions', 'evidence.exclusions')}
+    ${shape.exclusions.length === 0 ? `<p data-polaris-exclusions="0"${copyAttr('sentence.no-exclusions')}>${copy('sentence.no-exclusions')}</p>` : `<ul data-polaris-exclusions="${shape.exclusions.length}">${shape.exclusions.map(exclusionItem).join('')}</ul>`}
+    ${shape.limitBreaches.length === 0 ? '' : `<p${FACT}><small>${copy('label.limit-breaches')} ${shape.limitBreaches.map((breach) => `${escapeHtml(breach.limit)} ${breach.observed} &gt; ${breach.declared}${breach.path === undefined ? '' : ` (${escapeHtml(breach.path)})`}`).join('; ')}.</small></p>`}
   </section>
   <section class="claim-section" data-polaris-section="shape:contradictions">
-    <h3 id="polaris-shape-contradictions">Contradicted facts</h3>
-    ${shape.contradictions.length === 0 ? '<p data-polaris-contradictions="0">No two admitted declarations disagree.</p>' : `<ul data-polaris-contradictions="${shape.contradictions.length}">${shape.contradictions.map(factItem).join('')}</ul>`}
+    ${heading(3, 'polaris-shape-contradictions', 'evidence.contradictions')}
+    ${shape.contradictions.length === 0 ? `<p data-polaris-contradictions="0"${copyAttr('sentence.no-contradictions')}>${copy('sentence.no-contradictions')}</p>` : `<ul data-polaris-contradictions="${shape.contradictions.length}">${shape.contradictions.map(factItem).join('')}</ul>`}
   </section>
   <section class="claim-section" data-polaris-section="shape:gaps">
-    <h3 id="polaris-shape-gaps">Unknown, by reason</h3>
+    ${heading(3, 'polaris-shape-gaps', 'evidence.gaps')}
     ${gapsList(shapeClaims(shape))}
   </section>`;
 }
@@ -443,10 +409,8 @@ function shapeEvidence(shape: ProjectShape): string {
 // ---------------------------------------------------------------------------
 
 function groupHeader(group: PolarisGroup): string {
-  const copy = GROUP_COPY[group];
   return `<header class="group" data-polaris-group="${escapeHtml(group)}">
-    <h2 id="polaris-group-${escapeHtml(group)}">${escapeHtml(copy.heading)}</h2>
-    <p class="group-lede">${escapeHtml(copy.lede)}</p>
+    ${heading(2, `polaris-group-${group}`, `group.${group}`)}
   </header>`;
 }
 
@@ -475,7 +439,7 @@ const POLARIS_STYLE = `
   .claim-section p { font-size: 1.05rem; }
   .group { max-width: 74ch; margin: 3.5rem auto 1.5rem; }
   .group h2 { font-size: clamp(1.6rem, 3.2vw, 2.4rem); margin: 0 0 .6rem; }
-  .group-lede, .scope-instruction, .relationships-lede { font-size: 1.05rem; color: var(--muted); max-width: 74ch; }
+  .scope-instruction, .relationships-lede { font-size: 1.05rem; color: var(--muted); max-width: 74ch; }
   .scope-instruction { margin: 0 auto 1rem; }
   .citation { color: var(--muted); font-family: var(--font-mono); font-size: .82rem; }
   .citation a { color: inherit; }
@@ -497,7 +461,7 @@ export function renderPolarisPage(model: PocModel, mountPrefix = ''): string {
     .join('');
 
   const body = `
-    <p class="notice">Every positive claim below cites its source. Where evidence is absent, Unknown is stated in place with its route to resolution.</p>
+    <p class="notice"${copyAttr('notice')}>${copy('notice')}</p>
     ${groupHeader('overview')}
     ${projectGroupBody(shape, 'overview')}
     ${groupHeader('boundaries')}
@@ -509,15 +473,15 @@ export function renderPolarisPage(model: PocModel, mountPrefix = ''): string {
     ${groupHeader('catalog')}
     ${projectGroupBody(shape, 'catalog')}
     ${groupHeader('capability-detail')}
-    <p class="scope-instruction" data-polaris-capability-scope>This is one capability within the complete catalog above, not the project's declared shape. Its claims keep their own provenance and epistemic state.</p>
+    <p class="scope-instruction" data-polaris-capability-scope data-scope="poc-bound"${copyAttr('capability.scope')}>${copy('capability.scope')}</p>
     ${capabilitySections}
     ${groupHeader('evidence-and-gaps')}
     ${shapeEvidence(shape)}
     ${codeStructureSection(model)}
     ${workItemsSection(model)}
     <section class="relationships" data-polaris-section="relationships">
-      <h3 id="polaris-relationships">How the capability's claims connect</h3>
-      <p class="relationships-lede">Each capability claim above stands alone. The links below state how far the evidence reaches between them; an Unknown link stays Unknown.</p>
+      ${heading(3, 'polaris-relationships', 'evidence.relationships')}
+      <p class="relationships-lede"${copyAttr('evidence.relationships-lede')}>${copy('evidence.relationships-lede')}</p>
       <ul>${relationshipList}</ul>
     </section>`;
 
@@ -525,8 +489,8 @@ export function renderPolarisPage(model: PocModel, mountPrefix = ''): string {
     title: 'Polaris · Syzygy three-surface POC',
     current: 'polaris',
     eyebrow: `Polaris · Butlers ${model.project.revision.slice(0, 12)}`,
-    heading: 'Butlers, as it declares itself',
-    lede: 'Purpose, promises, boundaries, architecture and V1 first; then the catalog; then one capability in depth.',
+    heading: copyText('shell.heading'),
+    lede: copyText('shell.lede'),
     extraStyle: POLARIS_STYLE,
     body,
     footer: `Evaluation <code>${escapeHtml(model.evaluation.snapshot)}</code> as of <code>${escapeHtml(model.evaluation.asOf)}</code>.`,

@@ -241,31 +241,3 @@ describe('Polaris progressive depth (PWB-REQ-011; RFC7-16)', () => {
     expect(html).toContain('data-polaris-gap="excluded-content"');
   });
 });
-
-describe('Polaris copy bounds for the new groups (PWB-REQ-012, ahead of task 3.3)', () => {
-  it('keeps group headings to six words, ledes to twenty, and out of the prohibited vocabulary', () => {
-    const { model } = observedModel();
-    const html = renderPolarisPage(model);
-    const prohibited = /\b(page|document|reading|section|movement|presentation)\b/i;
-    const headings = [...html.matchAll(/<h2 id="polaris-group-[^"]+">([^<]+)<\/h2>/g)].map((match) => match[1] as string);
-    expect(headings.length).toBe(7);
-    for (const heading of headings) {
-      expect(heading.split(/\s+/).length).toBeLessThanOrEqual(6);
-      expect(heading).not.toMatch(prohibited);
-    }
-    const ledes = [...html.matchAll(/<p class="group-lede">([^<]+)<\/p>/g)].map((match) => match[1] as string);
-    expect(ledes.length).toBe(7);
-    for (const lede of ledes) {
-      expect(lede.split(/\s+/).length).toBeLessThanOrEqual(20);
-      expect(lede).not.toMatch(prohibited);
-    }
-    const notice = /<p class="notice">([^<]+)<\/p>/.exec(html)?.[1] ?? '';
-    expect(notice).not.toBe('');
-    expect(notice).not.toMatch(prohibited);
-    const shellLede = /<p class="lede">([^<]+)<\/p>/.exec(html)?.[1];
-    if (shellLede !== undefined) {
-      expect(shellLede.split(/\s+/).length).toBeLessThanOrEqual(20);
-      expect(shellLede).not.toMatch(prohibited);
-    }
-  });
-});

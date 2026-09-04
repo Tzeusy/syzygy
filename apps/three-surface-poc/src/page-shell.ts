@@ -18,7 +18,7 @@ function siteNav(
   const items = NAV_ITEMS.map((item) => {
     const current_ = item.id === current ? ' aria-current="page"' : '';
     const href = withMountPrefix(mountPrefix, item.href);
-    return `<li><a href="${escapeHtml(href)}"${current_}>${escapeHtml(item.label)}</a></li>`;
+    return `<li><a href="${escapeHtml(href)}"${current_} data-copy-role="action-label">${escapeHtml(item.label)}</a></li>`;
   }).join('');
   return `<nav aria-label="Three-surface POC sections"><ul>${items}</ul></nav>`;
 }
@@ -53,16 +53,16 @@ export function pageShell(input: PageShellInput): string {
 <body>
   ${skipLinkHtml('main-content')}
   <header>
-    <div class="eyebrow">${escapeHtml(input.eyebrow)}</div>
-    <h1>${escapeHtml(input.heading)}</h1>
-    <p class="lede">${escapeHtml(input.lede)}</p>
+    <div class="eyebrow" data-copy-role="project-fact">${escapeHtml(input.eyebrow)}</div>
+    <h1 data-copy-role="project-fact">${escapeHtml(input.heading)}</h1>
+    <p class="lede" data-copy-role="scope-instruction">${escapeHtml(input.lede)}</p>
   </header>
   ${siteNav(input.current, mountPrefix, escapeHtml)}
   <main id="main-content">
     ${legendHtml(escapeHtml)}
     ${input.body}
   </main>
-  <footer>${input.footer}</footer>
+  <footer data-copy-role="project-fact">${input.footer}</footer>
 </body>
 </html>`;
 }
