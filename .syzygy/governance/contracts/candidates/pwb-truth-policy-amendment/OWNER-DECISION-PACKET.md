@@ -6,7 +6,12 @@
 
 Date: 2026-09-05
 
-Frozen candidate subject commit: `9bac13f0aab06267a157daffe88cde5a0d8ff893`
+Frozen behavior/effect subject commit:
+`9bac13f0aab06267a157daffe88cde5a0d8ff893`
+
+This packet wrapper is not an act subject and does not carry a self-referential
+commit identity. Its exact bytes are bound by the separate independent owner-
+packet review record; changing this packet after that review retires the review.
 
 Behavior manifest: `PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt`
 
