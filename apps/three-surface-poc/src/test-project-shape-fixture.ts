@@ -106,6 +106,14 @@ export const PROJECT_SHAPE_FIXTURE_TEXTS: Readonly<Record<string, string>> = {
 
 /** The same tree with the craft index carrying a secret-shaped token: the
  * policy excludes that body, so its craft-policy items are Unknown. */
+/** The same tree plus the baseline spec the followed OpenSpec change amends,
+ * so `proposedWork.currentAuthority` resolves to an Observed shape item. */
+export const PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH = 'openspec/specs/switchboard-identity/spec.md';
+export const PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC: Readonly<Record<string, string>> = {
+  ...PROJECT_SHAPE_FIXTURE_TEXTS,
+  [PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH]: '# Switchboard identity\n',
+};
+
 export const PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET: Readonly<Record<string, string>> = {
   ...PROJECT_SHAPE_FIXTURE_TEXTS,
   'about/craft-and-care/README.md': `${CRAFT_README}\ntoken AKIA${'A'.repeat(16)} ${SECRET_SENTINEL}\n`,

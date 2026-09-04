@@ -36,7 +36,7 @@ describe('Polaris', () => {
 
     const entityIds = new Set(model.entities.map((entity) => entity.id));
     const relationshipIds = new Set(model.relationships.map((relationship) => relationship.id));
-    const syntheticRegionIds = new Set(['region:code-structure', 'region:work-items']);
+    const syntheticRegionIds = new Set(['region:code-structure', 'region:work-items', model.proposedWork.id, `${model.proposedWork.id}/current-authority`, `${model.proposedWork.id}/lifecycle`]);
 
     const markers = [...html.matchAll(/data-claim-provenance="([^"]+)"/g)].map((match) => match[1]);
     expect(markers.length).toBeGreaterThan(0);
@@ -168,11 +168,29 @@ describe('Polaris', () => {
       expect(bullets).toBe(model.relationships.length);
     }
 
-    // The slice itself is byte-identical across the two shapes: the project
-    // groups above it change, the capability claims do not.
-    const slice = (html: string): string =>
-      html.slice(html.indexOf('data-polaris-capability-scope'), html.indexOf('data-polaris-group="evidence-and-gaps"'));
-    expect(slice(renderPolarisPage(observed))).toBe(slice(renderPolarisPage(unevaluated)));
+    // The capability claims are byte-identical across the two shapes: the
+    // project groups above them change, the entity sections, the proposal
+    // part and the relationships do not. Only the current-authority part of
+    // the proposed-work section (PWB-REQ-013) may follow the shape, because
+    // that is where the shape's baseline spec is looked up.
+    const between = (html: string, from: string, to: string): string => {
+      const start = html.indexOf(from);
+      const end = html.indexOf(to, start);
+      expect(start).toBeGreaterThan(-1);
+      expect(end).toBeGreaterThan(start);
+      return html.slice(start, end);
+    };
+    const observedHtml = renderPolarisPage(observed);
+    const unevaluatedHtml = renderPolarisPage(unevaluated);
+    for (const [from, to] of [
+      ['data-polaris-capability-scope', 'data-polaris-section="proposed-work"'],
+      ['data-proposed-work-part="proposal"', 'data-polaris-section="relationships"'],
+      ['data-polaris-section="relationships"', 'data-polaris-group="evidence-and-gaps"'],
+    ] as const) {
+      expect(between(observedHtml, from, to)).toBe(between(unevaluatedHtml, from, to));
+    }
+    expect(between(observedHtml, 'data-proposed-work-part="current-authority"', 'data-proposed-work-part="proposal"'))
+      .not.toBe(between(unevaluatedHtml, 'data-proposed-work-part="current-authority"', 'data-proposed-work-part="proposal"'));
   });
 
   it('mutation check: removing an entity from coverage would fail the sweep', () => {

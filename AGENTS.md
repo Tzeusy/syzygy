@@ -742,6 +742,15 @@ can be authorized.
   `data-scope="poc-bound"` may appear once, on the capability scope
   instruction. Rows the fixtures cannot reach are listed by hand in
   `UNREACHED_IN_FIXTURES` — remove an id there when a fixture reaches it.
+- Task 3.4: `PocModel.proposedWork` (`proposed-work.ts`) is the followed
+  OpenSpec change as its own type — lifecycle from tree paths, current
+  authority looked up in `projectShape`'s baseline-spec items. Polaris
+  renders it only inside capability detail (after the entities, before the
+  relationships, which now live there too), current authority first. Its
+  marker ids are `proposed-work:<changeId>` plus `/current-authority` and
+  `/lifecycle`; add them to any marker-resolution sweep. Never render it as
+  an entity or in a project group — `polaris-proposed-work.test.ts` slices
+  the page and fails on any proposed identity outside the detail group.
 
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 

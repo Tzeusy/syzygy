@@ -16,6 +16,7 @@ import {
   type ProjectShapeItem,
   type ProjectShapeSource,
   type ProjectShapeSupport,
+  type ProposedWork,
 } from '@syzygy/three-surface-poc-core';
 
 import { pageShell } from './page-shell.js';
@@ -65,7 +66,7 @@ function copy(id: PolarisCopyId): string {
   return escapeHtml(copyText(id));
 }
 
-function heading(level: 2 | 3, id: string, copyId: PolarisCopyId): string {
+function heading(level: 2 | 3 | 4, id: string, copyId: PolarisCopyId): string {
   return `<h${level} id="${escapeHtml(id)}"${copyAttr(copyId)}>${copy(copyId)}</h${level}>`;
 }
 
@@ -407,6 +408,49 @@ function shapeEvidence(shape: ProjectShape): string {
 }
 
 // ---------------------------------------------------------------------------
+// Proposed work (PWB-REQ-013): a distinct type, rendered only inside the
+// affected capability's detail, labeled, with the current authority adjacent.
+
+function artifactCitation(artifact: ProposedWork['proposal']): string {
+  return `<cite data-parity-field="provenance-source">${escapeHtml(artifact.path)}</cite>@<code data-parity-field="provenance-revision">${escapeHtml(artifact.revision.slice(0, 12))}</code>`;
+}
+
+function currentAuthorityPart(work: ProposedWork): string {
+  const current = work.currentAuthority;
+  const body = current.kind === 'baseline-spec'
+    ? `<p${FACT}><span data-claim-provenance="${escapeHtml(current.claim.claimId)}"><code data-parity-field="current-authority-path">${escapeHtml(current.path)}</code></span>${supportCitations(current.claim.support)}</p>
+      ${tupleLine(current.claim)}`
+    : `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(work.id)}/current-authority"${DISCLOSURE}>${copy('label.unknown')} — <span data-unknown-reason="${escapeHtml(current.reason)}">${escapeHtml(current.reason)}</span>. ${copy('label.route')} ${escapeHtml(current.route)}.<br><small>${escapeHtml(current.detail)}</small></p>`;
+  return `<section data-proposed-work-part="current-authority">
+      ${heading(4, 'polaris-proposed-current', 'proposed.current')}
+      ${body}
+    </section>`;
+}
+
+function proposalPart(work: ProposedWork): string {
+  const lifecycle = work.lifecycle.kind === 'observed'
+    ? `<p${FACT}>${copy('label.lifecycle')} <span data-proposal-lifecycle-state="${escapeHtml(work.lifecycle.state)}">${escapeHtml(work.lifecycle.state)}</span> — ${escapeHtml(work.lifecycle.basis)}</p>`
+    : `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(work.id)}/lifecycle"${DISCLOSURE}>${copy('label.lifecycle')} ${copy('label.unknown')} — ${escapeHtml(work.lifecycle.reason)}</p>`;
+  return `<section data-proposed-work-part="proposal">
+      ${heading(4, 'polaris-proposed-change', 'proposed.change')}
+      <p${FACT}><span data-claim-provenance="${escapeHtml(work.id)}"><code data-parity-field="proposal-change-id">${escapeHtml(work.changeId)}</code> ${copy('label.amends')} <code>openspec/specs/${escapeHtml(work.specKey)}/spec.md</code>.</span> <span class="citation">(${artifactCitation(work.proposal)}, ${artifactCitation(work.delta)})</span></p>
+      ${lifecycle}
+    </section>`;
+}
+
+function proposedWorkSection(work: ProposedWork): string {
+  const lifecycleState = work.lifecycle.kind === 'observed' ? work.lifecycle.state : 'unknown';
+  return `<section class="claim-section proposal" data-polaris-section="proposed-work" data-proposal-change="${escapeHtml(work.changeId)}" data-proposal-lifecycle="${escapeHtml(lifecycleState)}" data-proposal-capability="${escapeHtml(work.capabilityId)}">
+    ${heading(3, 'polaris-proposed-work', 'proposed.heading')}
+    <p class="proposal-label" data-proposal-label${copyAttr('label.proposed')}>${copy('label.proposed')}</p>
+    <div class="adjacent">
+      ${currentAuthorityPart(work)}
+      ${proposalPart(work)}
+    </div>
+  </section>`;
+}
+
+// ---------------------------------------------------------------------------
 
 function groupHeader(group: PolarisGroup): string {
   return `<header class="group" data-polaris-group="${escapeHtml(group)}">
@@ -450,6 +494,10 @@ const POLARIS_STYLE = `
   .relationships { max-width: 74ch; margin: 0 auto 3rem; }
   .relationships ul { padding-left: 1.2rem; }
   .relationships li { margin-bottom: .5rem; }
+  .proposal { border-left: 4px solid var(--unknown); padding-left: 1rem; }
+  .proposal-label { font-family: var(--font-mono); font-size: .85rem; letter-spacing: .04em; text-transform: uppercase; color: var(--unknown); }
+  .proposal .adjacent { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); }
+  .proposal h4 { margin: 0 0 .5rem; font-size: 1.05rem; }
 `;
 
 export function renderPolarisPage(model: PocModel, mountPrefix = ''): string {
@@ -475,15 +523,16 @@ export function renderPolarisPage(model: PocModel, mountPrefix = ''): string {
     ${groupHeader('capability-detail')}
     <p class="scope-instruction" data-polaris-capability-scope data-scope="poc-bound"${copyAttr('capability.scope')}>${copy('capability.scope')}</p>
     ${capabilitySections}
-    ${groupHeader('evidence-and-gaps')}
-    ${shapeEvidence(shape)}
-    ${codeStructureSection(model)}
-    ${workItemsSection(model)}
+    ${proposedWorkSection(model.proposedWork)}
     <section class="relationships" data-polaris-section="relationships">
       ${heading(3, 'polaris-relationships', 'evidence.relationships')}
       <p class="relationships-lede"${copyAttr('evidence.relationships-lede')}>${copy('evidence.relationships-lede')}</p>
       <ul>${relationshipList}</ul>
-    </section>`;
+    </section>
+    ${groupHeader('evidence-and-gaps')}
+    ${shapeEvidence(shape)}
+    ${codeStructureSection(model)}
+    ${workItemsSection(model)}`;
 
   return pageShell({
     title: 'Polaris · Syzygy three-surface POC',

@@ -359,6 +359,41 @@ the Unknown disclosure, a statement and the nav; a prohibited word in a
 heading; a second POC-bound entry; a group lede; a role outside the set)
 are all killed. The 3.1 copy-bounds test is superseded and removed.
 
+**P3.4 note (task 3.4, syzygy-1z3.12, 2026-09-04).** The one OpenSpec change
+the POC follows is now a distinct machine type on the shared model,
+`PocModel.proposedWork` (`packages/three-surface-poc-core/src/proposed-work.ts`),
+never an entity, a project-account statement or a catalog item. It carries
+the change id and amended spec directory parsed from the delta path, the
+proposal and delta artifacts (path, revision, digest), a lifecycle state read
+from the exact tree listing already on the model (`active` when
+`openspec/changes/<id>/` is present and no archived copy is, `archived` when
+only an archive copy is, Unknown when both, neither, or no tree), and the
+current authority it would amend: the project shape's own `baseline-spec`
+item for that directory (identity and tuple preserved, PWB-REQ-011) or
+Unknown with the shape's reason and route (`unconsented-source-or-provider`
+when the shape was not evaluated, `missing-declaration` when the observed
+shape has no such spec). Polaris renders it exactly once, inside the
+capability-detail group after the entity sections, as a labeled section
+("Proposed change — not current authority.") whose current-authority part
+comes first and whose proposal part follows, adjacent. The capability's
+relationships list moved from the evidence group into capability detail, so
+no proposed identity is rendered outside that group; the 3.2 byte-identity
+guarantee now covers the entity sections, the proposal part and the
+relationships separately, with only the current-authority part allowed to
+follow the shape. The oracle (`polaris-proposed-work.test.ts`) restates the
+proposed identities by hand from the fixture repository's OpenSpec artifacts
+and checks, over unevaluated, observed-without-baseline and
+observed-with-baseline shapes, that none appears in the project-level or
+evidence slices, that the section appears once with lifecycle and label,
+that the current authority shares the catalog item's claim id and rendered
+tuple, and that the machine answer carries the same identities. Eleven hand
+mutations (proposal rendered in the overview, before the entities or in the
+evidence group; label dropped; parts swapped; Unknown authority rendered as
+Observed; archived read as active; contradiction ignored; prefix matching a
+longer change id; any baseline spec accepted; wrong Unknown reason) are all
+killed. No Butlers body is read: lifecycle uses tree paths and the
+artifacts were already hashed by the proving slice.
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a

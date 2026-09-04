@@ -11,6 +11,7 @@ import type { MaterializationRecord } from './materialization.js';
 import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import { gitRunnerFor, type GitRunner } from './project-shape-observation.js';
 import { buildProjectShape, unevaluatedProjectShape, type ProjectShape } from './project-shape-model.js';
+import { deriveProposedWork, type ProposedWork } from './proposed-work.js';
 import {
   resolveTestArtifactVerification,
   type TestArtifactRecord,
@@ -133,6 +134,8 @@ export interface PocModel {
    * `not-evaluated` when the builder was given no authority evaluation —
    * nothing is read then. */
   readonly projectShape: ProjectShape;
+  /** PWB-REQ-013: the one followed OpenSpec change as a distinct type, with its lifecycle and the current authority it would amend. */
+  readonly proposedWork: ProposedWork;
 }
 
 /** The lawful inputs of the project-shape pipeline: the PWB-REQ-005
@@ -578,6 +581,13 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
           runGit: input.projectShape.runGit ?? gitRunnerFor(repoRoot),
           ...(input.projectShape.repositoryId === undefined ? {} : { repositoryId: input.projectShape.repositoryId }),
         });
+  const proposedWork = deriveProposedWork({
+    capabilityId: 'capability:whatsapp-transport-identity',
+    proposal: { path: proposal.path, revision: input.repositoryRevision, digest: `sha256:${proposal.digest}` },
+    delta: { path: requirement.path, revision: input.repositoryRevision, digest: `sha256:${requirement.digest}` },
+    codeStructure,
+    projectShape,
+  });
 
   return {
     schema: 'syzygy-three-surface-poc/v1',
@@ -600,6 +610,7 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     trajectory: trajectoryProjection,
     materializedBeadId: materialization.beadId,
     projectShape,
+    proposedWork,
     surfaces: [
       {
         id: 'polaris',

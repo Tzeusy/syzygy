@@ -52,6 +52,13 @@ export const POLARIS_COPY = [
 
   { id: 'capability.scope', role: 'scope-instruction', kind: 'sentence', text: "This is one capability within the complete catalog above, not the project's declared shape. Its claims keep their own provenance and epistemic state." },
 
+  { id: 'proposed.heading', role: 'project-fact', kind: 'heading', text: 'Proposed OpenSpec change' },
+  { id: 'label.proposed', role: 'epistemic-disclosure', kind: 'label', text: 'Proposed change — not current authority.' },
+  { id: 'proposed.current', role: 'project-fact', kind: 'heading', text: 'Current authority' },
+  { id: 'proposed.change', role: 'project-fact', kind: 'heading', text: 'The proposal' },
+  { id: 'label.lifecycle', role: 'project-fact', kind: 'label', text: 'Lifecycle:' },
+  { id: 'label.amends', role: 'project-fact', kind: 'label', text: 'amends' },
+
   { id: 'evidence.observation', role: 'project-fact', kind: 'heading', text: 'Project-shape observation' },
   { id: 'evidence.sources', role: 'project-fact', kind: 'heading', text: 'Project-shape sources' },
   { id: 'evidence.exclusions', role: 'project-fact', kind: 'heading', text: 'Excluded bodies' },

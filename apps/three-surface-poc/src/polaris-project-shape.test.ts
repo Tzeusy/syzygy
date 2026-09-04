@@ -215,6 +215,9 @@ describe('Polaris progressive depth (PWB-REQ-011; RFC7-16)', () => {
       ...model.relationships.map((relationship) => relationship.id),
       'region:code-structure',
       'region:work-items',
+      model.proposedWork.id,
+      `${model.proposedWork.id}/current-authority`,
+      `${model.proposedWork.id}/lifecycle`,
       ...allShapeClaims(shape).map((claim) => claim.claimId),
     ]);
     const markers = [...html.matchAll(/data-(?:claim-provenance|unknown-disclosure)="([^"]+)"/g)].map((match) => match[1] as string);
