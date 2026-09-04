@@ -665,6 +665,39 @@ can be authorized.
   failed" verdict scores as survived. Build fixtures in `beforeAll` (or
   lazily) so crashes are counted failures.
 
+### PWB slice P2.7 — project shape on the one PocModel (syzygy-1z3.8, 2026-09-04)
+
+- `packages/three-surface-poc-core/src/project-shape-model.ts` composes the
+  P1 gate → P2.2 observer → phase-B tree re-list at the resolved commit →
+  P2.3 reader → P2.4 classifier → P2.5 extractor → P2.6 coverage into one
+  `ProjectShape` union (`not-evaluated` / `not-admitted` /
+  `observation-failed` / `observed`). `model.ts` puts it on
+  `PocModel.projectShape`; `/api/poc` is unchanged (`JSON.stringify` of the
+  model), so the machine answer grows by construction. The proving slice's
+  `inputsDigest` deliberately excludes it.
+- `main.ts` builds the authority from `process.cwd()`'s governance tree
+  (`governance-inputs.ts` → `evaluateBodyReadAuthority`) on every model
+  build and passes `projectShape: { authority }`; a loader throw becomes
+  `projectShapeDetail` and the shape is `not-evaluated`. Tests inject an
+  in-memory `runGit`; production uses `gitRunnerFor(repoRoot)`. Hosted CI's
+  shallow checkout lacks the signing tags, so there every act fails closed
+  and the daemon's shape is `not-admitted` — expected, not a defect.
+- Claim tuples reuse cap1-core vocabularies verbatim (three labels, six
+  tiers, twelve reasons, four freshness states); `UNKNOWN_REASON_ROUTES` is
+  keyed by `UnknownReason` so a vocabulary drift fails typecheck. Observed
+  = `report-fact` + `fresh`; contradiction = `suspended`; whole-shape claim
+  derives from sources + reconciled facts (not the observer's degradation
+  flag, which is data beside it). Item-level contradicted/unknown states are
+  unreachable through the grammar — tested at the exported `itemClaim` and
+  `countReasons` seams, not by fixture.
+- Fixture discipline for this module: pillar READMEs must link only files
+  present in the fixture tree, or the population honestly grows by
+  named-but-absent Unknown sources; the fixture Git runner throws on any
+  `ls-tree` not at the resolved commit and on any `cat-file` it does not
+  hold. Item keys follow the P2.5 grammar (`vision:1`, `1:Daemon`,
+  `cc-spec.md`, directory name for roster and specs). Mutation evidence:
+  `docs/evidence/pwb-p2-7-model-mutation-run-2026-09-04.json` (38/38).
+
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 
 - The three effect-specific authorities live at their final bytes:

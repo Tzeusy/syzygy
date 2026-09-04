@@ -10,6 +10,7 @@ import {
   type PocEntity,
   type PocRelationship,
 } from './model.js';
+import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import type { TestArtifactRecord } from './test-artifact-verification.js';
 
 const cleanups: string[] = [];
@@ -242,6 +243,90 @@ describe('three-surface Butlers POC model', () => {
     );
     const changedBytes = buildButlersPocModel(input);
     expect(changedBytes.evaluation.snapshot).not.toBe(first.evaluation.snapshot);
+  });
+
+  it('carries the project shape on the one model: not-evaluated without an authority evaluation, observed with an admitting one (PWB 2.7)', () => {
+    const repoRoot = butlersFixture();
+    const baseInput = {
+      repoRoot,
+      repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
+      observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
+      evaluation: { snapshot: 'butlers@c1389423', asOf: '2026-09-04T09:00:00.000Z' },
+    } as const;
+
+    const unevaluated = buildButlersPocModel({ ...baseInput, projectShapeDetail: 'no governance tree in this test' });
+    expect(unevaluated.projectShape.kind).toBe('not-evaluated');
+    expect(unevaluated.projectShape.authority).toBeUndefined();
+    expect(unevaluated.projectShape.claim.epistemic).toEqual({
+      label: 'Unknown',
+      reasons: { primary: 'unconsented-source-or-provider', secondary: [] },
+      freshness: 'fresh',
+    });
+    if (unevaluated.projectShape.kind === 'not-evaluated') expect(unevaluated.projectShape.detail).toBe('no governance tree in this test');
+
+    // A non-admitting evaluation reaches the gate and stops: no Git command.
+    const gitCalls: string[][] = [];
+    const rejecting: BodyReadAuthorityEvaluation = {
+      evaluationId: 'evaluation:test-rejecting',
+      evaluationInstant: '2026-09-04T00:00:00Z',
+      admits: false,
+      authorizationMode: 'rejected',
+      consent: { kind: 'absent', what: 'artifact-missing', artifactDigest: undefined },
+      policy: { kind: 'absent', what: 'artifact-missing', artifactDigest: undefined },
+      registry: { kind: 'absent', what: 'artifact-missing', artifactDigest: undefined },
+      contradiction: { clause: 'RFC3-16(a)', definedTerm: 'authorization-bearing governance artifact', statement: 'No effective act.', failing: [] },
+    };
+    const gated = buildButlersPocModel({
+      ...baseInput,
+      projectShape: { authority: rejecting, runGit: (args) => { gitCalls.push([...args]); throw new Error('must not run'); } },
+    });
+    expect(gated.projectShape.kind).toBe('not-admitted');
+    expect(gitCalls).toEqual([]);
+
+    // An admitting evaluation observes through the injected runner; the
+    // fixture has no `about/` tree, so the population is the root index
+    // alone, named-but-absent, and the shape is honestly Unknown.
+    const admitting: BodyReadAuthorityEvaluation = {
+      evaluationId: 'evaluation:test-admitting',
+      evaluationInstant: '2026-09-04T00:00:00Z',
+      admits: true,
+      authorizationMode: 'owner-trusted-bootstrap',
+      consent: { kind: 'valid', provenance: 'state-1', actIdentity: 'act:consent', artifactDigest: 'sha256:c'.padEnd(71, '0'), actInstant: '2026-09-02T00:00:00Z' },
+      policy: { kind: 'valid', provenance: 'state-1', actIdentity: 'act:policy', artifactDigest: 'sha256:p'.padEnd(71, '0'), actInstant: '2026-09-02T00:00:00Z' },
+      registry: { kind: 'valid', provenance: 'state-1', actIdentity: 'act:registry', artifactDigest: 'sha256:r'.padEnd(71, '0'), actInstant: '2026-09-02T00:00:00Z' },
+      contradiction: undefined,
+    };
+    const encoder = new TextEncoder();
+    const runGit = (args: readonly string[]): Uint8Array => {
+      switch (args[0]) {
+        case 'rev-parse':
+          return encoder.encode(`${'5'.repeat(40)}\n`);
+        case 'show':
+          return encoder.encode('2026-08-15T10:00:00+00:00\n');
+        case 'ls-tree':
+          return encoder.encode('');
+        default:
+          throw new Error(`unexpected git command ${args.join(' ')}`);
+      }
+    };
+    const observed = buildButlersPocModel({ ...baseInput, projectShape: { authority: admitting, runGit } });
+    expect(observed.projectShape.kind).toBe('observed');
+    if (observed.projectShape.kind === 'observed') {
+      expect(observed.projectShape.identity.repositoryId).toBe('repository:butlers-configured-poc');
+      expect(observed.projectShape.identity.revision).toBe('5'.repeat(40));
+      expect(observed.projectShape.identity.capturedAt).toBe('2026-09-04T09:00:00.000Z');
+      expect(observed.projectShape.sources.map((s) => [s.path, s.anchor.kind])).toEqual([['about/README.md', 'missing-at-revision']]);
+      expect(observed.projectShape.claim.epistemic.label).toBe('Unknown');
+    }
+
+    // The machine answer is the model verbatim, so the shape rides along.
+    const wire = JSON.parse(JSON.stringify(observed)) as { projectShape: { kind: string } };
+    expect(wire.projectShape.kind).toBe('observed');
+    expect(JSON.stringify(observed)).not.toContain('"text"');
+
+    // The shape does not enter the inputs digest of the unrelated proving
+    // slice (its own identity carries manifest and observation digests).
+    expect(observed.evaluation.inputsDigest).toBe(unevaluated.evaluation.inputsDigest);
   });
 
   it('shows the materialized work item Observed only once the recorded Bead is confirmed present (AC4)', () => {

@@ -233,6 +233,42 @@ conflict is the first fixture either way. 27 rule-6 mutations killed
 (`docs/evidence/pwb-p2-6-coverage-mutation-run-2026-09-04.json`). Still no
 Butlers read.
 
+P2.7 note, recorded 2026-09-04: `project-shape-model.ts` composes P1–P2.6
+into the one `ProjectShape` value that `model.ts` places on `PocModel`;
+`GET /api/poc` is still `JSON.stringify(model)`, so the machine answer is
+extended by construction. Decisions: (a) the gate runs first — a
+non-admitting evaluation issues zero Git commands and the shape is
+`not-admitted` with the gate's reasons; no evaluation at all is
+`not-evaluated` with the loader's failure text, Unknown as
+`unconsented-source-or-provider`; (b) every claim is a full PWB-REQ-007
+tuple — stable claim id, the PWB-REQ-005 evaluation id, cap1-core's
+`EpistemicState` (label, tier, one primary and deduplicated secondary
+reasons, freshness), a resolution route per reason from a twelve-entry
+table keyed by RFC2-24's vocabulary, challenge `unchallenged` (no challenge
+channel exists yet), and support anchors (path, line, content digest,
+source identity); (c) Observed claims are `report-fact` ("the source
+declares X") and `fresh` (bound to the evaluated revision); contradictions
+are `suspended`; an excluded, uncaptured or absent source is Unknown with
+the classifier's reason; (d) the whole-shape claim derives from its members
+(sources and reconciled facts): the first Unknown member's reason is
+primary, the rest secondary, and observer degradation is disclosed beside
+it as data because the population never shrinks; (e) class aggregates
+carry label, tier, freshness and primary/secondary reason counts over
+members and declaring sources, never a headline; (f) phase B re-lists the
+tree at the resolved commit rather than reusing phase A's listing, so the
+reader is bound to the same object ids the manifest recorded; (g) the
+daemon evaluates the authority from its own working directory's governance
+tree at every model build and fails closed to `not-evaluated` if the
+inputs cannot be loaded; (h) `walkthroughJudgment` is deferred to 4.6 and
+no live Butlers observation was run — the model is exercised only through
+an in-memory Git runner over a Butlers-shaped fixture. Item-level
+contradiction and item-level `unknown` are unreachable through the P2.5
+grammar (each identity has one declaring source; a duplicate key inside a
+source is a grammar failure), so those branches are tested at the exported
+`itemClaim` seam. 38 rule-6 mutations killed
+(`docs/evidence/pwb-p2-7-model-mutation-run-2026-09-04.json`). Still no
+Butlers read.
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a

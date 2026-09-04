@@ -8,6 +8,9 @@ import { observeWorkerChange, type WorkerChangeResult, type WorkerChangeSeam } f
 import { projectOrrery, type OrreryProjection } from './orrery-projection.js';
 import { projectTrajectory, type TrajectoryProjection } from './trajectory-projection.js';
 import type { MaterializationRecord } from './materialization.js';
+import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
+import { gitRunnerFor, type GitRunner } from './project-shape-observation.js';
+import { buildProjectShape, unevaluatedProjectShape, type ProjectShape } from './project-shape-model.js';
 import {
   resolveTestArtifactVerification,
   type TestArtifactRecord,
@@ -45,7 +48,9 @@ export interface PocProvenance {
     | 'git-revision'
     | 'manual-mapping'
     | 'materialization-record'
-    | 'test-artifact-record';
+    | 'test-artifact-record'
+    | 'project-shape-source'
+    | 'owner-act';
   readonly source: string;
   readonly revision: string;
   readonly digest?: string | undefined;
@@ -122,6 +127,22 @@ export interface PocModel {
    * live-observed work items). The typed source for renderers — never
    * re-derived from human-readable entity text. */
   readonly materializedBeadId: string | null;
+  /** The project-wide Butlers shape (PWB): body-read authority disclosure,
+   * revision-bound source population, items, coverage, contradictions and
+   * the project account, every fact with its complete epistemic tuple.
+   * `not-evaluated` when the builder was given no authority evaluation —
+   * nothing is read then. */
+  readonly projectShape: ProjectShape;
+}
+
+/** The lawful inputs of the project-shape pipeline: the PWB-REQ-005
+ * evaluation the daemon performed against Syzygy's governance tree, plus
+ * an injectable byte-level Git runner for hermetic tests. No Git command
+ * is issued unless the evaluation admits. */
+export interface ProjectShapeModelInput {
+  readonly authority: BodyReadAuthorityEvaluation;
+  readonly runGit?: GitRunner;
+  readonly repositoryId?: string;
 }
 
 export interface BuildButlersPocModelInput {
@@ -133,6 +154,10 @@ export interface BuildButlersPocModelInput {
   readonly runWorkItemQuery?: (repoRoot: string, sql: string) => string;
   readonly materializationRecord?: MaterializationRecord | null;
   readonly testArtifactRecord?: TestArtifactRecord | null;
+  /** Absent → `projectShape.kind === 'not-evaluated'` (no read); the
+   * optional detail says why no evaluation was supplied. */
+  readonly projectShape?: ProjectShapeModelInput | undefined;
+  readonly projectShapeDetail?: string;
 }
 
 export class PocObservationError extends Error {
@@ -543,6 +568,16 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
   const trajectoryProjection = projectTrajectory(workItems, {
     recentClosedWindow: RECENT_CLOSED_WINDOW,
   });
+  const projectShape: ProjectShape =
+    input.projectShape === undefined
+      ? unevaluatedProjectShape(input.projectShapeDetail ?? 'No body-read authority evaluation was supplied to this evaluation; no project-shape source was read.')
+      : buildProjectShape({
+          authority: input.projectShape.authority,
+          revision: input.repositoryRevision,
+          capturedAt: input.evaluation.asOf,
+          runGit: input.projectShape.runGit ?? gitRunnerFor(repoRoot),
+          ...(input.projectShape.repositoryId === undefined ? {} : { repositoryId: input.projectShape.repositoryId }),
+        });
 
   return {
     schema: 'syzygy-three-surface-poc/v1',
@@ -564,6 +599,7 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     orrery: orreryProjection,
     trajectory: trajectoryProjection,
     materializedBeadId: materialization.beadId,
+    projectShape,
     surfaces: [
       {
         id: 'polaris',

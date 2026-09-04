@@ -1,0 +1,286 @@
+{
+ "slice": "P2.7 project-shape model on the one PocModel and /api/poc answer (syzygy-1z3.8, PWB-REQ-001..007, PWB-REQ-020)",
+ "date": "2026-09-04",
+ "baseCommit": "2d6c9a494f19b23c75fbf5d16983f9dc14f2d07c",
+ "subject": "packages/three-surface-poc-core/src/project-shape-model.ts",
+ "sourceDigestSha256": "41de5b88c0836e043381b062143a82dd4a6ba46d88451863ff8986c0c4108324",
+ "testFiles": [
+  "packages/three-surface-poc-core/src/project-shape-model.test.ts",
+  "packages/three-surface-poc-core/src/model.test.ts"
+ ],
+ "method": "For each mutation: write the single exact-string replacement into the subject, run the two test files with the vitest JSON reporter, restore the original bytes and verify sha256 equality. A mutation is killed when at least one test fails or the run does not succeed. One mutation (phase-b-lists-requested-revision) makes the fixture Git runner throw during describe-time construction, which the reporter scores as a failed run with seven tests counted; it is recorded as killed on that basis. The run was performed in three chunks at the final subject bytes named above; earlier chunk runs at intermediate bytes found nine survivors that were resolved by strengthening tests (excluded-source support digest, duplicate secondary reasons, per-class reason counts over declaring sources, exported itemClaim/countReasons seams) and by removing the unreachable observer-degradation branch from the whole-shape claim, which now derives from sources and reconciled facts.",
+ "totals": {
+  "mutations": 38,
+  "killed": 38,
+  "survived": 0,
+  "testsAtFinalRun": 29
+ },
+ "mutations": [
+  {
+   "mutation": "routes-dropped-for-secondary",
+   "failedTests": 2,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "routes-for-observed",
+   "failedTests": 5,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "observed-untiered",
+   "failedTests": 5,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "observed-gate-backed",
+   "failedTests": 5,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "suspended-mislabeled",
+   "failedTests": 2,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "stale-freshness",
+   "failedTests": 11,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "secondary-keeps-primary",
+   "failedTests": 3,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "secondary-undeduped",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "challenge-missing",
+   "failedTests": 8,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "unevaluated-wrong-reason",
+   "failedTests": 2,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "support-line-dropped",
+   "failedTests": 2,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "support-identity-dropped",
+   "failedTests": 2,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "excluded-digest-dropped",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "unknown-source-observed",
+   "failedTests": 5,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "unknown-item-observed",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "contradicted-fact-not-suspended",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "contradicted-fact-observed",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "reason-counts-secondary-as-primary",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "class-unknown-denominator-observed",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "class-reason-counts-empty",
+   "failedTests": 2,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "account-claim-id-unrenamed",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "account-missing-always-missing-declaration",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "account-statement-dropped",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "invalid-input-runs-git",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "phase-b-lists-requested-revision",
+   "failedTests": 0,
+   "totalTests": 7,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "phase-b-tree-unlisted",
+   "failedTests": 12,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "identity-swapped",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "declaredBy-dropped",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "shape-observed-despite-unknown-members",
+   "failedTests": 5,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "shape-facts-ignored",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "shape-secondary-dropped",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "class-reason-counts-ignore-sources",
+   "failedTests": 2,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "exclusions-hidden",
+   "failedTests": 2,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "exclusion-count-zero",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "not-admitted-secondary-dropped",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "not-admitted-evaluation-id-lost",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "owner-act-order-reversed",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "owner-act-digest-dropped",
+   "failedTests": 1,
+   "totalTests": 29,
+   "verdict": "killed",
+   "restored": true
+  }
+ ]
+}

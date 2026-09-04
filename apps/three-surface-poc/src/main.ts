@@ -6,12 +6,15 @@ import { join, resolve } from 'node:path';
 import { createDaemon } from '@syzygy/cap1-daemon';
 import {
   buildButlersPocModel,
+  evaluateBodyReadAuthority,
   PocObservationError,
   readMaterializationRecordFile,
   readTestArtifactRecordFile,
+  type ProjectShapeModelInput,
 } from '@syzygy/three-surface-poc-core';
 
 import { parsePocCli } from './cli.js';
+import { loadBodyReadAuthorityInputs } from './governance-inputs.js';
 import {
   observeGitRepository,
   pocObserverInputsAreClean,
@@ -105,13 +108,38 @@ if (parsed.kind === 'help') {
           // "not yet ingested" (which would be silently more permissive).
           testArtifactRecord = null;
         }
+        const asOf = new Date().toISOString();
+        // PWB-REQ-005: the body-read authority gate is evaluated from the
+        // Syzygy governance tree (the daemon's working directory) before the
+        // model may read any project-shape body. If the governance inputs
+        // cannot even be loaded, no evaluation exists and the project shape
+        // stays `not-evaluated` (Unknown) with the failure named — never a
+        // synthetic admitting or rejecting evaluation.
+        let projectShape: ProjectShapeModelInput | undefined;
+        let projectShapeDetail: string | undefined;
+        try {
+          const authority = evaluateBodyReadAuthority(
+            loadBodyReadAuthorityInputs({
+              repoRoot: process.cwd(),
+              evaluationId: `evaluation:pwb-body-read:${asOf}`,
+              evaluationInstant: asOf,
+            }),
+          );
+          projectShape = { authority };
+        } catch (error: unknown) {
+          projectShapeDetail = `Body-read authority inputs could not be loaded from ${process.cwd()}: ${
+            error instanceof Error ? error.message : String(error)
+          }`;
+        }
         return buildButlersPocModel({
           repoRoot,
           repositoryRevision,
           observerRevision,
-          evaluation: { snapshot, asOf: new Date().toISOString() },
+          evaluation: { snapshot, asOf },
           materializationRecord,
           testArtifactRecord,
+          projectShape,
+          ...(projectShapeDetail === undefined ? {} : { projectShapeDetail }),
         });
       }
 
