@@ -112,10 +112,12 @@ The registry freezes the exact `Layer`, `Owns` and `Home` semantic literals for
 all seven rows. Raw `Layer` cells must be exactly one bold span; matching trims
 outer ASCII whitespace and unwraps only complete inline code spans in `Owns`
 and `Home`, preserving case, punctuation and internal whitespace. It also
-freezes a closed family map: project-account, principle, success-
-criterion and catalog-entry/count facts map to row 1; design-contract to row 2;
-baseline-spec to row 3; craft-policy to row 4; topology-component to row 5;
-roster-identity to row 6; and row 7 owns no fact in this content class. Mixed-
+freezes a closed twenty-entry family map. `item:<class>` and `count:<class>`
+are separate entries for each of the nine classes; their row is 1 for project-
+account-section, principle, success-criterion and catalog-entry, 2 for design-
+contract, 3 for baseline-spec, 4 for craft-policy, 5 for topology-component and
+6 for roster-identity. `catalog-count` and `project-account` are the remaining
+two entries and both map to row 1. Row 7 owns no fact in this content class. Mixed-
 family prose or any altered `Owns` cell invalidates the table rather than
 extending the grammar.
 

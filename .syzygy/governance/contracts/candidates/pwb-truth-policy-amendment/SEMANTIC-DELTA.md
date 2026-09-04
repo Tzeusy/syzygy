@@ -33,8 +33,10 @@ The only new stated-count grammar is the admitted root index's `Key
 Architectural Facts` item with the exact daemon/staffer/domain-butler cardinal
 form. The only precedence grammar is the same source's exact seven-row
 `Precedence Order When Layers Disagree` table. Every `Layer`, `Owns` and `Home`
-cell is an exact registry literal; a closed fact-family-to-row map decides
-application, never prose interpretation. Rows 1 through 5 are literal roots,
+cell is an exact registry literal; a closed twenty-entry fact-family-to-row map
+names item and count families separately for each of nine classes plus catalog-
+count and project-account. It decides application, never prose interpretation.
+Rows 1 through 5 are literal roots,
 row 6 is the exact roster-key template and row 7 owns no admitted fact. A
 unique lowest-numbered applicable home selects an effective declaration; no
 rule, altered/malformed rules or disagreeing applicable rules leave the fact

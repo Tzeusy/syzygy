@@ -521,11 +521,14 @@ code spans, preserving case, punctuation and internal whitespace; no other
 Markdown or prose normalization is allowed. Exactly one declaration must be
 under the lowest-numbered expanded
 home with at least one admitted source
-assigned to that fact family by the registry's closed family map. The map SHALL
-assign project-account, principle, success-criterion and catalog-entry/count
-facts to row 1; design-contract facts to row 2; baseline-spec facts to row 3;
-craft-policy facts to row 4; topology-component facts to row 5; and roster-
-identity facts to row 6. Row 7 owns no admitted fact in this content class.
+assigned to that fact family by the registry's closed twenty-entry family map.
+The map SHALL name `item:<class>` and `count:<class>` separately for all nine
+classes: project-account-section, principle, success-criterion and catalog-
+entry item/count families map to row 1; design-contract item/count to row 2;
+baseline-spec item/count to row 3; craft-policy item/count to row 4; topology-
+component item/count to row 5; roster-identity item/count to row 6; and the
+separate `catalog-count` and `project-account` families to row 1. Row 7 owns no
+admitted fact in this content class.
 Mixed-family prose or an unrecognized `Owns` value SHALL invalidate the table
 rather than extend the map. The root
 summary is non-owning and SHALL defer to that uniquely applicable owning layer;
@@ -549,8 +552,9 @@ Unknown.
   fact/rule tables and compare the complete declaration multiset, considered-
   rule outcomes, result and both human/machine forms.
 - **Oracle independence**: the checker hard-codes the four fact families,
-  twenty-four fixed keys, the two root headings, cardinal pattern, seven rule
-  ordinals, four rule columns and rejection arms; it imports no
+  twenty-four fixed keys, twenty fact-family mappings, the two root headings,
+  cardinal pattern, seven rule ordinals, four rule columns and rejection arms;
+  it imports no
   production vocabulary or injected production declaration/rule value.
 - **Falsifier**: an unrecognized fact or rule mints state, one declaration is
   hidden, the eight-versus-nine conflict disappears, a winner is selected

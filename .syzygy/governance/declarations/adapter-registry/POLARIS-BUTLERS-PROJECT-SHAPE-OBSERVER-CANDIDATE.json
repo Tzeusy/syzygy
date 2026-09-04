@@ -17,7 +17,7 @@
       "contractVersionSource": "accepted RFC-0004/general-contract.md as amended by the 2026-09-01 general trusted-bootstrap transaction (CONTRACT-AMENDMENT-MANIFEST.txt row)",
       "governingBehaviorContract": {
         "id": "polaris-project-wide-butlers-model",
-        "version": "sha256:915c51365815624fd2e794f0bc9dcd50778ac6dd7348696d42ec1ded08a1def6",
+        "version": "sha256:42d073cdeaf7fa7940c5e822b05213267ec1d0064faaaad092f21d264b76a2b1",
         "signedBy": "pending exact owner act over the PWB truth-and-readiness amendment manifest"
       },
       "subject": {
@@ -236,15 +236,26 @@
             }
           ],
           "factFamilyRows": {
-            "project-account": 1,
-            "principle": 1,
-            "success-criterion": 1,
-            "catalog-entry": 1,
-            "design-contract": 2,
-            "baseline-spec": 3,
-            "craft-policy": 4,
-            "topology-component": 5,
-            "roster-identity": 6
+            "item:project-account-section": 1,
+            "count:project-account-section": 1,
+            "item:principle": 1,
+            "count:principle": 1,
+            "item:success-criterion": 1,
+            "count:success-criterion": 1,
+            "item:catalog-entry": 1,
+            "count:catalog-entry": 1,
+            "item:design-contract": 2,
+            "count:design-contract": 2,
+            "item:baseline-spec": 3,
+            "count:baseline-spec": 3,
+            "item:craft-policy": 4,
+            "count:craft-policy": 4,
+            "item:topology-component": 5,
+            "count:topology-component": 5,
+            "item:roster-identity": 6,
+            "count:roster-identity": 6,
+            "catalog-count": 1,
+            "project-account": 1
           },
           "cellSyntax": "Layer raw cell is exactly one complete bold span; compare its content and Owns/Home after trimming outer ASCII whitespace and unwrapping only complete inline code spans; preserve case, punctuation and internal whitespace and apply no other Markdown or prose normalization",
           "application": "every Layer, Owns and Home cell must equal its row literal; mixed-family or unrecognized Owns prose invalidates the table; rows 1 through 5 are exact normalized roots, row 6 expands roster/{butler}/ only for a declared roster key, and row 7 is inert because code owns no admitted fact; an applied expanded home must contain at least one admitted source; the unique lowest-numbered applied home assigned by factFamilyRows selects its declaration; the root summary is non-owning; malformed, duplicate, missing, equally ranked or mutually disagreeing rules select nothing"
