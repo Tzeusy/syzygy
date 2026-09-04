@@ -532,9 +532,10 @@ a rendered heading, `:focus-visible` outline present, and no `outline: none`,
 `display: none`, `visibility: hidden`, absolute/fixed positioning, float,
 `order`, or reversed flex outside the skip link; every element of each
 colour-bearing class (`unknown-disclosure`, `proposal`, `band`, `claim-tuple`)
-names its state in text. `[Unknown]` stays as §9 records: no browser driver
-runs focus-order or accessibility-tree traces (task 4.4); the keyboard-only
-cold-open walkthrough remains manual evidence (PWB-REQ-016's record). Rule-6
+names its state in text. `[Unknown]` stayed as §9 recorded until P4.4 (below)
+added the browser-driven focus-order and accessibility-tree traces; the
+keyboard-only cold-open walkthrough remains manual evidence (PWB-REQ-016's
+record). Rule-6
 evidence: `docs/evidence/pwb-p3-8-reachability-mutation-run-2026-09-04.json`
 (19/19 killed, digest-verified restore).
 
@@ -646,6 +647,53 @@ not see — repaired in the oracle, which now also compares the machine's
 Unknown relationships and entities against the rendered disclosures as
 multisets. Evidence (26/26 killed):
 `docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04-parity-markers.json`.
+
+P4.4 implemented 2026-09-04 (task 4.4, keyboard/non-visual navigation and
+WCAG AA contrast measured in a real browser, `syzygy-1z3.20`). The §9
+"needs a browser driver" gap is closed without a new dependency:
+`apps/three-surface-poc/src/cdp-browser.ts` launches a locally installed
+Chrome/Chromium headless (`SYZYGY_POC_BROWSER`, else the first of
+`google-chrome`/`google-chrome-stable`/`chromium`/`chromium-browser` on
+PATH; nothing is downloaded) and speaks the DevTools protocol over Node's
+own WebSocket. `polaris-accessibility.ts` is the PWB-REQ-016 oracle outside
+the renderer: it enumerates the focusable population from the live DOM
+(links, disclosure summaries and `tabindex="0"` regions only — any other
+focusable or any `button` role in the accessibility tree is a violation),
+presses real Tab keys until the sequence wraps and requires the trace to
+equal the population in document order with no trap, mirrors it with
+Shift+Tab, requires a visible focus outline with a 3:1 indicator on every
+stop, activates every fragment link with a real Enter press (target must
+exist, become `:target`, and the next Tab must land on the first focusable
+after it — or lawfully wrap when none follows), reads the browser's own
+accessibility tree (every link, heading, region and navigation named; link
+count equal to the DOM's), and measures WCAG AA contrast for every rendered
+text element plus every targeted row against the composited backdrop
+(ancestor background colours with alpha, forking at gradients and judging
+against the worst candidate; 4.5:1, or 3:1 for large text). Every check
+reports its denominator. `polaris-accessibility-variants.ts` renders six
+Polaris pages from the in-memory fixtures (observed; observed with a lawful
+state-(1) judgment; degraded with an unlawful judgment; not-admitted;
+observation-failed; not-evaluated) and names every rendered group and deep
+dive as a required target; `polaris-accessibility.browser.test.ts` is
+`describe.skipIf`-gated on a browser (skipped is never reported as
+passed) and `npm run poc:accessibility-check` writes the evidence
+(`docs/evidence/pwb-p4-4-accessibility-browser-run-2026-09-04.json`:
+browser identity, commit, per-variant traces, activations, tree counts,
+contrast minima). The first measured run found one genuine defect: the
+coverage-counts `<summary>` disclosure was focusable but outside the
+`:focus-visible` rule, so its default outline measured 1.01:1 on the dark
+ground; `design-tokens.ts` now styles `summary:focus-visible` with the same
+3px focus outline. The daemon never imports the driver or the checker;
+no Butlers repository is read. Rule-6 evidence:
+`docs/evidence/pwb-p4-4-accessibility-mutation-run-2026-09-04.json`
+(ten mutations of `design-tokens.ts`/`polaris.ts` — the summary fix
+reverted, `outline: none`, low-contrast focus/muted/lede colours, a
+renamed skip-link target, an unfocusable scroll region, a broken source
+link target, a link given `role="button"`, a dropped depth-nav group
+link — each run against the browser check with digest-verified restore).
+Hosted CI's runner ships Chrome, so the gated suite runs there; the
+keyboard-only cold-open walkthrough record (PWB-REQ-022) remains the
+owner's manual evidence and is untouched by this automation.
 
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
@@ -840,12 +888,13 @@ demands it, and a review at the classes below.
 
 ## 9. Known gaps and assumptions, stated now
 
-- `[Unknown]` Automated keyboard traversal and WCAG AA contrast (task 4.4)
-  need a browser driver; none is a dependency today and adding one pulls a
-  browser binary over the network. The plan keeps structural accessibility
-  checks in-process and records the keyboard-only cold-open walkthrough as
-  the manual evidence, exactly as the previous POC cycle disclosed. A driver
-  is an ordinary tooling choice if the owner wants it; it is not assumed.
+- `[Observed]` (closed by P4.4, 2026-09-04) Automated keyboard traversal and
+  WCAG AA contrast run in a locally installed Chrome/Chromium through the
+  DevTools protocol with no new dependency and no download; where no
+  browser is installed the suite is skipped and reported as skipped, and
+  `docs/evidence/pwb-p4-4-accessibility-browser-run-2026-09-04.json`
+  records the run that was measured. The keyboard-only cold-open
+  walkthrough remains the owner's manual evidence.
 - `[Unknown]` Whether the real Butlers indexes match the literal grammar at
   the observed revision. A mismatch renders that source's item denominator
   Unknown; it does not license grammar changes (those are spec amendments).

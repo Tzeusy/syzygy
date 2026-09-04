@@ -16,6 +16,7 @@
     "poc": "npm run build:poc --silent && node apps/three-surface-poc/dist/main.js",
     "poc:capture-test-artifact": "npm run build:poc --silent && node apps/three-surface-poc/dist/capture-test-artifact-main.js",
     "poc:pwb-mutation-run": "npm run build:poc --silent && node apps/three-surface-poc/dist/pwb-mutation-run-main.js",
+    "poc:accessibility-check": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-accessibility-main.js",
     "poc:pwb-mutation-sweep": "npm run build:poc --silent && node apps/three-surface-poc/dist/pwb-mutation-sweep-main.js",
     "typecheck": "tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system"
   },

@@ -1,0 +1,3084 @@
+{
+  "task": "syzygy-1z3.20 (PWB task 4.4)",
+  "requirement": [
+    "PWB-REQ-016",
+    "PWB-REQ-011",
+    "RFC7-31",
+    "RFC7-34"
+  ],
+  "capturedAt": "2026-09-04T14:21:05.967Z",
+  "commit": "d3832829d365254f83a0786eb17924ebfca2ca26",
+  "browser": {
+    "executable": "/usr/bin/google-chrome",
+    "version": "Chrome/120.0.6099.224"
+  },
+  "variants": [
+    {
+      "label": "observed",
+      "url": "file:///tmp/syzygy-poc-a11y-va9rKd/observed.html",
+      "focusables": 82,
+      "focusTrace": {
+        "forward": [
+          "a[href=#main-content] \"Skip to main content\"",
+          "a[href=/] \"Overview\"",
+          "a[href=/polaris] \"Polaris\"",
+          "a[href=/trajectory] \"Trajectory\"",
+          "a[href=/orrery] \"Orrery\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-group-boundaries] \"What Butlers is not\"",
+          "a[href=#polaris-group-architecture] \"How Butlers is built\"",
+          "a[href=#polaris-group-v1] \"What V1 ships\"",
+          "a[href=#polaris-group-catalog] \"Project catalog\"",
+          "a[href=#polaris-class-catalog-entry] \"Declared projects\"",
+          "a[href=#polaris-class-roster-identity] \"Roster identities\"",
+          "a[href=#polaris-class-design-contract] \"Design contracts\"",
+          "a[href=#polaris-class-baseline-spec] \"Baseline specs\"",
+          "a[href=#polaris-class-craft-policy] \"Craft policies\"",
+          "a[href=#polaris-group-capability-detail] \"One capability in depth\"",
+          "a[href=#polaris-deep-dive-capability-whatsapp-transport-identity] \"WhatsApp transport identity normalizatio\"",
+          "a[href=#polaris-group-evidence-and-gaps] \"Evidence and gaps\"",
+          "a[href=#polaris-shape-sources] \"Project-shape sources\"",
+          "a[href=#polaris-shape-exclusions] \"Excluded bodies\"",
+          "a[href=#polaris-shape-contradictions] \"Contradicted facts\"",
+          "a[href=#polaris-shape-gaps] \"Unknown, by reason\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:3\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:7\"",
+          "a[href=#polaris-source-about-heart-and-soul-architecture-md] \"about/heart-and-soul/architecture.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:12\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state Fail closed *\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:18\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:19\"",
+          "a[href=#polaris-source-about-heart-and-soul-architecture-md] \"about/heart-and-soul/architecture.md:3\"",
+          "a[href=#polaris-source-about-lay-and-land-components-md] \"about/lay-and-land/components.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state 1:Daemon 1:Da\"",
+          "a[href=#polaris-source-about-lay-and-land-components-md] \"about/lay-and-land/components.md:7\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:3\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:34\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state v1:1 Ships on\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:36\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:9\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:10\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state Bus **Bus** -\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:9\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:15\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:16\"",
+          "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml\"",
+          "a[href=#polaris-source-roster-bishop-butler-toml] \"roster/bishop/butler.toml\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state atlas atlas (\"",
+          "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml:2\"",
+          "a[href=#polaris-source-roster-bishop-butler-toml] \"roster/bishop/butler.toml:2\"",
+          "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state RFC 0001 RFC \"",
+          "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md:7\"",
+          "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state alpha alpha (\"",
+          "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md:1\"",
+          "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state cc-spec.md cc\"",
+          "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md:7\"",
+          "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-code:identity-resolution] \"Identity resolution code region\"",
+          "a[href=#polaris-test:identity-regression-definition] \"Identity regression test definition\"",
+          "a[href=#polaris-work:whatsapp-single-event-normalization] \"Single-event sender normalization work\"",
+          "a[href=#polaris-evidence:focused-pytest] \"Focused pytest evidence\"",
+          "a[href=#polaris-runtime:live-satisfaction] \"Live runtime satisfaction\"",
+          "a[href=#polaris-region:unmapped-code] \"Unmapped Butlers code\"",
+          "summary \"Coverage counts\"",
+          "div \"#SourceRuleOutcomeDigestItems 1 about/RE\""
+        ],
+        "reverse": [
+          "div \"#SourceRuleOutcomeDigestItems 1 about/RE\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-region:unmapped-code] \"Unmapped Butlers code\"",
+          "a[href=#polaris-runtime:live-satisfaction] \"Live runtime satisfaction\"",
+          "a[href=#polaris-evidence:focused-pytest] \"Focused pytest evidence\"",
+          "a[href=#polaris-work:whatsapp-single-event-normalization] \"Single-event sender normalization work\"",
+          "a[href=#polaris-test:identity-regression-definition] \"Identity regression test definition\"",
+          "a[href=#polaris-code:identity-resolution] \"Identity resolution code region\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\"",
+          "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md:7\"",
+          "div \"KeyDeclaredEpistemic state cc-spec.md cc\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md\"",
+          "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md:1\"",
+          "div \"KeyDeclaredEpistemic state alpha alpha (\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md\"",
+          "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md:7\"",
+          "div \"KeyDeclaredEpistemic state RFC 0001 RFC \"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md\"",
+          "a[href=#polaris-source-roster-bishop-butler-toml] \"roster/bishop/butler.toml:2\"",
+          "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml:2\"",
+          "div \"KeyDeclaredEpistemic state atlas atlas (\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-roster-bishop-butler-toml] \"roster/bishop/butler.toml\"",
+          "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:16\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:15\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:9\"",
+          "div \"KeyDeclaredEpistemic state Bus **Bus** -\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:10\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:9\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:36\"",
+          "div \"KeyDeclaredEpistemic state v1:1 Ships on\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:34\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:3\"",
+          "a[href=#polaris-source-about-lay-and-land-components-md] \"about/lay-and-land/components.md:7\"",
+          "div \"KeyDeclaredEpistemic state 1:Daemon 1:Da\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-lay-and-land-components-md] \"about/lay-and-land/components.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-architecture-md] \"about/heart-and-soul/architecture.md:3\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:19\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:18\"",
+          "div \"KeyDeclaredEpistemic state Fail closed *\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:12\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-architecture-md] \"about/heart-and-soul/architecture.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:7\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:3\"",
+          "a[href=#polaris-shape-gaps] \"Unknown, by reason\"",
+          "a[href=#polaris-shape-contradictions] \"Contradicted facts\"",
+          "a[href=#polaris-shape-exclusions] \"Excluded bodies\"",
+          "a[href=#polaris-shape-sources] \"Project-shape sources\"",
+          "a[href=#polaris-group-evidence-and-gaps] \"Evidence and gaps\"",
+          "a[href=#polaris-deep-dive-capability-whatsapp-transport-identity] \"WhatsApp transport identity normalizatio\"",
+          "a[href=#polaris-group-capability-detail] \"One capability in depth\"",
+          "a[href=#polaris-class-craft-policy] \"Craft policies\"",
+          "a[href=#polaris-class-baseline-spec] \"Baseline specs\"",
+          "a[href=#polaris-class-design-contract] \"Design contracts\"",
+          "a[href=#polaris-class-roster-identity] \"Roster identities\"",
+          "a[href=#polaris-class-catalog-entry] \"Declared projects\"",
+          "a[href=#polaris-group-catalog] \"Project catalog\"",
+          "a[href=#polaris-group-v1] \"What V1 ships\"",
+          "a[href=#polaris-group-architecture] \"How Butlers is built\"",
+          "a[href=#polaris-group-boundaries] \"What Butlers is not\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=/orrery] \"Orrery\"",
+          "a[href=/trajectory] \"Trajectory\"",
+          "a[href=/polaris] \"Polaris\"",
+          "a[href=/] \"Overview\"",
+          "a[href=#main-content] \"Skip to main content\""
+        ],
+        "population": 82,
+        "reached": 82
+      },
+      "activations": [
+        {
+          "href": "#main-content",
+          "targetId": "main-content",
+          "targetTag": "main",
+          "continuedTo": "a[href=#polaris-group-overview] \"What Butlers is\""
+        },
+        {
+          "href": "#polaris-group-overview",
+          "targetId": "polaris-group-overview",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:3\""
+        },
+        {
+          "href": "#polaris-group-boundaries",
+          "targetId": "polaris-group-boundaries",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:12\""
+        },
+        {
+          "href": "#polaris-group-architecture",
+          "targetId": "polaris-group-architecture",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-architecture-md] \"about/heart-and-soul/architecture.md:3\""
+        },
+        {
+          "href": "#polaris-group-v1",
+          "targetId": "polaris-group-v1",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:3\""
+        },
+        {
+          "href": "#polaris-group-catalog",
+          "targetId": "polaris-group-catalog",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\""
+        },
+        {
+          "href": "#polaris-class-catalog-entry",
+          "targetId": "polaris-class-catalog-entry",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\""
+        },
+        {
+          "href": "#polaris-class-roster-identity",
+          "targetId": "polaris-class-roster-identity",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml\""
+        },
+        {
+          "href": "#polaris-class-design-contract",
+          "targetId": "polaris-class-design-contract",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md\""
+        },
+        {
+          "href": "#polaris-class-baseline-spec",
+          "targetId": "polaris-class-baseline-spec",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md\""
+        },
+        {
+          "href": "#polaris-class-craft-policy",
+          "targetId": "polaris-class-craft-policy",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md\""
+        },
+        {
+          "href": "#polaris-group-capability-detail",
+          "targetId": "polaris-group-capability-detail",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\""
+        },
+        {
+          "href": "#polaris-deep-dive-capability-whatsapp-transport-identity",
+          "targetId": "polaris-deep-dive-capability-whatsapp-transport-identity",
+          "targetTag": "section",
+          "continuedTo": "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\""
+        },
+        {
+          "href": "#polaris-group-evidence-and-gaps",
+          "targetId": "polaris-group-evidence-and-gaps",
+          "targetTag": "h2",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-shape-sources",
+          "targetId": "polaris-shape-sources",
+          "targetTag": "h3",
+          "continuedTo": "div \"#SourceRuleOutcomeDigestItems 1 about/RE\""
+        },
+        {
+          "href": "#polaris-shape-exclusions",
+          "targetId": "polaris-shape-exclusions",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-shape-contradictions",
+          "targetId": "polaris-shape-contradictions",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-shape-gaps",
+          "targetId": "polaris-shape-gaps",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-architecture-md",
+          "targetId": "polaris-source-about-heart-and-soul-architecture-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-architecture-md",
+          "targetId": "polaris-source-about-heart-and-soul-architecture-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-lay-and-land-components-md",
+          "targetId": "polaris-source-about-lay-and-land-components-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-lay-and-land-components-md",
+          "targetId": "polaris-source-about-lay-and-land-components-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-roster-atlas-butler-toml",
+          "targetId": "polaris-source-roster-atlas-butler-toml",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-roster-bishop-butler-toml",
+          "targetId": "polaris-source-roster-bishop-butler-toml",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-roster-atlas-butler-toml",
+          "targetId": "polaris-source-roster-atlas-butler-toml",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-roster-bishop-butler-toml",
+          "targetId": "polaris-source-roster-bishop-butler-toml",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-legends-and-lore-README-md",
+          "targetId": "polaris-source-about-legends-and-lore-README-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-legends-and-lore-README-md",
+          "targetId": "polaris-source-about-legends-and-lore-README-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-openspec-specs-alpha-spec-md",
+          "targetId": "polaris-source-openspec-specs-alpha-spec-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-openspec-specs-alpha-spec-md",
+          "targetId": "polaris-source-openspec-specs-alpha-spec-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-craft-and-care-README-md",
+          "targetId": "polaris-source-about-craft-and-care-README-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-craft-and-care-README-md",
+          "targetId": "polaris-source-about-craft-and-care-README-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-intent:req-switchboard-identity-001",
+          "targetId": "polaris-intent:req-switchboard-identity-001",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-group-overview",
+          "targetId": "polaris-group-overview",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:3\""
+        },
+        {
+          "href": "#polaris-code:identity-resolution",
+          "targetId": "polaris-code:identity-resolution",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-test:identity-regression-definition",
+          "targetId": "polaris-test:identity-regression-definition",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-work:whatsapp-single-event-normalization",
+          "targetId": "polaris-work:whatsapp-single-event-normalization",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-evidence:focused-pytest",
+          "targetId": "polaris-evidence:focused-pytest",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-runtime:live-satisfaction",
+          "targetId": "polaris-runtime:live-satisfaction",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-region:unmapped-code",
+          "targetId": "polaris-region:unmapped-code",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        }
+      ],
+      "accessibilityTree": {
+        "nodes": 2371,
+        "byRole": {
+          "RootWebArea": 1,
+          "link": 63,
+          "banner": 1,
+          "navigation": 2,
+          "main": 1,
+          "contentinfo": 1,
+          "StaticText": 765,
+          "generic": 1,
+          "heading": 50,
+          "paragraph": 81,
+          "list": 4,
+          "HeaderAsNonLandmark": 7,
+          "Section": 43,
+          "InlineTextBox": 1047,
+          "listitem": 19,
+          "Details": 10,
+          "region": 9,
+          "DisclosureTriangle": 10,
+          "table": 9,
+          "ListMarker": 13,
+          "row": 38,
+          "columnheader": 30,
+          "gridcell": 132,
+          "LineBreak": 34
+        },
+        "unnamed": []
+      },
+      "contrast": {
+        "measured": 1364,
+        "minimumRatio": 4.69,
+        "worst": [
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-vision-md>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-vision-md>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-architecture-md>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-architecture-md>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-v1-md>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-v1-md>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-lay-and-land-components-md>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-lay-and-land-components-md>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-roster-atlas-butler-toml>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-roster-atlas-butler-toml>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          }
+        ]
+      },
+      "violations": []
+    },
+    {
+      "label": "observed-lawful-state-1",
+      "url": "file:///tmp/syzygy-poc-a11y-va9rKd/observed-lawful-state-1.html",
+      "focusables": 82,
+      "focusTrace": {
+        "forward": [
+          "a[href=#main-content] \"Skip to main content\"",
+          "a[href=/] \"Overview\"",
+          "a[href=/polaris] \"Polaris\"",
+          "a[href=/trajectory] \"Trajectory\"",
+          "a[href=/orrery] \"Orrery\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-group-boundaries] \"What Butlers is not\"",
+          "a[href=#polaris-group-architecture] \"How Butlers is built\"",
+          "a[href=#polaris-group-v1] \"What V1 ships\"",
+          "a[href=#polaris-group-catalog] \"Project catalog\"",
+          "a[href=#polaris-class-catalog-entry] \"Declared projects\"",
+          "a[href=#polaris-class-roster-identity] \"Roster identities\"",
+          "a[href=#polaris-class-design-contract] \"Design contracts\"",
+          "a[href=#polaris-class-baseline-spec] \"Baseline specs\"",
+          "a[href=#polaris-class-craft-policy] \"Craft policies\"",
+          "a[href=#polaris-group-capability-detail] \"One capability in depth\"",
+          "a[href=#polaris-deep-dive-capability-whatsapp-transport-identity] \"WhatsApp transport identity normalizatio\"",
+          "a[href=#polaris-group-evidence-and-gaps] \"Evidence and gaps\"",
+          "a[href=#polaris-shape-sources] \"Project-shape sources\"",
+          "a[href=#polaris-shape-exclusions] \"Excluded bodies\"",
+          "a[href=#polaris-shape-contradictions] \"Contradicted facts\"",
+          "a[href=#polaris-shape-gaps] \"Unknown, by reason\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:3\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:7\"",
+          "a[href=#polaris-source-about-heart-and-soul-architecture-md] \"about/heart-and-soul/architecture.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:12\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state Fail closed *\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:18\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:19\"",
+          "a[href=#polaris-source-about-heart-and-soul-architecture-md] \"about/heart-and-soul/architecture.md:3\"",
+          "a[href=#polaris-source-about-lay-and-land-components-md] \"about/lay-and-land/components.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state 1:Daemon 1:Da\"",
+          "a[href=#polaris-source-about-lay-and-land-components-md] \"about/lay-and-land/components.md:7\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:3\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:34\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state v1:1 Ships on\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:36\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:9\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:10\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state Bus **Bus** -\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:9\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:15\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:16\"",
+          "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml\"",
+          "a[href=#polaris-source-roster-bishop-butler-toml] \"roster/bishop/butler.toml\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state atlas atlas (\"",
+          "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml:2\"",
+          "a[href=#polaris-source-roster-bishop-butler-toml] \"roster/bishop/butler.toml:2\"",
+          "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state RFC 0001 RFC \"",
+          "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md:7\"",
+          "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state alpha alpha (\"",
+          "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md:1\"",
+          "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state cc-spec.md cc\"",
+          "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md:7\"",
+          "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-code:identity-resolution] \"Identity resolution code region\"",
+          "a[href=#polaris-test:identity-regression-definition] \"Identity regression test definition\"",
+          "a[href=#polaris-work:whatsapp-single-event-normalization] \"Single-event sender normalization work\"",
+          "a[href=#polaris-evidence:focused-pytest] \"Focused pytest evidence\"",
+          "a[href=#polaris-runtime:live-satisfaction] \"Live runtime satisfaction\"",
+          "a[href=#polaris-region:unmapped-code] \"Unmapped Butlers code\"",
+          "summary \"Coverage counts\"",
+          "div \"#SourceRuleOutcomeDigestItems 1 about/RE\""
+        ],
+        "reverse": [
+          "div \"#SourceRuleOutcomeDigestItems 1 about/RE\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-region:unmapped-code] \"Unmapped Butlers code\"",
+          "a[href=#polaris-runtime:live-satisfaction] \"Live runtime satisfaction\"",
+          "a[href=#polaris-evidence:focused-pytest] \"Focused pytest evidence\"",
+          "a[href=#polaris-work:whatsapp-single-event-normalization] \"Single-event sender normalization work\"",
+          "a[href=#polaris-test:identity-regression-definition] \"Identity regression test definition\"",
+          "a[href=#polaris-code:identity-resolution] \"Identity resolution code region\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\"",
+          "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md:7\"",
+          "div \"KeyDeclaredEpistemic state cc-spec.md cc\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md\"",
+          "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md:1\"",
+          "div \"KeyDeclaredEpistemic state alpha alpha (\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md\"",
+          "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md:7\"",
+          "div \"KeyDeclaredEpistemic state RFC 0001 RFC \"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md\"",
+          "a[href=#polaris-source-roster-bishop-butler-toml] \"roster/bishop/butler.toml:2\"",
+          "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml:2\"",
+          "div \"KeyDeclaredEpistemic state atlas atlas (\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-roster-bishop-butler-toml] \"roster/bishop/butler.toml\"",
+          "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:16\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:15\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:9\"",
+          "div \"KeyDeclaredEpistemic state Bus **Bus** -\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:10\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:9\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:36\"",
+          "div \"KeyDeclaredEpistemic state v1:1 Ships on\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:34\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:3\"",
+          "a[href=#polaris-source-about-lay-and-land-components-md] \"about/lay-and-land/components.md:7\"",
+          "div \"KeyDeclaredEpistemic state 1:Daemon 1:Da\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-lay-and-land-components-md] \"about/lay-and-land/components.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-architecture-md] \"about/heart-and-soul/architecture.md:3\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:19\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:18\"",
+          "div \"KeyDeclaredEpistemic state Fail closed *\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:12\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-architecture-md] \"about/heart-and-soul/architecture.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:7\"",
+          "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:3\"",
+          "a[href=#polaris-shape-gaps] \"Unknown, by reason\"",
+          "a[href=#polaris-shape-contradictions] \"Contradicted facts\"",
+          "a[href=#polaris-shape-exclusions] \"Excluded bodies\"",
+          "a[href=#polaris-shape-sources] \"Project-shape sources\"",
+          "a[href=#polaris-group-evidence-and-gaps] \"Evidence and gaps\"",
+          "a[href=#polaris-deep-dive-capability-whatsapp-transport-identity] \"WhatsApp transport identity normalizatio\"",
+          "a[href=#polaris-group-capability-detail] \"One capability in depth\"",
+          "a[href=#polaris-class-craft-policy] \"Craft policies\"",
+          "a[href=#polaris-class-baseline-spec] \"Baseline specs\"",
+          "a[href=#polaris-class-design-contract] \"Design contracts\"",
+          "a[href=#polaris-class-roster-identity] \"Roster identities\"",
+          "a[href=#polaris-class-catalog-entry] \"Declared projects\"",
+          "a[href=#polaris-group-catalog] \"Project catalog\"",
+          "a[href=#polaris-group-v1] \"What V1 ships\"",
+          "a[href=#polaris-group-architecture] \"How Butlers is built\"",
+          "a[href=#polaris-group-boundaries] \"What Butlers is not\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=/orrery] \"Orrery\"",
+          "a[href=/trajectory] \"Trajectory\"",
+          "a[href=/polaris] \"Polaris\"",
+          "a[href=/] \"Overview\"",
+          "a[href=#main-content] \"Skip to main content\""
+        ],
+        "population": 82,
+        "reached": 82
+      },
+      "activations": [
+        {
+          "href": "#main-content",
+          "targetId": "main-content",
+          "targetTag": "main",
+          "continuedTo": "a[href=#polaris-group-overview] \"What Butlers is\""
+        },
+        {
+          "href": "#polaris-group-overview",
+          "targetId": "polaris-group-overview",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:3\""
+        },
+        {
+          "href": "#polaris-group-boundaries",
+          "targetId": "polaris-group-boundaries",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:12\""
+        },
+        {
+          "href": "#polaris-group-architecture",
+          "targetId": "polaris-group-architecture",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-architecture-md] \"about/heart-and-soul/architecture.md:3\""
+        },
+        {
+          "href": "#polaris-group-v1",
+          "targetId": "polaris-group-v1",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:3\""
+        },
+        {
+          "href": "#polaris-group-catalog",
+          "targetId": "polaris-group-catalog",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\""
+        },
+        {
+          "href": "#polaris-class-catalog-entry",
+          "targetId": "polaris-class-catalog-entry",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\""
+        },
+        {
+          "href": "#polaris-class-roster-identity",
+          "targetId": "polaris-class-roster-identity",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml\""
+        },
+        {
+          "href": "#polaris-class-design-contract",
+          "targetId": "polaris-class-design-contract",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md\""
+        },
+        {
+          "href": "#polaris-class-baseline-spec",
+          "targetId": "polaris-class-baseline-spec",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md\""
+        },
+        {
+          "href": "#polaris-class-craft-policy",
+          "targetId": "polaris-class-craft-policy",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md\""
+        },
+        {
+          "href": "#polaris-group-capability-detail",
+          "targetId": "polaris-group-capability-detail",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\""
+        },
+        {
+          "href": "#polaris-deep-dive-capability-whatsapp-transport-identity",
+          "targetId": "polaris-deep-dive-capability-whatsapp-transport-identity",
+          "targetTag": "section",
+          "continuedTo": "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\""
+        },
+        {
+          "href": "#polaris-group-evidence-and-gaps",
+          "targetId": "polaris-group-evidence-and-gaps",
+          "targetTag": "h2",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-shape-sources",
+          "targetId": "polaris-shape-sources",
+          "targetTag": "h3",
+          "continuedTo": "div \"#SourceRuleOutcomeDigestItems 1 about/RE\""
+        },
+        {
+          "href": "#polaris-shape-exclusions",
+          "targetId": "polaris-shape-exclusions",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-shape-contradictions",
+          "targetId": "polaris-shape-contradictions",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-shape-gaps",
+          "targetId": "polaris-shape-gaps",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-architecture-md",
+          "targetId": "polaris-source-about-heart-and-soul-architecture-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-architecture-md",
+          "targetId": "polaris-source-about-heart-and-soul-architecture-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-lay-and-land-components-md",
+          "targetId": "polaris-source-about-lay-and-land-components-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-lay-and-land-components-md",
+          "targetId": "polaris-source-about-lay-and-land-components-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-vision-md",
+          "targetId": "polaris-source-about-heart-and-soul-vision-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-roster-atlas-butler-toml",
+          "targetId": "polaris-source-roster-atlas-butler-toml",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-roster-bishop-butler-toml",
+          "targetId": "polaris-source-roster-bishop-butler-toml",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-roster-atlas-butler-toml",
+          "targetId": "polaris-source-roster-atlas-butler-toml",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-roster-bishop-butler-toml",
+          "targetId": "polaris-source-roster-bishop-butler-toml",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-legends-and-lore-README-md",
+          "targetId": "polaris-source-about-legends-and-lore-README-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-legends-and-lore-README-md",
+          "targetId": "polaris-source-about-legends-and-lore-README-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-openspec-specs-alpha-spec-md",
+          "targetId": "polaris-source-openspec-specs-alpha-spec-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-openspec-specs-alpha-spec-md",
+          "targetId": "polaris-source-openspec-specs-alpha-spec-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-craft-and-care-README-md",
+          "targetId": "polaris-source-about-craft-and-care-README-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-craft-and-care-README-md",
+          "targetId": "polaris-source-about-craft-and-care-README-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-intent:req-switchboard-identity-001",
+          "targetId": "polaris-intent:req-switchboard-identity-001",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-group-overview",
+          "targetId": "polaris-group-overview",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-vision-md] \"about/heart-and-soul/vision.md:3\""
+        },
+        {
+          "href": "#polaris-code:identity-resolution",
+          "targetId": "polaris-code:identity-resolution",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-test:identity-regression-definition",
+          "targetId": "polaris-test:identity-regression-definition",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-work:whatsapp-single-event-normalization",
+          "targetId": "polaris-work:whatsapp-single-event-normalization",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-evidence:focused-pytest",
+          "targetId": "polaris-evidence:focused-pytest",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-runtime:live-satisfaction",
+          "targetId": "polaris-runtime:live-satisfaction",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        },
+        {
+          "href": "#polaris-region:unmapped-code",
+          "targetId": "polaris-region:unmapped-code",
+          "targetTag": "h3",
+          "continuedTo": "summary \"Coverage counts\""
+        }
+      ],
+      "accessibilityTree": {
+        "nodes": 2465,
+        "byRole": {
+          "RootWebArea": 1,
+          "link": 63,
+          "banner": 1,
+          "navigation": 2,
+          "main": 1,
+          "contentinfo": 1,
+          "StaticText": 808,
+          "generic": 1,
+          "heading": 50,
+          "paragraph": 85,
+          "list": 4,
+          "HeaderAsNonLandmark": 7,
+          "Section": 43,
+          "InlineTextBox": 1094,
+          "listitem": 19,
+          "Details": 10,
+          "region": 9,
+          "DisclosureTriangle": 10,
+          "table": 9,
+          "ListMarker": 13,
+          "row": 38,
+          "columnheader": 30,
+          "gridcell": 132,
+          "LineBreak": 34
+        },
+        "unnamed": []
+      },
+      "contrast": {
+        "measured": 1410,
+        "minimumRatio": 4.69,
+        "worst": [
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-vision-md>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-vision-md>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-architecture-md>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-architecture-md>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-v1-md>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-v1-md>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-lay-and-land-components-md>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-lay-and-land-components-md>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-roster-atlas-butler-toml>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-roster-atlas-butler-toml>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          }
+        ]
+      },
+      "violations": []
+    },
+    {
+      "label": "observed-degraded-unlawful",
+      "url": "file:///tmp/syzygy-poc-a11y-va9rKd/observed-degraded-unlawful.html",
+      "focusables": 80,
+      "focusTrace": {
+        "forward": [
+          "a[href=#main-content] \"Skip to main content\"",
+          "a[href=/] \"Overview\"",
+          "a[href=/polaris] \"Polaris\"",
+          "a[href=/trajectory] \"Trajectory\"",
+          "a[href=/orrery] \"Orrery\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-group-boundaries] \"What Butlers is not\"",
+          "a[href=#polaris-group-architecture] \"How Butlers is built\"",
+          "a[href=#polaris-group-v1] \"What V1 ships\"",
+          "a[href=#polaris-group-catalog] \"Project catalog\"",
+          "a[href=#polaris-class-catalog-entry] \"Declared projects\"",
+          "a[href=#polaris-class-roster-identity] \"Roster identities\"",
+          "a[href=#polaris-class-design-contract] \"Design contracts\"",
+          "a[href=#polaris-class-baseline-spec] \"Baseline specs\"",
+          "a[href=#polaris-class-craft-policy] \"Craft policies\"",
+          "a[href=#polaris-group-capability-detail] \"One capability in depth\"",
+          "a[href=#polaris-deep-dive-capability-whatsapp-transport-identity] \"WhatsApp transport identity normalizatio\"",
+          "a[href=#polaris-group-evidence-and-gaps] \"Evidence and gaps\"",
+          "a[href=#polaris-shape-sources] \"Project-shape sources\"",
+          "a[href=#polaris-shape-exclusions] \"Excluded bodies\"",
+          "a[href=#polaris-shape-contradictions] \"Contradicted facts\"",
+          "a[href=#polaris-shape-gaps] \"Unknown, by reason\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-heart-and-soul-architecture-md] \"about/heart-and-soul/architecture.md:3\"",
+          "a[href=#polaris-source-about-lay-and-land-components-md] \"about/lay-and-land/components.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state 1:Daemon 1:Da\"",
+          "a[href=#polaris-source-about-lay-and-land-components-md] \"about/lay-and-land/components.md:7\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:3\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:34\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state v1:1 Ships on\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:36\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state Bus **Bus** -\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:9\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:15\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:16\"",
+          "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml\"",
+          "a[href=#polaris-source-roster-bishop-butler-toml] \"roster/bishop/butler.toml\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state atlas atlas (\"",
+          "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml:2\"",
+          "a[href=#polaris-source-roster-bishop-butler-toml] \"roster/bishop/butler.toml:2\"",
+          "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state RFC 0001 RFC \"",
+          "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md:7\"",
+          "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state alpha alpha (\"",
+          "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md:1\"",
+          "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md\"",
+          "summary \"Coverage counts\"",
+          "div \"KeyDeclaredEpistemic state cc-spec.md cc\"",
+          "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md:7\"",
+          "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-code:identity-resolution] \"Identity resolution code region\"",
+          "a[href=#polaris-test:identity-regression-definition] \"Identity regression test definition\"",
+          "a[href=#polaris-work:whatsapp-single-event-normalization] \"Single-event sender normalization work\"",
+          "a[href=#polaris-evidence:focused-pytest] \"Focused pytest evidence\"",
+          "a[href=#polaris-runtime:live-satisfaction] \"Live runtime satisfaction\"",
+          "a[href=#polaris-region:unmapped-code] \"Unmapped Butlers code\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "summary \"Coverage counts\"",
+          "div \"#SourceRuleOutcomeDigestItems 1 about/RE\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        ],
+        "reverse": [
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "div \"#SourceRuleOutcomeDigestItems 1 about/RE\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-region:unmapped-code] \"Unmapped Butlers code\"",
+          "a[href=#polaris-runtime:live-satisfaction] \"Live runtime satisfaction\"",
+          "a[href=#polaris-evidence:focused-pytest] \"Focused pytest evidence\"",
+          "a[href=#polaris-work:whatsapp-single-event-normalization] \"Single-event sender normalization work\"",
+          "a[href=#polaris-test:identity-regression-definition] \"Identity regression test definition\"",
+          "a[href=#polaris-code:identity-resolution] \"Identity resolution code region\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\"",
+          "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md:7\"",
+          "div \"KeyDeclaredEpistemic state cc-spec.md cc\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md\"",
+          "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md:1\"",
+          "div \"KeyDeclaredEpistemic state alpha alpha (\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md\"",
+          "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md:7\"",
+          "div \"KeyDeclaredEpistemic state RFC 0001 RFC \"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md\"",
+          "a[href=#polaris-source-roster-bishop-butler-toml] \"roster/bishop/butler.toml:2\"",
+          "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml:2\"",
+          "div \"KeyDeclaredEpistemic state atlas atlas (\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-roster-bishop-butler-toml] \"roster/bishop/butler.toml\"",
+          "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:16\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:15\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:9\"",
+          "div \"KeyDeclaredEpistemic state Bus **Bus** -\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:36\"",
+          "div \"KeyDeclaredEpistemic state v1:1 Ships on\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:34\"",
+          "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:3\"",
+          "a[href=#polaris-source-about-lay-and-land-components-md] \"about/lay-and-land/components.md:7\"",
+          "div \"KeyDeclaredEpistemic state 1:Daemon 1:Da\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-source-about-lay-and-land-components-md] \"about/lay-and-land/components.md\"",
+          "a[href=#polaris-source-about-heart-and-soul-architecture-md] \"about/heart-and-soul/architecture.md:3\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "summary \"Coverage counts\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-shape-gaps] \"Unknown, by reason\"",
+          "a[href=#polaris-shape-contradictions] \"Contradicted facts\"",
+          "a[href=#polaris-shape-exclusions] \"Excluded bodies\"",
+          "a[href=#polaris-shape-sources] \"Project-shape sources\"",
+          "a[href=#polaris-group-evidence-and-gaps] \"Evidence and gaps\"",
+          "a[href=#polaris-deep-dive-capability-whatsapp-transport-identity] \"WhatsApp transport identity normalizatio\"",
+          "a[href=#polaris-group-capability-detail] \"One capability in depth\"",
+          "a[href=#polaris-class-craft-policy] \"Craft policies\"",
+          "a[href=#polaris-class-baseline-spec] \"Baseline specs\"",
+          "a[href=#polaris-class-design-contract] \"Design contracts\"",
+          "a[href=#polaris-class-roster-identity] \"Roster identities\"",
+          "a[href=#polaris-class-catalog-entry] \"Declared projects\"",
+          "a[href=#polaris-group-catalog] \"Project catalog\"",
+          "a[href=#polaris-group-v1] \"What V1 ships\"",
+          "a[href=#polaris-group-architecture] \"How Butlers is built\"",
+          "a[href=#polaris-group-boundaries] \"What Butlers is not\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=/orrery] \"Orrery\"",
+          "a[href=/trajectory] \"Trajectory\"",
+          "a[href=/polaris] \"Polaris\"",
+          "a[href=/] \"Overview\"",
+          "a[href=#main-content] \"Skip to main content\""
+        ],
+        "population": 80,
+        "reached": 80
+      },
+      "activations": [
+        {
+          "href": "#main-content",
+          "targetId": "main-content",
+          "targetTag": "main",
+          "continuedTo": "a[href=#polaris-group-overview] \"What Butlers is\""
+        },
+        {
+          "href": "#polaris-group-overview",
+          "targetId": "polaris-group-overview",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-group-boundaries",
+          "targetId": "polaris-group-boundaries",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-group-architecture",
+          "targetId": "polaris-group-architecture",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-architecture-md] \"about/heart-and-soul/architecture.md:3\""
+        },
+        {
+          "href": "#polaris-group-v1",
+          "targetId": "polaris-group-v1",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md:3\""
+        },
+        {
+          "href": "#polaris-group-catalog",
+          "targetId": "polaris-group-catalog",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\""
+        },
+        {
+          "href": "#polaris-class-catalog-entry",
+          "targetId": "polaris-class-catalog-entry",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-about-heart-and-soul-v1-md] \"about/heart-and-soul/v1.md\""
+        },
+        {
+          "href": "#polaris-class-roster-identity",
+          "targetId": "polaris-class-roster-identity",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-roster-atlas-butler-toml] \"roster/atlas/butler.toml\""
+        },
+        {
+          "href": "#polaris-class-design-contract",
+          "targetId": "polaris-class-design-contract",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-about-legends-and-lore-README-md] \"about/legends-and-lore/README.md\""
+        },
+        {
+          "href": "#polaris-class-baseline-spec",
+          "targetId": "polaris-class-baseline-spec",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-openspec-specs-alpha-spec-md] \"openspec/specs/alpha/spec.md\""
+        },
+        {
+          "href": "#polaris-class-craft-policy",
+          "targetId": "polaris-class-craft-policy",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-source-about-craft-and-care-README-md] \"about/craft-and-care/README.md\""
+        },
+        {
+          "href": "#polaris-group-capability-detail",
+          "targetId": "polaris-group-capability-detail",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\""
+        },
+        {
+          "href": "#polaris-deep-dive-capability-whatsapp-transport-identity",
+          "targetId": "polaris-deep-dive-capability-whatsapp-transport-identity",
+          "targetTag": "section",
+          "continuedTo": "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\""
+        },
+        {
+          "href": "#polaris-group-evidence-and-gaps",
+          "targetId": "polaris-group-evidence-and-gaps",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-shape-sources",
+          "targetId": "polaris-shape-sources",
+          "targetTag": "h3",
+          "continuedTo": "div \"#SourceRuleOutcomeDigestItems 1 about/RE\""
+        },
+        {
+          "href": "#polaris-shape-exclusions",
+          "targetId": "polaris-shape-exclusions",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-shape-contradictions",
+          "targetId": "polaris-shape-contradictions",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-shape-gaps",
+          "targetId": "polaris-shape-gaps",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-architecture-md",
+          "targetId": "polaris-source-about-heart-and-soul-architecture-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-source-about-lay-and-land-components-md",
+          "targetId": "polaris-source-about-lay-and-land-components-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-lay-and-land-components-md",
+          "targetId": "polaris-source-about-lay-and-land-components-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-source-about-heart-and-soul-v1-md",
+          "targetId": "polaris-source-about-heart-and-soul-v1-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-source-roster-atlas-butler-toml",
+          "targetId": "polaris-source-roster-atlas-butler-toml",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-roster-bishop-butler-toml",
+          "targetId": "polaris-source-roster-bishop-butler-toml",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-roster-atlas-butler-toml",
+          "targetId": "polaris-source-roster-atlas-butler-toml",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-roster-bishop-butler-toml",
+          "targetId": "polaris-source-roster-bishop-butler-toml",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-legends-and-lore-README-md",
+          "targetId": "polaris-source-about-legends-and-lore-README-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-legends-and-lore-README-md",
+          "targetId": "polaris-source-about-legends-and-lore-README-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-openspec-specs-alpha-spec-md",
+          "targetId": "polaris-source-openspec-specs-alpha-spec-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-openspec-specs-alpha-spec-md",
+          "targetId": "polaris-source-openspec-specs-alpha-spec-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-source-about-craft-and-care-README-md",
+          "targetId": "polaris-source-about-craft-and-care-README-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-source-about-craft-and-care-README-md",
+          "targetId": "polaris-source-about-craft-and-care-README-md",
+          "targetTag": "tr",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-intent:req-switchboard-identity-001",
+          "targetId": "polaris-intent:req-switchboard-identity-001",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-group-overview",
+          "targetId": "polaris-group-overview",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-code:identity-resolution",
+          "targetId": "polaris-code:identity-resolution",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-test:identity-regression-definition",
+          "targetId": "polaris-test:identity-regression-definition",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-work:whatsapp-single-event-normalization",
+          "targetId": "polaris-work:whatsapp-single-event-normalization",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-evidence:focused-pytest",
+          "targetId": "polaris-evidence:focused-pytest",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-runtime:live-satisfaction",
+          "targetId": "polaris-runtime:live-satisfaction",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-region:unmapped-code",
+          "targetId": "polaris-region:unmapped-code",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        }
+      ],
+      "accessibilityTree": {
+        "nodes": 2285,
+        "byRole": {
+          "RootWebArea": 1,
+          "link": 62,
+          "banner": 1,
+          "navigation": 2,
+          "main": 1,
+          "contentinfo": 1,
+          "StaticText": 719,
+          "generic": 1,
+          "heading": 50,
+          "paragraph": 84,
+          "list": 9,
+          "HeaderAsNonLandmark": 7,
+          "Section": 43,
+          "InlineTextBox": 1012,
+          "listitem": 24,
+          "Details": 10,
+          "region": 8,
+          "DisclosureTriangle": 10,
+          "table": 8,
+          "ListMarker": 18,
+          "row": 33,
+          "columnheader": 27,
+          "gridcell": 120,
+          "LineBreak": 34
+        },
+        "unnamed": []
+      },
+      "contrast": {
+        "measured": 1308,
+        "minimumRatio": 4.69,
+        "worst": [
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-architecture-md>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-architecture-md>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-lay-and-land-components-md>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-lay-and-land-components-md>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-v1-md>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-about-heart-and-soul-v1-md>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-roster-atlas-butler-toml>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-roster-atlas-butler-toml>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-roster-bishop-butler-toml>td:nth-of-type(2)>small>cite",
+            "text": "repository:butlers-configured-poc@44444444444444444444444444",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(18)>div>table>tbody>tr#polaris-source-roster-bishop-butler-toml>td:nth-of-type(6)>span:nth-of-type(2)",
+            "text": "Observed · report-fact · fresh · unchallenged",
+            "foreground": "#8ca3a4",
+            "against": "#1e383b",
+            "ratio": 4.69,
+            "threshold": 4.5
+          }
+        ]
+      },
+      "violations": []
+    },
+    {
+      "label": "not-admitted",
+      "url": "file:///tmp/syzygy-poc-a11y-va9rKd/not-admitted.html",
+      "focusables": 34,
+      "focusTrace": {
+        "forward": [
+          "a[href=#main-content] \"Skip to main content\"",
+          "a[href=/] \"Overview\"",
+          "a[href=/polaris] \"Polaris\"",
+          "a[href=/trajectory] \"Trajectory\"",
+          "a[href=/orrery] \"Orrery\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-group-boundaries] \"What Butlers is not\"",
+          "a[href=#polaris-group-architecture] \"How Butlers is built\"",
+          "a[href=#polaris-group-v1] \"What V1 ships\"",
+          "a[href=#polaris-group-catalog] \"Project catalog\"",
+          "a[href=#polaris-group-capability-detail] \"One capability in depth\"",
+          "a[href=#polaris-deep-dive-capability-whatsapp-transport-identity] \"WhatsApp transport identity normalizatio\"",
+          "a[href=#polaris-group-evidence-and-gaps] \"Evidence and gaps\"",
+          "a[href=#polaris-shape-sources] \"Project-shape sources\"",
+          "a[href=#polaris-shape-gaps] \"Unknown, by reason\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-code:identity-resolution] \"Identity resolution code region\"",
+          "a[href=#polaris-test:identity-regression-definition] \"Identity regression test definition\"",
+          "a[href=#polaris-work:whatsapp-single-event-normalization] \"Single-event sender normalization work\"",
+          "a[href=#polaris-evidence:focused-pytest] \"Focused pytest evidence\"",
+          "a[href=#polaris-runtime:live-satisfaction] \"Live runtime satisfaction\"",
+          "a[href=#polaris-region:unmapped-code] \"Unmapped Butlers code\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        ],
+        "reverse": [
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-region:unmapped-code] \"Unmapped Butlers code\"",
+          "a[href=#polaris-runtime:live-satisfaction] \"Live runtime satisfaction\"",
+          "a[href=#polaris-evidence:focused-pytest] \"Focused pytest evidence\"",
+          "a[href=#polaris-work:whatsapp-single-event-normalization] \"Single-event sender normalization work\"",
+          "a[href=#polaris-test:identity-regression-definition] \"Identity regression test definition\"",
+          "a[href=#polaris-code:identity-resolution] \"Identity resolution code region\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-shape-gaps] \"Unknown, by reason\"",
+          "a[href=#polaris-shape-sources] \"Project-shape sources\"",
+          "a[href=#polaris-group-evidence-and-gaps] \"Evidence and gaps\"",
+          "a[href=#polaris-deep-dive-capability-whatsapp-transport-identity] \"WhatsApp transport identity normalizatio\"",
+          "a[href=#polaris-group-capability-detail] \"One capability in depth\"",
+          "a[href=#polaris-group-catalog] \"Project catalog\"",
+          "a[href=#polaris-group-v1] \"What V1 ships\"",
+          "a[href=#polaris-group-architecture] \"How Butlers is built\"",
+          "a[href=#polaris-group-boundaries] \"What Butlers is not\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=/orrery] \"Orrery\"",
+          "a[href=/trajectory] \"Trajectory\"",
+          "a[href=/polaris] \"Polaris\"",
+          "a[href=/] \"Overview\"",
+          "a[href=#main-content] \"Skip to main content\""
+        ],
+        "population": 34,
+        "reached": 34
+      },
+      "activations": [
+        {
+          "href": "#main-content",
+          "targetId": "main-content",
+          "targetTag": "main",
+          "continuedTo": "a[href=#polaris-group-overview] \"What Butlers is\""
+        },
+        {
+          "href": "#polaris-group-overview",
+          "targetId": "polaris-group-overview",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-group-boundaries",
+          "targetId": "polaris-group-boundaries",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-group-architecture",
+          "targetId": "polaris-group-architecture",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-group-v1",
+          "targetId": "polaris-group-v1",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-group-catalog",
+          "targetId": "polaris-group-catalog",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-group-capability-detail",
+          "targetId": "polaris-group-capability-detail",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\""
+        },
+        {
+          "href": "#polaris-deep-dive-capability-whatsapp-transport-identity",
+          "targetId": "polaris-deep-dive-capability-whatsapp-transport-identity",
+          "targetTag": "section",
+          "continuedTo": "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\""
+        },
+        {
+          "href": "#polaris-group-evidence-and-gaps",
+          "targetId": "polaris-group-evidence-and-gaps",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-shape-sources",
+          "targetId": "polaris-shape-sources",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-shape-gaps",
+          "targetId": "polaris-shape-gaps",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-intent:req-switchboard-identity-001",
+          "targetId": "polaris-intent:req-switchboard-identity-001",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-group-overview",
+          "targetId": "polaris-group-overview",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-code:identity-resolution",
+          "targetId": "polaris-code:identity-resolution",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-test:identity-regression-definition",
+          "targetId": "polaris-test:identity-regression-definition",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-work:whatsapp-single-event-normalization",
+          "targetId": "polaris-work:whatsapp-single-event-normalization",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-evidence:focused-pytest",
+          "targetId": "polaris-evidence:focused-pytest",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-runtime:live-satisfaction",
+          "targetId": "polaris-runtime:live-satisfaction",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-region:unmapped-code",
+          "targetId": "polaris-region:unmapped-code",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        }
+      ],
+      "accessibilityTree": {
+        "nodes": 902,
+        "byRole": {
+          "RootWebArea": 1,
+          "link": 34,
+          "banner": 1,
+          "navigation": 2,
+          "main": 1,
+          "contentinfo": 1,
+          "StaticText": 311,
+          "generic": 1,
+          "heading": 32,
+          "paragraph": 52,
+          "list": 5,
+          "HeaderAsNonLandmark": 7,
+          "Section": 30,
+          "InlineTextBox": 379,
+          "listitem": 20,
+          "LineBreak": 11,
+          "ListMarker": 14
+        },
+        "unnamed": []
+      },
+      "contrast": {
+        "measured": 574,
+        "minimumRatio": 5.09,
+        "worst": [
+          {
+            "path": "main#main-content>ul>li:nth-of-type(1)",
+            "text": "A resolvable observation or governed artifact backs this cla",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>ul>li:nth-of-type(2)",
+            "text": "No verifying evidence exists yet; the reason is stated besid",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(1)>small",
+            "text": "Also: source-uncaptured-or-unreachable (route: Repair the ob",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(2)>small",
+            "text": "The body-read gate refused (unconsented-source-or-provider; ",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(3)>small",
+            "text": "Authority:",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(3)>small>span:nth-of-type(1)",
+            "text": "consent — absent",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(3)>small>span:nth-of-type(2)",
+            "text": "policy — owner-adopted (bootstrap, uncorrelated)",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(3)>small>span:nth-of-type(3)",
+            "text": "registry — invalid act",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(3)>small>span:nth-of-type(4)",
+            "text": "rejected",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(3)>small>code",
+            "text": "evaluation:test-rejecting",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          }
+        ]
+      },
+      "violations": []
+    },
+    {
+      "label": "observation-failed",
+      "url": "file:///tmp/syzygy-poc-a11y-va9rKd/observation-failed.html",
+      "focusables": 34,
+      "focusTrace": {
+        "forward": [
+          "a[href=#main-content] \"Skip to main content\"",
+          "a[href=/] \"Overview\"",
+          "a[href=/polaris] \"Polaris\"",
+          "a[href=/trajectory] \"Trajectory\"",
+          "a[href=/orrery] \"Orrery\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-group-boundaries] \"What Butlers is not\"",
+          "a[href=#polaris-group-architecture] \"How Butlers is built\"",
+          "a[href=#polaris-group-v1] \"What V1 ships\"",
+          "a[href=#polaris-group-catalog] \"Project catalog\"",
+          "a[href=#polaris-group-capability-detail] \"One capability in depth\"",
+          "a[href=#polaris-deep-dive-capability-whatsapp-transport-identity] \"WhatsApp transport identity normalizatio\"",
+          "a[href=#polaris-group-evidence-and-gaps] \"Evidence and gaps\"",
+          "a[href=#polaris-shape-sources] \"Project-shape sources\"",
+          "a[href=#polaris-shape-gaps] \"Unknown, by reason\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-code:identity-resolution] \"Identity resolution code region\"",
+          "a[href=#polaris-test:identity-regression-definition] \"Identity regression test definition\"",
+          "a[href=#polaris-work:whatsapp-single-event-normalization] \"Single-event sender normalization work\"",
+          "a[href=#polaris-evidence:focused-pytest] \"Focused pytest evidence\"",
+          "a[href=#polaris-runtime:live-satisfaction] \"Live runtime satisfaction\"",
+          "a[href=#polaris-region:unmapped-code] \"Unmapped Butlers code\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        ],
+        "reverse": [
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-region:unmapped-code] \"Unmapped Butlers code\"",
+          "a[href=#polaris-runtime:live-satisfaction] \"Live runtime satisfaction\"",
+          "a[href=#polaris-evidence:focused-pytest] \"Focused pytest evidence\"",
+          "a[href=#polaris-work:whatsapp-single-event-normalization] \"Single-event sender normalization work\"",
+          "a[href=#polaris-test:identity-regression-definition] \"Identity regression test definition\"",
+          "a[href=#polaris-code:identity-resolution] \"Identity resolution code region\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\"",
+          "a[href=#polaris-shape-gaps] \"Unknown, by reason\"",
+          "a[href=#polaris-shape-sources] \"Project-shape sources\"",
+          "a[href=#polaris-group-evidence-and-gaps] \"Evidence and gaps\"",
+          "a[href=#polaris-deep-dive-capability-whatsapp-transport-identity] \"WhatsApp transport identity normalizatio\"",
+          "a[href=#polaris-group-capability-detail] \"One capability in depth\"",
+          "a[href=#polaris-group-catalog] \"Project catalog\"",
+          "a[href=#polaris-group-v1] \"What V1 ships\"",
+          "a[href=#polaris-group-architecture] \"How Butlers is built\"",
+          "a[href=#polaris-group-boundaries] \"What Butlers is not\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=/orrery] \"Orrery\"",
+          "a[href=/trajectory] \"Trajectory\"",
+          "a[href=/polaris] \"Polaris\"",
+          "a[href=/] \"Overview\"",
+          "a[href=#main-content] \"Skip to main content\""
+        ],
+        "population": 34,
+        "reached": 34
+      },
+      "activations": [
+        {
+          "href": "#main-content",
+          "targetId": "main-content",
+          "targetTag": "main",
+          "continuedTo": "a[href=#polaris-group-overview] \"What Butlers is\""
+        },
+        {
+          "href": "#polaris-group-overview",
+          "targetId": "polaris-group-overview",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-group-boundaries",
+          "targetId": "polaris-group-boundaries",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-group-architecture",
+          "targetId": "polaris-group-architecture",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-group-v1",
+          "targetId": "polaris-group-v1",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-group-catalog",
+          "targetId": "polaris-group-catalog",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-group-capability-detail",
+          "targetId": "polaris-group-capability-detail",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\""
+        },
+        {
+          "href": "#polaris-deep-dive-capability-whatsapp-transport-identity",
+          "targetId": "polaris-deep-dive-capability-whatsapp-transport-identity",
+          "targetTag": "section",
+          "continuedTo": "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\""
+        },
+        {
+          "href": "#polaris-group-evidence-and-gaps",
+          "targetId": "polaris-group-evidence-and-gaps",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-shape-sources",
+          "targetId": "polaris-shape-sources",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-shape-gaps",
+          "targetId": "polaris-shape-gaps",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-intent:req-switchboard-identity-001",
+          "targetId": "polaris-intent:req-switchboard-identity-001",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-group-overview",
+          "targetId": "polaris-group-overview",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-code:identity-resolution",
+          "targetId": "polaris-code:identity-resolution",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-test:identity-regression-definition",
+          "targetId": "polaris-test:identity-regression-definition",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-work:whatsapp-single-event-normalization",
+          "targetId": "polaris-work:whatsapp-single-event-normalization",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-evidence:focused-pytest",
+          "targetId": "polaris-evidence:focused-pytest",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-runtime:live-satisfaction",
+          "targetId": "polaris-runtime:live-satisfaction",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-region:unmapped-code",
+          "targetId": "polaris-region:unmapped-code",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-source-uncaptured-or-unreachable] \"source-uncaptured-or-unreachable\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-source-uncaptured-or-unreachable",
+          "targetId": "polaris-gap-source-uncaptured-or-unreachable",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        }
+      ],
+      "accessibilityTree": {
+        "nodes": 891,
+        "byRole": {
+          "RootWebArea": 1,
+          "link": 34,
+          "banner": 1,
+          "navigation": 2,
+          "main": 1,
+          "contentinfo": 1,
+          "StaticText": 305,
+          "generic": 1,
+          "heading": 32,
+          "paragraph": 52,
+          "list": 5,
+          "HeaderAsNonLandmark": 7,
+          "Section": 30,
+          "InlineTextBox": 380,
+          "listitem": 20,
+          "ListMarker": 14,
+          "LineBreak": 5
+        },
+        "unnamed": []
+      },
+      "contrast": {
+        "measured": 562,
+        "minimumRatio": 5.09,
+        "worst": [
+          {
+            "path": "main#main-content>ul>li:nth-of-type(1)",
+            "text": "A resolvable observation or governed artifact backs this cla",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>ul>li:nth-of-type(2)",
+            "text": "No verifying evidence exists yet; the reason is stated besid",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(2)>small",
+            "text": "The observer failed before any shape fact was read (gitCaptu",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(3)>small",
+            "text": "Authority:",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(3)>small>span:nth-of-type(1)",
+            "text": "consent — owner-adopted (bootstrap, uncorrelated)",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(3)>small>span:nth-of-type(2)",
+            "text": "policy — owner-adopted (bootstrap, uncorrelated)",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(3)>small>span:nth-of-type(3)",
+            "text": "registry — owner-adopted (bootstrap, uncorrelated)",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(3)>small>span:nth-of-type(4)",
+            "text": "owner-trusted-bootstrap",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(3)>small>code",
+            "text": "evaluation:test-admitting",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(4)>span",
+            "text": "Unknown (source-uncaptured-or-unreachable) · unstated · fres",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          }
+        ]
+      },
+      "violations": []
+    },
+    {
+      "label": "not-evaluated",
+      "url": "file:///tmp/syzygy-poc-a11y-va9rKd/not-evaluated.html",
+      "focusables": 34,
+      "focusTrace": {
+        "forward": [
+          "a[href=#main-content] \"Skip to main content\"",
+          "a[href=/] \"Overview\"",
+          "a[href=/polaris] \"Polaris\"",
+          "a[href=/trajectory] \"Trajectory\"",
+          "a[href=/orrery] \"Orrery\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-group-boundaries] \"What Butlers is not\"",
+          "a[href=#polaris-group-architecture] \"How Butlers is built\"",
+          "a[href=#polaris-group-v1] \"What V1 ships\"",
+          "a[href=#polaris-group-catalog] \"Project catalog\"",
+          "a[href=#polaris-group-capability-detail] \"One capability in depth\"",
+          "a[href=#polaris-deep-dive-capability-whatsapp-transport-identity] \"WhatsApp transport identity normalizatio\"",
+          "a[href=#polaris-group-evidence-and-gaps] \"Evidence and gaps\"",
+          "a[href=#polaris-shape-sources] \"Project-shape sources\"",
+          "a[href=#polaris-shape-gaps] \"Unknown, by reason\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-code:identity-resolution] \"Identity resolution code region\"",
+          "a[href=#polaris-test:identity-regression-definition] \"Identity regression test definition\"",
+          "a[href=#polaris-work:whatsapp-single-event-normalization] \"Single-event sender normalization work\"",
+          "a[href=#polaris-evidence:focused-pytest] \"Focused pytest evidence\"",
+          "a[href=#polaris-runtime:live-satisfaction] \"Live runtime satisfaction\"",
+          "a[href=#polaris-region:unmapped-code] \"Unmapped Butlers code\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        ],
+        "reverse": [
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-region:unmapped-code] \"Unmapped Butlers code\"",
+          "a[href=#polaris-runtime:live-satisfaction] \"Live runtime satisfaction\"",
+          "a[href=#polaris-evidence:focused-pytest] \"Focused pytest evidence\"",
+          "a[href=#polaris-work:whatsapp-single-event-normalization] \"Single-event sender normalization work\"",
+          "a[href=#polaris-test:identity-regression-definition] \"Identity regression test definition\"",
+          "a[href=#polaris-code:identity-resolution] \"Identity resolution code region\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\"",
+          "a[href=#polaris-shape-gaps] \"Unknown, by reason\"",
+          "a[href=#polaris-shape-sources] \"Project-shape sources\"",
+          "a[href=#polaris-group-evidence-and-gaps] \"Evidence and gaps\"",
+          "a[href=#polaris-deep-dive-capability-whatsapp-transport-identity] \"WhatsApp transport identity normalizatio\"",
+          "a[href=#polaris-group-capability-detail] \"One capability in depth\"",
+          "a[href=#polaris-group-catalog] \"Project catalog\"",
+          "a[href=#polaris-group-v1] \"What V1 ships\"",
+          "a[href=#polaris-group-architecture] \"How Butlers is built\"",
+          "a[href=#polaris-group-boundaries] \"What Butlers is not\"",
+          "a[href=#polaris-group-overview] \"What Butlers is\"",
+          "a[href=/orrery] \"Orrery\"",
+          "a[href=/trajectory] \"Trajectory\"",
+          "a[href=/polaris] \"Polaris\"",
+          "a[href=/] \"Overview\"",
+          "a[href=#main-content] \"Skip to main content\""
+        ],
+        "population": 34,
+        "reached": 34
+      },
+      "activations": [
+        {
+          "href": "#main-content",
+          "targetId": "main-content",
+          "targetTag": "main",
+          "continuedTo": "a[href=#polaris-group-overview] \"What Butlers is\""
+        },
+        {
+          "href": "#polaris-group-overview",
+          "targetId": "polaris-group-overview",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-group-boundaries",
+          "targetId": "polaris-group-boundaries",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-group-architecture",
+          "targetId": "polaris-group-architecture",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-group-v1",
+          "targetId": "polaris-group-v1",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-group-catalog",
+          "targetId": "polaris-group-catalog",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-group-capability-detail",
+          "targetId": "polaris-group-capability-detail",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\""
+        },
+        {
+          "href": "#polaris-deep-dive-capability-whatsapp-transport-identity",
+          "targetId": "polaris-deep-dive-capability-whatsapp-transport-identity",
+          "targetTag": "section",
+          "continuedTo": "a[href=#polaris-intent:req-switchboard-identity-001] \"REQ-switchboard-identity-001\""
+        },
+        {
+          "href": "#polaris-group-evidence-and-gaps",
+          "targetId": "polaris-group-evidence-and-gaps",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-shape-sources",
+          "targetId": "polaris-shape-sources",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-shape-gaps",
+          "targetId": "polaris-shape-gaps",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-intent:req-switchboard-identity-001",
+          "targetId": "polaris-intent:req-switchboard-identity-001",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-group-overview",
+          "targetId": "polaris-group-overview",
+          "targetTag": "h2",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-code:identity-resolution",
+          "targetId": "polaris-code:identity-resolution",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-test:identity-regression-definition",
+          "targetId": "polaris-test:identity-regression-definition",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-work:whatsapp-single-event-normalization",
+          "targetId": "polaris-work:whatsapp-single-event-normalization",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-evidence:focused-pytest",
+          "targetId": "polaris-evidence:focused-pytest",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-runtime:live-satisfaction",
+          "targetId": "polaris-runtime:live-satisfaction",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-region:unmapped-code",
+          "targetId": "polaris-region:unmapped-code",
+          "targetTag": "h3",
+          "continuedTo": "a[href=#polaris-gap-unconsented-source-or-provider] \"unconsented-source-or-provider\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        },
+        {
+          "href": "#polaris-gap-unconsented-source-or-provider",
+          "targetId": "polaris-gap-unconsented-source-or-provider",
+          "targetTag": "li",
+          "continuedTo": "a[href=#main-content] \"Skip to main content\""
+        }
+      ],
+      "accessibilityTree": {
+        "nodes": 849,
+        "byRole": {
+          "RootWebArea": 1,
+          "link": 34,
+          "banner": 1,
+          "navigation": 2,
+          "main": 1,
+          "contentinfo": 1,
+          "StaticText": 294,
+          "generic": 1,
+          "heading": 32,
+          "paragraph": 51,
+          "list": 5,
+          "HeaderAsNonLandmark": 7,
+          "Section": 30,
+          "InlineTextBox": 350,
+          "listitem": 20,
+          "ListMarker": 14,
+          "LineBreak": 5
+        },
+        "unnamed": []
+      },
+      "contrast": {
+        "measured": 550,
+        "minimumRatio": 5.09,
+        "worst": [
+          {
+            "path": "main#main-content>ul>li:nth-of-type(1)",
+            "text": "A resolvable observation or governed artifact backs this cla",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>ul>li:nth-of-type(2)",
+            "text": "No verifying evidence exists yet; the reason is stated besid",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(2)>small",
+            "text": "No body-read authority evaluation reached this evaluation: N",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(1)>p:nth-of-type(3)>span",
+            "text": "Unknown (unconsented-source-or-provider) · unstated · fresh ",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(2)>p:nth-of-type(2)>small",
+            "text": "No body-read authority evaluation reached this evaluation: N",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(2)>p:nth-of-type(3)>span",
+            "text": "Unknown (unconsented-source-or-provider) · unstated · fresh ",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(3)>p:nth-of-type(2)>small",
+            "text": "No body-read authority evaluation reached this evaluation: N",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(3)>p:nth-of-type(3)>span",
+            "text": "Unknown (unconsented-source-or-provider) · unstated · fresh ",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(4)>p:nth-of-type(2)>small",
+            "text": "No body-read authority evaluation reached this evaluation: N",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          },
+          {
+            "path": "main#main-content>section:nth-of-type(4)>p:nth-of-type(3)>span",
+            "text": "Unknown (unconsented-source-or-provider) · unstated · fresh ",
+            "foreground": "#8ca3a4",
+            "against": "#173238",
+            "ratio": 5.09,
+            "threshold": 4.5
+          }
+        ]
+      },
+      "violations": []
+    }
+  ],
+  "totals": {
+    "variants": 6,
+    "focusables": 346,
+    "activations": 266,
+    "contrastMeasurements": 5768,
+    "minimumContrast": 4.69,
+    "violations": 0
+  }
+}

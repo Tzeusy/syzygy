@@ -70,7 +70,7 @@ export const DESIGN_TOKENS_CSS = `
     line-height: 1.5;
   }
   a { color: var(--cyan); text-underline-offset: .22em; }
-  a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
     outline: 3px solid var(--focus);
     outline-offset: 4px;
   }

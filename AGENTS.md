@@ -788,6 +788,27 @@ can be authorized.
   `test-deep-dive-markers.ts` for the marker sweeps. Copy-table rows nested
   inside a `FACT` paragraph must themselves be `project-fact`, or the copy
   test reports them never rendered under their role.
+- Task 4.4: `cdp-browser.ts` drives a locally installed Chrome/Chromium
+  headless over the DevTools protocol with Node's global `WebSocket` (no
+  dependency, no download; `SYZYGY_POC_BROWSER` overrides the PATH search).
+  `polaris-accessibility.ts` is the PWB-REQ-016 oracle: real Tab/Shift+Tab
+  traces, real Enter activation of every fragment link, the browser's own
+  accessibility tree, and WCAG AA contrast against composited backdrops
+  (gradient stops are candidates; the worst wins). `polaris-accessibility.
+  browser.test.ts` is `describe.skipIf`-gated — skipped is not passed —
+  and `npm run poc:accessibility-check` writes the evidence JSON. Gotchas
+  learned from the first run: `Emulation.setFocusEmulationEnabled` is
+  required or headless never moves focus; scripted `focus()` + Enter on a
+  link whose fragment is already the URL hash is a no-op (no focus start
+  point moves), so re-navigate first; after the last focusable, Tab
+  lawfully wraps to the browser chrome (`activeElement` null) before the
+  first link; `<summary>` is focusable and must be in the `:focus-visible`
+  rule (it was not — a real 1.01:1 finding, fixed in `design-tokens.ts`);
+  unique landmarks (banner/main/contentinfo) need no accessible name; use a
+  fresh page target per variant: in the first run, later variants on a
+  reused target stopped receiving Enter/Shift+Tab (cause not isolated; a
+  fresh target removed it). Mutation loop is manual
+  (`docs/evidence/pwb-p4-4-accessibility-mutation-run-<date>.json`).
 - Task 4.3: `polaris-parity-sweep.test.ts` is the exhaustive PWB-REQ-020
   oracle: it parses Polaris back with its own attribute-tolerant extractor
   (boolean attributes such as `data-non-citable` must be allowed, or every

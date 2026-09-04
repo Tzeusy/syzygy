@@ -1,0 +1,131 @@
+{
+  "task": "syzygy-1z3.20 (PWB task 4.4)",
+  "kind": "rule-6 mutation loop over the browser-measured accessibility check",
+  "commit": "d3832829d365254f83a0786eb17924ebfca2ca26",
+  "capturedAt": "2026-09-04T14:20:33.434189+00:00",
+  "subjects": {
+    "apps/three-surface-poc/src/design-tokens.ts": "9a09b179ad798674e65f7362f36daa9463f05ecabcd7c3b264e2f4dfa4d2957a",
+    "apps/three-surface-poc/src/polaris.ts": "ac60129f11c113d297aa83251297ff41107b33b8f63094d369c3174f1adeead9"
+  },
+  "mutations": [
+    {
+      "id": "summary-focus-style-dropped",
+      "subject": "apps/three-surface-poc/src/design-tokens.ts",
+      "expectedKind": "focus-indicator-contrast",
+      "exit": 1,
+      "violationKinds": {
+        "focus-indicator-contrast": 30
+      },
+      "verdict": "KILLED",
+      "stderrTail": ""
+    },
+    {
+      "id": "focus-outline-none",
+      "subject": "apps/three-surface-poc/src/design-tokens.ts",
+      "expectedKind": "focus-not-visible",
+      "exit": 1,
+      "violationKinds": {
+        "focus-not-visible": 346
+      },
+      "verdict": "KILLED",
+      "stderrTail": ""
+    },
+    {
+      "id": "focus-colour-low-contrast",
+      "subject": "apps/three-surface-poc/src/design-tokens.ts",
+      "expectedKind": "focus-indicator-contrast",
+      "exit": 1,
+      "violationKinds": {
+        "focus-indicator-contrast": 346
+      },
+      "verdict": "KILLED",
+      "stderrTail": ""
+    },
+    {
+      "id": "muted-text-low-contrast",
+      "subject": "apps/three-surface-poc/src/design-tokens.ts",
+      "expectedKind": "text-contrast",
+      "exit": 1,
+      "violationKinds": {
+        "text-contrast": 2525
+      },
+      "verdict": "KILLED",
+      "stderrTail": ""
+    },
+    {
+      "id": "lede-low-contrast",
+      "subject": "apps/three-surface-poc/src/design-tokens.ts",
+      "expectedKind": "text-contrast",
+      "exit": 1,
+      "violationKinds": {
+        "text-contrast": 78
+      },
+      "verdict": "KILLED",
+      "stderrTail": ""
+    },
+    {
+      "id": "skip-link-target-renamed",
+      "subject": "apps/three-surface-poc/src/design-tokens.ts",
+      "expectedKind": "expected-target-absent",
+      "exit": 1,
+      "violationKinds": {
+        "expected-target-absent": 6,
+        "fragment-target-missing": 6
+      },
+      "verdict": "KILLED",
+      "stderrTail": ""
+    },
+    {
+      "id": "scroll-region-unfocusable",
+      "subject": "apps/three-surface-poc/src/polaris.ts",
+      "expectedKind": "unreachable-by-tab",
+      "exit": 1,
+      "violationKinds": {
+        "non-native-control": 26,
+        "unreachable-by-tab": 26,
+        "focus-did-not-continue-from-target": 3
+      },
+      "verdict": "KILLED",
+      "stderrTail": ""
+    },
+    {
+      "id": "overview-link-as-button",
+      "subject": "apps/three-surface-poc/src/polaris.ts",
+      "expectedKind": "non-native-control",
+      "exit": 1,
+      "violationKinds": {
+        "non-native-control": 6,
+        "accessible-link-count-differs": 6
+      },
+      "verdict": "KILLED",
+      "stderrTail": ""
+    },
+    {
+      "id": "depth-nav-group-link-dropped",
+      "subject": "apps/three-surface-poc/src/polaris.ts",
+      "expectedKind": "expected-target-absent",
+      "exit": 1,
+      "violationKinds": {
+        "expected-target-absent": 6
+      },
+      "verdict": "KILLED",
+      "stderrTail": ""
+    },
+    {
+      "id": "source-anchor-target-broken",
+      "subject": "apps/three-surface-poc/src/polaris.ts",
+      "expectedKind": "fragment-target-missing",
+      "exit": 1,
+      "violationKinds": {
+        "fragment-target-missing": 86
+      },
+      "verdict": "KILLED",
+      "stderrTail": ""
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "killed": 10,
+    "survived": 0
+  }
+}
