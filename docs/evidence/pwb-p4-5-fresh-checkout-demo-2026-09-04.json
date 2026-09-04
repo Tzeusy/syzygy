@@ -1,0 +1,1640 @@
+{
+  "task": "syzygy-1z3.21 (PWB task 4.5)",
+  "kind": "fresh-checkout demonstration against the configured Butlers revision",
+  "capturedAt": "2026-09-04T14:32:44.598Z",
+  "node": "v24.6.0",
+  "source": {
+    "root": "/home/tze/GitHub/syzygy",
+    "head": "7de2f681496bdefbd6e17327b5b49c9f7e8d1003"
+  },
+  "clone": {
+    "head": "7de2f681496bdefbd6e17327b5b49c9f7e8d1003",
+    "headMatchesSource": true,
+    "signingTags": [
+      "pwb-adopt-registry-entry-signed-2026-09-02",
+      "pwb-approve-policy-signed-2026-09-02",
+      "pwb-consent-observation-signed-2026-09-02",
+      "pwb-state1-amendment-signed-2026-09-02"
+    ],
+    "seconds": 0.1
+  },
+  "install": {
+    "seconds": 0.8,
+    "exitCode": 0
+  },
+  "build": {
+    "seconds": 4.8,
+    "exitCode": 0
+  },
+  "test": {
+    "seconds": 17.5,
+    "exitCode": 0,
+    "junit": {
+      "name": "vitest tests",
+      "tests": "1212",
+      "failures": "0",
+      "errors": "0",
+      "time": "46.500483197"
+    },
+    "junitSha256": "c32474eb757a6806f1e50f3250a3e3c8a66a14aeb629671a31e58d53fd86619e"
+  },
+  "butlers": {
+    "configuredRepository": "/home/tze/GitHub/butlers",
+    "observedRevision": "59e5caafd540a5d430594e5234559f545c67317d",
+    "modelRevision": "59e5caafd540a5d430594e5234559f545c67317d",
+    "observerRevision": "7de2f681496bdefbd6e17327b5b49c9f7e8d1003"
+  },
+  "evaluation": {
+    "snapshot": "butlers:59e5caafd540a5d430594e5234559f545c67317d|working-tree:sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855|observer:7de2f681496bdefbd6e17327b5b49c9f7e8d1003|inputs:sha256:b88920815078f941af0529fed1861c956f22adbbfc0291d6e4ec596729165da7",
+    "asOf": "2026-09-04T14:32:41.401Z",
+    "inputsDigest": "b88920815078f941af0529fed1861c956f22adbbfc0291d6e4ec596729165da7"
+  },
+  "daemon": {
+    "exitCode": 0,
+    "stderr": ""
+  },
+  "routes": [
+    {
+      "path": "/",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 38659,
+      "sha256": "3ec859668a037278210d023192785d59a09e397e1284c3157984a73616e165ed",
+      "retainedAs": "home.html"
+    },
+    {
+      "path": "/polaris",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 1069085,
+      "sha256": "8c0ffd5c18fcc4b8e43bc821623a7803170df76d8388eb34aa3d172e8607a341",
+      "retainedAs": "polaris.html"
+    },
+    {
+      "path": "/trajectory",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 231734,
+      "sha256": "e5c901099e2bbcd1c2341eb5467bd01a03c2a7c9bca3455fcf2737ba9868913f",
+      "retainedAs": "trajectory.html"
+    },
+    {
+      "path": "/orrery",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 37015,
+      "sha256": "bf783e07f737eae71da9389e27f29291b6a40585ebf802c568a2955b33643d3e",
+      "retainedAs": "orrery.html"
+    },
+    {
+      "path": "/api/poc",
+      "authenticated": false,
+      "status": 401,
+      "bytes": 37
+    },
+    {
+      "path": "/api/poc",
+      "authenticated": true,
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 4644380,
+      "sha256": "ece5bad915a9e89cdb6d9a873b81430796bf00a9c337a3038f314ec30c75f25f",
+      "retainedAs": "api-poc.json"
+    }
+  ],
+  "parity": {
+    "humanClaimTuples": 389,
+    "humanDistinctClaimIds": 389,
+    "machinePresentedClaimIds": 389,
+    "machineDistinctClaimIds": 389,
+    "machineOmittedByDesign": {
+      "reconciledFacts": 126,
+      "projectAccountSectionItems": 0
+    },
+    "machineIdsAbsentFromHuman": 0,
+    "humanIdsAbsentFromMachine": 0
+  },
+  "projectShape": {
+    "kind": "observed",
+    "authority": {
+      "admits": true,
+      "authorizationMode": "owner-trusted-bootstrap",
+      "authorities": [
+        {
+          "authority": "consent",
+          "state": "owner-adopted (bootstrap, uncorrelated)",
+          "independentlyVerified": false,
+          "invalidCase": null
+        },
+        {
+          "authority": "policy",
+          "state": "owner-adopted (bootstrap, uncorrelated)",
+          "independentlyVerified": false,
+          "invalidCase": null
+        },
+        {
+          "authority": "registry",
+          "state": "owner-adopted (bootstrap, uncorrelated)",
+          "independentlyVerified": false,
+          "invalidCase": null
+        }
+      ],
+      "contradiction": null
+    },
+    "identity": {
+      "repositoryId": "repository:butlers-configured-poc",
+      "revision": "59e5caafd540a5d430594e5234559f545c67317d",
+      "sourceClaimedInstant": {
+        "kind": "git-committer-instant",
+        "instant": "2026-09-04T10:02:42+08:00"
+      },
+      "observer": {
+        "observerId": "polaris-butlers-project-shape",
+        "observerVersion": "1.0.0-candidate.3",
+        "discoveryVersion": "pwb-discovery-v1-candidate.3",
+        "implementationId": "three-surface-poc-core/project-shape-observer",
+        "implementationVersion": "1.0.0"
+      },
+      "policy": {
+        "policyId": "polaris-butlers-project-shape-secrets",
+        "policyVersion": "1.0.0-candidate.4"
+      },
+      "manifestIdentity": "repository:butlers-configured-poc@59e5caafd540a5d430594e5234559f545c67317d/pwb-discovery-v1-candidate.3/sha256:3072acfdbde82ca99c36d2618e97756f109af6c7fcd72457d0d0741e680dbc38",
+      "manifestDigest": "sha256:3072acfdbde82ca99c36d2618e97756f109af6c7fcd72457d0d0741e680dbc38",
+      "observationDigest": "sha256:4e07fd7ffd34b9a6a86dda257cc311c1df0ef1fc6db149572e47f82ea17ead22"
+    },
+    "counts": {
+      "sources": 256,
+      "sourcesAdmitted": 122,
+      "sourcesWithUnknownDenominator": 134,
+      "items": 117,
+      "modeled": 117,
+      "unknown": 0,
+      "contradicted": 0,
+      "facts": 126,
+      "contradictedFacts": 0,
+      "rulesDeclared": 0,
+      "rulesApplied": 0,
+      "exclusions": 133,
+      "classification": {
+        "sources": 256,
+        "classified": 123,
+        "excluded": 133,
+        "unavailable": 0,
+        "byRedactionClass": {
+          "excluded-artifact": 1,
+          "unclassifiable-excluded": 132
+        }
+      }
+    },
+    "classes": {
+      "project-account-section": {
+        "denominator": {
+          "kind": "known",
+          "value": 0
+        },
+        "modeled": 0,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "principle": {
+        "denominator": {
+          "kind": "known",
+          "value": 0
+        },
+        "modeled": 0,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "success-criterion": {
+        "denominator": {
+          "kind": "known",
+          "value": 0
+        },
+        "modeled": 0,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "catalog-entry": {
+        "denominator": {
+          "kind": "known",
+          "value": 0
+        },
+        "modeled": 0,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "design-contract": {
+        "denominator": {
+          "kind": "known",
+          "value": 29
+        },
+        "modeled": 29,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "baseline-spec": {
+        "denominator": {
+          "kind": "unknown",
+          "reasons": [
+            "excluded-content"
+          ]
+        },
+        "modeled": 76,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 107,
+        "label": "Unknown"
+      },
+      "topology-component": {
+        "denominator": {
+          "kind": "unknown",
+          "reasons": [
+            "excluded-content"
+          ]
+        },
+        "modeled": 0,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 1,
+        "label": "Unknown"
+      },
+      "craft-policy": {
+        "denominator": {
+          "kind": "known",
+          "value": 7
+        },
+        "modeled": 7,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "roster-identity": {
+        "denominator": {
+          "kind": "unknown",
+          "reasons": [
+            "excluded-content"
+          ]
+        },
+        "modeled": 5,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 7,
+        "label": "Unknown"
+      }
+    },
+    "sources": [
+      {
+        "path": "about/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/engineering-bar.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/interfaces-and-dependencies.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/observability-and-operations.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/performance-discipline.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/review-and-documentation.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/security-and-secrets.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/testing-and-verification.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/README.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/lay-and-land/components.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/lay-and-land/data-flow.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/lay-and-land/dependencies.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/deployment.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/detail-page-audit.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/lay-and-land/frontend.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/lay-and-land/integration.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/module-vs-butler.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/ideas-ledger.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0001-daemon-lifecycle-and-triggers.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0002-mcp-tool-surface-and-modules.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0003-switchboard-routing-and-ingestion.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0004-identity-and-contact-resolution.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0005-observability-and-telemetry.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0006-database-schema-and-isolation.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0007-dashboard-and-api-surface.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0008-deployment-network-security.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0009-situational-context-bus.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0010-cross-butler-briefing-exception.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0011-proactive-insight-delivery.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0012-finance-transaction-data-model.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0013-dunbar-group-aware-interaction-scoring.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0014-chronicler-time-butler.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0015-qa-staffer-discovery-investigation-pipeline.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0016-s3-blob-storage-contract.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0017-owner-routing-safety-incident-reconciliation.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0018-connector-scope-and-deferral-rationale.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0019-proactive-egress-and-automation-parked.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0020-calendar-cross-domain-overlay-read-exception.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0021-decision-loop-one-tap-approvals-and-decision-memory.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0022-cross-process-event-transport.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0023-durable-approval-delivery-intent-recovery.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0024-messenger-private-email-correspondence-ledger.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0025-tracker-host-beads-projection-exporter.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0026-commitment-lifecycle.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0027-runtime-tool-surface-discovery.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0028-home-physical-actuation-contract.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0029-expected-signals-and-honest-absence.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/adapter-integration-testing/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/autonomy-suggestions/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/autonomy-tracker/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/build-reproducibility/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/bulk-transaction-ingestion/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/butler-base-spec/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/butler-chronicler/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-education/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/butler-finance/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-general/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/butler-health/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-home/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-lifestyle/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-messenger/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-relationship/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/butler-secrets/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/butler-switchboard/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/butler-travel/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/calendar-conflict-overcommitment-radar/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/calendar-event-proposals/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/calendar-overlay-aggregation/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/catalog-token-limits/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/chronicler-api/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/chronicler-intent-evidence-activity/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/chronicler-source-compatibility/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/complexity-classification/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-base-spec/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-discord/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-filtered-events/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-gmail/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-google-calendar/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-google-drive/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-google-health/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-home-assistant/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-live-listener/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-owntracks/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-replay-queue/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-spotify/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-steam/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-telegram-bot/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/connector-telegram-user-client/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/contacts-identity/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/context-bus/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/conversation-decomposition/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-credentials/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/core-daemon/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-modules/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/core-notify/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/core-scheduler/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/core-sessions/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/core-skills/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/core-spawner/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/core-state/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-telemetry/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/cross-butler-briefing-aggregation/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/cross-butler-briefing-contribution/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/cross-butler-delegation/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/csv-extraction-skill/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-admin-gateway/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-api/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-approvals/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-audit-log/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-briefing/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-butler-management/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-chat-ui/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-chronicles/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-connector-batch-settings/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-connector-filter-ui/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-conversations/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-decisions/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-design-language/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-domain-pages/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-education-api/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-education-ui/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-google-accounts/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-ingestion-dispatch-console/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-model-settings/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-overview/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-permissions/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-relationship/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-settings-console/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-shell/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-spend-dashboard/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-spotify-setup/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-steam/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dashboard-visibility/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/database-security/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/deadline-tracking/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/deployment-and-drift/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/deployment-hardening/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/detail-page-archetype/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/docs-information-architecture/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/dunbar-tier-scoring/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/e2e-ecosystem-staging/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/entity-identity/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/error-fingerprinting/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/error-recovery-corrections/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/event-chains/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/expected-signals/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-alerts/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-anomaly-detection/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/finance-budgets/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-crud-operations/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-data-import/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-data-migration/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-overview/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-pattern-recognition/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/finance-supporting-tables/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-transaction-schema/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/google-account-registry/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/google-multi-account-oauth/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/healing-anonymizer/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/healing-model-tier/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/healing-session-tracking/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/healing-worktree/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/home-dashboard-extensions/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/home-deterministic-jobs/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/home-maintenance-scheduling/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/ingestion-event-registry/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/ingestion-policy/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/ingress-injection/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/insight-delivery/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-catalog-schema/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-discovery-catalog/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/memory-events-enrichment/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-graph-health/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-migration-integration-tests/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-retention-policy/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/model-benchmark-harness/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/model-catalog/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/model-failover/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/module-approvals/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-calendar/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/module-contacts/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/module-document-renderer/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-analytics/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/module-education-curriculum/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-diagnostic/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/module-education-mastery/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-mind-map/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/module-education-spaced-repetition/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-teaching-flows/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/module-email/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-google-drive/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/module-google-health/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-home-assistant/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/module-mailbox/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-memory/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/module-metrics/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/module-pipeline/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-spotify/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-steam/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-telegram/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/owner-timezone-context/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/passive-interaction-sync/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/proactive-insight-engine/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/qa-dashboard/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/qa-investigation-dispatch/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/qa-log-scanner/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/qa-triage/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/relationship-curation/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/relationship-facts/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/routing-scorecard/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/runtime-config-api/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/runtime-config-dashboard-ui/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/runtime-config-table/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/runtime-opencode/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/s3-blob-storage/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/scorecard-reporting/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/seasonal-awareness/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/session-process-logs/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/source-filter-registry/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/staffer-archetype/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/staffer-qa/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/steam-account-registry/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/switchboard-identity/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/switchboard-rule-promotion/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/system-overview-page/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/telegram-user-client-conversation-history/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/testing/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "openspec/specs/time-aware-delivery/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/tool-call-scorecard/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/user-preferences/spec.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/chronicler/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/chronicler/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/education/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/education/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/finance/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/finance/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/general/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/general/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/health/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/health/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/home/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/home/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/lifestyle/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/lifestyle/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/messenger/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/messenger/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/qa/MANIFESTO.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/qa/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/relationship/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/relationship/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/switchboard/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/switchboard/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/travel/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/travel/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      }
+    ],
+    "unknownItemsByReason": {},
+    "exclusions": 133,
+    "limitBreaches": 0,
+    "degradation": {
+      "failureState": "someSourcesUncapturedOrOverLimit",
+      "degradationState": "Partial snapshot",
+      "unknownReason": "source-uncaptured-or-unreachable",
+      "detail": "pillar heart-and-soul unknown; pillar spec-and-spine unknown"
+    },
+    "contradictions": 0,
+    "claim": {
+      "label": "Unknown",
+      "tier": null,
+      "freshness": "fresh"
+    }
+  },
+  "otherRegions": {
+    "codeStructure": "observed",
+    "workItems": "observed",
+    "workerChange": "unknown",
+    "testArtifactVerification": "unknown",
+    "proposedWork": "proposed-work",
+    "walkthroughJudgment": "not-evaluated"
+  },
+  "retention": {
+    "directory": "/home/tze/.local/state/syzygy/pwb-p4-5-fresh-checkout-demo-2026-09-04",
+    "note": "exact artifact bytes retained locally, outside the repository; the consent excludes network egress",
+    "files": [
+      {
+        "name": "vitest-junit.xml",
+        "bytes": 358033,
+        "sha256": "c32474eb757a6806f1e50f3250a3e3c8a66a14aeb629671a31e58d53fd86619e"
+      },
+      {
+        "name": "home.html",
+        "bytes": 38659,
+        "sha256": "3ec859668a037278210d023192785d59a09e397e1284c3157984a73616e165ed"
+      },
+      {
+        "name": "polaris.html",
+        "bytes": 1069085,
+        "sha256": "8c0ffd5c18fcc4b8e43bc821623a7803170df76d8388eb34aa3d172e8607a341"
+      },
+      {
+        "name": "trajectory.html",
+        "bytes": 231734,
+        "sha256": "e5c901099e2bbcd1c2341eb5467bd01a03c2a7c9bca3455fcf2737ba9868913f"
+      },
+      {
+        "name": "orrery.html",
+        "bytes": 37015,
+        "sha256": "bf783e07f737eae71da9389e27f29291b6a40585ebf802c568a2955b33643d3e"
+      },
+      {
+        "name": "api-poc.json",
+        "bytes": 4644380,
+        "sha256": "ece5bad915a9e89cdb6d9a873b81430796bf00a9c337a3038f314ec30c75f25f"
+      }
+    ]
+  },
+  "log": []
+}

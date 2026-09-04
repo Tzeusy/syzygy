@@ -695,6 +695,61 @@ Hosted CI's runner ships Chrome, so the gated suite runs there; the
 keyboard-only cold-open walkthrough record (PWB-REQ-022) remains the
 owner's manual evidence and is untouched by this automation.
 
+P4.5 implemented 2026-09-04 (task 4.5, the fresh-checkout demonstration,
+`syzygy-1z3.21`). `apps/three-surface-poc/src/fresh-checkout-demo-main.ts`
+(`npm run poc:fresh-checkout-demo -- --repo <butlers>`) is a separate,
+manually invoked binary — the daemon never imports it — that clones this
+repository's `HEAD` into a temporary directory (tags included, so the P1
+gate can see the `pwb-*-signed-*` recording tags), runs `npm ci`, `npm run
+build` and the whole Vitest suite with a JUnit reporter, starts the
+clone's own built daemon against the one configured Butlers repository
+with a throwaway state directory, and fetches `/`, `/polaris`,
+`/trajectory`, `/orrery` and `/api/poc` (once without a credential, once
+with the minted bearer token). It then compares the Polaris claim tuples
+with the machine answer's presented claim population under the 4.3
+oracle's rule (reconciled facts and project-account-section items are
+folded into their account statements; contradictions render as their own
+claims). The committed evidence
+(`docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-04.json`) carries
+commits, timings, exit codes, test totals read from the JUnit root tag
+only, route statuses and byte sizes, the parity counts, and a body-free
+summary of the project shape (authority verdict without act digests,
+counts, class denominators, source paths with label and reason,
+exclusions counted by reason). The full route bodies and the JUnit file
+are retained only on the recording machine under
+`~/.local/state/syzygy/pwb-p4-5-fresh-checkout-demo-2026-09-04/`
+because they carry the act arguments (CG-7e) and Butlers text (the
+consent excludes egress; this repository is pushed to GitHub). The
+Butlers pytest capture was deliberately not run: the demo's test
+artifact is the clone's own suite, and `testArtifactVerification` stays
+Unknown.
+
+Live findings from the measured run, `[Observed]` against Butlers `HEAD`
+at the recorded revision from a clone of `7de2f68`: install, build and
+the suite (1212 tests, no failures) exit 0; the daemon exits 0 with an
+empty stderr; all five routes answer 200 and the machine route answers
+401 without a credential. The P1 gate admits in `owner-trusted-bootstrap`
+mode with all three authorities in state (1) — the shape is `observed`.
+Of 256 sources, 122 are Observed and 134 Unknown, every Unknown with
+reason `excluded-content`: 132 sources are excluded as `active-content`
+under the act-bound policy and one by the `known-token-formats` detector.
+The excluded set includes the lay-and-land pillar index, so that pillar's
+named files are Unknown and the observation is degraded as a partial
+snapshot; the heart-and-soul pillar's index is also unknown. Design
+contracts (29) and craft policies (7) have fully known denominators;
+baseline specs have 76 modelled items over an Unknown denominator (107
+excluded sources), roster identities 5 over 7 excluded, and the one
+topology-component source is excluded. All six project-account statements
+are Unknown with `missing-declaration`, so the whole-shape claim is
+Unknown. 126 facts reconcile with no contradiction and no precedence rule
+was needed. Parity: 389 Polaris claim tuples over 389 presented machine
+claim ids, no human-only and no machine-only id; the 126 reconciled facts
+are the whole omitted-by-design count. These answer §9's grammar
+question as recorded findings for the 5.x review/repair cycle, not as
+defects fixed here: the active-content rule is the act-bound policy's and
+changes only by a new act; whether the pillar-index grammar mismatch is a
+grammar question or an expected exclusion is for the review to say.
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a
@@ -895,9 +950,13 @@ demands it, and a review at the classes below.
   `docs/evidence/pwb-p4-4-accessibility-browser-run-2026-09-04.json`
   records the run that was measured. The keyboard-only cold-open
   walkthrough remains the owner's manual evidence.
-- `[Unknown]` Whether the real Butlers indexes match the literal grammar at
-  the observed revision. A mismatch renders that source's item denominator
-  Unknown; it does not license grammar changes (those are spec amendments).
+- `[Observed]` (measured by P4.5, 2026-09-04) At the observed Butlers
+  revision the root index and two pillar indexes match the literal grammar;
+  the lay-and-land index and 131 other sources are excluded as
+  `active-content` under the act-bound policy, and the heart-and-soul index
+  is unknown, so the baseline-spec, roster and topology denominators are
+  Unknown. The finding is recorded for the 5.x review; it does not license
+  grammar or policy changes (those are spec and act amendments).
 - `[Observed]` `.syzygy/governance/records/` does not exist yet; it is
   created by the recording session when the first walkthrough record is
   written, per RFC3-15's records category.

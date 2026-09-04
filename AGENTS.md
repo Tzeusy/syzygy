@@ -788,6 +788,19 @@ can be authorized.
   `test-deep-dive-markers.ts` for the marker sweeps. Copy-table rows nested
   inside a `FACT` paragraph must themselves be `project-fact`, or the copy
   test reports them never rendered under their role.
+- Task 4.5: `fresh-checkout-demo-main.ts` (`npm run poc:fresh-checkout-demo
+  -- --repo <butlers>`) clones `HEAD` with tags into a temp dir, runs
+  `npm ci`/`build`/the full Vitest suite (JUnit root tag only), starts the
+  clone's own daemon with cwd = clone, fetches the five routes, and checks
+  Polaris claim-tuple parity against the machine answer under the 4.3
+  presented-population rule (reconciled facts and project-account-section
+  items omitted by design). Committed evidence is body-free and carries no
+  act digests; the raw route bodies and JUnit file are retained only under
+  `~/.local/state/syzygy/pwb-p4-5-fresh-checkout-demo-<date>/` (CG-7e and
+  no-egress consent). Live findings from the first run are in the plan's
+  P4.5 note: shape `observed`, 256 sources / 134 Unknown (132
+  `active-content` exclusions under the act-bound policy, incl. one pillar
+  index), 389/389 parity. Those are 5.x review findings, not 4.5 defects.
 - Task 4.4: `cdp-browser.ts` drives a locally installed Chrome/Chromium
   headless over the DevTools protocol with Node's global `WebSocket` (no
   dependency, no download; `SYZYGY_POC_BROWSER` overrides the PATH search).
