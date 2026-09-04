@@ -205,6 +205,34 @@ killed with digest-verified restore
 (`docs/evidence/pwb-p2-5-extraction-mutation-run-2026-09-04.json`). Still no
 Butlers read: extraction is called by nothing before P4.
 
+P2.6 note, recorded 2026-09-04: `project-shape-coverage.ts` is coverage as
+data over the classified-and-extracted population. Decisions: (a) the
+source population is the input list unchanged and in order; each source
+carries a known item denominator or an Unknown one with the classifier's
+fixed reason, and a grammar failure becomes the policy's `parse-failure`
+exclusion (hash kept, failure named, `excluded-content`); (b) facts are
+reconciled from declarations — `item:<class>:<key>` for identities (a
+second declaration of one identity is a conflict whatever its statement
+says, per the spec's duplicate-key rule), `count:<class>` derived from the
+admitted items, and stated declarations supplied from outside the grammar
+(fixtures now; empty in production until Butlers is observed to declare a
+summary that the model may read); (c) a conflict is resolved only by a
+`PrecedenceRule` whose anchor path is in the admitted population and whose
+two selectors each match exactly one declaration; rules with disagreeing
+winners, out-of-scope facts or unmatched sides decide nothing and the fact
+is Unknown with RFC2-24's `contradicted-pending-adjudication`, every
+declaration retained and every considered rule's outcome recorded; (d) a
+count over a class with any Unknown-denominator source is itself Unknown
+with that source's reason, whatever a summary states; (e) item states are
+modeled or contradicted, `unknown` is reachable only through count facts,
+and per class modeled + unknown + contradicted equals the declared count
+while D is known only when every source of the class was readable.
+`[Unknown]` still whether Butlers declares any precedence rule — the first
+live run (P4's second half) answers it; the eight-versus-nine domain-butler
+conflict is the first fixture either way. 27 rule-6 mutations killed
+(`docs/evidence/pwb-p2-6-coverage-mutation-run-2026-09-04.json`). Still no
+Butlers read.
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a

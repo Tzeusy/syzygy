@@ -1,0 +1,206 @@
+{
+ "slice": "P2.6 project-shape coverage and precedence (syzygy-1z3.7, PWB-REQ-002 / PWB-REQ-004)",
+ "date": "2026-09-04",
+ "baseCommit": "9a5854cf370003c5fdd70c5c439dc2c95c28e244",
+ "subject": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+ "sourceDigestSha256": "5c318d2618cf961d116b991afb893c2d0746d4fbe1aa9c61c0567548e45bd180",
+ "testFile": "packages/three-surface-poc-core/src/project-shape-coverage.test.ts",
+ "method": "For each mutation: write the single exact-string replacement into the subject, run the test file with the vitest JSON reporter, restore the original bytes and verify sha256 equality. A mutation is killed when at least one test fails. One mutation (grammar-failure-as-known) first crashed the suite during describe-time fixture construction, which the reporter scored as zero tests; the fixture build was moved into beforeAll so the crash is a counted failure, and the mutation was re-run.",
+ "totals": {
+  "mutations": 27,
+  "killed": 27,
+  "survived": 0,
+  "testsAtFinalRun": 22
+ },
+ "mutations": [
+  {
+   "mutation": "anchor-population-unchecked",
+   "failedTests": 1,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "fact-scope-unchecked",
+   "failedTests": 1,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "higher-unmatched-ok",
+   "failedTests": 1,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "lower-unmatched-ok",
+   "failedTests": 1,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "multi-match-ok",
+   "failedTests": 1,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "same-both-sides-ok",
+   "failedTests": 1,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "lower-wins",
+   "failedTests": 2,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "identity-dup-not-conflict",
+   "failedTests": 3,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "value-dup-conflict",
+   "failedTests": 2,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "winner-without-rule",
+   "failedTests": 8,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "disagreeing-rules-ok",
+   "failedTests": 1,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "superseded-dropped",
+   "failedTests": 1,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "contradiction-reason-misspelt",
+   "failedTests": 3,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "grammar-failure-as-known",
+   "failedTests": 14,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "unknown-denominator-counted-known",
+   "failedTests": 1,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "unknown-count-fact-reconciled",
+   "failedTests": 2,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "stated-summaries-dropped",
+   "failedTests": 10,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "other-facts-dropped",
+   "failedTests": 2,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "population-includes-unknown",
+   "failedTests": 2,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "item-anchor-line-dropped",
+   "failedTests": 1,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "second-anchor-dropped",
+   "failedTests": 2,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "contradicted-items-modeled",
+   "failedTests": 2,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "class-declared-miscounted",
+   "failedTests": 2,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "contradictions-hidden",
+   "failedTests": 2,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "rules-applied-miscounted",
+   "failedTests": 1,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "sources-reordered",
+   "failedTests": 1,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  },
+  {
+   "mutation": "effective-ignores-rule",
+   "failedTests": 1,
+   "totalTests": 22,
+   "verdict": "killed",
+   "restored": true
+  }
+ ]
+}

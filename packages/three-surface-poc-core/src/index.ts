@@ -17,3 +17,4 @@ export * from './project-shape-observation.js';
 export * from './git-object-reader.js';
 export * from './content-classification.js';
 export * from './project-shape-extraction.js';
+export * from './project-shape-coverage.js';

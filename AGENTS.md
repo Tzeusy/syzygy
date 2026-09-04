@@ -641,6 +641,30 @@ can be authorized.
   mutations killed (evidence in `docs/evidence/`); two equivalent mutants
   (an unreachable indented-line guard) were removed as dead code.
 
+### PWB slice P2.6 — coverage and precedence (syzygy-1z3.7, 2026-09-04)
+
+- `packages/three-surface-poc-core/src/project-shape-coverage.ts` turns
+  `ClassifiedSource<SourceExtraction>` entries (2.4's population with 2.5's
+  `extractSource` as the consumer) into `ProjectShapeCoverage`: sources in
+  input order with known/Unknown item denominators, one `ItemCoverage` per
+  identity, per-class counts that reconcile to the declared count, and
+  reconciled facts. Grammar failures route through
+  `parseFailureExclusion`, so the coverage object never carries a body.
+- Precedence is data, never heuristics: a `PrecedenceRule` names its
+  Butlers anchor, its words and two selectors (`{path}` or `{basis}`). It
+  applies only when the anchor is an admitted source and each side matches
+  exactly one declaration; anything else is a recorded rejection and the
+  fact stays `contradicted-pending-adjudication` with every declaration
+  kept. Do not add a default rule, a "newest wins" or "authoritative file"
+  fallback — the spec forbids a winner without a Butlers-declared rule.
+- Production wiring (2.7) passes no rules and no stated declarations
+  until the live run shows Butlers declaring some; the design's
+  eight-versus-nine domain-butler conflict is the fixture in the test.
+- Mutation-loop gotcha: a mutation that throws during describe-time
+  fixture construction reports zero tests, which a naive "any test
+  failed" verdict scores as survived. Build fixtures in `beforeAll` (or
+  lazily) so crashes are counted failures.
+
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 
 - The three effect-specific authorities live at their final bytes:
