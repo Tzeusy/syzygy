@@ -168,5 +168,16 @@ result.
 
 ## Independent review
 
-`PENDING: exact frozen-byte review rows are inserted after independent contract,
-security, oracle, public-interface, comprehension and owner-packet reviews.`
+Three fresh-context review classes returned `CONFIRM` on the exact packet
+commit `80f08670ffd4cd9dcab622c8e60438a1d571c20c`, frozen semantic subject and
+both manifests:
+
+| Review | Classes | Exact verdict | SHA-256 |
+|---|---|---|---|
+| `docs/reviews/R-PWB-TRUTH-POLICY-CONTRACT-ORACLE-FINAL-RAW.md` | contract, oracle | `CONFIRM` | `1d35005cda8fab945b8191e97d1febe9dcf63c9c1f531d3346e535449a5aef97` |
+| `docs/reviews/R-PWB-TRUTH-POLICY-SECURITY-PUBLIC-CONFIRMATION-2-RAW.md` | security, public interface | `CONFIRM` | `5219f2de66291ec377babcacc9ee3fe1288aea8a489e0e56931813c5372e0d71` |
+| `docs/reviews/R-PWB-TRUTH-POLICY-COMPREHENSION-CONFIRMATION-RAW.md` | fresh-reader comprehension | `CONFIRM` | `f6c2a5b8a65b00795d90db1f86ced1541009e9805d52552bce6a87f5494d5fdf` |
+
+Earlier `REVISE` reviews and their exact finding dispositions remain stored
+verbatim. A separate fresh owner-packet review binds this final wrapper after
+the table above is frozen; it is evidence, never an act.
