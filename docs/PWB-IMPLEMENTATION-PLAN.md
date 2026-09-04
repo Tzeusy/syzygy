@@ -310,6 +310,16 @@ route); the fifth (hard-coding freshness to `fresh`) is equivalent because
 the model stamps every claim `fresh` — a freshness-varying claim does not
 exist yet, so no test can distinguish it. Still no Butlers read.
 
+P3.2 note, recorded 2026-09-04: the slice's move below the catalog was
+made by 3.1; 3.2 adds the proof that the move changed position only. The
+test renders both an unevaluated and an observed shape and checks, per
+entity, that its section sits inside "Capability detail", carries exactly
+the model's provenance sources and revisions in order, and exactly the
+model's label and reason; per relationship, the one marker the model's
+label implies; and that the slice's bytes are identical across the two
+shapes. Three hand mutations (an added citation, an Unknown entity
+relabeled Observed, slice copy varying with the shape) are killed.
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a

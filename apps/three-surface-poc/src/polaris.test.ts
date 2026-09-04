@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { renderPolarisPage } from './polaris.js';
 import { buildFixtureModel } from './test-model-fixture.js';
+import { ADMITTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 
 const cleanups: string[] = [];
 afterEach(() => {
@@ -100,6 +101,78 @@ describe('Polaris', () => {
     expect(html).toContain('one capability within the complete catalog');
     expect(html).not.toContain('data-polaris-movement');
     expect(html).not.toContain('data-polaris-framing');
+  });
+
+  it('moves the capability slice below the catalog with provenance and epistemic state unchanged (PWB-REQ-010, task 3.2)', () => {
+    // Both fixtures: the slice must read identically whether or not the
+    // project shape was observed — the move changes position, never claims.
+    const unevaluated = buildFixtureModel(cleanups);
+    const observed = buildFixtureModel(cleanups, {
+      projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() },
+    });
+    expect(unevaluated.projectShape.kind).toBe('not-evaluated');
+    expect(observed.projectShape.kind).toBe('observed');
+
+    for (const model of [unevaluated, observed]) {
+      const html = renderPolarisPage(model);
+      const catalogIndex = html.indexOf('data-polaris-group="catalog"');
+      const detailIndex = html.indexOf('data-polaris-group="capability-detail"');
+      const evidenceIndex = html.indexOf('data-polaris-group="evidence-and-gaps"');
+      expect(catalogIndex).toBeGreaterThan(-1);
+      expect(detailIndex).toBeGreaterThan(catalogIndex);
+
+      // Per entity: the section sits inside Capability detail and carries
+      // exactly the model's provenance (source and revision, in order) and
+      // exactly the model's epistemic label and reason — nothing added,
+      // nothing dropped, nothing re-labeled.
+      let checked = 0;
+      for (const entity of model.entities) {
+        const match = new RegExp(
+          `<section class="claim-section" data-polaris-section="${entity.id}">([\\s\\S]*?)</section>`,
+        ).exec(html);
+        expect(match).not.toBeNull();
+        const start = match?.index ?? -1;
+        expect(start).toBeGreaterThan(detailIndex);
+        expect(start).toBeLessThan(evidenceIndex);
+        const section = match?.[1] ?? '';
+        const sources = [...section.matchAll(/data-parity-field="provenance-source">([^<]+)</g)].map((m) => m[1]);
+        const revisions = [...section.matchAll(/data-parity-field="provenance-revision">([^<]+)</g)].map((m) => m[1]);
+        if (entity.epistemic.label === 'Observed') {
+          expect(section).toContain(`data-claim-provenance="${entity.id}"`);
+          expect(section).not.toContain('data-unknown-disclosure=');
+          expect(sources).toEqual(entity.provenance.map((item) => item.source));
+          expect(revisions).toEqual(entity.provenance.map((item) => item.revision.slice(0, 12)));
+        } else {
+          expect(section).toContain(`data-unknown-disclosure="${entity.id}"`);
+          expect(section).toContain(`Unknown — ${entity.epistemic.reason}`);
+          expect(section).not.toContain(`data-claim-provenance="${entity.id}"`);
+          expect(sources).toEqual([]);
+        }
+        checked += 1;
+      }
+      expect(checked).toBe(model.entities.length);
+
+      // Relationships: same rule, one bullet per relationship, same label.
+      let bullets = 0;
+      for (const relationship of model.relationships) {
+        const marker = relationship.epistemic.label === 'Observed'
+          ? `data-claim-provenance="${relationship.id}"`
+          : `data-unknown-disclosure="${relationship.id}"`;
+        const other = relationship.epistemic.label === 'Observed'
+          ? `data-unknown-disclosure="${relationship.id}"`
+          : `data-claim-provenance="${relationship.id}"`;
+        expect(html).toContain(marker);
+        expect(html).not.toContain(other);
+        bullets += 1;
+      }
+      expect(bullets).toBe(model.relationships.length);
+    }
+
+    // The slice itself is byte-identical across the two shapes: the project
+    // groups above it change, the capability claims do not.
+    const slice = (html: string): string =>
+      html.slice(html.indexOf('data-polaris-capability-scope'), html.indexOf('data-polaris-group="evidence-and-gaps"'));
+    expect(slice(renderPolarisPage(observed))).toBe(slice(renderPolarisPage(unevaluated)));
   });
 
   it('mutation check: removing an entity from coverage would fail the sweep', () => {

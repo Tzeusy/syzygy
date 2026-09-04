@@ -727,6 +727,11 @@ can be authorized.
 - The model stamps every claim `fresh`, so a renderer mutation hard-coding
   freshness is an equivalent mutant today; the tuple test still binds
   label/tier/evaluation id per claim.
+- Task 3.2's guarantee lives in `polaris.test.ts`: the capability slice
+  (from `data-polaris-capability-scope` to the evidence group) must be
+  byte-identical between an unevaluated and an observed shape, and each
+  entity section must carry exactly the model's provenance. Any change that
+  makes the slice depend on `projectShape` breaks it by design.
 
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 
