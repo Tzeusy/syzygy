@@ -1,0 +1,716 @@
+{
+  "task": "PWB 4.1 (syzygy-1z3.17) PWB-REQ-022 walkthrough-judgment evaluator",
+  "date": "2026-09-04",
+  "subject": {
+    "packages/three-surface-poc-core/src/walkthrough-judgment.ts": "81be59320fb352ee6748b679fce1ae7376baaa966e4729ccd4e24393c6a849f1"
+  },
+  "tests": [
+    "packages/three-surface-poc-core/src/walkthrough-judgment.test.ts"
+  ],
+  "restoreVerified": true,
+  "mutations": [
+    {
+      "mutation": "disable:run-record-outside-records-home",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-outside-records-home 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:judgment-outside-decisions-home",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > judgment-outside-decisions-home 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:run-record-identity-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-identity-missing 7ms"
+      ]
+    },
+    {
+      "mutation": "disable:run-record-identity-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-identity-malformed 7ms"
+      ]
+    },
+    {
+      "mutation": "disable:run-record-identity-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-identity-wrong 8ms"
+      ]
+    },
+    {
+      "mutation": "disable:surface-version-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > surface-version-missing 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:surface-version-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > surface-version-malformed 7ms"
+      ]
+    },
+    {
+      "mutation": "disable:surface-version-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > surface-version-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:evaluation-identity-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > evaluation-identity-missing 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:evaluation-identity-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > evaluation-identity-malformed 8ms"
+      ]
+    },
+    {
+      "mutation": "disable:evaluation-identity-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > evaluation-identity-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:nonvisual-mode-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > nonvisual-mode-missing 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:nonvisual-mode-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > nonvisual-mode-malformed 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:nonvisual-mode-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > nonvisual-mode-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:traversed-paths-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > traversed-paths-missing 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:traversed-paths-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > traversed-paths-malformed 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:traversed-paths-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > traversed-paths-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:verdict-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > verdict-missing 12ms"
+      ]
+    },
+    {
+      "mutation": "disable:verdict-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > verdict-malformed 8ms"
+      ]
+    },
+    {
+      "mutation": "disable:verdict-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > verdict-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:rationale-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > rationale-missing 8ms"
+      ]
+    },
+    {
+      "mutation": "disable:rationale-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > rationale-malformed 10ms"
+      ]
+    },
+    {
+      "mutation": "disable:rationale-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > rationale-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:judging-party-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > judging-party-missing 8ms"
+      ]
+    },
+    {
+      "mutation": "disable:judging-party-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > judging-party-malformed 8ms"
+      ]
+    },
+    {
+      "mutation": "disable:judging-party-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > judging-party-wrong 11ms"
+      ]
+    },
+    {
+      "mutation": "disable:run-record-reference-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-reference-missing 8ms"
+      ]
+    },
+    {
+      "mutation": "disable:run-record-reference-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-reference-malformed 7ms"
+      ]
+    },
+    {
+      "mutation": "disable:run-record-reference-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-reference-wrong 8ms"
+      ]
+    },
+    {
+      "mutation": "disable:tree-attribution-only",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > tree-attribution-only 5ms"
+      ]
+    },
+    {
+      "mutation": "disable:git-ref-only",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > git-ref-only 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:specification-signoff-only",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > specification-signoff-only 5ms"
+      ]
+    },
+    {
+      "mutation": "disable:machine-submission",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > machine-submission 5ms"
+      ]
+    },
+    {
+      "mutation": "disable:agent-assertion",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > agent-assertion 5ms"
+      ]
+    },
+    {
+      "mutation": "disable:project-identity-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > project-identity-missing 7ms"
+      ]
+    },
+    {
+      "mutation": "disable:project-identity-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > project-identity-malformed 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:project-identity-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > project-identity-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:artifact-identity-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > artifact-identity-missing 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:artifact-identity-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > artifact-identity-malformed 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:artifact-identity-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > artifact-identity-wrong 7ms"
+      ]
+    },
+    {
+      "mutation": "disable:exact-digest-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > exact-digest-missing 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:exact-digest-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > exact-digest-malformed 8ms"
+      ]
+    },
+    {
+      "mutation": "disable:exact-digest-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > exact-digest-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:act-type-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > act-type-missing 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:act-type-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > act-type-malformed 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:act-type-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > act-type-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:act-instant-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > act-instant-missing 9ms"
+      ]
+    },
+    {
+      "mutation": "disable:act-instant-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > act-instant-malformed 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:act-instant-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > act-instant-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:owner-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > owner-missing 5ms"
+      ]
+    },
+    {
+      "mutation": "disable:owner-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > owner-malformed 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:owner-non-human",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > owner-non-human 7ms"
+      ]
+    },
+    {
+      "mutation": "disable:owner-another-human",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > owner-another-human 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:scope-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > scope-missing 5ms"
+      ]
+    },
+    {
+      "mutation": "disable:scope-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > scope-malformed 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:scope-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > scope-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:supersession-target-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > supersession-target-missing 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:supersession-target-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > supersession-target-malformed 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:supersession-target-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > supersession-target-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:a1-identity-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > a1-identity-missing 5ms"
+      ]
+    },
+    {
+      "mutation": "disable:a1-identity-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > a1-identity-malformed 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:a1-identity-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > a1-identity-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:act-identity-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > act-identity-missing 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:act-identity-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > act-identity-malformed 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:act-identity-wrong",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > act-identity-wrong 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:paired-to-different-authority",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > paired-to-different-authority 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:provenance-state-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > provenance-state-missing 7ms"
+      ]
+    },
+    {
+      "mutation": "disable:provenance-state-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > provenance-state-malformed 7ms"
+      ]
+    },
+    {
+      "mutation": "disable:provenance-state-outside-vocabulary",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > provenance-state-outside-vocabulary 5ms"
+      ]
+    },
+    {
+      "mutation": "disable:stale",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > stale 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:expired",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > expired 7ms"
+      ]
+    },
+    {
+      "mutation": "disable:superseded",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > superseded 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:revoked",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > revoked 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:state-1-not-explicitly-selected",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > state-1-not-explicitly-selected 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:state-1-a1-present",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > state-1-a1-present 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:state-2-correlation-failed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > state-2-correlation-failed 6ms",
+        "\u00d7 PWB-REQ-022 \u2014 failed state (2) never downgrades; history is append-only > a failed state-(2) correlation is unlawful with the claimed state retained, not a state-(1) judgment 1ms"
+      ]
+    },
+    {
+      "mutation": "disable:state-2-correlation-unavailable",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > state-2-correlation-unavailable 5ms",
+        "\u00d7 PWB-REQ-022 \u2014 failed state (2) never downgrades; history is append-only > the production correlator is unavailable, so a state-(2) claim is unlawful here today 1ms"
+      ]
+    },
+    {
+      "mutation": "disable:state-2-correlation-indeterminate",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > state-2-correlation-indeterminate 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:phrase-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > phrase-missing 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:phrase-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > phrase-malformed 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:phrase-mismatched",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > phrase-mismatched 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:recording-tag-missing",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > recording-tag-missing 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:recording-tag-malformed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > recording-tag-malformed 6ms"
+      ]
+    },
+    {
+      "mutation": "disable:recording-tag-mismatched",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > recording-tag-mismatched 7ms"
+      ]
+    },
+    {
+      "mutation": "literal:exact-state-inflated",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 valid judgment states carry the owner verdict with the exact state > valid state (1): owner-adopted, not independently verified, exact disclosure 11ms",
+        "\u00d7 PWB-REQ-022 \u2014 failed state (2) never downgrades; history is append-only > later correlation is a new entry; the earlier state-(1) entry keeps its provenance 1ms"
+      ]
+    },
+    {
+      "mutation": "literal:exact-state-collapsed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 valid judgment states carry the owner verdict with the exact state > valid state (2): Syzygy-verified, independently verified, no state-(1) sentence 8ms",
+        "\u00d7 PWB-REQ-022 \u2014 failed state (2) never downgrades; history is append-only > later correlation is a new entry; the earlier state-(1) entry keeps its provenance 1ms"
+      ]
+    },
+    {
+      "mutation": "literal:independently-verified-always",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 valid judgment states carry the owner verdict with the exact state > valid state (1): owner-adopted, not independently verified, exact disclosure 18ms"
+      ]
+    },
+    {
+      "mutation": "literal:disclosure-hidden",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 valid judgment states carry the owner verdict with the exact state > valid state (1): owner-adopted, not independently verified, exact disclosure 12ms",
+        "\u00d7 PWB-REQ-022 \u2014 failed state (2) never downgrades; history is append-only > later correlation is a new entry; the earlier state-(1) entry keeps its provenance 2ms"
+      ]
+    },
+    {
+      "mutation": "literal:failed-correlation-downgrades",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > state-2-correlation-failed 6ms",
+        "\u00d7 PWB-REQ-022 \u2014 failed state (2) never downgrades; history is append-only > a failed state-(2) correlation is unlawful with the claimed state retained, not a state-(1) judgment 1ms"
+      ]
+    },
+    {
+      "mutation": "literal:absent-fabricates-verdict",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 either absent case renders Unknown, never met, without a verdict > no-run-record \u2014 run record missing 7ms",
+        "\u00d7 PWB-REQ-022 \u2014 either absent case renders Unknown, never met, without a verdict > no-run-record \u2014 run record unreadable 1ms",
+        "\u00d7 PWB-REQ-022 \u2014 either absent case renders Unknown, never met, without a verdict > no-judgment \u2014 judgment missing 1ms",
+        "\u00d7 PWB-REQ-022 \u2014 either absent case renders Unknown, never met, without a verdict > no-judgment \u2014 judgment unreadable 1ms"
+      ]
+    },
+    {
+      "mutation": "literal:absent-renders-success",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 either absent case renders Unknown, never met, without a verdict > no-run-record \u2014 run record missing 7ms",
+        "\u00d7 PWB-REQ-022 \u2014 either absent case renders Unknown, never met, without a verdict > no-run-record \u2014 run record unreadable 1ms",
+        "\u00d7 PWB-REQ-022 \u2014 either absent case renders Unknown, never met, without a verdict > no-judgment \u2014 judgment missing 1ms",
+        "\u00d7 PWB-REQ-022 \u2014 either absent case renders Unknown, never met, without a verdict > no-judgment \u2014 judgment unreadable 1ms"
+      ]
+    },
+    {
+      "mutation": "literal:unlawful-carries-verdict",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-outside-records-home 6ms",
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > judgment-outside-decisions-home 1ms",
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-identity-missing 1ms",
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-identity-malformed 1ms"
+      ]
+    },
+    {
+      "mutation": "literal:unlawful-renders-success",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-outside-records-home 7ms",
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > judgment-outside-decisions-home 1ms",
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-identity-missing 1ms",
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-identity-malformed 1ms"
+      ]
+    },
+    {
+      "mutation": "literal:verdict-unlawful-literal",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-outside-records-home 7ms",
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > judgment-outside-decisions-home 1ms",
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-identity-missing 1ms",
+        "\u00d7 PWB-REQ-022 \u2014 each present-invalid case records verdict-unlawful and Unknown-never-met > run-record-identity-malformed 1ms"
+      ]
+    },
+    {
+      "mutation": "literal:history-rewritten",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 failed state (2) never downgrades; history is append-only > re-recording an evaluation identity throws instead of rewriting 7ms"
+      ]
+    },
+    {
+      "mutation": "literal:history-not-frozen",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 failed state (2) never downgrades; history is append-only > later correlation is a new entry; the earlier state-(1) entry keeps its provenance 7ms"
+      ]
+    },
+    {
+      "mutation": "literal:lawful-called-observed",
+      "killed": true,
+      "failingTests": [
+        "\u00d7 PWB-REQ-022 \u2014 valid judgment states carry the owner verdict with the exact state > valid state (1): owner-adopted, not independently verified, exact disclosure 14ms",
+        "\u00d7 PWB-REQ-022 \u2014 valid judgment states carry the owner verdict with the exact state > a lawful outcome is recorded human judgment: never Observed, never a score 2ms"
+      ]
+    }
+  ],
+  "killed": 97,
+  "total": 97
+}

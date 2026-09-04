@@ -788,6 +788,20 @@ can be authorized.
   `test-deep-dive-markers.ts` for the marker sweeps. Copy-table rows nested
   inside a `FACT` paragraph must themselves be `project-fact`, or the copy
   test reports them never rendered under their role.
+- Task 4.1: `packages/three-surface-poc-core/src/walkthrough-judgment.ts`
+  is the PWB-REQ-022 evaluator (2 absent + 84 present-invalid cases, one
+  `// mutation-point:` per case, predicate order load-bearing: homes →
+  run-record fields → judgment fields → the 55 common act predicates
+  restated from P1). Run record grammar: backticked `Record identity:`
+  (`PWB-WALKTHROUGH-…`), `Surface version:` (`polaris@<v>`), `Evaluation
+  identity:`, `Mode:` (`nonvisual-keyboard-only`|`visual-pointer`) and a
+  `## Traversed paths` list of backticked routes. Judgment grammar:
+  `Verdict:` `` `<criterion>=met|not-met` ``, `Judging party:` (plain, the
+  owner), `Run record:` `` `<identity>@<sha256>` `` and a `## Rationale`
+  section; its owner act binds the judgment's SHA-256 like the three effect
+  acts. Never share the 55 common predicates with `body-read-authority.ts`
+  — the duplication keeps the risk floor's act-bound bytes untouched.
+  Nothing consumes the evaluator before 4.6.
 - Task 3.8: Polaris's depth list, gap-entry ids, contradiction ids and
   named scroll regions are the keyboard/text reachability surface. Link
   targets are page state (`activeTargets` in `polaris.ts`): a reason or

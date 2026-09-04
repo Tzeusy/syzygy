@@ -538,6 +538,38 @@ cold-open walkthrough remains manual evidence (PWB-REQ-016's record). Rule-6
 evidence: `docs/evidence/pwb-p3-8-reachability-mutation-run-2026-09-04.json`
 (19/19 killed, digest-verified restore).
 
+P4.1 implemented 2026-09-04 (task 4.1, PWB-REQ-022 plus the per-requirement
+behavior-test sweep, `syzygy-1z3.17`). `walkthrough-judgment.ts` is the
+PWB-REQ-022 evaluator over the pair (execution record under
+`.syzygy/governance/records/`, owner judgment under
+`.syzygy/governance/decisions/`): outcome `absent` (2 cases: no run record,
+no judgment — a judgment without an owner act counts as no judgment),
+`unlawful` (the closed 84-case population: 2 governance-home, 15 run-record
+field, 12 judgment field, 55 common act cases restated from PWB-REQ-005 in
+the same predicate order, recording exactly `verdict-unlawful`, Unknown
+never met, no verdict, an RFC3-16(a) contradiction) or `lawful` (the owner's
+verdict carried as `recorded-human-judgment` with exact state label, the
+state-(1) sentence from `authority-disclosure.ts`, and
+`independentlyVerified` true only for state (2)). Design readings recorded
+here: the judgment's exact run-record reference is `<identity>@<sha256>`,
+which transitively binds the surface version and evaluation identity the
+record names; the verdict field is `<criterion>=met|not-met`, so "wrong
+but present" is a verdict on another criterion; a rationale is "wrong" when
+it reasons about a different walkthrough-record identity; traversed paths
+are "wrong" when one lies outside the controlled route population. The 55
+common predicates are deliberately duplicated rather than shared with
+`body-read-authority.ts`, so the body-read risk floor and its act-bound
+mutation evidence stay byte-identical. State (2) stays unreachable in
+production (`JUDGMENT_CORRELATION_UNAVAILABLE`); history is append-only
+(`appendJudgmentEvaluation`). The test hand-types all 84 + 2 cases and the
+two state labels/disclosure, never importing the vocabulary, and reads the
+evaluator source as text to prove one predicate per case. Behavior-test
+sweep: every PWB-REQ id in the spec (17) now names at least one test file;
+PWB-REQ-021's comprehension oracle is the owner's, so its code-side test is
+the PWB-REQ-022 pair evaluator and its evidence is the P8 record. Not wired
+into the model or Polaris yet (4.6/4.3 own that). Rule-6 evidence:
+`docs/evidence/pwb-p4-1-judgment-mutation-run-2026-09-04.json`.
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a
