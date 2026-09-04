@@ -17,7 +17,7 @@
       "contractVersionSource": "accepted RFC-0004/general-contract.md as amended by the 2026-09-01 general trusted-bootstrap transaction (CONTRACT-AMENDMENT-MANIFEST.txt row)",
       "governingBehaviorContract": {
         "id": "polaris-project-wide-butlers-model",
-        "version": "sha256:8f4681a34a442a5311cbbe7e48284be26a9a0b555be90c0422d729b176f1b908",
+        "version": "sha256:915c51365815624fd2e794f0bc9dcd50778ac6dd7348696d42ec1ded08a1def6",
         "signedBy": "pending exact owner act over the PWB truth-and-readiness amendment manifest"
       },
       "subject": {
@@ -191,7 +191,63 @@
             6,
             7
           ],
-          "application": "a home is admitted only when it is a normalized repository-relative root with at least one admitted source at or beneath it; the unique lowest-numbered admitted home whose Owns cell names the fact family selects its declaration; the root summary is non-owning and an unlisted source owns nothing; malformed, duplicate, missing, equally ranked or mutually disagreeing rules select nothing"
+          "rows": [
+            {
+              "ordinal": 1,
+              "layer": "Heart and Soul",
+              "owns": "Principles, scope boundaries, the 7 non-negotiable rules",
+              "home": "about/heart-and-soul/"
+            },
+            {
+              "ordinal": 2,
+              "layer": "Legends and Lore",
+              "owns": "Wire contracts, state machines, data models, sanctioned rule exceptions",
+              "home": "about/legends-and-lore/rfcs/"
+            },
+            {
+              "ordinal": 3,
+              "layer": "Spec and Spine",
+              "owns": "Feature behaviour, acceptance scenarios (WHEN/THEN), per-butler contracts",
+              "home": "openspec/specs/"
+            },
+            {
+              "ordinal": 4,
+              "layer": "Craft and Care",
+              "owns": "Execution-quality standards, test scope, review gates, observability bar",
+              "home": "about/craft-and-care/"
+            },
+            {
+              "ordinal": 5,
+              "layer": "Lay and Land",
+              "owns": "Topology snapshot — where components live, how they connect, stability levels",
+              "home": "about/lay-and-land/"
+            },
+            {
+              "ordinal": 6,
+              "layer": "Roster config",
+              "owns": "Live butler identity: butler.toml, MANIFESTO.md, CLAUDE.md, skills, API routes",
+              "home": "roster/{butler}/"
+            },
+            {
+              "ordinal": 7,
+              "layer": "Code",
+              "owns": "Runtime behaviour — executed source, migrations, tests",
+              "home": "src/, alembic/, tests/"
+            }
+          ],
+          "factFamilyRows": {
+            "project-account": 1,
+            "principle": 1,
+            "success-criterion": 1,
+            "catalog-entry": 1,
+            "design-contract": 2,
+            "baseline-spec": 3,
+            "craft-policy": 4,
+            "topology-component": 5,
+            "roster-identity": 6
+          },
+          "cellSyntax": "Layer raw cell is exactly one complete bold span; compare its content and Owns/Home after trimming outer ASCII whitespace and unwrapping only complete inline code spans; preserve case, punctuation and internal whitespace and apply no other Markdown or prose normalization",
+          "application": "every Layer, Owns and Home cell must equal its row literal; mixed-family or unrecognized Owns prose invalidates the table; rows 1 through 5 are exact normalized roots, row 6 expands roster/{butler}/ only for a declared roster key, and row 7 is inert because code owns no admitted fact; an applied expanded home must contain at least one admitted source; the unique lowest-numbered applied home assigned by factFamilyRows selects its declaration; the root summary is non-owning; malformed, duplicate, missing, equally ranked or mutually disagreeing rules select nothing"
         }
       },
       "resourceLimits": {
@@ -208,11 +264,25 @@
         "maxBytesPerSource": "the exact UTF-8 blob before classification or parsing; the limit plus one byte is never passed to an extractor",
         "maxTotalBytes": "one cumulative counter across phase A and phase B; count each repository-relative-path plus object-id body once and never reset between phases",
         "maxIndexDepth": "the complete root-to-pillar discovery traversal",
-        "maxParsePassesPerSource": "one unit is one complete traversal of one decoded source by a named classifier or extractor pass; elapsed wall-clock time is not an input",
+        "maxParsePassesPerSource": "one unit is one complete traversal of one decoded source by a pass in parsePassIdentities; a helper traversal is charged to its named caller pass, repeating a pass counts again, and an unregistered traversal is forbidden; elapsed wall-clock time is not an input",
         "maxHumanResponseBytes": "the final encoded HTTP body for each Polaris HTML response",
         "maxMachineResponseBytes": "the final encoded HTTP body for each authenticated Polaris machine JSON response",
         "breachResult": "source and input breaches retain the complete population and make dependent facts Unknown; final-output breaches emit only a bounded typed failure carrying evaluation identity, limit identity, declared value, observed value and population counts; no truncated or success-shaped model is emitted; PWB-REQ-021 readiness is false"
       },
+      "parsePassIdentities": [
+        "utf8-and-nul-validation",
+        "secret-private-key-fragments",
+        "secret-known-token-formats",
+        "secret-credential-assignment",
+        "secret-credential-bearing-url",
+        "markdown-code-context-mask",
+        "active-html-svg-script-handler",
+        "unsafe-url-positions",
+        "phase-a-link-discovery",
+        "project-account-extraction",
+        "declared-item-extraction",
+        "fact-and-precedence-extraction"
+      ],
       "admissionFailureMapping": {
         "missingConsent": "unconsented-source-or-provider",
         "mismatchedStaleRevokedOrUnattributedConsent": "unconsented-source-or-provider",

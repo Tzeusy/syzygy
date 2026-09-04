@@ -354,13 +354,29 @@ element, comment or declaration; SVG; script; event-handler attribute; or an
 unsafe `javascript:`, `vbscript:`, `data:` or `file:` scheme in a Markdown
 destination, autolink or HTML attribute SHALL exclude the whole source.
 
+Code contexts SHALL use this exact UTF-8 line-oriented profile. A fenced opener
+is zero to three spaces followed by at least three identical backticks or
+tildes; a closer is zero to three spaces, the same character repeated at least
+the opener length, then spaces only. A backtick opener's trailing info text
+SHALL contain no backtick. The first qualifying closer ends the fence; an
+unclosed fence or invalid backtick info string is malformed and excludes the
+source. Outside fences, an inline code span starts with a run of one or more
+backticks and closes only at the next run of exactly the same length;
+backslashes do not escape a delimiter and runs of a different length are
+content. An unclosed span is malformed and excludes the source. Indented code,
+HTML `<code>` elements and every other construct are not inert contexts. The
+context mask SHALL affect only active-content detection, never secret scans.
+
 The registry SHALL declare one evaluation-wide resource envelope. Source count
 SHALL cover the complete manifest; per-source bytes SHALL cover each exact
 blob; total bytes SHALL use one cumulative phase-A-plus-phase-B counter and
 count each `(repository-relative path, object id)` body once; index depth SHALL
 cover discovery; deterministic parse work SHALL count complete source
-traversals and SHALL NOT depend on elapsed wall-clock time; and final encoded
-human HTML and machine JSON SHALL each have an explicit byte ceiling. A source
+traversals from the registry's closed pass list and SHALL NOT depend on elapsed
+wall-clock time. A complete traversal by a helper SHALL be charged to a named
+pass; repeating a named pass counts again; a traversal not in the list is
+forbidden. Final encoded human HTML and machine JSON SHALL each have an
+explicit byte ceiling. A source
 or input breach SHALL keep the complete source population counted and every
 dependent fact Unknown. A final-output breach SHALL return only a bounded typed
 failure envelope carrying evaluation identity, limit identity, declared value,
@@ -371,7 +387,8 @@ shaped model. Every breach SHALL make PWB-REQ-021 readiness false.
   the same markup-like bytes inside inline/fenced code, a secret sentinel in
   each code context, every limit at `limit - 1`, `limit`, and `limit + 1`,
   phase-A/phase-B cumulative carry-over, duplicate-object/different-path
-  accounting and both final-output sinks.
+  accounting, every named parse pass, an unregistered/repeated helper traversal
+  and both final-output sinks.
 - **Observable**: no request escapes the Git object reader, no active sentinel
   reaches a sink, and every rejected/limited source stays visible as Unknown.
 - **Oracle**: injected Git/read/render spies, context-independent secret scans,
@@ -491,11 +508,26 @@ No other root prose, number, heading or table SHALL mint a fact.
 The POC SHALL admit precedence only from the root index's exact H3
 `Precedence Order When Layers Disagree` and one pipe table with the exact
 columns `#`, `Layer`, `Owns`, `Home`. It SHALL emit the ordered layer rules only
-when rows 1 through 7 each occur once, every layer/home is unique, every home
-is a normalized repository-relative root, and at least one admitted source is
-at or beneath it. For a
-conflicting fact, a rule SHALL apply only when exactly one declaration is under
-the lowest-numbered home whose `Owns` cell names that fact family. The root
+when rows 1 through 7 each occur once and every layer/home is unique. Rows 1
+through 5 SHALL use their exact normalized repository-relative root literals;
+row 6 SHALL use the exact `roster/{butler}/` template expanded only for a
+declared roster key; row 7 SHALL use the exact inert
+`src/, alembic/, tests/` literal and owns no admitted fact. For a conflicting
+fact, a rule SHALL apply only when each
+row's `Layer` raw cell is exactly one bold span, and its bold content plus the
+`Owns` and `Home` semantic text equal the registry's exact seven-row vocabulary.
+Semantic text SHALL trim outer ASCII whitespace and unwrap only complete inline
+code spans, preserving case, punctuation and internal whitespace; no other
+Markdown or prose normalization is allowed. Exactly one declaration must be
+under the lowest-numbered expanded
+home with at least one admitted source
+assigned to that fact family by the registry's closed family map. The map SHALL
+assign project-account, principle, success-criterion and catalog-entry/count
+facts to row 1; design-contract facts to row 2; baseline-spec facts to row 3;
+craft-policy facts to row 4; topology-component facts to row 5; and roster-
+identity facts to row 6. Row 7 owns no admitted fact in this content class.
+Mixed-family prose or an unrecognized `Owns` value SHALL invalidate the table
+rather than extend the map. The root
 summary is non-owning and SHALL defer to that uniquely applicable owning layer;
 an unlisted source SHALL own nothing. Any missing, malformed, duplicated,
 out-of-population, self-referential, inapplicable or equally ranked rule SHALL
@@ -929,9 +961,12 @@ and evaluation identity and retain every path used to answer them. Readiness
 SHALL be false for a missing, empty, duplicate or unrecognized answer identity;
 an unresolved source anchor; a surface/evaluation mismatch; any path outside
 Polaris or its same-evaluation exact-source route; any PWB-REQ-006 resource
-breach; or an answer that cannot be compared to current Butlers authority.
+breach; or an answer whose cited current Butlers authority cannot be resolved.
 Readiness and the nine answers SHALL be machine-readable and owner-visible but
-SHALL remain execution facts, never a verdict or proof of comprehension.
+SHALL remain execution facts, never a verdict or proof of comprehension. The
+implementation SHALL NOT score or decide the semantic correctness of the
+owner's own-words answers. That comparison informs only the separate human
+owner judgment and rationale.
 
 These readiness cases belong only to PWB-REQ-021. They SHALL NOT be added to,
 substituted for or treated as invalid arms in PWB-REQ-022's owner-act and
@@ -947,8 +982,9 @@ valid owner act can lawfully retain a negative judgment about it.
   answers, paths, surface/evaluation identity and nonvisual/keyboard flag. A
   separate owner-judgment decision records verdict, rationale and judging party
   and references that execution record.
-- **Oracle**: compare each answer to its authoritative Butlers artifact,
-  exhaust the exact nine identities and every readiness arm, and independently
+- **Oracle**: a human reviewer compares each answer to its authoritative
+  Butlers artifact for the later owner judgment; the machine oracle separately
+  exhausts the exact nine identities and every readiness arm, and independently
   assert that the PWB-REQ-022 denominator remains 84 present-invalid plus 2
   absent cases; every prompt answered without a confident surface-caused error
   and no readiness arm present decides.

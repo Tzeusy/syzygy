@@ -102,14 +102,26 @@ Architectural Facts`, an unordered item whose leading bold label is
 `catalog-count:Staffers` and `catalog-count:Butlers`. Under the exact H3
 `Precedence Order When Layers Disagree`, one pipe table with the exact columns
 `#`, `Layer`, `Owns`, `Home` emits the seven ordered layer rules only when rows
-1 through 7 each occur once, each layer/home is unique, every home is a
-normalized repository-relative root, and at least one admitted source is at or
-beneath it. No other prose, number or table
+1 through 7 each occur once and each layer/home is unique. Rows 1 through 5
+carry exact normalized roots; row 6's exact `roster/{butler}/` template expands
+only for declared roster keys; row 7's exact `src/, alembic/, tests/` literal
+is inert because code owns no admitted fact. No other prose, number or table
 mints a declaration or rule.
 
+The registry freezes the exact `Layer`, `Owns` and `Home` semantic literals for
+all seven rows. Raw `Layer` cells must be exactly one bold span; matching trims
+outer ASCII whitespace and unwraps only complete inline code spans in `Owns`
+and `Home`, preserving case, punctuation and internal whitespace. It also
+freezes a closed family map: project-account, principle, success-
+criterion and catalog-entry/count facts map to row 1; design-contract to row 2;
+baseline-spec to row 3; craft-policy to row 4; topology-component to row 5;
+roster-identity to row 6; and row 7 owns no fact in this content class. Mixed-
+family prose or any altered `Owns` cell invalidates the table rather than
+extending the grammar.
+
 For one conflicting fact, the precedence table applies only when exactly one
-declaration's source is under the lowest-numbered listed home whose `Owns`
-cell names that fact family. The root summary is a non-owning declaration and
+declaration's source is under the lowest-numbered listed home assigned by that
+closed map. The root summary is a non-owning declaration and
 defers to such an owning layer; an unlisted source owns nothing. Missing,
 malformed, duplicated, out-of-population, self-referential, inapplicable or
 equally ranked rules select nothing. Thus the named live
@@ -180,13 +192,26 @@ before parsing. Outside inert-code contexts, raw HTML elements/comments/
 declarations, SVG, scripts, event-handler attributes and unsafe URL schemes in
 Markdown destinations, autolinks or HTML attributes exclude the whole source.
 
+The inert-context profile is closed and line-oriented. A fence begins with
+zero to three spaces and at least three identical backticks or tildes; it ends
+at the first zero-to-three-space run of the same character at least as long,
+with trailing spaces only. A backtick opener's info text may contain no
+backtick. Outside fences, an inline span closes only on the next backtick run
+of exactly the opener length; different-length runs are content and backslash
+does not escape them. Unclosed fences/spans and invalid backtick info strings
+are malformed and excluded. Indented code and HTML `<code>` are not inert
+contexts. The context mask affects only active-content detection; complete-body
+secret scans run first.
+
 The adapter declares one evaluation-wide envelope. `maxSources` covers the
 complete manifest. `maxBytesPerSource` covers each exact blob.
 `maxTotalBytes` is one cumulative counter across phase A and phase B and counts
 each `(path, object-id)` body once; it never resets between phases.
 `maxIndexDepth` covers discovery. Deterministic parse work is bounded by
-`maxParsePassesPerSource`: each complete traversal of one source counts one
-pass and no parser may exceed the declared pass count. Human HTML and machine
+`maxParsePassesPerSource`: the registry enumerates the only twelve pass
+identities. Each complete traversal of one source counts once, including a
+helper traversal; repeating one counts again and an unregistered traversal is
+forbidden. Human HTML and machine
 JSON have separate final encoded-byte ceilings. A source/input breach keeps
 the whole source population counted and makes every dependent fact Unknown. A
 final-output breach emits only the bounded typed failure envelope with the

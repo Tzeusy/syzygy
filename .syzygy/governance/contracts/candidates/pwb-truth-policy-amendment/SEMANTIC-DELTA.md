@@ -32,10 +32,13 @@ population is:
 The only new stated-count grammar is the admitted root index's `Key
 Architectural Facts` item with the exact daemon/staffer/domain-butler cardinal
 form. The only precedence grammar is the same source's exact seven-row
-`Precedence Order When Layers Disagree` table. The table's numbered homes
-apply only to facts their `Owns` cells cover. A unique lowest-numbered
-applicable home selects an effective declaration; no rule, malformed rules or
-disagreeing applicable rules leave the fact Unknown.
+`Precedence Order When Layers Disagree` table. Every `Layer`, `Owns` and `Home`
+cell is an exact registry literal; a closed fact-family-to-row map decides
+application, never prose interpretation. Rows 1 through 5 are literal roots,
+row 6 is the exact roster-key template and row 7 owns no admitted fact. A
+unique lowest-numbered applicable home selects an effective declaration; no
+rule, altered/malformed rules or disagreeing applicable rules leave the fact
+Unknown.
 
 This closes the live `catalog-count:Butlers` population: eight from the root
 summary and nine from the Heart and Soul V1 catalog. The row-1 Heart and Soul
@@ -45,8 +48,13 @@ anchor remain visible. Nothing is hard-coded as a winner.
 ## 2. Inert Markdown policy
 
 The candidate policy distinguishes inert Markdown code contexts from genuine
-active content. Markup-like bytes wholly inside a syntactically closed inline
-code span or fenced code block do not alone exclude a source. They remain
+active content. Its closed line-oriented profile fixes fence indentation,
+delimiter length/character, closer and backtick-info rules; inline spans close
+only on the next equal-length backtick run, with different-length runs as
+content and no backslash escaping. Unclosed/invalid contexts fail closed;
+indented code and HTML `code` elements are not inert. Markup-like bytes wholly
+inside a valid inline code span or fenced code block do not alone exclude a
+source. They remain
 untrusted text, are scanned by every secret detector over the complete body,
 and are encoded at every sink; they never mint markup, links, scripts,
 attributes or handlers.
@@ -62,7 +70,11 @@ returned or egressed.
 The candidate registry keeps source count `512`, per-source bytes `1,048,576`,
 total bytes `16,777,216` and index depth `4`. It replaces the unimplemented,
 nondeterministic `250` millisecond parser field with `16` complete parse passes
-per source. It splits the former ambiguous rendered-output ceiling into:
+per source. The registry enumerates twelve pass identities covering decoding,
+each secret detector, code-context masking, active/unsafe scanning, phase-A
+discovery and the three extraction families; helper/repeated traversals count
+and unregistered traversals are forbidden. It splits the former ambiguous
+rendered-output ceiling into:
 
 - human HTML response: `2,097,152` encoded bytes; and
 - authenticated machine JSON response: `8,388,608` encoded bytes.
@@ -91,8 +103,10 @@ return a raw body would require a separate consent amendment and act.
 
 PWB-REQ-021 now owns exactly nine answer identities, same-evaluation binding,
 source resolution, Polaris-only traversals and resource-ready state. Missing,
-empty, duplicate, unrecognized, off-surface or unresolvable answers make
-readiness false.
+empty, duplicate, unrecognized, off-surface or unresolvable cited-authority
+answers make readiness false. The implementation never scores answer
+semantics; only the later human owner judgment decides whether the own-words
+answers are correct.
 
 PWB-REQ-022 remains the owner-judgment legality gate. Its population stays
 exactly 84 present-invalid and 2 absent cases. A lawful run can be not ready;
