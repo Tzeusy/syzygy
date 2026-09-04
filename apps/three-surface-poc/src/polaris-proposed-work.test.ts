@@ -140,7 +140,7 @@ describe('Polaris proposed work stays subordinate to current truth (PWB-REQ-013)
     const tuple = (fragment: string): string | undefined => new RegExp(`<span class="claim-tuple" data-claim-id="${claimId}"[^>]*>([^<]*)<`).exec(fragment)?.[1];
     expect(tuple(current)).toBeDefined();
     expect(tuple(current)).toBe(tuple(projectLevel));
-    expect(tuple(current)).toBe(`Observed · ${machine.proposedWork.currentAuthority.claim.epistemic.tier ?? 'unstated'} · ${machine.proposedWork.currentAuthority.claim.epistemic.freshness ?? 'unstated'}`);
+    expect(tuple(current)).toBe(`Observed · ${machine.proposedWork.currentAuthority.claim.epistemic.tier ?? 'unstated'} · ${machine.proposedWork.currentAuthority.claim.epistemic.freshness ?? 'unstated'} · ${machine.proposedWork.currentAuthority.claim.challenge}`);
   });
 
   it('carries the same identities and lifecycle in the machine answer as in the human attributes', () => {

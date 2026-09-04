@@ -12,11 +12,13 @@ import {
   type ProjectAccountStatement,
   type ProjectShape,
   type ProjectShapeClaim,
+  type ProjectShapeClassAggregate,
   type ProjectShapeFact,
   type ProjectShapeItem,
   type ProjectShapeSource,
   type ProjectShapeSupport,
   type ProposedWork,
+  type ReasonCounts,
 } from '@syzygy/three-surface-poc-core';
 
 import { pageShell } from './page-shell.js';
@@ -146,13 +148,46 @@ function workItemsSection(model: PocModel): string {
 // ---------------------------------------------------------------------------
 // Project-shape renderers (PWB-REQ-010/011; RFC7-15, RFC7-16).
 
-/** The per-claim tuple RFC7-16 requires beside every claim: label, tier,
- * freshness and the evaluation it belongs to — as attributes so a sweep can
- * compare them to the machine answer, and as text for the reader. */
+/** The per-claim tuple RFC7-16 and PWB-REQ-007 require beside every claim:
+ * label, tier, primary reason, secondary reasons, freshness, challenge state
+ * and the evaluation it belongs to — as attributes so a sweep can compare
+ * them field by field to the machine answer, and as text for the reader.
+ * Absent tier or freshness renders as `unstated`, never as a default. */
 function claimTuple(claim: ProjectShapeClaim): string {
   const tier = claim.epistemic.tier ?? 'unstated';
   const freshness = claim.epistemic.freshness ?? 'unstated';
-  return `<span class="claim-tuple" data-claim-id="${escapeHtml(claim.claimId)}" data-epistemic-label="${escapeHtml(claim.epistemic.label)}" data-epistemic-tier="${escapeHtml(tier)}" data-epistemic-freshness="${escapeHtml(freshness)}" data-evaluation-id="${escapeHtml(claim.evaluationId)}"${DISCLOSURE}>${escapeHtml(claim.epistemic.label)} · ${escapeHtml(tier)} · ${escapeHtml(freshness)}</span>`;
+  const epistemic = claim.epistemic;
+  const primary = 'reasons' in epistemic ? epistemic.reasons.primary : 'basis' in epistemic ? epistemic.basis : 'none';
+  const secondary = 'reasons' in epistemic ? epistemic.reasons.secondary : [];
+  const reasonText = epistemic.label === 'Unknown'
+    ? ` (${escapeHtml(primary)}${secondary.length === 0 ? '' : `; ${secondary.map(escapeHtml).join(', ')}`})`
+    : '';
+  return `<span class="claim-tuple" data-claim-id="${escapeHtml(claim.claimId)}" data-epistemic-label="${escapeHtml(epistemic.label)}" data-epistemic-tier="${escapeHtml(tier)}" data-epistemic-primary-reason="${escapeHtml(primary)}" data-epistemic-secondary-reasons="${escapeHtml(secondary.join(','))}" data-epistemic-freshness="${escapeHtml(freshness)}" data-challenge-state="${escapeHtml(claim.challenge)}" data-evaluation-id="${escapeHtml(claim.evaluationId)}"${DISCLOSURE}>${escapeHtml(epistemic.label)}${reasonText} · ${escapeHtml(tier)} · ${escapeHtml(freshness)} · ${escapeHtml(claim.challenge)}</span>`;
+}
+
+/** PWB-REQ-007: an aggregate discloses its members' primary and secondary
+ * Unknown reason counts separately, each with its route — never a headline
+ * status, a maturity or a success. */
+export function reasonCountsBlock(claimId: string, counts: ReasonCounts): string {
+  const list = (which: 'primary' | 'secondary', entries: Readonly<Partial<Record<string, number>>>): string => {
+    const rows = Object.entries(entries).filter((entry): entry is [string, number] => typeof entry[1] === 'number' && entry[1] > 0);
+    if (rows.length === 0) return '';
+    return `<p${DISCLOSURE}>${copy(which === 'primary' ? 'label.primary-reasons' : 'label.secondary-reasons')}</p>
+      <ul data-reason-counts-${which}="${escapeHtml(claimId)}"${DISCLOSURE}>${rows
+        .map(([reason, count]) => `<li data-reason="${escapeHtml(reason)}" data-count="${count}"><span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>: ${count}. ${copy('label.route')} ${escapeHtml(UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route'))}.</li>`)
+        .join('')}</ul>`;
+  };
+  const primary = list('primary', counts.primary);
+  const secondary = list('secondary', counts.secondary);
+  const body = primary === '' && secondary === ''
+    ? `<p${copyAttr('sentence.no-member-unknowns')}>${copy('sentence.no-member-unknowns')}</p>`
+    : `${primary}${secondary}`;
+  return `<div class="reason-counts" data-reason-counts="${escapeHtml(claimId)}">${body}</div>`;
+}
+
+/** Coverage counts stay available on demand, never as the default view. */
+function onDemandCounts(claimId: string, text: string): string {
+  return `<details class="coverage-counts" data-coverage-counts="${escapeHtml(claimId)}"><summary${copyAttr('label.coverage-counts')}>${copy('label.coverage-counts')}</summary><p${FACT}>${text}</p></details>`;
 }
 
 function tupleLine(claim: ProjectShapeClaim): string {
@@ -221,12 +256,18 @@ function itemRow(item: ProjectShapeItem): string {
   </tr>`;
 }
 
-function denominatorText(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: ExtractionClass): string {
-  const aggregate = shape.classes[cls];
+export function denominatorText(aggregate: Pick<ProjectShapeClassAggregate, 'denominator' | 'modeled' | 'unknown' | 'contradicted' | 'sourcesWithUnknownDenominator'>): string {
   const denominator = aggregate.denominator.kind === 'known'
     ? `${aggregate.denominator.value} declared`
     : `denominator Unknown (${aggregate.denominator.reasons.join(', ')})`;
   return `${denominator}; ${aggregate.modeled} modeled, ${aggregate.unknown} Unknown, ${aggregate.contradicted} contradicted; ${aggregate.sourcesWithUnknownDenominator} source(s) unreadable.`;
+}
+
+/** The aggregate's statement: which admitted sources declare this class —
+ * a fact about the sources, not a count wall or a status. */
+function classStatement(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: ExtractionClass): string {
+  const declaring = shape.sources.filter((source) => source.extractionClasses.includes(cls)).map((source) => source.path);
+  return declaring.length === 0 ? 'No admitted source declares this class.' : `Declared by ${declaring.join(', ')}.`;
 }
 
 function classBlock(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: ExtractionClass, withItems: boolean): string {
@@ -241,12 +282,14 @@ function classBlock(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: Ext
         <tbody>${items.map(itemRow).join('')}</tbody>
       </table></div>`;
   const summary = aggregate.claim.epistemic.label === 'Observed'
-    ? `<p${FACT}><span data-claim-provenance="${escapeHtml(aggregate.claim.claimId)}">${escapeHtml(denominatorText(shape, cls))}</span></p>`
-    : `${unknownRoutes(aggregate.claim, `${escapeHtml(denominatorText(shape, cls))} `)}`;
+    ? `<p${FACT}><span data-claim-provenance="${escapeHtml(aggregate.claim.claimId)}">${escapeHtml(classStatement(shape, cls))}</span></p>`
+    : unknownRoutes(aggregate.claim, `${escapeHtml(classStatement(shape, cls))} `);
   return `<section class="claim-section" data-polaris-section="${escapeHtml(aggregate.claim.claimId)}" data-polaris-class="${escapeHtml(cls)}">
     ${heading(3, `polaris-class-${cls}`, `class.${cls}`)}
     ${summary}
     ${tupleLine(aggregate.claim)}
+    ${reasonCountsBlock(aggregate.claim.claimId, aggregate.reasonCounts)}
+    ${onDemandCounts(aggregate.claim.claimId, escapeHtml(denominatorText(aggregate)))}
     ${table}
   </section>`;
 }
@@ -349,6 +392,17 @@ function gapsList(claims: readonly ProjectShapeClaim[]): string {
     .join('')}</ul>`;
 }
 
+function countReasonsOf(claims: readonly ProjectShapeClaim[]): ReasonCounts {
+  const primary: Record<string, number> = {};
+  const secondary: Record<string, number> = {};
+  for (const member of claims) {
+    if (!('reasons' in member.epistemic)) continue;
+    primary[member.epistemic.reasons.primary] = (primary[member.epistemic.reasons.primary] ?? 0) + 1;
+    for (const reason of member.epistemic.reasons.secondary) secondary[reason] = (secondary[reason] ?? 0) + 1;
+  }
+  return { primary, secondary } as ReasonCounts;
+}
+
 function shapeClaims(shape: ProjectShape): readonly ProjectShapeClaim[] {
   if (shape.kind !== 'observed') return [shape.claim];
   return [
@@ -375,13 +429,16 @@ function shapeEvidence(shape: ProjectShape): string {
   }
   const identity = shape.identity;
   const counts = `${shape.counts.sourcesAdmitted} of ${shape.counts.sources} sources readable; ${shape.counts.items} items (${shape.counts.modeled} modeled, ${shape.counts.unknown} Unknown, ${shape.counts.contradicted} contradicted); ${shape.counts.facts} facts (${shape.counts.contradictedFacts} contradicted); ${shape.counts.exclusions} exclusion(s).`;
+  const statement = `Declared project shape of ${identity.repositoryId} at revision ${identity.revision.slice(0, 12)}.`;
   const whole = shape.claim.epistemic.label === 'Observed'
-    ? `<p${FACT}><span data-claim-provenance="${escapeHtml(shape.claim.claimId)}">${escapeHtml(counts)}</span></p>`
-    : unknownRoutes(shape.claim, `${escapeHtml(counts)} `);
+    ? `<p${FACT}><span data-claim-provenance="${escapeHtml(shape.claim.claimId)}">${escapeHtml(statement)}</span></p>`
+    : unknownRoutes(shape.claim, `${escapeHtml(statement)} `);
   return `<section class="claim-section" data-polaris-section="${escapeHtml(shape.claim.claimId)}">
     ${heading(3, 'polaris-shape-identity', 'evidence.observation')}
     ${whole}
     ${tupleLine(shape.claim)}
+    ${reasonCountsBlock(shape.claim.claimId, countReasonsOf(shapeClaims(shape).slice(1)))}
+    ${onDemandCounts(shape.claim.claimId, escapeHtml(counts))}
     <p${FACT}><small>Revision <code data-parity-field="shape-revision">${escapeHtml(identity.revision.slice(0, 12))}</code> (requested <code>${escapeHtml(identity.requestedRevision)}</code>), committed <code>${escapeHtml(identity.sourceClaimedInstant.instant)}</code>, captured <code>${escapeHtml(identity.capturedAt)}</code> by <code>${escapeHtml(identity.observer.observerId)}</code> ${escapeHtml(identity.observer.observerVersion)} under policy <code>${escapeHtml(identity.policy.policyId)}</code> ${escapeHtml(identity.policy.policyVersion)}; manifest <code data-parity-field="shape-manifest-digest">${escapeHtml(shortDigest(identity.manifestDigest))}</code>, observation <code data-parity-field="shape-observation-digest">${escapeHtml(shortDigest(identity.observationDigest))}</code>.</small></p>
     <p${DISCLOSURE}><small>${copy('label.authority')} ${shape.authority.authorities.map((entry) => `${escapeHtml(entry.authority)} — ${escapeHtml(entry.state)}`).join('; ')} (${escapeHtml(shape.authority.authorizationMode)}).</small></p>
   </section>
@@ -489,6 +546,10 @@ const POLARIS_STYLE = `
   .citation a { color: inherit; }
   .claim-tuple { font-family: var(--font-mono); font-size: .78rem; color: var(--muted); letter-spacing: .04em; }
   .tuple-line { margin-top: -.4rem; }
+  .reason-counts { font-size: .95rem; }
+  .reason-counts ul { padding-left: 1.2rem; }
+  .coverage-counts { margin: .6rem 0 1rem; }
+  .coverage-counts summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
   .unknown-disclosure { color: var(--unknown); border-left: 3px solid var(--unknown); padding-left: .9rem; }
   .table-scroll { overflow-x: auto; }
   .relationships { max-width: 74ch; margin: 0 auto 3rem; }

@@ -1,0 +1,56 @@
+{
+  "date": "2026-09-04",
+  "subject": "apps/three-surface-poc/src/polaris.ts",
+  "subjectSha256": "2e09008341c8d96ace41ab4cd4a3d1f41806e2f4ed6f6c13c5ea61f08f677e5c",
+  "tests": [
+    "apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts",
+    "apps/three-surface-poc/src/polaris-copy.test.ts",
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts"
+  ],
+  "results": [
+    {
+      "mutation": "drop-challenge-attr",
+      "killed": true
+    },
+    {
+      "mutation": "drop-challenge-text",
+      "killed": true
+    },
+    {
+      "mutation": "drop-secondary-attr",
+      "killed": true
+    },
+    {
+      "mutation": "headline-status",
+      "killed": true
+    },
+    {
+      "mutation": "fold-unknown-into-modeled",
+      "killed": true,
+      "note": "re-run after exporting denominatorText/reasonCountsBlock seams"
+    },
+    {
+      "mutation": "drop-reason-count-li",
+      "killed": true
+    },
+    {
+      "mutation": "drop-route-in-counts",
+      "killed": true
+    },
+    {
+      "mutation": "counts-in-default-view",
+      "killed": true
+    },
+    {
+      "mutation": "merge-primary-secondary",
+      "killed": true,
+      "note": "re-run after exporting denominatorText/reasonCountsBlock seams"
+    },
+    {
+      "mutation": "drop-unknown-denominator-branch",
+      "killed": true
+    }
+  ],
+  "killed": 10,
+  "total": 10
+}

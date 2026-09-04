@@ -394,6 +394,31 @@ longer change id; any baseline spec accepted; wrong Unknown reason) are all
 killed. No Butlers body is read: lifecycle uses tree paths and the
 artifacts were already hashed by the proving slice.
 
+**P3.5 note (task 3.5, syzygy-1z3.13, 2026-09-04).** Every Polaris claim
+tuple now renders the complete PWB-REQ-007 set — label, tier, one primary
+reason, closed secondary reasons, freshness, challenge state and evaluation
+id — as data attributes plus visible text (`Label (primary; secondary) ·
+tier · freshness · challenge`). Every Unknown reason is rendered beside its
+route. Aggregates (the nine classes and the whole shape) disclose their own
+tuple, then primary and secondary member Unknown-reason counts in two
+separate lists, each row routed; the class statement names the declaring
+sources instead of a count wall, and coverage counts (declared, modeled,
+Unknown, contradicted, unreadable sources) sit only inside a `<details>`
+element opened on demand. No headline status, maturity, success rate,
+percentage or trend appears anywhere on the page.
+`polaris-epistemic-tuples.test.ts` is the oracle with hand-typed
+vocabularies (three labels, six tiers plus `unstated`, twelve reasons, four
+freshness states plus `unstated`, `unchallenged`): every tuple is in
+vocabulary and equal to the machine claim, every reason has a route, every
+reason-count list equals the machine's separate primary/secondary maps, the
+three coverage states reconcile to the known denominator, and a status
+vocabulary regex matches nothing in the page text. Item-level Unknown and
+secondary reasons are unreachable through the fixtures, so
+`denominatorText` and `reasonCountsBlock` are exported and tested at the
+seam. Rule-6 evidence:
+`docs/evidence/pwb-p3-5-tuple-mutation-run-2026-09-04.json` (10/10 killed,
+digest-verified restore).
+
 Nothing lands in `openspec/**` or `.syzygy/**`. The walkthrough execution
 record (PWB-REQ-022) is a governance record written by the recording
 session, not by the daemon; the owner judgment is an owner act prepared as a

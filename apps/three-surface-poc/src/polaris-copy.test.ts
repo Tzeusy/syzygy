@@ -256,6 +256,7 @@ describe('Polaris copy roles (PWB-REQ-012)', () => {
       'label.deferred',
       'label.limit-breaches',
       'label.no-route',
+      'label.secondary-reasons',
       'sentence.missing-statement',
       'sentence.no-body-read',
     ]);

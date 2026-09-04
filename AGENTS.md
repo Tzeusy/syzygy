@@ -751,6 +751,16 @@ can be authorized.
   `/lifecycle`; add them to any marker-resolution sweep. Never render it as
   an entity or in a project group — `polaris-proposed-work.test.ts` slices
   the page and fails on any proposed identity outside the detail group.
+- Task 3.5: tuples carry `data-epistemic-{label,tier,primary-reason,
+  secondary-reasons,freshness}`, `data-challenge-state` and
+  `data-evaluation-id`; aggregates render `reasonCountsBlock` (separate
+  primary/secondary `<ul data-reason-counts-*>` lists) and coverage counts
+  only inside `<details class="coverage-counts">`.
+  `polaris-epistemic-tuples.test.ts` hard-codes the vocabularies and a
+  status-word regex; when adding page copy, avoid `healthy`, `score`,
+  `maturity`, `trend`, `on track`, `at risk` and percentages. Class-level
+  Unknown/secondary reasons are unreachable via fixtures, so
+  `denominatorText`/`reasonCountsBlock` are exported and tested directly.
 
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 

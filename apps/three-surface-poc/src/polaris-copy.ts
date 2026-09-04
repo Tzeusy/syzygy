@@ -59,6 +59,11 @@ export const POLARIS_COPY = [
   { id: 'label.lifecycle', role: 'project-fact', kind: 'label', text: 'Lifecycle:' },
   { id: 'label.amends', role: 'project-fact', kind: 'label', text: 'amends' },
 
+  { id: 'label.coverage-counts', role: 'action-label', kind: 'label', text: 'Coverage counts' },
+  { id: 'label.primary-reasons', role: 'epistemic-disclosure', kind: 'label', text: 'Primary Unknown reasons among members:' },
+  { id: 'label.secondary-reasons', role: 'epistemic-disclosure', kind: 'label', text: 'Secondary Unknown reasons among members:' },
+  { id: 'sentence.no-member-unknowns', role: 'epistemic-disclosure', kind: 'sentence', text: 'No member claim carries an Unknown reason.' },
+
   { id: 'evidence.observation', role: 'project-fact', kind: 'heading', text: 'Project-shape observation' },
   { id: 'evidence.sources', role: 'project-fact', kind: 'heading', text: 'Project-shape sources' },
   { id: 'evidence.exclusions', role: 'project-fact', kind: 'heading', text: 'Excluded bodies' },
