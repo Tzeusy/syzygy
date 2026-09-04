@@ -6,17 +6,17 @@
 
 Date: 2026-09-05
 
-Frozen candidate subject commit: `305500dc4262ea3ba85cda65030d47904b0cbd3e`
+Frozen candidate subject commit: `9bac13f0aab06267a157daffe88cde5a0d8ff893`
 
 Behavior manifest: `PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt`
 
 Behavior manifest SHA-256:
-`fbed0b7bfe3618fb054257d978ee4bba67ebb02c84c8a2d88d8803f345662a30`
+`f25268a81d4a32e0020acb1043f7e03ff9a3acac4accffc3c5db2411be6b4b95`
 
 Effect manifest: `PWB-EFFECT-AMENDMENT-MANIFEST.txt`
 
 Effect manifest SHA-256:
-`3f5b2123c71efc31c162e248ccdc1100b77ef0d127ea735251c9662c30934792`
+`d396df41281d94d8d0cd096a5dabc1ff89d3cb444cc497d9709fd7335bf3a436`
 
 ## Why this is here
 
@@ -53,12 +53,14 @@ authority for this bounded one-Butlers-repository POC?
 Recommended: **accept**. It makes these bounded changes:
 
 - closes four project-fact families and the exact root cardinal/precedence
-  grammar, including the live eight-versus-nine domain-butler conflict;
+  grammar, including literal layer/ownership rows and the live eight-versus-
+  nine domain-butler conflict;
 - admits markup-like examples only in syntactically valid inert code contexts,
   while complete secret scanning and genuine active-content exclusion remain;
 - defines one phase-A-plus-phase-B byte ledger, deterministic parse passes,
-  2 MiB human HTML and 8 MiB authenticated machine JSON ceilings, with bounded
-  typed failure rather than truncated success;
+  a closed twelve-pass vocabulary within the 16-pass ceiling, 2 MiB human HTML
+  and 8 MiB authenticated machine JSON ceilings, with bounded typed failure
+  rather than truncated success;
 - makes one selected, classified baseline requirement transiently verbatim
   through the existing exact-source path; and
 - closes nine-answer readiness under PWB-REQ-021 while leaving PWB-REQ-022 at
@@ -74,7 +76,7 @@ To accept Decision 1, and only if these exact reviewed bytes should supersede
 the current eleven-artifact package, respond exactly:
 
 ```text
-SIGN OFF PWB TRUTH-AND-READINESS AMENDMENT: fbed0b7bfe3618fb054257d978ee4bba67ebb02c84c8a2d88d8803f345662a30
+SIGN OFF PWB TRUTH-AND-READINESS AMENDMENT: f25268a81d4a32e0020acb1043f7e03ff9a3acac4accffc3c5db2411be6b4b95
 ```
 
 To hold, respond `HOLD PWB BEHAVIOR AMENDMENT` and optionally state what should
@@ -96,12 +98,12 @@ unreachable and blocks the signed exact-intent outcome. No option admits raw
 HTML/SVG/scripts/handlers/unsafe URLs or skips a secret detector.
 
 Policy SHA-256:
-`9d8f9283a5467193886713d73d3bd421605b86e7d6783b51311b5066ce979d1a`
+`d652baaef262b9c2ca6b5d02985fea12387f682b9cc04ff7593aacc90dbce356`
 
 To approve Decision 2, respond exactly:
 
 ```text
-APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: 9d8f9283a5467193886713d73d3bd421605b86e7d6783b51311b5066ce979d1a
+APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: d652baaef262b9c2ca6b5d02985fea12387f682b9cc04ff7593aacc90dbce356
 ```
 
 To retain the old policy, respond `HOLD PWB INERT-MARKDOWN POLICY`. **Stop after
@@ -121,12 +123,12 @@ per source, 16 MiB total and depth 4; it replaces elapsed time with 16 complete
 parse passes and splits output into 2 MiB human and 8 MiB machine ceilings.
 
 Registry SHA-256:
-`9e9e0805037dcfa1c4c4603eb7e7607986825e3144087dc2846c66f7b003ee2b`
+`082574c92f233959ce6e5516feb2179380c7d61bc4bd7e9da4238c00fe716c05`
 
 To adopt Decision 3, respond exactly:
 
 ```text
-ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: 9e9e0805037dcfa1c4c4603eb7e7607986825e3144087dc2846c66f7b003ee2b
+ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: 082574c92f233959ce6e5516feb2179380c7d61bc4bd7e9da4238c00fe716c05
 ```
 
 To hold, respond `HOLD PWB OBSERVER ENVELOPE`. **Stop after recording this
