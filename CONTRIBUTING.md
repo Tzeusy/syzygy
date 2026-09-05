@@ -2,23 +2,38 @@
 
 ## Current posture: licensed, but not accepting code contributions
 
-Syzygy is in **final pre-specification**. The repository is licensed
-**MIT** (owner ruling P-14, 2026-08-18 — see the root `LICENSE` and
-`.syzygy/governance/decisions/LICENSE-CHOICE-DECISION.md`), so reuse
-rights are granted. External **code** contributions still cannot be
-accepted — not for license reasons any more, but because there is no
-application code and the no-implementation boundary below binds
-everyone. Contributor-agreement posture is a separate, still-open owner
-decision. Issues and discussion are welcome; documentation and
+The repository is licensed **MIT** (owner ruling P-14, 2026-08-18 — see the
+root `LICENSE` and
+`.syzygy/governance/decisions/LICENSE-CHOICE-DECISION.md`), so reuse rights
+are granted. External **code** contributions still cannot be accepted, because
+contributor-agreement posture is an open owner decision — not because the
+project has no code. Issues and discussion are welcome; documentation and
 governance proposals follow the disciplines below.
 
-## The no-implementation boundary
+*Superseded, dated:* until 2026-09-05 this section opened "Syzygy is in
+**final pre-specification**" and gave the reason for refusing code as "there
+is no application code and the no-implementation boundary below binds
+everyone." Both were true when written on 2026-08-19 and stopped being true on
+2026-08-21, when Capability 1 implementation was authorized. What is
+implemented today, and under which act, is `PROJECT-STATUS.md`'s row, not
+this page's.
 
-Nothing in this repository may add application or library code, choose a
-stack, create behavioral-specification changesets, or build an
+## The implementation boundary
+
+Implementation is not open-ended: code may be added only where a **named owner
+act** authorizes it, and anything no act covers is forbidden. Find the act
+before writing code — `AGENTS.md` ("Where authority lives") routes to it, and
+`PROJECT-STATUS.md` says which acts are in force. This binds the project's own
+agents today and would bind contributors later.
+
+*Superseded, dated:* this section was headed "The no-implementation boundary"
+and read "Nothing in this repository may add application or library code,
+choose a stack, create behavioral-specification changesets, or build an
 implementation backlog until the foundational contracts are accepted and
-specification authoring formally opens. This binds the project's own agents
-today and would bind contributors later.
+specification authoring formally opens" until 2026-09-05. That described the
+pre-specification stage correctly and was overtaken by the acts that opened
+specification authoring and then authorized implementation. The gate did not
+disappear; it moved from "none at all" to "only what an act names.
 
 ## Authority layers
 
@@ -84,10 +99,15 @@ digests: `.syzygy/governance/policies/GOVERNANCE-SUBSTRATE-LOCK.yaml`
 
 ## Where Beads applies
 
-`bd` (Beads) tracks process housekeeping during this phase. It is **not**
-used for product work: no implementation issues, epics, or backlog exist,
-and none may be created before specification authoring opens. Unknowns go to
-the pending-decision queue, not the tracker.
+`bd` (Beads) tracks process housekeeping, the implementation backlog, and the
+POC improvement cycles — see `AGENTS.md`, "Beads scope", which owns this rule.
+Unknowns still go to the pending-decision queue, not the tracker: an open
+question for the owner is not a task.
+
+*Superseded, dated:* until 2026-09-05 this section read "It is **not** used
+for product work: no implementation issues, epics, or backlog exist, and none
+may be created before specification authoring opens." True when written on
+2026-08-19; false from the first implementation epic onward.
 
 ## Reporting a problem in the governance material
 

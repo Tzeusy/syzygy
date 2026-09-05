@@ -32,12 +32,25 @@ authority.
 | `round-2026-08c/` | 2026-08-07 | Structural closure: superseded offering, readiness and clone reports, reviews RD-1..8 |
 | `round-2026-08d/` | 2026-08-09 | Wave split and review pass: work order, wave design, verdict and disposition registers, reviews RD-9..23, and the launch-gate pilot administration (immutable) |
 | `round-2026-08e/` | 2026-08-10 | Launch closure: preflight, launch-gate v1.4–v1.18 semantic deltas, Wave A and Wave B closure reports and deltas, reviews |
-| `round-2026-08f/` | 2026-08-11 | Capability 1 readiness: context-route report, owner decision packet, spec-outline exercise, launch-gate v2.0 delta, the P-33 semantic install analysis, final public clone report |
+| `round-2026-08f/` | 2026-08-11 | Capability 1 readiness: context-route report, owner decision packet, spec-outline exercise, launch-gate v2.0 delta, the P-33 semantic install analysis, final public clone report. **Holds a live CI input** — see the note below |
 | `round-2026-08g/` | 2026-08-13 | Owner-decision, launch-policy and specification-discipline closure: Capability 1 owner-decision index, planning-charter and default-path-currency accounts, launch-gate v2.1 and v2.2 deltas, shape-to-spec fixture 2 and its answer key |
-| `round-2026-08h/` | 2026-08-16 | Launch-gate v2.3 and v2.4 semantic deltas, and their reviews |
+| `round-2026-08h/` | 2026-08-16 | Launch-gate v2.3 and v2.4 semantic deltas, and their reviews. Its closure record is `reviews/DISPOSITION-REGISTER.md`, one level down rather than at the round's top level as in every other round |
 | `round-2026-08i/` | 2026-08-17 | Convergence preflight: Capability 1 outline exercise 2, governance reduction plan (later revision), spec-acceptance-and-impact delta 2, pass checkpoint |
 | `round-2026-08j/` | 2026-08-18 | The repair pass after Administration 1: disposition register, the thesis risk ordering (B5 settlement), and the C2-normative-population and D3-coined-term sweeps with their scripts |
 | `round-2026-08k/` | 2026-08-20 | Capability 1 specification review binding (Pass 2 reviews RS-1..3 bound to exact bytes), and the prepared adoption act and implementation authorization |
+
+**Historical does not mean unreferenced — one round holds a live CI input.**
+`.github/workflows/governance-docs.yml` runs
+`scripts/validate_launch_administration.py` and
+`render_launch_administration.py` against
+`round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json` on every push. That
+fixture is a *current* test input living inside a closed round, so moving or
+deleting the directory would break CI, not merely orphan a citation. Rounds
+`h`, `i`, `j` and `k` are likewise cited as evidence by decision and act
+records that are in force today. Read every round as closed *process* record;
+do not read "closed" as "safe to relocate" without sweeping for citers first.
+[Observed — swept 2026-09-05: the workflow reference is two `run:` lines in
+`.github/workflows/governance-docs.yml`.]
 
 Companions, not rounds:
 

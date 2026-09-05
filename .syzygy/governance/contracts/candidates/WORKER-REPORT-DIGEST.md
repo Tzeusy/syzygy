@@ -1,5 +1,10 @@
 # Worker-report digest (lead's working record, non-normative)
 
+> **Historical working record. Not authority, and never citable as one.** It
+> digests the nine rev10 compaction-pass reports as they stood in August 2026.
+> Figures here were current for that pass and are not maintained; re-derive
+> rather than quoting them.
+
 Key figures and rulings from the nine compaction-pass reports, persisted
 verbatim-in-substance so the 03 report and reviewers can cite them. Full
 reports were delivered in-session; matrix-rows preambles carry each pass's

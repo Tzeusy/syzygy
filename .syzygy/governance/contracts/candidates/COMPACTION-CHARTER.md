@@ -1,5 +1,14 @@
 # Compaction charter — binding rules for every per-RFC compaction pass
 
+> **Spent working charter. Binds nobody now, and is not authority.** It
+> governed the rev9 → rev10 per-RFC compaction passes, which finished in
+> August 2026; the corpus it produced has since been reviewed, amended and
+> partly accepted by owner act. It is kept as the record of the rules that
+> pass was run under. The word "binding" below means binding *on that pass*.
+> Its input and output paths are under the git-excluded `_bootstrap/**` tree
+> and do not resolve in a clone. For what binds today, read
+> `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md`.
+
 Authority: `REV9-FINAL-PRESPEC-DIRECTIVE.md` §3 and
 `02-OWNER-DIRECTION-RECORD.md` OD-R10-3/OD-R10-6. The rev9 source corpus at
 `_bootstrap/rfc-phase/rfcs/` is frozen input — never edit it. Outputs land in

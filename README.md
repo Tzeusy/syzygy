@@ -204,12 +204,24 @@ claim of alignment, convergence, regeneration, deployment health, conformance,
 or release is intended; without current evidence those relationships remain
 Unknown (VIS-2).
 
-The 2026-09-02 PWB amendment signs state (1) or state (2) as valid provenance
+The PWB behavioral amendment signs state (1) or state (2) as valid provenance
 for PWB-REQ-005 and PWB-REQ-022, with exact state visible and only state (2)
-called independently verified. That behavioral sign-off does not create an
-effect. Effect-specific consent, policy and registry acts are still required
-before any new repository-body read, and separate authorization is required
-before PWB implementation can resume.
+called independently verified. That behavioral sign-off does not itself create
+an effect: an effect needs its own consent, policy and registry acts, and
+implementation needs its own authorization. **Whether those have been
+performed is not stated here** — `PROJECT-STATUS.md` owns that row, and the
+acts themselves are recorded in
+[`.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md`](.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md).
+Read one of those, not this paragraph.
+
+*Superseded, dated:* until 2026-09-05 this paragraph ended "Effect-specific
+consent, policy and registry acts are still required before any new
+repository-body read, and separate authorization is required before PWB
+implementation can resume." That was written on 2026-09-02 and was already
+false by the end of that day — the three effect acts and the implementation
+authorization were performed hours later, and a further amendment and
+continuation followed on 2026-09-05. It stood because this page restated a
+status it does not own instead of citing the page that does.
 
 ## License
 

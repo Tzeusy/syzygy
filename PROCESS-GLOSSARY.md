@@ -117,8 +117,18 @@ else does.
 - **formal administration** — an administration that may be cited as launch
   evidence. It must be run in **fresh context**, by someone who is not an
   authoring session of this repository, preferably outside the corpus
-  authors' model family. **None has ever been run.** The only administration
-  on record is the 2026-08-09 pilot, which returned `NOT READY`.
+  authors' model family. Which administrations have been run, and what each
+  returned, is a status question this page does not own: the launch-path
+  table in `PROJECT-STATUS.md` owns it, and the records live under
+  `.syzygy/governance/decisions/launch-gate/`. The 2026-08-09 run was a
+  **pilot**, not a formal administration, and is steering evidence only.
+
+  *Superseded, dated:* until 2026-09-05 this entry read "**None has ever been
+  run.** The only administration on record is the 2026-08-09 pilot, which
+  returned `NOT READY`." That was true when written and stopped being true on
+  2026-08-18, when Administration 1 was performed out-of-family in fresh
+  context — an administration whose own strongest findings were stale
+  current-state claims on the default path, of which this sentence was one.
 
 - **E1…E6** — the six readiness questions in the gate's section E, the
   section that asks the gate's actual question. Abbreviated constantly:
