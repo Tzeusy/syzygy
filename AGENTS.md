@@ -144,7 +144,8 @@ adoption gate is unresolved.
 Durable lessons only; status and narrative belong in git log, `bd`, or
 `PROJECT-STATUS.md`. Capability 1 status, the FROZEN-files rule, and the
 tailscale `--set-path` finding live in `bd memories` — do not re-add them.
-Last compacted 2026-09-05; C5 seams and recorder notes added the same day.
+Last compacted 2026-09-05; C5 seams, recorder notes and the docs-estate
+lessons added the same day.
 
 ### Architecture
 
@@ -215,6 +216,35 @@ Last compacted 2026-09-05; C5 seams and recorder notes added the same day.
 - Copy-oracle tests match by substring: a very short label (`None`) is
   "reached" by coincidence and proves nothing — give every label a
   distinctive string or drop it.
+
+### Governance prose and docs
+
+- **A page-level "may be stale" banner discharges CG-27 while a false
+  sentence stands.** Three default-path pages carried inverted act claims for
+  nineteen days behind such banners. Mark staleness **at the stale sentence**,
+  keeping the superseded text quoted and dated; never rely on a page banner to
+  cover a specific false claim.
+- CG-27's historical exemption is **paragraph-scoped, and a Markdown table is
+  one paragraph** — an incidental `superseded`/`historical` token anywhere in
+  a table (a filename counts) exempts every current-state claim in it.
+  Verified by mutating the block. Tracked as a check-quality bug.
+- A page that restates state it does not own goes stale silently. Cite
+  `PROJECT-STATUS.md` or the act record instead of repeating the row.
+- **"Historical" never means "safe to relocate."** Sweep for citers first:
+  `round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json` is a live CI input of
+  `.github/workflows/governance-docs.yml`, and rounds `h`–`k` are cited as
+  evidence by acts in force.
+- `docs/superpowers/**` is **path-pinned**:
+  `scripts/build_general_trusted_bootstrap_impact_ledger.py` hard-codes the
+  prefix to classify those paths as spent evidence, so moving a file out
+  silently re-classifies it on the next regeneration. Do not move or rename.
+- A prepared act package may still carry the pre-act "candidate, binds
+  nothing" banner it was drafted with. **Read the act record, never the
+  package banner.**
+- Before editing any governance prose, hash the file and grep the manifests —
+  a file listed in a performed act's manifest is bound (`ACCEPTANCE-ACT-RECORD.md`
+  names the argument). `openspec/changes/polaris-project-wide-butlers-model/`
+  is bound this way: it cannot take a status banner at all.
 
 ### Known gaps
 
