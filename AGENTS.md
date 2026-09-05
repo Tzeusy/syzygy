@@ -280,660 +280,105 @@ resolve and retry until it succeeds.
 
 ## Notes to self
 
-### Three-Surface POC architecture
+Compacted 2026-09-05 (memory-hygiene pass): the previous version of this
+section had grown into a slice-by-slice implementation diary (PWB P1–P4.6,
+Three-Surface POC internals, etc.) that was mostly re-derivable from git log
+or the code itself, plus facts already covered by the governance narrative
+above or by `bd memories`. Three facts now live only in `bd memories`
+(loaded automatically via `bd prime`, do not re-add here): Capability 1
+implementation status, the FROZEN-files rule, and the tailscale
+`--set-path` mount-prefix finding.
 
-- The bounded POC lives in `packages/three-surface-poc-core/` (one concrete,
-  immutable Butlers graph) and `apps/three-surface-poc/` (SSR HTML plus
-  authenticated `GET /api/poc`). Both human and machine routes consume the
-  same model instance; do not split surface truth stores.
-- `npm ci && npm run poc -- --repo /home/tze/GitHub/butlers` is the fresh
-  checkout command. Observation is fixed to five configured intent/code/test
-  files, outputs hashes and metadata only, and writes credentials solely to an
-  OS-temp state directory unless `--state-dir` is explicit.
-- The first slice intentionally keeps the work item, test-run evidence, live
-  runtime relationship, and unmapped code region Unknown. Later POC items may
-  raise only the relationship whose authoritative artifact they actually add.
-- The launcher permits unrelated dirty Syzygy files (for example `.gitignore`)
-  but refuses uncommitted changes to the POC, reused Capability 1 runtime
-  packages, or root build manifests; keep that classification path-based and
-  covered by the real-Git regression test. `build:poc` must retain
-  `tsc -b --force`: ignored incremental outputs are executable inputs, so a
-  normal up-to-date check is not a sufficient trust boundary.
+### Architecture (durable)
 
-### Capability 1 implementation status
+- `packages/cap1-core/src/`: 14 pure domain modules (zero I/O/clock/side
+  effects), re-exported via `index.ts`. Conformance tests: one file per
+  CAP1-REQ-NNN in `packages/cap1-conformance/src/`. Closed vocabularies as
+  `as const` tuples; branded ID types; discriminated-union results. Parity
+  by construction: one `FactModel`, `serveMachine`/`renderHuman` both read
+  from it, an independent oracle compares channel outputs.
+- Three-Surface POC: `packages/three-surface-poc-core/` (one shared
+  `PocModel`) + `apps/three-surface-poc/` (SSR pages + `GET /api/poc`), both
+  reading the same model instance — never split surface truth stores.
+  `npm ci && npm run poc -- --repo <butlers>` is the fresh-checkout command.
+  `build:poc` must keep `tsc -b --force`: ignored incremental outputs are
+  executable inputs, so a normal up-to-date check isn't a safe trust boundary.
+- PWB (Butlers project-shape reading) pipeline, in order, each stage pure
+  and injectable: **P1** `body-read-authority.ts` gates every read (no
+  Butlers body may be read before this evaluates true) → **P2.2**
+  `project-shape-observation.ts` (injectable `GitRunner`, fixed command
+  order) → **P2.3** `git-object-reader.ts` (path/type allowlist, hash
+  verification against the tree, active-content scan) → **P2.4**
+  `content-classification.ts` (policy-driven; produces hash-not-body
+  records, never raw text, for excluded content) → **P2.5**
+  `project-shape-extraction.ts` (literal grammar over classified text) →
+  **P2.6** `project-shape-coverage.ts` (precedence only via a
+  Butlers-declared `PrecedenceRule` — never a "newest wins" or
+  "authoritative file" default) → **P2.7** composes all of it into
+  `PocModel.projectShape`. Production binds the observer via
+  `gitRunnerFor(repoRoot)`; a live Butlers body read is authorized only
+  behind the P1 gate. Which owner acts/consents unlock which stage is
+  governed content — read the file's main body above, not this section.
+- Governance/contract-amendment state (which acts are performed, state (1)
+  vs (2), etc.) is narrated once in this file's main body — do not restate
+  it here; it will drift out of sync.
 
-**Complete end-to-end (2026-08-23), with the first runtime-hardening leaves
-merged 2026-08-24.** [Observed] Domain: S0–S7
-(296 conformance tests). Runtime vertical slice: epic syzygy-zal RT1–RT9
-all closed — real filesystem observation, exact fail-closed
-consent-reference loading, credential-backed local daemon (127.0.0.1,
-bearer token 0600, constant-time compare), JSON machine endpoint
-(`GET /api/project`), server-rendered human page + "Why this answer?"
-(`GET /`, `GET /entry`), write-boundary normalization/traversal/symlink
-protection, true process/filesystem/HTTP system tests
-(`npm run test:system`; fresh-clone test gated by `SYZYGY_FRESH_CLONE=1`),
-and hosted `node-ci` (green on main; verified by step output, not exit
-code). The fresh-clone bar is met and automated: clone → `npm ci` →
-`npm run build` → daemon start → same seven facts via browser-equivalent
-GET and authenticated machine request, wire-parity sweep 7/7. Runtime
-review cycle: R-RT review **CONFIRM WITH EXCEPTIONS** at f0a0f45 (one
-non-blocking finding RTF-1), one repair (00d6020), confirmation
-**CONFIRMED** — records in `docs/reviews/R-RT-*.md`. Current verified
-denominator including the POC slice: 58 unit/conformance files with 427 tests,
-plus 8 system files
-with 33 tests when the guarded fresh-clone case is enabled. Node floor is
->=22.15 (Node 20 is EOL); CI runs Node 24.
+### Recurring gotchas (guardrails — keep even when old)
 
-Known honest gaps (follow-up bead, not defects): pipeline does not yet
-compute discoverability findings / authority exposures (page renders
-disclosed absence); `evaluateProject` runs once at startup (snapshot
-semantics, as-of disclosed). The snapshot/coverage/discoverability chain
-remains blocked on human gate `syzygy-u2a.1`: a lawful independently kept
-RFC5-25 consent-audit source must be identified before repository observation
-can be authorized.
-
-### Implementation architecture
-
-- 14 pure domain modules in `packages/cap1-core/src/`, re-exported via
-  `index.ts`. Zero I/O, zero clock reads, zero side effects.
-- Conformance tests in `packages/cap1-conformance/src/`, one file per
-  CAP1-REQ-NNN plus `req-integration.conformance.test.ts`.
-- Closed vocabularies as `as const` tuples; branded ID types (`ProjectId`,
-  `RepositoryId`, `EvaluationId`); discriminated-union results with named
-  failure arms.
-- Parity by construction: one `FactModel`, `serveMachine`/`renderHuman`
-  both from the same source; independent oracle compares channel outputs.
-
-### Lessons learned (durable)
-
-- **FROZEN rule**: workers must declare files FROZEN after final report;
-  orchestrator re-verifies staged bytes match tested bytes before commit
-  (the S3 mutation race, fixed in bd84cf0).
-- **Fail-closed polarity**: withdrawal defeats grant (consent); future-dated
+- **Worktree builds**: a fresh `git worktree` has no local `node_modules`.
+  With no `paths` mapping in `tsconfig.base.json`, `NodeNext` resolution for
+  `@syzygy/*` silently walks up to the *main* checkout's symlinks instead of
+  the worktree's edits — no error, just confusing "property does not exist"
+  failures. Run `npm ci` inside the worktree first.
+- `git ls-tree` must be run with `-z` — without it the parser breaks on
+  quoted paths.
+- The mutation-check tooling (`npm run poc:pwb-*-mutation-*`) rewrites
+  source files in place while running (the full sweep takes ~35 min): never
+  edit those files or commit while it's running.
+- CDP/headless-browser testing: `Emulation.setFocusEmulationEnabled` is
+  required or headless never moves focus; re-navigate before Tab/Enter if
+  the target fragment already matches the URL hash (otherwise a no-op);
+  Tab lawfully wraps to the browser chrome after the last focusable element;
+  `<summary>` is focusable and needs its own `:focus-visible` rule.
+- The Write tool has emitted mixed NFC/NFD bytes for composed characters
+  (e.g. an accented letter) — use explicit Unicode escapes in fixtures when
+  NFC-exact matching matters.
+- A mutation that throws during describe-time fixture construction reports
+  zero tests, which a naive "any test failed" verdict scores as survived —
+  build fixtures in `beforeAll` so crashes count as failures.
+- Fail-closed polarity: withdrawal defeats grant (consent); future-dated
   evidence fails to stale; no evidence → Unknown, never green.
-- **Oracle independence in tests**: expected values are hard-coded string
-  literals in conformance tests, never imported from vocabulary modules.
-- **Rule-6 mutation check**: temporarily break the fix, confirm the
-  falsifier test fails, restore — proves the test can catch the defect.
-- **No-build Vitest seam**: root `test.projects` must alias both
-  `@syzygy/cap1-core` and `@syzygy/cap1-daemon` to source. Built `dist/`
-  output can mask a missing alias, so verify after `npm ci` with every project
-  `dist/` absent; the pre-POC denominator was 53 files / 417 tests.
+- Oracle independence: conformance-test expected values are hard-coded
+  literals, never imported from the vocabulary modules they check.
+- Rule-6 mutation check: temporarily break the fix, confirm the falsifier
+  test fails, then restore — proves the test can actually catch the defect.
+- No-build Vitest seam: root `test.projects` must alias both
+  `@syzygy/cap1-core` and `@syzygy/cap1-daemon` to source — built `dist/`
+  output can mask a missing alias; verify after `npm ci` with every
+  project's `dist/` absent.
+- Butlers' pytest suite needs its own venv interpreter
+  (`.venv/bin/python`, not bare `python3`) or collection fails.
+- Never wire `WORKER_CHANGE_SEAM` test-artifact evidence
+  (`whatsapp_user_client.py`) into the unrelated `evidence:focused-pytest`/
+  identity-resolution entities in `model.ts` — it renders a false "Verified"
+  claim against code the captured test never touches. (Made and reverted
+  once already.)
+- Never quote a performed governance act's argument or a truncated digest
+  of a signed artifact inside a new artifact unless it's in
+  `ACT_DIGEST_COPY_FILES` — CG-7e/CG-15 fail it. Cite the act record by
+  path instead. Never name a Butlers file path in backticks in a packet
+  (CG-1b resolves it as a repo path).
+- `authorizeWrite` uses raw `startsWith` for path containment — traversal
+  like `openspec/../README.md` currently passes; callers must normalize
+  first (tracked, not yet fixed).
 
-### Open follow-up work
+### Open/known gaps
 
-- Bead syzygy-ydr: non-blocking S2/S5 review findings (consent-reference
-  resolution, admissibility bar, grant-state rendering citations, and
-  unreachable-vs-observer-failure split).
-- Review WARNING: `authorizeWrite` uses raw `startsWith` — path traversal
-  like `openspec/../README.md` passes. Caller must normalize.
-
-### Three-surface redesign (syzygy-z2b): Polaris/Trajectory/Orrery
-
-- Two new pure-ish observers in `packages/three-surface-poc-core/src/`:
-  `code-structure.ts` (git `ls-tree -r -l` at an exact revision — metadata
-  only, never opens blob content) and `work-items.ts` (shells `bd sql
-  --json` against the live Dolt server; **never** reads the JSONL export —
-  asserted by a static-source sweep, not just runtime behavior). Both
-  return an `{kind:'observed'|'unknown', ...}` union and take an injectable
-  `runGit`/`runQuery` for hermetic tests. `PocModel` now carries
-  `codeStructure`, `workItems`, `orrery`, `trajectory` fields, computed
-  inside `buildButlersPocModel` — still one shared model, still
-  parity-by-construction (`GET /api/poc` is `JSON.stringify(model)`
-  verbatim).
-- `apps/three-surface-poc/src/{polaris,trajectory,orrery}.ts` are the three
-  new human routes; `page-shell.ts` + `design-tokens.ts` are the one
-  shared chrome/token/legend source all four pages (home included) render
-  from. Orrery is the only surface with real client-side rendering (an
-  inline, self-served `<script>` — no separate bundle, no CDN); Polaris and
-  Trajectory are plain SSR since nothing in the spec requires otherwise.
-  `exact-tables.ts` holds the entity/relationship table renderer shared by
-  the home page and Orrery's no-script/route-resolution backstop.
-- **`tailscale serve --set-path /butlers-syzygy <target>` strips the mount
-  prefix before forwarding and adds no header naming it** — verified
-  empirically (a throwaway second `--set-path` mount to a raw echo
-  listener). A browser request to `.../butlers-syzygy/polaris` reaches the
-  daemon as literal path `/polaris`; the `TAILNET_MOUNT_PREFIX`-prefixed
-  routes registered in `routes.ts`/`polaris.ts`/`trajectory.ts`/`orrery.ts`/
-  `materialize-action.ts` are therefore unreachable through this real
-  deployment (harmless leftovers for a hypothetical path-preserving proxy).
-  The one signal that survives the hop is the Host header, which `tailscale
-  serve` does forward faithfully — `tailnet.ts`'s `mountPrefixForRequest`
-  keys off it (via `browser-origin.ts`'s exported `TAILNET_HOST`, the same
-  constant its origin-admission check already uses) to decide whether
-  every internal href/form-action a page renders needs the
-  `/butlers-syzygy` prefix. A **Fetch API/undici test client silently
-  drops an overridden `Host` header** — `apps/three-surface-poc/src/
-  test-http-client.ts`'s `fetchWithHost` uses `node:http` directly to
-  simulate a request that genuinely carries a different Host.
-- **Worktree gotcha**: a freshly created `git worktree` under
-  `.worktrees/parallel-agents/<id>` has no local `node_modules`. Since this
-  repo has no `paths` mapping in `tsconfig.base.json`, `NodeNext` module
-  resolution for `@syzygy/*` packages walks up to the *main* checkout's
-  `node_modules/@syzygy/*` symlinks (which point at the main checkout's own
-  `packages/*`/`apps/*`) — so `tsc -b`/`vitest` silently type-check and run
-  against the wrong (stale) package copy instead of the worktree's edits,
-  with no error, just confusing "property does not exist" failures. Fix:
-  run `npm ci` inside the worktree once before trusting any cross-package
-  build or test there.
-- Honest gaps from the first implementation pass (see
-  `openspec/changes/three-surface-poc-experience/tasks.md` §3.5/4.1/4.2 for
-  the precise state): no automated WCAG AA contrast measurement or
-  browser-driven keyboard-traversal E2E (structural accessibility checks
-  only); no single sweep that counts and diffs *every* parity marker across
-  all three surfaces against the machine answer in one pass (existing
-  per-surface parity tests are structural/by-construction, not an
-  exhaustive marker sweep like `routes.test.ts` already does for the home
-  page); the fresh-checkout demo was run manually against the real Butlers
-  repo this session, not from a truly fresh `git clone`.
-
-### Test-artifact verification (syzygy-0r9)
-
-- `packages/three-surface-poc-core/src/test-artifact-verification.ts` is the
-  ingestion/verification module: a file-backed `TestArtifactRecord` (command,
-  exit status, capture time, commit, scope, digest, safe summary — never raw
-  test body/exceptions, AC5), parsed from a real JUnit artifact by reading
-  only the opening `<testsuite>`/`<testsuites>` tag's attributes (never
-  descending into `<testcase>`/`<failure>` content). `resolveTestArtifactVerification`
-  is pure and fail-closed: Verified only when the record's commit exactly
-  matches the git-observed `changed-or-merged` commit from
-  `worker-change-observation.ts`, the scope matches the bounded seam, the
-  exit code is 0, and capture time is neither future-dated nor earlier than
-  the commit itself.
-- **This evidence is scoped to the `WORKER_CHANGE_SEAM`
-  (`whatsapp_user_client.py`, intent `REQ-connector-base-spec-001`, exported
-  as `WORKER_CHANGE_INTENT_ID`) — a different capability/code file than
-  `code:identity-resolution`/`REQ-switchboard-identity-001`.** It is
-  surfaced only through the top-level `PocModel.testArtifactVerification`
-  field and the Trajectory worker-change badge; it must never be wired into
-  the `evidence:focused-pytest` entity or `relationship:code-to-evidence` in
-  `model.ts`, since those belong to the unrelated identity-resolution
-  capability — doing so would render a false "Verified" claim against code
-  the captured test never touches. (First implementation pass made exactly
-  this mistake and had to be reverted before commit — watch for it in
-  review.)
-- Real capture tool: `apps/three-surface-poc/src/capture-test-artifact.ts`
-  (pure orchestration, injectable) + `capture-test-artifact-main.ts` (real
-  CLI, `npm run poc:capture-test-artifact -- --repo <butlers> --scope <path>
-  --state-dir <dir> [--python <bin>]`). It is a separate, manually-invoked
-  binary — `main.ts` (the running daemon) never imports it and never shells
-  the observed test suite itself (SEC-3). Butlers' pytest needs its own venv
-  interpreter (`/home/tze/GitHub/butlers/.venv/bin/python`, not bare
-  `python3`) or collection fails with `ModuleNotFoundError: No module named
-  'butlers'` before any JUnit file is written.
-- Verified end-to-end this session with a real, live-gated test
-  (`test-artifact-verification.live.test.ts`, `SYZYGY_POC_BUTLERS_REPO`- and
-  `SYZYGY_POC_BUTLERS_PYTHON`-gated): ran the real focused pytest suite
-  against real Butlers HEAD (83 passed), ingested the real artifact, and
-  rendered Verified through the full shared model. Because the git-based
-  worker-change observer only matches commits carrying a literal
-  `[<materialized-bead-id>]` marker, and no real historical Butlers commit
-  carries a live Syzygy bead marker, the *composed* live proof injects
-  `runGit` to bind the observer to the real captured commit — the observer's
-  own real-git marker-matching is separately covered by
-  `worker-change-observation.test.ts`.
-
-### Contract-amendment manifest discipline
-
-- Performed Wave A/B manifests are immutable act-time arguments. Current
-  amendments to accepted RFC modules use a separate amendment manifest;
-  `build_active_manifest.py` regenerates the active view and unperformed waves,
-  but verifies performed manifests by recorded digest and path membership
-  without rewriting or comparing their historical row digests to current
-  module bytes.
-- The generalized trusted-bootstrap transaction was performed 2026-09-01 and
-  keeps state (1) and state (2) distinct: both may carry a valid, exact-scope
-  effective human act, only state (2) is independently verified, and an act is
-  always a warrant rather than evidence of effect success. It amended the
-  accepted 30-module RFC 0001–0009 set, seven signed coverage artifacts and
-  CC-SPEC-8, but granted no effect-specific or implementation authority.
-- The owner signed the eleven-artifact PWB state-(1) amendment on 2026-09-02.
-  PWB-REQ-005 and PWB-REQ-022 now accept valid state (1) or state (2), preserve
-  exact state, fail invalid acts closed and keep acts as warrants. The sign-off
-  supplies no consent, policy, registry, body-read or implementation authority.
-
-### PWB slice P1 — body-read authority gate (syzygy-1z3.26, 2026-09-03)
-
-- `packages/three-surface-poc-core/src/body-read-authority.ts` is the
-  PWB-REQ-005 evaluator: 85 `// mutation-point:` predicate sites (55 common,
-  shared by the three authorities, plus 30 authority-specific) carry the 195
-  invalid case instances; the first failing predicate names the case, so
-  predicate ORDER is load-bearing (false substitutes → binding fields →
-  association → provenance → lifecycle → state mechanics → phrase/tag →
-  specific fields). Adding a predicate means adding its case to the closed
-  vocabulary, the hand-typed table in `body-read-authority.test.ts`, and
-  re-running the mutation proof. Scope anchors are matched after collapsing
-  whitespace because real act records wrap prose at 80 columns.
-- The controlled expectations live only in
-  `apps/three-surface-poc/src/governance-inputs.ts`, never read from the
-  artifacts. The real-tree test is tag-aware: hosted CI's shallow checkout
-  has no `pwb-*-signed-2026-09-02` tags, so every act fails closed on
-  `recording-tag-mismatched` there; locally all three acts evaluate as valid
-  state (1). State (2) is unreachable (`A1_CORRELATION_UNAVAILABLE`).
-- `npm run poc:pwb-mutation-run` is the rule-6 proof: 86 predicate
-  disablings + 11 literal mutations, each run against the two independent
-  test files with digest-verified restore, evidence at
-  `docs/evidence/pwb-mutation-run-<date>.json`. Never run it while editing
-  the core sources (it rewrites them in place during the run) and never
-  commit while it runs. Vitest test names contain `→`; grep on the `×`
-  glyph, not the arrow, to list failures.
-- `project-shape-observer.ts` is the registry-named module; its first
-  statement is the admits gate. No Butlers body is read anywhere in P1.
-
-### PWB slice P2.1 — revision-bound source manifest (syzygy-1z3.2, 2026-09-03)
-
-- `packages/three-surface-poc-core/src/project-shape-manifest.ts` is phase A
-  discovery as a pure function over injected `tree` (parsed `ls-tree -r -z`
-  via `git-tree.ts`) and `readSeed`; it reads nothing itself and asks
-  `readSeed` only for tree-present blobs among the root index and the five
-  pillar READMEs, in `PILLAR_KEYS` order (`manifest.phaseAReads` records
-  exactly those). Tree-only rules (baseline specs, roster) never read.
-- The population never shrinks: a named-but-absent file is a source with
-  anchor `missing-at-revision`, a symlink/submodule is recorded by mode/type
-  (the P2.3 reader rejects it), an unreadable index leaves the pillar
-  `unknown` with its reason while the index itself stays counted.
-- Digest is sha256 over canonical (key-sorted) JSON of every field but
-  `digest`; capture instant is deliberately NOT in the manifest (it is the
-  observer's stamp, P2.2), so the same revision + indexes give the same
-  identity. Constants `PWB_DISCOVERY_VERSION`/`PWB_ROOT_INDEX_PATH` are
-  proven byte-equal to the act-bound registry/policy JSON in the test.
-- Always take tree listings with `-z`; the parser rejects quoted paths.
-
-### PWB slice P2.2 — injectable phase A observer (syzygy-1z3.3, 2026-09-03)
-
-- `packages/three-surface-poc-core/src/project-shape-observation.ts` wraps
-  the manifest with an injected `GitRunner` (`(args) => Uint8Array`, throws
-  on failure). Command order is fixed and ledgered: `rev-parse --verify
-  <rev>^{commit}` → `show -s --format=%cI` (committer instant = the
-  source-claimed instant, kept distinct from the injected `capturedAt`) →
-  `ls-tree -r -z -l` → one `cat-file blob <oid>` per admitted seed. Any
-  failure before the tree is `gitCaptureFailed` / "Observer failed".
-- `admitPhaseARead` is the allowlist and runs before every read: root index
-  or a `README.md` whose directory basename is a pillar key, tree-present,
-  object id equal to the tree's, mode 100644/100755. Returned bytes must
-  hash to the tree's object id (`gitBlobObjectId`), be NUL-free and strict
-  UTF-8; over-limit seeds (`maxBytesPerSource`, `maxTotalBytes`) are never
-  opened. Refusals leave the pillar `index-unavailable` with the reason as
-  `detail`; the population never shrinks.
-- `observationDigest` excludes `capturedAt` everywhere (top level and every
-  source stamp) so the same inputs at different capture times share a digest.
-  `PWB_OBSERVER_IDENTITY`, `PWB_RESOURCE_LIMITS`, `PWB_FAILURE_STATES` and
-  `PWB_CONTENT_CLASS` are hard-coded copies proven byte-equal to the
-  act-bound registry entry and consent record in the test.
-- `gitRunnerFor(repoRoot)` is the production binding; nothing calls it yet.
-  The first real Butlers observation stays in P4 behind the P1 gate.
-
-### PWB slice P2.3 — exact Git object reader (syzygy-1z3.4, 2026-09-04)
-
-- `packages/three-surface-poc-core/src/git-object-reader.ts` is the
-  PWB-REQ-006 read guard for phase B bodies. `admitExactObjectRead` refuses,
-  in order: escaping paths (absolute, NUL, `..` above root), unnormalized
-  paths (`.`/`..`/empty segments, trailing slash — the caller must already
-  hold the normalized form), the policy's denied basename/prefix/suffix
-  rules on the final segment (case-insensitive), not-in-tree, and any entry
-  that is not a regular blob (symlink 120000, submodule 160000, tree —
-  checked by type *and* mode). Only then does it issue exactly one
-  `cat-file blob <oid>`; bytes must hash to the tree's object id, be
-  NUL-free, strict UTF-8, and free of active content.
-- Active content is a closed seven-form vocabulary scanned over the whole
-  body (fences and spans included): html-tag, comment/declaration, script,
-  svg, event-handler attribute, unsafe URL scheme at a link/attribute/
-  autolink position (javascript/vbscript/data/file, whitespace-tolerant),
-  and an HTML entity inside a Markdown link destination. A finding names
-  form + line + column, never bytes. Records carry `contentDigest`
-  (sha256 of the exact bytes) and never a `text` field; the body reaches
-  only the caller's `consume` callback.
-- `evaluateLimit(limits, name, observed, path?)` is the shared comparison
-  for all six registry limits (`observed <= declared` passes). The reader
-  applies maxSources, maxBytesPerSource and maxTotalBytes (declared size
-  first; unsized listings are bounded after the read and the bytes
-  dropped). `readManifestSources` never shrinks the population: one result
-  per manifest source, in manifest order.
-- Test spy discipline: the fixture Git runner throws on anything but
-  `cat-file blob <40-hex>`, so an escaped request fails loudly. 22 rule-6
-  mutations killed (manual python loop, digest-verified restore); the two
-  equivalent mutants found were removed as dead code, not waived.
-
-### PWB slice P2.4 — secret policy before admission (syzygy-1z3.5, 2026-09-04)
-
-- `packages/three-surface-poc-core/src/content-classification.ts` runs the
-  act-bound policy's six-step `classificationOrder` over the P2.3 reader's
-  transient body. The policy is a parameter (`PWB_SECRET_POLICY` is the
-  byte-equal default; the test proves it against the JSON); detectors are
-  compiled from the policy strings and an uncompilable policy throws.
-  Global-flag regexps have `lastIndex` reset before every test — removing
-  that reset is a killed mutation, not a nicety.
-- Three body-free outcomes: `classified` (text reaches only the consumer
-  callback), `excluded` (hash-not-body RFC5-17 record: digest, path, policy
-  id/version, `detectorId` or a closed `exclusionReason`, optional closed
-  `detail` word) and `unavailable` (missing/non-blob/unreadable; not an
-  exclusion; registry reason `source-uncaptured-or-unreachable`). A denied
-  path or never-opened over-limit source has no content digest. Over-limit
-  is `unclassifiable-excluded` per the policy but carries the registry's
-  `Partial snapshot` reason (the two act-bound artifacts differ; recorded in
-  the plan's P2.4 note).
-- `classifyManifestSources` returns one result per manifest source in order;
-  the earlier population guard was removed as unreachable (equivalent
-  mutant). 25 rule-6 mutations killed, digest-verified restore, evidence at
-  `docs/evidence/pwb-p2-4-classification-mutation-run-2026-09-04.json`.
-- The classifier is constructed by nothing before P4; no Butlers body is
-  read.
-
-### PWB discovery truth repair (syzygy-1z3.24.2, 2026-09-05)
-
-- Butlers' root project-shape index declares pillar roots in the exact `Pillar`
-  / `Directory` table columns. Heart and Soul's start link points directly to
-  `vision.md`, while Spec and Spine maps to `openspec/`; link-target basename
-  inference is not a substitute for the directory declaration.
-- `baseline-spec` identities are exact-tree path facts. The PWB model derives
-  all 183 identities at Butlers `a3dd1fe` without opening those bodies; body
-  classification remains separate and the source record says `path-only`.
-- Under the signed active-content policy at that revision the honest manifest
-  is 255 sources (48 intent-tree files, 183 baseline specs, 24 roster files): all five
-  roots are recognized and seven Heart and Soul sources are present, while
-  Lay and Land's index remains excluded and its dependent denominator Unknown.
-  The real `v1.md` also remains whole-source Unknown because one catalog row
-  uses a colon after its bold label, outside the signed dash grammar; do not
-  relax either rule without the owner gate.
-
-### PWB slice P2.5 — literal item extraction (syzygy-1z3.6, 2026-09-04)
-
-- `packages/three-surface-poc-core/src/project-shape-extraction.ts` is the
-  PWB-REQ-002 grammar: `extractSource(source, text)` dispatches each of the
-  source's manifest classes to one literal extractor and returns either
-  `extracted` (items + per-class denominators) or `unknown` (one closed
-  failure reason, class, line, detail). A failing class withholds every
-  class's items for that source — never a partial set. Duplicate keys
-  within one source are a failure here; cross-source duplicates are 2.6's
-  contradictions.
-- Parsers are column-0 anchored and fence-masked; heading text is matched
-  exactly after NFC (no case folding), so a grammar mismatch against the
-  real Butlers tree will surface in P4 as `missing-heading`, not as a
-  silently empty set. Expect to widen fixtures, never the matcher, when
-  that happens: the grammar is the spec's, not ours.
-- The test's oracle is a regex-only extractor written from the spec; both
-  must agree on identities and denominators. Test fixtures spell composed
-  characters as `\u0301` escapes so NFC is observable — the Write tool
-  emitted mixed NFC/NFD bytes for a literal "é", which is why. 35 rule-6
-  mutations killed (evidence in `docs/evidence/`); two equivalent mutants
-  (an unreachable indented-line guard) were removed as dead code.
-
-### PWB slice P2.6 — coverage and precedence (syzygy-1z3.7, 2026-09-04)
-
-- `packages/three-surface-poc-core/src/project-shape-coverage.ts` turns
-  `ClassifiedSource<SourceExtraction>` entries (2.4's population with 2.5's
-  `extractSource` as the consumer) into `ProjectShapeCoverage`: sources in
-  input order with known/Unknown item denominators, one `ItemCoverage` per
-  identity, per-class counts that reconcile to the declared count, and
-  reconciled facts. Grammar failures route through
-  `parseFailureExclusion`, so the coverage object never carries a body.
-- Precedence is data, never heuristics: a `PrecedenceRule` names its
-  Butlers anchor, its words and two selectors (`{path}` or `{basis}`). It
-  applies only when the anchor is an admitted source and each side matches
-  exactly one declaration; anything else is a recorded rejection and the
-  fact stays `contradicted-pending-adjudication` with every declaration
-  kept. Do not add a default rule, a "newest wins" or "authoritative file"
-  fallback — the spec forbids a winner without a Butlers-declared rule.
-- Production wiring (2.7) passes no rules and no stated declarations
-  until the live run shows Butlers declaring some; the design's
-  eight-versus-nine domain-butler conflict is the fixture in the test.
-- Mutation-loop gotcha: a mutation that throws during describe-time
-  fixture construction reports zero tests, which a naive "any test
-  failed" verdict scores as survived. Build fixtures in `beforeAll` (or
-  lazily) so crashes are counted failures.
-
-### PWB slice P2.7 — project shape on the one PocModel (syzygy-1z3.8, 2026-09-04)
-
-- `packages/three-surface-poc-core/src/project-shape-model.ts` composes the
-  P1 gate → P2.2 observer → phase-B tree re-list at the resolved commit →
-  P2.3 reader → P2.4 classifier → P2.5 extractor → P2.6 coverage into one
-  `ProjectShape` union (`not-evaluated` / `not-admitted` /
-  `observation-failed` / `observed`). `model.ts` puts it on
-  `PocModel.projectShape`; `/api/poc` is unchanged (`JSON.stringify` of the
-  model), so the machine answer grows by construction. The proving slice's
-  `inputsDigest` deliberately excludes it.
-- `main.ts` builds the authority from `process.cwd()`'s governance tree
-  (`governance-inputs.ts` → `evaluateBodyReadAuthority`) on every model
-  build and passes `projectShape: { authority }`; a loader throw becomes
-  `projectShapeDetail` and the shape is `not-evaluated`. Tests inject an
-  in-memory `runGit`; production uses `gitRunnerFor(repoRoot)`. Hosted CI's
-  shallow checkout lacks the signing tags, so there every act fails closed
-  and the daemon's shape is `not-admitted` — expected, not a defect.
-- Claim tuples reuse cap1-core vocabularies verbatim (three labels, six
-  tiers, twelve reasons, four freshness states); `UNKNOWN_REASON_ROUTES` is
-  keyed by `UnknownReason` so a vocabulary drift fails typecheck. Observed
-  = `report-fact` + `fresh`; contradiction = `suspended`; whole-shape claim
-  derives from sources + reconciled facts (not the observer's degradation
-  flag, which is data beside it). Item-level contradicted/unknown states are
-  unreachable through the grammar — tested at the exported `itemClaim` and
-  `countReasons` seams, not by fixture.
-- Fixture discipline for this module: pillar READMEs must link only files
-  present in the fixture tree, or the population honestly grows by
-  named-but-absent Unknown sources; the fixture Git runner throws on any
-  `ls-tree` not at the resolved commit and on any `cat-file` it does not
-  hold. Item keys follow the P2.5 grammar (`vision:1`, `1:Daemon`,
-  `cc-spec.md`, directory name for roster and specs). Mutation evidence:
-  `docs/evidence/pwb-p2-7-model-mutation-run-2026-09-04.json` (38/38).
-
-### PWB slice P3.1 — project-level Polaris sequence (syzygy-1z3.9, 2026-09-04)
-
-- `apps/three-surface-poc/src/polaris.ts` opens with seven groups in fixed
-  order (`POLARIS_GROUPS`: overview, boundaries, architecture, v1, catalog,
-  capability-detail, evidence-and-gaps), each rendered once with
-  `data-polaris-group`; the WhatsApp entity sections sit under
-  capability-detail behind `data-polaris-capability-scope`. The
-  movements/tally scaffolding is gone — do not reintroduce
-  `data-polaris-movement` or a hand-written claim tally.
-- Unobserved shapes render every project group as Unknown in place
-  (`data-polaris-section="shape:<group>"`, `data-unknown-disclosure=
-  "claim:project-shape"`, reason + route); an observed shape renders account
-  statements (`claim:project-account:<key>`), class blocks
-  (`claim:class:<cls>`, `data-polaris-class`), item rows
-  (`data-polaris-item`), source rows (`id="polaris-source-<slug>"`),
-  exclusions (hash-not-body) and an Unknown-by-reason list
-  (`data-polaris-gap`). Every rendered shape claim carries a `claim-tuple`
-  span (claim id, label, tier, freshness, evaluation id) that the test
-  compares to the JSON machine answer per claim id.
-- Surface tests get an `observed` shape from
-  `test-project-shape-fixture.ts` (in-memory Git runner over Butlers-shaped
-  texts + `ADMITTING_AUTHORITY`/`REJECTING_AUTHORITY`) through
-  `buildFixtureModel(cleanups, { projectShape })`; without the option the
-  fixture shape stays `not-evaluated`. Do not use `class="epistemic …"` for
-  new spans — the cross-cutting legend sweep treats that class as a legend
-  entry.
-- The model stamps every claim `fresh`, so a renderer mutation hard-coding
-  freshness is an equivalent mutant today; the tuple test still binds
-  label/tier/evaluation id per claim.
-- Task 3.2's guarantee lives in `polaris.test.ts`: the capability slice
-  (from `data-polaris-capability-scope` to the evidence group) must be
-  byte-identical between an unevaluated and an observed shape, and each
-  entity section must carry exactly the model's provenance. Any change that
-  makes the slice depend on `projectShape` breaks it by design.
-- Task 3.3: every fixed Polaris string is a row of `polaris-copy.ts` with one
-  PWB-REQ-012 role; the renderer and the shared shell mark each carrying
-  element with `data-copy-role`, and `polaris-copy.test.ts` sweeps the
-  rendered text (own extractor, word counter and prohibited set) over five
-  fixtures covering all four shape arms. A new fixed string must be a table
-  row; a new element carrying model text must declare a role or the sweep
-  fails `unclassified`. No group ledes: a group header is one `<h2>` only.
-  `data-scope="poc-bound"` may appear once, on the capability scope
-  instruction. Rows the fixtures cannot reach are listed by hand in
-  `UNREACHED_IN_FIXTURES` — remove an id there when a fixture reaches it.
-- Task 3.4: `PocModel.proposedWork` (`proposed-work.ts`) is the followed
-  OpenSpec change as its own type — lifecycle from tree paths, current
-  authority looked up in `projectShape`'s baseline-spec items. Polaris
-  renders it only inside capability detail (after the entities, before the
-  relationships, which now live there too), current authority first. Its
-  marker ids are `proposed-work:<changeId>` plus `/current-authority` and
-  `/lifecycle`; add them to any marker-resolution sweep. Never render it as
-  an entity or in a project group — `polaris-proposed-work.test.ts` slices
-  the page and fails on any proposed identity outside the detail group.
-- Task 3.5: tuples carry `data-epistemic-{label,tier,primary-reason,
-  secondary-reasons,freshness}`, `data-challenge-state` and
-  `data-evaluation-id`; aggregates render `reasonCountsBlock` (separate
-  primary/secondary `<ul data-reason-counts-*>` lists) and coverage counts
-  only inside `<details class="coverage-counts">`.
-  `polaris-epistemic-tuples.test.ts` hard-codes the vocabularies and a
-  status-word regex; when adding page copy, avoid `healthy`, `score`,
-  `maturity`, `trend`, `on track`, `at risk` and percentages. Class-level
-  Unknown/secondary reasons are unreachable via fixtures, so
-  `denominatorText`/`reasonCountsBlock` are exported and tested directly.
-- Task 3.6: `roleAttr(copyRole, claimRole?)` now emits `data-claim-role`,
-  `data-presentation-artifact` and `data-non-citable` on every copy-role
-  element (page-shell/design-tokens carry the literals). An anchored project
-  fact must go through `anchoredBlock`/`shapeClaimBlock` in `polaris.ts` so
-  the `NarrativeRegistry` (module state for one synchronous render) records
-  its claims and anchors and the `<cite>` gets `anchorAttrs`. The oracle in
-  `polaris-narrative.test.ts` re-derives every block's anchor set from the
-  model — a new anchored site needs its rule added there too, or covering
-  fails. Never render `data-claim-provenance` outside an anchored block, and
-  never put narrative/anchor/view fields on `PocModel`.
-- Task 3.7: `capability-detail.ts` is the data side of the three-band deep
-  dive; `polaris.ts` composes it. Every `<section>` inside the dive goes
-  through `DeepDiveLedger.block(band, id)` so it carries exactly one
-  `data-band` and lands in the machine form's band population — a section
-  built without the ledger fails the exhaustion test. Proposals are
-  **non-anchored** (no `anchoredBlock`, no `data-anchor-*`, role
-  non-normative-framing); the narrative oracle throws if a proposal ever
-  registers as an anchored block. Verbatim requirement text comes only from
-  `PolarisRenderInputs.verbatim` at render (production passes none — the
-  baseline spec is outside the consented class — so the page shows
-  `unconsented-source-or-provider` beside the leaf identity); bytes must hash
-  to the leaf's `#<object id>` or `sha256:` identity or nothing renders. The
-  Unknown markers `<capabilityId>/{current-authority,adoption,
-  requirement-text,doctrine,non-goals}` are listed in
-  `test-deep-dive-markers.ts` for the marker sweeps. Copy-table rows nested
-  inside a `FACT` paragraph must themselves be `project-fact`, or the copy
-  test reports them never rendered under their role.
-- Task 4.6: `walkthrough-inputs.ts` loads the PWB-REQ-022 pair (run record
-  under `records/`, judgment + act record under `decisions/`) with the
-  helpers `governance-inputs.ts` now exports; `PWB_WALKTHROUGH_SCHEDULE`
-  is the controlled expectation table (serial identities, not dates). The
-  run record's `Evaluation identity:` must match `/^[a-z0-9][a-z0-9-]*$/`,
-  so the recording session assigns a slug and sets it in the schedule
-  when it writes the record — the daemon's `evaluation:…` id is not
-  usable there. `main.ts` evaluates the pair every build; absent →
-  `absent`/Unknown, loader throw → `not-evaluated`. The real-tree test
-  pins "no record yet" and must be re-pinned when one lands. The owner
-  packet is `contracts/candidates/pwb-walkthrough/OWNER-WALKTHROUGH-PACKET.md`;
-  it quotes no digest, so no act-phrase registration was needed yet —
-  register `ADOPT POLARIS COLD-OPEN WALKTHROUGH JUDGMENT` in
-  `check_governance.py` before any file quotes it with a digest. Future
-  paths in packets go unbackticked (CG-1b resolves backticked paths).
-- Task 4.5: `fresh-checkout-demo-main.ts` (`npm run poc:fresh-checkout-demo
-  -- --repo <butlers>`) clones `HEAD` with tags into a temp dir, runs
-  `npm ci`/`build`/the full Vitest suite (JUnit root tag only), starts the
-  clone's own daemon with cwd = clone, fetches the five routes, and checks
-  Polaris claim-tuple parity against the machine answer under the 4.3
-  presented-population rule (reconciled facts and project-account-section
-  items omitted by design). Committed evidence is body-free and carries no
-  act digests; the raw route bodies and JUnit file are retained only under
-  `~/.local/state/syzygy/pwb-p4-5-fresh-checkout-demo-<date>/` (CG-7e and
-  no-egress consent). Live findings from the first run are in the plan's
-  P4.5 note: shape `observed`, 256 sources / 134 Unknown (132
-  `active-content` exclusions under the act-bound policy, incl. one pillar
-  index), 389/389 parity. Those are 5.x review findings, not 4.5 defects.
-- Task 4.4: `cdp-browser.ts` drives a locally installed Chrome/Chromium
-  headless over the DevTools protocol with Node's global `WebSocket` (no
-  dependency, no download; `SYZYGY_POC_BROWSER` overrides the PATH search).
-  `polaris-accessibility.ts` is the PWB-REQ-016 oracle: real Tab/Shift+Tab
-  traces, real Enter activation of every fragment link, the browser's own
-  accessibility tree, and WCAG AA contrast against composited backdrops
-  (gradient stops are candidates; the worst wins). `polaris-accessibility.
-  browser.test.ts` is `describe.skipIf`-gated — skipped is not passed —
-  and `npm run poc:accessibility-check` writes the evidence JSON. Gotchas
-  learned from the first run: `Emulation.setFocusEmulationEnabled` is
-  required or headless never moves focus; scripted `focus()` + Enter on a
-  link whose fragment is already the URL hash is a no-op (no focus start
-  point moves), so re-navigate first; after the last focusable, Tab
-  lawfully wraps to the browser chrome (`activeElement` null) before the
-  first link; `<summary>` is focusable and must be in the `:focus-visible`
-  rule (it was not — a real 1.01:1 finding, fixed in `design-tokens.ts`);
-  unique landmarks (banner/main/contentinfo) need no accessible name; use a
-  fresh page target per variant: in the first run, later variants on a
-  reused target stopped receiving Enter/Shift+Tab (cause not isolated; a
-  fresh target removed it). Mutation loop is manual
-  (`docs/evidence/pwb-p4-4-accessibility-mutation-run-<date>.json`).
-- Task 4.3: `polaris-parity-sweep.test.ts` is the exhaustive PWB-REQ-020
-  oracle: it parses Polaris back with its own attribute-tolerant extractor
-  (boolean attributes such as `data-non-citable` must be allowed, or every
-  claim tuple silently extracts as nothing) and compares each marker family
-  to the machine answer as a multiset with both denominators, across the
-  shape × judgment matrix. Add a new `data-parity-field` and the sweep
-  reports it under `<uncovered>` until an expectation names it. Keep leaf
-  markers leaf (one text node) — nested markup goes through `containers`,
-  not `leafMarkers`. `PocModel.walkthroughJudgment` is `not-evaluated` in
-  production until 4.6 supplies a run/judgment pair;
-  `test-walkthrough-judgment-fixture.ts` reaches all five judgment states
-  (state (2) via an injected correlator). The mutation sweep's
-  parity-markers group names matrix cells as must-fail substrings (e.g.
-  `observed shape / lawful-state-1 judgment`).
-- Task 4.2: `apps/three-surface-poc/src/pwb-mutation-sweep.ts` is the one
-  rule-6 plan over the nine named mutation classes; `npm run
-  poc:pwb-mutation-sweep` (`--group <id>` / `--only <mutation-id>`) runs it
-  and writes `docs/evidence/pwb-p4-2-mutation-sweep-<date>.json`. Adding a
-  mutation means an exact fragment that occurs once in its subject plus a
-  must-fail test-name substring; `pwb-mutation-sweep.test.ts` rejects
-  drift. A killed mutation whose named test did not fail is reported as
-  SURVIVED with the actual failing names in the evidence — fix the name,
-  or, when nothing failed, strengthen the test (never waive). The full run
-  takes ~35 minutes and rewrites subjects in place: run it in the
-  background, edit nothing it lists, and never commit while it runs.
-- Task 4.1: `packages/three-surface-poc-core/src/walkthrough-judgment.ts`
-  is the PWB-REQ-022 evaluator (2 absent + 84 present-invalid cases, one
-  `// mutation-point:` per case, predicate order load-bearing: homes →
-  run-record fields → judgment fields → the 55 common act predicates
-  restated from P1). Run record grammar: backticked `Record identity:`
-  (`PWB-WALKTHROUGH-…`), `Surface version:` (`polaris@<v>`), `Evaluation
-  identity:`, `Mode:` (`nonvisual-keyboard-only`|`visual-pointer`) and a
-  `## Traversed paths` list of backticked routes. Judgment grammar:
-  `Verdict:` `` `<criterion>=met|not-met` ``, `Judging party:` (plain, the
-  owner), `Run record:` `` `<identity>@<sha256>` `` and a `## Rationale`
-  section; its owner act binds the judgment's SHA-256 like the three effect
-  acts. Never share the 55 common predicates with `body-read-authority.ts`
-  — the duplication keeps the risk floor's act-bound bytes untouched.
-  Nothing consumes the evaluator before 4.6.
-- Task 3.8: Polaris's depth list, gap-entry ids, contradiction ids and
-  named scroll regions are the keyboard/text reachability surface. Link
-  targets are page state (`activeTargets` in `polaris.ts`): a reason or
-  source path outside the rendered population renders as text, never as a
-  link — RFC7-31 makes a dangling internal link a release-blocking floor,
-  and `polaris-reachability.test.ts` sweeps every `href="#"` against the id
-  population in four shape states. Add a new in-page link only through
-  `unknownReasonRef`/`sourceRef` or with a target the same render emits.
-  `ProjectShapeModelInput.statedDeclarations`/`rules` exist for tests only
-  (the contradiction path); `main.ts` must keep passing neither until a
-  live run shows Butlers declaring them. The oracle's `text()` collapses
-  tags to spaces, so match `reason ?:`-style, not exact punctuation.
-
-### PWB effect-act packet (task 1.7) — performed 2026-09-02
-
-- The three effect-specific authorities live at their final bytes:
-  `decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md`,
-  `policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json`,
-  `declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`.
-  Each was performed as a **separate state-(1) act whose argument is the
-  artifact's own SHA-256** (RFC3-16(b) item 3 binds directly); all three are
-  recorded (tags `pwb-<act-type>-signed-2026-09-02`), so those three files
-  are now act-bound and may not be edited outside a new act. Task 1.8 was
-  closed the same day by the owner's direct "Authorized" reply, recorded at
-  `decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` with the recorder's
-  explicit scope reading — a plain direction, not a digest-bound act, so it
-  adds no acceptance-record row and registers nothing in CG-7e. Packet,
-  report, manifest and `ACT-SEMANTICS.md` sit in
-  `contracts/candidates/pwb-effect-acts/`; `build_pwb_effect_acts_packet.py`
-  generates/verifies them and `record_pwb_effect_acts.py --record <act-type>
-  <sha> --date <date>` writes the dedicated record plus the aggregate
-  section. Both scripts hard-code the frozen subject and packet head; a new
-  freeze means editing those constants and re-running the reviews.
-- **Never quote a performed act argument (or a truncated digest of a signed
-  artifact) inside a new artifact.** CG-7e fails any file carrying a
-  recognized act argument that is not in `ACT_DIGEST_COPY_FILES`, and CG-15
-  fails a truncated digest that prefixes no current argument or manifest
-  entry. Cite the act record by path instead. Also never name a Butlers
-  file path in backticks in a packet (CG-1b resolves it as a repo path).
-- New act phrases must be registered in `check_governance.py`'s
-  `_act_subjects()` and their packet copies in `ACT_DIGEST_COPY_FILES`
-  before the packet exists, or CG-7d cannot see them go stale; generated
-  files that appear only after `--finalize` are registered from an
-  existence-gated activation function, not from import time.
+- syzygy-ydr: non-blocking S2/S5 review findings still outstanding
+  (consent-reference resolution, admissibility bar, grant-state rendering
+  citations, unreachable-vs-observer-failure split).
+- Butlers-side data quirks affecting PWB extraction as of `a3dd1fe`: `v1.md`
+  is whole-source Unknown (one catalog row uses a colon after its bold
+  label, outside the signed dash grammar) and Lay and Land's index is
+  excluded (its dependent denominator stays Unknown). Don't relax the
+  extraction grammar to paper over either without an owner gate.
