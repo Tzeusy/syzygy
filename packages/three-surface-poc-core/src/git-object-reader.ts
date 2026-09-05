@@ -32,6 +32,7 @@ import { type GitTreeEntry, type GitTreeIndex, normalizeRepositoryPath, posixBas
 import { type MalformedCodeContext, maskMarkdownCodeContexts } from './markdown-code-context.js';
 import type { ManifestSource, ProjectShapeSourceManifest } from './project-shape-manifest.js';
 import { type GitRunner, PWB_RESOURCE_LIMITS, type PwbResourceLimits, type ResourceLimitBreach, gitBlobObjectId } from './project-shape-observation.js';
+import { createResourceLedger, ParsePassBudgetExceeded, type ParsePassCharge, type ResourceLedger } from './resource-ledger.js';
 
 // ---------------------------------------------------------------------
 // Policy-bound path rules (copies of the act-bound secret policy's
@@ -183,7 +184,12 @@ function positionOf(text: string, index: number): { readonly line: number; reado
   return { line, column: index - lineStart + 1 };
 }
 
-export function scanActiveContent(raw: string): readonly ActiveContentFinding[] {
+// `charge`, when a ledger is in force, is billed one registry pass before
+// each traversal: the code-context mask, the HTML/SVG/script/handler scan
+// and the unsafe-URL scan. It throws instead of letting a traversal run
+// past the source's budget.
+export function scanActiveContent(raw: string, charge?: ParsePassCharge): readonly ActiveContentFinding[] {
+  charge?.('markdown-code-context-mask');
   const mask = maskMarkdownCodeContexts(raw);
   if (mask.kind === 'malformed') {
     return [{ form: 'malformed-code-context', line: mask.line, column: 1, context: mask.reason }];
@@ -199,12 +205,14 @@ export function scanActiveContent(raw: string): readonly ActiveContentFinding[] 
     found.add(key);
     findings.push({ form, ...positionOf(text, index) });
   };
+  charge?.('active-html-svg-script-handler');
   for (const match of text.matchAll(HTML_TAG)) {
     const name = (match[1] ?? '').toLowerCase();
     add(name === 'script' ? 'script-element' : name === 'svg' ? 'svg-element' : 'html-tag', match.index);
   }
   for (const match of text.matchAll(HTML_DECLARATION)) add('html-comment-or-declaration', match.index);
   for (const match of text.matchAll(EVENT_HANDLER)) add('event-handler-attribute', match.index);
+  charge?.('unsafe-url-positions');
   for (const match of text.matchAll(UNSAFE_URL)) add('unsafe-url-scheme', match.index);
   for (const match of text.matchAll(OBFUSCATED_DESTINATION)) add('obfuscated-link-destination', match.index);
   return findings.sort((a, b) => a.line - b.line || a.column - b.column || a.form.localeCompare(b.form));
@@ -249,6 +257,7 @@ export interface ExactObjectReader {
   readonly records: readonly ObjectReadRecord[];
   readonly breaches: readonly ResourceLimitBreach[];
   readonly limits: PwbResourceLimits;
+  readonly ledger: ResourceLedger;
   readonly attempted: () => number;
   readonly totalBytes: () => number;
 }
@@ -258,6 +267,11 @@ export interface ExactObjectReaderInput {
   readonly tree: GitTreeIndex;
   readonly resourceLimits?: PwbResourceLimits;
   readonly deniedPathRules?: DeniedPathRules;
+  // The evaluation-wide ledger (registry `resourceLimitSemantics`): total
+  // bytes and parse passes continue from phase A, and a phase-A body the
+  // ledger still holds is reused rather than taken from Git again. A reader
+  // without one keeps a private ledger over `resourceLimits`.
+  readonly ledger?: ResourceLedger;
 }
 
 const STRICT_UTF8 = new TextDecoder('utf-8', { fatal: true });
@@ -275,12 +289,11 @@ export function contentDigestOf(bytes: Uint8Array): string {
 }
 
 export function createExactObjectReader(input: ExactObjectReaderInput): ExactObjectReader {
-  const limits = input.resourceLimits ?? PWB_RESOURCE_LIMITS;
+  const ledger = input.ledger ?? createResourceLedger(input.resourceLimits ?? PWB_RESOURCE_LIMITS);
+  const limits = ledger.limits;
   const rules = input.deniedPathRules ?? PWB_DENIED_PATH_RULES;
   const records: ObjectReadRecord[] = [];
-  const breaches: ResourceLimitBreach[] = [];
   let attempted = 0;
-  let totalBytes = 0;
 
   const unavailable = (record: ObjectReadRecord): ExactObjectRead => {
     records.push(record);
@@ -291,7 +304,7 @@ export function createExactObjectReader(input: ExactObjectReaderInput): ExactObj
     attempted += 1;
     const countBreach = evaluateLimit(limits, 'maxSources', attempted, path);
     if (countBreach !== undefined) {
-      breaches.push(countBreach);
+      ledger.recordBreach(countBreach);
       return unavailable({ path, outcome: 'over-limit', bytes: 0, detail: 'maxSources' });
     }
     const admission = admitExactObjectRead(input.tree, path, expectedObjectId, rules);
@@ -299,15 +312,23 @@ export function createExactObjectReader(input: ExactObjectReaderInput): ExactObj
     const { objectId, sizeBytes } = admission.entry;
     const objectFormat = objectId.length === 64 ? 'sha256' : 'sha1';
 
+    // A body phase A already took, counted and validated (object id, NUL,
+    // UTF-8, active content) is the same (path, object id) body: it is
+    // reused, counted no second time and traversed by no repeated pass.
+    const held = ledger.recall(path, objectId);
+    if (held !== undefined) {
+      const record: ObjectReadRecord = { path, objectId, bytes: held.bytes.byteLength, contentDigest: contentDigestOf(held.bytes), outcome: 'read' };
+      records.push(record);
+      return { kind: 'text', text: held.text, record };
+    }
+
     if (sizeBytes !== undefined) {
       const perSource = evaluateLimit(limits, 'maxBytesPerSource', sizeBytes, path);
       if (perSource !== undefined) {
-        breaches.push(perSource);
+        ledger.recordBreach(perSource);
         return unavailable({ path, objectId, outcome: 'over-limit', bytes: 0, detail: 'maxBytesPerSource' });
       }
-      const total = evaluateLimit(limits, 'maxTotalBytes', totalBytes + sizeBytes, path);
-      if (total !== undefined) {
-        breaches.push(total);
+      if (ledger.projectBody(path, objectId, sizeBytes) !== undefined) {
         return unavailable({ path, objectId, outcome: 'over-limit', bytes: 0, detail: 'maxTotalBytes' });
       }
     }
@@ -327,35 +348,42 @@ export function createExactObjectReader(input: ExactObjectReaderInput): ExactObj
     if (sizeBytes === undefined) {
       const perSource = evaluateLimit(limits, 'maxBytesPerSource', bytes.byteLength, path);
       if (perSource !== undefined) {
-        breaches.push(perSource);
+        ledger.recordBreach(perSource);
         return unavailable({ ...taken, outcome: 'over-limit', detail: 'maxBytesPerSource' });
       }
-      const total = evaluateLimit(limits, 'maxTotalBytes', totalBytes + bytes.byteLength, path);
-      if (total !== undefined) {
-        breaches.push(total);
-        return unavailable({ ...taken, outcome: 'over-limit', detail: 'maxTotalBytes' });
-      }
     }
-    totalBytes += bytes.byteLength;
+    if (ledger.chargeBody(path, objectId, bytes.byteLength) !== undefined) {
+      return unavailable({ ...taken, outcome: 'over-limit', detail: 'maxTotalBytes' });
+    }
 
     if (gitBlobObjectId(bytes, objectFormat) !== objectId) return unavailable({ ...taken, outcome: 'object-id-mismatch' });
-    if (bytes.includes(0)) return unavailable({ ...taken, outcome: 'contains-nul' });
-    const text = decodeUtf8(bytes);
-    if (text === undefined) return unavailable({ ...taken, outcome: 'not-utf-8' });
-    const activeContent = scanActiveContent(text);
-    if (activeContent.length > 0) return unavailable({ ...taken, outcome: 'active-content', activeContent });
-    const record: ObjectReadRecord = { ...taken, outcome: 'read' };
-    records.push(record);
-    return { kind: 'text', text, record };
+    // Every traversal of the decoded source is charged, by registry name,
+    // before it runs; the budget's limit plus one is never traversed.
+    const charge = ledger.chargeFor(path);
+    try {
+      charge('utf8-and-nul-validation');
+      if (bytes.includes(0)) return unavailable({ ...taken, outcome: 'contains-nul' });
+      const text = decodeUtf8(bytes);
+      if (text === undefined) return unavailable({ ...taken, outcome: 'not-utf-8' });
+      const activeContent = scanActiveContent(text, charge);
+      if (activeContent.length > 0) return unavailable({ ...taken, outcome: 'active-content', activeContent });
+      const record: ObjectReadRecord = { ...taken, outcome: 'read' };
+      records.push(record);
+      return { kind: 'text', text, record };
+    } catch (error) {
+      if (error instanceof ParsePassBudgetExceeded) return unavailable({ ...taken, outcome: 'over-limit', detail: 'maxParsePassesPerSource' });
+      throw error;
+    }
   };
 
   return {
     read,
     records,
-    breaches,
+    breaches: ledger.breaches,
     limits,
+    ledger,
     attempted: () => attempted,
-    totalBytes: () => totalBytes,
+    totalBytes: () => ledger.totalBytes(),
   };
 }
 

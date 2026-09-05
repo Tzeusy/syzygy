@@ -23,6 +23,7 @@ import {
   PWB_SECRET_POLICY,
   type SecretClassificationPolicy,
   parseFailureExclusion,
+  resourceLimitExclusion,
 } from './content-classification.js';
 import { EXTRACTION_CLASSES, type ExtractionClass, type ManifestSource } from './project-shape-manifest.js';
 import type { ExtractedItem, ExtractionFailureRecord, SourceExtraction } from './project-shape-extraction.js';
@@ -278,6 +279,10 @@ function sourceCoverage(entry: CoverageSourceInput, policy: SecretClassification
     return { path: source.path, extractionClasses, itemDenominator: { kind: 'unknown', unknown: record.unknown }, record };
   }
   const value = entry.value;
+  if (value !== undefined && value.kind === 'over-limit') {
+    const excluded = resourceLimitExclusion(policy, record, value.breach.limit);
+    return { path: source.path, extractionClasses, itemDenominator: { kind: 'unknown', unknown: excluded.unknown }, record: excluded };
+  }
   if (value === undefined || value.kind === 'unknown') {
     const excluded = parseFailureExclusion(policy, record);
     return {

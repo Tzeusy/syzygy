@@ -33,7 +33,8 @@
 
 import { PWB_POLICY_IDENTITY, scanActiveContent, type ExactObjectReader, type ObjectReadRecord, readManifestSources } from './git-object-reader.js';
 import { EXTRACTION_CLASSES, type ManifestSource, type ProjectShapeSourceManifest } from './project-shape-manifest.js';
-import { PWB_FAILURE_STATES, type PwbFailureState } from './project-shape-observation.js';
+import { PWB_FAILURE_STATES, type PwbFailureState, type PwbResourceLimits, type ResourceLimitBreach } from './project-shape-observation.js';
+import { ParsePassBudgetExceeded, type ParsePassCharge, type ParsePassIdentity, type ResourceLedger, SECRET_DETECTOR_PASSES } from './resource-ledger.js';
 
 // ---------------------------------------------------------------------
 // The policy, as an evaluation input.
@@ -168,9 +169,13 @@ export function compileDetectors(policy: Pick<SecretClassificationPolicy, 'detec
 // Runs every detector, in policy order, and names the first that matched.
 // Every detector runs so that a later detector's failure to compile or
 // evaluate cannot hide behind an earlier match.
-export function detectSecrets(detectors: readonly CompiledDetector[], text: string): string | undefined {
+// With a ledger in force each detector is one registry pass, charged by the
+// policy detector's registry identity before it runs (an identity the
+// registry does not list is refused by the ledger).
+export function detectSecrets(detectors: readonly CompiledDetector[], text: string, charge?: ParsePassCharge): string | undefined {
   let first: string | undefined;
   for (const detector of detectors) {
+    charge?.(SECRET_DETECTOR_PASSES[detector.id] ?? (detector.id as ParsePassIdentity));
     if (detector.matches(text) && first === undefined) first = detector.id;
   }
   return first;
@@ -178,16 +183,22 @@ export function detectSecrets(detectors: readonly CompiledDetector[], text: stri
 
 export type PhaseAClassification =
   | { readonly kind: 'safe' }
-  | { readonly kind: 'excluded'; readonly reason: 'secret-matched' | 'active-content'; readonly detail: string };
+  | { readonly kind: 'excluded'; readonly reason: 'secret-matched' | 'active-content'; readonly detail: string }
+  | { readonly kind: 'over-limit'; readonly breach: ResourceLimitBreach };
 
 // Phase-A indexes derive later read paths, so the same approved detectors and
 // active-content guard must screen their transient text before link parsing.
-export function classifyPhaseASeed(detectors: readonly CompiledDetector[], text: string): PhaseAClassification {
-  const detectorId = detectSecrets(detectors, text);
-  if (detectorId !== undefined) return { kind: 'excluded', reason: 'secret-matched', detail: detectorId };
-  const active = scanActiveContent(text);
-  if (active.length > 0) return { kind: 'excluded', reason: 'active-content', detail: String(active.length) };
-  return { kind: 'safe' };
+export function classifyPhaseASeed(detectors: readonly CompiledDetector[], text: string, charge?: ParsePassCharge): PhaseAClassification {
+  try {
+    const detectorId = detectSecrets(detectors, text, charge);
+    if (detectorId !== undefined) return { kind: 'excluded', reason: 'secret-matched', detail: detectorId };
+    const active = scanActiveContent(text, charge);
+    if (active.length > 0) return { kind: 'excluded', reason: 'active-content', detail: String(active.length) };
+    return { kind: 'safe' };
+  } catch (error) {
+    if (error instanceof ParsePassBudgetExceeded) return { kind: 'over-limit', breach: error.breach };
+    throw error;
+  }
 }
 
 // ---------------------------------------------------------------------
@@ -349,7 +360,7 @@ export interface ClassifyInput {
 // Classifies one source from its manifest entry and the reader's outcome.
 // `text` is the transient body the reader returned for outcome `read`; it is
 // consulted for detectors and then handed on, never retained here.
-export function classifySource(input: ClassifyInput, source: ManifestSource, record: ObjectReadRecord, text: string | undefined): SourceClassification {
+export function classifySource(input: ClassifyInput, source: ManifestSource, record: ObjectReadRecord, text: string | undefined, charge?: ParsePassCharge): SourceClassification {
   const { policy, detectors } = input;
   const path = source.path;
 
@@ -389,8 +400,16 @@ export function classifySource(input: ClassifyInput, source: ManifestSource, rec
   }
   if (text === undefined || record.contentDigest === undefined) return unavailable(path, 'git-read-failed', GIT_FAILED);
 
-  // 3. every detector over the transient text, before any parsing
-  const detectorId = detectSecrets(detectors, text);
+  // 3. every detector over the transient text, before any parsing; each is
+  // one charged pass, and a spent budget withholds the source over-limit
+  // without running the detector that would have exceeded it.
+  let detectorId: string | undefined;
+  try {
+    detectorId = detectSecrets(detectors, text, charge);
+  } catch (error) {
+    if (error instanceof ParsePassBudgetExceeded) return unclassifiable(policy, record, 'resource-limit', 'maxParsePassesPerSource', OVER_LIMIT);
+    throw error;
+  }
   if (detectorId !== undefined) {
     return excluded(
       policy,
@@ -428,6 +447,14 @@ export function classifySource(input: ClassifyInput, source: ManifestSource, rec
 // parse failed is withheld whole, hash-not-body, under the same policy.
 export function parseFailureExclusion(policy: SecretClassificationPolicy, classified: ClassificationRecord & { readonly outcome: 'classified' }): ClassificationRecord & { readonly outcome: 'excluded' } {
   const result = unclassifiable(policy, { path: classified.path, contentDigest: classified.contentDigest }, 'parse-failure', undefined);
+  return result.record as ClassificationRecord & { readonly outcome: 'excluded' };
+}
+
+// The extractor's resource-limit arm: a classified source whose extraction
+// pass budget ran out is withheld whole, counted, over-limit (registry
+// `breachResult`: dependent facts Unknown, the population kept).
+export function resourceLimitExclusion(policy: SecretClassificationPolicy, classified: ClassificationRecord & { readonly outcome: 'classified' }, limit: keyof PwbResourceLimits): ClassificationRecord & { readonly outcome: 'excluded' } {
+  const result = unclassifiable(policy, { path: classified.path, contentDigest: classified.contentDigest }, 'resource-limit', limit, OVER_LIMIT);
   return result.record as ClassificationRecord & { readonly outcome: 'excluded' };
 }
 
@@ -490,6 +517,9 @@ export function classifyManifestSources<T>(
   consume: (source: ManifestSource, text: string, record: ClassificationRecord & { readonly outcome: 'classified' }) => T,
   policy: SecretClassificationPolicy = PWB_SECRET_POLICY,
   deriveFromPath?: PathOnlyDerivation<T>,
+  // The evaluation-wide ledger; when given, every detector run is a charged
+  // registry pass on its source.
+  ledger?: ResourceLedger,
 ): ClassifiedPopulation<T> {
   const detectors = compileDetectors(policy);
   const input: ClassifyInput = { policy, detectors, manifest };
@@ -521,7 +551,7 @@ export function classifyManifestSources<T>(
     const bodyRead = bodyReads.get(source.path);
     if (bodyRead === undefined) throw new Error(`no body-read result for ${source.path}`);
     const { record: read, value: text } = bodyRead;
-    const classification = classifySource(input, source, read, text);
+    const classification = classifySource(input, source, read, text, ledger?.chargeFor(source.path));
     if (classification.kind === 'withheld') return { source, read, record: classification.record };
     return { source, read, record: classification.record, value: consume(source, classification.text, classification.record) };
   });

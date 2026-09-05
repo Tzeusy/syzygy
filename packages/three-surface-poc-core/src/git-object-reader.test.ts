@@ -32,6 +32,7 @@ import {
 import { indexGitTree, type GitTreeEntry } from './git-tree.js';
 import type { ManifestSource } from './project-shape-manifest.js';
 import { PWB_RESOURCE_LIMITS, type PwbResourceLimits } from './project-shape-observation.js';
+import { createResourceLedger } from './resource-ledger.js';
 
 // ---------------------------------------------------------------------
 // Fixture repository: bodies, real Git object ids, a tree with every
@@ -557,5 +558,106 @@ describe('policy-bound constants are byte-equal to the act-bound artifacts', () 
   it('module surface: outcome vocabulary is closed and records never carry a text field', () => {
     const record: ObjectReadRecord = { path: 'x', outcome: 'read', bytes: 0 };
     expect(Object.keys(record)).toEqual(['path', 'outcome', 'bytes']);
+  });
+});
+
+// ---------------------------------------------------------------------
+// One evaluation-wide envelope (registry amendment 2026-09-05:
+// `resourceLimitSemantics.maxTotalBytes` / `maxParsePassesPerSource`;
+// PWB-REQ-006 as amended). The reader charges the shared ledger.
+
+describe('the reader charges one shared resource ledger', () => {
+  const PATH = 'about/heart-and-soul/README.md';
+  const size = (BYTES[PATH] as Uint8Array).byteLength;
+
+  it('a fresh read charges exactly four registry passes on its path and counts its body once', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    const spy = gitSpy();
+    const r = createExactObjectReader({ runGit: spy.runGit, tree: indexGitTree(TREE), ledger });
+    expect(r.ledger).toBe(ledger);
+    expect(r.read(PATH).kind).toBe('text');
+    expect(ledger.passesFor(PATH)).toBe(4);
+    const summary = ledger.summary();
+    expect(summary.passesByIdentity).toMatchObject({
+      'utf8-and-nul-validation': 1,
+      'markdown-code-context-mask': 1,
+      'active-html-svg-script-handler': 1,
+      'unsafe-url-positions': 1,
+      'phase-a-link-discovery': 0,
+      'secret-known-token-formats': 0,
+    });
+    expect(summary.parsePasses).toBe(4);
+    expect(ledger.totalBytes()).toBe(size);
+    expect(ledger.counted(PATH, oidOf(PATH))).toBe(true);
+    expect(r.totalBytes()).toBe(size);
+    expect(r.breaches).toBe(ledger.breaches);
+  });
+
+  it('a phase-A body held in the ledger is reused: no cat-file, no repeated passes, bytes counted once', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    // Phase A took the body, counted it and validated it (nine passes).
+    expect(ledger.chargeBody(PATH, oidOf(PATH), size)).toBeUndefined();
+    for (let i = 0; i < 9; i += 1) ledger.chargePass(PATH, 'utf8-and-nul-validation');
+    ledger.remember(PATH, oidOf(PATH), { bytes: BYTES[PATH] as Uint8Array, text: TEXTS[PATH] as string });
+    const spy = gitSpy();
+    const r = createExactObjectReader({ runGit: spy.runGit, tree: indexGitTree(TREE), ledger });
+    const result = r.read(PATH);
+    expect(result.kind).toBe('text');
+    if (result.kind !== 'text') throw new Error('unreachable');
+    expect(result.text).toBe(TEXTS[PATH]);
+    expect(spy.calls).toEqual([]);
+    expect(ledger.passesFor(PATH)).toBe(9);
+    expect(ledger.totalBytes()).toBe(size);
+    expect(result.record).toEqual({ path: PATH, objectId: oidOf(PATH), outcome: 'read', bytes: size, contentDigest: contentDigestOf(BYTES[PATH] as Uint8Array) });
+    expect(r.records).toEqual([result.record]);
+    // A body held under another object id is not this source's body.
+    const other = r.read('about/README.md');
+    expect(other.kind).toBe('text');
+    expect(spy.calls).toEqual([['cat-file', 'blob', oidOf('about/README.md')]]);
+  });
+
+  it('a body already counted by phase A does not count again toward maxTotalBytes', () => {
+    const ledger = createResourceLedger({ ...PWB_RESOURCE_LIMITS, maxTotalBytes: size });
+    expect(ledger.chargeBody(PATH, oidOf(PATH), size)).toBeUndefined();
+    const spy = gitSpy();
+    const r = createExactObjectReader({ runGit: spy.runGit, tree: indexGitTree(TREE), ledger });
+    expect(r.read(PATH).kind).toBe('text');
+    expect(ledger.totalBytes()).toBe(size);
+    expect(ledger.breaches).toEqual([]);
+    expect(r.read('about/README.md').record).toMatchObject({ outcome: 'over-limit', detail: 'maxTotalBytes' });
+  });
+
+  it('maxParsePassesPerSource: limit − 1 and limit stop the read closed at the pass that never ran; limit + 1 reads', () => {
+    // A fresh read needs four passes; the fourth is unsafe-url-positions.
+    for (const [declared, expected] of [
+      [3, 'over-limit'],
+      [4, 'read'],
+      [5, 'read'],
+    ] as const) {
+      const ledger = createResourceLedger({ ...PWB_RESOURCE_LIMITS, maxParsePassesPerSource: declared });
+      const spy = gitSpy();
+      const r = createExactObjectReader({ runGit: spy.runGit, tree: indexGitTree(TREE), ledger });
+      const result = r.read(PATH);
+      expect(result.record.outcome, String(declared)).toBe(expected);
+      if (expected === 'over-limit') {
+        expect(result.kind).toBe('unavailable');
+        expect(result.record).toEqual({ path: PATH, objectId: oidOf(PATH), outcome: 'over-limit', bytes: size, detail: 'maxParsePassesPerSource', contentDigest: contentDigestOf(BYTES[PATH] as Uint8Array) });
+        expect(ledger.breaches).toEqual([{ limit: 'maxParsePassesPerSource', declared, observed: declared + 1, path: PATH }]);
+        expect(ledger.summary().passesByIdentity['unsafe-url-positions']).toBe(0);
+      } else {
+        expect(ledger.breaches).toEqual([]);
+      }
+    }
+  });
+
+  it('the pass budget is per source: a second source starts fresh', () => {
+    const ledger = createResourceLedger({ ...PWB_RESOURCE_LIMITS, maxParsePassesPerSource: 4 });
+    const spy = gitSpy();
+    const r = createExactObjectReader({ runGit: spy.runGit, tree: indexGitTree(TREE), ledger });
+    expect(r.read(PATH).kind).toBe('text');
+    expect(r.read('about/README.md').kind).toBe('text');
+    expect(r.read('roster/alpha/butler.toml').kind).toBe('text');
+    expect(ledger.summary().maxPassesOnOneSource).toBe(4);
+    expect(ledger.summary().sourcesTraversed).toBe(3);
   });
 });

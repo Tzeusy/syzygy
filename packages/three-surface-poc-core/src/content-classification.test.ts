@@ -33,6 +33,7 @@ import { createExactObjectReader, type ExactObjectReader, type ObjectReadRecord 
 import { indexGitTree, type GitTreeEntry } from './git-tree.js';
 import type { ManifestSource } from './project-shape-manifest.js';
 import { PWB_RESOURCE_LIMITS, type PwbResourceLimits } from './project-shape-observation.js';
+import { ParsePassBudgetExceeded, createResourceLedger, type ParsePassIdentity } from './resource-ledger.js';
 
 // ---------------------------------------------------------------------
 // Fixture repository.
@@ -578,5 +579,88 @@ describe('PWB-REQ-003 — the policy is the input', () => {
     expect([...UNAVAILABLE_REASONS]).toEqual(['not-in-manifest', 'missing-at-revision', 'not-a-regular-blob', 'not-in-tree', 'path-escapes-repository', 'path-not-normalized', 'object-id-mismatch', 'git-read-failed']);
     const { result } = population();
     expect(JSON.stringify(result)).not.toContain('redacted-span');
+  });
+});
+
+// ---------------------------------------------------------------------
+// Phase B classification charges the same ledger (registry amendment
+// 2026-09-05; PWB-REQ-006 as amended): each policy detector is one
+// registry pass, repeated after phase A and charged again.
+
+describe('PWB-REQ-006 (amended) — classification charges one shared resource ledger', () => {
+  const policy = PWB_SECRET_POLICY;
+  const detectors = compileDetectors(policy);
+  const PATH = 'about/heart-and-soul/principles.md';
+
+  function classified(limits: Partial<PwbResourceLimits>) {
+    const ledger = createResourceLedger({ ...PWB_RESOURCE_LIMITS, ...limits });
+    const spy = gitSpy();
+    const r = createExactObjectReader({ runGit: spy.runGit, tree: indexGitTree(TREE), ledger });
+    const consumed: string[] = [];
+    const result = classifyManifestSources({ sources: POPULATION }, r, (s, text) => {
+      consumed.push(s.path);
+      return text.length;
+    }, policy, undefined, ledger);
+    return { result, consumed, ledger };
+  }
+
+  it('detectSecrets charges each detector under its registry identity', () => {
+    const charged: ParsePassIdentity[] = [];
+    detectSecrets(detectors, '# plain\n', (pass) => {
+      charged.push(pass);
+    });
+    expect(charged).toEqual(['secret-private-key-fragments', 'secret-known-token-formats', 'secret-credential-assignment', 'secret-credential-bearing-url']);
+  });
+
+  it('a read source costs four reader passes plus four detector passes', () => {
+    const { result, consumed, ledger } = classified({});
+    expect(consumed).toContain(PATH);
+    expect(ledger.passesFor(PATH)).toBe(8);
+    const summary = ledger.summary();
+    // Every body the reader handed over was scanned by all four detectors:
+    // the consumed ones and the ones a detector then excluded.
+    const scanned = result.counts.classified + result.exclusions.filter((e) => e.detectorId !== undefined).length;
+    expect(scanned).toBeGreaterThan(consumed.length);
+    for (const pass of ['secret-private-key-fragments', 'secret-known-token-formats', 'secret-credential-assignment', 'secret-credential-bearing-url'] as const) {
+      expect(summary.passesByIdentity[pass], pass).toBe(scanned);
+    }
+    expect(result.exclusions.filter((e) => e.exclusionReason === 'resource-limit')).toEqual([]);
+  });
+
+  it('maxParsePassesPerSource 7 excludes every read source as resource-limit before consume; 8 classifies them', () => {
+    const under = classified({ maxParsePassesPerSource: 7 });
+    expect(under.consumed).toEqual([]);
+    expect(under.result.counts.classified).toBe(0);
+    expect(under.result.results).toHaveLength(POPULATION.length);
+    const excluded = under.result.exclusions.filter((e) => e.exclusionReason === 'resource-limit');
+    expect(excluded.map((e) => e.repositoryRelativePath)).toContain(PATH);
+    for (const e of excluded) expect(e).toMatchObject({ redactionClass: 'unclassifiable-excluded', detail: 'maxParsePassesPerSource', policyId: 'polaris-butlers-project-shape-secrets' });
+    expect(under.ledger.breaches.filter((b) => b.limit === 'maxParsePassesPerSource').map((b) => b.observed)).toEqual(Array(excluded.length).fill(8));
+    const at = classified({ maxParsePassesPerSource: 8 });
+    expect(at.consumed).toContain(PATH);
+    expect(at.result.exclusions.filter((e) => e.exclusionReason === 'resource-limit')).toEqual([]);
+  });
+
+  it('classifySource turns the budget breach into an excluded resource-limit record without the body', () => {
+    const input = { policy, detectors, manifest: { sources: POPULATION } };
+    const member = POPULATION.find((s) => s.path === PATH) as ManifestSource;
+    const record: ObjectReadRecord = { path: PATH, objectId: oidOf(PATH), outcome: 'read', bytes: 3, contentDigest: `sha256:${sha256Hex(BYTES[PATH] as Uint8Array)}` };
+    const breach = { limit: 'maxParsePassesPerSource' as const, declared: 1, observed: 2, path: PATH };
+    const result = classifySource(input, member, record, 'SECRET-BODY', () => {
+      throw new ParsePassBudgetExceeded(breach, 'secret-known-token-formats');
+    });
+    expect(result.kind).toBe('withheld');
+    expect(result.record).toMatchObject({ outcome: 'excluded', exclusion: { exclusionReason: 'resource-limit', detail: 'maxParsePassesPerSource', repositoryRelativePath: PATH } });
+    expect(JSON.stringify(result)).not.toContain('SECRET-BODY');
+  });
+
+  it('classifyPhaseASeed reports over-limit with the breach when a detector pass exceeds the budget', () => {
+    const breach = { limit: 'maxParsePassesPerSource' as const, declared: 5, observed: 6, path: 'about/README.md' };
+    let calls = 0;
+    const result = classifyPhaseASeed(detectors, '# root\n', (pass) => {
+      calls += 1;
+      if (calls === 2) throw new ParsePassBudgetExceeded(breach, pass);
+    });
+    expect(result).toEqual({ kind: 'over-limit', breach });
   });
 });

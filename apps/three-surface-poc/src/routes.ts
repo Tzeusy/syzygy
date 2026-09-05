@@ -1,5 +1,5 @@
-import { escapeHtml, type Route } from '@syzygy/cap1-daemon';
-import type { PocEntity, PocModel, PocSurface } from '@syzygy/three-surface-poc-core';
+import { escapeHtml, type Route, type RouteResponse } from '@syzygy/cap1-daemon';
+import { PWB_RESOURCE_LIMITS, type PocEntity, type PocModel, type PocSurface, type PwbResourceLimits } from '@syzygy/three-surface-poc-core';
 
 import { BROWSER_ORIGIN_REFUSAL, browserRequestAllowed } from './browser-origin.js';
 import { epistemicText, exactTablesSection } from './exact-tables.js';
@@ -78,42 +78,78 @@ export function renderPocPage(model: PocModel, mountPrefix = ''): string {
   });
 }
 
-export function pocRoutes(getModel: () => PocModel): readonly Route[] {
-  const humanHandle: Route['handle'] = ({ request }) =>
-    browserRequestAllowed(request.headers)
-      ? {
-          status: 200,
-          contentType: 'text/html; charset=utf-8',
-          body: renderPocPage(getModel(), mountPrefixForRequest(request.headers)),
-        }
-      : {
-          status: 403,
-          contentType: 'application/json',
-          body: JSON.stringify(BROWSER_ORIGIN_REFUSAL),
-        };
-  const machineHandle: Route['handle'] = () => ({
-    status: 200,
-    contentType: 'application/json',
-    body: JSON.stringify(getModel()),
-  });
+// ---------------------------------------------------------------------
+// Final-output ceilings (registry `resourceLimits.maxHumanResponseBytes` /
+// `maxMachineResponseBytes`, `resourceLimitSemantics.breachResult`;
+// PWB-REQ-006 as amended). The limit is measured against the final encoded
+// HTTP body of each human HTML response and each authenticated machine
+// JSON response. A breach emits only this bounded typed failure: the
+// evaluation identity, the limit identity, its declared and observed
+// values and the population counts. Nothing is truncated and no
+// success-shaped model is served; readiness (PWB-REQ-021) is false.
+
+export const RESPONSE_LIMIT_FAILURE = 'response-limit-breached' as const;
+export const RESPONSE_LIMIT_STATUS = 503 as const;
+
+export type ResponseLimitIdentity = 'maxHumanResponseBytes' | 'maxMachineResponseBytes';
+
+export interface ResponseLimitFailure {
+  readonly served: 'nothing';
+  readonly failure: typeof RESPONSE_LIMIT_FAILURE;
+  readonly evaluation: PocModel['evaluation'];
+  readonly limit: ResponseLimitIdentity;
+  readonly declared: number;
+  readonly observed: number;
+  readonly population:
+    | { readonly kind: 'counted'; readonly sources: number; readonly items: number; readonly facts: number; readonly exclusions: number }
+    | { readonly kind: 'unknown'; readonly reason: string };
+  readonly readiness: false;
+}
+
+function populationOf(model: PocModel): ResponseLimitFailure['population'] {
+  const shape = model.projectShape;
+  if (shape.kind !== 'observed') return { kind: 'unknown', reason: `project shape ${shape.kind}` };
+  return { kind: 'counted', sources: shape.counts.sources, items: shape.counts.items, facts: shape.counts.facts, exclusions: shape.counts.exclusions };
+}
+
+export function responseLimitFailure(model: PocModel, limit: ResponseLimitIdentity, declared: number, observed: number): ResponseLimitFailure {
+  return { served: 'nothing', failure: RESPONSE_LIMIT_FAILURE, evaluation: model.evaluation, limit, declared, observed, population: populationOf(model), readiness: false };
+}
+
+// Serves `body` only when its UTF-8 encoding fits the named ceiling.
+export function boundedResponse(model: PocModel, limits: PwbResourceLimits, limit: ResponseLimitIdentity, contentType: string, body: string): RouteResponse {
+  const observed = Buffer.byteLength(body, 'utf8');
+  const declared = limits[limit];
+  if (observed <= declared) return { status: 200, contentType, body };
+  return { status: RESPONSE_LIMIT_STATUS, contentType: 'application/json', body: JSON.stringify(responseLimitFailure(model, limit, declared, observed)) };
+}
+
+export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = PWB_RESOURCE_LIMITS): readonly Route[] {
+  const html = (model: PocModel, body: string): RouteResponse => boundedResponse(model, limits, 'maxHumanResponseBytes', 'text/html; charset=utf-8', body);
+  const humanHandle: Route['handle'] = ({ request }) => {
+    if (!browserRequestAllowed(request.headers)) {
+      return { status: 403, contentType: 'application/json', body: JSON.stringify(BROWSER_ORIGIN_REFUSAL) };
+    }
+    const model = getModel();
+    return html(model, renderPocPage(model, mountPrefixForRequest(request.headers)));
+  };
+  const machineHandle: Route['handle'] = () => {
+    const model = getModel();
+    return boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(model));
+  };
 
   function humanSurfaceRoutes(
     directPath: string,
     tailnetPath: string,
     render: (model: PocModel, mountPrefix: string) => string,
   ): readonly Route[] {
-    const handle: Route['handle'] = ({ request }) =>
-      browserRequestAllowed(request.headers)
-        ? {
-            status: 200,
-            contentType: 'text/html; charset=utf-8',
-            body: render(getModel(), mountPrefixForRequest(request.headers)),
-          }
-        : {
-            status: 403,
-            contentType: 'application/json',
-            body: JSON.stringify(BROWSER_ORIGIN_REFUSAL),
-          };
+    const handle: Route['handle'] = ({ request }) => {
+      if (!browserRequestAllowed(request.headers)) {
+        return { status: 403, contentType: 'application/json', body: JSON.stringify(BROWSER_ORIGIN_REFUSAL) };
+      }
+      const model = getModel();
+      return html(model, render(model, mountPrefixForRequest(request.headers)));
+    };
     return [
       { method: 'GET', path: directPath, credentialClass: 'human-open', handle },
       { method: 'GET', path: tailnetPath, credentialClass: 'human-open', handle },

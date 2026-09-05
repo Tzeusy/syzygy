@@ -27,6 +27,7 @@ import { createHash } from 'node:crypto';
 
 import type { AuthorityKind, AuthorityState, BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import type { PhaseAClassification } from './content-classification.js';
+import { createResourceLedger, ParsePassBudgetExceeded, type ParsePassCharge, type ResourceLedger } from './resource-ledger.js';
 import { type GitTreeEntry, type GitTreeIndex, indexGitTree, parseGitLsTree, posixBasename, posixDirname } from './git-tree.js';
 import {
   PILLAR_KEYS,
@@ -306,7 +307,11 @@ export interface ObserveProjectShapeSourcesInput {
   readonly capturedAt: string;
   readonly runGit: GitRunner;
   readonly authority?: BodyReadAuthorityEvaluation;
-  readonly classifyPhaseA: (text: string) => PhaseAClassification;
+  // `charge` bills the seed's registry passes to the evaluation ledger.
+  readonly classifyPhaseA: (text: string, charge: ParsePassCharge) => PhaseAClassification;
+  // The evaluation-wide ledger shared with phase B (registry
+  // `resourceLimitSemantics`); a private one over `resourceLimits` otherwise.
+  readonly ledger?: ResourceLedger;
   readonly discoveryVersion?: string;
   readonly resourceLimits?: PwbResourceLimits;
 }
@@ -401,24 +406,24 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
 
   // 4. Phase A: manifest derivation with admitted, ledgered seed reads.
   const reads: PhaseAReadRecord[] = [];
-  const breaches: ResourceLimitBreach[] = [];
-  let totalBytes = 0;
+  const ledger = input.ledger ?? createResourceLedger(limits);
   const readSeed = (seed: { readonly path: string; readonly objectId: string }): SeedRead => {
     const admission = admitPhaseARead(tree, seed);
     if (admission.kind === 'refused') {
       reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'refused', bytes: 0, detail: admission.reason });
       return { kind: 'unavailable', reason: `phase A read refused: ${admission.reason}` };
     }
+    const overLimit = (limit: keyof PwbResourceLimits, bytes: number): SeedRead => {
+      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'over-limit', bytes, detail: limit });
+      return { kind: 'unavailable', reason: `resource limit ${limit}` };
+    };
     const declaredSize = admission.entry.sizeBytes;
     if (declaredSize !== undefined && declaredSize > limits.maxBytesPerSource) {
-      breaches.push({ limit: 'maxBytesPerSource', declared: limits.maxBytesPerSource, observed: declaredSize, path: seed.path });
-      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'over-limit', bytes: 0, detail: 'maxBytesPerSource' });
-      return { kind: 'unavailable', reason: 'resource limit maxBytesPerSource' };
+      ledger.recordBreach({ limit: 'maxBytesPerSource', declared: limits.maxBytesPerSource, observed: declaredSize, path: seed.path });
+      return overLimit('maxBytesPerSource', 0);
     }
-    if (declaredSize !== undefined && totalBytes + declaredSize > limits.maxTotalBytes) {
-      breaches.push({ limit: 'maxTotalBytes', declared: limits.maxTotalBytes, observed: totalBytes + declaredSize, path: seed.path });
-      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'over-limit', bytes: 0, detail: 'maxTotalBytes' });
-      return { kind: 'unavailable', reason: 'resource limit maxTotalBytes' };
+    if (declaredSize !== undefined && ledger.projectBody(seed.path, seed.objectId, declaredSize) !== undefined) {
+      return overLimit('maxTotalBytes', 0);
     }
     let bytes: Uint8Array;
     try {
@@ -428,10 +433,25 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
       reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'git-read-failed', bytes: 0, detail });
       return { kind: 'unavailable', reason: `git cat-file failed: ${detail}` };
     }
-    totalBytes += bytes.byteLength;
+    if (declaredSize === undefined && bytes.byteLength > limits.maxBytesPerSource) {
+      ledger.recordBreach({ limit: 'maxBytesPerSource', declared: limits.maxBytesPerSource, observed: bytes.byteLength, path: seed.path });
+      return overLimit('maxBytesPerSource', bytes.byteLength);
+    }
+    // One cumulative counter across both phases, this body counted once.
+    if (ledger.chargeBody(seed.path, seed.objectId, bytes.byteLength) !== undefined) return overLimit('maxTotalBytes', bytes.byteLength);
     if (gitBlobObjectId(bytes, objectFormat) !== seed.objectId) {
       reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'object-id-mismatch', bytes: bytes.byteLength });
       return { kind: 'unavailable', reason: 'object id mismatch: bytes are not the tree-named object' };
+    }
+    // Each traversal of the decoded seed is one charged registry pass:
+    // validation, the policy detectors and the active-content scans inside
+    // `classifyPhaseA`, then the link discovery this read feeds.
+    const charge = ledger.chargeFor(seed.path);
+    try {
+      charge('utf8-and-nul-validation');
+    } catch (error) {
+      if (error instanceof ParsePassBudgetExceeded) return overLimit('maxParsePassesPerSource', bytes.byteLength);
+      throw error;
     }
     if (bytes.includes(0)) {
       reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'contains-nul', bytes: bytes.byteLength });
@@ -442,7 +462,8 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
       reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'not-utf-8', bytes: bytes.byteLength });
       return { kind: 'unavailable', reason: 'seed is not valid UTF-8' };
     }
-    const classification = input.classifyPhaseA(text);
+    const classification = input.classifyPhaseA(text, charge);
+    if (classification.kind === 'over-limit') return overLimit(classification.breach.limit, bytes.byteLength);
     if (classification.kind === 'excluded') {
       reads.push({
         path: seed.path,
@@ -453,7 +474,17 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
       });
       return { kind: 'unavailable', reason: `phase A source excluded: ${classification.reason}` };
     }
+    try {
+      charge('phase-a-link-discovery');
+    } catch (error) {
+      if (error instanceof ParsePassBudgetExceeded) return overLimit('maxParsePassesPerSource', bytes.byteLength);
+      throw error;
+    }
     reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'read', bytes: bytes.byteLength });
+    // The validated body is held for the phase-B reader: the same (path,
+    // object id) body is taken from Git once and traversed by no repeated
+    // validation pass.
+    ledger.remember(seed.path, seed.objectId, { bytes, text });
     return { kind: 'text', text };
   };
   const derived = deriveProjectShapeManifest({
@@ -467,10 +498,10 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
   const manifest = derived.manifest;
 
   if (PWB_INDEX_DEPTH > limits.maxIndexDepth) {
-    breaches.push({ limit: 'maxIndexDepth', declared: limits.maxIndexDepth, observed: PWB_INDEX_DEPTH });
+    ledger.recordBreach({ limit: 'maxIndexDepth', declared: limits.maxIndexDepth, observed: PWB_INDEX_DEPTH });
   }
   if (manifest.sources.length > limits.maxSources) {
-    breaches.push({ limit: 'maxSources', declared: limits.maxSources, observed: manifest.sources.length });
+    ledger.recordBreach({ limit: 'maxSources', declared: limits.maxSources, observed: manifest.sources.length });
   }
 
   // 5. Stamps.
@@ -512,7 +543,7 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
   } else {
     const partial = [
       ...manifest.pillars.filter((pillar) => pillar.state === 'unknown').map((pillar) => `pillar ${pillar.key} ${pillar.state}`),
-      ...breaches.map((breach) => `limit ${breach.limit} breached`),
+      ...ledger.breaches.map((breach) => `limit ${breach.limit} breached`),
       ...reads.filter((read) => read.outcome !== 'read').map((read) => `${read.path} ${read.outcome}`),
       ...manifest.sources.filter((source) => source.anchor.kind !== 'blob').map((source) => `${source.path} ${source.anchor.kind}`),
     ];
@@ -551,7 +582,8 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
     sources,
     reads,
     resourceLimits: limits,
-    limitBreaches: breaches,
+    // A phase-A snapshot; the ledger keeps counting through phase B.
+    limitBreaches: [...ledger.breaches],
     degradation,
     deterministicInputs,
   };

@@ -15,6 +15,7 @@ import { FRESHNESS_STATES, RENDERING_TIERS, UNKNOWN_REASONS } from '@syzygy/cap1
 import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import type { GitTreeEntry } from './git-tree.js';
 import type { Declaration, PrecedenceRule } from './project-shape-coverage.js';
+import { PWB_RESOURCE_LIMITS, type PwbResourceLimits } from './project-shape-observation.js';
 import {
   CHALLENGE_STATES,
   PWB_REPOSITORY_ID,
@@ -224,7 +225,7 @@ const REJECTING: BodyReadAuthorityEvaluation = {
   contradiction: { clause: 'RFC3-16(a)', definedTerm: 'authorization-bearing governance artifact', statement: 'No effective act.', failing: [] },
 };
 
-function build(input: Fixture & { authority?: BodyReadAuthorityEvaluation; rules?: readonly PrecedenceRule[]; stated?: readonly Declaration[]; revision?: string }) {
+function build(input: Fixture & { authority?: BodyReadAuthorityEvaluation; rules?: readonly PrecedenceRule[]; stated?: readonly Declaration[]; revision?: string; limits?: Partial<PwbResourceLimits> }) {
   const git = fixture(input);
   const shape = buildProjectShape({
     authority: input.authority ?? ADMITTING,
@@ -233,6 +234,7 @@ function build(input: Fixture & { authority?: BodyReadAuthorityEvaluation; rules
     runGit: git.runGit,
     ...(input.rules === undefined ? {} : { rules: input.rules }),
     ...(input.stated === undefined ? {} : { statedDeclarations: input.stated }),
+    ...(input.limits === undefined ? {} : { resourceLimits: { ...PWB_RESOURCE_LIMITS, ...input.limits } }),
   });
   return { shape, calls: git.calls, entries: git.entries };
 }
@@ -770,5 +772,138 @@ describe('claim helpers at the seam the coverage types define', () => {
       { ...base, epistemic: { label: 'Unknown', reasons: { primary: 'missing-evidence', secondary: [] }, freshness: 'fresh' } },
     ]);
     expect(counts).toEqual({ primary: { 'excluded-content': 1, 'missing-evidence': 1 }, secondary: { 'missing-evidence': 1, 'excluded-content': 1 } });
+  });
+});
+
+// ---------------------------------------------------------------------
+// One evaluation-wide resource envelope (registry amendment 2026-09-05:
+// `resourceLimits`, `parsePassIdentities`, `resourceLimitSemantics`;
+// PWB-REQ-006 as amended). Phase A and phase B share one ledger.
+
+describe('one resource envelope across both phases (PWB-REQ-006, amended)', () => {
+  function bodiesTaken(calls: readonly string[][], entries: readonly GitTreeEntry[]) {
+    const byOid = new Map(entries.map((entry) => [entry.objectId, entry]));
+    return calls.filter((call) => call[0] === 'cat-file').map((call) => byOid.get(call[2] ?? '') as GitTreeEntry);
+  }
+
+  // Hand-typed: the fourteen bodies the fixture takes from Git, in phase
+  // order, and their byte lengths.
+  const BODIES = [
+    ['about/README.md', 193],
+    ['about/heart-and-soul/README.md', 70],
+    ['about/legends-and-lore/README.md', 89],
+    ['about/spec-and-spine/README.md', 7],
+    ['about/lay-and-land/README.md', 28],
+    ['about/craft-and-care/README.md', 98],
+    ['about/craft-and-care/policies/cc-spec.md', 14],
+    ['about/heart-and-soul/architecture.md', 41],
+    ['about/heart-and-soul/v1.md', 342],
+    ['about/heart-and-soul/vision.md', 332],
+    ['about/lay-and-land/components.md', 83],
+    ['about/legends-and-lore/0001.md', 11],
+    ['roster/atlas/butler.toml', 24],
+    ['roster/bishop/butler.toml', 25],
+  ] as const;
+  const TOTAL = 1357;
+  // Phase B classifies the population in sorted path order.
+  const SEEDS: readonly string[] = [...BODIES.slice(0, 6).map(([path]) => path)].sort();
+
+  it('every body is taken from Git once, counted once and validated once across both phases', () => {
+    const { shape, calls, entries } = build({ texts: BASE_TEXTS });
+    if (shape.kind !== 'observed') throw new Error(shape.kind);
+    expect(bodiesTaken(calls, entries).map((entry) => [entry.path, entry.sizeBytes])).toEqual(BODIES.map((pair) => [...pair]));
+    expect(BODIES.reduce((sum, [, bytes]) => sum + bytes, 0)).toBe(TOTAL);
+    expect(shape.resourceUse).toEqual({
+      bodiesCounted: 14,
+      totalBytes: TOTAL,
+      parsePasses: 154,
+      passesByIdentity: {
+        'utf8-and-nul-validation': 14,
+        'secret-private-key-fragments': 20,
+        'secret-known-token-formats': 20,
+        'secret-credential-assignment': 20,
+        'secret-credential-bearing-url': 20,
+        'markdown-code-context-mask': 14,
+        'active-html-svg-script-handler': 14,
+        'unsafe-url-positions': 14,
+        'phase-a-link-discovery': 6,
+        'project-account-extraction': 3,
+        'declared-item-extraction': 9,
+        'fact-and-precedence-extraction': 0,
+      },
+      sourcesTraversed: 14,
+      maxPassesOnOneSource: 14,
+      breaches: [],
+    });
+    expect(shape.resourceUse.maxPassesOnOneSource).toBeLessThanOrEqual(PWB_RESOURCE_LIMITS.maxParsePassesPerSource);
+    expect(shape.limitBreaches).toEqual([]);
+  });
+
+  it('maxTotalBytes is one cumulative counter: the exact total fits, one byte less refuses only the last body', () => {
+    const fits = observed({ texts: BASE_TEXTS, limits: { maxTotalBytes: TOTAL } });
+    expect(fits.limitBreaches).toEqual([]);
+    expect(fits.exclusions).toEqual([]);
+    const shape = observed({ texts: BASE_TEXTS, limits: { maxTotalBytes: TOTAL - 1 } });
+    expect(shape.limitBreaches).toEqual([{ limit: 'maxTotalBytes', declared: TOTAL - 1, observed: TOTAL, path: 'roster/bishop/butler.toml' }]);
+    expect(shape.resourceUse.breaches).toEqual(shape.limitBreaches);
+    expect(shape.resourceUse.totalBytes).toBe(TOTAL - 25);
+    expect(shape.counts.sources).toBe(15);
+    expect(shape.exclusions).toEqual([
+      expect.objectContaining({ repositoryRelativePath: 'roster/bishop/butler.toml', exclusionReason: 'resource-limit', detail: 'maxTotalBytes', redactionClass: 'unclassifiable-excluded' }),
+    ]);
+    const bishop = shape.sources.find((source) => source.path === 'roster/bishop/butler.toml');
+    expect(bishop?.itemDenominator.kind).toBe('unknown');
+    expect(bishop?.claim.epistemic.label).toBe('Unknown');
+    expect(shape.classes['roster-identity'].denominator.kind).toBe('unknown');
+    expect(shape.claim.epistemic.label).toBe('Unknown');
+    expect('reasons' in shape.claim.epistemic && shape.claim.epistemic.reasons.primary).toBe('source-uncaptured-or-unreachable');
+    for (const entry of allClaims(shape)) isValidClaim(entry);
+  });
+
+  it('maxParsePassesPerSource counts phase B against a seed already validated in phase A', () => {
+    // A seed costs nine passes in phase A and four more detector passes in
+    // phase B before extraction: twelve is one short for every seed, while a
+    // named file with three classes needs eleven and still fits.
+    const shape = observed({ texts: BASE_TEXTS, limits: { maxParsePassesPerSource: 12 } });
+    expect(shape.counts.sources).toBe(15);
+    expect(shape.limitBreaches).toEqual(SEEDS.map((path) => ({ limit: 'maxParsePassesPerSource', declared: 12, observed: 13, path })));
+    expect(shape.exclusions.map((entry) => [entry.repositoryRelativePath, entry.exclusionReason, entry.detail])).toEqual(
+      SEEDS.map((path) => [path, 'resource-limit', 'maxParsePassesPerSource']),
+    );
+    expect(shape.resourceUse.maxPassesOnOneSource).toBe(12);
+    const vision = shape.sources.find((source) => source.path === 'about/heart-and-soul/vision.md');
+    expect(vision?.itemDenominator).toEqual({ kind: 'known', value: 7 });
+    expect(shape.classes['principle'].denominator.kind).toBe('known');
+    for (const path of SEEDS) expect(shape.sources.find((source) => source.path === path)?.claim.epistemic.label, path).toBe('Unknown');
+    expect(shape.claim.epistemic.label).toBe('Unknown');
+    // Excluded seed bodies are hash-not-body: no seed text reaches the shape.
+    expect(JSON.stringify(shape)).not.toContain('[Spec policy](policies/cc-spec.md)');
+    expect(JSON.stringify(shape)).not.toContain('Legends and Lore](legends-and-lore/)');
+    const fits = observed({ texts: BASE_TEXTS, limits: { maxParsePassesPerSource: 14 } });
+    expect(fits.limitBreaches).toEqual([]);
+    expect(fits.exclusions).toEqual([]);
+    for (const entry of allClaims(shape)) isValidClaim(entry);
+  });
+
+  it('a budget spent at extraction makes that source Unknown with no partial items', () => {
+    // vision.md and v1.md need eleven passes (four reader, four detector,
+    // three extraction classes); ten stops each at its third class.
+    const shape = observed({ texts: BASE_TEXTS, limits: { maxParsePassesPerSource: 10 } });
+    // Seeds stop earlier, at their phase-B detector passes; named files that
+    // fit in ten passes are untouched.
+    const stopped = shape.limitBreaches.map((breach) => breach.path ?? "?").filter((path) => !SEEDS.includes(path));
+    expect(stopped).toEqual(['about/heart-and-soul/v1.md', 'about/heart-and-soul/vision.md']);
+    expect(shape.limitBreaches.every((breach) => breach.limit === 'maxParsePassesPerSource' && breach.observed === 11)).toBe(true);
+    expect(shape.sources.find((source) => source.path === 'about/lay-and-land/components.md')?.itemDenominator.kind).toBe('known');
+    for (const path of stopped) {
+      expect(shape.exclusions).toContainEqual(expect.objectContaining({ repositoryRelativePath: path, exclusionReason: 'resource-limit', detail: 'maxParsePassesPerSource' }));
+      const source = shape.sources.find((candidate) => candidate.path === path);
+      expect(source?.itemDenominator.kind).toBe('unknown');
+      expect(shape.items.filter((item) => item.anchors.some((anchor) => anchor.path === path))).toEqual([]);
+    }
+    expect(shape.resourceUse.passesByIdentity['declared-item-extraction']).toBe(5);
+    expect(shape.resourceUse.passesByIdentity['project-account-extraction']).toBe(3);
+    expect(shape.counts.sources).toBe(15);
+    for (const entry of allClaims(shape)) isValidClaim(entry);
   });
 });

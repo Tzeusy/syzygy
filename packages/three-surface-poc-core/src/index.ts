@@ -22,3 +22,4 @@ export * from './project-shape-coverage.js';
 export * from './project-shape-model.js';
 export * from './proposed-work.js';
 export * from './walkthrough-judgment.js';
+export * from './resource-ledger.js';

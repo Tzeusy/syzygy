@@ -18,6 +18,7 @@ import {
   type ExtractedItem,
   type SourceExtraction,
 } from './project-shape-extraction.js';
+import { ParsePassBudgetExceeded, type ParsePassIdentity } from './resource-ledger.js';
 
 // ---------------------------------------------------------------------
 // Fixtures — hand-written in the literal grammar. Composed characters use
@@ -330,7 +331,7 @@ function oracle(fixture: Fixture): ReadonlyMap<ExtractionClass, readonly string[
 
 const extracted = (f: Fixture): SourceExtraction & { kind: 'extracted' } => {
   const r = extractSource({ path: f.path, extractionClasses: f.classes }, f.text);
-  if (r.kind !== 'extracted') throw new Error(`${f.path}: ${JSON.stringify(r.failure)}`);
+  if (r.kind !== 'extracted') throw new Error(`${f.path}: ${JSON.stringify(r.kind === 'unknown' ? r.failure : r.breach)}`);
   return r;
 };
 
@@ -864,5 +865,47 @@ describe('PWB-REQ-002 — the grammar is literal', () => {
       if (r.kind === 'failed') expect(r.failure.class).toBe(cls);
     }
     expect(extractClass('not-a-class' as ExtractionClass, 'x', '').kind).toBe('failed');
+  });
+});
+
+// ---------------------------------------------------------------------
+// Extraction charges one registry pass per class (registry amendment
+// 2026-09-05: `project-account-extraction`, `declared-item-extraction`;
+// PWB-REQ-006 as amended).
+
+describe('PWB-REQ-006 (amended) — extraction charges one registry pass per class', () => {
+  const source = { path: 'heart-and-soul/vision.md', extractionClasses: ['project-account-section', 'principle', 'success-criterion'] as const };
+
+  it('charges project-account-extraction for the account section and declared-item-extraction for every item class, in class order', () => {
+    const charged: ParsePassIdentity[] = [];
+    const r = extractSource(source, VISION, (pass) => {
+      charged.push(pass);
+    });
+    expect(r.kind).toBe('extracted');
+    expect(charged).toEqual(['project-account-extraction', 'declared-item-extraction', 'declared-item-extraction']);
+  });
+
+  it('a spent budget yields over-limit naming the class whose traversal never ran, with no partial items', () => {
+    const breach = { limit: 'maxParsePassesPerSource' as const, declared: 5, observed: 6, path: source.path };
+    let calls = 0;
+    const r = extractSource(source, VISION, (pass) => {
+      calls += 1;
+      if (calls === 2) throw new ParsePassBudgetExceeded(breach, pass);
+    });
+    expect(r).toEqual({ kind: 'over-limit', path: source.path, classes: [...source.extractionClasses], class: 'principle', breach });
+    expect('items' in r).toBe(false);
+    expect(calls).toBe(2);
+  });
+
+  it('an unregistered traversal is not caught: the forbidden call propagates', () => {
+    expect(() =>
+      extractSource(source, VISION, () => {
+        throw new Error('unregistered parse pass');
+      }),
+    ).toThrow('unregistered parse pass');
+  });
+
+  it('with no charge the extraction is unchanged', () => {
+    expect(extractSource(source, VISION)).toEqual(extractSource(source, VISION, () => undefined));
   });
 });

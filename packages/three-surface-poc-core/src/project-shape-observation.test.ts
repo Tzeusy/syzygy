@@ -16,6 +16,7 @@ import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import { PWB_SECRET_POLICY, classifyPhaseASeed, compileDetectors } from './content-classification.js';
 import { indexGitTree, type GitTreeEntry } from './git-tree.js';
 import { observeProjectShape } from './project-shape-observer.js';
+import { createResourceLedger, type ParsePassCharge } from './resource-ledger.js';
 import {
   PWB_CONTENT_CLASS,
   PWB_FAILURE_STATES,
@@ -629,5 +630,80 @@ describe('registry-bound constants', () => {
     expect(sourceIdentityOf('repository:x', 'b'.repeat(40), { path: 'p/q.md', rule: 'root-index', extractionClasses: [], anchor: { kind: 'missing-at-revision' } })).toBe(
       `repository:x@${'b'.repeat(40)}:p/q.md#missing`,
     );
+  });
+});
+
+// ---------------------------------------------------------------------
+// Phase A charges the evaluation-wide ledger (registry amendment
+// 2026-09-05: `parsePassIdentities`, `resourceLimitSemantics`; PWB-REQ-006
+// as amended). A seed is one utf8 validation, the seven guard passes of
+// the phase-A classifier and one link discovery: nine registry passes.
+
+describe('phase A charges one shared resource ledger', () => {
+  const chargingClassifier = (text: string, charge: ParsePassCharge) => classifyPhaseASeed(PHASE_A_DETECTORS, text, charge);
+
+  function observeWith(limits: Partial<PwbResourceLimits>) {
+    const ledger = createResourceLedger({ ...PWB_RESOURCE_LIMITS, ...limits });
+    const git = runner({});
+    const result = observeProjectShapeSources({ repositoryId: REPOSITORY, revision: 'main', capturedAt: CAPTURED_AT, runGit: git.runGit, classifyPhaseA: chargingClassifier, ledger });
+    if (result.kind !== 'observed') throw new Error(`expected observed, got ${result.kind}`);
+    return { observation: result, ledger, calls: git.calls };
+  }
+
+  it('a safe seed costs exactly nine registry passes, each identity once, and its body counts once', () => {
+    const { observation, ledger } = observeWith({});
+    for (const path of PHASE_A) expect(ledger.passesFor(path), path).toBe(9);
+    const summary = ledger.summary();
+    expect(summary.passesByIdentity).toEqual({
+      'utf8-and-nul-validation': 6,
+      'secret-private-key-fragments': 6,
+      'secret-known-token-formats': 6,
+      'secret-credential-assignment': 6,
+      'secret-credential-bearing-url': 6,
+      'markdown-code-context-mask': 6,
+      'active-html-svg-script-handler': 6,
+      'unsafe-url-positions': 6,
+      'phase-a-link-discovery': 6,
+      'project-account-extraction': 0,
+      'declared-item-extraction': 0,
+      'fact-and-precedence-extraction': 0,
+    });
+    expect(summary.maxPassesOnOneSource).toBe(9);
+    expect(summary.sourcesTraversed).toBe(6);
+    expect(summary.bodiesCounted).toBe(6);
+    expect(summary.totalBytes).toBe(PHASE_A.reduce((sum, path) => sum + (BYTES.get(path)?.byteLength ?? 0), 0));
+    expect(observation.limitBreaches).toEqual([]);
+    for (const path of PHASE_A) {
+      const held = ledger.recall(path, oidOf(path));
+      expect(held?.text, path).toBe(TEXTS[path]);
+    }
+  });
+
+  it('maxParsePassesPerSource 8 stops the root closed at link discovery, so nothing below it is discovered; 9 reads every seed', () => {
+    const under = observeWith({ maxParsePassesPerSource: 8 });
+    const root = 'about/README.md';
+    expect(under.observation.reads).toEqual([{ path: root, objectId: oidOf(root), outcome: 'over-limit', bytes: BYTES.get(root)?.byteLength, detail: 'maxParsePassesPerSource' }]);
+    expect(under.observation.limitBreaches).toEqual([{ limit: 'maxParsePassesPerSource', declared: 8, observed: 9, path: root }]);
+    expect(under.ledger.summary().passesByIdentity['phase-a-link-discovery']).toBe(0);
+    expect(under.ledger.summary().passesByIdentity['unsafe-url-positions']).toBe(1);
+    expect(under.ledger.passesFor(root)).toBe(8);
+    // An unreadable root is the whole-observation failure state, as for any
+    // other root read failure.
+    expect(under.observation.degradation).toMatchObject({ failureState: 'sourceMissingOrUnreadable', unknownReason: 'source-uncaptured-or-unreachable' });
+    // Nothing was discovered from a seed that never reached link discovery;
+    // the root itself stays in the population.
+    expect(under.observation.manifest.sources.map((source) => source.path).filter((path) => path.startsWith('about/'))).toEqual([root]);
+    expect(under.ledger.recall(root, oidOf(root))).toBeUndefined();
+    const at = observeWith({ maxParsePassesPerSource: 9 });
+    expect(at.observation.reads.every((read) => read.outcome === 'read')).toBe(true);
+    expect(at.observation.limitBreaches).toEqual([]);
+  });
+
+  it('maxParsePassesPerSource 1 stops a seed before its first classifier pass', () => {
+    const { observation, ledger } = observeWith({ maxParsePassesPerSource: 1 });
+    expect(observation.reads.map((read) => [read.outcome, read.detail])).toEqual([['over-limit', 'maxParsePassesPerSource']]);
+    expect(ledger.summary().passesByIdentity['secret-private-key-fragments']).toBe(0);
+    expect(ledger.summary().passesByIdentity['utf8-and-nul-validation']).toBe(1);
+    expect(ledger.breaches).toEqual([{ limit: 'maxParsePassesPerSource', declared: 1, observed: 2, path: 'about/README.md' }]);
   });
 });

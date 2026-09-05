@@ -18,6 +18,8 @@
 
 import { posixBasename } from './git-tree.js';
 import { EXTRACTION_CLASSES, type ExtractionClass, type ManifestSource } from './project-shape-manifest.js';
+import type { ResourceLimitBreach } from './project-shape-observation.js';
+import { ParsePassBudgetExceeded, type ParsePassCharge, type ParsePassIdentity } from './resource-ledger.js';
 
 // ---------------------------------------------------------------------
 // Vocabulary.
@@ -100,6 +102,15 @@ export type SourceExtraction =
       readonly path: string;
       readonly classes: readonly ExtractionClass[];
       readonly failure: ExtractionFailureRecord;
+    }
+  | {
+      // The source's parse-pass budget ran out before `class` was
+      // extracted: not a grammar failure, a registry resource breach.
+      readonly kind: 'over-limit';
+      readonly path: string;
+      readonly classes: readonly ExtractionClass[];
+      readonly class: ExtractionClass;
+      readonly breach: ResourceLimitBreach;
     };
 
 // ---------------------------------------------------------------------
@@ -571,12 +582,35 @@ export function extractClass(cls: ExtractionClass, path: string, text: string): 
 
 // Extracts every class the manifest assigned to one classified source. Any
 // class failing makes the whole source Unknown: no partial item set.
-export function extractSource(source: Pick<ManifestSource, 'path' | 'extractionClasses'>, text: string): SourceExtraction {
+//
+// With a ledger charge in force each class is one registry pass over the
+// decoded source (its parse is the helper traversal charged to that named
+// pass); a spent budget makes the whole source over-limit before the
+// extractor that would have exceeded it runs.
+export const EXTRACTION_PASSES: Readonly<Record<ExtractionClass, ParsePassIdentity>> = {
+  'project-account-section': 'project-account-extraction',
+  principle: 'declared-item-extraction',
+  'success-criterion': 'declared-item-extraction',
+  'catalog-entry': 'declared-item-extraction',
+  'design-contract': 'declared-item-extraction',
+  'baseline-spec': 'declared-item-extraction',
+  'topology-component': 'declared-item-extraction',
+  'craft-policy': 'declared-item-extraction',
+  'roster-identity': 'declared-item-extraction',
+};
+
+export function extractSource(source: Pick<ManifestSource, 'path' | 'extractionClasses'>, text: string, charge?: ParsePassCharge): SourceExtraction {
   const { path } = source;
   const classes = source.extractionClasses;
   const all: ExtractedItem[] = [];
   const denominators: Partial<Record<ExtractionClass, number>> = {};
   for (const cls of classes) {
+    try {
+      charge?.(EXTRACTION_PASSES[cls]);
+    } catch (error) {
+      if (error instanceof ParsePassBudgetExceeded) return { kind: 'over-limit', path, classes, class: cls, breach: error.breach };
+      throw error;
+    }
     const result = extractClass(cls, path, text);
     if (result.kind === 'failed') return { kind: 'unknown', path, classes, failure: result.failure };
     all.push(...result.items);
