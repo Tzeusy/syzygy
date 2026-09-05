@@ -258,6 +258,8 @@ describe('PWB-REQ-003 — the population survives every fault', () => {
     expect(c.sources).toBe(POPULATION.length);
     expect(c.classified + c.excluded + c.unavailable).toBe(c.sources);
     expect(c.classified).toBe(6);
+    expect(c.classifiedByBasis).toEqual({ body: 6, 'path-only': 0 });
+    expect(c.classifiedByBasis.body + c.classifiedByBasis['path-only']).toBe(c.classified);
     expect(c.excluded).toBe(12);
     expect(c.unavailable).toBe(4);
     expect(c.byRedactionClass).toEqual({ 'excluded-artifact': 9, 'unclassifiable-excluded': 3 });
@@ -454,6 +456,7 @@ describe('PWB-REQ-003 — classifySource step by step', () => {
       policyId: 'polaris-butlers-project-shape-secrets',
       policyVersion: '1.0.0-candidate.4',
       detectorsRun: 4,
+      basis: 'body',
     });
     const excluded = parseFailureExclusion(policy, classified.record);
     expect(excluded).toEqual({

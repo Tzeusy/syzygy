@@ -229,7 +229,7 @@ function denominatorSentence(aggregate: Observed['classes'][keyof Observed['clas
 
 function countsSentence(shape: Observed): string {
   const c = shape.counts;
-  return `${c.sourcesAdmitted} of ${c.sources} sources readable; ${c.items} items (${c.modeled} modeled, ${c.unknown} Unknown, ${c.contradicted} contradicted); ${c.facts} facts (${c.contradictedFacts} contradicted); ${c.exclusions} exclusion(s).`;
+  return `${c.classification.classifiedByBasis.body} of ${c.sources} source bodies readable; ${c.classification.classifiedByBasis['path-only']} path-only source identities; ${c.items} items (${c.modeled} modeled, ${c.unknown} Unknown, ${c.contradicted} contradicted); ${c.facts} facts (${c.contradictedFacts} contradicted); ${c.exclusions} exclusion(s).`;
 }
 
 function reasonCountsOf(claims: readonly ProjectShapeClaim[]): { primary: Map<string, number>; secondary: Map<string, number> } {

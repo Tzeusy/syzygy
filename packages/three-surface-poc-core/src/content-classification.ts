@@ -26,7 +26,7 @@
 // The population never shrinks: `classifyManifestSources` returns exactly one
 // result per manifest source, in manifest order.
 
-import { PWB_POLICY_IDENTITY, type ExactObjectReader, type ObjectReadRecord, readManifestSources } from './git-object-reader.js';
+import { PWB_POLICY_IDENTITY, scanActiveContent, type ExactObjectReader, type ObjectReadRecord, readManifestSources } from './git-object-reader.js';
 import { EXTRACTION_CLASSES, type ManifestSource, type ProjectShapeSourceManifest } from './project-shape-manifest.js';
 import { PWB_FAILURE_STATES, type PwbFailureState } from './project-shape-observation.js';
 
@@ -170,6 +170,20 @@ export function detectSecrets(detectors: readonly CompiledDetector[], text: stri
   return first;
 }
 
+export type PhaseAClassification =
+  | { readonly kind: 'safe' }
+  | { readonly kind: 'excluded'; readonly reason: 'secret-matched' | 'active-content'; readonly detail: string };
+
+// Phase-A indexes derive later read paths, so the same approved detectors and
+// active-content guard must screen their transient text before link parsing.
+export function classifyPhaseASeed(detectors: readonly CompiledDetector[], text: string): PhaseAClassification {
+  const detectorId = detectSecrets(detectors, text);
+  if (detectorId !== undefined) return { kind: 'excluded', reason: 'secret-matched', detail: detectorId };
+  const active = scanActiveContent(text);
+  if (active.length > 0) return { kind: 'excluded', reason: 'active-content', detail: String(active.length) };
+  return { kind: 'safe' };
+}
+
 // ---------------------------------------------------------------------
 // Outcomes.
 
@@ -227,11 +241,13 @@ export type ClassificationRecord =
   | {
       readonly path: string;
       readonly outcome: 'classified';
-      readonly contentDigest: string;
+      // Absent for a path-only identity whose body was deliberately not read.
+      readonly contentDigest?: string;
       readonly extractionClasses: readonly string[];
       readonly policyId: string;
       readonly policyVersion: string;
       readonly detectorsRun: number;
+      readonly basis: 'body' | 'path-only';
     }
   | {
       readonly path: string;
@@ -360,6 +376,8 @@ export function classifySource(input: ClassifyInput, source: ManifestSource, rec
       return unclassifiable(policy, record, 'not-utf-8', undefined);
     case 'active-content':
       return unclassifiable(policy, record, 'active-content', String(record.activeContent?.length ?? 0));
+    case 'not-read':
+      return unavailable(path, 'git-read-failed', GIT_FAILED);
     case 'read':
       break;
   }
@@ -395,6 +413,7 @@ export function classifySource(input: ClassifyInput, source: ManifestSource, rec
       policyId: policy.policyId,
       policyVersion: policy.policyVersion,
       detectorsRun: detectors.length,
+      basis: 'body',
     },
   };
 }
@@ -419,7 +438,10 @@ export interface ClassifiedSource<T> {
 
 export interface ClassificationCounts {
   readonly sources: number;
+  // Sources admitted to item extraction, split by whether a body crossed the
+  // classifier or identity was derived from exact path metadata only.
   readonly classified: number;
+  readonly classifiedByBasis: Readonly<Record<'body' | 'path-only', number>>;
   readonly excluded: number;
   readonly unavailable: number;
   readonly byRedactionClass: Readonly<Record<EmittedRedactionClass, number>>;
@@ -433,6 +455,26 @@ export interface ClassifiedPopulation<T> {
   readonly counts: ClassificationCounts;
 }
 
+export type PathOnlyDerivation<T> = (source: ManifestSource) => { readonly kind: 'derived'; readonly value: T } | { readonly kind: 'body' };
+
+export function classificationCounts(records: readonly ClassificationRecord[]): ClassificationCounts {
+  const exclusions = records.flatMap((record) => (record.outcome === 'excluded' ? [record.exclusion] : []));
+  return {
+    sources: records.length,
+    classified: records.filter((record) => record.outcome === 'classified').length,
+    classifiedByBasis: {
+      body: records.filter((record) => record.outcome === 'classified' && record.basis === 'body').length,
+      'path-only': records.filter((record) => record.outcome === 'classified' && record.basis === 'path-only').length,
+    },
+    excluded: exclusions.length,
+    unavailable: records.filter((record) => record.outcome === 'unavailable').length,
+    byRedactionClass: {
+      'excluded-artifact': exclusions.filter((entry) => entry.redactionClass === 'excluded-artifact').length,
+      'unclassifiable-excluded': exclusions.filter((entry) => entry.redactionClass === 'unclassifiable-excluded').length,
+    },
+  };
+}
+
 // Reads and classifies every manifest source in manifest order. Exactly one
 // result per source; the body reaches only `consume`, and only for a
 // classified source.
@@ -441,24 +483,43 @@ export function classifyManifestSources<T>(
   reader: ExactObjectReader,
   consume: (source: ManifestSource, text: string, record: ClassificationRecord & { readonly outcome: 'classified' }) => T,
   policy: SecretClassificationPolicy = PWB_SECRET_POLICY,
+  deriveFromPath?: PathOnlyDerivation<T>,
 ): ClassifiedPopulation<T> {
   const detectors = compileDetectors(policy);
   const input: ClassifyInput = { policy, detectors, manifest };
-  const results: ClassifiedSource<T>[] = readManifestSources(manifest, reader, (_source, text) => text).map(({ source, record: read, value: text }) => {
+  const derivations = new Map(manifest.sources.map((source) => [source.path, deriveFromPath?.(source) ?? { kind: 'body' as const }]));
+  const bodySources = manifest.sources.filter((source) => derivations.get(source.path)?.kind !== 'derived');
+  const bodyReads = new Map(readManifestSources({ sources: bodySources }, reader, (_source, text) => text).map((entry) => [entry.source.path, entry]));
+  const results: ClassifiedSource<T>[] = manifest.sources.map((source) => {
+    const pathOnly = derivations.get(source.path);
+    if (pathOnly?.kind === 'derived') {
+      if (source.rule !== 'baseline-spec-tree' || source.anchor.kind !== 'blob') {
+        throw new Error(`path-only derivation is not permitted for ${source.path}`);
+      }
+      const read: ObjectReadRecord = { path: source.path, objectId: source.anchor.objectId, outcome: 'not-read', bytes: 0, detail: 'path-defined-identity' };
+      return {
+        source,
+        read,
+        record: {
+          path: source.path,
+          outcome: 'classified',
+          extractionClasses: source.extractionClasses,
+          policyId: policy.policyId,
+          policyVersion: policy.policyVersion,
+          detectorsRun: 0,
+          basis: 'path-only',
+        },
+        value: pathOnly.value,
+      };
+    }
+    const bodyRead = bodyReads.get(source.path);
+    if (bodyRead === undefined) throw new Error(`no body-read result for ${source.path}`);
+    const { record: read, value: text } = bodyRead;
     const classification = classifySource(input, source, read, text);
     if (classification.kind === 'withheld') return { source, read, record: classification.record };
     return { source, read, record: classification.record, value: consume(source, classification.text, classification.record) };
   });
   const exclusions = results.flatMap((r) => (r.record.outcome === 'excluded' ? [r.record.exclusion] : []));
-  const counts: ClassificationCounts = {
-    sources: manifest.sources.length,
-    classified: results.filter((r) => r.record.outcome === 'classified').length,
-    excluded: exclusions.length,
-    unavailable: results.filter((r) => r.record.outcome === 'unavailable').length,
-    byRedactionClass: {
-      'excluded-artifact': exclusions.filter((e) => e.redactionClass === 'excluded-artifact').length,
-      'unclassifiable-excluded': exclusions.filter((e) => e.redactionClass === 'unclassifiable-excluded').length,
-    },
-  };
+  const counts = classificationCounts(results.map((result) => result.record));
   return { policyId: policy.policyId, policyVersion: policy.policyVersion, results, exclusions, counts };
 }

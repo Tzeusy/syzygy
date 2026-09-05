@@ -194,6 +194,7 @@ export function scanActiveContent(text: string): readonly ActiveContentFinding[]
 
 export const OBJECT_READ_OUTCOMES = [
   'read',
+  'not-read',
   'refused',
   'over-limit',
   'git-read-failed',

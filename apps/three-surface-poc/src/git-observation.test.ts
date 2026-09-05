@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import {
   mkdirSync,
   mkdtempSync,
+  readFileSync,
   renameSync,
   rmSync,
   statSync,
@@ -9,14 +10,18 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   observeGitRepository,
+  PWB_APPROVED_REPOSITORY_LOCATOR,
   pocObserverInputsAreClean,
+  resolvePwbRepositoryBinding,
 } from './git-observation.js';
 
 const cleanups: string[] = [];
+const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 
 afterEach(() => {
   for (const directory of cleanups.splice(0)) {
@@ -46,6 +51,43 @@ function repositoryWithFile(relativePath: string): string {
 }
 
 describe('read-only Git observation', () => {
+  it('binds only the approved resolved locator and its exact Git common directory', () => {
+    const result = resolvePwbRepositoryBinding('/configured/butlers-link', {
+      approvedLocator: '/approved/butlers',
+      realpath: (path) => path === '/configured/butlers-link' ? '/approved/butlers' : path,
+      runGit: () => '/approved/butlers/.git\n',
+    });
+    expect(result).toEqual({ kind: 'bound', locator: '/approved/butlers', gitCommonDirectory: '/approved/butlers/.git' });
+  });
+
+  it('keeps the approved locator byte-equal to the act-bound consent mapping', () => {
+    const consent = readFileSync(join(REPO_ROOT, '.syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md'), 'utf8');
+    expect(consent).toContain(`Current locator: \`${PWB_APPROVED_REPOSITORY_LOCATOR}\` (configuration, not repository`);
+  });
+
+  it('rejects a second Butlers-shaped repository before any repository observation', () => {
+    let gitCalls = 0;
+    const result = resolvePwbRepositoryBinding('/other/butlers', {
+      approvedLocator: '/approved/butlers',
+      realpath: (path) => path,
+      runGit: () => {
+        gitCalls += 1;
+        return '/other/butlers/.git\n';
+      },
+    });
+    expect(result).toEqual({ kind: 'rejected', reason: 'locator-mismatched' });
+    expect(gitCalls).toBe(0);
+  });
+
+  it('rejects a mismatched Git common directory', () => {
+    const result = resolvePwbRepositoryBinding('/approved/butlers', {
+      approvedLocator: '/approved/butlers',
+      realpath: (path) => path,
+      runGit: () => '/other/object-database\n',
+    });
+    expect(result).toEqual({ kind: 'rejected', reason: 'git-common-directory-mismatched' });
+  });
+
   it('allows unrelated dirty files while protecting POC runtime inputs', () => {
     expect(pocObserverInputsAreClean({ changedPaths: ['.gitignore'] })).toBe(true);
     expect(

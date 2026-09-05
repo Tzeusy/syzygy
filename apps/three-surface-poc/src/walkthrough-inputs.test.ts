@@ -5,6 +5,7 @@
 // below is written into a fake tree, never to disk.
 
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -157,6 +158,12 @@ function loaderFor(tree: FakeTree) {
       }
       throw new Error(`unexpected git ${args.join(' ')}`);
     },
+    readGitBlob: (_root, object) => {
+      const path = object.split(':').slice(1).join(':');
+      const text = tree.files.get(path);
+      if (text === undefined || !tree.treePaths.has(path)) throw new Error('missing tagged record');
+      return new TextEncoder().encode(text);
+    },
   });
 }
 
@@ -245,8 +252,10 @@ describe('loadWalkthroughJudgmentInputs (hermetic)', () => {
 
 describe('loadWalkthroughJudgmentInputs (real tree)', () => {
   it('evaluates the current tree honestly: no run record has been written yet, so the judgment is absent', () => {
+    const governanceRevision = execFileSync('git', ['-C', REPO_ROOT, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
     const inputs = loadWalkthroughJudgmentInputs({
       repoRoot: REPO_ROOT,
+      governanceRevision,
       evaluationId: 'eval-real',
       evaluationInstant: new Date().toISOString(),
     });

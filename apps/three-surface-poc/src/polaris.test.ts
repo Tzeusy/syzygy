@@ -99,7 +99,8 @@ describe('Polaris', () => {
     // The slice is labeled as one capability within the catalog, and the
     // old capability-first framing is gone.
     expect(html).toContain('data-polaris-capability-scope');
-    expect(html).toContain('one capability within the complete catalog');
+    expect(html).toContain('one capability within the project catalog');
+    expect(html).toContain('completeness follows its disclosed denominator');
     expect(html).not.toContain('data-polaris-movement');
     expect(html).not.toContain('data-polaris-framing');
   });
