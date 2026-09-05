@@ -45,11 +45,11 @@ the repair is a new disposition that cites it.
 | `POLARIS-*`, `R-POLARIS-*` | 15 | 2026-08-31 | Polaris project-wide model, POC, observation, precondition, and its sign-off packet |
 | `R-GENERAL-TRUSTED-*` | 24 | 2026-08-31 → 09-01 | The general trusted-bootstrap authorization transaction |
 | `R-PWB-STATE1-*`, `R-PWB-EFFECT-*` | 17 | 2026-09-02 | The PWB state-(1) amendment and effect acts |
-| `R-PWB-TRUTH-*`, `R-PWB-LIVE-*`, `*-pwb-live-*` | 15 | 2026-09-05 | PWB truth-policy amendment; the live exact-head packet |
+| `R-PWB-TRUTH-*`, `R-PWB-LIVE-*`, `*-pwb-live-*` | 16 | 2026-09-05 | PWB truth-policy amendment; the live exact-head packet and its finding-traceability index |
 
-The seven rows partition the directory: 85 files on disk, 85 assigned, no
-remainder [Observed — swept 2026-09-05 at `951084c`; the grouping is by
-filename prefix and the dates are `git log --diff-filter=A`]. These are
+The seven rows partition the directory: 86 files on disk, 86 assigned, no
+remainder [Observed — swept 2026-09-05; the grouping is by filename prefix
+and the dates are `git log --diff-filter=A`]. These are
 navigation figures, not measurement, and they go stale the moment a review
 lands — re-derive rather than trusting the row.
 
