@@ -13,7 +13,7 @@
 |---|---|---|
 | **Has the owner decided this?** | the **recorded decisions** below | Doctrine, craft, SDR-1…37, and the 2026-08-16 rulings are recorded. The rest is not |
 | **Has an act been performed?** | `ACCEPTANCE-ACT-RECORD.md` | **Yes — four original foundational acts, a separate five-row amendment transaction performed 2026-09-01, and the separate eleven-artifact PWB amendment performed 2026-09-02.** The PWB act changed behavioral provenance only; neither amendment granted effect-specific or implementation authority. Nine foundational offerings remain open: four deferred waves, CC-TEST-2, topology, overview, D3, and **P-12 knowledge hygiene** as the ninth |
-| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **21** rows in the open decision section, plus **5** open acceptance-act rows — **26 total** *(measured 2026-09-01 by the generator predicate: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`; independently recounted by section; P-1's row stays open for the deferred C/D waves)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
+| **Which decisions are pending?** | [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md) | **25** rows in the open decision section, plus **5** open acceptance-act rows — **30 total** *(measured 2026-09-05 by the generator predicate: every `## ` section except those headed `Resolved`, minus any row whose final cell leads with `**Executed.**`; independently recounted by section; P-1's row stays open for the deferred C/D waves; P-54…P-57 were added 2026-09-05 by the documentation consolidation pass)*. The launch-critical ones link a bounded packet; the rest are queue entries only |
 | **Which decisions were resolved, and how?** | [`DECISION-HISTORY.md`](DECISION-HISTORY.md) | The resolved rows — the nine 2026-08-16 rulings and the 2026-08-17 act dispositions (P-41/P-42 executed, P-22/P-28 ratified) — and the register's chronology |
 | **Where is the history?** | [`launch-gate/HISTORY.md`](launch-gate/HISTORY.md), [`DECISION-HISTORY.md`](DECISION-HISTORY.md), and the round trees under `contracts/candidates/` | Deliberately off the default path |
 
@@ -79,12 +79,14 @@ neither amendment act.
 ## 3. Pending decisions — one bounded packet each
 
 The queue is [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md). The
-launch-critical rows each have a prepared packet here:
+rows below have a prepared packet here — the launch-critical ones, and any
+group of rows gathered so the owner can answer them in one sitting:
 
 | `P-nn` | Question | Packet |
 |---|---|---|
 | **P-12** | The knowledge-hygiene craft policy | [`KNOWLEDGE-HYGIENE-DECISION.md`](KNOWLEDGE-HYGIENE-DECISION.md) |
 | **P-45…P-48** | The four Administration-1 owner inputs (resource envelope, effort ceiling, F2 disposition, stop condition) | [`ADMINISTRATION-1-OWNER-INPUTS-DECISION.md`](ADMINISTRATION-1-OWNER-INPUTS-DECISION.md) |
+| **P-54…P-57** | Four questions about the written estate: the OpenSpec config's vendor boilerplate, the two empty OpenSpec lifecycle directories, the spent Capability 1 prompt at the repository root, and whether `openspec/` gets a navigation page | [`DOCUMENTATION-ESTATE-DECISION-PACKET.md`](DOCUMENTATION-ESTATE-DECISION-PACKET.md) |
 
 Packets whose question the owner has since ruled or executed (P-41's
 `SPECIFICATION-ACCEPTANCE-DECISION.md` and P-42's

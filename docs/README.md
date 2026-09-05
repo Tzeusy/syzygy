@@ -22,6 +22,8 @@ agents doing the building.
 | `THREE-SURFACE-POC.md` | How to run the bounded POC | Anyone: "how do I start this thing and see it?" |
 | `reviews/` | The review corpus — raw reviewer output and its dispositions | A reviewer or repairer: "what did an independent reader find, and what happened to each finding?" |
 | `evidence/` | Machine-produced run records (mutation sweeps, browser and fresh-checkout runs), as JSON | Anyone checking a claim: "what did that run actually output?" |
+| `plans/` | Dated design notes for a single bead, written before the work | An implementer picking up that bead: "what shape was already decided, and by whom?" |
+| `superpowers/plans/`, `superpowers/specs/` | Spent plans and designs from an external-harness convention, kept as evidence | Someone auditing a past change: "what was the plan the work was actually done against?" |
 
 Implementation *plans* live here. The **authorizing act** for any of that work
 does not — it lives in `.syzygy/governance/decisions/`. A plan in this
@@ -50,6 +52,21 @@ remainder [Observed — swept 2026-09-05 at `951084c`; the grouping is by
 filename prefix and the dates are `git log --diff-filter=A`]. These are
 navigation figures, not measurement, and they go stale the moment a review
 lands — re-derive rather than trusting the row.
+
+## `plans/` and `superpowers/` — two homes, one role
+
+Both hold plan-and-design notes; they are split by which harness wrote them,
+not by what they are. Prefer `plans/` for anything new.
+
+`superpowers/` is **path-pinned and must not be moved or renamed.** The
+general trusted-bootstrap authorization's impact ledger classifies every path
+under that prefix as spent historical evidence, and
+`scripts/build_general_trusted_bootstrap_impact_ledger.py` hard-codes the
+prefix string to do it. Relocating a file out of that directory would silently
+re-classify it on the next regeneration. Its contents are spent: read them to
+learn what a past change was built against, never as a live instruction — the
+"REQUIRED SUB-SKILL" lines at their heads addressed the worker of the day and
+bind nobody now.
 
 ## `evidence/` — run records
 
