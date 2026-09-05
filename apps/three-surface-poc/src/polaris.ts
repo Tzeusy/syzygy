@@ -3,12 +3,15 @@ import {
   EXTRACTION_CLASSES,
   UNKNOWN_REASON_ROUTES,
   type AuthorityDisclosure,
+  type Declaration,
   type Exclusion,
   type ExtractionClass,
   type PocEntity,
   type PocModel,
   type PocProvenance,
   type PocRelationship,
+  type PrecedenceCitation,
+  type PrecedenceDisclosure,
   type ProjectAccountKey,
   type ProjectAccountStatement,
   type ProjectShape,
@@ -20,6 +23,7 @@ import {
   type ProjectShapeSupport,
   type ProposedWork,
   type ReasonCounts,
+  type RootSummaryDisclosure,
 } from '@syzygy/three-surface-poc-core';
 
 import {
@@ -322,7 +326,7 @@ function shortDigest(digest: string): string {
   return digest.replace(/^sha256:/, '').slice(0, 12);
 }
 
-function sourceSlug(path: string): string {
+export function sourceSlug(path: string): string {
   return path.replace(/[^A-Za-z0-9]+/g, '-');
 }
 
@@ -519,6 +523,55 @@ function walkthroughJudgmentSection(model: PocModel): string {
   </section>`;
 }
 
+/** PWB-REQ-021 (as amended 2026-09-05): whether the retained walkthrough
+ * record is a ready answer population against this evaluation. Every
+ * finding, every retained answer and every anchor is its own
+ * `data-polaris-readiness*` marker (the machine channel carries the same
+ * value under `walkthroughReadiness`); the owner's words are shown verbatim
+ * under the disclosure role — an execution fact, never a verdict or score,
+ * and separate from the judgment above. */
+function walkthroughReadinessSection(model: PocModel): string {
+  const readiness = model.walkthroughReadiness;
+  const head = heading(3, 'polaris-walkthrough-readiness', 'evidence.walkthrough-readiness');
+  if (readiness.kind === 'not-evaluated') {
+    return `<section class="claim-section" data-polaris-section="walkthrough-readiness" data-polaris-readiness="not-evaluated">
+    ${head}
+    <p${DISCLOSURE}><small>${copy('sentence.readiness-not-evaluated')} <span data-polaris-readiness-detail>${escapeHtml(readiness.detail)}</span></small></p>
+  </section>`;
+  }
+  const r = readiness.readiness;
+  if (r.kind === 'no-run-record') {
+    return `<section class="claim-section" data-polaris-section="walkthrough-readiness" data-polaris-readiness="no-run-record">
+    ${head}
+    <p${DISCLOSURE}><small>${copy('sentence.readiness-no-run-record')} <span data-polaris-readiness-detail>${escapeHtml(r.detail)}</span></small></p>
+  </section>`;
+  }
+  const state = r.ready ? 'ready' : 'not-ready';
+  const findings = r.findings.length === 0
+    ? ''
+    : `<p${DISCLOSURE}><small>${copy('label.readiness-findings')}</small></p>
+    <ul${DISCLOSURE}>${r.findings.map((finding) => `<li data-polaris-readiness-arm="${escapeHtml(finding.arm)}"><small><code>${escapeHtml(finding.arm)}</code> — <span data-polaris-readiness-finding>${escapeHtml(finding.detail)}</span></small></li>`).join('')}</ul>`;
+  const traversed = r.traversedPaths.map((path) => `<code data-polaris-readiness-traversed>${escapeHtml(path)}</code>`).join(', ');
+  const answers = r.answers.length === 0
+    ? ''
+    : `<p${DISCLOSURE}><small>${copy('label.answers')}</small></p>
+    <ol${DISCLOSURE} data-polaris-answers>${r.answers.map((answer) => {
+      const anchors = answer.anchors.length === 0
+        ? ''
+        : `<br><small>${copy('label.sources')} ${answer.anchors.map((anchor) => `<code data-polaris-answer-anchor="${escapeHtml(anchor.path)}:${anchor.line}" data-polaris-anchor-resolved="${anchor.resolved ? 'yes' : 'no'}">${escapeHtml(`${anchor.path}:${anchor.line}`)}</code>`).join(', ')}</small>`;
+      const authority = answer.authority === undefined
+        ? ''
+        : `<br><small>${copy('label.cited-authority')} <code data-polaris-answer-authority="${escapeHtml(answer.authority.path)}" data-polaris-authority-resolved="${answer.authority.resolved ? 'yes' : 'no'}">${escapeHtml(answer.authority.path)}</code></small>`;
+      return `<li data-polaris-answer="${escapeHtml(answer.identity)}"><code>${escapeHtml(answer.identity)}</code><blockquote data-polaris-answer-text>${escapeHtml(answer.text)}</blockquote>${anchors}${authority}</li>`;
+    }).join('')}</ol>`;
+  return `<section class="claim-section" data-polaris-section="walkthrough-readiness" data-polaris-readiness="${state}">
+    ${head}
+    <p${DISCLOSURE}><small>${copy('label.readiness')} <span data-polaris-readiness-state>${state}</span>. ${copy('sentence.readiness-execution-fact')} ${copy('label.surface-version')} <code data-polaris-readiness-surface>${escapeHtml(r.surfaceVersion ?? '')}</code>; ${copy('label.evaluation-identity')} <code data-polaris-readiness-evaluation>${escapeHtml(r.evaluationIdentity ?? '')}</code>; ${traversed === '' ? '' : `${copy('label.traversed')} ${traversed}.`}</small></p>
+    ${findings}
+    ${answers}
+  </section>`;
+}
+
 function anchorText(anchor: ProjectShapeSource['anchor']): string {
   switch (anchor.kind) {
     case 'blob':
@@ -563,6 +616,74 @@ function factItem(fact: ProjectShapeFact): string {
     .map((declaration) => `${escapeHtml(declaration.value)} (${escapeHtml(declaration.basis)}, ${declaration.anchors.map((anchor) => sourceRef(anchor.path, anchor.line === undefined ? anchor.path : `${anchor.path}:${anchor.line}`)).join(', ')})`)
     .join('; ');
   return `<li id="polaris-fact-${escapeHtml(sourceSlug(fact.claim.claimId))}" data-polaris-fact="${escapeHtml(fact.claim.claimId)}"${DISCLOSURE}>${unknownRoutes(fact.claim, `${escapeHtml(fact.fact.fact)}: `)}<small>${copy('label.declarations-kept')} ${declarations}.</small><br>${claimTuple(fact.claim)}</li>`;
+}
+
+// ---------------------------------------------------------------------------
+// The root index's own declarations (PWB-REQ-004 as amended; registry
+// `observationGrammar`). Disclosed whether or not any fact needed them: the
+// seven layer rows as admitted (or why the table is absent), the two stated
+// summary counts (or why they are absent), and every disagreement one row
+// decided, with the effective and superseded declarations both kept. A
+// decided fact is already counted on its family's class or account
+// statement, so it carries no claim tuple of its own here.
+
+function declarationText(declaration: Declaration): string {
+  const anchors = declaration.anchors.map((anchor) => sourceRef(anchor.path, anchor.line === undefined ? anchor.path : `${anchor.path}:${anchor.line}`)).join(', ');
+  return `${escapeHtml(declaration.value)} (${escapeHtml(declaration.basis)}, ${anchors})`;
+}
+
+function anchorRef(anchor: { readonly path: string; readonly line?: number }): string {
+  return sourceRef(anchor.path, anchor.line === undefined ? anchor.path : `${anchor.path}:${anchor.line}`);
+}
+
+function absenceText(disclosure: Extract<PrecedenceDisclosure | RootSummaryDisclosure, { kind: 'absent' | 'unknown' }>): string {
+  if (disclosure.kind === 'unknown') return escapeHtml(disclosure.reason);
+  const where = anchorRef(disclosure.line === undefined ? disclosure.anchor : { path: disclosure.anchor.path, line: disclosure.line });
+  return `${escapeHtml(disclosure.reason)}${disclosure.detail === undefined ? '' : ` (${escapeHtml(disclosure.detail)})`} at ${where}`;
+}
+
+function precedenceBlock(precedence: PrecedenceDisclosure): string {
+  if (precedence.kind !== 'admitted') {
+    return `<p data-polaris-precedence="0"${DISCLOSURE}><span${copyAttr('sentence.no-precedence')}>${copy('sentence.no-precedence')}</span> ${absenceText(precedence)}.</p>`;
+  }
+  const rows = precedence.rules
+    .map((rule) => `<tr data-polaris-precedence="${escapeHtml(rule.id)}"${FACT}><td>${rule.ordinal}</td><td>${escapeHtml(rule.layer)}</td><td>${escapeHtml(rule.owns)}</td><td><code>${escapeHtml(rule.home)}</code></td><td>${anchorRef(rule.anchor)}</td></tr>`)
+    .join('');
+  return `<p data-polaris-precedence="${precedence.rules.length}"${FACT}><small><span${copyAttr('label.precedence-rows')}>${copy('label.precedence-rows')}</span> ${precedence.rules.length} from ${anchorRef(precedence.anchor)}.</small></p>
+    ${tableRegion('polaris-shape-root-index', `<table>
+      <thead><tr>${(['table.index', 'table.layer', 'table.owns', 'table.home', 'table.declared-at'] as const).map((id) => `<th scope="col"${copyAttr(id)}>${copy(id)}</th>`).join('')}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`)}`;
+}
+
+function rootSummaryBlock(summary: RootSummaryDisclosure): string {
+  if (summary.kind !== 'emitted') {
+    return `<p data-polaris-stated-counts="0"${DISCLOSURE}><span${copyAttr('sentence.no-stated-counts')}>${copy('sentence.no-stated-counts')}</span> ${absenceText(summary)}.</p>`;
+  }
+  const counts = summary.declarations.map((declaration) => `<span data-polaris-stated-count="${escapeHtml(declaration.fact)}">${escapeHtml(declaration.fact)} = ${declarationText(declaration)}</span>`).join('; ');
+  return `<p data-polaris-stated-counts="${summary.declarations.length}"${FACT}><small><span${copyAttr('label.stated-counts')}>${copy('label.stated-counts')}</span> ${counts}.</small></p>`;
+}
+
+function citationText(citation: PrecedenceCitation): string {
+  return `${escapeHtml(citation.ruleId)} (${escapeHtml(citation.layer)}, ${anchorRef(citation.anchor)})`;
+}
+
+function decidedItem(fact: ProjectShapeFact): string {
+  if (fact.fact.state !== 'modeled' || fact.fact.disagreement === undefined) return '';
+  const disagreement = fact.fact.disagreement;
+  return `<li data-polaris-decided="${escapeHtml(fact.claim.claimId)}"${FACT}>${escapeHtml(fact.fact.fact)}: <span${copyAttr('label.effective')}>${copy('label.effective')}</span> ${declarationText(disagreement.effective)} by ${citationText(disagreement.precedence)}; <span${copyAttr('label.superseded')}>${copy('label.superseded')}</span> ${disagreement.superseded.map(declarationText).join('; ')}.</li>`;
+}
+
+function rootIndexSection(shape: Extract<ProjectShape, { kind: 'observed' }>): string {
+  const decided = shape.facts.filter((fact) => fact.fact.state === 'modeled' && fact.fact.disagreement !== undefined);
+  return `<section class="claim-section wide" data-polaris-section="shape:root-index">
+    ${heading(3, 'polaris-shape-root-index', 'evidence.root-index')}
+    ${precedenceBlock(shape.precedence)}
+    ${rootSummaryBlock(shape.rootSummary)}
+    ${decided.length === 0
+      ? `<p data-polaris-decided-count="0"${copyAttr('sentence.no-decided')}>${copy('sentence.no-decided')}</p>`
+      : `<p${FACT}><small${copyAttr('label.decided')}>${copy('label.decided')}</small></p><ul data-polaris-decided-count="${decided.length}">${decided.map(decidedItem).join('')}</ul>`}
+  </section>`;
 }
 
 /** The Unknown reasons across every shape claim, counted and routed, with
@@ -666,6 +787,7 @@ function shapeEvidence(shape: ProjectShape): string {
     ${shape.exclusions.length === 0 ? `<p data-polaris-exclusions="0"${copyAttr('sentence.no-exclusions')}>${copy('sentence.no-exclusions')}</p>` : `<ul data-polaris-exclusions="${shape.exclusions.length}">${shape.exclusions.map(exclusionItem).join('')}</ul>`}
     ${shape.limitBreaches.length === 0 ? '' : `<p${FACT}><small>${copy('label.limit-breaches')} ${shape.limitBreaches.map((breach) => `${escapeHtml(breach.limit)} ${breach.observed} &gt; ${breach.declared}${breach.path === undefined ? '' : ` (${escapeHtml(breach.path)})`}`).join('; ')}.</small></p>`}
   </section>
+  ${rootIndexSection(shape)}
   <section class="claim-section" data-polaris-section="shape:contradictions">
     ${heading(3, 'polaris-shape-contradictions', 'evidence.contradictions')}
     ${shape.contradictions.length === 0 ? `<p data-polaris-contradictions="0"${copyAttr('sentence.no-contradictions')}>${copy('sentence.no-contradictions')}</p>` : `<ul data-polaris-contradictions="${shape.contradictions.length}">${shape.contradictions.map(factItem).join('')}</ul>`}
@@ -702,7 +824,12 @@ function verbatimSlot(dive: CapabilityDeepDive, resolution: VerbatimResolution |
         : unknownLine(marker, 'reference-unresolvable', UNKNOWN_REASON_ROUTES['reference-unresolvable'], `The baseline spec ${intent.path} carries no captured identity to verify text against.`);
     }
     if (resolution.kind === 'not-rendered') return unknownLine(marker, resolution.reason, resolution.route, resolution.detail);
-    return `<pre class="verbatim" data-verbatim-text data-verbatim-identity="${escapeHtml(resolution.identity)}"${roleAttr('project-fact', 'anchored-project-fact')}>${escapeHtml(resolution.text)}</pre>`;
+    // One block per selected requirement (PWB-REQ-011 as amended): the
+    // requirement heading and its scenarios, byte-for-byte; nothing else of
+    // the owning artifact reaches the page.
+    return resolution.requirements
+      .map((requirement) => `<pre class="verbatim" data-verbatim-text data-verbatim-requirement="${escapeHtml(requirement.title)}" data-verbatim-identity="${escapeHtml(resolution.identity)}"${roleAttr('project-fact', 'anchored-project-fact')}>${escapeHtml(requirement.text)}</pre>`)
+      .join('\n');
   })();
   return `<section class="claim-section" data-contract-part="requirement-text" data-verbatim="${resolution?.kind === 'rendered' ? 'rendered' : 'not-rendered'}"${attrs}>
       ${heading(4, `polaris-${dive.capabilityId}-requirement-text`, 'label.requirement-text')}
@@ -957,7 +1084,7 @@ function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): st
     ['depth.source', [
       link('polaris-group-evidence-and-gaps', 'group.evidence-and-gaps'),
       link('polaris-shape-sources', 'evidence.sources'),
-      ...(observed ? [link('polaris-shape-exclusions', 'evidence.exclusions'), link('polaris-shape-contradictions', 'evidence.contradictions')] : []),
+      ...(observed ? [link('polaris-shape-exclusions', 'evidence.exclusions'), link('polaris-shape-root-index', 'evidence.root-index'), link('polaris-shape-contradictions', 'evidence.contradictions')] : []),
       link('polaris-shape-gaps', 'evidence.gaps'),
     ]],
   ];
@@ -1002,6 +1129,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     ${groupHeader('evidence-and-gaps')}
     ${shapeEvidence(shape)}
     ${walkthroughJudgmentSection(model)}
+    ${walkthroughReadinessSection(model)}
     ${codeStructureSection(model)}
     ${workItemsSection(model)}`;
   // The machine form of the presentation artifact precedes every group so no

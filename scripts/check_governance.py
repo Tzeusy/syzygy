@@ -1431,6 +1431,12 @@ PWB_STATE1_LABEL = "SIGN OFF PWB STATE-(1) AMENDMENT"
 PWB_STATE1_DIR = f"{CANDIDATES}/pwb-state1-amendment"
 PWB_STATE1_SUBJECT = f"{PWB_STATE1_DIR}/PWB-AMENDMENT-MANIFEST.txt"
 PWB_STATE1_ACT = f"{DECISIONS}/PWB-STATE1-AMENDMENT-ACT.md"
+PWB_TRUTH_AMENDMENT_LABEL = "SIGN OFF PWB TRUTH-AND-READINESS AMENDMENT"
+PWB_TRUTH_AMENDMENT_DIR = f"{CANDIDATES}/pwb-truth-policy-amendment"
+PWB_TRUTH_AMENDMENT_SUBJECT = (
+    f"{PWB_TRUTH_AMENDMENT_DIR}/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt")
+PWB_TRUTH_AMENDMENT_ACT = (
+    f"{DECISIONS}/PWB-TRUTH-READINESS-AMENDMENT-ACT.md")
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -1451,6 +1457,21 @@ PWB_EFFECT_ACTS = (
      f"{DECISIONS}/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md"),
 )
 PWB_EFFECT_ACT_LABELS = tuple(label for label, _s, _a in PWB_EFFECT_ACTS)
+#: Decisions 2 and 3 of the truth-and-readiness packet re-perform the policy
+#: and registry acts over amended artifact bytes. Each amended act gets its own
+#: new dedicated record (`record_pwb_effect_amendment_acts.py`); the
+#: 2026-09-02 record, the frozen effect-acts packet files and their act-time
+#: digest are immutable history and are re-registered as such once the
+#: successor record exists. Rows: label, subject, 2026-09-02 record,
+#: amendment record, 2026-09-02 performed digest.
+PWB_EFFECT_AMENDMENT_ACTS = (
+    (PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[1][1], PWB_EFFECT_ACTS[1][2],
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md",
+     "513a3be75bbd417a06d475c46bb423393ac59013e307157357083f29781a2a61"),
+    (PWB_EFFECT_ACTS[2][0], PWB_EFFECT_ACTS[2][1], PWB_EFFECT_ACTS[2][2],
+     f"{DECISIONS}/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md",
+     "d71eadb612cf657983d96ad44415b832054dc37e51ea674e569d9b8f655d05d7"),
+)
 PWB_STATE1_SUBJECTS = tuple(sorted((
     "openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml",
     "openspec/changes/polaris-project-wide-butlers-model/proposal.md",
@@ -1469,6 +1490,18 @@ PWB_STATE1_SUBJECTS = tuple(sorted((
     "openspec/changes/polaris-project-wide-butlers-model/"
     "contract-coverage-matrix/RFC-0007-0009.md",
 )))
+#: The truth-and-readiness amendment binds the same closed eleven-path
+#: population as the state-(1) amendment; only the bytes differ.
+PWB_TRUTH_AMENDMENT_SUBJECTS = PWB_STATE1_SUBJECTS
+#: Successor chain over the PWB behavioral package, in performance order.
+#: The latest validly performed link binds current bytes; every earlier
+#: link's rows are immutable act-time history.
+PWB_SUCCESSOR_CHAIN = (
+    (PWB_STATE1_LABEL, PWB_STATE1_SUBJECT, PWB_STATE1_ACT,
+     PWB_STATE1_SUBJECTS),
+    (PWB_TRUTH_AMENDMENT_LABEL, PWB_TRUTH_AMENDMENT_SUBJECT,
+     PWB_TRUTH_AMENDMENT_ACT, PWB_TRUTH_AMENDMENT_SUBJECTS),
+)
 GENERAL_BOOTSTRAP_PWB_PATHS = tuple(sorted((
     "openspec/changes/polaris-project-wide-butlers-model/"
     "CONTRACT-COVERAGE-REPAIR-DELTA.md",
@@ -1845,6 +1878,13 @@ def _act_subjects():
             re.compile(re.escape(PWB_STATE1_LABEL)
                        + r"\s*:\s*`?([0-9a-f]{64})"),
         ))
+    if not any(label == PWB_TRUTH_AMENDMENT_LABEL for label, _rel, _pat in out):
+        out.append((
+            PWB_TRUTH_AMENDMENT_LABEL,
+            PWB_TRUTH_AMENDMENT_SUBJECT,
+            re.compile(re.escape(PWB_TRUTH_AMENDMENT_LABEL)
+                       + r"\s*:\s*`?([0-9a-f]{64})"),
+        ))
     for label, subject, _act in PWB_EFFECT_ACTS:
         if not any(l == label for l, _rel, _pat in out):
             out.append((label, subject, re.compile(
@@ -2032,6 +2072,10 @@ ACT_DIGEST_COPY_FILES = {
         (PWB_STATE1_LABEL,),
     f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md": PWB_EFFECT_ACT_LABELS,
     f"{PWB_EFFECT_ACTS_DIR}/PWB-EFFECT-ACTS-MANIFEST.txt": PWB_EFFECT_ACT_LABELS,
+    f"{PWB_TRUTH_AMENDMENT_DIR}/PWB-EFFECT-AMENDMENT-MANIFEST.txt":
+        PWB_EFFECT_ACT_LABELS[1:],
+    f"{PWB_TRUTH_AMENDMENT_DIR}/OWNER-DECISION-PACKET.md":
+        (PWB_TRUTH_AMENDMENT_LABEL,) + PWB_EFFECT_ACT_LABELS[1:],
     # The owner-act record quotes each performed act's exact phrase and
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
@@ -2063,6 +2107,24 @@ def _activate_pwb_state1_act_copy_registry():
 
 
 _activate_pwb_state1_act_copy_registry()
+
+
+def _activate_pwb_truth_amendment_act_copy_registry():
+    """Same transition rule as the state-(1) act, for its successor.
+
+    Once `PWB-TRUTH-READINESS-AMENDMENT-ACT.md` exists, it and the aggregate
+    record must both carry the exact current behavior-manifest digest.
+    """
+    if not os.path.isfile(os.path.join(ROOT, PWB_TRUTH_AMENDMENT_ACT)):
+        return
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+    if PWB_TRUTH_AMENDMENT_LABEL not in labels:
+        ACT_DIGEST_COPY_FILES[aggregate] = labels + (PWB_TRUTH_AMENDMENT_LABEL,)
+    ACT_DIGEST_COPY_FILES[PWB_TRUTH_AMENDMENT_ACT] = (PWB_TRUTH_AMENDMENT_LABEL,)
+
+
+_activate_pwb_truth_amendment_act_copy_registry()
 
 
 def _activate_pwb_effect_act_copy_registries():
@@ -2123,6 +2185,53 @@ ACT_HISTORICAL_DIGEST_COPY_FILES = {
             r"^`" + GENERAL_BOOTSTRAP_ACT_DIGEST + r"`\.$", re.M
         )),)},
 }
+
+
+def _activate_pwb_effect_amendment_act_copy_registries():
+    """Re-register a superseded effect act's copies as history once its
+    amendment record exists.
+
+    Before the amendment act is performed, the 2026-09-02 packet files and
+    dedicated record are the current copies and must fail CG-7e the moment
+    the artifact bytes drift: that failure is the pre-act state, not noise.
+    Once the successor record exists, those same files may not be rewritten
+    to the new argument (they are one-time offerings and an append-only act
+    record), so each is pinned to its exact act-time quotation line instead,
+    and the new dedicated record plus the aggregate carry the current
+    argument. Every other label a file carries stays current.
+    """
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    for label, subject, predecessor, act, performed_digest in PWB_EFFECT_AMENDMENT_ACTS:
+        if not os.path.isfile(os.path.join(ROOT, act)):
+            continue
+        labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+        if label not in labels:
+            ACT_DIGEST_COPY_FILES[aggregate] = labels + (label,)
+        ACT_DIGEST_COPY_FILES[act] = (label,)
+        phrase_line = r"^" + re.escape(label) + r": " + performed_digest + r"$"
+        historical = {
+            f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md": phrase_line,
+            f"{PWB_EFFECT_ACTS_DIR}/PWB-EFFECT-ACTS-MANIFEST.txt":
+                r"^" + performed_digest + r"  " + re.escape(subject) + r"$",
+            f"{PWB_EFFECT_ACTS_DIR}/OWNER-SIGNOFF-PACKET.md": phrase_line,
+            f"{PWB_EFFECT_ACTS_DIR}/CANDIDATE-REPORT.md":
+                r"^\| `[a-z-]+` \| `" + re.escape(subject) + r"` \| `"
+                + performed_digest + r"` \|$",
+            predecessor: phrase_line,
+        }
+        for rel, pattern in historical.items():
+            current = ACT_DIGEST_COPY_FILES.get(rel)
+            if current is not None:
+                remaining = tuple(lab for lab in current if lab != label)
+                if remaining:
+                    ACT_DIGEST_COPY_FILES[rel] = remaining
+                else:
+                    del ACT_DIGEST_COPY_FILES[rel]
+            ACT_HISTORICAL_DIGEST_COPY_FILES.setdefault(rel, {})[label] = (
+                (performed_digest, re.compile(pattern, re.M)),)
+
+
+_activate_pwb_effect_amendment_act_copy_registries()
 
 
 def cg7e_act_digest_copies(paths, res):
@@ -2359,7 +2468,10 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                                successor_act_record=None,
                                successor_dedicated_record=None,
                                successor_manifest_body=None,
-                               successor_manifest_digest=None):
+                               successor_manifest_digest=None,
+                               truth_dedicated_record=None,
+                               truth_manifest_body=None,
+                               truth_manifest_digest=None):
     """The performed transaction binds every current and nested subject.
 
     CG-7d permits old *performed* digests so append-only history remains true.
@@ -2372,9 +2484,12 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
     bases. The historical PWB rows continue to match current paths until a
     valid later owner act supersedes them. Only matching aggregate and
     dedicated successor records activate the eleven-row current manifest;
-    candidate bytes alone never do. Otherwise a correct outer ceremony could
-    be reported over drifted nested bytes or an unsigned candidate could
-    impersonate current authority.
+    candidate bytes alone never do. Successors form a chain
+    (`PWB_SUCCESSOR_CHAIN`): the latest validly performed link binds current
+    bytes, every earlier link is immutable act-time history, and a later
+    link recorded without its predecessor is a gap, not a supersession.
+    Otherwise a correct outer ceremony could be reported over drifted nested
+    bytes or an unsigned candidate could impersonate current authority.
     """
     def read_if_present(rel):
         full = os.path.join(ROOT, rel)
@@ -2457,6 +2572,12 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         policy_digest = current_digest(CC_SPEC_SUBJECT)
     if successor_manifest_digest is None:
         successor_manifest_digest = current_digest(PWB_STATE1_SUBJECT)
+    if truth_dedicated_record is None:
+        truth_dedicated_record = read_if_present(PWB_TRUTH_AMENDMENT_ACT)
+    if truth_manifest_body is None:
+        truth_manifest_body = read_if_present(PWB_TRUTH_AMENDMENT_SUBJECT)
+    if truth_manifest_digest is None:
+        truth_manifest_digest = current_digest(PWB_TRUTH_AMENDMENT_SUBJECT)
 
     specs = (
         (GENERAL_BOOTSTRAP_LABEL, GENERAL_BOOTSTRAP_SUBJECT,
@@ -2508,43 +2629,68 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         pwb_rows, GENERAL_BOOTSTRAP_PWB_MANIFEST,
         GENERAL_BOOTSTRAP_PWB_PATHS)
 
-    successor_specs = ((
-        PWB_STATE1_LABEL,
-        PWB_STATE1_SUBJECT,
-        re.compile(re.escape(PWB_STATE1_LABEL)
-                   + r"\s*:\s*`?([0-9a-f]{64})"),
-    ),)
-    successor_recorded = _performed_act_digests(
-        successor_specs, record=successor_act_record)
-    successor_dedicated = _performed_act_digests(
-        successor_specs, record=successor_dedicated_record)
-    recorded_successors = successor_recorded.get(PWB_STATE1_LABEL, ())
-    dedicated_successors = successor_dedicated.get(PWB_STATE1_LABEL, ())
-    successor_attempted = bool(recorded_successors or dedicated_successors)
+    chain_inputs = {
+        PWB_STATE1_LABEL: (
+            successor_dedicated_record, successor_manifest_body,
+            successor_manifest_digest),
+        PWB_TRUTH_AMENDMENT_LABEL: (
+            truth_dedicated_record, truth_manifest_body,
+            truth_manifest_digest),
+    }
+    attempted_links = []
+    for label, subject, act_rel, subjects in PWB_SUCCESSOR_CHAIN:
+        dedicated_record_body, body, manifest_digest = chain_inputs[label]
+        link_specs = ((label, subject, re.compile(
+            re.escape(label) + r"\s*:\s*`?([0-9a-f]{64})")),)
+        link_recorded = _performed_act_digests(
+            link_specs, record=successor_act_record).get(label, ())
+        link_dedicated = _performed_act_digests(
+            link_specs, record=dedicated_record_body).get(label, ())
+        if not (link_recorded or link_dedicated):
+            continue
+        findings_before_link = len(findings)
+        if attempted_links and not attempted_links[-1][4]:
+            findings.append(
+                f"{act_rel} — successor act recorded while its predecessor "
+                f"`{attempted_links[-1][0]}` is invalid; a chain link cannot "
+                f"supersede a broken predecessor")
+        elif len(attempted_links) < PWB_SUCCESSOR_CHAIN.index(
+                (label, subject, act_rel, subjects)):
+            findings.append(
+                f"{act_rel} — successor act recorded without its predecessor "
+                f"act; the chain has a gap")
+        require_latest(
+            PERFORMED_ACT_RECORD, link_recorded, manifest_digest, subject)
+        require_latest(act_rel, link_dedicated, manifest_digest, subject)
+        link_rows = manifest_rows(body, subject, len(subjects))
+        require_exact_paths(link_rows, subject, subjects)
+        link_valid = len(findings) == findings_before_link
+        attempted_links.append((label, subject, act_rel, link_rows, link_valid))
+
+    successor_attempted = bool(attempted_links)
     successor_rows = []
     successor_valid = False
     if successor_attempted:
-        findings_before_successor = len(findings)
-        require_latest(
-            PERFORMED_ACT_RECORD, recorded_successors,
-            successor_manifest_digest, PWB_STATE1_SUBJECT)
-        require_latest(
-            PWB_STATE1_ACT, dedicated_successors,
-            successor_manifest_digest, PWB_STATE1_SUBJECT)
-        successor_rows = manifest_rows(
-            successor_manifest_body, PWB_STATE1_SUBJECT,
-            len(PWB_STATE1_SUBJECTS))
-        require_exact_paths(
-            successor_rows, PWB_STATE1_SUBJECT, PWB_STATE1_SUBJECTS)
-        for expected, path, line_no in successor_rows:
-            rel = repo_subject(path, PWB_STATE1_SUBJECT, line_no)
+        label, subject, _act_rel, latest_rows, latest_valid = attempted_links[-1]
+        findings_before_rows = len(findings)
+        for expected, path, line_no in latest_rows:
+            rel = repo_subject(path, subject, line_no)
             actual = current_digest(rel) if rel else None
             if actual != expected:
                 findings.append(
-                    f"{PWB_STATE1_SUBJECT}:{line_no} — `{path}` hashes to "
+                    f"{subject}:{line_no} — `{path}` hashes to "
                     f"{(actual or 'absent')[:12]}…, expected "
                     f"{expected[:12]}…")
-        successor_valid = len(findings) == findings_before_successor
+        successor_valid = (
+            latest_valid and len(findings) == findings_before_rows
+            and all(valid for _l, _s, _a, _r, valid in attempted_links))
+        successor_rows = [row for _l, _s, _a, rows, _v in attempted_links
+                          for row in rows]
+        for h_label, h_subject, _a, h_rows, _v in attempted_links[:-1]:
+            details.append(
+                f"[historical] {h_subject} — {len(h_rows)} act-time PWB "
+                f"row(s) preserved for `{h_label}`; current bytes are bound "
+                f"by {subject}")
 
     for expected, path, line_no in top_rows:
         rel = repo_subject(path, GENERAL_BOOTSTRAP_SUBJECT, line_no)
@@ -2569,7 +2715,7 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         details.append(
             f"[historical] {GENERAL_BOOTSTRAP_PWB_MANIFEST} — "
             f"{len(pwb_rows)} act-time PWB row(s) preserved; current bytes "
-            f"are bound by {PWB_STATE1_SUBJECT}")
+            f"are bound by {attempted_links[-1][1]}")
     else:
         for expected, path, line_no in pwb_rows:
             rel = repo_subject(path, GENERAL_BOOTSTRAP_PWB_MANIFEST, line_no)
@@ -2602,15 +2748,17 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                 f"{candidate_digest[:12]}…")
 
     successor_examined = (
-        2 + len(successor_rows) if successor_attempted else 0)
+        2 * len(attempted_links) + len(successor_rows)
+        if successor_attempted else 0)
     examined = (4 + len(top_rows) + len(contract_rows) + len(pwb_rows)
                 + len(contract_rows) + successor_examined)
     details.append(
         f"[population] 4 act-record predicates + {len(top_rows)} top-level "
         f"subjects + {len(contract_rows)} contract rows + {len(pwb_rows)} PWB "
         f"rows + {len(contract_rows)} installed/candidate mirror pairs"
-        + (f" + 2 successor act predicates + {len(successor_rows)} current "
-           "PWB rows" if successor_attempted else ""))
+        + (f" + {2 * len(attempted_links)} successor act predicates + "
+           f"{len(successor_rows)} successor PWB rows" if successor_attempted
+           else ""))
 
     res.add("FAIL" if findings else "OK",
             "CG-7h  performed bootstrap transaction subjects remain exact",
@@ -5365,6 +5513,18 @@ def selftest():
                   row[0] == "FAIL"
                   and any(PERFORMED_ACT_RECORD in d for d in row[4])))
 
+    truth_link = (PWB_TRUTH_AMENDMENT_LABEL, PWB_TRUTH_AMENDMENT_SUBJECT,
+                  PWB_TRUTH_AMENDMENT_ACT,
+                  _activate_pwb_truth_amendment_act_copy_registry)
+    row = _selftest_pwb_act_copy_registry("valid", truth_link)
+    cases.append(("CG-7e performed PWB truth act registers both record copies",
+                  row[0] == "OK" and row[2] == 2 and row[3] == 0))
+
+    row = _selftest_pwb_act_copy_registry("missing-aggregate", truth_link)
+    cases.append(("CG-7e performed PWB truth act requires aggregate record copy",
+                  row[0] == "FAIL"
+                  and any(PERFORMED_ACT_RECORD in d for d in row[4])))
+
     row, registered = _selftest_pwb_effect_act_copy_registry("valid")
     cases.append(("CG-7e performed PWB effect act registers exactly its two copies",
                   row[0] == "OK" and row[2] == 2 and row[3] == 0
@@ -5380,6 +5540,41 @@ def selftest():
     cases.append(("CG-7e performed PWB effect act rejects stale dedicated copy",
                   row[0] == "FAIL"
                   and any(PWB_EFFECT_ACTS[0][2] in d for d in row[4])))
+
+    amended_label, _s, amended_predecessor, amended_act, _old = PWB_EFFECT_AMENDMENT_ACTS[0]
+    row, registered = _selftest_pwb_effect_amendment_copy_registry("valid")
+    cases.append(("CG-7e amended PWB effect act pins five historical copies and two current",
+                  row[0] == "OK" and row[2] == 7 and row[3] == 0
+                  and amended_act in registered[0]
+                  and amended_predecessor in registered[1]
+                  and amended_predecessor not in registered[0]
+                  and f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md" in registered[0]
+                  and amended_label not in registered[2].get(
+                      f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md", ())
+                  and len(registered[2][f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md"]) == 2))
+
+    row, registered = _selftest_pwb_effect_amendment_copy_registry("pre-act")
+    cases.append(("CG-7e unperformed PWB effect amendment leaves 2026-09-02 copies current and stale",
+                  row[0] == "FAIL"
+                  and amended_act not in registered[0]
+                  and amended_predecessor not in registered[1]
+                  and any(amended_predecessor in d and "stale" in d for d in row[4])))
+
+    row, _registered = _selftest_pwb_effect_amendment_copy_registry("stale-amendment")
+    cases.append(("CG-7e amended PWB effect act rejects stale amendment record",
+                  row[0] == "FAIL"
+                  and any(amended_act in d and "stale" in d for d in row[4])))
+
+    row, _registered = _selftest_pwb_effect_amendment_copy_registry("rewritten-history")
+    cases.append(("CG-7e amended PWB effect act rejects rewritten 2026-09-02 record",
+                  row[0] == "FAIL"
+                  and any(amended_predecessor in d and "act-time quotation" in d
+                          for d in row[4])))
+
+    row, _registered = _selftest_pwb_effect_amendment_copy_registry("unperformed-history")
+    cases.append(("CG-7e amended PWB effect act requires the superseded digest to be performed",
+                  row[0] == "FAIL"
+                  and any("never performed" in d for d in row[4])))
 
     row = _selftest_cg7h("missing-act")
     cases.append(("CG-7h missing current amendment act rejected",
@@ -5448,6 +5643,45 @@ def selftest():
                       row[0] == "FAIL"
                       and any("PWB-AMENDMENT-MANIFEST.txt" in d
                               for d in row[4])))
+
+    row = _selftest_cg7h("valid-truth-successor")
+    cases.append(("CG-7h valid truth-and-readiness successor passes at 102 "
+                  "with state-(1) rows preserved as history",
+                  row[0] == "OK" and row[2] == 102 and row[3] == 0
+                  and any("[historical] " + PWB_STATE1_SUBJECT in d
+                          for d in row[4])))
+
+    row = _selftest_cg7h("truth-candidate-no-act")
+    cases.append(("CG-7h unsigned truth candidate grants no supersession",
+                  row[0] == "FAIL"
+                  and any(PWB_STATE1_SUBJECT in d for d in row[4])))
+
+    row = _selftest_cg7h("truth-one-record")
+    cases.append(("CG-7h one-sided truth successor act rejected",
+                  row[0] == "FAIL"
+                  and any(PWB_TRUTH_AMENDMENT_ACT in d for d in row[4])))
+
+    row = _selftest_cg7h("truth-conflict")
+    cases.append(("CG-7h conflicting truth successor digests rejected",
+                  row[0] == "FAIL"
+                  and any("latest performed digest" in d for d in row[4])))
+
+    row = _selftest_cg7h("truth-current-drift")
+    cases.append(("CG-7h post-truth-successor current artifact drift detected",
+                  row[0] == "FAIL"
+                  and any(PWB_TRUTH_AMENDMENT_SUBJECTS[0] in d
+                          for d in row[4])))
+
+    row = _selftest_cg7h("truth-without-state1")
+    cases.append(("CG-7h truth successor without its predecessor is a gap",
+                  row[0] == "FAIL"
+                  and any("chain has a gap" in d for d in row[4])))
+
+    row = _selftest_cg7h("truth-10")
+    cases.append(("CG-7h truth-10 manifest rejected",
+                  row[0] == "FAIL"
+                  and any("PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt" in d
+                          for d in row[4])))
 
     c = Cap(); cg21_contract_prose_states_no_measurement(c, modules=[])
     cases.append(("CG-21 empty module list warns, never passes",
@@ -5718,7 +5952,11 @@ def _selftest_cg7e_wrong_historical():
         shutil.rmtree(d, ignore_errors=True)
 
 
-def _selftest_pwb_act_copy_registry(kind):
+def _selftest_pwb_act_copy_registry(kind, link=None):
+    label, subject, act_rel, activate = link or (
+        PWB_STATE1_LABEL, PWB_STATE1_SUBJECT, PWB_STATE1_ACT,
+        _activate_pwb_state1_act_copy_registry)
+
     class Cap:
         def __init__(self): self.rows = []
         def add(self, status, name, examined, n, unit, note=None, details=None):
@@ -5735,15 +5973,15 @@ def _selftest_pwb_act_copy_registry(kind):
     cache = dict(_ActSubjects._cache)
     current_files = dict(ACT_DIGEST_COPY_FILES)
     try:
-        manifest = os.path.join(d, PWB_STATE1_SUBJECT)
+        manifest = os.path.join(d, subject)
         os.makedirs(os.path.dirname(manifest), exist_ok=True)
         with open(manifest, "w", encoding="utf-8") as fh:
             fh.write("successor manifest\n")
         argument = sha256_file(manifest)
-        phrase = f"{PWB_STATE1_LABEL}: {argument}\n"
+        phrase = f"{label}: {argument}\n"
 
         aggregate = os.path.join(d, PERFORMED_ACT_RECORD)
-        dedicated = os.path.join(d, PWB_STATE1_ACT)
+        dedicated = os.path.join(d, act_rel)
         os.makedirs(os.path.dirname(aggregate), exist_ok=True)
         with open(aggregate, "w", encoding="utf-8") as fh:
             fh.write("unrelated performed act\n" if kind == "missing-aggregate" else phrase)
@@ -5752,13 +5990,13 @@ def _selftest_pwb_act_copy_registry(kind):
 
         ROOT = d
         _ActSubjects._cache[d] = ((
-            PWB_STATE1_LABEL,
-            PWB_STATE1_SUBJECT,
-            re.compile(re.escape(PWB_STATE1_LABEL)
+            label,
+            subject,
+            re.compile(re.escape(label)
                        + r"\s*:\s*`?([0-9a-f]{64})"),
         ),)
         ACT_DIGEST_COPY_FILES.clear()
-        _activate_pwb_state1_act_copy_registry()
+        activate()
         c = Cap()
         cg7e_act_digest_copies(list(ACT_DIGEST_COPY_FILES), c)
         return c.row("CG-7e")
@@ -5821,6 +6059,79 @@ def _selftest_pwb_effect_act_copy_registry(kind):
     finally:
         ACT_DIGEST_COPY_FILES.clear()
         ACT_DIGEST_COPY_FILES.update(current_files)
+        _ActSubjects._cache.clear()
+        _ActSubjects._cache.update(cache)
+        ROOT = keep
+        shutil.rmtree(d, ignore_errors=True)
+
+
+def _selftest_pwb_effect_amendment_copy_registry(kind):
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, status, name, examined, n, unit, note=None, details=None):
+            self.rows.append((status, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows if r[1].startswith(prefix)), None)
+
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp(prefix="cg7e-pwb-effect-amendment-selftest-")
+    global ROOT
+    keep = ROOT
+    cache = dict(_ActSubjects._cache)
+    current_files = dict(ACT_DIGEST_COPY_FILES)
+    history_files = dict(ACT_HISTORICAL_DIGEST_COPY_FILES)
+    try:
+        label, subject, predecessor, act, old = PWB_EFFECT_AMENDMENT_ACTS[0]
+
+        def write(rel, text):
+            full = os.path.join(d, rel)
+            os.makedirs(os.path.dirname(full), exist_ok=True)
+            with open(full, "w", encoding="utf-8") as fh:
+                fh.write(text)
+
+        write(subject, "amended policy artifact\n")
+        new = sha256_file(os.path.join(d, subject))
+        old_phrase = f"{label}: {old}\n"
+        new_phrase = f"{label}: {new}\n"
+        write(PERFORMED_ACT_RECORD,
+              (new_phrase if kind == "unperformed-history"
+               else old_phrase + new_phrase))
+        write(predecessor,
+              new_phrase if kind == "rewritten-history" else old_phrase)
+        if kind != "pre-act":
+            write(act, f"{label}: {'0' * 64}\n"
+                  if kind == "stale-amendment" else new_phrase)
+        write(f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md", old_phrase)
+        write(f"{PWB_EFFECT_ACTS_DIR}/OWNER-SIGNOFF-PACKET.md", old_phrase)
+        write(f"{PWB_EFFECT_ACTS_DIR}/PWB-EFFECT-ACTS-MANIFEST.txt",
+              f"{old}  {subject}\n")
+        write(f"{PWB_EFFECT_ACTS_DIR}/CANDIDATE-REPORT.md",
+              f"| `approve-policy` | `{subject}` | `{old}` |\n")
+
+        ROOT = d
+        _ActSubjects._cache[d] = tuple(
+            (l, sub, re.compile(re.escape(l) + r"\s*:\s*`?([0-9a-f]{64})"))
+            for l, sub, _a in PWB_EFFECT_ACTS)
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES[f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md"] = PWB_EFFECT_ACT_LABELS
+        ACT_DIGEST_COPY_FILES[f"{PWB_EFFECT_ACTS_DIR}/PWB-EFFECT-ACTS-MANIFEST.txt"] = PWB_EFFECT_ACT_LABELS
+        _activate_pwb_effect_act_copy_registries()
+        _activate_pwb_effect_amendment_act_copy_registries()
+        registered = (tuple(sorted(ACT_DIGEST_COPY_FILES)),
+                      tuple(sorted(ACT_HISTORICAL_DIGEST_COPY_FILES)),
+                      dict(ACT_DIGEST_COPY_FILES))
+        c = Cap()
+        paths = sorted(set(ACT_DIGEST_COPY_FILES) | set(ACT_HISTORICAL_DIGEST_COPY_FILES))
+        cg7e_act_digest_copies(paths, c)
+        return c.row("CG-7e"), registered
+    finally:
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES.update(current_files)
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        ACT_HISTORICAL_DIGEST_COPY_FILES.update(history_files)
         _ActSubjects._cache.clear()
         _ActSubjects._cache.update(cache)
         ROOT = keep
@@ -5891,11 +6202,16 @@ def _selftest_cg7h(kind):
         top_rows.append(f"{stated}  {path}")
     manifest = "\n".join(top_rows) + "\n"
 
+    truth_kinds = {
+        "valid-truth-successor", "truth-one-record", "truth-conflict",
+        "truth-current-drift", "truth-without-state1", "truth-10",
+        "truth-candidate-no-act",
+    }
     successor_kinds = {
         "successor-one-record", "successor-conflict", "valid-successor",
         "successor-current-drift", "successor-10", "successor-12",
         "successor-duplicate", "successor-reordered", "successor-escaping",
-    }
+    } | (truth_kinds - {"truth-without-state1"})
     successor_rows = [
         (digest(f"successor-{i}"), path)
         for i, path in enumerate(PWB_STATE1_SUBJECTS)
@@ -5931,6 +6247,37 @@ def _selftest_cg7h(kind):
     else:
         successor_dedicated = ""
 
+    # The truth-and-readiness successor: the state-(1) rows stay in the
+    # fixture as act-time history while current bytes move to the new link.
+    truth_rows = [
+        (digest(f"truth-{i}"), path)
+        for i, path in enumerate(PWB_TRUTH_AMENDMENT_SUBJECTS)
+    ]
+    truth_manifest_rows = list(truth_rows)
+    if kind == "truth-10":
+        truth_manifest_rows.pop()
+    truth_manifest = "".join(
+        f"{stated}  {path}\n" for stated, path in truth_manifest_rows)
+    truth_digest = digest(truth_manifest)
+    truth_dedicated = ""
+    if kind in truth_kinds:
+        for stated, path in truth_rows:
+            current[path] = stated
+        current[PWB_TRUTH_AMENDMENT_SUBJECT] = truth_digest
+        if kind != "truth-candidate-no-act":
+            performed += f"{PWB_TRUTH_AMENDMENT_LABEL}: {truth_digest}\n"
+            truth_dedicated = f"{PWB_TRUTH_AMENDMENT_LABEL}: {truth_digest}\n"
+        if kind == "truth-one-record":
+            truth_dedicated = ""
+        elif kind == "truth-conflict":
+            truth_dedicated = f"{PWB_TRUTH_AMENDMENT_LABEL}: {mismatched}\n"
+        elif kind == "truth-current-drift":
+            current[PWB_TRUTH_AMENDMENT_SUBJECTS[0]] = digest("post-truth-drift")
+        elif kind == "truth-candidate-no-act":
+            # signed state-(1) rows no longer match current bytes and no
+            # successor act exists: candidate bytes alone bind nothing
+            pass
+
     if kind == "top-level-drift":
         current[top_paths[0]] = digest("drifted-top-level")
     elif kind == "nested-contract-drift":
@@ -5952,7 +6299,10 @@ def _selftest_cg7h(kind):
         successor_act_record=performed,
         successor_dedicated_record=successor_dedicated,
         successor_manifest_body=successor_manifest,
-        successor_manifest_digest=successor_digest)
+        successor_manifest_digest=successor_digest,
+        truth_dedicated_record=truth_dedicated,
+        truth_manifest_body=truth_manifest,
+        truth_manifest_digest=truth_digest)
     return c.row("CG-7h")
 
 

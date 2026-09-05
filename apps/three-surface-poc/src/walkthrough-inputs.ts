@@ -15,10 +15,12 @@ import { join, resolve } from 'node:path';
 import {
   JUDGMENT_CORRELATION_UNAVAILABLE,
   type ActRecordInput,
+  type ReadinessTraversal,
   type WalkthroughJudgmentExpectations,
   type WalkthroughJudgmentInputs,
 } from '@syzygy/three-surface-poc-core';
 
+import { POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, sourceSlug } from './polaris.js';
 import {
   actIdentityOf,
   classifyMissingRecord,
@@ -123,5 +125,29 @@ export function loadWalkthroughJudgmentInputs(options: LoadGovernanceInputsOptio
     },
     expectations,
     correlate: JUDGMENT_CORRELATION_UNAVAILABLE,
+  };
+}
+
+/** PWB-REQ-021 readiness traversal (as amended 2026-09-05): a traversed path
+ * is lawful only when it is Polaris itself (direct or tailnet mount) or
+ * Polaris's exact-source route of the same evaluation — the `#polaris-source-`
+ * fragment naming a source in this evaluation's population. Every other
+ * surface, and an exact-source fragment naming a source this evaluation does
+ * not carry, is outside Polaris. */
+export function pwbReadinessTraversal(): ReadinessTraversal {
+  const polarisRoutes = [POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH] as const;
+  return {
+    polarisRoutes,
+    isExactSourceRoute: (path, sourcePaths) => {
+      const hash = path.indexOf('#');
+      if (hash < 0) return false;
+      const route = path.slice(0, hash);
+      const fragment = path.slice(hash + 1);
+      if (!(polarisRoutes as readonly string[]).includes(route)) return false;
+      const prefix = 'polaris-source-';
+      if (!fragment.startsWith(prefix)) return false;
+      const slug = fragment.slice(prefix.length);
+      return sourcePaths.some((sourcePath) => sourceSlug(sourcePath) === slug);
+    },
   };
 }

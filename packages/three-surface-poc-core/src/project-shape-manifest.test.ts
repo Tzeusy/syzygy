@@ -226,7 +226,7 @@ describe('deriveProjectShapeManifest — complete population at one revision', (
     expect(new Set(manifest.sources.map((source) => source.path)).size).toBe(EXPECTED_SOURCES.length);
     expect(manifest.revision).toBe(REVISION);
     expect(manifest.repositoryId).toBe('repository:butlers-configured-poc');
-    expect(manifest.discoveryVersion).toBe('pwb-discovery-v1-candidate.3');
+    expect(manifest.discoveryVersion).toBe('pwb-discovery-v2-candidate.1');
     expect(manifest.indexDepth).toBe(3);
     expect(manifest.rootIndex).toEqual({ path: ROOT, state: 'read', anchor: b(3) });
   });
@@ -407,7 +407,7 @@ describe('deriveProjectShapeManifest — determinism and identity', () => {
     expect(first.digest).toBe(second.digest);
     expect(shuffled.digest).toBe(first.digest);
     expect(first.digest).toMatch(/^sha256:[0-9a-f]{64}$/);
-    expect(manifestIdentity(first)).toBe(`repository:butlers-configured-poc@${REVISION}/pwb-discovery-v1-candidate.3/${first.digest}`);
+    expect(manifestIdentity(first)).toBe(`repository:butlers-configured-poc@${REVISION}/pwb-discovery-v2-candidate.1/${first.digest}`);
   });
 
   it('an unlinked extra file leaves the digest unchanged; a changed source blob, revision or discovery version changes it', () => {

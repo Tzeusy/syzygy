@@ -1,0 +1,191 @@
+{
+  "slice": "C4 closed fact/precedence grammar (bead syzygy-1z3.24.4)",
+  "recorded": "2026-09-05",
+  "effectiveActs": [
+    "PWB truth-and-readiness amendment (PWB-REQ-004 as amended)",
+    "PWB observer registry-entry amendment (observationGrammar)"
+  ],
+  "method": "each predicate broken in place, its test file run from the worktree root with vitest, the source restored byte-for-byte from the pre-mutation string; a mutation is killed when at least one test fails",
+  "mutations": [
+    {
+      "id": "fact-out-of-scope",
+      "file": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+      "killed": true,
+      "failingTests": 2
+    },
+    {
+      "id": "home-inert",
+      "file": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "home-not-applied",
+      "file": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+      "killed": true,
+      "failingTests": 2
+    },
+    {
+      "id": "more-than-one-under-home",
+      "file": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+      "killed": true,
+      "failingTests": 2
+    },
+    {
+      "id": "anchor-not-in-population",
+      "file": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "no-rule-newest-wins",
+      "file": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+      "killed": true,
+      "failingTests": 13
+    },
+    {
+      "id": "disagreeing-rules-first",
+      "file": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "summary-duplicate-h2",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "summary-duplicate-daemons",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "summary-ordered-item",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "summary-cardinal-once",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "summary-cardinal-regex",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "summary-label-regex",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "table-duplicate-h3",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "table-one-table",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "table-columns",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "table-ordinal-range",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "table-duplicate-ordinal",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "table-layer-literal",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "table-owns-literal",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 2
+    },
+    {
+      "id": "table-home-literal",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "table-one-bold-span",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 1
+    },
+    {
+      "id": "root-pass-charged",
+      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "killed": true,
+      "failingTests": 2
+    }
+  ],
+  "summary": {
+    "mutations": 23,
+    "killed": 23,
+    "survived": 0
+  },
+  "liveObservation": {
+    "butlersRevision": "d684c5776f7132e87a2ccfb1c336fdfea90dd04b",
+    "precedence": {
+      "kind": "admitted",
+      "rootLine": 42,
+      "rowLines": [
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50
+      ]
+    },
+    "rootSummary": {
+      "kind": "emitted",
+      "rootLine": 105,
+      "statedStaffers": "3",
+      "statedButlers": "8"
+    },
+    "catalogCountStaffers": {
+      "state": "unknown",
+      "unknownReason": "excluded-content",
+      "declarationsKept": 1
+    },
+    "catalogCountButlers": {
+      "state": "unknown",
+      "unknownReason": "excluded-content",
+      "declarationsKept": 1
+    },
+    "cause": "about/heart-and-soul/v1.md whole-source Unknown: ambiguous-leading-label at line 95 (known grammar quirk; not relaxed)",
+    "rulesDeclared": 7,
+    "rulesApplied": 0,
+    "contradictions": 0,
+    "limitBreaches": 0
+  }
+}

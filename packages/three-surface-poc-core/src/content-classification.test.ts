@@ -27,11 +27,13 @@ import {
   parseFailureExclusion,
   type ClassificationRecord,
   type SecretClassificationPolicy,
+  classifyPhaseASeed,
 } from './content-classification.js';
 import { createExactObjectReader, type ExactObjectReader, type ObjectReadRecord } from './git-object-reader.js';
 import { indexGitTree, type GitTreeEntry } from './git-tree.js';
 import type { ManifestSource } from './project-shape-manifest.js';
 import { PWB_RESOURCE_LIMITS, type PwbResourceLimits } from './project-shape-observation.js';
+import { ParsePassBudgetExceeded, createResourceLedger, type ParsePassIdentity } from './resource-ledger.js';
 
 // ---------------------------------------------------------------------
 // Fixture repository.
@@ -51,7 +53,7 @@ const SECRETS = {
   assignment: 'password = "pwbsentinelE-hunter2"',
   url: 'https://pwbsentinelF:hunter2@example.org/repo.git',
 } as const;
-const SENTINEL_BYTES = ['pwbsentinelA', 'PWBSENTINELB', 'pwbsentinelC', 'pwbsentinelD', 'pwbsentinelE', 'pwbsentinelF', 'hunter2', 'pwb-active-sentinel'] as const;
+const SENTINEL_BYTES = ['pwbsentinelA', 'PWBSENTINELB', 'pwbsentinelC', 'pwbsentinelD', 'pwbsentinelE', 'pwbsentinelF', 'hunter2', 'pwb-active-sentinel', 'pwb-inert-example'] as const;
 
 const TEXTS: Record<string, string> = {
   'about/README.md': '# About\n\n- [Heart](heart-and-soul/README.md)\n',
@@ -68,6 +70,13 @@ const TEXTS: Record<string, string> = {
   'secrets/url.md': `remote: ${SECRETS.url}\n`,
   'secrets/two.md': `${SECRETS.githubToken} and ${SECRETS.url}\n`,
   'notes/active.md': '# Notes\n\n<script>pwb-active-sentinel()</script>\n',
+  // Amended PWB-REQ-006: markup only inside closed code contexts is inert…
+  'notes/inert-code.md': '# Notes\n\n```html\n<script>pwb-inert-example()</script>\n```\n\nUse `<img onerror=x>` and `[x](javascript:1)` as text.\n',
+  // …a malformed context excludes the whole artifact…
+  'notes/unclosed-fence.md': '# Notes\n\n```\nnever closed\n',
+  // …and a secret in a code context is still a secret (detectors ignore the mask).
+  'secrets/in-code.md': `# Key\n\n\`\`\`\n${SECRETS.githubToken}\n\`\`\`\n`,
+  'secrets/in-span.md': `Set \`${SECRETS.assignment}\` first.\n`,
   '.env': 'X=1\n',
   'certs/server.pem': 'x\n',
 };
@@ -149,11 +158,15 @@ const POPULATION: readonly ManifestSource[] = [
   source('certs/server.pem', []),
   source('gone/object.md'),
   source('notes/active.md'),
+  source('notes/inert-code.md', ['principle']),
+  source('notes/unclosed-fence.md'),
   source('openspec/specs/one/spec.md', ['baseline-spec']),
   source('roster/alpha/butler.toml', ['roster-identity']),
   source('secrets/assignment.md'),
   source('secrets/aws.md'),
   source('secrets/github.md'),
+  source('secrets/in-code.md'),
+  source('secrets/in-span.md'),
   source('secrets/private-key.md'),
   source('secrets/slack.md'),
   source('secrets/two.md'),
@@ -180,11 +193,15 @@ const EXPECTED: Record<string, Expected> = {
   'certs/server.pem': { outcome: 'excluded', redactionClass: 'excluded-artifact', exclusionReason: 'denied-path', digest: false, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   'gone/object.md': { outcome: 'unavailable', reason: 'git-read-failed', unknownReason: 'source-uncaptured-or-unreachable', degradationState: 'Observer failed' },
   'notes/active.md': { outcome: 'excluded', redactionClass: 'unclassifiable-excluded', exclusionReason: 'active-content', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
+  'notes/inert-code.md': { outcome: 'classified' },
+  'notes/unclosed-fence.md': { outcome: 'excluded', redactionClass: 'unclassifiable-excluded', exclusionReason: 'active-content', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   'openspec/specs/one/spec.md': { outcome: 'classified' },
   'roster/alpha/butler.toml': { outcome: 'classified' },
   'secrets/assignment.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'credential-assignment', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   'secrets/aws.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'known-token-formats', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   'secrets/github.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'known-token-formats', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
+  'secrets/in-code.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'known-token-formats', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
+  'secrets/in-span.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'credential-assignment', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   'secrets/private-key.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'private-key-material', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   'secrets/slack.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'known-token-formats', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   // Two detectors match; the first in policy order is named.
@@ -235,7 +252,7 @@ describe('PWB-REQ-003 — the population survives every fault', () => {
         expect(e.redactionClass).toBe(expected.redactionClass);
         expect(e.repositoryRelativePath).toBe(r.record.path);
         expect(e.policyId).toBe('polaris-butlers-project-shape-secrets');
-        expect(e.policyVersion).toBe('1.0.0-candidate.4');
+        expect(e.policyVersion).toBe('1.1.0-candidate.1');
         expect(e.detectorId).toBe(expected.detectorId);
         expect(e.exclusionReason).toBe(expected.exclusionReason);
         expect(e.contentDigest !== undefined, `${r.record.path} digest presence`).toBe(expected.digest);
@@ -257,16 +274,16 @@ describe('PWB-REQ-003 — the population survives every fault', () => {
     const c = result.counts;
     expect(c.sources).toBe(POPULATION.length);
     expect(c.classified + c.excluded + c.unavailable).toBe(c.sources);
-    expect(c.classified).toBe(6);
-    expect(c.classifiedByBasis).toEqual({ body: 6, 'path-only': 0 });
+    expect(c.classified).toBe(7);
+    expect(c.classifiedByBasis).toEqual({ body: 7, 'path-only': 0 });
     expect(c.classifiedByBasis.body + c.classifiedByBasis['path-only']).toBe(c.classified);
-    expect(c.excluded).toBe(12);
+    expect(c.excluded).toBe(15);
     expect(c.unavailable).toBe(4);
-    expect(c.byRedactionClass).toEqual({ 'excluded-artifact': 9, 'unclassifiable-excluded': 3 });
-    expect(result.exclusions).toHaveLength(12);
+    expect(c.byRedactionClass).toEqual({ 'excluded-artifact': 11, 'unclassifiable-excluded': 4 });
+    expect(result.exclusions).toHaveLength(15);
     expect(new Set(result.exclusions.map((e) => e.redactionClass))).toEqual(new Set(['excluded-artifact', 'unclassifiable-excluded']));
     expect(result.policyId).toBe('polaris-butlers-project-shape-secrets');
-    expect(result.policyVersion).toBe('1.0.0-candidate.4');
+    expect(result.policyVersion).toBe('1.1.0-candidate.1');
   });
 
   it('hands a body only to the consumer, and only for classified sources', () => {
@@ -290,7 +307,7 @@ describe('PWB-REQ-003 — the population survives every fault', () => {
     assertNoSentinel(r.records);
     assertNoSentinel(result.exclusions);
     // The consumer did see the benign bodies (the sentinels never were).
-    expect(result.results.filter((x) => x.value !== undefined)).toHaveLength(6);
+    expect(result.results.filter((x) => x.value !== undefined)).toHaveLength(7);
   });
 
   it('the three spec faults: a removed source, a denied read and a classifier-excluded source all stay counted', () => {
@@ -386,7 +403,7 @@ describe('PWB-REQ-003 — classifySource step by step', () => {
           exclusionReason: 'denied-path',
           detail,
           policyId: 'polaris-butlers-project-shape-secrets',
-          policyVersion: '1.0.0-candidate.4',
+          policyVersion: '1.1.0-candidate.1',
         });
       }
     }
@@ -454,7 +471,7 @@ describe('PWB-REQ-003 — classifySource step by step', () => {
       contentDigest: `sha256:${sha256Hex(BYTES[member.path] as Uint8Array)}`,
       extractionClasses: ['principle'],
       policyId: 'polaris-butlers-project-shape-secrets',
-      policyVersion: '1.0.0-candidate.4',
+      policyVersion: '1.1.0-candidate.1',
       detectorsRun: 4,
       basis: 'body',
     });
@@ -468,10 +485,28 @@ describe('PWB-REQ-003 — classifySource step by step', () => {
         contentDigest: classified.record.contentDigest,
         exclusionReason: 'parse-failure',
         policyId: 'polaris-butlers-project-shape-secrets',
-        policyVersion: '1.0.0-candidate.4',
+        policyVersion: '1.1.0-candidate.1',
       },
       unknown: { failureState: 'secretMatchedOrUnclassifiable', degradationState: 'Excluded content', unknownReason: 'excluded-content' },
     });
+  });
+});
+
+describe('PWB-REQ-006 (amended) — phase-A seeds use the same context-aware guard', () => {
+  const detectors = compileDetectors(PWB_SECRET_POLICY);
+
+  it('markup only inside closed code contexts keeps a seed safe', () => {
+    expect(classifyPhaseASeed(detectors, '# Index\n\n```\n<script>x</script>\n```\n\n- [a](a.md) and `<br>`\n')).toEqual({ kind: 'safe' });
+  });
+
+  it('the same markup outside a context, or a malformed context, excludes the seed', () => {
+    expect(classifyPhaseASeed(detectors, '# Index\n\n<script>x</script>\n')).toEqual({ kind: 'excluded', reason: 'active-content', detail: '2' });
+    expect(classifyPhaseASeed(detectors, '# Index\n\n```\nnever closed\n')).toEqual({ kind: 'excluded', reason: 'active-content', detail: '1' });
+  });
+
+  it('a secret inside a code context is still a secret: detectors see the raw text', () => {
+    expect(classifyPhaseASeed(detectors, `\`\`\`\n${SECRETS.awsKey}\n\`\`\`\n`)).toEqual({ kind: 'excluded', reason: 'secret-matched', detail: 'known-token-formats' });
+    expect(classifyPhaseASeed(detectors, `see \`${SECRETS.url}\`\n`)).toEqual({ kind: 'excluded', reason: 'secret-matched', detail: 'credential-bearing-url' });
   });
 });
 
@@ -522,7 +557,7 @@ describe('PWB-REQ-003 — the policy is the input', () => {
     expect(stable(PWB_SECRET_POLICY.unclassifiableExclusion)).toBe(stable({ redactionClass: unclassifiable['redactionClass'], retainedFields: unclassifiable['retainedFields'], retainBody: unclassifiable['retainBody'] }));
     const classes = policy['redactionClasses'] as Record<string, unknown>;
     expect(stable(PWB_SECRET_POLICY.redactionClasses)).toBe(stable({ emitted: classes['emitted'], neverEmitted: classes['neverEmitted'] }));
-    expect(policy['status']).toBe('candidate-act-ready-no-effect-until-owner-act');
+    expect(policy['status']).toBe('candidate-amendment-no-effect-until-owner-act');
     const raw = policy['rawBodyHandling'] as Record<string, string>;
     expect(Object.values(raw).every((v) => v === 'never')).toBe(true);
   });
@@ -544,5 +579,88 @@ describe('PWB-REQ-003 — the policy is the input', () => {
     expect([...UNAVAILABLE_REASONS]).toEqual(['not-in-manifest', 'missing-at-revision', 'not-a-regular-blob', 'not-in-tree', 'path-escapes-repository', 'path-not-normalized', 'object-id-mismatch', 'git-read-failed']);
     const { result } = population();
     expect(JSON.stringify(result)).not.toContain('redacted-span');
+  });
+});
+
+// ---------------------------------------------------------------------
+// Phase B classification charges the same ledger (registry amendment
+// 2026-09-05; PWB-REQ-006 as amended): each policy detector is one
+// registry pass, repeated after phase A and charged again.
+
+describe('PWB-REQ-006 (amended) — classification charges one shared resource ledger', () => {
+  const policy = PWB_SECRET_POLICY;
+  const detectors = compileDetectors(policy);
+  const PATH = 'about/heart-and-soul/principles.md';
+
+  function classified(limits: Partial<PwbResourceLimits>) {
+    const ledger = createResourceLedger({ ...PWB_RESOURCE_LIMITS, ...limits });
+    const spy = gitSpy();
+    const r = createExactObjectReader({ runGit: spy.runGit, tree: indexGitTree(TREE), ledger });
+    const consumed: string[] = [];
+    const result = classifyManifestSources({ sources: POPULATION }, r, (s, text) => {
+      consumed.push(s.path);
+      return text.length;
+    }, policy, undefined, ledger);
+    return { result, consumed, ledger };
+  }
+
+  it('detectSecrets charges each detector under its registry identity', () => {
+    const charged: ParsePassIdentity[] = [];
+    detectSecrets(detectors, '# plain\n', (pass) => {
+      charged.push(pass);
+    });
+    expect(charged).toEqual(['secret-private-key-fragments', 'secret-known-token-formats', 'secret-credential-assignment', 'secret-credential-bearing-url']);
+  });
+
+  it('a read source costs four reader passes plus four detector passes', () => {
+    const { result, consumed, ledger } = classified({});
+    expect(consumed).toContain(PATH);
+    expect(ledger.passesFor(PATH)).toBe(8);
+    const summary = ledger.summary();
+    // Every body the reader handed over was scanned by all four detectors:
+    // the consumed ones and the ones a detector then excluded.
+    const scanned = result.counts.classified + result.exclusions.filter((e) => e.detectorId !== undefined).length;
+    expect(scanned).toBeGreaterThan(consumed.length);
+    for (const pass of ['secret-private-key-fragments', 'secret-known-token-formats', 'secret-credential-assignment', 'secret-credential-bearing-url'] as const) {
+      expect(summary.passesByIdentity[pass], pass).toBe(scanned);
+    }
+    expect(result.exclusions.filter((e) => e.exclusionReason === 'resource-limit')).toEqual([]);
+  });
+
+  it('maxParsePassesPerSource 7 excludes every read source as resource-limit before consume; 8 classifies them', () => {
+    const under = classified({ maxParsePassesPerSource: 7 });
+    expect(under.consumed).toEqual([]);
+    expect(under.result.counts.classified).toBe(0);
+    expect(under.result.results).toHaveLength(POPULATION.length);
+    const excluded = under.result.exclusions.filter((e) => e.exclusionReason === 'resource-limit');
+    expect(excluded.map((e) => e.repositoryRelativePath)).toContain(PATH);
+    for (const e of excluded) expect(e).toMatchObject({ redactionClass: 'unclassifiable-excluded', detail: 'maxParsePassesPerSource', policyId: 'polaris-butlers-project-shape-secrets' });
+    expect(under.ledger.breaches.filter((b) => b.limit === 'maxParsePassesPerSource').map((b) => b.observed)).toEqual(Array(excluded.length).fill(8));
+    const at = classified({ maxParsePassesPerSource: 8 });
+    expect(at.consumed).toContain(PATH);
+    expect(at.result.exclusions.filter((e) => e.exclusionReason === 'resource-limit')).toEqual([]);
+  });
+
+  it('classifySource turns the budget breach into an excluded resource-limit record without the body', () => {
+    const input = { policy, detectors, manifest: { sources: POPULATION } };
+    const member = POPULATION.find((s) => s.path === PATH) as ManifestSource;
+    const record: ObjectReadRecord = { path: PATH, objectId: oidOf(PATH), outcome: 'read', bytes: 3, contentDigest: `sha256:${sha256Hex(BYTES[PATH] as Uint8Array)}` };
+    const breach = { limit: 'maxParsePassesPerSource' as const, declared: 1, observed: 2, path: PATH };
+    const result = classifySource(input, member, record, 'SECRET-BODY', () => {
+      throw new ParsePassBudgetExceeded(breach, 'secret-known-token-formats');
+    });
+    expect(result.kind).toBe('withheld');
+    expect(result.record).toMatchObject({ outcome: 'excluded', exclusion: { exclusionReason: 'resource-limit', detail: 'maxParsePassesPerSource', repositoryRelativePath: PATH } });
+    expect(JSON.stringify(result)).not.toContain('SECRET-BODY');
+  });
+
+  it('classifyPhaseASeed reports over-limit with the breach when a detector pass exceeds the budget', () => {
+    const breach = { limit: 'maxParsePassesPerSource' as const, declared: 5, observed: 6, path: 'about/README.md' };
+    let calls = 0;
+    const result = classifyPhaseASeed(detectors, '# root\n', (pass) => {
+      calls += 1;
+      if (calls === 2) throw new ParsePassBudgetExceeded(breach, pass);
+    });
+    expect(result).toEqual({ kind: 'over-limit', breach });
   });
 });

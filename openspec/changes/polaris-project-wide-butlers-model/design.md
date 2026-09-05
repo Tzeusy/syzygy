@@ -80,6 +80,58 @@ When two declarations disagree, the model retains both anchors, applies
 documented precedence only when it is explicit, and discloses the conflict
 either way.
 
+The project-fact population is closed rather than accepting arbitrary injected
+fact names. It consists of:
+
+1. `item:<class>:<declared-key>` for each item in the signed nine-class
+   extraction grammar;
+2. `count:<class>` for each of those nine classes;
+3. `catalog-count:<catalog-key>` for each of the nine signed V1 catalog
+   headings; and
+4. `project-account:<key>` for the six signed account keys.
+
+A declaration enters one of those facts only from an admitted source and the
+extractor assigned to that source. The root-index statement that Butlers has
+eight domain butlers and the V1 `Butlers` catalog's derived population of nine
+therefore both declare `catalog-count:Butlers`; neither is a side input.
+
+Two additional root-index grammars are closed. Under the exact H2 `Key
+Architectural Facts`, an unordered item whose leading bold label is
+`<decimal> daemons` and whose own text contains the exact cardinal form
+`<decimal> staffers ... + <decimal> domain butlers` emits only
+`catalog-count:Staffers` and `catalog-count:Butlers`. Under the exact H3
+`Precedence Order When Layers Disagree`, one pipe table with the exact columns
+`#`, `Layer`, `Owns`, `Home` emits the seven ordered layer rules only when rows
+1 through 7 each occur once and each layer/home is unique. Rows 1 through 5
+carry exact normalized roots; row 6's exact `roster/{butler}/` template expands
+only for declared roster keys; row 7's exact `src/, alembic/, tests/` literal
+is inert because code owns no admitted fact. No other prose, number or table
+mints a declaration or rule.
+
+The registry freezes the exact `Layer`, `Owns` and `Home` semantic literals for
+all seven rows. Raw `Layer` cells must be exactly one bold span; matching trims
+outer ASCII whitespace and unwraps only complete inline code spans in `Owns`
+and `Home`, preserving case, punctuation and internal whitespace. It also
+freezes a closed twenty-entry family map. `item:<class>` and `count:<class>`
+are separate entries for each of the nine classes; their row is 1 for project-
+account-section, principle, success-criterion and catalog-entry, 2 for design-
+contract, 3 for baseline-spec, 4 for craft-policy, 5 for topology-component and
+6 for roster-identity. `catalog-count` and `project-account` are the remaining
+two entries and both map to row 1. Row 7 owns no fact in this content class. Mixed-
+family prose or any altered `Owns` cell invalidates the table rather than
+extending the grammar.
+
+For one conflicting fact, the precedence table applies only when exactly one
+declaration's source is under the lowest-numbered listed home assigned by that
+closed map. The root summary is a non-owning declaration and
+defers to such an owning layer; an unlisted source owns nothing. Missing,
+malformed, duplicated, out-of-population, self-referential, inapplicable or
+equally ranked rules select nothing. Thus the named live
+`catalog-count:Butlers` conflict retains eight from the root summary and nine
+from the Heart and Soul V1 catalog; the admitted row-1 Heart and Soul rule may
+select nine only with that exact rule anchor and both declarations still
+visible. Without that applicable rule the result is Unknown.
+
 The machine answer and Polaris consume the same coverage object. A page cannot
 claim whole-project coverage from a smaller hidden model.
 
@@ -133,14 +185,50 @@ authority-specific field cases.
 
 Only exact Git objects under normalized repository-relative paths are read.
 Absolute paths, traversal, NULs, working-tree symlinks, submodule traversal and
-repository escape are rejected. Markdown is parsed as inert text; raw HTML,
-SVG, scripts, event handlers and unsafe URL schemes never reach browser output.
+repository escape are rejected. Markdown is handled as untrusted text and is
+context-encoded at every sink. Inline code spans and fenced code blocks are
+inert contexts: markup-like examples inside them do not by themselves trigger
+active-content exclusion and are never interpreted as markup or links. Secret
+detectors still scan the complete transient body, including those contexts,
+before parsing. Outside inert-code contexts, raw HTML elements/comments/
+declarations, SVG, scripts, event-handler attributes and unsafe URL schemes in
+Markdown destinations, autolinks or HTML attributes exclude the whole source.
 
-The adapter declares source-count, byte, depth, parse-time and rendered-output
-budgets in the model. A limit leaves the affected source counted and Unknown.
-Secret detection and content classification cover the model, caches, logs,
-HTML, JSON and walkthrough records. Exclusions carry hash-not-body provenance.
-No observed-project code executes.
+The inert-context profile is closed and line-oriented. A fence begins with
+zero to three spaces and at least three identical backticks or tildes; it ends
+at the first zero-to-three-space run of the same character at least as long,
+with trailing spaces only. A backtick opener's info text may contain no
+backtick. Outside fences, an inline span closes only on the next backtick run
+of exactly the opener length; different-length runs are content and backslash
+does not escape them. Unclosed fences/spans and invalid backtick info strings
+are malformed and excluded. Indented code and HTML `<code>` are not inert
+contexts. The context mask affects only active-content detection; complete-body
+secret scans run first.
+
+The adapter declares one evaluation-wide envelope. `maxSources` covers the
+complete manifest. `maxBytesPerSource` covers each exact blob.
+`maxTotalBytes` is one cumulative counter across phase A and phase B and counts
+each `(path, object-id)` body once; it never resets between phases.
+`maxIndexDepth` covers discovery. Deterministic parse work is bounded by
+`maxParsePassesPerSource`: the registry enumerates the only twelve pass
+identities. Each complete traversal of one source counts once, including a
+helper traversal; repeating one counts again and an unregistered traversal is
+forbidden. Human HTML and machine
+JSON have separate final encoded-byte ceilings. A source/input breach keeps
+the whole source population counted and makes every dependent fact Unknown. A
+final-output breach emits only the bounded typed failure envelope with the
+evaluation identity, breached limit, observed count and population counts; it
+never emits a truncated success-shaped model. Every breach makes cold-open
+readiness false. Secret detection and classification cover model, caches,
+logs, HTML, JSON and walkthrough records. Exclusions carry hash-not-body
+provenance. No observed-project code executes.
+
+The recommended registry values are unchanged for source and cumulative bytes
+(`512`, `1,048,576`, `16,777,216`, depth `4`), replace nondeterministic elapsed
+parse time with `16` complete passes per source, retain `2,097,152` bytes for a
+human HTML response, and set the machine JSON ceiling to `8,388,608` bytes.
+The split does not waive concise human presentation; it recognizes that the
+machine answer carries the complete fact population.
 
 ### 7. Keep execution and judgment separate
 
@@ -156,6 +244,29 @@ proves comprehension succeeded.
 The judgment oracle closes its invalid population at 84 present-invalid cases
 plus two absent cases.
 
+PWB-REQ-021 owns readiness and answer retention. Its execution record carries
+exactly nine identified answer entries, one for each closed cold-open prompt,
+and every traversed path used for readiness must be Polaris or a Polaris exact-
+source route at the same surface/evaluation identity. Missing, duplicate,
+unknown or wrong-prompt answers and non-Polaris paths make readiness false, but
+do not make the run or judgment act malformed. PWB-REQ-022 continues to decide
+only whether the separately retained run-record/judgment pair and owner act are
+lawful; its 84 present-invalid plus two absent cases do not change.
+
+### 8. Reach verbatim intent within the existing consent class
+
+Baseline `openspec/specs/*/spec.md` Git objects are already members of the
+signed source population, and PWB-REQ-011/015 already require exact requirement
+text. The performed consent covers exact Git objects selected by that
+population under `declared-project-shape-text`. The live route therefore needs
+no wider content class: after the ordinary authority gate, exact-object check,
+whole-body secret scan, inert-content classification and requirement-identity
+digest check, the renderer may transiently encode only the requested verbatim
+requirement and scenarios. It stores, logs, caches and returns no unselected
+body. If any gate fails, exact text remains Unknown. Any proposal to read a
+body outside that population or return a raw artifact requires a separate
+consent amendment and act.
+
 ## Data Flow
 
 1. Bind the configured Butlers repository to an exact Git revision.
@@ -168,8 +279,9 @@ plus two absent cases.
 7. Add the existing capability deep-dive facts.
 8. Freeze one shared model for the human and machine surfaces.
 9. Render project-level Polaris and capability drill-down from that model.
-10. Evaluate the separate walkthrough record and owner judgment with the exact
-    judgment-act state retained.
+10. Evaluate nine-answer readiness under PWB-REQ-021, then evaluate the
+    separate walkthrough record and owner judgment under PWB-REQ-022 with the
+    exact judgment-act state retained.
 
 ## Risks / Trade-offs
 

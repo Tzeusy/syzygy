@@ -1,0 +1,496 @@
+{
+ "slice": "C5 PWB-REQ-021 readiness + PWB-REQ-011 exact-requirement route (bead syzygy-1z3.24.4)",
+ "recorded": "2026-09-05",
+ "effectiveActs": [
+  "PWB truth-and-readiness amendment (PWB-REQ-011 and PWB-REQ-021 as amended; tag pwb-truth-readiness-amendment-signed-2026-09-05)",
+  "PWB observer registry-entry amendment (tag pwb-adopt-registry-entry-signed-2026-09-05)",
+  "PWB implementation-authorization continuation (plain direction, decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md)"
+ ],
+ "method": "each predicate broken in place, its test file(s) run from the worktree root with vitest, the source restored byte-for-byte and its SHA-256 re-checked; a mutation is killed when at least one test fails. Two survivors of the first pass (authority-raw-path-accepted: equivalent outcome, differing detail; population-admits-excluded: no excluded-source fixture) gained falsifier tests and were re-run; one store-only mutation with no observable behavior was dropped and replaced by a reuse-cached-bytes mutation.",
+ "mutations": [
+  {
+   "id": "answer-missing-no-section",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "answer-missing-per-identity",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2
+  },
+  {
+   "id": "answer-unrecognized",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2
+  },
+  {
+   "id": "answer-duplicate",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2
+  },
+  {
+   "id": "answer-empty",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2
+  },
+  {
+   "id": "anchor-line-zero",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "anchor-any-path-resolves",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2
+  },
+  {
+   "id": "anchor-unavailable-population-resolves",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "authority-unadmitted-resolves",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "authority-raw-path-accepted",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "surface-mismatch",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2
+  },
+  {
+   "id": "evaluation-mismatch",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2
+  },
+  {
+   "id": "path-outside-polaris",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 4
+  },
+  {
+   "id": "exact-source-ignores-population",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 15
+  },
+  {
+   "id": "resource-breach",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "ready-despite-findings",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2
+  },
+  {
+   "id": "no-run-record-as-ready",
+   "group": "readiness-arms",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "testFiles": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "population-admits-excluded",
+   "group": "readiness-population-and-traversal",
+   "file": "packages/three-surface-poc-core/src/model.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/polaris-walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "population-hides-breaches",
+   "group": "readiness-population-and-traversal",
+   "file": "packages/three-surface-poc-core/src/model.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/polaris-walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "exact-source-any-route",
+   "group": "readiness-population-and-traversal",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/polaris-walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "exact-source-any-slug",
+   "group": "readiness-population-and-traversal",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/polaris-walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2
+  },
+  {
+   "id": "route-serves-when-unobserved",
+   "group": "verbatim-route-gates",
+   "file": "apps/three-surface-poc/src/verbatim-route.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "route-ignores-population",
+   "group": "verbatim-route-gates",
+   "file": "apps/three-surface-poc/src/verbatim-route.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "route-ignores-rule",
+   "group": "verbatim-route-gates",
+   "file": "apps/three-surface-poc/src/verbatim-route.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "route-ignores-revision",
+   "group": "verbatim-route-gates",
+   "file": "apps/three-surface-poc/src/verbatim-route.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "route-ignores-identity",
+   "group": "verbatim-route-gates",
+   "file": "apps/three-surface-poc/src/verbatim-route.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "route-ignores-exclusion",
+   "group": "verbatim-route-gates",
+   "file": "apps/three-surface-poc/src/verbatim-route.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "route-ignores-object-hash",
+   "group": "verbatim-route-gates",
+   "file": "apps/three-surface-poc/src/verbatim-route.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "route-ignores-envelope",
+   "group": "verbatim-route-gates",
+   "file": "apps/three-surface-poc/src/verbatim-route.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "route-ignores-nul",
+   "group": "verbatim-route-gates",
+   "file": "apps/three-surface-poc/src/verbatim-route.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "route-ignores-secrets",
+   "group": "verbatim-route-gates",
+   "file": "apps/three-surface-poc/src/verbatim-route.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "route-ignores-active-content",
+   "group": "verbatim-route-gates",
+   "file": "apps/three-surface-poc/src/verbatim-route.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "route-reuses-cached-bytes",
+   "group": "verbatim-route-gates",
+   "file": "apps/three-surface-poc/src/verbatim-route.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 6
+  },
+  {
+   "id": "select-keeps-purpose",
+   "group": "requirement-selection-and-resolution",
+   "file": "apps/three-surface-poc/src/capability-detail.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/polaris-capability-detail.test.ts",
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 6
+  },
+  {
+   "id": "select-h2-does-not-end-block",
+   "group": "requirement-selection-and-resolution",
+   "file": "apps/three-surface-poc/src/capability-detail.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/polaris-capability-detail.test.ts",
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "select-no-requirement-renders",
+   "group": "requirement-selection-and-resolution",
+   "file": "apps/three-surface-poc/src/capability-detail.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/polaris-capability-detail.test.ts",
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "resolve-ignores-refusal",
+   "group": "requirement-selection-and-resolution",
+   "file": "apps/three-surface-poc/src/capability-detail.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/polaris-capability-detail.test.ts",
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  },
+  {
+   "id": "resolve-ignores-identity",
+   "group": "requirement-selection-and-resolution",
+   "file": "apps/three-surface-poc/src/capability-detail.ts",
+   "testFiles": [
+    "apps/three-surface-poc/src/polaris-capability-detail.test.ts",
+    "apps/three-surface-poc/src/verbatim-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1
+  }
+ ],
+ "summary": {
+  "mutations": 38,
+  "killed": 38,
+  "survived": 0,
+  "byGroup": {
+   "readiness-arms": 17,
+   "readiness-population-and-traversal": 4,
+   "verbatim-route-gates": 12,
+   "requirement-selection-and-resolution": 5
+  }
+ },
+ "liveObservation": {
+  "butlersRevision": "d684c5776f7132e87a2ccfb1c336fdfea90dd04b",
+  "syzygyRevision": "88efbd12e1db355571dccaef7f25750d85ee7865",
+  "shape": "observed",
+  "readiness": {
+   "kind": "no-run-record",
+   "ready": false,
+   "detail": "The walkthrough run record .syzygy/governance/records/PWB-WALKTHROUGH-001.md is missing; there is no answer population to assess."
+  },
+  "judgment": "absent",
+  "baselineSpecs": {
+   "count": 185,
+   "classification": {
+    "classified/path-only": 185
+   }
+  },
+  "exactRequirementRoute": {
+   "rendered": 175,
+   "requirementBlocksSelected": 1669,
+   "notRendered": [
+    {
+     "path": "openspec/specs/catalog-token-limits/spec.md",
+     "reason": "excluded-content",
+     "detail": "openspec/specs/catalog-token-limits/spec.md carries active content (html-tag); nothing was rendered."
+    },
+    {
+     "path": "openspec/specs/connector-home-assistant/spec.md",
+     "reason": "excluded-content",
+     "detail": "openspec/specs/connector-home-assistant/spec.md carries active content (html-tag); nothing was rendered."
+    },
+    {
+     "path": "openspec/specs/core-credentials/spec.md",
+     "reason": "excluded-content",
+     "detail": "openspec/specs/core-credentials/spec.md carries active content (html-comment-or-declaration); nothing was rendered."
+    },
+    {
+     "path": "openspec/specs/cross-butler-briefing-contribution/spec.md",
+     "reason": "excluded-content",
+     "detail": "openspec/specs/cross-butler-briefing-contribution/spec.md carries active content (html-tag); nothing was rendered."
+    },
+    {
+     "path": "openspec/specs/csv-extraction-skill/spec.md",
+     "reason": "excluded-content",
+     "detail": "openspec/specs/csv-extraction-skill/spec.md carries active content (html-tag); nothing was rendered."
+    },
+    {
+     "path": "openspec/specs/dashboard-butler-management/spec.md",
+     "reason": "excluded-content",
+     "detail": "openspec/specs/dashboard-butler-management/spec.md carries active content (html-tag); nothing was rendered."
+    },
+    {
+     "path": "openspec/specs/dashboard-domain-pages/spec.md",
+     "reason": "excluded-content",
+     "detail": "openspec/specs/dashboard-domain-pages/spec.md carries active content (html-tag); nothing was rendered."
+    },
+    {
+     "path": "openspec/specs/healing-anonymizer/spec.md",
+     "reason": "excluded-content",
+     "detail": "openspec/specs/healing-anonymizer/spec.md matched the classification policy's known-token-formats detector (polaris-butlers-project-shape-secrets 1.1.0-candidate.1); nothing was rendered."
+    },
+    {
+     "path": "openspec/specs/ingestion-policy/spec.md",
+     "reason": "excluded-content",
+     "detail": "openspec/specs/ingestion-policy/spec.md carries active content (html-tag); nothing was rendered."
+    },
+    {
+     "path": "openspec/specs/qa-dashboard/spec.md",
+     "reason": "excluded-content",
+     "detail": "openspec/specs/qa-dashboard/spec.md carries active content (html-tag); nothing was rendered."
+    }
+   ]
+  },
+  "polarisPage": {
+   "verbatimStates": [
+    "rendered"
+   ],
+   "verbatimRequirements": [
+    "Inbound message identity resolution",
+    "Identity-enriched prompt injection",
+    "Structured entity_id in route.v1 request_context",
+    "Routing log identity enrichment",
+    "Owner vs non-owner message differentiation",
+    "Resolved sender identity in route.v1 request_context"
+   ],
+   "readinessState": "no-run-record"
+  },
+  "note": "[Observed] every live baseline spec is classified path-only by phase B (body never read there), so the route itself ran the unchanged secret detectors and active-content scan on each transient body; ten specs are refused by those checks with the form or detector named, never the bytes. Readiness is no-run-record because .syzygy/governance/records/PWB-WALKTHROUGH-001.md does not exist yet (P8 owns it); the judgment is absent for the same reason."
+ }
+}

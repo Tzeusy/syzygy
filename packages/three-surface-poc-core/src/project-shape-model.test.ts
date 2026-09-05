@@ -14,7 +14,7 @@ import { FRESHNESS_STATES, RENDERING_TIERS, UNKNOWN_REASONS } from '@syzygy/cap1
 
 import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import type { GitTreeEntry } from './git-tree.js';
-import type { Declaration, PrecedenceRule } from './project-shape-coverage.js';
+import { PWB_RESOURCE_LIMITS, type PwbResourceLimits } from './project-shape-observation.js';
 import {
   CHALLENGE_STATES,
   PWB_REPOSITORY_ID,
@@ -151,6 +151,28 @@ const BASE_TEXTS: Readonly<Record<string, string>> = {
   'roster/bishop/butler.toml': '[butler]\nname = "bishop"\n',
 };
 
+// The root index carrying the two PWB-REQ-004 grammars: the seven-row
+// precedence table and a summary stating three butlers where v1.md declares
+// two (Atlas, Bishop) and no staffers where it states one.
+const ROOT_LINKS = BASE_TEXTS['about/README.md'] as string;
+const ROOT_TABLE = [
+  '### Precedence Order When Layers Disagree',
+  '',
+  '| # | Layer | Owns | Home |',
+  '|---|-------|------|------|',
+  '| 1 | **Heart and Soul** | Principles, scope boundaries, the 7 non-negotiable rules | `about/heart-and-soul/` |',
+  '| 2 | **Legends and Lore** | Wire contracts, state machines, data models, sanctioned rule exceptions | `about/legends-and-lore/rfcs/` |',
+  '| 3 | **Spec and Spine** | Feature behaviour, acceptance scenarios (WHEN/THEN), per-butler contracts | `openspec/specs/` |',
+  '| 4 | **Craft and Care** | Execution-quality standards, test scope, review gates, observability bar | `about/craft-and-care/` |',
+  '| 5 | **Lay and Land** | Topology snapshot \u2014 where components live, how they connect, stability levels | `about/lay-and-land/` |',
+  '| 6 | **Roster config** | Live butler identity: `butler.toml`, `MANIFESTO.md`, `CLAUDE.md`, skills, API routes | `roster/{butler}/` |',
+  '| 7 | **Code** | Runtime behaviour \u2014 executed source, migrations, tests | `src/`, `alembic/`, `tests/` |',
+  '',
+].join('\n');
+const ROOT_SUMMARY = ['## Key Architectural Facts', '', '- **4 daemons** \u2014 1 staffers (Switchboard) + 3 domain', '  butlers, each on its own port.', ''].join('\n');
+const ROOT_SUMMARY_ONLY_TEXTS: Readonly<Record<string, string>> = { ...BASE_TEXTS, 'about/README.md': `${ROOT_LINKS}\n${ROOT_SUMMARY}` };
+const ROOT_GRAMMAR_TEXTS: Readonly<Record<string, string>> = { ...BASE_TEXTS, 'about/README.md': `${ROOT_LINKS}\n${ROOT_TABLE}\n${ROOT_SUMMARY}` };
+
 const encoder = new TextEncoder();
 
 function sha1Blob(bytes: Uint8Array): string {
@@ -224,15 +246,14 @@ const REJECTING: BodyReadAuthorityEvaluation = {
   contradiction: { clause: 'RFC3-16(a)', definedTerm: 'authorization-bearing governance artifact', statement: 'No effective act.', failing: [] },
 };
 
-function build(input: Fixture & { authority?: BodyReadAuthorityEvaluation; rules?: readonly PrecedenceRule[]; stated?: readonly Declaration[]; revision?: string }) {
+function build(input: Fixture & { authority?: BodyReadAuthorityEvaluation; revision?: string; limits?: Partial<PwbResourceLimits> }) {
   const git = fixture(input);
   const shape = buildProjectShape({
     authority: input.authority ?? ADMITTING,
     revision: input.revision ?? 'main',
     capturedAt: CAPTURED_AT,
     runGit: git.runGit,
-    ...(input.rules === undefined ? {} : { rules: input.rules }),
-    ...(input.stated === undefined ? {} : { statedDeclarations: input.stated }),
+    ...(input.limits === undefined ? {} : { resourceLimits: { ...PWB_RESOURCE_LIMITS, ...input.limits } }),
   });
   return { shape, calls: git.calls, entries: git.entries };
 }
@@ -411,7 +432,7 @@ describe('an admitted, fully readable fixture', () => {
     expect(shape.identity.sourceClaimedInstant.instant).not.toBe(shape.identity.capturedAt);
     expect(shape.identity.scope).toEqual({ repositoryId: 'repository:butlers-configured-poc', contentClass: 'declared-project-shape-text', phase: 'A' });
     expect(shape.identity.observer.observerId).toBe('polaris-butlers-project-shape');
-    expect(shape.identity.policy).toEqual({ policyId: 'polaris-butlers-project-shape-secrets', policyVersion: '1.0.0-candidate.4' });
+    expect(shape.identity.policy).toEqual({ policyId: 'polaris-butlers-project-shape-secrets', policyVersion: '1.1.0-candidate.1' });
     expect(shape.identity.manifestDigest).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(shape.identity.observationDigest).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(shape.identity.deterministicInputs.authority).toEqual({
@@ -440,7 +461,7 @@ describe('an admitted, fully readable fixture', () => {
         scope: shape.identity.scope,
         capturedAt: CAPTURED_AT,
         observerId: 'polaris-butlers-project-shape',
-        observerVersion: '1.0.0-candidate.3',
+        observerVersion: '1.1.0-candidate.1',
       });
       expect(source.itemDenominator.kind).toBe('known');
       expect(source.claim.epistemic).toEqual({ label: 'Observed', tier: 'report-fact', freshness: 'fresh' });
@@ -511,13 +532,17 @@ describe('an admitted, fully readable fixture', () => {
       expect(aggregate.reasonCounts).toEqual({ primary: {}, secondary: {} });
       expect(aggregate.claim.claimId).toBe(`claim:class:${aggregate.class}`);
     }
-    expect(shape.counts.facts).toBe(20 + 9);
+    // 20 identities, 9 class counts, 9 catalog counts, 6 project-account facts.
+    expect(shape.counts.facts).toBe(20 + 9 + 9 + 6);
+    expect(shape.precedence).toEqual({ kind: 'absent', anchor: { path: 'about/README.md', line: 1, contentDigest: sha256(BASE_TEXTS['about/README.md'] as string) }, reason: 'missing-heading', detail: 'Precedence Order When Layers Disagree' });
+    expect(shape.rootSummary).toMatchObject({ kind: 'absent', reason: 'missing-heading', detail: 'Key Architectural Facts' });
+    expect(shape.counts).toMatchObject({ rulesDeclared: 0, rulesApplied: 0 });
     expect(shape.claim.epistemic).toEqual({ label: 'Observed', tier: 'report-fact', freshness: 'fresh' });
   });
 
   it('every claim is a complete tuple from the closed vocabularies', () => {
     const claims = allClaims(shape);
-    expect(claims.length).toBe(1 + 15 + 20 + 9 + 29 + 6);
+    expect(claims.length).toBe(1 + 15 + 20 + 9 + 44 + 6);
     for (const entry of claims) isValidClaim(entry);
     expect(new Set(claims.map((c) => c.evaluationId))).toEqual(new Set(['evaluation:test-admitting']));
   });
@@ -557,7 +582,7 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
         redactionClass: 'excluded-artifact',
         repositoryRelativePath: 'about/craft-and-care/README.md',
         policyId: 'polaris-butlers-project-shape-secrets',
-        policyVersion: '1.0.0-candidate.4',
+        policyVersion: '1.1.0-candidate.1',
         contentDigest: sha256(CRAFT_SECRET),
         detectorId: 'known-token-formats',
       },
@@ -687,29 +712,17 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
 // unreachable through the P2.5 grammar: every identity has exactly one
 // declaring source, and a duplicate key inside a source is a grammar failure.
 // The model still renders that state as Unknown/suspended because the coverage
-// type admits it; only the count-fact contradiction below is reachable.
-describe('contradictions are disclosed, resolved only by a cited rule (PWB-REQ-004)', () => {
-  const stated: Declaration = {
-    fact: 'count:roster-identity',
-    value: '3',
-    basis: 'stated-summary',
-    anchors: [{ path: 'about/README.md', line: 9 }],
-  };
-  const rule: PrecedenceRule = {
-    id: 'rule:roster-wins',
-    anchor: { path: 'about/heart-and-soul/v1.md', line: 3 },
-    statement: 'The roster tree is authoritative over summaries.',
-    higher: { basis: 'derived-count' },
-    lower: { path: 'about/README.md' },
-    facts: ['count:roster-identity'],
-  };
-
+// type admits it; the reachable conflict is the root summary's stated count
+// against the derived catalog count (PWB-REQ-004 as amended).
+describe('contradictions are disclosed, resolved only by a root-declared layer rule (PWB-REQ-004)', () => {
   it('a stated summary disagreeing with the derived count is contradicted, both anchors kept, tier suspended', () => {
-    const shape = observed({ texts: BASE_TEXTS, stated: [stated] });
-    expect(shape.contradictions.map((c) => c.fact.fact)).toEqual(['count:roster-identity']);
-    const [contradiction] = shape.contradictions;
+    const shape = observed({ texts: ROOT_SUMMARY_ONLY_TEXTS });
+    expect(shape.precedence).toMatchObject({ kind: 'absent', reason: 'missing-heading' });
+    expect(shape.rootSummary).toMatchObject({ kind: 'emitted', anchor: { path: 'about/README.md', line: 8 } });
+    expect(shape.contradictions.map((c) => c.fact.fact)).toEqual(['catalog-count:Staffers', 'catalog-count:Butlers']);
+    const contradiction = shape.contradictions[1];
     expect(contradiction?.fact.state).toBe('contradicted');
-    expect(contradiction?.fact.declarations.map((d) => d.value).sort()).toEqual(['2', '3']);
+    expect(contradiction?.fact.declarations.map((d) => [d.basis, d.value])).toEqual([['derived-count', '2'], ['stated-summary', '3']]);
     expect(contradiction?.claim.epistemic).toEqual({
       label: 'Unknown',
       reasons: { primary: 'contradicted-pending-adjudication', secondary: [] },
@@ -717,8 +730,8 @@ describe('contradictions are disclosed, resolved only by a cited rule (PWB-REQ-0
       freshness: 'fresh',
     });
     expect(contradiction?.claim.resolutionRoutes).toEqual([{ reason: 'contradicted-pending-adjudication', route: 'Owner adjudication' }]);
-    expect(contradiction?.claim.support.map((s) => s.path).sort()).toEqual(['about/README.md', 'roster/atlas/butler.toml', 'roster/bishop/butler.toml']);
-    expect(shape.counts.contradictedFacts).toBe(1);
+    expect(contradiction?.claim.support.map((s) => [s.path, s.line])).toEqual([['about/heart-and-soul/v1.md', 13], ['about/README.md', 8]]);
+    expect(shape.counts.contradictedFacts).toBe(2);
     expect(shape.counts.rulesDeclared).toBe(0);
     // Every source is Observed, yet the shape is not: the contradiction is
     // a member Unknown, so the whole-shape claim carries it.
@@ -730,17 +743,35 @@ describe('contradictions are disclosed, resolved only by a cited rule (PWB-REQ-0
     });
   });
 
-  it('with a cited Butlers rule the fact is modeled and the citation travels', () => {
-    const shape = observed({ texts: BASE_TEXTS, stated: [stated], rules: [rule] });
+  it('with the root precedence table, row 1 makes the derived count effective and the citation travels', () => {
+    const shape = observed({ texts: ROOT_GRAMMAR_TEXTS });
+    expect(shape.precedence.kind).toBe('admitted');
+    if (shape.precedence.kind === 'admitted') {
+      expect(shape.precedence.rules.map((r) => [r.id, r.ordinal, r.layer, r.home, r.anchor.line])).toEqual([
+        ['layer:1', 1, 'Heart and Soul', 'about/heart-and-soul/', 10],
+        ['layer:2', 2, 'Legends and Lore', 'about/legends-and-lore/rfcs/', 11],
+        ['layer:3', 3, 'Spec and Spine', 'openspec/specs/', 12],
+        ['layer:4', 4, 'Craft and Care', 'about/craft-and-care/', 13],
+        ['layer:5', 5, 'Lay and Land', 'about/lay-and-land/', 14],
+        ['layer:6', 6, 'Roster config', 'roster/{butler}/', 15],
+        ['layer:7', 7, 'Code', 'src/, alembic/, tests/', 16],
+      ]);
+    }
     expect(shape.contradictions).toEqual([]);
-    const fact = shape.facts.find((f) => f.fact.fact === 'count:roster-identity');
+    const fact = shape.facts.find((f) => f.fact.fact === 'catalog-count:Butlers');
     expect(fact?.fact.state).toBe('modeled');
     if (fact?.fact.state === 'modeled') {
       expect(fact.fact.value).toBe('2');
-      expect(fact.fact.disagreement?.precedence.ruleId).toBe('rule:roster-wins');
+      expect(fact.fact.declarations.map((d) => d.value)).toEqual(['2', '3']);
+      expect(fact.fact.disagreement?.superseded.map((d) => d.value)).toEqual(['3']);
+      expect(fact.fact.disagreement?.precedence).toMatchObject({ ruleId: 'layer:1', ordinal: 1, layer: 'Heart and Soul', anchor: { path: 'about/README.md', line: 10 } });
+      expect(fact.fact.rulesConsidered.map((r) => r.outcome)).toEqual(['applied', ...Array<string>(6).fill('fact-out-of-scope')]);
     }
     expect(fact?.claim.epistemic).toEqual({ label: 'Observed', tier: 'report-fact', freshness: 'fresh' });
-    expect(shape.counts.rulesApplied).toBe(1);
+    expect(shape.counts).toMatchObject({ rulesDeclared: 7, rulesApplied: 1, contradictedFacts: 0 });
+    expect(shape.claim.epistemic).toEqual({ label: 'Observed', tier: 'report-fact', freshness: 'fresh' });
+    // The whole table and summary are one extra pass on the root, no more.
+    expect(shape.resourceUse.passesByIdentity['fact-and-precedence-extraction']).toBe(1);
   });
 });
 
@@ -770,5 +801,138 @@ describe('claim helpers at the seam the coverage types define', () => {
       { ...base, epistemic: { label: 'Unknown', reasons: { primary: 'missing-evidence', secondary: [] }, freshness: 'fresh' } },
     ]);
     expect(counts).toEqual({ primary: { 'excluded-content': 1, 'missing-evidence': 1 }, secondary: { 'missing-evidence': 1, 'excluded-content': 1 } });
+  });
+});
+
+// ---------------------------------------------------------------------
+// One evaluation-wide resource envelope (registry amendment 2026-09-05:
+// `resourceLimits`, `parsePassIdentities`, `resourceLimitSemantics`;
+// PWB-REQ-006 as amended). Phase A and phase B share one ledger.
+
+describe('one resource envelope across both phases (PWB-REQ-006, amended)', () => {
+  function bodiesTaken(calls: readonly string[][], entries: readonly GitTreeEntry[]) {
+    const byOid = new Map(entries.map((entry) => [entry.objectId, entry]));
+    return calls.filter((call) => call[0] === 'cat-file').map((call) => byOid.get(call[2] ?? '') as GitTreeEntry);
+  }
+
+  // Hand-typed: the fourteen bodies the fixture takes from Git, in phase
+  // order, and their byte lengths.
+  const BODIES = [
+    ['about/README.md', 193],
+    ['about/heart-and-soul/README.md', 70],
+    ['about/legends-and-lore/README.md', 89],
+    ['about/spec-and-spine/README.md', 7],
+    ['about/lay-and-land/README.md', 28],
+    ['about/craft-and-care/README.md', 98],
+    ['about/craft-and-care/policies/cc-spec.md', 14],
+    ['about/heart-and-soul/architecture.md', 41],
+    ['about/heart-and-soul/v1.md', 342],
+    ['about/heart-and-soul/vision.md', 332],
+    ['about/lay-and-land/components.md', 83],
+    ['about/legends-and-lore/0001.md', 11],
+    ['roster/atlas/butler.toml', 24],
+    ['roster/bishop/butler.toml', 25],
+  ] as const;
+  const TOTAL = 1357;
+  // Phase B classifies the population in sorted path order.
+  const SEEDS: readonly string[] = [...BODIES.slice(0, 6).map(([path]) => path)].sort();
+
+  it('every body is taken from Git once, counted once and validated once across both phases', () => {
+    const { shape, calls, entries } = build({ texts: BASE_TEXTS });
+    if (shape.kind !== 'observed') throw new Error(shape.kind);
+    expect(bodiesTaken(calls, entries).map((entry) => [entry.path, entry.sizeBytes])).toEqual(BODIES.map((pair) => [...pair]));
+    expect(BODIES.reduce((sum, [, bytes]) => sum + bytes, 0)).toBe(TOTAL);
+    expect(shape.resourceUse).toEqual({
+      bodiesCounted: 14,
+      totalBytes: TOTAL,
+      parsePasses: 155,
+      passesByIdentity: {
+        'utf8-and-nul-validation': 14,
+        'secret-private-key-fragments': 20,
+        'secret-known-token-formats': 20,
+        'secret-credential-assignment': 20,
+        'secret-credential-bearing-url': 20,
+        'markdown-code-context-mask': 14,
+        'active-html-svg-script-handler': 14,
+        'unsafe-url-positions': 14,
+        'phase-a-link-discovery': 6,
+        'project-account-extraction': 3,
+        'declared-item-extraction': 9,
+        'fact-and-precedence-extraction': 1,
+      },
+      sourcesTraversed: 14,
+      maxPassesOnOneSource: 14,
+      breaches: [],
+    });
+    expect(shape.resourceUse.maxPassesOnOneSource).toBeLessThanOrEqual(PWB_RESOURCE_LIMITS.maxParsePassesPerSource);
+    expect(shape.limitBreaches).toEqual([]);
+  });
+
+  it('maxTotalBytes is one cumulative counter: the exact total fits, one byte less refuses only the last body', () => {
+    const fits = observed({ texts: BASE_TEXTS, limits: { maxTotalBytes: TOTAL } });
+    expect(fits.limitBreaches).toEqual([]);
+    expect(fits.exclusions).toEqual([]);
+    const shape = observed({ texts: BASE_TEXTS, limits: { maxTotalBytes: TOTAL - 1 } });
+    expect(shape.limitBreaches).toEqual([{ limit: 'maxTotalBytes', declared: TOTAL - 1, observed: TOTAL, path: 'roster/bishop/butler.toml' }]);
+    expect(shape.resourceUse.breaches).toEqual(shape.limitBreaches);
+    expect(shape.resourceUse.totalBytes).toBe(TOTAL - 25);
+    expect(shape.counts.sources).toBe(15);
+    expect(shape.exclusions).toEqual([
+      expect.objectContaining({ repositoryRelativePath: 'roster/bishop/butler.toml', exclusionReason: 'resource-limit', detail: 'maxTotalBytes', redactionClass: 'unclassifiable-excluded' }),
+    ]);
+    const bishop = shape.sources.find((source) => source.path === 'roster/bishop/butler.toml');
+    expect(bishop?.itemDenominator.kind).toBe('unknown');
+    expect(bishop?.claim.epistemic.label).toBe('Unknown');
+    expect(shape.classes['roster-identity'].denominator.kind).toBe('unknown');
+    expect(shape.claim.epistemic.label).toBe('Unknown');
+    expect('reasons' in shape.claim.epistemic && shape.claim.epistemic.reasons.primary).toBe('source-uncaptured-or-unreachable');
+    for (const entry of allClaims(shape)) isValidClaim(entry);
+  });
+
+  it('maxParsePassesPerSource counts phase B against a seed already validated in phase A', () => {
+    // A seed costs nine passes in phase A and four more detector passes in
+    // phase B before extraction: twelve is one short for every seed, while a
+    // named file with three classes needs eleven and still fits.
+    const shape = observed({ texts: BASE_TEXTS, limits: { maxParsePassesPerSource: 12 } });
+    expect(shape.counts.sources).toBe(15);
+    expect(shape.limitBreaches).toEqual(SEEDS.map((path) => ({ limit: 'maxParsePassesPerSource', declared: 12, observed: 13, path })));
+    expect(shape.exclusions.map((entry) => [entry.repositoryRelativePath, entry.exclusionReason, entry.detail])).toEqual(
+      SEEDS.map((path) => [path, 'resource-limit', 'maxParsePassesPerSource']),
+    );
+    expect(shape.resourceUse.maxPassesOnOneSource).toBe(12);
+    const vision = shape.sources.find((source) => source.path === 'about/heart-and-soul/vision.md');
+    expect(vision?.itemDenominator).toEqual({ kind: 'known', value: 7 });
+    expect(shape.classes['principle'].denominator.kind).toBe('known');
+    for (const path of SEEDS) expect(shape.sources.find((source) => source.path === path)?.claim.epistemic.label, path).toBe('Unknown');
+    expect(shape.claim.epistemic.label).toBe('Unknown');
+    // Excluded seed bodies are hash-not-body: no seed text reaches the shape.
+    expect(JSON.stringify(shape)).not.toContain('[Spec policy](policies/cc-spec.md)');
+    expect(JSON.stringify(shape)).not.toContain('Legends and Lore](legends-and-lore/)');
+    const fits = observed({ texts: BASE_TEXTS, limits: { maxParsePassesPerSource: 14 } });
+    expect(fits.limitBreaches).toEqual([]);
+    expect(fits.exclusions).toEqual([]);
+    for (const entry of allClaims(shape)) isValidClaim(entry);
+  });
+
+  it('a budget spent at extraction makes that source Unknown with no partial items', () => {
+    // vision.md and v1.md need eleven passes (four reader, four detector,
+    // three extraction classes); ten stops each at its third class.
+    const shape = observed({ texts: BASE_TEXTS, limits: { maxParsePassesPerSource: 10 } });
+    // Seeds stop earlier, at their phase-B detector passes; named files that
+    // fit in ten passes are untouched.
+    const stopped = shape.limitBreaches.map((breach) => breach.path ?? "?").filter((path) => !SEEDS.includes(path));
+    expect(stopped).toEqual(['about/heart-and-soul/v1.md', 'about/heart-and-soul/vision.md']);
+    expect(shape.limitBreaches.every((breach) => breach.limit === 'maxParsePassesPerSource' && breach.observed === 11)).toBe(true);
+    expect(shape.sources.find((source) => source.path === 'about/lay-and-land/components.md')?.itemDenominator.kind).toBe('known');
+    for (const path of stopped) {
+      expect(shape.exclusions).toContainEqual(expect.objectContaining({ repositoryRelativePath: path, exclusionReason: 'resource-limit', detail: 'maxParsePassesPerSource' }));
+      const source = shape.sources.find((candidate) => candidate.path === path);
+      expect(source?.itemDenominator.kind).toBe('unknown');
+      expect(shape.items.filter((item) => item.anchors.some((anchor) => anchor.path === path))).toEqual([]);
+    }
+    expect(shape.resourceUse.passesByIdentity['declared-item-extraction']).toBe(5);
+    expect(shape.resourceUse.passesByIdentity['project-account-extraction']).toBe(3);
+    expect(shape.counts.sources).toBe(15);
+    for (const entry of allClaims(shape)) isValidClaim(entry);
   });
 });

@@ -80,14 +80,47 @@ const V1 = [
 
 const CRAFT_README = ['# Craft', '', '### Reading Order', '', '| Order | File |', '|---|---|', '| 1 | [Spec policy](policies/cc-spec.md) |', ''].join('\n');
 
+const ROOT_LINKS = [
+  '# Fixture',
+  '',
+  '[Heart and Soul](heart-and-soul/) · [Legends and Lore](legends-and-lore/) ·',
+  '[Spec and Spine](spec-and-spine/) · [Lay and Land](lay-and-land/) · [Craft and Care](craft-and-care/)',
+  '',
+];
+// The registry's precedence grammar (PWB-REQ-004 as amended), shaped as the
+// live Butlers root writes it: bold Layer, code-span Home.
+const ROOT_PRECEDENCE = [
+  '### Precedence Order When Layers Disagree',
+  '',
+  '| # | Layer | Owns | Home |',
+  '|---|-------|------|------|',
+  '| 1 | **Heart and Soul** | Principles, scope boundaries, the 7 non-negotiable rules | `about/heart-and-soul/` |',
+  '| 2 | **Legends and Lore** | Wire contracts, state machines, data models, sanctioned rule exceptions | `about/legends-and-lore/rfcs/` |',
+  '| 3 | **Spec and Spine** | Feature behaviour, acceptance scenarios (WHEN/THEN), per-butler contracts | `openspec/specs/` |',
+  '| 4 | **Craft and Care** | Execution-quality standards, test scope, review gates, observability bar | `about/craft-and-care/` |',
+  '| 5 | **Lay and Land** | Topology snapshot \u2014 where components live, how they connect, stability levels | `about/lay-and-land/` |',
+  '| 6 | **Roster config** | Live butler identity: `butler.toml`, `MANIFESTO.md`, `CLAUDE.md`, skills, API routes | `roster/{butler}/` |',
+  '| 7 | **Code** | Runtime behaviour \u2014 executed source, migrations, tests | `src/`, `alembic/`, `tests/` |',
+  '',
+];
+// The stated summary: one staffer against V1's empty Staffers heading (row 1
+// decides for V1 when the table is admitted; a contradiction without it),
+// two butlers in agreement with V1.
+const ROOT_SUMMARY = [
+  '## Key Architectural Facts',
+  '',
+  '- **3 daemons** \u2014 1 staffers (Switchboard) + 2 domain',
+  '  butlers, each on its own port.',
+  '',
+];
+/** Line of the daemons item in the root with the table / without it. */
+export const PROJECT_SHAPE_FIXTURE_ROOT_SUMMARY_LINE = ROOT_LINKS.length + ROOT_PRECEDENCE.length + 3;
+export const PROJECT_SHAPE_FIXTURE_ROOT_SUMMARY_LINE_WITHOUT_PRECEDENCE = ROOT_LINKS.length + 3;
+/** First data row of the precedence table (row 1); row n is at this + n - 1. */
+export const PROJECT_SHAPE_FIXTURE_ROOT_ROW_1_LINE = ROOT_LINKS.length + 5;
+
 export const PROJECT_SHAPE_FIXTURE_TEXTS: Readonly<Record<string, string>> = {
-  'about/README.md': [
-    '# Fixture',
-    '',
-    '[Heart and Soul](heart-and-soul/) · [Legends and Lore](legends-and-lore/) ·',
-    '[Spec and Spine](spec-and-spine/) · [Lay and Land](lay-and-land/) · [Craft and Care](craft-and-care/)',
-    '',
-  ].join('\n'),
+  'about/README.md': [...ROOT_LINKS, ...ROOT_PRECEDENCE, ...ROOT_SUMMARY].join('\n'),
   'about/heart-and-soul/README.md': '- [Vision](vision.md)\n- [Architecture](architecture.md)\n- [v1](v1.md)\n',
   'about/heart-and-soul/vision.md': VISION,
   'about/heart-and-soul/architecture.md': ARCHITECTURE,
@@ -104,14 +137,57 @@ export const PROJECT_SHAPE_FIXTURE_TEXTS: Readonly<Record<string, string>> = {
   'roster/bishop/butler.toml': '[butler]\nname = "bishop"\n',
 };
 
+/** The same tree with the root index carrying the stated summary but no
+ * precedence table, so the one-against-zero staffer count has no row to
+ * decide it and stays contradicted with both anchors kept. */
+export const PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE: Readonly<Record<string, string>> = {
+  ...PROJECT_SHAPE_FIXTURE_TEXTS,
+  'about/README.md': [...ROOT_LINKS, ...ROOT_SUMMARY].join('\n'),
+};
+
 /** The same tree with the craft index carrying a secret-shaped token: the
  * policy excludes that body, so its craft-policy items are Unknown. */
 /** The same tree plus the baseline spec the followed OpenSpec change amends,
  * so `proposedWork.currentAuthority` resolves to an Observed shape item. */
 export const PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH = 'openspec/specs/switchboard-identity/spec.md';
+/** Purpose prose the amended PWB-REQ-011 route must withhold. */
+export const PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PURPOSE = 'PURPOSE-PROSE-NEVER-RENDERED: the switchboard resolves who is speaking.';
+/** The two requirement blocks the route may select, byte-for-byte. */
+export const PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS: readonly { readonly title: string; readonly text: string }[] = [
+  {
+    title: 'Inbound message identity resolution',
+    text: [
+      '### Requirement: Inbound message identity resolution',
+      '',
+      'The switchboard SHALL resolve the sender of every inbound message to an entity.',
+      '',
+      '#### Scenario: Owner sends a message',
+      '',
+      '- **WHEN** the owner sends a message',
+      '- **THEN** the sender resolves to the owner entity',
+    ].join('\n'),
+  },
+  {
+    title: 'Routing log identity enrichment',
+    text: ['### Requirement: Routing log identity enrichment', '', 'The routing log SHALL carry the resolved entity.', '', '#### Scenario: Log captures identity', '', '- **THEN** the log row names the entity'].join('\n'),
+  },
+];
 export const PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC: Readonly<Record<string, string>> = {
   ...PROJECT_SHAPE_FIXTURE_TEXTS,
-  [PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH]: '# Switchboard identity\n',
+  [PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH]: [
+    '# Switchboard identity',
+    '',
+    '## Purpose',
+    '',
+    PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PURPOSE,
+    '',
+    '## Requirements',
+    '',
+    PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS[0]?.text,
+    '',
+    PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS[1]?.text,
+    '',
+  ].join('\n'),
 };
 
 export const PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET: Readonly<Record<string, string>> = {

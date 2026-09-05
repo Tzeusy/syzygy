@@ -24,6 +24,18 @@
 - [x] 1.8 Obtain separate implementation authorization after the amended spec
   is signed and the effect-specific gates are satisfied. No body-read
   implementation is dispatchable before both gates.
+- [ ] 1.9 Obtain a superseding exact-digest owner sign-off over the complete
+  eleven-artifact truth/readiness amendment. Until that act, the 2026-09-02
+  signed bytes remain authoritative and no gated repair may implement the
+  candidate grammar, inert-code or resource-envelope semantics.
+- [ ] 1.10 Obtain separate successor owner acts over the amended secret policy
+  and observer registry entry. The current observation consent already covers
+  baseline-spec exact Git objects in the unchanged source population; do not
+  widen or re-act it solely to make a selected requirement verbatim.
+- [ ] 1.11 After all applicable acts are recorded, obtain a narrowly scoped
+  implementation-authorization continuation for only the performed amendment.
+  The earlier authorization does not cross its signed-spec, policy or registry
+  escalation triggers automatically.
 
 ## 2. Project-shape observation and model
 

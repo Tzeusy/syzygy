@@ -32,6 +32,7 @@ import {
 import { indexGitTree, type GitTreeEntry } from './git-tree.js';
 import type { ManifestSource } from './project-shape-manifest.js';
 import { PWB_RESOURCE_LIMITS, type PwbResourceLimits } from './project-shape-observation.js';
+import { createResourceLedger } from './resource-ledger.js';
 
 // ---------------------------------------------------------------------
 // Fixture repository: bodies, real Git object ids, a tree with every
@@ -51,6 +52,7 @@ const SENTINELS = {
   refDef: '[ref]: javascript:pwb_sentinel_7()',
   comment: '<!-- pwb-sentinel-8 -->',
   div: '<div class="pwb-sentinel-9">',
+  unclosedFence: '```\npwb-sentinel-10\n',
 } as const;
 
 const TEXTS: Record<string, string> = {
@@ -68,6 +70,8 @@ const TEXTS: Record<string, string> = {
   'notes/ref-def.md': `${SENTINELS.refDef}\n`,
   'notes/comment.md': `${SENTINELS.comment}\n`,
   'notes/div.md': `${SENTINELS.div}\n`,
+  'notes/unclosed-fence.md': SENTINELS.unclosedFence,
+  'notes/inert-code.md': `# Inert\n\n\`\`\`html\n${SENTINELS.script}\n${SENTINELS.svg}\n\`\`\`\n\nUse \`${SENTINELS.div}\` and \`${SENTINELS.jsLink}\` as text.\n`,
   '.env': 'SECRET=1\n',
   'config/secrets.json': '{}\n',
   'keys/id_rsa': 'x\n',
@@ -297,7 +301,17 @@ describe('active content is rejected and never reaches a sink', () => {
     ['notes/ref-def.md', 'unsafe-url-scheme'],
     ['notes/comment.md', 'html-comment-or-declaration'],
     ['notes/div.md', 'html-tag'],
+    ['notes/unclosed-fence.md', 'malformed-code-context'],
   ];
+
+  it('markup examples wholly inside closed code contexts read as text (PWB-REQ-006 amended)', () => {
+    const { reader: r } = reader();
+    const result = r.read('notes/inert-code.md');
+    expect(result.kind).toBe('text');
+    expect(result.record.outcome).toBe('read');
+    expect(result.record.activeContent).toBeUndefined();
+    if (result.kind === 'text') expect(result.text).toContain(SENTINELS.script);
+  });
 
   it.each(ACTIVE)('%s stays counted as active-content (%s) with a body-free record', (path, form) => {
     const { reader: r } = reader();
@@ -351,25 +365,52 @@ describe('active content is rejected and never reaches a sink', () => {
     }
   });
 
-  it('code fences and code spans are scanned like any other text (strict, whole-body)', () => {
-    expect(scanActiveContent('```html\n<div>\n```').map((f) => f.form)).toEqual(['html-tag']);
-    expect(scanActiveContent('use `<br>` here').map((f) => f.form)).toEqual(['html-tag']);
+  // PWB-REQ-006 as amended 2026-09-05 (policy `activeContentClassification`):
+  // closed inline code spans and fenced code blocks are inert contexts.
+  it('every sentinel inside a closed code fence or inline span is inert', () => {
+    for (const [name, sentinel] of Object.entries(SENTINELS)) {
+      if (name === 'unclosedFence') continue;
+      expect(scanActiveContent(`# Doc\n\n\`\`\`html\n${sentinel}\n\`\`\`\n`), sentinel).toEqual([]);
+      expect(scanActiveContent(`~~~\n${sentinel}\n~~~`), sentinel).toEqual([]);
+      expect(scanActiveContent(`use \`${sentinel}\` here`), sentinel).toEqual([]);
+      expect(scanActiveContent(`use \`\` ${sentinel} \`\` here`), sentinel).toEqual([]);
+    }
+  });
+
+  it('the same sentinel outside the context still excludes, at its raw position', () => {
+    const text = '```\n<div>\n```\nafter `<br>` and <SCRIPT>';
+    expect(scanActiveContent(text)).toEqual([{ form: 'script-element', line: 4, column: 18 }]);
+  });
+
+  it('indented code and HTML code elements are not inert contexts', () => {
+    expect(scanActiveContent('para\n\n    <div>\n').map((f) => f.form)).toEqual(['html-tag']);
+    expect(scanActiveContent('<code>&lt;x&gt;</code>').map((f) => f.form)).toEqual(['html-tag', 'html-tag']);
+  });
+
+  it('a malformed code context is itself a finding that excludes the source', () => {
+    expect(scanActiveContent('a\n```\nnever closed')).toEqual([{ form: 'malformed-code-context', line: 2, column: 1, context: 'unclosed-fence' }]);
+    expect(scanActiveContent('text `open span\nstill open')).toEqual([{ form: 'malformed-code-context', line: 1, column: 1, context: 'unclosed-inline-span' }]);
+    expect(scanActiveContent('```js `x`\ncode\n```')).toEqual([{ form: 'malformed-code-context', line: 1, column: 1, context: 'backtick-fence-with-backtick-in-info-string' }]);
+    // A closer shorter than the opener, or with trailing text, does not close.
+    expect(scanActiveContent('````\n```\nx\n``` y\n').map((f) => f.form)).toEqual(['malformed-code-context']);
+    // Different-length backtick runs are content, so the span never closes.
+    expect(scanActiveContent('`` a ` b').map((f) => f.form)).toEqual(['malformed-code-context']);
   });
 
   it('the form vocabulary is closed and every form is produced by a sentinel above', () => {
     expect([...ACTIVE_CONTENT_FORMS].sort()).toEqual(
-      ['event-handler-attribute', 'html-comment-or-declaration', 'html-tag', 'obfuscated-link-destination', 'script-element', 'svg-element', 'unsafe-url-scheme'].sort(),
+      ['event-handler-attribute', 'html-comment-or-declaration', 'html-tag', 'malformed-code-context', 'obfuscated-link-destination', 'script-element', 'svg-element', 'unsafe-url-scheme'].sort(),
     );
     const produced = new Set<string>();
-    for (const text of Object.values(SENTINELS)) for (const f of scanActiveContent(text)) produced.add(f.form);
+    for (const text of [...Object.values(SENTINELS), SENTINELS.unclosedFence]) for (const f of scanActiveContent(text)) produced.add(f.form);
     for (const form of ACTIVE_CONTENT_FORMS) expect(produced.has(form), form).toBe(true);
   });
 });
 
 describe('declared resource limits are evaluation inputs', () => {
   it('evaluateLimit: at the limit passes, one over breaches, for every declared limit', () => {
-    const limits: PwbResourceLimits = { maxSources: 3, maxBytesPerSource: 10, maxTotalBytes: 20, maxIndexDepth: 4, maxParseMillisecondsPerSource: 250, maxRenderedBytes: 100 };
-    const names: (keyof PwbResourceLimits)[] = ['maxSources', 'maxBytesPerSource', 'maxTotalBytes', 'maxIndexDepth', 'maxParseMillisecondsPerSource', 'maxRenderedBytes'];
+    const limits: PwbResourceLimits = { maxSources: 3, maxBytesPerSource: 10, maxTotalBytes: 20, maxIndexDepth: 4, maxParsePassesPerSource: 16, maxHumanResponseBytes: 100, maxMachineResponseBytes: 400 };
+    const names: (keyof PwbResourceLimits)[] = ['maxSources', 'maxBytesPerSource', 'maxTotalBytes', 'maxIndexDepth', 'maxParsePassesPerSource', 'maxHumanResponseBytes', 'maxMachineResponseBytes'];
     expect(names.length).toBe(Object.keys(PWB_RESOURCE_LIMITS).length);
     for (const name of names) {
       expect(evaluateLimit(limits, name, limits[name]), name).toBeUndefined();
@@ -517,5 +558,106 @@ describe('policy-bound constants are byte-equal to the act-bound artifacts', () 
   it('module surface: outcome vocabulary is closed and records never carry a text field', () => {
     const record: ObjectReadRecord = { path: 'x', outcome: 'read', bytes: 0 };
     expect(Object.keys(record)).toEqual(['path', 'outcome', 'bytes']);
+  });
+});
+
+// ---------------------------------------------------------------------
+// One evaluation-wide envelope (registry amendment 2026-09-05:
+// `resourceLimitSemantics.maxTotalBytes` / `maxParsePassesPerSource`;
+// PWB-REQ-006 as amended). The reader charges the shared ledger.
+
+describe('the reader charges one shared resource ledger', () => {
+  const PATH = 'about/heart-and-soul/README.md';
+  const size = (BYTES[PATH] as Uint8Array).byteLength;
+
+  it('a fresh read charges exactly four registry passes on its path and counts its body once', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    const spy = gitSpy();
+    const r = createExactObjectReader({ runGit: spy.runGit, tree: indexGitTree(TREE), ledger });
+    expect(r.ledger).toBe(ledger);
+    expect(r.read(PATH).kind).toBe('text');
+    expect(ledger.passesFor(PATH)).toBe(4);
+    const summary = ledger.summary();
+    expect(summary.passesByIdentity).toMatchObject({
+      'utf8-and-nul-validation': 1,
+      'markdown-code-context-mask': 1,
+      'active-html-svg-script-handler': 1,
+      'unsafe-url-positions': 1,
+      'phase-a-link-discovery': 0,
+      'secret-known-token-formats': 0,
+    });
+    expect(summary.parsePasses).toBe(4);
+    expect(ledger.totalBytes()).toBe(size);
+    expect(ledger.counted(PATH, oidOf(PATH))).toBe(true);
+    expect(r.totalBytes()).toBe(size);
+    expect(r.breaches).toBe(ledger.breaches);
+  });
+
+  it('a phase-A body held in the ledger is reused: no cat-file, no repeated passes, bytes counted once', () => {
+    const ledger = createResourceLedger(PWB_RESOURCE_LIMITS);
+    // Phase A took the body, counted it and validated it (nine passes).
+    expect(ledger.chargeBody(PATH, oidOf(PATH), size)).toBeUndefined();
+    for (let i = 0; i < 9; i += 1) ledger.chargePass(PATH, 'utf8-and-nul-validation');
+    ledger.remember(PATH, oidOf(PATH), { bytes: BYTES[PATH] as Uint8Array, text: TEXTS[PATH] as string });
+    const spy = gitSpy();
+    const r = createExactObjectReader({ runGit: spy.runGit, tree: indexGitTree(TREE), ledger });
+    const result = r.read(PATH);
+    expect(result.kind).toBe('text');
+    if (result.kind !== 'text') throw new Error('unreachable');
+    expect(result.text).toBe(TEXTS[PATH]);
+    expect(spy.calls).toEqual([]);
+    expect(ledger.passesFor(PATH)).toBe(9);
+    expect(ledger.totalBytes()).toBe(size);
+    expect(result.record).toEqual({ path: PATH, objectId: oidOf(PATH), outcome: 'read', bytes: size, contentDigest: contentDigestOf(BYTES[PATH] as Uint8Array) });
+    expect(r.records).toEqual([result.record]);
+    // A body held under another object id is not this source's body.
+    const other = r.read('about/README.md');
+    expect(other.kind).toBe('text');
+    expect(spy.calls).toEqual([['cat-file', 'blob', oidOf('about/README.md')]]);
+  });
+
+  it('a body already counted by phase A does not count again toward maxTotalBytes', () => {
+    const ledger = createResourceLedger({ ...PWB_RESOURCE_LIMITS, maxTotalBytes: size });
+    expect(ledger.chargeBody(PATH, oidOf(PATH), size)).toBeUndefined();
+    const spy = gitSpy();
+    const r = createExactObjectReader({ runGit: spy.runGit, tree: indexGitTree(TREE), ledger });
+    expect(r.read(PATH).kind).toBe('text');
+    expect(ledger.totalBytes()).toBe(size);
+    expect(ledger.breaches).toEqual([]);
+    expect(r.read('about/README.md').record).toMatchObject({ outcome: 'over-limit', detail: 'maxTotalBytes' });
+  });
+
+  it('maxParsePassesPerSource: limit − 1 and limit stop the read closed at the pass that never ran; limit + 1 reads', () => {
+    // A fresh read needs four passes; the fourth is unsafe-url-positions.
+    for (const [declared, expected] of [
+      [3, 'over-limit'],
+      [4, 'read'],
+      [5, 'read'],
+    ] as const) {
+      const ledger = createResourceLedger({ ...PWB_RESOURCE_LIMITS, maxParsePassesPerSource: declared });
+      const spy = gitSpy();
+      const r = createExactObjectReader({ runGit: spy.runGit, tree: indexGitTree(TREE), ledger });
+      const result = r.read(PATH);
+      expect(result.record.outcome, String(declared)).toBe(expected);
+      if (expected === 'over-limit') {
+        expect(result.kind).toBe('unavailable');
+        expect(result.record).toEqual({ path: PATH, objectId: oidOf(PATH), outcome: 'over-limit', bytes: size, detail: 'maxParsePassesPerSource', contentDigest: contentDigestOf(BYTES[PATH] as Uint8Array) });
+        expect(ledger.breaches).toEqual([{ limit: 'maxParsePassesPerSource', declared, observed: declared + 1, path: PATH }]);
+        expect(ledger.summary().passesByIdentity['unsafe-url-positions']).toBe(0);
+      } else {
+        expect(ledger.breaches).toEqual([]);
+      }
+    }
+  });
+
+  it('the pass budget is per source: a second source starts fresh', () => {
+    const ledger = createResourceLedger({ ...PWB_RESOURCE_LIMITS, maxParsePassesPerSource: 4 });
+    const spy = gitSpy();
+    const r = createExactObjectReader({ runGit: spy.runGit, tree: indexGitTree(TREE), ledger });
+    expect(r.read(PATH).kind).toBe('text');
+    expect(r.read('about/README.md').kind).toBe('text');
+    expect(r.read('roster/alpha/butler.toml').kind).toBe('text');
+    expect(ledger.summary().maxPassesOnOneSource).toBe(4);
+    expect(ledger.summary().sourcesTraversed).toBe(3);
   });
 });

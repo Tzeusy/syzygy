@@ -8,7 +8,11 @@ import { DEEP_DIVE_MARKERS } from './test-deep-dive-markers.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import {
   ADMITTING_AUTHORITY,
+  PROJECT_SHAPE_FIXTURE_ROOT_ROW_1_LINE,
+  PROJECT_SHAPE_FIXTURE_ROOT_SUMMARY_LINE,
+  PROJECT_SHAPE_FIXTURE_ROOT_SUMMARY_LINE_WITHOUT_PRECEDENCE,
   PROJECT_SHAPE_FIXTURE_TEXTS,
+  PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE,
   PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET,
   REJECTING_AUTHORITY,
   SECRET_SENTINEL,
@@ -289,3 +293,119 @@ describe('Polaris progressive depth (PWB-REQ-011; RFC7-16)', () => {
     expect(html).toContain('data-polaris-gap="excluded-content"');
   });
 });
+
+// ---------------------------------------------------------------------------
+// PWB-REQ-004 (as amended 2026-09-05): the root index's own declarations are
+// disclosed — the seven layer rows, the two stated counts, and every
+// disagreement a row decided — with both sides anchored to exact sources.
+// Oracles below are hand-typed from the registry entry's observationGrammar.
+
+const ROOT = 'about/README.md';
+const V1 = 'about/heart-and-soul/v1.md';
+const LAYER_ROWS: readonly (readonly [number, string, string, string])[] = [
+  [1, 'Heart and Soul', 'Principles, scope boundaries, the 7 non-negotiable rules', 'about/heart-and-soul/'],
+  [2, 'Legends and Lore', 'Wire contracts, state machines, data models, sanctioned rule exceptions', 'about/legends-and-lore/rfcs/'],
+  [3, 'Spec and Spine', 'Feature behaviour, acceptance scenarios (WHEN/THEN), per-butler contracts', 'openspec/specs/'],
+  [4, 'Craft and Care', 'Execution-quality standards, test scope, review gates, observability bar', 'about/craft-and-care/'],
+  [5, 'Lay and Land', 'Topology snapshot — where components live, how they connect, stability levels', 'about/lay-and-land/'],
+  [6, 'Roster config', 'Live butler identity: butler.toml, MANIFESTO.md, CLAUDE.md, skills, API routes', 'roster/{butler}/'],
+  [7, 'Code', 'Runtime behaviour — executed source, migrations, tests', 'src/, alembic/, tests/'],
+];
+
+function rootIndexSlice(html: string): string {
+  const start = html.indexOf('data-polaris-section="shape:root-index"');
+  expect(start).toBeGreaterThan(-1);
+  const end = html.indexOf('data-polaris-section="shape:contradictions"', start);
+  expect(end).toBeGreaterThan(start);
+  return html.slice(start, end);
+}
+
+function sourceLink(path: string, line: number): string {
+  return `<a href="#polaris-source-${path.replace(/[^A-Za-z0-9]+/g, '-')}" data-source-ref="${path}">${path}:${line}</a>`;
+}
+
+describe('Polaris root-index declarations (PWB-REQ-004 as amended)', () => {
+  it('renders the seven admitted rows verbatim with their exact-source anchors, the stated counts, and the one decided fact with effective and superseded sides', () => {
+    const { model, shape } = observedModel();
+    const html = renderPolarisPage(model);
+    const slice = rootIndexSlice(html);
+
+    // The machine answer the section must agree with.
+    expect(shape.precedence.kind).toBe('admitted');
+    expect(shape.rootSummary.kind).toBe('emitted');
+    const staffers = shape.facts.find((fact) => fact.fact.fact === 'catalog-count:Staffers');
+    expect(staffers?.fact.state).toBe('modeled');
+    if (staffers?.fact.state !== 'modeled') return;
+    expect(staffers.fact.value).toBe('0');
+    expect(staffers.fact.disagreement?.precedence.ruleId).toBe('layer:1');
+    expect(shape.contradictions.map((fact) => fact.fact.fact)).not.toContain('catalog-count:Staffers');
+
+    expect(slice).toContain('<h3 id="polaris-shape-root-index"');
+    expect(slice).toContain(`data-polaris-precedence="7"`);
+    expect(slice).toContain(`Precedence rows admitted:</span> 7 from ${sourceLink(ROOT, PROJECT_SHAPE_FIXTURE_ROOT_ROW_1_LINE - 2)}.`);
+    for (const [ordinal, layer, owns, home] of LAYER_ROWS) {
+      const row = new RegExp(`<tr data-polaris-precedence="layer:${ordinal}"[^>]*>([\\s\\S]*?)</tr>`).exec(slice)?.[1] ?? '';
+      expect(row, `row ${ordinal}`).not.toBe('');
+      const cells = [...row.matchAll(/<td>([\s\S]*?)<\/td>/g)].map((match) => match[1] as string);
+      expect(cells.slice(0, 4)).toEqual([String(ordinal), layer, owns.replace(/&/g, '&amp;'), `<code>${home}</code>`]);
+      expect(cells[4]).toBe(sourceLink(ROOT, PROJECT_SHAPE_FIXTURE_ROOT_ROW_1_LINE + ordinal - 1));
+    }
+    expect(slice.split('<tr data-polaris-precedence=').length - 1).toBe(7);
+
+    expect(slice).toContain('data-polaris-stated-counts="2"');
+    expect(slice).toContain(`<span data-polaris-stated-count="catalog-count:Staffers">catalog-count:Staffers = 1 (stated-summary, ${sourceLink(ROOT, PROJECT_SHAPE_FIXTURE_ROOT_SUMMARY_LINE)})</span>`);
+    expect(slice).toContain(`<span data-polaris-stated-count="catalog-count:Butlers">catalog-count:Butlers = 2 (stated-summary, ${sourceLink(ROOT, PROJECT_SHAPE_FIXTURE_ROOT_SUMMARY_LINE)})</span>`);
+
+    // Exactly one disagreement was decided: zero staffers (V1's heading) is
+    // effective by row 1; the stated one is kept, superseded, with its anchor.
+    expect(slice).toContain('data-polaris-decided-count="1"');
+    const decided = /<li data-polaris-decided="([^"]+)"[^>]*>([\s\S]*?)<\/li>/.exec(slice);
+    expect(decided?.[1]).toBe(staffers.claim.claimId);
+    const v1Line = staffers.fact.disagreement?.effective.anchors[0]?.line as number;
+    // Copy spans carry their role attributes; the words and anchors are exact.
+    expect((decided?.[2] ?? '').replace(/<span data-copy-role="[^"]+"[^>]*>/g, '<span>')).toBe(
+      `catalog-count:Staffers: <span>effective</span> 0 (derived-count, ${sourceLink(V1, v1Line)}) by layer:1 (Heart and Soul, ${sourceLink(ROOT, PROJECT_SHAPE_FIXTURE_ROOT_ROW_1_LINE)}); <span>superseded</span> 1 (stated-summary, ${sourceLink(ROOT, PROJECT_SHAPE_FIXTURE_ROOT_SUMMARY_LINE)}).`,
+    );
+    expect(decided?.[2]).toContain('data-copy-role="project-fact"');
+    expect(decided?.[2]).toContain('data-copy-role="epistemic-disclosure"');
+    // Butlers agreed (2 = 2): nothing decided, nothing contradicted.
+    expect(slice).not.toContain('data-polaris-decided="claim:fact:catalog-count:Butlers"');
+    // A decided fact is not a contradiction and carries no claim tuple here.
+    expect(slice).not.toContain('class="claim-tuple"');
+    expect(slice).not.toContain('data-polaris-fact=');
+  });
+
+  it('without the table: the stated staffer count is a contradiction with both anchors, the table is disclosed absent at its line, no row decides', () => {
+    const { model, shape } = observedModel(PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE);
+    const html = renderPolarisPage(model);
+    const slice = rootIndexSlice(html);
+    expect(shape.precedence).toMatchObject({ kind: 'absent', reason: 'missing-heading', detail: 'Precedence Order When Layers Disagree' });
+    expect(shape.contradictions.map((fact) => fact.fact.fact)).toEqual(['catalog-count:Staffers']);
+
+    expect(slice).toContain('data-polaris-precedence="0"');
+    expect(slice).toContain(`No precedence table is admitted from the root index:</span> missing-heading (Precedence Order When Layers Disagree) at ${sourceLink(ROOT, 1)}.`);
+    expect(slice).toContain('data-polaris-stated-counts="2"');
+    expect(slice).toContain(sourceLink(ROOT, PROJECT_SHAPE_FIXTURE_ROOT_SUMMARY_LINE_WITHOUT_PRECEDENCE));
+    expect(slice).toContain('data-polaris-decided-count="0"');
+    expect(slice).toContain('No disagreement between admitted declarations was decided by a row.');
+
+    const contradictions = html.slice(html.indexOf('data-polaris-section="shape:contradictions"'));
+    expect(contradictions).toContain('data-polaris-fact="claim:fact:catalog-count:Staffers"');
+    expect(contradictions).toContain('catalog-count:Staffers: Unknown');
+    expect(contradictions).toContain('contradicted-pending-adjudication');
+    expect(contradictions).toContain(`1 (stated-summary, ${sourceLink(ROOT, PROJECT_SHAPE_FIXTURE_ROOT_SUMMARY_LINE_WITHOUT_PRECEDENCE)})`);
+  });
+
+  it('the bare root: both grammars disclosed absent, nothing decided, no contradiction minted from a summary that was never stated', () => {
+    const texts = { ...PROJECT_SHAPE_FIXTURE_TEXTS, [ROOT]: (PROJECT_SHAPE_FIXTURE_TEXTS[ROOT] as string).split('\n### Precedence Order')[0] as string };
+    const { model, shape } = observedModel(texts);
+    const slice = rootIndexSlice(renderPolarisPage(model));
+    expect(shape.rootSummary).toMatchObject({ kind: 'absent', reason: 'missing-heading' });
+    expect(shape.facts.filter((fact) => fact.fact.fact.startsWith('catalog-count:')).every((fact) => fact.fact.declarations.length === 1)).toBe(true);
+    expect(slice).toContain('data-polaris-precedence="0"');
+    expect(slice).toContain('data-polaris-stated-counts="0"');
+    expect(slice).toContain(`No stated summary count is admitted from the root index:</span> missing-heading (Key Architectural Facts) at ${sourceLink(ROOT, 1)}.`);
+    expect(slice).toContain('data-polaris-decided-count="0"');
+  });
+});
+

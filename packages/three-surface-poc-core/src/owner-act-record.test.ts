@@ -119,6 +119,27 @@ describe('parseOwnerActRecord', () => {
     expect(supersessionTargetsOf(RECORD)).toEqual([]);
   });
 
+  it('parses the role-scoped amendment supersession form and reports its target as the record path', () => {
+    const text = RECORD.replace(
+      'none — this act supersedes no earlier act and is\nrevoked only by a later exact owner act naming it',
+      'this act supersedes, for the `approve-policy` role\nonly, the 2026-09-02 act recorded at `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md`. That\nrecord, its digest, its tag and the bytes it bound remain immutable history.',
+    );
+    const parsed = parseOwnerActRecord(text);
+    expect(parsed.supersession).toEqual({
+      kind: 'present',
+      value: { relation: 'supersedes', target: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md', role: 'approve-policy' },
+    });
+    expect(supersessionTargetsOf(text)).toEqual([{ relation: 'supersedes', target: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md' }]);
+    for (const malformed of [
+      'this act supersedes the 2026-09-02 act recorded at `.syzygy/governance/decisions/X.md`.',
+      'this act supersedes, for the `approve-policy` role only, the 2026-09-02 act recorded at X.',
+      'this act supersedes, for the `approve-policy` role only, the earlier act recorded at `X.md`.',
+    ]) {
+      const broken = RECORD.replace('none — this act supersedes no earlier act and is\nrevoked only by a later exact owner act naming it', malformed);
+      expect(parseOwnerActRecord(broken).supersession.kind, malformed).toBe('malformed');
+    }
+  });
+
   it('reports a missing or multi-line ceremony phrase and a missing Effect section', () => {
     const noPhrase = parseOwnerActRecord(RECORD.replace(/```text\n[^\n]*\n```\n/, ''));
     expect(noPhrase.ceremonyPhrase).toEqual({ kind: 'missing' });

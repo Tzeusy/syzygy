@@ -15,9 +15,17 @@
 // duplicate key within the source, an ambiguous leading label — makes the
 // whole source's item denominator Unknown. A source never yields a partial
 // item set.
+//
+// The root index (PWB-REQ-004 as amended by the 2026-09-05
+// truth-and-readiness amendment; registry `observationGrammar.rootSummary`
+// and `observationGrammar.precedence`) mints no item. Its own grammar, at
+// the end of this file, emits exactly two stated count declarations and the
+// seven-row layer precedence table, or nothing.
 
 import { posixBasename } from './git-tree.js';
-import { EXTRACTION_CLASSES, type ExtractionClass, type ManifestSource } from './project-shape-manifest.js';
+import { EXTRACTION_CLASSES, type ExtractionClass, type ManifestSource, type SourceRule } from './project-shape-manifest.js';
+import type { ResourceLimitBreach } from './project-shape-observation.js';
+import { ParsePassBudgetExceeded, type ParsePassCharge, type ParsePassIdentity } from './resource-ledger.js';
 
 // ---------------------------------------------------------------------
 // Vocabulary.
@@ -82,8 +90,15 @@ export interface ExtractionFailureRecord {
   readonly detail?: string;
 }
 
+// One literal V1 catalog heading and the line it sits on: the anchor of the
+// derived `catalog-count:<catalog-key>` declaration.
+export interface CatalogHeading {
+  readonly key: (typeof CATALOG_HEADINGS)[number];
+  readonly line: number;
+}
+
 export type ClassExtraction =
-  | { readonly kind: 'items'; readonly class: ExtractionClass; readonly items: readonly ExtractedItem[] }
+  | { readonly kind: 'items'; readonly class: ExtractionClass; readonly items: readonly ExtractedItem[]; readonly catalogHeadings?: readonly CatalogHeading[] }
   | { readonly kind: 'failed'; readonly failure: ExtractionFailureRecord };
 
 export type SourceExtraction =
@@ -94,12 +109,29 @@ export type SourceExtraction =
       readonly items: readonly ExtractedItem[];
       // Per class, the number of items this source declares (D).
       readonly denominators: Readonly<Partial<Record<ExtractionClass, number>>>;
+      // Present only when `catalog-entry` was extracted: the nine literal
+      // catalog headings, each the anchor of one derived catalog count.
+      readonly catalogHeadings?: readonly CatalogHeading[];
+      // Present only for the root index: its stated counts and precedence
+      // table under the registry grammar.
+      readonly rootIndex?: RootIndexExtraction;
     }
   | {
       readonly kind: 'unknown';
       readonly path: string;
       readonly classes: readonly ExtractionClass[];
       readonly failure: ExtractionFailureRecord;
+    }
+  | {
+      // The source's parse-pass budget ran out before `pass` ran: not a
+      // grammar failure, a registry resource breach. `class` names the
+      // extraction class that never ran; the root-index pass has none.
+      readonly kind: 'over-limit';
+      readonly path: string;
+      readonly classes: readonly ExtractionClass[];
+      readonly pass: ParsePassIdentity;
+      readonly class?: ExtractionClass;
+      readonly breach: ResourceLimitBreach;
     };
 
 // ---------------------------------------------------------------------
@@ -407,9 +439,11 @@ export function extractCatalogEntries(path: string, doc: Doc): ClassExtraction {
   const cls: ExtractionClass = 'catalog-entry';
   if (posixBasename(path) !== 'v1.md') return failed('unsupported-source', cls, undefined, posixBasename(path));
   const out: ExtractedItem[] = [];
+  const catalogHeadings: CatalogHeading[] = [];
   for (const headingText of CATALOG_HEADINGS) {
     const h = oneHeading(doc, 3, headingText, cls);
     if (isFailure(h)) return h;
+    catalogHeadings.push({ key: headingText, line: h.index + 1 });
     for (const item of topLevelListItems(doc, sectionOf(doc, h))) {
       if (item.ordered) return failed('malformed-list', cls, item.line, 'not an unordered-list item');
       const bold = LEADING_BOLD.exec(item.text);
@@ -421,7 +455,8 @@ export function extractCatalogEntries(path: string, doc: Doc): ClassExtraction {
       out.push({ class: cls, key: declarationKey(label), path, line: item.line, statement: item.text, context: headingText });
     }
   }
-  return items(cls, out);
+  const result = items(cls, out);
+  return result.kind === 'items' ? { ...result, catalogHeadings } : result;
 }
 
 function headedTable(doc: Doc, headingText: string, cls: ExtractionClass): Table | ClassExtraction {
@@ -571,16 +606,213 @@ export function extractClass(cls: ExtractionClass, path: string, text: string): 
 
 // Extracts every class the manifest assigned to one classified source. Any
 // class failing makes the whole source Unknown: no partial item set.
-export function extractSource(source: Pick<ManifestSource, 'path' | 'extractionClasses'>, text: string): SourceExtraction {
+//
+// With a ledger charge in force each class is one registry pass over the
+// decoded source (its parse is the helper traversal charged to that named
+// pass); a spent budget makes the whole source over-limit before the
+// extractor that would have exceeded it runs.
+export const EXTRACTION_PASSES: Readonly<Record<ExtractionClass, ParsePassIdentity>> = {
+  'project-account-section': 'project-account-extraction',
+  principle: 'declared-item-extraction',
+  'success-criterion': 'declared-item-extraction',
+  'catalog-entry': 'declared-item-extraction',
+  'design-contract': 'declared-item-extraction',
+  'baseline-spec': 'declared-item-extraction',
+  'topology-component': 'declared-item-extraction',
+  'craft-policy': 'declared-item-extraction',
+  'roster-identity': 'declared-item-extraction',
+};
+
+export const ROOT_INDEX_PASS: ParsePassIdentity = 'fact-and-precedence-extraction';
+
+export function extractSource(
+  source: Pick<ManifestSource, 'path' | 'extractionClasses'> & Partial<Pick<ManifestSource, 'rule'>>,
+  text: string,
+  charge?: ParsePassCharge,
+): SourceExtraction {
   const { path } = source;
   const classes = source.extractionClasses;
   const all: ExtractedItem[] = [];
   const denominators: Partial<Record<ExtractionClass, number>> = {};
+  let catalogHeadings: readonly CatalogHeading[] | undefined;
   for (const cls of classes) {
+    try {
+      charge?.(EXTRACTION_PASSES[cls]);
+    } catch (error) {
+      if (error instanceof ParsePassBudgetExceeded) return { kind: 'over-limit', path, classes, pass: EXTRACTION_PASSES[cls], class: cls, breach: error.breach };
+      throw error;
+    }
     const result = extractClass(cls, path, text);
     if (result.kind === 'failed') return { kind: 'unknown', path, classes, failure: result.failure };
     all.push(...result.items);
     denominators[cls] = result.items.length;
+    if (result.catalogHeadings !== undefined) catalogHeadings = result.catalogHeadings;
   }
-  return { kind: 'extracted', path, classes, items: all, denominators };
+  const extracted: SourceExtraction = { kind: 'extracted', path, classes, items: all, denominators, ...(catalogHeadings === undefined ? {} : { catalogHeadings }) };
+  if ((source.rule as SourceRule | undefined) !== 'root-index') return extracted;
+  // The root index's own pass: one traversal for the stated counts and the
+  // precedence table together, charged under the registry identity.
+  try {
+    charge?.(ROOT_INDEX_PASS);
+  } catch (error) {
+    if (error instanceof ParsePassBudgetExceeded) return { kind: 'over-limit', path, classes, pass: ROOT_INDEX_PASS, breach: error.breach };
+    throw error;
+  }
+  return { ...extracted, rootIndex: extractRootIndex(text) };
+}
+
+// ---------------------------------------------------------------------
+// The root index (PWB-REQ-004 as amended; registry `observationGrammar`).
+//
+// Two grammars, both closed. The root summary emits exactly two stated
+// counts: under the exact H2 `Key Architectural Facts`, the one unordered
+// item whose leading bold label is `<decimal> daemons` and whose own text
+// carries the exact cardinal form `<decimal> staffers ... + <decimal>
+// domain butlers` declares `catalog-count:Staffers` and
+// `catalog-count:Butlers`. The precedence table under the exact H3
+// `Precedence Order When Layers Disagree` is admitted only as the exact
+// seven-row registry vocabulary. Nothing else in the root mints anything.
+
+export const ROOT_SUMMARY_HEADING = 'Key Architectural Facts';
+export const PRECEDENCE_HEADING = 'Precedence Order When Layers Disagree';
+export const PRECEDENCE_COLUMNS = ['#', 'Layer', 'Owns', 'Home'] as const;
+export const LAYER_ORDINALS = [1, 2, 3, 4, 5, 6, 7] as const;
+export type LayerOrdinal = (typeof LAYER_ORDINALS)[number];
+
+export interface LayerRow {
+  readonly ordinal: LayerOrdinal;
+  readonly layer: string;
+  readonly owns: string;
+  readonly home: string;
+}
+
+// The registry's exact seven rows (`observationGrammar.precedence.rows`).
+export const LAYER_ROWS: readonly LayerRow[] = [
+  { ordinal: 1, layer: 'Heart and Soul', owns: 'Principles, scope boundaries, the 7 non-negotiable rules', home: 'about/heart-and-soul/' },
+  { ordinal: 2, layer: 'Legends and Lore', owns: 'Wire contracts, state machines, data models, sanctioned rule exceptions', home: 'about/legends-and-lore/rfcs/' },
+  { ordinal: 3, layer: 'Spec and Spine', owns: 'Feature behaviour, acceptance scenarios (WHEN/THEN), per-butler contracts', home: 'openspec/specs/' },
+  { ordinal: 4, layer: 'Craft and Care', owns: 'Execution-quality standards, test scope, review gates, observability bar', home: 'about/craft-and-care/' },
+  { ordinal: 5, layer: 'Lay and Land', owns: 'Topology snapshot \u2014 where components live, how they connect, stability levels', home: 'about/lay-and-land/' },
+  { ordinal: 6, layer: 'Roster config', owns: 'Live butler identity: butler.toml, MANIFESTO.md, CLAUDE.md, skills, API routes', home: 'roster/{butler}/' },
+  { ordinal: 7, layer: 'Code', owns: 'Runtime behaviour \u2014 executed source, migrations, tests', home: 'src/, alembic/, tests/' },
+];
+export const ROSTER_HOME_TEMPLATE = 'roster/{butler}/';
+export const INERT_HOME = 'src/, alembic/, tests/';
+
+export const STATED_COUNT_FACTS = ['catalog-count:Staffers', 'catalog-count:Butlers'] as const;
+export type StatedCountFact = (typeof STATED_COUNT_FACTS)[number];
+
+export interface StatedCount {
+  readonly fact: StatedCountFact;
+  readonly value: string;
+  // The list item's line.
+  readonly line: number;
+}
+
+export type RootSummaryExtraction =
+  | { readonly kind: 'emitted'; readonly line: number; readonly declarations: readonly StatedCount[] }
+  | { readonly kind: 'absent'; readonly reason: ExtractionFailure; readonly line?: number; readonly detail?: string };
+
+export interface AdmittedLayerRule extends LayerRow {
+  // The table row's line.
+  readonly line: number;
+}
+
+export type PrecedenceExtraction =
+  | { readonly kind: 'admitted'; readonly line: number; readonly rules: readonly AdmittedLayerRule[] }
+  | { readonly kind: 'absent'; readonly reason: ExtractionFailure; readonly line?: number; readonly detail?: string };
+
+export interface RootIndexExtraction {
+  readonly summary: RootSummaryExtraction;
+  readonly precedence: PrecedenceExtraction;
+}
+
+const DAEMONS_LABEL = /^(\d+) daemons$/;
+// `<decimal> staffers ... + <decimal> domain butlers`: the ellipsis is the
+// item's own intervening text; the form must occur exactly once.
+const CARDINAL_FORM = /(\d+) staffers\b[^+]*\+ (\d+) domain butlers\b/g;
+
+function absentSummary(reason: ExtractionFailure, line?: number, detail?: string): RootSummaryExtraction {
+  return { kind: 'absent', reason, ...(line === undefined ? {} : { line }), ...(detail === undefined ? {} : { detail }) };
+}
+
+export function extractRootSummary(doc: Doc): RootSummaryExtraction {
+  const found = headingsOf(doc, 2, ROOT_SUMMARY_HEADING);
+  if (found.length === 0) return absentSummary('missing-heading', undefined, ROOT_SUMMARY_HEADING);
+  if (found.length > 1) return absentSummary('duplicate-key', (found[1] as Heading).index + 1, ROOT_SUMMARY_HEADING);
+  const heading = found[0] as Heading;
+  const labelled = topLevelListItems(doc, sectionOf(doc, heading)).filter((item) => {
+    const bold = LEADING_BOLD.exec(item.text);
+    const label = bold?.[1] ?? bold?.[2];
+    return label !== undefined && DAEMONS_LABEL.test(declarationKey(label));
+  });
+  if (labelled.length === 0) return absentSummary('malformed-list', heading.index + 1, 'no item labelled <decimal> daemons');
+  if (labelled.length > 1) return absentSummary('duplicate-key', (labelled[1] as ListItem).line, '<decimal> daemons');
+  const item = labelled[0] as ListItem;
+  if (item.ordered) return absentSummary('malformed-list', item.line, 'not an unordered-list item');
+  // Wrapped label continuation lines are one semantic space apart.
+  const own = item.text.replace(/\s+/g, ' ');
+  const forms = [...own.matchAll(CARDINAL_FORM)];
+  if (forms.length !== 1) return absentSummary('malformed-list', item.line, forms.length === 0 ? 'no cardinal form' : 'cardinal form repeated');
+  const form = forms[0] as RegExpMatchArray;
+  return {
+    kind: 'emitted',
+    line: item.line,
+    declarations: [
+      { fact: 'catalog-count:Staffers', value: form[1] as string, line: item.line },
+      { fact: 'catalog-count:Butlers', value: form[2] as string, line: item.line },
+    ],
+  };
+}
+
+const ONE_BOLD_SPAN = /^\*\*([^*\n]+)\*\*$/;
+const COMPLETE_CODE_SPAN = /`([^`\n]*)`/g;
+
+// `cellSyntax`: trim outer ASCII whitespace and unwrap only complete inline
+// code spans; keep case, punctuation and internal whitespace.
+export function semanticCellText(raw: string): string {
+  return raw.replace(/^[ \t]+|[ \t]+$/g, '').replace(COMPLETE_CODE_SPAN, '$1');
+}
+
+function absentPrecedence(reason: ExtractionFailure, line?: number, detail?: string): PrecedenceExtraction {
+  return { kind: 'absent', reason, ...(line === undefined ? {} : { line }), ...(detail === undefined ? {} : { detail }) };
+}
+
+export function extractPrecedenceTable(doc: Doc): PrecedenceExtraction {
+  const found = headingsOf(doc, 3, PRECEDENCE_HEADING);
+  if (found.length === 0) return absentPrecedence('missing-heading', undefined, PRECEDENCE_HEADING);
+  if (found.length > 1) return absentPrecedence('duplicate-key', (found[1] as Heading).index + 1, PRECEDENCE_HEADING);
+  const heading = found[0] as Heading;
+  const tables = tablesOf(doc, sectionOf(doc, heading));
+  if (tables.length !== 1) return absentPrecedence('malformed-row', heading.index + 1, tables.length === 0 ? 'no table' : 'more than one table');
+  const table = tables[0] as Table;
+  if (table.malformedRowLine !== undefined) return absentPrecedence('malformed-row', table.malformedRowLine, 'column count');
+  const header = table.header.map(semanticCellText);
+  if (header.length !== PRECEDENCE_COLUMNS.length || header.some((cell, i) => cell !== PRECEDENCE_COLUMNS[i])) {
+    return absentPrecedence('malformed-row', table.line, 'columns');
+  }
+  if (table.rows.length !== LAYER_ROWS.length) return absentPrecedence('malformed-row', table.line, 'row count');
+  const rules: AdmittedLayerRule[] = [];
+  const seen = new Set<number>();
+  for (const row of table.rows) {
+    const [ordinalCell, layerCell, ownsCell, homeCell] = row.cells as [string, string, string, string];
+    if (!/^[1-7]$/.test(semanticCellText(ordinalCell))) return absentPrecedence('malformed-row', row.line, '#');
+    const ordinal = Number(semanticCellText(ordinalCell)) as LayerOrdinal;
+    if (seen.has(ordinal)) return absentPrecedence('duplicate-key', row.line, String(ordinal));
+    seen.add(ordinal);
+    const bold = ONE_BOLD_SPAN.exec(layerCell.replace(/^[ \t]+|[ \t]+$/g, ''));
+    if (bold === null) return absentPrecedence('malformed-row', row.line, 'Layer');
+    const literal = LAYER_ROWS[ordinal - 1] as LayerRow;
+    if (semanticCellText(bold[1] as string) !== literal.layer) return absentPrecedence('malformed-row', row.line, 'Layer');
+    if (semanticCellText(ownsCell) !== literal.owns) return absentPrecedence('malformed-row', row.line, 'Owns');
+    if (semanticCellText(homeCell) !== literal.home) return absentPrecedence('malformed-row', row.line, 'Home');
+    rules.push({ ...literal, line: row.line });
+  }
+  rules.sort((a, b) => a.ordinal - b.ordinal);
+  return { kind: 'admitted', line: table.line, rules };
+}
+
+export function extractRootIndex(text: string): RootIndexExtraction {
+  const doc = parseDoc(text);
+  return { summary: extractRootSummary(doc), precedence: extractPrecedenceTable(doc) };
 }

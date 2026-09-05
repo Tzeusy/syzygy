@@ -15,6 +15,10 @@ coverage explicit POC evaluation criteria.
   connector and major interface in the configured Butlers revision.
 - Coverage reports a complete denominator. Missing or unreadable declarations
   remain visible as Unknown; they never disappear from the known-source count.
+- Project-fact identity and precedence use a closed grammar. The live
+  eight-versus-nine domain-butler disagreement is one required fact in that
+  population; both declarations remain visible and no winner is invented when
+  Butlers declares no applicable precedence rule.
 - Repository bodies are not read until the Butlers observation-consent record,
   the observing project's concrete secret-detection/classification policy and
   the project-shape observer's registered adapter entry each carry an
@@ -28,6 +32,9 @@ coverage explicit POC evaluation criteria.
   or invalid acts fail closed.
 - Shape reads are bounded, repository-contained and inert: exact Git objects
   only, no symlink/submodule escape, no active browser content and no execution.
+  Inline code spans and fenced code blocks are inert Markdown contexts, not
+  active content merely because they contain markup-like examples; secret
+  screening still examines their bytes before parsing or rendering.
 - Capability material becomes drill-down content beneath the project account.
   The existing WhatsApp slice remains a proving example, not the definition of
   Butlers.
@@ -43,6 +50,9 @@ coverage explicit POC evaluation criteria.
   operable, including a nonvisual cold-open run.
 - The POC evaluation includes an owner cold-open walkthrough that tests whether
   the reader can explain Butlers as a whole.
+- Cold-open readiness retains the complete nine-answer population and checks
+  its Polaris-only paths under PWB-REQ-021 before an owner judgment is offered.
+  This does not add cases to PWB-REQ-022's separate act-validity denominator.
 - The cold-open criterion accepts an exact-scope owner judgment in either valid
   provenance state, renders the exact state and treats the verdict as human
   judgment rather than Observed evidence.
@@ -88,20 +98,21 @@ provenance, parity, authentication or one-repository POC boundaries.
 
 ## Authority and sign-off
 
-The project-wide change was signed on 2026-08-31. This state-(1) amendment is a
-candidate and binds nothing until a later human owner sign-off supersedes all
-eleven signed artifact digests together. Until then, the currently signed
-state-(2)-only behavior remains authoritative. Sign-off remains necessary but
-not sufficient for implementation: work must also remain inside a recorded,
-finding-derived POC improvement cycle, receive separate implementation
-authorization and satisfy every effect-specific security prerequisite. The six
-signed `three-surface-poc-experience` artifacts remain unchanged at their
-recorded digests.
+The project-wide change was signed on 2026-08-31 and amended on 2026-09-02.
+The present truth-and-policy repair is a candidate and binds nothing until a
+later human owner sign-off supersedes all eleven current signed artifact
+digests together. Until that exact act, the 2026-09-02 bytes remain the
+behavioral authority. The classification policy, observer registry entry and
+consent record remain separately act-bound authorities; changing any of their
+bytes requires its own later act. The six signed
+`three-surface-poc-experience` artifacts remain unchanged.
 
-This amendment changes only the PWB-REQ-005 and PWB-REQ-022 provenance gates
-and the parity behavior they expose. It creates no consent, policy, registry or
-judgment act and grants no body read, implementation, write, egress, execution,
-deployment, release, recovery or mission authority.
+This amendment changes the closed PWB-REQ-004 fact/precedence grammar,
+PWB-REQ-006 inert-Markdown and resource-envelope behavior, PWB-REQ-011's
+verbatim exact-source route, and PWB-REQ-021 readiness/retention behavior. It
+does not change PWB-REQ-005 or PWB-REQ-022's valid or invalid populations,
+widen the consented repository or content class, or grant implementation,
+write, egress, execution, deployment, release, recovery or mission authority.
 
 ## Authoring evidence
 
@@ -112,3 +123,5 @@ deployment, release, recovery or mission authority.
   blocks.
 - `docs/reviews/R-POC-OWNER-WALKTHROUGH-POLARIS.md` records the product finding
   that triggered this change.
+- `docs/reviews/2026-09-05-pwb-live-exact-head-packet.md` records the retained
+  live findings that require this amendment.

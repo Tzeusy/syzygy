@@ -190,6 +190,14 @@ function summarizeShape(shape: ProjectShape): Record<string, unknown> {
   }
 }
 
+function summarizeReadiness(value: unknown): Record<string, unknown> | null {
+  if (typeof value !== 'object' || value === null) return null;
+  const presentation = value as { kind?: string; detail?: string; readiness?: { kind?: string; ready?: boolean; findings?: readonly { arm?: string }[] } };
+  if (presentation.kind !== 'evaluated' || presentation.readiness === undefined) return { kind: presentation.kind ?? null, detail: presentation.detail ?? null };
+  const readiness = presentation.readiness;
+  return { kind: readiness.kind ?? null, ready: readiness.ready ?? null, arms: countBy((readiness.findings ?? []).map((finding) => finding.arm ?? 'unstated')) };
+}
+
 function countBy(values: readonly string[]): Record<string, number> {
   const out: Record<string, number> = {};
   for (const value of values) out[value] = (out[value] ?? 0) + 1;
@@ -305,6 +313,10 @@ async function main(): Promise<number> {
         testArtifactVerification: model.testArtifactVerification.kind,
         proposedWork: (model as unknown as { proposedWork?: { kind?: string } }).proposedWork?.kind ?? null,
         walkthroughJudgment: (model as unknown as { walkthroughJudgment?: { kind?: string } }).walkthroughJudgment?.kind ?? null,
+        // PWB-REQ-021 readiness: kind plus the ready flag and every arm that
+        // fired — an execution fact, never a verdict; it does not move the
+        // exit polarity below.
+        walkthroughReadiness: summarizeReadiness((model as unknown as { walkthroughReadiness?: unknown }).walkthroughReadiness),
       },
       retention: { directory: retainDir, note: 'exact artifact bytes retained locally, outside the repository; the consent excludes network egress', files: retained },
       log,

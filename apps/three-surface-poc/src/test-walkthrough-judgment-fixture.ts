@@ -45,8 +45,46 @@ function bytes(text: string): Uint8Array {
   return new TextEncoder().encode(text);
 }
 
-export function fixtureRunRecordText(): string {
-  return [
+/** The nine PWB-REQ-021 answer identities, hand-typed here (never imported). */
+export const FIXTURE_ANSWER_IDENTITIES = [
+  'why',
+  'promises',
+  'refusals-and-rule',
+  'capabilities-and-fit',
+  'exact-requirement',
+  'unknown-or-contradiction',
+  'claim-strength',
+  'architecture-and-groups',
+  'v1-success',
+] as const;
+
+export interface FixtureAnswer {
+  readonly identity: string;
+  readonly text?: string;
+  readonly sources?: readonly string[];
+  readonly authority?: string;
+}
+
+/** Nine answers anchored into the project-shape fixture's root index
+ * (`about/README.md`), the exact-requirement one citing it as authority. */
+export function fixtureAnswers(): FixtureAnswer[] {
+  return FIXTURE_ANSWER_IDENTITIES.map((identity, index) => ({
+    identity,
+    text: `(${identity}: the reader's own words, fixture ${index + 1}.)`,
+    sources: [`about/README.md:${index + 1}`],
+    ...(identity === 'exact-requirement' ? { authority: 'about/README.md' } : {}),
+  }));
+}
+
+export interface RunRecordOptions {
+  /** Traversed paths; default is the fixture's `/polaris`, `/entry`, `/polaris`. */
+  readonly traversed?: readonly string[];
+  /** Answers section; `null` omits it; default is the nine fixture answers. */
+  readonly answers?: readonly FixtureAnswer[] | null;
+}
+
+export function fixtureRunRecordText(options: RunRecordOptions = {}): string {
+  const lines = [
     '# Cold-open walkthrough execution record',
     '',
     `Record identity: \`${F.runId}\``,
@@ -61,14 +99,20 @@ export function fixtureRunRecordText(): string {
     '',
     '## Traversed paths',
     '',
-    ...F.traversed.map((path) => `- \`${path}\``),
+    ...(options.traversed ?? F.traversed).map((path) => `- \`${path}\``),
     '',
-    '## Answers',
-    '',
-    "1. Why Butlers exists: (answer in the reader's own words).",
-    '2. One current Unknown or contradiction: (answer).',
-    '',
-  ].join('\n');
+  ];
+  if (options.answers !== null) {
+    lines.push('## Answers', '');
+    for (const answer of options.answers ?? fixtureAnswers()) {
+      lines.push(`### ${answer.identity}`, '');
+      if (answer.text !== undefined && answer.text !== '') lines.push(answer.text, '');
+      if (answer.sources !== undefined) lines.push(`Sources: ${answer.sources.map((source) => `\`${source}\``).join(', ')}`);
+      if (answer.authority !== undefined) lines.push(`Authority: \`${answer.authority}\``);
+      lines.push('');
+    }
+  }
+  return lines.join('\n');
 }
 
 export function fixtureJudgmentText(runDigest: string, verdict: 'met' | 'not-met' = 'met', judgingParty: string = F.owner): string {
@@ -178,8 +222,8 @@ export type JudgmentFixtureState = 'lawful-state-1' | 'lawful-state-2' | 'unlawf
 /** One evaluator input per presentation state. `unlawful` names a wrong
  * judging party (case `judging-party-wrong`); `lawful-state-2` pairs a
  * state-(2) act record with a correlator that succeeds. */
-export function walkthroughJudgmentFixture(state: JudgmentFixtureState, evaluationId = 'judgment-eval-0001'): WalkthroughJudgmentInputs {
-  const runText = fixtureRunRecordText();
+export function walkthroughJudgmentFixture(state: JudgmentFixtureState, evaluationId = 'judgment-eval-0001', runRecord: RunRecordOptions = {}): WalkthroughJudgmentInputs {
+  const runText = fixtureRunRecordText(runRecord);
   const runDigest = sha256(runText);
   const judgmentText = fixtureJudgmentText(runDigest, 'met', state === 'unlawful' ? 'Somebody Else' : F.owner);
   const judgmentDigest = sha256(judgmentText);

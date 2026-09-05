@@ -16,7 +16,7 @@ import {
 
 import { parsePocCli } from './cli.js';
 import { loadBodyReadAuthorityInputs } from './governance-inputs.js';
-import { loadWalkthroughJudgmentInputs } from './walkthrough-inputs.js';
+import { loadWalkthroughJudgmentInputs, pwbReadinessTraversal } from './walkthrough-inputs.js';
 import {
   observeGitRepository,
   pocObserverInputsAreClean,
@@ -25,6 +25,7 @@ import {
 import { launchAfterPwbRepositoryBinding } from './launcher.js';
 import { materializeRoutes } from './materialize-action.js';
 import { pocRoutes } from './routes.js';
+import { gitBlobReaderFor, verbatimRouteReader } from './verbatim-route.js';
 
 const USAGE = `syzygy three-surface POC (local, non-release)
 
@@ -170,6 +171,8 @@ if (parsed.kind === 'help') {
               ...(projectShapeDetail === undefined ? {} : { projectShapeDetail }),
               walkthroughJudgment,
               ...(walkthroughJudgmentDetail === undefined ? {} : { walkthroughJudgmentDetail }),
+              // PWB-REQ-021 readiness against this evaluation's own Polaris routes.
+              walkthroughReadiness: { traversal: pwbReadinessTraversal() },
             });
           }
 
@@ -179,7 +182,10 @@ if (parsed.kind === 'help') {
               stateDir,
               port: parsed.config.port,
               routes: [
-                ...pocRoutes(() => model),
+                // PWB-REQ-011 (amended): Polaris's transient exact-requirement
+                // route — the observed shape's own admitted baseline-spec object,
+                // read at render and never stored.
+                ...pocRoutes(() => model, undefined, (current) => ({ verbatim: verbatimRouteReader(current, gitBlobReaderFor(repoRoot)) })),
                 ...materializeRoutes({
                   getModel: () => model,
                   targetRepoRoot: repoRoot,

@@ -139,11 +139,15 @@ is refused as `path-not-normalized`, never silently rewritten; (b) the only
 Git command the reader issues is `cat-file blob <object-id>` taken from the
 tree entry, never a path-addressed read; (c) the policy's denied
 basename/prefix/suffix rules are compared case-insensitively on the final
-segment (strictly more refusals); (d) active content is scanned over the
-whole body, code fences and code spans included, and one finding excludes
-the whole source with a body-free finding (form, line, column) — a
-technical README quoting HTML stays counted and Unknown rather than being
-partially admitted; (e) `evaluateLimit` is the one comparison for all six
+segment (strictly more refusals); (d) active content is scanned with the
+2026-09-05 policy amendment's Markdown code-context mask
+(`markdown-code-context.ts`, profile `closed-pwb-code-context-v1`): bytes
+wholly inside a closed inline code span or fenced code block are inert for
+active-form detection only — secret detectors always scan the raw text — and
+one finding outside those contexts, or a malformed context (unclosed fence
+or span, backtick fence with a backtick in its info string, reported as the
+form `malformed-code-context`), excludes the whole source with a body-free
+finding (form, line, column); (e) `evaluateLimit` is the one comparison for all six
 registry limits, so index depth (observer), parse time (2.5) and rendered
 bytes (2.7/3.x) breach in the same shape as source count and bytes; (f)
 `readManifestSources` returns one result per manifest source in manifest
@@ -245,6 +249,116 @@ live run (P4's second half) answers it; the eight-versus-nine domain-butler
 conflict is the first fixture either way. 27 rule-6 mutations killed
 (`docs/evidence/pwb-p2-6-coverage-mutation-run-2026-09-04.json`). Still no
 Butlers read.
+
+C4 note, recorded 2026-09-05 (bead syzygy-1z3.24.4; effective acts: the
+truth-and-readiness amendment's PWB-REQ-004 and the registry-entry
+amendment's `observationGrammar`): stated counts and precedence rules are
+no longer injected from outside the grammar. The root index is charged one
+`fact-and-precedence-extraction` pass and read for exactly two closed
+grammars — the `Key Architectural Facts` H2's one `<decimal> daemons` item
+whose cardinal form `<n> staffers ... + <n> domain butlers` mints
+`catalog-count:Staffers` and `catalog-count:Butlers` as `stated-summary`
+declarations, and the `Precedence Order When Layers Disagree` H3's one
+table, admitted only when all seven registry rows match after the registry
+cell syntax (trim, unwrap complete code spans, one bold Layer span). Fact
+families are the registry's four (`item`, `count`, `catalog-count`,
+`project-account`), each family row-mapped; a row decides only when its
+anchor is in the population, it owns the fact's family, its home is not
+inert (row 7), the home is applied (row 6 expands only to declared roster
+keys), and exactly one declaration lies under the home — otherwise it
+decides nothing and RFC2-24's Unknown stands with every declaration kept.
+`ProjectShape` now discloses `precedence` and `rootSummary` (admitted /
+emitted, absent with the grammar reason and line, or unknown) and Polaris
+renders them with every decided disagreement's effective and superseded
+sides in a `shape:root-index` section. The eight-versus-nine fixture is
+the model and coverage test (`with the table: nine is effective by row 1,
+eight is superseded ...`). 23 rule-6 mutations killed
+(`docs/evidence/pwb-c4-fact-precedence-grammar-mutation-run-2026-09-05.json`).
+First live observation at Butlers d684c5776: the table is admitted (seven
+rows, root lines 44–50) and the summary emits 3 and 8 (root line 105), but
+`v1.md` is still whole-source Unknown (`ambiguous-leading-label`, line 95),
+so both catalog counts are Unknown with `excluded-content`, the stated
+values retained and anchored, no rule applied — the lawful outcome; no
+number is shown over an Unknown denominator.
+
+C5 note, recorded 2026-09-05 (bead syzygy-1z3.24.4; effective acts: the
+truth-and-readiness amendment's PWB-REQ-021 and PWB-REQ-011 as amended, the
+registry-entry amendment, and the implementation-authorization continuation
+direction): two seams, both pure and injectable.
+
+(a) PWB-REQ-021 readiness. `walkthrough-readiness.ts` (core) owns the nine
+answer identities (`why`, `promises`, `refusals-and-rule`,
+`capabilities-and-fit`, `exact-requirement`, `unknown-or-contradiction`,
+`claim-strength`, `architecture-and-groups`, `v1-success`) and the ten
+readiness arms (`answer-missing`, `answer-empty`, `answer-duplicate`,
+`answer-unrecognized`, `anchor-unresolved`, `surface-mismatch`,
+`evaluation-mismatch`, `path-outside-polaris`, `resource-breach`,
+`authority-unresolvable`). It reads the run record's `## Answers` section
+(`### <identity>` subsections; `Sources:` backticked `path:line` anchors;
+`Authority:` one backticked path; every other non-empty line is the reader's
+own words, retained verbatim and never scored), sweeps every arm (no first-
+failure stop), and reports `ready` only when no arm fired. Anchors resolve
+against the same evaluation's complete source population (an Unknown source
+is still a source); a cited authority resolves only to an admitted source.
+Traversed paths must be Polaris or its same-evaluation exact-source route
+(`/polaris`, the tailnet mount, or either with the
+`#polaris-source-<slug>` fragment of a population source — the predicate is
+injected from the app, `pwbReadinessTraversal()`). Any PWB-REQ-006 breach in
+the evaluation makes readiness false. The judgment evaluator is untouched
+and its `section()` never sees `## Answers`, so readiness cannot change a
+PWB-REQ-022 outcome (tested both ways: ready-and-unlawful, not-ready-and-
+lawful); readiness never mints `verdict-unlawful`, a verdict or a score.
+`PocModel.walkthroughReadiness` is `not-evaluated` (no judgment inputs or no
+traversal), or `evaluated` with `no-run-record` / `evaluated` readiness;
+Polaris renders it as the `walkthrough-readiness` section (state, findings,
+each answer's own words, anchors and authority with resolution flags), all
+disclosure-role copy, machine form by construction.
+`[Inferred]` tension to resolve in P8: the exact-source fragment route is a
+lawful readiness traversal but lies outside `PWB_WALKTHROUGH_SCHEDULE`'s
+route population, so a record that traverses it is ready yet judged
+`traversed-paths-wrong` under PWB-REQ-022 — the 84 + 2 denominator is
+unchanged here; whether the schedule should name the fragment routes is an
+owner question, not an implementation call.
+
+(b) PWB-REQ-011 exact-requirement route. `verbatim-route.ts` (app) is the
+transient route: `verbatimRouteReader(model, readBlob)` is derived per
+render from the model being rendered (routes pass it through
+`pocRoutes(getModel, limits, polarisInputs)`; `main.ts` binds
+`gitBlobReaderFor(repoRoot)`), stores and caches nothing, and per leaf
+requires, in order: the leaf's path is a source of this evaluation's
+population under the `baseline-spec-tree` rule; the leaf's revision and
+identity are this evaluation's; the source was not excluded; the anchor is a
+blob and the path is not policy-denied; the bytes Git serves hash to the
+exact object id; the body fits `maxBytesPerSource`; it is NUL-free UTF-8;
+the approved secret detectors find nothing; the active-content scan (with
+the inert Markdown code-context mask) finds nothing. Then `resolveVerbatim`
+re-checks the identity and selects only `### Requirement:` blocks (each with
+its `#### Scenario:` children, ended by the next h1–h3 heading, trailing
+blank lines trimmed); the h1 title, `## Purpose` prose and inter-block text
+are never encoded; a spec with no requirement heading is
+`reference-unresolvable`. Every failed gate is a typed refusal naming the
+detector or form, never bytes. `[Observed]` Phase B classifies every
+baseline spec path-only (the directory name is the item identity; the body
+is deliberately not read), so the evaluation holds no whole-body verdict for
+them and the route runs the unchanged detectors and scan itself before any
+block may be encoded — the reading of "the existing … gates all admit it"
+applied here; no new consent, content class or population rule. Polaris
+renders one `<pre data-verbatim-text data-verbatim-requirement="<title>">`
+per selected block; the machine form carries the titles, never the text.
+The P3.8 note's `[Unknown]` on live rendering is now answered below.
+
+Evidence: core 27 + app 10 readiness tests, 13 route tests, capability-
+detail suite updated to the selected-block grammar; 38 rule-6 mutations
+killed (17 readiness arms, 4 population/traversal, 12 route gates, 5
+selection/resolution), sources restored byte-for-byte
+(`docs/evidence/pwb-c5-readiness-verbatim-mutation-run-2026-09-05.json`).
+Live at Butlers d684c5776: 185 baseline specs, all classified path-only;
+the route renders 175 (1,669 requirement blocks selected) and refuses 10 —
+nine for active content (`html-tag` ×8, `html-comment-or-declaration` ×1)
+and one (`healing-anonymizer`) on the `known-token-formats` detector — each
+named by form or detector only. The Polaris page renders the current
+leaf (`switchboard-identity`, six blocks) verbatim; readiness is
+`no-run-record` because `PWB-WALKTHROUGH-001.md` does not exist yet (P8).
 
 P2.7 note, recorded 2026-09-04: `project-shape-model.ts` composes P1–P2.6
 into the one `ProjectShape` value that `model.ts` places on `PocModel`;
@@ -493,7 +607,10 @@ production passes no reader and the contract band discloses
 only when they hash to the captured git object id / sha256, are NUL-free
 UTF-8, and appear once on the page, never in the machine form or the model).
 `[Unknown]` The live rendering of real Butlers requirement text stays Unknown
-until an act extends consent to that class. Doctrine and non-goal parts are
+until an act extends consent to that class. (Superseded 2026-09-05 by the
+C5 note: the truth-and-readiness amendment's PWB-REQ-011 authorizes the
+transient selected-requirement route over the already-consented population;
+live rendering is now Observed.) Doctrine and non-goal parts are
 Unknown `missing-declaration` (the consented grammar declares no capability →
 doctrine/non-goal link) or the shape's own reason when the shape is not
 observed. Proposals moved from an anchored block to a non-anchored,
@@ -529,10 +646,10 @@ source row when the page carries that source. Wide tables render inside a
 `role="region" tabindex="0" aria-labelledby=<heading id>` container so a
 keyboard-only reader can scroll them. The page's link targets are module
 state (`activeTargets`) computed once per render from the shape population
-and cleared with the registry. `ProjectShapeModelInput` now forwards optional
-`rules`/`statedDeclarations` to the coverage step (the daemon passes none);
-the test injects one stated summary that disagrees with the derived principle
-count to reach the contradiction path. `polaris-reachability.test.ts` is the
+and cleared with the registry. (Superseded 2026-09-05 by the C4 note: the
+`rules`/`statedDeclarations` injection seam is removed; the reachability
+test reaches the contradiction path through a fixture root whose stated
+staffer count has no admitted table to decide it.) `polaris-reachability.test.ts` is the
 oracle with its own tag scanner and CSS sweep: no dangling internal link and
 no duplicate id in four shape states; the four depths in document order over
 the exact target population; the PWB-REQ-011 category sweep from depth list to

@@ -144,7 +144,7 @@ adoption gate is unresolved.
 Durable lessons only; status and narrative belong in git log, `bd`, or
 `PROJECT-STATUS.md`. Capability 1 status, the FROZEN-files rule, and the
 tailscale `--set-path` finding live in `bd memories` — do not re-add them.
-Last compacted 2026-09-05.
+Last compacted 2026-09-05; C5 seams and recorder notes added the same day.
 
 ### Architecture
 
@@ -160,6 +160,17 @@ Last compacted 2026-09-05.
   (excluded content yields hash-not-body records) → extraction (literal
   grammar) → coverage (precedence only via a Butlers-declared
   `PrecedenceRule`, never "newest wins") → `PocModel.projectShape`.
+  Since the 2026-09-05 amendment the precedence input is the root index's
+  own seven-row `Precedence Order When Layers Disagree` table, admitted
+  only when every row matches the registry literal grammar; a row decides
+  a disagreement only when exactly one declaration lies under its home.
+- Two render-time seams sit beside the shape, both pure and injectable:
+  `walkthrough-readiness.ts` (core; PWB-REQ-021 nine answer identities,
+  ten arms, never a verdict or score, never touches the PWB-REQ-022
+  evaluator) and `verbatim-route.ts` (app; PWB-REQ-011 exact-requirement
+  route, derived per render from the model, caches nothing). Phase B
+  classifies baseline specs path-only, so the route runs the unchanged
+  secret detectors and active-content scan on the transient body itself.
 
 ### Guardrails (keep even when old)
 
@@ -190,6 +201,16 @@ Last compacted 2026-09-05.
   the record by path. Never backtick a Butlers path in a packet (CG-1b).
 - `authorizeWrite` uses raw `startsWith` for containment; callers must
   normalize paths first (tracked, unfixed).
+- App typecheck (`tsc --noEmit -p apps/three-surface-poc`) resolves core
+  through `dist` declarations: run `tsc -b packages/three-surface-poc-core`
+  first after a core type change, or the app reports phantom errors.
+- Ledger semantics: a refused read is not a counted pass; phase-B breaches
+  are typed findings and do not set the degradation state; catalog
+  extraction keys off the basename `v1.md`. The tailnet mount is detected
+  by `Host`, never by path.
+- Copy-oracle tests match by substring: a very short label (`None`) is
+  "reached" by coincidence and proves nothing — give every label a
+  distinctive string or drop it.
 
 ### Known gaps
 
@@ -199,6 +220,22 @@ Last compacted 2026-09-05.
   index is excluded. Do not relax the grammar without an owner gate.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
+### Governance recorders (digest-bound acts)
+
+- Each digest-bound owner act has a dedicated recorder script that
+  hard-codes the frozen subject and packet head, validates the owner's
+  phrase against current bytes, writes a new dedicated record and appends
+  one aggregate section to `ACCEPTANCE-ACT-RECORD.md`; `--check` must
+  count exactly one copy of its block, never assume it is the file tail.
+  A superseding act gets a new record; the superseded record is never
+  edited, and its recorder fails `--check` by design.
+- Register a new act phrase in `check_governance.py`'s `_act_subjects()`
+  and its packet copies in `ACT_DIGEST_COPY_FILES` before the packet
+  exists, or CG-7d cannot see them go stale; files that appear only after
+  an act are registered from an existence-gated activation function.
+- Plain owner directions (implementation authorization, continuation)
+  bind no digest, add no acceptance-record row and register nothing.
+
 ## Beads Issue Tracker
 
 This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.

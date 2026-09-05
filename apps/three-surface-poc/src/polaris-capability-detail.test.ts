@@ -11,6 +11,8 @@ import { renderCapabilityDeepDive, renderPolarisPage } from './polaris.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import {
   ADMITTING_AUTHORITY,
+  PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PURPOSE,
+  PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS,
   PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH,
   PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC,
   projectShapeFixtureGit,
@@ -36,6 +38,10 @@ const CHANGE_ID = 'repair-whatsapp-identity-reconciliation';
 // The fixture repository's own baseline-spec bytes: captured OpenSpec state,
 // restated from the fixture table, never read back from Polaris.
 const BASELINE_TEXT = PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC[PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH] as string;
+// PWB-REQ-011 (amended 2026-09-05): only the requirement blocks may be
+// encoded; the Purpose prose is withheld.
+const REQUIREMENT_TEXTS = PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS.map((requirement) => requirement.text);
+const SELECTED_TEXT = REQUIREMENT_TEXTS.join('\n');
 
 type Variant = 'unevaluated' | 'draft' | 'adopted';
 
@@ -110,9 +116,15 @@ function unescapeHtml(text: string): string {
   return text.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
 }
 
+/** The fixture text as it appears inside the escaped verbatim block. */
+function escapeForSplit(text: string): string {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+/** Every rendered verbatim block, in page order, joined by one newline. */
 function verbatimOf(fragment: string): string | undefined {
-  const match = /<pre class="verbatim" data-verbatim-text[^>]*>([\s\S]*?)<\/pre>/.exec(fragment);
-  return match === null ? undefined : unescapeHtml(match[1] as string);
+  const blocks = [...fragment.matchAll(/<pre class="verbatim" data-verbatim-text[^>]*>([\s\S]*?)<\/pre>/g)].map((match) => unescapeHtml(match[1] as string));
+  return blocks.length === 0 ? undefined : blocks.join('\n');
 }
 
 function secondProposal(first: ProposedWork): ProposedWork {
@@ -224,12 +236,19 @@ describe('Polaris capability deep dive bands (PWB-REQ-015; RFC7-17)', () => {
     expect(reads).toEqual([{ path: PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH, revision: shapeRevision, identity: leafIdentity }]);
     expect(renderedDive).toContain('data-verbatim="rendered"');
     expect(renderedDive).toContain(`data-verbatim-identity="${leafIdentity}"`);
-    expect(verbatimOf(renderedDive)).toBe(BASELINE_TEXT);
+    // Only the selected requirement blocks, byte-for-byte, one block each,
+    // in source order; the Purpose prose and the title never reach the page.
+    expect(verbatimOf(renderedDive)).toBe(SELECTED_TEXT);
+    expect([...renderedDive.matchAll(/data-verbatim-requirement="([^"]*)"/g)].map((match) => match[1])).toEqual(PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS.map((requirement) => requirement.title));
+    expect(rendered).not.toContain(PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PURPOSE);
+    expect(rendered).not.toContain('# Switchboard identity');
     expect(parseNarrativeScript(rendered).deepDives[0]?.intent.verbatim).toBe('rendered');
-    // The bytes appear exactly once on the page — the verbatim block — and
+    expect(parseNarrativeScript(rendered).deepDives[0]?.intent.requirements).toEqual(PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS.map((requirement) => requirement.title));
+    // Each block appears exactly once on the page — the verbatim block — and
     // never in the machine form: no reorganized second copy.
-    expect(rendered.split(BASELINE_TEXT.trim()).length - 1).toBe(1);
-    expect(/<script type="application\/json"[^>]*>[\s\S]*?<\/script>/.exec(rendered)?.[0]).not.toContain(BASELINE_TEXT.trim());
+    for (const text of REQUIREMENT_TEXTS) expect(rendered.split(escapeForSplit(text)).length - 1).toBe(1);
+    const machineForm = /<script type="application\/json"[^>]*>[\s\S]*?<\/script>/.exec(rendered)?.[0] as string;
+    for (const text of REQUIREMENT_TEXTS) expect(machineForm).not.toContain(text.split('\n')[2]);
     // The text sits inside the current-authority part, before the proposal.
     const textAt = renderedDive.indexOf('data-verbatim-text');
     expect(textAt).toBeGreaterThan(renderedDive.indexOf('data-proposed-work-part="current-authority"'));
@@ -383,9 +402,23 @@ describe('Polaris capability deep dive bands (PWB-REQ-015; RFC7-17)', () => {
     expect(mismatch).toMatchObject({ kind: 'not-rendered', reason: 'reference-unresolvable' });
     const noDigest = resolveVerbatim({ path: 'p', revision: 'r', identity: 'no-digest-here' }, () => bytes);
     expect(noDigest).toMatchObject({ kind: 'not-rendered', reason: 'reference-unresolvable' });
+    // Bytes that hash but carry no requirement block: nothing to select.
     const sha = createHash('sha256').update(bytes).digest('hex');
-    const ok = resolveVerbatim({ path: 'p', revision: 'r', identity: `sha256:${sha}` }, () => bytes);
-    expect(ok).toEqual({ kind: 'rendered', identity: `sha256:${sha}`, text: '# leaf\n' });
+    const noRequirement = resolveVerbatim({ path: 'p', revision: 'r', identity: `sha256:${sha}` }, () => bytes);
+    expect(noRequirement).toMatchObject({ kind: 'not-rendered', reason: 'reference-unresolvable' });
+    // A typed refusal from the reader is disclosed as its own reason.
+    const refused = resolveVerbatim({ path: 'p', revision: 'r', identity: `sha256:${sha}` }, () => ({ refused: 'excluded-content', detail: 'gate closed' }));
+    expect(refused).toMatchObject({ kind: 'not-rendered', reason: 'excluded-content', detail: 'gate closed' });
+    // Bytes that hash and carry requirement blocks: the blocks, and only them.
+    const specBytes = new TextEncoder().encode(BASELINE_TEXT);
+    const specSha = createHash('sha256').update(specBytes).digest('hex');
+    const ok = resolveVerbatim({ path: 'p', revision: 'r', identity: `sha256:${specSha}` }, () => specBytes);
+    expect(ok).toEqual({
+      kind: 'rendered',
+      identity: `sha256:${specSha}`,
+      text: SELECTED_TEXT,
+      requirements: PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS,
+    });
     const nul = resolveVerbatim({ path: 'p', revision: 'r', identity: `sha256:${createHash('sha256').update(new Uint8Array([0x41, 0x00])).digest('hex')}` }, () => new Uint8Array([0x41, 0x00]));
     expect(nul).toMatchObject({ kind: 'not-rendered', reason: 'excluded-content' });
   });

@@ -39,8 +39,18 @@ export const PWB_AUTHORITY_ARTIFACTS: Readonly<Record<AuthorityKind, string>> = 
   registry: '.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json',
 };
 
+// The current act for each authority. Consent is the 2026-09-02 act; the
+// policy and registry acts are the 2026-09-05 amendments, each of which
+// supersedes its 2026-09-02 predecessor for its own role only. The
+// superseded records stay in the tree as immutable history and are named
+// here only as the expected supersession targets.
 export const PWB_ACT_RECORDS: Readonly<Record<AuthorityKind, string>> = {
   consent: '.syzygy/governance/decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md',
+  policy: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md',
+  registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md',
+};
+
+export const PWB_SUPERSEDED_ACT_RECORDS: Readonly<Record<Exclude<AuthorityKind, 'consent'>, string>> = {
   policy: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md',
   registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md',
 };
@@ -53,7 +63,7 @@ export function pwbAuthorityExpectations(evaluationInstant: string): BodyReadAut
     contentClass: 'declared-project-shape-text',
     owner: 'Tzeusy',
     governanceHome: '.syzygy/governance/declarations/adapter-registry',
-    policyVersion: '1.0.0-candidate.4',
+    policyVersion: '1.1.0-candidate.1',
     evaluationInstant,
     // The PWB state-(1) amendment sign-off; earlier acts predate the
     // authority that makes state (1) acceptable for PWB-REQ-005.
@@ -70,27 +80,31 @@ export function pwbAuthorityExpectations(evaluationInstant: string): BodyReadAut
       },
       policy: {
         artifactPath: PWB_AUTHORITY_ARTIFACTS.policy,
-        actIdentity: 'PWB-SECRET-CLASSIFICATION-POLICY-APPROVAL-2026-09-02',
+        actIdentity: 'PWB-SECRET-CLASSIFICATION-POLICY-APPROVAL-AMENDMENT-2026-09-05',
         actType: 'approve-policy',
         phrasePrefix: 'APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY',
-        recordingTag: 'pwb-approve-policy-signed-2026-09-02',
-        scopeAnchors: ['polaris-butlers-project-shape-secrets', 'project:syzygy'],
+        recordingTag: 'pwb-approve-policy-signed-2026-09-05',
+        scopeAnchors: ['polaris-butlers-project-shape-secrets', '1.1.0-candidate.1', 'project:syzygy'],
         a1: { kind: 'absent' },
+        supersession: { kind: 'supersedes', target: PWB_SUPERSEDED_ACT_RECORDS.policy },
       },
       registry: {
         artifactPath: PWB_AUTHORITY_ARTIFACTS.registry,
-        actIdentity: 'PWB-OBSERVER-REGISTRY-ENTRY-ADOPTION-2026-09-02',
+        actIdentity: 'PWB-OBSERVER-REGISTRY-ENTRY-ADOPTION-AMENDMENT-2026-09-05',
         actType: 'adopt-registry-entry',
         phrasePrefix: 'ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY',
-        recordingTag: 'pwb-adopt-registry-entry-signed-2026-09-02',
+        recordingTag: 'pwb-adopt-registry-entry-signed-2026-09-05',
         scopeAnchors: [
           'polaris-butlers-project-shape',
+          '1.1.0-candidate.1',
+          'pwb-discovery-v2-candidate.1',
           '.syzygy/governance/declarations/adapter-registry',
           'project:syzygy',
           'read-only',
           'empty write surface',
         ],
         a1: { kind: 'absent' },
+        supersession: { kind: 'supersedes', target: PWB_SUPERSEDED_ACT_RECORDS.registry },
       },
     },
   };
@@ -247,7 +261,8 @@ function classifyMissingRecord(
 }
 
 // Every decisions/*.md other than the act's own record is scanned for a
-// later act that supersedes or revokes this act identity.
+// later act that supersedes or revokes this act, named either by its act
+// identity or (amendment form) by its record path.
 function lifecycleFor(
   read: (path: string) => Uint8Array,
   list: (path: string) => readonly string[],
@@ -272,7 +287,7 @@ function lifecycleFor(
     const text = readText(read, join(decisionsDir, name));
     if (text === undefined) throw new Error(`governance lifecycle record disappeared: ${relative}`);
     for (const entry of supersessionTargetsOf(text)) {
-      if (entry.target !== actIdentity) continue;
+      if (entry.target !== actIdentity && entry.target !== ownRecordPath) continue;
       if (entry.relation === 'supersedes') supersededBy ??= relative;
       else revokedBy ??= relative;
     }

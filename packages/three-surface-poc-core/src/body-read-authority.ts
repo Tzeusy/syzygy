@@ -222,7 +222,16 @@ export interface AuthorityExpectation {
   // or its explicit absence (RFC3-16(b) item 9). Absent for every state-(1)
   // act; production supplies absent for all three.
   readonly a1: A1Expectation;
+  // What RFC3-16(b) item 8 must say. Absent means "none": the act
+  // supersedes nothing. An amending act (the 2026-09-05 policy and
+  // registry acts) must name exactly the record it supersedes, for its own
+  // role only; anything else is `supersession-target-wrong`.
+  readonly supersession?: SupersessionExpectation;
 }
+
+export type SupersessionExpectation =
+  | { readonly kind: 'none' }
+  | { readonly kind: 'supersedes'; readonly target: string };
 
 export type A1Expectation =
   | { readonly kind: 'absent' }
@@ -473,8 +482,17 @@ function evaluateAuthority(
   if (supersession.kind === 'missing') return invalid('supersession-target-missing', 'RFC3-16(b) item 8 absent');
   // mutation-point: supersession-target-malformed
   if (supersession.kind === 'malformed') return invalid('supersession-target-malformed', 'RFC3-16(b) item 8 is neither none nor a named target');
+  const expectedSupersession = expected.supersession ?? { kind: 'none' };
   // mutation-point: supersession-target-wrong
-  if (supersession.value.relation !== 'none') return invalid('supersession-target-wrong', `act ${supersession.value.relation} ${supersession.value.target}; no supersession is expected`);
+  if (expectedSupersession.kind === 'none') {
+    if (supersession.value.relation !== 'none') return invalid('supersession-target-wrong', `act ${supersession.value.relation} ${supersession.value.target}; no supersession is expected`);
+  } else if (supersession.value.relation !== 'supersedes') {
+    return invalid('supersession-target-wrong', `act ${supersession.value.relation === 'none' ? 'supersedes nothing' : `revokes ${supersession.value.target}`}; expected to supersede ${expectedSupersession.target}`);
+  } else if (supersession.value.target !== expectedSupersession.target) {
+    return invalid('supersession-target-wrong', `act supersedes ${supersession.value.target}; expected ${expectedSupersession.target}`);
+  } else if (supersession.value.role !== undefined && supersession.value.role !== expected.actType) {
+    return invalid('supersession-target-wrong', `act supersedes for the ${supersession.value.role} role; its own type is ${expected.actType}`);
+  }
 
   const a1 = record.a1;
   // mutation-point: a1-identity-missing

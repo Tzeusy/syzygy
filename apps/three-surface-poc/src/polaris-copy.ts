@@ -100,6 +100,21 @@ export const POLARIS_COPY = [
   { id: 'evidence.sources', role: 'project-fact', kind: 'heading', text: 'Project-shape sources' },
   { id: 'evidence.exclusions', role: 'project-fact', kind: 'heading', text: 'Excluded bodies' },
   { id: 'evidence.contradictions', role: 'project-fact', kind: 'heading', text: 'Contradicted facts' },
+  // PWB-REQ-004 (as amended): the root index's own declarations and every
+  // disagreement one of its rows decided.
+  { id: 'evidence.root-index', role: 'project-fact', kind: 'heading', text: 'Root index declarations' },
+  { id: 'label.precedence-rows', role: 'project-fact', kind: 'label', text: 'Precedence rows admitted:' },
+  { id: 'sentence.no-precedence', role: 'epistemic-disclosure', kind: 'sentence', text: 'No precedence table is admitted from the root index:' },
+  { id: 'label.stated-counts', role: 'project-fact', kind: 'label', text: 'Stated counts:' },
+  { id: 'sentence.no-stated-counts', role: 'epistemic-disclosure', kind: 'sentence', text: 'No stated summary count is admitted from the root index:' },
+  { id: 'label.decided', role: 'project-fact', kind: 'label', text: 'Decided by a row:' },
+  { id: 'sentence.no-decided', role: 'project-fact', kind: 'sentence', text: 'No disagreement between admitted declarations was decided by a row.' },
+  { id: 'label.effective', role: 'project-fact', kind: 'label', text: 'effective' },
+  { id: 'label.superseded', role: 'epistemic-disclosure', kind: 'label', text: 'superseded' },
+  { id: 'table.layer', role: 'project-fact', kind: 'label', text: 'Layer' },
+  { id: 'table.owns', role: 'project-fact', kind: 'label', text: 'Owns' },
+  { id: 'table.home', role: 'project-fact', kind: 'label', text: 'Home' },
+  { id: 'table.declared-at', role: 'project-fact', kind: 'label', text: 'Declared at' },
   { id: 'evidence.gaps', role: 'epistemic-disclosure', kind: 'heading', text: 'Unknown, by reason' },
   { id: 'evidence.code-structure', role: 'project-fact', kind: 'heading', text: 'Observed code structure' },
   { id: 'evidence.work-items', role: 'project-fact', kind: 'heading', text: 'Observed work items' },
@@ -154,6 +169,19 @@ export const POLARIS_COPY = [
   { id: 'label.act', role: 'epistemic-disclosure', kind: 'label', text: 'Act' },
   { id: 'label.traversed', role: 'epistemic-disclosure', kind: 'label', text: 'traversed' },
   { id: 'label.rationale', role: 'epistemic-disclosure', kind: 'label', text: 'Rationale:' },
+  // PWB-REQ-021 (amended 2026-09-05): readiness of the retained walkthrough
+  // record — an execution fact, never a verdict or a score.
+  { id: 'evidence.walkthrough-readiness', role: 'epistemic-disclosure', kind: 'heading', text: 'Walkthrough record readiness' },
+  { id: 'sentence.readiness-not-evaluated', role: 'epistemic-disclosure', kind: 'sentence', text: 'Readiness was not assessed:' },
+  { id: 'sentence.readiness-no-run-record', role: 'epistemic-disclosure', kind: 'sentence', text: 'No walkthrough run record to assess:' },
+  { id: 'label.readiness', role: 'epistemic-disclosure', kind: 'label', text: 'Readiness:' },
+  { id: 'sentence.readiness-execution-fact', role: 'epistemic-disclosure', kind: 'sentence', text: 'An execution fact about the record, not a verdict and not a score.' },
+  { id: 'label.surface-version', role: 'epistemic-disclosure', kind: 'label', text: 'surface' },
+  { id: 'label.evaluation-identity', role: 'epistemic-disclosure', kind: 'label', text: 'evaluation' },
+  { id: 'label.readiness-findings', role: 'epistemic-disclosure', kind: 'label', text: 'Why not ready:' },
+  { id: 'label.answers', role: 'epistemic-disclosure', kind: 'label', text: 'Recorded answers, in the owner’s words, unjudged:' },
+  { id: 'label.sources', role: 'epistemic-disclosure', kind: 'label', text: 'Sources:' },
+  { id: 'label.cited-authority', role: 'epistemic-disclosure', kind: 'label', text: 'Cited authority:' },
 ] as const satisfies readonly PolarisCopyRow[];
 
 export type PolarisCopyId = (typeof POLARIS_COPY)[number]['id'];

@@ -344,28 +344,86 @@ Group: Admission. Form: **prohibition**.
 The POC SHALL read only exact Git objects addressed by normalized
 repository-relative paths inside the consented repository. It SHALL NOT follow
 absolute paths, traversal, NUL-bearing paths, working-tree symlinks or
-submodules; execute observed content; or emit active Markdown, HTML, SVG,
-scripts, event handlers or unsafe URL schemes. Declared source-count, byte,
-depth, parse-time and rendered-output limits SHALL be evaluation inputs;
-breaches SHALL leave the source counted and Unknown.
+submodules; execute observed content; or emit active HTML, SVG, scripts, event
+handlers or unsafe URL schemes. Inline code spans and fenced code blocks SHALL
+be inert Markdown contexts: markup-like examples inside them SHALL NOT alone
+cause active-content exclusion and SHALL never be interpreted as markup or a
+link. Secret detectors SHALL scan the complete transient source bytes,
+including those contexts, before parsing. Outside inert-code contexts, an HTML
+element, comment or declaration; SVG; script; event-handler attribute; or an
+unsafe `javascript:`, `vbscript:`, `data:` or `file:` scheme in a Markdown
+destination, autolink or HTML attribute SHALL exclude the whole source.
 
-- **Case (counterexample sweep)**: exercise every prohibited path/content form
-  and each declared limit with controlled sentinels.
+Code contexts SHALL use this exact UTF-8 line-oriented profile. A fenced opener
+is zero to three spaces followed by at least three identical backticks or
+tildes; a closer is zero to three spaces, the same character repeated at least
+the opener length, then spaces only. A backtick opener's trailing info text
+SHALL contain no backtick. The first qualifying closer ends the fence; an
+unclosed fence or invalid backtick info string is malformed and excludes the
+source. Outside fences, an inline code span starts with a run of one or more
+backticks and closes only at the next run of exactly the same length;
+backslashes do not escape a delimiter and runs of a different length are
+content. An unclosed span is malformed and excludes the source. Indented code,
+HTML `<code>` elements and every other construct are not inert contexts. The
+context mask SHALL affect only active-content detection, never secret scans.
+
+The registry SHALL declare one evaluation-wide resource envelope. Source count
+SHALL cover the complete manifest; per-source bytes SHALL cover each exact
+blob; total bytes SHALL use one cumulative phase-A-plus-phase-B counter and
+count each `(repository-relative path, object id)` body once; index depth SHALL
+cover discovery; deterministic parse work SHALL count complete source
+traversals from the registry's closed pass list and SHALL NOT depend on elapsed
+wall-clock time. A complete traversal by a helper SHALL be charged to a named
+pass; repeating a named pass counts again; a traversal not in the list is
+forbidden. Final encoded human HTML and machine JSON SHALL each have an
+explicit byte ceiling. A source
+or input breach SHALL keep the complete source population counted and every
+dependent fact Unknown. A final-output breach SHALL return only a bounded typed
+failure envelope carrying evaluation identity, limit identity, declared value,
+observed value and population counts; it SHALL NOT truncate or emit a success-
+shaped model. Every breach SHALL make PWB-REQ-021 readiness false.
+
+- **Case (counterexample sweep)**: exercise every prohibited path/content form,
+  the same markup-like bytes inside inline/fenced code, a secret sentinel in
+  each code context, every limit at `limit - 1`, `limit`, and `limit + 1`,
+  phase-A/phase-B cumulative carry-over, duplicate-object/different-path
+  accounting, every named parse pass, an unregistered/repeated helper traversal
+  and both final-output sinks.
 - **Observable**: no request escapes the Git object reader, no active sentinel
   reaches a sink, and every rejected/limited source stays visible as Unknown.
-- **Oracle**: injected Git/read/render spies plus complete sink-byte scans and
-  limit-boundary cases decide.
+- **Oracle**: injected Git/read/render spies, context-independent secret scans,
+  complete sink-byte scans, a separately accumulated resource ledger and exact
+  final encoded-byte counts decide.
 - **Oracle independence**: malicious paths, content, limits and spies are
   supplied outside production parsing/rendering code.
 - **Falsifier**: host filesystem access, submodule/symlink traversal, executed
-  active content, unsafe URL output, an unbounded operation, or a vanished
-  rejected source.
+  active content, unsafe URL output, a code-context secret admitted, an elapsed-
+  time-dependent result, a reset/double-counted byte ledger, an oversized or
+  truncated success response, or a vanished rejected source.
 
 #### Scenario: Active repository content remains inert
 
 - **WHEN** an admitted Markdown source contains raw active HTML or an unsafe URL
 - **THEN** no active content reaches Polaris, JSON, logs, caches or records
 - **AND** the affected source remains counted with an exclusion or Unknown reason
+
+#### Scenario: Markup examples in code remain inert
+
+- **WHEN** an otherwise classifiable Markdown source contains HTML, SVG,
+  event-handler or unsafe-URL examples only inside valid inline code spans or
+  fenced code blocks and no secret detector matches
+- **THEN** the source is not excluded solely for those example bytes
+- **AND** both output sinks encode them as text and never interpret them as
+  markup, script, handler or link
+
+#### Scenario: Resource breach is bounded and explicit
+
+- **WHEN** any evaluation-wide input, deterministic parse-work or final-output
+  ceiling is exceeded
+- **THEN** the evaluation names the exact limit and counts the affected
+  population as Unknown without emitting a partial success-shaped answer
+- **AND** human and machine responses stay within their own declared encoded-
+  byte ceilings and cold-open readiness is false
 
 ```yaml
 warrants:
@@ -430,27 +488,99 @@ warrants:
 
 Group: Coverage. Form: **invariant**.
 
-WHEN two admitted Butlers artifacts disagree about one project fact, Polaris
-SHALL expose both source anchors and the disagreement. It SHALL identify an
-effective statement only when Butlers declares an applicable precedence rule;
-otherwise the fact SHALL remain Unknown.
+The POC SHALL admit project facts only from this closed population:
+`item:<class>:<declared-key>` and `count:<class>` for each of PWB-REQ-002's
+nine extraction classes; `catalog-count:<catalog-key>` for each of the nine
+literal V1 catalog headings; and `project-account:<key>` for `purpose`,
+`promises`, `refusals`, `architecture`, `v1-scope` and `v1-success`. Every
+declaration SHALL be emitted by the extractor assigned to an admitted source;
+an injected or unrecognized fact, class, key, catalog or account key SHALL mint
+nothing.
 
-- **Case**: observe two controlled declarations with different values, once
-  with an applicable precedence rule and once without one.
+The root-index extractor SHALL mint only two stated count declarations: under
+the exact H2 `Key Architectural Facts`, one unordered item whose leading bold
+label is `<decimal> daemons` and whose own text contains the exact cardinal
+form `<decimal> staffers ... + <decimal> domain butlers` SHALL emit
+`catalog-count:Staffers` and `catalog-count:Butlers`. Each V1 catalog heading
+SHALL emit the corresponding `catalog-count:<catalog-key>` derived declaration.
+No other root prose, number, heading or table SHALL mint a fact.
+
+The POC SHALL admit precedence only from the root index's exact H3
+`Precedence Order When Layers Disagree` and one pipe table with the exact
+columns `#`, `Layer`, `Owns`, `Home`. It SHALL emit the ordered layer rules only
+when rows 1 through 7 each occur once and every layer/home is unique. Rows 1
+through 5 SHALL use their exact normalized repository-relative root literals;
+row 6 SHALL use the exact `roster/{butler}/` template expanded only for a
+declared roster key; row 7 SHALL use the exact inert
+`src/, alembic/, tests/` literal and owns no admitted fact. For a conflicting
+fact, a rule SHALL apply only when each
+row's `Layer` raw cell is exactly one bold span, and its bold content plus the
+`Owns` and `Home` semantic text equal the registry's exact seven-row vocabulary.
+Semantic text SHALL trim outer ASCII whitespace and unwrap only complete inline
+code spans, preserving case, punctuation and internal whitespace; no other
+Markdown or prose normalization is allowed. Exactly one declaration must be
+under the lowest-numbered expanded
+home with at least one admitted source
+assigned to that fact family by the registry's closed twenty-entry family map.
+The map SHALL name `item:<class>` and `count:<class>` separately for all nine
+classes: project-account-section, principle, success-criterion and catalog-
+entry item/count families map to row 1; design-contract item/count to row 2;
+baseline-spec item/count to row 3; craft-policy item/count to row 4; topology-
+component item/count to row 5; roster-identity item/count to row 6; and the
+separate `catalog-count` and `project-account` families to row 1. Row 7 owns no
+admitted fact in this content class.
+Mixed-family prose or an unrecognized `Owns` value SHALL invalidate the table
+rather than extend the map. The root
+summary is non-owning and SHALL defer to that uniquely applicable owning layer;
+an unlisted source SHALL own nothing. Any missing, malformed, duplicated,
+out-of-population, self-referential, inapplicable or equally ranked rule SHALL
+select no effective declaration.
+
+WHEN two admitted Butlers artifacts disagree about one closed project fact,
+Polaris SHALL expose every declaration and source anchor and the disagreement.
+It SHALL identify an effective statement only when exactly one applicable
+admitted precedence outcome selects it; otherwise the fact SHALL remain
+Unknown.
+
+- **Case (population and counterexample sweep)**: exhaust the four fact
+  families and their closed keys; observe the exact eight-versus-nine
+  `catalog-count:Butlers` declarations; then exercise no rule, one valid rule,
+  every rejected rule arm and two applicable rules that disagree.
 - **Observable**: Polaris and the machine answer show both values and sources;
   the first case names the precedence basis and the second renders Unknown.
-- **Oracle**: compare the rendered values, source identities and result to the
-  controlled declarations and precedence input.
-- **Oracle independence**: the conflict and precedence rule are fixtures
-  supplied independently of the model.
-- **Falsifier**: one declaration is hidden, a winner is selected without a
-  rule, or disagreement is rendered as agreement.
+- **Oracle**: independently parse the admitted source anchors into the closed
+  fact/rule tables and compare the complete declaration multiset, considered-
+  rule outcomes, result and both human/machine forms.
+- **Oracle independence**: the checker hard-codes the four fact families,
+  twenty-four fixed keys, twenty fact-family mappings, the two root headings,
+  cardinal pattern, seven rule ordinals, four rule columns and rejection arms;
+  it imports no
+  production vocabulary or injected production declaration/rule value.
+- **Falsifier**: an unrecognized fact or rule mints state, one declaration is
+  hidden, the eight-versus-nine conflict disappears, a winner is selected
+  without exactly one applicable outcome, or disagreement renders agreement.
 
 #### Scenario: Stale summary does not silently replace V1 scope
 
 - **WHEN** a summary count disagrees with the authoritative V1 declaration
 - **THEN** Polaris exposes the disagreement and both sources
 - **AND** any effective count cites the documented precedence rule that chose it
+
+#### Scenario: Eight versus nine follows the declared layer rule
+
+- **WHEN** the admitted root summary declares eight domain butlers and the
+  admitted Heart and Soul V1 `Butlers` catalog derives nine, and the admitted
+  root precedence table assigns scope boundaries to Heart and Soul at row 1
+- **THEN** both declare `catalog-count:Butlers` with their exact source anchors
+- **AND** both channels render nine as effective only with the row-1 precedence
+  citation while preserving eight as the superseded declaration
+
+#### Scenario: Conflict remains Unknown without one applicable outcome
+
+- **WHEN** two closed declarations disagree and no admitted rule applies or
+  multiple applicable rules select different declarations
+- **THEN** both declarations and every considered-rule outcome remain visible
+- **AND** both channels render `contradicted-pending-adjudication`
 
 ```yaml
 warrants:
@@ -523,6 +653,17 @@ levels. A reader who stops at any level SHALL retain a true, coarser account.
 - **WHEN** a reader opens a declared capability from the catalog
 - **THEN** its detail links to the governing requirement identities
 - **AND** exact requirement text remains reachable without treating Polaris as authority
+
+#### Scenario: Consented baseline requirement renders verbatim
+
+- **WHEN** the requested requirement belongs to a baseline
+  `openspec/specs/*/spec.md` exact Git object already selected by the signed
+  source population and the existing `declared-project-shape-text` authority,
+  exact-object, secret and inert-content gates all admit it
+- **THEN** Polaris may transiently encode only that requirement and its
+  scenarios verbatim after verifying their source identity
+- **AND** it stores, logs, caches and returns no unselected body bytes; a failed
+  gate leaves the exact text Unknown and grants no wider content-class access
 
 ```yaml
 warrants:
@@ -815,26 +956,63 @@ exact requirements live, one current Unknown or contradiction with its source,
 and for one chosen fact how strongly Polaris claims to know it and what would
 make that claim stronger.
 
-- **Case**: an owner reads only Polaris at a named evaluation and answers the
-  RFC7-30 prompts in their own words.
+The retained PWB-REQ-021 answer population SHALL contain exactly one non-empty
+entry for each of these nine identities: `why`, `promises`,
+`refusals-and-rule`, `capabilities-and-fit`, `exact-requirement`,
+`unknown-or-contradiction`, `claim-strength`, `architecture-and-groups`, and
+`v1-success`. The record SHALL bind those answers to one exact surface version
+and evaluation identity and retain every path used to answer them. Readiness
+SHALL be false for a missing, empty, duplicate or unrecognized answer identity;
+an unresolved source anchor; a surface/evaluation mismatch; any path outside
+Polaris or its same-evaluation exact-source route; any PWB-REQ-006 resource
+breach; or an answer whose cited current Butlers authority cannot be resolved.
+Readiness and the nine answers SHALL be machine-readable and owner-visible but
+SHALL remain execution facts, never a verdict or proof of comprehension. The
+implementation SHALL NOT score or decide the semantic correctness of the
+owner's own-words answers. That comparison informs only the separate human
+owner judgment and rationale.
+
+These readiness cases belong only to PWB-REQ-021. They SHALL NOT be added to,
+substituted for or treated as invalid arms in PWB-REQ-022's owner-act and
+record-validity population; a structurally lawful run can be not ready, and a
+valid owner act can lawfully retain a negative judgment about it.
+
+- **Case (closed answer/readiness sweep)**: an owner reads only Polaris at a
+  named evaluation and answers the nine identities in their own words; then
+  independently inject each missing, empty, duplicate, unrecognized,
+  unresolved-anchor, wrong-surface, wrong-evaluation, non-Polaris-path,
+  resource-breach and authority-unavailable readiness arm.
 - **Observable**: a retained walkthrough execution record contains only the
   answers, paths, surface/evaluation identity and nonvisual/keyboard flag. A
   separate owner-judgment decision records verdict, rationale and judging party
   and references that execution record.
-- **Oracle**: compare each answer to its authoritative Butlers artifact and
-  exhaust the complete RFC7-30 prompt list plus the two project-wide additions;
-  every prompt answered without a confident surface-caused error decides.
+- **Oracle**: a human reviewer compares each answer to its authoritative
+  Butlers artifact for the later owner judgment; the machine oracle separately
+  exhausts the exact nine identities and every readiness arm, and independently
+  assert that the PWB-REQ-022 denominator remains 84 present-invalid plus 2
+  absent cases; every prompt answered without a confident surface-caused error
+  and no readiness arm present decides.
 - **Oracle independence**: answer checking uses Butlers artifacts; the owner,
   not the implementation, supplies the judgment.
 - **Falsifier**: the reader cannot explain Butlers as a whole, confidently
-  answers incorrectly because of Polaris, cannot reach exact intent, or cannot
-  identify a visible Unknown or contradiction.
+  answers incorrectly because of Polaris, cannot reach exact intent, cannot
+  identify a visible Unknown or contradiction, readiness accepts a malformed
+  or off-surface answer population, or an answer-readiness case changes
+  PWB-REQ-022's closed act-validity denominator.
 
 #### Scenario: Whole-project walkthrough passes
 
 - **WHEN** the owner completes a cold-open walkthrough at evaluation E
 - **THEN** every project-comprehension prompt is answered from Polaris alone
 - **AND** the retained record resolves each answer to current Butlers authority
+
+#### Scenario: Lawful run can remain not ready
+
+- **WHEN** a structurally lawful run record lacks one of the nine answers or
+  includes a non-Polaris traversal
+- **THEN** PWB-REQ-021 readiness is false and the exact reason remains visible
+- **AND** the condition does not mint `verdict-unlawful` or add an invalid case
+  to PWB-REQ-022
 
 ```yaml
 warrants:
@@ -877,6 +1055,12 @@ identity or explicit absence SHALL be evaluation inputs.
 The closed judgment-case population SHALL contain exactly 84 present-invalid
 cases plus 2 absent cases. “Malformed” and “wrong but present” have the same
 meanings as in PWB-REQ-005.
+
+PWB-REQ-021's nine answer identities, answer completeness, source resolution,
+Polaris-only traversal and semantic-readiness result SHALL NOT be act-validity
+fields here and SHALL NOT change this closed population. They may support the
+owner's verdict and rationale, but a not-ready answer set does not by itself
+make an otherwise lawful run record, judgment artifact or owner act unlawful.
 
 | Case group | Required independent cases | Count |
 |---|---|---:|

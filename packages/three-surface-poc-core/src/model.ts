@@ -9,11 +9,11 @@ import { projectOrrery, type OrreryProjection } from './orrery-projection.js';
 import { projectTrajectory, type TrajectoryProjection } from './trajectory-projection.js';
 import type { MaterializationRecord } from './materialization.js';
 import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
-import { gitRunnerFor, type GitRunner } from './project-shape-observation.js';
-import type { Declaration, PrecedenceRule } from './project-shape-coverage.js';
+import { gitRunnerFor, type GitRunner, type PwbResourceLimits } from './project-shape-observation.js';
 import { buildProjectShape, unevaluatedProjectShape, type ProjectShape } from './project-shape-model.js';
 import { deriveProposedWork, type ProposedWork } from './proposed-work.js';
 import { evaluateWalkthroughJudgment, type WalkthroughJudgmentEvaluation, type WalkthroughJudgmentInputs } from './walkthrough-judgment.js';
+import { evaluateWalkthroughReadiness, type ReadinessPopulation, type ReadinessTraversal, type WalkthroughReadiness } from './walkthrough-readiness.js';
 import {
   resolveTestArtifactVerification,
   type TestArtifactRecord,
@@ -144,7 +144,19 @@ export interface PocModel {
    * when the builder was given no run-record/judgment pair. Never a score,
    * never evidence of success. */
   readonly walkthroughJudgment: WalkthroughJudgmentPresentation;
+  /** PWB-REQ-021 (as amended 2026-09-05): whether the retained walkthrough
+   * record is a ready answer population against this evaluation — the nine
+   * identities, resolved anchors, same surface and evaluation, Polaris-only
+   * traversal, no PWB-REQ-006 breach, resolvable cited authority. An
+   * execution fact only: never a verdict, never a score, and independent
+   * of the PWB-REQ-022 outcome. `not-evaluated` when the builder was given
+   * no run record or no traversal predicate. */
+  readonly walkthroughReadiness: WalkthroughReadinessPresentation;
 }
+
+export type WalkthroughReadinessPresentation =
+  | { readonly kind: 'not-evaluated'; readonly detail: string }
+  | { readonly kind: 'evaluated'; readonly readiness: WalkthroughReadiness };
 
 export type WalkthroughJudgmentPresentation =
   | { readonly kind: 'not-evaluated'; readonly detail: string }
@@ -158,11 +170,8 @@ export interface ProjectShapeModelInput {
   readonly authority: BodyReadAuthorityEvaluation;
   readonly runGit?: GitRunner;
   readonly repositoryId?: string;
-  /** Butlers-declared precedence rules and stated summaries (P2.6). The
-   * daemon passes none until a live run shows Butlers declaring some; tests
-   * inject them to reach the contradiction path. */
-  readonly rules?: readonly PrecedenceRule[];
-  readonly statedDeclarations?: readonly Declaration[];
+  /** The PWB-REQ-006 envelope; absent → the registry's `PWB_RESOURCE_LIMITS`. */
+  readonly resourceLimits?: PwbResourceLimits;
 }
 
 export interface BuildButlersPocModelInput {
@@ -182,6 +191,26 @@ export interface BuildButlersPocModelInput {
    * detail says why no pair was supplied. */
   readonly walkthroughJudgment?: WalkthroughJudgmentInputs | undefined;
   readonly walkthroughJudgmentDetail?: string;
+  /** PWB-REQ-021 readiness needs the surface's own traversal predicate
+   * (which routes are Polaris and its same-evaluation exact-source route);
+   * the run record comes from `walkthroughJudgment` and the source
+   * population from the built project shape. Absent →
+   * `walkthroughReadiness.kind === 'not-evaluated'`. */
+  readonly walkthroughReadiness?: { readonly traversal: ReadinessTraversal } | undefined;
+}
+
+/** The same-evaluation source population readiness resolves against: the
+ * observed shape's complete source list (admitted = classified body) and
+ * its PWB-REQ-006 breach count; `unavailable` when no shape was observed. */
+function readinessPopulation(projectShape: ProjectShape): ReadinessPopulation {
+  if (projectShape.kind !== 'observed') {
+    return { kind: 'unavailable', reason: `project shape ${projectShape.kind}: no same-evaluation source population` };
+  }
+  return {
+    kind: 'observed',
+    sources: projectShape.sources.map((source) => ({ path: source.path, admitted: source.record.outcome === 'classified' })),
+    limitBreaches: projectShape.limitBreaches.length,
+  };
 }
 
 export class PocObservationError extends Error {
@@ -601,8 +630,7 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
           capturedAt: input.evaluation.asOf,
           runGit: input.projectShape.runGit ?? gitRunnerFor(repoRoot),
           ...(input.projectShape.repositoryId === undefined ? {} : { repositoryId: input.projectShape.repositoryId }),
-          ...(input.projectShape.rules === undefined ? {} : { rules: input.projectShape.rules }),
-          ...(input.projectShape.statedDeclarations === undefined ? {} : { statedDeclarations: input.projectShape.statedDeclarations }),
+          ...(input.projectShape.resourceLimits === undefined ? {} : { resourceLimits: input.projectShape.resourceLimits }),
         });
   const walkthroughJudgment: WalkthroughJudgmentPresentation =
     input.walkthroughJudgment === undefined
@@ -611,6 +639,23 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
           detail: input.walkthroughJudgmentDetail ?? 'No cold-open walkthrough run record and judgment pair was supplied to this evaluation; no judgment was evaluated.',
         }
       : { kind: 'evaluated', evaluation: evaluateWalkthroughJudgment(input.walkthroughJudgment) };
+  const walkthroughReadiness: WalkthroughReadinessPresentation =
+    input.walkthroughJudgment === undefined
+      ? { kind: 'not-evaluated', detail: 'No cold-open walkthrough run record was supplied to this evaluation; no answer population was assessed.' }
+      : input.walkthroughReadiness === undefined
+        ? { kind: 'not-evaluated', detail: 'No Polaris traversal predicate was supplied to this evaluation; readiness cannot tell Polaris routes from others.' }
+        : {
+            kind: 'evaluated',
+            readiness: evaluateWalkthroughReadiness({
+              runRecord: input.walkthroughJudgment.runRecord,
+              expectations: {
+                surfaceVersion: input.walkthroughJudgment.expectations.surfaceVersion,
+                evaluationIdentity: input.walkthroughJudgment.expectations.evaluationIdentity,
+              },
+              traversal: input.walkthroughReadiness.traversal,
+              population: readinessPopulation(projectShape),
+            }),
+          };
   const proposedWork = deriveProposedWork({
     capabilityId: 'capability:whatsapp-transport-identity',
     proposal: { path: proposal.path, revision: input.repositoryRevision, digest: `sha256:${proposal.digest}` },
@@ -642,6 +687,7 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
     projectShape,
     proposedWork,
     walkthroughJudgment,
+    walkthroughReadiness,
     surfaces: [
       {
         id: 'polaris',

@@ -49,17 +49,18 @@ import { indexGitTree, parseGitLsTree } from './git-tree.js';
 import {
   buildProjectShapeCoverage,
   type ClassCoverage,
-  type Declaration,
   type DeclarationAnchor,
   type ItemCoverage,
-  type PrecedenceRule,
+  type PrecedenceDisclosure,
   type ReconciledFact,
+  type RootSummaryDisclosure,
   type SourceCoverage,
 } from './project-shape-coverage.js';
 import { PROJECT_ACCOUNT_KEYS, extractBaselineSpec, extractSource, type ProjectAccountKey, type SourceExtraction } from './project-shape-extraction.js';
 import type { ExtractionClass, ManifestSource, PillarKey, SourceRule } from './project-shape-manifest.js';
 import {
   PWB_FAILURE_STATES,
+  PWB_RESOURCE_LIMITS,
   observeProjectShapeSources,
   type DeterministicInputs,
   type EmissionStamp,
@@ -67,9 +68,11 @@ import {
   type ObservationDegradation,
   type ObservationScope,
   type PWB_OBSERVER_IDENTITY,
+  type PwbResourceLimits,
   type ResourceLimitBreach,
 } from './project-shape-observation.js';
 import { observeProjectShape, type AdmissionFailureReason } from './project-shape-observer.js';
+import { createResourceLedger, type ResourceLedgerSummary } from './resource-ledger.js';
 
 // The one consented repository identity (the consent record's scope anchor;
 // `governance-inputs.ts` proves the expectation byte-equal).
@@ -297,8 +300,16 @@ export type ProjectShape =
       readonly classes: Readonly<Record<ExtractionClass, ProjectShapeClassAggregate>>;
       readonly facts: readonly ProjectShapeFact[];
       readonly contradictions: readonly ProjectShapeFact[];
+      // The root index's own declarations, disclosed whether or not any
+      // conflict needed them: the seven layer rules and the two stated
+      // summary counts, or why each is absent.
+      readonly precedence: PrecedenceDisclosure;
+      readonly rootSummary: RootSummaryDisclosure;
       readonly exclusions: readonly Exclusion[];
+      // Every breach of the one evaluation-wide envelope, both phases, in
+      // order; `resourceUse` is the ledger's closing count.
       readonly limitBreaches: readonly ResourceLimitBreach[];
+      readonly resourceUse: ResourceLedgerSummary;
       readonly degradation: ObservationDegradation | undefined;
       readonly projectAccount: readonly ProjectAccountStatement[];
       readonly counts: ProjectShapeCounts;
@@ -312,10 +323,10 @@ export interface ProjectShapeBuildInput {
   readonly runGit: GitRunner;
   readonly repositoryId?: string;
   readonly policy?: SecretClassificationPolicy;
-  // Precedence rules and stated summaries are supplied only when Butlers
-  // declares them; production passes none until a live run shows some.
-  readonly rules?: readonly PrecedenceRule[];
-  readonly statedDeclarations?: readonly Declaration[];
+  // The registry envelope by default; tests narrow it to reach a breach.
+  readonly resourceLimits?: PwbResourceLimits;
+  // Precedence rules and stated summary counts come only from the admitted
+  // root index (PWB-REQ-004 as amended); nothing is injected here.
 }
 
 const NOT_EVALUATED_ID = 'evaluation:not-evaluated' as const;
@@ -450,6 +461,11 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
   const gated = observeProjectShape({
     authority: input.authority,
     read: ({ authority }) => {
+      // One evaluation-wide resource envelope (registry
+      // `resourceLimitSemantics`, PWB-REQ-006 as amended): phase A and
+      // phase B share the byte counter, the parse-pass counters and the
+      // breach list; nothing resets between phases.
+      const ledger = createResourceLedger(input.resourceLimits ?? PWB_RESOURCE_LIMITS);
       // Phase A: revision, source population, seeds (P2.1/P2.2).
       const observation = observeProjectShapeSources({
         repositoryId,
@@ -457,7 +473,8 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
         capturedAt: input.capturedAt,
         runGit: input.runGit,
         authority,
-        classifyPhaseA: (text) => classifyPhaseASeed(phaseADetectors, text),
+        classifyPhaseA: (text, charge) => classifyPhaseASeed(phaseADetectors, text, charge),
+        ledger,
       });
       if (observation.kind === 'invalid-input') {
         return observationFailed(authority, {
@@ -496,12 +513,12 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
           detail: `ls-tree record is malformed: ${parsed.record}`,
         });
       }
-      const reader = createExactObjectReader({ runGit: input.runGit, tree: indexGitTree(parsed.entries), resourceLimits: observation.resourceLimits });
+      const reader = createExactObjectReader({ runGit: input.runGit, tree: indexGitTree(parsed.entries), ledger });
       // Policy before admission (P2.4), literal grammar (P2.5) on the transient body.
       const population = classifyManifestSources<SourceExtraction>(
         observation.manifest,
         reader,
-        (source, text) => extractSource(source, text),
+        (source, text) => extractSource(source, text, ledger.chargeFor(source.path)),
         policy,
         (source) => {
           if (source.rule !== 'baseline-spec-tree') return { kind: 'body' };
@@ -511,7 +528,10 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
             : { kind: 'unknown', path: source.path, classes: source.extractionClasses, failure: extracted.failure };
           return { kind: 'derived', value };
         },
+        ledger,
       );
+      // Phase B has read: the phase-A bodies the ledger held are dropped.
+      ledger.release();
       const discoveryUnknown: FixedUnknown = {
         failureState: 'sourceMissingOrUnreadable',
         degradationState: PWB_FAILURE_STATES.sourceMissingOrUnreadable.degradationState,
@@ -537,8 +557,6 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
         policy,
         discoveryUncertainties: uncoveredDiscovery
           .map((pillar) => ({ classes: classesForPillar[pillar.key], unknown: discoveryUnknown })),
-        ...(input.rules === undefined ? {} : { rules: input.rules }),
-        ...(input.statedDeclarations === undefined ? {} : { statedDeclarations: input.statedDeclarations }),
       });
 
       const evaluationId = authority.evaluationId;
@@ -612,8 +630,11 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
         classes,
         facts,
         contradictions,
+        precedence: coverage.precedence,
+        rootSummary: coverage.rootSummary,
         exclusions: finalExclusions,
-        limitBreaches: observation.limitBreaches,
+        limitBreaches: [...ledger.breaches],
+        resourceUse: ledger.summary(),
         degradation: observation.degradation,
         projectAccount,
         counts: { ...coverage.counts, exclusions: finalExclusions.length, classification: finalClassification },
