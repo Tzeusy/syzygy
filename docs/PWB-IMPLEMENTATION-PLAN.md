@@ -428,6 +428,102 @@ the 1z3.25 packet. Open `[Inferred]` question carried from C5: the
 walkthrough that opens it is judged `traversed-paths-wrong`; the 84 + 2
 denominator is untouched here.
 
+C7 note, recorded 2026-09-05 (bead syzygy-1z3.24.6; PWB-LIVE-12, 14;
+effective acts: PWB-REQ-016/020/021/022 as amended and the implementation-
+authorization continuation direction): mechanical gates only — no consent,
+population rule, PWB-REQ-022 case or the 84 + 2 denominator changed.
+
+(a) Exact binding (PWB-REQ-021). The schedule carries no placeholder
+surface or evaluation value. A record must name the surface
+`polaris@<first 12 hex of the tree oid of apps/three-surface-poc/src at the
+observer revision>` (`polaris@unresolved` when Git cannot resolve it) and
+the evaluation `pwb-eval-<first 24 hex of a digest over the shape's
+deterministic inputs>`: repository and revision, manifest digest,
+discovery/observer/implementation versions, resource limits, and the
+consent, policy and registry acts the authority evaluation rested on —
+never the authority's per-run evaluation id or a capture instant.
+`[Observed]` the first cut used the observation digest, and two daemon
+starts on the same commits named two evaluations, because that digest
+carries the per-run `evaluation:pwb-body-read:<instant>` id; the
+deterministic-inputs digest names the same evaluation on both starts
+(checked twice against the built daemon and once more in the fresh clone).
+An unobserved shape yields `pwb-unobserved-<kind>`, which no record can
+lawfully name. `[Inferred]` gap: a core code change that bumps no declared
+observer/implementation version leaves the identity unchanged; the surface
+version covers the app tree only. `model.ts`
+hands that identity to the judgment loader through a callback and fails
+closed to `not-evaluated` (with the loader's message) when loading throws.
+Polaris prints the expected binding beside any record, and beneath the
+"no run record" state, so the reader knows what to write. (b) Polaris-only
+routes (PWB-REQ-021/022). `surfaceRoutes` is `/polaris`, its tailnet
+mount, and `/polaris/source` on both mounts; the traversal predicate admits
+`#polaris-source-<slug>` fragments on the two Polaris routes and the source
+route bare or with an identity whose path is in the evaluation's
+population — a Polaris fragment on another surface, a query on `/polaris`,
+or an identity outside the population is not a route. The C5/C6 open
+question is thereby closed in code; whether the record guidance should
+list the query form is an owner wording question (1z3.25). (c) Preflight
+(`walkthrough-preflight.ts`, pure). Eight limbs over the served page, the
+machine answer, the exact-source route's answer per linked identity and
+the browser check: six source-backed Observed account statements each
+rendered once; principles, success criteria, catalog and topology nonempty
+and reconciling to a known denominator with every item row rendered once;
+one reachable verbatim current requirement on the page and on the route;
+at least one visible Unknown, matching the machine count, each with a
+primary reason and a route; one glossary explaining every tier and
+freshness word the page uses with every tuple described by it; every
+linked source path reachable and every internal link resolving; a browser
+check of the serving commit with no violation. Findings name the limb and
+the offending row; `ready` is `findings.length === 0` and nothing else.
+It is mechanical readiness — the four states (preflight, execution record,
+owner judgment, act validity) stay separate; a failed preflight fails the
+demo and invites nobody. (d) Exit (`fresh-checkout-verdict.ts`, pure).
+Sixteen named invariants, each recorded and each moving the exit: clone
+head equals source head; install, build, test exit 0; machine answer
+refused exactly 401 without and served 200 with the credential; every
+human route 200; every linked exact-source route 200; daemon's observed
+Butlers revision is a hex revision equal to the model's; shape observed;
+authority admits; parity; zero limit breaches; preflight ready; daemon
+exit 0 with empty stderr; evidence written. Parity is per tuple, not per
+id: every rendered tuple must equal its machine claim's label, tier,
+reasons and freshness, the presented population must be rendered, both id
+sets equal — a claim may lawfully render more than once (the current-
+authority citation repeats the baseline-spec item's tuple), so the
+2026-09-04 record's `tuples === distinct ids` was coincidence, not a rule.
+
+Evidence: +74 tests (verdict 29 with one counterexample per invariant and
+an all-at-once case; preflight 31 with one pre-fix-failing counterexample
+per limb, `also` naming limbs a mutation legitimately co-trips; binding,
+surface version and traversal 8; core identity — restart-stable, changed
+by each deterministic input, unobserved named — and `expected` 5; model
+seam 1; page expected-binding parity incl. a record naming another
+surface); 46 rule-6 mutations killed, seven of them only after a second
+round added the test each survivor exposed (a 403 refusal, an Inferred
+account statement, an unchecked and a not-rendered current-requirement
+route, a Polaris fragment on `/trajectory`, a fixed seam identity, the
+record's surface shown as the expected one), sources restored byte-for-
+byte (`docs/evidence/pwb-c7-fresh-demo-readiness-mutation-run-2026-09-05.
+json`). Live fresh clone of 28ff68d against Butlers ff52900a3
+(`docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-05.json`, artifacts
+retained outside the repository): 1,501 tests green in the clone; binding
+`polaris@dea2b82f3ef5` / `pwb-eval-0c3baa9fb21e88afce06602f`; 529 tuples
+over 528 ids, 0 mismatching, both absences 0; 185 exact-source identities
+fetched, 175 rendered (1,669 requirements), 10 not rendered with reason
+`excluded-content`; browser check 6 variants, 0 violations, at the
+serving commit; daemon exit 0, stderr empty; 0 limit breaches. `[Observed]`
+the exit is 1 on `preflight-ready` alone: account statements `v1-scope`
+and `v1-success` are Unknown with no statement and no anchor, and
+`catalog-entry` and `topology-component` have 0 modeled with an
+`excluded-content` denominator (`success-criterion` reconciles 5 modeled
+but its denominator is Unknown for the same cause) — the Butlers data
+quirks already recorded (`v1.md` whole-source Unknown; excluded index).
+No Syzygy change can make that ready: repairing the Butlers rows or an
+owner gate amending the grammar or the exclusion are owner decisions for
+the 1z3.25 packet, and until one of them lands the owner walkthrough is
+correctly not ready and no owner attention is requested. `[Observed]` the
+Polaris page is 2,045,086 bytes (97.5 % of the ceiling; +1,039 bytes for
+the expected-binding line) — the C6 ceiling question stands.
+
 P2.7 note, recorded 2026-09-04: `project-shape-model.ts` composes P1–P2.6
 into the one `ProjectShape` value that `model.ts` places on `PocModel`;
 `GET /api/poc` is still `JSON.stringify(model)`, so the machine answer is
