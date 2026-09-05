@@ -1,0 +1,481 @@
+{
+ "task": "syzygy-1z3.24.6 (PWB C7: fresh-checkout verdict, walkthrough preflight, exact binding, Polaris-only traversal)",
+ "rule": "AGENTS.md verification rule 6: mutate the input and confirm the check fails, per predicate",
+ "method": "each mutation applied in place to one source file, the named vitest files run from the worktree root, the file restored byte-for-byte and its SHA-256 re-checked",
+ "capturedAt": "2026-09-05",
+ "sourceFiles": [
+  "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+  "apps/three-surface-poc/src/polaris.ts",
+  "apps/three-surface-poc/src/walkthrough-inputs.ts",
+  "apps/three-surface-poc/src/walkthrough-preflight.ts",
+  "packages/three-surface-poc-core/src/model.ts",
+  "packages/three-surface-poc-core/src/walkthrough-readiness.ts"
+ ],
+ "results": [
+  {
+   "id": "verdict-ignores-clone-head",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-ignores-test-exit",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-refusal-any-4xx",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-human-routes-some",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-source-route-unchecked",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-revision-unhexed",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-authority-null-admits",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-parity-ignores-mismatch",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-parity-ignores-absent-machine",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-parity-empty-page-ok",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-limit-breaches-tolerated",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-preflight-advisory",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-daemon-stderr-ignored",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-daemon-null-exit-clean",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "verdict-evidence-assumed",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-account-label-any",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-account-anchorless-ok",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-population-empty-ok",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-population-denominator-unsummed",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-requirement-route-unchecked",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-requirement-route-not-rendered-ok",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-unknown-invisible-ok",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-unknown-count-unmatched",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-unknown-no-route-ok",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-glossary-term-unexplained-ok",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-tuple-undescribed-ok",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-source-unreachable-ok",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-dangling-fragment-ok",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-browser-not-performed-ok",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-browser-stale-commit-ok",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-browser-violations-ok",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-unobserved-ready",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "surface-version-unvalidated-tree",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-inputs.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "surface-version-from-head",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-inputs.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "binding-identity-ignored",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-inputs.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "schedule-routes-widened",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-inputs.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "traversal-source-any-identity",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-inputs.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "traversal-fragment-any-route",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-inputs.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "traversal-fragment-any-slug",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-inputs.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "evaluation-identity-unstable",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "tests": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "evaluation-identity-ignores-acts",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "tests": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "evaluation-identity-ignores-manifest",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "tests": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "evaluation-identity-minted-unobserved",
+   "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "tests": [
+    "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "model-loader-throw-uncaught",
+   "file": "packages/three-surface-poc-core/src/model.ts",
+   "tests": [
+    "packages/three-surface-poc-core/src/model.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "model-seam-identity-fixed",
+   "file": "packages/three-surface-poc-core/src/model.ts",
+   "tests": [
+    "packages/three-surface-poc-core/src/model.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "page-expected-surface-from-record",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-walkthrough-readiness.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  }
+ ],
+ "summary": {
+  "mutations": 46,
+  "killed": 46,
+  "survived": 0
+ }
+}
