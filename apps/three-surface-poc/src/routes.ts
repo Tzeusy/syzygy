@@ -5,7 +5,8 @@ import { BROWSER_ORIGIN_REFUSAL, browserRequestAllowed } from './browser-origin.
 import { epistemicText, exactTablesSection } from './exact-tables.js';
 import { ORRERY_HUMAN_PATH, ORRERY_TAILNET_PATH, renderOrreryPage } from './orrery.js';
 import { pageShell } from './page-shell.js';
-import { POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, renderPolarisPage, type PolarisRenderInputs } from './polaris.js';
+import { POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, renderPolarisPage, renderPolarisPresentation, type PolarisRenderInputs } from './polaris.js';
+import { POLARIS_SOURCE_PATH, POLARIS_SOURCE_TAILNET_PATH, renderPolarisSourcePage, SOURCE_IDENTITY_PARAM } from './polaris-source.js';
 import { mountPrefixForRequest, TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { renderTrajectoryPage, TRAJECTORY_HUMAN_PATH, TRAJECTORY_TAILNET_PATH } from './trajectory.js';
 
@@ -13,6 +14,22 @@ export { BROWSER_ORIGIN_REFUSAL } from './browser-origin.js';
 
 export const POC_HUMAN_PATH = '/' as const;
 export const POC_MACHINE_PATH = '/api/poc' as const;
+/** The authenticated machine presentation envelope (PWB-REQ-014/020): the
+ * Polaris narrative — block, anchor and band multisets — as one JSON body
+ * under the machine credential, derived from the same capture as the page.
+ * It is a presentation artifact, never citable, and never part of `/api/poc`. */
+export const POLARIS_PRESENTATION_PATH = '/api/poc/polaris' as const;
+export const POLARIS_PRESENTATION_KIND = 'polaris-presentation' as const;
+
+export interface PolarisPresentationEnvelope {
+  readonly kind: typeof POLARIS_PRESENTATION_KIND;
+  readonly version: 1;
+  readonly presentation: 'presentation-artifact';
+  readonly citable: false;
+  readonly evaluation: PocModel['evaluation'];
+  readonly project: { readonly revision: string };
+  readonly narrative: ReturnType<typeof renderPolarisPresentation>['narrative'];
+}
 
 function surfacePanel(surface: PocSurface, model: PocModel): string {
   const entities = new Map(model.entities.map((entity) => [entity.id, entity]));
@@ -143,6 +160,30 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
     const model = getModel();
     return boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(model));
   };
+  const presentationHandle: Route['handle'] = () => {
+    const model = getModel();
+    const { narrative } = renderPolarisPresentation(model, '', {}, polarisInputs === undefined ? {} : polarisInputs(model));
+    const envelope: PolarisPresentationEnvelope = {
+      kind: POLARIS_PRESENTATION_KIND,
+      version: 1,
+      presentation: 'presentation-artifact',
+      citable: false,
+      evaluation: model.evaluation,
+      project: { revision: model.project.revision },
+      narrative,
+    };
+    return boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(envelope));
+  };
+  // The exact-source route: human-open like the page, keyed by the source
+  // identity in the query, rendering only revision/digest-verified text.
+  const sourceHandle: Route['handle'] = ({ request }) => {
+    if (!browserRequestAllowed(request.headers)) {
+      return { status: 403, contentType: 'application/json', body: JSON.stringify(BROWSER_ORIGIN_REFUSAL) };
+    }
+    const model = getModel();
+    const identity = request.query.get(SOURCE_IDENTITY_PARAM) ?? '';
+    return html(model, renderPolarisSourcePage(model, identity, mountPrefixForRequest(request.headers), polarisInputs === undefined ? {} : polarisInputs(model)));
+  };
 
   function humanSurfaceRoutes(
     directPath: string,
@@ -177,6 +218,8 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
       handle: humanHandle,
     },
     ...humanSurfaceRoutes(POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, (model, mountPrefix) => renderPolarisPage(model, mountPrefix, {}, polarisInputs === undefined ? {} : polarisInputs(model))),
+    { method: 'GET', path: POLARIS_SOURCE_PATH, credentialClass: 'human-open', handle: sourceHandle },
+    { method: 'GET', path: POLARIS_SOURCE_TAILNET_PATH, credentialClass: 'human-open', handle: sourceHandle },
     ...humanSurfaceRoutes(TRAJECTORY_HUMAN_PATH, TRAJECTORY_TAILNET_PATH, renderTrajectoryPage),
     ...humanSurfaceRoutes(ORRERY_HUMAN_PATH, ORRERY_TAILNET_PATH, renderOrreryPage),
     {
@@ -191,5 +234,7 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
       credentialClass: 'machine-credentialed',
       handle: machineHandle,
     },
+    { method: 'GET', path: POLARIS_PRESENTATION_PATH, credentialClass: 'machine-credentialed', handle: presentationHandle },
+    { method: 'GET', path: `${TAILNET_MOUNT_PREFIX}${POLARIS_PRESENTATION_PATH}`, credentialClass: 'machine-credentialed', handle: presentationHandle },
   ];
 }

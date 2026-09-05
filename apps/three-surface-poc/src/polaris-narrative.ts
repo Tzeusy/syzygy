@@ -192,8 +192,9 @@ export class NarrativeRegistry {
 
 export const NARRATIVE_SCRIPT_ID = 'polaris-narrative';
 
-/** The machine form of the presentation artifact, embedded in the page. It is
- * not `/api/poc` and never becomes part of it. */
+/** The machine form of the presentation artifact, embedded in the page and
+ * served as the authenticated envelope at `/api/poc/polaris` from the same
+ * capture. It is not `/api/poc` and never becomes part of it. */
 export function narrativeScript(narrative: PolarisNarrative): string {
   const json = JSON.stringify(narrative).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
   return `<script type="application/json" id="${NARRATIVE_SCRIPT_ID}" data-presentation-artifact data-non-citable>${json}</script>`;

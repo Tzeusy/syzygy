@@ -360,6 +360,74 @@ named by form or detector only. The Polaris page renders the current
 leaf (`switchboard-identity`, six blocks) verbatim; readiness is
 `no-run-record` because `PWB-WALKTHROUGH-001.md` does not exist yet (P8).
 
+C6 note, recorded 2026-09-05 (bead syzygy-1z3.24.5; PWB-LIVE-06, 11, 13;
+effective acts: PWB-REQ-010/011/014/020 as amended and the implementation-
+authorization continuation direction): presentation only — no truth model,
+consent, population rule or policy changed.
+
+(a) First reading (PWB-REQ-010). The page opens as `Butlers` with the
+overview group first, then one native `<details id="polaris-claim-states">`
+that explains every tuple field once (label, the seven RFC2-25 tier words,
+the four freshness words, challenge) and the only strengthening routes;
+every tuple is `aria-describedby` that explanation. The depth list follows
+it. (b) Progressive disclosure (PWB-REQ-011). Each catalog class's items and
+the exclusions sit complete inside `<details class="population">` whose
+summary names the count; nothing is hidden by style. `[Observed]` the
+sources table is *routed*, not collapsed: after fragment navigation to a
+target inside a closed `<details>`, Chrome restarts sequential focus at the
+details' first focusable (the table region), so a reader who followed a
+citation could not continue past the row — the browser suite's new
+disclosure step and re-open-after-navigate found it. Rule: no fragment
+target inside a `<details>`. (c) Cause-correct routes (PWB-REQ-020). Each
+Unknown's route names the recorded cause (`<path> matched the <detector>
+detector: rotate and remove …; or an owner policy change to that detector`;
+`does not parse under the declared grammar: repair the row …; or an owner
+gate amending the grammar. No policy change is involved`; `carries active
+content (N marker(s)): remove it …`; resource limit, denied path, non-UTF-8,
+unknown extraction class, uncaptured) beside the claim; the gaps and reason-
+count entries keep the generic table route and add `By cause:` beneath it.
+(d) Exact-source route (PWB-REQ-011). `GET /polaris/source?identity=<repo@
+rev:path#oid>` (and the tailnet mount) is human-open like `/polaris` —
+browser-origin refusal, mount-aware links, `maxHumanResponseBytes` — and
+"authenticated" by revision and digest rather than bearer: the identity is
+resolved only against the evaluation's signed population and handed to the
+unchanged `verbatimRouteReader`, so an identity outside the population, an
+empty identity, an unobserved shape, forged bytes, an unreadable object or
+a policy hit each render an Unknown with its reason and no bytes. The page
+links `Exact text` from every admitted baseline spec's source row and item
+rows, from the current-authority citation and from the depth list's last
+level; `exactSourceIdentities` admits only `baseline-spec-tree` sources that
+are classified blobs. (e) Machine presentation (PWB-REQ-014). `GET
+/api/poc/polaris` (machine-credentialed, `maxMachineResponseBytes`) serves
+`{ kind: 'polaris-presentation', version: 1, presentation, citable: false,
+evaluation, project.revision, narrative }` where `narrative` is the very
+registry the human page's script carries — one render, two forms — and
+`/api/poc` is unchanged.
+
+Evidence: +14 tests (5 source route incl. HTTP, 2 presentation envelope, 7
+first-reading/cause/disclosure); the project-shape secret test now asserts
+the detector wording; the reachability nav-order rule and the copy sweep
+(baseline-spec variant, source-route pages) amended in place; browser suite
+9/9 with the disclosure step; 26 rule-6 mutations killed, sources restored
+byte-for-byte
+(`docs/evidence/pwb-c6-polaris-parity-mutation-run-2026-09-05.json`).
+Live at Butlers ff52900a3 (Syzygy 951084c): 185 admitted baseline specs,
+372 route links on the page, 175 route pages rendered (1,669 blocks; page
+block count equals the resolver's for every one), 10 refused
+`excluded-content` with no bytes; 11 exclusions (2 parse-failure, 8
+active-content, 1 `credential-assignment` detector) each routed by cause,
+`By cause:` at 7 entries; 529 tuples, all described; 521 narrative blocks
+and 713 anchors in the envelope (496 KB). `[Observed]` the human page is
+2,044,047 bytes against the 2,097,152 ceiling — 97.5 % — so any further
+growth (P8's readiness section on a real run record, or more Butlers
+sources) will fail closed with a 503; raising the ceiling is a registry
+amendment act, and trimming is a presentation choice: an owner question for
+the 1z3.25 packet. Open `[Inferred]` question carried from C5: the
+`/polaris/source` route is not a lawful PWB-REQ-021 traversal
+(`isExactSourceRoute` admits only `/polaris#polaris-source-<slug>`), so a
+walkthrough that opens it is judged `traversed-paths-wrong`; the 84 + 2
+denominator is untouched here.
+
 P2.7 note, recorded 2026-09-04: `project-shape-model.ts` composes P1–P2.6
 into the one `ProjectShape` value that `model.ts` places on `PocModel`;
 `GET /api/poc` is still `JSON.stringify(model)`, so the machine answer is

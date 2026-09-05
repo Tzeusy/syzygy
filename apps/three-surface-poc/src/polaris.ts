@@ -54,7 +54,10 @@ import {
   type NarrativeAnchor,
   type PolarisViewState,
 } from './polaris-narrative.js';
+import { sourceRouteHref, sourceSlug } from './polaris-source.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
+
+export { sourceSlug };
 
 export const POLARIS_HUMAN_PATH = '/polaris' as const;
 export const POLARIS_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}/polaris` as const;
@@ -115,6 +118,17 @@ interface PageTargets {
 }
 const NO_TARGETS: PageTargets = { gapReasons: new Set(), sourcePaths: new Set() };
 let activeTargets: PageTargets = NO_TARGETS;
+/** The mount the page is rendered under: the exact-source route links are
+ * built relative to it. */
+let activeMountPrefix = '';
+/** The evaluation's exclusions and unavailable sources, so an Unknown's
+ * route names its actual cause (PWB-LIVE-11): the detector, grammar or
+ * observer failure that produced it — never a blanket policy change. */
+let activeExclusions: readonly Exclusion[] = [];
+let activeUnavailable: readonly { readonly path: string; readonly reason: string }[] = [];
+/** Identities the exact-source route can serve: admitted baseline specs
+ * whose body was classified and whose anchor is a blob at this revision. */
+let activeExactSources: ReadonlySet<string> = new Set();
 
 function gapId(reason: string): string {
   return `polaris-gap-${reason.replace(/[^A-Za-z0-9]+/g, '-')}`;
@@ -289,7 +303,7 @@ function claimTuple(claim: ProjectShapeClaim): string {
   const reasonText = epistemic.label === 'Unknown'
     ? ` (${escapeHtml(primary)}${secondary.length === 0 ? '' : `; ${secondary.map(escapeHtml).join(', ')}`})`
     : '';
-  return `<span class="claim-tuple" data-claim-id="${escapeHtml(claim.claimId)}" data-epistemic-label="${escapeHtml(epistemic.label)}" data-epistemic-tier="${escapeHtml(tier)}" data-epistemic-primary-reason="${escapeHtml(primary)}" data-epistemic-secondary-reasons="${escapeHtml(secondary.join(','))}" data-epistemic-freshness="${escapeHtml(freshness)}" data-challenge-state="${escapeHtml(claim.challenge)}" data-evaluation-id="${escapeHtml(claim.evaluationId)}"${DISCLOSURE}>${escapeHtml(epistemic.label)}${reasonText} · ${escapeHtml(tier)} · ${escapeHtml(freshness)} · ${escapeHtml(claim.challenge)}</span>`;
+  return `<span class="claim-tuple" data-claim-id="${escapeHtml(claim.claimId)}" data-epistemic-label="${escapeHtml(epistemic.label)}" data-epistemic-tier="${escapeHtml(tier)}" data-epistemic-primary-reason="${escapeHtml(primary)}" data-epistemic-secondary-reasons="${escapeHtml(secondary.join(','))}" data-epistemic-freshness="${escapeHtml(freshness)}" data-challenge-state="${escapeHtml(claim.challenge)}" data-evaluation-id="${escapeHtml(claim.evaluationId)}" aria-describedby="polaris-claim-states-lede"${DISCLOSURE}>${escapeHtml(epistemic.label)}${reasonText} · ${escapeHtml(tier)} · ${escapeHtml(freshness)} · ${escapeHtml(claim.challenge)}</span>`;
 }
 
 /** PWB-REQ-007: an aggregate discloses its members' primary and secondary
@@ -301,7 +315,7 @@ export function reasonCountsBlock(claimId: string, counts: ReasonCounts): string
     if (rows.length === 0) return '';
     return `<p${DISCLOSURE}>${copy(which === 'primary' ? 'label.primary-reasons' : 'label.secondary-reasons')}</p>
       <ul data-reason-counts-${which}="${escapeHtml(claimId)}"${DISCLOSURE}>${rows
-        .map(([reason, count]) => `<li data-reason="${escapeHtml(reason)}" data-count="${count}">${unknownReasonRef(reason)}: ${count}. ${copy('label.route')} ${escapeHtml(UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route'))}.</li>`)
+        .map(([reason, count]) => `<li data-reason="${escapeHtml(reason)}" data-count="${count}">${unknownReasonRef(reason)}: ${count}. ${copy('label.route')} ${reasonRouteHtml(reason)}</li>`)
         .join('')}</ul>`;
   };
   const primary = list('primary', counts.primary);
@@ -318,16 +332,50 @@ function onDemandCounts(claimId: string, text: string): string {
   return `<details class="coverage-counts" data-coverage-counts="${escapeHtml(claimId)}"${open}><summary${copyAttr('label.coverage-counts')}>${copy('label.coverage-counts')}</summary><p${FACT}>${text}</p></details>`;
 }
 
+/** The claim-state glossary (PWB-REQ-007; RFC2-25): every field of the
+ * tuple beside each claim, in ordinary words, and the only routes that
+ * strengthen a claim. One disclosure, once, described-by from every tuple. */
+function claimStatesBlock(): string {
+  const sentence = (id: PolarisCopyId): string => `<p${copyAttr(id)}>${copy(id)}</p>`;
+  const group = (labelId: PolarisCopyId, ids: readonly PolarisCopyId[]): string =>
+    `<p${copyAttr(labelId)}>${copy(labelId)}</p><ul>${ids.map((id) => `<li${copyAttr(id)}>${copy(id)}</li>`).join('')}</ul>`;
+  return `<details id="polaris-claim-states" class="claim-states" data-polaris-claim-states>
+    <summary${copyAttr('label.claim-states')}>${copy('label.claim-states')}</summary>
+    <p class="lede" id="polaris-claim-states-lede"${copyAttr('states.lede')}>${copy('states.lede')}</p>
+    ${sentence('states.observed')}
+    ${sentence('states.inferred')}
+    ${sentence('states.unknown')}
+    ${group('states.tier', ['states.tier.gate-backed', 'states.tier.report-fact', 'states.tier.reduced-fidelity', 'states.tier.asserted-by-worker', 'states.tier.declared-only', 'states.tier.suspended', 'states.tier.unstated'])}
+    ${group('states.freshness', ['states.freshness.fresh', 'states.freshness.stale', 'states.freshness.broken', 'states.freshness.superseded'])}
+    ${group('states.challenge', ['states.challenge.unchallenged'])}
+    ${sentence('states.strengthen')}
+  </details>`;
+}
+
+/** Progressive disclosure (PWB-REQ-011): an exhaustive population stays
+ * complete on the page, behind one native disclosure whose control names
+ * the population and its count. Nothing is hidden by style; the reader
+ * opens it by keyboard. The sources table is not wrapped: its rows are
+ * fragment targets, and Chrome restarts sequential focus at the first
+ * focusable of a `<details>` after navigating to a target inside it, so a
+ * reader who follows a citation could not continue past the row. The
+ * sources table is routed instead — the last depth, reached by the depth
+ * list and by citations. */
+function population(kind: 'items' | 'exclusions', key: string, count: number, labelId: PolarisCopyId, inner: string): string {
+  return `<details class="population" data-polaris-${kind}="${escapeHtml(key)}"><summary${copyAttr(labelId)}>${copy(labelId)} (${count})</summary>${inner}</details>`;
+}
+
+/** The exact-source route link for one admitted baseline spec identity. */
+function exactTextLink(identity: string): string {
+  return `<a href="${escapeHtml(sourceRouteHref(activeMountPrefix, identity))}" data-source-route="${escapeHtml(identity)}"${copyAttr('label.exact-text')}>${copy('label.exact-text')}</a>`;
+}
+
 function tupleLine(claim: ProjectShapeClaim): string {
   return `<p class="tuple-line"${DISCLOSURE}>${claimTuple(claim)}</p>`;
 }
 
 function shortDigest(digest: string): string {
   return digest.replace(/^sha256:/, '').slice(0, 12);
-}
-
-export function sourceSlug(path: string): string {
-  return path.replace(/[^A-Za-z0-9]+/g, '-');
 }
 
 /** Exact-source citations: path, line and the exact content digest of the
@@ -353,9 +401,72 @@ function shapeClaimBlock(claim: ProjectShapeClaim, revision: string, targetClass
   return anchoredBlock(`block:${claim.claimId}`, [{ claimId: claim.claimId, anchors, captured: capturedStateOf(claim) }]);
 }
 
+/** The cause-correct route for one exclusion: what produced it and what,
+ * in Butlers or by the owner, resolves it. A parse failure is a repair in
+ * Butlers or an owner gate on the grammar, never a policy change; a detector
+ * match is a rotation in Butlers or an owner change to that detector. */
+function excludedCauseRoute(exclusion: Exclusion): string {
+  const path = exclusion.repositoryRelativePath;
+  if (exclusion.detectorId !== undefined) {
+    return `${path} matched the ${exclusion.detectorId} detector: rotate and remove the matched text in Butlers, then a new snapshot; or an owner policy change to that detector`;
+  }
+  switch (exclusion.exclusionReason) {
+    case 'parse-failure':
+      return `${path} does not parse under the declared grammar${exclusion.detail === undefined ? '' : ` (${exclusion.detail})`}: repair the row in Butlers, then a new snapshot; or an owner gate amending the grammar. No policy change is involved`;
+    case 'active-content':
+      return `${path} carries active content${exclusion.detail === undefined ? '' : ` (${exclusion.detail} marker(s))`}: remove it in Butlers, then a new snapshot; or an owner policy change admitting it`;
+    case 'resource-limit':
+      return `${path} exceeds a declared resource limit: reduce the source in Butlers, then a new snapshot; or an owner act raising the limit`;
+    case 'denied-path':
+      return `${path} is a denied path: only an owner policy change admits it`;
+    case 'contains-nul':
+    case 'not-utf-8':
+      return `${path} is not UTF-8 text: make it text in Butlers, then a new snapshot`;
+    case 'unknown-extraction-class':
+      return `${path} names no registered extraction class: an owner registry change, then a new snapshot`;
+    default:
+      return `${path}: ${UNKNOWN_REASON_ROUTES['excluded-content']}`;
+  }
+}
+
+function unavailableCauseRoute(source: { readonly path: string; readonly reason: string }): string {
+  return `${source.path} was not captured (${source.reason}): repair the observer or the source in Butlers, then a new snapshot`;
+}
+
+/** The routes by cause for one reason over a set of paths: the exclusions
+ * or uncaptured sources among them, or all of the evaluation's when the
+ * claim's support does not name one. Undefined when the evaluation records
+ * no cause of that kind. */
+function causeRoutes(reason: string, paths: ReadonlySet<string> | undefined): readonly string[] | undefined {
+  if (reason === 'excluded-content') {
+    const own = paths === undefined ? [] : activeExclusions.filter((exclusion) => paths.has(exclusion.repositoryRelativePath));
+    const matched = own.length > 0 ? own : activeExclusions;
+    return matched.length === 0 ? undefined : [...new Set(matched.map(excludedCauseRoute))];
+  }
+  if (reason === 'source-uncaptured-or-unreachable') {
+    const own = paths === undefined ? [] : activeUnavailable.filter((source) => paths.has(source.path));
+    const matched = own.length > 0 ? own : activeUnavailable;
+    return matched.length === 0 ? undefined : [...new Set(matched.map(unavailableCauseRoute))];
+  }
+  return undefined;
+}
+
 function routeOf(claim: ProjectShapeClaim, reason: string): string {
+  const causes = causeRoutes(reason, new Set(claim.support.map((support) => support.path)));
+  if (causes !== undefined) return causes.join('; ');
   const route = claim.resolutionRoutes.find((entry) => entry.reason === reason)?.route;
   return route ?? UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route');
+}
+
+/** The route text of one reason in a list keyed by reason (gaps, reason
+ * counts): the generic route, then the evaluation's causes when it records
+ * any, so the reader reaches the actual cause without leaving the list. */
+function reasonRouteHtml(reason: string): string {
+  const generic = UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route');
+  const causes = causeRoutes(reason, undefined);
+  return causes === undefined
+    ? `${escapeHtml(generic)}.`
+    : `${escapeHtml(generic)}. <span${copyAttr('label.by-cause')}>${copy('label.by-cause')}</span> ${escapeHtml(causes.join('; '))}.`;
 }
 
 function unknownRoutes(claim: ProjectShapeClaim, prefix: string): string {
@@ -385,8 +496,10 @@ function accountStatement(statement: ProjectAccountStatement, revision: string):
 
 function itemRow(item: ProjectShapeItem, revision: string): string {
   const block = item.claim.epistemic.label === 'Observed' ? shapeClaimBlock(item.claim, revision) : undefined;
+  const identity = item.claim.support[0]?.sourceIdentity;
+  const exact = block !== undefined && item.class === 'baseline-spec' && identity !== undefined && activeExactSources.has(identity) ? ` ${exactTextLink(identity)}` : '';
   const statement = block !== undefined
-    ? `<span data-claim-provenance="${escapeHtml(item.claim.claimId)}">${escapeHtml(item.statement ?? item.key)}</span>${supportCitations(item.claim.support, block.anchors)}`
+    ? `<span data-claim-provenance="${escapeHtml(item.claim.claimId)}">${escapeHtml(item.statement ?? item.key)}</span>${supportCitations(item.claim.support, block.anchors)}${exact}`
     : unknownRoutes(item.claim, '');
   return `<tr data-polaris-item="${escapeHtml(item.claim.claimId)}">
     <td${FACT}><code>${escapeHtml(item.key)}</code></td>
@@ -418,10 +531,10 @@ function classBlock(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: Ext
     ? ''
     : items.length === 0
       ? `<p${copyAttr('sentence.no-items')}><small>${copy('sentence.no-items')}</small></p>`
-      : tableRegion(`polaris-class-${cls}`, `<table>
+      : population('items', cls, items.length, 'label.show-items', tableRegion(`polaris-class-${cls}`, `<table>
         <thead><tr><th scope="col"${copyAttr('table.key')}>${copy('table.key')}</th><th scope="col"${copyAttr('table.declared')}>${copy('table.declared')}</th><th scope="col"${copyAttr('table.epistemic-state')}>${copy('table.epistemic-state')}</th></tr></thead>
         <tbody>${items.map((item) => itemRow(item, shape.identity.revision)).join('')}</tbody>
-      </table>`);
+      </table>`));
   const summary = aggregate.claim.epistemic.label === 'Observed'
     ? ((): string => {
         const block = shapeClaimBlock(aggregate.claim, shape.identity.revision);
@@ -597,7 +710,7 @@ function sourceRow(source: ProjectShapeSource, index: number, revision: string):
     : `${copyText('label.unknown')} — ${source.itemDenominator.unknown.unknownReason}`;
   return `<tr id="polaris-source-${escapeHtml(sourceSlug(source.path))}" data-polaris-source="${escapeHtml(source.claim.claimId)}"${block?.attrs ?? FACT}>
     <td>${index + 1}</td>
-    <td><code data-parity-field="shape-source-path">${escapeHtml(source.path)}</code><br>${identityCell}</td>
+    <td><code data-parity-field="shape-source-path">${escapeHtml(source.path)}</code><br>${identityCell}${activeExactSources.has(source.identity) ? `<br>${exactTextLink(source.identity)}` : ''}</td>
     <td>${escapeHtml(source.rule)}${source.pillar === undefined ? '' : ` · ${escapeHtml(source.pillar)}`}</td>
     <td>${escapeHtml(outcome)} · ${escapeHtml(anchorText(source.anchor))}</td>
     <td>${digest === undefined ? `<small${copyAttr('sentence.no-body-read')}>${copy('sentence.no-body-read')}</small>` : `<code data-parity-field="shape-source-digest">${escapeHtml(shortDigest(digest))}</code>`}</td>
@@ -712,7 +825,7 @@ function gapsList(claims: readonly ProjectShapeClaim[]): string {
     return b[1] - a[1] || a[0].localeCompare(b[0]);
   });
   return `<ul data-polaris-gaps="${counts.size}"${DISCLOSURE}>${ordered
-    .map(([reason, count]) => `<li id="${gapId(reason)}" data-polaris-gap="${escapeHtml(reason)}"><span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>: ${count} claim(s). ${copy('label.route')} ${escapeHtml(UNKNOWN_REASON_ROUTES[reason as keyof typeof UNKNOWN_REASON_ROUTES] ?? copyText('label.no-route'))}.</li>`)
+    .map(([reason, count]) => `<li id="${gapId(reason)}" data-polaris-gap="${escapeHtml(reason)}"><span data-unknown-reason="${escapeHtml(reason)}">${escapeHtml(reason)}</span>: ${count} claim(s). ${copy('label.route')} ${reasonRouteHtml(reason)}</li>`)
     .join('')}</ul>`;
 }
 
@@ -784,7 +897,7 @@ function shapeEvidence(shape: ProjectShape): string {
   </section>
   <section class="claim-section" data-polaris-section="shape:exclusions">
     ${heading(3, 'polaris-shape-exclusions', 'evidence.exclusions')}
-    ${shape.exclusions.length === 0 ? `<p data-polaris-exclusions="0"${copyAttr('sentence.no-exclusions')}>${copy('sentence.no-exclusions')}</p>` : `<ul data-polaris-exclusions="${shape.exclusions.length}">${shape.exclusions.map(exclusionItem).join('')}</ul>`}
+    ${shape.exclusions.length === 0 ? `<p data-polaris-exclusions="0"${copyAttr('sentence.no-exclusions')}>${copy('sentence.no-exclusions')}</p>` : population('exclusions', shape.claim.claimId, shape.exclusions.length, 'label.show-exclusions', `<ul data-polaris-exclusions="${shape.exclusions.length}">${shape.exclusions.map(exclusionItem).join('')}</ul>`)}
     ${shape.limitBreaches.length === 0 ? '' : `<p${FACT}><small>${copy('label.limit-breaches')} ${shape.limitBreaches.map((breach) => `${escapeHtml(breach.limit)} ${breach.observed} &gt; ${breach.declared}${breach.path === undefined ? '' : ` (${escapeHtml(breach.path)})`}`).join('; ')}.</small></p>`}
   </section>
   ${rootIndexSection(shape)}
@@ -847,7 +960,7 @@ function currentIntentPart(dive: CapabilityDeepDive, revision: string, resolutio
           anchors: current.claim.support.map((support) => supportAnchor(support, revision, 'requirement')).filter((anchor): anchor is AnchorInput => anchor !== undefined),
           captured: capturedStateOf(current.claim),
         }]);
-        return `<p${block.attrs}><span data-claim-provenance="${escapeHtml(current.claim.claimId)}"><code data-parity-field="current-authority-path">${escapeHtml(current.path)}</code></span>${supportCitations(current.claim.support, block.anchors)}</p>
+        return `<p${block.attrs}><span data-claim-provenance="${escapeHtml(current.claim.claimId)}"><code data-parity-field="current-authority-path">${escapeHtml(current.path)}</code></span>${supportCitations(current.claim.support, block.anchors)}${((): string => { const leaf = currentIntentLeaf(current, revision); return leaf !== undefined && activeExactSources.has(leaf.identity) ? ` ${exactTextLink(leaf.identity)}` : ''; })()}</p>
       ${tupleLine(current.claim)}`;
       })()
     : unknownLine(`${dive.capabilityId}/current-authority`, current.reason, current.route, current.detail);
@@ -1019,6 +1132,10 @@ const POLARIS_STYLE = `
   .reason-counts ul { padding-left: 1.2rem; }
   .coverage-counts { margin: .6rem 0 1rem; }
   .coverage-counts summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
+  .population { margin: .6rem 0 1rem; }
+  .population summary, .claim-states summary { cursor: pointer; color: var(--muted); font-size: .95rem; }
+  .claim-states { max-width: 74ch; margin: 0 auto 2rem; padding: .5rem 1rem; border: 1px dashed var(--line); font-size: .95rem; }
+  .claim-states ul { padding-left: 1.2rem; }
   .unknown-disclosure { color: var(--unknown); border-left: 3px solid var(--unknown); padding-left: .9rem; }
   .table-scroll { overflow-x: auto; }
   .depth-nav { max-width: 74ch; margin: 0 auto 2rem; font-size: .95rem; }
@@ -1057,17 +1174,29 @@ export interface PolarisRenderInputs {
   readonly verbatim?: VerbatimLeafReader;
 }
 
-export function renderPolarisPage(model: PocModel, mountPrefix = '', viewState: PolarisViewState = {}, inputs: PolarisRenderInputs = {}): string {
+/** The presentation artifact and its machine form, from one capture: the
+ * human page and the envelope `/api/poc/polaris` serves derive from the
+ * same registry, so their block, anchor and band multisets are one. */
+export function renderPolarisPresentation(model: PocModel, mountPrefix = '', viewState: PolarisViewState = {}, inputs: PolarisRenderInputs = {}): { readonly html: string; readonly narrative: ReturnType<NarrativeRegistry['narrative']> } {
   if (activeRegistry !== undefined) throw new Error('renderPolarisPage re-entered');
   activeRegistry = new NarrativeRegistry();
   activeViewState = viewState;
   try {
-    return renderPolarisBody(model, mountPrefix, activeRegistry, inputs);
+    const html = renderPolarisBody(model, mountPrefix, activeRegistry, inputs);
+    return { html, narrative: activeRegistry.narrative() };
   } finally {
     activeRegistry = undefined;
     activeViewState = {};
     activeTargets = NO_TARGETS;
+    activeMountPrefix = '';
+    activeExclusions = [];
+    activeUnavailable = [];
+    activeExactSources = new Set();
   }
+}
+
+export function renderPolarisPage(model: PocModel, mountPrefix = '', viewState: PolarisViewState = {}, inputs: PolarisRenderInputs = {}): string {
+  return renderPolarisPresentation(model, mountPrefix, viewState, inputs).html;
 }
 
 /** The four depths PWB-REQ-011 names — summary, catalog, detail, exact
@@ -1076,6 +1205,7 @@ export function renderPolarisPage(model: PocModel, mountPrefix = '', viewState: 
  * emits; a level lists only what this shape state renders. */
 function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): string {
   const observed = shape.kind === 'observed';
+  const revision = observed ? shape.identity.revision : '';
   const link = (id: string, copyId: PolarisCopyId): string => `<a href="#${escapeHtml(id)}"${copyAttr(copyId)}>${copy(copyId)}</a>`;
   const levels: readonly (readonly [PolarisCopyId, readonly string[]])[] = [
     ['depth.summary', [link('polaris-group-overview', 'group.overview'), link('polaris-group-boundaries', 'group.boundaries'), link('polaris-group-architecture', 'group.architecture'), link('polaris-group-v1', 'group.v1')]],
@@ -1086,6 +1216,12 @@ function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): st
       link('polaris-shape-sources', 'evidence.sources'),
       ...(observed ? [link('polaris-shape-exclusions', 'evidence.exclusions'), link('polaris-shape-root-index', 'evidence.root-index'), link('polaris-shape-contradictions', 'evidence.contradictions')] : []),
       link('polaris-shape-gaps', 'evidence.gaps'),
+      ...dives.flatMap((dive) => {
+        const leaf = currentIntentLeaf(dive.currentIntent, revision);
+        return leaf !== undefined && activeExactSources.has(leaf.identity)
+          ? [`<a href="${escapeHtml(sourceRouteHref(activeMountPrefix, leaf.identity))}" data-source-route="${escapeHtml(leaf.identity)}" data-depth-source="${escapeHtml(dive.capabilityId)}"${copyAttr('label.exact-text')}>${copy('label.exact-text')}</a>`]
+          : [];
+      }),
     ]],
   ];
   return `<nav class="depth-nav" data-polaris-depth-nav aria-labelledby="polaris-depth-label">
@@ -1101,20 +1237,39 @@ function pageTargets(shape: ProjectShape): PageTargets {
   };
 }
 
+/** Identities the exact-source route serves for this shape: the reader's
+ * own admission gates restated as a set (an admitted baseline spec whose
+ * identity was classified — path-only, its body is read only at render —
+ * and whose anchor is a blob), so the page links only where the route can
+ * resolve. */
+export function exactSourceIdentities(shape: ProjectShape): ReadonlySet<string> {
+  if (shape.kind !== 'observed') return new Set();
+  return new Set(shape.sources
+    .filter((source) => source.rule === 'baseline-spec-tree' && source.record.outcome === 'classified' && source.anchor.kind === 'blob')
+    .map((source) => source.identity));
+}
+
 function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: NarrativeRegistry, inputs: PolarisRenderInputs): string {
   const shape = model.projectShape;
   const revision = shape.kind === 'observed' ? shape.identity.revision : '';
   activeTargets = pageTargets(shape);
+  activeMountPrefix = mountPrefix;
+  activeExclusions = shape.kind === 'observed' ? shape.exclusions : [];
+  activeUnavailable = shape.kind === 'observed'
+    ? shape.sources.flatMap((source) => (source.record.outcome === 'unavailable' ? [{ path: source.path, reason: source.record.reason }] : []))
+    : [];
+  activeExactSources = exactSourceIdentities(shape);
   const dives = deriveCapabilityDeepDives(model);
   const deepDives = dives
     .map((dive) => capabilityDeepDive(dive, model, revision, inputs.verbatim))
     .join('');
 
   const body = `
-    <p class="notice"${copyAttr('notice')}>${copy('notice')}</p>
-    ${depthNav(shape, dives)}
+    <p class="notice"${copyAttr('notice')}>${copy('notice')} <a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p>
     ${groupHeader('overview')}
     ${projectGroupBody(shape, 'overview')}
+    ${claimStatesBlock()}
+    ${depthNav(shape, dives)}
     ${groupHeader('boundaries')}
     ${projectGroupBody(shape, 'boundaries')}
     ${groupHeader('architecture')}

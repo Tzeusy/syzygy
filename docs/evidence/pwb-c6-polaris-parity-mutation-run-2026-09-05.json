@@ -1,0 +1,278 @@
+{
+ "results": [
+  {
+   "id": "source-route-serves-unobserved",
+   "file": "apps/three-surface-poc/src/polaris-source.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-source-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "source-route-empty-identity-reads",
+   "file": "apps/three-surface-poc/src/polaris-source.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-source-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "source-route-ignores-population",
+   "file": "apps/three-surface-poc/src/polaris-source.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-source-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 4,
+   "exitCode": 1
+  },
+  {
+   "id": "source-route-wrong-revision",
+   "file": "apps/three-surface-poc/src/polaris-source.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-source-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 3,
+   "exitCode": 1
+  },
+  {
+   "id": "source-route-claims-rendered",
+   "file": "apps/three-surface-poc/src/polaris-source.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-source-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2,
+   "exitCode": 1
+  },
+  {
+   "id": "source-route-unescaped-identity",
+   "file": "apps/three-surface-poc/src/polaris-source.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-source-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "source-route-unescaped-text",
+   "file": "apps/three-surface-poc/src/polaris-source.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-source-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2,
+   "exitCode": 1
+  },
+  {
+   "id": "source-route-back-link-generic",
+   "file": "apps/three-surface-poc/src/polaris-source.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-source-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2,
+   "exitCode": 1
+  },
+  {
+   "id": "exact-link-any-rule",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-source-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "exact-link-none",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-source-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "cause-route-generic-only",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2,
+   "exitCode": 1
+  },
+  {
+   "id": "cause-route-detector-unnamed",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 2,
+   "exitCode": 1
+  },
+  {
+   "id": "cause-route-active-as-policy",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "by-cause-omitted",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "overview-after-depth-nav",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "tuple-not-described",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "claim-states-drops-suspended",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "population-not-native",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "population-count-off-by-one",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "presentation-human-open",
+   "file": "apps/three-surface-poc/src/routes.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-presentation-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "presentation-citable",
+   "file": "apps/three-surface-poc/src/routes.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-presentation-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "presentation-narrative-detached",
+   "file": "apps/three-surface-poc/src/routes.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-presentation-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "presentation-unbounded",
+   "file": "apps/three-surface-poc/src/routes.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-presentation-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "source-route-ignores-origin",
+   "file": "apps/three-surface-poc/src/routes.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-source-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "source-route-ignores-mount",
+   "file": "apps/three-surface-poc/src/routes.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-source-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "source-route-ignores-query",
+   "file": "apps/three-surface-poc/src/routes.ts",
+   "tests": [
+    "apps/three-surface-poc/src/polaris-source-route.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  }
+ ],
+ "summary": {
+  "mutations": 26,
+  "killed": 26,
+  "survived": 0
+ }
+}
