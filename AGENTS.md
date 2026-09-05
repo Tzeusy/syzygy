@@ -216,6 +216,15 @@ lessons added the same day.
 - Copy-oracle tests match by substring: a very short label (`None`) is
   "reached" by coincidence and proves nothing — give every label a
   distinctive string or drop it.
+- PWB-REQ-020 parity is per tuple, never per id: a claim may render more
+  than once (the current-authority citation repeats the baseline-spec
+  item's tuple), so `tuples === distinct ids` is a false invariant; check
+  every rendered tuple against its machine claim by id and both id sets.
+- The fresh-checkout demo exits by `fresh-checkout-verdict.ts` over every
+  invariant it records (daemon stderr must be empty); the walkthrough
+  preflight (`walkthrough-preflight.ts`) is mechanical readiness and
+  never an owner verdict — keep readiness, execution record, owner
+  judgment and act validity as four states.
 
 ### Governance prose and docs
 
