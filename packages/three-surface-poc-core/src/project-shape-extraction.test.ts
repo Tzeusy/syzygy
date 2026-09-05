@@ -14,8 +14,11 @@ import {
   EXTRACTION_FAILURES,
   PROJECT_ACCOUNT_KEYS,
   extractClass,
+  extractRootIndex,
   extractSource,
+  semanticCellText,
   type ExtractedItem,
+  type RootIndexExtraction,
   type SourceExtraction,
 } from './project-shape-extraction.js';
 import { ParsePassBudgetExceeded, type ParsePassIdentity } from './resource-ledger.js';
@@ -796,6 +799,16 @@ describe('PWB-REQ-002 — any grammar failure makes the whole source Unknown', (
       denominators: {},
     });
   });
+
+  it('catalog-entry extraction also reports the nine literal headings and their lines', () => {
+    const r = extractSource({ path: 'heart-and-soul/v1.md', extractionClasses: ['catalog-entry'] }, V1);
+    expect(r.kind).toBe('extracted');
+    if (r.kind !== 'extracted') return;
+    expect(r.catalogHeadings?.map((h) => h.key)).toEqual([...CATALOG_HEADINGS]);
+    expect(r.catalogHeadings?.length).toBe(9);
+    for (const h of r.catalogHeadings ?? []) expect(V1.split('\n')[h.line - 1]).toBe(`### ${h.key}`);
+    expect('rootIndex' in r).toBe(false);
+  });
 });
 
 // ---------------------------------------------------------------------
@@ -892,7 +905,7 @@ describe('PWB-REQ-006 (amended) — extraction charges one registry pass per cla
       calls += 1;
       if (calls === 2) throw new ParsePassBudgetExceeded(breach, pass);
     });
-    expect(r).toEqual({ kind: 'over-limit', path: source.path, classes: [...source.extractionClasses], class: 'principle', breach });
+    expect(r).toEqual({ kind: 'over-limit', path: source.path, classes: [...source.extractionClasses], pass: 'declared-item-extraction', class: 'principle', breach });
     expect('items' in r).toBe(false);
     expect(calls).toBe(2);
   });
@@ -907,5 +920,209 @@ describe('PWB-REQ-006 (amended) — extraction charges one registry pass per cla
 
   it('with no charge the extraction is unchanged', () => {
     expect(extractSource(source, VISION)).toEqual(extractSource(source, VISION, () => undefined));
+  });
+});
+
+// ---------------------------------------------------------------------
+// PWB-REQ-004 (as amended 2026-09-05) — the root index's two grammars.
+// Every literal below is hand-typed from the registry entry's
+// `observationGrammar.rootSummary` and `observationGrammar.precedence`.
+
+const TABLE_ROWS = [
+  '| 1 | **Heart and Soul** | Principles, scope boundaries, the 7 non-negotiable rules | `about/heart-and-soul/` |',
+  '| 2 | **Legends and Lore** | Wire contracts, state machines, data models, sanctioned rule exceptions | `about/legends-and-lore/rfcs/` |',
+  '| 3 | **Spec and Spine** | Feature behaviour, acceptance scenarios (WHEN/THEN), per-butler contracts | `openspec/specs/` |',
+  '| 4 | **Craft and Care** | Execution-quality standards, test scope, review gates, observability bar | `about/craft-and-care/` |',
+  '| 5 | **Lay and Land** | Topology snapshot — where components live, how they connect, stability levels | `about/lay-and-land/` |',
+  '| 6 | **Roster config** | Live butler identity: `butler.toml`, `MANIFESTO.md`, `CLAUDE.md`, skills, API routes | `roster/{butler}/` |',
+  '| 7 | **Code** | Runtime behaviour — executed source, migrations, tests | `src/`, `alembic/`, `tests/` |',
+];
+const TABLE = ['### Precedence Order When Layers Disagree', '', '| # | Layer | Owns | Home |', '|---|-------|------|------|', ...TABLE_ROWS];
+const SUMMARY = [
+  '## Key Architectural Facts',
+  '',
+  '- **11 daemons** — 3 staffers (Switchboard, Messenger, QA) + 8 domain',
+  '  butlers, each a FastMCP server on its own port.',
+  '- **One database** — shared Postgres.',
+];
+// Lines: 1 title, 2 blank, 3 H3, 4 blank, 5 header, 6 delimiter, 7–13 rows,
+// 14 blank, 15 H2, 16 blank, 17 the daemons item.
+const ROOT = ['# Butlers', '', ...TABLE, '', ...SUMMARY, ''].join('\n');
+const ROOT_LINES = ROOT.split('\n');
+
+const EXPECTED_ROWS: readonly [number, string, string, string][] = [
+  [1, 'Heart and Soul', 'Principles, scope boundaries, the 7 non-negotiable rules', 'about/heart-and-soul/'],
+  [2, 'Legends and Lore', 'Wire contracts, state machines, data models, sanctioned rule exceptions', 'about/legends-and-lore/rfcs/'],
+  [3, 'Spec and Spine', 'Feature behaviour, acceptance scenarios (WHEN/THEN), per-butler contracts', 'openspec/specs/'],
+  [4, 'Craft and Care', 'Execution-quality standards, test scope, review gates, observability bar', 'about/craft-and-care/'],
+  [5, 'Lay and Land', 'Topology snapshot — where components live, how they connect, stability levels', 'about/lay-and-land/'],
+  [6, 'Roster config', 'Live butler identity: butler.toml, MANIFESTO.md, CLAUDE.md, skills, API routes', 'roster/{butler}/'],
+  [7, 'Code', 'Runtime behaviour — executed source, migrations, tests', 'src/, alembic/, tests/'],
+];
+
+// ROOT with one line replaced (1-based) or with lines inserted after it.
+const withLine = (line: number, text: string): string => ROOT_LINES.map((l, i) => (i === line - 1 ? text : l)).join('\n');
+const withoutLine = (line: number): string => ROOT_LINES.filter((_, i) => i !== line - 1).join('\n');
+const insertAfter = (line: number, ...lines: string[]): string => [...ROOT_LINES.slice(0, line), ...lines, ...ROOT_LINES.slice(line)].join('\n');
+
+describe('PWB-REQ-004 — the root summary emits exactly two stated counts', () => {
+  const summary = (text: string): RootIndexExtraction['summary'] => extractRootIndex(text).summary;
+
+  it('the Butlers-shaped root yields catalog-count:Staffers 3 and catalog-count:Butlers 8 at the item line', () => {
+    expect(summary(ROOT)).toEqual({
+      kind: 'emitted',
+      line: 17,
+      declarations: [
+        { fact: 'catalog-count:Staffers', value: '3', line: 17 },
+        { fact: 'catalog-count:Butlers', value: '8', line: 17 },
+      ],
+    });
+  });
+
+  it('the cardinal form may span a wrapped continuation line but never another item', () => {
+    expect(summary(withLine(17, '- **11 daemons** — 3 staffers + 8 domain butlers.')).kind).toBe('emitted');
+    const unwrapped = withoutLine(18);
+    expect(summary(unwrapped)).toEqual({ kind: 'absent', reason: 'malformed-list', line: 17, detail: 'no cardinal form' });
+    const split = withLine(18, '- 3 staffers + 8 domain butlers');
+    expect(summary(split)).toMatchObject({ kind: 'absent', reason: 'malformed-list', detail: 'no cardinal form' });
+  });
+
+  it('the heading must be the exact H2, exactly once', () => {
+    expect(summary(withLine(15, '## Key architectural facts'))).toEqual({ kind: 'absent', reason: 'missing-heading', detail: 'Key Architectural Facts' });
+    expect(summary(withLine(15, '### Key Architectural Facts'))).toMatchObject({ kind: 'absent', reason: 'missing-heading' });
+    expect(summary(insertAfter(19, '', '## Key Architectural Facts', '- **2 daemons** — 1 staffers + 1 domain butlers'))).toEqual({ kind: 'absent', reason: 'duplicate-key', line: 21, detail: 'Key Architectural Facts' });
+  });
+
+  it('the leading label must be exactly <decimal> daemons on exactly one unordered item', () => {
+    expect(summary(withLine(17, '- **11 daemon** — 3 staffers + 8 domain butlers'))).toEqual({ kind: 'absent', reason: 'malformed-list', line: 15, detail: 'no item labelled <decimal> daemons' });
+    expect(summary(withLine(17, '- **eleven daemons** — 3 staffers + 8 domain butlers'))).toMatchObject({ kind: 'absent', reason: 'malformed-list' });
+    expect(summary(withLine(17, '- 11 daemons — 3 staffers + 8 domain butlers'))).toMatchObject({ kind: 'absent', reason: 'malformed-list' });
+    expect(summary(withLine(17, '1. **11 daemons** — 3 staffers + 8 domain butlers'))).toEqual({ kind: 'absent', reason: 'malformed-list', line: 17, detail: 'not an unordered-list item' });
+    expect(summary(insertAfter(18, '- **12 daemons** — 4 staffers + 8 domain butlers'))).toEqual({ kind: 'absent', reason: 'duplicate-key', line: 19, detail: '<decimal> daemons' });
+  });
+
+  it('the cardinal form must occur exactly once and the counts are decimals', () => {
+    expect(summary(withLine(17, '- **11 daemons** — three staffers + eight domain butlers'))).toMatchObject({ kind: 'absent', reason: 'malformed-list', detail: 'no cardinal form' });
+    expect(summary(withLine(17, '- **11 daemons** — 3 staffers + 8 domain butlers, or 2 staffers + 9 domain butlers'))).toMatchObject({ kind: 'absent', reason: 'malformed-list', detail: 'cardinal form repeated' });
+    expect(summary(withLine(17, '- **11 daemons** — 3 staffers, 8 domain butlers'))).toMatchObject({ kind: 'absent', reason: 'malformed-list', detail: 'no cardinal form' });
+    expect(summary(withLine(17, '- **11 daemons** — 3 staffers + 8 butlers'))).toMatchObject({ kind: 'absent', reason: 'malformed-list', detail: 'no cardinal form' });
+  });
+
+  it('a fenced copy of the summary is inert', () => {
+    const fenced = ['# Butlers', '', '```md', ...SUMMARY, '```', ''].join('\n');
+    expect(summary(fenced)).toMatchObject({ kind: 'absent', reason: 'missing-heading' });
+  });
+
+  it('no other root prose mints a fact: prose counts outside the item are ignored', () => {
+    const prose = insertAfter(16, 'There are 9 domain butlers in total.');
+    expect(summary(prose)).toMatchObject({ kind: 'emitted', declarations: [{ value: '3' }, { value: '8' }] });
+  });
+});
+
+describe('PWB-REQ-004 — the precedence table is admitted only as the exact seven registry rows', () => {
+  const precedence = (text: string): RootIndexExtraction['precedence'] => extractRootIndex(text).precedence;
+
+  it('the Butlers-shaped table yields seven rules with the registry literals, code spans unwrapped, anchored per row', () => {
+    const p = precedence(ROOT);
+    expect(p.kind).toBe('admitted');
+    if (p.kind !== 'admitted') return;
+    expect(p.line).toBe(5);
+    expect(p.rules.map((r) => [r.ordinal, r.layer, r.owns, r.home])).toEqual(EXPECTED_ROWS);
+    expect(p.rules.map((r) => r.line)).toEqual([7, 8, 9, 10, 11, 12, 13]);
+  });
+
+  it('row order in the source does not matter; ordinals do', () => {
+    const shuffled = [...ROOT_LINES];
+    [shuffled[6], shuffled[12]] = [shuffled[12] as string, shuffled[6] as string];
+    const p = precedence(shuffled.join('\n'));
+    expect(p.kind).toBe('admitted');
+    if (p.kind === 'admitted') expect(p.rules.map((r) => [r.ordinal, r.line])).toEqual([[1, 13], [2, 8], [3, 9], [4, 10], [5, 11], [6, 12], [7, 7]]);
+  });
+
+  it('the heading must be the exact H3, exactly once, holding exactly one table', () => {
+    expect(precedence(withLine(3, '### Precedence order when layers disagree'))).toEqual({ kind: 'absent', reason: 'missing-heading', detail: 'Precedence Order When Layers Disagree' });
+    expect(precedence(withLine(3, '## Precedence Order When Layers Disagree'))).toMatchObject({ kind: 'absent', reason: 'missing-heading' });
+    expect(precedence(insertAfter(13, '', '### Precedence Order When Layers Disagree'))).toEqual({ kind: 'absent', reason: 'duplicate-key', line: 15, detail: 'Precedence Order When Layers Disagree' });
+    expect(precedence(insertAfter(13, '', '| # | Layer | Owns | Home |', '|---|---|---|---|', TABLE_ROWS[0] as string))).toEqual({ kind: 'absent', reason: 'malformed-row', line: 3, detail: 'more than one table' });
+    expect(precedence(['# Butlers', '', '### Precedence Order When Layers Disagree', '', 'No table here.', ''].join('\n'))).toEqual({ kind: 'absent', reason: 'malformed-row', line: 3, detail: 'no table' });
+  });
+
+  it('the columns must be exactly #, Layer, Owns, Home', () => {
+    expect(precedence(withLine(5, '| # | Layer | Owns | Path |'))).toEqual({ kind: 'absent', reason: 'malformed-row', line: 5, detail: 'columns' });
+    expect(precedence(withLine(5, '| # | Layer | Owns | Home | Notes |'))).toMatchObject({ kind: 'absent', reason: 'malformed-row' });
+    expect(precedence(withLine(5, '| Layer | # | Owns | Home |'))).toMatchObject({ kind: 'absent', reason: 'malformed-row', detail: 'columns' });
+  });
+
+  it('exactly seven rows with ordinals 1–7 once each', () => {
+    expect(precedence(withoutLine(13))).toEqual({ kind: 'absent', reason: 'malformed-row', line: 5, detail: 'row count' });
+    expect(precedence(insertAfter(13, '| 8 | **Extra** | Anything | `x/` |'))).toMatchObject({ kind: 'absent', reason: 'malformed-row', detail: 'row count' });
+    expect(precedence(withLine(13, TABLE_ROWS[0] as string))).toEqual({ kind: 'absent', reason: 'duplicate-key', line: 13, detail: '1' });
+    expect(precedence(withLine(13, (TABLE_ROWS[6] as string).replace('| 7 |', '| 8 |')))).toEqual({ kind: 'absent', reason: 'malformed-row', line: 13, detail: '#' });
+    expect(precedence(withLine(13, (TABLE_ROWS[6] as string).replace('| 7 |', '| 07 |')))).toMatchObject({ kind: 'absent', reason: 'malformed-row', detail: '#' });
+  });
+
+  it('every cell must equal its row literal after the registry cell syntax; nothing else is normalized', () => {
+    const row1 = TABLE_ROWS[0] as string;
+    expect(precedence(withLine(7, row1.replace('**Heart and Soul**', 'Heart and Soul')))).toEqual({ kind: 'absent', reason: 'malformed-row', line: 7, detail: 'Layer' });
+    expect(precedence(withLine(7, row1.replace('**Heart and Soul**', '**Heart** and **Soul**')))).toMatchObject({ kind: 'absent', reason: 'malformed-row', detail: 'Layer' });
+    expect(precedence(withLine(7, row1.replace('**Heart and Soul**', '**Heart And Soul**')))).toMatchObject({ kind: 'absent', reason: 'malformed-row', detail: 'Layer' });
+    expect(precedence(withLine(7, row1.replace('the 7 non-negotiable rules', 'the seven non-negotiable rules')))).toEqual({ kind: 'absent', reason: 'malformed-row', line: 7, detail: 'Owns' });
+    expect(precedence(withLine(7, row1.replace('`about/heart-and-soul/`', '`about/heart-and-soul`')))).toEqual({ kind: 'absent', reason: 'malformed-row', line: 7, detail: 'Home' });
+    expect(precedence(withLine(7, row1.replace('`about/heart-and-soul/`', 'about/heart-and-soul/')))).toMatchObject({ kind: 'admitted' });
+    expect(precedence(withLine(7, row1.replace('`about/heart-and-soul/`', '`about/heart-and-soul/')))).toEqual({ kind: 'absent', reason: 'malformed-row', line: 7, detail: 'Home' });
+    expect(precedence(withLine(7, row1.replace('Principles,', '  Principles,')))).toMatchObject({ kind: 'admitted' });
+    expect(precedence(withLine(7, row1.replace('Principles, scope', 'Principles,  scope')))).toMatchObject({ kind: 'absent', reason: 'malformed-row', detail: 'Owns' });
+    expect(precedence(withLine(11, (TABLE_ROWS[4] as string).replace('—', '-')))).toMatchObject({ kind: 'absent', reason: 'malformed-row', line: 11, detail: 'Owns' });
+    expect(precedence(withLine(12, (TABLE_ROWS[5] as string).replace('`roster/{butler}/`', '`roster/{name}/`')))).toMatchObject({ kind: 'absent', reason: 'malformed-row', line: 12, detail: 'Home' });
+  });
+
+  it('a mixed-family or unrecognized row invalidates the whole table: no partial rule set', () => {
+    const p = precedence(withLine(9, '| 3 | **Spec and Spine** | Feature behaviour and the roster | `openspec/specs/` |'));
+    expect(p).toEqual({ kind: 'absent', reason: 'malformed-row', line: 9, detail: 'Owns' });
+    expect('rules' in p).toBe(false);
+  });
+
+  it('a fenced copy of the table is inert', () => {
+    const fenced = ['# Butlers', '', '```md', ...TABLE, '```', ''].join('\n');
+    expect(precedence(fenced)).toMatchObject({ kind: 'absent', reason: 'missing-heading' });
+  });
+
+  it('semanticCellText trims ASCII whitespace and unwraps only complete inline code spans', () => {
+    expect(semanticCellText('  `a/`, `b/` ')).toBe('a/, b/');
+    expect(semanticCellText('`unclosed')).toBe('`unclosed');
+    expect(semanticCellText('Keep  Case')).toBe('Keep  Case');
+    expect(semanticCellText(' x')).toBe(' x');
+  });
+});
+
+describe('PWB-REQ-006 (amended) — the root index charges one fact-and-precedence pass', () => {
+  const root = { path: 'about/README.md', rule: 'root-index' as const, extractionClasses: [] as const };
+
+  it('the root grammar runs only for the root-index rule and is charged once after the class passes', () => {
+    const charged: ParsePassIdentity[] = [];
+    const r = extractSource(root, ROOT, (pass) => {
+      charged.push(pass);
+    });
+    expect(charged).toEqual(['fact-and-precedence-extraction']);
+    expect(r.kind).toBe('extracted');
+    if (r.kind === 'extracted') {
+      expect(r.rootIndex?.summary.kind).toBe('emitted');
+      expect(r.rootIndex?.precedence.kind).toBe('admitted');
+      expect(r.items).toEqual([]);
+    }
+    const notRoot = extractSource({ ...root, rule: 'pillar-index' }, ROOT, (pass) => {
+      charged.push(pass);
+    });
+    expect(charged).toEqual(['fact-and-precedence-extraction']);
+    expect(notRoot.kind === 'extracted' && 'rootIndex' in notRoot).toBe(false);
+  });
+
+  it('a spent budget yields over-limit naming the root pass with no class and no grammar result', () => {
+    const breach = { limit: 'maxParsePassesPerSource' as const, declared: 13, observed: 14, path: root.path };
+    const r = extractSource(root, ROOT, (pass) => {
+      throw new ParsePassBudgetExceeded(breach, pass);
+    });
+    expect(r).toEqual({ kind: 'over-limit', path: root.path, classes: [], pass: 'fact-and-precedence-extraction', breach });
+    expect('rootIndex' in r).toBe(false);
   });
 });

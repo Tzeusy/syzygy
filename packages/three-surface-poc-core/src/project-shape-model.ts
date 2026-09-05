@@ -49,11 +49,11 @@ import { indexGitTree, parseGitLsTree } from './git-tree.js';
 import {
   buildProjectShapeCoverage,
   type ClassCoverage,
-  type Declaration,
   type DeclarationAnchor,
   type ItemCoverage,
-  type PrecedenceRule,
+  type PrecedenceDisclosure,
   type ReconciledFact,
+  type RootSummaryDisclosure,
   type SourceCoverage,
 } from './project-shape-coverage.js';
 import { PROJECT_ACCOUNT_KEYS, extractBaselineSpec, extractSource, type ProjectAccountKey, type SourceExtraction } from './project-shape-extraction.js';
@@ -300,6 +300,11 @@ export type ProjectShape =
       readonly classes: Readonly<Record<ExtractionClass, ProjectShapeClassAggregate>>;
       readonly facts: readonly ProjectShapeFact[];
       readonly contradictions: readonly ProjectShapeFact[];
+      // The root index's own declarations, disclosed whether or not any
+      // conflict needed them: the seven layer rules and the two stated
+      // summary counts, or why each is absent.
+      readonly precedence: PrecedenceDisclosure;
+      readonly rootSummary: RootSummaryDisclosure;
       readonly exclusions: readonly Exclusion[];
       // Every breach of the one evaluation-wide envelope, both phases, in
       // order; `resourceUse` is the ledger's closing count.
@@ -320,10 +325,8 @@ export interface ProjectShapeBuildInput {
   readonly policy?: SecretClassificationPolicy;
   // The registry envelope by default; tests narrow it to reach a breach.
   readonly resourceLimits?: PwbResourceLimits;
-  // Precedence rules and stated summaries are supplied only when Butlers
-  // declares them; production passes none until a live run shows some.
-  readonly rules?: readonly PrecedenceRule[];
-  readonly statedDeclarations?: readonly Declaration[];
+  // Precedence rules and stated summary counts come only from the admitted
+  // root index (PWB-REQ-004 as amended); nothing is injected here.
 }
 
 const NOT_EVALUATED_ID = 'evaluation:not-evaluated' as const;
@@ -554,8 +557,6 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
         policy,
         discoveryUncertainties: uncoveredDiscovery
           .map((pillar) => ({ classes: classesForPillar[pillar.key], unknown: discoveryUnknown })),
-        ...(input.rules === undefined ? {} : { rules: input.rules }),
-        ...(input.statedDeclarations === undefined ? {} : { statedDeclarations: input.statedDeclarations }),
       });
 
       const evaluationId = authority.evaluationId;
@@ -629,6 +630,8 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
         classes,
         facts,
         contradictions,
+        precedence: coverage.precedence,
+        rootSummary: coverage.rootSummary,
         exclusions: finalExclusions,
         limitBreaches: [...ledger.breaches],
         resourceUse: ledger.summary(),

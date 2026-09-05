@@ -3,12 +3,15 @@ import {
   EXTRACTION_CLASSES,
   UNKNOWN_REASON_ROUTES,
   type AuthorityDisclosure,
+  type Declaration,
   type Exclusion,
   type ExtractionClass,
   type PocEntity,
   type PocModel,
   type PocProvenance,
   type PocRelationship,
+  type PrecedenceCitation,
+  type PrecedenceDisclosure,
   type ProjectAccountKey,
   type ProjectAccountStatement,
   type ProjectShape,
@@ -20,6 +23,7 @@ import {
   type ProjectShapeSupport,
   type ProposedWork,
   type ReasonCounts,
+  type RootSummaryDisclosure,
 } from '@syzygy/three-surface-poc-core';
 
 import {
@@ -565,6 +569,74 @@ function factItem(fact: ProjectShapeFact): string {
   return `<li id="polaris-fact-${escapeHtml(sourceSlug(fact.claim.claimId))}" data-polaris-fact="${escapeHtml(fact.claim.claimId)}"${DISCLOSURE}>${unknownRoutes(fact.claim, `${escapeHtml(fact.fact.fact)}: `)}<small>${copy('label.declarations-kept')} ${declarations}.</small><br>${claimTuple(fact.claim)}</li>`;
 }
 
+// ---------------------------------------------------------------------------
+// The root index's own declarations (PWB-REQ-004 as amended; registry
+// `observationGrammar`). Disclosed whether or not any fact needed them: the
+// seven layer rows as admitted (or why the table is absent), the two stated
+// summary counts (or why they are absent), and every disagreement one row
+// decided, with the effective and superseded declarations both kept. A
+// decided fact is already counted on its family's class or account
+// statement, so it carries no claim tuple of its own here.
+
+function declarationText(declaration: Declaration): string {
+  const anchors = declaration.anchors.map((anchor) => sourceRef(anchor.path, anchor.line === undefined ? anchor.path : `${anchor.path}:${anchor.line}`)).join(', ');
+  return `${escapeHtml(declaration.value)} (${escapeHtml(declaration.basis)}, ${anchors})`;
+}
+
+function anchorRef(anchor: { readonly path: string; readonly line?: number }): string {
+  return sourceRef(anchor.path, anchor.line === undefined ? anchor.path : `${anchor.path}:${anchor.line}`);
+}
+
+function absenceText(disclosure: Extract<PrecedenceDisclosure | RootSummaryDisclosure, { kind: 'absent' | 'unknown' }>): string {
+  if (disclosure.kind === 'unknown') return escapeHtml(disclosure.reason);
+  const where = anchorRef(disclosure.line === undefined ? disclosure.anchor : { path: disclosure.anchor.path, line: disclosure.line });
+  return `${escapeHtml(disclosure.reason)}${disclosure.detail === undefined ? '' : ` (${escapeHtml(disclosure.detail)})`} at ${where}`;
+}
+
+function precedenceBlock(precedence: PrecedenceDisclosure): string {
+  if (precedence.kind !== 'admitted') {
+    return `<p data-polaris-precedence="0"${DISCLOSURE}><span${copyAttr('sentence.no-precedence')}>${copy('sentence.no-precedence')}</span> ${absenceText(precedence)}.</p>`;
+  }
+  const rows = precedence.rules
+    .map((rule) => `<tr data-polaris-precedence="${escapeHtml(rule.id)}"${FACT}><td>${rule.ordinal}</td><td>${escapeHtml(rule.layer)}</td><td>${escapeHtml(rule.owns)}</td><td><code>${escapeHtml(rule.home)}</code></td><td>${anchorRef(rule.anchor)}</td></tr>`)
+    .join('');
+  return `<p data-polaris-precedence="${precedence.rules.length}"${FACT}><small><span${copyAttr('label.precedence-rows')}>${copy('label.precedence-rows')}</span> ${precedence.rules.length} from ${anchorRef(precedence.anchor)}.</small></p>
+    ${tableRegion('polaris-shape-root-index', `<table>
+      <thead><tr>${(['table.index', 'table.layer', 'table.owns', 'table.home', 'table.declared-at'] as const).map((id) => `<th scope="col"${copyAttr(id)}>${copy(id)}</th>`).join('')}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`)}`;
+}
+
+function rootSummaryBlock(summary: RootSummaryDisclosure): string {
+  if (summary.kind !== 'emitted') {
+    return `<p data-polaris-stated-counts="0"${DISCLOSURE}><span${copyAttr('sentence.no-stated-counts')}>${copy('sentence.no-stated-counts')}</span> ${absenceText(summary)}.</p>`;
+  }
+  const counts = summary.declarations.map((declaration) => `<span data-polaris-stated-count="${escapeHtml(declaration.fact)}">${escapeHtml(declaration.fact)} = ${declarationText(declaration)}</span>`).join('; ');
+  return `<p data-polaris-stated-counts="${summary.declarations.length}"${FACT}><small><span${copyAttr('label.stated-counts')}>${copy('label.stated-counts')}</span> ${counts}.</small></p>`;
+}
+
+function citationText(citation: PrecedenceCitation): string {
+  return `${escapeHtml(citation.ruleId)} (${escapeHtml(citation.layer)}, ${anchorRef(citation.anchor)})`;
+}
+
+function decidedItem(fact: ProjectShapeFact): string {
+  if (fact.fact.state !== 'modeled' || fact.fact.disagreement === undefined) return '';
+  const disagreement = fact.fact.disagreement;
+  return `<li data-polaris-decided="${escapeHtml(fact.claim.claimId)}"${FACT}>${escapeHtml(fact.fact.fact)}: <span${copyAttr('label.effective')}>${copy('label.effective')}</span> ${declarationText(disagreement.effective)} by ${citationText(disagreement.precedence)}; <span${copyAttr('label.superseded')}>${copy('label.superseded')}</span> ${disagreement.superseded.map(declarationText).join('; ')}.</li>`;
+}
+
+function rootIndexSection(shape: Extract<ProjectShape, { kind: 'observed' }>): string {
+  const decided = shape.facts.filter((fact) => fact.fact.state === 'modeled' && fact.fact.disagreement !== undefined);
+  return `<section class="claim-section wide" data-polaris-section="shape:root-index">
+    ${heading(3, 'polaris-shape-root-index', 'evidence.root-index')}
+    ${precedenceBlock(shape.precedence)}
+    ${rootSummaryBlock(shape.rootSummary)}
+    ${decided.length === 0
+      ? `<p data-polaris-decided-count="0"${copyAttr('sentence.no-decided')}>${copy('sentence.no-decided')}</p>`
+      : `<p${FACT}><small${copyAttr('label.decided')}>${copy('label.decided')}</small></p><ul data-polaris-decided-count="${decided.length}">${decided.map(decidedItem).join('')}</ul>`}
+  </section>`;
+}
+
 /** The Unknown reasons across every shape claim, counted and routed, with
  * `missing-declaration` foremost (RFC7-15) and `unconsented` next. */
 function gapReasonCounts(claims: readonly ProjectShapeClaim[]): ReadonlyMap<string, number> {
@@ -666,6 +738,7 @@ function shapeEvidence(shape: ProjectShape): string {
     ${shape.exclusions.length === 0 ? `<p data-polaris-exclusions="0"${copyAttr('sentence.no-exclusions')}>${copy('sentence.no-exclusions')}</p>` : `<ul data-polaris-exclusions="${shape.exclusions.length}">${shape.exclusions.map(exclusionItem).join('')}</ul>`}
     ${shape.limitBreaches.length === 0 ? '' : `<p${FACT}><small>${copy('label.limit-breaches')} ${shape.limitBreaches.map((breach) => `${escapeHtml(breach.limit)} ${breach.observed} &gt; ${breach.declared}${breach.path === undefined ? '' : ` (${escapeHtml(breach.path)})`}`).join('; ')}.</small></p>`}
   </section>
+  ${rootIndexSection(shape)}
   <section class="claim-section" data-polaris-section="shape:contradictions">
     ${heading(3, 'polaris-shape-contradictions', 'evidence.contradictions')}
     ${shape.contradictions.length === 0 ? `<p data-polaris-contradictions="0"${copyAttr('sentence.no-contradictions')}>${copy('sentence.no-contradictions')}</p>` : `<ul data-polaris-contradictions="${shape.contradictions.length}">${shape.contradictions.map(factItem).join('')}</ul>`}
@@ -957,7 +1030,7 @@ function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): st
     ['depth.source', [
       link('polaris-group-evidence-and-gaps', 'group.evidence-and-gaps'),
       link('polaris-shape-sources', 'evidence.sources'),
-      ...(observed ? [link('polaris-shape-exclusions', 'evidence.exclusions'), link('polaris-shape-contradictions', 'evidence.contradictions')] : []),
+      ...(observed ? [link('polaris-shape-exclusions', 'evidence.exclusions'), link('polaris-shape-root-index', 'evidence.root-index'), link('polaris-shape-contradictions', 'evidence.contradictions')] : []),
       link('polaris-shape-gaps', 'evidence.gaps'),
     ]],
   ];

@@ -17,7 +17,7 @@ import type { PocModel, ProjectShape } from '@syzygy/three-surface-poc-core';
 
 import { renderPolarisPage } from './polaris.js';
 import { buildFixtureModel } from './test-model-fixture.js';
-import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET, REJECTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
+import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET, REJECTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 
 const cleanups: string[] = [];
 afterEach(() => {
@@ -34,7 +34,7 @@ const GROUP_IDS = ['overview', 'boundaries', 'architecture', 'v1', 'catalog', 'c
 const CATALOG_CLASS_IDS = ['catalog-entry', 'roster-identity', 'design-contract', 'baseline-spec', 'craft-policy'] as const;
 const ITEM_CLASS_IDS = [...CATALOG_CLASS_IDS, 'principle', 'topology-component', 'success-criterion'] as const;
 const ACCOUNT_KEYS = ['purpose', 'promises', 'refusals', 'architecture', 'v1-scope', 'v1-success'] as const;
-const EVIDENCE_IDS = ['sources', 'exclusions', 'contradictions', 'gaps'] as const;
+const EVIDENCE_IDS = ['sources', 'exclusions', 'root-index', 'contradictions', 'gaps'] as const;
 /** A class the stylesheet colours, and the text every element carrying it
  * must contain so the state survives without colour. */
 const COLOURED: readonly (readonly [string, RegExp])[] = [
@@ -43,9 +43,10 @@ const COLOURED: readonly (readonly [string, RegExp])[] = [
   ['band', /Why this capability|Current intent, verbatim|What is observed/],
   ['claim-tuple', /Observed|Unknown|Inferred/],
 ];
-/** A stated declaration that disagrees with the derived principle count, so
- * the observed page carries one contradiction with an exact-source anchor. */
-const STATED_PRINCIPLE_COUNT = { fact: 'count:principle', value: '7', basis: 'stated-summary', anchors: [{ path: 'about/heart-and-soul/vision.md', line: 3 }] } as const;
+// The observed variant reads the root without its precedence table, so the
+// root summary's one staffer against V1's zero has no row to decide it: the
+// page carries exactly one contradiction with exact-source anchors on both
+// sides (PWB-REQ-004 as amended).
 
 type Variant = 'unevaluated' | 'rejected' | 'observed' | 'secret';
 
@@ -56,7 +57,7 @@ function modelFor(variant: Variant): PocModel {
     case 'rejected':
       return buildFixtureModel(cleanups, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
     case 'observed':
-      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(), statedDeclarations: [STATED_PRINCIPLE_COUNT] } });
+      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE) } });
     case 'secret':
       return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET) } });
   }

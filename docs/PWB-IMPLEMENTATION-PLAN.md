@@ -250,6 +250,37 @@ conflict is the first fixture either way. 27 rule-6 mutations killed
 (`docs/evidence/pwb-p2-6-coverage-mutation-run-2026-09-04.json`). Still no
 Butlers read.
 
+C4 note, recorded 2026-09-05 (bead syzygy-1z3.24.4; effective acts: the
+truth-and-readiness amendment's PWB-REQ-004 and the registry-entry
+amendment's `observationGrammar`): stated counts and precedence rules are
+no longer injected from outside the grammar. The root index is charged one
+`fact-and-precedence-extraction` pass and read for exactly two closed
+grammars — the `Key Architectural Facts` H2's one `<decimal> daemons` item
+whose cardinal form `<n> staffers ... + <n> domain butlers` mints
+`catalog-count:Staffers` and `catalog-count:Butlers` as `stated-summary`
+declarations, and the `Precedence Order When Layers Disagree` H3's one
+table, admitted only when all seven registry rows match after the registry
+cell syntax (trim, unwrap complete code spans, one bold Layer span). Fact
+families are the registry's four (`item`, `count`, `catalog-count`,
+`project-account`), each family row-mapped; a row decides only when its
+anchor is in the population, it owns the fact's family, its home is not
+inert (row 7), the home is applied (row 6 expands only to declared roster
+keys), and exactly one declaration lies under the home — otherwise it
+decides nothing and RFC2-24's Unknown stands with every declaration kept.
+`ProjectShape` now discloses `precedence` and `rootSummary` (admitted /
+emitted, absent with the grammar reason and line, or unknown) and Polaris
+renders them with every decided disagreement's effective and superseded
+sides in a `shape:root-index` section. The eight-versus-nine fixture is
+the model and coverage test (`with the table: nine is effective by row 1,
+eight is superseded ...`). 23 rule-6 mutations killed
+(`docs/evidence/pwb-c4-fact-precedence-grammar-mutation-run-2026-09-05.json`).
+First live observation at Butlers d684c5776: the table is admitted (seven
+rows, root lines 44–50) and the summary emits 3 and 8 (root line 105), but
+`v1.md` is still whole-source Unknown (`ambiguous-leading-label`, line 95),
+so both catalog counts are Unknown with `excluded-content`, the stated
+values retained and anchored, no rule applied — the lawful outcome; no
+number is shown over an Unknown denominator.
+
 P2.7 note, recorded 2026-09-04: `project-shape-model.ts` composes P1–P2.6
 into the one `ProjectShape` value that `model.ts` places on `PocModel`;
 `GET /api/poc` is still `JSON.stringify(model)`, so the machine answer is
@@ -533,10 +564,10 @@ source row when the page carries that source. Wide tables render inside a
 `role="region" tabindex="0" aria-labelledby=<heading id>` container so a
 keyboard-only reader can scroll them. The page's link targets are module
 state (`activeTargets`) computed once per render from the shape population
-and cleared with the registry. `ProjectShapeModelInput` now forwards optional
-`rules`/`statedDeclarations` to the coverage step (the daemon passes none);
-the test injects one stated summary that disagrees with the derived principle
-count to reach the contradiction path. `polaris-reachability.test.ts` is the
+and cleared with the registry. (Superseded 2026-09-05 by the C4 note: the
+`rules`/`statedDeclarations` injection seam is removed; the reachability
+test reaches the contradiction path through a fixture root whose stated
+staffer count has no admitted table to decide it.) `polaris-reachability.test.ts` is the
 oracle with its own tag scanner and CSS sweep: no dangling internal link and
 no duplicate id in four shape states; the four depths in document order over
 the exact target population; the PWB-REQ-011 category sweep from depth list to

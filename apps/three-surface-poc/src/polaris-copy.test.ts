@@ -9,6 +9,8 @@ import { buildFixtureModel } from './test-model-fixture.js';
 import { walkthroughJudgmentFixture } from './test-walkthrough-judgment-fixture.js';
 import {
   ADMITTING_AUTHORITY,
+  PROJECT_SHAPE_FIXTURE_TEXTS,
+  PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE,
   PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET,
   REJECTING_AUTHORITY,
   projectShapeFixtureGit,
@@ -148,8 +150,14 @@ function sweep(html: string): { strings: CopyString[]; violations: Violation[] }
 
 // ---------------------------------------------------------------------------
 
-type Variant = 'unevaluated' | 'rejected' | 'observed' | 'observed-with-secret' | 'observation-failed' | 'judgment-absent' | 'judgment-unlawful' | 'judgment-lawful';
-const VARIANTS: readonly Variant[] = ['unevaluated', 'rejected', 'observed', 'observed-with-secret', 'observation-failed', 'judgment-absent', 'judgment-unlawful', 'judgment-lawful'];
+type Variant = 'unevaluated' | 'rejected' | 'observed' | 'observed-without-precedence' | 'observed-bare-root' | 'observed-with-secret' | 'observation-failed' | 'judgment-absent' | 'judgment-unlawful' | 'judgment-lawful';
+const VARIANTS: readonly Variant[] = ['unevaluated', 'rejected', 'observed', 'observed-without-precedence', 'observed-bare-root', 'observed-with-secret', 'observation-failed', 'judgment-absent', 'judgment-unlawful', 'judgment-lawful'];
+// A root index with neither grammar: links only, as the fixture root read
+// before the 2026-09-05 amendment.
+const BARE_ROOT_TEXTS: Readonly<Record<string, string>> = {
+  ...PROJECT_SHAPE_FIXTURE_TEXTS,
+  'about/README.md': (PROJECT_SHAPE_FIXTURE_TEXTS['about/README.md'] as string).split('\n### Precedence Order')[0] as string,
+};
 
 function modelFor(variant: Variant): PocModel {
   switch (variant) {
@@ -159,6 +167,10 @@ function modelFor(variant: Variant): PocModel {
       return buildFixtureModel(cleanups, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
     case 'observed':
       return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
+    case 'observed-without-precedence':
+      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE) } });
+    case 'observed-bare-root':
+      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(BARE_ROOT_TEXTS) } });
     case 'observed-with-secret':
       return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET) } });
     case 'observation-failed': {
@@ -179,7 +191,7 @@ function modelFor(variant: Variant): PocModel {
 }
 
 describe('Polaris copy roles (PWB-REQ-012)', () => {
-  it('renders the five shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control', () => {
+  it('renders the seven shape states and three judgment states with every string classified once, within the word bounds, free of the prohibited vocabulary, with one POC-bound scope instruction and at most one action label per control', () => {
     const shapeKinds = new Set<string>();
     for (const variant of VARIANTS) {
       const model = modelFor(variant);
@@ -259,7 +271,6 @@ describe('Polaris copy roles (PWB-REQ-012)', () => {
     // Rows the five fixtures cannot reach, restated by hand so a newly
     // reachable row must be removed from here rather than silently pass.
     const UNREACHED_IN_FIXTURES = new Set<string>([
-      'label.declarations-kept',
       'label.deferred',
       'label.limit-breaches',
       'label.no-route',
