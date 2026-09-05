@@ -1187,15 +1187,44 @@ CLAIM_NEGATOR = re.compile(r"\b(no|not|never|nothing|none|until|neither|"
 CLAIM_LOOKBEHIND = 80
 
 
-def _accepted_claim(head):
-    """(claim, context) for an unnegated acceptance claim, or None."""
+#: Sentence boundaries, for attributing an acceptance claim. The exemption
+#: below is deliberately sentence-scoped rather than banner-scoped: a
+#: banner-wide exemption would let one truthful attributed claim license
+#: every other claim on the page, which is the RD-17 hole reopened one level
+#: up. A claim earns its exemption only in the sentence that names what it
+#: is about.
+#: The trailing character class matters: markdown routinely closes a
+#: sentence as `in force.**`, and a splitter demanding whitespace directly
+#: after the stop merges that sentence into the next — handing an
+#: unattributed claim the following sentence's attribution.
+SENTENCE_SPLIT = re.compile(r"""(?<=[.!?])[*_`)\]"']*\s+""")
+
+
+def _accepted_claim(head, exempting=()):
+    """(claim, context) for an unnegated, unattributed acceptance claim.
+
+    `exempting` holds names — a file's basename, or its directory's — whose
+    bytes an owner act has actually bound. A claim of acceptance in the same
+    sentence as one of those names is a true statement about act-bound
+    material and is passed over; the same claim standing alone is the
+    prohibited label.
+    """
     flat = " ".join(head.split())
     low = flat.lower()
+    spans = []
+    at = 0
+    for part in SENTENCE_SPLIT.split(flat):
+        start = flat.find(part, at)
+        spans.append((start, start + len(part), part))
+        at = start + len(part)
     for claim in ACCEPTED_CLAIMS:
         at = low.find(claim)
         while at >= 0:
             if not CLAIM_NEGATOR.search(low[max(0, at - CLAIM_LOOKBEHIND):at]):
-                return claim, flat[max(0, at - 40):at + len(claim) + 20]
+                sentence = next((txt for lo, hi, txt in spans
+                                 if lo <= at < hi), flat)
+                if not any(tok in sentence for tok in exempting):
+                    return claim, flat[max(0, at - 40):at + len(claim) + 20]
             at = low.find(claim, at + 1)
     return None
 
@@ -1258,6 +1287,34 @@ def cg4_candidate_banners(paths, res):
 cg4_candidate_banners_positive = cg4_candidate_banners
 
 
+def _act_bound_names(paths):
+    """Names a truthful acceptance claim inside the candidate tree may cite.
+
+    Every file under the candidate tree whose current sha256 is quoted in the
+    performed-act record is act-bound; its basename, and its directory's
+    basename, are the tokens a banner can use to say so. Computed each run
+    from the bytes and the record, so it cannot drift out of date: if an act
+    moves those bytes, the token disappears and the claim fails again.
+    """
+    record = os.path.join(ROOT, PERFORMED_ACT_RECORD)
+    if not os.path.exists(record):
+        return set()
+    quoted = set(re.findall(r"\b[0-9a-f]{64}\b", read(PERFORMED_ACT_RECORD)))
+    names = set()
+    for rel in paths:
+        if not rel.startswith(f"{CANDIDATES}/"):
+            continue
+        full = os.path.join(ROOT, rel)
+        if not os.path.isfile(full):
+            continue
+        if sha256_file(full) in quoted:
+            names.add(os.path.basename(rel))
+            parent = os.path.basename(os.path.dirname(rel))
+            if parent and parent != os.path.basename(CANDIDATES):
+                names.add(parent)
+    return names
+
+
 def cg4b_no_accepted_claim(paths, res, corpus=None):
     """No file in a candidate home claims the acceptance has happened.
 
@@ -1273,6 +1330,20 @@ def cg4b_no_accepted_claim(paths, res, corpus=None):
     owner acceptance act has been performed over any of it"*. A predicate
     that could not read those would report the three correct banners in the
     repository as defects and be switched off within a day.
+
+    **The "no acts at all" premise expired on 2026-08-17.** Craft acts 6 and
+    7 bound `policy-candidates/`'s specification-acceptance and
+    shape-to-spec-impact policies *at their committed home*, inside this
+    tree, so CC-SPEC-1…11 and CC-IMPACT-1…7 are in force here and must be
+    citable as authority. Until 2026-09-05 this check therefore forbade the
+    front door from saying so, and the front door duly did not. The
+    exemption is computed, never listed: a banner may carry an acceptance
+    claim when it names a file, or the directory of a file, whose *current*
+    sha256 is quoted in the performed-act record. An act that moves those
+    bytes withdraws the exemption on the next run rather than aging into a
+    stale allowlist, and a banner that claims acceptance while naming
+    nothing act-bound — RD-17's mutation M8b, *"Accepted contract package —
+    IN FORCE"* — still fails.
     """
     if corpus is None:
         corpus = [(p, read(p)) for p in paths
@@ -1281,17 +1352,20 @@ def cg4b_no_accepted_claim(paths, res, corpus=None):
                        or p.startswith(f"{TOPOLOGY_CANDIDATES}/"))
                   and not _verbatim_source(p)
                   and "/round-2026-08" not in p]
+    exempting = _act_bound_names(paths)
     findings = []
     for rel, body in corpus:
         head = "\n".join(body.splitlines()[:BANNER_LINES])
-        hit = _accepted_claim(head)
+        hit = _accepted_claim(head, exempting)
         if hit:
             findings.append(
-                f"{rel} — banner claims `{hit[0]}` with no negation: "
-                f"“{hit[1]}”. No owner act has been performed over "
-                f"anything in this tree (VIS-4); a banner that says otherwise "
-                f"is the labelled-accepted prohibition, at the file a reader "
-                f"meets first")
+                f"{rel} — banner claims `{hit[0]}` with no negation and "
+                f"nothing act-bound named in the same sentence: “{hit[1]}”. "
+                f"Only the owner accepts (VIS-4), and the only act-bound "
+                f"material in this tree is "
+                f"{', '.join(sorted(exempting)) or '(none)'}; a banner "
+                f"claiming more is the labelled-accepted prohibition, at the "
+                f"file a reader meets first")
     res.add("FAIL" if findings else ("OK" if corpus else "WARN"),
             "CG-4b  candidate homes claim no acceptance", len(corpus),
             len(findings), "file",
@@ -4542,6 +4616,42 @@ def selftest():
     cg4b_no_accepted_claim([], c, corpus=[])
     cases.append(("CG-4b empty candidate tree warns, never passes",
                   c.rows[0][0] == "WARN"))
+
+    # Craft acts 6 and 7 bound two policies at their committed home inside
+    # the candidate tree, so a banner naming that home may say they are in
+    # force — and a banner claiming it while naming nothing act-bound may
+    # not. The exempting names are computed from the bytes and the act
+    # record, so this pair also fails if those acts are ever superseded.
+    bound = f"{CANDIDATES}/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md"
+    claim = ("> Two files under `%s` are **in force** by craft acts 6 and "
+             "7.\n")
+    c = Cap()
+    cg4b_no_accepted_claim([bound], c, corpus=[
+        ("README.md", "# Candidate contract package\n\n"
+                      + claim % "policy-candidates/")])
+    cases.append(("CG-4b acceptance claim naming an act-bound home exempted",
+                  c.rows[0][0] == "OK"))
+
+    c = Cap()
+    cg4b_no_accepted_claim([bound], c, corpus=[
+        ("README.md", "# Candidate contract package\n\n"
+                      + claim % "history/")])
+    cases.append(("CG-4b acceptance claim naming an unbound home detected",
+                  c.rows[0][0] == "FAIL"))
+
+    # A bold-closed sentence must not lend its attribution to the sentence
+    # before it. Caught in review of the exemption itself: `in force.**`
+    # defeated a naive sentence splitter, so an unattributed claim inherited
+    # the next sentence's `policy-candidates/` and passed.
+    c = Cap()
+    cg4b_no_accepted_claim([bound], c, corpus=[
+        ("README.md", "# Candidate contract package\n\n"
+                      "> **Accepted contract package — everything here is "
+                      "in force.**\n"
+                      "> Craft acts 6 and 7 put two policies **in force** "
+                      "under `policy-candidates/`.\n")])
+    cases.append(("CG-4b bold-closed sentence lends no attribution",
+                  c.rows[0][0] == "FAIL"))
 
     # ---- CG-7a/7b: the CG-7 family's act-argument predicates, which had no
     # fixture of their own — CG-7 counted as covered on CG-7e's strength
