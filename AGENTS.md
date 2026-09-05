@@ -907,8 +907,8 @@ can be authorized.
   `pwb-<act-type>-signed-<date>`). The 2026-09-02 dedicated records are
   never appended to or edited: the implementation's `governance-inputs.ts`
   parses them as one act each, and re-pointing it at the successor records
-  is the syzygy-8i7 continuation's work, not the recorder's. Decision 2 was
-  performed 2026-09-05.
+  is the syzygy-8i7 continuation's work, not the recorder's. Decisions 2
+  and 3 were both performed 2026-09-05.
 - `_activate_pwb_effect_amendment_act_copy_registries()` re-registers the
   four frozen `pwb-effect-acts/*` copies and the superseded dedicated record
   as `ACT_HISTORICAL_DIGEST_COPY_FILES` entries pinned at the 2026-09-02
@@ -921,11 +921,8 @@ can be authorized.
   as `[historical]`, and fails a later link recorded without its predecessor
   as a chain gap. A third amendment appends one tuple to the chain plus its
   `truth_*`-style injected fixture inputs; do not special-case it elsewhere.
-- Until Decision 3 is recorded, CG-7e's 6 findings on the registry-label
-  copies are the expected pre-act state on this branch: the candidate
-  registry digest in `PWB-EFFECT-AMENDMENT-MANIFEST.txt` is registered as the
-  current argument, so every 2026-09-02 registry copy reads stale. Nothing
-  else in the battery fails. `record_pwb_state1_amendment.py --check` also
+- With all three acts recorded the battery is fully green (CG-7e 0
+  findings: 27 files, five historical pins per amended label). `record_pwb_state1_amendment.py --check` also
   fails against current bytes by design — it is a superseded act's recorder.
 
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02

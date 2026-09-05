@@ -299,3 +299,30 @@ owner-adopted (bootstrap, uncorrelated)** for its own PWB-REQ-005 role only.
 The other effect authorities and the continuation of PWB implementation
 authorization remain separate; no body read, write, egress, execution,
 deployment, release, recovery or mission authority follows from this act.
+
+## PWB effect-act amendment — adopt-registry-entry — performed 2026-09-05
+
+**Phrase, exactly as written by the owner (in-interaction, 2026-09-05):**
+
+```text
+ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: 0765f4d534afad9003463790113fd433d250550091df783c1ff372d227643e4f
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `adopt-registry-entry` / `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` |
+| Argument | SHA-256 of the artifact itself, recomputed at recording and equal to the phrase and the effect-manifest row |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Supersession | the 2026-09-02 `adopt-registry-entry` act recorded at `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md`; that act, its digest and its tag remain immutable history |
+| Reviewed subject | `4daea0868a0e15ea2f9407efc18f143dbabbd64b` |
+| Owner-packet / final evidence heads | `875ef026f00b3b2a87b72f2977ab12380af5cc2a` / `62d3bb74b21e43b07a7b708f5c743e6ee27ac946` |
+| Review outcome | final contract/oracle, security/public-interface, comprehension and owner-packet reviews: `CONFIRM`, zero open findings |
+| Recording | `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md`; annotated tag `pwb-adopt-registry-entry-signed-2026-09-05` on the commit carrying these records |
+
+Effective status: this one amended artifact is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own PWB-REQ-005 role only.
+The other effect authorities and the continuation of PWB implementation
+authorization remain separate; no body read, write, egress, execution,
+deployment, release, recovery or mission authority follows from this act.
