@@ -66,7 +66,17 @@ implementation authorization** by direct direction the same day
 plane; the first Butlers body read is lawful only after the implementation
 evaluates the three acts under PWB-REQ-005, and only for the consented
 content class. Still no write, egress, execution, deployment, release,
-recovery, or mission authority.
+recovery, or mission authority. On **2026-09-05** the owner signed the
+three-act PWB truth-and-policy amendment (behavior package,
+secret-classification policy, observer registry entry; consent unchanged;
+`decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md`,
+`decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md`,
+`decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md`; the 2026-09-02
+records stay immutable history) and continued implementation authorization
+for that amendment by direct direction
+(`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md`): the
+amended semantics, policy and registry entry are the implementation target;
+every 2026-09-02 exclusion is retained.
 
 ## Where authority lives
 
@@ -121,7 +131,7 @@ Load the minimum for one correct decision; never "read everything."
 | A doctrine question | the one doctrine file, via the `heart-and-soul` skill |
 | An engineering-bar question | the one craft policy that owns it |
 | A contract question | **`contracts/candidates/TASK-ROUTER.md`** — the one generated router; context-budget measurement stays with `06-CONTEXT-LOAD-MAP.md` / `scripts/context_load.py` |
-| "May I implement X?" | Capability 1 remains authorized under `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`. The bounded Three-Surface POC and its one Butlers proving slice are additionally authorized by `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`; the surface-redesign item `syzygy-z2b` is authorized by the signed-off `three-surface-poc-experience` spec (`decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`). The `polaris-project-wide-butlers-model` change is signed, its three effect acts are performed, and its implementation is authorized by `decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` (plan: `docs/PWB-IMPLEMENTATION-PLAN.md`; tasks §2–§5, one Butlers repository, content class `declared-project-shape-text`, body read only after in-implementation PWB-REQ-005 evaluation). Anything outside these authorized scopes remains forbidden. |
+| "May I implement X?" | Capability 1 remains authorized under `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`. The bounded Three-Surface POC and its one Butlers proving slice are additionally authorized by `decisions/THREE-SURFACE-POC-MODE-DIRECTION.md`; the surface-redesign item `syzygy-z2b` is authorized by the signed-off `three-surface-poc-experience` spec (`decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`). The `polaris-project-wide-butlers-model` change is signed, its three effect acts are performed, and its implementation is authorized by `decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` and continued for the 2026-09-05 amendment by `decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` (plan: `docs/PWB-IMPLEMENTATION-PLAN.md`; tasks §2–§5 against the 2026-09-05 signed package, one Butlers repository, content class `declared-project-shape-text`, body read only after in-implementation PWB-REQ-005 evaluation of the current consent, policy and registry acts). Anything outside these authorized scopes remains forbidden. |
 | "How would a spec be authored?" | `contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md` — router only; Capability 1's spec is **authored and adopted**; every other capability's authoring stays forbidden |
 | The Capability 1 specification | the change `openspec/changes/project-registration-and-honest-shape-visibility/` — **ADOPTED by the owner (act dated 2026-08-20)**; the 2026-09-01 transaction superseded only `CONTRACT-COVERAGE.md`'s digest. The current seven-artifact set may not be edited outside CC-REV-2's amendment path; its warrants-union is generated (`build_capability_1_spec_dependencies.py`). See the original act plus `decisions/ACCEPTANCE-ACT-RECORD.md`. |
 | Current status | `PROJECT-STATUS.md` |
@@ -148,9 +158,10 @@ improvement cycles authorized on 2026-08-30
 (`decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md`)**; extend
 that POC beyond one configured Butlers repository; read Butlers body
 content outside the consented `declared-project-shape-text` class, or before
-the implementation has evaluated the three 2026-09-02 effect acts under
-PWB-REQ-005 (`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` bounds the
-PWB implementation); read any new repository body before
+the implementation has evaluated the current three effect acts (the
+2026-09-02 consent and the 2026-09-05 policy and registry amendments) under
+PWB-REQ-005 (`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` and its
+2026-09-05 continuation bound the PWB implementation); read any new repository body before
 per-repository consent and the applicable registry/policy acts; implement
 deferred Waves C1/C2/D1/D2 or substantive Mission Control; perform production
 deployment, release, broad remote access, or multi-user support; allow Syzygy
@@ -907,8 +918,11 @@ can be authorized.
   `pwb-<act-type>-signed-<date>`). The 2026-09-02 dedicated records are
   never appended to or edited: the implementation's `governance-inputs.ts`
   parses them as one act each, and re-pointing it at the successor records
-  is the syzygy-8i7 continuation's work, not the recorder's. Decisions 2
-  and 3 were both performed 2026-09-05.
+  is implementation work under the continuation, not the recorder's.
+  Decisions 2 and 3 were both performed 2026-09-05; the owner continued
+  implementation authorization for the amendment the same day
+  (`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md`, a
+  plain direction: no digest, no acceptance-record row, no CG-7e entry).
 - `_activate_pwb_effect_amendment_act_copy_registries()` re-registers the
   four frozen `pwb-effect-acts/*` copies and the superseded dedicated record
   as `ACT_HISTORICAL_DIGEST_COPY_FILES` entries pinned at the 2026-09-02
