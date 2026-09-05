@@ -36,16 +36,29 @@ higher one.
 | **recorded** | An owner **decision** was written down. Binding, but not digest-bound — no ceremony phrase, no argument | the owner |
 
 **Confirmed is not accepted.** This is the distinction a newcomer most often
-collapses. Waves A and B are both *confirmed* today and **neither is
-accepted**; no owner act has been performed in this repository at all.
+collapses: a `CONFIRM` verdict says the bytes are ready to be offered, and an
+act is a separate thing that only the owner does. Confirmation of Waves A and
+B did not make them binding — the two acts performed on 2026-08-17 did, and
+each was a separate transaction after the review. Which artifacts are accepted
+today is owned by `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` and
+summarised in `PROJECT-STATUS.md`; read those, not this page, for status.
+
+*Superseded, dated:* until 2026-09-05 this paragraph ended "Waves A and B are
+both *confirmed* today and **neither is accepted**; no owner act has been
+performed in this repository at all." That was true when written and stopped
+being true on 2026-08-17.
 
 ## Acts, arguments, offers
 
 - **act** — a formal owner transaction that changes what is binding. An act
   has an exact **ceremony phrase** the owner types, and an **argument**. Only
-  the owner performs acts (doctrine VIS-4). No act has been performed yet;
-  `decisions/ACCEPTANCE-ACT-RECORD.md` therefore does not exist, and that
-  absence is correct rather than a gap.
+  the owner performs acts (doctrine VIS-4). Acts have been performed here, and
+  `.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md` — created by the
+  first of them — is the append-only record of every one. This page defines
+  the word; it never says which acts exist. *(Until 2026-09-05 this entry read
+  "No act has been performed yet; `decisions/ACCEPTANCE-ACT-RECORD.md`
+  therefore does not exist, and that absence is correct rather than a gap" —
+  correct when written, false from 2026-08-17 onward.)*
 
 - **argument** — the exact bytes an act binds, identified by a `sha256`
   digest. For a wave act the argument is the digest of that wave's **whole
