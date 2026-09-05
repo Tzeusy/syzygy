@@ -889,6 +889,28 @@ can be authorized.
   live run shows Butlers declaring them. The oracle's `text()` collapses
   tags to spaces, so match `reason ?:`-style, not exact punctuation.
 
+### PWB truth-and-readiness amendment — Decision 1 performed 2026-09-05
+
+- `scripts/record_pwb_truth_amendment.py --record <sha>` wrote
+  `decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md` and appended the aggregate
+  section; `--check <sha>` regenerates both and diffs. It hard-codes the
+  frozen subject, packet head and final-evidence head and binds the presented
+  packet bytes to the final owner-packet review's own `[Observed]` lines.
+  Decisions 2 and 3 (policy, registry) have no recorder yet: reuse the
+  effect-act pattern with the `PWB-EFFECT-AMENDMENT-MANIFEST.txt` digests.
+- `check_governance.py` now models the PWB behavioral package as a successor
+  chain (`PWB_SUCCESSOR_CHAIN`: state-(1) act → truth act). CG-7h binds
+  current bytes to the latest validly performed link, preserves earlier links
+  as `[historical]`, and fails a later link recorded without its predecessor
+  as a chain gap. A third amendment appends one tuple to the chain plus its
+  `truth_*`-style injected fixture inputs; do not special-case it elsewhere.
+- Until Decisions 2 and 3 are recorded, CG-7e's 12 findings on the effect-act
+  copies are the expected pre-act state on this branch: the candidate policy
+  and registry digests in `PWB-EFFECT-AMENDMENT-MANIFEST.txt` are registered
+  as the current arguments, so every 2026-09-02 copy reads stale. Nothing
+  else in the battery fails. `record_pwb_state1_amendment.py --check` also
+  fails against current bytes by design — it is a superseded act's recorder.
+
 ### PWB effect-act packet (task 1.7) — performed 2026-09-02
 
 - The three effect-specific authorities live at their final bytes:
