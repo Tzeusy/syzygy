@@ -27,6 +27,7 @@ import {
   parseFailureExclusion,
   type ClassificationRecord,
   type SecretClassificationPolicy,
+  classifyPhaseASeed,
 } from './content-classification.js';
 import { createExactObjectReader, type ExactObjectReader, type ObjectReadRecord } from './git-object-reader.js';
 import { indexGitTree, type GitTreeEntry } from './git-tree.js';
@@ -51,7 +52,7 @@ const SECRETS = {
   assignment: 'password = "pwbsentinelE-hunter2"',
   url: 'https://pwbsentinelF:hunter2@example.org/repo.git',
 } as const;
-const SENTINEL_BYTES = ['pwbsentinelA', 'PWBSENTINELB', 'pwbsentinelC', 'pwbsentinelD', 'pwbsentinelE', 'pwbsentinelF', 'hunter2', 'pwb-active-sentinel'] as const;
+const SENTINEL_BYTES = ['pwbsentinelA', 'PWBSENTINELB', 'pwbsentinelC', 'pwbsentinelD', 'pwbsentinelE', 'pwbsentinelF', 'hunter2', 'pwb-active-sentinel', 'pwb-inert-example'] as const;
 
 const TEXTS: Record<string, string> = {
   'about/README.md': '# About\n\n- [Heart](heart-and-soul/README.md)\n',
@@ -68,6 +69,13 @@ const TEXTS: Record<string, string> = {
   'secrets/url.md': `remote: ${SECRETS.url}\n`,
   'secrets/two.md': `${SECRETS.githubToken} and ${SECRETS.url}\n`,
   'notes/active.md': '# Notes\n\n<script>pwb-active-sentinel()</script>\n',
+  // Amended PWB-REQ-006: markup only inside closed code contexts is inert…
+  'notes/inert-code.md': '# Notes\n\n```html\n<script>pwb-inert-example()</script>\n```\n\nUse `<img onerror=x>` and `[x](javascript:1)` as text.\n',
+  // …a malformed context excludes the whole artifact…
+  'notes/unclosed-fence.md': '# Notes\n\n```\nnever closed\n',
+  // …and a secret in a code context is still a secret (detectors ignore the mask).
+  'secrets/in-code.md': `# Key\n\n\`\`\`\n${SECRETS.githubToken}\n\`\`\`\n`,
+  'secrets/in-span.md': `Set \`${SECRETS.assignment}\` first.\n`,
   '.env': 'X=1\n',
   'certs/server.pem': 'x\n',
 };
@@ -149,11 +157,15 @@ const POPULATION: readonly ManifestSource[] = [
   source('certs/server.pem', []),
   source('gone/object.md'),
   source('notes/active.md'),
+  source('notes/inert-code.md', ['principle']),
+  source('notes/unclosed-fence.md'),
   source('openspec/specs/one/spec.md', ['baseline-spec']),
   source('roster/alpha/butler.toml', ['roster-identity']),
   source('secrets/assignment.md'),
   source('secrets/aws.md'),
   source('secrets/github.md'),
+  source('secrets/in-code.md'),
+  source('secrets/in-span.md'),
   source('secrets/private-key.md'),
   source('secrets/slack.md'),
   source('secrets/two.md'),
@@ -180,11 +192,15 @@ const EXPECTED: Record<string, Expected> = {
   'certs/server.pem': { outcome: 'excluded', redactionClass: 'excluded-artifact', exclusionReason: 'denied-path', digest: false, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   'gone/object.md': { outcome: 'unavailable', reason: 'git-read-failed', unknownReason: 'source-uncaptured-or-unreachable', degradationState: 'Observer failed' },
   'notes/active.md': { outcome: 'excluded', redactionClass: 'unclassifiable-excluded', exclusionReason: 'active-content', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
+  'notes/inert-code.md': { outcome: 'classified' },
+  'notes/unclosed-fence.md': { outcome: 'excluded', redactionClass: 'unclassifiable-excluded', exclusionReason: 'active-content', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   'openspec/specs/one/spec.md': { outcome: 'classified' },
   'roster/alpha/butler.toml': { outcome: 'classified' },
   'secrets/assignment.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'credential-assignment', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   'secrets/aws.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'known-token-formats', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   'secrets/github.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'known-token-formats', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
+  'secrets/in-code.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'known-token-formats', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
+  'secrets/in-span.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'credential-assignment', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   'secrets/private-key.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'private-key-material', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   'secrets/slack.md': { outcome: 'excluded', redactionClass: 'excluded-artifact', detectorId: 'known-token-formats', digest: true, unknownReason: 'excluded-content', degradationState: 'Excluded content' },
   // Two detectors match; the first in policy order is named.
@@ -257,13 +273,13 @@ describe('PWB-REQ-003 — the population survives every fault', () => {
     const c = result.counts;
     expect(c.sources).toBe(POPULATION.length);
     expect(c.classified + c.excluded + c.unavailable).toBe(c.sources);
-    expect(c.classified).toBe(6);
-    expect(c.classifiedByBasis).toEqual({ body: 6, 'path-only': 0 });
+    expect(c.classified).toBe(7);
+    expect(c.classifiedByBasis).toEqual({ body: 7, 'path-only': 0 });
     expect(c.classifiedByBasis.body + c.classifiedByBasis['path-only']).toBe(c.classified);
-    expect(c.excluded).toBe(12);
+    expect(c.excluded).toBe(15);
     expect(c.unavailable).toBe(4);
-    expect(c.byRedactionClass).toEqual({ 'excluded-artifact': 9, 'unclassifiable-excluded': 3 });
-    expect(result.exclusions).toHaveLength(12);
+    expect(c.byRedactionClass).toEqual({ 'excluded-artifact': 11, 'unclassifiable-excluded': 4 });
+    expect(result.exclusions).toHaveLength(15);
     expect(new Set(result.exclusions.map((e) => e.redactionClass))).toEqual(new Set(['excluded-artifact', 'unclassifiable-excluded']));
     expect(result.policyId).toBe('polaris-butlers-project-shape-secrets');
     expect(result.policyVersion).toBe('1.1.0-candidate.1');
@@ -290,7 +306,7 @@ describe('PWB-REQ-003 — the population survives every fault', () => {
     assertNoSentinel(r.records);
     assertNoSentinel(result.exclusions);
     // The consumer did see the benign bodies (the sentinels never were).
-    expect(result.results.filter((x) => x.value !== undefined)).toHaveLength(6);
+    expect(result.results.filter((x) => x.value !== undefined)).toHaveLength(7);
   });
 
   it('the three spec faults: a removed source, a denied read and a classifier-excluded source all stay counted', () => {
@@ -472,6 +488,24 @@ describe('PWB-REQ-003 — classifySource step by step', () => {
       },
       unknown: { failureState: 'secretMatchedOrUnclassifiable', degradationState: 'Excluded content', unknownReason: 'excluded-content' },
     });
+  });
+});
+
+describe('PWB-REQ-006 (amended) — phase-A seeds use the same context-aware guard', () => {
+  const detectors = compileDetectors(PWB_SECRET_POLICY);
+
+  it('markup only inside closed code contexts keeps a seed safe', () => {
+    expect(classifyPhaseASeed(detectors, '# Index\n\n```\n<script>x</script>\n```\n\n- [a](a.md) and `<br>`\n')).toEqual({ kind: 'safe' });
+  });
+
+  it('the same markup outside a context, or a malformed context, excludes the seed', () => {
+    expect(classifyPhaseASeed(detectors, '# Index\n\n<script>x</script>\n')).toEqual({ kind: 'excluded', reason: 'active-content', detail: '2' });
+    expect(classifyPhaseASeed(detectors, '# Index\n\n```\nnever closed\n')).toEqual({ kind: 'excluded', reason: 'active-content', detail: '1' });
+  });
+
+  it('a secret inside a code context is still a secret: detectors see the raw text', () => {
+    expect(classifyPhaseASeed(detectors, `\`\`\`\n${SECRETS.awsKey}\n\`\`\`\n`)).toEqual({ kind: 'excluded', reason: 'secret-matched', detail: 'known-token-formats' });
+    expect(classifyPhaseASeed(detectors, `see \`${SECRETS.url}\`\n`)).toEqual({ kind: 'excluded', reason: 'secret-matched', detail: 'credential-bearing-url' });
   });
 });
 

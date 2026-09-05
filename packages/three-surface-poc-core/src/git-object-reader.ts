@@ -29,6 +29,7 @@
 import { createHash } from 'node:crypto';
 
 import { type GitTreeEntry, type GitTreeIndex, normalizeRepositoryPath, posixBasename } from './git-tree.js';
+import { type MalformedCodeContext, maskMarkdownCodeContexts } from './markdown-code-context.js';
 import type { ManifestSource, ProjectShapeSourceManifest } from './project-shape-manifest.js';
 import { type GitRunner, PWB_RESOURCE_LIMITS, type PwbResourceLimits, type ResourceLimitBreach, gitBlobObjectId } from './project-shape-observation.js';
 
@@ -126,6 +127,16 @@ export function admitExactObjectRead(
 // The closed set of forms PWB-REQ-006 forbids from ever reaching a sink.
 // A match excludes the whole source; the finding names only the form and
 // where it starts, never the matched bytes.
+//
+// Since the 2026-09-05 truth-and-readiness amendment (PWB-REQ-006) and the
+// policy amendment's `activeContentClassification.markdownProfile`, closed
+// inline code spans and fenced code blocks are inert Markdown contexts:
+// `scanActiveContent` masks them first (`markdown-code-context.ts`) and the
+// active forms are matched only outside them. A malformed context —
+// unclosed fence, unclosed span, backtick fence with a backtick in its info
+// string — is itself a finding (`malformed-code-context`), because the
+// policy's `malformedContextAction` is exclude-whole-artifact. Secret
+// detectors never see the mask; they scan the raw text elsewhere.
 
 export const ACTIVE_CONTENT_FORMS = [
   'html-tag', // any raw HTML tag (CommonMark autolinks are not tags)
@@ -135,6 +146,7 @@ export const ACTIVE_CONTENT_FORMS = [
   'event-handler-attribute', // `onload=`, `onerror=` … inside a tag
   'unsafe-url-scheme', // javascript:, vbscript:, data:, file: as a link or attribute target
   'obfuscated-link-destination', // an HTML entity inside a Markdown link destination
+  'malformed-code-context', // an inert context that never closed, or an invalid backtick info string
 ] as const;
 export type ActiveContentForm = (typeof ACTIVE_CONTENT_FORMS)[number];
 
@@ -142,6 +154,8 @@ export interface ActiveContentFinding {
   readonly form: ActiveContentForm;
   readonly line: number;
   readonly column: number;
+  // Present only for `malformed-code-context`: the profile's closed reason.
+  readonly context?: MalformedCodeContext;
 }
 
 // A tag name must be followed by whitespace, `/>` or `>`, so CommonMark
@@ -169,7 +183,14 @@ function positionOf(text: string, index: number): { readonly line: number; reado
   return { line, column: index - lineStart + 1 };
 }
 
-export function scanActiveContent(text: string): readonly ActiveContentFinding[] {
+export function scanActiveContent(raw: string): readonly ActiveContentFinding[] {
+  const mask = maskMarkdownCodeContexts(raw);
+  if (mask.kind === 'malformed') {
+    return [{ form: 'malformed-code-context', line: mask.line, column: 1, context: mask.reason }];
+  }
+  // The mask keeps every newline and length, so positions found in the
+  // masked text are positions in the raw text.
+  const text = mask.masked;
   const findings: ActiveContentFinding[] = [];
   const found = new Set<string>();
   const add = (form: ActiveContentForm, index: number): void => {

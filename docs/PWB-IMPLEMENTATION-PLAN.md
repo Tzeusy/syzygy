@@ -139,11 +139,15 @@ is refused as `path-not-normalized`, never silently rewritten; (b) the only
 Git command the reader issues is `cat-file blob <object-id>` taken from the
 tree entry, never a path-addressed read; (c) the policy's denied
 basename/prefix/suffix rules are compared case-insensitively on the final
-segment (strictly more refusals); (d) active content is scanned over the
-whole body, code fences and code spans included, and one finding excludes
-the whole source with a body-free finding (form, line, column) — a
-technical README quoting HTML stays counted and Unknown rather than being
-partially admitted; (e) `evaluateLimit` is the one comparison for all six
+segment (strictly more refusals); (d) active content is scanned with the
+2026-09-05 policy amendment's Markdown code-context mask
+(`markdown-code-context.ts`, profile `closed-pwb-code-context-v1`): bytes
+wholly inside a closed inline code span or fenced code block are inert for
+active-form detection only — secret detectors always scan the raw text — and
+one finding outside those contexts, or a malformed context (unclosed fence
+or span, backtick fence with a backtick in its info string, reported as the
+form `malformed-code-context`), excludes the whole source with a body-free
+finding (form, line, column); (e) `evaluateLimit` is the one comparison for all six
 registry limits, so index depth (observer), parse time (2.5) and rendered
 bytes (2.7/3.x) breach in the same shape as source count and bytes; (f)
 `readManifestSources` returns one result per manifest source in manifest
