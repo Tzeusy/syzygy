@@ -17,6 +17,10 @@
 // act can retain a negative judgment. Every arm below is evaluated (a
 // sweep, not a first-failure), so the owner sees every reason at once.
 
+import { createHash } from 'node:crypto';
+
+import { canonicalJson } from './project-shape-manifest.js';
+import type { ProjectShape } from './project-shape-model.js';
 import type { RunRecordInput } from './walkthrough-judgment.js';
 import { parseRunRecord } from './walkthrough-judgment.js';
 
@@ -84,11 +88,43 @@ export type ReadinessPopulation =
     }
   | { readonly kind: 'unavailable'; readonly reason: string };
 
+/** What a record for this evaluation must name: the one exact surface
+ * version and evaluation identity (PWB-REQ-021 "one exact surface version
+ * and evaluation identity"). Never a placeholder. */
+export interface WalkthroughBinding {
+  readonly surfaceVersion: string;
+  readonly evaluationIdentity: string;
+}
+
 export interface WalkthroughReadinessInputs {
   readonly runRecord: RunRecordInput;
-  readonly expectations: { readonly surfaceVersion: string; readonly evaluationIdentity: string };
+  readonly expectations: WalkthroughBinding;
   readonly traversal: ReadinessTraversal;
   readonly population: ReadinessPopulation;
+}
+
+/** The exact evaluation identity a walkthrough record binds to (as
+ * amended 2026-09-05). An observed shape's identity digests its
+ * deterministic inputs — repository and revision, manifest digest,
+ * discovery/observer/implementation versions, resource limits, and the
+ * consent, policy and registry acts the authority evaluation rested on
+ * (their identities and artifact digests) — and nothing time-bound: the
+ * authority's per-run `evaluationId` and every capture instant are left
+ * out, so the identity is the same after a daemon restart or a Syzygy
+ * commit that changes none of those inputs, and changes with any of them.
+ * (The observation digest itself is not used: it carries the per-run
+ * authority evaluation id.) A shape that was not observed has no exact
+ * evaluation to bind: the identity names that state, so no record can
+ * match it. Always an identifier (`[a-z0-9-]`). */
+export function walkthroughEvaluationIdentity(shape: ProjectShape): string {
+  if (shape.kind !== 'observed') return `pwb-unobserved-${shape.kind}`;
+  const inputs = shape.identity.deterministicInputs;
+  const authority = inputs.authority.kind === 'evaluated'
+    ? { kind: 'evaluated', consent: inputs.authority.consent, policy: inputs.authority.policy, registry: inputs.authority.registry }
+    : { kind: inputs.authority.kind };
+  const stable = { ...inputs, authority };
+  const digest = createHash('sha256').update(canonicalJson(stable)).digest('hex');
+  return `pwb-eval-${digest.slice(0, 24)}`;
 }
 
 // ---------------------------------------------------------------------
@@ -115,7 +151,7 @@ export interface ReadinessFinding {
 }
 
 export type WalkthroughReadiness =
-  | { readonly kind: 'no-run-record'; readonly ready: false; readonly detail: string }
+  | { readonly kind: 'no-run-record'; readonly ready: false; readonly detail: string; readonly expected: WalkthroughBinding }
   | {
       readonly kind: 'evaluated';
       readonly ready: boolean;
@@ -124,6 +160,8 @@ export type WalkthroughReadiness =
       readonly surfaceVersion: string | undefined;
       readonly evaluationIdentity: string | undefined;
       readonly traversedPaths: readonly string[];
+      /** What the record must name to be this evaluation's. */
+      readonly expected: WalkthroughBinding;
     };
 
 // ---------------------------------------------------------------------
@@ -221,14 +259,15 @@ function isAnswerIdentity(value: string): value is AnswerIdentity {
 
 export function evaluateWalkthroughReadiness(inputs: WalkthroughReadinessInputs): WalkthroughReadiness {
   const { artifact, path } = inputs.runRecord;
+  const expected: WalkthroughBinding = { surfaceVersion: inputs.expectations.surfaceVersion, evaluationIdentity: inputs.expectations.evaluationIdentity };
   if (artifact.kind !== 'present') {
-    return { kind: 'no-run-record', ready: false, detail: `The walkthrough run record ${path} is ${artifact.kind}; there is no answer population to assess.` };
+    return { kind: 'no-run-record', ready: false, detail: `The walkthrough run record ${path} is ${artifact.kind}; there is no answer population to assess.`, expected };
   }
   let text: string;
   try {
     text = new TextDecoder('utf-8', { fatal: true }).decode(artifact.bytes);
   } catch {
-    return { kind: 'no-run-record', ready: false, detail: `The walkthrough run record ${path} is not UTF-8 text; there is no answer population to assess.` };
+    return { kind: 'no-run-record', ready: false, detail: `The walkthrough run record ${path} is not UTF-8 text; there is no answer population to assess.`, expected };
   }
   const findings: ReadinessFinding[] = [];
   const finding = (arm: ReadinessArm, detail: string): void => {
@@ -335,5 +374,6 @@ export function evaluateWalkthroughReadiness(inputs: WalkthroughReadinessInputs)
     surfaceVersion,
     evaluationIdentity,
     traversedPaths,
+    expected,
   };
 }

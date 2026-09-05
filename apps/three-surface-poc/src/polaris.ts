@@ -653,10 +653,14 @@ function walkthroughReadinessSection(model: PocModel): string {
   </section>`;
   }
   const r = readiness.readiness;
+  // The exact binding a record must name for this evaluation — shown in
+  // every state so the recording session copies it, never invents it.
+  const expected = `<p${DISCLOSURE}><small>${copy('label.expected-binding')} ${copy('label.surface-version')} <code data-polaris-readiness-expected-surface>${escapeHtml(r.expected.surfaceVersion)}</code>; ${copy('label.evaluation-identity')} <code data-polaris-readiness-expected-evaluation>${escapeHtml(r.expected.evaluationIdentity)}</code>.</small></p>`;
   if (r.kind === 'no-run-record') {
     return `<section class="claim-section" data-polaris-section="walkthrough-readiness" data-polaris-readiness="no-run-record">
     ${head}
     <p${DISCLOSURE}><small>${copy('sentence.readiness-no-run-record')} <span data-polaris-readiness-detail>${escapeHtml(r.detail)}</span></small></p>
+    ${expected}
   </section>`;
   }
   const state = r.ready ? 'ready' : 'not-ready';
@@ -680,6 +684,7 @@ function walkthroughReadinessSection(model: PocModel): string {
   return `<section class="claim-section" data-polaris-section="walkthrough-readiness" data-polaris-readiness="${state}">
     ${head}
     <p${DISCLOSURE}><small>${copy('label.readiness')} <span data-polaris-readiness-state>${state}</span>. ${copy('sentence.readiness-execution-fact')} ${copy('label.surface-version')} <code data-polaris-readiness-surface>${escapeHtml(r.surfaceVersion ?? '')}</code>; ${copy('label.evaluation-identity')} <code data-polaris-readiness-evaluation>${escapeHtml(r.evaluationIdentity ?? '')}</code>; ${traversed === '' ? '' : `${copy('label.traversed')} ${traversed}.`}</small></p>
+    ${expected}
     ${findings}
     ${answers}
   </section>`;

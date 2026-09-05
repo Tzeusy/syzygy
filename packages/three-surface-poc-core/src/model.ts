@@ -13,7 +13,7 @@ import { gitRunnerFor, type GitRunner, type PwbResourceLimits } from './project-
 import { buildProjectShape, unevaluatedProjectShape, type ProjectShape } from './project-shape-model.js';
 import { deriveProposedWork, type ProposedWork } from './proposed-work.js';
 import { evaluateWalkthroughJudgment, type WalkthroughJudgmentEvaluation, type WalkthroughJudgmentInputs } from './walkthrough-judgment.js';
-import { evaluateWalkthroughReadiness, type ReadinessPopulation, type ReadinessTraversal, type WalkthroughReadiness } from './walkthrough-readiness.js';
+import { evaluateWalkthroughReadiness, walkthroughEvaluationIdentity, type ReadinessPopulation, type ReadinessTraversal, type WalkthroughReadiness } from './walkthrough-readiness.js';
 import {
   resolveTestArtifactVerification,
   type TestArtifactRecord,
@@ -154,6 +154,8 @@ export interface PocModel {
   readonly walkthroughReadiness: WalkthroughReadinessPresentation;
 }
 
+export type WalkthroughJudgmentInputsFor = (binding: { readonly evaluationIdentity: string }) => WalkthroughJudgmentInputs;
+
 export type WalkthroughReadinessPresentation =
   | { readonly kind: 'not-evaluated'; readonly detail: string }
   | { readonly kind: 'evaluated'; readonly readiness: WalkthroughReadiness };
@@ -188,8 +190,12 @@ export interface BuildButlersPocModelInput {
   readonly projectShape?: ProjectShapeModelInput | undefined;
   readonly projectShapeDetail?: string;
   /** Absent → `walkthroughJudgment.kind === 'not-evaluated'`; the optional
-   * detail says why no pair was supplied. */
-  readonly walkthroughJudgment?: WalkthroughJudgmentInputs | undefined;
+   * detail says why no pair was supplied. A function receives the exact
+   * evaluation identity of the shape this build observed
+   * (`walkthroughEvaluationIdentity`) so the pair's expectations bind to
+   * it rather than to a placeholder; if it throws, the judgment and
+   * readiness stay `not-evaluated` with the failure named. */
+  readonly walkthroughJudgment?: WalkthroughJudgmentInputs | WalkthroughJudgmentInputsFor | undefined;
   readonly walkthroughJudgmentDetail?: string;
   /** PWB-REQ-021 readiness needs the surface's own traversal predicate
    * (which routes are Polaris and its same-evaluation exact-source route);
@@ -632,25 +638,38 @@ export function buildButlersPocModel(input: BuildButlersPocModelInput): PocModel
           ...(input.projectShape.repositoryId === undefined ? {} : { repositoryId: input.projectShape.repositoryId }),
           ...(input.projectShape.resourceLimits === undefined ? {} : { resourceLimits: input.projectShape.resourceLimits }),
         });
+  // The pair's expectations bind to the exact evaluation this build
+  // observed; a loader that fails leaves both states `not-evaluated`.
+  let walkthroughInputs: WalkthroughJudgmentInputs | undefined;
+  let walkthroughDetail = input.walkthroughJudgmentDetail;
+  if (typeof input.walkthroughJudgment === 'function') {
+    try {
+      walkthroughInputs = input.walkthroughJudgment({ evaluationIdentity: walkthroughEvaluationIdentity(projectShape) });
+    } catch (error: unknown) {
+      walkthroughDetail = `Walkthrough-judgment inputs could not be loaded: ${error instanceof Error ? error.message : String(error)}`;
+    }
+  } else {
+    walkthroughInputs = input.walkthroughJudgment;
+  }
   const walkthroughJudgment: WalkthroughJudgmentPresentation =
-    input.walkthroughJudgment === undefined
+    walkthroughInputs === undefined
       ? {
           kind: 'not-evaluated',
-          detail: input.walkthroughJudgmentDetail ?? 'No cold-open walkthrough run record and judgment pair was supplied to this evaluation; no judgment was evaluated.',
+          detail: walkthroughDetail ?? 'No cold-open walkthrough run record and judgment pair was supplied to this evaluation; no judgment was evaluated.',
         }
-      : { kind: 'evaluated', evaluation: evaluateWalkthroughJudgment(input.walkthroughJudgment) };
+      : { kind: 'evaluated', evaluation: evaluateWalkthroughJudgment(walkthroughInputs) };
   const walkthroughReadiness: WalkthroughReadinessPresentation =
-    input.walkthroughJudgment === undefined
-      ? { kind: 'not-evaluated', detail: 'No cold-open walkthrough run record was supplied to this evaluation; no answer population was assessed.' }
+    walkthroughInputs === undefined
+      ? { kind: 'not-evaluated', detail: walkthroughDetail ?? 'No cold-open walkthrough run record was supplied to this evaluation; no answer population was assessed.' }
       : input.walkthroughReadiness === undefined
         ? { kind: 'not-evaluated', detail: 'No Polaris traversal predicate was supplied to this evaluation; readiness cannot tell Polaris routes from others.' }
         : {
             kind: 'evaluated',
             readiness: evaluateWalkthroughReadiness({
-              runRecord: input.walkthroughJudgment.runRecord,
+              runRecord: walkthroughInputs.runRecord,
               expectations: {
-                surfaceVersion: input.walkthroughJudgment.expectations.surfaceVersion,
-                evaluationIdentity: input.walkthroughJudgment.expectations.evaluationIdentity,
+                surfaceVersion: walkthroughInputs.expectations.surfaceVersion,
+                evaluationIdentity: walkthroughInputs.expectations.evaluationIdentity,
               },
               traversal: input.walkthroughReadiness.traversal,
               population: readinessPopulation(projectShape),
