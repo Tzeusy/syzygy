@@ -182,6 +182,10 @@ Last compacted 2026-09-05; C5 seams and recorder notes added the same day.
 - CDP headless: enable `Emulation.setFocusEmulationEnabled` or focus never
   moves; re-navigate before Tab/Enter when the fragment already matches the
   hash; `<summary>` needs its own `:focus-visible` rule.
+- Never put a fragment target (an `id` some `href="#…"` names) inside a
+  `<details>`: after navigating to it Chrome restarts Tab at the details'
+  first focusable, stranding keyboard readers. Collapse populations, route
+  the targets.
 - The Write tool has emitted mixed NFC/NFD bytes; use Unicode escapes in
   fixtures when exact matching matters.
 - A mutation that throws at describe time reports zero tests and scores as

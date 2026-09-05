@@ -4,13 +4,16 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
 import { POLARIS_COPY } from './polaris-copy.js';
+import { renderPolarisSourcePage } from './polaris-source.js';
 import { renderPolarisPage } from './polaris.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import { walkthroughJudgmentFixture } from './test-walkthrough-judgment-fixture.js';
 import {
   ADMITTING_AUTHORITY,
+  PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH,
   PROJECT_SHAPE_FIXTURE_TEXTS,
   PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE,
+  PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC,
   PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET,
   REJECTING_AUTHORITY,
   projectShapeFixtureGit,
@@ -150,8 +153,8 @@ function sweep(html: string): { strings: CopyString[]; violations: Violation[] }
 
 // ---------------------------------------------------------------------------
 
-type Variant = 'unevaluated' | 'rejected' | 'observed' | 'observed-without-precedence' | 'observed-bare-root' | 'observed-with-secret' | 'observation-failed' | 'judgment-absent' | 'judgment-unlawful' | 'judgment-lawful' | 'judgment-ready';
-const VARIANTS: readonly Variant[] = ['unevaluated', 'rejected', 'observed', 'observed-without-precedence', 'observed-bare-root', 'observed-with-secret', 'observation-failed', 'judgment-absent', 'judgment-unlawful', 'judgment-lawful', 'judgment-ready'];
+type Variant = 'unevaluated' | 'rejected' | 'observed' | 'observed-without-precedence' | 'observed-bare-root' | 'observed-with-secret' | 'observed-with-baseline-spec' | 'observation-failed' | 'judgment-absent' | 'judgment-unlawful' | 'judgment-lawful' | 'judgment-ready';
+const VARIANTS: readonly Variant[] = ['unevaluated', 'rejected', 'observed', 'observed-without-precedence', 'observed-bare-root', 'observed-with-secret', 'observed-with-baseline-spec', 'observation-failed', 'judgment-absent', 'judgment-unlawful', 'judgment-lawful', 'judgment-ready'];
 // A root index with neither grammar: links only, as the fixture root read
 // before the 2026-09-05 amendment.
 const BARE_ROOT_TEXTS: Readonly<Record<string, string>> = {
@@ -173,6 +176,8 @@ function modelFor(variant: Variant): PocModel {
       return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(BARE_ROOT_TEXTS) } });
     case 'observed-with-secret':
       return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET) } });
+    case 'observed-with-baseline-spec':
+      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC) } });
     case 'observation-failed': {
       const inner = projectShapeFixtureGit();
       const failing = (args: readonly string[]): Uint8Array => {
@@ -275,6 +280,15 @@ describe('Polaris copy roles (PWB-REQ-012)', () => {
     }
     const rendered: CopyString[] = [];
     for (const variant of VARIANTS) rendered.push(...sweep(renderPolarisPage(modelFor(variant))).strings);
+    // The exact-source route's own strings: rendered text, an identity the
+    // population does not carry, an empty identity, and an unobserved shape.
+    const withSpec = modelFor('observed-with-baseline-spec');
+    const specIdentity = withSpec.projectShape.kind === 'observed' ? withSpec.projectShape.sources.find((source) => source.path === PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH)?.identity ?? '' : '';
+    const specBytes = new TextEncoder().encode(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC[PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH] as string);
+    rendered.push(...sweep(renderPolarisSourcePage(withSpec, specIdentity, '', { verbatim: () => specBytes })).strings);
+    rendered.push(...sweep(renderPolarisSourcePage(withSpec, 'nobody@0:none#0')).strings);
+    rendered.push(...sweep(renderPolarisSourcePage(withSpec, '')).strings);
+    rendered.push(...sweep(renderPolarisSourcePage(modelFor('unevaluated'), specIdentity)).strings);
     // Rows the five fixtures cannot reach, restated by hand so a newly
     // reachable row must be removed from here rather than silently pass.
     const UNREACHED_IN_FIXTURES = new Set<string>([

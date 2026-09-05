@@ -289,6 +289,11 @@ describe('Polaris progressive depth (PWB-REQ-011; RFC7-16)', () => {
     const catalog = groupSlice(html, 'catalog');
     expect(catalog).toContain('data-unknown-disclosure="claim:class:craft-policy"');
     expect(catalog).toContain('data-unknown-reason="excluded-content"');
+    // The claim's route names the cause, not only the policy (PWB-LIVE-11):
+    // the detector that matched and the two things that clear it. The
+    // generic policy route remains at the reason-count and gap entries,
+    // with the causes listed beneath it.
+    expect(catalog).toContain('Route: about/craft-and-care/README.md matched the known-token-formats detector: rotate and remove the matched text in Butlers, then a new snapshot; or an owner policy change to that detector');
     expect(catalog).toContain('Route: Policy change by the owner, or accept the exclusion');
     expect(html).toContain('data-polaris-gap="excluded-content"');
   });

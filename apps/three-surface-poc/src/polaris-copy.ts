@@ -23,9 +23,33 @@ export interface PolarisCopyRow {
 }
 
 export const POLARIS_COPY = [
-  { id: 'shell.heading', role: 'project-fact', kind: 'heading', text: 'Butlers, as it declares itself' },
-  { id: 'shell.lede', role: 'scope-instruction', kind: 'lede', text: 'Purpose, promises, boundaries, architecture and V1 first; then the project catalog; then one capability in depth.' },
-  { id: 'notice', role: 'epistemic-disclosure', kind: 'notice', text: 'Every positive claim below cites its source. Where evidence is absent, Unknown is stated in place with its route to resolution.' },
+  { id: 'shell.heading', role: 'project-fact', kind: 'heading', text: 'Butlers' },
+  { id: 'shell.lede', role: 'scope-instruction', kind: 'lede', text: 'Butlers in its own words: purpose, promises, limits, architecture and V1, each traced to its source.' },
+  { id: 'notice', role: 'epistemic-disclosure', kind: 'notice', text: 'Every positive claim cites its source. Where evidence is absent, Unknown is stated in place with its route to resolution.' },
+  { id: 'label.claim-states', role: 'action-label', kind: 'label', text: 'What the claim states mean' },
+  // The claim-state glossary (RFC2-25 tiers; PWB-REQ-007): every field of
+  // the tuple beside each claim, in ordinary words, and the only routes
+  // that strengthen a claim. Nothing here rounds a state up.
+  { id: 'states.lede', role: 'epistemic-disclosure', kind: 'lede', text: 'Beside each claim: its label, tier, freshness and challenge state; then the only routes that strengthen it.' },
+  { id: 'states.observed', role: 'epistemic-disclosure', kind: 'sentence', text: 'Observed — the statement was read from the named source at the evaluated revision.' },
+  { id: 'states.inferred', role: 'epistemic-disclosure', kind: 'sentence', text: 'Inferred — a worker asserted it; no source was read for it.' },
+  { id: 'states.unknown', role: 'epistemic-disclosure', kind: 'sentence', text: 'Unknown — no admissible evidence; the reason and its route are stated in place. Never green, never zero.' },
+  { id: 'states.tier', role: 'epistemic-disclosure', kind: 'label', text: 'Tier — how the evidence reached the claim:' },
+  { id: 'states.tier.gate-backed', role: 'epistemic-disclosure', kind: 'sentence', text: 'gate-backed — a retained gate artifact bound to this exact revision vouches for it.' },
+  { id: 'states.tier.report-fact', role: 'epistemic-disclosure', kind: 'sentence', text: 'report-fact — the observer read it directly from the source; the strongest tier this evaluation mints.' },
+  { id: 'states.tier.reduced-fidelity', role: 'epistemic-disclosure', kind: 'sentence', text: 'reduced-fidelity — read under a limit or a fallback; treat it as partial.' },
+  { id: 'states.tier.asserted-by-worker', role: 'epistemic-disclosure', kind: 'sentence', text: 'asserted-by-worker — stated by an agent, not read; always Inferred.' },
+  { id: 'states.tier.declared-only', role: 'epistemic-disclosure', kind: 'sentence', text: 'declared-only — a declaration exists but nothing observed it.' },
+  { id: 'states.tier.suspended', role: 'epistemic-disclosure', kind: 'sentence', text: 'suspended — a contradiction or challenge holds the claim; Unknown until adjudicated.' },
+  { id: 'states.tier.unstated', role: 'epistemic-disclosure', kind: 'sentence', text: 'unstated — no tier applies to an Unknown that has no evidence.' },
+  { id: 'states.freshness', role: 'epistemic-disclosure', kind: 'label', text: 'Freshness — whether the evidence is current:' },
+  { id: 'states.freshness.fresh', role: 'epistemic-disclosure', kind: 'sentence', text: 'fresh — captured at this evaluation.' },
+  { id: 'states.freshness.stale', role: 'epistemic-disclosure', kind: 'sentence', text: 'stale — older than the declared currency bound.' },
+  { id: 'states.freshness.broken', role: 'epistemic-disclosure', kind: 'sentence', text: 'broken — its source changed since capture.' },
+  { id: 'states.freshness.superseded', role: 'epistemic-disclosure', kind: 'sentence', text: 'superseded — a later evaluation replaced it.' },
+  { id: 'states.challenge', role: 'epistemic-disclosure', kind: 'label', text: 'Challenge — whether anyone disputed it:' },
+  { id: 'states.challenge.unchallenged', role: 'epistemic-disclosure', kind: 'sentence', text: 'unchallenged — no challenge is recorded; a recorded challenge suspends the claim.' },
+  { id: 'states.strengthen', role: 'epistemic-disclosure', kind: 'sentence', text: 'To strengthen a claim: report-fact becomes gate-backed only through a retained gate artifact bound to the exact revision; an Unknown clears only by the route stated beside it. No summary rounds any state up.' },
 
   { id: 'depth.label', role: 'scope-instruction', kind: 'label', text: 'Depths, from summary to exact source:' },
   { id: 'depth.summary', role: 'scope-instruction', kind: 'label', text: 'Summary' },
@@ -92,6 +116,12 @@ export const POLARIS_COPY = [
   { id: 'label.amends', role: 'project-fact', kind: 'label', text: 'amends' },
 
   { id: 'label.coverage-counts', role: 'action-label', kind: 'label', text: 'Coverage counts' },
+  // Progressive disclosure (PWB-REQ-011): exhaustive populations stay
+  // complete behind a native disclosure whose control names the count.
+  { id: 'label.show-items', role: 'action-label', kind: 'label', text: 'Show items' },
+  { id: 'label.show-exclusions', role: 'action-label', kind: 'label', text: 'Show exclusions' },
+  { id: 'label.exact-text', role: 'action-label', kind: 'label', text: 'Exact text' },
+  { id: 'label.by-cause', role: 'epistemic-disclosure', kind: 'label', text: 'By cause:' },
   { id: 'label.primary-reasons', role: 'epistemic-disclosure', kind: 'label', text: 'Primary Unknown reasons among members:' },
   { id: 'label.secondary-reasons', role: 'epistemic-disclosure', kind: 'label', text: 'Secondary Unknown reasons among members:' },
   { id: 'sentence.no-member-unknowns', role: 'epistemic-disclosure', kind: 'sentence', text: 'No member claim carries an Unknown reason.' },
@@ -182,6 +212,15 @@ export const POLARIS_COPY = [
   { id: 'label.answers', role: 'epistemic-disclosure', kind: 'label', text: 'Recorded answers, in the owner’s words, unjudged:' },
   { id: 'label.sources', role: 'epistemic-disclosure', kind: 'label', text: 'Sources:' },
   { id: 'label.cited-authority', role: 'epistemic-disclosure', kind: 'label', text: 'Cited authority:' },
+  // The exact-source route (PWB-REQ-011 as amended): one Git object of the
+  // evaluated revision, byte-for-byte or nothing, never as authority.
+  { id: 'source.heading', role: 'project-fact', kind: 'heading', text: 'Exact source text' },
+  { id: 'source.lede', role: 'scope-instruction', kind: 'lede', text: 'Requirement and scenario text byte-for-byte from one Git object of the evaluated revision, or nothing at all.' },
+  { id: 'source.not-authority', role: 'epistemic-disclosure', kind: 'notice', text: 'Polaris is not the authority for this text; the owning artifact in Butlers is. Nothing is restated or summarized.' },
+  { id: 'label.identity', role: 'project-fact', kind: 'label', text: 'Identity:' },
+  { id: 'label.back-to-source-row', role: 'action-label', kind: 'label', text: 'Back to its source row' },
+  { id: 'sentence.no-identity-named', role: 'epistemic-disclosure', kind: 'sentence', text: 'No source identity was named; nothing was read.' },
+  { id: 'sentence.identity-not-in-population', role: 'epistemic-disclosure', kind: 'sentence', text: 'No admitted source of this evaluation carries this identity; nothing was read.' },
 ] as const satisfies readonly PolarisCopyRow[];
 
 export type PolarisCopyId = (typeof POLARIS_COPY)[number]['id'];

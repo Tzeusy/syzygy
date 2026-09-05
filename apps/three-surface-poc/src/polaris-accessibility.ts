@@ -294,7 +294,8 @@ export type ViolationKind =
   | 'unnamed-accessible-node'
   | 'accessible-link-count-differs'
   | 'text-contrast'
-  | 'expected-target-absent';
+  | 'expected-target-absent'
+  | 'disclosure-did-not-open';
 
 export interface Violation {
   readonly kind: ViolationKind;
@@ -331,10 +332,17 @@ export interface AxReport {
   readonly unnamed: readonly string[];
 }
 
+export interface DisclosureReport {
+  /** Native disclosures (`<details>`) on the page, each opened by Enter on its summary. */
+  readonly population: number;
+  readonly opened: number;
+}
+
 export interface AccessibilityReport {
   readonly label: string;
   readonly url: string;
   readonly focusables: readonly FocusableElement[];
+  readonly disclosures: DisclosureReport;
   readonly focusTrace: FocusTraceReport;
   readonly activations: readonly ActivationReport[];
   readonly accessibilityTree: AxReport;
@@ -351,6 +359,13 @@ function describe(element: { readonly tag: string; readonly id: string; readonly
   return `${element.tag}${element.id === '' ? '' : `#${element.id}`}${element.href === null ? '' : `[href=${element.href}]`} "${element.text.slice(0, 40)}"`;
 }
 
+const SUMMARY_INDEXES_SCRIPT = `(() => {
+  const all = Array.from(document.querySelectorAll('*'));
+  return all.flatMap((element, index) => (element.tagName === 'SUMMARY' && element.parentElement && element.parentElement.tagName === 'DETAILS') ? [index] : []);
+})()`;
+
+const OPEN_DISCLOSURES_SCRIPT = `(() => { document.querySelectorAll('details').forEach((details) => { details.open = true; }); return null; })()`;
+
 export interface CheckOptions {
   /** Element ids the page must reach by keyboard (e.g. every depth target). */
   readonly expectedTargets?: readonly string[];
@@ -362,6 +377,29 @@ export interface CheckOptions {
 export async function checkPolarisAccessibility(page: BrowserPage, url: string, label: string, options: CheckOptions = {}): Promise<AccessibilityReport> {
   const violations: Violation[] = [];
   await page.navigate(url);
+
+  // 0. Progressive disclosure (PWB-REQ-011): every native disclosure opens
+  // by a real Enter press on its summary, so the populations behind them
+  // are keyboard-reachable; then every disclosure is opened so the rest of
+  // the checks see the complete page. `reopen` restores that state after
+  // each navigation below.
+  const summaries = await page.evaluate<readonly number[]>(SUMMARY_INDEXES_SCRIPT);
+  let opened = 0;
+  for (const index of summaries) {
+    const before = await page.evaluate<boolean>(`(() => { const all = document.querySelectorAll('*'); const s = all[${index}]; s.focus(); return s.parentElement.open; })()`);
+    await page.press('Enter');
+    const after = await page.evaluate<boolean>(`document.querySelectorAll('*')[${index}].parentElement.open`);
+    if (after === before) {
+      violations.push({ kind: 'disclosure-did-not-open', where: `summary[${index}]`, detail: `Enter on the summary left its disclosure ${before ? 'open' : 'closed'}` });
+    } else if (after) {
+      opened += 1;
+    }
+  }
+  const reopen = async (): Promise<void> => {
+    await page.navigate(url);
+    await page.evaluate<null>(OPEN_DISCLOSURES_SCRIPT);
+  };
+  await reopen();
 
   // 1. The focusable population: native links and named keyboard-scrollable
   // regions only — nothing a pointer alone can operate.
@@ -450,7 +488,7 @@ export async function checkPolarisAccessibility(page: BrowserPage, url: string, 
     // browser (no navigation, no new focus start point), so start each
     // activation from a page whose hash is not already the target.
     const currentHash = await page.evaluate<string>('location.hash');
-    if (currentHash === `#${targetId}`) await page.navigate(url);
+    if (currentHash === `#${targetId}`) await reopen();
     await page.evaluate<null>(`(() => { const all = document.querySelectorAll('*'); all[${link.index}].focus(); return null; })()`);
     await page.press('Enter');
     const outcome = await page.evaluate<Activation>(AFTER_ACTIVATION_SCRIPT);
@@ -502,7 +540,7 @@ export async function checkPolarisAccessibility(page: BrowserPage, url: string, 
   }
 
   // 7. WCAG AA contrast over every rendered text element (plus the targeted rows).
-  await page.navigate(url);
+  await reopen();
   const texts = [...(await page.evaluate<readonly TextElement[]>(TEXT_SCRIPT)), ...targetContrast];
   const measurements: ContrastMeasurement[] = [];
   for (const element of texts) {
@@ -519,6 +557,7 @@ export async function checkPolarisAccessibility(page: BrowserPage, url: string, 
     label,
     url,
     focusables,
+    disclosures: { population: summaries.length, opened },
     focusTrace: { forward: forward.map(describe), reverse: reverse.map(describe), population: focusables.length, reached: forward.length },
     activations,
     accessibilityTree: { nodes: live.length, byRole, unnamed },

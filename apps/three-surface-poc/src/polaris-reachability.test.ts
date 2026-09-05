@@ -197,10 +197,14 @@ describe('Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7
       expect(html).toContain('id="polaris-depth-label"');
       expect(nav.inner).not.toMatch(/onclick|role="button"|tabindex/);
 
-      // Document order: every target sits after the nav, in the nav's order.
+      // Document order: the overview group — the first reading level, the
+      // project's own account — precedes the depth list; every other target
+      // sits after the nav, in the nav's order.
       const targets = internalHrefs(nav.inner);
       const positions = targets.map((target) => html.indexOf(` id="${target}"`));
-      expect(positions.every((position) => position > nav.start)).toBe(true);
+      expect(targets[0]).toBe('polaris-group-overview');
+      expect(positions[0] as number).toBeLessThan(nav.start);
+      expect(positions.slice(1).every((position) => position > nav.start)).toBe(true);
       for (let index = 1; index < positions.length; index += 1) expect(positions[index], `${variant}: ${targets[index]} after ${targets[index - 1]}`).toBeGreaterThan(positions[index - 1] as number);
 
       // Coverage of the population the state renders.
