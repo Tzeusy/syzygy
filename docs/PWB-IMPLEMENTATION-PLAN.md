@@ -155,7 +155,16 @@ order and hands each body only to the caller's `consume` callback, so no
 record this module returns can carry a body. Still no Butlers read: the
 reader is constructed by nothing before P4.
 
-P2.4 note, recorded 2026-09-04: `content-classification.ts` is the policy's
+P2.4 note, recorded 2026-09-04. Rule-6 evidence:
+`docs/evidence/pwb-p2-4-classification-mutation-run-2026-09-04.json` — 25
+mutations, 25 killed, 25 restored, against `content-classification.test.ts`;
+the run record names the source digest it verified the restore against, and
+that digest is read from the record, never copied here. One further planned
+mutation (`population-guard-off`) was withdrawn rather than counted, because removing
+that guard was equivalent to removing dead code and would have scored a kill
+it did not earn.
+
+`content-classification.ts` is the policy's
 six-step `classificationOrder` executed over the P2.3 reader's transient
 body. Decisions: (a) the policy is a parameter — `PWB_SECRET_POLICY` is the
 hard-coded copy proven byte-equal to the act-bound JSON, detectors are
@@ -1240,6 +1249,15 @@ with source digests before/after and the commit to
 `docs/evidence/pwb-mutation-run-<date>.json`. A run is valid only at a named
 commit and is retained as review evidence; it is never run against a dirty
 tree.
+
+The run that pattern names is
+`docs/evidence/pwb-mutation-run-2026-09-03.json`, at commit `c5f59361`: 97
+mutations planned — 86 predicate sites and 11 literals — 97 killed, 0
+survived, 0 restore failures, over `body-read-authority.test.ts` and
+`governance-inputs.test.ts`. Those are the same 86 and 11 §"task 2.5" cites
+above; until 2026-09-05 the figures travelled in this page's prose while the
+file holding them was named only by the `<date>` pattern, so a reader could
+not reach the record without guessing its name.
 
 **Retained evidence** per slice: commit, `vitest run` transcript summary,
 the three denominators reported separately, mutation-run file. Claims
