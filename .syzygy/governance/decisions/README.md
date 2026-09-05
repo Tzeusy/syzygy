@@ -43,11 +43,16 @@ These carry rulings the owner has actually made.
 | [`CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`](CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md) | **Owner launch decision, 2026-08-20** — Capability 1 specification authoring authorized; the Administration 1 `NOT READY` verdict stands unaltered; specification definition only, no implementation |
 | [`GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-DIRECTION.md`](GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-DIRECTION.md) | **Owner direction, 2026-08-31** — authorized preparation of the generalized provenance amendment; the exact five-row transaction was separately performed 2026-09-01 and is recorded in `ACCEPTANCE-ACT-RECORD.md` |
 | [`PWB-STATE1-AMENDMENT-DIRECTION.md`](PWB-STATE1-AMENDMENT-DIRECTION.md) | **Owner direction, 2026-09-02** — selected profile A and authorized drafting/review of the two-requirement amendment; the exact package was separately signed the same day |
+| [`A6-RESOURCE-ENVELOPE-DECISION.md`](A6-RESOURCE-ENVELOPE-DECISION.md), [`A6-SCOPE-VS-CAPACITY-ASSESSMENT.md`](A6-SCOPE-VS-CAPACITY-ASSESSMENT.md) | **P-45 ruled 2026-08-19** — the stated resource envelope, and the assessment of scope against it |
+| [`F6-GOVERNANCE-CEILING-DECISION.md`](F6-GOVERNANCE-CEILING-DECISION.md) | **P-46 ruled 2026-08-19** — no governance ceiling; F6 stays `Not met`, disclosed |
+| [`F2-GOVERNANCE-REDUCTION-DECISION.md`](F2-GOVERNANCE-REDUCTION-DECISION.md) | **P-47 ruled 2026-08-19** — the governance-reduction plan adopted as directed work |
+| [`LAUNCH-REPAIR-STOP-CONDITION-DECISION.md`](LAUNCH-REPAIR-STOP-CONDITION-DECISION.md) | **P-48 ruled 2026-08-19** — the repair cycle bounded at two further administrations |
+| [`BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md`](BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md) | The recorded consent for observing the one Butlers repository's project shape (RFC3-7 consent record) |
 
 Doctrine itself (VIS-1…7, SEC-1…5) is adopted and lives in
 [`../doctrine/`](../doctrine/), not here.
 
-## 2. Owner acts — four original acts plus two separate amendments
+## 2. Owner acts
 
 ```text
 ACCEPTANCE-ACT-RECORD.md      exists — created by the Wave A act, 2026-08-17
@@ -75,6 +80,46 @@ its performed record is
 The PWB amendment's performed record is
 [`PWB-STATE1-AMENDMENT-ACT.md`](PWB-STATE1-AMENDMENT-ACT.md). This page owns
 neither amendment act.
+
+### Every act and direction recorded here, by date
+
+*Superseded, dated:* this section was headed "four original acts plus two
+separate amendments" and named only those six until 2026-09-05. Every act
+performed from 2026-08-21 onward — including the two Capability 1 acts and the
+PWB implementation authorization that `AGENTS.md` cites as current authority —
+was present in this directory and named by no index in it. A reader following
+the router could not reach the acts in force.
+
+**None of these rows is authority.** Each act's authority is its own record
+plus the aggregate entry in
+[`ACCEPTANCE-ACT-RECORD.md`](ACCEPTANCE-ACT-RECORD.md); which acts are *in
+force* is owned by `PROJECT-STATUS.md`. This table says only that the file
+exists and what it is about, so that a reader can find it.
+
+| Recorded | File | About |
+|---|---|---|
+| 2026-08-21 | [`CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md`](CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md) | Adoption of the Capability 1 specification |
+| 2026-08-21 | [`CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`](CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md) | Authorization to implement Capability 1 |
+| 2026-08-29 | [`THREE-SURFACE-POC-MODE-DIRECTION.md`](THREE-SURFACE-POC-MODE-DIRECTION.md) | The POC's operating mode |
+| 2026-08-30 | [`THREE-SURFACE-POC-SPEC-AUTHORIZATION.md`](THREE-SURFACE-POC-SPEC-AUTHORIZATION.md), [`THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md`](THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md) | The POC specification: authorized, then signed |
+| 2026-08-30 | [`THREE-SURFACE-POC-REDESIGN-DIRECTION.md`](THREE-SURFACE-POC-REDESIGN-DIRECTION.md), [`THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md`](THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md) | POC redesign, and the improvement-cycle regime |
+| 2026-08-30 | [`OPENSPEC-MULTI-CHANGE-DIRECTION.md`](OPENSPEC-MULTI-CHANGE-DIRECTION.md) | More than one OpenSpec change may be open at once |
+| 2026-08-31 | [`BOUNDED-MISSION-DOCTRINE-INTERPRETATION-ACT.md`](BOUNDED-MISSION-DOCTRINE-INTERPRETATION-ACT.md) | The D4 bounded-mission reading of doctrine |
+| 2026-08-31 | [`POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md`](POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md), [`POLARIS-PROJECT-WIDE-POC-EVALUATION-DIRECTION.md`](POLARIS-PROJECT-WIDE-POC-EVALUATION-DIRECTION.md) | The PWB specification signed, and its evaluation directed |
+| 2026-08-31 | [`POLARIS-TRUSTED-BOOTSTRAP-OBSERVATION-DIRECTION.md`](POLARIS-TRUSTED-BOOTSTRAP-OBSERVATION-DIRECTION.md), [`POLARIS-POST-CEILING-CORRECTION-AUTHORIZATION.md`](POLARIS-POST-CEILING-CORRECTION-AUTHORIZATION.md) | Trusted-bootstrap observation, and the post-ceiling correction |
+| 2026-09-01 | [`GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`](GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md) | The indivisible five-row amendment transaction |
+| 2026-09-02 | [`PWB-STATE1-AMENDMENT-ACT.md`](PWB-STATE1-AMENDMENT-ACT.md) | The eleven-artifact state-(1) behavioral amendment |
+| 2026-09-02 | [`PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`](PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md), [`PWB-SECRET-CLASSIFICATION-POLICY-ACT.md`](PWB-SECRET-CLASSIFICATION-POLICY-ACT.md), [`PWB-OBSERVER-REGISTRY-ENTRY-ACT.md`](PWB-OBSERVER-REGISTRY-ENTRY-ACT.md) | The three effect-specific acts: consent, secret policy, observer registry entry |
+| 2026-09-02 | [`PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md`](PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md) | Authorization to implement PWB tasks §2–§5 |
+| 2026-09-05 | [`PWB-TRUTH-READINESS-AMENDMENT-ACT.md`](PWB-TRUTH-READINESS-AMENDMENT-ACT.md) | The truth, inert-Markdown and readiness amendment |
+| 2026-09-05 | [`PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md`](PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md), [`PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md`](PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md) | The two effect-act amendments |
+| 2026-09-05 | [`PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md`](PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md) | Continuation of implementation authority for the 2026-09-05 amendment |
+
+Dates are each file's first-commit date, not a claim about when the owner
+acted; the act's own record states that. [Observed — enumerated 2026-09-05 over
+every `*-ACT.md`, `*-DIRECTION.md` and `*-AUTHORIZATION.md` in this directory,
+dated by `git log --diff-filter=A`. Re-enumerate rather than trusting this
+table after any new act.]
 
 ## 3. Pending decisions — one bounded packet each
 
