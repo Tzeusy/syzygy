@@ -1,10 +1,20 @@
-# Candidate contract package — NOT ACCEPTED
+# Candidate contract package — partly accepted, partly still candidate
 
-> **Everything under this directory is candidate material. No owner
-> acceptance act has been performed over any of it. Nothing here binds,
-> and nothing here may be cited as accepted authority.** The accepted home
-> (`.syzygy/governance/contracts/rfcs/`) does not exist yet — it is created
-> only by the first wave act's install step, per the acceptance record.
+> **Nothing in this directory binds, and nothing here may be cited as
+> authority — no owner act has been performed over any file in this tree.**
+> What the Wave A and Wave B acts bound was each wave's *manifest digest*;
+> what they installed is a separate copy, under
+> `.syzygy/governance/contracts/rfcs/`. That home exists and holds those
+> modules. Read contract text there, never from here.
+>
+> The `rfcs/RFC-0001…0009` files under *this* directory are the
+> manifest-hashed candidate originals those acts were performed over: package
+> identity and review evidence, not a second authority. Where they and
+> `contracts/rfcs/` could ever disagree, the installed tree wins.
+>
+> Still candidate, never offered: **RFC-0010 (Mission Control)** and
+> **RFC-0011 (Context Compiler)**, the deferred waves C1/C2/D1/D2, and every
+> companion, report, and round record under this tree.
 
 This directory tracks the final pre-specification candidate package so that
 a fresh clone can read, review, and verify the exact artifacts the owner is
@@ -20,15 +30,27 @@ states (`round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md` through
 > wins and this page is stale**. Report the disagreement rather than
 > resolving it yourself.
 
-**Current state (as-of 2026-08-11):** the owner's launch target is
-**Capability 1 — Project registration and honest shape visibility**,
-prerequisite **Waves A + B**. Both waves' current exact packages are
-**confirmed** — Wave A `VERDICT: CONFIRM` (RD-31b), Wave B `VERDICT:
-CONFIRM` (RD-32c) — and neither act has been offered: Wave A's offer is
-withheld solely by owner decision **P-33**, and Wave B follows Wave A.
-`PROJECT-STATUS.md` owns both rows. **Waves C1/C2/D1/D2 are visibly
-deferred** — `DEFERRED-WAVE-POSTURE.md` is the disclosure. Task routing has
-one current answer: the generated `TASK-ROUTER.md`.
+**Current state — derived, not owned here.** `PROJECT-STATUS.md` owns every
+row below; read it, not this paragraph, and report any disagreement.
+
+- **Waves A and B are accepted.** Both acts were performed 2026-08-17 and
+  their modules installed to `.syzygy/governance/contracts/rfcs/`
+  (`decisions/ACCEPTANCE-ACT-RECORD.md`, Acts A and B, which state the
+  counts). The accepted RFC
+  0001–0009 bytes were subsequently amended by the 2026-09-01 general
+  trusted-bootstrap transaction and the 2026-09-02 PWB state-(1) amendment
+  act, both recorded in that same append-only record.
+- **Waves C1/C2/D1/D2 remain visibly deferred** — `DEFERRED-WAVE-POSTURE.md`
+  is the disclosure, and RFC-0010/RFC-0011 are their candidate subjects.
+- Task routing has one current answer: the generated `TASK-ROUTER.md`.
+
+*Superseded, kept because it is cited elsewhere:* until 2026-09-05 this
+paragraph still read "as-of 2026-08-11 … neither act has been offered: Wave
+A's offer is withheld solely by owner decision **P-33**, and Wave B follows
+Wave A", with both waves at `VERDICT: CONFIRM` (RD-31b, RD-32c). That was
+true when written and stopped being true when the two acts were performed on
+2026-08-17; the page's own "this page may be stale" banner discharged the
+governance check without the sentence ever being corrected.
 
 *Superseded state, kept because it is cited elsewhere:* an earlier revision
 of this paragraph said the Wave A/B repair batches "await fresh
