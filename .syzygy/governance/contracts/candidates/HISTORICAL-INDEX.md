@@ -21,16 +21,59 @@
 
 ## Historical rounds (whole directories; each has its own banners)
 
+Eleven closed rounds, in the order they were recorded. Dates are each
+directory's first-commit date; none is on a default path, and none is
+authority.
+
+| Directory | Recorded | What it holds |
+|---|---|---|
+| `round-2026-08/` | 2026-08-05 | Human-clarity refactor: charter, dispositions, superseded acceptance record and readiness report, archive index, reviews RB-1..8 |
+| `round-2026-08b/` | 2026-08-05 | Term closure, dependency closure, superseded acceptance record, reviews RC-1..12 |
+| `round-2026-08c/` | 2026-08-07 | Structural closure: superseded offering, readiness and clone reports, reviews RD-1..8 |
+| `round-2026-08d/` | 2026-08-09 | Wave split and review pass: work order, wave design, verdict and disposition registers, reviews RD-9..23, and the launch-gate pilot administration (immutable) |
+| `round-2026-08e/` | 2026-08-10 | Launch closure: preflight, launch-gate v1.4–v1.18 semantic deltas, Wave A and Wave B closure reports and deltas, reviews |
+| `round-2026-08f/` | 2026-08-11 | Capability 1 readiness: context-route report, owner decision packet, spec-outline exercise, launch-gate v2.0 delta, the P-33 semantic install analysis, final public clone report |
+| `round-2026-08g/` | 2026-08-13 | Owner-decision, launch-policy and specification-discipline closure: Capability 1 owner-decision index, planning-charter and default-path-currency accounts, launch-gate v2.1 and v2.2 deltas, shape-to-spec fixture 2 and its answer key |
+| `round-2026-08h/` | 2026-08-16 | Launch-gate v2.3 and v2.4 semantic deltas, and their reviews |
+| `round-2026-08i/` | 2026-08-17 | Convergence preflight: Capability 1 outline exercise 2, governance reduction plan (later revision), spec-acceptance-and-impact delta 2, pass checkpoint |
+| `round-2026-08j/` | 2026-08-18 | The repair pass after Administration 1: disposition register, the thesis risk ordering (B5 settlement), and the C2-normative-population and D3-coined-term sweeps with their scripts |
+| `round-2026-08k/` | 2026-08-20 | Capability 1 specification review binding (Pass 2 reviews RS-1..3 bound to exact bytes), and the prepared adoption act and implementation authorization |
+
+Companions, not rounds:
+
 | Directory | What it holds |
 |---|---|
-| `round-2026-08/` | human-clarity refactor round: charter, dispositions, superseded acceptance record/readiness report, archive index, reviews RB-1..8 |
-| `round-2026-08b/` | term closure, dependency closure, superseded acceptance record, reviews RC-1..12 |
-| `round-2026-08c/` | structural closure: superseded offering/readiness/clone reports, reviews RD-1..8 |
-| `round-2026-08d/` | wave split and review pass: work order, wave design, verdict/disposition registers, reviews RD-9..23 + the launch-gate pilot administration (immutable) |
-| `round-2026-08e/` | this launch-closure pass: preflight, deltas, closure reports (current while the round is open; history at its close) |
-| `history/` + `history/rev9-rfcs/` | the frozen rev9 corpus and per-RFC amendment history |
-| `matrix-rows/` | per-contract routing row sources |
+| `history/` + `history/rev9-rfcs/` | The frozen rev9 corpus and per-RFC amendment history |
+| `matrix-rows/` | Per-contract routing row sources |
 | `reviews/` (candidates root) | rev10-era reviews and dispositions |
+
+## Repeated filenames — which copy is last
+
+Twelve filenames occur in more than one round, each a successive revision
+and no two byte-identical. A basename alone therefore identifies nothing:
+resolve it here, or by first-commit date, before citing one. Three of these
+families are named `FINAL-…` and are not final.
+
+| Filename | Copies, oldest → newest | The last one |
+|---|---|---|
+| `FINAL-PRE-SPECIFICATION-READINESS-REPORT.md` | `round-2026-08/`, `round-2026-08b/`, `round-2026-08c/` | `round-2026-08c/` |
+| `FINAL-PUBLIC-CLONE-REPORT.md` | `round-2026-08c/`, `round-2026-08f/`, `round-2026-08g/` | `round-2026-08g/` |
+| `FINAL-CAPABILITY-1-READINESS-REPORT.md` | `round-2026-08f/`, `round-2026-08g/`, `round-2026-08i/` | `round-2026-08i/` |
+| `P33-SEMANTIC-INSTALL-ANALYSIS.md` | `round-2026-08f/`, `round-2026-08g/` | `round-2026-08g/` |
+| `GOVERNANCE-REDUCTION-PLAN.md` | `round-2026-08e/`, `round-2026-08i/` | `round-2026-08i/` |
+| `FIRST-OPENSPEC-SEQUENCE.md` | `round-2026-08c/`, `round-2026-08d/` | the candidates-root copy (rev 3) supersedes both |
+| `OWNER-DECISION-PACKETS.md` | `round-2026-08c/`, `round-2026-08d/` | the five `decisions/*-DECISION.md` packets supersede both |
+| `FINAL-HUMAN-CLARITY-REVIEW.md` | `round-2026-08/`, `round-2026-08b/` | `round-2026-08b/` |
+| `FINAL-OWNER-ACCEPTANCE-RECORD.md` | `round-2026-08/`, `round-2026-08b/` | superseded by `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md` |
+| `PUBLIC-CLONE-VERIFICATION-REPORT.md` | `round-2026-08/`, `round-2026-08b/` | `round-2026-08b/` |
+| `DELIVERY-AND-VERDICT-REGISTER.md` | `round-2026-08d/reviews/`, `round-2026-08e/reviews/` | `round-2026-08e/reviews/` |
+| `DISPOSITION-REGISTER.md` | `reviews/` under rounds `d`, `e`, `f`, `g`, `h` | `round-2026-08h/reviews/` |
+
+[Observed — swept 2026-09-05 over every `.md` under the eleven round
+directories, grouped by exact basename and compared by sha256: 12 of 217 distinct
+basenames have more than one copy, and no two copies inside a family are
+byte-identical. Ordering is each copy's `git log --diff-filter=A` date.
+Re-run the sweep rather than trusting this table after any new round.]
 
 ## Retired identities (never reused)
 
