@@ -115,6 +115,10 @@ describe('PWB-REQ-021 readiness on Polaris', () => {
     expect(leafTexts(slice, 'data-polaris-readiness-traversed')).toEqual(['/polaris', ROOT_EXACT_SOURCE]);
     expect(leafTexts(slice, 'data-polaris-readiness-surface')).toEqual(['polaris@0.3.0']);
     expect(leafTexts(slice, 'data-polaris-readiness-evaluation')).toEqual(['eval-0007']);
+    // The binding a record must name, from the machine channel, verbatim.
+    const expected = readinessOf(model).expected;
+    expect(leafTexts(slice, 'data-polaris-readiness-expected-surface')).toEqual([expected.surfaceVersion]);
+    expect(leafTexts(slice, 'data-polaris-readiness-expected-evaluation')).toEqual([expected.evaluationIdentity]);
     // The block carries no verdict value, no criterion result and no score.
     const text = slice.replace(/<[^>]+>/g, ' ');
     expect(text).not.toMatch(/=met\b|=not-met\b|verdict-unlawful|\bscore:|\d+\s?%|\bhealthy\b|\bpassing\b/i);
@@ -210,9 +214,26 @@ describe('PWB-REQ-021 readiness on Polaris', () => {
   });
 
   it('renders no-run-record and not-evaluated as their own states, never as not-ready', () => {
+    // When the record names another surface than the evaluation expects, the
+    // page shows both: the record's under the readiness marker, the expected
+    // one under the expected marker — never one for the other.
+    const fixture = walkthroughJudgmentFixture('lawful-state-1', 'judgment-eval-0001', { traversed: ['/polaris'] });
+    const mismatched = buildFixtureModel(cleanups, {
+      projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() },
+      walkthroughJudgment: { ...fixture, expectations: { ...fixture.expectations, surfaceVersion: 'polaris@0.9.9' } },
+    });
+    const mismatchedSlice = readinessSlice(renderPolarisPage(mismatched));
+    expect(leafTexts(mismatchedSlice, 'data-polaris-readiness-surface')).toEqual(['polaris@0.3.0']);
+    expect(leafTexts(mismatchedSlice, 'data-polaris-readiness-expected-surface')).toEqual(['polaris@0.9.9']);
     const absent = modelFor({ shape: 'observed', judgment: 'absent-run-record' });
     expect(absent.walkthroughReadiness.kind === 'evaluated' && absent.walkthroughReadiness.readiness.kind).toBe('no-run-record');
-    expect(state(renderPolarisPage(absent))).toBe('no-run-record');
+    const absentHtml = renderPolarisPage(absent);
+    expect(state(absentHtml)).toBe('no-run-record');
+    // Even with no record, the page says which binding a record must name.
+    const absentSlice = readinessSlice(absentHtml);
+    const expected = absent.walkthroughReadiness.kind === 'evaluated' ? absent.walkthroughReadiness.readiness.expected : undefined;
+    expect(leafTexts(absentSlice, 'data-polaris-readiness-expected-surface')).toEqual([expected?.surfaceVersion]);
+    expect(leafTexts(absentSlice, 'data-polaris-readiness-expected-evaluation')).toEqual([expected?.evaluationIdentity]);
     const none = modelFor({ shape: 'observed' });
     expect(none.walkthroughReadiness.kind).toBe('not-evaluated');
     const html = renderPolarisPage(none);

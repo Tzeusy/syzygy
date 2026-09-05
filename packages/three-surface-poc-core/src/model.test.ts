@@ -12,6 +12,7 @@ import {
 } from './model.js';
 import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import type { TestArtifactRecord } from './test-artifact-verification.js';
+import { walkthroughEvaluationIdentity } from './walkthrough-readiness.js';
 
 const cleanups: string[] = [];
 
@@ -311,6 +312,19 @@ describe('three-surface Butlers POC model', () => {
     };
     const observed = buildButlersPocModel({ ...baseInput, projectShape: { authority: admitting, runGit } });
     expect(observed.projectShape.kind).toBe('observed');
+    // The walkthrough-judgment seam is handed this very evaluation's identity.
+    const seen: string[] = [];
+    buildButlersPocModel({
+      ...baseInput,
+      projectShape: { authority: admitting, runGit },
+      walkthroughJudgment: (binding) => {
+        seen.push(binding.evaluationIdentity);
+        throw new Error('stop here');
+      },
+      walkthroughReadiness: { traversal: { polarisRoutes: ['/polaris'], isExactSourceRoute: () => false } },
+    });
+    expect(seen).toEqual([walkthroughEvaluationIdentity(observed.projectShape)]);
+    expect(seen[0]).toMatch(/^pwb-eval-[0-9a-f]{24}$/);
     if (observed.projectShape.kind === 'observed') {
       expect(observed.projectShape.identity.repositoryId).toBe('repository:butlers-configured-poc');
       expect(observed.projectShape.identity.revision).toBe('5'.repeat(40));
@@ -327,6 +341,33 @@ describe('three-surface Butlers POC model', () => {
     // The shape does not enter the inputs digest of the unrelated proving
     // slice (its own identity carries manifest and observation digests).
     expect(observed.evaluation.inputsDigest).toBe(unevaluated.evaluation.inputsDigest);
+  });
+
+  it('resolves walkthrough-judgment inputs through a callback bound to the shape\u2019s own evaluation identity, and fails closed when the loader throws', () => {
+    const repoRoot = butlersFixture();
+    const baseInput = {
+      repoRoot,
+      repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
+      observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
+      evaluation: { snapshot: 'butlers@c1389423', asOf: '2026-09-04T09:00:00.000Z' },
+    } as const;
+    const seen: string[] = [];
+    const throwing = buildButlersPocModel({
+      ...baseInput,
+      walkthroughJudgment: (binding) => {
+        seen.push(binding.evaluationIdentity);
+        throw new Error('governance tree unreadable');
+      },
+      walkthroughReadiness: { traversal: { polarisRoutes: ['/polaris'], isExactSourceRoute: () => false } },
+    });
+    // No shape was evaluated, so the identity names that state rather than
+    // an evaluation; the loader saw exactly that identity.
+    expect(seen).toEqual(['pwb-unobserved-not-evaluated']);
+    expect(throwing.walkthroughJudgment.kind).toBe('not-evaluated');
+    expect(throwing.walkthroughJudgment.kind === 'not-evaluated' && throwing.walkthroughJudgment.detail).toContain('governance tree unreadable');
+    expect(throwing.walkthroughReadiness.kind).toBe('not-evaluated');
+    expect(throwing.walkthroughReadiness.kind === 'not-evaluated' && throwing.walkthroughReadiness.detail).toContain('governance tree unreadable');
+    expect(JSON.stringify(throwing.walkthroughJudgment)).not.toMatch(/"verdict"|"met"/);
   });
 
   it('shows the materialized work item Observed only once the recorded Bead is confirmed present (AC4)', () => {

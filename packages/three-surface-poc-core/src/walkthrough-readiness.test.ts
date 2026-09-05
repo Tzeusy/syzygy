@@ -16,6 +16,7 @@ import {
   evaluateWalkthroughJudgment,
   evaluateWalkthroughReadiness,
   parseAnswers,
+  walkthroughEvaluationIdentity,
   JUDGMENT_CORRELATION_UNAVAILABLE,
   type ReadinessPopulation,
   type ReadinessTraversal,
@@ -162,6 +163,16 @@ describe('PWB-REQ-021 readiness: the ready case', () => {
     expect(result.surfaceVersion).toBe(SURFACE);
     expect(result.evaluationIdentity).toBe(EVALUATION);
     expect(result.traversedPaths).toEqual([POLARIS, EXACT_SOURCE, POLARIS]);
+    expect(result.expected).toEqual({ surfaceVersion: SURFACE, evaluationIdentity: EVALUATION });
+  });
+
+  it('carries the expected binding in every state, so a record can be written against the evaluation it must name', () => {
+    const absent = evaluateWalkthroughReadiness(inputs(undefined));
+    expect(absent.kind).toBe('no-run-record');
+    expect(absent.expected).toEqual({ surfaceVersion: SURFACE, evaluationIdentity: EVALUATION });
+    const mismatched = evaluated(evaluateWalkthroughReadiness(inputs(runRecordText({ set: { 'Surface version:': '`polaris@0.2.9`' } }))));
+    expect(mismatched.surfaceVersion).toBe('polaris@0.2.9');
+    expect(mismatched.expected.surfaceVersion).toBe(SURFACE);
   });
 
   it('retains the owner words verbatim and never reads them (a nonsense answer is still ready)', () => {
@@ -386,5 +397,61 @@ describe('answers grammar', () => {
       ['c.md', 10],
     ]);
     expect(parsed?.[0]?.authority?.path).toBe('a/b.md');
+  });
+});
+
+describe('walkthroughEvaluationIdentity', () => {
+  type Shape = Parameters<typeof walkthroughEvaluationIdentity>[0];
+  const inputs = {
+    repositoryId: 'repository:butlers-configured-poc',
+    revision: '5'.repeat(40),
+    discoveryVersion: '1',
+    observerId: 'observer:pwb',
+    observerVersion: '1',
+    implementationId: 'three-surface-poc-core/project-shape-observer',
+    implementationVersion: '1',
+    manifestDigest: `sha256:${'a'.repeat(64)}`,
+    resourceLimitsDigest: `sha256:${'b'.repeat(64)}`,
+    authority: {
+      kind: 'evaluated',
+      evaluationId: 'evaluation:pwb-body-read:2026-09-05T09:00:00.000Z',
+      consent: { kind: 'valid', provenance: 'state-1', actIdentity: 'act:consent', artifactDigest: `sha256:${'c'.repeat(64)}` },
+      policy: { kind: 'valid', provenance: 'state-1', actIdentity: 'act:policy', artifactDigest: `sha256:${'d'.repeat(64)}` },
+      registry: { kind: 'valid', provenance: 'state-1', actIdentity: 'act:registry', artifactDigest: `sha256:${'e'.repeat(64)}` },
+    },
+  };
+  const observedWith = (deterministicInputs: unknown, observationDigest = `sha256:${'0'.repeat(64)}`): Shape =>
+    ({ kind: 'observed', identity: { observationDigest, deterministicInputs } }) as unknown as Shape;
+  const base = walkthroughEvaluationIdentity(observedWith(inputs));
+
+  it('is an identifier under a fixed prefix, 24 hex digits of the deterministic inputs', () => {
+    expect(base).toMatch(/^pwb-eval-[0-9a-f]{24}$/);
+    expect(base).toMatch(/^[a-z0-9][a-z0-9-]*$/);
+  });
+
+  it('is the same after a restart: the per-run authority evaluation id and the observation digest that carries it do not enter', () => {
+    const restarted = observedWith({ ...inputs, authority: { ...inputs.authority, evaluationId: 'evaluation:pwb-body-read:2026-09-06T10:00:00.000Z' } }, `sha256:${'f'.repeat(64)}`);
+    expect(walkthroughEvaluationIdentity(restarted)).toBe(base);
+  });
+
+  it('changes with any deterministic input: revision, manifest, limits, versions, or the acts the authority rested on', () => {
+    const variants = [
+      { ...inputs, revision: '6'.repeat(40) },
+      { ...inputs, manifestDigest: `sha256:${'1'.repeat(64)}` },
+      { ...inputs, resourceLimitsDigest: `sha256:${'2'.repeat(64)}` },
+      { ...inputs, implementationVersion: '2' },
+      { ...inputs, authority: { ...inputs.authority, consent: { ...inputs.authority.consent, artifactDigest: `sha256:${'3'.repeat(64)}` } } },
+      { ...inputs, authority: { ...inputs.authority, policy: { kind: 'absent', what: 'policy', artifactDigest: null } } },
+      { ...inputs, authority: { kind: 'not-evaluated' } },
+    ];
+    const identities = variants.map((variant) => walkthroughEvaluationIdentity(observedWith(variant)));
+    for (const identity of identities) expect(identity).not.toBe(base);
+    expect(new Set(identities).size).toBe(variants.length);
+  });
+
+  it('names the unobserved state instead of minting an identity no record could lawfully bind', () => {
+    for (const kind of ['not-evaluated', 'not-admitted', 'observation-failed'] as const) {
+      expect(walkthroughEvaluationIdentity({ kind } as unknown as Shape)).toBe(`pwb-unobserved-${kind}`);
+    }
   });
 });

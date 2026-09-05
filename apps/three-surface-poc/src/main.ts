@@ -10,13 +10,13 @@ import {
   PocObservationError,
   readMaterializationRecordFile,
   readTestArtifactRecordFile,
+  type PocModel,
   type ProjectShapeModelInput,
-  type WalkthroughJudgmentInputs,
 } from '@syzygy/three-surface-poc-core';
 
 import { parsePocCli } from './cli.js';
 import { loadBodyReadAuthorityInputs } from './governance-inputs.js';
-import { loadWalkthroughJudgmentInputs, pwbReadinessTraversal } from './walkthrough-inputs.js';
+import { pwbReadinessTraversal, walkthroughJudgmentInputsFor } from './walkthrough-inputs.js';
 import {
   observeGitRepository,
   pocObserverInputsAreClean,
@@ -26,6 +26,19 @@ import { launchAfterPwbRepositoryBinding } from './launcher.js';
 import { materializeRoutes } from './materialize-action.js';
 import { pocRoutes } from './routes.js';
 import { gitBlobReaderFor, verbatimRouteReader } from './verbatim-route.js';
+
+/** The exact binding a PWB-WALKTHROUGH-001 record must name for this
+ * evaluation, printed so the recording session copies it rather than
+ * invents it; absent lines mean readiness could not be evaluated. */
+function walkthroughBindingLines(model: PocModel): readonly string[] {
+  const readiness = model.walkthroughReadiness;
+  if (readiness.kind !== 'evaluated') return [];
+  const { expected } = readiness.readiness;
+  return [
+    `Walkthrough surface version: ${expected.surfaceVersion}`,
+    `Walkthrough evaluation identity: ${expected.evaluationIdentity}`,
+  ];
+}
 
 const USAGE = `syzygy three-surface POC (local, non-release)
 
@@ -145,21 +158,16 @@ if (parsed.kind === 'help') {
             // PWB-REQ-022: the cold-open walkthrough pair is evaluated from the
             // same governance tree. An absent pair evaluates as `absent`
             // (Unknown, never met); only a loader failure leaves the judgment
-            // `not-evaluated` with the failure named.
-            let walkthroughJudgment: WalkthroughJudgmentInputs | undefined;
-            let walkthroughJudgmentDetail: string | undefined;
-            try {
-              walkthroughJudgment = loadWalkthroughJudgmentInputs({
-                repoRoot: process.cwd(),
-                governanceRevision: observerRevision,
-                evaluationId: `evaluation:pwb-walkthrough-judgment:${asOf}`,
-                evaluationInstant: asOf,
-              });
-            } catch (error: unknown) {
-              walkthroughJudgmentDetail = `Walkthrough-judgment inputs could not be loaded from ${process.cwd()}: ${
-                error instanceof Error ? error.message : String(error)
-              }`;
-            }
+            // `not-evaluated` with the failure named. The pair binds to the exact evaluation this build observes: the
+            // builder supplies the evaluation identity, the loader the Polaris
+            // surface version at the observer revision (a loader failure leaves
+            // both states `not-evaluated`, named).
+            const walkthroughJudgment = walkthroughJudgmentInputsFor({
+              repoRoot: process.cwd(),
+              governanceRevision: observerRevision,
+              evaluationId: `evaluation:pwb-walkthrough-judgment:${asOf}`,
+              evaluationInstant: asOf,
+            });
             return buildButlersPocModel({
               repoRoot,
               repositoryRevision,
@@ -170,7 +178,6 @@ if (parsed.kind === 'help') {
               projectShape,
               ...(projectShapeDetail === undefined ? {} : { projectShapeDetail }),
               walkthroughJudgment,
-              ...(walkthroughJudgmentDetail === undefined ? {} : { walkthroughJudgmentDetail }),
               // PWB-REQ-021 readiness against this evaluation's own Polaris routes.
               walkthroughReadiness: { traversal: pwbReadinessTraversal() },
             });
@@ -206,6 +213,7 @@ if (parsed.kind === 'help') {
                   `Syzygy Three-Surface POC: http://${daemon.host}:${daemon.port}/`,
                   `Observed repository: ${repoRoot}`,
                   `Observed revision: ${repositoryRevision}`,
+                  ...walkthroughBindingLines(model),
                   `Machine endpoint: http://${daemon.host}:${daemon.port}/api/poc`,
                   `Machine credential (${daemon.credentialProvision}) at: ${daemon.credentialPath}`,
                   'Credential value is never printed. POC is local, experimental, and non-release.',

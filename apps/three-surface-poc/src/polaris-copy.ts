@@ -206,6 +206,7 @@ export const POLARIS_COPY = [
   { id: 'sentence.readiness-no-run-record', role: 'epistemic-disclosure', kind: 'sentence', text: 'No walkthrough run record to assess:' },
   { id: 'label.readiness', role: 'epistemic-disclosure', kind: 'label', text: 'Readiness:' },
   { id: 'sentence.readiness-execution-fact', role: 'epistemic-disclosure', kind: 'sentence', text: 'An execution fact about the record, not a verdict and not a score.' },
+  { id: 'label.expected-binding', role: 'epistemic-disclosure', kind: 'label', text: 'A record for this evaluation must name:' },
   { id: 'label.surface-version', role: 'epistemic-disclosure', kind: 'label', text: 'surface' },
   { id: 'label.evaluation-identity', role: 'epistemic-disclosure', kind: 'label', text: 'evaluation' },
   { id: 'label.readiness-findings', role: 'epistemic-disclosure', kind: 'label', text: 'Why not ready:' },

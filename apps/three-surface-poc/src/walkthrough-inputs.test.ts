@@ -13,11 +13,22 @@ import { describe, expect, it } from 'vitest';
 
 import { evaluateWalkthroughJudgment } from '@syzygy/three-surface-poc-core';
 
-import { PWB_WALKTHROUGH_SCHEDULE as S, loadWalkthroughJudgmentInputs, pwbWalkthroughExpectations } from './walkthrough-inputs.js';
+import {
+  PWB_WALKTHROUGH_SCHEDULE as S,
+  loadWalkthroughJudgmentInputs,
+  pwbReadinessTraversal,
+  pwbSurfaceVersion,
+  pwbWalkthroughExpectations,
+  walkthroughJudgmentInputsFor,
+} from './walkthrough-inputs.js';
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 const EVALUATION_INSTANT = '2026-09-10T00:00:00Z';
 const ACT_DATE = '2026-09-06';
+/** A binding as the daemon would derive it: the Polaris tree id at the
+ * observer revision and the evaluation's observation-digest identity. */
+const BINDING = { surfaceVersion: 'polaris@0123456789ab', evaluationIdentity: 'pwb-eval-0123456789abcdef01234567' } as const;
+const SURFACE_TREE_ID = '0123456789abcdef0123456789abcdef01234567';
 
 function sha256(text: string): string {
   return createHash('sha256').update(text).digest('hex');
@@ -31,9 +42,9 @@ function runRecordText(): string {
     '',
     `Record identity: \`${S.runRecordIdentity}\``,
     '',
-    `Surface version: \`${S.surfaceVersion}\``,
+    `Surface version: \`${BINDING.surfaceVersion}\``,
     '',
-    `Evaluation identity: \`${S.evaluationIdentity}\``,
+    `Evaluation identity: \`${BINDING.evaluationIdentity}\``,
     '',
     `Mode: \`${S.mode}\``,
     '',
@@ -136,6 +147,7 @@ function loaderFor(tree: FakeTree) {
     repoRoot: root,
     evaluationId: 'eval-hermetic',
     evaluationInstant: EVALUATION_INSTANT,
+    binding: BINDING,
     readFile: (absolute) => {
       const text = tree.files.get(relative(absolute));
       if (text === undefined) throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' });
@@ -175,10 +187,125 @@ describe('the scheduled walkthrough', () => {
     expect(S.runRecordIdentity).toBe('PWB-WALKTHROUGH-001');
     expect(S.mode).toBe('nonvisual-keyboard-only');
     expect(S.phrasePrefix).toBe('ADOPT POLARIS COLD-OPEN WALKTHROUGH JUDGMENT');
-    const expectations = pwbWalkthroughExpectations(EVALUATION_INSTANT);
+    const expectations = pwbWalkthroughExpectations(EVALUATION_INSTANT, BINDING);
     expect(expectations.judgment.a1).toEqual({ kind: 'absent' });
     expect(expectations.judgment.scopeAnchors).toEqual(['PWB-WALKTHROUGH-001', 'polaris-cold-open-comprehension']);
     expect(expectations.otherActBoundArtifacts).toHaveLength(3);
+  });
+
+  it('carries no placeholder binding: surface version and evaluation identity come only from the bound evaluation', () => {
+    expect(Object.keys(S)).not.toContain('surfaceVersion');
+    expect(Object.keys(S)).not.toContain('evaluationIdentity');
+    const expectations = pwbWalkthroughExpectations(EVALUATION_INSTANT, BINDING);
+    expect(expectations.surfaceVersion).toBe(BINDING.surfaceVersion);
+    expect(expectations.evaluationIdentity).toBe(BINDING.evaluationIdentity);
+    expect(JSON.stringify(S)).not.toMatch(/0\.0\.0|not-yet-recorded/);
+  });
+
+  it('admits Polaris routes only (PWB-REQ-021 as amended): the page and its exact-source route, direct and mounted', () => {
+    expect([...S.surfaceRoutes]).toEqual(['/polaris', '/butlers-syzygy/polaris', '/polaris/source', '/butlers-syzygy/polaris/source']);
+    for (const other of ['/', '/trajectory', '/orrery', '/trajectory/materialize', '/api/poc']) {
+      expect(S.surfaceRoutes as readonly string[]).not.toContain(other);
+    }
+  });
+});
+
+describe('pwbSurfaceVersion', () => {
+  it('is the Polaris source tree id at the observer revision, and nothing else moves it', () => {
+    const calls: string[][] = [];
+    const runGit = (_root: string, args: readonly string[]): string => {
+      calls.push([...args]);
+      return `${SURFACE_TREE_ID}\n`;
+    };
+    expect(pwbSurfaceVersion(runGit, '/fake/root', 'a'.repeat(40))).toBe('polaris@0123456789ab');
+    expect(calls).toEqual([['rev-parse', `${'a'.repeat(40)}:apps/three-surface-poc/src`]]);
+  });
+
+  it('fails closed to polaris@unresolved when the tree cannot be resolved or is not a tree id', () => {
+    expect(pwbSurfaceVersion(() => { throw new Error('bad revision'); }, '/fake/root', 'deadbeef')).toBe('polaris@unresolved');
+    expect(pwbSurfaceVersion(() => 'fatal: not a tree\n', '/fake/root', 'deadbeef')).toBe('polaris@unresolved');
+    expect(pwbSurfaceVersion(() => '', '/fake/root', 'deadbeef')).toBe('polaris@unresolved');
+  });
+
+  it('the real tree resolves to the surface tree at HEAD, and the record grammar accepts it', () => {
+    const head = execFileSync('git', ['-C', REPO_ROOT, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+    const tree = execFileSync('git', ['-C', REPO_ROOT, 'rev-parse', `${head}:apps/three-surface-poc/src`], { encoding: 'utf8' }).trim();
+    const runGit = (root: string, args: readonly string[]): string => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8' });
+    const version = pwbSurfaceVersion(runGit, REPO_ROOT, head);
+    expect(version).toBe(`polaris@${tree.slice(0, 12)}`);
+    expect(version).toMatch(/^[a-z][a-z0-9-]*@[0-9A-Za-z][0-9A-Za-z.+-]*$/);
+  });
+});
+
+describe('walkthroughJudgmentInputsFor', () => {
+  it('binds the loaded pair to the builder-supplied evaluation identity and the tree-derived surface version', () => {
+    const tree = fakeTree();
+    const root = '/fake/root';
+    const relative = (absolute: string): string => absolute.slice(`${root}/`.length);
+    const loader = walkthroughJudgmentInputsFor({
+      repoRoot: root,
+      evaluationId: 'eval-hermetic',
+      evaluationInstant: EVALUATION_INSTANT,
+      governanceRevision: 'b'.repeat(40),
+      readFile: (absolute) => {
+        const text = tree.files.get(relative(absolute));
+        if (text === undefined) throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' });
+        return new TextEncoder().encode(text);
+      },
+      listDirectory: (absolute) => {
+        const prefix = `${relative(absolute)}/`;
+        return [...tree.files.keys()].filter((path) => path.startsWith(prefix)).map((path) => path.slice(prefix.length));
+      },
+      runGit: (_root, args) => {
+        if (args[0] === 'rev-parse' && args[1] === `${'b'.repeat(40)}:apps/three-surface-poc/src`) return `${SURFACE_TREE_ID}\n`;
+        if (args[0] === 'rev-parse') return `${'4'.repeat(40)}\n`;
+        if (args[0] === 'ls-tree') return tree.treePaths.has(args[4] ?? '') ? `${args[4]}\n` : '';
+        throw new Error(`unexpected git ${args.join(' ')}`);
+      },
+      readGitBlob: (_root, object) => {
+        const path = object.split(':').slice(1).join(':');
+        const text = tree.files.get(path);
+        if (text === undefined) throw new Error('missing');
+        return new TextEncoder().encode(text);
+      },
+    });
+    const inputs = loader({ evaluationIdentity: BINDING.evaluationIdentity });
+    expect(inputs.expectations.surfaceVersion).toBe(BINDING.surfaceVersion);
+    expect(inputs.expectations.evaluationIdentity).toBe(BINDING.evaluationIdentity);
+    expect(evaluateWalkthroughJudgment(inputs).outcome.kind).toBe('lawful');
+    // Another evaluation identity: the same record no longer binds.
+    const other = loader({ evaluationIdentity: 'pwb-eval-ffffffffffffffffffffffff' });
+    expect(evaluateWalkthroughJudgment(other).outcome.kind).toBe('unlawful');
+  });
+});
+
+describe('pwbReadinessTraversal', () => {
+  const traversal = pwbReadinessTraversal();
+  const population = ['openspec/specs/alpha/spec.md', 'heart-and-soul/README.md'];
+
+  it('names the Polaris page routes and admits the exact-source route in every spelling of the same evaluation', () => {
+    expect([...traversal.polarisRoutes]).toEqual(['/polaris', '/butlers-syzygy/polaris']);
+    expect(traversal.isExactSourceRoute('/polaris#polaris-source-openspec-specs-alpha-spec-md', population)).toBe(true);
+    expect(traversal.isExactSourceRoute('/butlers-syzygy/polaris#polaris-source-openspec-specs-alpha-spec-md', population)).toBe(true);
+    expect(traversal.isExactSourceRoute('/polaris/source', population)).toBe(true);
+    expect(traversal.isExactSourceRoute('/butlers-syzygy/polaris/source', population)).toBe(true);
+    expect(traversal.isExactSourceRoute('/polaris/source?identity=source:openspec/specs/alpha/spec.md%23abc', population)).toBe(true);
+    expect(traversal.isExactSourceRoute('/polaris/source?identity=source:openspec/specs/alpha/spec.md', population)).toBe(true);
+  });
+
+  it('rejects other surfaces, other evaluations\' sources and malformed identities', () => {
+    expect(traversal.isExactSourceRoute('/trajectory', population)).toBe(false);
+    expect(traversal.isExactSourceRoute('/polaris', population)).toBe(false);
+    expect(traversal.isExactSourceRoute('/polaris#polaris-source-lay-and-land-readme-md', population)).toBe(false);
+    // A Polaris fragment on another surface is not a Polaris route.
+    expect(traversal.isExactSourceRoute('/trajectory#polaris-source-openspec-specs-alpha-spec-md', population)).toBe(false);
+    expect(traversal.isExactSourceRoute('/#polaris-source-openspec-specs-alpha-spec-md', population)).toBe(false);
+    expect(traversal.isExactSourceRoute('/polaris/source?identity=source:lay-and-land/README.md', population)).toBe(false);
+    expect(traversal.isExactSourceRoute('/polaris/source?other=1', population)).toBe(false);
+    expect(traversal.isExactSourceRoute('/polaris/source?identity=', population)).toBe(false);
+    expect(traversal.isExactSourceRoute('/polaris/source#x', population)).toBe(false);
+    expect(traversal.isExactSourceRoute('/polaris/sources', population)).toBe(false);
+    expect(traversal.isExactSourceRoute('/polaris?identity=source:openspec/specs/alpha/spec.md', population)).toBe(false);
   });
 });
 
@@ -258,6 +385,7 @@ describe('loadWalkthroughJudgmentInputs (real tree)', () => {
       governanceRevision,
       evaluationId: 'eval-real',
       evaluationInstant: new Date().toISOString(),
+      binding: BINDING,
     });
     const outcome = evaluateWalkthroughJudgment(inputs).outcome;
     if (existsSync(join(REPO_ROOT, S.runRecordPath))) {
