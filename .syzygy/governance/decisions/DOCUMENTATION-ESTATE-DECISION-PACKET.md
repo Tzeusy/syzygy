@@ -137,7 +137,11 @@ the directory sees `config.yaml`, `changes/`, `specs/`, and three change
 directories whose names do not say which one is adopted, which is a bounded
 non-release experiment, and which is a later repair to that experiment. One of
 the three proposals also lacks the "Candidate specification" banner the other
-two carry, so its status is invisible at its head.
+two carry, so its status is invisible at its head — and it cannot be given
+one: every byte of `polaris-project-wide-butlers-model/` is bound by the PWB
+truth-and-readiness amendment performed 2026-09-05, and its `proposal.md`
+still hashes to the manifest row that act's argument covers. Adding a banner
+there would break a performed act's argument.
 
 **Why it matters.** This is the same defect that was just repaired in `docs/`
 and in the contract tree: authority exists and is correct, but nothing routes
@@ -164,12 +168,14 @@ the governed plane stay free of agent-authored pages as a matter of principle,
 (b) costs little: the same information can live in `PROJECT-STATUS.md`, which
 is already the page that owns which acts are in force.
 
-Either way, the missing status banner on the third proposal is a separate,
-smaller thing: it is a disclosure, its two siblings show the exact form, and
-it should be added under whichever arm you pick.
+This also makes an index the *only* lawful place to disclose that third
+change's status. Its head cannot carry a banner without breaking the act, so
+if the answer is (b), the routing sentence in `PROJECT-STATUS.md` has to say
+which of the three is bound and by which act — a pointer alone will not do.
 
-**Default if unanswered:** `openspec/` keeps no index and the third proposal
-keeps no status banner.
+**Default if unanswered:** `openspec/` keeps no index, and the status of the
+three sibling changes stays legible only to a reader who already knows the act
+record.
 
 ---
 

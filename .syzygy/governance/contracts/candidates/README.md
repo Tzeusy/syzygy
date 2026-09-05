@@ -84,6 +84,33 @@ are that round's record and are not the current package's state.
 | `00-README.md`, `01`–`10-*`, other top-level reports | The rev10 packet's own delivery reports, kept as packet history |
 | `DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` | The D3 proposal, rev1 — act 5's subject (optional). Supersedes `…-DRAFT.md`, which stays in place, banner-marked, as the original the owner may still compare |
 
+### Act packages prepared in this tree
+
+Five directories hold prepared act packages — a semantic delta, a manifest,
+an impact ledger, a review brief, and an owner packet apiece. They were absent
+from every index in this tree until 2026-09-05, which is why a reader could
+only find the newest and most consequential material here by listing the
+directory. **A performed act's authority is the record in
+`.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md`, never the package**;
+the package is how the act was prepared and what its argument was computed
+over. Some of these packages still carry the "candidate, binds nothing" banner
+they were drafted with, written before the act was performed over them —
+read the act record, not the banner.
+
+| Directory | Subject | Where its authority is |
+|---|---|---|
+| `general-trusted-bootstrap-authorization/` | The indivisible five-row contract and PWB-coverage amendment | Act record, "General trusted-bootstrap authorization transaction — performed 2026-09-01" |
+| `pwb-state1-amendment/` | The two-requirement state-(1) behavioral amendment | Act record, "PWB state-(1) amendment — performed 2026-09-02" |
+| `pwb-effect-acts/` | The three effect-specific acts: consent-observation, approve-policy, adopt-registry-entry | Act record, three separate entries, all performed 2026-09-02 |
+| `pwb-truth-policy-amendment/` | PWB truth, inert Markdown and readiness repair, plus two effect-act amendments | Act record, three entries performed 2026-09-05 |
+| `pwb-walkthrough/` | The Polaris cold-open walkthrough packet — asks the owner for a reading only they can give | No act; the packet performs nothing and is still waiting on the owner |
+
+Eight further top-level files here are the rev10 packet's own working records
+— compaction charter, worker-report digest, lead sweep notes, context-budget
+report, two Polaris observation deltas, the general trusted-bootstrap routing
+delta, and the superseded D3 draft. Each is banner-marked at its own head;
+none is authority, and none is reachable from any route that matters.
+
 The packet's former `doctrine/` and `craft-and-care/` mirrors are **not**
 tracked here — their canonical homes are `.syzygy/governance/doctrine/` and
 `.syzygy/governance/policies/craft-and-care/` (one authoritative home per
