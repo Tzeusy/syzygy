@@ -5,7 +5,7 @@ import { BROWSER_ORIGIN_REFUSAL, browserRequestAllowed } from './browser-origin.
 import { epistemicText, exactTablesSection } from './exact-tables.js';
 import { ORRERY_HUMAN_PATH, ORRERY_TAILNET_PATH, renderOrreryPage } from './orrery.js';
 import { pageShell } from './page-shell.js';
-import { POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, renderPolarisPage } from './polaris.js';
+import { POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, renderPolarisPage, type PolarisRenderInputs } from './polaris.js';
 import { mountPrefixForRequest, TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { renderTrajectoryPage, TRAJECTORY_HUMAN_PATH, TRAJECTORY_TAILNET_PATH } from './trajectory.js';
 
@@ -124,7 +124,13 @@ export function boundedResponse(model: PocModel, limits: PwbResourceLimits, limi
   return { status: RESPONSE_LIMIT_STATUS, contentType: 'application/json', body: JSON.stringify(responseLimitFailure(model, limit, declared, observed)) };
 }
 
-export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = PWB_RESOURCE_LIMITS): readonly Route[] {
+/** Render-time inputs for Polaris only (PWB-REQ-011's transient verbatim
+ * route): derived per request from the model being rendered, never stored.
+ * Absent → Polaris renders with no verbatim reader, so requirement text is
+ * disclosed as outside the consented class. */
+export type PolarisRenderInputsFor = (model: PocModel) => PolarisRenderInputs;
+
+export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = PWB_RESOURCE_LIMITS, polarisInputs?: PolarisRenderInputsFor): readonly Route[] {
   const html = (model: PocModel, body: string): RouteResponse => boundedResponse(model, limits, 'maxHumanResponseBytes', 'text/html; charset=utf-8', body);
   const humanHandle: Route['handle'] = ({ request }) => {
     if (!browserRequestAllowed(request.headers)) {
@@ -170,7 +176,7 @@ export function pocRoutes(getModel: () => PocModel, limits: PwbResourceLimits = 
       credentialClass: 'human-open',
       handle: humanHandle,
     },
-    ...humanSurfaceRoutes(POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, renderPolarisPage),
+    ...humanSurfaceRoutes(POLARIS_HUMAN_PATH, POLARIS_TAILNET_PATH, (model, mountPrefix) => renderPolarisPage(model, mountPrefix, {}, polarisInputs === undefined ? {} : polarisInputs(model))),
     ...humanSurfaceRoutes(TRAJECTORY_HUMAN_PATH, TRAJECTORY_TAILNET_PATH, renderTrajectoryPage),
     ...humanSurfaceRoutes(ORRERY_HUMAN_PATH, ORRERY_TAILNET_PATH, renderOrreryPage),
     {

@@ -5,6 +5,8 @@ import { dirname, join } from 'node:path';
 
 import { buildButlersPocModel, type PocModel, type ProjectShapeModelInput, type WalkthroughJudgmentInputs } from '@syzygy/three-surface-poc-core';
 
+import { pwbReadinessTraversal } from './walkthrough-inputs.js';
+
 function git(root: string, args: readonly string[]): string {
   return execFileSync('git', ['-C', root, ...args], {
     // Pinned commit instants: two fixture builds in one test must mint the
@@ -137,5 +139,8 @@ export function buildFixtureModel(cleanups: string[], options: FixtureModelOptio
       sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: doltRevision }]),
     ...(options.projectShape === undefined ? {} : { projectShape: options.projectShape }),
     ...(options.walkthroughJudgment === undefined ? {} : { walkthroughJudgment: options.walkthroughJudgment }),
+    // The production traversal predicate: readiness is assessed whenever a
+    // pair is supplied, exactly as the daemon does.
+    walkthroughReadiness: { traversal: pwbReadinessTraversal() },
   });
 }

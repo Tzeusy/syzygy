@@ -326,7 +326,7 @@ function shortDigest(digest: string): string {
   return digest.replace(/^sha256:/, '').slice(0, 12);
 }
 
-function sourceSlug(path: string): string {
+export function sourceSlug(path: string): string {
   return path.replace(/[^A-Za-z0-9]+/g, '-');
 }
 
@@ -520,6 +520,55 @@ function walkthroughJudgmentSection(model: PocModel): string {
     ${head}
     ${evaluated}
     ${body}
+  </section>`;
+}
+
+/** PWB-REQ-021 (as amended 2026-09-05): whether the retained walkthrough
+ * record is a ready answer population against this evaluation. Every
+ * finding, every retained answer and every anchor is its own
+ * `data-polaris-readiness*` marker (the machine channel carries the same
+ * value under `walkthroughReadiness`); the owner's words are shown verbatim
+ * under the disclosure role — an execution fact, never a verdict or score,
+ * and separate from the judgment above. */
+function walkthroughReadinessSection(model: PocModel): string {
+  const readiness = model.walkthroughReadiness;
+  const head = heading(3, 'polaris-walkthrough-readiness', 'evidence.walkthrough-readiness');
+  if (readiness.kind === 'not-evaluated') {
+    return `<section class="claim-section" data-polaris-section="walkthrough-readiness" data-polaris-readiness="not-evaluated">
+    ${head}
+    <p${DISCLOSURE}><small>${copy('sentence.readiness-not-evaluated')} <span data-polaris-readiness-detail>${escapeHtml(readiness.detail)}</span></small></p>
+  </section>`;
+  }
+  const r = readiness.readiness;
+  if (r.kind === 'no-run-record') {
+    return `<section class="claim-section" data-polaris-section="walkthrough-readiness" data-polaris-readiness="no-run-record">
+    ${head}
+    <p${DISCLOSURE}><small>${copy('sentence.readiness-no-run-record')} <span data-polaris-readiness-detail>${escapeHtml(r.detail)}</span></small></p>
+  </section>`;
+  }
+  const state = r.ready ? 'ready' : 'not-ready';
+  const findings = r.findings.length === 0
+    ? ''
+    : `<p${DISCLOSURE}><small>${copy('label.readiness-findings')}</small></p>
+    <ul${DISCLOSURE}>${r.findings.map((finding) => `<li data-polaris-readiness-arm="${escapeHtml(finding.arm)}"><small><code>${escapeHtml(finding.arm)}</code> — <span data-polaris-readiness-finding>${escapeHtml(finding.detail)}</span></small></li>`).join('')}</ul>`;
+  const traversed = r.traversedPaths.map((path) => `<code data-polaris-readiness-traversed>${escapeHtml(path)}</code>`).join(', ');
+  const answers = r.answers.length === 0
+    ? ''
+    : `<p${DISCLOSURE}><small>${copy('label.answers')}</small></p>
+    <ol${DISCLOSURE} data-polaris-answers>${r.answers.map((answer) => {
+      const anchors = answer.anchors.length === 0
+        ? ''
+        : `<br><small>${copy('label.sources')} ${answer.anchors.map((anchor) => `<code data-polaris-answer-anchor="${escapeHtml(anchor.path)}:${anchor.line}" data-polaris-anchor-resolved="${anchor.resolved ? 'yes' : 'no'}">${escapeHtml(`${anchor.path}:${anchor.line}`)}</code>`).join(', ')}</small>`;
+      const authority = answer.authority === undefined
+        ? ''
+        : `<br><small>${copy('label.cited-authority')} <code data-polaris-answer-authority="${escapeHtml(answer.authority.path)}" data-polaris-authority-resolved="${answer.authority.resolved ? 'yes' : 'no'}">${escapeHtml(answer.authority.path)}</code></small>`;
+      return `<li data-polaris-answer="${escapeHtml(answer.identity)}"><code>${escapeHtml(answer.identity)}</code><blockquote data-polaris-answer-text>${escapeHtml(answer.text)}</blockquote>${anchors}${authority}</li>`;
+    }).join('')}</ol>`;
+  return `<section class="claim-section" data-polaris-section="walkthrough-readiness" data-polaris-readiness="${state}">
+    ${head}
+    <p${DISCLOSURE}><small>${copy('label.readiness')} <span data-polaris-readiness-state>${state}</span>. ${copy('sentence.readiness-execution-fact')} ${copy('label.surface-version')} <code data-polaris-readiness-surface>${escapeHtml(r.surfaceVersion ?? '')}</code>; ${copy('label.evaluation-identity')} <code data-polaris-readiness-evaluation>${escapeHtml(r.evaluationIdentity ?? '')}</code>; ${traversed === '' ? '' : `${copy('label.traversed')} ${traversed}.`}</small></p>
+    ${findings}
+    ${answers}
   </section>`;
 }
 
@@ -775,7 +824,12 @@ function verbatimSlot(dive: CapabilityDeepDive, resolution: VerbatimResolution |
         : unknownLine(marker, 'reference-unresolvable', UNKNOWN_REASON_ROUTES['reference-unresolvable'], `The baseline spec ${intent.path} carries no captured identity to verify text against.`);
     }
     if (resolution.kind === 'not-rendered') return unknownLine(marker, resolution.reason, resolution.route, resolution.detail);
-    return `<pre class="verbatim" data-verbatim-text data-verbatim-identity="${escapeHtml(resolution.identity)}"${roleAttr('project-fact', 'anchored-project-fact')}>${escapeHtml(resolution.text)}</pre>`;
+    // One block per selected requirement (PWB-REQ-011 as amended): the
+    // requirement heading and its scenarios, byte-for-byte; nothing else of
+    // the owning artifact reaches the page.
+    return resolution.requirements
+      .map((requirement) => `<pre class="verbatim" data-verbatim-text data-verbatim-requirement="${escapeHtml(requirement.title)}" data-verbatim-identity="${escapeHtml(resolution.identity)}"${roleAttr('project-fact', 'anchored-project-fact')}>${escapeHtml(requirement.text)}</pre>`)
+      .join('\n');
   })();
   return `<section class="claim-section" data-contract-part="requirement-text" data-verbatim="${resolution?.kind === 'rendered' ? 'rendered' : 'not-rendered'}"${attrs}>
       ${heading(4, `polaris-${dive.capabilityId}-requirement-text`, 'label.requirement-text')}
@@ -1075,6 +1129,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     ${groupHeader('evidence-and-gaps')}
     ${shapeEvidence(shape)}
     ${walkthroughJudgmentSection(model)}
+    ${walkthroughReadinessSection(model)}
     ${codeStructureSection(model)}
     ${workItemsSection(model)}`;
   // The machine form of the presentation artifact precedes every group so no

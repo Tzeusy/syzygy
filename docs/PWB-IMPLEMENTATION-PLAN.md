@@ -281,6 +281,85 @@ so both catalog counts are Unknown with `excluded-content`, the stated
 values retained and anchored, no rule applied — the lawful outcome; no
 number is shown over an Unknown denominator.
 
+C5 note, recorded 2026-09-05 (bead syzygy-1z3.24.4; effective acts: the
+truth-and-readiness amendment's PWB-REQ-021 and PWB-REQ-011 as amended, the
+registry-entry amendment, and the implementation-authorization continuation
+direction): two seams, both pure and injectable.
+
+(a) PWB-REQ-021 readiness. `walkthrough-readiness.ts` (core) owns the nine
+answer identities (`why`, `promises`, `refusals-and-rule`,
+`capabilities-and-fit`, `exact-requirement`, `unknown-or-contradiction`,
+`claim-strength`, `architecture-and-groups`, `v1-success`) and the ten
+readiness arms (`answer-missing`, `answer-empty`, `answer-duplicate`,
+`answer-unrecognized`, `anchor-unresolved`, `surface-mismatch`,
+`evaluation-mismatch`, `path-outside-polaris`, `resource-breach`,
+`authority-unresolvable`). It reads the run record's `## Answers` section
+(`### <identity>` subsections; `Sources:` backticked `path:line` anchors;
+`Authority:` one backticked path; every other non-empty line is the reader's
+own words, retained verbatim and never scored), sweeps every arm (no first-
+failure stop), and reports `ready` only when no arm fired. Anchors resolve
+against the same evaluation's complete source population (an Unknown source
+is still a source); a cited authority resolves only to an admitted source.
+Traversed paths must be Polaris or its same-evaluation exact-source route
+(`/polaris`, the tailnet mount, or either with the
+`#polaris-source-<slug>` fragment of a population source — the predicate is
+injected from the app, `pwbReadinessTraversal()`). Any PWB-REQ-006 breach in
+the evaluation makes readiness false. The judgment evaluator is untouched
+and its `section()` never sees `## Answers`, so readiness cannot change a
+PWB-REQ-022 outcome (tested both ways: ready-and-unlawful, not-ready-and-
+lawful); readiness never mints `verdict-unlawful`, a verdict or a score.
+`PocModel.walkthroughReadiness` is `not-evaluated` (no judgment inputs or no
+traversal), or `evaluated` with `no-run-record` / `evaluated` readiness;
+Polaris renders it as the `walkthrough-readiness` section (state, findings,
+each answer's own words, anchors and authority with resolution flags), all
+disclosure-role copy, machine form by construction.
+`[Inferred]` tension to resolve in P8: the exact-source fragment route is a
+lawful readiness traversal but lies outside `PWB_WALKTHROUGH_SCHEDULE`'s
+route population, so a record that traverses it is ready yet judged
+`traversed-paths-wrong` under PWB-REQ-022 — the 84 + 2 denominator is
+unchanged here; whether the schedule should name the fragment routes is an
+owner question, not an implementation call.
+
+(b) PWB-REQ-011 exact-requirement route. `verbatim-route.ts` (app) is the
+transient route: `verbatimRouteReader(model, readBlob)` is derived per
+render from the model being rendered (routes pass it through
+`pocRoutes(getModel, limits, polarisInputs)`; `main.ts` binds
+`gitBlobReaderFor(repoRoot)`), stores and caches nothing, and per leaf
+requires, in order: the leaf's path is a source of this evaluation's
+population under the `baseline-spec-tree` rule; the leaf's revision and
+identity are this evaluation's; the source was not excluded; the anchor is a
+blob and the path is not policy-denied; the bytes Git serves hash to the
+exact object id; the body fits `maxBytesPerSource`; it is NUL-free UTF-8;
+the approved secret detectors find nothing; the active-content scan (with
+the inert Markdown code-context mask) finds nothing. Then `resolveVerbatim`
+re-checks the identity and selects only `### Requirement:` blocks (each with
+its `#### Scenario:` children, ended by the next h1–h3 heading, trailing
+blank lines trimmed); the h1 title, `## Purpose` prose and inter-block text
+are never encoded; a spec with no requirement heading is
+`reference-unresolvable`. Every failed gate is a typed refusal naming the
+detector or form, never bytes. `[Observed]` Phase B classifies every
+baseline spec path-only (the directory name is the item identity; the body
+is deliberately not read), so the evaluation holds no whole-body verdict for
+them and the route runs the unchanged detectors and scan itself before any
+block may be encoded — the reading of "the existing … gates all admit it"
+applied here; no new consent, content class or population rule. Polaris
+renders one `<pre data-verbatim-text data-verbatim-requirement="<title>">`
+per selected block; the machine form carries the titles, never the text.
+The P3.8 note's `[Unknown]` on live rendering is now answered below.
+
+Evidence: core 27 + app 10 readiness tests, 13 route tests, capability-
+detail suite updated to the selected-block grammar; 38 rule-6 mutations
+killed (17 readiness arms, 4 population/traversal, 12 route gates, 5
+selection/resolution), sources restored byte-for-byte
+(`docs/evidence/pwb-c5-readiness-verbatim-mutation-run-2026-09-05.json`).
+Live at Butlers d684c5776: 185 baseline specs, all classified path-only;
+the route renders 175 (1,669 requirement blocks selected) and refuses 10 —
+nine for active content (`html-tag` ×8, `html-comment-or-declaration` ×1)
+and one (`healing-anonymizer`) on the `known-token-formats` detector — each
+named by form or detector only. The Polaris page renders the current
+leaf (`switchboard-identity`, six blocks) verbatim; readiness is
+`no-run-record` because `PWB-WALKTHROUGH-001.md` does not exist yet (P8).
+
 P2.7 note, recorded 2026-09-04: `project-shape-model.ts` composes P1–P2.6
 into the one `ProjectShape` value that `model.ts` places on `PocModel`;
 `GET /api/poc` is still `JSON.stringify(model)`, so the machine answer is
@@ -528,7 +607,10 @@ production passes no reader and the contract band discloses
 only when they hash to the captured git object id / sha256, are NUL-free
 UTF-8, and appear once on the page, never in the machine form or the model).
 `[Unknown]` The live rendering of real Butlers requirement text stays Unknown
-until an act extends consent to that class. Doctrine and non-goal parts are
+until an act extends consent to that class. (Superseded 2026-09-05 by the
+C5 note: the truth-and-readiness amendment's PWB-REQ-011 authorizes the
+transient selected-requirement route over the already-consented population;
+live rendering is now Observed.) Doctrine and non-goal parts are
 Unknown `missing-declaration` (the consented grammar declares no capability →
 doctrine/non-goal link) or the shape's own reason when the shape is not
 observed. Proposals moved from an anchored block to a non-anchored,

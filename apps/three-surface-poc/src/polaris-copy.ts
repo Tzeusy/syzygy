@@ -169,6 +169,19 @@ export const POLARIS_COPY = [
   { id: 'label.act', role: 'epistemic-disclosure', kind: 'label', text: 'Act' },
   { id: 'label.traversed', role: 'epistemic-disclosure', kind: 'label', text: 'traversed' },
   { id: 'label.rationale', role: 'epistemic-disclosure', kind: 'label', text: 'Rationale:' },
+  // PWB-REQ-021 (amended 2026-09-05): readiness of the retained walkthrough
+  // record — an execution fact, never a verdict or a score.
+  { id: 'evidence.walkthrough-readiness', role: 'epistemic-disclosure', kind: 'heading', text: 'Walkthrough record readiness' },
+  { id: 'sentence.readiness-not-evaluated', role: 'epistemic-disclosure', kind: 'sentence', text: 'Readiness was not assessed:' },
+  { id: 'sentence.readiness-no-run-record', role: 'epistemic-disclosure', kind: 'sentence', text: 'No walkthrough run record to assess:' },
+  { id: 'label.readiness', role: 'epistemic-disclosure', kind: 'label', text: 'Readiness:' },
+  { id: 'sentence.readiness-execution-fact', role: 'epistemic-disclosure', kind: 'sentence', text: 'An execution fact about the record, not a verdict and not a score.' },
+  { id: 'label.surface-version', role: 'epistemic-disclosure', kind: 'label', text: 'surface' },
+  { id: 'label.evaluation-identity', role: 'epistemic-disclosure', kind: 'label', text: 'evaluation' },
+  { id: 'label.readiness-findings', role: 'epistemic-disclosure', kind: 'label', text: 'Why not ready:' },
+  { id: 'label.answers', role: 'epistemic-disclosure', kind: 'label', text: 'Recorded answers, in the owner’s words, unjudged:' },
+  { id: 'label.sources', role: 'epistemic-disclosure', kind: 'label', text: 'Sources:' },
+  { id: 'label.cited-authority', role: 'epistemic-disclosure', kind: 'label', text: 'Cited authority:' },
 ] as const satisfies readonly PolarisCopyRow[];
 
 export type PolarisCopyId = (typeof POLARIS_COPY)[number]['id'];

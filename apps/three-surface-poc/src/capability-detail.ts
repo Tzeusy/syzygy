@@ -140,11 +140,73 @@ export interface VerbatimLeaf {
   readonly identity: string;
 }
 
-export type VerbatimLeafReader = (leaf: VerbatimLeaf) => Uint8Array | undefined;
+/** A reader's typed refusal: the route's gate that failed, as an Unknown
+ * reason plus a detail, so the page discloses why nothing was rendered. */
+export interface VerbatimRefusal {
+  readonly refused: UnknownReason;
+  readonly detail: string;
+}
+
+/** Returns the owning artifact's exact bytes, a typed refusal, or
+ * `undefined` when the bytes could not be read at all. */
+export type VerbatimLeafReader = (leaf: VerbatimLeaf) => Uint8Array | VerbatimRefusal | undefined;
+
+/** One `### Requirement:` block of a baseline spec, with its scenarios. */
+export interface VerbatimRequirement {
+  readonly title: string;
+  readonly text: string;
+}
 
 export type VerbatimResolution =
-  | { readonly kind: 'rendered'; readonly identity: string; readonly text: string }
+  | {
+      readonly kind: 'rendered';
+      readonly identity: string;
+      /** The selected requirement blocks only, in source order, joined by one newline. */
+      readonly text: string;
+      readonly requirements: readonly VerbatimRequirement[];
+    }
   | { readonly kind: 'not-rendered'; readonly reason: UnknownReason; readonly route: string; readonly detail: string };
+
+function isRefusal(value: Uint8Array | VerbatimRefusal | undefined): value is VerbatimRefusal {
+  return value !== undefined && !(value instanceof Uint8Array) && typeof (value as VerbatimRefusal).refused === 'string';
+}
+
+/**
+ * PWB-REQ-011 (as amended 2026-09-05): Polaris may transiently encode only the
+ * selected requirement and its scenarios, verbatim — never the rest of the
+ * body. The baseline OpenSpec grammar is `### Requirement: <title>` blocks
+ * whose `#### Scenario:` children follow until the next `###`, `##` or `#`
+ * heading; `## Purpose` prose and anything outside a requirement block is
+ * withheld. Trailing blank lines before the next heading are not requirement
+ * text. Bytes inside a block are kept exactly.
+ */
+export function selectRequirementSections(text: string): readonly VerbatimRequirement[] {
+  const lines = text.split(/\r?\n/);
+  const out: VerbatimRequirement[] = [];
+  let current: { title: string; lines: string[] } | undefined;
+  const flush = (): void => {
+    if (current === undefined) return;
+    const block = [...current.lines];
+    while (block.length > 0 && (block[block.length - 1] as string).trim() === '') block.pop();
+    out.push({ title: current.title, text: block.join('\n') });
+    current = undefined;
+  };
+  for (const line of lines) {
+    const requirement = /^### Requirement:\s*(.*)$/.exec(line);
+    if (requirement !== null) {
+      flush();
+      current = { title: (requirement[1] ?? '').trim(), lines: [line] };
+      continue;
+    }
+    if (/^#{1,3} /.test(line)) {
+      flush();
+      continue;
+    }
+    if (current !== undefined) current.lines.push(line);
+  }
+  flush();
+  return out;
+}
 
 function notRendered(reason: UnknownReason, detail: string): VerbatimResolution {
   return { kind: 'not-rendered', reason, route: UNKNOWN_REASON_ROUTES[reason], detail };
@@ -169,7 +231,9 @@ export function resolveVerbatim(leaf: VerbatimLeaf, reader: VerbatimLeafReader |
       `The requirement leaf ${leaf.path} lies outside the consented content class; only its identity at ${leaf.revision.slice(0, 12)} was captured.`,
     );
   }
-  const bytes = reader(leaf);
+  const offered = reader(leaf);
+  if (isRefusal(offered)) return notRendered(offered.refused, offered.detail);
+  const bytes = offered;
   if (bytes === undefined) {
     return notRendered('source-uncaptured-or-unreachable', `The owning artifact ${leaf.path} could not be read at ${leaf.revision.slice(0, 12)}.`);
   }
@@ -189,7 +253,11 @@ export function resolveVerbatim(leaf: VerbatimLeaf, reader: VerbatimLeafReader |
   } catch {
     return notRendered('excluded-content', `The owning artifact ${leaf.path} is not UTF-8 text; nothing was rendered.`);
   }
-  return { kind: 'rendered', identity: leaf.identity, text };
+  const requirements = selectRequirementSections(text);
+  if (requirements.length === 0) {
+    return notRendered('reference-unresolvable', `The baseline spec ${leaf.path} carries no requirement heading to select; nothing was rendered.`);
+  }
+  return { kind: 'rendered', identity: leaf.identity, text: requirements.map((requirement) => requirement.text).join('\n'), requirements };
 }
 
 /** The current requirement leaf, when the shape observed its baseline spec. */
@@ -223,6 +291,8 @@ export interface DeepDiveMachineForm {
     readonly leaf?: VerbatimLeaf;
     readonly verbatim: 'rendered' | 'not-rendered';
     readonly reason?: UnknownReason;
+    /** Titles of the selected requirement blocks (rendered only); never the text. */
+    readonly requirements?: readonly string[];
   };
   readonly proposals: readonly {
     readonly changeId: string;
@@ -273,6 +343,8 @@ export function deepDiveMachineForm(
       ...(intent.leaf === undefined ? {} : { leaf: intent.leaf }),
       verbatim: intent.resolution?.kind === 'rendered' ? 'rendered' : 'not-rendered',
       ...(intent.resolution?.kind === 'not-rendered' ? { reason: intent.resolution.reason } : {}),
+      // Titles only: the selected requirement text itself never enters the machine form.
+      ...(intent.resolution?.kind === 'rendered' ? { requirements: intent.resolution.requirements.map((requirement) => requirement.title) } : {}),
     },
     proposals: dive.proposals.map((proposal) => ({
       changeId: proposal.changeId,

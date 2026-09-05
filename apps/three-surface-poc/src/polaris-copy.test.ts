@@ -150,8 +150,8 @@ function sweep(html: string): { strings: CopyString[]; violations: Violation[] }
 
 // ---------------------------------------------------------------------------
 
-type Variant = 'unevaluated' | 'rejected' | 'observed' | 'observed-without-precedence' | 'observed-bare-root' | 'observed-with-secret' | 'observation-failed' | 'judgment-absent' | 'judgment-unlawful' | 'judgment-lawful';
-const VARIANTS: readonly Variant[] = ['unevaluated', 'rejected', 'observed', 'observed-without-precedence', 'observed-bare-root', 'observed-with-secret', 'observation-failed', 'judgment-absent', 'judgment-unlawful', 'judgment-lawful'];
+type Variant = 'unevaluated' | 'rejected' | 'observed' | 'observed-without-precedence' | 'observed-bare-root' | 'observed-with-secret' | 'observation-failed' | 'judgment-absent' | 'judgment-unlawful' | 'judgment-lawful' | 'judgment-ready';
+const VARIANTS: readonly Variant[] = ['unevaluated', 'rejected', 'observed', 'observed-without-precedence', 'observed-bare-root', 'observed-with-secret', 'observation-failed', 'judgment-absent', 'judgment-unlawful', 'judgment-lawful', 'judgment-ready'];
 // A root index with neither grammar: links only, as the fixture root read
 // before the 2026-09-05 amendment.
 const BARE_ROOT_TEXTS: Readonly<Record<string, string>> = {
@@ -187,6 +187,13 @@ function modelFor(variant: Variant): PocModel {
       return buildFixtureModel(cleanups, { walkthroughJudgment: walkthroughJudgmentFixture('unlawful') });
     case 'judgment-lawful':
       return buildFixtureModel(cleanups, { walkthroughJudgment: walkthroughJudgmentFixture('lawful-state-1') });
+    case 'judgment-ready':
+      // Observed shape plus a Polaris-only record anchored into it: the one
+      // variant whose PWB-REQ-021 readiness is `ready`.
+      return buildFixtureModel(cleanups, {
+        projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() },
+        walkthroughJudgment: walkthroughJudgmentFixture('lawful-state-1', 'judgment-eval-0001', { traversed: ['/polaris'] }),
+      });
   }
 }
 

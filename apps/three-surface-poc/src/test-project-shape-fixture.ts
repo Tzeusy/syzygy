@@ -150,9 +150,44 @@ export const PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE: Readonly<Record<str
 /** The same tree plus the baseline spec the followed OpenSpec change amends,
  * so `proposedWork.currentAuthority` resolves to an Observed shape item. */
 export const PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH = 'openspec/specs/switchboard-identity/spec.md';
+/** Purpose prose the amended PWB-REQ-011 route must withhold. */
+export const PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PURPOSE = 'PURPOSE-PROSE-NEVER-RENDERED: the switchboard resolves who is speaking.';
+/** The two requirement blocks the route may select, byte-for-byte. */
+export const PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS: readonly { readonly title: string; readonly text: string }[] = [
+  {
+    title: 'Inbound message identity resolution',
+    text: [
+      '### Requirement: Inbound message identity resolution',
+      '',
+      'The switchboard SHALL resolve the sender of every inbound message to an entity.',
+      '',
+      '#### Scenario: Owner sends a message',
+      '',
+      '- **WHEN** the owner sends a message',
+      '- **THEN** the sender resolves to the owner entity',
+    ].join('\n'),
+  },
+  {
+    title: 'Routing log identity enrichment',
+    text: ['### Requirement: Routing log identity enrichment', '', 'The routing log SHALL carry the resolved entity.', '', '#### Scenario: Log captures identity', '', '- **THEN** the log row names the entity'].join('\n'),
+  },
+];
 export const PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC: Readonly<Record<string, string>> = {
   ...PROJECT_SHAPE_FIXTURE_TEXTS,
-  [PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH]: '# Switchboard identity\n',
+  [PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH]: [
+    '# Switchboard identity',
+    '',
+    '## Purpose',
+    '',
+    PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PURPOSE,
+    '',
+    '## Requirements',
+    '',
+    PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS[0]?.text,
+    '',
+    PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS[1]?.text,
+    '',
+  ].join('\n'),
 };
 
 export const PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET: Readonly<Record<string, string>> = {
