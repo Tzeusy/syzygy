@@ -272,3 +272,30 @@ authorizes no implementation of the amended semantics. Decisions 2 and 3 of
 the packet and a separate continuation of implementation authorization remain
 open; no write, egress, execution, deployment, release, recovery or mission
 authority follows from this act.
+
+## PWB effect-act amendment — approve-policy — performed 2026-09-05
+
+**Phrase, exactly as written by the owner (in-interaction, 2026-09-05):**
+
+```text
+APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY: d148f0360841cfc30cdc9ecedbffe722e31044e4bb048cd33f83cc193ee88e75
+```
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Act type / artifact | `approve-policy` / `.syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json` |
+| Argument | SHA-256 of the artifact itself, recomputed at recording and equal to the phrase and the effect-manifest row |
+| Provenance state | `owner-adopted (bootstrap, uncorrelated)` — a state-(1) human act, owner-trusted and never independently verified |
+| A1 audit-record identity | explicitly absent, satisfying RFC3-16(b) item 9 for state (1) |
+| Supersession | the 2026-09-02 `approve-policy` act recorded at `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md`; that act, its digest and its tag remain immutable history |
+| Reviewed subject | `4daea0868a0e15ea2f9407efc18f143dbabbd64b` |
+| Owner-packet / final evidence heads | `875ef026f00b3b2a87b72f2977ab12380af5cc2a` / `62d3bb74b21e43b07a7b708f5c743e6ee27ac946` |
+| Review outcome | final contract/oracle, security/public-interface, comprehension and owner-packet reviews: `CONFIRM`, zero open findings |
+| Recording | `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md`; annotated tag `pwb-approve-policy-signed-2026-09-05` on the commit carrying these records |
+
+Effective status: this one amended artifact is **effective owner authority —
+owner-adopted (bootstrap, uncorrelated)** for its own PWB-REQ-005 role only.
+The other effect authorities and the continuation of PWB implementation
+authorization remain separate; no body read, write, egress, execution,
+deployment, release, recovery or mission authority follows from this act.

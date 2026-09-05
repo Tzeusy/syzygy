@@ -279,10 +279,15 @@ def record(root: pathlib.Path, argument: str, check: bool) -> int:
         print(f"FAILED: {exc}")
         return 1
     if check:
-        drift = [
-            rel for rel, content in outputs.items()
-            if not (root / rel).is_file() or (root / rel).read_text() != content
-        ]
+        # Later acts append after this section, so the aggregate is checked
+        # for exactly one exact copy of this act's block, not for being the
+        # tail of the file.
+        drift = []
+        if not (root / ACT_REL).is_file() or (root / ACT_REL).read_text() != outputs[ACT_REL]:
+            drift.append(ACT_REL)
+        aggregate = (root / AGGREGATE_REL).read_text()
+        if aggregate.count(render_aggregate_block(argument)) != 1:
+            drift.append(AGGREGATE_REL)
         if drift:
             for rel in drift:
                 print(f"recorded PWB act differs from regeneration: {rel}")

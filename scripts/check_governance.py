@@ -1457,6 +1457,21 @@ PWB_EFFECT_ACTS = (
      f"{DECISIONS}/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md"),
 )
 PWB_EFFECT_ACT_LABELS = tuple(label for label, _s, _a in PWB_EFFECT_ACTS)
+#: Decisions 2 and 3 of the truth-and-readiness packet re-perform the policy
+#: and registry acts over amended artifact bytes. Each amended act gets its own
+#: new dedicated record (`record_pwb_effect_amendment_acts.py`); the
+#: 2026-09-02 record, the frozen effect-acts packet files and their act-time
+#: digest are immutable history and are re-registered as such once the
+#: successor record exists. Rows: label, subject, 2026-09-02 record,
+#: amendment record, 2026-09-02 performed digest.
+PWB_EFFECT_AMENDMENT_ACTS = (
+    (PWB_EFFECT_ACTS[1][0], PWB_EFFECT_ACTS[1][1], PWB_EFFECT_ACTS[1][2],
+     f"{DECISIONS}/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md",
+     "513a3be75bbd417a06d475c46bb423393ac59013e307157357083f29781a2a61"),
+    (PWB_EFFECT_ACTS[2][0], PWB_EFFECT_ACTS[2][1], PWB_EFFECT_ACTS[2][2],
+     f"{DECISIONS}/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md",
+     "d71eadb612cf657983d96ad44415b832054dc37e51ea674e569d9b8f655d05d7"),
+)
 PWB_STATE1_SUBJECTS = tuple(sorted((
     "openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml",
     "openspec/changes/polaris-project-wide-butlers-model/proposal.md",
@@ -2170,6 +2185,53 @@ ACT_HISTORICAL_DIGEST_COPY_FILES = {
             r"^`" + GENERAL_BOOTSTRAP_ACT_DIGEST + r"`\.$", re.M
         )),)},
 }
+
+
+def _activate_pwb_effect_amendment_act_copy_registries():
+    """Re-register a superseded effect act's copies as history once its
+    amendment record exists.
+
+    Before the amendment act is performed, the 2026-09-02 packet files and
+    dedicated record are the current copies and must fail CG-7e the moment
+    the artifact bytes drift: that failure is the pre-act state, not noise.
+    Once the successor record exists, those same files may not be rewritten
+    to the new argument (they are one-time offerings and an append-only act
+    record), so each is pinned to its exact act-time quotation line instead,
+    and the new dedicated record plus the aggregate carry the current
+    argument. Every other label a file carries stays current.
+    """
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    for label, subject, predecessor, act, performed_digest in PWB_EFFECT_AMENDMENT_ACTS:
+        if not os.path.isfile(os.path.join(ROOT, act)):
+            continue
+        labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+        if label not in labels:
+            ACT_DIGEST_COPY_FILES[aggregate] = labels + (label,)
+        ACT_DIGEST_COPY_FILES[act] = (label,)
+        phrase_line = r"^" + re.escape(label) + r": " + performed_digest + r"$"
+        historical = {
+            f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md": phrase_line,
+            f"{PWB_EFFECT_ACTS_DIR}/PWB-EFFECT-ACTS-MANIFEST.txt":
+                r"^" + performed_digest + r"  " + re.escape(subject) + r"$",
+            f"{PWB_EFFECT_ACTS_DIR}/OWNER-SIGNOFF-PACKET.md": phrase_line,
+            f"{PWB_EFFECT_ACTS_DIR}/CANDIDATE-REPORT.md":
+                r"^\| `[a-z-]+` \| `" + re.escape(subject) + r"` \| `"
+                + performed_digest + r"` \|$",
+            predecessor: phrase_line,
+        }
+        for rel, pattern in historical.items():
+            current = ACT_DIGEST_COPY_FILES.get(rel)
+            if current is not None:
+                remaining = tuple(lab for lab in current if lab != label)
+                if remaining:
+                    ACT_DIGEST_COPY_FILES[rel] = remaining
+                else:
+                    del ACT_DIGEST_COPY_FILES[rel]
+            ACT_HISTORICAL_DIGEST_COPY_FILES.setdefault(rel, {})[label] = (
+                (performed_digest, re.compile(pattern, re.M)),)
+
+
+_activate_pwb_effect_amendment_act_copy_registries()
 
 
 def cg7e_act_digest_copies(paths, res):
@@ -5479,6 +5541,41 @@ def selftest():
                   row[0] == "FAIL"
                   and any(PWB_EFFECT_ACTS[0][2] in d for d in row[4])))
 
+    amended_label, _s, amended_predecessor, amended_act, _old = PWB_EFFECT_AMENDMENT_ACTS[0]
+    row, registered = _selftest_pwb_effect_amendment_copy_registry("valid")
+    cases.append(("CG-7e amended PWB effect act pins five historical copies and two current",
+                  row[0] == "OK" and row[2] == 7 and row[3] == 0
+                  and amended_act in registered[0]
+                  and amended_predecessor in registered[1]
+                  and amended_predecessor not in registered[0]
+                  and f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md" in registered[0]
+                  and amended_label not in registered[2].get(
+                      f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md", ())
+                  and len(registered[2][f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md"]) == 2))
+
+    row, registered = _selftest_pwb_effect_amendment_copy_registry("pre-act")
+    cases.append(("CG-7e unperformed PWB effect amendment leaves 2026-09-02 copies current and stale",
+                  row[0] == "FAIL"
+                  and amended_act not in registered[0]
+                  and amended_predecessor not in registered[1]
+                  and any(amended_predecessor in d and "stale" in d for d in row[4])))
+
+    row, _registered = _selftest_pwb_effect_amendment_copy_registry("stale-amendment")
+    cases.append(("CG-7e amended PWB effect act rejects stale amendment record",
+                  row[0] == "FAIL"
+                  and any(amended_act in d and "stale" in d for d in row[4])))
+
+    row, _registered = _selftest_pwb_effect_amendment_copy_registry("rewritten-history")
+    cases.append(("CG-7e amended PWB effect act rejects rewritten 2026-09-02 record",
+                  row[0] == "FAIL"
+                  and any(amended_predecessor in d and "act-time quotation" in d
+                          for d in row[4])))
+
+    row, _registered = _selftest_pwb_effect_amendment_copy_registry("unperformed-history")
+    cases.append(("CG-7e amended PWB effect act requires the superseded digest to be performed",
+                  row[0] == "FAIL"
+                  and any("never performed" in d for d in row[4])))
+
     row = _selftest_cg7h("missing-act")
     cases.append(("CG-7h missing current amendment act rejected",
                   row[0] == "FAIL"
@@ -5962,6 +6059,79 @@ def _selftest_pwb_effect_act_copy_registry(kind):
     finally:
         ACT_DIGEST_COPY_FILES.clear()
         ACT_DIGEST_COPY_FILES.update(current_files)
+        _ActSubjects._cache.clear()
+        _ActSubjects._cache.update(cache)
+        ROOT = keep
+        shutil.rmtree(d, ignore_errors=True)
+
+
+def _selftest_pwb_effect_amendment_copy_registry(kind):
+    class Cap:
+        def __init__(self): self.rows = []
+        def add(self, status, name, examined, n, unit, note=None, details=None):
+            self.rows.append((status, name, examined, n, details or []))
+
+        def row(self, prefix):
+            return next((r for r in self.rows if r[1].startswith(prefix)), None)
+
+    import shutil
+    import tempfile
+    d = tempfile.mkdtemp(prefix="cg7e-pwb-effect-amendment-selftest-")
+    global ROOT
+    keep = ROOT
+    cache = dict(_ActSubjects._cache)
+    current_files = dict(ACT_DIGEST_COPY_FILES)
+    history_files = dict(ACT_HISTORICAL_DIGEST_COPY_FILES)
+    try:
+        label, subject, predecessor, act, old = PWB_EFFECT_AMENDMENT_ACTS[0]
+
+        def write(rel, text):
+            full = os.path.join(d, rel)
+            os.makedirs(os.path.dirname(full), exist_ok=True)
+            with open(full, "w", encoding="utf-8") as fh:
+                fh.write(text)
+
+        write(subject, "amended policy artifact\n")
+        new = sha256_file(os.path.join(d, subject))
+        old_phrase = f"{label}: {old}\n"
+        new_phrase = f"{label}: {new}\n"
+        write(PERFORMED_ACT_RECORD,
+              (new_phrase if kind == "unperformed-history"
+               else old_phrase + new_phrase))
+        write(predecessor,
+              new_phrase if kind == "rewritten-history" else old_phrase)
+        if kind != "pre-act":
+            write(act, f"{label}: {'0' * 64}\n"
+                  if kind == "stale-amendment" else new_phrase)
+        write(f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md", old_phrase)
+        write(f"{PWB_EFFECT_ACTS_DIR}/OWNER-SIGNOFF-PACKET.md", old_phrase)
+        write(f"{PWB_EFFECT_ACTS_DIR}/PWB-EFFECT-ACTS-MANIFEST.txt",
+              f"{old}  {subject}\n")
+        write(f"{PWB_EFFECT_ACTS_DIR}/CANDIDATE-REPORT.md",
+              f"| `approve-policy` | `{subject}` | `{old}` |\n")
+
+        ROOT = d
+        _ActSubjects._cache[d] = tuple(
+            (l, sub, re.compile(re.escape(l) + r"\s*:\s*`?([0-9a-f]{64})"))
+            for l, sub, _a in PWB_EFFECT_ACTS)
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES[f"{PWB_EFFECT_ACTS_DIR}/ACT-SEMANTICS.md"] = PWB_EFFECT_ACT_LABELS
+        ACT_DIGEST_COPY_FILES[f"{PWB_EFFECT_ACTS_DIR}/PWB-EFFECT-ACTS-MANIFEST.txt"] = PWB_EFFECT_ACT_LABELS
+        _activate_pwb_effect_act_copy_registries()
+        _activate_pwb_effect_amendment_act_copy_registries()
+        registered = (tuple(sorted(ACT_DIGEST_COPY_FILES)),
+                      tuple(sorted(ACT_HISTORICAL_DIGEST_COPY_FILES)),
+                      dict(ACT_DIGEST_COPY_FILES))
+        c = Cap()
+        paths = sorted(set(ACT_DIGEST_COPY_FILES) | set(ACT_HISTORICAL_DIGEST_COPY_FILES))
+        cg7e_act_digest_copies(paths, c)
+        return c.row("CG-7e"), registered
+    finally:
+        ACT_DIGEST_COPY_FILES.clear()
+        ACT_DIGEST_COPY_FILES.update(current_files)
+        ACT_HISTORICAL_DIGEST_COPY_FILES.clear()
+        ACT_HISTORICAL_DIGEST_COPY_FILES.update(history_files)
         _ActSubjects._cache.clear()
         _ActSubjects._cache.update(cache)
         ROOT = keep

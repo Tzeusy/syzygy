@@ -896,18 +896,35 @@ can be authorized.
   section; `--check <sha>` regenerates both and diffs. It hard-codes the
   frozen subject, packet head and final-evidence head and binds the presented
   packet bytes to the final owner-packet review's own `[Observed]` lines.
-  Decisions 2 and 3 (policy, registry) have no recorder yet: reuse the
-  effect-act pattern with the `PWB-EFFECT-AMENDMENT-MANIFEST.txt` digests.
+  Its `--check` tolerates later appended aggregate sections (exactly one
+  copy of its block, not the tail of the file).
+- Decisions 2 and 3 use `scripts/record_pwb_effect_amendment_acts.py
+  --record <approve-policy|adopt-registry-entry> <sha> --date <date>`: same
+  frozen subject/packet head as Decision 1, the effect manifest instead of
+  the behavior manifest, and a **new** dedicated record per act
+  (`PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md`,
+  `PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md`, tag
+  `pwb-<act-type>-signed-<date>`). The 2026-09-02 dedicated records are
+  never appended to or edited: the implementation's `governance-inputs.ts`
+  parses them as one act each, and re-pointing it at the successor records
+  is the syzygy-8i7 continuation's work, not the recorder's. Decision 2 was
+  performed 2026-09-05.
+- `_activate_pwb_effect_amendment_act_copy_registries()` re-registers the
+  four frozen `pwb-effect-acts/*` copies and the superseded dedicated record
+  as `ACT_HISTORICAL_DIGEST_COPY_FILES` entries pinned at the 2026-09-02
+  digest once the amendment record exists, and keeps their other labels
+  current. Before that record exists the same files are current copies and
+  their CG-7e findings are the intended pre-act state.
 - `check_governance.py` now models the PWB behavioral package as a successor
   chain (`PWB_SUCCESSOR_CHAIN`: state-(1) act → truth act). CG-7h binds
   current bytes to the latest validly performed link, preserves earlier links
   as `[historical]`, and fails a later link recorded without its predecessor
   as a chain gap. A third amendment appends one tuple to the chain plus its
   `truth_*`-style injected fixture inputs; do not special-case it elsewhere.
-- Until Decisions 2 and 3 are recorded, CG-7e's 12 findings on the effect-act
-  copies are the expected pre-act state on this branch: the candidate policy
-  and registry digests in `PWB-EFFECT-AMENDMENT-MANIFEST.txt` are registered
-  as the current arguments, so every 2026-09-02 copy reads stale. Nothing
+- Until Decision 3 is recorded, CG-7e's 6 findings on the registry-label
+  copies are the expected pre-act state on this branch: the candidate
+  registry digest in `PWB-EFFECT-AMENDMENT-MANIFEST.txt` is registered as the
+  current argument, so every 2026-09-02 registry copy reads stale. Nothing
   else in the battery fails. `record_pwb_state1_amendment.py --check` also
   fails against current bytes by design — it is a superseded act's recorder.
 

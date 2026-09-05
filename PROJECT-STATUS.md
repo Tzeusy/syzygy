@@ -69,11 +69,16 @@ append-only act record: the eleven-artifact package at
 supersedes the 2026-09-02 digests as the signed behavioral authority (closed
 fact/precedence grammar, inert-code admission, deterministic resource
 envelope, one transient verbatim baseline requirement, PWB-REQ-021
-readiness). Decisions 2 and 3 of that packet — the amended secret policy and
-observer registry entry — and the continuation of implementation
-authorization remain open; the 2026-09-02 policy and registry acts stay
-effective for their roles, and the amended semantics may not be implemented
-until all three acts and the continuation are recorded.
+readiness). The same day the owner approved Decision 2, the amended
+secret-classification policy, as a separate state-(1) act bound to the
+policy's own SHA-256 and recorded in
+`decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md`; it supersedes
+the 2026-09-02 policy approval for that role only, and that earlier record
+stays immutable history. Decision 3 of the packet — the amended observer
+registry entry — and the continuation of implementation authorization remain
+open; the 2026-09-02 registry act stays effective for its role, and the
+amended semantics may not be implemented until all three acts and the
+continuation are recorded.
 
 Later on 2026-09-02 the owner performed the three separate effect-specific
 acts PWB-REQ-005 requires, each a state-(1) act bound to its artifact's own
@@ -140,7 +145,8 @@ overview, D3, and **P-12 knowledge hygiene** as the ninth.
 | License | ✅ **MIT** — root `LICENSE`; contributor-agreement posture remains a separate open question | `decisions/LICENSE-CHOICE-DECISION.md` |
 | General trusted-bootstrap transaction | ✅ Five rows performed indivisibly 2026-09-01; provenance semantics, seven coverage artifacts and CC-SPEC-8 reconciled; no effect-specific or implementation authority granted | `decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`; `decisions/ACCEPTANCE-ACT-RECORD.md` |
 | PWB state-(1) amendment | ✅ Eleven artifacts signed 2026-09-02; PWB-REQ-005/022 now accept valid state (1) or state (2), with exact state visible and invalid acts fail closed; no effect-specific or implementation authority granted | `decisions/PWB-STATE1-AMENDMENT-ACT.md`; `decisions/ACCEPTANCE-ACT-RECORD.md` |
-| PWB truth-and-readiness amendment (Decision 1) | ✅ Eleven artifacts signed 2026-09-05, superseding the 2026-09-02 digests; policy (Decision 2), registry (Decision 3) and implementation-authorization continuation remain open owner gates | `decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md`; `decisions/ACCEPTANCE-ACT-RECORD.md`; `contracts/candidates/pwb-truth-policy-amendment/OWNER-DECISION-PACKET.md` |
+| PWB truth-and-readiness amendment (Decision 1) | ✅ Eleven artifacts signed 2026-09-05, superseding the 2026-09-02 digests; registry (Decision 3) and implementation-authorization continuation remain open owner gates | `decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md`; `decisions/ACCEPTANCE-ACT-RECORD.md`; `contracts/candidates/pwb-truth-policy-amendment/OWNER-DECISION-PACKET.md` |
+| PWB secret-policy amendment (Decision 2) | ✅ Amended policy approved 2026-09-05 in state (1) at its own SHA-256, superseding the 2026-09-02 approval for the policy role only; the earlier record stays immutable history | `decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md`; `decisions/ACCEPTANCE-ACT-RECORD.md` |
 | PWB implementation authorization | ✅ Granted 2026-09-02 by owner direction; PWB tasks §2–§5 dispatchable, body read gated on PWB-REQ-005 evaluation inside the implementation | `decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` |
 | PWB effect-specific acts | ✅ Consent, secret policy and observer registry entry each signed separately 2026-09-02 in state (1); effect gate closed for the one Butlers project-shape content class; no implementation authority granted | `decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`; `decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md`; `decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md` |
 
