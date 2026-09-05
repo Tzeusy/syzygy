@@ -38,7 +38,7 @@ import {
 // Byte-equal to the adopted registry entry's `discoveryVersion` and the
 // adopted policy's `sourceAdmission.phaseA.fixedSeedPaths`;
 // `project-shape-manifest.test.ts` proves both against the act-bound JSON.
-export const PWB_DISCOVERY_VERSION = 'pwb-discovery-v1-candidate.3';
+export const PWB_DISCOVERY_VERSION = 'pwb-discovery-v2-candidate.1';
 export const PWB_ROOT_INDEX_PATH = 'about/README.md';
 
 // Root index → pillar index → named file.

@@ -411,7 +411,7 @@ describe('an admitted, fully readable fixture', () => {
     expect(shape.identity.sourceClaimedInstant.instant).not.toBe(shape.identity.capturedAt);
     expect(shape.identity.scope).toEqual({ repositoryId: 'repository:butlers-configured-poc', contentClass: 'declared-project-shape-text', phase: 'A' });
     expect(shape.identity.observer.observerId).toBe('polaris-butlers-project-shape');
-    expect(shape.identity.policy).toEqual({ policyId: 'polaris-butlers-project-shape-secrets', policyVersion: '1.0.0-candidate.4' });
+    expect(shape.identity.policy).toEqual({ policyId: 'polaris-butlers-project-shape-secrets', policyVersion: '1.1.0-candidate.1' });
     expect(shape.identity.manifestDigest).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(shape.identity.observationDigest).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(shape.identity.deterministicInputs.authority).toEqual({
@@ -440,7 +440,7 @@ describe('an admitted, fully readable fixture', () => {
         scope: shape.identity.scope,
         capturedAt: CAPTURED_AT,
         observerId: 'polaris-butlers-project-shape',
-        observerVersion: '1.0.0-candidate.3',
+        observerVersion: '1.1.0-candidate.1',
       });
       expect(source.itemDenominator.kind).toBe('known');
       expect(source.claim.epistemic).toEqual({ label: 'Observed', tier: 'report-fact', freshness: 'fresh' });
@@ -557,7 +557,7 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
         redactionClass: 'excluded-artifact',
         repositoryRelativePath: 'about/craft-and-care/README.md',
         policyId: 'polaris-butlers-project-shape-secrets',
-        policyVersion: '1.0.0-candidate.4',
+        policyVersion: '1.1.0-candidate.1',
         contentDigest: sha256(CRAFT_SECRET),
         detectorId: 'known-token-formats',
       },

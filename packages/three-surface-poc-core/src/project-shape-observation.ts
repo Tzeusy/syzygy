@@ -46,7 +46,7 @@ import {
 
 export const PWB_OBSERVER_IDENTITY = {
   observerId: 'polaris-butlers-project-shape',
-  observerVersion: '1.0.0-candidate.3',
+  observerVersion: '1.1.0-candidate.1',
   discoveryVersion: PWB_DISCOVERY_VERSION,
   implementationId: 'three-surface-poc-core/project-shape-observer',
   implementationVersion: '1.0.0',
@@ -56,13 +56,19 @@ export const PWB_OBSERVER_IDENTITY = {
 // content class").
 export const PWB_CONTENT_CLASS = 'declared-project-shape-text';
 
+// The 2026-09-05 registry entry's deterministic envelope: every limit is a
+// count of bytes, sources, depth, parse passes or encoded response bytes —
+// wall-clock time is not an input. `maxTotalBytes` is one cumulative ledger
+// across phase A and phase B (each path+object body counted once); the two
+// response ceilings apply to the final encoded HTTP bodies.
 export interface PwbResourceLimits {
   readonly maxSources: number;
   readonly maxBytesPerSource: number;
   readonly maxTotalBytes: number;
   readonly maxIndexDepth: number;
-  readonly maxParseMillisecondsPerSource: number;
-  readonly maxRenderedBytes: number;
+  readonly maxParsePassesPerSource: number;
+  readonly maxHumanResponseBytes: number;
+  readonly maxMachineResponseBytes: number;
 }
 
 export const PWB_RESOURCE_LIMITS: PwbResourceLimits = {
@@ -70,8 +76,9 @@ export const PWB_RESOURCE_LIMITS: PwbResourceLimits = {
   maxBytesPerSource: 1048576,
   maxTotalBytes: 16777216,
   maxIndexDepth: 4,
-  maxParseMillisecondsPerSource: 250,
-  maxRenderedBytes: 2097152,
+  maxParsePassesPerSource: 16,
+  maxHumanResponseBytes: 2097152,
+  maxMachineResponseBytes: 8388608,
 };
 
 export const PWB_FAILURE_STATES = {

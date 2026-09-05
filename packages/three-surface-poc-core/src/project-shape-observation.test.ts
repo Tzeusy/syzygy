@@ -235,13 +235,13 @@ describe('observeProjectShapeSources — identities, instants and scope', () => 
     expect(observation.manifest.revision).toBe(COMMIT);
     expect(observation.observer).toEqual({
       observerId: 'polaris-butlers-project-shape',
-      observerVersion: '1.0.0-candidate.3',
-      discoveryVersion: 'pwb-discovery-v1-candidate.3',
+      observerVersion: '1.1.0-candidate.1',
+      discoveryVersion: 'pwb-discovery-v2-candidate.1',
       implementationId: 'three-surface-poc-core/project-shape-observer',
       implementationVersion: '1.0.0',
     });
     expect(observation.scope).toEqual({ repositoryId: REPOSITORY, contentClass: 'declared-project-shape-text', phase: 'A' });
-    expect(observation.manifestIdentity).toBe(`${REPOSITORY}@${COMMIT}/pwb-discovery-v1-candidate.3/${observation.manifest.digest}`);
+    expect(observation.manifestIdentity).toBe(`${REPOSITORY}@${COMMIT}/pwb-discovery-v2-candidate.1/${observation.manifest.digest}`);
   });
 
   it('keeps the capture instant distinct from the source-claimed (committer) instant', () => {
@@ -260,9 +260,9 @@ describe('observeProjectShapeSources — identities, instants and scope', () => 
     expect(observation.deterministicInputs).toEqual({
       repositoryId: REPOSITORY,
       revision: COMMIT,
-      discoveryVersion: 'pwb-discovery-v1-candidate.3',
+      discoveryVersion: 'pwb-discovery-v2-candidate.1',
       observerId: 'polaris-butlers-project-shape',
-      observerVersion: '1.0.0-candidate.3',
+      observerVersion: '1.1.0-candidate.1',
       implementationId: 'three-surface-poc-core/project-shape-observer',
       implementationVersion: '1.0.0',
       manifestDigest: observation.manifest.digest,
@@ -312,7 +312,7 @@ describe('observeProjectShapeSources — reads only the phase A allowlist', () =
         scope: { repositoryId: REPOSITORY, contentClass: 'declared-project-shape-text', phase: 'A' },
         capturedAt: CAPTURED_AT,
         observerId: 'polaris-butlers-project-shape',
-        observerVersion: '1.0.0-candidate.3',
+        observerVersion: '1.1.0-candidate.1',
       });
     }
     expect(observation.degradation).toEqual({

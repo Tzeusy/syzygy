@@ -368,8 +368,8 @@ describe('active content is rejected and never reaches a sink', () => {
 
 describe('declared resource limits are evaluation inputs', () => {
   it('evaluateLimit: at the limit passes, one over breaches, for every declared limit', () => {
-    const limits: PwbResourceLimits = { maxSources: 3, maxBytesPerSource: 10, maxTotalBytes: 20, maxIndexDepth: 4, maxParseMillisecondsPerSource: 250, maxRenderedBytes: 100 };
-    const names: (keyof PwbResourceLimits)[] = ['maxSources', 'maxBytesPerSource', 'maxTotalBytes', 'maxIndexDepth', 'maxParseMillisecondsPerSource', 'maxRenderedBytes'];
+    const limits: PwbResourceLimits = { maxSources: 3, maxBytesPerSource: 10, maxTotalBytes: 20, maxIndexDepth: 4, maxParsePassesPerSource: 16, maxHumanResponseBytes: 100, maxMachineResponseBytes: 400 };
+    const names: (keyof PwbResourceLimits)[] = ['maxSources', 'maxBytesPerSource', 'maxTotalBytes', 'maxIndexDepth', 'maxParsePassesPerSource', 'maxHumanResponseBytes', 'maxMachineResponseBytes'];
     expect(names.length).toBe(Object.keys(PWB_RESOURCE_LIMITS).length);
     for (const name of names) {
       expect(evaluateLimit(limits, name, limits[name]), name).toBeUndefined();

@@ -1,5 +1,6 @@
 // Governance-inputs loader: hermetic classification of what the tree
-// holds, and the real-tree evaluation of the three 2026-09-02 PWB acts.
+// holds, and the real-tree evaluation of the three current PWB acts (the
+// 2026-09-02 consent act and the 2026-09-05 policy and registry amendments).
 //
 // The real-tree test reads only Syzygy's own governance tree. It never
 // touches a Butlers repository, and the reader it hands the observer is a
@@ -22,12 +23,13 @@ import {
 import {
   PWB_ACT_RECORDS,
   PWB_AUTHORITY_ARTIFACTS,
+  PWB_SUPERSEDED_ACT_RECORDS,
   loadBodyReadAuthorityInputs,
   pwbAuthorityExpectations,
 } from './governance-inputs.js';
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
-const EVALUATION_INSTANT = '2026-09-03T00:00:00Z';
+const EVALUATION_INSTANT = '2026-09-06T00:00:00Z';
 const CURRENT_COMMIT = 'f'.repeat(40);
 const cleanups: string[] = [];
 
@@ -155,7 +157,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     const tree = fakeTree();
     tree.files.delete(PWB_ACT_RECORDS.policy);
     const inputs = loaderFor(tree);
-    expect(inputs.policy.actRecord).toEqual({ kind: 'git-ref-only', ref: 'pwb-approve-policy-signed-2026-09-02' });
+    expect(inputs.policy.actRecord).toEqual({ kind: 'git-ref-only', ref: 'pwb-approve-policy-signed-2026-09-05' });
     const evaluation = evaluateBodyReadAuthority(inputs);
     expect(evaluation.policy.kind === 'invalid' && evaluation.policy.caseId).toBe('policy:git-ref-only');
   });
@@ -174,7 +176,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     const tree = fakeTree();
     tree.files.delete(PWB_ACT_RECORDS.registry);
     tree.files.delete(PWB_AUTHORITY_ARTIFACTS.registry);
-    tree.tags.delete('pwb-adopt-registry-entry-signed-2026-09-02');
+    tree.tags.delete('pwb-adopt-registry-entry-signed-2026-09-05');
     const inputs = loaderFor(tree);
     expect(inputs.registry.artifact).toEqual({ kind: 'missing' });
     expect(inputs.registry.actRecord).toEqual({ kind: 'absent' });
@@ -244,7 +246,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     );
     tree.files.set(
       '.syzygy/governance/decisions/PWB-LATER-SUPERSESSION-ACT.md',
-      '# Later act\n\nAct identity: `PWB-LATER-2026-09-11`\n\nSupersession / revocation: supersedes `PWB-OBSERVER-REGISTRY-ENTRY-ADOPTION-2026-09-02`\n',
+      '# Later act\n\nAct identity: `PWB-LATER-2026-09-11`\n\nSupersession / revocation: supersedes `PWB-OBSERVER-REGISTRY-ENTRY-ADOPTION-AMENDMENT-2026-09-05`\n',
     );
     const inputs = loaderFor(tree);
     expect(inputs.consent.lifecycle).toEqual({ revokedBy: '.syzygy/governance/decisions/PWB-LATER-REVOCATION-ACT.md' });
@@ -253,6 +255,38 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     const evaluation = evaluateBodyReadAuthority(inputs);
     expect(evaluation.consent.kind === 'invalid' && evaluation.consent.caseId).toBe('consent:revoked');
     expect(evaluation.registry.kind === 'invalid' && evaluation.registry.caseId).toBe('registry:superseded');
+  });
+
+  it('detects a later amendment-form record that supersedes an act by its record path', () => {
+    const tree = fakeTree();
+    tree.files.set(
+      '.syzygy/governance/decisions/PWB-LATER-POLICY-AMENDMENT-ACT.md',
+      `# Later act\n\nAct identity: \`PWB-LATER-2026-09-12\`\n\nSupersession / revocation: this act supersedes, for the \`approve-policy\` role\nonly, the 2026-09-05 act recorded at \`${PWB_ACT_RECORDS.policy}\`. That\nrecord remains immutable history.\n`,
+    );
+    const inputs = loaderFor(tree);
+    expect(inputs.policy.lifecycle).toEqual({ supersededBy: '.syzygy/governance/decisions/PWB-LATER-POLICY-AMENDMENT-ACT.md' });
+    expect(inputs.consent.lifecycle).toEqual({});
+    expect(inputs.registry.lifecycle).toEqual({});
+    const evaluation = evaluateBodyReadAuthority(inputs);
+    expect(evaluation.policy.kind === 'invalid' && evaluation.policy.caseId).toBe('policy:superseded');
+  });
+
+  it('the current policy and registry acts name their superseded 2026-09-02 records; the superseded records are not the evaluated acts', () => {
+    const tree = fakeTree();
+    for (const kind of ['policy', 'registry'] as const) {
+      const record = tree.files.get(PWB_ACT_RECORDS[kind]) ?? '';
+      expect(record).toContain(`act recorded at \`${PWB_SUPERSEDED_ACT_RECORDS[kind]}\``);
+      expect(PWB_ACT_RECORDS[kind]).not.toBe(PWB_SUPERSEDED_ACT_RECORDS[kind]);
+    }
+    // A current record rewritten to claim no supersession is a different act
+    // from the one expected and fails closed on exactly that item.
+    tree.files.set(
+      PWB_ACT_RECORDS.policy,
+      (tree.files.get(PWB_ACT_RECORDS.policy) ?? '').replace(/^Supersession \/ revocation:[\s\S]*?\n\n/m, 'Supersession / revocation: none — this act supersedes no earlier act\n\n'),
+    );
+    const evaluation = evaluateBodyReadAuthority(loaderFor(tree));
+    expect(evaluation.policy.kind === 'invalid' && evaluation.policy.caseId).toBe('policy:supersession-target-wrong');
+    expect(evaluation.registry.kind).toBe('valid');
   });
 
   it('an edited artifact breaks its act’s digest binding', () => {
@@ -265,7 +299,7 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
 
 function localTagsPresent(): boolean {
   try {
-    const out = execFileSync('git', ['-C', REPO_ROOT, 'tag', '--list', 'pwb-*-signed-2026-09-02'], { encoding: 'utf8' });
+    const out = execFileSync('git', ['-C', REPO_ROOT, 'tag', '--list', 'pwb-*-signed-*'], { encoding: 'utf8' });
     const present = new Set(out.split('\n').map((line) => line.trim()));
     const expected = pwbAuthorityExpectations(EVALUATION_INSTANT).authorities;
     return (['consent', 'policy', 'registry'] as const).every((kind) => present.has(expected[kind].recordingTag));
@@ -275,7 +309,7 @@ function localTagsPresent(): boolean {
 }
 
 describe('loadBodyReadAuthorityInputs (real Syzygy governance tree)', () => {
-  it('evaluates the three real 2026-09-02 PWB acts without reading any body', () => {
+  it('evaluates the three real current PWB acts without reading any body', () => {
     const governanceRevision = execFileSync('git', ['-C', REPO_ROOT, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
     const inputs = loadBodyReadAuthorityInputs({
       repoRoot: REPO_ROOT,

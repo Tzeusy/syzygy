@@ -1,7 +1,7 @@
 // PWB-REQ-003 — the observing project's secret policy, applied before model
 // admission, without shrinking the source population.
 //
-// This module is the policy's six-step `classificationOrder`, executed
+// This module is the policy's seven-step `classificationOrder`, executed
 // literally over the transient body the P2.3 reader hands out:
 //
 //   1. exact Git-object membership in the revision-bound manifest;
@@ -9,11 +9,16 @@
 //      path and decoded strict UTF-8 — this step turns those refusals into
 //      classification outcomes);
 //   3. every detector, executed from the policy document's own strings, over
-//      the transient text before any parsing;
-//   4. only the closed extraction classes the manifest assigned;
-//   5. whole-artifact exclusion on any match, NUL byte, strict-UTF-8 failure,
+//      the complete transient text before any parsing — inert code contexts
+//      included;
+//   4. active content with Markdown code-context awareness (the reader's
+//      scan, `scanActiveContent`, masks closed inline code spans and fenced
+//      blocks for active-form detection only; a genuine active form outside
+//      them, or a malformed code context, excludes the whole artifact);
+//   5. only the closed extraction classes the manifest assigned;
+//   6. whole-artifact exclusion on any match, NUL byte, strict-UTF-8 failure,
 //      unknown extraction class, parse failure or resource-limit failure;
-//   6. admit only parsed project-shape facts (the extractor, P2.5, consumes
+//   7. admit only parsed project-shape facts (the extractor, P2.5, consumes
 //      the classified text; nothing here retains it).
 //
 // Every outcome is body-free. An exclusion carries hash-not-body provenance
@@ -91,6 +96,7 @@ export const PWB_SECRET_POLICY: SecretClassificationPolicy = {
     'verify exact Git-object membership in the phase-A seed algorithm or the phase-B revision-bound manifest against the signed PWB grammar',
     'reject denied path or unsupported encoding',
     'run every detector over transient bytes before parsing',
+    'classify active content with Markdown code-context awareness; exclude a genuine active form and fail closed on malformed code context',
     'parse only the closed extraction class assigned by the manifest',
     'exclude the whole artifact on any match, NUL byte, strict UTF-8 failure, unknown extraction class, parse failure or resource-limit failure',
     'admit only parsed project-shape facts',

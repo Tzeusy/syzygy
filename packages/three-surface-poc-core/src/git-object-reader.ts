@@ -38,7 +38,7 @@ import { type GitRunner, PWB_RESOURCE_LIMITS, type PwbResourceLimits, type Resou
 
 export const PWB_POLICY_IDENTITY = {
   policyId: 'polaris-butlers-project-shape-secrets',
-  policyVersion: '1.0.0-candidate.4',
+  policyVersion: '1.1.0-candidate.1',
 } as const;
 
 export const PWB_DENIED_PATH_RULES = {

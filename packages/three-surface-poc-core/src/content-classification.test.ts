@@ -235,7 +235,7 @@ describe('PWB-REQ-003 — the population survives every fault', () => {
         expect(e.redactionClass).toBe(expected.redactionClass);
         expect(e.repositoryRelativePath).toBe(r.record.path);
         expect(e.policyId).toBe('polaris-butlers-project-shape-secrets');
-        expect(e.policyVersion).toBe('1.0.0-candidate.4');
+        expect(e.policyVersion).toBe('1.1.0-candidate.1');
         expect(e.detectorId).toBe(expected.detectorId);
         expect(e.exclusionReason).toBe(expected.exclusionReason);
         expect(e.contentDigest !== undefined, `${r.record.path} digest presence`).toBe(expected.digest);
@@ -266,7 +266,7 @@ describe('PWB-REQ-003 — the population survives every fault', () => {
     expect(result.exclusions).toHaveLength(12);
     expect(new Set(result.exclusions.map((e) => e.redactionClass))).toEqual(new Set(['excluded-artifact', 'unclassifiable-excluded']));
     expect(result.policyId).toBe('polaris-butlers-project-shape-secrets');
-    expect(result.policyVersion).toBe('1.0.0-candidate.4');
+    expect(result.policyVersion).toBe('1.1.0-candidate.1');
   });
 
   it('hands a body only to the consumer, and only for classified sources', () => {
@@ -386,7 +386,7 @@ describe('PWB-REQ-003 — classifySource step by step', () => {
           exclusionReason: 'denied-path',
           detail,
           policyId: 'polaris-butlers-project-shape-secrets',
-          policyVersion: '1.0.0-candidate.4',
+          policyVersion: '1.1.0-candidate.1',
         });
       }
     }
@@ -454,7 +454,7 @@ describe('PWB-REQ-003 — classifySource step by step', () => {
       contentDigest: `sha256:${sha256Hex(BYTES[member.path] as Uint8Array)}`,
       extractionClasses: ['principle'],
       policyId: 'polaris-butlers-project-shape-secrets',
-      policyVersion: '1.0.0-candidate.4',
+      policyVersion: '1.1.0-candidate.1',
       detectorsRun: 4,
       basis: 'body',
     });
@@ -468,7 +468,7 @@ describe('PWB-REQ-003 — classifySource step by step', () => {
         contentDigest: classified.record.contentDigest,
         exclusionReason: 'parse-failure',
         policyId: 'polaris-butlers-project-shape-secrets',
-        policyVersion: '1.0.0-candidate.4',
+        policyVersion: '1.1.0-candidate.1',
       },
       unknown: { failureState: 'secretMatchedOrUnclassifiable', degradationState: 'Excluded content', unknownReason: 'excluded-content' },
     });
@@ -522,7 +522,7 @@ describe('PWB-REQ-003 — the policy is the input', () => {
     expect(stable(PWB_SECRET_POLICY.unclassifiableExclusion)).toBe(stable({ redactionClass: unclassifiable['redactionClass'], retainedFields: unclassifiable['retainedFields'], retainBody: unclassifiable['retainBody'] }));
     const classes = policy['redactionClasses'] as Record<string, unknown>;
     expect(stable(PWB_SECRET_POLICY.redactionClasses)).toBe(stable({ emitted: classes['emitted'], neverEmitted: classes['neverEmitted'] }));
-    expect(policy['status']).toBe('candidate-act-ready-no-effect-until-owner-act');
+    expect(policy['status']).toBe('candidate-amendment-no-effect-until-owner-act');
     const raw = policy['rawBodyHandling'] as Record<string, string>;
     expect(Object.values(raw).every((v) => v === 'never')).toBe(true);
   });

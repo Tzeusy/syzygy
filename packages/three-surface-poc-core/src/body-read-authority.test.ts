@@ -666,3 +666,46 @@ describe('PWB-REQ-005 absence and mechanics', () => {
     expect(evaluation.evaluationInstant).toBe(EVALUATION_INSTANT);
   });
 });
+
+// ---------------------------------------------------------------------
+// Expected supersession (the 2026-09-05 amendment acts): an amending act
+// must name exactly the record it supersedes, for its own role only. The
+// case id stays `supersession-target-wrong`; the population is unchanged.
+// ---------------------------------------------------------------------
+
+describe('PWB-REQ-005 expected supersession target', () => {
+  const SUPERSEDED = '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md';
+  const amended = (): BodyReadAuthorityExpectations => {
+    const base = expectations();
+    return { ...base, authorities: { ...base.authorities, policy: { ...base.authorities.policy, supersession: { kind: 'supersedes', target: SUPERSEDED } } } };
+  };
+  const line = (text: string) => ({ policy: { record: { set: { 'Supersession / revocation:': text } } }, expectations: amended() });
+  const scoped = (role: string, target: string) => `this act supersedes, for the \`${role}\` role\nonly, the 2026-09-02 act recorded at \`${target}\`. That\nrecord remains immutable history.`;
+
+  it('admits an act that supersedes exactly the expected record for its own role, in either written form', () => {
+    for (const text of [scoped('approve-policy', SUPERSEDED), `supersedes \`${SUPERSEDED}\``]) {
+      const evaluation = evaluateBodyReadAuthority(inputs(line(text)));
+      expect(evaluation.policy.kind, text).toBe('valid');
+      expect(evaluation.admits, text).toBe(true);
+    }
+  });
+
+  it.each([
+    ['none', 'none — this act supersedes no earlier act'],
+    ['another target', scoped('approve-policy', '.syzygy/governance/decisions/PWB-OTHER-ACT.md')],
+    ['another role', scoped('adopt-registry-entry', SUPERSEDED)],
+    ['revocation instead of supersession', `revokes \`${SUPERSEDED}\``],
+  ])('rejects %s as supersession-target-wrong with zero reads', (_label, text) => {
+    const evaluation = evaluateBodyReadAuthority(inputs(line(text)));
+    expect(evaluation.policy.kind === 'invalid' && evaluation.policy.caseId).toBe('policy:supersession-target-wrong');
+    expect(evaluation.admits).toBe(false);
+    const reads = spy();
+    expect(observeProjectShape({ authority: evaluation, read: reads.read }).kind).toBe('unknown');
+    expect(reads.calls()).toBe(0);
+  });
+
+  it('an expectation of none still rejects any named supersession', () => {
+    const evaluation = evaluateBodyReadAuthority(inputs({ policy: { record: { set: { 'Supersession / revocation:': scoped('approve-policy', SUPERSEDED) } } } }));
+    expect(evaluation.policy.kind === 'invalid' && evaluation.policy.caseId).toBe('policy:supersession-target-wrong');
+  });
+});
