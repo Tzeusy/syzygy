@@ -271,9 +271,12 @@ added 2026-09-06.
 - A prepared act package may still carry the pre-act "candidate, binds
   nothing" banner it was drafted with. **Read the act record, never the
   package banner.**
-- **`bd search` does not reach bead descriptions.** `bd search PWB-LIVE`
-  returns "No issues found" while five beads name those identifiers in their
-  descriptions. Search the full `bd show` text instead.
+- **`bd search` reaches neither bead descriptions nor `close_reason`.**
+  `bd search PWB-LIVE` returns "No issues found" while five beads name those
+  identifiers in their descriptions, and `RTF-1` appears in exactly one place
+  in the tracker — `syzygy-zal.9`'s close reason (1 hit over all 165 beads).
+  Sweep the `.beads/issues.jsonl` export instead: one line per bead, every
+  field, and its line count is the denominator.
 - Identifiers in this corpus are written in **continuation form** — "Repair
   PWB-LIVE-02, 03, 05 and 15", `PWB-LIVE-02/03/05/15`, `PWB-LIVE-01..15`. A
   sweep matching the full identifier misses every continuation and produces a
@@ -344,6 +347,35 @@ added 2026-09-06.
   binds nothing" about a transaction performed 2026-09-01. The eight unbound
   prose files in the three PWB packages took dated **PERFORMED** heads instead
   (2026-09-06, `syzygy-bba`); the pre-act banner stays beneath, unedited.
+  Membership in the package directory is neither necessary nor sufficient,
+  so read the rows: of the 8 files in that one, 5 are digest-cited and 3
+  (`CANDIDATE-TRANSACTION-REPORT.md`, `OWNER-SIGNOFF-PACKET.md`,
+  `REVIEW-BRIEF.md`) are not.
+- **An act's *preservation* language edit-locks files whose digest appears
+  nowhere.** Both Capability 1 acts name `round-2026-08k` as their evidence
+  chain and say it is preserved. In `decisions/`,
+  `CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md` lines 7-9 name
+  `REVIEW-BINDING.md`, reviews RS-1…RS-5 and the adoption PREPARED packet as
+  "preserved unchanged"; `CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`
+  lines 6-8 name the implementation PREPARED packet "banner-marked performed,
+  preserved". All 9 tracked files under that directory return **0** digest
+  citers across every tracked file under `.syzygy/`, `openspec/`, `docs/` and
+  `scripts/`, and the acceptance record never names the path — so the manifest
+  grep, the digest grep and the record grep all read them as free. The lock is
+  the act's own sentence. Route around the language; there is no hash to
+  mismatch.
+- **Zero digest citers does not mean never bound.** A raw review that quotes a
+  digest freezes those *bytes*, not the path, so a file edited after its
+  confirmation looks identical to one no review ever touched.
+  `GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-SEMANTIC-DELTA.md`, in
+  `contracts/candidates/`, has 0 citers for its current hash while
+  `docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-SEMANTIC-DELTA-6-RAW.md:3`
+  confirms a digest the file stopped hashing to two commits later, before the
+  diff that added RFC4-23, RFC8-16 and CC-SPEC-8 to its affected-ID set. That
+  is rule 10 working: the review confirms history and the current bytes carry
+  no confirmation. Before calling a governed file unreviewed, grep the raws
+  for *any* digest cited against its path, not only its current one — and do
+  not copy the stale prefix into your finding, which is CG-15's whole point.
 - **An *unperformed* act's prepared argument is just as untouchable, and
   nothing in the file says so.** `.syzygy/intent/OVERVIEW.md` is the argument
   of act 4, `ADOPT PROJECT OVERVIEW`, which has never been performed — so its

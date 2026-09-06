@@ -1,14 +1,15 @@
-# Owner decision packet — six questions about the written estate
+# Owner decision packet — seven questions about the written estate
 
-> **Pending. This packet decides nothing and adopts nothing.** It states six
+> **Pending. This packet decides nothing and adopts nothing.** It states seven
 > questions, gives the evidence for each, recommends an answer, and says what
-> happens if you say nothing. Register rows: **P-54 … P-59** in
-> [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md). Answer all six
+> happens if you say nothing. Register rows: **P-54 … P-59 and P-66** in
+> [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md). Answer all seven
 > in one reply, or any subset; none depends on another — though P-58 and P-59
 > are two defects on the same page and are cheapest answered together.
 >
 > Written 2026-09-05 during a documentation consolidation pass; P-58 and P-59
-> added 2026-09-06 during the second pass. Nothing in
+> added 2026-09-06 during the second pass, P-66 the same day during the
+> fifth. Nothing in
 > this packet is a change to any accepted artifact; each question exists
 > precisely because the change it asks about would land on the governed plane,
 > where only you may put it.
@@ -309,6 +310,74 @@ the endpoints and the POC that reads them all became real.
 
 ---
 
+## P-66 — CC-SPEC's amendment history names five of nine phase rules, and its bytes are frozen
+
+**What is there.**
+[`SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md`](../contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md)
+— the in-force CC-SPEC policy — carries an amendment-history banner at lines
+28-35 recording the 2026-08-17
+RD-69 blocker repair. It says CC-SPEC-8 "now cites
+RFC1-33/RFC6-28/RFC7-38/RFC8-32/RFC9-52 for the judgment's home, gate, unit,
+and effect." The normative clause it is summarizing names **nine** confirmed
+contract phase rules at lines 245-248: those five plus **RFC2-26, RFC3-33,
+RFC4-30 and RFC5-27** [Observed — swept 2026-09-06 by extracting every
+`RFC<n>-<n>` identifier from each line range with Python `re`; banner 5,
+clause 9 phase rules, the four listed above present only in the clause].
+
+The banner does not say "only", and the operative clause is exhaustive and
+unambiguous, so nothing about the reviewed-N/A judgment's home, gate, unit or
+effect is actually in doubt. What the banner under-reports is its own history:
+a reader reconstructing what the repair did learns that CC-SPEC-8 defers to
+five modules when it defers to nine.
+
+**Why you and not an agent.** The file's current bytes are bound. Its sha256
+equals row 7 of
+[`../contracts/candidates/general-trusted-bootstrap-authorization/TRANSACTION-MANIFEST.txt`](../contracts/candidates/general-trusted-bootstrap-authorization/TRANSACTION-MANIFEST.txt)
+line 11 — the seventh subject of the indivisible amendment transaction the
+owner performed 2026-09-01, recorded in
+[`GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md`](GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md)
+row 5 [Observed — recomputed this session with `sha256sum` and compared
+against the manifest row by `grep -F`; exact equality, not a prefix match].
+So the banner is not merely uncorrected, it is frozen: editing one character
+breaks a performed act's argument. This is the fourth uncorrectable banner on
+this same page — path, filename and head banner all still say "candidate"
+about a policy in force since 2026-08-17 — and the same shape as P-58/P-59,
+except that here the act has already been performed rather than merely
+prepared.
+
+It was flagged as a non-blocking exception by the confirming reviewer at
+[`../../../docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-CONTRACT-CONFIRMATION-RAW.md`](../../../docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-CONTRACT-CONFIRMATION-RAW.md),
+which recorded that it "does not reopen authority or CC-REV-2 closure" and
+called it a VIS-3 clarity blemish worth correcting in a future byte revision.
+That review's verdict stands; this row exists because the correction it names
+is an act, not an edit.
+
+**The arms.**
+
+- **(a)** Fold the banner correction into the next CC-SPEC amendment act
+  whenever one is performed for some other reason. Costs nothing extra: the
+  act already re-freezes the whole file, and the confirming review already
+  reads these bytes.
+- **(b)** Rule it a permanent, disclosed blemish — the operative clause is
+  the authority, the banner is history, and history that under-counts is
+  recorded rather than repaired — and let this register row be the disclosure
+  so the next audit does not re-raise it.
+- **(c)** Perform a standalone amendment act now whose only subject is the
+  banner: a new confirming review on fresh bytes, a new manifest, a new
+  ceremony.
+
+**Recommendation: (b), with (a) riding along if a CC-SPEC amendment ever
+comes.** Arm (c) spends a full review-and-act cycle to repair prose that binds
+nothing, against a page whose three other banners are already permanently
+wrong for the same reason; the honest move is to say so once, here. Nothing is
+gated on this.
+
+**Default if unanswered:** the banner keeps naming five of the nine, and a
+reader of the amendment history under-counts the phase rules CC-SPEC-8 defers
+to by four.
+
+---
+
 ## What was repaired without asking
 
 For contrast, so the boundary of this packet is legible. All of the following
@@ -394,6 +463,20 @@ Added in the third and fourth passes, 2026-09-06:
   digest-bound, and one is byte-compared by CI. Published on `ROUND-ESTATE.md`
   and corrected at the sentence in `HISTORICAL-INDEX.md`.
 
-**No new question came out of these two passes.** Everything above was either
-implementation-plane or pure disclosure repair. The register rows this packet
-owns are still P-54 … P-59, unanswered.
+**No new question came out of the third and fourth passes.** Everything above
+was either implementation-plane or pure disclosure repair.
+
+Added in the fifth pass, 2026-09-06:
+
+- Round 08d's two unpromoted process lessons were promoted into
+  `PROCESS-LESSONS.md`; three independent audits confirmed rounds 08e, 08f,
+  08j and 08k need none. The round estate's own uncited-file count had decayed
+  from 84 to 82 within three commits of publication — falsified by prose from
+  the pass that published it — and is now stated with its citer predicate,
+  which moves the answer across 82 / 75 / 63 over the same 237 files. The
+  96-unbannered-heads figure was published on a predicate ("four status words
+  or similar") that reproduces as 118; the two missing literals were recovered
+  by search and both pages now carry the exact six-literal set.
+- One new question came out of this pass: **P-66**, above.
+
+The register rows this packet owns are P-54 … P-59 and P-66, unanswered.
