@@ -63,10 +63,25 @@ general trusted-bootstrap authorization's impact ledger classifies every path
 under that prefix as spent historical evidence, and
 `scripts/build_general_trusted_bootstrap_impact_ledger.py` hard-codes the
 prefix string to do it. Relocating a file out of that directory would silently
-re-classify it on the next regeneration. Its contents are spent: read them to
-learn what a past change was built against, never as a live instruction — the
-"REQUIRED SUB-SKILL" lines at their heads addressed the worker of the day and
-bind nobody now.
+re-classify it on the next regeneration.
+
+**One of the four is not spent.** The ledger's classification is about where a
+file sits, not about whether the work it plans is finished, and those two
+answers have come apart. Read the table before treating any of these as
+history — and read the `bd` issue, never the "REQUIRED SUB-SKILL" line at a
+file's head, which addressed the worker of the day.
+
+| File | Issue | State |
+|---|---|---|
+| `superpowers/plans/2026-08-24-cap1-runtime-hardening-followups.md` | epic `syzygy-u2a` | **Live.** The epic names it as its *approved implementation guidance* at commit `d11c07e`, and shapes its six implementation children on that file's Tasks 1–6. The epic is open (P1) and its human gate `syzygy-u2a.1` is blocked |
+| `superpowers/specs/2026-08-23-cap1-runtime-hardening-followups-design.md` | `syzygy-ydr`, `syzygy-e84`, `syzygy-h84` | Spent. The design the plan above was written from |
+| `superpowers/plans/2026-08-27-syzygy-vky-validator-hardening.md` | `syzygy-vky` (closed) | Spent |
+| `plans/2026-08-26-syzygy-vky-validator-hardening-design.md` | `syzygy-vky` (closed) | Spent. The design for the same work as the row above — two files, one bead, split only by which harness wrote them. Neither is cited by anything |
+
+[Observed — swept 2026-09-06: four files across the three directories; each
+searched for `syzygy-*` identifiers in its own text, and each filename searched
+across every tracked `.md` and `.py`. Two are cited, both by the general
+trusted-bootstrap impact ledger; two are cited by nothing.]
 
 ## `evidence/` — run records
 
