@@ -9,6 +9,7 @@
 // absent and the evaluation is `absent` (Unknown, never met) — no verdict is
 // invented, and nothing here performs an owner act.
 
+import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
@@ -44,7 +45,7 @@ import {
  * its own (the former placeholders `polaris@0.0.0` / `not-yet-recorded`
  * could bind no record — PWB-LIVE-12): both are derived from the exact
  * evaluation the daemon serves, `pwbSurfaceVersion` from the Polaris
- * source tree at the observer revision and the evaluation identity from
+ * and core source trees at the observer revision and the evaluation identity from
  * the observed shape's observation digest (`walkthroughEvaluationIdentity`,
  * core). The daemon prints both and Polaris shows both, so the recording
  * session copies rather than invents them.
@@ -67,25 +68,32 @@ export const PWB_WALKTHROUGH_SCHEDULE = {
   recordingTag: 'pwb-adopt-walkthrough-judgment-signed-001',
 } as const;
 
-/** The Polaris surface tree: every byte that renders the surface a reader
- * walks. Its Git tree id at the observer revision is the surface version,
- * so the version changes with any change to the surface and with nothing
- * else — committing the run record does not move it. */
-export const POLARIS_SURFACE_TREE = 'apps/three-surface-poc/src' as const;
+/** The trees whose bytes render the surface a reader walks: the Polaris
+ * app source and the shared core package it renders from (PWB-RECON-03:
+ * a core-only change moves what the page says, so it moves the version).
+ * The version is a digest over both Git tree ids at the observer revision,
+ * so it changes with any change to either tree and with nothing else —
+ * committing the run record does not move it. */
+export const POLARIS_SURFACE_TREES = ['apps/three-surface-poc/src', 'packages/three-surface-poc-core/src'] as const;
 export const POLARIS_SURFACE_NAME = 'polaris' as const;
 
-/** `polaris@<tree id of the surface at this revision>`. When the tree
- * cannot be resolved the version names that state (`polaris@unresolved`)
- * so no record can match it — fail closed, never a placeholder that a
- * record could be written against. */
+/** `polaris@<12 hex of sha256 over the surface tree ids, newline-joined>`.
+ * When either tree cannot be resolved the version names that state
+ * (`polaris@unresolved`) so no record can match it — fail closed, never a
+ * placeholder that a record could be written against. */
 export function pwbSurfaceVersion(runGit: (repoRoot: string, args: readonly string[]) => string, repoRoot: string, observerRevision: string): string {
-  let tree: string;
-  try {
-    tree = runGit(repoRoot, ['rev-parse', `${observerRevision}:${POLARIS_SURFACE_TREE}`]).trim();
-  } catch {
-    return `${POLARIS_SURFACE_NAME}@unresolved`;
+  const trees: string[] = [];
+  for (const path of POLARIS_SURFACE_TREES) {
+    let tree: string;
+    try {
+      tree = runGit(repoRoot, ['rev-parse', `${observerRevision}:${path}`]).trim();
+    } catch {
+      return `${POLARIS_SURFACE_NAME}@unresolved`;
+    }
+    if (!/^[0-9a-f]{40,64}$/.test(tree)) return `${POLARIS_SURFACE_NAME}@unresolved`;
+    trees.push(tree);
   }
-  return /^[0-9a-f]{40,64}$/.test(tree) ? `${POLARIS_SURFACE_NAME}@${tree.slice(0, 12)}` : `${POLARIS_SURFACE_NAME}@unresolved`;
+  return `${POLARIS_SURFACE_NAME}@${createHash('sha256').update(trees.join('\n')).digest('hex').slice(0, 12)}`;
 }
 
 // The other act-bound artifacts a judgment act could be mis-paired to.

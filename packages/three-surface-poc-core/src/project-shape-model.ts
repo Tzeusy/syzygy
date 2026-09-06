@@ -57,7 +57,7 @@ import {
   type SourceCoverage,
 } from './project-shape-coverage.js';
 import { PROJECT_ACCOUNT_KEYS, extractBaselineSpec, extractSource, type ProjectAccountKey, type SourceExtraction } from './project-shape-extraction.js';
-import type { ExtractionClass, ManifestSource, PillarKey, SourceRule } from './project-shape-manifest.js';
+import type { ExtractionClass, ManifestSource, PillarDiscovery, PillarKey, SourceRule } from './project-shape-manifest.js';
 import {
   PWB_FAILURE_STATES,
   PWB_RESOURCE_LIMITS,
@@ -311,6 +311,10 @@ export type ProjectShape =
       readonly limitBreaches: readonly ResourceLimitBreach[];
       readonly resourceUse: ResourceLedgerSummary;
       readonly degradation: ObservationDegradation | undefined;
+      // Phase A's discovery outcome per pillar (PWB-RECON-02): the page and
+      // the machine answer both say which home was found, which index was
+      // read, and why a pillar is Unknown — never only the aggregate reason.
+      readonly discovery: readonly PillarDiscovery[];
       readonly projectAccount: readonly ProjectAccountStatement[];
       readonly counts: ProjectShapeCounts;
       readonly claim: ProjectShapeClaim;
@@ -636,6 +640,7 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
         limitBreaches: [...ledger.breaches],
         resourceUse: ledger.summary(),
         degradation: observation.degradation,
+        discovery: observation.manifest.pillars,
         projectAccount,
         counts: { ...coverage.counts, exclusions: finalExclusions.length, classification: finalClassification },
         claim: shapeClaim,

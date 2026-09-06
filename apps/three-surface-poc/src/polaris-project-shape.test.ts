@@ -414,3 +414,65 @@ describe('Polaris root-index declarations (PWB-REQ-004 as amended)', () => {
   });
 });
 
+describe('Polaris authority disclosure and discovery (gen-2 repairs PWB-RECON-01/02)', () => {
+  // Quoted from PWB-REQ-005 by hand, never imported from the core module.
+  const STATE_1_SENTENCE = "Owner-trusted only; same-tree forgeable from Syzygy's perspective. Digest detects drift, not authorship or attendance.";
+
+  function markers(html: string, field: string): { attrs: string; text: string }[] {
+    return Array.from(html.matchAll(new RegExp(`data-parity-field="${field}"([^>]*)>([^<]*)<`, 'g')), (match) => ({
+      attrs: match[1] as string,
+      text: (match[2] as string).replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&'),
+    }));
+  }
+
+  it('renders the exact state-(1) sentence once per state-(1) authority as a parity field on the human page (PWB-REQ-005)', () => {
+    const { model, shape } = observedModel();
+    const html = renderPolarisPage(model);
+    const found = markers(html, 'authority-disclosure');
+    expect(found.map((marker) => marker.text)).toEqual([STATE_1_SENTENCE, STATE_1_SENTENCE, STATE_1_SENTENCE]);
+    expect(found.map((marker) => / data-authority="([^"]*)"/.exec(marker.attrs)?.[1])).toEqual(['consent', 'policy', 'registry']);
+    // The machine side carries the same three sentences, so parity is by construction.
+    expect(shape.authority.authorities.map((entry) => entry.disclosure)).toEqual([STATE_1_SENTENCE, STATE_1_SENTENCE, STATE_1_SENTENCE]);
+  });
+
+  it("discloses every pillar's discovery state, and a missing pillar index with its reason and a cause-correct route", () => {
+    // The home exists (a body lies under it) but carries no index — the live Butlers shape of Spec and Spine.
+    const texts: Record<string, string> = { ...PROJECT_SHAPE_FIXTURE_TEXTS, 'about/spec-and-spine/notes.md': 'Specs live under openspec/.\n' };
+    delete texts['about/spec-and-spine/README.md'];
+    const { model, shape } = observedModel(texts);
+    const missing = shape.discovery.find((pillar) => pillar.key === 'spec-and-spine');
+    expect(missing).toMatchObject({ state: 'unknown', reason: 'index-missing-at-revision', indexPath: 'about/spec-and-spine/README.md' });
+    expect(shape.discovery.filter((pillar) => pillar.state === 'discovered').map((pillar) => pillar.key)).toEqual(['heart-and-soul', 'legends-and-lore', 'lay-and-land', 'craft-and-care']);
+    const html = renderPolarisPage(model);
+    const states = markers(html, 'shape-pillar-state');
+    expect(states.map((marker) => marker.text)).toEqual([
+      'heart-and-soul — discovered',
+      'legends-and-lore — discovered',
+      'spec-and-spine — unknown',
+      'lay-and-land — discovered',
+      'craft-and-care — discovered',
+    ]);
+    const reasons = markers(html, 'shape-pillar-reason');
+    expect(reasons.map((marker) => marker.text)).toEqual(['index-missing-at-revision']);
+    expect(reasons[0]?.attrs).toContain('data-pillar="spec-and-spine"');
+    const line = /<p[^>]*data-shape-discovery[^>]*>[\s\S]*?<\/p>/.exec(html)?.[0] ?? '';
+    expect(line).toContain('about/spec-and-spine/README.md');
+    expect(line).toContain('then a new snapshot');
+    // The whole-shape claim is Unknown for this very reason, and the page says so in place.
+    expect(shape.claim.epistemic.label).toBe('Unknown');
+    expect(html).toContain('data-unknown-disclosure="claim:project-shape"');
+  });
+
+  it('discloses the degradation state when the observation is degraded, and says none was recorded when it is not', () => {
+    const degraded = observedModel(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET);
+    expect(degraded.shape.degradation).toBeDefined();
+    const degradedHtml = renderPolarisPage(degraded.model);
+    expect(markers(degradedHtml, 'shape-degradation-state').map((marker) => marker.text)).toEqual([degraded.shape.degradation?.degradationState]);
+    expect(degradedHtml).toContain(degraded.shape.degradation?.failureState as string);
+    const clean = observedModel();
+    expect(clean.shape.degradation).toBeUndefined();
+    const cleanHtml = renderPolarisPage(clean.model);
+    expect(markers(cleanHtml, 'shape-degradation-state')).toEqual([]);
+    expect(cleanHtml).toContain('No degradation state was recorded for this evaluation.');
+  });
+});
