@@ -11,16 +11,25 @@
 > only thing that says so.** Of the 235 Markdown files inside the eleven
 > round directories, 96 carry no status word — *historical*, *superseded*,
 > *candidate*, *never authority* or similar — anywhere in their first fifteen
-> lines; `round-2026-08e` alone accounts for 25 of them, and only
-> `round-2026-08/` has a directory-level `README.md` at all. So a reader who
+> lines; `round-2026-08e` alone accounts for 25 of them. So a reader who
 > opens a round file directly, rather than arriving through this page, may
 > find nothing at its head telling them the round is closed. Treat **the
 > directory name as the banner**: everything under a `round-*` path is a
 > closed round record and is never authority, whatever its own head does or
 > does not say. Fixing this file by file is not an agent's to do — it is 96
 > edits inside the governed plane, and some of those files are bound by a
-> performed act's manifest. Tracked as `syzygy-3zi`, which states the three
-> lawful shapes the repair could take.
+> performed act's manifest.
+>
+> **Repaired at the directory level, 2026-09-06.** The sentence above read
+> "and only `round-2026-08/` has a directory-level `README.md` at all" until
+> that date; all eleven round directories now carry one. Each names what its
+> round settled, where that settlement lives now, and what in it a later
+> reader will trip over, and each opens by saying the round is closed and
+> binds nothing. That is arm (a) of `syzygy-3zi`, which states the three
+> lawful shapes the repair could take. It does not change the 96, which
+> stands as measured: a reader who opens a round file directly still sees no
+> banner at that file's head, and the directory-name rule above is still how
+> to read one. The eleven rounds in one page: `ROUND-ESTATE.md`.
 >
 > [Observed — swept 2026-09-06 over all 235 `.md` files under the eleven
 > `round-*` directories, matching a case-insensitive status-word pattern

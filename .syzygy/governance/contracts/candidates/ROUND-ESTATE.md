@@ -8,10 +8,12 @@
 > accepted is `decisions/ACCEPTANCE-ACT-RECORD.md`.
 >
 > Written 2026-09-06. Before it, ten of the eleven round directories had no
-> index of any kind — only `round-2026-08/` carries a `README.md` [Observed —
+> index of any kind — only `round-2026-08/` carried a `README.md` [Observed —
 > `ls` over all eleven, 2026-09-06; `round-2026-08g/CAPABILITY-1-OWNER-DECISION-INDEX.md`
 > indexes a decision set, not the directory]. A reader asking "what did round
-> 08e settle, and does any of it still bind?" had to open 53 files.
+> 08e settle, and does any of it still bind?" had to open 53 files. Later the
+> same day all eleven directories gained a `README.md`; this page is the route
+> across them, each round's own README the route within it.
 
 ## How to read a round
 
@@ -23,8 +25,11 @@ them are easy to get wrong:
   contents.** `round-2026-08g` took two files seventeen days after it closed.
 - **"Historical" never means "safe to relocate."** Two round files are live
   inputs to running software; both are named below.
-- **96 of 235 round files carry no status word at their head** (tracked as
-  `syzygy-3zi`). Read the `round-*` path itself as the banner.
+- **96 of 235 round files carry no status word at their head.** Every round
+  directory now has a `README.md` saying the round is closed, but those 96
+  file heads are unchanged and an agent may not change them — some are bound
+  by a performed act's manifest (`syzygy-3zi` states the lawful shapes). Read
+  the `round-*` path itself as the banner.
 
 ## The eleven rounds
 
