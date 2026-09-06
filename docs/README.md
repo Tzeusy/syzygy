@@ -37,21 +37,36 @@ ending `-RAW.md` are that verbatim output; `-DISPOSITION.md` and `*-PACKET.md`
 files are the synthesis over them. Correcting a RAW file is never the repair —
 the repair is a new disposition that cites it.
 
-| Campaign prefix | Files | Recorded | What was under review |
-|---|---|---|---|
-| `R-S2` … `R-S7` | 4 | 2026-08-21 → 08-22 | Capability 1 domain slices S2, S5, S6, S7 |
-| `R-RT-*` | 2 | 2026-08-23 | The Capability 1 runtime vertical slice |
-| `R-POC-*` | 8 | 2026-08-30 → 08-31 | The Three-Surface POC cycle, product and owner passes |
-| `POLARIS-*`, `R-POLARIS-*` | 15 | 2026-08-31 | Polaris project-wide model, POC, observation, precondition, and its sign-off packet |
-| `R-GENERAL-TRUSTED-*` | 24 | 2026-08-31 → 09-01 | The general trusted-bootstrap authorization transaction |
-| `R-PWB-STATE1-*`, `R-PWB-EFFECT-*` | 17 | 2026-09-02 | The PWB state-(1) amendment and effect acts |
-| `R-PWB-TRUTH-*`, `R-PWB-LIVE-*`, `*-pwb-live-*` | 16 | 2026-09-05 | PWB truth-policy amendment; the live exact-head packet and its finding-traceability index |
+| Campaign | Files | Recorded | What was under review | Last verdict of record, and where the findings landed |
+|---|---|---|---|---|
+| `R-S2` … `R-S7` | 4 | 2026-08-21 → 08-22 | Capability 1 domain slices S2, S5, S6, S7 | S2 `VERDICT: CONFIRM` (`R-S2-RISK-FLOOR-REVIEW.md:54`, the confirming pass over the `REVISE` at `:30`); S5/S6/S7 each `## Verdict: CONFIRM WITH EXCEPTIONS` at `:8`. S2's blocker was repaired in the slice; its four non-blocking findings and S5's parity exception went to bead `syzygy-ydr` (closed), whose successor `syzygy-e3e` is still open. S7's third exception is the `write-boundary.ts` `startsWith` containment item `AGENTS.md` still tracks as unfixed |
+| `R-RT-*` | 2 | 2026-08-23 | The Capability 1 runtime vertical slice — daemon, app entry, system tests | `## Verdict: CONFIRMED` (`R-RT-CONFIRMATION-REVIEW.md:4`) over the `CONFIRM WITH EXCEPTIONS` first pass. RTF-1 (a symlinked `--state-dir` dodging the governed-plane guard) was repaired in the commit range the confirmation names, with a new system test. No bead: the disposition lives entirely in this file pair |
+| `R-POC-*` | 8 | 2026-08-30 → 08-31 | The Three-Surface POC — one product review, four improvement cycles, and the owner's cold-open walkthrough | `## Verdict: CONFIRMED` (`R-POC-CYCLE-4-CONFIRMATION.md:15`) closes the cycle chain; each cycle's findings were repaired in the commit the next file names. The walkthrough is a different evidence class and did not close: `**FAIL — BLOCKER for presenting the current page as project-level Polaris.**` (`R-POC-OWNER-WALKTHROUGH-POLARIS.md:17`). It is what launched the `polaris-project-wide-butlers-model` spec work below |
+| `POLARIS-*`, `R-POLARIS-*` | 15 | 2026-08-31 | Two threads: the read-boundary incident and the bootstrap-authorization exception; and the project-wide Polaris candidate's own six-pass review chain | The chain exhausted its six-pass convergence ceiling at `REVISE`; the owner authorized one bounded post-ceiling correction (`decisions/POLARIS-POST-CEILING-CORRECTION-AUTHORIZATION.md`), after which `Verdict: **CONFIRMED**` (`R-POLARIS-PROJECT-WIDE-SPEC-REVIEW-DISPOSITION.md:181`) closed the last finding. The binding disposition is the act, not a review file: `decisions/POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md:14`. Sign-off is not implementation authority — read the act |
+| `R-GENERAL-TRUSTED-*` | 24 | 2026-08-31 → 09-01 | The general trusted-bootstrap authorization transaction, across four sub-rounds: semantic deltas, a full pre-act round, the owner packet, and a post-act round | Both final confirmations head `CONFIRM` (`…POST-ACT-CHECKER-FINAL-CONFIRMATION-RAW.md:1`, `…POST-ACT-READER-FINAL-CONFIRMATION-RAW.md:1`). Findings landed in the two `*-REVIEW-DISPOSITION.md` files, the candidate delta, RFC 0001–0009 and the CC-SPEC repairs, the act record, and three `check_governance.py` predicates. One item was deliberately deferred as non-blocking and is named there |
+| `R-PWB-STATE1-*` | 14 | 2026-09-02 | The PWB state-(1) amendment — a second lawful provenance state for PWB-REQ-005/022, over an eleven-artifact manifest | Three post-act reviews each `**EXACT VERDICT: CONFIRM**`. Three lanes (security, transaction, oracles) each ran to `REVISE` and back twice before the owner packet; the act is `decisions/PWB-STATE1-AMENDMENT-ACT.md` |
+| `R-PWB-EFFECT-*` | 3 | 2026-09-02 | The three PWB effect acts — the consent, secret-policy and registry authority that PWB-REQ-005 gates on | `**EXACT VERDICT: CONFIRM**` (`R-PWB-EFFECT-ACTS-OWNER-PACKET-RAW.md:353`). One security finding on policy vocabulary was repaired and confirmed; the rest were readability notes. Three separate acts in `decisions/`, one per authority |
+| `R-PWB-TRUTH-*` | 11 | 2026-09-05 | The PWB truth-and-readiness amendment — precedence grammar, code-context and secret-scan grammar, the resource-limit ledger, PWB-REQ-021 readiness — plus two dependent effect amendments | `**EXACT VERDICT: CONFIRM**` (`R-PWB-TRUTH-POLICY-OWNER-PACKET-FINAL-RAW.md:19`), zero findings, after three frozen subjects and two full repair cycles across security, contract-oracle and comprehension lanes. Three acts followed: `PWB-TRUTH-READINESS-AMENDMENT-ACT.md` and the two `*-AMENDMENT-ACT.md` effect decisions |
+| `R-PWB-LIVE-*`, `*-pwb-live-*` | 5 | 2026-09-05 | The live implementation at its exact head — truth, denominator, secret-exposure, parity, copy and comprehension | Fifteen findings PWB-LIVE-01…15 across three raw reviews, plus the traceability index over them. Their dispositions are not in this campaign; they are in the row below |
+| `R-PWB-RECOVERY-*`, `*-pwb-recovery-*` | 2 | 2026-09-06 | The recovery of those fifteen findings: a repair register and its reconciliation packet | `**CONFIRM WITH EXCEPTIONS.**` (`2026-09-06-pwb-recovery-reconciliation-packet.md:21`) — all fifteen `repaired`, with two residues named in the packet. This closes the PWB-LIVE cycle's repair half; §5.3 of the spec's task list (report the cycle to the owner) is still open |
 
-The seven rows partition the directory: 86 files on disk, 86 assigned, no
-remainder [Observed — swept 2026-09-05; the grouping is by filename prefix
-and the dates are `git log --diff-filter=A`]. These are
-navigation figures, not measurement, and they go stale the moment a review
-lands — re-derive rather than trusting the row.
+The ten rows partition the directory: 88 files on disk, 88 assigned, no
+remainder [Observed — swept 2026-09-06 by a script that asserts each basename
+matches at most one campaign pattern and prints the unmatched remainder; dates
+are `git log --diff-filter=A`]. These are navigation figures, not measurement,
+and they go stale the moment a review lands — re-derive rather than trusting
+the row.
+
+Three things the table cannot show. The PWB rows are a dependency chain, not
+four independent campaigns: the state-(1) amendment made a behavioral change,
+the effect acts then granted the authority that change could satisfy, and the
+truth-and-readiness amendment later replaced the state-(1) artifacts outright
+while amending the two instruments the effect acts had put in force — the act
+records say so, and only they say it. A `CONFIRM` verdict is a reviewer's
+finding about frozen bytes, never an adoption: what binds is always the act in
+`.syzygy/governance/decisions/`. And a campaign with nothing open in its own
+files may still have left something open elsewhere — the S-slice row's
+`syzygy-e3e`, the POC row's walkthrough blocker, the recovery row's §5.3.
 
 ## `plans/` and `superpowers/` — two homes, one role
 
