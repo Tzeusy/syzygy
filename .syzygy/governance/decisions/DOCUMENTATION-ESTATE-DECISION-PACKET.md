@@ -1,25 +1,26 @@
-# Owner decision packet — five questions about the written estate
+# Owner decision packet — six questions about the written estate
 
-> **Pending. This packet decides nothing and adopts nothing.** It states five
+> **Pending. This packet decides nothing and adopts nothing.** It states six
 > questions, gives the evidence for each, recommends an answer, and says what
-> happens if you say nothing. Register rows: **P-54 … P-58** in
-> [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md). Answer all five
-> in one reply, or any subset; none depends on another.
+> happens if you say nothing. Register rows: **P-54 … P-59** in
+> [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md). Answer all six
+> in one reply, or any subset; none depends on another — though P-58 and P-59
+> are two defects on the same page and are cheapest answered together.
 >
-> Written 2026-09-05 during a documentation consolidation pass; P-58 added
-> 2026-09-06 during the second pass. Nothing in
+> Written 2026-09-05 during a documentation consolidation pass; P-58 and P-59
+> added 2026-09-06 during the second pass. Nothing in
 > this packet is a change to any accepted artifact; each question exists
 > precisely because the change it asks about would land on the governed plane,
 > where only you may put it.
 
-## Why these five, and why together
+## Why these, and why together
 
 The repository holds roughly twelve megabytes of tracked prose, most of it the
 closed record of work that is finished. A consolidation pass can safely repair
 navigation, staleness, and duplicate homes on the implementation side without
-asking you anything — and that part is done. Five items remained that an agent
-may not decide, because each would write to, remove from, or restructure the
-governed plane. They are gathered here rather than raised one at a time.
+asking you anything — and that part is done. What remained are the items an
+agent may not decide, because each would write to, remove from, or restructure
+the governed plane. They are gathered here rather than raised one at a time.
 
 ---
 
@@ -251,6 +252,63 @@ of the two founding rules depends on which door they came through.
 
 ---
 
+## P-59 — The public overview still opens "Nothing is implemented"
+
+**What is there.** `.syzygy/intent/OVERVIEW.md:125`, under the heading *What
+exists today*, reads in bold: **"Nothing is implemented"** — "no daemon, no
+UI, no store, no endpoints, no chosen language, framework, or database."
+
+`PROJECT-STATUS.md` owns that row and answers differently. Capability 1 and
+its local daemon are implemented and running, and the bounded Three-Surface
+POC has been authorized since 2026-08-29 with a runnable implementation
+(`PROJECT-STATUS.md:22` and its POC row). The language, framework and store
+questions the sentence lists as unchosen were all answered by that
+implementation.
+
+**Why it matters.** This is the same failure shape the second pass repaired on
+three other default-path pages and wrote into `AGENTS.md` as a lesson: a page
+restating state it does not own goes quietly false the first time that state
+moves. Here the page does the right thing two paragraphs later — it routes the
+gate table to `PROJECT-STATUS.md` and says explicitly that it will not restate
+it, *because* its bytes are frozen. The bolded sentence above that paragraph
+is the one claim it did restate, and it is the one that went false.
+
+It is also, of the three, the sentence most likely to be read: it is under
+*What exists today*, in bold, on the page `AGENTS.md` routes to as the public
+narrative, and a newcomer reaches it before any status page.
+
+**Why you and not an agent.** Same reason as P-58: these bytes are the
+prepared argument of the unperformed act **4, `ADOPT PROJECT OVERVIEW`** (row
+61 of
+[`contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`](../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md)).
+An agent may not edit one word of it, and the house repair — marking staleness
+at the stale sentence with the superseded text quoted and dated — is itself an
+edit. The defect is therefore disclosed here and nowhere on the page.
+
+**The arms.**
+
+- **(a)** Replace the sentence in the act-4 argument with the same move the
+  paragraph below it already makes: say that current capability is stated once,
+  in `PROJECT-STATUS.md`, and route there. An agent may prepare the delta; only
+  you may perform it. This is P-58's arm (a) applied to the same file, and the
+  two would ride on one act.
+- **(b)** Leave the page and record the divergence here, treating the overview
+  as a fixed historical statement of intended shape written before any
+  implementation existed. Free, but the false sentence stays on a default path.
+- **(c)** Retire act 4 and route the public narrative elsewhere, so no page
+  outside `PROJECT-STATUS.md` ever claims current capability.
+
+**Recommendation: (a), folded into act 4 alongside P-58.** Both defects are on
+the same page, both cost the same one act argument, and neither is urgent —
+but they should move together, because a second edit to act 4's argument later
+would retire whatever confirmation the first one earned.
+
+**Default if unanswered:** the project's public overview goes on telling a
+first-time reader that nothing is implemented, seven days after the daemon,
+the endpoints and the POC that reads them all became real.
+
+---
+
 ## What was repaired without asking
 
 For contrast, so the boundary of this packet is legible. All of the following
@@ -282,5 +340,14 @@ Added in the second pass, 2026-09-06:
   commit; every file in `docs/evidence/` is now cited by something.
 - The PWB live-review campaign recorded fifteen findings and no index of where
   each one is answered. `docs/reviews/2026-09-05-pwb-live-finding-traceability.md`
-  now says, per finding, which record names it — and renders **Unknown** for the
-  eight that nothing names, rather than inferring an outcome.
+  now says, per finding, which record names it, which reviewer identifier the
+  packet renumbered it from, and where its disposition lives.
+
+  *Superseded, dated:* until later on 2026-09-06 the sentence above ended "and
+  renders **Unknown** for the eight that nothing names, rather than inferring
+  an outcome." That was a false absence, not a gap: the sweep behind it matched
+  full identifiers only and missed the continuation forms this corpus writes
+  them in (`PWB-LIVE-02, 03, 05 and 15`). Re-swept with an expansion-aware
+  pattern over thirteen sources, **fifteen of fifteen are named**, each by
+  exactly one repair child. The lesson is `AGENTS.md` verification rule 9's:
+  an absence claim's denominator must cover the *forms* an identifier takes.
