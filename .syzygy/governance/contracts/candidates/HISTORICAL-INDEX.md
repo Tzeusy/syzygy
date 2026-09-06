@@ -8,10 +8,12 @@
 > round close (candidate for generation).
 >
 > **The round files are not uniformly banner-marked, and this page is the
-> only thing that says so.** Of the 235 Markdown files inside the eleven
-> round directories, 96 carry no status word — *historical*, *superseded*,
-> *candidate*, *never authority* or similar — anywhere in their first fifteen
-> lines; `round-2026-08e` alone accounts for 25 of them. So a reader who
+> only thing that says so.** 96 Markdown files inside the eleven round
+> directories carry no status word anywhere in their first fifteen lines —
+> none of *historical*, *superseded*, *candidate*, *never authority*,
+> *non-authoritative* or *not authority*, matched case-insensitively, which
+> is the whole word set and not an abbreviation of one. `round-2026-08e`
+> alone accounts for 25 of them; `round-2026-08j` for none. So a reader who
 > opens a round file directly, rather than arriving through this page, may
 > find nothing at its head telling them the round is closed. Treat **the
 > directory name as the banner**: everything under a `round-*` path is a
@@ -44,12 +46,25 @@
 > banner at that file's head, and the directory-name rule above is still how
 > to read one. The eleven rounds in one page: `ROUND-ESTATE.md`.
 >
-> [Observed — swept 2026-09-06 over all 235 `.md` files under the eleven
-> `round-*` directories, matching a case-insensitive status-word pattern
-> against each file's first fifteen lines. This measures the keyword, not the
+> [Observed — re-swept 2026-09-06 at commit `9ca96c2` under the six literals
+> above against each file's first fifteen lines. The 96 does not depend on
+> which round population you take: it is 96 of the 234 Markdown round work
+> files, 96 of the 245 `.md` files under the eleven directories, and 96 of
+> the 235 that were there when this was first swept — because all eleven
+> directory READMEs carry a status word, so widening the denominator to
+> include them cannot move the numerator. This measures the keyword, not the
 > banner: a file could disclose its status in other words and be counted
 > missing, and the figure is a floor on coverage rather than a count of
 > defects.]
+>
+> **Superseded 2026-09-06; marked here the same day.** This paragraph said
+> the sweep ran "over all 235 `.md` files under the eleven `round-*`
+> directories". That named the population correctly on the morning it was
+> written and stopped being true the same day, when ten directory READMEs
+> landed and made it 245 — so a reader re-running the sweep as described got
+> a different denominator and had no way to tell whether the 96 had moved.
+> It had not. The sentence above now states the numerator's independence from
+> that choice instead of a count that only one tree satisfies.
 
 ## Superseded current-lane artifacts (banner-marked in place)
 

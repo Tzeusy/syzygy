@@ -26,14 +26,20 @@ them are easy to get wrong:
   contents.** `round-2026-08g` took two files seventeen days after it closed.
 - **"Historical" never means "safe to relocate."** Two round files are live
   inputs to running software; both are named below.
-- **96 of the 235 Markdown round files carry no status word at their head** —
-  no *historical*, *superseded*, *candidate*, *never authority* or similar
-  anywhere in their first fifteen lines. The denominator is derived under
-  "How many files are in here"; the fifteen-line window and that word set are
-  the whole predicate, and a sweep using a different window gets a different
-  number. Every round directory now has a `README.md` saying the round is
-  closed, but those 96 file heads are unchanged. Read the `round-*` path
-  itself as the banner.
+- **96 Markdown round files carry no status word at their head** — none of
+  *historical*, *superseded*, *candidate*, *never authority*,
+  *non-authoritative* or *not authority* anywhere in their first fifteen
+  lines, matched case-insensitively. Those six literals and that window are
+  the whole predicate; a sweep using a different window, or that word set
+  minus its last two, gets a different number — dropping them gives 118.
+  The denominator does not matter here, which is why the headline no longer
+  carries one: the figure is 96 over the 234 Markdown round work files, 96
+  over the 245 `.md` files under the eleven directories, and 96 over the 235
+  that existed before the ten new READMEs, because every one of the eleven
+  READMEs carries a status word [Observed — re-swept 2026-09-06 at commit
+  `9ca96c2` over all three populations]. Every round directory now has a
+  `README.md` saying the round is closed, but those 96 file heads are
+  unchanged. Read the `round-*` path itself as the banner.
 
   **The 96 is not a to-do list, and it is mostly not actionable by anyone**
   [Observed — swept 2026-09-06 under the predicate above, then each of the 22

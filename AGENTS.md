@@ -304,6 +304,17 @@ added 2026-09-06.
   read — and it needs its citer predicate stated, because "cited by no other
   tracked file" and "cited by nothing outside its own round" differ by
   nineteen files over the same 237.
+- **A word set published as "X, Y or similar" is not a predicate, and the
+  figure resting on it cannot be re-derived.** The round estate's 96
+  unbannered heads were published with four status words "or similar"; the
+  four alone give 118, and the figure only comes back at 96 when
+  *non-authoritative* and *not authority* are added — recovered by search,
+  not from the page. Enumerate every literal, the window, and the case
+  folding, or the number is a claim no reader can check. Test the denominator
+  separately: that same figure is 96 over the round work files, over every
+  `.md` under the eleven directories, and over the population as it stood
+  before the READMEs landed, so naming one of the three was never load-bearing
+  and only went stale.
 - Where a file *sits* and whether its work is *finished* are different
   questions. The general trusted-bootstrap impact ledger classifies everything
   under `docs/superpowers/` as spent evidence, but
