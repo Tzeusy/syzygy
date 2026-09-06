@@ -199,6 +199,9 @@ lessons added the same day; second docs-pass lessons added 2026-09-06, third pas
   fixtures when exact matching matters.
 - A mutation that throws at describe time reports zero tests and scores as
   survived — build fixtures in `beforeAll`.
+- A rule-6 evidence record must store each mutant's `old`/`new` fragment and
+  the commit it ran at; ids and outcomes alone are not re-runnable, and a
+  rebase-merge leaves the recorded commit reachable from no ref.
 - Fail-closed polarity: withdrawal defeats grant; future-dated evidence is
   stale; no evidence → Unknown.
 - Conformance expected values are hard-coded literals, never imported from

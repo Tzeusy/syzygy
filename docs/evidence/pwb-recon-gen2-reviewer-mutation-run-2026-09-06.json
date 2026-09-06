@@ -1,0 +1,453 @@
+{
+ "kind": "pwb-recon-gen2-reviewer-mutation-run",
+ "date": "2026-09-06",
+ "reviewer": "independent fresh-context gen-2 reconciliation reviewer (bead syzygy-1z3.24.9)",
+ "subject": "9b28663804281f5419c41ea70b7ede52f8ff6597",
+ "where": "reviewer's fresh clone of the worktree; each mutant restored byte-for-byte (sha256 verified)",
+ "summary": {
+  "mutations": 19,
+  "killed": 16,
+  "survived": [
+   "R02-route-text-of-index-unavailable-for-index-missing",
+   "R02-core-discovery-discovered-only--core-gate",
+   "R02-preflight-route-check-dropped"
+  ],
+  "restoreFailures": 0
+ },
+ "results": [
+  {
+   "id": "R01-disclosure-dropped-for-registry",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "fragment": {
+    "old": "<span data-parity-field=\"authority-disclosure\" data-authority=\"${escapeHtml(entry.authority)}\">${escapeHtml(entry.disclosure)}</span>",
+    "new": "<span data-parity-field=\"authority-disclosure\" data-authority=\"${escapeHtml(entry.authority)}\">${entry.authority === 'registry' ? '' : escapeHtml(entry.disclosure)}</span>"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+    "apps/three-surface-poc/src/surface-routes.test.ts",
+    "apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 70,
+   "total": 103,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "is ready for the fixture evaluation, and its counts are the page\u2019s",
+    "an account statement with no source anchor \u2192 account-statement-unbacked, and nothing else",
+    "an account statement the model holds as Inferred \u2192 account-statement-unbacked, and nothing else",
+    "an account statement rendered nowhere on the page \u2192 account-statement-unbacked, and nothing else",
+    "an empty statement \u2192 account-statement-unbacked, and nothing else",
+    "a reconciled class with nothing modeled \u2192 population-empty (and population-unreconciled)"
+   ]
+  },
+  {
+   "id": "R01-disclosure-shows-state-not-sentence",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "fragment": {
+    "old": "<span data-parity-field=\"authority-disclosure\" data-authority=\"${escapeHtml(entry.authority)}\">${escapeHtml(entry.disclosure)}</span>",
+    "new": "<span data-parity-field=\"authority-disclosure\" data-authority=\"${escapeHtml(entry.authority)}\">${escapeHtml(entry.state)}</span>"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+    "apps/three-surface-poc/src/surface-routes.test.ts",
+    "apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 71,
+   "total": 103,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "is ready for the fixture evaluation, and its counts are the page\u2019s",
+    "an account statement with no source anchor \u2192 account-statement-unbacked, and nothing else",
+    "an account statement the model holds as Inferred \u2192 account-statement-unbacked, and nothing else",
+    "an account statement rendered nowhere on the page \u2192 account-statement-unbacked, and nothing else",
+    "an empty statement \u2192 account-statement-unbacked, and nothing else",
+    "a reconciled class with nothing modeled \u2192 population-empty (and population-unreconciled)"
+   ]
+  },
+  {
+   "id": "R01-disclosure-duplicated-per-authority",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "fragment": {
+    "old": "<span data-parity-field=\"authority-disclosure\" data-authority=\"${escapeHtml(entry.authority)}\">${escapeHtml(entry.disclosure)}</span>",
+    "new": "<span data-parity-field=\"authority-disclosure\" data-authority=\"${escapeHtml(entry.authority)}\">${escapeHtml(entry.disclosure)}</span><span data-parity-field=\"authority-disclosure\" data-authority=\"${escapeHtml(entry.authority)}\">${escapeHtml(entry.disclosure)}</span>"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+    "apps/three-surface-poc/src/surface-routes.test.ts",
+    "apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 70,
+   "total": 103,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "is ready for the fixture evaluation, and its counts are the page\u2019s",
+    "an account statement with no source anchor \u2192 account-statement-unbacked, and nothing else",
+    "an account statement the model holds as Inferred \u2192 account-statement-unbacked, and nothing else",
+    "an account statement rendered nowhere on the page \u2192 account-statement-unbacked, and nothing else",
+    "an empty statement \u2192 account-statement-unbacked, and nothing else",
+    "a reconciled class with nothing modeled \u2192 population-empty (and population-unreconciled)"
+   ]
+  },
+  {
+   "id": "R01-preflight-state1-sentence-check-dropped",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "fragment": {
+    "old": "    if (entry.state === STATE_1_LABEL && (own[0]?.text !== STATE_1_SENTENCE || entry.disclosure !== STATE_1_SENTENCE)) problems.push(`${entry.authority}: state (1) without the PWB-REQ-005 sentence`);\n",
+    "new": "    // dropped\n"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 1,
+   "total": 41,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "a state-(1) authority whose page and evaluation both carry another sentence \u2192 authority-disclosure-missing, and nothing else",
+    "walkthrough preflight: one counterexample per limb > a state-(1) authority whose page and evaluation both carry another sentence \u2192 authority-disclosure-missing, and nothing else"
+   ]
+  },
+  {
+   "id": "R02-route-text-of-index-unavailable-for-index-missing",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "fragment": {
+    "old": "    case 'index-missing-at-revision':\n      return `the home ${home} carries no index at ${index} at this revision: add that index in Butlers, then a new snapshot; or an owner gate amending the discovery rule. No policy change is involved`;",
+    "new": "    case 'index-missing-at-revision':\n      return `the index ${index} could not be read: restore its body in Butlers, then a new snapshot`;"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+    "apps/three-surface-poc/src/surface-routes.test.ts",
+    "apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "exitCode": 0,
+   "failed": 0,
+   "total": 103,
+   "killed": false,
+   "restored": true,
+   "failing": []
+  },
+  {
+   "id": "R02-route-text-of-root-missing-for-index-missing",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "fragment": {
+    "old": "    case 'index-missing-at-revision':\n      return `the home ${home} carries no index at ${index} at this revision: add that index in Butlers, then a new snapshot; or an owner gate amending the discovery rule. No policy change is involved`;",
+    "new": "    case 'index-missing-at-revision':\n      return `the named home ${home} is absent at this revision: create it in Butlers, then a new snapshot`;"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+    "apps/three-surface-poc/src/surface-routes.test.ts",
+    "apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 1,
+   "total": 103,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "discloses every pillar's discovery state, and a missing pillar index with its reason and a cause-correct route",
+    "Polaris authority disclosure and discovery (gen-2 repairs PWB-RECON-01/02) > discloses every pillar's discovery state, and a missing pillar index with its reason and a cause-correct route"
+   ]
+  },
+  {
+   "id": "R02-pillar-reason-marker-dropped",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "fragment": {
+    "old": "return `${state} (<span data-parity-field=\"shape-pillar-reason\" data-pillar=\"${escapeHtml(pillar.key)}\">${escapeHtml(pillar.reason)}</span>; ${copy('label.route').toLowerCase()} ${escapeHtml(pillarRoute(pillar))})`;",
+    "new": "return `${state} (${copy('label.route').toLowerCase()} ${escapeHtml(pillarRoute(pillar))})`;"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+    "apps/three-surface-poc/src/surface-routes.test.ts",
+    "apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 46,
+   "total": 103,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "is ready for the fixture evaluation, and its counts are the page\u2019s",
+    "an account statement with no source anchor \u2192 account-statement-unbacked, and nothing else",
+    "an account statement the model holds as Inferred \u2192 account-statement-unbacked, and nothing else",
+    "an account statement rendered nowhere on the page \u2192 account-statement-unbacked, and nothing else",
+    "an empty statement \u2192 account-statement-unbacked, and nothing else",
+    "a reconciled class with nothing modeled \u2192 population-empty (and population-unreconciled)"
+   ]
+  },
+  {
+   "id": "R02-degradation-always-none",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "fragment": {
+    "old": "  if (degradation === undefined) return `<p data-shape-degradation=\"none\"",
+    "new": "  if (degradation === undefined || true) return `<p data-shape-degradation=\"none\""
+   },
+   "tests": [
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+    "apps/three-surface-poc/src/surface-routes.test.ts",
+    "apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 47,
+   "total": 103,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "is ready for the fixture evaluation, and its counts are the page\u2019s",
+    "an account statement with no source anchor \u2192 account-statement-unbacked, and nothing else",
+    "an account statement the model holds as Inferred \u2192 account-statement-unbacked, and nothing else",
+    "an account statement rendered nowhere on the page \u2192 account-statement-unbacked, and nothing else",
+    "an empty statement \u2192 account-statement-unbacked, and nothing else",
+    "a reconciled class with nothing modeled \u2192 population-empty (and population-unreconciled)"
+   ]
+  },
+  {
+   "id": "R02-core-discovery-discovered-only--core-gate",
+   "file": "packages/three-surface-poc-core/src/project-shape-model.ts",
+   "fragment": {
+    "old": "        discovery: observation.manifest.pillars,",
+    "new": "        discovery: observation.manifest.pillars.filter((pillar) => pillar.state === 'discovered'),"
+   },
+   "tests": [
+    "packages/three-surface-poc-core/src/project-shape-model.test.ts"
+   ],
+   "exitCode": 0,
+   "failed": 0,
+   "total": 29,
+   "killed": false,
+   "restored": true,
+   "failing": []
+  },
+  {
+   "id": "R02-core-discovery-discovered-only--page-gate",
+   "file": "packages/three-surface-poc-core/src/project-shape-model.ts",
+   "fragment": {
+    "old": "        discovery: observation.manifest.pillars,",
+    "new": "        discovery: observation.manifest.pillars.filter((pillar) => pillar.state === 'discovered'),"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+    "apps/three-surface-poc/src/polaris-parity-sweep.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 2,
+   "total": 58,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "discloses every pillar's discovery state, and a missing pillar index with its reason and a cause-correct route",
+    "the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification",
+    "PWB-REQ-020 exhaustive Polaris parity sweep > the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification",
+    "Polaris authority disclosure and discovery (gen-2 repairs PWB-RECON-01/02) > discloses every pillar's discovery state, and a missing pillar index with its reason and a cause-correct route"
+   ]
+  },
+  {
+   "id": "R02-preflight-route-check-dropped",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "fragment": {
+    "old": "      if (!html.includes('then a new snapshot')) problems.push(`${pillar.key}: Unknown without a route`);\n",
+    "new": "      // dropped\n"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "exitCode": 0,
+   "failed": 0,
+   "total": 41,
+   "killed": false,
+   "restored": true,
+   "failing": []
+  },
+  {
+   "id": "R03-tree-order-swapped",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "fragment": {
+    "old": "createHash('sha256').update(trees.join('\\n'))",
+    "new": "createHash('sha256').update([...trees].reverse().join('\\n'))"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-inputs.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 3,
+   "total": 18,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "is a digest over the Polaris surface tree and the core package tree at the observer revision, and nothing else moves it",
+    "the real trees resolve to the digest over both at HEAD, and the record grammar accepts it",
+    "binds the loaded pair to the builder-supplied evaluation identity and the tree-derived surface version",
+    "pwbSurfaceVersion > is a digest over the Polaris surface tree and the core package tree at the observer revision, and nothing else moves it",
+    "pwbSurfaceVersion > the real trees resolve to the digest over both at HEAD, and the record grammar accepts it",
+    "walkthroughJudgmentInputsFor > binds the loaded pair to the builder-supplied evaluation identity and the tree-derived surface version"
+   ]
+  },
+  {
+   "id": "R03-unhashed-prefix-of-app-tree",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "fragment": {
+    "old": "${createHash('sha256').update(trees.join('\\n')).digest('hex').slice(0, 12)}",
+    "new": "${trees.join('\\n').slice(0, 12)}"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-inputs.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 4,
+   "total": 18,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "is a digest over the Polaris surface tree and the core package tree at the observer revision, and nothing else moves it",
+    "a core-only tree change moves the version; the same two trees keep it",
+    "the real trees resolve to the digest over both at HEAD, and the record grammar accepts it",
+    "binds the loaded pair to the builder-supplied evaluation identity and the tree-derived surface version",
+    "pwbSurfaceVersion > is a digest over the Polaris surface tree and the core package tree at the observer revision, and nothing else moves it",
+    "pwbSurfaceVersion > a core-only tree change moves the version; the same two trees keep it"
+   ]
+  },
+  {
+   "id": "R03-core-tree-replaced-by-constant",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "fragment": {
+    "old": "    trees.push(tree);",
+    "new": "    trees.push(path === 'apps/three-surface-poc/src' ? tree : 'core-ignored');"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-inputs.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 4,
+   "total": 18,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "is a digest over the Polaris surface tree and the core package tree at the observer revision, and nothing else moves it",
+    "a core-only tree change moves the version; the same two trees keep it",
+    "the real trees resolve to the digest over both at HEAD, and the record grammar accepts it",
+    "binds the loaded pair to the builder-supplied evaluation identity and the tree-derived surface version",
+    "pwbSurfaceVersion > is a digest over the Polaris surface tree and the core package tree at the observer revision, and nothing else moves it",
+    "pwbSurfaceVersion > a core-only tree change moves the version; the same two trees keep it"
+   ]
+  },
+  {
+   "id": "R06-vanished-record-skipped",
+   "file": "apps/three-surface-poc/src/governance-inputs.ts",
+   "fragment": {
+    "old": "    if (text === undefined) throw new Error(`governance lifecycle record disappeared: ${relative}`);",
+    "new": "    if (text === undefined) continue;"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/governance-inputs.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 1,
+   "total": 17,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "fails closed when lifecycle vanish fails",
+    "loadBodyReadAuthorityInputs (hermetic) > fails closed when lifecycle vanish fails"
+   ]
+  },
+  {
+   "id": "R07-verdict-tailnet-disclosure-count-ignored",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "fragment": {
+    "old": "check('tailnet-mount-served', inputs.tailnetMountStatus === 200 && inputs.tailnetMountPrefixedLinks && inputs.directDisclosureMarkers > 0 && inputs.tailnetDisclosureMarkers === inputs.directDisclosureMarkers);",
+    "new": "check('tailnet-mount-served', inputs.tailnetMountStatus === 200 && inputs.tailnetMountPrefixedLinks);"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 2,
+   "total": 41,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "the tailnet page discloses fewer authority sentences than the direct page \u2192 tailnet-mount-served fails, and nothing else",
+    "neither page discloses an authority sentence \u2192 tailnet-mount-served fails, and nothing else",
+    "freshCheckoutVerdict > the tailnet page discloses fewer authority sentences than the direct page \u2192 tailnet-mount-served fails, and nothing else",
+    "freshCheckoutVerdict > neither page discloses an authority sentence \u2192 tailnet-mount-served fails, and nothing else"
+   ]
+  },
+  {
+   "id": "R07-verdict-origin-any-403",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "fragment": {
+    "old": "check('browser-origin-refused', inputs.foreignOriginStatus === 403 && inputs.foreignOriginReason === 'browser-origin-refused');",
+    "new": "check('browser-origin-refused', inputs.foreignOriginStatus === 403);"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 1,
+   "total": 41,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "a foreign-Origin browser request was refused for another reason \u2192 browser-origin-refused fails, and nothing else",
+    "freshCheckoutVerdict > a foreign-Origin browser request was refused for another reason \u2192 browser-origin-refused fails, and nothing else"
+   ]
+  },
+  {
+   "id": "R07-verdict-presentation-citable-ignored",
+   "file": "apps/three-surface-poc/src/fresh-checkout-verdict.ts",
+   "fragment": {
+    "old": "inputs.presentationKind === 'polaris-presentation' && inputs.presentationCitable === false);",
+    "new": "inputs.presentationKind === 'polaris-presentation');"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/fresh-checkout-verdict.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 2,
+   "total": 41,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "the presentation envelope claims to be citable \u2192 presentation-served-with-credential fails, and nothing else",
+    "the presentation envelope carries no citable flag \u2192 presentation-served-with-credential fails, and nothing else",
+    "freshCheckoutVerdict > the presentation envelope claims to be citable \u2192 presentation-served-with-credential fails, and nothing else",
+    "freshCheckoutVerdict > the presentation envelope carries no citable flag \u2192 presentation-served-with-credential fails, and nothing else"
+   ]
+  },
+  {
+   "id": "R01-disclosure-dropped-on-tailnet-mount",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "fragment": {
+    "old": "<span data-parity-field=\"authority-disclosure\" data-authority=\"${escapeHtml(entry.authority)}\">${escapeHtml(entry.disclosure)}</span>",
+    "new": "<span data-parity-field=\"authority-disclosure\" data-authority=\"${escapeHtml(entry.authority)}\">${activeMountPrefix === '' ? escapeHtml(entry.disclosure) : ''}</span>"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+    "apps/three-surface-poc/src/surface-routes.test.ts",
+    "apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "exitCode": 1,
+   "failed": 1,
+   "total": 103,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "serves the exact state-(1) authority sentence on Polaris both directly and through the tailnet Host mount (PWB-REQ-005; PWB-RECON-01)",
+    "surface routes > serves the exact state-(1) authority sentence on Polaris both directly and through the tailnet Host mount (PWB-REQ-005; PWB-RECON-01)"
+   ]
+  }
+ ]
+}
