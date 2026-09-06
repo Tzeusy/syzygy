@@ -107,6 +107,22 @@ over. Some of these packages still carry the "candidate, binds nothing" banner
 they were drafted with, written before the act was performed over them —
 read the act record, not the banner.
 
+*Repaired at the head, 2026-09-06.* Eight package files that assert their own
+inertness now open with a dated **PERFORMED** note naming the act record that
+performed them; the pre-act banner is kept unedited beneath it as the
+drafter's record. Two of those files carry a second date: the state-(1)
+amendment's own eleven digests were superseded on 2026-09-05 by the
+truth-and-readiness act. Every other file in these four packages was left
+byte-identical, for one of two reasons. Seven of them are bound — the five
+`*-MANIFEST.txt` files, and the general trusted-bootstrap package's
+`ACT-SEMANTICS.md` and `IMPACT-LEDGER.md`, both of which that package's
+transaction manifest carries as rows. `ACT-SEMANTICS.md` therefore still opens
+"**Candidate — binds nothing**" about a transaction the owner performed on
+2026-09-01, and no agent may correct it: the act bound the bytes that say it.
+The rest were left because their banner is still true — a review brief that
+says "review input, never authority" has not stopped being one. Tracked as
+`syzygy-bba`.
+
 | Directory | Subject | Where its authority is |
 |---|---|---|
 | `general-trusted-bootstrap-authorization/` | The indivisible five-row contract and PWB-coverage amendment | Act record, "General trusted-bootstrap authorization transaction — performed 2026-09-01" |

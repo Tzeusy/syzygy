@@ -1,4 +1,15 @@
-# Candidate report — PWB state-(1) amendment
+# Historical candidate report — PWB state-(1) amendment
+
+> **PERFORMED 2026-09-02, and superseded 2026-09-05.** The owner performed
+> this amendment's sign-off; the act is recorded at
+> `.syzygy/governance/decisions/PWB-STATE1-AMENDMENT-ACT.md`. Three days later
+> a further owner act — `.syzygy/governance/decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md`,
+> 2026-09-05 — states in its own text that it supersedes the eleven PWB
+> artifact digests this amendment made current. So the banner below is stale in
+> both directions: the condition it names as unmet was met, and what it made
+> current is no longer current. It is kept unedited as the drafter's record.
+> The act records own the authority state; `PROJECT-STATUS.md` owns the
+> current one.
 
 > **GENERATED CANDIDATE REPORT — never authority.** The eleven artifact bytes
 > remain inert unless the human owner performs the exact ceremony in

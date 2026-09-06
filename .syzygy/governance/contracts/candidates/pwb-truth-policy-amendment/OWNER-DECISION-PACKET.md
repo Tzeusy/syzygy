@@ -1,4 +1,13 @@
-# Owner decision packet — PWB truth and policy repair
+# Historical owner decision packet — PWB truth and policy repair
+
+> **PERFORMED 2026-09-05.** The owner performed all three decisions this
+> packet offered, recorded at
+> `.syzygy/governance/decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md`,
+> `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md`
+> and `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md`.
+> The banner below is the drafter's pre-act text, kept unedited; it is no
+> longer true of the authority state. The act records own that;
+> `PROJECT-STATUS.md` owns the current one.
 
 > **Inert offering.** This packet performs nothing. Present only the current
 > decision, record the owner's answer, and stop. Do not infer an answer to a

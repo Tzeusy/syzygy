@@ -1,4 +1,15 @@
-# Candidate report — PWB effect acts (consent, secret policy, observer registry)
+# Historical candidate report — PWB effect acts (consent, secret policy, observer registry)
+
+> **PERFORMED 2026-09-02.** The owner performed all three effect acts, each
+> recorded separately at
+> `.syzygy/governance/decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`,
+> `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md` and
+> `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md`. The
+> policy and registry artifacts were then amended by two further acts on
+> 2026-09-05 (`*-AMENDMENT-ACT.md` beside each of the two above). The banner
+> below is the drafter's pre-act text, kept unedited; it is no longer true of
+> the authority state. The act records own that; `PROJECT-STATUS.md` owns the
+> current one.
 
 > **GENERATED CANDIDATE REPORT — never authority.** The three artifacts bind
 > nothing until the human owner performs the exact phrases in

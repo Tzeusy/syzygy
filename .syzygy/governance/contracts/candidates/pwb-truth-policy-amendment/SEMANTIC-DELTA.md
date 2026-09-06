@@ -1,4 +1,14 @@
-# Semantic delta — PWB truth, inert Markdown and readiness repair
+# Historical semantic delta — PWB truth, inert Markdown and readiness repair
+
+> **PERFORMED 2026-09-05.** The owner performed all three decisions this
+> delta was prepared for, recorded at
+> `.syzygy/governance/decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md`,
+> `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md`
+> and `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md`.
+> The banner below is the drafter's pre-act text, kept unedited; it is no
+> longer true of the authority state. The act records own that;
+> `PROJECT-STATUS.md` owns the current one.
+
 
 > **Candidate — binds nothing.** Agents prepared these bytes from the retained
 > live review. Only the human owner may supersede the signed PWB behavior,

@@ -1,5 +1,16 @@
 # Owner sign-off packet — the three Butlers observation authorities
 
+> **PERFORMED 2026-09-02.** The owner performed all three effect acts, each
+> recorded separately at
+> `.syzygy/governance/decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`,
+> `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md` and
+> `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md`. The
+> policy and registry artifacts were then amended by two further acts on
+> 2026-09-05 (`*-AMENDMENT-ACT.md` beside each of the two above). The packet
+> below is the drafter's pre-act text, kept unedited; its ceremony has since
+> been performed. The act records own that; `PROJECT-STATUS.md` owns the
+> current one.
+
 Frozen candidate commit: `48e0f5db645d1fb08e5e3a65c5e50dbcece40412`
 
 Manifest: `.syzygy/governance/contracts/candidates/pwb-effect-acts/PWB-EFFECT-ACTS-MANIFEST.txt` (SHA-256 `d259c3798b2961489d31c55af09e86c9711c0cfd4e5ec626211fdc2447a54150`)
