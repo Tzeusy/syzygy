@@ -52,9 +52,11 @@ the repair is a new disposition that cites it.
 
 The ten rows partition the directory: 91 files on disk, 91 assigned, no
 remainder [Observed — swept by a script that asserts each basename matches at
-most one campaign pattern and prints the unmatched remainder; re-run 2026-09-06
-after the gen-2 reconciliation added two files to the last row, which is why
-this figure reads 91 and not the 88 of the morning (the fifth recovery file is the gen-2 raw re-issued with its crosswalk addendum); dates are
+most one campaign pattern and prints the unmatched remainder; re-run
+2026-09-06, and this figure read 88 the same morning. All three arrivals
+landed in the last row: the gen-2 reconciliation added two, and the gen-2 raw
+was then re-issued with its crosswalk addendum as a fifth file rather than
+overwriting the first (verification rule 10). Dates are
 `git log --diff-filter=A`]. These are navigation figures, not measurement,
 and they go stale the moment a review lands — re-derive rather than trusting
 the row.
