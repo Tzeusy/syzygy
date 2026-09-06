@@ -88,6 +88,12 @@ being true on 2026-08-17.
 
 Identifiers are amended in place or retired — **never renumbered**.
 
+This page defines the *forms*. For the *instances* — every identifier that
+exists, and the file and line where each is defined — see
+[`DIRECTIVE-REGISTER.md`](DIRECTIVE-REGISTER.md), which is generated from the
+corpus on every CI run. It answers "where does `CC-SPEC-11` live?"; it
+deliberately does not answer "what does it say?", because only the clause does.
+
 | Form | Is | Example |
 |---|---|---|
 | `P-nn` | An open **owner decision**, queued in `PENDING-OWNER-DECISIONS.md`. A question only the owner may answer | `P-41` — the specification-acceptance craft act |

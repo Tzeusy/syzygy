@@ -33,14 +33,17 @@ forbidden — before implementing, find the act.
 |---|---|---|---|
 | Why — purpose, non-negotiables | Doctrine (VIS-1…7, SEC-1…5) | `.syzygy/governance/doctrine/` | Adopted, in force |
 | Prior owner rulings | Decisions (SDR-1…37, acts, pending queue) | `.syzygy/governance/decisions/` | In force |
-| Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | CC-SPEC, CC-IMPACT in force; rest owner-approved |
+| Engineering and evidence bar | Craft-and-care (CC-*) | `.syzygy/governance/policies/craft-and-care/` | Owner-approved |
+| The specification bar (CC-SPEC-1…11, CC-IMPACT-1…7) | Craft acts 6 and 7; CC-SPEC amended 2026-09-01 | `contracts/candidates/policy-candidates/` — **not** the craft-and-care directory | **In force.** Path, filenames and head banners all still say candidate; the acts bound those bytes and none may be corrected |
 | Load-bearing how | Design contracts RFC 0001–0011 | `.syzygy/governance/contracts/` | 0001–0009 accepted; 0010–0011 candidate in `contracts/candidates/` |
 | Intended placement | Topology bundle | `.syzygy/map/topology-candidates/` | Candidate |
 | Public narrative | Overview | `.syzygy/intent/OVERVIEW.md` | Presentation, never authority |
 
 `GOVERNANCE-SUBSTRATE-LOCK.yaml` is a record, never authority. **Cite by
 identifier** (`VIS-2`, `SDR-9`, `RFC10-9`); identifiers are amended in place
-or retired, never renumbered. Candidate clauses, drafts, indexes, summaries,
+or retired, never renumbered. `DIRECTIVE-REGISTER.md` (generated) says where
+every identifier is defined, file and line, across all of these trees — use it
+to find a clause, never to learn what one says. Candidate clauses, drafts, indexes, summaries,
 and generated views are never authority.
 
 ## Task routing — context is compiled, never accumulated
@@ -61,6 +64,7 @@ Load the minimum for one correct decision; never "read everything."
 | A launch-gate administration | structured JSON (`launch-gate-administration.schema.json`); the Markdown report is generated, never parsed |
 | Mission or Context-selection work | `contracts/candidates/DEFERRED-WAVE-POSTURE.md` first |
 | What a term means | `governance/doctrine/README.md` glossary, then `PROCESS-GLOSSARY.md` |
+| Where a clause with a known identifier lives | `DIRECTIVE-REGISTER.md` (generated) |
 | Avoiding a repeat mistake | `decisions/PROCESS-LESSONS.md` — not default context |
 
 Historical material (`_bootstrap/`, `contracts/candidates/history/`,
@@ -259,14 +263,15 @@ lessons added the same day; second docs-pass lessons added 2026-09-06.
   false absence (it produced one, on a page written the day before). An
   absence claim's denominator must cover the *forms* an identifier occurs in,
   not only the records searched (rule 9).
-- Two owner-confirmed craft policies have been **in force since 2026-08-17
-  inside `contracts/candidates/policy-candidates/`** — CC-SPEC-1…11 and
-  CC-IMPACT-1…7, at their committed home, uncopied. Their own head banners and
-  their `-POLICY-CANDIDATE.md` filenames still say candidate and are wrong;
-  the candidates `README.md` section "Two in-force craft policies live in this
-  tree" is the correct account. CC-IMPACT-7 mandates a blind run against
-  `SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md` by path *and* digest, which fixture
-  3 superseded on 2026-08-30; neither the clause nor fixture 2 may be edited.
+- The two in-force craft policies inside `policy-candidates/` are in the
+  authority table above; the trap that is not is CC-IMPACT-7, which mandates a
+  blind run against `SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md` by path *and*
+  digest — a fixture that fixture 3 superseded on 2026-08-30 because it left
+  `topology[]` unexercised. Neither the clause nor fixture 2 may be edited to
+  say so.
+- A clause is found by identifier, not by directory. `DIRECTIVE-REGISTER.md`
+  is generated from all five trees and carries file and line for every one; a
+  scan of a directory you *expect* to own a family will miss the two above.
 - A round directory's index date is its **first-commit** date and does not
   bound its contents: `round-2026-08g` took two files seventeen days after it
   closed. 96 of 235 round files carry no status word at their head — read the

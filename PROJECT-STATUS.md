@@ -212,13 +212,15 @@ python3 $CS/build_capability_1_views.py --check      # capability 1: charter -> 
 python3 $CS/build_capability_1_views.py --selftest
 python3 scripts/build_capability_1_spec_dependencies.py --check  # capability 1 spec: warrants -> generated union
 python3 scripts/build_capability_1_spec_dependencies.py --selftest
+python3 scripts/build_directive_register.py --check     # every identifier -> its definition site
+python3 scripts/build_directive_register.py --selftest
 DR=.syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json
 python3 scripts/validate_launch_administration.py $DR
 python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
 ```
 
-The eighteen checks above are the same eighteen the hosted workflow runs
+The twenty checks above are the same twenty the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.

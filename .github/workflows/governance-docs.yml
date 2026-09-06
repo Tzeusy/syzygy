@@ -92,6 +92,17 @@ jobs:
       - name: build_capability_1_spec_dependencies --selftest
         run: python3 scripts/build_capability_1_spec_dependencies.py --selftest
 
+      # The directive register: every governing identifier and its definition
+      # site, across all five trees. --check fails when a clause moves, is
+      # renumbered against CC-REV-7, or gains a definition the page has not
+      # seen; --selftest holds the predicate's fixtures, including the
+      # leading-possessive-citation line that is not a definition.
+      - name: build_directive_register --check
+        run: python3 scripts/build_directive_register.py --check
+
+      - name: build_directive_register --selftest
+        run: python3 scripts/build_directive_register.py --selftest
+
       # The checkers' own fixtures. A hosted run that exercises the checks
       # but never the checks' checks reports a denominator it does not have.
       # Every one is stdlib-only, which is why they can run here at all —
