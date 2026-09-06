@@ -32,6 +32,8 @@ export const PREFLIGHT_LIMBS = [
   'unknown-invisible',
   'claim-strength-unexplained',
   'source-path-unresolved',
+  'authority-disclosure-missing',
+  'discovery-undisclosed',
   'browser-check-not-current',
 ] as const;
 export type PreflightLimb = (typeof PREFLIGHT_LIMBS)[number];
@@ -247,6 +249,55 @@ function browserCheck(model: PocModel, input: BrowserCheckInput): string | undef
   return problems.length === 0 ? undefined : problems.join('; ');
 }
 
+// PWB-REQ-005, quoted by hand as the controlled expectation (never imported
+// from the module that renders it): the state-(1) label and the sentence
+// the human surface must carry verbatim for every owner-adopted authority.
+const STATE_1_LABEL = 'owner-adopted (bootstrap, uncorrelated)';
+const STATE_1_SENTENCE = "Owner-trusted only; same-tree forgeable from Syzygy's perspective. Digest detects drift, not authorship or attendance.";
+
+function markerTexts(html: string, field: string): { readonly attrs: string; readonly text: string }[] {
+  return Array.from(html.matchAll(new RegExp(`data-parity-field="${field}"([^>]*)>([^<]*)<`, 'g')), (match) => ({ attrs: match[1] as string, text: decode(match[2] as string) }));
+}
+
+/** PWB-RECON-01: every authority's disclosure sentence is on the page as
+ * its own marker, and every state-(1) authority's is the exact sentence. */
+function authorityDisclosure(shape: ProjectShape, html: string): string | undefined {
+  if (shape.authority === undefined) return `no body-read authority evaluation (${shape.kind})`;
+  const problems: string[] = [];
+  const rendered = markerTexts(html, 'authority-disclosure');
+  for (const entry of shape.authority.authorities) {
+    const own = rendered.filter((marker) => marker.attrs.includes(`data-authority="${entry.authority}"`));
+    if (own.length !== 1) problems.push(`${entry.authority}: ${own.length} disclosure marker(s) on the page (need exactly one)`);
+    else if (own[0]?.text !== entry.disclosure) problems.push(`${entry.authority}: the page sentence differs from the evaluation's`);
+    if (entry.state === STATE_1_LABEL && (own[0]?.text !== STATE_1_SENTENCE || entry.disclosure !== STATE_1_SENTENCE)) problems.push(`${entry.authority}: state (1) without the PWB-REQ-005 sentence`);
+  }
+  return problems.length === 0 ? undefined : problems.join('; ');
+}
+
+/** PWB-RECON-02: every pillar's discovery state is on the page, every
+ * Unknown pillar with its reason and a route, and the degradation state
+ * when the observation carries one. */
+function discoveryDisclosure(shape: ProjectShape, html: string): string | undefined {
+  if (shape.kind !== 'observed') return `no observed project shape (${shape.kind})`;
+  const problems: string[] = [];
+  const states = markerTexts(html, 'shape-pillar-state');
+  const reasons = markerTexts(html, 'shape-pillar-reason');
+  for (const pillar of shape.discovery) {
+    const own = states.filter((marker) => marker.attrs.includes(`data-pillar="${pillar.key}"`));
+    if (own.length !== 1 || own[0]?.text !== `${pillar.key} — ${pillar.state}`) problems.push(`${pillar.key}: discovery state not on the page as ${pillar.state}`);
+    if (pillar.state === 'unknown') {
+      const reason = reasons.filter((marker) => marker.attrs.includes(`data-pillar="${pillar.key}"`));
+      if (reason.length !== 1 || reason[0]?.text !== pillar.reason) problems.push(`${pillar.key}: Unknown without its reason ${pillar.reason} on the page`);
+      if (!html.includes('then a new snapshot')) problems.push(`${pillar.key}: Unknown without a route`);
+    }
+  }
+  if (shape.degradation !== undefined) {
+    const shown = markerTexts(html, 'shape-degradation-state').map((marker) => marker.text);
+    if (shown.length !== 1 || shown[0] !== shape.degradation.degradationState) problems.push(`degradation state ${shape.degradation.degradationState} not on the page`);
+  }
+  return problems.length === 0 ? undefined : problems.join('; ');
+}
+
 const EMPTY_POPULATIONS = Object.fromEntries(RECONCILED_CLASSES.map((cls) => [cls, { modeled: 0, denominator: null, rows: 0 }])) as WalkthroughPreflight['observed']['populations'];
 
 /** Every limb is evaluated and every failure reported at once. */
@@ -284,6 +335,8 @@ export function evaluateWalkthroughPreflight(inputs: WalkthroughPreflightInputs)
   add('claim-strength-unexplained', strength.failure);
   const paths = sourcePaths(html, sourceRoutes);
   add('source-path-unresolved', paths.failure);
+  add('authority-disclosure-missing', authorityDisclosure(shape, html));
+  add('discovery-undisclosed', discoveryDisclosure(shape, html));
   add('browser-check-not-current', browserCheck(model, inputs.browserCheck));
   return {
     ready: findings.length === 0,

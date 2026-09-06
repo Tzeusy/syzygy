@@ -126,7 +126,7 @@ describe('walkthrough preflight: the ready case', () => {
     for (const word of ['verdict', 'score', '"met"', 'answers']) expect(json).not.toContain(word);
   });
 
-  it('owns exactly eight limbs', () => {
+  it('owns exactly ten limbs', () => {
     expect([...PREFLIGHT_LIMBS]).toEqual([
       'account-statement-unbacked',
       'population-empty',
@@ -135,6 +135,8 @@ describe('walkthrough preflight: the ready case', () => {
       'unknown-invisible',
       'claim-strength-unexplained',
       'source-path-unresolved',
+      'authority-disclosure-missing',
+      'discovery-undisclosed',
       'browser-check-not-current',
     ]);
   });
@@ -282,6 +284,38 @@ describe('walkthrough preflight: one counterexample per limb', () => {
       mutate: (b) => ({ ...b, polarisHtml: `${b.polarisHtml}<a href="#polaris-nowhere">nowhere</a>` }),
     },
     {
+      name: 'an authority whose disclosure sentence is not on the page',
+      limb: 'authority-disclosure-missing',
+      mutate: (b) => ({ ...b, polarisHtml: replaceOnce(b.polarisHtml, 'data-parity-field="authority-disclosure"', 'data-parity-field="authority-sentence"') }),
+    },
+    {
+      name: 'a state-(1) authority whose sentence on the page is not the PWB-REQ-005 sentence',
+      limb: 'authority-disclosure-missing',
+      mutate: (b) => ({ ...b, polarisHtml: replaceOnce(b.polarisHtml, 'data-authority="consent">Owner-trusted only;', 'data-authority="consent">Owner-verified only;') }),
+    },
+    {
+      name: 'a state-(1) authority the model calls owner-adopted but whose sentence is another',
+      limb: 'authority-disclosure-missing',
+      mutate: (b) => ({ ...b, model: { ...b.model, projectShape: { ...observedOf(b.model), authority: { ...observedOf(b.model).authority, authorities: observedOf(b.model).authority.authorities.map((entry, index) => (index === 0 ? { ...entry, disclosure: 'Owner-trusted, drift detected by digest.' } : entry)) } } } }),
+    },
+    {
+      name: 'a pillar whose discovery state is not on the page',
+      limb: 'discovery-undisclosed',
+      mutate: (b) => ({ ...b, polarisHtml: replaceOnce(b.polarisHtml, 'data-parity-field="shape-pillar-state"', 'data-parity-field="pillar-state"') }),
+    },
+    {
+      name: 'a pillar the model holds Unknown that the page shows discovered, with no reason or route',
+      limb: 'discovery-undisclosed',
+      mutate: (b) => ({ ...b, model: withShape(b.model, (shape) => {
+        (shape as unknown as { discovery: unknown[] }).discovery = shape.discovery.map((pillar) => (pillar.key === 'spec-and-spine' ? { key: pillar.key, state: 'unknown', reason: 'index-missing-at-revision', root: 'about/spec-and-spine', indexPath: 'about/spec-and-spine/README.md', ignoredLinks: [] } : pillar));
+      }) }),
+    },
+    {
+      name: 'a degradation state the page does not show',
+      limb: 'discovery-undisclosed',
+      mutate: (b) => ({ ...b, polarisHtml: replaceOnce(b.polarisHtml, 'data-parity-field="shape-degradation-state"', 'data-parity-field="degradation-state"') }),
+    },
+    {
       name: 'no browser check performed',
       limb: 'browser-check-not-current',
       mutate: (b) => ({ ...b, browserCheck: { kind: 'not-performed', detail: 'no browser' } }),
@@ -325,6 +359,6 @@ describe('walkthrough preflight: one counterexample per limb', () => {
     const result = evaluateWalkthroughPreflight({ ...ready, model: copy });
     expect(result.ready).toBe(false);
     const limbs = result.findings.map((finding) => finding.limb);
-    for (const limb of ['account-statement-unbacked', 'population-empty', 'population-unreconciled', 'exact-requirement-unreachable']) expect(limbs).toContain(limb);
+    for (const limb of ['account-statement-unbacked', 'population-empty', 'population-unreconciled', 'exact-requirement-unreachable', 'authority-disclosure-missing', 'discovery-undisclosed']) expect(limbs).toContain(limb);
   });
 });

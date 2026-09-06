@@ -19,7 +19,7 @@ import type { PocModel, ProjectShape, ProjectShapeClaim } from '@syzygy/three-su
 
 import { renderPolarisPage } from './polaris.js';
 import { buildFixtureModel } from './test-model-fixture.js';
-import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS, REJECTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
+import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET, REJECTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 import { walkthroughJudgmentFixture, type JudgmentFixtureState } from './test-walkthrough-judgment-fixture.js';
 
 const cleanups: string[] = [];
@@ -31,7 +31,7 @@ afterEach(() => {
 // The state matrix: every body-read authority state the shape can carry ×
 // every judgment presentation state, each rendered once.
 
-const SHAPE_STATES = ['not-evaluated', 'not-admitted', 'observation-failed', 'observed', 'observed-degraded'] as const;
+const SHAPE_STATES = ['not-evaluated', 'not-admitted', 'observation-failed', 'observed', 'observed-degraded', 'observed-excluded', 'observed-undiscovered'] as const;
 type ShapeState = (typeof SHAPE_STATES)[number];
 const JUDGMENT_STATES = ['not-evaluated', 'absent-run-record', 'absent-judgment', 'unlawful', 'lawful-state-1', 'lawful-state-2'] as const;
 type JudgmentState = (typeof JUDGMENT_STATES)[number];
@@ -53,6 +53,17 @@ function modelFor(shapeState: ShapeState, judgmentState: JudgmentState): PocMode
     }
     case 'observed':
       return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() }, ...walkthroughJudgment });
+    case 'observed-excluded':
+      // A secret-bearing source is withheld hash-not-body, so the
+      // observation carries a degradation state (PWB-RECON-02 family).
+      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET) }, ...walkthroughJudgment });
+    case 'observed-undiscovered': {
+      // A pillar home with no index (the live Spec and Spine shape): the
+      // pillar is Unknown with a reason, and the whole-shape claim with it.
+      const texts: Record<string, string> = { ...PROJECT_SHAPE_FIXTURE_TEXTS, 'about/spec-and-spine/notes.md': 'Specs live under openspec/.\n' };
+      delete texts['about/spec-and-spine/README.md'];
+      return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(texts) }, ...walkthroughJudgment });
+    }
     case 'observed-degraded': {
       // One phase-B body read fails: the source stays in the population as
       // Unknown, so reason counts, gaps and Unknown disclosures are rendered.
@@ -325,6 +336,14 @@ function sweep(model: PocModel): SweepResult {
   expected.set('authority-state', authority === undefined ? [] : authority.authorities.map((entry) => `${entry.authority} — ${entry.state}`));
   expected.set('authority-mode', authority === undefined ? [] : [authority.authorizationMode]);
   expected.set('authority-evaluation-id', authority === undefined ? [] : [authority.evaluationId]);
+  // PWB-REQ-005 on the human surface (PWB-RECON-01): each authority's exact
+  // disclosure sentence, in authority order.
+  expected.set('authority-disclosure', authority === undefined ? [] : authority.authorities.map((entry) => entry.disclosure));
+  // Discovery and degradation (PWB-RECON-02): one state marker per pillar,
+  // one reason per Unknown pillar, the degradation state when there is one.
+  expected.set('shape-pillar-state', observed === undefined ? [] : observed.discovery.map((pillar) => `${pillar.key} — ${pillar.state}`));
+  expected.set('shape-pillar-reason', observed === undefined ? [] : observed.discovery.flatMap((pillar) => (pillar.state === 'unknown' ? [pillar.reason] : [])));
+  expected.set('shape-degradation-state', observed?.degradation === undefined ? [] : [observed.degradation.degradationState]);
   // Walkthrough judgment: every state field, both digests, the disclosure
   // sentence and every traversed path (repeats included).
   const judgment = machine.walkthroughJudgment;
@@ -514,10 +533,16 @@ describe('PWB-REQ-020 exhaustive Polaris parity sweep', () => {
     const model = modelFor('observed-degraded', 'lawful-state-2');
     const { reports, parityFields } = sweep(model);
     const nonEmpty = new Set(reports.filter((report) => report.human > 0).map((report) => report.family));
-    for (const family of ['claim-tuple', 'claim-population', 'unknown-disclosure', 'unknown-relationships', 'reason-counts:primary', 'coverage-counts', 'item-rows', 'source-rows', 'gaps', 'judgment-state', 'parity-field:authority-state', 'parity-field:judgment-disclosure', 'parity-field:judgment-traversed-path', 'parity-field:shape-anchor', 'parity-field:shape-source-path']) {
+    for (const family of ['claim-tuple', 'claim-population', 'unknown-disclosure', 'unknown-relationships', 'reason-counts:primary', 'coverage-counts', 'item-rows', 'source-rows', 'gaps', 'judgment-state', 'parity-field:authority-state', 'parity-field:authority-disclosure', 'parity-field:shape-pillar-state', 'parity-field:judgment-disclosure', 'parity-field:judgment-traversed-path', 'parity-field:shape-anchor', 'parity-field:shape-source-path']) {
       expect(nonEmpty.has(family), family).toBe(true);
     }
     expect(parityFields).toContain('judgment-independently-verified');
+    // The degradation family has a real denominator only where the
+    // observation is degraded: the excluded-source cell.
+    const excluded = sweep(modelFor('observed-excluded', 'lawful-state-2'));
+    expect(excluded.reports.find((report) => report.family === 'parity-field:shape-degradation-state')?.human).toBe(1);
+    const undiscovered = sweep(modelFor('observed-undiscovered', 'lawful-state-2'));
+    expect(undiscovered.reports.find((report) => report.family === 'parity-field:shape-pillar-reason')?.human).toBe(1);
     const html = renderPolarisPage(model);
     expect(leafMarkers(html, 'data-parity-field').filter((m) => m.attrs.get('data-parity-field') === 'judgment-independently-verified').map((m) => m.text)).toEqual(['yes']);
     expect(leafMarkers(html, 'data-parity-field').filter((m) => m.attrs.get('data-parity-field') === 'judgment-state-label').map((m) => m.text)).toEqual(['Syzygy-verified']);
@@ -526,6 +551,9 @@ describe('PWB-REQ-020 exhaustive Polaris parity sweep', () => {
     expect(leafMarkers(state1, 'data-parity-field').filter((m) => m.attrs.get('data-parity-field') === 'judgment-disclosure').map((m) => m.text)).toEqual([
       "Owner-trusted only; same-tree forgeable from Syzygy's perspective. Digest detects drift, not authorship or attendance.",
     ]);
+    expect(leafMarkers(state1, 'data-parity-field').filter((m) => m.attrs.get('data-parity-field') === 'authority-disclosure').map((m) => m.text)).toEqual(
+      Array.from({ length: 3 }, () => "Owner-trusted only; same-tree forgeable from Syzygy's perspective. Digest detects drift, not authorship or attendance."),
+    );
     // The traversed-path fixture repeats a path; both channels keep three.
     const traversed = leafMarkers(html, 'data-parity-field').filter((m) => m.attrs.get('data-parity-field') === 'judgment-traversed-path').map((m) => m.text);
     expect(traversed).toEqual(['/polaris', '/entry', '/polaris']);

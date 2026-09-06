@@ -25,10 +25,15 @@ import {
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 const EVALUATION_INSTANT = '2026-09-10T00:00:00Z';
 const ACT_DATE = '2026-09-06';
-/** A binding as the daemon would derive it: the Polaris tree id at the
- * observer revision and the evaluation's observation-digest identity. */
-const BINDING = { surfaceVersion: 'polaris@0123456789ab', evaluationIdentity: 'pwb-eval-0123456789abcdef01234567' } as const;
 const SURFACE_TREE_ID = '0123456789abcdef0123456789abcdef01234567';
+const CORE_TREE_ID_FOR_BINDING = 'fedcba9876543210fedcba9876543210fedcba98';
+/** A binding as the daemon would derive it: a digest over the Polaris and
+ * core tree ids at the observer revision and the evaluation's
+ * observation-digest identity. */
+const BINDING = {
+  surfaceVersion: `polaris@${createHash('sha256').update(`${SURFACE_TREE_ID}\n${CORE_TREE_ID_FOR_BINDING}`).digest('hex').slice(0, 12)}`,
+  evaluationIdentity: 'pwb-eval-0123456789abcdef01234567',
+} as const;
 
 function sha256(text: string): string {
   return createHash('sha256').update(text).digest('hex');
@@ -211,28 +216,55 @@ describe('the scheduled walkthrough', () => {
 });
 
 describe('pwbSurfaceVersion', () => {
-  it('is the Polaris source tree id at the observer revision, and nothing else moves it', () => {
+  const CORE_TREE_ID = 'fedcba9876543210fedcba9876543210fedcba98';
+  // The controlled expectation: a digest over the two tree ids in this
+  // order, computed here rather than imported (PWB-RECON-03: a core-only
+  // change must move the version, so the core tree is part of it).
+  const expectedVersion = (surface: string, core: string): string =>
+    `polaris@${createHash('sha256').update(`${surface}\n${core}`).digest('hex').slice(0, 12)}`;
+
+  it('is a digest over the Polaris surface tree and the core package tree at the observer revision, and nothing else moves it', () => {
     const calls: string[][] = [];
     const runGit = (_root: string, args: readonly string[]): string => {
       calls.push([...args]);
-      return `${SURFACE_TREE_ID}\n`;
+      return args[1]?.endsWith(':apps/three-surface-poc/src') === true ? `${SURFACE_TREE_ID}\n` : `${CORE_TREE_ID}\n`;
     };
-    expect(pwbSurfaceVersion(runGit, '/fake/root', 'a'.repeat(40))).toBe('polaris@0123456789ab');
-    expect(calls).toEqual([['rev-parse', `${'a'.repeat(40)}:apps/three-surface-poc/src`]]);
+    expect(pwbSurfaceVersion(runGit, '/fake/root', 'a'.repeat(40))).toBe(expectedVersion(SURFACE_TREE_ID, CORE_TREE_ID));
+    expect(calls).toEqual([
+      ['rev-parse', `${'a'.repeat(40)}:apps/three-surface-poc/src`],
+      ['rev-parse', `${'a'.repeat(40)}:packages/three-surface-poc-core/src`],
+    ]);
   });
 
-  it('fails closed to polaris@unresolved when the tree cannot be resolved or is not a tree id', () => {
+  it('a core-only tree change moves the version; the same two trees keep it', () => {
+    const version = (core: string): string =>
+      pwbSurfaceVersion((_root, args) => (args[1]?.endsWith(':apps/three-surface-poc/src') === true ? SURFACE_TREE_ID : core), '/fake/root', 'b'.repeat(40));
+    expect(version(CORE_TREE_ID)).toBe(version(CORE_TREE_ID));
+    expect(version('1'.repeat(40))).not.toBe(version(CORE_TREE_ID));
+    expect(version('1'.repeat(40))).toMatch(/^polaris@[0-9a-f]{12}$/);
+  });
+
+  it('fails closed to polaris@unresolved when either tree cannot be resolved or is not a tree id', () => {
     expect(pwbSurfaceVersion(() => { throw new Error('bad revision'); }, '/fake/root', 'deadbeef')).toBe('polaris@unresolved');
     expect(pwbSurfaceVersion(() => 'fatal: not a tree\n', '/fake/root', 'deadbeef')).toBe('polaris@unresolved');
     expect(pwbSurfaceVersion(() => '', '/fake/root', 'deadbeef')).toBe('polaris@unresolved');
+    const coreOnlyFails = (_root: string, args: readonly string[]): string => {
+      if (args[1]?.endsWith(':packages/three-surface-poc-core/src') === true) throw new Error('no core tree');
+      return SURFACE_TREE_ID;
+    };
+    expect(pwbSurfaceVersion(coreOnlyFails, '/fake/root', 'deadbeef')).toBe('polaris@unresolved');
+    const coreNotHex = (_root: string, args: readonly string[]): string =>
+      (args[1]?.endsWith(':packages/three-surface-poc-core/src') === true ? 'fatal: not a tree\n' : SURFACE_TREE_ID);
+    expect(pwbSurfaceVersion(coreNotHex, '/fake/root', 'deadbeef')).toBe('polaris@unresolved');
   });
 
-  it('the real tree resolves to the surface tree at HEAD, and the record grammar accepts it', () => {
+  it('the real trees resolve to the digest over both at HEAD, and the record grammar accepts it', () => {
     const head = execFileSync('git', ['-C', REPO_ROOT, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-    const tree = execFileSync('git', ['-C', REPO_ROOT, 'rev-parse', `${head}:apps/three-surface-poc/src`], { encoding: 'utf8' }).trim();
+    const surface = execFileSync('git', ['-C', REPO_ROOT, 'rev-parse', `${head}:apps/three-surface-poc/src`], { encoding: 'utf8' }).trim();
+    const core = execFileSync('git', ['-C', REPO_ROOT, 'rev-parse', `${head}:packages/three-surface-poc-core/src`], { encoding: 'utf8' }).trim();
     const runGit = (root: string, args: readonly string[]): string => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8' });
     const version = pwbSurfaceVersion(runGit, REPO_ROOT, head);
-    expect(version).toBe(`polaris@${tree.slice(0, 12)}`);
+    expect(version).toBe(expectedVersion(surface, core));
     expect(version).toMatch(/^[a-z][a-z0-9-]*@[0-9A-Za-z][0-9A-Za-z.+-]*$/);
   });
 });
@@ -258,6 +290,7 @@ describe('walkthroughJudgmentInputsFor', () => {
       },
       runGit: (_root, args) => {
         if (args[0] === 'rev-parse' && args[1] === `${'b'.repeat(40)}:apps/three-surface-poc/src`) return `${SURFACE_TREE_ID}\n`;
+        if (args[0] === 'rev-parse' && args[1] === `${'b'.repeat(40)}:packages/three-surface-poc-core/src`) return `${CORE_TREE_ID_FOR_BINDING}\n`;
         if (args[0] === 'rev-parse') return `${'4'.repeat(40)}\n`;
         if (args[0] === 'ls-tree') return tree.treePaths.has(args[4] ?? '') ? `${args[4]}\n` : '';
         throw new Error(`unexpected git ${args.join(' ')}`);

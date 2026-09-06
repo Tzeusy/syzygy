@@ -181,6 +181,10 @@ export const POLARIS_COPY = [
   { id: 'label.deferred', role: 'epistemic-disclosure', kind: 'label', text: 'deferred' },
   { id: 'label.no-route', role: 'epistemic-disclosure', kind: 'label', text: 'No route declared' },
   { id: 'label.evaluated-as', role: 'epistemic-disclosure', kind: 'label', text: 'evaluated as' },
+  // PWB-RECON-02: phase-A discovery per pillar and the observation's degradation state.
+  { id: 'label.discovery', role: 'epistemic-disclosure', kind: 'label', text: 'Discovery:' },
+  { id: 'label.degradation', role: 'epistemic-disclosure', kind: 'label', text: 'Degradation:' },
+  { id: 'sentence.no-degradation', role: 'epistemic-disclosure', kind: 'sentence', text: 'No degradation state was recorded for this evaluation.' },
   // PWB-REQ-021/022: the owner's cold-open walkthrough judgment, as carried.
   { id: 'evidence.walkthrough', role: 'epistemic-disclosure', kind: 'heading', text: 'Owner cold-open walkthrough judgment' },
   { id: 'sentence.judgment-not-evaluated', role: 'epistemic-disclosure', kind: 'sentence', text: 'No walkthrough run record and judgment pair reached this evaluation:' },

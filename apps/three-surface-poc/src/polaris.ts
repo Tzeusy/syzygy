@@ -6,6 +6,8 @@ import {
   type Declaration,
   type Exclusion,
   type ExtractionClass,
+  type ObservationDegradation,
+  type PillarDiscovery,
   type PocEntity,
   type PocModel,
   type PocProvenance,
@@ -589,9 +591,57 @@ function shapeUnknownBlock(shape: Exclude<ProjectShape, { kind: 'observed' }>, g
  * mode and the evaluation the states belong to, each as its own parity
  * marker so the human channel keeps one marker per authority (multiplicity)
  * and names the evaluation it was disclosed at. */
+/** The cause-correct route for one Unknown pillar (PWB-RECON-02): what
+ * phase A could not find and what, in Butlers or by owner gate, would
+ * resolve it. Exhaustive over the closed reason set by type. */
+function pillarRoute(pillar: Extract<PillarDiscovery, { state: 'unknown' }>): string {
+  const home = pillar.root === undefined ? 'its home' : pillar.root;
+  const index = pillar.indexPath === undefined ? 'its index' : pillar.indexPath;
+  switch (pillar.reason) {
+    case 'root-index-missing-at-revision':
+      return 'the root index is absent at this revision, so no pillar home is named: restore it in Butlers, then a new snapshot';
+    case 'root-index-unavailable':
+      return `the root index could not be read${pillar.detail === undefined ? '' : ` (${pillar.detail})`}: restore its body in Butlers, then a new snapshot`;
+    case 'not-named-in-root-index':
+      return 'the root index names no home for this pillar: add its link in Butlers, then a new snapshot; or an owner gate amending the pillar set';
+    case 'named-root-ambiguous':
+      return 'the root index names more than one home for this pillar: keep exactly one in Butlers, then a new snapshot';
+    case 'root-missing-at-revision':
+      return `the named home ${home} is absent at this revision: create it in Butlers, then a new snapshot`;
+    case 'index-missing-at-revision':
+      return `the home ${home} carries no index at ${index} at this revision: add that index in Butlers, then a new snapshot; or an owner gate amending the discovery rule. No policy change is involved`;
+    case 'index-unavailable':
+      return `the index ${index} could not be read${pillar.detail === undefined ? '' : ` (${pillar.detail})`}: restore its body in Butlers, then a new snapshot`;
+  }
+}
+
+/** One marker per pillar with its discovery state; an Unknown pillar adds
+ * its reason marker and the route, a discovered one its index and count. */
+function discoveryLine(discovery: readonly PillarDiscovery[]): string {
+  const entries = discovery
+    .map((pillar) => {
+      const state = `<span data-parity-field="shape-pillar-state" data-pillar="${escapeHtml(pillar.key)}">${escapeHtml(pillar.key)} — ${escapeHtml(pillar.state)}</span>`;
+      if (pillar.state === 'discovered') return `${state} (${escapeHtml(pillar.indexPath)}, ${pillar.namedSources} named)`;
+      return `${state} (<span data-parity-field="shape-pillar-reason" data-pillar="${escapeHtml(pillar.key)}">${escapeHtml(pillar.reason)}</span>; ${copy('label.route').toLowerCase()} ${escapeHtml(pillarRoute(pillar))})`;
+    })
+    .join('; ');
+  return `<p${DISCLOSURE} data-shape-discovery><small>${copy('label.discovery')} ${entries}.</small></p>`;
+}
+
+/** The observation's degradation state, or the sentence that none was
+ * recorded — never silence in either case. */
+function degradationLine(degradation: ObservationDegradation | undefined): string {
+  if (degradation === undefined) return `<p data-shape-degradation="none"${copyAttr('sentence.no-degradation')}><small>${copy('sentence.no-degradation')}</small></p>`;
+  return `<p${DISCLOSURE} data-shape-degradation="${escapeHtml(degradation.failureState)}"><small>${copy('label.degradation')} <span data-parity-field="shape-degradation-state">${escapeHtml(degradation.degradationState)}</span> (${escapeHtml(degradation.failureState)}; ${escapeHtml(degradation.detail)}).</small></p>`;
+}
+
 function authorityLine(authority: AuthorityDisclosure): string {
+  // PWB-REQ-005 on the human surface (PWB-RECON-01): every authority's
+  // state and, beside it, its exact disclosure sentence — state (1) renders
+  // the quoted sentence verbatim, the machine answer carries the same
+  // string, and the parity sweep compares the two per authority.
   const entries = authority.authorities
-    .map((entry) => `<span data-parity-field="authority-state" data-authority="${escapeHtml(entry.authority)}">${escapeHtml(entry.authority)} — ${escapeHtml(entry.state)}</span>`)
+    .map((entry) => `<span data-parity-field="authority-state" data-authority="${escapeHtml(entry.authority)}">${escapeHtml(entry.authority)} — ${escapeHtml(entry.state)}</span> (<span data-parity-field="authority-disclosure" data-authority="${escapeHtml(entry.authority)}">${escapeHtml(entry.disclosure)}</span>)`)
     .join('; ');
   return `<p${DISCLOSURE} data-authority-evaluation><small>${copy('label.authority')} ${entries} (<span data-parity-field="authority-mode">${escapeHtml(authority.authorizationMode)}</span>), ${copy('label.evaluated-as')} <code data-parity-field="authority-evaluation-id">${escapeHtml(authority.evaluationId)}</code>.</small></p>`;
 }
@@ -892,6 +942,8 @@ function shapeEvidence(shape: ProjectShape): string {
     ${onDemandCounts(shape.claim.claimId, escapeHtml(counts))}
     <p${FACT}><small>Revision <code data-parity-field="shape-revision">${escapeHtml(identity.revision.slice(0, 12))}</code> (requested <code>${escapeHtml(identity.requestedRevision)}</code>), committed <code>${escapeHtml(identity.sourceClaimedInstant.instant)}</code>, captured <code>${escapeHtml(identity.capturedAt)}</code> by <code>${escapeHtml(identity.observer.observerId)}</code> ${escapeHtml(identity.observer.observerVersion)} under policy <code>${escapeHtml(identity.policy.policyId)}</code> ${escapeHtml(identity.policy.policyVersion)}; manifest <code data-parity-field="shape-manifest-digest">${escapeHtml(shortDigest(identity.manifestDigest))}</code>, observation <code data-parity-field="shape-observation-digest">${escapeHtml(shortDigest(identity.observationDigest))}</code>.</small></p>
     ${authorityLine(shape.authority)}
+    ${discoveryLine(shape.discovery)}
+    ${degradationLine(shape.degradation)}
   </section>
   <section class="claim-section wide" data-polaris-section="shape:sources">
     ${heading(3, 'polaris-shape-sources', 'evidence.sources')}

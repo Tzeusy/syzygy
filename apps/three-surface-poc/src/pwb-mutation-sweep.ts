@@ -536,6 +536,57 @@ const PARITY_MARKERS: SweepGroup = {
       '<code data-parity-field="authority-evaluation-id">${escapeHtml(authority.evaluationInstant)}<',
       ['observed shape / not-evaluated judgment'],
     ),
+    // authority-disclosure — PWB-REQ-005's sentence on the human page (PWB-RECON-01).
+    literal(
+      'polaris-authority-disclosure-missing',
+      POLARIS_SOURCE,
+      'authority-disclosure/missing: the disclosure marker is renamed so the sentence drops out of the human channel',
+      '<span data-parity-field="authority-disclosure" data-authority="${escapeHtml(entry.authority)}">${escapeHtml(entry.disclosure)}</span>',
+      '<span data-parity-field="authority-sentence" data-authority="${escapeHtml(entry.authority)}">${escapeHtml(entry.disclosure)}</span>',
+      ['observed shape / not-evaluated judgment'],
+    ),
+    literal(
+      'polaris-authority-disclosure-changed',
+      POLARIS_SOURCE,
+      'authority-disclosure/changed: the sentence shown is not the evaluation\'s sentence',
+      '<span data-parity-field="authority-disclosure" data-authority="${escapeHtml(entry.authority)}">${escapeHtml(entry.disclosure)}</span>',
+      '<span data-parity-field="authority-disclosure" data-authority="${escapeHtml(entry.authority)}">${escapeHtml(entry.disclosure.replace(\'forgeable\', \'verifiable\'))}</span>',
+      ['observed shape / not-evaluated judgment'],
+    ),
+    // shape-pillar-state / shape-pillar-reason / shape-degradation-state —
+    // discovery and degradation on the page (PWB-RECON-02).
+    literal(
+      'polaris-pillar-state-missing',
+      POLARIS_SOURCE,
+      'shape-pillar-state/missing: the first pillar is not rendered',
+      '  const entries = discovery\n    .map((pillar) => {',
+      '  const entries = discovery.slice(1)\n    .map((pillar) => {',
+      ['observed shape / not-evaluated judgment'],
+    ),
+    literal(
+      'polaris-pillar-state-changed',
+      POLARIS_SOURCE,
+      'shape-pillar-state/changed: every pillar is shown discovered whatever the model holds',
+      '${escapeHtml(pillar.key)} — ${escapeHtml(pillar.state)}</span>`;',
+      '${escapeHtml(pillar.key)} — discovered</span>`;',
+      ['observed-undiscovered shape / not-evaluated judgment', "discloses every pillar's discovery state, and a missing pillar index with its reason and a cause-correct route"],
+    ),
+    literal(
+      'polaris-pillar-reason-changed',
+      POLARIS_SOURCE,
+      'shape-pillar-reason/changed: the reason marker carries the state word where the reason belongs',
+      'data-pillar="${escapeHtml(pillar.key)}">${escapeHtml(pillar.reason)}</span>',
+      'data-pillar="${escapeHtml(pillar.key)}">${escapeHtml(pillar.state)}</span>',
+      ['observed-undiscovered shape / not-evaluated judgment', "discloses every pillar's discovery state, and a missing pillar index with its reason and a cause-correct route"],
+    ),
+    literal(
+      'polaris-degradation-missing',
+      POLARIS_SOURCE,
+      'shape-degradation-state/missing: a degraded observation is rendered as though none was recorded',
+      "  if (degradation === undefined) return `<p data-shape-degradation=\"none\"",
+      "  if (degradation !== null) return `<p data-shape-degradation=\"none\"",
+      ['observed-excluded shape / not-evaluated judgment'],
+    ),
     // judgment-state — the walkthrough judgment section.
     literal(
       'polaris-judgment-state-missing',

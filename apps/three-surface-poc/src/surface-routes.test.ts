@@ -13,6 +13,7 @@ import { POC_HUMAN_PATH, pocRoutes } from './routes.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { fetchWithHost } from './test-http-client.js';
 import { buildFixtureModel } from './test-model-fixture.js';
+import { ADMITTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 import { TRAJECTORY_HUMAN_PATH } from './trajectory.js';
 
 const cleanups: string[] = [];
@@ -96,6 +97,26 @@ describe('surface routes', () => {
     for (const page of pages) {
       expect(page.html).toContain('epistemic-observed { color: var(--cyan); }');
       expect(page.html).toContain('epistemic-unknown { color: var(--unknown)');
+    }
+  });
+
+  it('serves the exact state-(1) authority sentence on Polaris both directly and through the tailnet Host mount (PWB-REQ-005; PWB-RECON-01)', async () => {
+    const sentence = "Owner-trusted only; same-tree forgeable from Syzygy&#39;s perspective. Digest detects drift, not authorship or attendance.";
+    const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
+    if (model.projectShape.kind !== 'observed') throw new Error(`fixture shape is ${model.projectShape.kind}`);
+    const start = await createDaemon({
+      stateDir: join(tempDir('syzygy-poc-surface-state-'), 'state'),
+      routes: pocRoutes(() => model),
+      port: 0,
+    });
+    if (!start.started) throw new Error(`daemon failed to start: ${start.failure.kind}`);
+    running.push(start.daemon);
+    const baseUrl = `http://${start.daemon.host}:${start.daemon.port}`;
+    const direct = await (await fetch(`${baseUrl}${POLARIS_HUMAN_PATH}`)).text();
+    const mounted = await (await fetchWithHost(`${baseUrl}${POLARIS_HUMAN_PATH}`, TAILNET_HOST, { origin: `https://${TAILNET_HOST}` })).text();
+    for (const html of [direct, mounted]) {
+      const sentences = Array.from(html.matchAll(/data-parity-field="authority-disclosure"[^>]*>([^<]*)</g), (match) => match[1]);
+      expect(sentences).toEqual([sentence, sentence, sentence]);
     }
   });
 

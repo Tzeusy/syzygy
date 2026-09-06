@@ -487,6 +487,13 @@ describe('an admitted, fully readable fixture', () => {
     expect(shape.contradictions).toEqual([]);
     expect(shape.exclusions).toEqual([]);
     expect(shape.degradation).toBeUndefined();
+    expect(shape.discovery.map((pillar) => [pillar.key, pillar.state])).toEqual([
+      ['heart-and-soul', 'discovered'],
+      ['legends-and-lore', 'discovered'],
+      ['spec-and-spine', 'discovered'],
+      ['lay-and-land', 'discovered'],
+      ['craft-and-care', 'discovered'],
+    ]);
     expect(shape.limitBreaches).toEqual([]);
     for (const item of shape.items) {
       expect(item.state).toBe('modeled');
