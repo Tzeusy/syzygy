@@ -368,17 +368,20 @@ describe('walkthrough preflight: one counterexample per limb', () => {
       }),
     },
     {
-      // PWB-RECON-11: the route sentence is elsewhere on the page (the
-      // excluded source's route) but absent from the pillar's own entry.
-      name: 'an Unknown pillar whose own entry has no route while another route is on the page',
+      // PWB-RECON-11: the same reason's route (craft-and-care's excluded
+      // index is index-unavailable in this fixture) is elsewhere on the
+      // page, but absent from this pillar's own entry — only a check scoped
+      // to the entry can see it.
+      name: "an Unknown pillar whose own entry has no route while the same reason's route is on the page for another pillar",
       limb: 'discovery-undisclosed',
       mutate: (b) => {
-        if (!b.polarisHtml.includes('then a new snapshot')) throw new Error('fixture page carries no route elsewhere');
+        const elsewhere = /data-pillar="craft-and-care">index-unavailable<\/span>; route: the index about\/craft-and-care\/README\.md could not be read .*?: restore its body in Butlers, then a new snapshot\)/;
+        if (!elsewhere.test(b.polarisHtml)) throw new Error("fixture page lacks craft-and-care's index-unavailable route");
         return {
           ...b,
-          polarisHtml: replaceOnce(b.polarisHtml, /spec-and-spine \u2014 discovered<\/span> \([^)]*\)/, 'spec-and-spine \u2014 unknown</span> (<span data-parity-field="shape-pillar-reason" data-pillar="spec-and-spine">index-missing-at-revision</span>)'),
+          polarisHtml: replaceOnce(b.polarisHtml, /spec-and-spine \u2014 discovered<\/span> \([^)]*\)/, 'spec-and-spine \u2014 unknown</span> (<span data-parity-field="shape-pillar-reason" data-pillar="spec-and-spine">index-unavailable</span>)'),
           model: withShape(b.model, (shape) => {
-            (shape as unknown as { discovery: unknown[] }).discovery = shape.discovery.map((pillar) => (pillar.key === 'spec-and-spine' ? { key: pillar.key, state: 'unknown', reason: 'index-missing-at-revision', root: 'about/spec-and-spine', indexPath: 'about/spec-and-spine/README.md', ignoredLinks: [] } : pillar));
+            (shape as unknown as { discovery: unknown[] }).discovery = shape.discovery.map((pillar) => (pillar.key === 'spec-and-spine' ? { key: pillar.key, state: 'unknown', reason: 'index-unavailable', detail: 'blob unreadable', root: 'about/spec-and-spine', indexPath: 'about/spec-and-spine/README.md', ignoredLinks: [] } : pillar));
           }),
         };
       },
