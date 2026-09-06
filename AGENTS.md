@@ -145,7 +145,7 @@ Durable lessons only; status and narrative belong in git log, `bd`, or
 `PROJECT-STATUS.md`. Capability 1 status, the FROZEN-files rule, and the
 tailscale `--set-path` finding live in `bd memories` — do not re-add them.
 Last compacted 2026-09-05; C5 seams, recorder notes and the docs-estate
-lessons added the same day.
+lessons added the same day; second docs-pass lessons added 2026-09-06.
 
 ### Architecture
 
@@ -250,6 +250,32 @@ lessons added the same day.
 - A prepared act package may still carry the pre-act "candidate, binds
   nothing" banner it was drafted with. **Read the act record, never the
   package banner.**
+- **`bd search` does not reach bead descriptions.** `bd search PWB-LIVE`
+  returns "No issues found" while five beads name those identifiers in their
+  descriptions. Search the full `bd show` text instead.
+- Identifiers in this corpus are written in **continuation form** — "Repair
+  PWB-LIVE-02, 03, 05 and 15", `PWB-LIVE-02/03/05/15`, `PWB-LIVE-01..15`. A
+  sweep matching the full identifier misses every continuation and produces a
+  false absence (it produced one, on a page written the day before). An
+  absence claim's denominator must cover the *forms* an identifier occurs in,
+  not only the records searched (rule 9).
+- Two owner-confirmed craft policies have been **in force since 2026-08-17
+  inside `contracts/candidates/policy-candidates/`** — CC-SPEC-1…11 and
+  CC-IMPACT-1…7, at their committed home, uncopied. Their own head banners and
+  their `-POLICY-CANDIDATE.md` filenames still say candidate and are wrong;
+  the candidates `README.md` section "Two in-force craft policies live in this
+  tree" is the correct account. CC-IMPACT-7 mandates a blind run against
+  `SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md` by path *and* digest, which fixture
+  3 superseded on 2026-08-30; neither the clause nor fixture 2 may be edited.
+- A round directory's index date is its **first-commit** date and does not
+  bound its contents: `round-2026-08g` took two files seventeen days after it
+  closed. 96 of 235 round files carry no status word at their head — read the
+  `round-*` path itself as the banner.
+- Where a file *sits* and whether its work is *finished* are different
+  questions. The general trusted-bootstrap impact ledger classifies everything
+  under `docs/superpowers/` as spent evidence, but
+  `plans/2026-08-24-cap1-runtime-hardening-followups.md` is the open P1 epic
+  `syzygy-u2a`'s approved implementation guidance. Check the `bd` issue.
 - Before editing any governance prose, hash the file and grep the manifests —
   a file listed in a performed act's manifest is bound (`ACCEPTANCE-ACT-RECORD.md`
   names the argument). `openspec/changes/polaris-project-wide-butlers-model/`

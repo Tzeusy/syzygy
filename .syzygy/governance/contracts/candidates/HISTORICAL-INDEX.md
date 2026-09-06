@@ -19,7 +19,8 @@
 > closed round record and is never authority, whatever its own head does or
 > does not say. Fixing this file by file is not an agent's to do — it is 96
 > edits inside the governed plane, and some of those files are bound by a
-> performed act's manifest.
+> performed act's manifest. Tracked as `syzygy-3zi`, which states the three
+> lawful shapes the repair could take.
 >
 > [Observed — swept 2026-09-06 over all 235 `.md` files under the eleven
 > `round-*` directories, matching a case-insensitive status-word pattern
