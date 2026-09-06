@@ -233,6 +233,12 @@ added 2026-09-06.
 - Copy-oracle tests match by substring: a very short label (`None`) is
   "reached" by coincidence and proves nothing — give every label a
   distinctive string or drop it.
+- A counterexample isolates a *scoping* change only if the same signal is
+  genuinely elsewhere on the page: the preflight fixture (`TEXTS` in
+  `walkthrough-preflight.test.ts`) already renders craft-and-care as
+  `index-unavailable` with its route, so a page-wide substring check
+  survives any case using a different reason (the phrase check catches
+  it first). Give the mutated pillar the reason already on the page.
 - PWB-REQ-020 parity is per tuple, never per id: a claim may render more
   than once (the current-authority citation repeats the baseline-spec
   item's tuple), so `tuples === distinct ids` is a false invariant; check
