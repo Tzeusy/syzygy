@@ -153,7 +153,7 @@ Durable lessons only; status and narrative belong in git log, `bd`, or
 `PROJECT-STATUS.md`. Capability 1 status, the FROZEN-files rule, and the
 tailscale `--set-path` finding live in `bd memories` — do not re-add them.
 Last compacted 2026-09-05; C5 seams, recorder notes and the docs-estate
-lessons added the same day; second docs-pass lessons added 2026-09-06.
+lessons added the same day; second docs-pass lessons added 2026-09-06, third pass the same day.
 
 ### Architecture
 
@@ -304,6 +304,22 @@ lessons added the same day; second docs-pass lessons added 2026-09-06.
   the same shape as CC-SPEC/CC-IMPACT living under `policy-candidates/`.
   Trust the act record and the routing table above; a package banner is
   evidence of what a drafter believed, never of what binds.
+- **An *unperformed* act's prepared argument is just as untouchable, and
+  nothing in the file says so.** `.syzygy/intent/OVERVIEW.md` is the argument
+  of act 4, `ADOPT PROJECT OVERVIEW`, which has never been performed — so its
+  hash appears in no performed act's manifest and the manifest grep above
+  returns clean, yet editing one word regenerates the argument and retires any
+  confirmation bound to it. Grep
+  `contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md` for
+  the path too. Its false "Nothing is implemented" sentence is queued as P-59
+  for exactly this reason; do not repair it.
+- Every `round-*` directory now carries a `README.md` naming what the round
+  settled, where that settlement lives now, and its live-input cautions;
+  `contracts/candidates/ROUND-ESTATE.md` is the route across all eleven. The
+  96 unbannered *file* heads inside them are unchanged and need an owner act.
+- `docs/README.md`'s review-campaign table is ten rows over 88 files, each row
+  carrying its last verdict of record and where the findings landed. It is
+  re-derived, not maintained: rerun the partition rather than trusting a row.
 
 ### Known gaps
 
