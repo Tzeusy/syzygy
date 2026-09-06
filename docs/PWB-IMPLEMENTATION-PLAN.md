@@ -603,6 +603,22 @@ retained gen-2 mutation record stores no fragments. Owner items for 1z3.25
 now number seven: the six gen-1 items (item 6 repaired) plus whether to
 close epic syzygy-1z3.24 with the test-rigor beads outstanding.
 
+Gate repair note, recorded 2026-09-06 (beads syzygy-1z3.24.10 and
+syzygy-1z3.24.11): PWB-RECON-10..12 and 08 are `repaired`. The page test now
+asserts the exact cause-correct route for each of the seven Unknown
+reasons; the preflight `discovery-undisclosed` limb checks the route inside
+the Unknown pillar's own entry against its reason's phrase, never
+page-wide, with two isolating counterexamples; the core model test asserts
+the Unknown pillar stays in `shape.discovery`. Evidence
+`docs/evidence/pwb-recon-gen2-gate-mutation-run-2026-09-06.json` re-applies
+the reviewer's three surviving mutants by exact fragment plus three on the
+new scoping: 6 of 6 killed at `d747c75`, each by its intended test, every
+fragment retained (PWB-RECON-13's shape). The live discovery test pins
+Butlers `ec8b1f6` with populations hand-typed from `git ls-tree` and the
+retained gen-2 demo record (Lay and Land is discovered again at that
+head); it passes there and skips without the repository. P-65's two arms
+now converge: the residue it weighed has closed with rule-6 evidence.
+
 Cycle report note, recorded 2026-09-06 (bead syzygy-1z3.25): task 5.3
 asks for the cycle report after the owner walkthrough (4.6), which has not
 been performed (aborted 2026-09-05 on the pre-repair head; Unknown). The

@@ -218,6 +218,14 @@ independently confirmed and the residue is test rigor, not behaviour.
 **Default if unanswered:** the epic stays open and the walkthrough stays
 formally blocked on it even after P-60 and P-61 land.
 
+> **Updated 2026-09-06, later the same day.** Both beads this question
+> weighed have closed: the three gates now have isolating counterexamples
+> and the live test is re-pinned, with a fragment-bearing rule-6 record
+> (`docs/evidence/pwb-recon-gen2-gate-mutation-run-2026-09-06.json`, 6 of
+> 6 killed). Arms (a) and (b) therefore converge on the same state; the
+> ruling to close the epic is still the owner's, and the text above is kept
+> as written.
+
 ---
 
 ## What was repaired without a decision

@@ -1,0 +1,152 @@
+{
+ "kind": "pwb-recon-gen2-gate-mutation-run",
+ "date": "2026-09-06",
+ "bead": "syzygy-1z3.24.10",
+ "subject": "d747c758d953c7f62a3822ab6cf39ab4a8e0924e",
+ "uncommittedChanges": [],
+ "where": "the main checkout; each mutant applied by exact-fragment replacement and restored byte-for-byte (sha256 verified)",
+ "reviewerRecord": "docs/evidence/pwb-recon-gen2-reviewer-mutation-run-2026-09-06.json",
+ "note": "reviewerId names the gen-2 reviewer's surviving mutant this one re-applies; R02-preflight-route-check-dropped re-applies the reviewer's mutant on the line that replaced the page-wide substring check, so its old fragment is the new line",
+ "summary": {
+  "mutations": 6,
+  "killed": 6,
+  "survived": [],
+  "restoreFailures": 0
+ },
+ "results": [
+  {
+   "id": "R02-route-text-of-index-unavailable-for-index-missing",
+   "reviewerId": "R02-route-text-of-index-unavailable-for-index-missing",
+   "finding": "PWB-RECON-10",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "fragment": {
+    "old": "    case 'index-missing-at-revision':\n      return `the home ${home} carries no index at ${index} at this revision: add that index in Butlers, then a new snapshot; or an owner gate amending the discovery rule. No policy change is involved`;",
+    "new": "    case 'index-missing-at-revision':\n      return `the index ${index} could not be read: restore its body in Butlers, then a new snapshot`;"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+    "apps/three-surface-poc/src/surface-routes.test.ts",
+    "apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "failed": 1,
+   "total": 113,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "Polaris authority disclosure and discovery (gen-2 repairs PWB-RECON-01/02) routes an Unknown pillar whose reason is index-missing-at-revision to: the home about/spec-and-spine carries no…"
+   ]
+  },
+  {
+   "id": "R02-route-text-of-root-missing-for-index-unavailable",
+   "reviewerId": null,
+   "finding": "PWB-RECON-10",
+   "file": "apps/three-surface-poc/src/polaris.ts",
+   "fragment": {
+    "old": "    case 'index-unavailable':\n      return `the index ${index} could not be read${pillar.detail === undefined ? '' : ` (${pillar.detail})`}: restore its body in Butlers, then a new snapshot`;",
+    "new": "    case 'index-unavailable':\n      return `the named home ${home} is absent at this revision: create it in Butlers, then a new snapshot`;"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+    "apps/three-surface-poc/src/surface-routes.test.ts",
+    "apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "failed": 34,
+   "total": 113,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "Polaris authority disclosure and discovery (gen-2 repairs PWB-RECON-01/02) routes an Unknown pillar whose reason is index-unavailable to: the index about/spec-and-spine/README.md…",
+    "walkthrough preflight: the ready case is ready for the fixture evaluation, and its counts are the page’s",
+    "walkthrough preflight: one counterexample per limb an account statement with no source anchor → account-statement-unbacked, and nothing else",
+    "walkthrough preflight: one counterexample per limb an account statement the model holds as Inferred → account-statement-unbacked, and nothing else",
+    "walkthrough preflight: one counterexample per limb an account statement rendered nowhere on the page → account-statement-unbacked, and nothing else",
+    "walkthrough preflight: one counterexample per limb an empty statement → account-statement-unbacked, and nothing else",
+    "walkthrough preflight: one counterexample per limb a reconciled class with nothing modeled → population-empty (and population-unreconciled)",
+    "walkthrough preflight: one counterexample per limb a class whose counts do not add up to its denominator → population-unreconciled, and nothing else"
+   ]
+  },
+  {
+   "id": "R02-preflight-route-check-dropped",
+   "reviewerId": "R02-preflight-route-check-dropped",
+   "finding": "PWB-RECON-11",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "fragment": {
+    "old": "      if (!entry.includes('then a new snapshot') || !entry.includes(phrase)) problems.push(`${pillar.key}: Unknown without the ${pillar.reason} route in its own entry`);\n",
+    "new": "      // dropped\n"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "failed": 2,
+   "total": 43,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "walkthrough preflight: one counterexample per limb an Unknown pillar whose own entry carries another reason's route → discovery-undisclosed, and nothing else",
+    "walkthrough preflight: one counterexample per limb an Unknown pillar whose own entry has no route while the same reason's route is on the page for another pillar → discovery-undisclosed, and nothing else"
+   ]
+  },
+  {
+   "id": "R02-preflight-route-check-page-wide",
+   "reviewerId": null,
+   "finding": "PWB-RECON-11",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "fragment": {
+    "old": "      const entry = pillarEntry(html, pillar.key) ?? '';\n",
+    "new": "      const entry = html;\n"
+   },
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "failed": 1,
+   "total": 43,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "walkthrough preflight: one counterexample per limb an Unknown pillar whose own entry has no route while the same reason's route is on the page for another pillar → discovery-undisclosed, and nothing else"
+   ]
+  },
+  {
+   "id": "R02-preflight-route-phrase-check-dropped",
+   "reviewerId": null,
+   "finding": "PWB-RECON-11",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "fragment": {
+    "old": "      if (!entry.includes('then a new snapshot') || !entry.includes(phrase)) problems.push(",
+    "new": "      if (!entry.includes('then a new snapshot') || !entry.includes(phrase.slice(0, 0))) problems.push("
+   },
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "failed": 1,
+   "total": 43,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "walkthrough preflight: one counterexample per limb an Unknown pillar whose own entry carries another reason's route → discovery-undisclosed, and nothing else"
+   ]
+  },
+  {
+   "id": "R02-core-discovery-discovered-only--core-gate",
+   "reviewerId": "R02-core-discovery-discovered-only--core-gate",
+   "finding": "PWB-RECON-12",
+   "file": "packages/three-surface-poc-core/src/project-shape-model.ts",
+   "fragment": {
+    "old": "        discovery: observation.manifest.pillars,",
+    "new": "        discovery: observation.manifest.pillars.filter((pillar) => pillar.state === 'discovered'),"
+   },
+   "tests": [
+    "packages/three-surface-poc-core/src/project-shape-model.test.ts"
+   ],
+   "failed": 1,
+   "total": 29,
+   "killed": true,
+   "restored": true,
+   "failing": [
+    "faults never shrink the population (PWB-REQ-003) a missing pillar index poisons its dependent class even when no class source entered the manifest"
+   ]
+  }
+ ]
+}
