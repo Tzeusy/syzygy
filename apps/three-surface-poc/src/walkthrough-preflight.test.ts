@@ -53,6 +53,14 @@ function blobReaderFor(texts: Readonly<Record<string, string>>): (objectId: stri
   return (objectId) => byOid.get(objectId);
 }
 
+/** The consent authority's disclosure marker as the page renders it
+ * (the sentence's apostrophe is HTML-escaped there). */
+function consentDisclosureMarker(html: string): string {
+  const match = /<span data-parity-field="authority-disclosure" data-authority="consent">[^<]*<\/span>/.exec(html);
+  if (match === null) throw new Error('fixture page lacks the consent disclosure marker');
+  return match[0];
+}
+
 function browserCheckFor(model: PocModel): BrowserCheckInput {
   return { kind: 'performed', commit: model.observerRevision, variants: 3, violations: 0 };
 }
@@ -299,6 +307,28 @@ describe('walkthrough preflight: one counterexample per limb', () => {
       mutate: (b) => ({ ...b, model: { ...b.model, projectShape: { ...observedOf(b.model), authority: { ...observedOf(b.model).authority, authorities: observedOf(b.model).authority.authorities.map((entry, index) => (index === 0 ? { ...entry, disclosure: 'Owner-trusted, drift detected by digest.' } : entry)) } } } }),
     },
     {
+      name: 'an authority whose disclosure sentence is on the page twice',
+      limb: 'authority-disclosure-missing',
+      mutate: (b) => {
+        const marker = consentDisclosureMarker(b.polarisHtml);
+        return { ...b, polarisHtml: replaceOnce(b.polarisHtml, marker, `${marker}${marker}`) };
+      },
+    },
+    {
+      name: 'a Syzygy-verified authority whose sentence on the page is the state-(1) one',
+      limb: 'authority-disclosure-missing',
+      mutate: (b) => ({ ...b, model: { ...b.model, projectShape: { ...observedOf(b.model), authority: { ...observedOf(b.model).authority, authorities: observedOf(b.model).authority.authorities.map((entry) => (entry.authority === 'policy' ? { ...entry, state: 'Syzygy-verified', disclosure: 'Correlated against an independently kept record.' } : entry)) } } } }),
+    },
+    {
+      name: 'a state-(1) authority whose page and evaluation both carry another sentence',
+      limb: 'authority-disclosure-missing',
+      mutate: (b) => ({
+        ...b,
+        polarisHtml: replaceOnce(b.polarisHtml, consentDisclosureMarker(b.polarisHtml), '<span data-parity-field="authority-disclosure" data-authority="consent">Owner-trusted, drift detected by digest.</span>'),
+        model: { ...b.model, projectShape: { ...observedOf(b.model), authority: { ...observedOf(b.model).authority, authorities: observedOf(b.model).authority.authorities.map((entry) => (entry.authority === 'consent' ? { ...entry, disclosure: 'Owner-trusted, drift detected by digest.' } : entry)) } } },
+      }),
+    },
+    {
       name: 'a pillar whose discovery state is not on the page',
       limb: 'discovery-undisclosed',
       mutate: (b) => ({ ...b, polarisHtml: replaceOnce(b.polarisHtml, 'data-parity-field="shape-pillar-state"', 'data-parity-field="pillar-state"') }),
@@ -309,6 +339,17 @@ describe('walkthrough preflight: one counterexample per limb', () => {
       mutate: (b) => ({ ...b, model: withShape(b.model, (shape) => {
         (shape as unknown as { discovery: unknown[] }).discovery = shape.discovery.map((pillar) => (pillar.key === 'spec-and-spine' ? { key: pillar.key, state: 'unknown', reason: 'index-missing-at-revision', root: 'about/spec-and-spine', indexPath: 'about/spec-and-spine/README.md', ignoredLinks: [] } : pillar));
       }) }),
+    },
+    {
+      name: 'an Unknown pillar whose reason on the page is another reason',
+      limb: 'discovery-undisclosed',
+      mutate: (b) => ({
+        ...b,
+        polarisHtml: replaceOnce(b.polarisHtml, 'spec-and-spine \u2014 discovered</span>', 'spec-and-spine \u2014 unknown</span> (<span data-parity-field="shape-pillar-reason" data-pillar="spec-and-spine">root-missing-at-revision</span>; route: then a new snapshot)'),
+        model: withShape(b.model, (shape) => {
+          (shape as unknown as { discovery: unknown[] }).discovery = shape.discovery.map((pillar) => (pillar.key === 'spec-and-spine' ? { key: pillar.key, state: 'unknown', reason: 'index-missing-at-revision', root: 'about/spec-and-spine', indexPath: 'about/spec-and-spine/README.md', ignoredLinks: [] } : pillar));
+        }),
+      }),
     },
     {
       name: 'a degradation state the page does not show',
