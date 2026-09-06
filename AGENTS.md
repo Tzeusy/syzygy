@@ -153,7 +153,7 @@ Durable lessons only; status and narrative belong in git log, `bd`, or
 `PROJECT-STATUS.md`. Capability 1 status, the FROZEN-files rule, and the
 tailscale `--set-path` finding live in `bd memories` — do not re-add them.
 Last compacted 2026-09-05; C5 seams, recorder notes and the docs-estate
-lessons added the same day; second, third and fourth docs-pass lessons
+lessons added the same day; the second through fifth docs-pass lessons
 added 2026-09-06.
 
 ### Architecture
