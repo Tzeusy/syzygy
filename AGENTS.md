@@ -203,6 +203,11 @@ lessons added the same day; second and third docs-pass lessons added
 - A rule-6 evidence record must store each mutant's `old`/`new` fragment and
   the commit it ran at; ids and outcomes alone are not re-runnable, and a
   rebase-merge leaves the recorded commit reachable from no ref.
+- A retained raw review's filename must end in `-RAW.md`: `check_governance`
+  exempts only that suffix from CG-1b and CG-15, so a raw named
+  `…-RAW-ADDENDUM.md` fails on the Butlers paths and truncated digests it
+  quotes verbatim. A re-issued raw is a second `-RAW.md` file, never an
+  overwrite of the digest-cited first.
 - Fail-closed polarity: withdrawal defeats grant; future-dated evidence is
   stale; no evidence → Unknown.
 - Conformance expected values are hard-coded literals, never imported from
