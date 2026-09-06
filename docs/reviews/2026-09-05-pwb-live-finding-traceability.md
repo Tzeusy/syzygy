@@ -112,4 +112,28 @@ and `R-PWB-LIVE-EXACT-HEAD-ENGINEERING-RAW.md` head their findings with bare
 severity words (`### BLOCKER`, `### HIGH`), so for those the packet's numbering
 is the first numbering and nothing was renumbered.
 
-Tracked as `syzygy-qzo`, a child of `syzygy-1z3.24`.
+## The dispositions now exist, and they are not here
+
+The section above this one says a reconciliation review under `syzygy-1z3.24.7`
+was deriving the dispositions and that this page should cite that record rather
+than answer for it. That record landed on 2026-09-06:
+[`2026-09-06-pwb-recovery-reconciliation-packet.md`](2026-09-06-pwb-recovery-reconciliation-packet.md),
+over `R-PWB-RECOVERY-RECONCILIATION-GEN1-RAW.md`. Its verdict line reads
+**`CONFIRM WITH EXCEPTIONS.`** (`:21`) and its own register (`:40-62`) gives
+all fifteen the disposition `repaired`, two of them with a stated residue —
+`PWB-LIVE-04`'s live eight-versus-nine scenario stays unobservable until the
+Butlers V1 page parses, and `PWB-LIVE-15`'s comprehension half is the owner's
+under PWB-REQ-021 by spec design. That packet is the disposition of record;
+this page still assigns none, and a reader wanting outcomes should go there.
+
+**Two rows attribute differently, and the packet's column is the later one.**
+For `PWB-LIVE-04` and `PWB-LIVE-07` the table above names `syzygy-1z3.24.3`,
+read from the bead descriptions; the packet names `syzygy-1z3.24.4 (act via
+.24.3)`. Both are true of different things — `.24.3` owns the owner-gated act
+and `.24.4` the code — and the packet's is the finer statement. Neither record
+is edited to match the other (CC-REV-6); the disagreement is recorded here,
+which is what this page is for.
+
+Tracked as `syzygy-qzo`, a child of `syzygy-1z3.24`. A gen-2 cycle
+(`syzygy-1z3.24.8`, `.24.9`) is in flight as this is written, so the packet
+above is the gen-1 record and not necessarily the last one.
