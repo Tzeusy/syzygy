@@ -107,6 +107,17 @@ the overlapping text, because no record states it — and it is navigation, not
 a disposition: `PWB-LIVE-13`'s repair child is `syzygy-1z3.24.5`, and whether
 either UX finding is closed is still the reconciliation review's answer.
 
+The gen-2 reconciliation reviewer checked the four rows on 2026-09-06
+(`R-PWB-RECOVERY-RECONCILIATION-GEN2-UX-ADDENDUM-RAW.md`, Section F) and
+agrees with all four primaries; its answer wins where it adds. Two additions:
+`PWB-UX-1` (the six `missing-declaration` statements, raw `:148-152`) and
+`PWB-UX-4` (the project-account fallback, raw `:299-307`) also land partly in
+`PWB-LIVE-03`, which the table above omits `[Inferred]`; and `PWB-UX-3`'s
+self-referential-lede sub-observation (raw `:259-266`) matches no packet
+clause by text and reaches `PWB-LIVE-13` only through the gen-1 register
+`[Inferred]`. No disposition moves: `PWB-LIVE-02`, `-03`, `-06` and `-13` are
+all `repaired` in the gen-1 register.
+
 The other two raw reviews numbered nothing. `R-PWB-LIVE-EXACT-HEAD-TRUTH-RAW.md`
 and `R-PWB-LIVE-EXACT-HEAD-ENGINEERING-RAW.md` head their findings with bare
 severity words (`### BLOCKER`, `### HIGH`), so for those the packet's numbering

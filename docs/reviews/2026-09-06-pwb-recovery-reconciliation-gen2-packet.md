@@ -86,13 +86,30 @@ owner already holds (PWB-RECON-04), not for any Syzygy-side gap.
 
 The co-lead's [Inferred] crosswalk in
 `2026-09-05-pwb-live-finding-traceability.md` maps the UX reviewer's own
-identifiers PWB-UX-1..4 to PWB-LIVE-02, -06, -13 and -13. The gen-2 reviewer
-was asked to check it after its charge was issued and had frozen before the
-request reached its report, so the raw review records no mapping. This
-handoff's own reading of the two raw texts agrees with all four rows
-[Inferred: the same overlapping sentences the crosswalk quotes, re-read at
-`R-PWB-LIVE-EXACT-HEAD-UX-RAW.md` lines 153-154, 202, 248 and 297]. The
-review reached no different answer, so the crosswalk stands as written.
+identifiers PWB-UX-1..4 to PWB-LIVE-02, -06, -13 and -13.
+
+Superseded 2026-09-06, later the same day (kept for the record): this
+section first read "The gen-2 reviewer was asked to check it after its
+charge was issued and had frozen before the request reached its report, so
+the raw review records no mapping." That was true of the raw review as
+retained in `R-PWB-RECOVERY-RECONCILIATION-GEN2-RAW.md` (its digest below
+is unchanged). After reporting, the reviewer took up the addendum and
+re-issued its raw with one new Section F subsection; that later version is
+retained separately as
+`R-PWB-RECOVERY-RECONCILIATION-GEN2-UX-ADDENDUM-RAW.md`, verbatim, and the
+first retained file is not edited (rule 10).
+
+The reviewer's answer [Observed, from that addendum]: the four primary rows
+agree with the crosswalk, 4 of 4. It adds PWB-LIVE-03 as a secondary landing
+for PWB-UX-1 (its six missing-declaration statements) and PWB-UX-4 (the
+project-account fallback, the code site LIVE-03's repair changed), both
+labelled [Inferred]; and it notes that one PWB-UX-3 sub-observation, the
+self-referential lede, matches no packet clause by text and is attributed to
+LIVE-13 only through gen-1's register. Its sweep for the four identifiers
+over every tracked Markdown, TypeScript, Python, JSON and JSONL file at
+`ac518d0` hits only the UX raw and the traceability page. No gen-1
+disposition changes: LIVE-02, -03, -06 and -13 are all repaired. The
+traceability page's crosswalk section now carries these two additions.
 
 ## Owner decisions (accumulated for the 1z3.25 packet, in plain language)
 
@@ -136,6 +153,8 @@ empty) and signalled no other process.
 
 - `docs/reviews/R-PWB-RECOVERY-RECONCILIATION-GEN2-RAW.md`
   (`5cbc10e3a7cc812424d7218a48fad1ed4391f9f5fb7dc686b48df3a25e090d68`)
+- `docs/reviews/R-PWB-RECOVERY-RECONCILIATION-GEN2-UX-ADDENDUM-RAW.md`
+  (`d91e83175bd572c407f0517472e8e90bd1e7f520af88bc3624906893ca4bd66a`) — the reviewer's re-issued raw after the crosswalk addendum; differs from the first file only by the Section F subsection
 - `docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-06-gen2-reviewer.json`
   (`3fd46719ec7d02aea23e1e6be850717b9fa28864cee77d23c71325482658683a`) — the reviewer's own clone run at `9b28663`, Butlers `ec8b1f6`
 - `docs/evidence/pwb-recon-gen2-reviewer-mutation-run-2026-09-06.json`
