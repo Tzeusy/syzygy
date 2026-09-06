@@ -289,9 +289,12 @@ lessons added the same day; second docs-pass lessons added 2026-09-06.
 ### Known gaps
 
 - syzygy-ydr: non-blocking S2/S5 review findings outstanding.
-- Butlers data quirks (as of `a3dd1fe`): `v1.md` is whole-source Unknown
-  (one row uses a colon outside the signed dash grammar); Lay and Land's
-  index is excluded. Do not relax the grammar without an owner gate.
+- Butlers data quirks (as of `2891522f`): `v1.md` is whole-source Unknown
+  (one row uses a colon outside the signed dash grammar); Spec and Spine's
+  home `openspec/` has no index, so the whole-shape claim is Unknown;
+  `components.md` fails the table grammar; `frontend.md` and 7 of 13
+  `butler.toml` are withheld as active content (TOML has no inert
+  context). Do not relax the grammar or policy without an owner gate.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
 ### Governance recorders (digest-bound acts)

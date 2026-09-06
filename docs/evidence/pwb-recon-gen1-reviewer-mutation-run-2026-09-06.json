@@ -1,0 +1,210 @@
+[
+ {
+  "mutation": "locator-mismatch-accepted",
+  "file": "apps/three-surface-poc/src/git-observation.ts",
+  "tests": [
+   "apps/three-surface-poc/src/git-observation.test.ts",
+   "apps/three-surface-poc/src/launcher.test.ts"
+  ],
+  "killed": true,
+  "summary": "1 failed | 7 passed (8)",
+  "failing": [
+   "read-only Git observation > rejects a second Butlers-shaped repository before any repository observation 8ms",
+   "|@syzygy/three-surface-poc-app| apps/three-surface-poc/src/git-observation.test.ts > read-only Git observation > rejects a second Butlers-shaped repository befo"
+  ],
+  "restored": true
+ },
+ {
+  "mutation": "git-common-dir-mismatch-accepted",
+  "file": "apps/three-surface-poc/src/git-observation.ts",
+  "tests": [
+   "apps/three-surface-poc/src/git-observation.test.ts"
+  ],
+  "killed": true,
+  "summary": "1 failed | 6 passed (7)",
+  "failing": [
+   "read-only Git observation > rejects a mismatched Git common directory 7ms",
+   "|@syzygy/three-surface-poc-app| apps/three-surface-poc/src/git-observation.test.ts > read-only Git observation > rejects a mismatched Git common directory"
+  ],
+  "restored": true
+ },
+ {
+  "mutation": "tag-path-only-resolves",
+  "file": "apps/three-surface-poc/src/governance-inputs.ts",
+  "tests": [
+   "apps/three-surface-poc/src/governance-inputs.test.ts"
+  ],
+  "killed": true,
+  "summary": "2 failed | 14 passed (16)",
+  "failing": [
+   "loadBodyReadAuthorityInputs (hermetic) > rejects a current act record whose bytes drift from the exact recording-tag blob 8ms",
+   "loadBodyReadAuthorityInputs (hermetic) > preserves production Git blob bytes for tag comparison and lifecycle decoding 171ms",
+   "|@syzygy/three-surface-poc-app| apps/three-surface-poc/src/governance-inputs.test.ts > loadBodyReadAuthorityInputs (hermetic) > rejects a current act record who",
+   "|@syzygy/three-surface-poc-app| apps/three-surface-poc/src/governance-inputs.test.ts > loadBodyReadAuthorityInputs (hermetic) > preserves production Git blob by"
+  ],
+  "restored": true
+ },
+ {
+  "mutation": "lifecycle-enumeration-failure-empty",
+  "file": "apps/three-surface-poc/src/governance-inputs.ts",
+  "tests": [
+   "apps/three-surface-poc/src/governance-inputs.test.ts"
+  ],
+  "killed": true,
+  "summary": "1 failed | 15 passed (16)",
+  "failing": [
+   "loadBodyReadAuthorityInputs (hermetic) > fails closed when lifecycle list fails 6ms",
+   "|@syzygy/three-surface-poc-app| apps/three-surface-poc/src/governance-inputs.test.ts > loadBodyReadAuthorityInputs (hermetic) > fails closed when lifecycle list"
+  ],
+  "restored": true
+ },
+ {
+  "mutation": "lifecycle-unreadable-record-skipped",
+  "file": "apps/three-surface-poc/src/governance-inputs.ts",
+  "tests": [
+   "apps/three-surface-poc/src/governance-inputs.test.ts"
+  ],
+  "killed": false,
+  "summary": "16 passed (16)",
+  "failing": [],
+  "restored": true
+ },
+ {
+  "mutation": "phase-a-excluded-seed-parsed",
+  "file": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+  "tests": [
+   "packages/three-surface-poc-core/src/project-shape-observation.test.ts"
+  ],
+  "killed": true,
+  "summary": "2 failed | 28 passed (30)",
+  "failing": [
+   "observeProjectShapeSources \u2014 reads only the phase A allowlist > screens a secret-bearing root seed before it can derive any child path 14ms",
+   "observeProjectShapeSources \u2014 reads only the phase A allowlist > screens an active-content pillar seed before it can derive that pillar children 3ms",
+   "|@syzygy/three-surface-poc-core| packages/three-surface-poc-core/src/project-shape-observation.test.ts > observeProjectShapeSources \u2014 reads only the phase A all",
+   "|@syzygy/three-surface-poc-core| packages/three-surface-poc-core/src/project-shape-observation.test.ts > observeProjectShapeSources \u2014 reads only the phase A all"
+  ],
+  "restored": true
+ },
+ {
+  "mutation": "root-directory-column-ignored",
+  "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+  "tests": [
+   "packages/three-surface-poc-core/src/project-shape-manifest.test.ts"
+  ],
+  "killed": true,
+  "summary": "1 failed | 19 passed (20)",
+  "failing": [
+   "deriveProjectShapeManifest \u2014 complete population at one revision > recognizes the real-shaped five-row root table and all seven Heart and Soul sources 15ms",
+   "|@syzygy/three-surface-poc-core| packages/three-surface-poc-core/src/project-shape-manifest.test.ts > deriveProjectShapeManifest \u2014 complete population at one re"
+  ],
+  "restored": true
+ },
+ {
+  "mutation": "baseline-specs-read-bodies",
+  "file": "packages/three-surface-poc-core/src/project-shape-model.ts",
+  "tests": [
+   "packages/three-surface-poc-core/src/project-shape-model.test.ts"
+  ],
+  "killed": true,
+  "summary": "7 failed | 22 passed (29)",
+  "failing": [
+   "an admitted, fully readable fixture > carries the complete source population with stamps, identities and Observed claims 14ms",
+   "faults never shrink the population (PWB-REQ-003) > derives baseline identities from exact tree paths without opening or admitting their bodies 5ms",
+   "faults never shrink the population (PWB-REQ-003) > combined faults keep one primary reason and deduplicated secondaries on the whole-shape claim 2ms",
+   "faults never shrink the population (PWB-REQ-003) > a grammar failure leaves the source counted with a parse-failure exclusion and an Unknown denominator 3ms"
+  ],
+  "restored": true
+ },
+ {
+  "mutation": "unknown-pillar-not-propagated",
+  "file": "packages/three-surface-poc-core/src/project-shape-model.ts",
+  "tests": [
+   "packages/three-surface-poc-core/src/project-shape-model.test.ts"
+  ],
+  "killed": true,
+  "summary": "2 failed | 27 passed (29)",
+  "failing": [
+   "faults never shrink the population (PWB-REQ-003) > an undiscovered Heart and Soul root poisons all dependent denominators and account statements without claimin",
+   "faults never shrink the population (PWB-REQ-003) > a missing pillar index poisons its dependent class even when no class source entered the manifest 4ms",
+   "|@syzygy/three-surface-poc-core| packages/three-surface-poc-core/src/project-shape-model.test.ts > faults never shrink the population (PWB-REQ-003) > an undisco",
+   "|@syzygy/three-surface-poc-core| packages/three-surface-poc-core/src/project-shape-model.test.ts > faults never shrink the population (PWB-REQ-003) > a missing "
+  ],
+  "restored": true
+ },
+ {
+  "mutation": "multiline-continuation-dropped",
+  "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+  "tests": [
+   "packages/three-surface-poc-core/src/project-shape-extraction.test.ts"
+  ],
+  "killed": true,
+  "summary": "6 failed | 81 passed (87)",
+  "failing": [
+   "PWB-REQ-002 \u2014 two independent extractors agree on every fixture > preserves multiline success-criterion declarations without minting a second item 8ms",
+   "PWB-REQ-002 \u2014 two independent extractors agree on every fixture > preserves multiline catalog-entry declarations without minting a second item 1ms",
+   "PWB-REQ-002 \u2014 two independent extractors agree on every fixture > preserves multiline catalog-entry declarations without minting a second item 3ms",
+   "PWB-REQ-004 \u2014 the root summary emits exactly two stated counts > the Butlers-shaped root yields catalog-count:Staffers 3 and catalog-count:Butlers 8 at the item"
+  ],
+  "restored": true
+ },
+ {
+  "mutation": "final-exclusions-stale",
+  "file": "packages/three-surface-poc-core/src/project-shape-model.ts",
+  "tests": [
+   "packages/three-surface-poc-core/src/project-shape-model.test.ts"
+  ],
+  "killed": true,
+  "summary": "2 failed | 27 passed (29)",
+  "failing": [
+   "faults never shrink the population (PWB-REQ-003) > a grammar failure leaves the source counted with a parse-failure exclusion and an Unknown denominator 12ms",
+   "one resource envelope across both phases (PWB-REQ-006, amended) > a budget spent at extraction makes that source Unknown with no partial items 5ms",
+   "|@syzygy/three-surface-poc-core| packages/three-surface-poc-core/src/project-shape-model.test.ts > faults never shrink the population (PWB-REQ-003) > a grammar ",
+   "|@syzygy/three-surface-poc-core| packages/three-surface-poc-core/src/project-shape-model.test.ts > one resource envelope across both phases (PWB-REQ-006, amende"
+  ],
+  "restored": true
+ },
+ {
+  "mutation": "human-ceiling-unenforced",
+  "file": "apps/three-surface-poc/src/routes.ts",
+  "tests": [
+   "apps/three-surface-poc/src/response-limits.test.ts"
+  ],
+  "killed": true,
+  "summary": "9 failed | 3 passed (12)",
+  "failing": [
+   "boundedResponse \u2014 the ceiling is measured on the final encoded body > limit \u2212 1 breaches, limit and limit + 1 serve, for each ceiling 8ms",
+   "boundedResponse \u2014 the ceiling is measured on the final encoded body > the failure carries the counted population when the project shape is observed, else an Unk",
+   "pocRoutes \u2014 every human HTML sink is bounded by maxHumanResponseBytes > /: limit \u2212 1 fails closed, limit and limit + 1 serve the page 3ms",
+   "pocRoutes \u2014 every human HTML sink is bounded by maxHumanResponseBytes > /polaris: limit \u2212 1 fails closed, limit and limit + 1 serve the page 9ms"
+  ],
+  "restored": true
+ },
+ {
+  "mutation": "narrative-envelope-detached",
+  "file": "apps/three-surface-poc/src/routes.ts",
+  "tests": [
+   "apps/three-surface-poc/src/polaris-presentation-route.test.ts"
+  ],
+  "killed": true,
+  "summary": "1 failed | 1 passed (2)",
+  "failing": [
+   "Polaris machine presentation envelope (PWB-REQ-014; RFC7-2, RFC7-3) > refuses without the bearer and, with it, serves the same block, anchor and band multisets ",
+   "|@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-presentation-route.test.ts > Polaris machine presentation envelope (PWB-REQ-014; RFC7-2, RFC7"
+  ],
+  "restored": true
+ },
+ {
+  "mutation": "evaluation-identity-drops-manifest",
+  "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+  "tests": [
+   "packages/three-surface-poc-core/src/walkthrough-readiness.test.ts"
+  ],
+  "killed": true,
+  "summary": "1 failed | 31 passed (32)",
+  "failing": [
+   "walkthroughEvaluationIdentity > changes with any deterministic input: revision, manifest, limits, versions, or the acts the authority rested on 5ms",
+   "|@syzygy/three-surface-poc-core| packages/three-surface-poc-core/src/walkthrough-readiness.test.ts > walkthroughEvaluationIdentity > changes with any determinis"
+  ],
+  "restored": true
+ }
+]

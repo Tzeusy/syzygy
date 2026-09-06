@@ -533,6 +533,25 @@ correctly not ready and no owner attention is requested. `[Observed]` the
 Polaris page is 2,045,086 bytes (97.5 % of the ceiling; +1,039 bytes for
 the expected-binding line) — the C6 ceiling question stands.
 
+Reconciliation gen-1 note, recorded 2026-09-06 (bead syzygy-1z3.24.7):
+one independent fresh-context review re-opened the whole recovery at
+`d92910c` against the amended specification and the 2026-09-05 acts
+(`docs/reviews/2026-09-06-pwb-recovery-reconciliation-packet.md`, raw
+`docs/reviews/R-PWB-RECOVERY-RECONCILIATION-GEN1-RAW.md`). Verdict
+**CONFIRM WITH EXCEPTIONS**: PWB-LIVE-01..15 all `repaired`, each to one
+child, code location and one gate; 11/11 amended digests, policy and
+registry match their acts; a clone run reproduces the C7 result
+(`preflight-ready` alone fails, same three limbs) at Butlers `2891522f`.
+Exceptions PWB-RECON-01..09: the human page renders no state-(1)
+same-tree-forgeability sentence (PWB-REQ-005 "both surfaces"; High,
+pre-existing at `cd6c952`), the whole-shape Unknown cause (Spec and Spine
+home has no index) never reaches the page, and the binding is blind to
+core-package changes — a gen-2 implementation pass, then a gen-2
+reconciliation, before any owner walkthrough. Readiness blockers on the
+Butlers side are wider than the C7 note recorded (roster TOML and one Lay
+and Land page withheld as active content; topology table fails the
+grammar): owner items collected in the packet for 1z3.25.
+
 P2.7 note, recorded 2026-09-04: `project-shape-model.ts` composes P1–P2.6
 into the one `ProjectShape` value that `model.ts` places on `PocModel`;
 `GET /api/poc` is still `JSON.stringify(model)`, so the machine answer is
