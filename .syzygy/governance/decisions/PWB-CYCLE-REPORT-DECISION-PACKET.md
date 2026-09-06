@@ -1,5 +1,12 @@
 # Owner packet — the PWB improvement cycle, reported before the walkthrough
 
+> **Status: answered. All six were ruled on 2026-09-07** — see
+> [`PWB-CYCLE-OWNER-RULINGS-DECISION.md`](PWB-CYCLE-OWNER-RULINGS-DECISION.md),
+> which owns the rulings and their application. This packet remains the
+> question each was ruled on; it is not the state of any of them, and four
+> of its sentences are marked wrong below, in place. *(Until 2026-09-07 the
+> line below read as the head of this file.)*
+>
 > **Pending. This packet decides nothing and adopts nothing.** It reports
 > the state of the Polaris project-wide Butlers (PWB) improvement cycle as
 > far as it can be reported before you perform the cold-open walkthrough,
@@ -7,6 +14,11 @@
 > answer them in one reply. Register rows: **P-60 … P-65** in
 > [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md). None depends
 > on another; P-60 and P-61 are the two that keep the walkthrough not ready.
+> *(Marked 2026-09-07: "None depends on another" was wrong for one pair.
+> P-63 is a prerequisite of any P-60/P-61 arm that lands items — the
+> repairs add about 420 KB to a page with 44 KB of headroom, and at the
+> ceiling the page serves nothing. The rows have since moved to
+> `DECISION-HISTORY.md`.)*
 >
 > Written 2026-09-06 for task 5.3 of the signed PWB task list (bead
 > `syzygy-1z3.25`). Task 5.3 asks for the report *after* the walkthrough
@@ -97,6 +109,13 @@ The topology table in the components page does not match the table grammar.
 Together they empty the catalog and topology populations and leave the
 roster denominator Unknown; the readiness check reports two limbs.
 
+> *Marked 2026-09-07: the sentence above is wrong. The roster withholding
+> gates no readiness limb; the empty catalog and topology populations come
+> from the two pages the signed grammar refuses (the V1 page's catalog
+> grammar, P-60, and the components page's table grammar, here), and the
+> readiness check reports three limbs. The roster stays a disclosed
+> page-level Unknown. Ruled A: bold the seven first cells; roster untouched.*
+
 **Why it matters.** This is the other thing keeping the walkthrough not
 ready, and it is a policy trade-off: the withholding is the secret policy
 doing what it was signed to do.
@@ -158,6 +177,15 @@ the ceiling. [Observed at Butlers `ec8b1f6`]
 limit ledger records a breach and the page degrades honestly, but the
 walkthrough would then be read on a degraded page.
 
+> *Marked 2026-09-07: the sentence above is false. At the ceiling the page
+> serves nothing — HTTP 503 with a JSON body, readiness false, nothing
+> truncated — and the walkthrough is unreachable from that moment. No
+> ledger sees a response-ceiling breach and nothing logs it; the 503 body
+> of the breaching request is the only trace. The resource ledger is the
+> input-side reader budget and never sees a response ceiling. And the
+> growth is not only Butlers': the P-60/P-61 repairs themselves add about
+> 420 KB against 44 KB of headroom.*
+
 **The arms.**
 
 - **(a)** Direct a presentation trim, implementation only: the exhaustive
@@ -165,12 +193,18 @@ walkthrough would then be read on a degraded page.
   obvious candidate. No act.
 - **(b)** Raise the ceiling by a registry amendment act.
 - **(c)** Leave it and let the ledger report the breach when it comes.
+  *(Marked 2026-09-07: false — no ledger reports it; see the note above.)*
 
 **Recommendation: (a), then (b) only if a trim cannot buy enough.** A trim
 serves the reader as well as the ceiling and needs no act.
 
 **Default if unanswered:** the page keeps serving until it crosses the
 ceiling, then reports the breach.
+
+> *Marked 2026-09-07: misleading by omission — it omits that nothing
+> page-shaped is served after the breach, and "reports" is only the 503
+> body of the breaching request. Ruled A: trim first, measured, bead
+> `syzygy-1z3.27`.*
 
 ---
 
@@ -237,6 +271,10 @@ decision is needed; it is listed so the six gen-1 items are all accounted
 for.
 
 ## What happens after your reply
+
+*(Marked 2026-09-07: the owner delegated the Butlers edits to a dispatched
+agent working on a branch; the merge stays the owner's and follows the P-63
+trim. See the rulings record.)*
 
 Butlers edits are yours to make; when P-60 and P-61 have landed in Butlers,
 an agent re-runs the fresh-clone demo, and if readiness reports *ready* the

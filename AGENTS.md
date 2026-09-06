@@ -154,7 +154,8 @@ Durable lessons only; status and narrative belong in git log, `bd`, or
 tailscale `--set-path` finding live in `bd memories` — do not re-add them.
 Last compacted 2026-09-05; C5 seams, recorder notes and the docs-estate
 lessons added the same day; the second through fifth docs-pass lessons
-added 2026-09-06.
+added 2026-09-06; the ceiling, locator, extractor and regex lessons
+added 2026-09-07.
 
 ### Architecture
 
@@ -196,6 +197,9 @@ added 2026-09-06.
   `<details>`: after navigating to it Chrome restarts Tab at the details'
   first focusable, stranding keyboard readers. Collapse populations, route
   the targets.
+- A Python block matcher written `(?:- .*\n)+` under `re.S` swallows every
+  following block (`.` eats the newline); use `[^\n]*` and no DOTALL, and
+  assert the match ends where the next heading begins.
 - The Write tool has emitted mixed NFC/NFD bytes; use Unicode escapes in
   fixtures when exact matching matters.
 - A mutation that throws at describe time reports zero tests and scores as
@@ -247,6 +251,23 @@ added 2026-09-06.
   overwrites silently: pass a suffixed `--date` (`2026-09-06-gen2`) when a
   same-day file exists. Rebase-merge re-hashes the recorded head; the
   surface version (sha256 over both `src` trees) is the stable anchor.
+- **A response-ceiling breach serves nothing and logs nothing.** `routes.ts`'s
+  `boundedResponse` answers HTTP 503 with a JSON body (`served: 'nothing'`,
+  readiness false); no ledger, stderr line or status record sees it — the 503
+  body of the breaching request is the only trace. The resource ledger is
+  the input-side reader budget and never sees a response ceiling. Two
+  governance records said "degrades honestly" / "the ledger reports the
+  breach" for a day; both marked 2026-09-07. `/polaris` sits 44 KB under
+  the 2 MB ceiling and the P-60/P-61 repairs add ~420 KB (bead
+  `syzygy-1z3.27` trims first).
+- The daemon serves only the registered locator (`git-observation.ts`
+  refuses any other `--repo`), so a repaired Butlers page cannot be measured
+  on a private daemon from a scratch clone: measure per-item marginal cost
+  on the retained capture instead, or wait for a real Butlers commit.
+- The extractor stops at the first grammar failure, so a finding that names
+  "one line" understates: re-run on a scratch copy after each fix until it
+  parses (v1.md had five colon forms and four duplicate labels behind "one
+  row uses a colon").
 - The fresh-checkout demo exits by `fresh-checkout-verdict.ts` over every
   invariant it records (daemon stderr must be empty); the walkthrough
   preflight (`walkthrough-preflight.ts`) is mechanical readiness and
@@ -449,12 +470,15 @@ added 2026-09-06.
 ### Known gaps
 
 - syzygy-ydr: non-blocking S2/S5 review findings outstanding.
-- Butlers data quirks (as of `2891522f`): `v1.md` is whole-source Unknown
-  (one row uses a colon outside the signed dash grammar); Spec and Spine's
-  home `openspec/` has no index, so the whole-shape claim is Unknown;
-  `components.md` fails the table grammar; `frontend.md` and 7 of 13
-  `butler.toml` are withheld as active content (TOML has no inert
-  context). Do not relax the grammar or policy without an owner gate.
+- Butlers data quirks (as of `13d269b`): `v1.md` is whole-source Unknown
+  (five colon forms and four duplicate labels outside the signed dash
+  grammar); Spec and Spine's home `openspec/` has no index, so the
+  whole-shape claim is Unknown; `components.md` fails the table grammar
+  (seven code-span first cells); `frontend.md` and 7 of 13 `butler.toml`
+  are withheld as active content (TOML has no inert context). Repairs for
+  the first three were ruled 2026-09-07 (P-60/P-61/P-62) and sit on a
+  Butlers branch pending the owner's merge after the P-63 trim. Do not
+  relax the grammar or policy without an owner gate.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
 ### Governance recorders (digest-bound acts)

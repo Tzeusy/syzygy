@@ -47,6 +47,7 @@ These carry rulings the owner has actually made.
 | [`F6-GOVERNANCE-CEILING-DECISION.md`](F6-GOVERNANCE-CEILING-DECISION.md) | **P-46 ruled 2026-08-19** — no governance ceiling; F6 stays `Not met`, disclosed |
 | [`F2-GOVERNANCE-REDUCTION-DECISION.md`](F2-GOVERNANCE-REDUCTION-DECISION.md) | **P-47 ruled 2026-08-19** — the governance-reduction plan adopted as directed work |
 | [`LAUNCH-REPAIR-STOP-CONDITION-DECISION.md`](LAUNCH-REPAIR-STOP-CONDITION-DECISION.md) | **P-48 ruled 2026-08-19** — the repair cycle bounded at two further administrations |
+| [`PWB-CYCLE-OWNER-RULINGS-DECISION.md`](PWB-CYCLE-OWNER-RULINGS-DECISION.md) | **P-60…P-65 ruled 2026-09-07** — A on every row: Butlers page repairs by a dispatched agent on a branch, the Polaris trim first (bead `syzygy-1z3.27`), repair epic closed, walkthrough sentence awaited |
 | [`BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md`](BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md) | The recorded consent for observing the one Butlers repository's project shape (RFC3-7 consent record) |
 
 Doctrine itself (VIS-1…7, SEC-1…5) is adopted and lives in
@@ -132,12 +133,13 @@ group of rows gathered so the owner can answer them in one sitting:
 | **P-12** | The knowledge-hygiene craft policy | [`KNOWLEDGE-HYGIENE-DECISION.md`](KNOWLEDGE-HYGIENE-DECISION.md) |
 | **P-45…P-48** | The four Administration-1 owner inputs (resource envelope, effort ceiling, F2 disposition, stop condition) | [`ADMINISTRATION-1-OWNER-INPUTS-DECISION.md`](ADMINISTRATION-1-OWNER-INPUTS-DECISION.md) |
 | **P-54…P-59, P-66** | Seven questions about the written estate: the OpenSpec config's vendor boilerplate, the two empty OpenSpec lifecycle directories, the spent Capability 1 prompt at the repository root, whether `openspec/` gets a navigation page, the two front doors that name different founding rules, the public overview that still says nothing is implemented, and CC-SPEC's amendment banner naming five of nine phase rules on frozen bytes | [`DOCUMENTATION-ESTATE-DECISION-PACKET.md`](DOCUMENTATION-ESTATE-DECISION-PACKET.md) |
-| **P-60…P-65** | The PWB improvement-cycle report before the walkthrough: the Butlers V1 line that does not parse, the withheld roster and unparsed topology, the Spec and Spine home without an index, the human page's byte headroom, the exact-source wording, and whether to close the repair epic now | [`PWB-CYCLE-REPORT-DECISION-PACKET.md`](PWB-CYCLE-REPORT-DECISION-PACKET.md) |
 
 Packets whose question the owner has since ruled or executed (P-41's
 `SPECIFICATION-ACCEPTANCE-DECISION.md` and P-42's
 `SHAPE-TO-SPEC-IMPACT-DECISION.md` — acts 6 and 7 performed 2026-08-17 —
 P-14's `LICENSE-DECISION-PACKET.md` — MIT ruled 2026-08-18 —
+P-60…P-65's `PWB-CYCLE-REPORT-DECISION-PACKET.md` — ruled 2026-09-07,
+record `PWB-CYCLE-OWNER-RULINGS-DECISION.md` —
 P-31's
 `MERGED-UNRECONCILED-DECISION.md`, P-36's `UNKNOWNS-AND-GAPS-DECISION.md`,
 P-37's `PROJECT-SHAPE-FACETS-DECISION.md`, P-39's

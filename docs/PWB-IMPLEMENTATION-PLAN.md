@@ -633,6 +633,13 @@ no decision since gen-2. The confirmed code head is `9b28663` at Butlers
 `ec8b1f6`. Task 5.3 and bead syzygy-1z3.25 stay open until the walkthrough
 outcome can be added.
 
+Ruled 2026-09-07: the owner chose the recommended arm on all six
+(`.syzygy/governance/decisions/PWB-CYCLE-OWNER-RULINGS-DECISION.md`). Repair
+epic syzygy-1z3.24 is closed; the page trim is bead syzygy-1z3.27 and
+precedes the Butlers merges; the Butlers edits sit on a branch made by a
+dispatched agent, merge the owner's. Note the packet's own "None depends on
+another" was wrong: P-63 gates P-60/P-61.
+
 Evidence: every new test failed before its repair; rule-6 runs
 `docs/evidence/pwb-recon-gen2-repair-mutation-run-2026-09-06.json` (12/12
 killed, four preflight mutants only after a second round added one

@@ -12,6 +12,28 @@
 > cells — are preserved verbatim in git history at commit `9c43fc5`
 > (`git show 9c43fc5:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`).
 
+## Resolved on 2026-09-07 (the PWB improvement-cycle questions, P-60…P-65)
+
+The six questions gathered by the PWB cycle report
+(`PWB-CYCLE-REPORT-DECISION-PACKET.md`, 2026-09-06) were ruled by the owner
+in one reply on 2026-09-07 and applied the same day on that reply's own
+apply instruction ("Follow your recommendations for all of the above. For
+the butler page change, dispatch a subagent to do that"). Every item passed
+independent adversarial subagent review (scope and recommendation verdicts)
+in a local questionnaire packet before presentation; the review corrected
+the two rows quoted below and found that the packet's "None depends on
+another" was wrong for one pair. The rulings record is
+`PWB-CYCLE-OWNER-RULINGS-DECISION.md`, which owns the full detail.
+
+| # | What happened |
+|---|---|
+| P-60 | **Ruled — arm (a)/A**: repair the Butlers V1 page (nine edits over eight lines) so its catalog parses; no Syzygy act. The row's "one line uses a colon" understated it: the extractor stops at the first failure, and the page has five colon forms and four duplicate labels. **Owner edit to the boundary:** the edit is made by a dispatched agent on a Butlers branch, not by the owner's hand; merge stays the owner's and follows the P-63 trim. |
+| P-61 | **Ruled — A**: bold the seven code-span first cells in the two Lay and Land tables (87 topology items); roster untouched, no grammar act. The row as written was wrong and is quoted here so the correction is checkable: it said the withheld roster files and the failing table "together … empty the catalog and topology populations and leave the roster denominator Unknown; readiness reports two limbs". The roster withholding gates no limb; the empty populations come from the two failing pages, and readiness reports three limbs. Same owner edit to the boundary as P-60. |
+| P-62 | **Ruled — A**: add an index page at openspec/README.md in Butlers, linking only to directories, so Spec and Spine is discovered like the other four pillars. Written by the same dispatched agent as its own commit (the owner's "butler page change" read as covering it; droppable alone). Because this delegates drafting rather than a pre-reviewed edit, the commit is a proposal: its text goes before the owner verbatim and is final only on the owner's approval or knowing merge. |
+| P-63 | **Ruled — A**: an implementation-only trim of the Polaris human page, measured before the P-60/P-61 repairs merge, target about 420 KB; if short, a registry act packet (raise or narrow) is drafted at once. Bead `syzygy-1z3.27`. The row's default, "the page serves until it crosses the ceiling, then reports the breach", misled by omission — at the ceiling the page serves nothing (HTTP 503, readiness false) — and its arm (c), "let the limit ledger report the breach", was false: no ledger sees a response-ceiling breach and nothing logs it. P-52 not ruled; the bead was filed on the item's stated boundary. |
+| P-64 | **Ruled — A**: one sentence in the owner's words that following an Exact source link is a permitted walkthrough step, to be inserted below line 79 of the candidate walkthrough packet. **The sentence is not yet supplied**; nothing is inserted until it is. |
+| P-65 | **Ruled — A**: repair epic `syzygy-1z3.24` closed 2026-09-07 with criterion 4 (a passing retained run) recorded unmet and carried by `syzygy-1z3.22`'s readiness gate and by `syzygy-1z3.27`. The walkthrough stays gated on P-60, P-61, P-63 and a green preflight. |
+
 ## Resolved on 2026-08-19, second sitting (the Administration-1 owner inputs, P-45…P-48)
 
 The four owner inputs queued by the Administration-1 repair pass
@@ -108,6 +130,10 @@ repository.
 
 ## The register's as-of chronology (oldest last)
 
+- **2026-09-07** — the PWB cycle questions P-60…P-65 ruled in one owner
+  reply (A on every row) and applied on its own apply instruction: rows
+  moved to resolved; `PWB-CYCLE-OWNER-RULINGS-DECISION.md` owns them.
+  P-52 stays open.
 - **2026-08-20** — the owner's **launch decision**: Capability 1
   specification authoring authorized by explicit owner instruction
   (`CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`, which owns the
