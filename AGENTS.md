@@ -307,6 +307,15 @@ lessons added the same day; second docs-pass lessons added 2026-09-06, third pas
   the same shape as CC-SPEC/CC-IMPACT living under `policy-candidates/`.
   Trust the act record and the routing table above; a package banner is
   evidence of what a drafter believed, never of what binds.
+- **A package's own manifest is part of the digest-binding corpus.** A sweep
+  that excludes the directory under audit will call its files unbound when the
+  sibling `*-MANIFEST.txt` carries them as rows (rule 4). This is how
+  `general-trusted-bootstrap-authorization/ACT-SEMANTICS.md` and its
+  `IMPACT-LEDGER.md` read as free: both are rows of `TRANSACTION-MANIFEST.txt`
+  in the same directory, so ACT-SEMANTICS.md permanently opens "Candidate —
+  binds nothing" about a transaction performed 2026-09-01. The eight unbound
+  prose files in the three PWB packages took dated **PERFORMED** heads instead
+  (2026-09-06, `syzygy-bba`); the pre-act banner stays beneath, unedited.
 - **An *unperformed* act's prepared argument is just as untouchable, and
   nothing in the file says so.** `.syzygy/intent/OVERVIEW.md` is the argument
   of act 4, `ADOPT PROJECT OVERVIEW`, which has never been performed — so its
