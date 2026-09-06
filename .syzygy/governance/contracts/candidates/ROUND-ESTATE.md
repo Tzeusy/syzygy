@@ -136,12 +136,32 @@ wrong by four when first published, for the reason that section gives.
 
 ## What no longer has a reader
 
-**84 of the 237 round work files are named by no other tracked file**
-[Observed — re-swept 2026-09-06: every non-README round file's basename
-searched as a literal substring across the decoded bytes of all 751 tracked
-non-round files; `git ls-files` is the denominator for both populations]. By
-round: 08→9, 08b→8, 08c→13, 08d→8, 08e→19, 08f→9, 08g→5, 08h→4,
-08i→2, 08j→4, 08k→3.
+**82 of the 237 round work files are named by no other non-round tracked
+file** [Observed — re-swept 2026-09-06 at commit `2342724`: every non-README
+round file's basename searched as a literal substring across the decoded bytes
+of all 753 tracked non-round files; `git ls-files` is the denominator for both
+populations]. By round: 08→9, 08b→8, 08c→13, 08d→8, 08e→18, 08f→8,
+08g→5, 08h→4, 08i→2, 08j→4, 08k→3.
+
+> **Superseded 2026-09-06; marked here the same day.** The paragraph above
+> read "**84 of the 237 round work files are named by no other tracked
+> file**", over "all 751 tracked non-round files", with `08e→19, 08f→9`.
+> That was exact when it was published, and three commits later it was not.
+> `round-2026-08e/reviews/RD-28-spec-authoring-RAW.md` gained citers at
+> `decisions/launch-gate/README.md:25` and `AGENTS.md:385`, and
+> `round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.md` gained them at
+> `HISTORICAL-INDEX.md:30` and at line 49 of this page — all four written by
+> the same pass that published the 84 [Observed — the uncited set recomputed
+> over both trees with `git ls-tree -r`; the two sets differ by exactly those
+> two files, in one direction].
+>
+> The paragraph below already warns that an index which names files changes
+> the absence figure it reports. That warning is not sufficient, and this is
+> the proof: measuring last only protects a figure until the *next* edit, and
+> a page that goes on being written after its own sweep falsifies its own
+> number. Re-derive this paragraph rather than reading it, and treat a
+> quoted count of this population anywhere — including here — as a claim
+> about a tree that has since moved.
 
 *This figure read 88 of 238 when the page was first written, hours earlier.*
 Four of those 88 have a citer now, and the citer is **this page**: writing the
@@ -152,6 +172,37 @@ round table named `round-2026-08c/HUMAN-CLARITY-CLOSURE-REPORT.md`,
 tracked file names any of them. An index that names files changes the absence
 figure it reports, so the sweep has to run *after* the prose is written, not
 before — measure last, or the number is stale on publication.
+
+**"No other tracked file" is a choice, and it is the strictest of three.**
+Whether one round file may vouch for another changes the answer, so all three
+predicates are stated here rather than left to the reader [Observed — swept
+2026-09-06 at commit `2342724`, one tree, one matching primitive: literal
+substring containment of the basename over each candidate citer decoded as
+UTF-8, no word boundary]:
+
+| Citers counted | Uncited |
+|---|---|
+| Non-round tracked files only — the figure above | **82** of 237 |
+| … plus the eleven round `README.md` files | 75 of 237 |
+| Every tracked file outside the target round's own directory | 63 of 237 |
+
+The first is the honest one for "has this been carried forward", because the
+other two let the estate vouch for itself: a round README naming its own
+round's files is the index written to retire them, not evidence that anything
+outside still reads them.
+
+The third predicate was also swept independently, in a separate session,
+against the tree as it stood before this page and the ten new READMEs existed.
+It returned **67 of 237** — and re-running that predicate here over that same
+tree reproduces 67 with a per-round split identical on all eleven rounds. The
+four-file gap to today's 63 is entirely files that acquired a citer afterwards:
+`RD-28-spec-authoring-RAW.md`, `RD-33-instrument-v15-RAW.md`,
+`DRY-RUN-ADMINISTRATION.md` and `ADMINISTRATION-1-DISPOSITION-REGISTER.md`
+[Observed — 2026-09-06; both sweeps recomputed over the two trees and compared
+round by round]. Two implementations, written without sight of each other,
+agree exactly once the tree is held fixed — which is the second method rule 2
+asks for, and is the reason the figure above is stated as a sweep and not as a
+fact about the estate.
 
 Two cautions on that figure, in both directions. It counts **filename**
 citation only, so a file whose findings were absorbed into a successor's prose

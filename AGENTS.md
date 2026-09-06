@@ -297,6 +297,13 @@ added 2026-09-06.
   different figures for the same directories were in circulation, each right
   about a different population, and one of them was stale on publication
   because the page quoting it had itself become the missing citer.
+  **Measuring last is not enough.** That page's own uncited count was exact
+  when published and wrong three commits later, falsified by prose in the
+  same pass that named two of the files it counted. An absence figure over a
+  population the current pass is still editing has to be re-derived, never
+  read — and it needs its citer predicate stated, because "cited by no other
+  tracked file" and "cited by nothing outside its own round" differ by
+  nineteen files over the same 237.
 - Where a file *sits* and whether its work is *finished* are different
   questions. The general trusted-bootstrap impact ledger classifies everything
   under `docs/superpowers/` as spent evidence, but
