@@ -225,6 +225,10 @@ lessons added the same day; second docs-pass lessons added 2026-09-06.
   than once (the current-authority citation repeats the baseline-spec
   item's tuple), so `tuples === distinct ids` is a false invariant; check
   every rendered tuple against its machine claim by id and both id sets.
+- `poc:fresh-checkout-demo` names its evidence file by `--date` and
+  overwrites silently: pass a suffixed `--date` (`2026-09-06-gen2`) when a
+  same-day file exists. Rebase-merge re-hashes the recorded head; the
+  surface version (sha256 over both `src` trees) is the stable anchor.
 - The fresh-checkout demo exits by `fresh-checkout-verdict.ts` over every
   invariant it records (daemon stderr must be empty); the walkthrough
   preflight (`walkthrough-preflight.ts`) is mechanical readiness and

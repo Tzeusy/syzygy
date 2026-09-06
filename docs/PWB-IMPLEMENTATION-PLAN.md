@@ -552,6 +552,54 @@ Butlers side are wider than the C7 note recorded (roster TOML and one Lay
 and Land page withheld as active content; topology table fails the
 grammar): owner items collected in the packet for 1z3.25.
 
+Gen-2 repair note, recorded 2026-09-06 (bead syzygy-1z3.24.8): the
+implementation-only repairs of PWB-RECON-01/02/03, plus the optional 06
+and 07. PWB-RECON-01: `authorityLine` now renders each authority's
+disclosure sentence beside its state as an `authority-disclosure` parity
+marker (state (1) verbatim: "Owner-trusted only; same-tree forgeable from
+Syzygy's perspective. Digest detects drift, not authorship or
+attendance."), served identically on the direct and tailnet-Host mounts;
+preflight limb nine, `authority-disclosure-missing`, requires exactly one
+marker per authority whose text equals the evaluation's and, for state
+(1), the PWB-REQ-005 sentence on both sides. PWB-RECON-02: the observed
+`ProjectShape` carries Phase A's per-pillar `discovery`; the page renders
+each pillar's state, an Unknown pillar's reason and a cause-correct route
+(the index-missing case names the home and index path, then "add that
+index in Butlers, then a new snapshot; or an owner gate amending the
+discovery rule"), and the degradation state or an explicit
+no-degradation sentence; preflight limb ten, `discovery-undisclosed`,
+holds page and model to each other (ten limbs now). PWB-RECON-03: the
+surface version is `polaris@` plus the first twelve hex digits of
+sha256 over the two source tree ids (`apps/three-surface-poc/src`, then
+`packages/three-surface-poc-core/src`), `polaris@unresolved` if either
+fails — a core-only change moves the binding. PWB-RECON-06: a decision
+record the lifecycle enumeration listed but the read cannot find aborts
+the loader (counterexample through the injected reader). PWB-RECON-07:
+the fresh demo probes the tailnet Host mount (served, every internal link
+mount-prefixed, the same disclosure count as the direct page), the
+presentation envelope (401 without the credential; 200
+`polaris-presentation`, `citable: false` with it) and a foreign-Origin
+refusal (403 `browser-origin-refused`), as three new verdict invariants
+(nineteen). The parity sweep gained the `observed-excluded` and
+`observed-undiscovered` shape states (seven) and four marker families.
+
+Evidence: every new test failed before its repair; rule-6 runs
+`docs/evidence/pwb-recon-gen2-repair-mutation-run-2026-09-06.json` (12/12
+killed, four preflight mutants only after a second round added one
+isolating counterexample each), the parity-markers sweep
+`pwb-p4-2-mutation-sweep-2026-09-06-parity-markers.json` (32/32, six new
+literals), and nine verdict/lifecycle mutants killed in-session; fresh
+demo `pwb-p4-5-fresh-checkout-demo-2026-09-06-gen2.json` at branch head
+`1ad69cc` (rebased before merge; the two source trees are unchanged, so
+the surface version `polaris@e64a10980701` binds the same code): clone
+suite 1540 tests, 0 failures; Butlers now `ec8b1f6` (moved from
+`2891522f`); preflight fails only the same three Butlers-side limbs as
+before (`account-statement-unbacked`, `population-empty`,
+`population-unreconciled`), the two new limbs and all three probes pass;
+Spec and Spine still `index-missing-at-revision` (its home openspec in
+Butlers carries no README index).
+The gen-2 reconciliation (bead syzygy-1z3.24.9) reviews this head.
+
 P2.7 note, recorded 2026-09-04: `project-shape-model.ts` composes P1–P2.6
 into the one `ProjectShape` value that `model.ts` places on `PocModel`;
 `GET /api/poc` is still `JSON.stringify(model)`, so the machine answer is
