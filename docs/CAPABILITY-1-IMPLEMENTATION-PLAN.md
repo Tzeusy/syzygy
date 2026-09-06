@@ -110,10 +110,18 @@ conformance module passes; partial slices are never reported as done.
 | Ordinary | facet computation, rendering, explanation drawers, discoverability | Standard review; th-engineering subskills as applicable |
 | Trivial | tooling, formatting, non-semantic refactors | Author-verified; split before oversized (CC-REV) |
 
-## Escalation back to the owner (from the act, restated)
+## Escalation back to the owner (cited, never restated)
 
-A new owner act is required before any choice that: changes doctrine or
-an accepted contract; needs a spec amendment; changes security, privacy,
-retention, or a normative data contract; exceeds P-35/A6; or expands
-beyond Capability 1. Everything else in stack/layout is settled by this
-plan and its ordinary revisions.
+The triggers are the act's own, and this plan does not carry a second copy of
+them: `.syzygy/governance/decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`,
+the paragraph beginning "They do not require another owner act unless the
+proposed choice", lists five. Read them there. Everything else in stack and
+layout is settled by this plan and its ordinary revisions.
+
+*Superseded, dated:* until 2026-09-06 this section was headed "(from the act,
+restated)" and paraphrased the five triggers. The paraphrase had already
+drifted — it rendered "exceeds the recorded operating constraints or resource
+envelope" as "exceeds P-35/A6", and dropped "materially" from "materially
+expands the implementation beyond Capability 1". A restated rule drifts and
+becomes a shadow authority (CC-REV-3); this is that failure, found in the
+plane the clause governs.

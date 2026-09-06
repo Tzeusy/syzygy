@@ -6,8 +6,14 @@ The repository is licensed **MIT** (owner ruling P-14, 2026-08-18 — see the
 root `LICENSE` and
 `.syzygy/governance/decisions/LICENSE-CHOICE-DECISION.md`), so reuse rights
 are granted. External **code** contributions still cannot be accepted, because
-contributor-agreement posture is an open owner decision — not because the
-project has no code. Issues and discussion are welcome; documentation and
+contributor-agreement posture is an unrecorded owner-held fact — not because
+the project has no code. `LICENSE-CHOICE-DECISION.md` names it: "Whether a
+hosted offering is intended, and contributor-agreement posture, remain
+unrecorded owner-held facts — the latter is its own future decision and is
+**not** settled by this ruling." It is not queued in
+`PENDING-OWNER-DECISIONS.md` either [Observed — zero case-insensitive matches
+for "contributor" across that file's 125 lines, swept 2026-09-06], so no
+record anywhere carries a date by which it will be answered. Issues and discussion are welcome; documentation and
 governance proposals follow the disciplines below.
 
 *Superseded, dated:* until 2026-09-05 this section opened "Syzygy is in

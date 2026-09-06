@@ -119,7 +119,14 @@ Eight further top-level files here are the rev10 packet's own working records
 — compaction charter, worker-report digest, lead sweep notes, the generated
 context-budget report, two Polaris observation deltas, the general
 trusted-bootstrap routing delta, and the superseded D3 draft. None is
-authority, and none is reachable from any route that matters. Two of the eight
+authority. Seven are unreachable from any route that matters; the eighth,
+`CONTEXT-BUDGET-REPORT.md`, is a **live input to the everyday validator** —
+`scripts/check_governance.py` hard-codes its filename as the single sentence a
+contract module may use to point at a measurement (CG-21), and exempts it by
+path from the digest-scope rule (CG-7e). Deleting or renaming it changes what
+the validator accepts. *(Until 2026-09-06 this sentence read "None is
+authority, and none is reachable from any route that matters" — the first
+clause is still true; the second was never true of this file.)* Two of the eight
 carried no banner until 2026-09-05 and now do: `COMPACTION-CHARTER.md`, whose
 head announced "binding rules" and an `Authority:` line for a pass that
 finished in August, and `WORKER-REPORT-DIGEST.md`, which declared itself
