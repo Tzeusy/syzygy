@@ -1,7 +1,14 @@
 # Administration 1 owner inputs — bounded packet (P-45…P-48)
 
-> **Status: PENDING — this packet decides nothing.** Written 2026-08-18
-> (round 2026-08j, the repair pass after Administration 1) to put the
+> **Status: answered. All four were ruled on 2026-08-19** — see
+> [`DECISION-HISTORY.md`](DECISION-HISTORY.md) §"Resolved on 2026-08-19,
+> second sitting", which names the four successor decision records that carry
+> the rulings. This packet remains the question each was ruled on; it is not
+> the state of any of them. *(Until 2026-09-06 this line read "**Status:
+> PENDING — this packet decides nothing.**" — true when written, false from
+> 2026-08-19.)*
+>
+> Written 2026-08-18 (round 2026-08j, the repair pass after Administration 1) to put the
 > four administration findings that only the owner can dispose into
 > decidable form. The administration record is
 > [`launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json`](launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json);

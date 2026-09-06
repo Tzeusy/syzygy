@@ -1,7 +1,13 @@
 # Project status
 
-> **As-of: 2026-09-02** (the commit introducing this revision —
-> `git log -1 --format=%h PROJECT-STATUS.md`). A hand-authored pointer page:
+> **As-of: 2026-09-06.** To check whether that is still true, run
+> `git log -1 --date=short --format='%h %ad' PROJECT-STATUS.md`: it names the
+> commit that last touched this page. **If its date is later than the As-of
+> above, someone edited this page without restating this line**, and the rows
+> below may be older than they look. *(Until 2026-09-06 this line read
+> "As-of: 2026-09-02 (the commit introducing this revision)" and named a
+> command that returns the last commit, not the first — so the line falsified
+> itself four days later and said nothing about it.)* A hand-authored pointer page:
 > it **must not be the sole source** for any fact it states. Each row cites
 > the record that owns it, and where they disagree the record wins and this
 > page is stale.

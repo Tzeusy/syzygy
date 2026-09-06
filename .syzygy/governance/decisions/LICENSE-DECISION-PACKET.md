@@ -8,9 +8,20 @@
 *"If no licence exists, produce a concise owner decision packet… Do not choose
 the licence without owner approval."*
 
-**Status: no licence is declared, and this packet does not choose one.** It
-lays out the four candidates the directive names, against what this project
-has already decided about itself.
+**Status: answered. This packet is the question; `LICENSE-CHOICE-DECISION.md`
+is the answer.** The owner ruled **P-14 — MIT** on 2026-08-18 (applied
+2026-08-19), and the root `LICENSE` file carries the MIT text. Read this page as the reasoning the owner
+weighed, never as the current licence state; `PROJECT-STATUS.md` and
+[`LICENSE-CHOICE-DECISION.md`](LICENSE-CHOICE-DECISION.md) own that. What
+follows lays out the four candidates the directive named, against what the
+project had already decided about itself.
+
+*Superseded, dated:* until 2026-09-06 this line read "**Status: no licence is
+declared, and this packet does not choose one.**", and the file's own head
+comment still says "The license choice is the owner's and remains PENDING."
+Both were true when written on 2026-08-05 and stopped being true on
+2026-08-18. The head comment is left as authored, because it records what the
+tracked copy was created believing.
 
 > **[Unknown] — this is not legal advice.** The framing below is engineering
 > and governance reasoning, not a legal opinion. A licence choice with real
