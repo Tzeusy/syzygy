@@ -355,6 +355,19 @@ added 2026-09-06.
   its own package's transaction manifest, so the classification binds. Route
   from the nearest *unbound* index instead — the map from filename to verdict
   to disposition section now lives in `candidates/README.md`.
+- **A citation wrapped across a line break is invisible to every basename
+  sweep, so every absence figure in this corpus carries an unmeasured error
+  term.** These pages are hard-wrapped at 78 columns, and a wrapper that
+  breaks inside a code span leaves half a filename on each line:
+  `docs/PWB-IMPLEMENTATION-PLAN.md` cited a mutation-run record as
+  `…-2026-09-05.` + `json`, which is why one evidence file read as uncited by
+  a full-basename sweep and as cited by a stem sweep — both were right. To
+  measure it, take each non-fence line with an odd backtick count, join its
+  tail to the next line's head, and test the join against the tracked
+  basenames; a hit that neither half carries alone is a wrapped citation.
+  Repaired 2026-09-06 in three places over 165,027 non-fence lines; the one
+  remainder is in `round-2026-08/ROUND-DISPOSITIONS.md`, which is historical
+  and not edited. Never let a reflow break a code span.
 - **A home's README describing what it will hold goes false the moment it
   holds something, and a stored review may make the false sentence
   undeletable.** `decisions/launch-gate/README.md` said "Empty today,

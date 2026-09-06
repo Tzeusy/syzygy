@@ -81,9 +81,10 @@ Per `A6-RESOURCE-ENVELOPE-DECISION.md` (ruled 2026-08-19):
   assessment) is not the model family the budget row names. Whether
   Claude-family usage draws on this same $200/month ceiling, a separate
   unstated arrangement, or a differently-metered plan is not stated
-  anywhere in the governance record swept above. `A6-RESOURCE-ENVELOPE-
-  DECISION.md`'s own boundary section states the figure "authorizes no
-  spending... a ceiling that exists, not a budget granted" — it does not
+  anywhere in the governance record swept above.
+  `A6-RESOURCE-ENVELOPE-DECISION.md`'s own boundary section states the
+  figure "authorizes no spending... a ceiling that exists, not a budget
+  granted" — it does not
   say which billed product(s) the ceiling covers.
 
 ## 3. Maximum concurrent supervised workstreams (2–3)
@@ -175,9 +176,9 @@ Per `A6-RESOURCE-ENVELOPE-DECISION.md` (ruled 2026-08-19):
   --date=short -- docs/reviews/`) cluster on 2026-08-21, 08-22 (3),
   08-23 (3), and 08-30 (2) — four distinct days across the 16-day window,
   each with either one or several reviews landing the same day.
-  `R-POC-CONFIRMATION-REVIEW.md` (`docs/reviews/R-POC-CONFIRMATION-
-  REVIEW.md`) records a review, a named repair, and a same-day
-  confirmation review all completing within the single day 2026-08-30.
+  `docs/reviews/R-POC-CONFIRMATION-REVIEW.md` records a review, a named
+  repair, and a same-day confirmation review all completing within the
+  single day 2026-08-30.
 - `[Inferred]` The pattern — zero-review days interspersed with single
   days carrying multiple independent review passes — is consistent with
   "no fixed cadence" as stated (cadence is genuinely irregular by this

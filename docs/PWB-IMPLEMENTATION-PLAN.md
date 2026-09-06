@@ -510,9 +510,10 @@ surface); 46 rule-6 mutations killed, seven of them only after a second
 round added the test each survivor exposed (a 403 refusal, an Inferred
 account statement, an unchecked and a not-rendered current-requirement
 route, a Polaris fragment on `/trajectory`, a fixed seam identity, the
-record's surface shown as the expected one), sources restored byte-for-
-byte (`docs/evidence/pwb-c7-fresh-demo-readiness-mutation-run-2026-09-05.
-json`). Live fresh clone of 28ff68d against Butlers ff52900a3
+record's surface shown as the expected one), sources restored
+byte-for-byte
+(`docs/evidence/pwb-c7-fresh-demo-readiness-mutation-run-2026-09-05.json`).
+Live fresh clone of 28ff68d against Butlers ff52900a3
 (`docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-05.json`, artifacts
 retained outside the repository): 1,501 tests green in the clone; binding
 `polaris@dea2b82f3ef5` / `pwb-eval-0c3baa9fb21e88afce06602f`; 529 tuples
