@@ -35,11 +35,11 @@ precisely so nobody has to cite it for it to remain evidence (CC-REV-6).
 
 ## The shape of this directory
 53 tracked files. 27 of them sit under `reviews/`, stored **verbatim and never
-edited** (CC-REV-6) — correcting a raw review is never the repair. 19 of the 53 are named by no
-other tracked file [Observed — 2026-09-06, every basename searched as a
-literal across all tracked non-round files; method and the per-round figures
-are in `../ROUND-ESTATE.md`]. That is a citation count, not a judgment about
-whether a file has served its purpose.
+edited** (CC-REV-6) — correcting a raw review is never the repair. 19 of the
+53 are named by no other tracked file [Observed — 2026-09-06, every basename
+searched as a literal across all tracked non-round files; method and the
+per-round figures are in `../ROUND-ESTATE.md`]. That is a citation count, not
+a judgment about whether a file has served its purpose.
 
 This directory's first-commit date is not a fence around its contents: a round
 directory can take a file long after the round closed, and one of them did

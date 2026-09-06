@@ -62,7 +62,10 @@ date as provenance, never as a guarantee that everything in the directory is
 contemporaneous with it [Observed — swept 2026-09-06 with
 `git log --diff-filter=A --name-only` over all eleven directories: 239 files
 added, 11 first-commit dates, 4 rounds with any later addition, 1 with a gap
-wider than a day].
+wider than a day. That 239 counts a file that has since left the tree and
+predates the ten directory READMEs of 2026-09-06; [`ROUND-ESTATE.md`](ROUND-ESTATE.md)
+derives it against the other three figures in circulation, and is the home for
+all of them].
 
 | Directory | Recorded | What it holds |
 |---|---|---|

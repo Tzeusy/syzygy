@@ -37,11 +37,17 @@ not a disposition.
 
 ## The shape of this directory
 31 tracked files. 10 of them sit under `reviews/`, stored **verbatim and never
-edited** (CC-REV-6) — correcting a raw review is never the repair. 15 of the 31 are named by no
-other tracked file [Observed — 2026-09-06, every basename searched as a
-literal across all tracked non-round files; method and the per-round figures
-are in `../ROUND-ESTATE.md`]. That is a citation count, not a judgment about
-whether a file has served its purpose.
+edited** (CC-REV-6) — correcting a raw review is never the repair. 15 of the
+31 are named by no other tracked file [Observed — 2026-09-06, every basename
+searched as a literal across all tracked non-round files; method and the
+per-round figures are in `../ROUND-ESTATE.md`]. That is a citation count, not
+a judgment about whether a file has served its purpose.
+
+*Re-swept later the same day: 13 of the 31.* Two of the fifteen have a citer
+now — `HUMAN-CLARITY-CLOSURE-REPORT.md` and `reviews/RD-2-human-clarity-RAW.md`
+— and the citer is `../ROUND-ESTATE.md`, whose round table names them. An
+index that names files reduces the absence figure it reports; that page
+carries the estate-wide derivation.
 
 This directory's first-commit date is not a fence around its contents: a round
 directory can take a file long after the round closed, and one of them did

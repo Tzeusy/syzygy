@@ -2,8 +2,9 @@
 
 > **Navigation, never authority.** This page adopts nothing, accepts nothing
 > and may not be cited as a rule. It routes a reader through
-> `round-2026-08` … `round-2026-08k` — 238 tracked files that no index
-> covered. Where this page and an owning record disagree, **the owning record
+> `round-2026-08` … `round-2026-08k` — the tracked files that no index
+> covered; "How many files are in here" below derives the count and
+> reconciles the four different figures other pages quote. Where this page and an owning record disagree, **the owning record
 > wins and this page is stale.** Current state is `PROJECT-STATUS.md`; what is
 > accepted is `decisions/ACCEPTANCE-ACT-RECORD.md`.
 >
@@ -25,7 +26,8 @@ them are easy to get wrong:
   contents.** `round-2026-08g` took two files seventeen days after it closed.
 - **"Historical" never means "safe to relocate."** Two round files are live
   inputs to running software; both are named below.
-- **96 of 235 round files carry no status word at their head.** Every round
+- **96 of the 235 Markdown round files carry no status word at their head**
+  (the denominator is derived under "How many files are in here"). Every round
   directory now has a `README.md` saying the round is closed, but those 96
   file heads are unchanged and an agent may not change them — some are bound
   by a performed act's manifest (`syzygy-3zi` states the lawful shapes). Read
@@ -90,13 +92,46 @@ Rounds `h` through `k` are additionally cited as evidence by acts in force.
 Before treating any round file as inert, sweep for citers by filename across
 `git ls-files` — not by directory name, and not by the word "historical".
 
+## How many files are in here
+
+Four figures for this one population are in circulation, and all four are
+right about different things. The derivation, so no page has to guess:
+
+| Figure | What it counts |
+|---|---|
+| **249** | Every file ever added under a `round-*` path |
+| **248** | Present on disk now. The one that left was the first round's own PROCESS-LESSONS.md — no code span, because a path that no longer resolves may not carry one (CG-1b) — moved out to [`decisions/PROCESS-LESSONS.md`](../../decisions/PROCESS-LESSONS.md) as the rounds' one durable export |
+| **239** | Present before 2026-09-06, plus that departed file — the population `HISTORICAL-INDEX.md` swept with `git log --diff-filter=A` |
+| **238** | Present before 2026-09-06: the 248 less the ten directory `README.md` files added that day (`round-2026-08/` already had one) |
+| **235** | Of those 238, the Markdown ones. The three that are not: `round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json` and `round-2026-08j/`'s two `sweep_*.py` |
+| **237** | On disk now, less all eleven directory READMEs — the round *work*, which is what a citation sweep should measure |
+
+[Observed — 2026-09-06: `git ls-files` for what is present, `git log
+--diff-filter=A --name-only` for what was ever added, both over all eleven
+directories; the two lists differ by exactly the one file named above.]
+
+A figure quoted anywhere else is a copy and may have gone stale — including
+the two in the next section, which were re-derived here today and were already
+wrong by four when first published, for the reason that section gives.
+
 ## What no longer has a reader
 
-**88 of the 238 round files are named by no other tracked file** [Observed —
-2026-09-06: every round file's basename searched as a literal substring across
-the decoded bytes of all 743 tracked non-round files; `git ls-files` is the
-denominator for both populations]. By round: 08→9, 08b→8, 08c→15, 08d→8,
-08e→19, 08f→9, 08g→6, 08h→4, 08i→2, 08j→5, 08k→3.
+**84 of the 237 round work files are named by no other tracked file**
+[Observed — re-swept 2026-09-06: every non-README round file's basename
+searched as a literal substring across the decoded bytes of all 751 tracked
+non-round files; `git ls-files` is the denominator for both populations]. By
+round: 08→9, 08b→8, 08c→13, 08d→8, 08e→19, 08f→9, 08g→5, 08h→4,
+08i→2, 08j→4, 08k→3.
+
+*This figure read 88 of 238 when the page was first written, hours earlier.*
+Four of those 88 have a citer now, and the citer is **this page**: writing the
+round table named `round-2026-08c/HUMAN-CLARITY-CLOSURE-REPORT.md`,
+`round-2026-08c/reviews/RD-2-human-clarity-RAW.md`,
+`round-2026-08g/CAPABILITY-1-OWNER-DECISION-INDEX.md` and
+`round-2026-08j/ADMINISTRATION-1-DISPOSITION-REGISTER.md`, and no other
+tracked file names any of them. An index that names files changes the absence
+figure it reports, so the sweep has to run *after* the prose is written, not
+before — measure last, or the number is stale on publication.
 
 Two cautions on that figure, in both directions. It counts **filename**
 citation only, so a file whose findings were absorbed into a successor's prose

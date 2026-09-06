@@ -286,8 +286,12 @@ lessons added the same day; second and third docs-pass lessons added
   scan of a directory you *expect* to own a family will miss the two above.
 - A round directory's index date is its **first-commit** date and does not
   bound its contents: `round-2026-08g` took two files seventeen days after it
-  closed. 96 of 235 round files carry no status word at their head — read the
-  `round-*` path itself as the banner.
+  closed. Many round file heads carry no status word at all — read the
+  `round-*` path itself as the banner. Counts for that estate live in one
+  place, `contracts/candidates/ROUND-ESTATE.md`, which derives them: four
+  different figures for the same directories were in circulation, each right
+  about a different population, and one of them was stale on publication
+  because the page quoting it had itself become the missing citer.
 - Where a file *sits* and whether its work is *finished* are different
   questions. The general trusted-bootstrap impact ledger classifies everything
   under `docs/superpowers/` as spent evidence, but

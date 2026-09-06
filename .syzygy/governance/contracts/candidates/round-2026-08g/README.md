@@ -39,11 +39,16 @@ closed. Its index date bounds nothing.
 
 ## The shape of this directory
 20 tracked files. 6 of them sit under `reviews/`, stored **verbatim and never
-edited** (CC-REV-6) — correcting a raw review is never the repair. 6 of the 20 are named by no
-other tracked file [Observed — 2026-09-06, every basename searched as a
-literal across all tracked non-round files; method and the per-round figures
-are in `../ROUND-ESTATE.md`]. That is a citation count, not a judgment about
-whether a file has served its purpose.
+edited** (CC-REV-6) — correcting a raw review is never the repair. 6 of the 20
+are named by no other tracked file [Observed — 2026-09-06, every basename
+searched as a literal across all tracked non-round files; method and the
+per-round figures are in `../ROUND-ESTATE.md`]. That is a citation count, not
+a judgment about whether a file has served its purpose.
+
+*Re-swept later the same day: 5 of the 20.* `CAPABILITY-1-OWNER-DECISION-INDEX.md`
+has a citer now, and the citer is `../ROUND-ESTATE.md`, whose round table
+names it. An index that names files reduces the absence figure it reports;
+that page carries the estate-wide derivation.
 
 This directory's first-commit date is not a fence around its contents: a round
 directory can take a file long after the round closed, and one of them did

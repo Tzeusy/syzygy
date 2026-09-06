@@ -37,11 +37,17 @@ This round has no `reviews/` directory — it produced measurements, not review
 verdicts.
 
 ## The shape of this directory
-6 tracked files, none of them review output. 5 of the 6 are named by no
-other tracked file [Observed — 2026-09-06, every basename searched as a
-literal across all tracked non-round files; method and the per-round figures
-are in `../ROUND-ESTATE.md`]. That is a citation count, not a judgment about
-whether a file has served its purpose.
+6 tracked files, none of them review output. 5 of the 6 are named by no other
+tracked file [Observed — 2026-09-06, every basename searched as a literal
+across all tracked non-round files; method and the per-round figures are in
+`../ROUND-ESTATE.md`]. That is a citation count, not a judgment about whether
+a file has served its purpose.
+
+*Re-swept later the same day: 4 of the 6.*
+`ADMINISTRATION-1-DISPOSITION-REGISTER.md` has a citer now, and the citer is
+`../ROUND-ESTATE.md`, whose round table names it. An index that names files
+reduces the absence figure it reports; that page carries the estate-wide
+derivation.
 
 This directory's first-commit date is not a fence around its contents: a round
 directory can take a file long after the round closed, and one of them did
