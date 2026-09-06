@@ -153,8 +153,8 @@ Durable lessons only; status and narrative belong in git log, `bd`, or
 `PROJECT-STATUS.md`. Capability 1 status, the FROZEN-files rule, and the
 tailscale `--set-path` finding live in `bd memories` — do not re-add them.
 Last compacted 2026-09-05; C5 seams, recorder notes and the docs-estate
-lessons added the same day; second and third docs-pass lessons added
-2026-09-06.
+lessons added the same day; second, third and fourth docs-pass lessons
+added 2026-09-06.
 
 ### Architecture
 
@@ -342,8 +342,33 @@ lessons added the same day; second and third docs-pass lessons added
 - `docs/README.md`'s review-campaign table is ten rows over every file in
   `docs/reviews/`, each row carrying its last verdict of record and where the
   findings landed. It is re-derived, not maintained: the count moved 88 → 90
-  within a day of being written, so rerun the partition rather than trusting a
-  row.
+  within a day of being written, and again the same day, so rerun the
+  partition rather than trusting a row.
+- **An index that routes by short name makes the files it routes read as
+  orphans.** `contracts/candidates/reviews/DISPOSITIONS.md` sections are
+  titled "rev10-boundary", "rev10-safety" — never the filename — so a sweep
+  for a report by its own basename finds no citer and reports it unread
+  (rule 9's false-absence class again, this time in the *citer's* form rather
+  than the identifier's). It cannot be repaired at the site: the general
+  trusted-bootstrap `IMPACT-LEDGER.md` classifies that file as raw-review
+  evidence "never rewritten to current semantics", and the ledger is a row of
+  its own package's transaction manifest, so the classification binds. Route
+  from the nearest *unbound* index instead — the map from filename to verdict
+  to disposition section now lives in `candidates/README.md`.
+- **A home's README describing what it will hold goes false the moment it
+  holds something, and a stored review may make the false sentence
+  undeletable.** `decisions/launch-gate/README.md` said "Empty today,
+  correctly: no formal administration has been run" for nineteen days after
+  Administration 1 landed beside it, stated a filename convention
+  (`ADMINISTRATION-<n>-<date>.md`) that the one record never followed, and
+  named neither the canonical JSON nor the two other file classes present.
+  `round-2026-08e/reviews/RD-28-spec-authoring-RAW.md` quotes that exact
+  sentence verbatim as evidence of the project's epistemic discipline, so it
+  was marked and dated in place, not removed — a review's referent may not be
+  edited out from under it. Retain a validation transcript beside every future
+  administration record: rule 7 makes a transcript valid only for the commit
+  it names, and a JSON record with none is a record no later reader can
+  confirm was checked.
 
 ### Known gaps
 

@@ -78,7 +78,7 @@ are that round's record and are not the current package's state.
 | `FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md` | The gate definitions and ceremony (six wave acts + craft, topology, overview, optional D3) |
 | `history/`, `matrix-rows/` | Non-normative companions: rev9 corpus, Tier-2 rationale, decision censuses. "Nothing in this directory binds" |
 | `fixtures/` | Context-selection fixtures for the RFC-0011 Context Compiler |
-| `reviews/` | Raw review reports and dispositions for this package — stored verbatim, never edited |
+| `reviews/` | Raw review reports and dispositions for this package — stored verbatim, never edited; the eight files and what each is are named under "[What is in `reviews/`](#what-is-in-reviews)" below, because `DISPOSITIONS.md` itself may not be extended to name them |
 | `scripts/` | Self-rooted, portable verification and generation (`verify_final_prespec.py`, `build_contract_index.py`, `build_dependency_index.py`, `build_budget_report.py`, `build_task_router.py`, `build_active_manifest.py`, `build_capability_1_views.py`, `context_load.py`) |
 | `TASK-ROUTER.md` | **The one current task router** — generated navigation by `scripts/build_task_router.py`, never authority; supersedes the historical task index (now `history/TASK-TO-CONTRACT-INDEX.md`) and the load map's reader table |
 | `CONTRACT-DEPENDENCY-INDEX.md` | Derived module-graph index (generated; never authority) |
@@ -93,6 +93,52 @@ are that round's record and are not the current package's state.
 | `CAPABILITY-1-GENERATED-VIEWS.md` | Derived Capability 1 coverage views (generated; never authority) |
 | `00-README.md`, `01`–`04-*`, `06`–`10-*`, other top-level reports | The rev10 packet's own delivery reports, kept as packet history |
 | `DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` | The D3 proposal, rev1 — act 5's subject (optional). Supersedes `…-DRAFT.md`, which stays in place, banner-marked, as the original the owner may still compare |
+
+### What is in `reviews/`
+
+Eight files: seven raw reviewer reports of the rev10 packet and the lead's
+synthesis of them. The synthesis, `reviews/DISPOSITIONS.md`, is the reading
+order — it carries every finding and its disposition, section by section, and
+it is the only file here that was written by the lead rather than a reviewer.
+
+`DISPOSITIONS.md` names its sections by short name ("rev10-boundary",
+"rev10-safety") and not by filename, so a sweep looking for a report by its
+own basename finds no citer and reports it unread. That is a false absence of
+the kind verification rule 9 exists to catch, and it cannot be repaired where
+it occurs: the general trusted-bootstrap `IMPACT-LEDGER.md` classifies
+`reviews/DISPOSITIONS.md` as raw-review evidence "never rewritten to current
+semantics", and that ledger is a row of its own package's transaction
+manifest, so the classification is bound. The mapping therefore lives here.
+
+| File | Directive | Verdict of record | Disposition section |
+|---|---|---|---|
+| `reviews/rev10-equivalence-review.md` | §13.1 semantic equivalence | `EXCEPTIONS`, 7 (E1 act-holding) | §6 |
+| `reviews/rev10-digestibility-review.md` | §13.2 human digestibility and context | `EXCEPTIONS`, 4 substantive + 4 nits | §2 |
+| `reviews/rev10-safety-review.md` | §13.3 mission and autonomy safety | `EXCEPTIONS`, 14 (6 blocking) | §5 |
+| `reviews/rev10-boundary-review.md` | §13.4 RFC/OpenSpec boundary | `EXCEPTIONS`, 9 | §3 |
+| `reviews/rev10-transaction-review.md` | §13.5 acceptance transaction | `EXCEPTIONS`, 5 | §1 |
+| `reviews/rev10-transaction-review-resend.md` | §13.5, same reviewer | `EXCEPTIONS`, identical E1–E5 | §1 |
+| `reviews/rev10-portability-review.md` | §13.6 portability | `EXCEPTIONS` (2 must-fix, 6 non-blocking) | §4 |
+| `reviews/rev10-confirming-review.md` | final confirming review, 2026-08-03 | `CONFIRM`, 3 residuals | §7 |
+
+Every verdict in the column above is `EXCEPTIONS` except the last. That is
+what a working review round looks like, not a troubled one: the findings were
+dispositioned, the `rfcs/`-touching fixes were batched so the manifest digest
+regenerated once, and the confirming review then ran against the repaired
+bytes. §7's three residuals include one the lead **declined** rather than
+fixed — a stale navigation word-count — because fixing it would have churned
+the act's argument digest for a figure that binds nothing. The decline is
+recorded with its reasoning; read it as the model for surfacing a cost to the
+owner instead of absorbing it.
+
+**Two files, one review.** `rev10-transaction-review-resend.md` is the same
+reviewer's fuller retransmission of `rev10-transaction-review.md` after an
+idle nudge. The first transmission stays exactly as it arrived and remains the
+one of record; the resend is retained beside it because a re-issued raw is
+kept as a second file and never overwrites the first (verification rule 10 —
+the bytes a review is bound to are frozen, and that includes a worse earlier
+draft of the same report). Both carry the same verdict and the same five
+findings in the same locations; the resend adds per-check evidence only.
 
 ### Act packages prepared in this tree
 
