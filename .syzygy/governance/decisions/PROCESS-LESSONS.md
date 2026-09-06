@@ -462,6 +462,124 @@ still described the choice as untaken.
 decision becomes a fait accompli. If an arm must be prototyped to be
 evaluated, the register says so in the same change.
 
+## Round 2026-08d — fifteen reviews, fifteen REVISE verdicts (2026-08-09)
+
+- **A clause range or enumeration goes stale the moment a clause is appended,
+  and nothing notices.** The round's recurring class was "a clause range or
+  enumeration not extended when new clauses were appended" — RFC7-38, RFC11-12
+  and the RFC-0010 range, the same shape RD-10 F13 and RD-9 finding 8 had
+  already found one level up, at package-index level
+  (`round-2026-08d/reviews/DELIVERY-AND-VERDICT-REGISTER.md:198`). RD-22
+  measured RFC11-12's coverage matrix reading `RFC11-1..RFC11-12` against a
+  16-clause package — short by exactly the four clauses that round had just
+  added. Any sentence declaring "clauses N..M" or "K clauses" is a generated
+  view wearing prose clothes: regenerate and `--check` it, never hand-increment.
+- **Never gate an act on a criterion whose evidence sits outside every manifest
+  the act binds.** RD-23 B2 found the C2 selection module's own acceptance
+  condition anchored to fixtures "outside every wave manifest and the active
+  manifest, so the act would freeze the claim while its subject stays freely
+  editable" — in the review's own words, "the inverse of verification rule 10".
+  Rule 10 stops a *review* from covering bytes that moved; this is its mirror,
+  an *act* freezing a claim over bytes that stay editable underneath it. Bind
+  the evidence into the manifest, or drop the criterion.
+- **Ten goldens that contradict each other test nothing, and "N of M
+  reproduced" hides it.** The same finding's B3: the fixtures "mechanically
+  contradict three of the module's six clauses", including a bimodal 2-vs-8
+  split on what RFC11-14's "cite" means, "under which two honest selectors
+  produce omission registers differing by two orders of magnitude". Before
+  citing a fixture pass rate as evidence, check that the fixtures agree with
+  *each other* about the clause — when they do not, there is no right answer to
+  reproduce and the rate measures which reading the runner happened to hold.
+- **A hand-written count inside an acceptance record is read by no check.**
+  RD-17 F1: "the acceptance record's per-wave module counts are transcribed and
+  verified by nothing; a 20-module wave can bind under the words 'the 19
+  modules' with the whole battery green." Verification rule 3 says totals are
+  computed — this is the gap underneath it, where a total was never any check's
+  input to begin with.
+
+## Round 2026-08e — four passes at one parser, and the checks nobody owned (2026-08-10 → 08-13)
+
+- **A verdict parser must exclude every carrier that can quote text without
+  meaning it — enumerate the carriers up front, not one per review.** The
+  launch-gate instrument's "terminal `GATE VERDICT:` line" rule was repaired
+  four times running, each fix closing the carrier the previous review happened
+  to find. RD-39 caught a fenced-code stripper that still let a record whose
+  real verdict was `NOT READY` log as `READY FOR`. RD-40 caught the next fix
+  comparing raw text against stripped text — under which a blockquote, an
+  indented or fenced code block, a list item or a plain prose quotation is
+  byte-identical to the real line and still parses as terminal; its rule was
+  "a verdict quoted after the record's own terminal verdict is ambiguous, never
+  silently resolved". RD-42 then needed a unicode-fold fixture on top of that.
+  Four instance fixes cost more than one carrier enumeration would have:
+  list every way the corpus can quote a line, and mutation-fixture each.
+- **Adding a value to a taxonomy means wiring it into every column that
+  aggregates the old field, in the same batch.** A new scoped value ("Not met
+  (out of launch scope)") registered in *no* trend column — not Not-met, not
+  Deferred, not New-findings — so a finding became invisible to measurement the
+  moment it was classified, and convergence read better the more findings got
+  the new value. The instrument's own anti-laundering rule already forbade the
+  outcome: "moving a finding from Not-met to Deferred must never improve the
+  read of any other column"
+  (`round-2026-08e/reviews/RD-33-instrument-v15-RAW.md:77`). Same shape as the
+  Wave B lesson that an imported release-blocking obligation is routed into the
+  release-gate list by the same amendment, never by later housekeeping.
+- **Verify a fix against the whole class of like sites — and check the siblings
+  you did not touch.** The positive: RD-31b "swept all 14 Wave A lettered
+  sub-clauses against all six front-matter declarations and found the class
+  closed, not just the instance" (`WAVE-A-CLOSURE-REPORT.md:60`). The negative,
+  in the same round: a version-agnostic-matching guard was applied to one of two
+  sibling fixture builders and not the other, silently breaking the untouched
+  one at the next version bump.
+- **Never attribute a citation the cited text does not contain; where no owner
+  exists, say so.** Two independent incidents. An earlier `CHECK_OWNERS` draft
+  cited `SDR-1`, `SEC-5` and `SEC-4` as the doctrine owners of three checks —
+  "Those identifiers exist and say something else", SDR-1 ruling that `Feature`
+  is not a kernel concept and SEC-5 reading *"Secrets are never indexed"*. And a
+  fixture whose own heading promised "**owners cited, nothing invented**"
+  attributed a sweep to a craft owner that does not exist and an exception limb
+  to a clause that does not contain it. An honest `mechanical — …` entry is a
+  better anchor than a plausible wrong one; rule 8 is the guard, and inventing
+  an anchor is how it fails while looking cited.
+- **No incident, no check — and a rule that lives only in code gets WARN, never
+  FAIL.** The round's standing gate on adding validators: "Stop condition for
+  new validators… No incident, no check" — a new FAIL-capable check needs either
+  a recorded incident in this file or a rule with a named owner. CG-20 and CG-21
+  were downgraded to WARN on exactly that test, their only stated rule being a
+  Python docstring. "**A downgrade is not a silencing.**" What a downgrade
+  withdraws is the repository-wide claim the FAIL would make; the finding still
+  prints every run.
+
+## Round 2026-08f — the register that dropped what it promised to keep (2026-08-11 → 08-17)
+
+- **A register that says "nothing here is dismissed" must be reconciled against
+  the source's finding count, not skimmed.** This register's worst finding was
+  about itself: "RD-50 raised eleven findings, exactly one (f1) appeared in the
+  repaired table above, and the other ten appeared nowhere — while this file's
+  header says 'Nothing here is dismissed'. Ten findings were dismissed by
+  omission." (`round-2026-08f/reviews/DISPOSITION-REGISTER.md:118`) A
+  completeness claim in a tracker is an absence claim like any other and needs
+  its denominator (rule 9): count the source's findings and reconcile row for
+  row.
+- **Revising a graded exercise's criteria after a run, then quoting that run's
+  grade, is grading to taste.** RD-53 f8 found pass criterion 3 unfalsifiable
+  and criteria 2 and 4 carrying no threshold, and ruled that "the criteria
+  should be revised **and the exercise re-administered**". Fixing the ruler does
+  not re-measure what was measured with the old one.
+- **A selftest fixture named for a predicate must assert that predicate.**
+  RD-53 f3: a fixture "named 'a deferred-wave module in the load set detected'
+  mutated `clauses` and asserted a predicate two cases above it — no
+  deferred-leak check existed." Rule 6 says mutate per predicate; this is the
+  case where the fixture's *name* was the false claim, so a sweep asking "is
+  this predicate covered?" answered yes over nothing.
+- **Repair and freeze are different acts, and a pending freeze blocks neither.**
+  Twenty findings were carried as "not repaired, by design" for two days on
+  reasoning the register later struck through itself: "The reasoning above
+  conflated **repair** with **freeze**: repairing a candidate does not freeze
+  it, and only the freeze had to wait on P-40. Written as a reason not to act,
+  it left four blocking findings — including one clause weakening an
+  owner-approved rule — carried for two days." A gate on the *offer* is never a
+  gate on the *fix*.
+
 ## Round 2026-08g — traps that recur underneath the verification rules
 
 *Moved here 2026-08-13 from `AGENTS.md`, on owner instruction (charter §11.5).
@@ -584,3 +702,44 @@ verification rules and points here for the incidents.*
   "no other statement of it exists" was written without the rule-9 sweep
   that would have falsified it. Before declaring any clause a fact's
   home, sweep for the fact's existing statements with a denominator.
+
+## Round 2026-08j — the repair pass after Administration 1 (2026-08-18)
+
+- **A repair claim is a byte claim about named files; it never re-grades the
+  question.** The pass wrote its own bound and held to it: "No
+  re-administration, no self-grading: every 'repaired' claim above is a
+  byte-level claim about named files, checkable by diff against `d9261b7`, not
+  a claim that a question now grades `Met`." Only the next formal
+  administration grades. A repairer who reasons "that defect is fixed, so the
+  question passes now" has graded its own exam.
+
+## Round 2026-08k — the Capability 1 specification review and adoption cycle (2026-08-20 → 08-21)
+
+- **One repair batch, one confirming review — a blocker found in the
+  confirmation goes to the owner, not into a second repair pass.**
+  `REVIEW-BINDING.md` fixed that bound before the cycle ran: "If Pass 4 finds a
+  real blocker, the bounded workflow stops and the specification goes to the
+  owner with the blocker stated — no second repair pass." It was then actually
+  exercised: the confirming pass found a blocker at CAP1-REQ-038 and stopped
+  rather than opening another repair round.
+- **A one-word owner "Authorized" is not an act, and recording it would author
+  the act's content.** The session declined to treat the word as the act,
+  because "a one-word authorization leaves every material term below undefined
+  — recording it would mean the session authored the act's content on the
+  owner's behalf (VIS-4)". VIS-4 names the boundary; this is the trap that
+  reaches for it, because a terse affirmation reads exactly like consent.
+  Prepare the instrument, leave it unperformed, and wait.
+- **A coverage row is lawful only when its label is the clause's own
+  consequence.** The authority review's two blockers were both subject-swaps:
+  cost clauses re-subjected as "no composite score computed", and the
+  specification's own authored strictness attributed to clauses that do not
+  state it. Rule 8 says anchor to the clause and quote it — this is how rule 8
+  gets violated by someone who *did* read the clause: it is cited correctly, and
+  the row's subject is the author's rather than the clause's.
+- **Before excluding a touched file from a review's byte-binding, classify it
+  and sweep for it.** `tasks.md` was deliberately held outside the binding, on a
+  measured basis rather than an assumption: "CC-SPEC-10 binds adoption to 'what
+  was adopted at which digest,' and no in-force clause names the task file — a
+  sweep of the in-force CC-SPEC/CC-IMPACT policy text finds zero mentions of
+  it." Semantic specification content versus mutable lifecycle tracker is a
+  decision to make, measure and record — never one to assume from a filename.

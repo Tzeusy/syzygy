@@ -71,7 +71,10 @@ Load the minimum for one correct decision; never "read everything."
 Historical material (`_bootstrap/`, `contracts/candidates/history/`,
 `round-*`) is never on a default path and never authority. Superseded
 offerings are banner-marked; retired phrases satisfy nothing — never route
-an owner to a stale offering.
+an owner to a stale offering. For the eleven `round-*` directories, read
+`contracts/candidates/ROUND-ESTATE.md` before opening any of them: it says
+what each round settled and where that settlement lives now, and it names
+the round files that running software still reads.
 
 ## Hard prohibitions
 
