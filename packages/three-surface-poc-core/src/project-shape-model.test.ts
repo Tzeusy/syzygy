@@ -627,6 +627,23 @@ describe('faults never shrink the population (PWB-REQ-003)', () => {
     const shape = observed({ texts: BASE_TEXTS, dropFromTree: ['about/legends-and-lore/README.md'] });
     expect(shape.classes['design-contract']).toMatchObject({ declared: 0, discoveryUnknown: 1, denominator: { kind: 'unknown', reasons: ['source-uncaptured-or-unreachable'] } });
     expect(shape.classes['design-contract'].claim.epistemic.label).toBe('Unknown');
+    // PWB-RECON-12: the Unknown pillar is carried in the shape's discovery
+    // with its reason, never filtered down to the discovered ones.
+    expect(shape.discovery.map((pillar) => [pillar.key, pillar.state])).toEqual([
+      ['heart-and-soul', 'discovered'],
+      ['legends-and-lore', 'unknown'],
+      ['spec-and-spine', 'discovered'],
+      ['lay-and-land', 'discovered'],
+      ['craft-and-care', 'discovered'],
+    ]);
+    expect(shape.discovery.find((pillar) => pillar.key === 'legends-and-lore')).toEqual({
+      key: 'legends-and-lore',
+      state: 'unknown',
+      reason: 'index-missing-at-revision',
+      root: 'about/legends-and-lore',
+      indexPath: 'about/legends-and-lore/README.md',
+      ignoredLinks: [],
+    });
   });
 
   it('derives baseline identities from exact tree paths without opening or admitting their bodies', () => {

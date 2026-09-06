@@ -96,10 +96,13 @@ function withShape(model: PocModel, edit: (shape: Observed) => void): PocModel {
   return copy;
 }
 
-function replaceOnce(html: string, needle: string, replacement: string): string {
-  const at = html.indexOf(needle);
-  if (at < 0) throw new Error(`fixture page lacks ${needle}`);
-  return `${html.slice(0, at)}${replacement}${html.slice(at + needle.length)}`;
+function replaceOnce(html: string, needle: string | RegExp, replacement: string): string {
+  const match = typeof needle === 'string' ? { at: html.indexOf(needle), length: needle.length } : (() => {
+    const found = needle.exec(html);
+    return found === null ? { at: -1, length: 0 } : { at: found.index, length: found[0].length };
+  })();
+  if (match.at < 0) throw new Error(`fixture page lacks ${String(needle)}`);
+  return `${html.slice(0, match.at)}${replacement}${html.slice(match.at + match.length)}`;
 }
 
 let ready: WalkthroughPreflightInputs;
@@ -350,6 +353,35 @@ describe('walkthrough preflight: one counterexample per limb', () => {
           (shape as unknown as { discovery: unknown[] }).discovery = shape.discovery.map((pillar) => (pillar.key === 'spec-and-spine' ? { key: pillar.key, state: 'unknown', reason: 'index-missing-at-revision', root: 'about/spec-and-spine', indexPath: 'about/spec-and-spine/README.md', ignoredLinks: [] } : pillar));
         }),
       }),
+    },
+    {
+      // PWB-RECON-11: the entry names the right reason but carries another
+      // reason's route; only the route check can see it.
+      name: "an Unknown pillar whose own entry carries another reason's route",
+      limb: 'discovery-undisclosed',
+      mutate: (b) => ({
+        ...b,
+        polarisHtml: replaceOnce(b.polarisHtml, /spec-and-spine \u2014 discovered<\/span> \([^)]*\)/, 'spec-and-spine \u2014 unknown</span> (<span data-parity-field="shape-pillar-reason" data-pillar="spec-and-spine">index-missing-at-revision</span>; route: the index about/spec-and-spine/README.md could not be read: restore its body in Butlers, then a new snapshot)'),
+        model: withShape(b.model, (shape) => {
+          (shape as unknown as { discovery: unknown[] }).discovery = shape.discovery.map((pillar) => (pillar.key === 'spec-and-spine' ? { key: pillar.key, state: 'unknown', reason: 'index-missing-at-revision', root: 'about/spec-and-spine', indexPath: 'about/spec-and-spine/README.md', ignoredLinks: [] } : pillar));
+        }),
+      }),
+    },
+    {
+      // PWB-RECON-11: the route sentence is elsewhere on the page (the
+      // excluded source's route) but absent from the pillar's own entry.
+      name: 'an Unknown pillar whose own entry has no route while another route is on the page',
+      limb: 'discovery-undisclosed',
+      mutate: (b) => {
+        if (!b.polarisHtml.includes('then a new snapshot')) throw new Error('fixture page carries no route elsewhere');
+        return {
+          ...b,
+          polarisHtml: replaceOnce(b.polarisHtml, /spec-and-spine \u2014 discovered<\/span> \([^)]*\)/, 'spec-and-spine \u2014 unknown</span> (<span data-parity-field="shape-pillar-reason" data-pillar="spec-and-spine">index-missing-at-revision</span>)'),
+          model: withShape(b.model, (shape) => {
+            (shape as unknown as { discovery: unknown[] }).discovery = shape.discovery.map((pillar) => (pillar.key === 'spec-and-spine' ? { key: pillar.key, state: 'unknown', reason: 'index-missing-at-revision', root: 'about/spec-and-spine', indexPath: 'about/spec-and-spine/README.md', ignoredLinks: [] } : pillar));
+          }),
+        };
+      },
     },
     {
       name: 'a degradation state the page does not show',

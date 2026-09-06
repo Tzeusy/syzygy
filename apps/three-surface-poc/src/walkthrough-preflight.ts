@@ -17,6 +17,7 @@ import {
   PROJECT_ACCOUNT_KEYS,
   type ExtractionClass,
   type PocModel,
+  type PillarUnknownReason,
   type ProjectShape,
   type ProjectShapeClaim,
 } from '@syzygy/three-surface-poc-core';
@@ -274,9 +275,31 @@ function authorityDisclosure(shape: ProjectShape, html: string): string | undefi
   return problems.length === 0 ? undefined : problems.join('; ');
 }
 
+/** The phrase that tells one Unknown reason's route from every other's,
+ * hand-typed from the page's cause-correct routes (PWB-RECON-02) and
+ * checked inside the pillar's own entry, never page-wide (PWB-RECON-11). */
+const ROUTE_PHRASE_BY_REASON: Readonly<Record<PillarUnknownReason, string>> = {
+  'root-index-missing-at-revision': 'the root index is absent at this revision',
+  'root-index-unavailable': 'the root index could not be read',
+  'not-named-in-root-index': 'the root index names no home for this pillar',
+  'named-root-ambiguous': 'the root index names more than one home for this pillar',
+  'root-missing-at-revision': 'is absent at this revision: create it in Butlers',
+  'index-missing-at-revision': 'carries no index at',
+  'index-unavailable': 'could not be read',
+};
+
+/** The bytes of one pillar's own discovery entry: from its reason marker to
+ * the next pillar's state marker or the end of the discovery line. */
+function pillarEntry(html: string, key: string): string | undefined {
+  const start = html.indexOf(`<span data-parity-field="shape-pillar-reason" data-pillar="${key}">`);
+  if (start < 0) return undefined;
+  const candidates = [html.indexOf('data-parity-field="shape-pillar-state"', start), html.indexOf('</small>', start)].filter((at) => at > start);
+  return html.slice(start, candidates.length === 0 ? html.length : Math.min(...candidates));
+}
+
 /** PWB-RECON-02: every pillar's discovery state is on the page, every
- * Unknown pillar with its reason and a route, and the degradation state
- * when the observation carries one. */
+ * Unknown pillar with its reason and its own reason's route inside its own
+ * entry, and the degradation state when the observation carries one. */
 function discoveryDisclosure(shape: ProjectShape, html: string): string | undefined {
   if (shape.kind !== 'observed') return `no observed project shape (${shape.kind})`;
   const problems: string[] = [];
@@ -288,7 +311,9 @@ function discoveryDisclosure(shape: ProjectShape, html: string): string | undefi
     if (pillar.state === 'unknown') {
       const reason = reasons.filter((marker) => marker.attrs.includes(`data-pillar="${pillar.key}"`));
       if (reason.length !== 1 || reason[0]?.text !== pillar.reason) problems.push(`${pillar.key}: Unknown without its reason ${pillar.reason} on the page`);
-      if (!html.includes('then a new snapshot')) problems.push(`${pillar.key}: Unknown without a route`);
+      const entry = pillarEntry(html, pillar.key) ?? '';
+      const phrase = ROUTE_PHRASE_BY_REASON[pillar.reason];
+      if (!entry.includes('then a new snapshot') || !entry.includes(phrase)) problems.push(`${pillar.key}: Unknown without the ${pillar.reason} route in its own entry`);
     }
   }
   if (shape.degradation !== undefined) {

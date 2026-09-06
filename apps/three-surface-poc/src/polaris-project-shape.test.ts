@@ -1,7 +1,7 @@
 import { rmSync } from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import type { PocModel, ProjectShape, ProjectShapeClaim } from '@syzygy/three-surface-poc-core';
+import { PILLAR_UNKNOWN_REASONS, type PillarDiscovery, type PocModel, type ProjectShape, type ProjectShapeClaim } from '@syzygy/three-surface-poc-core';
 
 import { renderPolarisPage } from './polaris.js';
 import { DEEP_DIVE_MARKERS } from './test-deep-dive-markers.js';
@@ -462,6 +462,41 @@ describe('Polaris authority disclosure and discovery (gen-2 repairs PWB-RECON-01
     expect(shape.claim.epistemic.label).toBe('Unknown');
     expect(html).toContain('data-unknown-disclosure="claim:project-shape"');
   });
+
+  // PWB-RECON-10: the route for each Unknown reason, hand-typed. A reason
+  // whose route is another reason's (the reviewer's surviving mutant) fails
+  // its own row; a reason added to the closed set without a row fails the
+  // vocabulary check.
+  const UNKNOWN_PILLAR = { key: 'spec-and-spine', state: 'unknown', root: 'about/spec-and-spine', indexPath: 'about/spec-and-spine/README.md', detail: 'blob unreadable', ignoredLinks: [] } as const;
+  const ROUTE_BY_REASON: Readonly<Record<string, string>> = {
+    'root-index-missing-at-revision': 'the root index is absent at this revision, so no pillar home is named: restore it in Butlers, then a new snapshot',
+    'root-index-unavailable': 'the root index could not be read (blob unreadable): restore its body in Butlers, then a new snapshot',
+    'not-named-in-root-index': 'the root index names no home for this pillar: add its link in Butlers, then a new snapshot; or an owner gate amending the pillar set',
+    'named-root-ambiguous': 'the root index names more than one home for this pillar: keep exactly one in Butlers, then a new snapshot',
+    'root-missing-at-revision': 'the named home about/spec-and-spine is absent at this revision: create it in Butlers, then a new snapshot',
+    'index-missing-at-revision': 'the home about/spec-and-spine carries no index at about/spec-and-spine/README.md at this revision: add that index in Butlers, then a new snapshot; or an owner gate amending the discovery rule. No policy change is involved',
+    'index-unavailable': 'the index about/spec-and-spine/README.md could not be read (blob unreadable): restore its body in Butlers, then a new snapshot',
+  };
+
+  it('routes every Unknown reason by its own cause, one distinct route per reason (PWB-RECON-02)', () => {
+    expect([...PILLAR_UNKNOWN_REASONS].sort()).toEqual(Object.keys(ROUTE_BY_REASON).sort());
+    expect(new Set(Object.values(ROUTE_BY_REASON)).size).toBe(Object.keys(ROUTE_BY_REASON).length);
+  });
+
+  for (const [reason, route] of Object.entries(ROUTE_BY_REASON)) {
+    it(`routes an Unknown pillar whose reason is ${reason} to: ${route.slice(0, 40)}…`, () => {
+      const { model } = observedModel();
+      const copy = JSON.parse(JSON.stringify(model)) as PocModel;
+      if (copy.projectShape.kind !== 'observed') throw new Error(copy.projectShape.kind);
+      (copy.projectShape as unknown as { discovery: PillarDiscovery[] }).discovery = copy.projectShape.discovery.map((pillar) => (pillar.key === 'spec-and-spine' ? ({ ...UNKNOWN_PILLAR, reason } as PillarDiscovery) : pillar));
+      const html = renderPolarisPage(copy);
+      const line = /<p[^>]*data-shape-discovery[^>]*>[\s\S]*?<\/p>/.exec(html)?.[0] ?? '';
+      // The entry closes with `)` and is followed by the next entry (`; `) or the line's full stop.
+      const entry = /<span data-parity-field="shape-pillar-reason" data-pillar="spec-and-spine">([^<]*)<\/span>; route: (.*?)\)(?:; |\.<\/small>)/.exec(line);
+      expect(entry?.[1]).toBe(reason);
+      expect(entry?.[2]).toBe(route);
+    });
+  }
 
   it('discloses the degradation state when the observation is degraded, and says none was recorded when it is not', () => {
     const degraded = observedModel(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET);
