@@ -496,6 +496,36 @@ evaluated, the register says so in the same change.
   modules' with the whole battery green." Verification rule 3 says totals are
   computed — this is the gap underneath it, where a total was never any check's
   input to begin with.
+- **An obligation asserted in index prose binds nothing, and it recurred six
+  times in one round.** The round's disposition register collects the class as
+  X5: "Every obligation the packages' READMEs assert moves into a clause, a
+  generated table, or the record's act row — never index prose", against
+  RD-11 f7/f9, RD-13 f7, RD-20 B1/M1, RD-22 M1/M2 and RD-23 B1
+  (`round-2026-08d/reviews/DISPOSITION-REGISTER.md:68`). The sharpest instance
+  is RD-20 B1: the independent-acceptability condition "until the correction
+  plane is accepted" appeared exactly once in the 1,011 lines of the Wave D1
+  package, as README index prose, while RFC10-7's actual cap-lift condition
+  never mentioned the correction plane at all — so an ordinary owner act would
+  have lifted the cap with that plane unbound
+  (`round-2026-08d/reviews/DELIVERY-AND-VERDICT-REGISTER.md:59`). A README
+  stating a condition is evidence of what a drafter intended; only a clause
+  conditions anything. This is the same shape as a package banner that
+  survives the act which contradicts it, one level up.
+- **An owner-facing "never" claim needs its own sweep, in the exact words it
+  uses.** The acceptance record's §7 item 9 read "RFC 0001–0009 never cite
+  RFC-0010/0011", and two findings hit it from opposite directions. RD-19 B1
+  found it false as a *reliance* claim: RFC9-8(a) relies at clause level on
+  the RFC10-15 workspace governance store, so "the owner-attention list denies
+  the wave's only forward reliance"
+  (`round-2026-08d/reviews/DELIVERY-AND-VERDICT-REGISTER.md:58`). RD-22 m4
+  then found it false as the *citation* claim it is literally worded as — five
+  hits — while recording that its substance survives under verification rule 5
+  (`round-2026-08d/reviews/DELIVERY-AND-VERDICT-REGISTER.md:108`). Rule 5 stops
+  a citation from being read as a reliance; it does not license a summary to
+  deny either one without sweeping for it. An exact machine-checked dependency
+  graph is not evidence for a sentence the graph never reads, and an
+  attention-routing list is the worst place to be wrong: it is read precisely
+  by the owner who would otherwise have looked.
 
 ## Round 2026-08e — four passes at one parser, and the checks nobody owned (2026-08-10 → 08-13)
 
