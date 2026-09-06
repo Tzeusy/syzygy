@@ -583,6 +583,25 @@ refusal (403 `browser-origin-refused`), as three new verdict invariants
 (nineteen). The parity sweep gained the `observed-excluded` and
 `observed-undiscovered` shape states (seven) and four marker families.
 
+Reconciliation gen-2 note, recorded 2026-09-06 (bead syzygy-1z3.24.9):
+one independent fresh-context review re-opened the gen-2 repairs at
+`9b28663` against the gen-1 findings, the amended specification and a live
+clone run (`docs/reviews/2026-09-06-pwb-recovery-reconciliation-gen2-packet.md`,
+raw `docs/reviews/R-PWB-RECOVERY-RECONCILIATION-GEN2-RAW.md`). Verdict
+**CONFIRM WITH EXCEPTIONS**, gen-3 not needed: PWB-RECON-01, the page half
+of 02, 03, 06 and 07 `repaired` (each confirmed by reverting the
+implementation hunks, by the reviewer's own mutants — 16 of 19 killed — and
+by live observation on both mounts at Butlers `ec8b1f6`); 08 `open` (live
+discovery test still pins `a3dd1fe`, bead syzygy-1z3.24.11); 04, 05 and 09
+owner items, unchanged. The reviewer's clone run reproduces the retained
+gen-2 demo value for value (surface version `polaris@e64a10980701`,
+`preflight-ready` alone fails on the same three Butlers-data limbs). New
+findings PWB-RECON-10..12 are Low test-rigor gaps on the new discovery gates
+(three surviving mutants; bead syzygy-1z3.24.10) and PWB-RECON-13 notes the
+retained gen-2 mutation record stores no fragments. Owner items for 1z3.25
+now number seven: the six gen-1 items (item 6 repaired) plus whether to
+close epic syzygy-1z3.24 with the test-rigor beads outstanding.
+
 Evidence: every new test failed before its repair; rule-6 runs
 `docs/evidence/pwb-recon-gen2-repair-mutation-run-2026-09-06.json` (12/12
 killed, four preflight mutants only after a second round added one
