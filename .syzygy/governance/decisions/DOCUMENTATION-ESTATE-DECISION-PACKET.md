@@ -1,22 +1,23 @@
-# Owner decision packet — four questions about the written estate
+# Owner decision packet — five questions about the written estate
 
-> **Pending. This packet decides nothing and adopts nothing.** It states four
+> **Pending. This packet decides nothing and adopts nothing.** It states five
 > questions, gives the evidence for each, recommends an answer, and says what
-> happens if you say nothing. Register rows: **P-54 … P-57** in
-> [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md). Answer all four
+> happens if you say nothing. Register rows: **P-54 … P-58** in
+> [`PENDING-OWNER-DECISIONS.md`](PENDING-OWNER-DECISIONS.md). Answer all five
 > in one reply, or any subset; none depends on another.
 >
-> Written 2026-09-05 during a documentation consolidation pass. Nothing in
+> Written 2026-09-05 during a documentation consolidation pass; P-58 added
+> 2026-09-06 during the second pass. Nothing in
 > this packet is a change to any accepted artifact; each question exists
 > precisely because the change it asks about would land on the governed plane,
 > where only you may put it.
 
-## Why these four, and why together
+## Why these five, and why together
 
 The repository holds roughly twelve megabytes of tracked prose, most of it the
 closed record of work that is finished. A consolidation pass can safely repair
 navigation, staleness, and duplicate homes on the implementation side without
-asking you anything — and that part is done. Four items remained that an agent
+asking you anything — and that part is done. Five items remained that an agent
 may not decide, because each would write to, remove from, or restructure the
 governed plane. They are gathered here rather than raised one at a time.
 
@@ -179,11 +180,82 @@ record.
 
 ---
 
+## P-58 — The two default-path pages each name "the two rules", and they name different pairs
+
+**What is there.** Both of the project's front doors open the same way, with
+the same sentence, and then diverge.
+
+`README.md:60` says *"Two rules everything else follows from:"* and lists
+**VIS-1** (comprehensible truth, never comprehensible fiction) and **VIS-2**
+(no evidence means Unknown), each cited by identifier.
+
+`.syzygy/intent/OVERVIEW.md:22` says the same sentence and lists **"No
+evidence means Unknown"** and **"Doing the work is never proof the intent was
+satisfied."** Neither is cited by identifier.
+
+So the second door drops VIS-1 entirely, and in its place elevates a sentence
+that doctrine does not number. In `.syzygy/governance/doctrine/vision.md`,
+VIS-1 is at line 82 and VIS-2 at line 96; the "scheduled or completed work is
+never proof" clause sits at line 23, inside the preamble, and is not a
+numbered rule at all [Observed — swept 2026-09-06 by `grep -nF` for each rule
+heading in `vision.md` and for the shared sentence in both pages].
+
+**Why it matters.** This is a CC-REV-3 shadow-authority defect of the exact
+kind that policy names: the same question — *which rules is everything else
+downstream of?* — is answered in two homes, and the homes disagree. A reader
+who arrives through `OVERVIEW.md` learns a two-rule doctrine that omits the
+rule doctrine itself ranks first, and learns it without an identifier they
+could check. Neither page is wrong about doctrine's *content*; both sentences
+are true things the doctrine says. What is wrong is that each page presents
+its own pair as the closed set.
+
+CC-REV-3 also says an agent that finds one question answered in two homes
+surfaces the contradiction rather than silently picking a winner. That is what
+this item is.
+
+**Why you and not an agent.** `README.md` is on the implementation plane and
+an agent could repair it freely. `.syzygy/intent/OVERVIEW.md` cannot be
+touched: its current bytes are the prepared argument of the unperformed act
+**4, `ADOPT PROJECT OVERVIEW`**, whose row lives in
+[`contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md`](../contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md)
+line 61. Editing one word of the page regenerates that argument and retires
+any confirmation bound to it. So every repair that reaches the divergence
+costs an act argument, and choosing which page moves is choosing what act 4
+will offer.
+
+**The arms.**
+
+- **(a)** Make `OVERVIEW.md` match `README.md`: VIS-1 and VIS-2, cited by
+  identifier, with the activity-is-not-proof sentence kept where it already
+  appears in the surrounding prose rather than promoted to a rule. Costs act
+  4's argument; an agent may prepare the delta, only you may perform it.
+- **(b)** Leave `OVERVIEW.md` alone and repair `README.md` instead — drop the
+  "two rules" framing there and route to `doctrine/vision.md` for the numbered
+  set, so only one page ever claims to enumerate it. Free: `README.md` binds
+  nothing. But it leaves the uncited pair standing on the page a newcomer is
+  most likely to read first.
+- **(c)** Rule that the two pages address different audiences and may frame
+  doctrine differently, and record that as a deliberate exception to CC-REV-3
+  so the next audit does not re-raise it.
+
+**Recommendation: (a), folded into act 4 whenever you next take it up.** The
+page that will become an accepted artifact is the one that should carry
+identifiers, and "everything follows from these two" is a claim about doctrine
+that only doctrine's own numbering can settle. There is no urgency: nothing is
+gated on this, and (a) costs nothing extra if it rides along with an act you
+have not yet performed. If act 4 is not coming soon, (b) is the honest interim
+— it removes the conflicting enumeration without touching a prepared argument.
+
+**Default if unanswered:** both pages keep their own pair, and a reader's idea
+of the two founding rules depends on which door they came through.
+
+---
+
 ## What was repaired without asking
 
 For contrast, so the boundary of this packet is legible. All of the following
-were done in the same pass, on the implementation plane or as pure disclosure
-repair, and none needed an act:
+were done in the two passes that produced this packet, on the implementation
+plane or as pure disclosure repair, and none needed an act:
 
 - The candidate contract package's front page claimed no owner act had ever
   been performed over any of it, and that the accepted home did not exist.
@@ -194,3 +266,21 @@ repair, and none needed an act:
 - The historical index listed five of eleven closed rounds. It now lists all
   eleven, and resolves the twelve filenames that occur in more than one round
   — three of which begin with `FINAL-` and are not final.
+
+Added in the second pass, 2026-09-06:
+
+- The candidate contract package's front page also *denied* the two craft
+  policies that have been in force inside it since 2026-08-17
+  (**CC-SPEC-1…11** and **CC-IMPACT-1…7**, at their committed home under
+  `policy-candidates/`). The banner is corrected, the two files are named, and
+  the consequences are disclosed — including that CC-IMPACT-7 mandates a blind
+  run against a fixture a later review superseded, and that neither the clause
+  nor the fixture may be edited. `check_governance.py`'s CG-4b carried the same
+  expired premise and was fixed rather than worked around.
+- The PWB implementation plan quoted figures from two mutation runs without
+  naming the evidence files that produced them. Both are now cited by path and
+  commit; every file in `docs/evidence/` is now cited by something.
+- The PWB live-review campaign recorded fifteen findings and no index of where
+  each one is answered. `docs/reviews/2026-09-05-pwb-live-finding-traceability.md`
+  now says, per finding, which record names it — and renders **Unknown** for the
+  eight that nothing names, rather than inferring an outcome.
