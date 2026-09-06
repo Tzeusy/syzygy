@@ -602,6 +602,20 @@ retained gen-2 mutation record stores no fragments. Owner items for 1z3.25
 now number seven: the six gen-1 items (item 6 repaired) plus whether to
 close epic syzygy-1z3.24 with the test-rigor beads outstanding.
 
+Cycle report note, recorded 2026-09-06 (bead syzygy-1z3.25): task 5.3
+asks for the cycle report after the owner walkthrough (4.6), which has not
+been performed (aborted 2026-09-05 on the pre-repair head; Unknown). The
+report as far as it can be written before the walkthrough, with every
+owner decision the cycle accumulated gathered in one packet, is
+`.syzygy/governance/decisions/PWB-CYCLE-REPORT-DECISION-PACKET.md`
+(register rows P-60…P-65): the V1 colon line and the withheld roster and
+unparsed topology are the two items keeping readiness not ready; the Spec
+and Spine index, the byte headroom, the exact-source wording and whether
+to close epic syzygy-1z3.24 now are the rest; the state-(1) sentence needs
+no decision since gen-2. The confirmed code head is `9b28663` at Butlers
+`ec8b1f6`. Task 5.3 and bead syzygy-1z3.25 stay open until the walkthrough
+outcome can be added.
+
 Evidence: every new test failed before its repair; rule-6 runs
 `docs/evidence/pwb-recon-gen2-repair-mutation-run-2026-09-06.json` (12/12
 killed, four preflight mutants only after a second round added one
