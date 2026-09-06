@@ -28,6 +28,7 @@
 //
 // The daemon (`main.ts`) never imports this file.
 import { execFileSync, spawn } from 'node:child_process';
+import * as http from 'node:http';
 import { createHash } from 'node:crypto';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
@@ -35,7 +36,11 @@ import { join, resolve } from 'node:path';
 
 import type { PocModel, ProjectShape } from '@syzygy/three-surface-poc-core';
 
+import { TAILNET_HOST } from './browser-origin.js';
 import { FRESH_CHECKOUT_INVARIANTS, freshCheckoutVerdict, type FreshCheckoutParity } from './fresh-checkout-verdict.js';
+import { POLARIS_HUMAN_PATH } from './polaris.js';
+import { POLARIS_PRESENTATION_PATH } from './routes.js';
+import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { POLARIS_SOURCE_PATH, SOURCE_IDENTITY_PARAM } from './polaris-source.js';
 import { evaluateWalkthroughPreflight, presentedShapeClaims, type BrowserCheckInput, type SourceRouteOutcome } from './walkthrough-preflight.js';
 
@@ -136,6 +141,33 @@ function startDaemon(cloneDir: string, butlersRepo: string, stateDir: string): P
       reject(new Error(`daemon exited (${String(code)}) before announcing its address\nstdout:\n${out}\nstderr:\n${err}`));
     });
   });
+}
+
+/** A request with explicit Host and Origin headers — the Fetch API drops a
+ * set Host header, so the tailnet-mount and foreign-Origin probes
+ * (PWB-RECON-07) go through `node:http` directly. */
+function requestWithHeaders(baseUrl: string, path: string, headers: Readonly<Record<string, string>>): Promise<{ readonly status: number; readonly body: Uint8Array; readonly contentType: string }> {
+  const target = new URL(`${baseUrl}${path}`);
+  return new Promise((resolvePromise, reject) => {
+    const request = http.request({ hostname: target.hostname, port: target.port, path: `${target.pathname}${target.search}`, method: 'GET', headers: { ...headers } }, (response) => {
+      const chunks: Buffer[] = [];
+      response.on('data', (chunk: Buffer) => chunks.push(chunk));
+      response.on('end', () => resolvePromise({ status: response.statusCode ?? 0, body: new Uint8Array(Buffer.concat(chunks)), contentType: response.headers['content-type'] ?? '' }));
+    });
+    request.on('error', reject);
+    request.end();
+  });
+}
+
+function countDisclosureMarkers(html: string): number {
+  return html.split('data-parity-field="authority-disclosure"').length - 1;
+}
+
+/** Every internal link on a tailnet-mounted page carries the mount prefix
+ * (a root-relative one resolves to the wrong host in the browser). */
+function internalLinksPrefixed(html: string): boolean {
+  const hrefs = Array.from(html.matchAll(/href="(\/[^"]*)"/g), (match) => match[1] as string);
+  return hrefs.length > 0 && hrefs.every((href) => href === TAILNET_MOUNT_PREFIX || href.startsWith(`${TAILNET_MOUNT_PREFIX}/`));
 }
 
 async function fetchRoute(baseUrl: string, path: string, token?: string): Promise<{ readonly status: number; readonly body: Uint8Array; readonly contentType: string }> {
@@ -371,6 +403,32 @@ async function main(): Promise<number> {
     routes.push({ path: '/api/poc', authenticated: true, status: machine.status, contentType: machine.contentType, bytes: machine.body.byteLength, sha256: retain('api-poc.json', machine.body), retainedAs: 'api-poc.json' });
     const model = JSON.parse(new TextDecoder().decode(machine.body)) as PocModel;
 
+    // PWB-RECON-07 probes: the tailnet mount (by Host, the one signal that
+    // survives `tailscale serve`), the machine presentation envelope, and a
+    // foreign-Origin refusal.
+    const tailnet = await requestWithHeaders(daemon.baseUrl, POLARIS_HUMAN_PATH, { Host: TAILNET_HOST, Origin: `https://${TAILNET_HOST}` });
+    const tailnetHtml = new TextDecoder().decode(tailnet.body);
+    routes.push({ path: POLARIS_HUMAN_PATH, host: TAILNET_HOST, status: tailnet.status, contentType: tailnet.contentType, bytes: tailnet.body.byteLength, sha256: retain('polaris-tailnet.html', tailnet.body), retainedAs: 'polaris-tailnet.html', prefixedLinks: internalLinksPrefixed(tailnetHtml), disclosureMarkers: countDisclosureMarkers(tailnetHtml) });
+    const presentationRefused = await fetchRoute(daemon.baseUrl, POLARIS_PRESENTATION_PATH);
+    routes.push({ path: POLARIS_PRESENTATION_PATH, authenticated: false, status: presentationRefused.status, bytes: presentationRefused.body.byteLength });
+    const presentation = await fetchRoute(daemon.baseUrl, POLARIS_PRESENTATION_PATH, token);
+    let presentationEnvelope: { kind?: unknown; citable?: unknown } = {};
+    try {
+      presentationEnvelope = JSON.parse(new TextDecoder().decode(presentation.body)) as { kind?: unknown; citable?: unknown };
+    } catch {
+      presentationEnvelope = {};
+    }
+    routes.push({ path: POLARIS_PRESENTATION_PATH, authenticated: true, status: presentation.status, contentType: presentation.contentType, bytes: presentation.body.byteLength, sha256: retain('api-poc-polaris.json', presentation.body), retainedAs: 'api-poc-polaris.json', kind: presentationEnvelope.kind ?? null, citable: presentationEnvelope.citable ?? null });
+    const foreignOrigin = await requestWithHeaders(daemon.baseUrl, POLARIS_HUMAN_PATH, { Host: new URL(daemon.baseUrl).host, Origin: 'https://example.invalid' });
+    let foreignOriginReason = '';
+    try {
+      foreignOriginReason = String((JSON.parse(new TextDecoder().decode(foreignOrigin.body)) as { reason?: unknown }).reason ?? '');
+    } catch {
+      foreignOriginReason = '';
+    }
+    routes.push({ path: POLARIS_HUMAN_PATH, origin: 'https://example.invalid', status: foreignOrigin.status, bytes: foreignOrigin.body.byteLength, reason: foreignOriginReason });
+    say(`probes: tailnet mount ${tailnet.status} (${internalLinksPrefixed(tailnetHtml) ? 'links prefixed' : 'a root-relative link'}, ${countDisclosureMarkers(tailnetHtml)} disclosures); presentation ${presentationRefused.status}/${presentation.status} ${String(presentationEnvelope.kind ?? 'no kind')}; foreign origin ${foreignOrigin.status} ${foreignOriginReason || 'no reason'}`);
+
     // Parity: the same served Polaris bytes the record retains, every claim
     // tuple against the machine answer's claim of that id.
     const polarisHtml = new TextDecoder().decode(polarisBytes);
@@ -406,6 +464,16 @@ async function main(): Promise<number> {
       // Every linked identity must be served; an unlinked page yields no
       // source status, which the verdict treats as not served.
       sourceRouteStatus: sourceRouteStatuses.length === 0 ? 0 : sourceRouteStatuses.every((status) => status === 200) ? 200 : (sourceRouteStatuses.find((status) => status !== 200) as number),
+      tailnetMountStatus: tailnet.status,
+      tailnetMountPrefixedLinks: internalLinksPrefixed(tailnetHtml),
+      tailnetDisclosureMarkers: countDisclosureMarkers(tailnetHtml),
+      directDisclosureMarkers: countDisclosureMarkers(polarisHtml),
+      presentationRefusedStatus: presentationRefused.status,
+      presentationStatus: presentation.status,
+      presentationKind: typeof presentationEnvelope.kind === 'string' ? presentationEnvelope.kind : '',
+      presentationCitable: typeof presentationEnvelope.citable === 'boolean' ? presentationEnvelope.citable : null,
+      foreignOriginStatus: foreignOrigin.status,
+      foreignOriginReason,
       daemonObservedRevision: daemon.observedRevision,
       modelRevision: model.project.revision,
       shapeKind: shape.kind,
@@ -419,7 +487,7 @@ async function main(): Promise<number> {
     };
 
     const evidence = {
-      task: 'syzygy-1z3.21 (PWB task 4.5); exit gate and preflight syzygy-1z3.24.6',
+      task: 'syzygy-1z3.21 (PWB task 4.5); exit gate and preflight syzygy-1z3.24.6; mount, envelope and Origin probes syzygy-1z3.24.8',
       kind: 'fresh-checkout demonstration against the configured Butlers revision',
       capturedAt: new Date().toISOString(),
       node: process.version,

@@ -21,6 +21,9 @@ export const FRESH_CHECKOUT_INVARIANTS = [
   'machine-served-with-credential',
   'human-routes-served',
   'source-route-served',
+  'tailnet-mount-served',
+  'presentation-served-with-credential',
+  'browser-origin-refused',
   'butlers-revision-matches-model',
   'shape-observed',
   'authority-admits',
@@ -57,6 +60,23 @@ export interface FreshCheckoutInvariants {
   /** Status of every human route fetched (`/`, `/polaris`, …); must be nonempty. */
   readonly humanRouteStatuses: readonly number[];
   readonly sourceRouteStatus: number;
+  /** PWB-RECON-07 probes. The tailnet mount is the Polaris page fetched
+   * with the tailnet Host header `tailscale serve` forwards: it must be
+   * served, every internal link must carry the mount prefix, and it must
+   * disclose exactly as many authority sentences as the direct page. */
+  readonly tailnetMountStatus: number;
+  readonly tailnetMountPrefixedLinks: boolean;
+  readonly tailnetDisclosureMarkers: number;
+  readonly directDisclosureMarkers: number;
+  /** The machine presentation envelope: refused without the credential,
+   * served with it as the presentation kind, never citable. */
+  readonly presentationRefusedStatus: number;
+  readonly presentationStatus: number;
+  readonly presentationKind: string;
+  readonly presentationCitable: boolean | null;
+  /** A browser request carrying a foreign Origin is refused by reason. */
+  readonly foreignOriginStatus: number;
+  readonly foreignOriginReason: string;
   readonly daemonObservedRevision: string;
   readonly modelRevision: string;
   readonly shapeKind: string;
@@ -92,6 +112,9 @@ export function freshCheckoutVerdict(inputs: FreshCheckoutInvariants): FreshChec
   check('machine-served-with-credential', inputs.machineStatus === 200);
   check('human-routes-served', inputs.humanRouteStatuses.length > 0 && inputs.humanRouteStatuses.every((status) => status === 200));
   check('source-route-served', inputs.sourceRouteStatus === 200);
+  check('tailnet-mount-served', inputs.tailnetMountStatus === 200 && inputs.tailnetMountPrefixedLinks && inputs.directDisclosureMarkers > 0 && inputs.tailnetDisclosureMarkers === inputs.directDisclosureMarkers);
+  check('presentation-served-with-credential', inputs.presentationRefusedStatus === 401 && inputs.presentationStatus === 200 && inputs.presentationKind === 'polaris-presentation' && inputs.presentationCitable === false);
+  check('browser-origin-refused', inputs.foreignOriginStatus === 403 && inputs.foreignOriginReason === 'browser-origin-refused');
   check('butlers-revision-matches-model', HEX_REVISION.test(inputs.daemonObservedRevision) && inputs.daemonObservedRevision === inputs.modelRevision);
   check('shape-observed', inputs.shapeKind === 'observed');
   check('authority-admits', inputs.authorityAdmits === true);
