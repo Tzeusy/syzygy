@@ -1,0 +1,142 @@
+{
+ "subject": "PWB-RECON-01/02/03 gen-2 repairs (bead syzygy-1z3.24.8): rule-6 mutations of the walkthrough-preflight authority-disclosure-missing and discovery-undisclosed limbs, pwbSurfaceVersion over both surface trees, and the core project-shape discovery field",
+ "commit": "c2d75c8",
+ "method": "For each mutation: apply the exact-fragment replacement to the subject file, run the named vitest files, restore the original bytes and verify sha256 equality. Killed = at least one test failed. A first round at cff7e15 left four preflight mutants alive; c2d75c8 added one counterexample per survivor and this run re-ran all twelve.",
+ "firstRound": {
+  "commit": "cff7e15",
+  "killed": 8,
+  "survived": [
+   "preflight-authority-ignores-count",
+   "preflight-authority-ignores-text",
+   "preflight-authority-any-sentence-for-state-1",
+   "preflight-discovery-ignores-reason"
+  ]
+ },
+ "results": [
+  {
+   "id": "preflight-authority-ignores-count",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-authority-ignores-text",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-authority-any-sentence-for-state-1",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-authority-unobserved-passes",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-discovery-ignores-state",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-discovery-ignores-reason",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-discovery-ignores-degradation",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "preflight-discovery-unobserved-passes",
+   "file": "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "surface-version-app-tree-only",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-inputs.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 4,
+   "exitCode": 1
+  },
+  {
+   "id": "surface-version-core-failure-ignored",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-inputs.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "surface-version-core-nonhex-accepted",
+   "file": "apps/three-surface-poc/src/walkthrough-inputs.ts",
+   "tests": [
+    "apps/three-surface-poc/src/walkthrough-inputs.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  },
+  {
+   "id": "model-discovery-empty",
+   "file": "packages/three-surface-poc-core/src/project-shape-model.ts",
+   "tests": [
+    "packages/three-surface-poc-core/src/project-shape-model.test.ts"
+   ],
+   "killed": true,
+   "failingTests": 1,
+   "exitCode": 1
+  }
+ ],
+ "summary": {
+  "mutations": 12,
+  "killed": 12,
+  "survived": 0
+ }
+}

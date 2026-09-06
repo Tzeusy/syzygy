@@ -1,0 +1,940 @@
+{
+  "subject": "PWB mutation sweep — task 4.2 (docs/PWB-IMPLEMENTATION-PLAN.md; PWB-REQ-001/002/003/004/005/010/012/020/022)",
+  "date": "2026-09-06",
+  "commit": "c2d75c80ab21a87b7e92c0a5a0ff712a71fdfa46",
+  "uncommittedChanges": [],
+  "method": "For each group: run its test files green as the baseline; for each mutation write exactly one predicate disabling or exact-fragment replacement into the subject, run the same test files with the vitest JSON reporter, restore the original bytes and verify sha256 equality. Killed = at least one test failed and every named must-fail test is among the failures.",
+  "sourceDigestsBefore": {
+    "apps/three-surface-poc/src/polaris.ts": "87c81eb7d55ce7b1b1ea0085ecd48637a31c563ec0b0b30aaa0c220b70c95106",
+    "apps/three-surface-poc/src/trajectory.ts": "0a60017ede866a060885db035b82ec142d4b442c244dc47ebc3b96b60b1c6f82",
+    "apps/three-surface-poc/src/orrery.ts": "8e96af68029148938b070eb2817ded28e881ceb976bf637e9611f0bcfdac3d4d",
+    "apps/three-surface-poc/src/exact-tables.ts": "fd52777ed3ac9275a6f9393abd4732cd5a535eccf7a244c2ff81a9241a755bee"
+  },
+  "sourceDigestsAfter": {
+    "apps/three-surface-poc/src/polaris.ts": "87c81eb7d55ce7b1b1ea0085ecd48637a31c563ec0b0b30aaa0c220b70c95106",
+    "apps/three-surface-poc/src/trajectory.ts": "0a60017ede866a060885db035b82ec142d4b442c244dc47ebc3b96b60b1c6f82",
+    "apps/three-surface-poc/src/orrery.ts": "8e96af68029148938b070eb2817ded28e881ceb976bf637e9611f0bcfdac3d4d",
+    "apps/three-surface-poc/src/exact-tables.ts": "fd52777ed3ac9275a6f9393abd4732cd5a535eccf7a244c2ff81a9241a755bee"
+  },
+  "classes": {
+    "source-denominator": {
+      "planned": 0,
+      "killed": 0
+    },
+    "coverage-partition": {
+      "planned": 0,
+      "killed": 0
+    },
+    "precedence-guard": {
+      "planned": 0,
+      "killed": 0
+    },
+    "secret-sentinel": {
+      "planned": 0,
+      "killed": 0
+    },
+    "capability-first-regression": {
+      "planned": 0,
+      "killed": 0
+    },
+    "meta-copy-prohibition": {
+      "planned": 0,
+      "killed": 0
+    },
+    "admission-invalid-cases": {
+      "planned": 0,
+      "killed": 0
+    },
+    "judgment-invalid-cases": {
+      "planned": 0,
+      "killed": 0
+    },
+    "parity-markers": {
+      "planned": 32,
+      "killed": 32
+    }
+  },
+  "groups": [
+    {
+      "id": "parity-markers",
+      "sweepClass": "parity-markers",
+      "requirement": "PWB-REQ-020",
+      "description": "a rendered parity marker is renamed or dropped so the human answer no longer resolves to the machine answer",
+      "testFiles": [
+        "apps/three-surface-poc/src/polaris.test.ts",
+        "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+        "apps/three-surface-poc/src/trajectory.test.ts",
+        "apps/three-surface-poc/src/orrery.test.ts",
+        "apps/three-surface-poc/src/routes.test.ts",
+        "apps/three-surface-poc/src/polaris-parity-sweep.test.ts"
+      ],
+      "baseline": {
+        "total": 82,
+        "passed": 82,
+        "failed": 0
+      },
+      "predicateSites": 0,
+      "literalMutations": 32,
+      "planned": 32,
+      "killed": 32,
+      "survived": 0,
+      "mutations": [
+        {
+          "id": "polaris-fact-marker-missing",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "fact/missing: the source-path marker is renamed so the source facts drop out of the human channel",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 57,
+            "failed": 25
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-fact-marker-duplicated",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "fact/duplicated: every source row is rendered twice",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 43,
+            "failed": 39
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-fact-marker-changed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "fact/changed: the rendered source path is not the machine path",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 58,
+            "failed": 24
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-fact-marker-collapsed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "fact/collapsed: sources sharing a pillar directory collapse into one row",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 56,
+            "failed": 26
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-fact-marker-wrong-evaluation",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "fact/wrong-evaluation: the observation digest shown is the manifest digest of another stage",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 58,
+            "failed": 24
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-authority-state-missing",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "authority-state/missing: the first authority is not rendered",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 44,
+            "failed": 38
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-authority-state-duplicated",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "authority-state/duplicated: every authority is rendered twice",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 44,
+            "failed": 38
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-authority-state-changed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "authority-state/changed: the state word shown is not the machine state",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 46,
+            "failed": 36
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-authority-state-collapsed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "authority-state/collapsed: authorities sharing a state collapse into one marker",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 50,
+            "failed": 32
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-authority-state-wrong-evaluation",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "authority-state/wrong-evaluation: the authority line names the evaluation instant where the evaluation id belongs",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 46,
+            "failed": 36
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-authority-disclosure-missing",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "authority-disclosure/missing: the disclosure marker is renamed so the sentence drops out of the human channel",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 44,
+            "failed": 38
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-authority-disclosure-changed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "authority-disclosure/changed: the sentence shown is not the evaluation's sentence",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 44,
+            "failed": 38
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-pillar-state-missing",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "shape-pillar-state/missing: the first pillar is not rendered",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 57,
+            "failed": 25
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-pillar-state-changed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "shape-pillar-state/changed: every pillar is shown discovered whatever the model holds",
+          "mustFail": [
+            "observed-undiscovered shape / not-evaluated judgment",
+            "discloses every pillar's discovery state, and a missing pillar index with its reason and a cause-correct route"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 69,
+            "failed": 13
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-undiscovered shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-undiscovered shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-pillar-reason-changed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "shape-pillar-reason/changed: the reason marker carries the state word where the reason belongs",
+          "mustFail": [
+            "observed-undiscovered shape / not-evaluated judgment",
+            "discloses every pillar's discovery state, and a missing pillar index with its reason and a cause-correct route"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 69,
+            "failed": 13
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-undiscovered shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-undiscovered shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-degradation-missing",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "shape-degradation-state/missing: a degraded observation is rendered as though none was recorded",
+          "mustFail": [
+            "observed-excluded shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 68,
+            "failed": 14
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-undiscovered shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-undiscovered shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-judgment-state-missing",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "judgment-state/missing: the judgment kind marker is renamed",
+          "mustFail": [
+            "observed shape / lawful-state-1 judgment",
+            "observed shape / unlawful judgment",
+            "observed shape / absent-run-record judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 47,
+            "failed": 35
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / unlawful judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-judgment-state-duplicated",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "judgment-state/duplicated: every traversed path is rendered twice",
+          "mustFail": [
+            "observed shape / lawful-state-1 judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 67,
+            "failed": 15
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-judgment-state-changed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "judgment-state/changed: the kind word shown is not the machine kind",
+          "mustFail": [
+            "observed shape / lawful-state-1 judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 68,
+            "failed": 14
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-judgment-state-collapsed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "judgment-state/collapsed: repeated traversed paths collapse into one",
+          "mustFail": [
+            "observed shape / lawful-state-1 judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 67,
+            "failed": 15
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-judgment-state-wrong-evaluation",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "judgment-state/wrong-evaluation: the judgment names the model snapshot label where its own evaluation id belongs",
+          "mustFail": [
+            "observed shape / lawful-state-1 judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 47,
+            "failed": 35
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / unlawful judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-disclosure-missing",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "disclosure/missing: the state disclosure loses its marker",
+          "mustFail": [
+            "observed shape / lawful-state-1 judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 67,
+            "failed": 15
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-disclosure-duplicated",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "disclosure/duplicated: the state disclosure is rendered twice",
+          "mustFail": [
+            "observed shape / lawful-state-1 judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 67,
+            "failed": 15
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-disclosure-changed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "disclosure/changed: the disclosure sentence shown is not the machine sentence",
+          "mustFail": [
+            "observed shape / lawful-state-1 judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 74,
+            "failed": 8
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observation-failed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-excluded shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-undiscovered shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep the observed-degraded / lawful-state-2 matrix cell carries every marker family with a non-empty denominator, and state (2) alone claims independent verification"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-disclosure-collapsed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "disclosure/collapsed: Unknown relationship disclosures sharing a reason collapse into one",
+          "mustFail": [
+            "observed shape / not-evaluated judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 39,
+            "failed": 43
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-disclosure-wrong-evaluation",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "disclosure/wrong-evaluation: the judgment disclosure is bound to the model as-of instant instead of its own evaluation instant",
+          "mustFail": [
+            "observed shape / lawful-state-1 judgment"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 47,
+            "failed": 35
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / unlawful judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-provenance-revision-marker-renamed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "the capability-item provenance revision marker is renamed",
+          "mustFail": [
+            "moves the capability slice below the catalog"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 39,
+            "failed": 43
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-evaluated shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep not-admitted shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-shape-anchor-marker-dropped",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "the project-shape anchor marker is dropped from every citation",
+          "mustFail": [
+            "reaches the exact source from every observed statement"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 56,
+            "failed": 26
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "polaris-shape-anchor-digest-truncated",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/polaris.ts",
+          "description": "the anchor digest shown differs from the exact digest the machine answer carries",
+          "mustFail": [
+            "reaches the exact source from every observed statement"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 57,
+            "failed": 25
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed shape / lawful-state-2 judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+            "PWB-REQ-020 exhaustive Polaris parity sweep observed-degraded shape / absent-run-record judgment: every marker family matches the machine answer as a multiset"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "trajectory-work-item-status-marker-renamed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/trajectory.ts",
+          "description": "the work-item status marker is renamed",
+          "mustFail": [
+            "places every rendered item in the column"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 80,
+            "failed": 2
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "Trajectory places every rendered item in the column its declared status mapping assigns (POC-REQ-040)",
+            "Trajectory never renders closure/activity as verification satisfaction (POC-REQ-043)"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "orrery-unmapped-count-marker-renamed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/orrery.ts",
+          "description": "the unmapped-count marker is renamed",
+          "mustFail": [
+            "reconciles declared mapped and unmapped counts"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 81,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "Orrery reconciles declared mapped and unmapped counts against the observed total (POC-REQ-051)"
+          ],
+          "killed": true,
+          "restored": true
+        },
+        {
+          "id": "home-provenance-kind-marker-renamed",
+          "kind": "literal",
+          "file": "apps/three-surface-poc/src/exact-tables.ts",
+          "description": "the exact-table provenance kind marker is renamed",
+          "mustFail": [
+            "serves one model through human and authenticated machine views"
+          ],
+          "observed": {
+            "total": 82,
+            "passed": 81,
+            "failed": 1
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "three-surface POC routes serves one model through human and authenticated machine views"
+          ],
+          "killed": true,
+          "restored": true
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "groups": 1,
+    "planned": 32,
+    "killed": 32,
+    "survived": 0,
+    "restoreFailures": 0
+  }
+}

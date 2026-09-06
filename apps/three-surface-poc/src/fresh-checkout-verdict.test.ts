@@ -20,6 +20,16 @@ function healthy(): FreshCheckoutInvariants {
     machineStatus: 200,
     humanRouteStatuses: [200, 200, 200, 200],
     sourceRouteStatus: 200,
+    tailnetMountStatus: 200,
+    tailnetMountPrefixedLinks: true,
+    tailnetDisclosureMarkers: 3,
+    directDisclosureMarkers: 3,
+    presentationRefusedStatus: 401,
+    presentationStatus: 200,
+    presentationKind: 'polaris-presentation',
+    presentationCitable: false,
+    foreignOriginStatus: 403,
+    foreignOriginReason: 'browser-origin-refused',
     daemonObservedRevision: REVISION,
     modelRevision: REVISION,
     shapeKind: 'observed',
@@ -44,6 +54,17 @@ const COUNTEREXAMPLES: readonly { readonly name: string; readonly invariant: Fre
   { name: 'one human route failed', invariant: 'human-routes-served', mutate: (b) => ({ ...b, humanRouteStatuses: [200, 500, 200, 200] }) },
   { name: 'no human route was fetched at all', invariant: 'human-routes-served', mutate: (b) => ({ ...b, humanRouteStatuses: [] }) },
   { name: 'the exact-source route failed', invariant: 'source-route-served', mutate: (b) => ({ ...b, sourceRouteStatus: 404 }) },
+  { name: 'the tailnet-Host request was refused', invariant: 'tailnet-mount-served', mutate: (b) => ({ ...b, tailnetMountStatus: 403 }) },
+  { name: 'the tailnet page carries a root-relative internal link', invariant: 'tailnet-mount-served', mutate: (b) => ({ ...b, tailnetMountPrefixedLinks: false }) },
+  { name: 'the tailnet page discloses fewer authority sentences than the direct page', invariant: 'tailnet-mount-served', mutate: (b) => ({ ...b, tailnetDisclosureMarkers: 2 }) },
+  { name: 'neither page discloses an authority sentence', invariant: 'tailnet-mount-served', mutate: (b) => ({ ...b, tailnetDisclosureMarkers: 0, directDisclosureMarkers: 0 }) },
+  { name: 'the presentation envelope was served without a credential', invariant: 'presentation-served-with-credential', mutate: (b) => ({ ...b, presentationRefusedStatus: 200 }) },
+  { name: 'the presentation envelope refused the credential', invariant: 'presentation-served-with-credential', mutate: (b) => ({ ...b, presentationStatus: 401 }) },
+  { name: 'the presentation envelope is of another kind', invariant: 'presentation-served-with-credential', mutate: (b) => ({ ...b, presentationKind: 'poc-model' }) },
+  { name: 'the presentation envelope claims to be citable', invariant: 'presentation-served-with-credential', mutate: (b) => ({ ...b, presentationCitable: true }) },
+  { name: 'the presentation envelope carries no citable flag', invariant: 'presentation-served-with-credential', mutate: (b) => ({ ...b, presentationCitable: null }) },
+  { name: 'a foreign-Origin browser request was served', invariant: 'browser-origin-refused', mutate: (b) => ({ ...b, foreignOriginStatus: 200 }) },
+  { name: 'a foreign-Origin browser request was refused for another reason', invariant: 'browser-origin-refused', mutate: (b) => ({ ...b, foreignOriginReason: 'credential-missing' }) },
   { name: 'the daemon observed a different Butlers revision than the model carries', invariant: 'butlers-revision-matches-model', mutate: (b) => ({ ...b, daemonObservedRevision: 'b'.repeat(40) }) },
   { name: 'the observed revision is not a revision', invariant: 'butlers-revision-matches-model', mutate: (b) => ({ ...b, daemonObservedRevision: 'unknown', modelRevision: 'unknown' }) },
   { name: 'the shape was not observed', invariant: 'shape-observed', mutate: (b) => ({ ...b, shapeKind: 'not-admitted' }) },
@@ -84,6 +105,6 @@ describe('freshCheckoutVerdict', () => {
   it('the counterexample table covers every exported invariant', () => {
     const covered = new Set(COUNTEREXAMPLES.map((example) => example.invariant));
     expect([...FRESH_CHECKOUT_INVARIANTS].filter((invariant) => !covered.has(invariant))).toEqual([]);
-    expect(FRESH_CHECKOUT_INVARIANTS).toHaveLength(16);
+    expect(FRESH_CHECKOUT_INVARIANTS).toHaveLength(19);
   });
 });

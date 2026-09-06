@@ -70,6 +70,8 @@ interface FakeTree {
   failLifecycleList?: boolean;
   readonly unreadablePaths: Set<string>;
   readonly invalidUtf8Paths: Set<string>;
+  /** Listed by the directory but ENOENT on read (a record that disappeared between enumeration and read). */
+  readonly vanishedPaths: Set<string>;
 }
 
 function fakeTree(): FakeTree {
@@ -88,7 +90,7 @@ function fakeTree(): FakeTree {
   for (const kind of ['consent', 'policy', 'registry'] as const) {
     taggedRecords.set(`${tags.get(expectations.authorities[kind].recordingTag)}:${PWB_ACT_RECORDS[kind]}`, files.get(PWB_ACT_RECORDS[kind]) ?? '');
   }
-  return { files, tags, treePaths: new Set(Object.values(PWB_ACT_RECORDS)), taggedRecords, unreadablePaths: new Set(), invalidUtf8Paths: new Set() };
+  return { files, tags, treePaths: new Set(Object.values(PWB_ACT_RECORDS)), taggedRecords, unreadablePaths: new Set(), invalidUtf8Paths: new Set(), vanishedPaths: new Set() };
 }
 
 function loaderFor(tree: FakeTree, fromGitTree = false) {
@@ -96,6 +98,7 @@ function loaderFor(tree: FakeTree, fromGitTree = false) {
   const relative = (absolute: string): string => absolute.slice(`${root}/`.length);
   const bytesAt = (path: string): Uint8Array => {
     if (tree.unreadablePaths.has(path)) throw Object.assign(new Error('EACCES'), { code: 'EACCES' });
+    if (tree.vanishedPaths.has(path)) throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' });
     if (tree.invalidUtf8Paths.has(path)) return new Uint8Array([0xff]);
     const text = tree.files.get(path);
     if (text === undefined) throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' });
@@ -198,14 +201,18 @@ describe('loadBodyReadAuthorityInputs (hermetic)', () => {
     expect(evaluation.consent.kind === 'invalid' && evaluation.consent.caseId).toBe('consent:recording-tag-mismatched');
   });
 
-  it.each(['list', 'read', 'decode'] as const)('fails closed when lifecycle %s fails', (failure) => {
+  // `vanish`: PWB-RECON-06 — a record the enumeration listed but the read
+  // cannot find is aborted, never skipped (skipping would silently drop a
+  // later revocation from the lifecycle).
+  it.each(['list', 'read', 'decode', 'vanish'] as const)('fails closed when lifecycle %s fails', (failure) => {
     const tree = fakeTree();
     const other = '.syzygy/governance/decisions/OTHER.md';
     tree.files.set(other, '# Other decision\n');
     if (failure === 'list') tree.failLifecycleList = true;
     if (failure === 'read') tree.unreadablePaths.add(other);
     if (failure === 'decode') tree.invalidUtf8Paths.add(other);
-    expect(() => loaderFor(tree)).toThrow();
+    if (failure === 'vanish') tree.vanishedPaths.add(other);
+    expect(() => loaderFor(tree)).toThrow(failure === 'vanish' ? /lifecycle record disappeared/ : undefined);
   });
 
   it('aborts lifecycle loading on invalid UTF-8 from the exact governance Git tree', () => {
