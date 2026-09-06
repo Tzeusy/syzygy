@@ -16,9 +16,22 @@
 > find nothing at its head telling them the round is closed. Treat **the
 > directory name as the banner**: everything under a `round-*` path is a
 > closed round record and is never authority, whatever its own head does or
-> does not say. Fixing this file by file is not an agent's to do — it is 96
-> edits inside the governed plane, and some of those files are bound by a
+> does not say. Fixing this file by file is not an agent's to do — those are
+> edits inside the governed plane, and some of the files are bound by a
 > performed act's manifest.
+>
+> **Corrected at the sentence, 2026-09-06.** The clause above read "it is 96
+> edits inside the governed plane". It is not: **74 of the 96** are raw
+> reviewer output inside a round's `reviews/` subdirectory, which CC-REV-6
+> stores unchanged whatever anyone authorizes; two more are digest-bound
+> (`round-2026-08/OWNER-ROUND-CHARTER.md`, and
+> `round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md`, pinned by path and
+> digest by in-force CC-IMPACT-7); and
+> `round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.md` is regenerated and
+> byte-compared by CI. **19 remain reachable.** The figure 96 measures how
+> many heads a reader may open without a banner — which is what it is for —
+> and not how much work anyone could do about it. `ROUND-ESTATE.md` carries
+> the split.
 >
 > **Repaired at the directory level, 2026-09-06.** The sentence above read
 > "and only `round-2026-08/` has a directory-level `README.md` at all" until

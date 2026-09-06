@@ -26,12 +26,32 @@ them are easy to get wrong:
   contents.** `round-2026-08g` took two files seventeen days after it closed.
 - **"Historical" never means "safe to relocate."** Two round files are live
   inputs to running software; both are named below.
-- **96 of the 235 Markdown round files carry no status word at their head**
-  (the denominator is derived under "How many files are in here"). Every round
-  directory now has a `README.md` saying the round is closed, but those 96
-  file heads are unchanged and an agent may not change them — some are bound
-  by a performed act's manifest (`syzygy-3zi` states the lawful shapes). Read
-  the `round-*` path itself as the banner.
+- **96 of the 235 Markdown round files carry no status word at their head** —
+  no *historical*, *superseded*, *candidate*, *never authority* or similar
+  anywhere in their first fifteen lines. The denominator is derived under
+  "How many files are in here"; the fifteen-line window and that word set are
+  the whole predicate, and a sweep using a different window gets a different
+  number. Every round directory now has a `README.md` saying the round is
+  closed, but those 96 file heads are unchanged. Read the `round-*` path
+  itself as the banner.
+
+  **The 96 is not a to-do list, and it is mostly not actionable by anyone**
+  [Observed — swept 2026-09-06 under the predicate above, then each of the 22
+  non-review files hashed and its digest searched across all tracked
+  `.syzygy/**` and `openspec/**`]. **74 of the 96** sit inside a round's
+  `reviews/` subdirectory and are raw reviewer output, which CC-REV-6 stores
+  unchanged — no owner authorization reaches them, because the rule that
+  protects them is not about authority. **Two more are digest-bound:**
+  `round-2026-08/OWNER-ROUND-CHARTER.md`, whose digest its own round README
+  and `round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md` both carry, and
+  `round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md`, which in-force
+  **CC-IMPACT-7** pins by path *and* digest for a blind exercise. **One more
+  is byte-checked by CI:** `round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.md`
+  is regenerated from its sibling JSON and compared, so a banner in it fails
+  `.github/workflows/governance-docs.yml`. That leaves **19** files that a
+  head-banner act could lawfully reach, out of a figure reading 96. Anyone
+  weighing that act should weigh 19 edits against eleven directory READMEs
+  that already exist — which is why `syzygy-3zi` closed on arm (a).
 
 ## The eleven rounds
 

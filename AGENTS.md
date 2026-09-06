@@ -338,7 +338,14 @@ added 2026-09-06.
 - Every `round-*` directory now carries a `README.md` naming what the round
   settled, where that settlement lives now, and its live-input cautions;
   `contracts/candidates/ROUND-ESTATE.md` is the route across all eleven. The
-  96 unbannered *file* heads inside them are unchanged and need an owner act.
+  96 unbannered *file* heads inside them are unchanged — but **only 19 of the
+  96 could ever be banner-marked**, and the other 77 are not an owner's to
+  authorize: 74 are raw reviewer output under a round's `reviews/`
+  subdirectory (CC-REV-6 stores raw output unchanged, which is not a question
+  of authority), two are digest-bound, and one is regenerated and
+  byte-compared by CI. A count of unbannered heads measures what a reader may
+  open, never how much work is available; check what protects each file before
+  costing a pass over a population.
 - `docs/README.md`'s review-campaign table is ten rows over every file in
   `docs/reviews/`, each row carrying its last verdict of record and where the
   findings landed. It is re-derived, not maintained: the count moved 88 → 90
