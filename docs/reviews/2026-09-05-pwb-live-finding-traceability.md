@@ -80,4 +80,36 @@ A reconciliation review under `syzygy-1z3.24.7` is deriving those dispositions
 in fresh context; when its raw output is retained, the disposition question
 belongs to that record, and this page should cite it rather than answer it.
 
+## The reviewer identifiers the packet renumbered
+
+One of the three raw reviews numbered its own findings. `PWB-UX-1` … `PWB-UX-4`
+are the UX reviewer's identifiers, assigned in
+[`R-PWB-LIVE-EXACT-HEAD-UX-RAW.md`](R-PWB-LIVE-EXACT-HEAD-UX-RAW.md), and the
+packet re-numbered them into the `PWB-LIVE-*` series without recording which
+became which. A reader asking "was `PWB-UX-4` repaired?" therefore found the
+identifier in exactly one file — the raw review that raised it — and nowhere
+else in the repository [Observed — 2026-09-06: all four searched as literals
+across every tracked `.md`, `.py`, `.ts` and `.jsonl`, and again in the
+continuation forms this corpus uses; the only hits are inside that raw review].
+CC-REV-7 amends identifiers in place and retires rather than renumbers, so the
+crosswalk belongs somewhere, and this page is the somewhere.
+
+| Reviewer ID | Severity as raised | Packet ID | The overlap the mapping rests on |
+|---|---|---|---|
+| `PWB-UX-1` | BLOCKER | `PWB-LIVE-02` | "No `heart-and-soul` path appears anywhere in the rendered source population" (`:153-154`, line-wrapped) against the packet's "the source delta is seven omitted Heart and Soul paths" |
+| `PWB-UX-2` | BLOCKER | `PWB-LIVE-06` | Both titles state the same defect — the reviewer's is "never reaches exact requirement text" (`:202`), the packet's "links stop at metadata and production cannot render a verbatim current requirement", each about the `Exact source` link |
+| `PWB-UX-3` | HIGH | `PWB-LIVE-13` | "the useful story is buried under its index" (`:248`) against "Page hierarchy exposes exhaustive inventories by default" |
+| `PWB-UX-4` | HIGH | `PWB-LIVE-13` | "Resolution copy sends the owner to the wrong gate" (`:297`), whose two limbs — `missing-declaration` routed to owner drafting, and one generic policy route for 141 exclusion claims — are the packet row's second and third clauses verbatim |
+
+Two of the four landed in one packet row, so the series is not a relabelling
+and cannot be read as one. The mapping above is `[Inferred]` — it is read off
+the overlapping text, because no record states it — and it is navigation, not
+a disposition: `PWB-LIVE-13`'s repair child is `syzygy-1z3.24.5`, and whether
+either UX finding is closed is still the reconciliation review's answer.
+
+The other two raw reviews numbered nothing. `R-PWB-LIVE-EXACT-HEAD-TRUTH-RAW.md`
+and `R-PWB-LIVE-EXACT-HEAD-ENGINEERING-RAW.md` head their findings with bare
+severity words (`### BLOCKER`, `### HIGH`), so for those the packet's numbering
+is the first numbering and nothing was renumbered.
+
 Tracked as `syzygy-qzo`, a child of `syzygy-1z3.24`.

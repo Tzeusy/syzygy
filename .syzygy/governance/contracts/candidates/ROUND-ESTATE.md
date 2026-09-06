@@ -42,6 +42,27 @@ them are easy to get wrong:
 | `round-2026-08j` | 08-18 | 6 | The repair pass after launch-gate Administration 1 returned `NOT READY`; three Unknown verdicts (B5, C2, D3) settled by dedicated measurement rather than prose | The three reports and their two sweep scripts are the settlements of record, tied together by `ADMINISTRATION-1-DISPOSITION-REGISTER.md` over `decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json` |
 | `round-2026-08k` | 08-20 → 08-21 | 8 | The Capability 1 specification adoption and implementation-authorization acts, prepared and bound; five fresh-context reviews | `decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md` and `decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md`, both in force. The two `*-PREPARED.md` files here are literally the packets those acts performed from |
 
+## One finding that outlived the packet it was routed to
+
+Round `2026-08c` recorded its own sharpest unrepaired finding — facets permit
+**intra**-facet rollup and forbid **inter**-facet rollup, with no stated
+principle distinguishing them (B-4/B-6, `HUMAN-CLARITY-CLOSURE-REPORT.md:154`
+over `reviews/RD-2-human-clarity-RAW.md:346`) — and routed it to owner
+**packet 6**. Packet 6 was later struck as stale
+(`round-2026-08d/OWNER-DECISION-PACKETS.md:21`, "Do not act from packet 6
+below"), and no row in `decisions/PENDING-OWNER-DECISIONS.md` inherited the
+question [Observed — 2026-09-06, `intra-facet` and `rollup` swept as literals
+across `.syzygy/`, `openspec/`, `docs/` and the root pages; the only hits for
+the finding are the two round files above].
+
+The adopted Capability 1 specification now speaks to both halves:
+**CAP1-REQ-030** defines each facet as a question plus its constituent facts,
+and **CAP1-REQ-031** prohibits any composite over the answers. `[Inferred]`
+that is the distinction the finding asked for — a facet's own aggregation is
+definitional, a cross-facet one is derived — but neither clause states it as a
+principle, and no record says B-6 was answered. Read the two clauses before
+concluding either way; do not treat this paragraph as the disposition.
+
 ## The two round files that running software reads
 
 Neither may be moved, renamed or deleted without breaking something.
