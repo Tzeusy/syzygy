@@ -338,6 +338,15 @@ Added in the second pass, 2026-09-06:
 - The PWB implementation plan quoted figures from two mutation runs without
   naming the evidence files that produced them. Both are now cited by path and
   commit; every file in `docs/evidence/` is now cited by something.
+
+  *Qualified, dated 2026-09-06:* that claim was true, but only under a sweep
+  that matched filename **stems**. One of the two citations had been written
+  across a line break — `…-2026-09-05.` ending one line and `json` opening
+  the next — so a sweep matching whole filenames read that file as uncited.
+  Both sweeps were correct and the citation existed throughout. The wrap is
+  repaired, and the lesson is in `AGENTS.md`: these pages are hard-wrapped at
+  78 columns, so a reflow that breaks inside a code span puts an unmeasured
+  error term under every absence figure in the repository.
 - The PWB live-review campaign recorded fifteen findings and no index of where
   each one is answered. `docs/reviews/2026-09-05-pwb-live-finding-traceability.md`
   now says, per finding, which record names it, which reviewer identifier the
@@ -351,3 +360,40 @@ Added in the second pass, 2026-09-06:
   pattern over thirteen sources, **fifteen of fifteen are named**, each by
   exactly one repair child. The lesson is `AGENTS.md` verification rule 9's:
   an absence claim's denominator must cover the *forms* an identifier takes.
+
+Added in the third and fourth passes, 2026-09-06:
+
+- Eight prose files in three prepared act packages asserted their own
+  inertness about transactions the owner had already performed. Each now
+  opens with a dated **PERFORMED** note citing the act record by path; the
+  pre-act banner stays beneath it, unedited, as the drafter's record. The
+  seven bound files in those packages were left byte-identical, including one
+  that will permanently read "Candidate — binds nothing" about a transaction
+  performed 2026-09-01, because its own sibling manifest carries its digest.
+- The eleven work rounds had four different file counts in circulation across
+  four pages. `contracts/candidates/ROUND-ESTATE.md` now derives all four from
+  one table and proves them mutually consistent, and the pages that quoted a
+  figure point at it instead of copying one.
+- `decisions/launch-gate/README.md` said "Empty today, correctly: no formal
+  administration has been run" for nineteen days after Administration 1 landed
+  in that directory with its generated report and validation transcript. It
+  also stated a filename convention the one record never followed and did not
+  say the JSON is canonical while the Markdown is generated. Marked at the
+  stale sentences, dated; the superseded text is kept because a stored review
+  quotes it verbatim as evidence of this project's epistemic discipline.
+- All seven raw reports under `contracts/candidates/reviews/` read as uncited
+  by any basename sweep, because their index titles its sections by short name
+  ("rev10-boundary") and never by filename. That index may not be edited — an
+  act package's impact ledger classifies it as raw-review evidence never
+  rewritten to current semantics, and that ledger is bound — so the mapping
+  from filename to verdict of record to disposition section was added to
+  `contracts/candidates/README.md` instead.
+- The count of unbannered round-file heads (96) was being read as a work
+  estimate. Only **19** of the 96 are reachable by any act: 74 are raw
+  reviewer output that CC-REV-6 protects regardless of authorization, two are
+  digest-bound, and one is byte-compared by CI. Published on `ROUND-ESTATE.md`
+  and corrected at the sentence in `HISTORICAL-INDEX.md`.
+
+**No new question came out of these two passes.** Everything above was either
+implementation-plane or pure disclosure repair. The register rows this packet
+owns are still P-54 … P-59, unanswered.
