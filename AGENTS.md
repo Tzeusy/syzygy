@@ -330,9 +330,11 @@ lessons added the same day; second and third docs-pass lessons added
   settled, where that settlement lives now, and its live-input cautions;
   `contracts/candidates/ROUND-ESTATE.md` is the route across all eleven. The
   96 unbannered *file* heads inside them are unchanged and need an owner act.
-- `docs/README.md`'s review-campaign table is ten rows over 88 files, each row
-  carrying its last verdict of record and where the findings landed. It is
-  re-derived, not maintained: rerun the partition rather than trusting a row.
+- `docs/README.md`'s review-campaign table is ten rows over every file in
+  `docs/reviews/`, each row carrying its last verdict of record and where the
+  findings landed. It is re-derived, not maintained: the count moved 88 → 90
+  within a day of being written, so rerun the partition rather than trusting a
+  row.
 
 ### Known gaps
 

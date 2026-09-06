@@ -50,10 +50,12 @@ the repair is a new disposition that cites it.
 | `R-PWB-LIVE-*`, `*-pwb-live-*` | 5 | 2026-09-05 | The live implementation at its exact head — truth, denominator, secret-exposure, parity, copy and comprehension | Fifteen findings PWB-LIVE-01…15 across three raw reviews, plus the traceability index over them. Their dispositions are not in this campaign; they are in the row below |
 | `R-PWB-RECOVERY-*`, `*-pwb-recovery-*` | 4 | 2026-09-06 | The recovery of those fifteen findings: a gen-1 reconciliation packet with its raw review, then a gen-2 reconciliation of the repairs it required, with its raw review | Gen-1 `**CONFIRM WITH EXCEPTIONS.**` (`2026-09-06-pwb-recovery-reconciliation-packet.md:21`) — all fifteen `repaired`, nine residues PWB-RECON-01…09. Gen-2 `**CONFIRM WITH EXCEPTIONS.**` (`2026-09-06-pwb-recovery-reconciliation-gen2-packet.md:24`) — the three required repairs confirmed, gen-3 not needed, four Low/Info residues PWB-RECON-10…13 as ordinary beads. This closes the PWB-LIVE cycle's repair half; §5.3 of the spec's task list (report the cycle to the owner) is still open |
 
-The ten rows partition the directory: 88 files on disk, 88 assigned, no
-remainder [Observed — swept 2026-09-06 by a script that asserts each basename
-matches at most one campaign pattern and prints the unmatched remainder; dates
-are `git log --diff-filter=A`]. These are navigation figures, not measurement,
+The ten rows partition the directory: 90 files on disk, 90 assigned, no
+remainder [Observed — swept by a script that asserts each basename matches at
+most one campaign pattern and prints the unmatched remainder; re-run 2026-09-06
+after the gen-2 reconciliation added two files to the last row, which is why
+this figure reads 90 and not the 88 of the morning; dates are
+`git log --diff-filter=A`]. These are navigation figures, not measurement,
 and they go stale the moment a review lands — re-derive rather than trusting
 the row.
 
@@ -104,6 +106,22 @@ Each file is one run's machine output at a named commit, kept because a claim
 elsewhere cites it. A mutation-run record is valid **only for the commit it
 names** (`AGENTS.md` verification rule 7). Reading the file's own contents is
 the check; the filename is not the evidence.
+
+**This directory has no index of its own, and does not need one:
+`PWB-IMPLEMENTATION-PLAN.md` is the index.** Every file here is cited, and 25
+of the 28 are cited by that plan, at the task whose evidence they are — so the
+route in is the plan's task, never a listing of this directory. The three the
+plan does not name are the three a *reviewer* produced rather than a task
+(`…-gen2-reviewer.json`, `pwb-recon-gen1-reviewer-…`,
+`pwb-recon-gen2-reviewer-…`); the reconciliation packets in `reviews/` cite
+those, which is the correct home for a reviewer's own run. [Observed — swept
+2026-09-06: 28 files, each basename and stem searched across every tracked
+`.md`, `.py`, `.ts`, `.json`, `.yml`, `.txt` and `.sh` outside this directory;
+28 cited, 0 uncited, 25 cited by the plan, remainder enumerated above.]
+
+A JSON here does not say whether the work it evidences is finished — a run
+that passed at a commit says nothing about the finding a later review raised
+against the same seam. `bd show` and `PROJECT-STATUS.md` own that.
 
 ## The maintenance contract
 
