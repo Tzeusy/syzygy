@@ -312,6 +312,9 @@ function summarizeShape(shape: ProjectShape): Record<string, unknown> {
         exclusions: shape.exclusions.length,
         limitBreaches: shape.limitBreaches.length,
         degradation: shape.degradation ?? null,
+        // Phase A's discovery outcome per pillar (PWB-RECON-02): the cause of
+        // a whole-shape Unknown is recorded here, as the page renders it.
+        discovery: shape.discovery.map((pillar) => (pillar.state === 'discovered' ? { key: pillar.key, state: pillar.state, indexPath: pillar.indexPath, namedSources: pillar.namedSources } : { key: pillar.key, state: pillar.state, reason: pillar.reason, root: pillar.root, indexPath: pillar.indexPath })),
         contradictions: shape.contradictions.length,
         claim,
       };
