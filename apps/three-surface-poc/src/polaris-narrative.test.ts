@@ -199,11 +199,13 @@ describe('Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9)',
           // Durable identity: never a bare path, label or coordinate.
           expect(anchor.targetId).toMatch(/^(sha256:[0-9a-f]{64}|git-tree:[0-9a-f]{40}|beads-dolt:.+|[a-z-]+:(sha256:[0-9a-f]{64}|.+)|[^/\s]+@[0-9a-f]{40}:.+#.+)$/);
           expect(anchor.targetId).not.toMatch(/\.[a-z]+:\d+$/); // never path:line
+          // The citation names the anchor by id alone; class, target, supported
+          // claims and captured state are read from the machine record under
+          // that id (asserted above and below), never restated on the cite.
           const cite = new RegExp(`<cite[^>]*data-anchor-id="${anchor.anchorId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[^>]*>`).exec(unit.inner)?.[0];
           expect(cite, `${variant}: anchor ${anchor.anchorId} not rendered in its block`).toBeDefined();
-          expect(attr(cite as string, 'data-anchor-class')).toBe(anchor.targetClass);
-          expect(attr(cite as string, 'data-anchor-target')).toBe(anchor.targetId);
-          expect((attr(cite as string, 'data-anchor-for') as string).split('\t')).toEqual([...anchor.supports]);
+          expect((cite as string).match(/\sdata-anchor-[a-z]+=/g)).toEqual([' data-anchor-id=']);
+          expect(anchor.anchorId.startsWith(`${blockId}#a`)).toBe(true);
           // Captured target state equals the machine claim's state at capture.
           const claim = claims.get(anchor.supports[0] as string);
           if (claim !== undefined) {
@@ -213,7 +215,6 @@ describe('Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9)',
           } else {
             expect(anchor.captured.label).toBe('Observed');
           }
-          expect(attr(cite as string, 'data-anchor-label')).toBe(anchor.captured.label);
         }
         const citesInBlock = unit.inner.match(/data-anchor-id="/g)?.length ?? 0;
         expect(citesInBlock, `${variant}: ${blockId} renders a cite that is not in its anchor set`).toBe(block.anchors.length);

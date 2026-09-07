@@ -155,8 +155,8 @@ function sourceRef(path: string, text: string): string {
 /** A horizontally scrollable table region is a keyboard stop of its own
  * (tabindex 0) named by the heading above it, so a keyboard-only reader can
  * scroll a wide table without a pointer. */
-function tableRegion(labelledBy: string, table: string): string {
-  return `<div class="table-scroll" role="region" tabindex="0" aria-labelledby="${escapeHtml(labelledBy)}">${table}</div>`;
+function tableRegion(labelledBy: string, table: string, attrs = ''): string {
+  return `<div class="table-scroll" role="region" tabindex="0" aria-labelledby="${escapeHtml(labelledBy)}"${attrs}>${table}</div>`;
 }
 
 function registry(): NarrativeRegistry {
@@ -187,8 +187,13 @@ function anchoredBlock(blockId: string, claims: readonly AnchoredClaim[]): { rea
   return { attrs: `${ANCHORED} data-narrative-block="${escapeHtml(blockId)}"`, anchors: block.anchors };
 }
 
+/** The human citation names its anchor by id only. The anchor record itself
+ * (target class, durable target identity, revision, supported claims and the
+ * captured label/tier/reason) lives once, frozen, in the page's narrative
+ * script under that id — the machine form PWB-REQ-014 binds — and is not
+ * restated on every `<cite>` (byte-ceiling trim, syzygy-1z3.27). */
 function anchorAttrs(anchor: NarrativeAnchor): string {
-  return ` data-anchor-id="${escapeHtml(anchor.anchorId)}" data-anchor-class="${anchor.targetClass}" data-anchor-target="${escapeHtml(anchor.targetId)}" data-anchor-revision="${escapeHtml(anchor.revision)}" data-anchor-for="${escapeHtml(anchor.supports.join('\t'))}" data-anchor-label="${escapeHtml(anchor.captured.label)}" data-anchor-tier="${escapeHtml(anchor.captured.tier)}" data-anchor-reason="${escapeHtml(anchor.captured.reason)}"`;
+  return ` data-anchor-id="${escapeHtml(anchor.anchorId)}"`;
 }
 
 function entityCaptured(epistemic: { readonly label: string; readonly reason?: string }): CapturedTargetState {
@@ -369,7 +374,7 @@ function population(kind: 'items' | 'exclusions', key: string, count: number, la
 
 /** The exact-source route link for one admitted baseline spec identity. */
 function exactTextLink(identity: string): string {
-  return `<a href="${escapeHtml(sourceRouteHref(activeMountPrefix, identity))}" data-source-route="${escapeHtml(identity)}"${copyAttr('label.exact-text')}>${copy('label.exact-text')}</a>`;
+  return `<a href="${escapeHtml(sourceRouteHref(activeMountPrefix, identity))}"${copyAttr('label.exact-text')}>${copy('label.exact-text')}</a>`;
 }
 
 function tupleLine(claim: ProjectShapeClaim): string {
@@ -503,11 +508,10 @@ function itemRow(item: ProjectShapeItem, revision: string): string {
   const statement = block !== undefined
     ? `<span data-claim-provenance="${escapeHtml(item.claim.claimId)}">${escapeHtml(item.statement ?? item.key)}</span>${supportCitations(item.claim.support, block.anchors)}${exact}`
     : unknownRoutes(item.claim, '');
-  return `<tr data-polaris-item="${escapeHtml(item.claim.claimId)}">
-    <td${FACT}><code>${escapeHtml(item.key)}</code></td>
-    <td${block?.attrs ?? FACT}>${statement}</td>
-    <td${DISCLOSURE}>${claimTuple(item.claim)}</td>
-  </tr>`;
+  // The key cell takes the table region's role (declared once on the region,
+  // classBlock); the tuple cell holds only the tuple span, which declares its
+  // own. The declared cell is the row's one narrative unit.
+  return `<tr data-polaris-item="${escapeHtml(item.claim.claimId)}"><td><code>${escapeHtml(item.key)}</code></td><td${block?.attrs ?? FACT}>${statement}</td><td>${claimTuple(item.claim)}</td></tr>`;
 }
 
 export function denominatorText(aggregate: Pick<ProjectShapeClassAggregate, 'denominator' | 'modeled' | 'unknown' | 'contradicted' | 'sourcesWithUnknownDenominator'>): string {
@@ -533,10 +537,7 @@ function classBlock(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: Ext
     ? ''
     : items.length === 0
       ? `<p${copyAttr('sentence.no-items')}><small>${copy('sentence.no-items')}</small></p>`
-      : population('items', cls, items.length, 'label.show-items', tableRegion(`polaris-class-${cls}`, `<table>
-        <thead><tr><th scope="col"${copyAttr('table.key')}>${copy('table.key')}</th><th scope="col"${copyAttr('table.declared')}>${copy('table.declared')}</th><th scope="col"${copyAttr('table.epistemic-state')}>${copy('table.epistemic-state')}</th></tr></thead>
-        <tbody>${items.map((item) => itemRow(item, shape.identity.revision)).join('')}</tbody>
-      </table>`));
+      : population('items', cls, items.length, 'label.show-items', tableRegion(`polaris-class-${cls}`, `<table><thead><tr><th scope="col"${copyAttr('table.key')}>${copy('table.key')}</th><th scope="col"${copyAttr('table.declared')}>${copy('table.declared')}</th><th scope="col"${copyAttr('table.epistemic-state')}>${copy('table.epistemic-state')}</th></tr></thead><tbody>${items.map((item) => itemRow(item, shape.identity.revision)).join('')}</tbody></table>`, FACT));
   const summary = aggregate.claim.epistemic.label === 'Observed'
     ? ((): string => {
         const block = shapeClaimBlock(aggregate.claim, shape.identity.revision);
@@ -763,14 +764,7 @@ function sourceRow(source: ProjectShapeSource, index: number, revision: string):
   const denominator = source.itemDenominator.kind === 'known'
     ? `${source.itemDenominator.value} item(s)`
     : `${copyText('label.unknown')} — ${source.itemDenominator.unknown.unknownReason}`;
-  return `<tr id="polaris-source-${escapeHtml(sourceSlug(source.path))}" data-polaris-source="${escapeHtml(source.claim.claimId)}"${block?.attrs ?? FACT}>
-    <td>${index + 1}</td>
-    <td><code data-parity-field="shape-source-path">${escapeHtml(source.path)}</code><br>${identityCell}${activeExactSources.has(source.identity) ? `<br>${exactTextLink(source.identity)}` : ''}</td>
-    <td>${escapeHtml(source.rule)}${source.pillar === undefined ? '' : ` · ${escapeHtml(source.pillar)}`}</td>
-    <td>${escapeHtml(outcome)} · ${escapeHtml(anchorText(source.anchor))}</td>
-    <td>${digest === undefined ? `<small${copyAttr('sentence.no-body-read')}>${copy('sentence.no-body-read')}</small>` : `<code data-parity-field="shape-source-digest">${escapeHtml(shortDigest(digest))}</code>`}</td>
-    <td>${source.claim.epistemic.label === 'Observed' ? `<span data-claim-provenance="${escapeHtml(source.claim.claimId)}">${escapeHtml(denominator)}</span>` : unknownRoutes(source.claim, '')}<br>${claimTuple(source.claim)}</td>
-  </tr>`;
+  return `<tr id="polaris-source-${escapeHtml(sourceSlug(source.path))}" data-polaris-source="${escapeHtml(source.claim.claimId)}"${block?.attrs ?? FACT}><td>${index + 1}</td><td><code data-parity-field="shape-source-path">${escapeHtml(source.path)}</code><br>${identityCell}${activeExactSources.has(source.identity) ? `<br>${exactTextLink(source.identity)}` : ''}</td><td>${escapeHtml(source.rule)}${source.pillar === undefined ? '' : ` · ${escapeHtml(source.pillar)}`}</td><td>${escapeHtml(outcome)} · ${escapeHtml(anchorText(source.anchor))}</td><td>${digest === undefined ? `<small${copyAttr('sentence.no-body-read')}>${copy('sentence.no-body-read')}</small>` : `<code data-parity-field="shape-source-digest">${escapeHtml(shortDigest(digest))}</code>`}</td><td>${source.claim.epistemic.label === 'Observed' ? `<span data-claim-provenance="${escapeHtml(source.claim.claimId)}">${escapeHtml(denominator)}</span>` : unknownRoutes(source.claim, '')}<br>${claimTuple(source.claim)}</td></tr>`;
 }
 
 function exclusionItem(exclusion: Exclusion): string {
@@ -947,10 +941,7 @@ function shapeEvidence(shape: ProjectShape): string {
   </section>
   <section class="claim-section wide" data-polaris-section="shape:sources">
     ${heading(3, 'polaris-shape-sources', 'evidence.sources')}
-    ${tableRegion('polaris-shape-sources', `<table>
-      <thead><tr>${(['table.index', 'table.source', 'table.rule', 'table.outcome', 'table.digest', 'table.items'] as const).map((id) => `<th scope="col"${copyAttr(id)}>${copy(id)}</th>`).join('')}</tr></thead>
-      <tbody>${shape.sources.map((source, index) => sourceRow(source, index, shape.identity.revision)).join('')}</tbody>
-    </table>`)}
+    ${tableRegion('polaris-shape-sources', `<table><thead><tr>${(['table.index', 'table.source', 'table.rule', 'table.outcome', 'table.digest', 'table.items'] as const).map((id) => `<th scope="col"${copyAttr(id)}>${copy(id)}</th>`).join('')}</tr></thead><tbody>${shape.sources.map((source, index) => sourceRow(source, index, shape.identity.revision)).join('')}</tbody></table>`)}
   </section>
   <section class="claim-section" data-polaris-section="shape:exclusions">
     ${heading(3, 'polaris-shape-exclusions', 'evidence.exclusions')}
@@ -1276,7 +1267,7 @@ function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): st
       ...dives.flatMap((dive) => {
         const leaf = currentIntentLeaf(dive.currentIntent, revision);
         return leaf !== undefined && activeExactSources.has(leaf.identity)
-          ? [`<a href="${escapeHtml(sourceRouteHref(activeMountPrefix, leaf.identity))}" data-source-route="${escapeHtml(leaf.identity)}" data-depth-source="${escapeHtml(dive.capabilityId)}"${copyAttr('label.exact-text')}>${copy('label.exact-text')}</a>`]
+          ? [`<a href="${escapeHtml(sourceRouteHref(activeMountPrefix, leaf.identity))}" data-depth-source="${escapeHtml(dive.capabilityId)}"${copyAttr('label.exact-text')}>${copy('label.exact-text')}</a>`]
           : [];
       }),
     ]],

@@ -42,6 +42,15 @@ export function sourceRouteHref(mountPrefix: string, identity: string): string {
   return `${withMountPrefix(mountPrefix, POLARIS_SOURCE_PATH)}?${SOURCE_IDENTITY_PARAM}=${encodeURIComponent(identity)}`;
 }
 
+/** Every identity a served page links to the route, in document order with
+ * repeats, read back from the links' own `href` (the one carrier of the
+ * identity; no attribute restates it). The inverse of `sourceRouteHref`
+ * under either mount. */
+export function sourceRouteIdentities(html: string): string[] {
+  const pattern = new RegExp(`href="[^"]*${POLARIS_SOURCE_PATH.replace(/\//g, '\\/')}\\?${SOURCE_IDENTITY_PARAM}=([^"&]*)"`, 'g');
+  return Array.from(html.matchAll(pattern), (match) => decodeURIComponent((match[1] as string).replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>')));
+}
+
 export type SourceRouteResolution =
   | { readonly kind: 'rendered'; readonly path: string; readonly resolution: Extract<VerbatimResolution, { kind: 'rendered' }> }
   | { readonly kind: 'not-rendered'; readonly path: string | undefined; readonly reason: string; readonly route: string; readonly detail: string };

@@ -204,11 +204,11 @@ describe('Polaris progressive disclosure (PWB-REQ-011 as amended; PWB-LIVE-13)',
   it('reaches at least one requirement and one scenario verbatim from a first reading without treating Polaris as authority: the current-authority citation routes to the exact text and names the owning artifact', () => {
     const { html } = observed(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC);
     const detail = html.slice(html.indexOf('data-polaris-group="capability-detail"'), html.indexOf('data-polaris-group="evidence-and-gaps"'));
-    const links = [...detail.matchAll(/<a href="([^"]+)" data-source-route="([^"]+)"[^>]*>Exact text<\/a>/g)];
+    const links = [...detail.matchAll(/<a href="([^"]+)"[^>]*>Exact text<\/a>/g)];
     expect(links.length).toBeGreaterThan(0);
     for (const link of links) {
       expect(decode(link[1] as string)).toContain('/polaris/source?identity=');
-      expect(decode(link[2] as string)).toContain('openspec/specs/');
+      expect(decodeURIComponent(decode(link[1] as string).split('identity=')[1] as string)).toContain('openspec/specs/');
     }
     // No requirement text is copied onto the page itself: the page cites and
     // routes, the route renders (PWB-REQ-011 non-goal: no copied source).

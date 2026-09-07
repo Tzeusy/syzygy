@@ -24,6 +24,7 @@ import {
 
 import { currentIntentLeaf } from './capability-detail.js';
 import { copyText } from './polaris-copy.js';
+import { sourceRouteIdentities } from './polaris-source.js';
 
 export const PREFLIGHT_LIMBS = [
   'account-statement-unbacked',
@@ -173,7 +174,7 @@ function exactRequirement(model: PocModel, shape: Observed, html: string, routes
   const requirementsOnPage = count(html, 'data-verbatim-requirement="');
   if (renderedOnPage < 1) problems.push('no verbatim block rendered on the page');
   if (requirementsOnPage < 1) problems.push('no requirement rendered on the page');
-  if (count(html, `data-source-route="${encode(leaf.identity)}"`) < 1) problems.push('the page does not link the exact-source route for the current requirement');
+  if (!sourceRouteIdentities(html).includes(leaf.identity)) problems.push('the page does not link the exact-source route for the current requirement');
   const route = routes.get(leaf.identity);
   let requirements = 0;
   if (route === undefined) problems.push('the exact-source route was not checked');
@@ -226,7 +227,7 @@ function claimStrength(shape: ProjectShape, html: string): { readonly failure: s
 
 function sourcePaths(html: string, routes: ReadonlyMap<string, SourceRouteOutcome>): { readonly failure: string | undefined; readonly linked: number; readonly fragments: number } {
   const problems: string[] = [];
-  const identities = [...new Set(attrValues(html, 'data-source-route'))];
+  const identities = [...new Set(sourceRouteIdentities(html))];
   for (const identity of identities) {
     const route = routes.get(identity);
     if (route === undefined) problems.push(`${identity}: route not checked`);

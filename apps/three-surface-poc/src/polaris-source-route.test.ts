@@ -19,7 +19,7 @@ import { PWB_RESOURCE_LIMITS, type PocModel, type ProjectShape } from '@syzygy/t
 
 import { TAILNET_HOST } from './browser-origin.js';
 import { exactSourceIdentities, renderPolarisPage } from './polaris.js';
-import { POLARIS_SOURCE_PATH, POLARIS_SOURCE_TAILNET_PATH, renderPolarisSourcePage, resolveSourceRoute, sourceRouteHref, sourceSlug } from './polaris-source.js';
+import { POLARIS_SOURCE_PATH, POLARIS_SOURCE_TAILNET_PATH, renderPolarisSourcePage, resolveSourceRoute, sourceRouteHref, sourceRouteIdentities, sourceSlug } from './polaris-source.js';
 import { pocRoutes } from './routes.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { fetchWithHost } from './test-http-client.js';
@@ -192,7 +192,7 @@ describe('Polaris exact-source route (PWB-REQ-011 as amended; RFC7-1, RFC7-13)',
   it('links to the route from the page only for admitted baseline-spec identities: each source row, item row, current-authority citation and depth-list dive names the same href', () => {
     const { model, identity } = observed();
     const html = renderPolarisPage(model);
-    const linked = [...html.matchAll(/data-source-route="([^"]+)"/g)].map((match) => decode(match[1] as string));
+    const linked = sourceRouteIdentities(html);
     expect(linked.length).toBeGreaterThanOrEqual(3);
     // Both fixture baseline specs are admitted and routed; nothing else is.
     const admitted = exactSourceIdentities(model.projectShape);
@@ -200,15 +200,16 @@ describe('Polaris exact-source route (PWB-REQ-011 as amended; RFC7-1, RFC7-13)',
     expect(new Set(linked)).toEqual(admitted);
     expect(linked).toContain(identity);
     expect(sourceRouteHref('', identity)).toBe(`${POLARIS_SOURCE_PATH}?identity=${encodeURIComponent(identity)}`);
-    const anchors = [...html.matchAll(/<a href="([^"]+)" data-source-route="([^"]*)"[^>]*>([^<]*)<\/a>/g)];
+    // The href is the one carrier of the identity: it round-trips exactly.
+    const anchors = [...html.matchAll(/<a href="([^"]*\/polaris\/source\?identity=[^"]*)"[^>]*>([^<]*)<\/a>/g)];
     expect(anchors.length).toBe(linked.length);
-    for (const anchor of anchors) {
-      expect(decode(anchor[1] as string)).toBe(sourceRouteHref('', decode(anchor[2] as string)));
-      expect(anchor[3]).toBe('Exact text');
-    }
+    anchors.forEach((anchor, index) => {
+      expect(decode(anchor[1] as string)).toBe(sourceRouteHref('', linked[index] as string));
+      expect(anchor[2]).toBe('Exact text');
+    });
     // The source row, the item rows of the baseline spec, and the depth list.
     const sourceRow = html.slice(html.indexOf(`id="polaris-source-${sourceSlug(PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH)}"`));
-    expect(sourceRow.slice(0, sourceRow.indexOf('</tr>'))).toContain('data-source-route=');
+    expect(sourceRouteIdentities(sourceRow.slice(0, sourceRow.indexOf('</tr>')))).toEqual([identity]);
     expect(html).toMatch(/data-depth-source="[^"]+"/);
     // No other source (the root index, the layer indexes) is routed: a tree
     // with no baseline spec carries no route link at all.
@@ -216,7 +217,7 @@ describe('Polaris exact-source route (PWB-REQ-011 as amended; RFC7-1, RFC7-13)',
     const withoutSpec = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(withoutSpecs) } });
     expect(withoutSpec.projectShape.kind).toBe('observed');
     expect(exactSourceIdentities(withoutSpec.projectShape).size).toBe(0);
-    expect(renderPolarisPage(withoutSpec)).not.toContain('data-source-route=');
+    expect(sourceRouteIdentities(renderPolarisPage(withoutSpec))).toEqual([]);
   });
 
   it('serves the route human-open: direct GET renders the text, the tailnet Host rebinds the back link, a browser origin off the allow-list gets 403 and nothing, a script in the identity is escaped, and the human ceiling fails closed', async () => {
