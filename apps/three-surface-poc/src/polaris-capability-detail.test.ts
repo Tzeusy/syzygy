@@ -332,7 +332,7 @@ describe('Polaris capability deep dive bands (PWB-REQ-015; RFC7-17)', () => {
     const digests = [machine.proposedWork.proposal.digest, machine.proposedWork.delta.digest];
     for (const digest of digests) {
       expect(proposal.inner).toContain(`data-proposal-artifact="${digest}"`);
-      expect(html).not.toContain(`data-anchor-target="${digest}"`);
+      expect(html).not.toContain(`#${digest}`);
     }
     const narrative = parseNarrativeScript(html);
     for (const block of narrative.blocks) {

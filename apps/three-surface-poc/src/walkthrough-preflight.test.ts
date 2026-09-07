@@ -12,7 +12,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
 import { renderPolarisPage } from './polaris.js';
-import { resolveSourceRoute } from './polaris-source.js';
+import { resolveSourceRoute, sourceRouteIdentities } from './polaris-source.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import {
   ADMITTING_AUTHORITY,
@@ -72,7 +72,7 @@ function inputsFor(texts: Readonly<Record<string, string>>): WalkthroughPrefligh
   const reader = verbatimRouteReader(model, blobReaderFor(texts));
   const polarisHtml = renderPolarisPage(model, '', {}, { verbatim: reader });
   const sourceRoutes = new Map<string, SourceRouteOutcome>();
-  for (const identity of new Set(Array.from(polarisHtml.matchAll(/data-source-route="([^"]*)"/g), (match) => match[1] as string))) {
+  for (const identity of new Set(sourceRouteIdentities(polarisHtml))) {
     const resolved = resolveSourceRoute(model, identity, reader);
     sourceRoutes.set(identity, resolved.kind === 'rendered' ? { state: 'rendered', requirements: resolved.resolution.requirements.length } : { state: 'not-rendered', reason: resolved.reason });
   }

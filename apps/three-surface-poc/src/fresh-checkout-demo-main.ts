@@ -41,7 +41,7 @@ import { FRESH_CHECKOUT_INVARIANTS, freshCheckoutVerdict, type FreshCheckoutPari
 import { POLARIS_HUMAN_PATH } from './polaris.js';
 import { POLARIS_PRESENTATION_PATH } from './routes.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
-import { POLARIS_SOURCE_PATH, SOURCE_IDENTITY_PARAM } from './polaris-source.js';
+import { POLARIS_SOURCE_PATH, SOURCE_IDENTITY_PARAM, sourceRouteIdentities } from './polaris-source.js';
 import { evaluateWalkthroughPreflight, presentedShapeClaims, type BrowserCheckInput, type SourceRouteOutcome } from './walkthrough-preflight.js';
 
 function argument(name: string): string | undefined {
@@ -232,7 +232,7 @@ function claimParity(html: string, shape: ProjectShape): FreshCheckoutParity & {
  * the preflight needs it: rendered with a requirement count, not rendered
  * with the page's own reason, or unreachable. */
 async function probeSourceRoutes(baseUrl: string, polarisHtml: string, retain: (name: string, bytes: Uint8Array) => string): Promise<{ readonly outcomes: Map<string, SourceRouteOutcome>; readonly routes: Record<string, unknown>[] }> {
-  const identities = [...new Set(Array.from(polarisHtml.matchAll(/data-source-route="([^"]*)"/g), (match) => decodeAttr(match[1] as string)))];
+  const identities = [...new Set(sourceRouteIdentities(polarisHtml))];
   const outcomes = new Map<string, SourceRouteOutcome>();
   const routes: Record<string, unknown>[] = [];
   let index = 0;
