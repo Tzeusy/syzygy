@@ -257,9 +257,24 @@ added 2026-09-07.
   body of the breaching request is the only trace. The resource ledger is
   the input-side reader budget and never sees a response ceiling. Two
   governance records said "degrades honestly" / "the ledger reports the
-  breach" for a day; both marked 2026-09-07. `/polaris` sits 44 KB under
-  the 2 MB ceiling and the P-60/P-61 repairs add ~420 KB (bead
-  `syzygy-1z3.27` trims first).
+  breach" for a day; both marked 2026-09-07. `/polaris` sat 44 KB under
+  the 2 MB ceiling; the P-63 trim (`syzygy-1z3.27`) cut 434,960 bytes on
+  both forms (`docs/evidence/pwb-p63-polaris-trim-measurement-2026-09-07.json`),
+  leaving ~479 KB for the P-60/P-61 repairs' 418–443 KB.
+- **Measuring `/polaris` needs a committed, clean tree.** The observer
+  refuses uncommitted inputs, so commit first, then serve a private daemon
+  (`--port 0 --state-dir <scratch>`) from the worktree root and curl the
+  page twice: direct, and with `Host: tzeusy.parrot-hen.ts.net` (the mount
+  prefix adds 15 bytes per internal link, 5,640 bytes at 376 links). Never
+  measure through the loopback daemon on 7478.
+- **Where a trimmed byte may not come from.** The parity sweep finds class
+  tables by the literal `<tbody>` and the reachability test wants a region
+  inner starting with `<table>`; an attribute hoisted onto either tag drops
+  the family to a human count of 0 rather than failing loudly. Hoist roles
+  onto the `tableRegion` div (its `attrs` parameter). A cite span needs only
+  `data-anchor-id`; every other anchor field lives once in the frozen
+  narrative JSON, and the source-route `href` is the single carrier of the
+  exact-source identity (`sourceRouteIdentities(html)` reads it back).
 - The daemon serves only the registered locator (`git-observation.ts`
   refuses any other `--repo`), so a repaired Butlers page cannot be measured
   on a private daemon from a scratch clone: measure per-item marginal cost
@@ -476,8 +491,8 @@ added 2026-09-07.
   whole-shape claim is Unknown; `components.md` fails the table grammar
   (seven code-span first cells); `frontend.md` and 7 of 13 `butler.toml`
   are withheld as active content (TOML has no inert context). Repairs for
-  the first three were ruled 2026-09-07 (P-60/P-61/P-62) and sit on a
-  Butlers branch pending the owner's merge after the P-63 trim. Do not
+  the first three were ruled 2026-09-07 (P-60/P-61/P-62) and sit on
+  Butlers PR #4066, cleared to merge once the P-63 trim is on main. Do not
   relax the grammar or policy without an owner gate.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
