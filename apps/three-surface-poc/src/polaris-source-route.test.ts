@@ -14,7 +14,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
+import { createDaemon, escapeHtml, type RunningDaemon } from '@syzygy/cap1-daemon';
 import { PWB_RESOURCE_LIMITS, type PocModel, type ProjectShape } from '@syzygy/three-surface-poc-core';
 
 import { TAILNET_HOST } from './browser-origin.js';
@@ -218,6 +218,15 @@ describe('Polaris exact-source route (PWB-REQ-011 as amended; RFC7-1, RFC7-13)',
     expect(withoutSpec.projectShape.kind).toBe('observed');
     expect(exactSourceIdentities(withoutSpec.projectShape).size).toBe(0);
     expect(sourceRouteIdentities(renderPolarisPage(withoutSpec))).toEqual([]);
+  });
+
+  it('reads back every identity character the href can carry, under both mounts', () => {
+    // Round trip through the exact renderer chain: percent-encode, then
+    // HTML-escape the attribute (an apostrophe survives encodeURIComponent
+    // and is escaped as &#39; — the reader must unescape before decoding).
+    const identities = ["a'b", 'a&b', 'a#b', 'a%b', 'a+b', 'a@b', 'a b', 'a"b', 'a<b>c', 'path/with/ü.md', 'openspec/specs/x/spec.md@abc:7'];
+    const html = identities.map((identity) => `<a href="${escapeHtml(sourceRouteHref('', identity))}">x</a>`).join('') + identities.map((identity) => `<a href="${escapeHtml(sourceRouteHref(TAILNET_MOUNT_PREFIX, identity))}">y</a>`).join('');
+    expect(sourceRouteIdentities(html)).toEqual([...identities, ...identities]);
   });
 
   it('serves the route human-open: direct GET renders the text, the tailnet Host rebinds the back link, a browser origin off the allow-list gets 403 and nothing, a script in the identity is escaped, and the human ceiling fails closed', async () => {

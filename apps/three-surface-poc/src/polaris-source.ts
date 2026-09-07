@@ -47,8 +47,19 @@ export function sourceRouteHref(mountPrefix: string, identity: string): string {
  * identity; no attribute restates it). The inverse of `sourceRouteHref`
  * under either mount. */
 export function sourceRouteIdentities(html: string): string[] {
-  const pattern = new RegExp(`href="[^"]*${POLARIS_SOURCE_PATH.replace(/\//g, '\\/')}\\?${SOURCE_IDENTITY_PARAM}=([^"&]*)"`, 'g');
-  return Array.from(html.matchAll(pattern), (match) => decodeURIComponent((match[1] as string).replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>')));
+  // The attribute value is HTML-escaped after percent-encoding, so an
+  // apostrophe (which encodeURIComponent leaves raw) arrives as `&#39;`:
+  // capture the whole quoted value, unescape the entities, then decode.
+  const pattern = new RegExp(`href="([^"]*${POLARIS_SOURCE_PATH.replace(/\//g, '\\/')}\\?${SOURCE_IDENTITY_PARAM}=[^"]*)"`, 'g');
+  return Array.from(html.matchAll(pattern), (match) => {
+    const href = unescapeAttribute(match[1] as string);
+    const encoded = href.slice(href.indexOf(`${SOURCE_IDENTITY_PARAM}=`) + SOURCE_IDENTITY_PARAM.length + 1);
+    return decodeURIComponent(encoded);
+  });
+}
+
+function unescapeAttribute(value: string): string {
+  return value.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 }
 
 export type SourceRouteResolution =
