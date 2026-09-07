@@ -1,0 +1,298 @@
+{
+ "kind": "pwb-p63-polaris-trim-measurement",
+ "task": "syzygy-1z3.27 (P-63 arm A: implementation-only trim of the Polaris human page, measured before the P-60/P-61 Butlers repairs merge)",
+ "date": "2026-09-07",
+ "ruling": ".syzygy/governance/decisions/PWB-CYCLE-OWNER-RULINGS-DECISION.md (P-63 row: arm A, target about 420 KB; direction only, design not ruled)",
+ "labels": "Every number below is [Observed] from the retained captures unless marked [Inferred].",
+ "method": {
+  "daemon": "node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir <session scratchpad>/state-<label>; run from the Syzygy worktree root at the named commit with a clean tree; one private daemon per capture, killed after the capture; the loopback daemon on port 7478 was never contacted",
+  "requests": [
+   "GET /polaris (direct form, Host = the daemon's loopback address)",
+   "GET /polaris with Host: tzeusy.parrot-hen.ts.net (tailnet form; internal links carry the /butlers-syzygy mount prefix)",
+   "GET /api/poc/polaris without a machine credential: both captures are the 37-byte HTTP 401 body {\"admitted\":false,\"served\":\"nothing\"}; the machine envelope itself was NOT measured"
+  ],
+  "sizes": "curl size_download over the full response body, in bytes; 'KB' below means 1024 bytes and the 420 KB target is read as 430,080 bytes (it is also met at 1000-byte KB = 420,000)",
+  "script": "the measurement script's body is retained under measurementScript below; $SESSION_SCRATCHPAD stands for the session's private scratch directory",
+  "captures": "the raw captures (about 7.3 MB) are not retained in the repository; their byte sizes and SHA-256 digests are recorded so a re-capture at the same commits can be compared"
+ },
+ "measurementScript": "#!/usr/bin/env bash\n# usage: measure.sh <syzygy-worktree> <label>\nset -u\nWT=\"$1\"; LABEL=\"$2\"\nS=$SESSION_SCRATCHPAD\nOUT=\"$S/measure/$LABEL\"; mkdir -p \"$OUT\"\nSTATE=\"$S/state-$LABEL\"; mkdir -p \"$STATE\"\ncd \"$WT\"\nnode apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir \"$STATE\" > \"$OUT/daemon.log\" 2>&1 &\nPID=$!\nfor i in $(seq 1 120); do\n  if grep -q 'Syzygy Three-Surface POC: http' \"$OUT/daemon.log\" 2>/dev/null; then break; fi\n  if ! kill -0 $PID 2>/dev/null; then echo \"daemon died\"; cat \"$OUT/daemon.log\"; exit 1; fi\n  sleep 1\ndone\nURL=$(grep -o 'http://[^ ]*/' \"$OUT/daemon.log\" | head -1)\necho \"daemon $URL pid=$PID\"\ngrep -E 'Observed revision' \"$OUT/daemon.log\"\ncurl -s -o \"$OUT/polaris-direct.html\" -w \"direct status=%{http_code} bytes=%{size_download}\\n\" \"${URL}polaris\"\ncurl -s -o \"$OUT/polaris-tailnet.html\" -H 'Host: tzeusy.parrot-hen.ts.net' -w \"tailnet status=%{http_code} bytes=%{size_download}\\n\" \"${URL}polaris\"\ncurl -s -o \"$OUT/api-polaris.json\" -w \"api status=%{http_code} bytes=%{size_download}\\n\" \"${URL}api/poc/polaris\"\nkill $PID; wait $PID 2>/dev/null\necho \"syzygy=$(git -C \"$WT\" rev-parse HEAD) butlers=$(git -C /home/tze/GitHub/butlers rev-parse HEAD)\"\n",
+ "butlers": {
+  "repository": "/home/tze/GitHub/butlers",
+  "revision": "03f9ae74a8ebcc57ce7d82e61697bd860eddec7d",
+  "workingTree": "clean (working-tree:sha256:e3b0c442… in the evaluation identity)",
+  "note": "the P-60/P-61/P-62 repairs (Butlers PR #4066) are NOT in this revision; that is the point of measuring first"
+ },
+ "syzygy": {
+  "before": {
+   "commit": "301ba697629eccddf8457f3429897e422e673b94",
+   "surfaceVersion": "polaris@2fd0dae51531",
+   "note": "main at the start of the bead"
+  },
+  "after": {
+   "commit": "4217818143ec1e05cc3c9f2bde80379336c0f98c",
+   "surfaceVersion": "polaris@1c43490df233",
+   "note": "the trim commit on agent/syzygy-1z3.27 before any merge; a rebase-merge re-hashes it, so the surface version (sha256 over both src trees) is the stable anchor"
+  }
+ },
+ "captures": {
+  "before": {
+   "polaris-direct.html": {
+    "bytes": 2047721,
+    "sha256": "0c70dc6f753a4067ddc00467e291505c0004dcca79c3d18d9ea6e8a5175a84ac"
+   },
+   "polaris-tailnet.html": {
+    "bytes": 2053361,
+    "sha256": "d2afc221ba23721fb428085d201d11d0cfe66d48a3b38b84326911e4a6684cb8"
+   },
+   "api-polaris.json": {
+    "bytes": 37,
+    "sha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+   }
+  },
+  "after": {
+   "polaris-direct.html": {
+    "bytes": 1612761,
+    "sha256": "0acf3b4158e0c54d4ab3722e7767e860b616b52b4ca1e9ed8fb74a697bc10bf4"
+   },
+   "polaris-tailnet.html": {
+    "bytes": 1618401,
+    "sha256": "f8f173dae5eef72d99140133d5618878f719faaf31a0fb25355c0a4a71b37354"
+   },
+   "api-polaris.json": {
+    "bytes": 37,
+    "sha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+   }
+  }
+ },
+ "result": {
+  "direct": {
+   "before": 2047721,
+   "after": 1612761,
+   "saving": 434960
+  },
+  "tailnet": {
+   "before": 2053361,
+   "after": 1618401,
+   "saving": 434960
+  },
+  "ceilingBytes": 2097152,
+  "tailnetHeadroom": {
+   "before": 43791,
+   "after": 478751
+  },
+  "targetBytes": 430080,
+  "targetMet": true,
+  "repairsProjection": "[Inferred] the P-63 packet put the repairs' growth at 418–443 KB (428,032–453,632 bytes) on the tailnet form; the after-trim headroom of 478751 bytes covers the upper bound with 25119 bytes to spare",
+  "apiEnvelopeUnchanged": "[Observed] the unauthenticated 401 body is byte-identical before and after; [Observed from the diff] no API route, envelope builder or registry file is touched, so the machine envelope is unchanged by inspection, not by measurement"
+ },
+ "trim": {
+  "files": [
+   "apps/three-surface-poc/src/polaris.ts",
+   "apps/three-surface-poc/src/polaris-source.ts (new helper sourceRouteIdentities)",
+   "apps/three-surface-poc/src/walkthrough-preflight.ts",
+   "apps/three-surface-poc/src/fresh-checkout-demo-main.ts",
+   "five test files updated to the new carriers"
+  ],
+  "mechanisms": [
+   "cite spans name their anchor by data-anchor-id only; the anchor record (target class, target, revision, for, label, tier, reason) lives once in the frozen narrative JSON (PWB-REQ-014 machine form), which is unchanged",
+   "the exact-source route href is the single carrier of the source identity; the duplicate data-source-route attribute is dropped and readers use sourceRouteIdentities(html)",
+   "each class table's fact role sits once on the table region rather than on every statement cell; the key cell inherits it and the tuple cell carries none because the tuple span declares its own roles",
+   "item and source rows are emitted without indentation or inter-tag newlines"
+  ],
+  "kept": [
+   "the full 40-character revision and the source prefix inside every anchor record and every tuple (anchor identity, PWB constraint 3)",
+   "all eight tuple data fields and aria-describedby on every tuple",
+   "the literal <table>/<tbody> markers the parity sweep and reachability test key on",
+   "every claim, Unknown, item, source, fragment id, narrative block and anchor"
+  ]
+ },
+ "invariants": {
+  "form": "tailnet capture before vs after; multisets compared after HTML-unescaping",
+  "attributes": {
+   "data-claim-id": {
+    "before": 529,
+    "after": 529,
+    "equalMultiset": true,
+    "distinct": 528
+   },
+   "data-polaris-item": {
+    "before": 242,
+    "after": 242,
+    "equalMultiset": true,
+    "distinct": 242
+   },
+   "data-polaris-source": {
+    "before": 270,
+    "after": 270,
+    "equalMultiset": true,
+    "distinct": 270
+   },
+   "id": {
+    "before": 329,
+    "after": 329,
+    "equalMultiset": true,
+    "distinct": 329
+   },
+   "data-narrative-block": {
+    "before": 521,
+    "after": 521,
+    "equalMultiset": true,
+    "distinct": 521
+   },
+   "data-claim-provenance": {
+    "before": 521,
+    "after": 521,
+    "equalMultiset": true,
+    "distinct": 520
+   },
+   "data-unknown-disclosure": {
+    "before": 30,
+    "after": 30,
+    "equalMultiset": true,
+    "distinct": 30
+   },
+   "data-polaris-gap": {
+    "before": 2,
+    "after": 2,
+    "equalMultiset": true,
+    "distinct": 2
+   },
+   "data-anchor-id": {
+    "before": 713,
+    "after": 713,
+    "equalMultiset": true,
+    "distinct": 713
+   },
+   "data-parity-field": {
+    "before": 1181,
+    "after": 1181,
+    "equalMultiset": true,
+    "distinct": 25
+   },
+   "data-polaris-section": {
+    "before": 44,
+    "after": 44,
+    "equalMultiset": true,
+    "distinct": 44
+   },
+   "data-polaris-class": {
+    "before": 9,
+    "after": 9,
+    "equalMultiset": true,
+    "distinct": 9
+   },
+   "href": {
+    "before": 874,
+    "after": 874,
+    "equalMultiset": true,
+    "distinct": 414
+   }
+  },
+  "unknownClaimSet": {
+   "before": 19,
+   "after": 19,
+   "equal": true
+  },
+  "claimTuples": {
+   "count": 529,
+   "equalModuloEvaluationId": true,
+   "note": "data-evaluation-id differs per daemon run only in the observer segment"
+  },
+  "narrativeJson": {
+   "blocks": {
+    "before": 521,
+    "after": 521
+   },
+   "anchors": {
+    "before": 713,
+    "after": 713
+   },
+   "equalModuloObserverRevisionAndTimestamps": true
+  },
+  "visibleText": {
+   "equalModuloPerRunIdentities": true,
+   "note": "differences before scrubbing were only the observer revision (Syzygy commit), the evaluation inputs digest, the observation and surface hashes and timestamps"
+  },
+  "fragmentTargets": {
+   "before": {
+    "fragmentHrefs": 498,
+    "dangling": []
+   },
+   "after": {
+    "fragmentHrefs": 498,
+    "dangling": []
+   },
+   "idsInsideDetails": {
+    "before": [
+     "polaris-claim-states-lede"
+    ],
+    "after": [
+     "polaris-claim-states-lede"
+    ]
+   },
+   "note": "polaris-claim-states-lede sits inside the claim-states disclosure before and after; it is not a fragment-link target (no href points at it) — [Observed] from the href set"
+  },
+  "tailnetMountPrefix": {
+   "before": {
+    "prefixedInternalHrefs": 376,
+    "unprefixedInternalHrefs": 0
+   },
+   "after": {
+    "prefixedInternalHrefs": 376,
+    "unprefixedInternalHrefs": 0
+   }
+  }
+ },
+ "verification": {
+  "appSuite": "npx vitest run apps/three-surface-poc at 4217818: 34 files passed, 1 skipped (project-shape-discovery.live), 342 tests passed, 1 skipped — run twice consecutively with the same counts; one earlier run during development reported 2 failures that did not reproduce on the immediate rerun and were not characterised",
+  "fullSuite": "npm test at 4217818: 112 files passed, 3 skipped; 1547 tests passed, 3 skipped; exit 0",
+  "typecheck": "npm run typecheck: no diagnostics",
+  "governance": "python3 scripts/check_governance.py: 33 OK, 19 WARN, 0 FAIL (52 checks)",
+  "browser": {
+   "suite": "polaris-accessibility.browser.test.ts ran (not skipped) under /usr/bin/google-chrome Chrome/120.0.6099.224: 9 tests passed",
+   "cli": "node dist/polaris-accessibility-main.js at 4217818 under Chrome/120.0.6099.224: 6 variants, 432 focusables (all reachable), 314 activations, 6905 contrast measurements, minimum contrast 4.69:1, 0 violations"
+  },
+  "preflightAndParity": "walkthrough-preflight.test.ts, polaris-parity-sweep.test.ts (PWB-REQ-020), polaris-copy.test.ts, polaris-narrative.test.ts, polaris-first-reading.test.ts, polaris-source-route.test.ts, polaris-no-js/keyboard tests all inside the passing app suite",
+  "newGuards": "none: the trim adds no new guard, so no rule-6 mutation evidence is owed; sourceRouteIdentities replaces an attribute read inside the existing preflight check and is covered by walkthrough-preflight.test.ts and polaris-source-route.test.ts"
+ },
+ "nonGoalsHonoured": [
+  "no registry, spec or policy change",
+  "no claim or Unknown removed (see invariants)",
+  "no reconciled class relocated",
+  "no Butlers change",
+  "the daemon on port 7478 untouched"
+ ],
+ "armB": "not needed: the tailnet saving exceeds the 420 KB target, so no P-63 arm B registry act packet is drafted",
+ "followUp": {
+  "commit": "509b749d9af6eb6d889c2b319fa061fa350330e7",
+  "surfaceVersion": "polaris@da97f1f73de4",
+  "what": "review finding 1: sourceRouteIdentities now captures the whole quoted href, unescapes attribute entities, then percent-decodes, so an apostrophe-bearing identity round-trips; a round-trip test ( ' & # % + @ space quote angle brackets non-ASCII, both mounts) fails on the previous reader and passes on this one",
+  "rendererUnchanged": "[Observed] re-measured with the same script at 509b749, Butlers 03f9ae74a8ebcc57ce7d82e61697bd860eddec7d, clean tree: direct 1612761 bytes, tailnet 1618401 bytes — identical to the 4217818 figures",
+  "captures": {
+   "polaris-direct.html": {
+    "bytes": 1612761,
+    "sha256": "1610caf65b2f794e23f8512aa5f545a0b7e711b7b06b0c682f9950153cf9f46a"
+   },
+   "polaris-tailnet.html": {
+    "bytes": 1618401,
+    "sha256": "47748f566a7b8fc17defe3ed09a1ab0493b7d8d9106a9977fb113939614f96b6"
+   },
+   "api-polaris.json": {
+    "bytes": 37,
+    "sha256": "ec69c1fba62dfad8176339194413213405e39be93ca9de874044991a1f1478e7"
+   }
+  }
+ },
+ "review": {
+  "raw": "docs/reviews/R-PWB-P63-POLARIS-TRIM-RAW.md",
+  "verdict": "CONFIRMED WITH FINDINGS (no blocker); the reviewer reproduced both forms byte-identically from a fresh clone at 301ba69 and the worktree at 4217818",
+  "dispositions": [
+   "1 (should-fix, apostrophe identity dropped): fixed in 509b749 with a round-trip test",
+   "2 (should-fix, evidence untracked; surfaceVersion null; scratch path in script): evidence committed with the review; surface versions recorded; scratch path replaced by $SESSION_SCRATCHPAD",
+   "3 (note, api capture is a 401 body): the evidence now says so and grounds apiEnvelopeUnchanged in the diff",
+   "4 (note, uncommitted AGENTS.md): the notes-to-self change is committed deliberately alongside this evidence",
+   "5–7 (notes on tests, roles, readers, spec): no change requested; recorded",
+   "8 (note, uncharacterised one-off 2-failure run): filed as bead syzygy-1z3.28"
+  ]
+ }
+}

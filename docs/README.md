@@ -50,10 +50,12 @@ the repair is a new disposition that cites it.
 | `R-PWB-LIVE-*`, `*-pwb-live-*` | 5 | 2026-09-05 | The live implementation at its exact head — truth, denominator, secret-exposure, parity, copy and comprehension | Fifteen findings PWB-LIVE-01…15 across three raw reviews, plus the traceability index over them. Their dispositions are not in this campaign; they are in the row below |
 | `R-PWB-RECOVERY-*`, `*-pwb-recovery-*` | 5 | 2026-09-06 | The recovery of those fifteen findings: a gen-1 reconciliation packet with its raw review, then a gen-2 reconciliation of the repairs it required, with its raw review | Gen-1 `**CONFIRM WITH EXCEPTIONS.**` (`2026-09-06-pwb-recovery-reconciliation-packet.md:21`) — all fifteen `repaired`, nine residues PWB-RECON-01…09. Gen-2 `**CONFIRM WITH EXCEPTIONS.**` (`2026-09-06-pwb-recovery-reconciliation-gen2-packet.md:24`) — the three required repairs confirmed, gen-3 not needed, four Low/Info residues PWB-RECON-10…13 as ordinary beads. This closes the PWB-LIVE cycle's repair half; §5.3 of the spec's task list (report the cycle to the owner) is still open |
 
-The ten rows partition the directory: 91 files on disk, 91 assigned, no
+| `R-PWB-P63-*` | 1 | 2026-09-07 | The P-63 arm-A trim of the Polaris human page (bead `syzygy-1z3.27`): 434,960 bytes off both forms, measured before the P-60/P-61 Butlers repairs merge | `CONFIRMED WITH FINDINGS` (`R-PWB-P63-POLARIS-TRIM-RAW.md:16`), no blocker; the reviewer reproduced the measurement byte-for-byte. Both should-fix findings were repaired in the same branch (the apostrophe-bearing identity reader, and the evidence retention); dispositions live in `docs/evidence/pwb-p63-polaris-trim-measurement-2026-09-07.json` under `review.dispositions` |
+The eleven rows partition the directory: 92 files on disk, 92 assigned, no
 remainder [Observed — swept by a script that asserts each basename matches at
 most one campaign pattern and prints the unmatched remainder; re-run
-2026-09-06, and this figure read 88 the same morning. All three arrivals
+2026-09-07 after the P-63 row was added (92), and 2026-09-06 when it read 91;
+this figure read 88 the morning of the 6th. All three arrivals
 landed in the last row: the gen-2 reconciliation added two, and the gen-2 raw
 was then re-issued with its crosswalk addendum as a fifth file rather than
 overwriting the first (verification rule 10). Dates are
