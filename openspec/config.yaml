@@ -1,20 +1,9 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
-
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+# The shipped `context:` and `rules:` example blocks were removed 2026-09-07
+# on the owner's P-54 ruling, arm (b): this project's standing instruction to
+# an authoring agent travels through AGENTS.md and the governed plane, not
+# through tool config. Do not reintroduce a `context:` block here — it would
+# be a second home for an answer AGENTS.md already owns, invisible to anyone
+# not reading tool config (CC-REV-3). The ruling record is
+# .syzygy/governance/decisions/DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md

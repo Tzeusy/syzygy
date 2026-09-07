@@ -1,5 +1,19 @@
 # Syzygy — Begin the Specification Stage with Capability 1
 
+> **Spent, and kept here deliberately (marked 2026-09-07).** This prompt
+> opened the Capability 1 specification stage. That stage is finished:
+> Capability 1 was adopted 2026-08-20 and is implemented — see
+> `PROJECT-STATUS.md` for the current state, which this page does not
+> restate. It is not an instruction to any agent reading the repository
+> today, and running it again would re-open a stage that closed.
+>
+> It stays at the repository root because a decision record cites it *by*
+> this location, calling it "(repository root)":
+> [`CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`](.syzygy/governance/decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md).
+> Moving it would break that citation. Kept on the owner's ruling of
+> 2026-09-07, arm (b) of P-56 — record:
+> [`DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md`](.syzygy/governance/decisions/DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md).
+
 Run this prompt in a **fresh Claude Fable / Opus session** at the root of
 `Tzeusy/syzygy`.
 

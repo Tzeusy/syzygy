@@ -119,3 +119,5 @@ the daemon-side loader for the two governance homes are implemented and
 tested; with no record on disk the daemon reports the judgment as absent
 and Unknown. Nothing in this packet was performed by an agent on your
 behalf.
+
+Yes, following the exact-source link is permitted.

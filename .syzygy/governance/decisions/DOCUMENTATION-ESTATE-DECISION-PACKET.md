@@ -1,5 +1,20 @@
 # Owner decision packet — seven questions about the written estate
 
+> **Status: answered. All seven were ruled on 2026-09-07** — see
+> [`DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md`](DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md),
+> which owns the rulings and their application, and quotes the owner's reply
+> verbatim. This packet remains the question each was ruled on; it is not the
+> state of any of them, and the register rows it names have moved to
+> [`DECISION-HISTORY.md`](DECISION-HISTORY.md). *(Until 2026-09-07 the line
+> below read as the head of this file.)*
+>
+> **Marked 2026-09-07: "none depends on another" is true of the questions and
+> false of the applications.** P-55 and P-57 are coupled — the `openspec/`
+> index authorized by P-57 has to say what the two empty directories mean,
+> and what they mean was settled only by P-55. Ruled the other way, the index
+> would have described a tree about to be restructured. They were ruled
+> together, so nothing went wrong.
+>
 > **Pending. This packet decides nothing and adopts nothing.** It states seven
 > questions, gives the evidence for each, recommends an answer, and says what
 > happens if you say nothing. Register rows: **P-54 … P-59 and P-66** in
