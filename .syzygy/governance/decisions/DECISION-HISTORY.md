@@ -12,6 +12,33 @@
 > cells — are preserved verbatim in git history at commit `9c43fc5`
 > (`git show 9c43fc5:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`).
 
+## Resolved on 2026-09-07 (the written-estate questions, P-54…P-59 and P-66)
+
+The seven questions gathered by the documentation-estate packet
+(`DOCUMENTATION-ESTATE-DECISION-PACKET.md`, written 2026-09-05, extended
+2026-09-06) were ruled by the owner in one reply on 2026-09-07 agreeing with
+every recommendation in it, and applied the same day so far as each arm
+allows — two of the seven defer by their own terms and one is disclosure
+only. The rulings record is `DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md`,
+which owns the full detail and quotes the reply verbatim.
+
+| # | What happened |
+|---|---|
+| P-54 | **Ruled — arm (b)**: `openspec/config.yaml` trimmed to its one live setting, `schema: spec-driven`; the shipped `context:` and `rules:` examples deleted, and this project's agent-facing context ruled to travel through `AGENTS.md` and the governed plane rather than tool config. A comment in the file states the ruling so the block is not reintroduced. The file's only evidence citation, in the Administration-1 launch-gate record, is anchored to commit `71e5986` and describes the scaffold rather than quoting its bytes, so the trim retires nothing. |
+| P-55 | **Ruled — arm (b)**: this project does not use the OpenSpec archive and spec-materialization steps. `openspec/specs/` and `openspec/changes/archive/` each took a one-line README saying so. Neither directory had ever been tracked (git stores no empty directory), so the READMEs also make them exist in a clone for the first time — before this, the "two empty directories" a reader saw were present only in the authoring checkout. |
+| P-56 | **Ruled — arm (b)**: `syzygy_begin_specification_stage_capability1_prompt.md` stays at the repository root and took a head note — what it opened, that the stage closed on 2026-08-20, that it is not an instruction to any agent reading the repository today, and why it is kept there. Not (a): (a) edits a decision record to buy a tidier root listing. The citation pinning it here, in `CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md`, wraps across a line break ("(repository" / "root)"), which is why a basename sweep does not find it. |
+| P-57 | **Ruled — arm (a)**: an agent was authorized to write `openspec/README.md` as navigation only — which change is adopted and under which act, which are candidate, what the empty directories mean — banner-marked never authority. **The arm reserved the owner's review of its text, and that review has not happened**; the page is committed so it is reviewable in place and says so on its face. It is the governed plane's only agent-authored page. |
+| P-58 | **Ruled — arm (a), folded into act 4 whenever the owner next takes it up**: the overview is to name VIS-1 and VIS-2 by identifier and keep the activity-is-not-proof sentence as prose rather than as one of two rules. The arm defers by its own terms — an agent may prepare the delta, only the owner performs the act — so `.syzygy/intent/OVERVIEW.md` is byte-unchanged and was not opened for editing. Prepared as delta **OVW-1** with P-59, unreviewed. |
+| P-59 | **Ruled — arm (a), alongside P-58**: the overview's bolded "Nothing is implemented" is to be replaced by the route to `PROJECT-STATUS.md` that the next paragraph already takes. Same deferral; deliberately the same one delta, because a second edit to act 4's argument later would retire whatever confirmation the first earned. |
+| P-66 | **Ruled — arm (b), with (a) riding along if a CC-SPEC amendment ever comes**: the amendment-history banner naming five of the nine phase rules CC-SPEC-8 defers to is a permanent, disclosed blemish. Nothing was edited — the file's bytes are a performed act's argument — and arm (c), a standalone amendment act for prose that binds nothing, was not taken. **This row and the rulings record are the disclosure; the next audit should not re-raise it.** |
+
+Two things this pass recorded against the records themselves: the packet's
+"none depends on another" holds for the questions but not for the
+applications (P-57's index has to say what P-55 settled), and the register's
+own published row counts had been one low since 2026-08-06 because their
+stated predicate did not match the sub-lettered row `P-25(c)`. Both are
+marked in place in the records that carried them.
+
 ## Resolved on 2026-09-07 (the PWB improvement-cycle questions, P-60…P-65)
 
 The six questions gathered by the PWB cycle report

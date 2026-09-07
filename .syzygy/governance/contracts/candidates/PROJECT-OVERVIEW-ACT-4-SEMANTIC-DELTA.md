@@ -89,16 +89,22 @@ its place in the surrounding prose and stops being presented as one of two.
 **Edit 2.** Replace the sentence quoted above with:
 
 ```text
-What is implemented today is stated once, in
-[`PROJECT-STATUS.md`](../../PROJECT-STATUS.md), and is deliberately not
-restated here: this file's bytes are frozen by an owner act, and any
-capability claim frozen inside it would go quietly false the first time
-that capability moved. This page describes intended shape.
+What is implemented today is stated once, in `PROJECT-STATUS.md`, and is
+deliberately not restated here: this file's bytes are frozen by an owner
+act, and any capability claim frozen inside it would go quietly false the
+first time that capability moved. This page describes intended shape.
 ```
 
 This is the move the very next paragraph of the page already makes for the
 gate table, applied to the one row above it that was restated instead of
 routed.
+
+The replacement is given as plain text. When it is installed in
+`OVERVIEW.md`, `PROJECT-STATUS.md` takes the same relative Markdown link
+form that next paragraph already uses for the gate table; it is not written
+as a link here, because a relative path inside this candidate resolves from
+this directory rather than from `.syzygy/intent/`, and the link checker
+follows links inside fenced blocks.
 
 ## What explicitly does NOT change
 
