@@ -81,3 +81,14 @@ scope and architecture remain available. New selection metadata and exact
 review bindings are in docs/evidence/polaris-editorial-reading-plans-2026-09-09.json.
 The current implementation plan file SHA-256 is 7effb17f7f19ddb7d003313d57cba2865fb8558450c8614d2ae2a6da8b046d58.
 The original 1,685-word selection confirmation remains historical.
+
+## Catalog presentation checkpoint
+
+The repeated design findings share one invariant: first reading exposes the
+population identity, claim state and reason counts; source-path enumerations
+and detailed remediation belong to adjacent, labelled native disclosures.
+The repair now applies this to all observed class provenance, Unknown source
+details and member-reason aggregations, rather than fixing one visible wall
+at a time. Existing source identities, paths, causes and routes remain intact.
+The first-reading and exhaustive parity suites cover the complete class
+population; final visual inspection covers the closed catalog.

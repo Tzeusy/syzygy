@@ -574,7 +574,7 @@ function classBlock(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: Ext
         const block = shapeClaimBlock(aggregate.claim, shape.identity.revision);
         const contexts = cls === 'catalog-entry' ? [...new Set(items.map((item) => item.context).filter((context): context is string => context !== undefined))] : [];
         const guide = contexts.length === 0 ? '' : `<ul class="catalog-contexts">${contexts.map((context) => `<li>${escapeHtml(context)}</li>`).join('')}</ul>`;
-        return `<div${block.attrs}><div data-claim-provenance="${escapeHtml(aggregate.claim.claimId)}">${guide}<p>${escapeHtml(classStatement(shape, cls))}</p></div>${supportCitations(aggregate.claim.support, block.anchors)}</div>`;
+        return `<details class="class-provenance"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')}</summary><div${block.attrs}><div data-claim-provenance="${escapeHtml(aggregate.claim.claimId)}">${guide}<p>${escapeHtml(classStatement(shape, cls))}</p></div>${supportCitations(aggregate.claim.support, block.anchors)}</div></details>`;
       })()
     : unknownRoutes(aggregate.claim, `${escapeHtml(classStatement(shape, cls))} `);
   return `<section class="claim-section" data-polaris-section="${escapeHtml(aggregate.claim.claimId)}" data-polaris-class="${escapeHtml(cls)}">
@@ -1254,6 +1254,8 @@ const POLARIS_STYLE = `
   main, footer { overflow-wrap: anywhere; }
   :target { scroll-margin-top: 5rem; }
   .reading-citations { margin-block: .5rem; font-size: .85rem; }
+  .class-provenance { font-size: .85rem; margin-block: .7rem; }
+  .class-provenance > summary { cursor: pointer; color: var(--muted); }
   .reading-citations > summary { cursor: pointer; color: var(--muted); }
   .excerpt-label { color: var(--muted); font-size: .85rem !important; }
   main > .group:first-of-type { margin-top: 1rem; }

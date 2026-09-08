@@ -200,6 +200,14 @@ describe('Polaris progressive disclosure (PWB-REQ-011 as amended; PWB-LIVE-13)',
   it('keeps each item population and the exclusions complete behind a native disclosure whose control names the count, leaves the sources table open for fragment navigation, and hides nothing by style', () => {
     const { shape, html } = observed(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET);
     const populations = detailsOf(html).filter((details) => details.tag.includes('class="population"'));
+    const sourceDisclosures = detailsOf(html).filter((details) => details.tag.includes('class="class-provenance"'));
+    const observedClasses = Object.values(shape.classes).filter((aggregate) => aggregate.claim.epistemic.label === 'Observed');
+    expect(sourceDisclosures.length).toBe(observedClasses.length);
+    for (const aggregate of observedClasses) {
+      const disclosure = sourceDisclosures.find((entry) => entry.inner.includes(`data-claim-provenance="${aggregate.claim.claimId}"`));
+      expect(disclosure).toBeDefined();
+      expect(disclosure?.tag).not.toMatch(/\sopen(?:\s|$)/);
+    }
     const itemPopulations = populations.filter((details) => details.tag.includes('data-polaris-items='));
     const exclusionPopulations = populations.filter((details) => details.tag.includes('data-polaris-exclusions='));
     // One disclosure per catalog class that declares items, each summary
