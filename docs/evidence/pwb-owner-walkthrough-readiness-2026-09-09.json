@@ -1,0 +1,98 @@
+{
+  "status": "[Inferred] ready for owner review; not owner judgment",
+  "runtimeHead": "5f538289a120b981afc00c4e882517624f22e158",
+  "runtimeCheckout": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/pwb-owner-walkthrough-20260909",
+  "binding": {
+    "butlersRevision": "c08b255fd735fddf5a20e6350ccef9da2230d2ef",
+    "surfaceVersion": "polaris@872dd490a668",
+    "evaluationIdentity": "pwb-eval-b3bd8c0207e52d3c1af2ce17",
+    "url": "http://127.0.0.1:38091/polaris",
+    "polarisSha256": "f3242a0dd65d538a1bae80930f6b3fd50fdf9252691fd0ce7ba5297a1a1043c8",
+    "bytes": 1952294,
+    "stderrBytes": 0,
+    "sourceSha256": "5b14f87bc376e7bf4a768e81f818e0e2cc736d9bd862efd95fdd4630d8e551ed",
+    "sourceBytes": 23036
+  },
+  "tests": {
+    "total": 1564,
+    "passed": 1561,
+    "skipped": 3,
+    "failures": 0,
+    "errors": 0,
+    "method": "JUnit root totals independently checked by counting testcase children"
+  },
+  "freshDemo": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-final.json",
+  "governance": {
+    "result": "canonical battery passed in clone at runtime head",
+    "checks": 52,
+    "ok": 33,
+    "warn": 19,
+    "fail": 0,
+    "logs": [
+      {
+        "name": "governance-and-affected-mutant.log",
+        "sha256": "176c5513e65c8cdc0d94aa16593d014aa4f1d0490c7357a65bf55261dee3596e",
+        "bytes": 185401
+      },
+      {
+        "name": "fresh-demo-execution.log",
+        "sha256": "2d0c0df1e33ed5c6d7919cc05caa807b3a1667fa55af6c6d6a46b62626d544b4",
+        "bytes": 1238
+      }
+    ]
+  },
+  "semanticReview": "docs/reviews/R-PWB-WALKTHROUGH-LIVE-CAPTURE-RAW.md",
+  "codeReview": "docs/reviews/R-PWB-DECLARED-HOME-FINAL-RAW.md",
+  "readiness": {
+    "ready": true,
+    "findings": [],
+    "observed": {
+      "accountStatementsBacked": 6,
+      "populations": {
+        "principle": {
+          "modeled": 7,
+          "denominator": 7,
+          "rows": 7
+        },
+        "success-criterion": {
+          "modeled": 13,
+          "denominator": 13,
+          "rows": 13
+        },
+        "catalog-entry": {
+          "modeled": 65,
+          "denominator": 65,
+          "rows": 65
+        },
+        "topology-component": {
+          "modeled": 87,
+          "denominator": 87,
+          "rows": 87
+        }
+      },
+      "exactRequirement": {
+        "identity": "repository:butlers-configured-poc@c08b255fd735fddf5a20e6350ccef9da2230d2ef:openspec/specs/switchboard-identity/spec.md#0a76a0d7a6f04425fa2f0063c5a1c7cf6e261853",
+        "requirements": 6
+      },
+      "unknownsVisible": 11,
+      "unknownsMachine": 11,
+      "sourceRoutesLinked": 185,
+      "fragmentLinks": 658,
+      "claimTuples": 690
+    }
+  },
+  "ownerExecution": "absent; collect nine own-words answers and keyboard traversal first",
+  "ownerJudgment": "absent; owner decides separately after execution",
+  "scope": "One local experimental Butlers instance. Content captures remain local; no source bodies in this report.",
+  "changes": [
+    "Use screened declared pillar homes for phase A admission",
+    "Retain missing and non-blob named sources when tree rules cannot supply them",
+    "Reuse screened root derivation without another parse",
+    "Align existing mutation target with repaired source"
+  ],
+  "nonblockingCaveats": [
+    "Long architecture text and raw Markdown increase reading effort",
+    "Opaque numbered topology keys need the architecture narrative",
+    "Catalog heading can confuse its heterogeneous population"
+  ]
+}

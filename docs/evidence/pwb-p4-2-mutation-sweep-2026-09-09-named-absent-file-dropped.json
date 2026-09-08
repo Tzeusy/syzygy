@@ -1,0 +1,129 @@
+{
+  "subject": "PWB mutation sweep — task 4.2 (docs/PWB-IMPLEMENTATION-PLAN.md; PWB-REQ-001/002/003/004/005/010/012/020/022)",
+  "date": "2026-09-09",
+  "commit": "5f538289a120b981afc00c4e882517624f22e158",
+  "uncommittedChanges": [],
+  "method": "For each group: run its test files green as the baseline; for each mutation write exactly one predicate disabling or exact-fragment replacement into the subject, run the same test files with the vitest JSON reporter, restore the original bytes and verify sha256 equality. Killed = at least one test failed and every named must-fail test is among the failures.",
+  "sourceDigestsBefore": {
+    "packages/three-surface-poc-core/src/project-shape-manifest.ts": "df5e1122af74643a09c28a450751242fad18f47760901b137a9c8d8fdf2f6ea5",
+    "packages/three-surface-poc-core/src/project-shape-observation.ts": "a946ae5ebc9ade430566a894ea81584919890bd0381208b9c1d6663d54c9d7ac",
+    "packages/three-surface-poc-core/src/project-shape-coverage.ts": "e44268cb7c2e725c684883e87fef263afbf51579959b70b1bd97549d9dc2e16f",
+    "packages/three-surface-poc-core/src/content-classification.ts": "1a7874ad67b27b55c324065a421f822d1dc864d1fdf648836e326629d4cd5a0d",
+    "apps/three-surface-poc/src/polaris.ts": "e6dbb07a1f573b02685c698487adc281ef618cd2f8e1192b4662d7370be742e5",
+    "apps/three-surface-poc/src/polaris-copy.ts": "fceec425c5e896544065f29add66b167f4094dd3f3e6e1b2daa4379bf96c4293",
+    "packages/three-surface-poc-core/src/body-read-authority.ts": "647a9583590ead29fb7d82ef4689470fdaaac24be0ba58769c2bf2cba361c002",
+    "packages/three-surface-poc-core/src/project-shape-observer.ts": "9ff2151735897a0f5af295669240af79cdd3b038fcb4dc0a2bab50b5ecef93c6",
+    "packages/three-surface-poc-core/src/authority-disclosure.ts": "5f0a402ae9f634b39080fe3af0120eefa18ad17d6fb420a40975becc3f5b02cf",
+    "packages/three-surface-poc-core/src/walkthrough-judgment.ts": "81be59320fb352ee6748b679fce1ae7376baaa966e4729ccd4e24393c6a849f1",
+    "apps/three-surface-poc/src/trajectory.ts": "0a60017ede866a060885db035b82ec142d4b442c244dc47ebc3b96b60b1c6f82",
+    "apps/three-surface-poc/src/orrery.ts": "8e96af68029148938b070eb2817ded28e881ceb976bf637e9611f0bcfdac3d4d",
+    "apps/three-surface-poc/src/exact-tables.ts": "fd52777ed3ac9275a6f9393abd4732cd5a535eccf7a244c2ff81a9241a755bee"
+  },
+  "sourceDigestsAfter": {
+    "packages/three-surface-poc-core/src/project-shape-manifest.ts": "df5e1122af74643a09c28a450751242fad18f47760901b137a9c8d8fdf2f6ea5",
+    "packages/three-surface-poc-core/src/project-shape-observation.ts": "a946ae5ebc9ade430566a894ea81584919890bd0381208b9c1d6663d54c9d7ac",
+    "packages/three-surface-poc-core/src/project-shape-coverage.ts": "e44268cb7c2e725c684883e87fef263afbf51579959b70b1bd97549d9dc2e16f",
+    "packages/three-surface-poc-core/src/content-classification.ts": "1a7874ad67b27b55c324065a421f822d1dc864d1fdf648836e326629d4cd5a0d",
+    "apps/three-surface-poc/src/polaris.ts": "e6dbb07a1f573b02685c698487adc281ef618cd2f8e1192b4662d7370be742e5",
+    "apps/three-surface-poc/src/polaris-copy.ts": "fceec425c5e896544065f29add66b167f4094dd3f3e6e1b2daa4379bf96c4293",
+    "packages/three-surface-poc-core/src/body-read-authority.ts": "647a9583590ead29fb7d82ef4689470fdaaac24be0ba58769c2bf2cba361c002",
+    "packages/three-surface-poc-core/src/project-shape-observer.ts": "9ff2151735897a0f5af295669240af79cdd3b038fcb4dc0a2bab50b5ecef93c6",
+    "packages/three-surface-poc-core/src/authority-disclosure.ts": "5f0a402ae9f634b39080fe3af0120eefa18ad17d6fb420a40975becc3f5b02cf",
+    "packages/three-surface-poc-core/src/walkthrough-judgment.ts": "81be59320fb352ee6748b679fce1ae7376baaa966e4729ccd4e24393c6a849f1",
+    "apps/three-surface-poc/src/trajectory.ts": "0a60017ede866a060885db035b82ec142d4b442c244dc47ebc3b96b60b1c6f82",
+    "apps/three-surface-poc/src/orrery.ts": "8e96af68029148938b070eb2817ded28e881ceb976bf637e9611f0bcfdac3d4d",
+    "apps/three-surface-poc/src/exact-tables.ts": "fd52777ed3ac9275a6f9393abd4732cd5a535eccf7a244c2ff81a9241a755bee"
+  },
+  "classes": {
+    "source-denominator": {
+      "planned": 1,
+      "killed": 1
+    },
+    "coverage-partition": {
+      "planned": 0,
+      "killed": 0
+    },
+    "precedence-guard": {
+      "planned": 0,
+      "killed": 0
+    },
+    "secret-sentinel": {
+      "planned": 0,
+      "killed": 0
+    },
+    "capability-first-regression": {
+      "planned": 0,
+      "killed": 0
+    },
+    "meta-copy-prohibition": {
+      "planned": 0,
+      "killed": 0
+    },
+    "admission-invalid-cases": {
+      "planned": 0,
+      "killed": 0
+    },
+    "judgment-invalid-cases": {
+      "planned": 0,
+      "killed": 0
+    },
+    "parity-markers": {
+      "planned": 0,
+      "killed": 0
+    }
+  },
+  "groups": [
+    {
+      "id": "source-denominator",
+      "sweepClass": "source-denominator",
+      "requirement": "PWB-REQ-001",
+      "description": "a named-but-absent, unreadable or refused source drops out of the population",
+      "testFiles": [
+        "packages/three-surface-poc-core/src/project-shape-manifest.test.ts",
+        "packages/three-surface-poc-core/src/project-shape-observation.test.ts"
+      ],
+      "baseline": {
+        "total": 63,
+        "passed": 63,
+        "failed": 0
+      },
+      "predicateSites": 0,
+      "literalMutations": 3,
+      "planned": 1,
+      "killed": 1,
+      "survived": 0,
+      "mutations": [
+        {
+          "id": "named-absent-file-dropped",
+          "kind": "literal",
+          "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+          "description": "a pillar-named file absent at the revision is silently omitted instead of recorded missing-at-revision",
+          "mustFail": [
+            "emits exactly the hand-typed source set"
+          ],
+          "observed": {
+            "total": 63,
+            "passed": 59,
+            "failed": 4
+          },
+          "mustFailMissing": [],
+          "failing": [
+            "deriveProjectShapeManifest — complete population at one revision emits exactly the hand-typed source set, sorted, each anchored at the one revision",
+            "deriveProjectShapeManifest — a declared home over tree-rule files (syzygy-1z3.29 review) retains absent and non-blob named targets that the tree rules cannot supply",
+            "observeProjectShapeSources — reads only the phase A allowlist exposes the complete population with a per-source identity and stamp",
+            "observeProjectShapeSources — reads only the phase A allowlist records maxIndexDepth and maxSources breaches without shrinking the population"
+          ],
+          "killed": true,
+          "restored": true
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "groups": 1,
+    "planned": 1,
+    "killed": 1,
+    "survived": 0,
+    "restoreFailures": 0
+  }
+}

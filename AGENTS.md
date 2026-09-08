@@ -185,6 +185,12 @@ added 2026-09-07.
 
 ### Guardrails (keep even when old)
 
+- Phase-A pillar indexes follow roots declared by the screened root index,
+  not directory basenames. Reuse the screened root derivation in the
+  manifest; repeating it is another registry-budgeted parse pass.
+- Manifest tree rules supply only blobs. When a named source yields to a
+  tree rule, keep missing/non-blob targets counted, and update literal
+  mutation targets whenever the guarded source fragment changes.
 - Fresh `git worktree`: run `npm ci` inside it first, or `NodeNext` silently
   resolves `@syzygy/*` to the main checkout's `node_modules`.
 - `git ls-tree` needs `-z`, or quoted paths break the parser.
