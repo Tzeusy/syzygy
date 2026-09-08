@@ -185,6 +185,10 @@ added 2026-09-07.
 
 ### Guardrails (keep even when old)
 
+- Polaris reading selections are metadata-only offsets bound to the exact
+  extracted declaration digest and an independent fidelity review. Source
+  drift must render the full declaration; keyword-based omission can drop
+  qualifications. Scope sticky styling to `.site-nav`, never all `nav` tags.
 - Phase-A pillar indexes follow roots declared by the screened root index,
   not directory basenames. Reuse the screened root derivation in the
   manifest; repeating it is another registry-budgeted parse pass.

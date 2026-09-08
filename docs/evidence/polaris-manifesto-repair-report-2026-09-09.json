@@ -1,0 +1,156 @@
+{
+  "issue": "syzygy-xy1",
+  "status": "Independent implementation and design reviews confirmed; owner judgment remains unperformed",
+  "runtimeHead": "33b1717014f35c0607e1782a2566d587f75f9f18",
+  "branch": "codex/polaris-editorial-20260909",
+  "tests": {
+    "total": 1585,
+    "passed": 1582,
+    "skipped": 3,
+    "failed": 0,
+    "method": "Root JUnit totals independently checked against testcase children"
+  },
+  "freshDemo": "docs/evidence/pwb-p4-5-fresh-checkout-demo-2026-09-09-manifesto-catalog.json",
+  "reviewBindings": [
+    "docs/reviews/R-POLARIS-MANIFESTO-DESIGN-CONFIRMATION-RAW.md",
+    "docs/reviews/R-POLARIS-MANIFESTO-CODE-CATALOG-RAW.md",
+    "docs/reviews/R-POLARIS-EDITORIAL-CORE-PASSAGES-RAW.md",
+    "docs/reviews/R-POLARIS-EDITORIAL-SCOPE-PASSAGES-RAW.md"
+  ],
+  "viewportChecks": [
+    {
+      "name": "desktop",
+      "viewport": 1365,
+      "pageWidth": 1350,
+      "contentsPosition": "static",
+      "siteNavHeight": 51.59375,
+      "targetTop": null,
+      "provenanceDisclosures": 8,
+      "openProvenanceDisclosures": 0,
+      "reasonDisclosures": 2,
+      "openReasonDisclosures": 0
+    },
+    {
+      "name": "architecture",
+      "viewport": 1365,
+      "pageWidth": 1350,
+      "contentsPosition": "static",
+      "siteNavHeight": 51.59375,
+      "targetTop": 80.109375,
+      "provenanceDisclosures": 8,
+      "openProvenanceDisclosures": 0,
+      "reasonDisclosures": 2,
+      "openReasonDisclosures": 0
+    },
+    {
+      "name": "scope",
+      "viewport": 1365,
+      "pageWidth": 1350,
+      "contentsPosition": "static",
+      "siteNavHeight": 51.59375,
+      "targetTop": 80.609375,
+      "provenanceDisclosures": 8,
+      "openProvenanceDisclosures": 0,
+      "reasonDisclosures": 2,
+      "openReasonDisclosures": 0
+    },
+    {
+      "name": "catalog",
+      "viewport": 1365,
+      "pageWidth": 1350,
+      "contentsPosition": "static",
+      "siteNavHeight": 51.59375,
+      "targetTop": 80.40625,
+      "provenanceDisclosures": 8,
+      "openProvenanceDisclosures": 0,
+      "reasonDisclosures": 2,
+      "openReasonDisclosures": 0
+    },
+    {
+      "name": "mobile",
+      "viewport": 390,
+      "pageWidth": 375,
+      "contentsPosition": "static",
+      "siteNavHeight": 47.984375,
+      "targetTop": null,
+      "provenanceDisclosures": 8,
+      "openProvenanceDisclosures": 0,
+      "reasonDisclosures": 2,
+      "openReasonDisclosures": 0
+    }
+  ],
+  "retention": {
+    "directory": "/home/tze/.local/state/syzygy/pwb-p4-5-fresh-checkout-demo-2026-09-09-manifesto-catalog",
+    "files": [
+      {
+        "name": "desktop.png",
+        "bytes": 253659,
+        "sha256": "b160b1d78e4cb2519bfd43ebb883d33cc7c17d2a5d26d7170936c7ef73b70101"
+      },
+      {
+        "name": "mobile.png",
+        "bytes": 146633,
+        "sha256": "dfba4f3879d901280084e8a97692592e7deeb6bc8ccf831534653e3482d85ee5"
+      },
+      {
+        "name": "scope.png",
+        "bytes": 127268,
+        "sha256": "7d8bde2cf0acc7ddf1782718138ea09bdcdadab46421cd58e8f168ebd5a7989d"
+      },
+      {
+        "name": "architecture.png",
+        "bytes": 176877,
+        "sha256": "854e0096de2a18bccf82cf01e56f49a8b8a2605b4c2a1e83a5a8614040104590"
+      },
+      {
+        "name": "catalog.png",
+        "bytes": 75773,
+        "sha256": "7a8befbef5e92822cbc1a55c351e58325bd17adfeff3c206a420eb8f27d4bfe6"
+      },
+      {
+        "name": "viewport-checks.json",
+        "bytes": 1478,
+        "sha256": "c19981e6a77bfe51f05d5efb2eddd1b36d17bc64b4c3cb42ee2ecc3180699fc6"
+      },
+      {
+        "name": "governance-battery.log",
+        "bytes": 184972,
+        "sha256": "0d25ce9e43b3225f0bf51465dc397f8a4c242797f2f4d02c56043956450fb066"
+      },
+      {
+        "name": "demo-execution.log",
+        "bytes": 1274,
+        "sha256": "cb6eae600419d04ebf2ffea91a383860c7f191b1d4389438bbd02355665ada26"
+      }
+    ]
+  },
+  "changes": [
+    "Core introduction before technical reading aids",
+    "Early in-flow contents, capabilities and terminology routes",
+    "Complete real examples from each declared capability group",
+    "Reviewed exact-source core architecture and complete V1 deferrals with full declarations reachable",
+    "Escaped semantic Markdown with literal code preserved",
+    "Sources and detailed remedies use native disclosures throughout the catalog",
+    "Fragment targets clear site navigation; desktop and mobile horizontal fit"
+  ],
+  "ownerState": "Previous incomplete walkthrough retained locally; no execution record, verdict or act created for this new surface",
+  "liveBinding": {
+    "butlersRevision": "c08b255fd735fddf5a20e6350ccef9da2230d2ef",
+    "surfaceVersion": "polaris@067e191a8a4e",
+    "evaluationIdentity": "pwb-eval-b3bd8c0207e52d3c1af2ce17",
+    "url": "http://127.0.0.1:38091/polaris",
+    "runtimeHead": "33b1717014f35c0607e1782a2566d587f75f9f18",
+    "htmlSha256": "d43ca510f746da72117ad703f05dda240e89543ccebb4ba90c7d42a00aa18028",
+    "bytes": 2012241,
+    "stderrBytes": 0
+  },
+  "liveReadingComparison": {
+    "blocks": 419,
+    "matchesReviewedCapture": true,
+    "method": "HTMLParser comparison of every reading-prose container in document order",
+    "independentBrowserCheck": {
+      "count": 419,
+      "sha256": "cf67c66875d75f52789c279c1db241b83f4f82aae6f633edce9018be78874166"
+    }
+  }
+}
