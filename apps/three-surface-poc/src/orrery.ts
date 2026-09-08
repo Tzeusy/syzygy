@@ -145,7 +145,7 @@ export function renderOrreryPage(model: PocModel, mountPrefix = ''): string {
         <p class="unavailable-notice">The spatial city rendering requires JavaScript and is unavailable without it. The same facts are in the exact tables below.</p>
       </noscript>
       <section id="orrery-canvas" aria-label="Spatial code city (JavaScript-rendered; see exact tables for the no-script form)"></section>
-      <p class="orrery-height-legend">District blocks have a minimum height that grows with relative byte size; longer labels may add height. Exact file counts and sizes are in the tables below.</p>
+      <p class="orrery-height-legend">District blocks have a minimum height that grows with relative byte size; longer labels may add height.</p>
       <script type="application/json" id="orrery-data">${islandJson}</script>
       <script>${CLIENT_SCRIPT}</script>
       ${exactTablesSection(model)}`;
