@@ -1,5 +1,5 @@
 import { renderPolarisMarkdown } from './polaris-markdown.js';
-import { projectReading } from './polaris-reading.js';
+import { projectReading, type ProjectReading } from './polaris-reading.js';
 import { escapeHtml } from '@syzygy/cap1-daemon';
 import {
   EXTRACTION_CLASSES,
@@ -489,13 +489,18 @@ function unknownRoutes(claim: ProjectShapeClaim, prefix: string): string {
   return `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}>${prefix}${copy('label.unknown')} — ${unknownReasonRef(primary)}. ${copy('label.route')} ${escapeHtml(routeOf(claim, primary))}.${secondaryLine}</p>`;
 }
 
+export function renderProjectReading(reading: ProjectReading): string {
+  const label = reading.condensed ? `<p class="excerpt-label"${copyAttr('label.selected-passages')}>${copy('label.selected-passages')}</p>` : '';
+  const full = reading.condensed ? `<details class="full-account"><summary${copyAttr('label.full-account')}>${copy('label.full-account')}</summary><div class="reading-prose">${renderPolarisMarkdown(reading.full)}</div></details>` : '';
+  return `${label}<div class="reading-prose">${renderPolarisMarkdown(reading.summary)}</div>${full}`;
+}
+
 function accountStatement(statement: ProjectAccountStatement, revision: string): string {
   const body = statement.claim.epistemic.label === 'Observed' && statement.statement !== undefined
     ? ((): string => {
         const block = shapeClaimBlock(statement.claim, revision);
         const reading = projectReading(statement.statement, statement.key);
-        const full = reading.condensed ? `<details class="full-account"><summary${copyAttr('label.full-account')}>${copy('label.full-account')}</summary><div class="reading-prose">${renderPolarisMarkdown(reading.full)}</div></details>` : '';
-        return `<div class="account-reading"${block.attrs}><div data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${reading.condensed ? `<p class="excerpt-label"${copyAttr('label.selected-passages')}>${copy('label.selected-passages')}</p>` : ''}<div class="reading-prose">${renderPolarisMarkdown(reading.summary)}</div>${full}</div><details class="reading-citations"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')}</summary>${supportCitations(statement.claim.support, block.anchors)}</details></div>`;
+        return `<div class="account-reading"${block.attrs}><div data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${renderProjectReading(reading)}</div><details class="reading-citations"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')}</summary>${supportCitations(statement.claim.support, block.anchors)}</details></div>`;
       })()
     : unknownRoutes(statement.claim, '');
   return `<section class="claim-section" data-polaris-section="${escapeHtml(statement.claim.claimId)}">

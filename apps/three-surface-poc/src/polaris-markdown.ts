@@ -20,7 +20,12 @@ function inline(text: string, depth = 0): string {
     }
     const ticks = /^`+/.exec(rest)?.[0];
     if (ticks) {
-      const end = text.indexOf(ticks, i + ticks.length);
+      const runs = /`+/g;
+      runs.lastIndex = i + ticks.length;
+      let end = -1;
+      for (let match = runs.exec(text); match !== null; match = runs.exec(text)) {
+        if (match[0].length === ticks.length) { end = match.index; break; }
+      }
       if (end >= 0) {
         html += `<code>${escapeHtml(text.slice(i + ticks.length, end))}</code>`;
         i = end + ticks.length;
@@ -62,7 +67,23 @@ function inline(text: string, depth = 0): string {
 
 function cells(line: string): string[] {
   const content = line.trim().replace(/^\|/, '').replace(/(?<!\\)\|$/, '');
-  return content.split(/(?<!\\)\|/).map((cell) => cell.trim());
+  const cells: string[] = [];
+  let cell = '';
+  let codeRun = 0;
+  for (let i = 0; i < content.length; i++) {
+    const character = content[i]!;
+    if (character === '\\' && i + 1 < content.length) { cell += character + content[++i]; continue; }
+    if (character === '`') {
+      const run = /^`+/.exec(content.slice(i))![0];
+      if (codeRun === 0) codeRun = run.length;
+      else if (codeRun === run.length) codeRun = 0;
+      cell += run;
+      i += run.length - 1;
+    } else if (character === '|' && codeRun === 0) { cells.push(cell.trim()); cell = ''; }
+    else cell += character;
+  }
+  cells.push(cell.trim());
+  return cells;
 }
 
 function tableHeader(lines: string[], index: number): boolean {
@@ -84,6 +105,14 @@ function blocks(lines: string[], depth = 0): string {
   while (i < lines.length) {
     const line = lines[i]!;
     if (!line.trim()) { i++; continue; }
+    if (/^(?: {4}|\t)/.test(line)) {
+      const code: string[] = [];
+      while (i < lines.length && (/^(?: {4}|\t)/.test(lines[i]!) || lines[i]!.trim() === '')) {
+        code.push(lines[i++]!.replace(/^(?: {4}|\t)/, ''));
+      }
+      output.push(`<pre><code>${escapeHtml(code.join('\n'))}</code></pre>`);
+      continue;
+    }
     const fence = fenceStart.exec(line);
     if (fence) {
       const marker = fence[1]!;

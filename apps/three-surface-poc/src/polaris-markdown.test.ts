@@ -66,3 +66,17 @@ describe('Polaris admitted-text Markdown presentation', () => {
     expect(html.match(/<blockquote>/g)).toHaveLength(24);
   });
 });
+
+
+describe('literal code boundaries', () => {
+  it('retains indented code without interpreting links or emphasis', () => {
+    expect(renderPolarisMarkdown('    [literal](must-retain) **literal**')).toBe('<pre><code>[literal](must-retain) **literal**</code></pre>');
+  });
+  it('closes inline code only with an equal-length delimiter run', () => {
+    expect(renderPolarisMarkdown('`a``[literal](must-retain)`')).toBe('<p><code>a``[literal](must-retain)</code></p>');
+  });
+  it('keeps pipes within a code span in their table cell', () => {
+    const html = renderPolarisMarkdown('| Key | Meaning |\n| --- | --- |\n| `a|b` | Literal |');
+    expect(html).toContain('<td><code>a|b</code></td><td>Literal</td>');
+  });
+});

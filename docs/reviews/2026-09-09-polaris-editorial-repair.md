@@ -50,3 +50,18 @@ Retain before/after local captures and repository metadata-only evidence.
 [Unknown] Owner comprehension and satisfaction with the repaired page remain
 unjudged until the owner reads it. The previous readiness reviews remain
 historical records and are not evidence that the owner accepted the design.
+
+## Reviewed passage binding
+
+The rejected lexical omission rule has been removed. The architecture uses
+reviewed complete passages only when the extracted declaration matches its
+exact SHA-256. Any changed or unreviewed declaration renders completely.
+The plan stores offsets, not source bodies, and has no runtime input channel.
+
+- Plan: apps/three-surface-poc/src/polaris-reading-plan.ts
+- Plan file SHA-256: 755d1155d4dd6d61e00695051e2240099909249d0db35fb549c734927c16cdf4
+- Extracted declaration SHA-256: b6a02d08b19dbd0dee09f15076494fa6bbe4346e6009e07dff28c01fa2b5036c
+- Independent selection review: docs/reviews/R-POLARIS-EDITORIAL-PASSAGES-RAW.md
+
+This binding identifies the retained selection review; changing offsets retires
+that review until the new selection has its own independent confirmation.

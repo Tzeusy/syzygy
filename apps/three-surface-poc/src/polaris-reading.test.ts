@@ -1,39 +1,38 @@
+import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { projectReading } from './polaris-reading.js';
 
-describe('projectReading', () => {
-  it('keeps short account categories and V1 scope intact', () => {
-    const text = '### Scope\n\n- A complete declaration.\n\nDeferrals\n\nNot available.';
-    for (const key of ['purpose', 'promises', 'refusals', 'v1-success', 'v1-scope']) {
-      expect(projectReading(text, key)).toEqual({ summary: text, full: text, condensed: false });
+import { applyReadingPlan, projectReading, type ReadingPlan } from './polaris-reading.js';
+
+const text = 'Process Model\n\nWorkers run with explicit approval.\n\nBackground examples.\n\nStorage Model\n\nRecords persist.';
+const plan: ReadingPlan = {
+  statementSha256: createHash('sha256').update(text).digest('hex'),
+  passages: [{ start: 0, end: 13, heading: true }, { start: 15, end: 50 }, { start: 74, end: 87, heading: true }, { start: 89, end: 105 }],
+};
+
+describe('reviewed project reading', () => {
+  it('preserves exact selected passages and the full declaration', () => {
+    const result = applyReadingPlan(text, plan);
+    expect(result).toEqual({ summary: '### Process Model\n\nWorkers run with explicit approval.\n\n### Storage Model\n\nRecords persist.', full: text, condensed: true });
+  });
+
+  it('retains the complete account after any source change, including a new unmarked qualification', () => {
+    for (const changed of [text + '\n\nAccess requires further approval.', text.replace('explicit approval', 'no approval'), text.replace('Records persist.', 'Records persist only for one day.')]) {
+      expect(applyReadingPlan(changed, plan)).toEqual({ summary: changed, full: changed, condensed: false });
     }
   });
 
-  it('retains introduced lists, explanatory closure and unmarked exceptions', () => {
-    const intro = 'The issue has these causes:\n\n- First cause.\n- Second cause.\n\nSeparate processes solve the issue.\n\nHowever, shared reads remain permitted.';
-    const text = `Process Model\n\n${intro}\n\n**Why this helps:**\n\nRoutine operation becomes simpler.\n\nStorage Model\n\nRecords persist.`;
-    const result = projectReading(text, 'architecture');
-    expect(result.summary).toContain(intro);
-    expect(result.summary).not.toContain('Routine operation becomes simpler.');
-    expect(result.full).toBe(text);
-    expect(result.condensed).toBe(true);
+  it('fails closed on empty, overlapping, out-of-bounds and partial-line selectors', () => {
+    for (const passages of [[], [{ start: 0, end: 500 }], [{ start: 0, end: 12 }], [{ start: 1, end: 13 }], [{ start: 0, end: 13 }, { start: 0, end: 13 }]]) {
+      const candidate = { ...plan, passages };
+      expect(applyReadingPlan(text, candidate)).toEqual({ summary: text, full: text, condensed: false });
+    }
+    expect(applyReadingPlan(text, { ...plan, passages: [{ start: 0, end: 50, heading: true }] }).condensed).toBe(false);
   });
 
-  it('keeps qualifications in otherwise omittable rationale', () => {
-    const text = 'Process Model\n\nWorkers run.\n\n**Why this helps:**\n\nShared access is useful.\n\nAn exception requires approval.\n\nStorage Model\n\nRecords persist.';
-    expect(projectReading(text, 'architecture').summary).toContain('An exception requires approval.');
-  });
-
-  it('keeps fenced blocks intact, including blank lines and heading-like text', () => {
-    const fence = '```\nStep One\n\nStep Two\n```';
-    const text = `Process Model\n\nThe sequence follows:\n\n${fence}\n\nStorage Model\n\nRecords persist.`;
-    expect(projectReading(text, 'architecture').summary).toContain(fence);
-  });
-
-  it('retains caution-only sections and falls back when boundaries are ambiguous', () => {
-    const text = 'Overview\n\nWorkers run.\n\nCautions\n\n- Never share writes.\n- Retain records.';
-    expect(projectReading(text, 'architecture').summary).toContain('- Never share writes.\n- Retain records.');
-    const ambiguous = 'Workers run.\n\nAn unmarked exception follows.';
-    expect(projectReading(ambiguous, 'architecture')).toEqual({ summary: ambiguous, full: ambiguous, condensed: false });
+  it('never shortens unreviewed architecture or other account categories', () => {
+    const declaration = 'Process Model\n\nWorkers share records.\n\nAccess requires explicit approval.\n\nStorage Model\n\nRecords persist.';
+    for (const key of ['purpose', 'promises', 'refusals', 'v1-success', 'v1-scope', 'architecture']) {
+      expect(projectReading(declaration, key)).toEqual({ summary: declaration, full: declaration, condensed: false });
+    }
   });
 });

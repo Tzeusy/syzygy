@@ -102,6 +102,7 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
         site: getComputedStyle(document.querySelector('.site-nav')).position
       })`);
       expect(initial).toEqual({ contents: 'static', site: 'sticky' });
+      expect(await page.evaluate<boolean>('document.documentElement.scrollWidth <= innerWidth')).toBe(true);
       await page.evaluate(`document.querySelector('.contents-list summary').focus()`);
       await page.press('Enter');
       const after = await page.evaluate<{ open: boolean; top: number }>(`(() => {
