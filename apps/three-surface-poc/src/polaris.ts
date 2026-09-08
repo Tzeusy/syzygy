@@ -1252,6 +1252,7 @@ const POLARIS_STYLE = `
   .reading-prose blockquote { border-left: 2px solid var(--cyan); margin: 1rem 0; padding-left: 1.3rem; font-size: 1.2em; }
   .markdown-table { overflow-x: auto; margin-block: 1.5rem; }
   main, footer { overflow-wrap: anywhere; }
+  :target { scroll-margin-top: 5rem; }
   .reading-citations { margin-block: .5rem; font-size: .85rem; }
   .reading-citations > summary { cursor: pointer; color: var(--muted); }
   .excerpt-label { color: var(--muted); font-size: .85rem !important; }

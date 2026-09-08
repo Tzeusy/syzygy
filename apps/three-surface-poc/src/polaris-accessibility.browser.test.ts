@@ -113,6 +113,12 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
       })()`);
       expect(after.open).toBe(true);
       expect(after.top).toBeLessThanOrEqual(0);
+      const destination = await page.evaluate<{ top: number; navBottom: number }>(`(() => {
+        document.querySelector('.quick-links a').click();
+        return { top: document.querySelector('#polaris-group-v1').getBoundingClientRect().top,
+          navBottom: document.querySelector('.site-nav').getBoundingClientRect().bottom };
+      })()`);
+      expect(destination.top).toBeGreaterThanOrEqual(destination.navBottom);
     } finally { await page.close(); }
   });
 
