@@ -324,7 +324,7 @@ export function reasonCountsBlock(claimId: string, counts: ReasonCounts): string
     if (rows.length === 0) return '';
     return `<p${DISCLOSURE}>${copy(which === 'primary' ? 'label.primary-reasons' : 'label.secondary-reasons')}</p>
       <ul data-reason-counts-${which}="${escapeHtml(claimId)}"${DISCLOSURE}>${rows
-        .map(([reason, count]) => `<li data-reason="${escapeHtml(reason)}" data-count="${count}">${unknownReasonRef(reason)}: ${count}. ${copy('label.route')} ${reasonRouteHtml(reason)}</li>`)
+        .map(([reason, count]) => `<li data-reason="${escapeHtml(reason)}" data-count="${count}">${unknownReasonRef(reason)}: ${count}. <details class="reason-remedies"><summary${copyAttr('label.source-remedies')}>${copy('label.source-remedies')}</summary><p>${copy('label.route')} ${reasonRouteHtml(reason)}</p></details></li>`)
         .join('')}</ul>`;
   };
   const primary = list('primary', counts.primary);
@@ -1276,7 +1276,8 @@ const POLARIS_STYLE = `
   .guide-state { color: var(--muted); font-size: .75rem; }
   .guide-state > summary, .unknown-source-details > summary { cursor: pointer; }
   .unknown-disclosure > p { margin: 0 0 .5rem; }
-  .unknown-source-details { font-size: .9rem; }
+  .unknown-source-details, .reason-remedies { font-size: .9rem; }
+  .reason-remedies > summary { cursor: pointer; color: var(--muted); }
   .quick-links { display: flex; gap: 1.5rem; margin: 0 0 .5rem; font-size: .95rem; }
   .catalog-contexts { columns: 2; column-gap: 2.5rem; padding-left: 1.2rem; font-size: 1.15rem; line-height: 1.5; }
   .catalog-contexts li { break-inside: avoid; margin-bottom: .8rem; }

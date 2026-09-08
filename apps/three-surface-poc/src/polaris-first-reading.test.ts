@@ -158,6 +158,12 @@ describe('Polaris cause-correct routes (PWB-REQ-020 as amended; PWB-LIVE-11)', (
     expect(gap).toContain('>By cause:</span>');
     expect(decode(gap as string)).toContain(cause);
     expect(html).not.toContain(SECRET_SENTINEL);
+    const reasonBlocks = [...html.matchAll(/<ul data-reason-counts-(?:primary|secondary)="[^"]+"[^>]*>([\s\S]*?)<\/ul>/g)];
+    expect(reasonBlocks.length).toBeGreaterThan(0);
+    for (const block of reasonBlocks) {
+      expect(block[1]).toContain('<details class="reason-remedies">');
+      expect(block[1]).not.toContain('<details class="reason-remedies" open');
+    }
     expect(html).not.toContain('AKIA');
   });
 
