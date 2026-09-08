@@ -63,6 +63,7 @@ const TEXTS: Readonly<Record<string, string>> = {
   'about/craft-and-care/policies/testing.md': '# Testing\n',
   'README.md': '# Root\n',
   'openspec/specs/alpha/spec.md': '# Alpha\n',
+  'openspec/README.md': '[Specs](specs/)\n',
   'roster/atlas/butler.toml': '[butler]\nname = "atlas"\n',
   'roster/atlas/MANIFESTO.md': '# Atlas\n',
 };
@@ -537,20 +538,92 @@ describe('observeProjectShapeSources — determinism', () => {
   });
 });
 
+// The homes the default fixture's root index declares by its links.
+const DECLARED_HOMES: ReadonlySet<string> = new Set([
+  'about/heart-and-soul',
+  'about/legends-and-lore',
+  'about/spec-and-spine',
+  'about/lay-and-land',
+  'about/craft-and-care',
+]);
+
 describe('admitPhaseARead', () => {
   const tree = indexGitTree(TREE);
-  it('admits only tree-matching regular blobs at root-index or pillar-README paths', () => {
+  it('admits only tree-matching regular blobs at the root index or a declared pillar index', () => {
     const root = oidOf('about/README.md');
-    expect(admitPhaseARead(tree, { path: 'about/README.md', objectId: root })).toEqual({ kind: 'admitted', entry: TREE[1] });
-    expect(admitPhaseARead(tree, { path: 'about/heart-and-soul/vision.md', objectId: oidOf('about/heart-and-soul/vision.md') })).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
-    expect(admitPhaseARead(tree, { path: 'roster/atlas/butler.toml', objectId: oidOf('roster/atlas/butler.toml') })).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
-    expect(admitPhaseARead(tree, { path: 'README.md', objectId: oidOf('README.md') })).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
-    expect(admitPhaseARead(tree, { path: 'docs/heart-and-soul/README.md', objectId: root })).toEqual({ kind: 'refused', reason: 'not-in-tree' });
-    expect(admitPhaseARead(tree, { path: 'about/README.md', objectId: 'f'.repeat(40) })).toEqual({ kind: 'refused', reason: 'object-id-differs-from-tree' });
+    expect(admitPhaseARead(tree, { path: 'about/README.md', objectId: root }, DECLARED_HOMES)).toEqual({ kind: 'admitted', entry: TREE[1] });
+    expect(admitPhaseARead(tree, { path: 'about/heart-and-soul/README.md', objectId: oidOf('about/heart-and-soul/README.md') }, DECLARED_HOMES)).toEqual({ kind: 'admitted', entry: TREE[2] });
+    expect(admitPhaseARead(tree, { path: 'about/heart-and-soul/vision.md', objectId: oidOf('about/heart-and-soul/vision.md') }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    expect(admitPhaseARead(tree, { path: 'roster/atlas/butler.toml', objectId: oidOf('roster/atlas/butler.toml') }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    expect(admitPhaseARead(tree, { path: 'README.md', objectId: oidOf('README.md') }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    expect(admitPhaseARead(tree, { path: 'docs/heart-and-soul/README.md', objectId: root }, new Set(['docs/heart-and-soul']))).toEqual({ kind: 'refused', reason: 'not-in-tree' });
+    expect(admitPhaseARead(tree, { path: 'about/README.md', objectId: 'f'.repeat(40) }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'object-id-differs-from-tree' });
     const symlinked = indexGitTree(TREE.map((entry) => (entry.path === 'about/README.md' ? { ...entry, mode: '120000' } : entry)));
-    expect(admitPhaseARead(symlinked, { path: 'about/README.md', objectId: root })).toEqual({ kind: 'refused', reason: 'not-a-regular-blob' });
+    expect(admitPhaseARead(symlinked, { path: 'about/README.md', objectId: root }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-regular-blob' });
     const submodule = indexGitTree([{ mode: '160000', type: 'commit', objectId: root, path: 'about/README.md' }]);
-    expect(admitPhaseARead(submodule, { path: 'about/README.md', objectId: root })).toEqual({ kind: 'refused', reason: 'not-a-regular-blob' });
+    expect(admitPhaseARead(submodule, { path: 'about/README.md', objectId: root }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-regular-blob' });
+  });
+
+  it('a declared home admits its index wherever it sits; a directory merely named for a pillar declares nothing (syzygy-1z3.29)', () => {
+    const withIndex = indexGitTree([...TREE, blob('openspec/README.md')]);
+    const openspecIndex = { path: 'openspec/README.md', objectId: oidOf('openspec/README.md') };
+    expect(admitPhaseARead(withIndex, openspecIndex, new Set(['openspec']))).toEqual({ kind: 'admitted', entry: blob('openspec/README.md') });
+    expect(admitPhaseARead(withIndex, openspecIndex, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    expect(admitPhaseARead(withIndex, openspecIndex, new Set())).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    const named = { path: 'about/heart-and-soul/README.md', objectId: oidOf('about/heart-and-soul/README.md') };
+    expect(admitPhaseARead(withIndex, named, new Set())).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    expect(admitPhaseARead(withIndex, named, new Set(['about/heart-and-soul/']))).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    // The root index needs no declaration: it is the fixed seed.
+    expect(admitPhaseARead(withIndex, { path: 'about/README.md', objectId: oidOf('about/README.md') }, new Set())).toEqual({ kind: 'admitted', entry: TREE[1] });
+  });
+});
+
+// A root index in the real Butlers shape: the five-row table declares
+// Spec and Spine's home as `openspec/`, a directory not named for the
+// pillar, while `about/spec-and-spine/README.md` still exists undeclared.
+const ROOT_DECLARING_OPENSPEC = [
+  '# Fixture',
+  '',
+  '| Pillar | Purpose | Directory | Start here |',
+  '| --- | --- | --- | --- |',
+  '| Heart and Soul | why | `about/heart-and-soul/` | [Index](heart-and-soul/README.md) |',
+  '| Legends and Lore | design | `about/legends-and-lore/` | [Index](legends-and-lore/README.md) |',
+  '| Spec and Spine | behavior | `openspec/` | OpenSpec |',
+  '| Lay and Land | map | `about/lay-and-land/` | [Index](lay-and-land/README.md) |',
+  '| Craft and Care | quality | `about/craft-and-care/` | [Index](craft-and-care/README.md) |',
+  '',
+].join('\n');
+
+function withRootIndex(text: string): { tree: readonly GitTreeEntry[]; blobOverrides: Readonly<Record<string, Uint8Array>> } {
+  const bytes = encoder.encode(text);
+  const objectId = sha1Blob(bytes);
+  const tree = [...TREE.map((entry) => (entry.path === 'about/README.md' ? { ...entry, objectId, sizeBytes: bytes.byteLength } : entry)), blob('openspec/README.md')];
+  return { tree, blobOverrides: { [objectId]: bytes } };
+}
+
+describe('declared pillar homes (syzygy-1z3.29)', () => {
+  it('reads the pillar index at a declared home that is not named for the pillar', () => {
+    const { observation } = observed(withRootIndex(ROOT_DECLARING_OPENSPEC));
+    expect(observation.manifest.pillars.find((pillar) => pillar.key === 'spec-and-spine')).toMatchObject({
+      state: 'discovered',
+      indexPath: 'openspec/README.md',
+    });
+    expect(observation.reads.find((read) => read.path === 'openspec/README.md')).toMatchObject({ outcome: 'read', bytes: BYTES.get('openspec/README.md')?.byteLength });
+    // The undeclared, pillar-named directory is asked for by nothing.
+    expect(observation.reads.some((read) => read.path === 'about/spec-and-spine/README.md')).toBe(false);
+    expect(observation.manifest.sources.some((source) => source.path === 'about/spec-and-spine/README.md')).toBe(false);
+  });
+
+  it('the other four declared homes read as before, with no refusal in the ledger', () => {
+    const { observation } = observed(withRootIndex(ROOT_DECLARING_OPENSPEC));
+    expect(observation.manifest.pillars.map((pillar) => [pillar.key, pillar.state])).toEqual([
+      ['heart-and-soul', 'discovered'],
+      ['legends-and-lore', 'discovered'],
+      ['spec-and-spine', 'discovered'],
+      ['lay-and-land', 'discovered'],
+      ['craft-and-care', 'discovered'],
+    ]);
+    expect(observation.reads.filter((read) => read.outcome === 'refused')).toEqual([]);
   });
 });
 

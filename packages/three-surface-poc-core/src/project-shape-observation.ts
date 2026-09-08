@@ -30,11 +30,11 @@ import type { PhaseAClassification } from './content-classification.js';
 import { createResourceLedger, ParsePassBudgetExceeded, type ParsePassCharge, type ResourceLedger } from './resource-ledger.js';
 import { type GitTreeEntry, type GitTreeIndex, indexGitTree, parseGitLsTree, posixBasename, posixDirname } from './git-tree.js';
 import {
-  PILLAR_KEYS,
   PWB_DISCOVERY_VERSION,
   PWB_INDEX_DEPTH,
   PWB_ROOT_INDEX_PATH,
   canonicalJson,
+  declaredPillarRoots,
   deriveProjectShapeManifest,
   manifestIdentity,
   type ManifestSource,
@@ -147,18 +147,28 @@ export type PhaseAAdmission =
 
 const REGULAR_BLOB_MODES: readonly string[] = ['100644', '100755'];
 
-function isPhaseASeedPath(path: string): boolean {
+function isPhaseASeedPath(path: string, declaredRoots: ReadonlySet<string>): boolean {
   if (path === PWB_ROOT_INDEX_PATH) return true;
   if (posixBasename(path) !== 'README.md') return false;
-  return (PILLAR_KEYS as readonly string[]).includes(posixBasename(posixDirname(path)));
+  return declaredRoots.has(posixDirname(path));
 }
 
-// A seed may be read only when it is the fixed root index or a pillar
-// README (a `README.md` whose directory is named for one of the five
-// pillars), the tree lists exactly that object id at that path, and the
-// entry is a regular blob — never a symlink (120000) or a submodule.
-export function admitPhaseARead(tree: GitTreeIndex, seed: { readonly path: string; readonly objectId: string }): PhaseAAdmission {
-  if (!isPhaseASeedPath(seed.path)) return { kind: 'refused', reason: 'not-a-phase-a-seed-path' };
+// A seed may be read only when it is the fixed root index or a declared
+// pillar index — the `README.md` at a home the already-read root index
+// declares for exactly one pillar (the registry's "its declared pillar
+// README indexes"; `declaredPillarRoots` is the one derivation, shared with
+// the manifest's Rule 2) — the tree lists exactly that object id at that
+// path, and the entry is a regular blob — never a symlink (120000) or a
+// submodule. Before the root index is read nothing but the root index is
+// admissible, and a directory merely named for a pillar declares nothing:
+// Butlers keeps Spec and Spine at `openspec/`, and the earlier name-based
+// rule refused that index as `not-a-phase-a-seed-path` (syzygy-1z3.29).
+export function admitPhaseARead(
+  tree: GitTreeIndex,
+  seed: { readonly path: string; readonly objectId: string },
+  declaredRoots: ReadonlySet<string>,
+): PhaseAAdmission {
+  if (!isPhaseASeedPath(seed.path, declaredRoots)) return { kind: 'refused', reason: 'not-a-phase-a-seed-path' };
   const entry = tree.entryAt(seed.path);
   if (entry === undefined) return { kind: 'refused', reason: 'not-in-tree' };
   if (entry.objectId !== seed.objectId) return { kind: 'refused', reason: 'object-id-differs-from-tree' };
@@ -407,8 +417,11 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
   // 4. Phase A: manifest derivation with admitted, ledgered seed reads.
   const reads: PhaseAReadRecord[] = [];
   const ledger = input.ledger ?? createResourceLedger(limits);
+  // The pillar homes the root index declares, filled once its body has
+  // passed validation; until then only the root index itself is admissible.
+  const declaredRoots = new Set<string>();
   const readSeed = (seed: { readonly path: string; readonly objectId: string }): SeedRead => {
-    const admission = admitPhaseARead(tree, seed);
+    const admission = admitPhaseARead(tree, seed, declaredRoots);
     if (admission.kind === 'refused') {
       reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'refused', bytes: 0, detail: admission.reason });
       return { kind: 'unavailable', reason: `phase A read refused: ${admission.reason}` };
@@ -481,6 +494,15 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
       throw error;
     }
     reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'read', bytes: bytes.byteLength });
+    // The validated root index names the pillar homes phase A may read
+    // next. This derivation belongs to the link-discovery pass charged
+    // above (the manifest's Rule 1 repeats the same pure derivation under
+    // that one charge); only an unambiguous home admits its index.
+    if (seed.path === PWB_ROOT_INDEX_PATH) {
+      for (const declared of declaredPillarRoots(text).values()) {
+        if (!declared.ambiguous) declaredRoots.add(declared.root);
+      }
+    }
     // The validated body is held for the phase-B reader: the same (path,
     // object id) body is taken from Git once and traversed by no repeated
     // validation pass.
