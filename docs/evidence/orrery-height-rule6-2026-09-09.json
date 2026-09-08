@@ -1,0 +1,32 @@
+{
+  "scope": "Existing POC height/label/legend regression, synthetic browser fixture",
+  "baseCommit": "31571f6bfed0fae6aecae333e085f010c7f90d7b",
+  "sourceSha256": "85f869e498fb77f06d667366697cea5d6b2998256be2696539555ea67f42a29e",
+  "testSha256": "fae4d0addfa274bd79f88c2789bd7aeaa57b4ed485c4a0b3b2584a07a4d3f43b",
+  "mutations": [
+    {
+      "id": "grid-stretch",
+      "old": "    align-items: end;\n",
+      "new": "",
+      "totalTests": 1,
+      "failedTests": 1,
+      "outcome": "killed"
+    },
+    {
+      "id": "long-label-overflow",
+      "old": "    overflow-wrap: anywhere;\n",
+      "new": "",
+      "totalTests": 1,
+      "failedTests": 1,
+      "outcome": "killed"
+    },
+    {
+      "id": "misleading-legend",
+      "old": "District blocks have a minimum height that grows with relative byte size; longer labels may add height.",
+      "new": "District block height is proportional to directory byte size.",
+      "totalTests": 1,
+      "failedTests": 1,
+      "outcome": "killed"
+    }
+  ]
+}

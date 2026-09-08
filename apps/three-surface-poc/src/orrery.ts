@@ -34,6 +34,7 @@ const ORRERY_STYLE = `
   #orrery-canvas {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+    align-items: end;
     gap: .6rem;
     padding: 1.5rem 0 2rem;
     min-height: 8rem;
@@ -47,6 +48,7 @@ const ORRERY_STYLE = `
     flex-direction: column;
     justify-content: flex-end;
     min-height: var(--block-height, 4rem);
+    overflow-wrap: anywhere;
   }
   .orrery-block .block-label { font-family: var(--font-mono); font-size: .68rem; color: var(--muted); }
   .orrery-block.mapped { border-color: var(--cyan); }
@@ -143,7 +145,7 @@ export function renderOrreryPage(model: PocModel, mountPrefix = ''): string {
         <p class="unavailable-notice">The spatial city rendering requires JavaScript and is unavailable without it. The same facts are in the exact tables below.</p>
       </noscript>
       <section id="orrery-canvas" aria-label="Spatial code city (JavaScript-rendered; see exact tables for the no-script form)"></section>
-      <p class="orrery-height-legend">District block height is proportional to the directory's total size in bytes, relative to the largest district. File counts and sizes are also in the exact tables below.</p>
+      <p class="orrery-height-legend">District blocks have a minimum height that grows with relative byte size; longer labels may add height. Exact file counts and sizes are in the tables below.</p>
       <script type="application/json" id="orrery-data">${islandJson}</script>
       <script>${CLIENT_SCRIPT}</script>
       ${exactTablesSection(model)}`;
