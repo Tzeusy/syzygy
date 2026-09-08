@@ -12,7 +12,9 @@
 > its text — see
 > [`DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md`](../.syzygy/governance/decisions/DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md).
 > It is the governed plane's only agent-authored page and it holds no
-> obligations, by design.
+> obligations, by design. **The owner approved this text 2026-09-08**; the
+> reservation is discharged and this banner is not edited further to say so
+> again.
 
 ## The three changes, and what state each is in
 

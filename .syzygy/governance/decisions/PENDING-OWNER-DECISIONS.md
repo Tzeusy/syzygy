@@ -66,7 +66,7 @@
 > recommendation in the estate packet. Rows moved to `DECISION-HISTORY.md`;
 > the rulings live in `DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md`. Four
 > were applied the same day (P-54, P-55, P-56, P-57 — the `openspec/` index
-> written under P-57 awaits the owner's reserved review of its text); P-58
+> written under P-57 was approved by the owner 2026-09-08); P-58
 > and P-59 were ruled onto act 4 and travel as one prepared, unapplied and
 > unreviewed delta, with `.syzygy/intent/OVERVIEW.md` byte-unchanged; P-66
 > was ruled a permanent disclosed blemish and nothing was edited. Now
