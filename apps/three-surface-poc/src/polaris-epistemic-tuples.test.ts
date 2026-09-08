@@ -181,7 +181,8 @@ describe('Polaris complete epistemic tuples (PWB-REQ-007; RFC2-24, RFC6-14, RFC7
             expect(REASONS).toContain(reason);
             // The reason may be linked to its gaps-list entry (task 3.8); the
             // text and count beside it are what this oracle compares.
-            expect((list as string)).toMatch(new RegExp(`data-unknown-reason="${reason}">${reason}</span>(</a>)?: ${count}\\. Route: `));
+            expect((list as string)).toMatch(new RegExp(`data-unknown-reason="${reason}">${reason}</span>(</a>)?: ${count}\\. <details class="reason-remedies">`));
+            expect(list).toContain('Route: ');
           }
         }
         if (Object.values(aggregate.reasonCounts.primary).every((count) => (count ?? 0) === 0) && Object.values(aggregate.reasonCounts.secondary).every((count) => (count ?? 0) === 0)) {
@@ -249,7 +250,8 @@ describe('Polaris complete epistemic tuples (PWB-REQ-007; RFC2-24, RFC6-14, RFC7
     const secondary = /<ul data-reason-counts-secondary="claim:class:vision"[^>]*>([\s\S]*?)<\/ul>/.exec(html)?.[1] ?? '';
     expect([...primary.matchAll(/data-reason="([^"]+)" data-count="(\d+)"/g)].map((m) => `${m[1]}=${m[2]}`)).toEqual(['missing-declaration=2', 'excluded-content=1']);
     expect([...secondary.matchAll(/data-reason="([^"]+)" data-count="(\d+)"/g)].map((m) => `${m[1]}=${m[2]}`)).toEqual(['stale-beyond-currency-bound=1']);
-    expect(secondary).toContain('stale-beyond-currency-bound</span>: 1. Route: ');
+    expect(secondary).toContain('stale-beyond-currency-bound</span>: 1. <details class="reason-remedies">');
+    expect(secondary).toContain('Route: ');
     expect(html.split('data-reason-counts-primary=').length - 1).toBe(1);
     expect(html.split('data-reason-counts-secondary=').length - 1).toBe(1);
     expect(reasonCountsBlock('claim:class:vision', { primary: {}, secondary: {} })).toContain('No member claim carries an Unknown reason.');
