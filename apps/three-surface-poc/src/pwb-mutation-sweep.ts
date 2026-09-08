@@ -96,8 +96,8 @@ const SOURCE_DENOMINATOR: SweepGroup = {
       'named-absent-file-dropped',
       MANIFEST_SOURCE,
       'a pillar-named file absent at the revision is silently omitted instead of recorded missing-at-revision',
-      '      if (BASELINE_SPEC.test(path) || ROSTER_BUTLER.test(path)) continue;\n      addSource({',
-      "      if (BASELINE_SPEC.test(path) || ROSTER_BUTLER.test(path)) continue;\n      if (anchorFor(tree, path).kind === 'missing-at-revision') continue;\n      addSource({",
+      "      if (tree.entryAt(path)?.type === 'blob' && (BASELINE_SPEC.test(path) || ROSTER_BUTLER.test(path))) continue;\n      addSource({",
+      "      if (tree.entryAt(path)?.type === 'blob' && (BASELINE_SPEC.test(path) || ROSTER_BUTLER.test(path))) continue;\n      if (anchorFor(tree, path).kind === 'missing-at-revision') continue;\n      addSource({",
       ['emits exactly the hand-typed source set'],
     ),
     literal(
