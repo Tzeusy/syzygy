@@ -69,11 +69,12 @@ describe('Polaris first reading (PWB-REQ-010 as amended; PWB-LIVE-06)', () => {
       expect(states).toBeGreaterThan(overview);
       expect(nav).toBeGreaterThan(states);
       expect(boundaries).toBeGreaterThan(nav);
-      // The notice links the reader to the state explanation before any
-      // control: one link, one target, before the overview.
+      // The source-backed project introduction precedes the reading aids.
+      // The notice still routes to the complete state explanation.
       const notice = variant.indexOf('href="#polaris-claim-states"');
       expect(notice).toBeGreaterThan(-1);
-      expect(notice).toBeLessThan(overview);
+      expect(notice).toBeGreaterThan(overview);
+      expect(notice).toBeLessThan(states);
       expect(textOf(variant)).not.toMatch(/\b(healthy|unhealthy|passing|failing|maturity|score|on track|at risk|trend|trending|success rate)\b|\d+\s?%/i);
     }
   });

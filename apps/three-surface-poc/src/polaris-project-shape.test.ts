@@ -91,7 +91,11 @@ describe('Polaris project-level sequence (PWB-REQ-010)', () => {
       expect(slice).toContain(`data-polaris-section="claim:project-account:${key}"`);
       if (statement?.statement !== undefined && statement.claim.epistemic.label === 'Observed') {
         expect(slice).toContain(`data-claim-provenance="claim:project-account:${key}"`);
-        expect(slice).toContain(statement.statement.replace(/&/g, '&amp;'));
+        const visibleText = slice.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ');
+        for (const line of statement.statement.split('\n').filter((line) => line.trim() !== '')) {
+          const prose = line.replace(/^\s*(?:#{1,6}|[-*+]|\d+[.)])\s+/, '').replace(/\*\*|`/g, '').replace(/\s+/g, ' ').trim();
+          expect(visibleText).toContain(prose);
+        }
       }
     }
 

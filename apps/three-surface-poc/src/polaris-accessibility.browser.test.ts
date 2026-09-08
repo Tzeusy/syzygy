@@ -92,6 +92,29 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
     return { url: pathToFileURL(file).href, expectedTargets: rendered.expectedTargets };
   }
 
+  it('keeps the contents in document flow when expanded and scrolled', async () => {
+    const { url } = pageUrl(ACCESSIBILITY_VARIANTS[0] as AccessibilityVariant);
+    const page = await browser.newPage();
+    try {
+      await page.navigate(url);
+      const initial = await page.evaluate<{ contents: string; site: string }>(`({
+        contents: getComputedStyle(document.querySelector('.depth-nav')).position,
+        site: getComputedStyle(document.querySelector('.site-nav')).position
+      })`);
+      expect(initial).toEqual({ contents: 'static', site: 'sticky' });
+      await page.evaluate(`document.querySelector('.contents-list summary').focus()`);
+      await page.press('Enter');
+      const after = await page.evaluate<{ open: boolean; top: number }>(`(() => {
+        document.documentElement.style.scrollBehavior = 'auto';
+        const nav = document.querySelector('.depth-nav');
+        scrollTo(0, nav.offsetTop + nav.offsetHeight + 100);
+        return { open: document.querySelector('.contents-list').open, top: nav.getBoundingClientRect().bottom };
+      })()`);
+      expect(after.open).toBe(true);
+      expect(after.top).toBeLessThanOrEqual(0);
+    } finally { await page.close(); }
+  });
+
   for (const variant of ACCESSIBILITY_VARIANTS) {
     it(`${variant.id}: every distinction is keyboard-operable, named for assistive technology, and AA-contrasting`, async () => {
       const { url, expectedTargets } = pageUrl(variant);

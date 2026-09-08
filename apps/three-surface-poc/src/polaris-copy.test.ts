@@ -280,6 +280,13 @@ describe('Polaris copy roles (PWB-REQ-012)', () => {
     }
     const rendered: CopyString[] = [];
     for (const variant of VARIANTS) rendered.push(...sweep(renderPolarisPage(modelFor(variant))).strings);
+    const longAccount = buildFixtureModel(cleanups, { projectShape: {
+      authority: ADMITTING_AUTHORITY,
+      runGit: projectShapeFixtureGit({ ...PROJECT_SHAPE_FIXTURE_TEXTS,
+        'about/heart-and-soul/architecture.md': '# Architecture\n\n## Processes\n\nWorkers run.\n\nAdditional background explains the choice.\n\n## Storage\n\nRecords persist.\n',
+      }),
+    } });
+    rendered.push(...sweep(renderPolarisPage(longAccount)).strings);
     // The exact-source route's own strings: rendered text, an identity the
     // population does not carry, an empty identity, and an unobserved shape.
     const withSpec = modelFor('observed-with-baseline-spec');

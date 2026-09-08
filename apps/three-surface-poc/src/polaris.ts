@@ -1,3 +1,5 @@
+import { renderPolarisMarkdown } from './polaris-markdown.js';
+import { projectReading } from './polaris-reading.js';
 import { escapeHtml } from '@syzygy/cap1-daemon';
 import {
   EXTRACTION_CLASSES,
@@ -491,7 +493,9 @@ function accountStatement(statement: ProjectAccountStatement, revision: string):
   const body = statement.claim.epistemic.label === 'Observed' && statement.statement !== undefined
     ? ((): string => {
         const block = shapeClaimBlock(statement.claim, revision);
-        return `<p${block.attrs}><span data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${escapeHtml(statement.statement)}</span>${supportCitations(statement.claim.support, block.anchors)}</p>`;
+        const reading = projectReading(statement.statement, statement.key);
+        const full = reading.condensed ? `<details class="full-account"><summary${copyAttr('label.full-account')}>${copy('label.full-account')}</summary><div class="reading-prose">${renderPolarisMarkdown(reading.full)}</div></details>` : '';
+        return `<div class="account-reading"${block.attrs}><div data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${reading.condensed ? `<p class="excerpt-label"${copyAttr('label.selected-passages')}>${copy('label.selected-passages')}</p>` : ''}<div class="reading-prose">${renderPolarisMarkdown(reading.summary)}</div>${full}</div><details class="reading-citations"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')}</summary>${supportCitations(statement.claim.support, block.anchors)}</details></div>`;
       })()
     : unknownRoutes(statement.claim, '');
   return `<section class="claim-section" data-polaris-section="${escapeHtml(statement.claim.claimId)}">
@@ -506,7 +510,7 @@ function itemRow(item: ProjectShapeItem, revision: string): string {
   const identity = item.claim.support[0]?.sourceIdentity;
   const exact = block !== undefined && item.class === 'baseline-spec' && identity !== undefined && activeExactSources.has(identity) ? ` ${exactTextLink(identity)}` : '';
   const statement = block !== undefined
-    ? `<span data-claim-provenance="${escapeHtml(item.claim.claimId)}">${escapeHtml(item.statement ?? item.key)}</span>${supportCitations(item.claim.support, block.anchors)}${exact}`
+    ? `<div class="reading-prose" data-claim-provenance="${escapeHtml(item.claim.claimId)}">${renderPolarisMarkdown(item.statement ?? item.key)}</div>${supportCitations(item.claim.support, block.anchors)}${exact}`
     : unknownRoutes(item.claim, '');
   // The key cell takes the table region's role (declared once on the region,
   // classBlock); the tuple cell holds only the tuple span, which declares its
@@ -541,7 +545,9 @@ function classBlock(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: Ext
   const summary = aggregate.claim.epistemic.label === 'Observed'
     ? ((): string => {
         const block = shapeClaimBlock(aggregate.claim, shape.identity.revision);
-        return `<p${block.attrs}><span data-claim-provenance="${escapeHtml(aggregate.claim.claimId)}">${escapeHtml(classStatement(shape, cls))}</span>${supportCitations(aggregate.claim.support, block.anchors)}</p>`;
+        const contexts = cls === 'catalog-entry' ? [...new Set(items.map((item) => item.context).filter((context): context is string => context !== undefined))] : [];
+        const guide = contexts.length === 0 ? '' : `<ul class="catalog-contexts">${contexts.map((context) => `<li>${escapeHtml(context)}</li>`).join('')}</ul>`;
+        return `<div${block.attrs}><div data-claim-provenance="${escapeHtml(aggregate.claim.claimId)}">${guide}<p>${escapeHtml(classStatement(shape, cls))}</p></div>${supportCitations(aggregate.claim.support, block.anchors)}</div>`;
       })()
     : unknownRoutes(aggregate.claim, `${escapeHtml(classStatement(shape, cls))} `);
   return `<section class="claim-section" data-polaris-section="${escapeHtml(aggregate.claim.claimId)}" data-polaris-class="${escapeHtml(cls)}">
@@ -1197,6 +1203,58 @@ const POLARIS_STYLE = `
   .proposal-label { font-family: var(--font-mono); font-size: .85rem; letter-spacing: .04em; text-transform: uppercase; color: var(--unknown); }
   .proposal .adjacent { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); }
   .proposal h4 { margin: 0 0 .5rem; font-size: 1.05rem; }
+
+  header { width: min(74ch, calc(100% - 2rem)); padding: 2.8rem 0 1rem; }
+  header h1 { font-size: clamp(3.5rem, 7vw, 5.5rem); line-height: 1; margin-block: .7rem 1.4rem; }
+  header .lede { max-width: 48ch; font-size: 1.25rem; line-height: 1.6; }
+  main > .legend { max-width: 74ch; margin: 1.25rem auto 2rem; gap: .5rem 1rem; }
+  main > .notice { max-width: 74ch; margin: 0 auto 2rem; background: transparent; border-left: 1px solid var(--line); font-size: .9rem; color: var(--muted); }
+  .group { margin-top: 4rem; padding: 1.5rem 0 0; border-top: 1px solid var(--line); }
+  .group h2 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.15; letter-spacing: -.025em; }
+  .claim-section { border: 0; margin-bottom: 2.5rem; padding-top: .7rem; }
+  .claim-section h3 { font-size: 1.05rem; color: var(--muted); font-weight: normal; letter-spacing: .02em; }
+  .reading-prose { max-width: 66ch; font-size: 1.12rem; line-height: 1.75; overflow-wrap: anywhere; }
+  .reading-prose p { font-size: inherit; margin: 0 0 1.2em; }
+  .reading-prose h4, .reading-prose h5, .reading-prose h6 { font-size: 1.3rem; line-height: 1.3; margin: 2rem 0 .8rem; color: var(--ink); }
+  .reading-prose ul, .reading-prose ol { padding-left: 1.4rem; margin: .5rem 0 1.5rem; }
+  .reading-prose li { margin-bottom: .7rem; padding-left: .2rem; }
+  .reading-prose li p { margin-bottom: .3rem; }
+  .reading-prose strong { font-weight: bold; color: var(--ink); }
+  .reading-prose code { font-size: .84em; color: var(--cyan); }
+  .reading-prose pre { max-width: 100%; overflow-x: auto; padding: 1rem; background: var(--panel); line-height: 1.5; }
+  .reading-prose blockquote { border-left: 2px solid var(--cyan); margin: 1rem 0; padding-left: 1.3rem; font-size: 1.2em; }
+  .markdown-table { overflow-x: auto; margin-block: 1.5rem; }
+  main, footer { overflow-wrap: anywhere; }
+  .reading-citations { margin-block: .5rem; font-size: .85rem; }
+  .reading-citations > summary { cursor: pointer; color: var(--muted); }
+  .excerpt-label { color: var(--muted); font-size: .85rem !important; }
+  main > .group:first-of-type { margin-top: 1rem; }
+  .reading-citations .citation { font-size: .72rem; overflow-wrap: anywhere; }
+  .tuple-line { margin-top: .7rem; }
+  .claim-tuple { letter-spacing: 0; font-size: .72rem; }
+  .full-account { border-left: 1px solid var(--line); padding: .6rem 0 .6rem 1.2rem; margin: 1.5rem 0; }
+  .full-account > summary { cursor: pointer; color: var(--cyan); }
+  .full-account[open] > summary { margin-bottom: 1.3rem; }
+  .depth-nav { position: static; border: 0; background: transparent; backdrop-filter: none; padding: 0; font-family: var(--font-serif); }
+  .contents-list { border-block: 1px solid var(--line); padding: 1rem 0; }
+  .contents-list > summary { cursor: pointer; color: var(--cyan); font-size: 1rem; }
+  .contents-list ol { margin: 1rem 0 0; padding-left: 1.4rem; }
+  .contents-list li { margin: .75rem 0; line-height: 1.7; }
+  .catalog-contexts { columns: 2; column-gap: 2.5rem; padding-left: 1.2rem; font-size: 1.15rem; line-height: 1.5; }
+  .catalog-contexts li { break-inside: avoid; margin-bottom: .8rem; }
+  .population { border-block: 1px solid var(--line); padding: .75rem 0; }
+  .population > summary { font-size: 1rem; color: var(--cyan); }
+  .population[open] > summary { margin-bottom: 1rem; }
+  .population .reading-prose { font-size: 1rem; min-width: 22ch; }
+  .population .reading-prose p:last-child { margin-bottom: 0; }
+  .claim-states { border: 0; border-left: 1px solid var(--line); padding: .3rem 1rem; }
+  @media (max-width: 640px) {
+    header { padding-top: 2.5rem; }
+    .catalog-contexts { columns: 1; }
+    .site-nav ul { gap: 1rem; font-size: .85rem; }
+    .reading-prose { font-size: 1.05rem; }
+    .group { margin-top: 3rem; }
+  }
 `;
 
 /** Seam for the PWB-REQ-015 sweep: one deep dive rendered on its own with a
@@ -1273,8 +1331,8 @@ function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): st
     ]],
   ];
   return `<nav class="depth-nav" data-polaris-depth-nav aria-labelledby="polaris-depth-label">
-    <p id="polaris-depth-label"${SCOPE}>${copy('depth.label')}</p>
-    <ol>${levels.map(([copyId, links], index) => `<li data-depth-level="${index + 1}"${SCOPE}><span${copyAttr(copyId)}>${copy(copyId)}</span> — ${links.join(', ')}</li>`).join('')}</ol>
+    <details class="contents-list"><summary id="polaris-depth-label"${SCOPE}>${copy('depth.label')}</summary>
+    <ol>${levels.map(([copyId, links], index) => `<li data-depth-level="${index + 1}"${SCOPE}><span${copyAttr(copyId)}>${copy(copyId)}</span> — ${links.join(', ')}</li>`).join('')}</ol></details>
   </nav>`;
 }
 
@@ -1313,9 +1371,9 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     .join('');
 
   const body = `
-    <p class="notice"${copyAttr('notice')}>${copy('notice')} <a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p>
     ${groupHeader('overview')}
     ${projectGroupBody(shape, 'overview')}
+    <p class="notice"${copyAttr('notice')}>${copy('notice')} <a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p>
     ${claimStatesBlock()}
     ${depthNav(shape, dives)}
     ${groupHeader('boundaries')}
@@ -1342,7 +1400,8 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
   return pageShell({
     title: 'Polaris · Syzygy three-surface POC',
     current: 'polaris',
-    eyebrow: `Polaris · Butlers ${model.project.revision.slice(0, 12)}`,
+    eyebrow: 'Polaris · Project manifesto',
+    readingLayout: true,
     heading: copyText('shell.heading'),
     lede: copyText('shell.lede'),
     extraStyle: POLARIS_STYLE,
