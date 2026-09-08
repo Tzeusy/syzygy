@@ -315,6 +315,81 @@ describe('deriveProjectShapeManifest — complete population at one revision', (
   });
 });
 
+describe('deriveProjectShapeManifest — a declared home over tree-rule files (syzygy-1z3.29 review)', () => {
+  // The root index declares Spec and Spine at `openspec/` and Lay and Land at
+  // `roster/`, and each home's index links a file Rules 3 and 4 own. Expected
+  // sources are hand-typed: the tree rule keeps the file and its class, the
+  // link still counts as named, and no class-less duplicate shadows it.
+  const ROOT_TEXT = [
+    '| Pillar | Directory |',
+    '| --- | --- |',
+    '| Spec and Spine | `openspec/` |',
+    '| Lay and Land | `roster/` |',
+    '',
+  ].join('\n');
+  const TREE_WITH_HOMES: readonly GitTreeEntry[] = [
+    ...TREE.filter((entry) => !entry.path.startsWith('about/spec-and-spine/') && !entry.path.startsWith('about/lay-and-land/')),
+    blob('openspec/README.md', 50),
+    blob('roster/README.md', 51),
+  ];
+  const overrides: Readonly<Record<string, SeedRead>> = {
+    'openspec/README.md': { kind: 'text', text: '[Alpha](specs/alpha/spec.md) · [Gamma](specs/gamma/README.md) · [Specs](specs/)\n' },
+    'roster/README.md': { kind: 'text', text: '[Atlas](atlas/butler.toml) · [Atlas manifesto](atlas/MANIFESTO.md)\n' },
+  };
+
+  it('a baseline spec named by the Spec and Spine index keeps its tree rule and its baseline-spec class', () => {
+    const { manifest } = derive({ rootText: ROOT_TEXT, tree: TREE_WITH_HOMES, overrides });
+    expect(manifest.pillars[2]).toEqual({
+      key: 'spec-and-spine',
+      state: 'discovered',
+      root: 'openspec',
+      indexPath: 'openspec/README.md',
+      namedSources: 2,
+      ignoredLinks: [{ target: 'specs/', reason: 'names-a-directory' }],
+    });
+    expect(manifest.sources.find((source) => source.path === 'openspec/specs/alpha/spec.md')).toEqual({
+      path: 'openspec/specs/alpha/spec.md',
+      rule: 'baseline-spec-tree',
+      extractionClasses: ['baseline-spec'],
+      anchor: b(20),
+    });
+    expect(manifest.sources.find((source) => source.path === 'openspec/specs/gamma/README.md')).toEqual({
+      path: 'openspec/specs/gamma/README.md',
+      rule: 'pillar-named-file',
+      pillar: 'spec-and-spine',
+      declaredBy: 'openspec/README.md',
+      extractionClasses: [],
+      anchor: b(21),
+    });
+    expect(manifest.sources.filter((source) => source.extractionClasses.includes('baseline-spec')).map((source) => source.path)).toEqual([
+      'openspec/specs/alpha/spec.md',
+      'openspec/specs/beta/spec.md',
+    ]);
+  });
+
+  it('a butler.toml named by an index at a roster home keeps its tree rule and its roster-identity class', () => {
+    const { manifest } = derive({ rootText: ROOT_TEXT, tree: TREE_WITH_HOMES, overrides });
+    expect(manifest.pillars[3]).toEqual({
+      key: 'lay-and-land',
+      state: 'discovered',
+      root: 'roster',
+      indexPath: 'roster/README.md',
+      namedSources: 2,
+      ignoredLinks: [],
+    });
+    expect(manifest.sources.find((source) => source.path === 'roster/atlas/butler.toml')).toEqual({
+      path: 'roster/atlas/butler.toml',
+      rule: 'roster-tree',
+      extractionClasses: ['roster-identity'],
+      anchor: b(25),
+    });
+    expect(manifest.sources.filter((source) => source.extractionClasses.includes('roster-identity')).map((source) => source.path)).toEqual([
+      'roster/atlas/butler.toml',
+      'roster/bravo/butler.toml',
+    ]);
+  });
+});
+
 describe('deriveProjectShapeManifest — the population never shrinks on failure', () => {
   it('root index unavailable: five pillars Unknown, tree rules still populate, the root index stays counted', () => {
     const { manifest, asked } = derive({ overrides: { [ROOT]: { kind: 'unavailable', reason: 'read guard rejected' } } });

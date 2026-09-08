@@ -466,6 +466,12 @@ export function deriveProjectShapeManifest(input: DeriveManifestInput): DeriveMa
       namedPaths.add(resolved.path);
     }
     for (const path of namedPaths) {
+      // A baseline spec or roster file is owned by Rules 3 and 4 with their
+      // classes (the spec: `baseline-spec` uses each baseline spec directory)
+      // whoever names it; a pillar declared at `openspec/` or `roster/` would
+      // otherwise register it first as a class-less named file, and the tree
+      // rule's add would be silently discarded (review of syzygy-1z3.29).
+      if (BASELINE_SPEC.test(path) || ROSTER_BUTLER.test(path)) continue;
       addSource({
         path,
         rule: 'pillar-named-file',
