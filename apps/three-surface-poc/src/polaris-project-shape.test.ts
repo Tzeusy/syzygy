@@ -27,7 +27,7 @@ afterEach(() => {
 });
 
 // Hand-typed oracles (never imported from the renderer or the model).
-const PROJECT_GROUPS = ['overview', 'boundaries', 'architecture', 'v1', 'catalog'] as const;
+const PROJECT_GROUPS = ['overview', 'boundaries', 'v1', 'architecture', 'catalog'] as const;
 const ACCOUNT_KEYS = ['purpose', 'promises', 'refusals', 'architecture', 'v1-scope', 'v1-success'] as const;
 const CATALOG_CLASSES = ['catalog-entry', 'roster-identity', 'design-contract', 'baseline-spec', 'craft-policy'] as const;
 const ACCOUNT_GROUP: Readonly<Record<(typeof ACCOUNT_KEYS)[number], string>> = {
@@ -194,7 +194,8 @@ describe('Polaris progressive depth (PWB-REQ-011; RFC7-16)', () => {
       shape.items.filter((item) => item.class !== 'project-account-section').length +
       shape.sources.length +
       shape.contradictions.length;
-    expect(tuples.length).toBe(expectedTuples);
+    const examples = new Set(shape.items.filter((item) => item.class === 'catalog-entry' && item.claim.epistemic.label === 'Observed' && item.statement !== undefined).map((item) => item.context)).size;
+    expect(tuples.length).toBe(expectedTuples + examples);
     expect(new Set(tuples.map((tuple) => attribute(tuple, 'data-claim-id'))).size).toBe(expectedTuples);
     let matched = 0;
     for (const tuple of tuples) {

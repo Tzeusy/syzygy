@@ -1,6 +1,6 @@
-// Source-free presentation selectors over one exact extracted declaration.
-// The full declaration is used whenever its bytes differ.
-// Fidelity review: docs/reviews/R-POLARIS-EDITORIAL-PASSAGES-RAW.md.
+// Metadata-only, independently reviewed presentation selections.
+// Any source-text change renders the complete declaration instead.
+
 export const ARCHITECTURE_READING_PLAN = {
   "statementSha256": "b6a02d08b19dbd0dee09f15076494fa6bbe4346e6009e07dff28c01fa2b5036c",
   "passages": [
@@ -52,27 +52,6 @@ export const ARCHITECTURE_READING_PLAN = {
       "end": 4220
     },
     {
-      "start": 4222,
-      "end": 4274,
-      "heading": true
-    },
-    {
-      "start": 4276,
-      "end": 4472
-    },
-    {
-      "start": 4474,
-      "end": 4809
-    },
-    {
-      "start": 4811,
-      "end": 5582
-    },
-    {
-      "start": 5584,
-      "end": 5960
-    },
-    {
       "start": 6741,
       "end": 6779,
       "heading": true
@@ -86,71 +65,8 @@ export const ARCHITECTURE_READING_PLAN = {
       "end": 7170
     },
     {
-      "start": 7206,
-      "end": 7838
-    },
-    {
       "start": 7840,
       "end": 8057
-    },
-    {
-      "start": 8517,
-      "end": 8552,
-      "heading": true
-    },
-    {
-      "start": 8554,
-      "end": 9105
-    },
-    {
-      "start": 9107,
-      "end": 9541
-    },
-    {
-      "start": 12582,
-      "end": 12926
-    },
-    {
-      "start": 12928,
-      "end": 13390
-    },
-    {
-      "start": 13632,
-      "end": 13672,
-      "heading": true
-    },
-    {
-      "start": 13674,
-      "end": 13871
-    },
-    {
-      "start": 14383,
-      "end": 14656
-    },
-    {
-      "start": 14797,
-      "end": 14977
-    },
-    {
-      "start": 14979,
-      "end": 15029,
-      "heading": true
-    },
-    {
-      "start": 15424,
-      "end": 15866
-    },
-    {
-      "start": 16425,
-      "end": 16455
-    },
-    {
-      "start": 16457,
-      "end": 16986
-    },
-    {
-      "start": 16988,
-      "end": 17289
     },
     {
       "start": 17843,
@@ -175,24 +91,31 @@ export const ARCHITECTURE_READING_PLAN = {
       "heading": true
     },
     {
-      "start": 19218,
-      "end": 19264
-    },
-    {
       "start": 19266,
       "end": 19330
     },
     {
       "start": 19332,
       "end": 20154
+    }
+  ]
+} as const;
+
+export const V1_READING_PLAN = {
+  "statementSha256": "58cd64a8abe3491deb4ed3caa3996c82792734e2e64ad84041d06495ba770357",
+  "passages": [
+    {
+      "start": 9346,
+      "end": 9360,
+      "heading": true
     },
     {
-      "start": 20405,
-      "end": 20476
+      "start": 9362,
+      "end": 9508
     },
     {
-      "start": 20478,
-      "end": 21074
+      "start": 9510,
+      "end": 10514
     }
   ]
 } as const;

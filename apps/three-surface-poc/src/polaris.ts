@@ -83,8 +83,8 @@ export const POLARIS_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}/polaris` as const;
 export const POLARIS_GROUPS = [
   'overview',
   'boundaries',
-  'architecture',
   'v1',
+  'architecture',
   'catalog',
   'capability-detail',
   'evidence-and-gaps',
@@ -405,9 +405,9 @@ function supportCitations(support: readonly ProjectShapeSupport[], anchors: read
 
 /** One anchored block for one Observed shape claim: its support anchors,
  * bound to the evaluated revision, with the claim's own captured state. */
-function shapeClaimBlock(claim: ProjectShapeClaim, revision: string, targetClass: AnchorTargetClass = 'evidence'): { readonly attrs: string; readonly anchors: readonly NarrativeAnchor[] } {
+function shapeClaimBlock(claim: ProjectShapeClaim, revision: string, targetClass: AnchorTargetClass = 'evidence', blockId = `block:${claim.claimId}`): { readonly attrs: string; readonly anchors: readonly NarrativeAnchor[] } {
   const anchors = claim.support.map((support) => supportAnchor(support, revision, targetClass)).filter((anchor): anchor is AnchorInput => anchor !== undefined);
-  return anchoredBlock(`block:${claim.claimId}`, [{ claimId: claim.claimId, anchors, captured: capturedStateOf(claim) }]);
+  return anchoredBlock(blockId, [{ claimId: claim.claimId, anchors, captured: capturedStateOf(claim) }]);
 }
 
 /** The cause-correct route for one exclusion: what produced it and what,
@@ -486,7 +486,7 @@ function unknownRoutes(claim: ProjectShapeClaim, prefix: string): string {
   const secondaryLine = secondary.length === 0
     ? ''
     : `<br><small>${copy('label.also')} ${secondary.map((reason) => `${escapeHtml(reason)} (${copy('label.route').toLowerCase()} ${escapeHtml(routeOf(claim, reason))})`).join('; ')}</small>`;
-  return `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}>${prefix}${copy('label.unknown')} — ${unknownReasonRef(primary)}. ${copy('label.route')} ${escapeHtml(routeOf(claim, primary))}.${secondaryLine}</p>`;
+  return `<div class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}><p>${prefix.startsWith('Declared by ') ? '' : prefix}${copy('label.unknown')} — ${unknownReasonRef(primary)}.</p><details class="unknown-source-details"><summary${copyAttr('label.source-remedies')}>${copy('label.source-remedies')}</summary><p>${prefix.startsWith('Declared by ') ? prefix : ''}${copy('label.route')} ${escapeHtml(routeOf(claim, primary))}.${secondaryLine}</p></details></div>`;
 }
 
 export function renderProjectReading(reading: ProjectReading): string {
@@ -537,6 +537,28 @@ function classStatement(shape: Extract<ProjectShape, { kind: 'observed' }>, cls:
   const declaring = shape.sources.filter((source) => source.extractionClasses.includes(cls)).map((source) => source.path);
   if (declaring.length === 0 && aggregate.denominator.kind === 'unknown') return 'Source discovery is incomplete for this class.';
   return declaring.length === 0 ? 'No admitted source declares this class.' : `Declared by ${declaring.join(', ')}.`;
+}
+
+function capabilityGuide(shape: Extract<ProjectShape, { kind: 'observed' }>): string {
+  const groups = new Map<string, ProjectShapeItem[]>();
+  for (const item of shape.items.filter((item) => item.class === 'catalog-entry')) {
+    const context = item.context ?? copyText('class.catalog-entry');
+    const group = groups.get(context) ?? [];
+    group.push(item);
+    groups.set(context, group);
+  }
+  const practicalOrder = ['Butlers', 'Staffers', 'Dashboard', 'Connectors'];
+  const rank = (context: string): number => { const index = practicalOrder.indexOf(context); return index < 0 ? practicalOrder.length : index; };
+  const entries = [...groups.entries()].sort(([a], [b]) => rank(a) - rank(b));
+  return `<section class="capability-guide" id="polaris-capability-guide">
+    <p class="guide-intro"${copyAttr('label.guide-intro')}>${copy('label.guide-intro')} <a href="#polaris-class-catalog-entry"${copyAttr('label.complete-catalog')}>${copy('label.complete-catalog')}</a></p>
+    <div class="guide-grid">${entries.map(([context, members]) => {
+      const example = members.find((item) => item.claim.epistemic.label === 'Observed' && item.statement !== undefined);
+      if (example === undefined) return `<section class="guide-entry"><h4${FACT}>${escapeHtml(context)}</h4><p${SCOPE}>${copy('label.complete-catalog')}</p></section>`;
+      const block = shapeClaimBlock(example.claim, shape.identity.revision, 'evidence', `guide:${example.claim.claimId}`);
+      return `<section class="guide-entry"><h4${FACT}>${escapeHtml(context)}</h4><div${block.attrs}><div class="reading-prose" data-claim-provenance="${escapeHtml(example.claim.claimId)}">${renderPolarisMarkdown(example.statement as string)}</div><details class="reading-citations"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')}</summary>${supportCitations(example.claim.support, block.anchors)}</details></div><details class="guide-state"><summary${DISCLOSURE}>${escapeHtml(example.claim.epistemic.label)}</summary>${claimTuple(example.claim)}</details></section>`;
+    }).join('')}</div>
+  </section>`;
 }
 
 function classBlock(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: ExtractionClass, withItems: boolean): string {
@@ -1164,7 +1186,7 @@ function projectGroupBody(shape: ProjectShape, group: Exclude<PolarisGroup, 'cap
     case 'architecture':
       return `${accountByKey(shape, 'architecture')}${classBlock(shape, 'topology-component', true)}`;
     case 'v1':
-      return `${accountByKey(shape, 'v1-scope')}${accountByKey(shape, 'v1-success')}${classBlock(shape, 'success-criterion', true)}`;
+      return `${capabilityGuide(shape)}${accountByKey(shape, 'v1-scope')}${accountByKey(shape, 'v1-success')}${classBlock(shape, 'success-criterion', true)}`;
     case 'catalog':
       return CATALOG_CLASSES.map((cls) => classBlock(shape, cls, true)).join('');
   }
@@ -1245,6 +1267,17 @@ const POLARIS_STYLE = `
   .contents-list > summary { cursor: pointer; color: var(--cyan); font-size: 1rem; }
   .contents-list ol { margin: 1rem 0 0; padding-left: 1.4rem; }
   .contents-list li { margin: .75rem 0; line-height: 1.7; }
+  .guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 2rem; }
+  .capability-guide { max-width: 74ch; margin: 1.5rem auto 3rem; }
+  .guide-entry { border-top: 1px solid var(--line); padding-top: 1rem; }
+  .guide-entry h4 { font-size: 1.35rem; margin: 0 0 .75rem; }
+  .guide-entry .reading-prose { font-size: 1rem; line-height: 1.6; }
+  .guide-intro { color: var(--muted); }
+  .guide-state { color: var(--muted); font-size: .75rem; }
+  .guide-state > summary, .unknown-source-details > summary { cursor: pointer; }
+  .unknown-disclosure > p { margin: 0 0 .5rem; }
+  .unknown-source-details { font-size: .9rem; }
+  .quick-links { display: flex; gap: 1.5rem; margin: 0 0 .5rem; font-size: .95rem; }
   .catalog-contexts { columns: 2; column-gap: 2.5rem; padding-left: 1.2rem; font-size: 1.15rem; line-height: 1.5; }
   .catalog-contexts li { break-inside: avoid; margin-bottom: .8rem; }
   .population { border-block: 1px solid var(--line); padding: .75rem 0; }
@@ -1256,6 +1289,7 @@ const POLARIS_STYLE = `
   @media (max-width: 640px) {
     header { padding-top: 2.5rem; }
     .catalog-contexts { columns: 1; }
+    .guide-grid { grid-template-columns: 1fr; }
     .site-nav ul { gap: 1rem; font-size: .85rem; }
     .reading-prose { font-size: 1.05rem; }
     .group { margin-top: 3rem; }
@@ -1319,7 +1353,7 @@ function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): st
   const revision = observed ? shape.identity.revision : '';
   const link = (id: string, copyId: PolarisCopyId): string => `<a href="#${escapeHtml(id)}"${copyAttr(copyId)}>${copy(copyId)}</a>`;
   const levels: readonly (readonly [PolarisCopyId, readonly string[]])[] = [
-    ['depth.summary', [link('polaris-group-overview', 'group.overview'), link('polaris-group-boundaries', 'group.boundaries'), link('polaris-group-architecture', 'group.architecture'), link('polaris-group-v1', 'group.v1')]],
+    ['depth.summary', [link('polaris-group-overview', 'group.overview'), link('polaris-group-boundaries', 'group.boundaries'), link('polaris-group-v1', 'group.v1'), link('polaris-group-architecture', 'group.architecture')]],
     ['depth.catalog', [link('polaris-group-catalog', 'group.catalog'), ...(observed ? CATALOG_CLASSES.map((cls) => link(`polaris-class-${cls}`, `class.${cls}`)) : [])]],
     ['depth.detail', [link('polaris-group-capability-detail', 'group.capability-detail'), ...dives.map((dive) => `<a href="#polaris-deep-dive-${escapeHtml(sourceSlug(dive.capabilityId))}" data-depth-dive="${escapeHtml(dive.capabilityId)}"${FACT}>${escapeHtml(dive.capability.title)}</a>`)]],
     ['depth.source', [
@@ -1335,7 +1369,7 @@ function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): st
       }),
     ]],
   ];
-  return `<nav class="depth-nav" data-polaris-depth-nav aria-labelledby="polaris-depth-label">
+  return `<nav class="depth-nav" data-polaris-depth-nav aria-labelledby="polaris-depth-label"><p class="quick-links"${SCOPE}><a href="#polaris-group-v1"${copyAttr('label.capabilities')}>${copy('label.capabilities')}</a>${observed ? ` <a href="#polaris-account-purpose"${copyAttr('label.terminology')}>${copy('label.terminology')}</a>` : ''}</p>
     <details class="contents-list"><summary id="polaris-depth-label"${SCOPE}>${copy('depth.label')}</summary>
     <ol>${levels.map(([copyId, links], index) => `<li data-depth-level="${index + 1}"${SCOPE}><span${copyAttr(copyId)}>${copy(copyId)}</span> — ${links.join(', ')}</li>`).join('')}</ol></details>
   </nav>`;
@@ -1376,17 +1410,17 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     .join('');
 
   const body = `
+    ${depthNav(shape, dives)}
     ${groupHeader('overview')}
     ${projectGroupBody(shape, 'overview')}
     <p class="notice"${copyAttr('notice')}>${copy('notice')} <a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p>
     ${claimStatesBlock()}
-    ${depthNav(shape, dives)}
     ${groupHeader('boundaries')}
     ${projectGroupBody(shape, 'boundaries')}
-    ${groupHeader('architecture')}
-    ${projectGroupBody(shape, 'architecture')}
     ${groupHeader('v1')}
     ${projectGroupBody(shape, 'v1')}
+    ${groupHeader('architecture')}
+    ${projectGroupBody(shape, 'architecture')}
     ${groupHeader('catalog')}
     ${projectGroupBody(shape, 'catalog')}
     ${groupHeader('capability-detail')}

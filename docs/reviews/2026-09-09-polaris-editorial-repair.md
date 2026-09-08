@@ -51,7 +51,7 @@ Retain before/after local captures and repository metadata-only evidence.
 unjudged until the owner reads it. The previous readiness reviews remain
 historical records and are not evidence that the owner accepted the design.
 
-## Reviewed passage binding
+## Initial passage binding (superseded for the first reading)
 
 The rejected lexical omission rule has been removed. The architecture uses
 reviewed complete passages only when the extracted declaration matches its
@@ -65,3 +65,19 @@ The plan stores offsets, not source bodies, and has no runtime input channel.
 
 This binding identifies the retained selection review; changing offsets retires
 that review until the new selection has its own independent confirmation.
+
+## Reading hierarchy revision
+
+Independent design review required a shorter core architecture, practical
+capabilities before engineering detail, early contents/terminology routes and
+compact Unknown disclosure. The V1 project scope is part of the manifesto;
+the full capability catalog remains after the architecture, preserving
+RFC7-13's primary altitude order.
+
+The primary architecture now uses the separately confirmed core selection.
+The V1 account retains its complete deferrals alongside every declared
+capability context and complete example member statements. The complete
+scope and architecture remain available. New selection metadata and exact
+review bindings are in docs/evidence/polaris-editorial-reading-plans-2026-09-09.json.
+The current implementation plan file SHA-256 is 7effb17f7f19ddb7d003313d57cba2865fb8558450c8614d2ae2a6da8b046d58.
+The original 1,685-word selection confirmation remains historical.

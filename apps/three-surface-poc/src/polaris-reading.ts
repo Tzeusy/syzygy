@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import { ARCHITECTURE_READING_PLAN } from './polaris-reading-plan.js';
+import { ARCHITECTURE_READING_PLAN, V1_READING_PLAN } from './polaris-reading-plan.js';
 
 export interface ProjectReading {
   readonly summary: string;
@@ -33,5 +33,7 @@ export function applyReadingPlan(text: string, plan: ReadingPlan): ProjectReadin
 export function projectReading(text: string, key: string): ProjectReading {
   return key === 'architecture'
     ? applyReadingPlan(text, ARCHITECTURE_READING_PLAN)
-    : { summary: text, full: text, condensed: false };
+    : key === 'v1-scope'
+      ? applyReadingPlan(text, V1_READING_PLAN)
+      : { summary: text, full: text, condensed: false };
 }

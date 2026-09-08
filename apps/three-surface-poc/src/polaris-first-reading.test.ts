@@ -57,7 +57,7 @@ function detailsOf(html: string): { tag: string; inner: string }[] {
 }
 
 describe('Polaris first reading (PWB-REQ-010 as amended; PWB-LIVE-06)', () => {
-  it('opens on Butlers: the heading names the project, the overview group and the claim-state disclosure precede the depth list, and no headline status appears', () => {
+  it('opens on Butlers: the heading names the project, the compact contents precede the overview and the state explanation follows it, and no headline status appears', () => {
     for (const variant of [observed().html, observed(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET).html, renderPolarisPage(buildFixtureModel(cleanups)), renderPolarisPage(buildFixtureModel(cleanups, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } }))]) {
       expect(variant).toMatch(/<h1[^>]*>Butlers<\/h1>/);
       expect(variant).toContain('Butlers in its own words');
@@ -67,8 +67,8 @@ describe('Polaris first reading (PWB-REQ-010 as amended; PWB-LIVE-06)', () => {
       const boundaries = variant.indexOf('data-polaris-group="boundaries"');
       expect(overview).toBeGreaterThan(-1);
       expect(states).toBeGreaterThan(overview);
-      expect(nav).toBeGreaterThan(states);
-      expect(boundaries).toBeGreaterThan(nav);
+      expect(nav).toBeLessThan(overview);
+      expect(boundaries).toBeGreaterThan(states);
       // The source-backed project introduction precedes the reading aids.
       // The notice still routes to the complete state explanation.
       const notice = variant.indexOf('href="#polaris-claim-states"');
@@ -106,6 +106,33 @@ describe('Polaris first reading (PWB-REQ-010 as amended; PWB-LIVE-06)', () => {
   });
 });
 
+describe('Polaris capability reading', () => {
+  it('introduces declared groups with complete member examples before the architecture', () => {
+    const { shape, html } = observed();
+    const start = html.indexOf('id="polaris-capability-guide"');
+    const end = html.indexOf('data-polaris-section="claim:project-account:v1-scope"');
+    expect(start).toBeGreaterThan(-1);
+    expect(end).toBeGreaterThan(start);
+    expect(end).toBeLessThan(html.indexOf('data-polaris-group="architecture"'));
+    const guide = html.slice(start, end);
+    expect(guide).toContain('Declared capability groups, with examples where available.');
+    expect(guide).toContain('href="#polaris-class-catalog-entry"');
+    const declared = shape.items.filter((item) => item.class === 'catalog-entry');
+    const contexts = [...new Set(declared.map((item) => item.context))];
+    expect(contexts.length).toBeGreaterThan(0);
+    for (const context of contexts) {
+      if (context !== undefined) expect(textOf(guide)).toContain(context);
+    }
+    const examples = [...guide.matchAll(/data-claim-provenance="([^"]+)"/g)].map((match) => match[1]);
+    expect(examples.length).toBe(contexts.length);
+    for (const id of examples) {
+      const item = declared.find((item) => item.claim.claimId === id);
+      expect(item).toBeDefined();
+      expect(textOf(guide)).toContain((item?.statement ?? '').replace(/\*\*|`/g, '').replace(/\s+/g, ' ').trim());
+    }
+  });
+});
+
 describe('Polaris cause-correct routes (PWB-REQ-020 as amended; PWB-LIVE-11)', () => {
   it('routes a detector exclusion to the detector and the rotation, beside every claim it makes Unknown and beneath the generic route at the gap entry; the body stays withheld', () => {
     const { shape, html } = observed(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET);
@@ -115,10 +142,14 @@ describe('Polaris cause-correct routes (PWB-REQ-020 as amended; PWB-LIVE-11)', (
     const text = textOf(html);
     expect(text).toContain(`Route: ${cause}`);
     // Every excluded-content Unknown on the page carries the cause route.
-    const disclosures = [...html.matchAll(/<p class="unknown-disclosure" data-unknown-disclosure="([^"]+)"[^>]*>([\s\S]*?)<\/p>/g)]
+    const disclosures = [...html.matchAll(/<div class="unknown-disclosure" data-unknown-disclosure="([^"]+)"[^>]*>([\s\S]*?)<\/div>/g)]
       .filter((match) => (match[2] as string).includes('excluded-content'));
     expect(disclosures.length).toBeGreaterThan(0);
-    for (const disclosure of disclosures) expect(decode(disclosure[2] as string), disclosure[1]).toContain(cause);
+    for (const disclosure of disclosures) {
+      expect(decode(disclosure[2] as string), disclosure[1]).toContain(cause);
+      expect(disclosure[2]).toContain('<details class="unknown-source-details">');
+      expect(disclosure[2]).not.toContain('<details class="unknown-source-details" open');
+    }
     // The gap entry keeps the generic route (the tuples oracle) and adds the
     // cause beneath it, labelled.
     const gap = /<li id="[^"]*" data-polaris-gap="excluded-content">([\s\S]*?)<\/li>/.exec(html)?.[1];

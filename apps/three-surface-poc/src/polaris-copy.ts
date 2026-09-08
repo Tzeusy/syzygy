@@ -119,6 +119,11 @@ export const POLARIS_COPY = [
   // Progressive disclosure (PWB-REQ-011): exhaustive populations stay
   // complete behind a native disclosure whose control names the count.
   { id: 'label.selected-passages', role: 'scope-instruction', kind: 'label', text: 'Selected passages from the project’s declaration. The complete account follows below.' },
+  { id: 'label.source-remedies', role: 'action-label', kind: 'label', text: 'Source details and remedies' },
+  { id: 'label.guide-intro', role: 'scope-instruction', kind: 'label', text: 'Declared capability groups, with examples where available.' },
+  { id: 'label.complete-catalog', role: 'action-label', kind: 'label', text: 'Explore the complete catalog' },
+  { id: 'label.capabilities', role: 'action-label', kind: 'label', text: 'Capabilities' },
+  { id: 'label.terminology', role: 'action-label', kind: 'label', text: 'Terminology' },
   { id: 'label.source-notes', role: 'action-label', kind: 'label', text: 'Sources' },
   { id: 'label.full-account', role: 'action-label', kind: 'label', text: 'Read the complete declaration' },
   { id: 'label.show-items', role: 'action-label', kind: 'label', text: 'Show items' },

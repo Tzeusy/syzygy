@@ -80,7 +80,7 @@ describe('Polaris', () => {
     const html = renderPolarisPage(model);
 
     // Hand-typed oracle from task 3.1: never imported from the renderer.
-    const required = ['overview', 'boundaries', 'architecture', 'v1', 'catalog', 'capability-detail', 'evidence-and-gaps'];
+    const required = ['overview', 'boundaries', 'v1', 'architecture', 'catalog', 'capability-detail', 'evidence-and-gaps'];
     const rendered = [...html.matchAll(/data-polaris-group="([^"]+)"/g)].map((match) => match[1]);
     expect(rendered).toEqual(required);
 
