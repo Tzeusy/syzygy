@@ -473,10 +473,11 @@ export function createPhaseASeedReader(deps: PhaseASeedReaderDeps): (seed: { rea
     reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'read', bytes: bytes.byteLength });
     // The validated root index names the pillar homes phase A may read
     // next. This derivation belongs to the link-discovery pass charged
-    // above (the manifest's Rule 1 repeats the same pure derivation under
-    // that one charge); only an unambiguous home admits its index.
-    if (seed.path === PWB_ROOT_INDEX_PATH) {
-      for (const declared of declaredPillarRoots(text).values()) {
+    // above; return its result so Rule 1 does not traverse the body again.
+    // Only an unambiguous home admits its index.
+    const pillarRoots = seed.path === PWB_ROOT_INDEX_PATH ? declaredPillarRoots(text) : undefined;
+    if (pillarRoots !== undefined) {
+      for (const declared of pillarRoots.values()) {
         if (!declared.ambiguous) declaredRoots.add(declared.root);
       }
     }
@@ -484,7 +485,7 @@ export function createPhaseASeedReader(deps: PhaseASeedReaderDeps): (seed: { rea
     // object id) body is taken from Git once and traversed by no repeated
     // validation pass.
     ledger.remember(seed.path, seed.objectId, { bytes, text });
-    return { kind: 'text', text };
+    return { kind: 'text', text, ...(pillarRoots === undefined ? {} : { pillarRoots }) };
   };
   return readSeed;
 }

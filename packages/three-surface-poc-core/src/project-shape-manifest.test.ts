@@ -337,6 +337,37 @@ describe('deriveProjectShapeManifest — a declared home over tree-rule files (s
     'roster/README.md': { kind: 'text', text: '[Atlas](atlas/butler.toml) · [Atlas manifesto](atlas/MANIFESTO.md)\n' },
   };
 
+  it('retains absent and non-blob named targets that the tree rules cannot supply', () => {
+    const { manifest } = derive({
+      rootText: ROOT_TEXT,
+      tree: [...TREE_WITH_HOMES, { mode: '160000', type: 'commit', objectId: oid(60), path: 'roster/vendor/butler.toml' }],
+      overrides: {
+        'openspec/README.md': { kind: 'text', text: '[Missing](specs/missing/spec.md)' },
+        'roster/README.md': { kind: 'text', text: '[Missing](missing/butler.toml) [Vendor](vendor/butler.toml)' },
+      },
+    });
+    expect(manifest.sources.filter((source) => source.rule === 'pillar-named-file' && (source.path.startsWith('openspec/') || source.path.startsWith('roster/')))).toEqual([
+      { path: 'openspec/specs/missing/spec.md', rule: 'pillar-named-file', pillar: 'spec-and-spine', declaredBy: 'openspec/README.md', extractionClasses: [], anchor: { kind: 'missing-at-revision' } },
+      { path: 'roster/missing/butler.toml', rule: 'pillar-named-file', pillar: 'lay-and-land', declaredBy: 'roster/README.md', extractionClasses: [], anchor: { kind: 'missing-at-revision' } },
+      { path: 'roster/vendor/butler.toml', rule: 'pillar-named-file', pillar: 'lay-and-land', declaredBy: 'roster/README.md', extractionClasses: [], anchor: { kind: 'not-a-blob', mode: '160000', type: 'commit' } },
+    ]);
+  });
+
+  it('reuses the screened root derivation without traversing its text again', () => {
+    const { manifest } = derive({
+      tree: TREE_WITH_HOMES,
+      overrides: {
+        ...overrides,
+        [ROOT]: {
+          kind: 'text',
+          get text(): string { throw new Error('root text traversed again'); },
+          pillarRoots: new Map([['spec-and-spine', { root: 'openspec', ambiguous: false }]]),
+        },
+      },
+    });
+    expect(manifest.pillars[2]).toMatchObject({ state: 'discovered', root: 'openspec' });
+  });
+
   it('a baseline spec named by the Spec and Spine index keeps its tree rule and its baseline-spec class', () => {
     const { manifest } = derive({ rootText: ROOT_TEXT, tree: TREE_WITH_HOMES, overrides });
     expect(manifest.pillars[2]).toEqual({

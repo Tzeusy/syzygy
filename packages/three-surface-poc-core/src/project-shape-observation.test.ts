@@ -654,7 +654,7 @@ describe('the seed reader widens phase A only after a validated root index (syzy
   it('a declared pillar index asked for before the root index is refused, and read after it', () => {
     const { read, reads } = reader();
     expect(read(seedOf('about/heart-and-soul/README.md'))).toEqual({ kind: 'unavailable', reason: 'phase A read refused: not-a-phase-a-seed-path' });
-    expect(read(seedOf('about/README.md'))).toEqual({ kind: 'text', text: TEXTS['about/README.md'] });
+    expect(read(seedOf('about/README.md'))).toMatchObject({ kind: 'text', text: TEXTS['about/README.md'], pillarRoots: expect.any(Map) });
     expect(read(seedOf('about/heart-and-soul/README.md'))).toEqual({ kind: 'text', text: TEXTS['about/heart-and-soul/README.md'] });
     expect(reads.map((record) => record.outcome)).toEqual(['refused', 'read', 'read']);
   });
@@ -714,7 +714,7 @@ describe('the seed reader widens phase A only after a validated root index (syzy
       { mode: '100644', type: 'blob', objectId: altId, sizeBytes: alt.byteLength, path: 'alt/heart-and-soul/README.md' },
     ];
     const { read } = reader({ tree, blobOverrides: { [rootId]: rootBytes, [altId]: alt } });
-    expect(read({ path: 'about/README.md', objectId: rootId })).toEqual({ kind: 'text', text: rootText });
+    expect(read({ path: 'about/README.md', objectId: rootId })).toMatchObject({ kind: 'text', text: rootText, pillarRoots: expect.any(Map) });
     expect(read(seedOf('about/heart-and-soul/README.md', tree))).toEqual({ kind: 'unavailable', reason: 'phase A read refused: not-a-phase-a-seed-path' });
     expect(read({ path: 'alt/heart-and-soul/README.md', objectId: altId })).toEqual({ kind: 'unavailable', reason: 'phase A read refused: not-a-phase-a-seed-path' });
     // The unambiguous homes are unaffected.

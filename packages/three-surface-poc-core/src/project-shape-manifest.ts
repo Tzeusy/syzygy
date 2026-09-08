@@ -143,8 +143,10 @@ export interface ProjectShapeSourceManifest {
   readonly digest: string;
 }
 
+export type DeclaredPillarRoots = ReadonlyMap<PillarKey, { readonly root: string; readonly ambiguous: boolean }>;
+
 export type SeedRead =
-  | { readonly kind: 'text'; readonly text: string }
+  | { readonly kind: 'text'; readonly text: string; readonly pillarRoots?: DeclaredPillarRoots }
   | { readonly kind: 'unavailable'; readonly reason: string };
 
 export interface DeriveManifestInput {
@@ -410,7 +412,7 @@ export function deriveProjectShapeManifest(input: DeriveManifestInput): DeriveMa
     rootIndex = { path: PWB_ROOT_INDEX_PATH, state: 'unavailable', reason: rootRead.reason, anchor: rootAnchor };
   } else {
     rootIndex = { path: PWB_ROOT_INDEX_PATH, state: 'read', anchor: rootAnchor };
-    for (const [key, declared] of declaredPillarRoots(rootRead.text)) rootsByKey.set(key, { root: declared.root, ambiguous: declared.ambiguous });
+    for (const [key, declared] of rootRead.pillarRoots ?? declaredPillarRoots(rootRead.text)) rootsByKey.set(key, { root: declared.root, ambiguous: declared.ambiguous });
   }
 
   // Rule 2 — each declared pillar's own README index, restricted to its root.
@@ -471,7 +473,9 @@ export function deriveProjectShapeManifest(input: DeriveManifestInput): DeriveMa
       // whoever names it; a pillar declared at `openspec/` or `roster/` would
       // otherwise register it first as a class-less named file, and the tree
       // rule's add would be silently discarded (review of syzygy-1z3.29).
-      if (BASELINE_SPEC.test(path) || ROSTER_BUTLER.test(path)) continue;
+      // Missing and non-blob targets stay named sources: tree rules cannot
+      // restore them, and absence must not shrink the declared population.
+      if (tree.entryAt(path)?.type === 'blob' && (BASELINE_SPEC.test(path) || ROSTER_BUTLER.test(path))) continue;
       addSource({
         path,
         rule: 'pillar-named-file',
