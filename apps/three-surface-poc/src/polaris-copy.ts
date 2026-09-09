@@ -58,7 +58,7 @@ export const POLARIS_COPY = [
   { id: 'depth.source', role: 'scope-instruction', kind: 'label', text: 'Exact source' },
 
   { id: 'group.overview', role: 'project-fact', kind: 'heading', text: 'What Butlers is' },
-  { id: 'group.boundaries', role: 'project-fact', kind: 'heading', text: 'What Butlers is not' },
+  { id: 'group.boundaries', role: 'project-fact', kind: 'heading', text: 'Scope and principles' },
   { id: 'group.architecture', role: 'project-fact', kind: 'heading', text: 'How Butlers is built' },
   { id: 'group.v1', role: 'project-fact', kind: 'heading', text: 'What V1 ships' },
   { id: 'group.catalog', role: 'project-fact', kind: 'heading', text: 'Project catalog' },
@@ -67,7 +67,7 @@ export const POLARIS_COPY = [
 
   { id: 'account.purpose', role: 'project-fact', kind: 'heading', text: 'Purpose' },
   { id: 'account.promises', role: 'project-fact', kind: 'heading', text: 'Promises' },
-  { id: 'account.refusals', role: 'project-fact', kind: 'heading', text: 'Refusals' },
+  { id: 'account.refusals', role: 'project-fact', kind: 'heading', text: 'Deliberate limits' },
   { id: 'account.architecture', role: 'project-fact', kind: 'heading', text: 'Architecture' },
   { id: 'account.v1-scope', role: 'project-fact', kind: 'heading', text: 'V1 scope' },
   { id: 'account.v1-success', role: 'project-fact', kind: 'heading', text: 'V1 success' },

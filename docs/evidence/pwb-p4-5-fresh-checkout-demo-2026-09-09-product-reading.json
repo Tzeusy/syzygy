@@ -1,0 +1,5207 @@
+{
+  "task": "syzygy-1z3.21 (PWB task 4.5); exit gate and preflight syzygy-1z3.24.6; mount, envelope and Origin probes syzygy-1z3.24.8",
+  "kind": "fresh-checkout demonstration against the configured Butlers revision",
+  "capturedAt": "2026-09-09T14:38:40.150Z",
+  "node": "v24.6.0",
+  "source": {
+    "root": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/polaris-product-delivery",
+    "head": "25cf1f8b0140d503951d60341c2b7501f74f76ba"
+  },
+  "clone": {
+    "head": "25cf1f8b0140d503951d60341c2b7501f74f76ba",
+    "headMatchesSource": true,
+    "signingTags": [
+      "pwb-adopt-registry-entry-signed-2026-09-02",
+      "pwb-adopt-registry-entry-signed-2026-09-05",
+      "pwb-approve-policy-signed-2026-09-02",
+      "pwb-approve-policy-signed-2026-09-05",
+      "pwb-consent-observation-signed-2026-09-02",
+      "pwb-state1-amendment-signed-2026-09-02",
+      "pwb-truth-readiness-amendment-signed-2026-09-05"
+    ],
+    "seconds": 0.2
+  },
+  "install": {
+    "seconds": 0.8,
+    "exitCode": 0
+  },
+  "build": {
+    "seconds": 6.3,
+    "exitCode": 0
+  },
+  "test": {
+    "seconds": 31.6,
+    "exitCode": 0,
+    "junit": {
+      "name": "vitest tests",
+      "tests": "1586",
+      "failures": "0",
+      "errors": "0",
+      "time": "97.03119557"
+    },
+    "junitSha256": "e69eefa7100b28faa60426e3ad0e8f7c0d1ecb6979994046da436e00b404d491"
+  },
+  "butlers": {
+    "configuredRepository": "/home/tze/GitHub/butlers",
+    "observedRevision": "d55870e39699a999009fd1b5a2a0835bf7e7c3c7",
+    "modelRevision": "d55870e39699a999009fd1b5a2a0835bf7e7c3c7",
+    "observerRevision": "25cf1f8b0140d503951d60341c2b7501f74f76ba"
+  },
+  "walkthroughBinding": {
+    "surfaceVersion": "polaris@1221b4ae0e6f",
+    "evaluationIdentity": "pwb-eval-fef969b504577a473f5d35e8"
+  },
+  "evaluation": {
+    "snapshot": "butlers:d55870e39699a999009fd1b5a2a0835bf7e7c3c7|working-tree:sha256:7fef1a4d15c52e53b8005eb909f9c0c5efe596b97fabbf1e0d529b5a6c6b3651|observer:25cf1f8b0140d503951d60341c2b7501f74f76ba|inputs:sha256:97582c815a0c5cf1589a632321e2e3cf84ce10fe1e2c1faccade92924fb22409",
+    "asOf": "2026-09-09T14:38:04.569Z",
+    "inputsDigest": "97582c815a0c5cf1589a632321e2e3cf84ce10fe1e2c1faccade92924fb22409"
+  },
+  "daemon": {
+    "exitCode": 0,
+    "stderr": ""
+  },
+  "routes": [
+    {
+      "path": "/",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 38697,
+      "sha256": "b6eae2d496dd1c767b389c3995a03bbbbab6a315ee97412c93ea6fbb1ebf84fa",
+      "retainedAs": "home.html"
+    },
+    {
+      "path": "/polaris",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 2083802,
+      "sha256": "2b6a8630df927372bcdfa7b1a0fd75b7bb8cc55926faae1877c285063542aa88",
+      "retainedAs": "polaris.html"
+    },
+    {
+      "path": "/trajectory",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 259650,
+      "sha256": "143fc7824d68756e2939c73ea2fbca44177d664e45ac815977a2f648acc0ab09",
+      "retainedAs": "trajectory.html"
+    },
+    {
+      "path": "/orrery",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 37039,
+      "sha256": "79f130202329b37b2278aafdc70410c5c5f36a70fdc3f0e674b2150eaae38052",
+      "retainedAs": "orrery.html"
+    },
+    {
+      "path": "/api/poc",
+      "authenticated": false,
+      "status": 401,
+      "bytes": 37
+    },
+    {
+      "path": "/api/poc",
+      "authenticated": true,
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 5420835,
+      "sha256": "74c65d6302eefe32f24041b95bba59d81364ff51e0443667b47aad30d3cc01bf",
+      "retainedAs": "api-poc.json"
+    },
+    {
+      "path": "/polaris",
+      "host": "tzeusy.parrot-hen.ts.net",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 2089442,
+      "sha256": "9cbbc40233c91888c5366762f9a639a5f886ce5669bad3e71926c05a04b75618",
+      "retainedAs": "polaris-tailnet.html",
+      "prefixedLinks": true,
+      "disclosureMarkers": 3
+    },
+    {
+      "path": "/api/poc/polaris",
+      "authenticated": false,
+      "status": 401,
+      "bytes": 37
+    },
+    {
+      "path": "/api/poc/polaris",
+      "authenticated": true,
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 625314,
+      "sha256": "7edb499f2e245468541b17dd74d78e6a3edfb6821e81268bfb020c3d015dc791",
+      "retainedAs": "api-poc-polaris.json",
+      "kind": "polaris-presentation",
+      "citable": false
+    },
+    {
+      "path": "/polaris",
+      "origin": "https://example.invalid",
+      "status": 403,
+      "bytes": 54,
+      "reason": "browser-origin-refused"
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 1,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 23074,
+      "sha256": "49d7652a261c6319471a53c1f64bcf422763ead74ddb5281f359c4b0cdb1220a",
+      "retainedAs": "polaris-source-1.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 2,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 19052,
+      "sha256": "fe26553065538475fc3fdce8d87ae91e5108161dcb02dd3d50b5ac734c17880a",
+      "retainedAs": "polaris-source-2.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 8
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 3,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 22126,
+      "sha256": "cd34c540ff0c638be35562a268ff04e6cff49649d82261a713a75ac867dda49a",
+      "retainedAs": "polaris-source-3.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 4,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 19461,
+      "sha256": "080cebfc7ea58e001599f70cafe97346db8eab8603afb1fa61b8cdafade434c6",
+      "retainedAs": "polaris-source-4.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 5,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 14896,
+      "sha256": "2f506372b7a6fe904859ac68f2db90420a4ea894ff662fabaf48554976baba95",
+      "retainedAs": "polaris-source-5.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 6,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17422,
+      "sha256": "f6d97ef67b87ac53ed8711c9b326d85f96d5c76a12f98ad0612044e4ad9c76c3",
+      "retainedAs": "polaris-source-6.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 7,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 56016,
+      "sha256": "1a54fae43ca0c5bef58fcf16505447acc7909b50308a92beebf5b208571a0303",
+      "retainedAs": "polaris-source-7.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 17
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 8,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 42943,
+      "sha256": "e90317e637031954f50a8f57b8b75176ae60c9c97d414442cb24e8aa7ebf4441",
+      "retainedAs": "polaris-source-8.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 17
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 9,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17213,
+      "sha256": "c72369ffc6e3c6547eee5b636ea263efc74c0a59a9d42600ca95f2820bc120bd",
+      "retainedAs": "polaris-source-9.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 10,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 31692,
+      "sha256": "5746bf1af80f5d470adbf12ee2369a685a19becc2f1fd7c91b58d729651701ec",
+      "retainedAs": "polaris-source-10.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 11,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 33074,
+      "sha256": "ee11956f5a8aa4cecf15ceb08efd53077c381cd893d8b783cf1eca37fb77b528",
+      "retainedAs": "polaris-source-11.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 12
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 12,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 15352,
+      "sha256": "5f8f7fb576ad7f38695471f5091eef6a56ca7a8e02483e4c9029a30fe2d045e7",
+      "retainedAs": "polaris-source-12.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 13,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 51624,
+      "sha256": "c706666cf929c060412c6326461b53019cf31363094c11d3a03749418a12f0fc",
+      "retainedAs": "polaris-source-13.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 19
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 14,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 24488,
+      "sha256": "a75fb43a5a9002026d58a4cc92abaccfc3f1cf8306ff6c35481f0d8208f3d5e5",
+      "retainedAs": "polaris-source-14.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 15,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 19155,
+      "sha256": "d25e4c764ac96d4305de83fee0e0a3b9b2a00b6136960481b86e3a29e4508bbe",
+      "retainedAs": "polaris-source-15.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 8
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 16,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 11391,
+      "sha256": "075ac193ad9960b45eca0fc57f8056731173945ca453fcb23c02c190669c131a",
+      "retainedAs": "polaris-source-16.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 17,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 31088,
+      "sha256": "31d1ae6470be7047f1b0e4f181b702bc355c95c12313a280da7c9fd7704d38b3",
+      "retainedAs": "polaris-source-17.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 18,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 44959,
+      "sha256": "ded0ab8dd0486315a8e7db7c0406e115bc2ea8705a8063726d686408d08eb317",
+      "retainedAs": "polaris-source-18.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 12
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 19,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 32292,
+      "sha256": "411ce9ad66581b485f2f478ce1cde33e48c044e94e726e2e8fd55aabc0ff7d97",
+      "retainedAs": "polaris-source-19.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 8
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 20,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17915,
+      "sha256": "fbccc5ca0d7c39fe62f2dedd031a1da587ed4b68051dc84294dd6e091894b1c7",
+      "retainedAs": "polaris-source-20.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 21,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 22144,
+      "sha256": "7ab90a818da058bd28213ec923274ac71d8113f44cac10922dfec5af56647db3",
+      "retainedAs": "polaris-source-21.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 22,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 18038,
+      "sha256": "b8c5470ef9c4bcd4e0961a8dd13bcad34091ae7ae08d71dc06a116425411c072",
+      "retainedAs": "polaris-source-22.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 23,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 31413,
+      "sha256": "b86d7b389edcde608a711590f8b6b94acf53e362127056ff269855f1a1fc61ca",
+      "retainedAs": "polaris-source-23.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 9
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 24,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 8640,
+      "sha256": "3f86ddc9a75ba434e0af45e5eaa1d2696baee08e4617e6753b734a937a85c23c",
+      "retainedAs": "polaris-source-24.html",
+      "outcome": {
+        "state": "not-rendered",
+        "reason": "excluded-content"
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 25,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 48379,
+      "sha256": "2f642de1b5e4dafc2c18336bcb240302c01872fe2e6b07d7333259ad6f271a69",
+      "retainedAs": "polaris-source-25.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 17
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 26,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 23187,
+      "sha256": "1645dc2c3d6154a51c1a0023da14b13aedcca6e91e0eff763d1ad0db8c125999",
+      "retainedAs": "polaris-source-26.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 27,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17241,
+      "sha256": "7033c6ab09671a3dccc572ce9f6f07faf2cc13f7dc398c14ec951f1408a86751",
+      "retainedAs": "polaris-source-27.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 28,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 16044,
+      "sha256": "499ec26f715ed24c3450e22ce8623555261341f86959f1a0989dc3f921656092",
+      "retainedAs": "polaris-source-28.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 29,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 68025,
+      "sha256": "6b32aa12484fa8a45155c5cded334ead1a478ddec4e33a2c028ed26f954a0419",
+      "retainedAs": "polaris-source-29.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 26
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 30,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 13555,
+      "sha256": "66d682a8bcef0297002cd51b246daea9a68753d04698c327f005d95dc9e87288",
+      "retainedAs": "polaris-source-30.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 2
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 31,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 19081,
+      "sha256": "b38b2ef521e17eae09f1918d43260a7da0e6601482e5157a238208935771633a",
+      "retainedAs": "polaris-source-31.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 32,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 44107,
+      "sha256": "1c2248babdb2e528f4293f6743589a21a211bbbfb799e1900a90e62eaf3b52b4",
+      "retainedAs": "polaris-source-32.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 18
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 33,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 29078,
+      "sha256": "bfb79cdb0e09fcc5068adb1cf6655d58774f95aad53f5b439308c786063a8fc5",
+      "retainedAs": "polaris-source-33.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 12
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 34,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 30251,
+      "sha256": "230d91aa1a59e510e947ac920f4c42f7ad9b0caec979f0f5d98dbfec7f548195",
+      "retainedAs": "polaris-source-34.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 12
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 35,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 31144,
+      "sha256": "c58be6c651140f0487dba0e432cae24dfa7e89b4ac792034c1b4db2faf1c3bba",
+      "retainedAs": "polaris-source-35.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 15
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 36,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 8664,
+      "sha256": "1ae827c8452cb1d079291cb861f7efbf63704f559e346af8483e3ed3fac69379",
+      "retainedAs": "polaris-source-36.html",
+      "outcome": {
+        "state": "not-rendered",
+        "reason": "excluded-content"
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 37,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 37279,
+      "sha256": "417c31c17a4fc63a54f1170d04842bfb52dbadfe46f206bb603b525fac9d4eb8",
+      "retainedAs": "polaris-source-37.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 13
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 38,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 42879,
+      "sha256": "c47470eefce3503057126ac29c2789b7fc94962f705cdd5f965eb30cfa586cec",
+      "retainedAs": "polaris-source-38.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 17
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 39,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 13283,
+      "sha256": "a039ceb5fd586fbcc523dbbe7c8855ced0d96527fa33cf541ff8f7146f84f18b",
+      "retainedAs": "polaris-source-39.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 2
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 40,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 30301,
+      "sha256": "75428ddb6e38c041fb1eef59f6eba4509d4e6650641429ea8d0cc0bab3c65237",
+      "retainedAs": "polaris-source-40.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 12
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 41,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 34236,
+      "sha256": "dd3ad0c78b75e4dfd149f12d7d30772d3f21836a676efd79265d5ef5b709b43e",
+      "retainedAs": "polaris-source-41.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 13
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 42,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 25826,
+      "sha256": "a7e2deb811e5ab7483030b9ecfbb0d701c3401b9b3ebd348986c9092aa3ff2ff",
+      "retainedAs": "polaris-source-42.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 12
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 43,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 38317,
+      "sha256": "852329210df9d0d38c4e740190a034ceae995d54841dc193e6c4a86951c9b4f8",
+      "retainedAs": "polaris-source-43.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 16
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 44,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 13472,
+      "sha256": "bbf53668a00cc1cb0d7e328c69ca814f43c6e7f826406e0c21649c30f484ee47",
+      "retainedAs": "polaris-source-44.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 2
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 45,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 24639,
+      "sha256": "c1216ae45c664eb433d70a513ee606cdb815ebf13529eadfb432af406b094794",
+      "retainedAs": "polaris-source-45.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 46,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17742,
+      "sha256": "dc785566edf17de4ee0cfde5a329147a270de25848143e2e4e0bc2f1b68a6983",
+      "retainedAs": "polaris-source-46.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 47,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 8635,
+      "sha256": "dbac6a830c6bc624e4297991d16b422e94a0d0cb1c21ff1fe443fe16cea65489",
+      "retainedAs": "polaris-source-47.html",
+      "outcome": {
+        "state": "not-rendered",
+        "reason": "excluded-content"
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 48,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 27993,
+      "sha256": "b4bef4e6d12337c4336e7a1393bd4a39bf7b20f7b15cca74cfa669e9f15f7b53",
+      "retainedAs": "polaris-source-48.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 8
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 49,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 29314,
+      "sha256": "ab6db80ea0c26d3daeb9c31f2fe2facebffb0c8cf9f7c22f59d7fadb413fc5ac",
+      "retainedAs": "polaris-source-49.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 14
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 50,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 63275,
+      "sha256": "0337a0ffb92a8e1f9eed3508b48dd6011f17816fe8c37f9c3fac2b4ab1c89790",
+      "retainedAs": "polaris-source-50.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 25
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 51,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 28263,
+      "sha256": "916ad921e61b2def12dd9af65c243f8ae6c02f0b6913521039b8ff15606d29cf",
+      "retainedAs": "polaris-source-51.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 52,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 16465,
+      "sha256": "147c79e00e08b95df46275b155019abe8f76994348b9b1002a32be299e47d045",
+      "retainedAs": "polaris-source-52.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 53,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17331,
+      "sha256": "a2322ad4ab63fdfa6020c618b288ca5d91ce4d0d79c3b4b8adf21ccf111ab4f5",
+      "retainedAs": "polaris-source-53.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 54,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 63885,
+      "sha256": "57711be1eddd954e9b4cbeed411c3ba1458b529d0a99704adf6baf90dfc256dc",
+      "retainedAs": "polaris-source-54.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 21
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 55,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 14618,
+      "sha256": "ef0de22cb53a3ca216c4e05ed88299f95a0d8a36338005467b1417add888ac63",
+      "retainedAs": "polaris-source-55.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 56,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 25738,
+      "sha256": "9e325fd26872212fe8f2678716865a85a2f36e203f8f6e1bad54c92a0c86119f",
+      "retainedAs": "polaris-source-56.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 14
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 57,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 16349,
+      "sha256": "72b01006f79b1ec2cca9979d1e093ebb39dddff0a6cfbe3fee3ca9c68be1bbff",
+      "retainedAs": "polaris-source-57.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 58,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 8724,
+      "sha256": "856eebc87680fb6056d993fd7271b4a8c235af78fead0920d0f5a3b677bdb4a8",
+      "retainedAs": "polaris-source-58.html",
+      "outcome": {
+        "state": "not-rendered",
+        "reason": "excluded-content"
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 59,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 30153,
+      "sha256": "c577fb7159f626c553fd5a1a71c64be2b7b57de0c60f77539a5c602e9678c96a",
+      "retainedAs": "polaris-source-59.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 60,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 8640,
+      "sha256": "5bc506960d1781f310a6d648081fb9777d338d25dddf940b88b7cbec6ff63527",
+      "retainedAs": "polaris-source-60.html",
+      "outcome": {
+        "state": "not-rendered",
+        "reason": "excluded-content"
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 61,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 53405,
+      "sha256": "fa3bf6aefbe422c9d2349117472b4ebdcf45f19902ba17e943b0d5923c57681c",
+      "retainedAs": "polaris-source-61.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 13
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 62,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 193279,
+      "sha256": "e423644c28f964e967dce1c2580777c713e282e2fbbee4d598cb5b1b4d3d4b04",
+      "retainedAs": "polaris-source-62.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 56
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 63,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 58074,
+      "sha256": "126690fa23275a82f9c4fc2277371d881903a6c4d76160b1b76808874cf08598",
+      "retainedAs": "polaris-source-63.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 23
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 64,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 19228,
+      "sha256": "df05d1804ba91aee44f62d658f10ab0e44f1ad681a243aed466e45fd3e9d7196",
+      "retainedAs": "polaris-source-64.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 65,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 29338,
+      "sha256": "6ee36f8bc434276bcd5bad65006fe21495e76c3ff2992cfa6403fa6e44421a47",
+      "retainedAs": "polaris-source-65.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 9
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 66,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 8682,
+      "sha256": "df394b49c7e8404204824e6eb2f434e21a0ba86223a5be27f79c2288f0cd12ec",
+      "retainedAs": "polaris-source-66.html",
+      "outcome": {
+        "state": "not-rendered",
+        "reason": "excluded-content"
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 67,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 27497,
+      "sha256": "8daacbae1e7581e818a1d02ff15de990659f1b86f542035fc835e735f1e5a556",
+      "retainedAs": "polaris-source-67.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 11
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 68,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 51583,
+      "sha256": "990bd00078bd202b68cd08de4f54924e05c54e05345433a77312c129c5aa0e99",
+      "retainedAs": "polaris-source-68.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 23
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 69,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 11484,
+      "sha256": "d94ddc4062e112793ceb357ab3f168144973e969fca68773e922efd6b26e88a2",
+      "retainedAs": "polaris-source-69.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 2
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 70,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 16619,
+      "sha256": "28853bc66fba15a5131b81c6f4be9f5694c6d1c771f93fecafede1f685a02038",
+      "retainedAs": "polaris-source-70.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 71,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 48654,
+      "sha256": "4658013f7ab9aaa4e35598e073e7aa476f48509c855d666e7936acda648beb85",
+      "retainedAs": "polaris-source-71.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 16
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 72,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 15848,
+      "sha256": "6df33c82ff5a7b08585997425a5fcfb46ad99d001ad01c581de9af0e88d8f3d0",
+      "retainedAs": "polaris-source-72.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 73,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 44201,
+      "sha256": "b24b8029ad37fc40ec960cb80f02bfbcb39f95ac5de8618c6e9311c72fa39468",
+      "retainedAs": "polaris-source-73.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 25
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 74,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 8652,
+      "sha256": "40ed44a87dc043538aaaddc5a119a9adee76d123434dd2475f8bb52d66766c65",
+      "retainedAs": "polaris-source-74.html",
+      "outcome": {
+        "state": "not-rendered",
+        "reason": "excluded-content"
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 75,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 24614,
+      "sha256": "bbf0b828f450fd68338aedd4d28528f7716e0bfc5fce13e9194292a60f7731f2",
+      "retainedAs": "polaris-source-75.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 76,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 33087,
+      "sha256": "cbf260a7c6ec01e03d1b34ac4b7a052967ffeaf9473936eb877e0b4951eb3fad",
+      "retainedAs": "polaris-source-76.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 77,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 21869,
+      "sha256": "a3d988b6667b339a85b0f55376e659ca18e25da4b296aa8967eaa04dd526d7a1",
+      "retainedAs": "polaris-source-77.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 8
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 78,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 44480,
+      "sha256": "e196ad940cc77c4abc0024ce7589075bdd667d5f7ae462418fd64a4030b14567",
+      "retainedAs": "polaris-source-78.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 12
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 79,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 28408,
+      "sha256": "13ffb2d51a743af49a197cfae1c849205977f812144f8269a8ae053c2471ee9e",
+      "retainedAs": "polaris-source-79.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 11
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 80,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 32682,
+      "sha256": "f766085963edd7106dc9ca9859a8ebca38c7e43e5788167325abe3a0b9833287",
+      "retainedAs": "polaris-source-80.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 8
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 81,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 22229,
+      "sha256": "54122dc6879ee748e4e710c3f3457e8ece9b3f14b86df49ac0347ad4edd63212",
+      "retainedAs": "polaris-source-81.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 82,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 94885,
+      "sha256": "5cef50bded61a891c692dc20a67ff5603b8b3c4ded96b6cc4f16f97d331e380b",
+      "retainedAs": "polaris-source-82.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 28
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 83,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 18897,
+      "sha256": "e9d80ffd13b91a48cd382462ca4fca9fabd2934ffde90eb9d27289ff03938630",
+      "retainedAs": "polaris-source-83.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 3
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 84,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 58155,
+      "sha256": "52e48f3717dadbca4f547567bbc375005e06d6c33bf989722e233e150851313e",
+      "retainedAs": "polaris-source-84.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 19
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 85,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 43080,
+      "sha256": "0d06a2130cbe8abcd3417678d39547054b7d202b83a69df0a41d90596ed1d7d5",
+      "retainedAs": "polaris-source-85.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 86,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 22043,
+      "sha256": "382fe87591e43e5bc9b9dafcb225d6ae2522beefa5d2ad7a0da2ab3b5d47e0de",
+      "retainedAs": "polaris-source-86.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 87,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 19179,
+      "sha256": "7015003668ac4a6b02af3a138b284ea4e23b0d69b34775f43e6d13f99ba25532",
+      "retainedAs": "polaris-source-87.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 88,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 63959,
+      "sha256": "0b154f2e5619586e5bbc96d97ec4eddd41422c4c6b339169ef772377e08508e3",
+      "retainedAs": "polaris-source-88.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 21
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 89,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 18994,
+      "sha256": "076c53ee3257b5f7d720dac12b58eb48ab50ac017d3ac6a71bca47eb7555a469",
+      "retainedAs": "polaris-source-89.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 90,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 18272,
+      "sha256": "92769952162e33d67aabace0d8a622f2b6be59f72227dd873491c0510f7494df",
+      "retainedAs": "polaris-source-90.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 91,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 26534,
+      "sha256": "421c1bc104400e935d5ce02f3a0885f2011f6ce8a72c6bdcb60083d75636328b",
+      "retainedAs": "polaris-source-91.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 92,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 20674,
+      "sha256": "1eee1c3360afd8f72793712a6c84b0b47855d18c128bce77844d02547ac10df2",
+      "retainedAs": "polaris-source-92.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 93,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 18739,
+      "sha256": "2ba414fe35362523f17fa0ce544d83cea2abb14a0ae57e69cd9b3d2a7ee69367",
+      "retainedAs": "polaris-source-93.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 94,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 28412,
+      "sha256": "9fb9094d243a5333a90dd852ccca7a2401462e09d37a7073c06c481561553e3f",
+      "retainedAs": "polaris-source-94.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 11
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 95,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 35858,
+      "sha256": "906a6ec8dc83ba5c76ad563d9349ff708acfcb9b5c7f7dcd0381f95267a8f55c",
+      "retainedAs": "polaris-source-95.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 12
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 96,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 12856,
+      "sha256": "db03e0565c9abb0660927fb82850b75edab8d65b251241a4a6c82eea7454ff8a",
+      "retainedAs": "polaris-source-96.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 97,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 63662,
+      "sha256": "82a8d6855441ca01024db803844f2af9c6847452111951804b316f16d02c6f8c",
+      "retainedAs": "polaris-source-97.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 22
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 98,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 22982,
+      "sha256": "a1a1eccd923849c7d84e05af38e4511a21a857c2f32047cf0b7b67eccb26d56c",
+      "retainedAs": "polaris-source-98.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 99,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 32638,
+      "sha256": "312f55bb56447354c9100070504b45b4bb511c7fbba8f5b514bdc7ac911a07f4",
+      "retainedAs": "polaris-source-99.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 12
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 100,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 18139,
+      "sha256": "73edb0e37fa018615a8efacce2b1c2902ce94d19018f5c1983b699dccd0bf23d",
+      "retainedAs": "polaris-source-100.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 101,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 14285,
+      "sha256": "c02630df7c3bb25c9818e62f4717784edf5999d2b3c84a44c7806cd4174d22a3",
+      "retainedAs": "polaris-source-101.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 102,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 31421,
+      "sha256": "bd599bb823657ad78c840928ce0d6d841eda07d0d90779687d5eaec20993fe81",
+      "retainedAs": "polaris-source-102.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 103,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 16055,
+      "sha256": "611ccb3f1eb26fe6323868ba90959f4a5facee49bc7a0ed761ecc932049256c5",
+      "retainedAs": "polaris-source-103.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 104,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 15757,
+      "sha256": "cf7ffa96972c28af27d1129b73a724cb063da0be6cf1e87a668eb53815c3143a",
+      "retainedAs": "polaris-source-104.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 105,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 22328,
+      "sha256": "2e13177bafea8a885f0af44c28fc5ae09c66989b910798f1164c43d8023d47b6",
+      "retainedAs": "polaris-source-105.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 8
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 106,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17069,
+      "sha256": "a8ebc0edce4bced036bcd694e70ee1223f66369845ff05f7b6a69ef26cc20a99",
+      "retainedAs": "polaris-source-106.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 107,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 13409,
+      "sha256": "8c72ba8e48786c70563797e2f96b9fea1f03e738e3e75e7368a17bbbe0f5b3ae",
+      "retainedAs": "polaris-source-107.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 2
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 108,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 18166,
+      "sha256": "409ba110a039cabd402c1161a83ece6a670d29375916cb52542d63aae77e7387",
+      "retainedAs": "polaris-source-108.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 109,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 15126,
+      "sha256": "ff12ac9da75dedb0b8a18a18772780a212cb65a6649be39cd25b264742703e8b",
+      "retainedAs": "polaris-source-109.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 3
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 110,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 25361,
+      "sha256": "b9d9c9c58d3c209a1c9762bf9b9f4dc0b638bb78f2a2a7c529ffc55dfaa9d83f",
+      "retainedAs": "polaris-source-110.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 111,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17998,
+      "sha256": "6d47941a6dd708c2c1cd27db3dc29950d51e7ed68246fc8e8e1ccc6a53ed75a3",
+      "retainedAs": "polaris-source-111.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 3
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 112,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 18963,
+      "sha256": "90cf89aa907bef7b99db0d90d8ef7e24247cc824e4d71b4dbd9c81b4b0b92c85",
+      "retainedAs": "polaris-source-112.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 113,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 21036,
+      "sha256": "20c257788c2dac4ec31b087ba3dfc275fc35593d74b718ddc0142166e80c4295",
+      "retainedAs": "polaris-source-113.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 8
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 114,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 8721,
+      "sha256": "8e703357bb09ef29cfec92945f235bd243648671572cede11693dcc5ba5afd45",
+      "retainedAs": "polaris-source-114.html",
+      "outcome": {
+        "state": "not-rendered",
+        "reason": "excluded-content"
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 115,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 14425,
+      "sha256": "3f7c5f4c0079fb82cb452f6142b246c82c751ae0f3487d5846a8a28487e0d9c1",
+      "retainedAs": "polaris-source-115.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 116,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 28839,
+      "sha256": "a26b0c5a37566b785c83ff6292f1b391051cf17b6f8c23a18125016d09448356",
+      "retainedAs": "polaris-source-116.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 11
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 117,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17871,
+      "sha256": "e55b9ff6b5c510a9de75472a7d2ca3e64ecfc381a881c8df3a1bd522535e853b",
+      "retainedAs": "polaris-source-117.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 118,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17551,
+      "sha256": "b5d3b27d3dcf7b3cd96ab89495e47c242b04c047c35ca8b40c6de88dd64b7fc7",
+      "retainedAs": "polaris-source-118.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 119,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 35231,
+      "sha256": "797aaefcbbc8b3eb03b3e0eade0933d82b9107650eb6a65c6cc6b046cb53c29e",
+      "retainedAs": "polaris-source-119.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 8
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 120,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17049,
+      "sha256": "143e5ceb103111efaee2d96c648c0d18701ec995b1b143389a9e8c1223928c61",
+      "retainedAs": "polaris-source-120.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 121,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 20412,
+      "sha256": "ed97b644b27ca5cdb933a9795cf30f28ba3f5c35ab7140f286037b748badb654",
+      "retainedAs": "polaris-source-121.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 122,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 8616,
+      "sha256": "3f742f3cbcc4cc67c1e6b4a02cf511b9ab6d5acda851c1b8e32decac6eaea9ea",
+      "retainedAs": "polaris-source-122.html",
+      "outcome": {
+        "state": "not-rendered",
+        "reason": "excluded-content"
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 123,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 13469,
+      "sha256": "276ae60abccc6a9172844f95a3ad689c501e47743d0d7198a46d9bbf1c769ca3",
+      "retainedAs": "polaris-source-123.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 124,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17039,
+      "sha256": "e7e87fe8c12181cb0190d25ca6a75234fc0473f157e747d3140f9ea2b3cf9a21",
+      "retainedAs": "polaris-source-124.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 125,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 10532,
+      "sha256": "6b4bebc59688630f1897a15e04472a662707fc35879ca4bcf73646ec3dcdc39b",
+      "retainedAs": "polaris-source-125.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 1
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 126,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 38749,
+      "sha256": "91a74a3efaabdb48eec50994f11f09c6cecd63268b168e69777a3dc80b879cb3",
+      "retainedAs": "polaris-source-126.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 12
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 127,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 11530,
+      "sha256": "f50b48fa61953f85b769b3f49489eb09cbac8c4f5b296934ffe66dff58ad61de",
+      "retainedAs": "polaris-source-127.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 2
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 128,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 12609,
+      "sha256": "490f6f26473caa66442c6097893e279bea9d46e32631f7f5f1bac8eddff9cb17",
+      "retainedAs": "polaris-source-128.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 2
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 129,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 10999,
+      "sha256": "77e71399f94cb5cf6413a0fc731aa68bb55cd36065b6bd9e39cbb10dd9bc60c4",
+      "retainedAs": "polaris-source-129.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 1
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 130,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 33206,
+      "sha256": "df67ef3c3f5e9e6c50db527b0b7815eb3ccaf258149f8a3c42f1a8489b185a96",
+      "retainedAs": "polaris-source-130.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 9
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 131,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 14996,
+      "sha256": "0d95779c4a570744101eee16f2719a0cc12d51ac014695c25323a94eb60a5585",
+      "retainedAs": "polaris-source-131.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 132,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 32355,
+      "sha256": "e0226d050087ca4dfdf28c4a92c3bbfdfca8ebf25f6fb01840ec9eb2646879c8",
+      "retainedAs": "polaris-source-132.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 133,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 18997,
+      "sha256": "5407b076f7de7888509658189bd7a763c17ff976b039c5563ab7ecf64b0fba2c",
+      "retainedAs": "polaris-source-133.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 3
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 134,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 44953,
+      "sha256": "20c46e0e9b2ad46cf0456cf8c1fdc2722aca8bab1f1dfa8032a70d78c7183a20",
+      "retainedAs": "polaris-source-134.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 20
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 135,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 72873,
+      "sha256": "731bdbe9dfb63f3c04e4211ea81137e115c4e701c41295acddacdaf7929df66e",
+      "retainedAs": "polaris-source-135.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 25
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 136,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 33807,
+      "sha256": "a760e8565b03280735f4b1fbf32970bd0d23e4a9896b089c8466d1aeda2c1925",
+      "retainedAs": "polaris-source-136.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 13
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 137,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 14152,
+      "sha256": "ba022b4b1ffd12a82de65fb172186e767bedeac7f4ee3e3813fc0cbf0b8d128f",
+      "retainedAs": "polaris-source-137.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 138,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 10140,
+      "sha256": "f663e25c2792a310a9db010d9a1c6978ab6df3c12f1b555640af13c59a3e92ed",
+      "retainedAs": "polaris-source-138.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 2
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 139,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 30598,
+      "sha256": "a6e04f4bd2de24a14dae4064737cc52ac5bb1127f3c7a68a97096ee49f853f93",
+      "retainedAs": "polaris-source-139.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 11
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 140,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 32706,
+      "sha256": "5cc6d230b72797b75c1005a8357d3a4f8b460c8a9721c431df9956e8a4bafad8",
+      "retainedAs": "polaris-source-140.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 9
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 141,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 26818,
+      "sha256": "4cada0293b58e1fb9911d10f07b5b7733fb778cac106d71cc3e5bba8e0c5f6fe",
+      "retainedAs": "polaris-source-141.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 8
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 142,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 34904,
+      "sha256": "9b22b1bc29f72592e41293025fc95a605ed60eb39de9d38d2aa9e178f78eebac",
+      "retainedAs": "polaris-source-142.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 143,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 44398,
+      "sha256": "cf4d07481b6f170dd1fc3262553c560ef6feeb1126ce906302fb49a91c5ed5a3",
+      "retainedAs": "polaris-source-143.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 19
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 144,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 32200,
+      "sha256": "38dbac64ddd3179e79fff594a630121f98757c04bff3d92f5d80d080755b3b17",
+      "retainedAs": "polaris-source-144.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 9
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 145,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 44846,
+      "sha256": "4ceb50f3333f56f1fada6cef45a30c42f32ff8e453d66d490b2726693fdfe099",
+      "retainedAs": "polaris-source-145.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 14
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 146,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 16133,
+      "sha256": "db7f96e6c7297323d7dfcc7ac35f322611a538f7534e6bc6858addd88ed270ab",
+      "retainedAs": "polaris-source-146.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 147,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 32971,
+      "sha256": "6fda2f390bdcf4a126e256ee2360e5b6925c46b5ac8aabaa12396259f7e2df3a",
+      "retainedAs": "polaris-source-147.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 16
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 148,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 18984,
+      "sha256": "f99c6a2b1d32de62a0accd26b53fc7e87e1fda4404c7df115ef98a6373c691a5",
+      "retainedAs": "polaris-source-148.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 9
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 149,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 46418,
+      "sha256": "b9c5fa1923683d08b397e49a6d5cae46081fed6ef46d9271b7687b7fec39d616",
+      "retainedAs": "polaris-source-149.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 26
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 150,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 15668,
+      "sha256": "6bf85300e81674917e23fab9606c6fbbc082641076755ebcbcee2c5a1dee8997",
+      "retainedAs": "polaris-source-150.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 151,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 39090,
+      "sha256": "767309a9aa6ec8bf63f6bd0c3e536fe44ea3791ad86bb725194de53ca0065efc",
+      "retainedAs": "polaris-source-151.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 12
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 152,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 22929,
+      "sha256": "8737f77b56716566fc28f7a50786a8cab568fae8d6ae4bc9950003a6573bb048",
+      "retainedAs": "polaris-source-152.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 153,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 22884,
+      "sha256": "f38126588d46e7708a573b80546845389399f1c29da04c354ec3fa8b32585b55",
+      "retainedAs": "polaris-source-153.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 9
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 154,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 24465,
+      "sha256": "6ae7a0a8e882c1e12b38bf1d34248fc788093540601f302bab404c7c9d8a12b3",
+      "retainedAs": "polaris-source-154.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 11
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 155,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 22272,
+      "sha256": "053696f83de808e0199977a9cefbb8fc6371c2239a40990ce934b025888c693c",
+      "retainedAs": "polaris-source-155.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 12
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 156,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 16108,
+      "sha256": "a84a82b9e2b5bd13422450ec3dc0983408e023fe5fe26284878414f128e3590b",
+      "retainedAs": "polaris-source-156.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 157,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17389,
+      "sha256": "2f2bebcc5617fbc7d47b0a3248aa01f28c0f1c5deb48478766ddc1e01778717a",
+      "retainedAs": "polaris-source-157.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 158,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 23833,
+      "sha256": "3f73d00ac925fb52592ff627f453d3a18f1d3e6b3ec61748e684232935285210",
+      "retainedAs": "polaris-source-158.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 159,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 50565,
+      "sha256": "3b185fc18e0ce4b6b262b23c5381e10d9f20c38e312328d75988405d8f1ae060",
+      "retainedAs": "polaris-source-159.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 20
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 160,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 8592,
+      "sha256": "787614a2d11b1f19cce2270783fea81920a8e99cf70d276a8a9b4dd900917769",
+      "retainedAs": "polaris-source-160.html",
+      "outcome": {
+        "state": "not-rendered",
+        "reason": "excluded-content"
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 161,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 44510,
+      "sha256": "c567688df007af5603a3cb73a33268cc8258bf711db58b4d5e4a35da89ac2d37",
+      "retainedAs": "polaris-source-161.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 17
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 162,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 23516,
+      "sha256": "23649bfc7e8db18377b001b0078ad59bf3e3a8684e56a5200d9b4ba054291d67",
+      "retainedAs": "polaris-source-162.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 8
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 163,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 18534,
+      "sha256": "bc540d3e8266ad6509ba576fc730fef90601fadf5b41f5fdec38ddace2aa3b26",
+      "retainedAs": "polaris-source-163.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 164,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 19391,
+      "sha256": "fffbfb36d9ec4b961e42c414762fe99e6962b928e668f2168f22820950c3c4ad",
+      "retainedAs": "polaris-source-164.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 165,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 42765,
+      "sha256": "b8cbee03ef3139d7f5fbea67b2d45b902decd53c3222535152369249e2e10c02",
+      "retainedAs": "polaris-source-165.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 12
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 166,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 11788,
+      "sha256": "709e0044bd0bf471a03f925588eb38429dbefe61b0ddce23c17b4471cdcd6bea",
+      "retainedAs": "polaris-source-166.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 167,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 13170,
+      "sha256": "804149987b47290d45083935e3a5d1e7c16caad1e4078be59dcbece382cb5b10",
+      "retainedAs": "polaris-source-167.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 2
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 168,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 12007,
+      "sha256": "556886da84d4079cb2108feb78440fe10a35b15527e7f6db77a182ee1dde320a",
+      "retainedAs": "polaris-source-168.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 3
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 169,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 14218,
+      "sha256": "83d150365ef86b55a001b1e58c4ffb2d823b2a20f46f7c2d913db45ef91a0e8d",
+      "retainedAs": "polaris-source-169.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 170,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 22014,
+      "sha256": "ca559c594f93b253a6f408a8a75385eeb87ef37d3e07d7152488668b80945343",
+      "retainedAs": "polaris-source-170.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 11
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 171,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 20023,
+      "sha256": "e126a725d211bee74445b0d2e1b1076fda3521a84ee4c35354ec5a8e5a85ff9c",
+      "retainedAs": "polaris-source-171.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 172,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 12757,
+      "sha256": "127388311b9eed22f027a192e172ed55e305e578b4cab358ca85d4d284b7a4d8",
+      "retainedAs": "polaris-source-172.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 173,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 15824,
+      "sha256": "c52cc83242002fbe5d36cff1440c2850ab9f1f0bdc478c787f183ebe2bd5abe1",
+      "retainedAs": "polaris-source-173.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 5
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 174,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 17028,
+      "sha256": "32861191ffe3312d91628425b9ca964c88c34c02f0dfd827ce3c18489bf772e8",
+      "retainedAs": "polaris-source-174.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 175,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 16939,
+      "sha256": "f6fa5ef63ac0d0db3f4737284bdc1251b314fb473f8e84b5ba67599a4de2904c",
+      "retainedAs": "polaris-source-175.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 176,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 19603,
+      "sha256": "8baf48bca036c9972588c6f4141bef91550bf07be7551561db685672158b415c",
+      "retainedAs": "polaris-source-176.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 177,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 37604,
+      "sha256": "2c87013d78c257de7f5a080e96b9da91ef4eb74aaa3b513fc59daf85c2897af4",
+      "retainedAs": "polaris-source-177.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 11
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 178,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 16798,
+      "sha256": "3b4b49e94533912872a18953d1833b8b2f365ca1e5dbcecc666f49e522a20fc6",
+      "retainedAs": "polaris-source-178.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 179,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 32601,
+      "sha256": "b5f4efffa72e136c76fe2dea51f01e7d133831233e8201ada4f87482cd14b6c7",
+      "retainedAs": "polaris-source-179.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 7
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 180,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 43135,
+      "sha256": "44a1d2cba1b1ce3730ed5730ede8d388775dd2a56dfed1b3c6d79a16c86a32d4",
+      "retainedAs": "polaris-source-180.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 11
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 181,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 18827,
+      "sha256": "9477f0827e52d12451e79b07befe4ded3711d14de0bb60a58c5d45c0c866eb53",
+      "retainedAs": "polaris-source-181.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 8
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 182,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 70154,
+      "sha256": "e24ec997989a7682d98fe0753dcc037aed68ae69aeeb4b0ca18bec4664ef1efd",
+      "retainedAs": "polaris-source-182.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 31
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 183,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 28006,
+      "sha256": "93a34f778b6fc29df4ecd4436f0141e47168171b463b4add5b1ea070e0fb5573",
+      "retainedAs": "polaris-source-183.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 10
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 184,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 12013,
+      "sha256": "713f3c78a790ca1b2984e70c19a67f58d7c408181f07ff3a9cee31685cf0d0eb",
+      "retainedAs": "polaris-source-184.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 4
+      }
+    },
+    {
+      "path": "/polaris/source",
+      "identityIndex": 185,
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 22347,
+      "sha256": "6455128e5fde745948ba73c424a7053f88475b37d204af692d6a99975f694332",
+      "retainedAs": "polaris-source-185.html",
+      "outcome": {
+        "state": "rendered",
+        "requirements": 6
+      }
+    }
+  ],
+  "parity": {
+    "humanClaimTuples": 699,
+    "humanDistinctClaimIds": 689,
+    "humanTuplesMismatchingMachine": 0,
+    "machinePresentedClaimIds": 689,
+    "machineDistinctClaimIds": 689,
+    "machineOmittedByDesign": {
+      "reconciledFacts": 432,
+      "projectAccountSectionItems": 6
+    },
+    "machineIdsAbsentFromHuman": 0,
+    "humanIdsAbsentFromMachine": 0
+  },
+  "browserCheck": {
+    "kind": "performed",
+    "commit": "25cf1f8b0140d503951d60341c2b7501f74f76ba",
+    "variants": 6,
+    "violations": 0,
+    "seconds": 14.3,
+    "exitCode": 0,
+    "sha256": "5759a881e75cc40ebcb43e5fd7ca11f3e25b2f213efb44355535caecc3f83923"
+  },
+  "preflight": {
+    "ready": true,
+    "findings": [],
+    "observed": {
+      "accountStatementsBacked": 6,
+      "populations": {
+        "principle": {
+          "modeled": 7,
+          "denominator": 7,
+          "rows": 7
+        },
+        "success-criterion": {
+          "modeled": 13,
+          "denominator": 13,
+          "rows": 13
+        },
+        "catalog-entry": {
+          "modeled": 65,
+          "denominator": 65,
+          "rows": 65
+        },
+        "topology-component": {
+          "modeled": 87,
+          "denominator": 87,
+          "rows": 87
+        }
+      },
+      "exactRequirement": {
+        "identity": "repository:butlers-configured-poc@d55870e39699a999009fd1b5a2a0835bf7e7c3c7:openspec/specs/switchboard-identity/spec.md#0a76a0d7a6f04425fa2f0063c5a1c7cf6e261853",
+        "requirements": 6
+      },
+      "unknownsVisible": 11,
+      "unknownsMachine": 11,
+      "sourceRoutesLinked": 185,
+      "fragmentLinks": 670,
+      "claimTuples": 699
+    }
+  },
+  "projectShape": {
+    "kind": "observed",
+    "authority": {
+      "admits": true,
+      "authorizationMode": "owner-trusted-bootstrap",
+      "authorities": [
+        {
+          "authority": "consent",
+          "state": "owner-adopted (bootstrap, uncorrelated)",
+          "independentlyVerified": false,
+          "invalidCase": null
+        },
+        {
+          "authority": "policy",
+          "state": "owner-adopted (bootstrap, uncorrelated)",
+          "independentlyVerified": false,
+          "invalidCase": null
+        },
+        {
+          "authority": "registry",
+          "state": "owner-adopted (bootstrap, uncorrelated)",
+          "independentlyVerified": false,
+          "invalidCase": null
+        }
+      ],
+      "contradiction": null
+    },
+    "identity": {
+      "repositoryId": "repository:butlers-configured-poc",
+      "revision": "d55870e39699a999009fd1b5a2a0835bf7e7c3c7",
+      "sourceClaimedInstant": {
+        "kind": "git-committer-instant",
+        "instant": "2026-09-09T00:35:32Z"
+      },
+      "observer": {
+        "observerId": "polaris-butlers-project-shape",
+        "observerVersion": "1.1.0-candidate.1",
+        "discoveryVersion": "pwb-discovery-v2-candidate.1",
+        "implementationId": "three-surface-poc-core/project-shape-observer",
+        "implementationVersion": "1.0.0"
+      },
+      "policy": {
+        "policyId": "polaris-butlers-project-shape-secrets",
+        "policyVersion": "1.1.0-candidate.1"
+      },
+      "manifestIdentity": "repository:butlers-configured-poc@d55870e39699a999009fd1b5a2a0835bf7e7c3c7/pwb-discovery-v2-candidate.1/sha256:5b755974a40c3840a3786e86b5350fde61a3f1e72e0e7209713fa0c33a67a434",
+      "manifestDigest": "sha256:5b755974a40c3840a3786e86b5350fde61a3f1e72e0e7209713fa0c33a67a434",
+      "observationDigest": "sha256:f646e21b19aeeb643847f89561c2f5061dc488866351780d6bba52e1bd0d255a"
+    },
+    "counts": {
+      "sources": 271,
+      "sourcesWithKnownItemDenominator": 262,
+      "sourcesWithUnknownDenominator": 9,
+      "items": 408,
+      "modeled": 408,
+      "unknown": 0,
+      "contradicted": 0,
+      "facts": 432,
+      "contradictedFacts": 0,
+      "rulesDeclared": 7,
+      "rulesApplied": 1,
+      "exclusions": 9,
+      "classification": {
+        "sources": 271,
+        "classified": 262,
+        "classifiedByBasis": {
+          "body": 77,
+          "path-only": 185
+        },
+        "excluded": 9,
+        "unavailable": 0,
+        "byRedactionClass": {
+          "excluded-artifact": 1,
+          "unclassifiable-excluded": 8
+        }
+      }
+    },
+    "classes": {
+      "project-account-section": {
+        "denominator": {
+          "kind": "known",
+          "value": 6
+        },
+        "modeled": 6,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "principle": {
+        "denominator": {
+          "kind": "known",
+          "value": 7
+        },
+        "modeled": 7,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "success-criterion": {
+        "denominator": {
+          "kind": "known",
+          "value": 13
+        },
+        "modeled": 13,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "catalog-entry": {
+        "denominator": {
+          "kind": "known",
+          "value": 65
+        },
+        "modeled": 65,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "design-contract": {
+        "denominator": {
+          "kind": "known",
+          "value": 32
+        },
+        "modeled": 32,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "baseline-spec": {
+        "denominator": {
+          "kind": "known",
+          "value": 185
+        },
+        "modeled": 185,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "topology-component": {
+        "denominator": {
+          "kind": "known",
+          "value": 87
+        },
+        "modeled": 87,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "craft-policy": {
+        "denominator": {
+          "kind": "known",
+          "value": 7
+        },
+        "modeled": 7,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "roster-identity": {
+        "denominator": {
+          "kind": "unknown",
+          "reasons": [
+            "excluded-content"
+          ]
+        },
+        "modeled": 6,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 7,
+        "label": "Unknown"
+      }
+    },
+    "sources": [
+      {
+        "path": "about/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/engineering-bar.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/interfaces-and-dependencies.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/observability-and-operations.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/performance-discipline.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/review-and-documentation.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/security-and-secrets.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/testing-and-verification.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/architecture.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/design-language.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/development.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/security.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/v1.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/vision.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/components.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/data-flow.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/dependencies.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/deployment.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/detail-page-audit.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/frontend.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/lay-and-land/integration.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/module-vs-butler.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/ideas-ledger.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0001-daemon-lifecycle-and-triggers.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0002-mcp-tool-surface-and-modules.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0003-switchboard-routing-and-ingestion.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0004-identity-and-contact-resolution.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0005-observability-and-telemetry.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0006-database-schema-and-isolation.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0007-dashboard-and-api-surface.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0008-deployment-network-security.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0009-situational-context-bus.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0010-cross-butler-briefing-exception.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0011-proactive-insight-delivery.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0012-finance-transaction-data-model.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0013-dunbar-group-aware-interaction-scoring.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0014-chronicler-time-butler.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0015-qa-staffer-discovery-investigation-pipeline.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0016-s3-blob-storage-contract.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0017-owner-routing-safety-incident-reconciliation.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0018-connector-scope-and-deferral-rationale.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0019-proactive-egress-and-automation-parked.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0020-calendar-cross-domain-overlay-read-exception.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0021-decision-loop-one-tap-approvals-and-decision-memory.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0022-cross-process-event-transport.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0023-durable-approval-delivery-intent-recovery.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0024-messenger-private-email-correspondence-ledger.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0025-tracker-host-beads-projection-exporter.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0026-commitment-lifecycle.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0027-runtime-tool-surface-discovery.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0028-home-physical-actuation-contract.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0029-expected-signals-and-honest-absence.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0030-system-plane-read-exception.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0031-public-entity-graph-projection.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0032-fleet-case-file.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/adapter-integration-testing/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/autonomy-suggestions/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/autonomy-tracker/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/build-reproducibility/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/bulk-transaction-ingestion/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-base-spec/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-chronicler/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-concierge/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-education/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-finance/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-general/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-health/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-home/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-lifestyle/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-messenger/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-relationship/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-secrets/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-switchboard/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-travel/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/calendar-conflict-overcommitment-radar/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/calendar-event-proposals/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/calendar-overlay-aggregation/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/catalog-token-limits/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/chronicler-api/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/chronicler-intent-evidence-activity/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/chronicler-source-compatibility/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/complexity-classification/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-base-spec/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-discord/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-filtered-events/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-gmail/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-google-calendar/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-google-drive/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-google-health/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-home-assistant/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-live-listener/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-owntracks/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-replay-queue/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-spotify/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-steam/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-telegram-bot/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-telegram-user-client/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/contacts-identity/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/context-bus/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/conversation-decomposition/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-credentials/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-daemon/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-modules/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-notify/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-scheduler/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-sessions/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-skills/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-spawner/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-state/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-telemetry/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/cross-butler-briefing-aggregation/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/cross-butler-briefing-contribution/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/cross-butler-delegation/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/csv-extraction-skill/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-admin-gateway/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-api/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-approvals/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-audit-log/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-briefing/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-butler-management/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-chat-ui/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-chronicles/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-connector-batch-settings/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-connector-filter-ui/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-conversations/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-decisions/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-design-language/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-domain-pages/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-education-api/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-education-ui/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-google-accounts/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-ingestion-dispatch-console/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-model-settings/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-overview/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-permissions/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-relationship/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-settings-console/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-shell/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-spend-dashboard/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-spotify-setup/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-steam/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-visibility/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/database-security/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/deadline-tracking/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/deployment-and-drift/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/deployment-hardening/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/detail-page-archetype/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/docs-information-architecture/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dunbar-tier-scoring/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/e2e-ecosystem-staging/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/entity-identity/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/error-fingerprinting/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/error-recovery-corrections/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/event-chains/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/expected-signals/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-alerts/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-anomaly-detection/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-budgets/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-crud-operations/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-data-import/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-data-migration/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-overview/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-pattern-recognition/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-supporting-tables/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-transaction-schema/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/google-account-registry/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/google-multi-account-oauth/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/healing-anonymizer/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/healing-model-tier/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/healing-session-tracking/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/healing-worktree/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/home-dashboard-extensions/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/home-deterministic-jobs/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/home-maintenance-scheduling/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/ingestion-event-registry/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/ingestion-policy/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/ingress-injection/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/insight-delivery/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-catalog-schema/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-discovery-catalog/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-events-enrichment/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-graph-health/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-migration-integration-tests/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-retention-policy/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/model-benchmark-harness/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/model-catalog/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/model-failover/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-approvals/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-calendar/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-contacts/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-dashboard-read/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-document-renderer/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-analytics/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-curriculum/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-diagnostic/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-mastery/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-mind-map/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-spaced-repetition/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-teaching-flows/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-email/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-google-drive/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-google-health/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-home-assistant/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-mailbox/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-memory/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-metrics/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-pipeline/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-spotify/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-steam/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-telegram/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/owner-timezone-context/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/passive-interaction-sync/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/proactive-insight-engine/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/qa-dashboard/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/qa-investigation-dispatch/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/qa-log-scanner/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/qa-triage/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/relationship-curation/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/relationship-facts/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/routing-scorecard/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/runtime-config-api/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/runtime-config-dashboard-ui/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/runtime-config-table/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/runtime-opencode/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/s3-blob-storage/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/scorecard-reporting/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/seasonal-awareness/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/session-process-logs/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/source-filter-registry/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/staffer-archetype/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/staffer-qa/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/steam-account-registry/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/switchboard-identity/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/switchboard-rule-promotion/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/system-overview-page/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/telegram-user-client-conversation-history/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/testing/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/time-aware-delivery/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/tool-call-scorecard/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/user-preferences/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/chronicler/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/chronicler/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/concierge/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/concierge/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/education/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/education/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/finance/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/finance/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/general/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/general/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/health/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/health/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/home/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/home/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/lifestyle/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/lifestyle/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/messenger/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/messenger/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/qa/MANIFESTO.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/qa/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/relationship/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/relationship/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/switchboard/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/switchboard/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/travel/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/travel/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      }
+    ],
+    "unknownItemsByReason": {},
+    "exclusions": 9,
+    "limitBreaches": 0,
+    "degradation": null,
+    "discovery": [
+      {
+        "key": "heart-and-soul",
+        "state": "discovered",
+        "indexPath": "about/heart-and-soul/README.md",
+        "namedSources": 6
+      },
+      {
+        "key": "legends-and-lore",
+        "state": "discovered",
+        "indexPath": "about/legends-and-lore/README.md",
+        "namedSources": 33
+      },
+      {
+        "key": "spec-and-spine",
+        "state": "discovered",
+        "indexPath": "openspec/README.md",
+        "namedSources": 0
+      },
+      {
+        "key": "lay-and-land",
+        "state": "discovered",
+        "indexPath": "about/lay-and-land/README.md",
+        "namedSources": 8
+      },
+      {
+        "key": "craft-and-care",
+        "state": "discovered",
+        "indexPath": "about/craft-and-care/README.md",
+        "namedSources": 7
+      }
+    ],
+    "contradictions": 0,
+    "claim": {
+      "label": "Unknown",
+      "tier": null,
+      "freshness": "fresh"
+    }
+  },
+  "otherRegions": {
+    "codeStructure": "observed",
+    "workItems": "observed",
+    "workerChange": "unknown",
+    "testArtifactVerification": "unknown",
+    "proposedWork": "proposed-work",
+    "walkthroughJudgment": "evaluated",
+    "walkthroughReadiness": {
+      "kind": "no-run-record",
+      "ready": false,
+      "arms": {}
+    }
+  },
+  "retention": {
+    "directory": "/home/tze/.local/state/syzygy/pwb-p4-5-fresh-checkout-demo-2026-09-09-product-reading",
+    "note": "exact artifact bytes retained locally, outside the repository; the consent excludes network egress",
+    "files": [
+      {
+        "name": "vitest-junit.xml",
+        "bytes": 465945,
+        "sha256": "e69eefa7100b28faa60426e3ad0e8f7c0d1ecb6979994046da436e00b404d491"
+      },
+      {
+        "name": "home.html",
+        "bytes": 38697,
+        "sha256": "b6eae2d496dd1c767b389c3995a03bbbbab6a315ee97412c93ea6fbb1ebf84fa"
+      },
+      {
+        "name": "polaris.html",
+        "bytes": 2083802,
+        "sha256": "2b6a8630df927372bcdfa7b1a0fd75b7bb8cc55926faae1877c285063542aa88"
+      },
+      {
+        "name": "trajectory.html",
+        "bytes": 259650,
+        "sha256": "143fc7824d68756e2939c73ea2fbca44177d664e45ac815977a2f648acc0ab09"
+      },
+      {
+        "name": "orrery.html",
+        "bytes": 37039,
+        "sha256": "79f130202329b37b2278aafdc70410c5c5f36a70fdc3f0e674b2150eaae38052"
+      },
+      {
+        "name": "api-poc.json",
+        "bytes": 5420835,
+        "sha256": "74c65d6302eefe32f24041b95bba59d81364ff51e0443667b47aad30d3cc01bf"
+      },
+      {
+        "name": "polaris-tailnet.html",
+        "bytes": 2089442,
+        "sha256": "9cbbc40233c91888c5366762f9a639a5f886ce5669bad3e71926c05a04b75618"
+      },
+      {
+        "name": "api-poc-polaris.json",
+        "bytes": 625314,
+        "sha256": "7edb499f2e245468541b17dd74d78e6a3edfb6821e81268bfb020c3d015dc791"
+      },
+      {
+        "name": "polaris-source-1.html",
+        "bytes": 23074,
+        "sha256": "49d7652a261c6319471a53c1f64bcf422763ead74ddb5281f359c4b0cdb1220a"
+      },
+      {
+        "name": "polaris-source-2.html",
+        "bytes": 19052,
+        "sha256": "fe26553065538475fc3fdce8d87ae91e5108161dcb02dd3d50b5ac734c17880a"
+      },
+      {
+        "name": "polaris-source-3.html",
+        "bytes": 22126,
+        "sha256": "cd34c540ff0c638be35562a268ff04e6cff49649d82261a713a75ac867dda49a"
+      },
+      {
+        "name": "polaris-source-4.html",
+        "bytes": 19461,
+        "sha256": "080cebfc7ea58e001599f70cafe97346db8eab8603afb1fa61b8cdafade434c6"
+      },
+      {
+        "name": "polaris-source-5.html",
+        "bytes": 14896,
+        "sha256": "2f506372b7a6fe904859ac68f2db90420a4ea894ff662fabaf48554976baba95"
+      },
+      {
+        "name": "polaris-source-6.html",
+        "bytes": 17422,
+        "sha256": "f6d97ef67b87ac53ed8711c9b326d85f96d5c76a12f98ad0612044e4ad9c76c3"
+      },
+      {
+        "name": "polaris-source-7.html",
+        "bytes": 56016,
+        "sha256": "1a54fae43ca0c5bef58fcf16505447acc7909b50308a92beebf5b208571a0303"
+      },
+      {
+        "name": "polaris-source-8.html",
+        "bytes": 42943,
+        "sha256": "e90317e637031954f50a8f57b8b75176ae60c9c97d414442cb24e8aa7ebf4441"
+      },
+      {
+        "name": "polaris-source-9.html",
+        "bytes": 17213,
+        "sha256": "c72369ffc6e3c6547eee5b636ea263efc74c0a59a9d42600ca95f2820bc120bd"
+      },
+      {
+        "name": "polaris-source-10.html",
+        "bytes": 31692,
+        "sha256": "5746bf1af80f5d470adbf12ee2369a685a19becc2f1fd7c91b58d729651701ec"
+      },
+      {
+        "name": "polaris-source-11.html",
+        "bytes": 33074,
+        "sha256": "ee11956f5a8aa4cecf15ceb08efd53077c381cd893d8b783cf1eca37fb77b528"
+      },
+      {
+        "name": "polaris-source-12.html",
+        "bytes": 15352,
+        "sha256": "5f8f7fb576ad7f38695471f5091eef6a56ca7a8e02483e4c9029a30fe2d045e7"
+      },
+      {
+        "name": "polaris-source-13.html",
+        "bytes": 51624,
+        "sha256": "c706666cf929c060412c6326461b53019cf31363094c11d3a03749418a12f0fc"
+      },
+      {
+        "name": "polaris-source-14.html",
+        "bytes": 24488,
+        "sha256": "a75fb43a5a9002026d58a4cc92abaccfc3f1cf8306ff6c35481f0d8208f3d5e5"
+      },
+      {
+        "name": "polaris-source-15.html",
+        "bytes": 19155,
+        "sha256": "d25e4c764ac96d4305de83fee0e0a3b9b2a00b6136960481b86e3a29e4508bbe"
+      },
+      {
+        "name": "polaris-source-16.html",
+        "bytes": 11391,
+        "sha256": "075ac193ad9960b45eca0fc57f8056731173945ca453fcb23c02c190669c131a"
+      },
+      {
+        "name": "polaris-source-17.html",
+        "bytes": 31088,
+        "sha256": "31d1ae6470be7047f1b0e4f181b702bc355c95c12313a280da7c9fd7704d38b3"
+      },
+      {
+        "name": "polaris-source-18.html",
+        "bytes": 44959,
+        "sha256": "ded0ab8dd0486315a8e7db7c0406e115bc2ea8705a8063726d686408d08eb317"
+      },
+      {
+        "name": "polaris-source-19.html",
+        "bytes": 32292,
+        "sha256": "411ce9ad66581b485f2f478ce1cde33e48c044e94e726e2e8fd55aabc0ff7d97"
+      },
+      {
+        "name": "polaris-source-20.html",
+        "bytes": 17915,
+        "sha256": "fbccc5ca0d7c39fe62f2dedd031a1da587ed4b68051dc84294dd6e091894b1c7"
+      },
+      {
+        "name": "polaris-source-21.html",
+        "bytes": 22144,
+        "sha256": "7ab90a818da058bd28213ec923274ac71d8113f44cac10922dfec5af56647db3"
+      },
+      {
+        "name": "polaris-source-22.html",
+        "bytes": 18038,
+        "sha256": "b8c5470ef9c4bcd4e0961a8dd13bcad34091ae7ae08d71dc06a116425411c072"
+      },
+      {
+        "name": "polaris-source-23.html",
+        "bytes": 31413,
+        "sha256": "b86d7b389edcde608a711590f8b6b94acf53e362127056ff269855f1a1fc61ca"
+      },
+      {
+        "name": "polaris-source-24.html",
+        "bytes": 8640,
+        "sha256": "3f86ddc9a75ba434e0af45e5eaa1d2696baee08e4617e6753b734a937a85c23c"
+      },
+      {
+        "name": "polaris-source-25.html",
+        "bytes": 48379,
+        "sha256": "2f642de1b5e4dafc2c18336bcb240302c01872fe2e6b07d7333259ad6f271a69"
+      },
+      {
+        "name": "polaris-source-26.html",
+        "bytes": 23187,
+        "sha256": "1645dc2c3d6154a51c1a0023da14b13aedcca6e91e0eff763d1ad0db8c125999"
+      },
+      {
+        "name": "polaris-source-27.html",
+        "bytes": 17241,
+        "sha256": "7033c6ab09671a3dccc572ce9f6f07faf2cc13f7dc398c14ec951f1408a86751"
+      },
+      {
+        "name": "polaris-source-28.html",
+        "bytes": 16044,
+        "sha256": "499ec26f715ed24c3450e22ce8623555261341f86959f1a0989dc3f921656092"
+      },
+      {
+        "name": "polaris-source-29.html",
+        "bytes": 68025,
+        "sha256": "6b32aa12484fa8a45155c5cded334ead1a478ddec4e33a2c028ed26f954a0419"
+      },
+      {
+        "name": "polaris-source-30.html",
+        "bytes": 13555,
+        "sha256": "66d682a8bcef0297002cd51b246daea9a68753d04698c327f005d95dc9e87288"
+      },
+      {
+        "name": "polaris-source-31.html",
+        "bytes": 19081,
+        "sha256": "b38b2ef521e17eae09f1918d43260a7da0e6601482e5157a238208935771633a"
+      },
+      {
+        "name": "polaris-source-32.html",
+        "bytes": 44107,
+        "sha256": "1c2248babdb2e528f4293f6743589a21a211bbbfb799e1900a90e62eaf3b52b4"
+      },
+      {
+        "name": "polaris-source-33.html",
+        "bytes": 29078,
+        "sha256": "bfb79cdb0e09fcc5068adb1cf6655d58774f95aad53f5b439308c786063a8fc5"
+      },
+      {
+        "name": "polaris-source-34.html",
+        "bytes": 30251,
+        "sha256": "230d91aa1a59e510e947ac920f4c42f7ad9b0caec979f0f5d98dbfec7f548195"
+      },
+      {
+        "name": "polaris-source-35.html",
+        "bytes": 31144,
+        "sha256": "c58be6c651140f0487dba0e432cae24dfa7e89b4ac792034c1b4db2faf1c3bba"
+      },
+      {
+        "name": "polaris-source-36.html",
+        "bytes": 8664,
+        "sha256": "1ae827c8452cb1d079291cb861f7efbf63704f559e346af8483e3ed3fac69379"
+      },
+      {
+        "name": "polaris-source-37.html",
+        "bytes": 37279,
+        "sha256": "417c31c17a4fc63a54f1170d04842bfb52dbadfe46f206bb603b525fac9d4eb8"
+      },
+      {
+        "name": "polaris-source-38.html",
+        "bytes": 42879,
+        "sha256": "c47470eefce3503057126ac29c2789b7fc94962f705cdd5f965eb30cfa586cec"
+      },
+      {
+        "name": "polaris-source-39.html",
+        "bytes": 13283,
+        "sha256": "a039ceb5fd586fbcc523dbbe7c8855ced0d96527fa33cf541ff8f7146f84f18b"
+      },
+      {
+        "name": "polaris-source-40.html",
+        "bytes": 30301,
+        "sha256": "75428ddb6e38c041fb1eef59f6eba4509d4e6650641429ea8d0cc0bab3c65237"
+      },
+      {
+        "name": "polaris-source-41.html",
+        "bytes": 34236,
+        "sha256": "dd3ad0c78b75e4dfd149f12d7d30772d3f21836a676efd79265d5ef5b709b43e"
+      },
+      {
+        "name": "polaris-source-42.html",
+        "bytes": 25826,
+        "sha256": "a7e2deb811e5ab7483030b9ecfbb0d701c3401b9b3ebd348986c9092aa3ff2ff"
+      },
+      {
+        "name": "polaris-source-43.html",
+        "bytes": 38317,
+        "sha256": "852329210df9d0d38c4e740190a034ceae995d54841dc193e6c4a86951c9b4f8"
+      },
+      {
+        "name": "polaris-source-44.html",
+        "bytes": 13472,
+        "sha256": "bbf53668a00cc1cb0d7e328c69ca814f43c6e7f826406e0c21649c30f484ee47"
+      },
+      {
+        "name": "polaris-source-45.html",
+        "bytes": 24639,
+        "sha256": "c1216ae45c664eb433d70a513ee606cdb815ebf13529eadfb432af406b094794"
+      },
+      {
+        "name": "polaris-source-46.html",
+        "bytes": 17742,
+        "sha256": "dc785566edf17de4ee0cfde5a329147a270de25848143e2e4e0bc2f1b68a6983"
+      },
+      {
+        "name": "polaris-source-47.html",
+        "bytes": 8635,
+        "sha256": "dbac6a830c6bc624e4297991d16b422e94a0d0cb1c21ff1fe443fe16cea65489"
+      },
+      {
+        "name": "polaris-source-48.html",
+        "bytes": 27993,
+        "sha256": "b4bef4e6d12337c4336e7a1393bd4a39bf7b20f7b15cca74cfa669e9f15f7b53"
+      },
+      {
+        "name": "polaris-source-49.html",
+        "bytes": 29314,
+        "sha256": "ab6db80ea0c26d3daeb9c31f2fe2facebffb0c8cf9f7c22f59d7fadb413fc5ac"
+      },
+      {
+        "name": "polaris-source-50.html",
+        "bytes": 63275,
+        "sha256": "0337a0ffb92a8e1f9eed3508b48dd6011f17816fe8c37f9c3fac2b4ab1c89790"
+      },
+      {
+        "name": "polaris-source-51.html",
+        "bytes": 28263,
+        "sha256": "916ad921e61b2def12dd9af65c243f8ae6c02f0b6913521039b8ff15606d29cf"
+      },
+      {
+        "name": "polaris-source-52.html",
+        "bytes": 16465,
+        "sha256": "147c79e00e08b95df46275b155019abe8f76994348b9b1002a32be299e47d045"
+      },
+      {
+        "name": "polaris-source-53.html",
+        "bytes": 17331,
+        "sha256": "a2322ad4ab63fdfa6020c618b288ca5d91ce4d0d79c3b4b8adf21ccf111ab4f5"
+      },
+      {
+        "name": "polaris-source-54.html",
+        "bytes": 63885,
+        "sha256": "57711be1eddd954e9b4cbeed411c3ba1458b529d0a99704adf6baf90dfc256dc"
+      },
+      {
+        "name": "polaris-source-55.html",
+        "bytes": 14618,
+        "sha256": "ef0de22cb53a3ca216c4e05ed88299f95a0d8a36338005467b1417add888ac63"
+      },
+      {
+        "name": "polaris-source-56.html",
+        "bytes": 25738,
+        "sha256": "9e325fd26872212fe8f2678716865a85a2f36e203f8f6e1bad54c92a0c86119f"
+      },
+      {
+        "name": "polaris-source-57.html",
+        "bytes": 16349,
+        "sha256": "72b01006f79b1ec2cca9979d1e093ebb39dddff0a6cfbe3fee3ca9c68be1bbff"
+      },
+      {
+        "name": "polaris-source-58.html",
+        "bytes": 8724,
+        "sha256": "856eebc87680fb6056d993fd7271b4a8c235af78fead0920d0f5a3b677bdb4a8"
+      },
+      {
+        "name": "polaris-source-59.html",
+        "bytes": 30153,
+        "sha256": "c577fb7159f626c553fd5a1a71c64be2b7b57de0c60f77539a5c602e9678c96a"
+      },
+      {
+        "name": "polaris-source-60.html",
+        "bytes": 8640,
+        "sha256": "5bc506960d1781f310a6d648081fb9777d338d25dddf940b88b7cbec6ff63527"
+      },
+      {
+        "name": "polaris-source-61.html",
+        "bytes": 53405,
+        "sha256": "fa3bf6aefbe422c9d2349117472b4ebdcf45f19902ba17e943b0d5923c57681c"
+      },
+      {
+        "name": "polaris-source-62.html",
+        "bytes": 193279,
+        "sha256": "e423644c28f964e967dce1c2580777c713e282e2fbbee4d598cb5b1b4d3d4b04"
+      },
+      {
+        "name": "polaris-source-63.html",
+        "bytes": 58074,
+        "sha256": "126690fa23275a82f9c4fc2277371d881903a6c4d76160b1b76808874cf08598"
+      },
+      {
+        "name": "polaris-source-64.html",
+        "bytes": 19228,
+        "sha256": "df05d1804ba91aee44f62d658f10ab0e44f1ad681a243aed466e45fd3e9d7196"
+      },
+      {
+        "name": "polaris-source-65.html",
+        "bytes": 29338,
+        "sha256": "6ee36f8bc434276bcd5bad65006fe21495e76c3ff2992cfa6403fa6e44421a47"
+      },
+      {
+        "name": "polaris-source-66.html",
+        "bytes": 8682,
+        "sha256": "df394b49c7e8404204824e6eb2f434e21a0ba86223a5be27f79c2288f0cd12ec"
+      },
+      {
+        "name": "polaris-source-67.html",
+        "bytes": 27497,
+        "sha256": "8daacbae1e7581e818a1d02ff15de990659f1b86f542035fc835e735f1e5a556"
+      },
+      {
+        "name": "polaris-source-68.html",
+        "bytes": 51583,
+        "sha256": "990bd00078bd202b68cd08de4f54924e05c54e05345433a77312c129c5aa0e99"
+      },
+      {
+        "name": "polaris-source-69.html",
+        "bytes": 11484,
+        "sha256": "d94ddc4062e112793ceb357ab3f168144973e969fca68773e922efd6b26e88a2"
+      },
+      {
+        "name": "polaris-source-70.html",
+        "bytes": 16619,
+        "sha256": "28853bc66fba15a5131b81c6f4be9f5694c6d1c771f93fecafede1f685a02038"
+      },
+      {
+        "name": "polaris-source-71.html",
+        "bytes": 48654,
+        "sha256": "4658013f7ab9aaa4e35598e073e7aa476f48509c855d666e7936acda648beb85"
+      },
+      {
+        "name": "polaris-source-72.html",
+        "bytes": 15848,
+        "sha256": "6df33c82ff5a7b08585997425a5fcfb46ad99d001ad01c581de9af0e88d8f3d0"
+      },
+      {
+        "name": "polaris-source-73.html",
+        "bytes": 44201,
+        "sha256": "b24b8029ad37fc40ec960cb80f02bfbcb39f95ac5de8618c6e9311c72fa39468"
+      },
+      {
+        "name": "polaris-source-74.html",
+        "bytes": 8652,
+        "sha256": "40ed44a87dc043538aaaddc5a119a9adee76d123434dd2475f8bb52d66766c65"
+      },
+      {
+        "name": "polaris-source-75.html",
+        "bytes": 24614,
+        "sha256": "bbf0b828f450fd68338aedd4d28528f7716e0bfc5fce13e9194292a60f7731f2"
+      },
+      {
+        "name": "polaris-source-76.html",
+        "bytes": 33087,
+        "sha256": "cbf260a7c6ec01e03d1b34ac4b7a052967ffeaf9473936eb877e0b4951eb3fad"
+      },
+      {
+        "name": "polaris-source-77.html",
+        "bytes": 21869,
+        "sha256": "a3d988b6667b339a85b0f55376e659ca18e25da4b296aa8967eaa04dd526d7a1"
+      },
+      {
+        "name": "polaris-source-78.html",
+        "bytes": 44480,
+        "sha256": "e196ad940cc77c4abc0024ce7589075bdd667d5f7ae462418fd64a4030b14567"
+      },
+      {
+        "name": "polaris-source-79.html",
+        "bytes": 28408,
+        "sha256": "13ffb2d51a743af49a197cfae1c849205977f812144f8269a8ae053c2471ee9e"
+      },
+      {
+        "name": "polaris-source-80.html",
+        "bytes": 32682,
+        "sha256": "f766085963edd7106dc9ca9859a8ebca38c7e43e5788167325abe3a0b9833287"
+      },
+      {
+        "name": "polaris-source-81.html",
+        "bytes": 22229,
+        "sha256": "54122dc6879ee748e4e710c3f3457e8ece9b3f14b86df49ac0347ad4edd63212"
+      },
+      {
+        "name": "polaris-source-82.html",
+        "bytes": 94885,
+        "sha256": "5cef50bded61a891c692dc20a67ff5603b8b3c4ded96b6cc4f16f97d331e380b"
+      },
+      {
+        "name": "polaris-source-83.html",
+        "bytes": 18897,
+        "sha256": "e9d80ffd13b91a48cd382462ca4fca9fabd2934ffde90eb9d27289ff03938630"
+      },
+      {
+        "name": "polaris-source-84.html",
+        "bytes": 58155,
+        "sha256": "52e48f3717dadbca4f547567bbc375005e06d6c33bf989722e233e150851313e"
+      },
+      {
+        "name": "polaris-source-85.html",
+        "bytes": 43080,
+        "sha256": "0d06a2130cbe8abcd3417678d39547054b7d202b83a69df0a41d90596ed1d7d5"
+      },
+      {
+        "name": "polaris-source-86.html",
+        "bytes": 22043,
+        "sha256": "382fe87591e43e5bc9b9dafcb225d6ae2522beefa5d2ad7a0da2ab3b5d47e0de"
+      },
+      {
+        "name": "polaris-source-87.html",
+        "bytes": 19179,
+        "sha256": "7015003668ac4a6b02af3a138b284ea4e23b0d69b34775f43e6d13f99ba25532"
+      },
+      {
+        "name": "polaris-source-88.html",
+        "bytes": 63959,
+        "sha256": "0b154f2e5619586e5bbc96d97ec4eddd41422c4c6b339169ef772377e08508e3"
+      },
+      {
+        "name": "polaris-source-89.html",
+        "bytes": 18994,
+        "sha256": "076c53ee3257b5f7d720dac12b58eb48ab50ac017d3ac6a71bca47eb7555a469"
+      },
+      {
+        "name": "polaris-source-90.html",
+        "bytes": 18272,
+        "sha256": "92769952162e33d67aabace0d8a622f2b6be59f72227dd873491c0510f7494df"
+      },
+      {
+        "name": "polaris-source-91.html",
+        "bytes": 26534,
+        "sha256": "421c1bc104400e935d5ce02f3a0885f2011f6ce8a72c6bdcb60083d75636328b"
+      },
+      {
+        "name": "polaris-source-92.html",
+        "bytes": 20674,
+        "sha256": "1eee1c3360afd8f72793712a6c84b0b47855d18c128bce77844d02547ac10df2"
+      },
+      {
+        "name": "polaris-source-93.html",
+        "bytes": 18739,
+        "sha256": "2ba414fe35362523f17fa0ce544d83cea2abb14a0ae57e69cd9b3d2a7ee69367"
+      },
+      {
+        "name": "polaris-source-94.html",
+        "bytes": 28412,
+        "sha256": "9fb9094d243a5333a90dd852ccca7a2401462e09d37a7073c06c481561553e3f"
+      },
+      {
+        "name": "polaris-source-95.html",
+        "bytes": 35858,
+        "sha256": "906a6ec8dc83ba5c76ad563d9349ff708acfcb9b5c7f7dcd0381f95267a8f55c"
+      },
+      {
+        "name": "polaris-source-96.html",
+        "bytes": 12856,
+        "sha256": "db03e0565c9abb0660927fb82850b75edab8d65b251241a4a6c82eea7454ff8a"
+      },
+      {
+        "name": "polaris-source-97.html",
+        "bytes": 63662,
+        "sha256": "82a8d6855441ca01024db803844f2af9c6847452111951804b316f16d02c6f8c"
+      },
+      {
+        "name": "polaris-source-98.html",
+        "bytes": 22982,
+        "sha256": "a1a1eccd923849c7d84e05af38e4511a21a857c2f32047cf0b7b67eccb26d56c"
+      },
+      {
+        "name": "polaris-source-99.html",
+        "bytes": 32638,
+        "sha256": "312f55bb56447354c9100070504b45b4bb511c7fbba8f5b514bdc7ac911a07f4"
+      },
+      {
+        "name": "polaris-source-100.html",
+        "bytes": 18139,
+        "sha256": "73edb0e37fa018615a8efacce2b1c2902ce94d19018f5c1983b699dccd0bf23d"
+      },
+      {
+        "name": "polaris-source-101.html",
+        "bytes": 14285,
+        "sha256": "c02630df7c3bb25c9818e62f4717784edf5999d2b3c84a44c7806cd4174d22a3"
+      },
+      {
+        "name": "polaris-source-102.html",
+        "bytes": 31421,
+        "sha256": "bd599bb823657ad78c840928ce0d6d841eda07d0d90779687d5eaec20993fe81"
+      },
+      {
+        "name": "polaris-source-103.html",
+        "bytes": 16055,
+        "sha256": "611ccb3f1eb26fe6323868ba90959f4a5facee49bc7a0ed761ecc932049256c5"
+      },
+      {
+        "name": "polaris-source-104.html",
+        "bytes": 15757,
+        "sha256": "cf7ffa96972c28af27d1129b73a724cb063da0be6cf1e87a668eb53815c3143a"
+      },
+      {
+        "name": "polaris-source-105.html",
+        "bytes": 22328,
+        "sha256": "2e13177bafea8a885f0af44c28fc5ae09c66989b910798f1164c43d8023d47b6"
+      },
+      {
+        "name": "polaris-source-106.html",
+        "bytes": 17069,
+        "sha256": "a8ebc0edce4bced036bcd694e70ee1223f66369845ff05f7b6a69ef26cc20a99"
+      },
+      {
+        "name": "polaris-source-107.html",
+        "bytes": 13409,
+        "sha256": "8c72ba8e48786c70563797e2f96b9fea1f03e738e3e75e7368a17bbbe0f5b3ae"
+      },
+      {
+        "name": "polaris-source-108.html",
+        "bytes": 18166,
+        "sha256": "409ba110a039cabd402c1161a83ece6a670d29375916cb52542d63aae77e7387"
+      },
+      {
+        "name": "polaris-source-109.html",
+        "bytes": 15126,
+        "sha256": "ff12ac9da75dedb0b8a18a18772780a212cb65a6649be39cd25b264742703e8b"
+      },
+      {
+        "name": "polaris-source-110.html",
+        "bytes": 25361,
+        "sha256": "b9d9c9c58d3c209a1c9762bf9b9f4dc0b638bb78f2a2a7c529ffc55dfaa9d83f"
+      },
+      {
+        "name": "polaris-source-111.html",
+        "bytes": 17998,
+        "sha256": "6d47941a6dd708c2c1cd27db3dc29950d51e7ed68246fc8e8e1ccc6a53ed75a3"
+      },
+      {
+        "name": "polaris-source-112.html",
+        "bytes": 18963,
+        "sha256": "90cf89aa907bef7b99db0d90d8ef7e24247cc824e4d71b4dbd9c81b4b0b92c85"
+      },
+      {
+        "name": "polaris-source-113.html",
+        "bytes": 21036,
+        "sha256": "20c257788c2dac4ec31b087ba3dfc275fc35593d74b718ddc0142166e80c4295"
+      },
+      {
+        "name": "polaris-source-114.html",
+        "bytes": 8721,
+        "sha256": "8e703357bb09ef29cfec92945f235bd243648671572cede11693dcc5ba5afd45"
+      },
+      {
+        "name": "polaris-source-115.html",
+        "bytes": 14425,
+        "sha256": "3f7c5f4c0079fb82cb452f6142b246c82c751ae0f3487d5846a8a28487e0d9c1"
+      },
+      {
+        "name": "polaris-source-116.html",
+        "bytes": 28839,
+        "sha256": "a26b0c5a37566b785c83ff6292f1b391051cf17b6f8c23a18125016d09448356"
+      },
+      {
+        "name": "polaris-source-117.html",
+        "bytes": 17871,
+        "sha256": "e55b9ff6b5c510a9de75472a7d2ca3e64ecfc381a881c8df3a1bd522535e853b"
+      },
+      {
+        "name": "polaris-source-118.html",
+        "bytes": 17551,
+        "sha256": "b5d3b27d3dcf7b3cd96ab89495e47c242b04c047c35ca8b40c6de88dd64b7fc7"
+      },
+      {
+        "name": "polaris-source-119.html",
+        "bytes": 35231,
+        "sha256": "797aaefcbbc8b3eb03b3e0eade0933d82b9107650eb6a65c6cc6b046cb53c29e"
+      },
+      {
+        "name": "polaris-source-120.html",
+        "bytes": 17049,
+        "sha256": "143e5ceb103111efaee2d96c648c0d18701ec995b1b143389a9e8c1223928c61"
+      },
+      {
+        "name": "polaris-source-121.html",
+        "bytes": 20412,
+        "sha256": "ed97b644b27ca5cdb933a9795cf30f28ba3f5c35ab7140f286037b748badb654"
+      },
+      {
+        "name": "polaris-source-122.html",
+        "bytes": 8616,
+        "sha256": "3f742f3cbcc4cc67c1e6b4a02cf511b9ab6d5acda851c1b8e32decac6eaea9ea"
+      },
+      {
+        "name": "polaris-source-123.html",
+        "bytes": 13469,
+        "sha256": "276ae60abccc6a9172844f95a3ad689c501e47743d0d7198a46d9bbf1c769ca3"
+      },
+      {
+        "name": "polaris-source-124.html",
+        "bytes": 17039,
+        "sha256": "e7e87fe8c12181cb0190d25ca6a75234fc0473f157e747d3140f9ea2b3cf9a21"
+      },
+      {
+        "name": "polaris-source-125.html",
+        "bytes": 10532,
+        "sha256": "6b4bebc59688630f1897a15e04472a662707fc35879ca4bcf73646ec3dcdc39b"
+      },
+      {
+        "name": "polaris-source-126.html",
+        "bytes": 38749,
+        "sha256": "91a74a3efaabdb48eec50994f11f09c6cecd63268b168e69777a3dc80b879cb3"
+      },
+      {
+        "name": "polaris-source-127.html",
+        "bytes": 11530,
+        "sha256": "f50b48fa61953f85b769b3f49489eb09cbac8c4f5b296934ffe66dff58ad61de"
+      },
+      {
+        "name": "polaris-source-128.html",
+        "bytes": 12609,
+        "sha256": "490f6f26473caa66442c6097893e279bea9d46e32631f7f5f1bac8eddff9cb17"
+      },
+      {
+        "name": "polaris-source-129.html",
+        "bytes": 10999,
+        "sha256": "77e71399f94cb5cf6413a0fc731aa68bb55cd36065b6bd9e39cbb10dd9bc60c4"
+      },
+      {
+        "name": "polaris-source-130.html",
+        "bytes": 33206,
+        "sha256": "df67ef3c3f5e9e6c50db527b0b7815eb3ccaf258149f8a3c42f1a8489b185a96"
+      },
+      {
+        "name": "polaris-source-131.html",
+        "bytes": 14996,
+        "sha256": "0d95779c4a570744101eee16f2719a0cc12d51ac014695c25323a94eb60a5585"
+      },
+      {
+        "name": "polaris-source-132.html",
+        "bytes": 32355,
+        "sha256": "e0226d050087ca4dfdf28c4a92c3bbfdfca8ebf25f6fb01840ec9eb2646879c8"
+      },
+      {
+        "name": "polaris-source-133.html",
+        "bytes": 18997,
+        "sha256": "5407b076f7de7888509658189bd7a763c17ff976b039c5563ab7ecf64b0fba2c"
+      },
+      {
+        "name": "polaris-source-134.html",
+        "bytes": 44953,
+        "sha256": "20c46e0e9b2ad46cf0456cf8c1fdc2722aca8bab1f1dfa8032a70d78c7183a20"
+      },
+      {
+        "name": "polaris-source-135.html",
+        "bytes": 72873,
+        "sha256": "731bdbe9dfb63f3c04e4211ea81137e115c4e701c41295acddacdaf7929df66e"
+      },
+      {
+        "name": "polaris-source-136.html",
+        "bytes": 33807,
+        "sha256": "a760e8565b03280735f4b1fbf32970bd0d23e4a9896b089c8466d1aeda2c1925"
+      },
+      {
+        "name": "polaris-source-137.html",
+        "bytes": 14152,
+        "sha256": "ba022b4b1ffd12a82de65fb172186e767bedeac7f4ee3e3813fc0cbf0b8d128f"
+      },
+      {
+        "name": "polaris-source-138.html",
+        "bytes": 10140,
+        "sha256": "f663e25c2792a310a9db010d9a1c6978ab6df3c12f1b555640af13c59a3e92ed"
+      },
+      {
+        "name": "polaris-source-139.html",
+        "bytes": 30598,
+        "sha256": "a6e04f4bd2de24a14dae4064737cc52ac5bb1127f3c7a68a97096ee49f853f93"
+      },
+      {
+        "name": "polaris-source-140.html",
+        "bytes": 32706,
+        "sha256": "5cc6d230b72797b75c1005a8357d3a4f8b460c8a9721c431df9956e8a4bafad8"
+      },
+      {
+        "name": "polaris-source-141.html",
+        "bytes": 26818,
+        "sha256": "4cada0293b58e1fb9911d10f07b5b7733fb778cac106d71cc3e5bba8e0c5f6fe"
+      },
+      {
+        "name": "polaris-source-142.html",
+        "bytes": 34904,
+        "sha256": "9b22b1bc29f72592e41293025fc95a605ed60eb39de9d38d2aa9e178f78eebac"
+      },
+      {
+        "name": "polaris-source-143.html",
+        "bytes": 44398,
+        "sha256": "cf4d07481b6f170dd1fc3262553c560ef6feeb1126ce906302fb49a91c5ed5a3"
+      },
+      {
+        "name": "polaris-source-144.html",
+        "bytes": 32200,
+        "sha256": "38dbac64ddd3179e79fff594a630121f98757c04bff3d92f5d80d080755b3b17"
+      },
+      {
+        "name": "polaris-source-145.html",
+        "bytes": 44846,
+        "sha256": "4ceb50f3333f56f1fada6cef45a30c42f32ff8e453d66d490b2726693fdfe099"
+      },
+      {
+        "name": "polaris-source-146.html",
+        "bytes": 16133,
+        "sha256": "db7f96e6c7297323d7dfcc7ac35f322611a538f7534e6bc6858addd88ed270ab"
+      },
+      {
+        "name": "polaris-source-147.html",
+        "bytes": 32971,
+        "sha256": "6fda2f390bdcf4a126e256ee2360e5b6925c46b5ac8aabaa12396259f7e2df3a"
+      },
+      {
+        "name": "polaris-source-148.html",
+        "bytes": 18984,
+        "sha256": "f99c6a2b1d32de62a0accd26b53fc7e87e1fda4404c7df115ef98a6373c691a5"
+      },
+      {
+        "name": "polaris-source-149.html",
+        "bytes": 46418,
+        "sha256": "b9c5fa1923683d08b397e49a6d5cae46081fed6ef46d9271b7687b7fec39d616"
+      },
+      {
+        "name": "polaris-source-150.html",
+        "bytes": 15668,
+        "sha256": "6bf85300e81674917e23fab9606c6fbbc082641076755ebcbcee2c5a1dee8997"
+      },
+      {
+        "name": "polaris-source-151.html",
+        "bytes": 39090,
+        "sha256": "767309a9aa6ec8bf63f6bd0c3e536fe44ea3791ad86bb725194de53ca0065efc"
+      },
+      {
+        "name": "polaris-source-152.html",
+        "bytes": 22929,
+        "sha256": "8737f77b56716566fc28f7a50786a8cab568fae8d6ae4bc9950003a6573bb048"
+      },
+      {
+        "name": "polaris-source-153.html",
+        "bytes": 22884,
+        "sha256": "f38126588d46e7708a573b80546845389399f1c29da04c354ec3fa8b32585b55"
+      },
+      {
+        "name": "polaris-source-154.html",
+        "bytes": 24465,
+        "sha256": "6ae7a0a8e882c1e12b38bf1d34248fc788093540601f302bab404c7c9d8a12b3"
+      },
+      {
+        "name": "polaris-source-155.html",
+        "bytes": 22272,
+        "sha256": "053696f83de808e0199977a9cefbb8fc6371c2239a40990ce934b025888c693c"
+      },
+      {
+        "name": "polaris-source-156.html",
+        "bytes": 16108,
+        "sha256": "a84a82b9e2b5bd13422450ec3dc0983408e023fe5fe26284878414f128e3590b"
+      },
+      {
+        "name": "polaris-source-157.html",
+        "bytes": 17389,
+        "sha256": "2f2bebcc5617fbc7d47b0a3248aa01f28c0f1c5deb48478766ddc1e01778717a"
+      },
+      {
+        "name": "polaris-source-158.html",
+        "bytes": 23833,
+        "sha256": "3f73d00ac925fb52592ff627f453d3a18f1d3e6b3ec61748e684232935285210"
+      },
+      {
+        "name": "polaris-source-159.html",
+        "bytes": 50565,
+        "sha256": "3b185fc18e0ce4b6b262b23c5381e10d9f20c38e312328d75988405d8f1ae060"
+      },
+      {
+        "name": "polaris-source-160.html",
+        "bytes": 8592,
+        "sha256": "787614a2d11b1f19cce2270783fea81920a8e99cf70d276a8a9b4dd900917769"
+      },
+      {
+        "name": "polaris-source-161.html",
+        "bytes": 44510,
+        "sha256": "c567688df007af5603a3cb73a33268cc8258bf711db58b4d5e4a35da89ac2d37"
+      },
+      {
+        "name": "polaris-source-162.html",
+        "bytes": 23516,
+        "sha256": "23649bfc7e8db18377b001b0078ad59bf3e3a8684e56a5200d9b4ba054291d67"
+      },
+      {
+        "name": "polaris-source-163.html",
+        "bytes": 18534,
+        "sha256": "bc540d3e8266ad6509ba576fc730fef90601fadf5b41f5fdec38ddace2aa3b26"
+      },
+      {
+        "name": "polaris-source-164.html",
+        "bytes": 19391,
+        "sha256": "fffbfb36d9ec4b961e42c414762fe99e6962b928e668f2168f22820950c3c4ad"
+      },
+      {
+        "name": "polaris-source-165.html",
+        "bytes": 42765,
+        "sha256": "b8cbee03ef3139d7f5fbea67b2d45b902decd53c3222535152369249e2e10c02"
+      },
+      {
+        "name": "polaris-source-166.html",
+        "bytes": 11788,
+        "sha256": "709e0044bd0bf471a03f925588eb38429dbefe61b0ddce23c17b4471cdcd6bea"
+      },
+      {
+        "name": "polaris-source-167.html",
+        "bytes": 13170,
+        "sha256": "804149987b47290d45083935e3a5d1e7c16caad1e4078be59dcbece382cb5b10"
+      },
+      {
+        "name": "polaris-source-168.html",
+        "bytes": 12007,
+        "sha256": "556886da84d4079cb2108feb78440fe10a35b15527e7f6db77a182ee1dde320a"
+      },
+      {
+        "name": "polaris-source-169.html",
+        "bytes": 14218,
+        "sha256": "83d150365ef86b55a001b1e58c4ffb2d823b2a20f46f7c2d913db45ef91a0e8d"
+      },
+      {
+        "name": "polaris-source-170.html",
+        "bytes": 22014,
+        "sha256": "ca559c594f93b253a6f408a8a75385eeb87ef37d3e07d7152488668b80945343"
+      },
+      {
+        "name": "polaris-source-171.html",
+        "bytes": 20023,
+        "sha256": "e126a725d211bee74445b0d2e1b1076fda3521a84ee4c35354ec5a8e5a85ff9c"
+      },
+      {
+        "name": "polaris-source-172.html",
+        "bytes": 12757,
+        "sha256": "127388311b9eed22f027a192e172ed55e305e578b4cab358ca85d4d284b7a4d8"
+      },
+      {
+        "name": "polaris-source-173.html",
+        "bytes": 15824,
+        "sha256": "c52cc83242002fbe5d36cff1440c2850ab9f1f0bdc478c787f183ebe2bd5abe1"
+      },
+      {
+        "name": "polaris-source-174.html",
+        "bytes": 17028,
+        "sha256": "32861191ffe3312d91628425b9ca964c88c34c02f0dfd827ce3c18489bf772e8"
+      },
+      {
+        "name": "polaris-source-175.html",
+        "bytes": 16939,
+        "sha256": "f6fa5ef63ac0d0db3f4737284bdc1251b314fb473f8e84b5ba67599a4de2904c"
+      },
+      {
+        "name": "polaris-source-176.html",
+        "bytes": 19603,
+        "sha256": "8baf48bca036c9972588c6f4141bef91550bf07be7551561db685672158b415c"
+      },
+      {
+        "name": "polaris-source-177.html",
+        "bytes": 37604,
+        "sha256": "2c87013d78c257de7f5a080e96b9da91ef4eb74aaa3b513fc59daf85c2897af4"
+      },
+      {
+        "name": "polaris-source-178.html",
+        "bytes": 16798,
+        "sha256": "3b4b49e94533912872a18953d1833b8b2f365ca1e5dbcecc666f49e522a20fc6"
+      },
+      {
+        "name": "polaris-source-179.html",
+        "bytes": 32601,
+        "sha256": "b5f4efffa72e136c76fe2dea51f01e7d133831233e8201ada4f87482cd14b6c7"
+      },
+      {
+        "name": "polaris-source-180.html",
+        "bytes": 43135,
+        "sha256": "44a1d2cba1b1ce3730ed5730ede8d388775dd2a56dfed1b3c6d79a16c86a32d4"
+      },
+      {
+        "name": "polaris-source-181.html",
+        "bytes": 18827,
+        "sha256": "9477f0827e52d12451e79b07befe4ded3711d14de0bb60a58c5d45c0c866eb53"
+      },
+      {
+        "name": "polaris-source-182.html",
+        "bytes": 70154,
+        "sha256": "e24ec997989a7682d98fe0753dcc037aed68ae69aeeb4b0ca18bec4664ef1efd"
+      },
+      {
+        "name": "polaris-source-183.html",
+        "bytes": 28006,
+        "sha256": "93a34f778b6fc29df4ecd4436f0141e47168171b463b4add5b1ea070e0fb5573"
+      },
+      {
+        "name": "polaris-source-184.html",
+        "bytes": 12013,
+        "sha256": "713f3c78a790ca1b2984e70c19a67f58d7c408181f07ff3a9cee31685cf0d0eb"
+      },
+      {
+        "name": "polaris-source-185.html",
+        "bytes": 22347,
+        "sha256": "6455128e5fde745948ba73c424a7053f88475b37d204af692d6a99975f694332"
+      },
+      {
+        "name": "accessibility-browser-run.json",
+        "bytes": 192764,
+        "sha256": "5759a881e75cc40ebcb43e5fd7ca11f3e25b2f213efb44355535caecc3f83923"
+      }
+    ]
+  },
+  "log": [],
+  "verdictBeforeWrite": {
+    "invariants": [
+      "clone-head-matches-source",
+      "install",
+      "build",
+      "test",
+      "machine-refused-without-credential",
+      "machine-served-with-credential",
+      "human-routes-served",
+      "source-route-served",
+      "tailnet-mount-served",
+      "presentation-served-with-credential",
+      "browser-origin-refused",
+      "butlers-revision-matches-model",
+      "shape-observed",
+      "authority-admits",
+      "parity",
+      "limit-breaches",
+      "preflight-ready",
+      "daemon-exit-clean",
+      "evidence-written"
+    ],
+    "healthy": true,
+    "failed": []
+  }
+}
