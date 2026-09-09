@@ -1209,7 +1209,10 @@ const SECTION_NAV_SCRIPT = `<script>
     if (event.target instanceof Element && event.target.closest('a') && !wide.matches) drawer.open = false;
   });
   document.addEventListener('DOMContentLoaded', () => {
-    const openGuide = (hash) => {
+    let handledHash;
+    const openGuide = (hash, explicitClick = false) => {
+      if (!explicitClick && hash === handledHash) return;
+      handledHash = hash;
       let id;
       try { id = decodeURIComponent(hash.slice(1)); } catch { return; }
       const guide = document.getElementById(id);
@@ -1217,7 +1220,7 @@ const SECTION_NAV_SCRIPT = `<script>
     };
     document.addEventListener('click', (event) => {
       const link = event.target instanceof Element ? event.target.closest('a[href^="#polaris-guide-"]') : null;
-      if (link) openGuide(link.hash);
+      if (link) openGuide(link.hash, true);
     });
     addEventListener('hashchange', () => openGuide(location.hash));
     openGuide(location.hash);

@@ -168,6 +168,16 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
       await page.setViewport(390, 844);
       await page.navigate(pathToFileURL(file).href);
       expect(await page.evaluate<number>(`document.querySelectorAll('[data-component-guide] details[open]').length`)).toBe(0);
+      // Native hashchange is queued after click. A fast collapse must survive it.
+      expect(await page.evaluate<number>(`(async () => {
+        const navigation = new Promise(resolve => addEventListener('hashchange', resolve, { once: true }));
+        document.querySelector('#guide-test-link').click();
+        const button = document.querySelector('.expand-declaration');
+        button.click();
+        button.click();
+        await navigation;
+        return document.querySelectorAll('[data-component-guide] details[open]').length;
+      })()`)).toBe(0);
       await page.evaluate(`document.querySelector('#guide-test-link').focus()`);
       await page.press('Enter');
       expect(await page.evaluate<boolean>(`document.querySelector('#polaris-guide-test-tools details').open && document.querySelector('#polaris-guide-test-tools').closest('details') === null`)).toBe(true);
@@ -177,6 +187,15 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
       expect(await page.evaluate<string>(`document.querySelector('.expand-declaration').getAttribute('aria-expanded')`)).toBe('true');
       await page.press('Enter');
       expect(await page.evaluate<number>(`document.querySelectorAll('[data-component-guide] details[open]').length`)).toBe(0);
+      // Leaving the guide and returning through browser history is a new navigation.
+      await page.evaluate(`new Promise(resolve => {
+        addEventListener('hashchange', resolve, { once: true });
+        location.hash = '#polaris-group-architecture';
+      })`);
+      expect(await page.evaluate<boolean>(`new Promise(resolve => {
+        addEventListener('hashchange', () => resolve(document.querySelector('#polaris-guide-test-tools details').open), { once: true });
+        history.back();
+      })`)).toBe(true);
     } finally { await page.close(); }
   });
 
