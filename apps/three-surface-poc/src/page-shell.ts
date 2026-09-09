@@ -20,7 +20,7 @@ function siteNav(
     const href = withMountPrefix(mountPrefix, item.href);
     return `<li><a href="${escapeHtml(href)}"${current_} data-copy-role="action-label" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${escapeHtml(item.label)}</a></li>`;
   }).join('');
-  return `<nav aria-label="Three-surface POC sections"><ul>${items}</ul></nav>`;
+  return `<nav class="site-nav" aria-label="Three-surface POC sections"><ul>${items}</ul></nav>`;
 }
 
 export interface PageShellInput {
@@ -30,6 +30,7 @@ export interface PageShellInput {
   readonly heading: string;
   readonly lede: string;
   readonly extraStyle?: string;
+  readonly readingLayout?: boolean;
   readonly body: string;
   readonly footer: string;
   readonly escapeHtml: (value: string) => string;
@@ -52,17 +53,18 @@ export function pageShell(input: PageShellInput): string {
 </head>
 <body>
   ${skipLinkHtml('main-content')}
+  ${input.readingLayout ? siteNav(input.current, mountPrefix, escapeHtml) : ''}
   <header>
     <div class="eyebrow" data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${escapeHtml(input.eyebrow)}</div>
     <h1 data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${escapeHtml(input.heading)}</h1>
     <p class="lede" data-copy-role="scope-instruction" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${escapeHtml(input.lede)}</p>
   </header>
-  ${siteNav(input.current, mountPrefix, escapeHtml)}
+  ${input.readingLayout ? '' : siteNav(input.current, mountPrefix, escapeHtml)}
   <main id="main-content">
-    ${legendHtml(escapeHtml)}
+    ${input.readingLayout ? '' : legendHtml(escapeHtml)}
     ${input.body}
   </main>
-  <footer data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${input.footer}</footer>
+  <footer data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${input.readingLayout ? legendHtml(escapeHtml) : ''}${input.footer}</footer>
 </body>
 </html>`;
 }

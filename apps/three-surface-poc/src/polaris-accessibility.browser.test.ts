@@ -92,6 +92,64 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
     return { url: pathToFileURL(file).href, expectedTargets: rendered.expectedTargets };
   }
 
+  it('keeps the contents in document flow when expanded and scrolled', async () => {
+    const { url } = pageUrl(ACCESSIBILITY_VARIANTS[0] as AccessibilityVariant);
+    const page = await browser.newPage();
+    try {
+      await page.navigate(url);
+      const initial = await page.evaluate<{ contents: string; site: string }>(`({
+        contents: getComputedStyle(document.querySelector('.depth-nav')).position,
+        site: getComputedStyle(document.querySelector('.site-nav')).position
+      })`);
+      expect(initial).toEqual({ contents: 'static', site: 'sticky' });
+      expect(await page.evaluate<boolean>('document.documentElement.scrollWidth <= innerWidth')).toBe(true);
+      await page.evaluate(`document.querySelector('.contents-list summary').focus()`);
+      await page.press('Enter');
+      const after = await page.evaluate<{ open: boolean; top: number }>(`(() => {
+        document.documentElement.style.scrollBehavior = 'auto';
+        const nav = document.querySelector('.depth-nav');
+        scrollTo(0, nav.offsetTop + nav.offsetHeight + 100);
+        return { open: document.querySelector('.contents-list').open, top: nav.getBoundingClientRect().bottom };
+      })()`);
+      expect(after.open).toBe(true);
+      expect(after.top).toBeLessThanOrEqual(0);
+      const destination = await page.evaluate<{ top: number; navBottom: number }>(`(() => {
+        document.querySelector('.quick-links a').click();
+        return { top: document.querySelector('#polaris-group-v1').getBoundingClientRect().top,
+          navBottom: document.querySelector('.site-nav').getBoundingClientRect().bottom };
+      })()`);
+      expect(destination.top).toBeGreaterThanOrEqual(destination.navBottom);
+    } finally { await page.close(); }
+  });
+
+  it('keeps source records compact while citation targets remain keyboard-reachable', async () => {
+    const { url } = pageUrl(ACCESSIBILITY_VARIANTS[0] as AccessibilityVariant);
+    const page = await browser.newPage();
+    try {
+      await page.navigate(url);
+      expect(await page.evaluate<boolean>(`(() => { const index = document.querySelector('[data-source-index]'); return index.scrollHeight > index.clientHeight && index.clientHeight <= innerHeight; })()`)).toBe(true);
+      const id = await page.evaluate<string>(`document.querySelector('tr[data-polaris-source]').id`);
+      await page.navigate('about:blank');
+      await page.navigate(url + '#' + id);
+      const closed = await page.evaluate<{ open: boolean; hidden: boolean; targetOutsideDisclosure: boolean }>(`(() => {
+        const row = document.getElementById(${JSON.stringify(id)});
+        const record = row.querySelector('.source-record');
+        return { open: record.open, hidden: !record.querySelector('cite').checkVisibility(),
+          targetOutsideDisclosure: row.closest('details') === null };
+      })()`);
+      expect(closed).toEqual({ open: false, hidden: true, targetOutsideDisclosure: true });
+      await page.press('Tab');
+      expect(await page.evaluate<boolean>(`document.activeElement === document.getElementById(${JSON.stringify(id)}).querySelector('.source-record summary')`)).toBe(true);
+      await page.press('Enter');
+      expect(await page.evaluate<boolean>(`document.getElementById(${JSON.stringify(id)}).querySelector('.source-record cite').checkVisibility()`)).toBe(true);
+      await page.press('Enter');
+      await page.press('Tab');
+      const next = await page.evaluate<string | null>(`document.activeElement.closest('tr[data-polaris-source]')?.id ?? null`);
+      expect(next).not.toBeNull();
+      expect(next).not.toBe(id);
+    } finally { await page.close(); }
+  });
+
   for (const variant of ACCESSIBILITY_VARIANTS) {
     it(`${variant.id}: every distinction is keyboard-operable, named for assistive technology, and AA-contrasting`, async () => {
       const { url, expectedTargets } = pageUrl(variant);

@@ -24,7 +24,7 @@ export interface PolarisCopyRow {
 
 export const POLARIS_COPY = [
   { id: 'shell.heading', role: 'project-fact', kind: 'heading', text: 'Butlers' },
-  { id: 'shell.lede', role: 'scope-instruction', kind: 'lede', text: 'Butlers in its own words: purpose, promises, limits, architecture and V1, each traced to its source.' },
+  { id: 'shell.lede', role: 'scope-instruction', kind: 'lede', text: 'Butlers in its own words.' },
   { id: 'notice', role: 'epistemic-disclosure', kind: 'notice', text: 'Every positive claim cites its source. Where evidence is absent, Unknown is stated in place with its route to resolution.' },
   { id: 'label.claim-states', role: 'action-label', kind: 'label', text: 'What the claim states mean' },
   // The claim-state glossary (RFC2-25 tiers; PWB-REQ-007): every field of
@@ -51,7 +51,7 @@ export const POLARIS_COPY = [
   { id: 'states.challenge.unchallenged', role: 'epistemic-disclosure', kind: 'sentence', text: 'unchallenged — no challenge is recorded; a recorded challenge suspends the claim.' },
   { id: 'states.strengthen', role: 'epistemic-disclosure', kind: 'sentence', text: 'To strengthen a claim: report-fact becomes gate-backed only through a retained gate artifact bound to the exact revision; an Unknown clears only by the route stated beside it. No summary rounds any state up.' },
 
-  { id: 'depth.label', role: 'scope-instruction', kind: 'label', text: 'Depths, from summary to exact source:' },
+  { id: 'depth.label', role: 'scope-instruction', kind: 'label', text: 'Contents — explore this account' },
   { id: 'depth.summary', role: 'scope-instruction', kind: 'label', text: 'Summary' },
   { id: 'depth.catalog', role: 'scope-instruction', kind: 'label', text: 'Catalog' },
   { id: 'depth.detail', role: 'scope-instruction', kind: 'label', text: 'Detail' },
@@ -75,7 +75,7 @@ export const POLARIS_COPY = [
   { id: 'class.project-account-section', role: 'project-fact', kind: 'heading', text: 'Project account' },
   { id: 'class.principle', role: 'project-fact', kind: 'heading', text: 'Non-negotiable rules' },
   { id: 'class.success-criterion', role: 'project-fact', kind: 'heading', text: 'Success criteria' },
-  { id: 'class.catalog-entry', role: 'project-fact', kind: 'heading', text: 'Declared projects' },
+  { id: 'class.catalog-entry', role: 'project-fact', kind: 'heading', text: 'Capabilities and terminology' },
   { id: 'class.design-contract', role: 'project-fact', kind: 'heading', text: 'Design contracts' },
   { id: 'class.baseline-spec', role: 'project-fact', kind: 'heading', text: 'Baseline specs' },
   { id: 'class.topology-component', role: 'project-fact', kind: 'heading', text: 'Components' },
@@ -118,6 +118,16 @@ export const POLARIS_COPY = [
   { id: 'label.coverage-counts', role: 'action-label', kind: 'label', text: 'Coverage counts' },
   // Progressive disclosure (PWB-REQ-011): exhaustive populations stay
   // complete behind a native disclosure whose control names the count.
+  { id: 'label.selected-passages', role: 'scope-instruction', kind: 'label', text: 'Selected passages from the project’s declaration. The complete account follows below.' },
+  { id: 'label.source-remedies', role: 'action-label', kind: 'label', text: 'Source details and remedies' },
+  { id: 'label.guide-intro', role: 'scope-instruction', kind: 'label', text: 'Declared capability groups, with examples where available.' },
+  { id: 'label.complete-catalog', role: 'action-label', kind: 'label', text: 'Explore the complete catalog' },
+  { id: 'label.capabilities', role: 'action-label', kind: 'label', text: 'Capabilities' },
+  { id: 'label.terminology', role: 'action-label', kind: 'label', text: 'Terminology' },
+  { id: 'label.browse-source-records', role: 'scope-instruction', kind: 'sentence', text: 'Browse the source records below. Scroll within the table for the full list.' },
+  { id: 'label.source-record', role: 'scope-instruction', kind: 'label', text: 'Source record' },
+  { id: 'label.source-notes', role: 'action-label', kind: 'label', text: 'Sources' },
+  { id: 'label.full-account', role: 'action-label', kind: 'label', text: 'Read the complete declaration' },
   { id: 'label.show-items', role: 'action-label', kind: 'label', text: 'Show items' },
   { id: 'label.show-exclusions', role: 'action-label', kind: 'label', text: 'Show exclusions' },
   { id: 'label.exact-text', role: 'action-label', kind: 'label', text: 'Exact text' },

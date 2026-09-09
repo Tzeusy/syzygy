@@ -27,7 +27,7 @@ afterEach(() => {
 });
 
 // Hand-typed oracles (never imported from the renderer or the model).
-const PROJECT_GROUPS = ['overview', 'boundaries', 'architecture', 'v1', 'catalog'] as const;
+const PROJECT_GROUPS = ['overview', 'boundaries', 'v1', 'architecture', 'catalog'] as const;
 const ACCOUNT_KEYS = ['purpose', 'promises', 'refusals', 'architecture', 'v1-scope', 'v1-success'] as const;
 const CATALOG_CLASSES = ['catalog-entry', 'roster-identity', 'design-contract', 'baseline-spec', 'craft-policy'] as const;
 const ACCOUNT_GROUP: Readonly<Record<(typeof ACCOUNT_KEYS)[number], string>> = {
@@ -91,7 +91,11 @@ describe('Polaris project-level sequence (PWB-REQ-010)', () => {
       expect(slice).toContain(`data-polaris-section="claim:project-account:${key}"`);
       if (statement?.statement !== undefined && statement.claim.epistemic.label === 'Observed') {
         expect(slice).toContain(`data-claim-provenance="claim:project-account:${key}"`);
-        expect(slice).toContain(statement.statement.replace(/&/g, '&amp;'));
+        const visibleText = slice.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ');
+        for (const line of statement.statement.split('\n').filter((line) => line.trim() !== '')) {
+          const prose = line.replace(/^\s*(?:#{1,6}|[-*+]|\d+[.)])\s+/, '').replace(/\*\*|`/g, '').replace(/\s+/g, ' ').trim();
+          expect(visibleText).toContain(prose);
+        }
       }
     }
 
@@ -190,7 +194,8 @@ describe('Polaris progressive depth (PWB-REQ-011; RFC7-16)', () => {
       shape.items.filter((item) => item.class !== 'project-account-section').length +
       shape.sources.length +
       shape.contradictions.length;
-    expect(tuples.length).toBe(expectedTuples);
+    const examples = new Set(shape.items.filter((item) => item.class === 'catalog-entry' && item.claim.epistemic.label === 'Observed' && item.statement !== undefined).map((item) => item.context)).size;
+    expect(tuples.length).toBe(expectedTuples + examples);
     expect(new Set(tuples.map((tuple) => attribute(tuple, 'data-claim-id'))).size).toBe(expectedTuples);
     let matched = 0;
     for (const tuple of tuples) {

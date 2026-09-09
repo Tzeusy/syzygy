@@ -5,7 +5,7 @@ import type { PocModel } from '@syzygy/three-surface-poc-core';
 
 import { POLARIS_COPY } from './polaris-copy.js';
 import { renderPolarisSourcePage } from './polaris-source.js';
-import { renderPolarisPage } from './polaris.js';
+import { renderPolarisPage, renderProjectReading } from './polaris.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import { walkthroughJudgmentFixture } from './test-walkthrough-judgment-fixture.js';
 import {
@@ -280,6 +280,7 @@ describe('Polaris copy roles (PWB-REQ-012)', () => {
     }
     const rendered: CopyString[] = [];
     for (const variant of VARIANTS) rendered.push(...sweep(renderPolarisPage(modelFor(variant))).strings);
+    rendered.push(...sweep(`<div data-copy-role="project-fact">${renderProjectReading({ summary: 'Selected complete paragraph.', full: 'Complete declaration.', condensed: true })}</div>`).strings);
     // The exact-source route's own strings: rendered text, an identity the
     // population does not carry, an empty identity, and an unobserved shape.
     const withSpec = modelFor('observed-with-baseline-spec');

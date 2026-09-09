@@ -100,7 +100,7 @@ export const DESIGN_TOKENS_CSS = `
     color: #f6dfb5;
     max-width: 78ch;
   }
-  nav {
+  .site-nav {
     position: sticky;
     top: 0;
     z-index: 2;
@@ -108,7 +108,7 @@ export const DESIGN_TOKENS_CSS = `
     border-block: 1px solid var(--line);
     backdrop-filter: blur(10px);
   }
-  nav ul {
+  .site-nav ul {
     width: min(1180px, calc(100% - 2rem));
     margin: 0 auto;
     padding: .8rem 0;
@@ -117,7 +117,7 @@ export const DESIGN_TOKENS_CSS = `
     list-style: none;
     overflow-x: auto;
   }
-  nav a[aria-current="page"] { color: var(--ink); text-decoration: underline; }
+  .site-nav a[aria-current="page"] { color: var(--ink); text-decoration: underline; }
   .epistemic {
     display: inline-block;
     padding: .08rem .5rem;
