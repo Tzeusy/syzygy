@@ -489,10 +489,13 @@ function unknownRoutes(claim: ProjectShapeClaim, prefix: string): string {
   return `<div class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}><p>${prefix.startsWith('Declared by ') ? '' : prefix}${copy('label.unknown')} — ${unknownReasonRef(primary)}.</p><details class="unknown-source-details"><summary${copyAttr('label.source-remedies')}>${copy('label.source-remedies')}</summary><p>${prefix.startsWith('Declared by ') ? prefix : ''}${copy('label.route')} ${escapeHtml(routeOf(claim, primary))}.${secondaryLine}</p></details></div>`;
 }
 
-export function renderProjectReading(reading: ProjectReading): string {
+export function renderProjectReading(reading: ProjectReading, anchorId?: string): string {
   const label = reading.condensed ? `<p class="excerpt-label"${copyAttr('label.selected-passages')}>${copy('label.selected-passages')}</p>` : '';
-  const full = reading.condensed ? `<details class="full-account"><summary${copyAttr('label.full-account')}>${copy('label.full-account')}</summary><div class="reading-prose">${renderPolarisMarkdown(reading.full)}</div></details>` : '';
-  return `${label}<div class="reading-prose">${renderPolarisMarkdown(reading.summary)}</div>${full}`;
+  const chapters = reading.chapters;
+  const full = chapters !== undefined
+    ? `<section class="component-library"><h4${copyAttr('label.component-guides')}>${copy('label.component-guides')}</h4><button type="button" class="expand-declaration" aria-expanded="false"${copyAttr('label.full-account')}>${copy('label.full-account')}</button><div class="component-guides">${chapters.map((chapter) => `<section id="polaris-guide-${escapeHtml(chapter.id)}" data-component-guide><details><summary>${escapeHtml(chapter.title)}</summary><div class="reading-prose">${renderPolarisMarkdown(chapter.body, anchorId)}</div></details></section>`).join('')}</div></section>`
+    : reading.condensed ? `<details class="full-account"><summary${copyAttr('label.full-account')}>${copy('label.full-account')}</summary><div class="reading-prose">${renderPolarisMarkdown(reading.full, anchorId)}</div></details>` : '';
+  return `${label}<div class="reading-prose">${renderPolarisMarkdown(reading.summary, anchorId)}</div>${full}`;
 }
 
 function accountStatement(statement: ProjectAccountStatement, revision: string): string {
@@ -500,7 +503,7 @@ function accountStatement(statement: ProjectAccountStatement, revision: string):
     ? ((): string => {
         const block = shapeClaimBlock(statement.claim, revision);
         const reading = projectReading(statement.statement, statement.key);
-        return `<div class="account-reading"${block.attrs}><div data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${renderProjectReading(reading)}</div><details class="reading-citations"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')}</summary>${supportCitations(statement.claim.support, block.anchors)}</details></div>`;
+        return `<div class="account-reading"${block.attrs}><div data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${renderProjectReading(reading, block.anchors.length === 1 ? block.anchors[0]!.anchorId : undefined)}</div><details class="reading-citations"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')}</summary>${supportCitations(statement.claim.support, block.anchors)}</details></div>`;
       })()
     : unknownRoutes(statement.claim, '');
   return `<section class="claim-section" data-polaris-section="${escapeHtml(statement.claim.claimId)}">
@@ -1199,7 +1202,64 @@ function projectGroupBody(shape: ProjectShape, group: Exclude<PolarisGroup, 'cap
   }
 }
 
+const SECTION_NAV_SCRIPT = `<script>
+(() => {
+  const drawer = document.querySelector('.reading-sidebar .contents-list');
+  if (!drawer) return;
+  const wide = matchMedia('(min-width: 1000px)');
+  const adapt = () => { drawer.open = wide.matches; };
+  adapt();
+  wide.addEventListener('change', adapt);
+  document.querySelector('.reading-sidebar').addEventListener('click', (event) => {
+    if (event.target instanceof Element && event.target.closest('a') && !wide.matches) drawer.open = false;
+  });
+  document.addEventListener('DOMContentLoaded', () => {
+    const openGuide = (hash) => {
+      let id;
+      try { id = decodeURIComponent(hash.slice(1)); } catch { return; }
+      const guide = document.getElementById(id);
+      if (guide && guide.matches('[data-component-guide]')) guide.querySelector('details').open = true;
+    };
+    document.addEventListener('click', (event) => {
+      const link = event.target instanceof Element ? event.target.closest('a[href^="#polaris-guide-"]') : null;
+      if (link) openGuide(link.hash);
+    });
+    addEventListener('hashchange', () => openGuide(location.hash));
+    openGuide(location.hash);
+    for (const library of document.querySelectorAll('.component-library')) {
+      const button = library.querySelector('.expand-declaration');
+      const sections = Array.from(library.querySelectorAll('[data-component-guide] > details'));
+      button.addEventListener('click', () => {
+        const open = !sections.every((section) => section.open);
+        for (const section of sections) section.open = open;
+        button.setAttribute('aria-expanded', String(open));
+      });
+      library.addEventListener('toggle', () => button.setAttribute('aria-expanded', String(sections.every((section) => section.open))), true);
+    }
+    const headings = Array.from(document.querySelectorAll('h2[id^="polaris-group-"]'));
+    const links = Array.from(drawer.querySelectorAll('a'));
+    let queued = false;
+    const update = () => {
+      queued = false;
+      let active = headings[0];
+      for (const heading of headings) {
+        if (heading.getBoundingClientRect().top <= 160) active = heading;
+      }
+      for (const link of links) {
+        if (active && link.hash === '#' + active.id) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      }
+    };
+    addEventListener('scroll', () => {
+      if (!queued) { queued = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    update();
+  });
+})();
+</script>`;
+
 const POLARIS_STYLE = `
+  html { scroll-behavior: auto; }
   .band { max-width: 74ch; margin: 0 auto 2rem; padding: 0.5rem 0 0; border-left: 3px solid var(--line); padding-left: 1rem; }
   .band[data-band="argument"] { border-left-style: dotted; }
   .band[data-band="contract"] { border-left-style: double; }
@@ -1302,9 +1362,67 @@ const POLARIS_STYLE = `
   .population .reading-prose { font-size: 1rem; min-width: 22ch; }
   .population .reading-prose p:last-child { margin-bottom: 0; }
   .claim-states { border: 0; border-left: 1px solid var(--line); padding: .3rem 1rem; }
+  .reading-layout { display: grid; grid-template-columns: 14rem minmax(0, 1fr); grid-template-areas: "sidebar header" "sidebar content" "sidebar footer"; column-gap: clamp(2rem, 4vw, 4rem); max-width: 96rem; padding-inline: clamp(1rem, 3vw, 3rem); margin-inline: auto; }
+  .reading-sidebar { grid-area: sidebar; position: sticky; top: 5rem; align-self: start; max-height: calc(100vh - 6rem); overflow: auto; margin-top: 3rem; padding-right: .75rem; }
+  .reading-layout > header { grid-area: header; }
+  .reading-layout > main { grid-area: content; }
+  .reading-layout > footer { grid-area: footer; }
+  .reading-layout > header, .reading-layout > main, .reading-layout > footer { min-width: 0; width: 100%; margin-inline: 0; }
+  .reading-layout .group, .reading-layout .claim-section, .reading-layout .band, .reading-layout .relationships, .reading-layout .capability-guide, .reading-layout .scope-instruction, .reading-layout .claim-states { max-width: 91ch; margin-left: 0; }
+  .reading-layout .claim-section.wide { max-width: none; }
+  .reading-prose { max-width: 74ch; }
+  .reading-prose .source-flow { display: grid; grid-template-columns: repeat(var(--flow-columns), minmax(0, 1fr)); gap: 1.3rem; list-style: none; padding: 1.25rem 0; margin: 1.5rem 0; }
+  .source-flow li { position: relative; min-width: 0; padding: 0; margin: 0; }
+  .flow-node { display: block; height: 100%; border: 1px solid var(--line); border-top: 2px solid var(--cyan); background: var(--panel); padding: .75rem .5rem; font: .85rem var(--font-mono); text-transform: capitalize; }
+  .flow-arrow { position: absolute; top: 50%; right: -1.3rem; width: 1.3rem; text-align: center; transform: translateY(-50%); font-size: 0; }
+  .flow-arrow::after { content: '→'; font-size: 1.2rem; color: var(--muted); }
+  .reading-prose .source-flow[data-flow-long] { grid-template-columns: 1fr; }
+  .source-flow[data-flow-long] .flow-arrow { top: auto; right: calc(50% - .65rem); bottom: -1.3rem; height: 1.3rem; transform: none; }
+  .source-flow[data-flow-long] .flow-arrow::after { content: '↓'; }
+  @media (max-width: 800px) {
+    .reading-prose .source-flow { grid-template-columns: 1fr; }
+    .source-flow .flow-arrow { top: auto; right: calc(50% - .65rem); bottom: -1.3rem; height: 1.3rem; transform: none; }
+    .source-flow .flow-arrow::after { content: '↓'; }
+  }
+  .source-relationships { display: grid; gap: 1rem; margin-block: 1.5rem; }
+  .source-relationship { border: 1px solid var(--line); background: var(--panel); padding: 1.25rem; }
+  .relationship-nodes { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 1rem; font-size: 1rem; }
+  .relationship-nodes > strong { padding: .6rem; border-bottom: 2px solid var(--line); }
+  .relationship-arrow { color: var(--muted); font-size: 1.5rem; }
+  .relationship-description { margin-top: 1rem; font-size: .95rem; }
+  .relationship-description p:last-child { margin-bottom: 0; }
+  .component-library { margin-block: 2rem; }
+  .component-library > h4 { font-size: 1.4rem; margin-bottom: .75rem; }
+  .expand-declaration { background: transparent; border: 1px solid var(--line); color: var(--cyan); padding: .6rem .9rem; cursor: pointer; margin-bottom: 1rem; font: inherit; }
+  .component-guides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  [data-component-guide] { min-width: 0; border: 1px solid var(--line); background: var(--panel); padding: 1rem; }
+  [data-component-guide]:has(details[open]) { grid-column: 1 / -1; }
+  [data-component-guide] summary { cursor: pointer; font-size: 1.1rem; line-height: 1.5; }
+  [data-component-guide] details[open] > summary { margin-bottom: 1.5rem; }
+
+
+  .reading-sidebar .quick-links { flex-wrap: wrap; gap: .6rem 1rem; }
+  .reading-sidebar .contents-list { border-top: 0; }
+  .reading-sidebar .contents-list ol, .reading-sidebar .contents-list ul { list-style: none; padding: 0; }
+  .reading-sidebar .contents-list > ol > li { margin: 1.25rem 0; }
+  .reading-sidebar .contents-list ul { margin: .4rem 0 0; }
+  .reading-sidebar .contents-list ul li { margin: .15rem 0; line-height: 1.4; }
+  .depth-group-label { color: var(--muted); font: .7rem var(--font-mono); text-transform: uppercase; letter-spacing: .08em; }
+  .reading-sidebar .contents-list a { display: block; padding: .35rem .5rem; border-left: 2px solid transparent; text-decoration: none; }
+  .reading-sidebar .contents-list a[aria-current="location"] { color: var(--ink); border-color: var(--cyan); background: var(--panel); }
+  @media (max-width: 999px) {
+    .reading-layout { display: block; padding-inline: 1rem; }
+    .reading-sidebar { position: static; max-height: none; margin-top: 1rem; padding: 0; }
+    .reading-sidebar .depth-nav { max-width: none; margin-bottom: 0; }
+    .reading-sidebar .contents-list { border-block: 1px solid var(--line); }
+    .reading-sidebar .contents-list > ol { columns: 2; column-gap: 2rem; }
+    .reading-sidebar .contents-list > ol > li { break-inside: avoid; }
+  }
   @media (max-width: 640px) {
     header { padding-top: 2.5rem; }
+    .reading-sidebar .contents-list > ol { columns: 1; }
     .catalog-contexts { columns: 1; }
+    .component-guides { grid-template-columns: 1fr; }
     .guide-grid { grid-template-columns: 1fr; }
     .site-nav ul { gap: 1rem; font-size: .85rem; }
     .reading-prose { font-size: 1.05rem; }
@@ -1367,11 +1485,13 @@ export function renderPolarisPage(model: PocModel, mountPrefix = '', viewState: 
 function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): string {
   const observed = shape.kind === 'observed';
   const revision = observed ? shape.identity.revision : '';
+  const architecture = observed ? shape.projectAccount.find((statement) => statement.key === 'architecture' && statement.claim.epistemic.label === 'Observed')?.statement : undefined;
+  const chapters = architecture === undefined ? [] : projectReading(architecture, 'architecture').chapters ?? [];
   const link = (id: string, copyId: PolarisCopyId): string => `<a href="#${escapeHtml(id)}"${copyAttr(copyId)}>${copy(copyId)}</a>`;
   const levels: readonly (readonly [PolarisCopyId, readonly string[]])[] = [
     ['depth.summary', [link('polaris-group-overview', 'group.overview'), link('polaris-group-boundaries', 'group.boundaries'), link('polaris-group-v1', 'group.v1'), link('polaris-group-architecture', 'group.architecture')]],
     ['depth.catalog', [link('polaris-group-catalog', 'group.catalog'), ...(observed ? CATALOG_CLASSES.map((cls) => link(`polaris-class-${cls}`, `class.${cls}`)) : [])]],
-    ['depth.detail', [link('polaris-group-capability-detail', 'group.capability-detail'), ...dives.map((dive) => `<a href="#polaris-deep-dive-${escapeHtml(sourceSlug(dive.capabilityId))}" data-depth-dive="${escapeHtml(dive.capabilityId)}"${FACT}>${escapeHtml(dive.capability.title)}</a>`)]],
+    ['depth.detail', [...chapters.map((chapter) => `<a href="#polaris-guide-${escapeHtml(chapter.id)}"${FACT}>${escapeHtml(chapter.title)}</a>`), link('polaris-group-capability-detail', 'group.capability-detail'), ...dives.map((dive) => `<a href="#polaris-deep-dive-${escapeHtml(sourceSlug(dive.capabilityId))}" data-depth-dive="${escapeHtml(dive.capabilityId)}"${FACT}>${escapeHtml(dive.capability.title)}</a>`)]],
     ['depth.source', [
       link('polaris-group-evidence-and-gaps', 'group.evidence-and-gaps'),
       link('polaris-shape-sources', 'evidence.sources'),
@@ -1387,7 +1507,7 @@ function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): st
   ];
   return `<nav class="depth-nav" data-polaris-depth-nav aria-labelledby="polaris-depth-label"><p class="quick-links"${SCOPE}><a href="#polaris-group-v1"${copyAttr('label.capabilities')}>${copy('label.capabilities')}</a>${observed ? ` <a href="#polaris-account-purpose"${copyAttr('label.terminology')}>${copy('label.terminology')}</a>` : ''}</p>
     <details class="contents-list"><summary id="polaris-depth-label"${SCOPE}>${copy('depth.label')}</summary>
-    <ol>${levels.map(([copyId, links], index) => `<li data-depth-level="${index + 1}"${SCOPE}><span${copyAttr(copyId)}>${copy(copyId)}</span> — ${links.join(', ')}</li>`).join('')}</ol></details>
+    <ol>${levels.map(([copyId, links], index) => `<li data-depth-level="${index + 1}"${SCOPE}><span class="depth-group-label"${copyAttr(copyId)}>${copy(copyId)}</span><ul>${links.map((item) => `<li>${item}</li>`).join('')}</ul></li>`).join('')}</ol></details>
   </nav>`;
 }
 
@@ -1426,7 +1546,6 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     .join('');
 
   const body = `
-    ${depthNav(shape, dives)}
     ${groupHeader('overview')}
     ${projectGroupBody(shape, 'overview')}
     <p class="notice"${copyAttr('notice')}>${copy('notice')} <a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p>
@@ -1461,6 +1580,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     lede: copyText('shell.lede'),
     extraStyle: POLARIS_STYLE,
     body: bodyWithNarrative,
+    sidebar: depthNav(shape, dives) + SECTION_NAV_SCRIPT,
     footer: `Evaluation <code>${escapeHtml(model.evaluation.snapshot)}</code> as of <code>${escapeHtml(model.evaluation.asOf)}</code>.`,
     escapeHtml,
     mountPrefix,

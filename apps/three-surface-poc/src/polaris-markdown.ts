@@ -98,7 +98,35 @@ function tableHeader(lines: string[], index: number): boolean {
 const listItem = /^( *)([-+*]|\d+[.)]) +(.*)$/;
 const fenceStart = /^ {0,3}(`{3,}|~{3,})(.*)$/;
 
-function blocks(lines: string[], depth = 0): string {
+function diagramNodeAttrs(anchorId: string | undefined): string {
+  return anchorId === undefined
+    ? ' data-diagram-node data-non-normative data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable'
+    : ` data-diagram-node data-anchor-id="${escapeHtml(anchorId)}"`;
+}
+
+/** Explicit flow fences contain data only; unsupported graphs stay literal. */
+function flowDiagram(body: readonly string[], anchorId?: string): string | undefined {
+  if (body.length !== 1) return undefined;
+  const nodes = body[0]!.trim().split(/\s+-->\s+/);
+  if (nodes.length < 2 || nodes.length > 12 || nodes.some((node) => !/^[\p{L}\p{N}][\p{L}\p{N} _()./&'-]{0,63}$/u.test(node))) return undefined;
+  return `<ol class="source-flow" data-visual-provenance="curated" style="--flow-columns:${nodes.length}"${nodes.length > 6 ? ' data-flow-long' : ''}>${nodes.map((node, index) => `<li><span class="flow-node"${diagramNodeAttrs(anchorId)}>${escapeHtml(node)}</span>${index < nodes.length - 1 ? '<span class="flow-arrow" aria-hidden="true"> --&gt; </span>' : ''}</li>`).join('')}</ol>`;
+}
+
+function relationshipDiagram(body: readonly string[], depth: number, anchorId?: string): string | undefined {
+  let rows: unknown;
+  try { rows = JSON.parse(body.join('\n')); } catch { return undefined; }
+  if (!Array.isArray(rows) || rows.length === 0 || rows.length > 8) return undefined;
+  for (const row of rows) {
+    if (row === null || typeof row !== 'object' || Array.isArray(row)
+      || Object.keys(row).sort().join(',') !== 'description,from,to'
+      || typeof row.from !== 'string' || !row.from.trim() || row.from.length > 128
+      || typeof row.to !== 'string' || !row.to.trim() || row.to.length > 128
+      || typeof row.description !== 'string' || !row.description.trim() || row.description.length > 8000) return undefined;
+  }
+  return `<div class="source-relationships" data-visual-provenance="curated">${rows.map((row) => `<section class="source-relationship" data-visual-provenance="curated"><div class="relationship-nodes"><strong${diagramNodeAttrs(anchorId)}>${escapeHtml(row.from)}</strong><span class="relationship-arrow" aria-hidden="true">→</span><strong${diagramNodeAttrs(anchorId)}>${escapeHtml(row.to)}</strong></div><div class="relationship-description">${blocks(row.description.split('\n'), depth + 1, anchorId)}</div></section>`).join('')}</div>`;
+}
+
+function blocks(lines: string[], depth = 0, anchorId?: string): string {
   if (depth >= MAX_NESTING) return `<pre>${escapeHtml(lines.join('\n'))}</pre>`;
   const output: string[] = [];
   let i = 0;
@@ -121,7 +149,9 @@ function blocks(lines: string[], depth = 0): string {
       const closing = new RegExp(`^ {0,3}${marker[0]}{${marker.length},}\\s*$`);
       while (i < lines.length && !closing.test(lines[i]!)) body.push(lines[i++]!);
       if (i < lines.length) i++;
-      output.push(`<pre><code>${escapeHtml(body.join('\n'))}</code></pre>`);
+      const language = fence[2]!.trim();
+      const diagram = language === 'flow' ? flowDiagram(body, anchorId) : language === 'relations' ? relationshipDiagram(body, depth, anchorId) : undefined;
+      output.push(diagram ?? `<pre><code>${escapeHtml(body.join('\n'))}</code></pre>`);
       continue;
     }
     const heading = /^ {0,3}(#{1,6}) +(.+?)(?: +#+)? *$/.exec(line);
@@ -134,7 +164,7 @@ function blocks(lines: string[], depth = 0): string {
     if (/^ *>/.test(line)) {
       const quote: string[] = [];
       while (i < lines.length && /^ *>/.test(lines[i]!)) quote.push(lines[i++]!.replace(/^ *> ?/, ''));
-      output.push(`<blockquote>${blocks(quote, depth + 1)}</blockquote>`);
+      output.push(`<blockquote>${blocks(quote, depth + 1, anchorId)}</blockquote>`);
       continue;
     }
     if (tableHeader(lines, i)) {
@@ -166,7 +196,7 @@ function blocks(lines: string[], depth = 0): string {
         }
         // Preserve explicit numbering, including gaps in a source list.
         const value = ordered ? ` value="${Number.parseInt(item[2]!, 10)}"` : '';
-        items.push(`<li${value}>${blocks(content, depth + 1)}</li>`);
+        items.push(`<li${value}>${blocks(content, depth + 1, anchorId)}</li>`);
       }
       output.push(`<${tag}>${items.join('')}</${tag}>`);
       continue;
@@ -183,6 +213,6 @@ function blocks(lines: string[], depth = 0): string {
   return output.join('\n');
 }
 
-export function renderPolarisMarkdown(text: string): string {
-  return blocks(text.replace(/\r\n?/g, '\n').split('\n'));
+export function renderPolarisMarkdown(text: string, anchorId?: string): string {
+  return blocks(text.replace(/\r\n?/g, '\n').split('\n'), 0, anchorId);
 }

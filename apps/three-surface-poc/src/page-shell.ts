@@ -32,6 +32,7 @@ export interface PageShellInput {
   readonly extraStyle?: string;
   readonly readingLayout?: boolean;
   readonly body: string;
+  readonly sidebar?: string;
   readonly footer: string;
   readonly escapeHtml: (value: string) => string;
   /** The mount this page is being rendered under (`''` direct, or
@@ -54,17 +55,20 @@ export function pageShell(input: PageShellInput): string {
 <body>
   ${skipLinkHtml('main-content')}
   ${input.readingLayout ? siteNav(input.current, mountPrefix, escapeHtml) : ''}
+  ${input.sidebar === undefined ? '' : '<div class="reading-layout">'}
   <header>
     <div class="eyebrow" data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${escapeHtml(input.eyebrow)}</div>
     <h1 data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${escapeHtml(input.heading)}</h1>
     <p class="lede" data-copy-role="scope-instruction" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${escapeHtml(input.lede)}</p>
   </header>
+  ${input.sidebar === undefined ? '' : `<aside class="reading-sidebar">${input.sidebar}</aside>`}
   ${input.readingLayout ? '' : siteNav(input.current, mountPrefix, escapeHtml)}
   <main id="main-content">
     ${input.readingLayout ? '' : legendHtml(escapeHtml)}
     ${input.body}
   </main>
   <footer data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>${input.readingLayout ? legendHtml(escapeHtml) : ''}${input.footer}</footer>
+  ${input.sidebar === undefined ? '' : '</div>'}
 </body>
 </html>`;
 }

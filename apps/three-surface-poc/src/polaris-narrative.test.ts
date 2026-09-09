@@ -156,6 +156,22 @@ describe('Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9)',
     expect(anchored).toBeGreaterThan(40);
   });
 
+  it('binds every named diagram element to its source declaration anchor', () => {
+    const path = 'about/heart-and-soul/architecture.md';
+    const texts = { ...PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC,
+      [path]: PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC[path] + '\n```flow\nReceive --> Decide --> Act\n```\n' };
+    const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(texts) } });
+    const html = renderPolarisPage(model);
+    const nodes = [...html.matchAll(/<span class="flow-node"([^>]*)>/g)];
+    expect(nodes).toHaveLength(3);
+    const narrative = parseNarrativeScript(html);
+    const block = narrative.blocks.find((entry) => entry.claims.includes('claim:project-account:architecture'));
+    expect(block?.anchors).toHaveLength(1);
+    for (const node of nodes) expect(attr(node[1]!, 'data-anchor-id')).toBe(block!.anchors[0]!.anchorId);
+    expect(block!.anchors[0]!.locator).toContain(path);
+    expect(html).toContain('data-visual-provenance="curated"');
+  });
+
   it('gives every anchored block a typed, revision-bound anchor set that exactly covers its claims (no uncovered claim, no surplus anchor) and captures target state', () => {
     let blocks = 0;
     for (const variant of VARIANTS) {
@@ -216,8 +232,10 @@ describe('Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9)',
             expect(anchor.captured.label).toBe('Observed');
           }
         }
-        const citesInBlock = unit.inner.match(/data-anchor-id="/g)?.length ?? 0;
-        expect(citesInBlock, `${variant}: ${blockId} renders a cite that is not in its anchor set`).toBe(block.anchors.length);
+        // Named diagram elements may reference the same canonical anchor.
+        // References remain closed over the block's independently checked set.
+        const citedIds = [...unit.inner.matchAll(/data-anchor-id="([^"]+)"/g)].map((match) => match[1]);
+        expect([...new Set(citedIds)].sort(), `${variant}: ${blockId} anchor references`).toEqual(block.anchors.map((anchor) => anchor.anchorId).sort());
         blocks += 1;
       }
     }

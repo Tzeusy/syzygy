@@ -60,7 +60,7 @@ describe('Polaris first reading (PWB-REQ-010 as amended; PWB-LIVE-06)', () => {
   it('opens on Butlers: the heading names the project, the compact contents precede the overview and the state explanation follows it, and no headline status appears', () => {
     for (const variant of [observed().html, observed(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET).html, renderPolarisPage(buildFixtureModel(cleanups)), renderPolarisPage(buildFixtureModel(cleanups, { projectShape: { authority: REJECTING_AUTHORITY, runGit: projectShapeFixtureGit() } }))]) {
       expect(variant).toMatch(/<h1[^>]*>Butlers<\/h1>/);
-      expect(variant).toContain('Butlers in its own words');
+      expect(variant).toContain('Less to remember. More room to live.');
       const overview = variant.indexOf('data-polaris-group="overview"');
       const states = variant.indexOf('id="polaris-claim-states"');
       const nav = variant.indexOf('data-polaris-depth-nav');

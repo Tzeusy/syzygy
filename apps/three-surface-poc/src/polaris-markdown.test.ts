@@ -80,3 +80,34 @@ describe('literal code boundaries', () => {
     expect(html).toContain('<td><code>a|b</code></td><td>Literal</td>');
   });
 });
+
+
+describe('explicit explanatory diagrams', () => {
+  it('renders bounded flow data and keeps ordinary code literal', () => {
+    const flow = renderPolarisMarkdown('```flow\nReceive --> Decide --> Act\n```');
+    expect(flow).toContain('class="source-flow"');
+    expect(flow).toContain('data-visual-provenance="curated"');
+    expect(flow.match(/data-non-normative/g)).toHaveLength(3);
+    const anchored = renderPolarisMarkdown('```flow\nReceive --> Decide --> Act\n```', 'source-block#a1');
+    expect(anchored.match(/data-anchor-id="source-block#a1"/g)).toHaveLength(3);
+    expect(anchored).not.toContain('data-non-normative');
+    expect(flow.match(/class="flow-node"/g)).toHaveLength(3);
+    expect(flow.replace(/<[^>]+>/g, '')).toContain('Receive --&gt; Decide --&gt; Act');
+    expect(renderPolarisMarkdown('```js\nReceive --> Decide --> Act\n```')).toContain('<pre><code>');
+    for (const body of ['Only one node', 'A --> <script>run()</script>', Array(13).fill('Node').join(' --> ')]) {
+      expect(renderPolarisMarkdown('```flow\n' + body + '\n```')).not.toContain('class="source-flow"');
+    }
+  });
+
+  it('keeps relationship explanations and escapes all source-controlled labels', () => {
+    const body = [{ from: '<img src=x>', to: 'Tool & state', description: 'Calls only this endpoint. Peers cannot call one another.' }];
+    const html = renderPolarisMarkdown('```relations\n' + JSON.stringify(body) + '\n```');
+    expect(html).toContain('class="source-relationships"');
+    expect(html).toContain('&lt;img src=x&gt;');
+    expect(html).not.toContain('<img');
+    expect(html).toContain('Peers cannot call one another.');
+    for (const invalid of ['not JSON', '[null]', JSON.stringify([{ ...body[0], href: 'https://invalid.example' }])]) {
+      expect(renderPolarisMarkdown('```relations\n' + invalid + '\n```')).toContain('<pre><code>');
+    }
+  });
+});

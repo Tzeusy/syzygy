@@ -281,6 +281,7 @@ describe('Polaris copy roles (PWB-REQ-012)', () => {
     const rendered: CopyString[] = [];
     for (const variant of VARIANTS) rendered.push(...sweep(renderPolarisPage(modelFor(variant))).strings);
     rendered.push(...sweep(`<div data-copy-role="project-fact">${renderProjectReading({ summary: 'Selected complete paragraph.', full: 'Complete declaration.', condensed: true })}</div>`).strings);
+    rendered.push(...sweep(`<div data-copy-role="project-fact">${renderProjectReading({ summary: 'A complete statement.', full: 'Example component\n\nA complete statement.', condensed: true, chapters: [{ id: 'example', title: 'Example component', body: 'A complete statement.' }] })}</div>`).strings);
     // The exact-source route's own strings: rendered text, an identity the
     // population does not carry, an empty identity, and an unobserved shape.
     const withSpec = modelFor('observed-with-baseline-spec');

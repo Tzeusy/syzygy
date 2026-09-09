@@ -35,4 +35,37 @@ describe('reviewed project reading', () => {
       expect(projectReading(declaration, key)).toEqual({ summary: declaration, full: declaration, condensed: false });
     }
   });
+
+  it('partitions the complete source into named guides and rejects gaps or duplicate identities', () => {
+    const chapters = [{ id: 'process', start: 0, headingEnd: 13, end: 74 }, { id: 'storage', start: 74, headingEnd: 87, end: 105 }];
+    const reading = applyReadingPlan(text, { ...plan, chapters });
+    expect(reading.chapters).toEqual([
+      { id: 'process', title: 'Process Model', body: 'Workers run with explicit approval.\n\nBackground examples.\n\n' },
+      { id: 'storage', title: 'Storage Model', body: 'Records persist.' },
+    ]);
+    expect(reading.chapters?.map((chapter) => chapter.title + '\n\n' + chapter.body).join('')).toBe(text);
+    for (const invalid of [chapters.slice(0, 1), [chapters[0]!, { ...chapters[1]!, start: 75 }], [chapters[0]!, { ...chapters[1]!, id: 'process' }]]) {
+      expect(applyReadingPlan(text, { ...plan, chapters: invalid })).toEqual({ summary: text, full: text, condensed: false });
+    }
+  });
+
+  it('requires relationship labels to come from complete retained explanations', () => {
+    const source = 'Client calls tools.\n\nBroker routes work.';
+    const relationshipPlan: ReadingPlan = { statementSha256: createHash('sha256').update(source).digest('hex'), passages: [{ start: 0, end: source.length, relationships: [
+      { from: { start: 0, end: 6 }, to: { start: 13, end: 18 }, body: { start: 0, end: 19 } },
+      { from: { start: 21, end: 27 }, to: { start: 35, end: 39 }, body: { start: 21, end: 40 } },
+    ] }] };
+    const result = applyReadingPlan(source, relationshipPlan);
+    expect(result.summary).toContain('```relations');
+    expect(result.summary).toContain('Client calls tools.');
+    expect(result.summary).toContain('Broker routes work.');
+    const missing = { ...relationshipPlan, passages: [{ ...relationshipPlan.passages[0]!, relationships: relationshipPlan.passages[0]!.relationships!.slice(0, 1) }] };
+    expect(applyReadingPlan(source, missing)).toEqual({ summary: source, full: source, condensed: false });
+    const rows = relationshipPlan.passages[0]!.relationships!;
+    for (const first of [{ ...rows[0]!, body: { start: 0, end: 18 } }, { ...rows[0]!, from: { start: 21, end: 27 } }]) {
+      const invalid = { ...relationshipPlan, passages: [{ ...relationshipPlan.passages[0]!, relationships: [first, rows[1]!] }] };
+      expect(applyReadingPlan(source, invalid)).toEqual({ summary: source, full: source, condensed: false });
+    }
+  });
+
 });

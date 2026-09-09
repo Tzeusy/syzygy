@@ -24,7 +24,7 @@ export interface PolarisCopyRow {
 
 export const POLARIS_COPY = [
   { id: 'shell.heading', role: 'project-fact', kind: 'heading', text: 'Butlers' },
-  { id: 'shell.lede', role: 'scope-instruction', kind: 'lede', text: 'Butlers in its own words.' },
+  { id: 'shell.lede', role: 'scope-instruction', kind: 'lede', text: 'Less to remember. More room to live.' },
   { id: 'notice', role: 'epistemic-disclosure', kind: 'notice', text: 'Every positive claim cites its source. Where evidence is absent, Unknown is stated in place with its route to resolution.' },
   { id: 'label.claim-states', role: 'action-label', kind: 'label', text: 'What the claim states mean' },
   // The claim-state glossary (RFC2-25 tiers; PWB-REQ-007): every field of
@@ -51,7 +51,7 @@ export const POLARIS_COPY = [
   { id: 'states.challenge.unchallenged', role: 'epistemic-disclosure', kind: 'sentence', text: 'unchallenged — no challenge is recorded; a recorded challenge suspends the claim.' },
   { id: 'states.strengthen', role: 'epistemic-disclosure', kind: 'sentence', text: 'To strengthen a claim: report-fact becomes gate-backed only through a retained gate artifact bound to the exact revision; an Unknown clears only by the route stated beside it. No summary rounds any state up.' },
 
-  { id: 'depth.label', role: 'scope-instruction', kind: 'label', text: 'Contents — explore this account' },
+  { id: 'depth.label', role: 'scope-instruction', kind: 'label', text: 'On this page' },
   { id: 'depth.summary', role: 'scope-instruction', kind: 'label', text: 'Summary' },
   { id: 'depth.catalog', role: 'scope-instruction', kind: 'label', text: 'Catalog' },
   { id: 'depth.detail', role: 'scope-instruction', kind: 'label', text: 'Detail' },
@@ -125,6 +125,7 @@ export const POLARIS_COPY = [
   { id: 'label.capabilities', role: 'action-label', kind: 'label', text: 'Capabilities' },
   { id: 'label.terminology', role: 'action-label', kind: 'label', text: 'Key roles' },
   { id: 'label.browse-source-records', role: 'scope-instruction', kind: 'sentence', text: 'Browse the source records below. Scroll within the table for the full list.' },
+  { id: 'label.component-guides', role: 'scope-instruction', kind: 'label', text: 'Explore the design' },
   { id: 'label.source-record', role: 'scope-instruction', kind: 'label', text: 'Source record' },
   { id: 'label.source-notes', role: 'action-label', kind: 'label', text: 'Sources' },
   { id: 'label.full-account', role: 'action-label', kind: 'label', text: 'Read the complete declaration' },
