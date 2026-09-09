@@ -1,0 +1,71 @@
+{
+  "status": "Local captured-model presentation comparison; not generator or owner comprehension verdict",
+  "finding": "Cold reader reported source evidence overwhelming the manifesto reading.",
+  "modelSha256": "8e9981a77ad7ef728ae5e466edeaa3376fcb914c1ce6204e4e673c325fd8b6a6",
+  "comparisons": [
+    {
+      "stage": "before",
+      "width": 1280,
+      "pageHeight": 71854,
+      "sourceHeight": 51206.875,
+      "sourceRows": 271,
+      "closedRecords": 0,
+      "targetsOutsideDetails": true,
+      "pageFits": true,
+      "screenshot": "/tmp/polaris-source-before-1280.png"
+    },
+    {
+      "stage": "before",
+      "width": 390,
+      "pageHeight": 181989,
+      "sourceHeight": 154466.046875,
+      "sourceRows": 271,
+      "closedRecords": 0,
+      "targetsOutsideDetails": true,
+      "pageFits": true,
+      "screenshot": "/tmp/polaris-source-before-390.png"
+    },
+    {
+      "stage": "after",
+      "width": 1280,
+      "pageHeight": 21222,
+      "sourceHeight": 575.15625,
+      "sourceRows": 271,
+      "closedRecords": 271,
+      "targetsOutsideDetails": true,
+      "pageFits": true,
+      "screenshot": "/tmp/polaris-source-after-1280.png"
+    },
+    {
+      "stage": "after",
+      "width": 390,
+      "pageHeight": 28124,
+      "sourceHeight": 600.34375,
+      "sourceRows": 271,
+      "closedRecords": 271,
+      "targetsOutsideDetails": true,
+      "pageFits": true,
+      "screenshot": "/tmp/polaris-source-after-390.png"
+    }
+  ],
+  "scope": "Same retained admitted Butlers model rendered before/after without a verbatim leaf reader; source bodies and screenshots stay local. Full live route verification remains required.",
+  "responseBytes": {
+    "direct": 2069238,
+    "mounted": 2074878,
+    "limit": 2097152
+  },
+  "implementationFiles": [
+    {
+      "path": "apps/three-surface-poc/src/polaris.ts",
+      "sha256": "65eba81ee4894d31b9127eb7985344fd75b69e1076c9e255babe2e718a341c14"
+    },
+    {
+      "path": "apps/three-surface-poc/src/polaris-copy.ts",
+      "sha256": "25daceb8baff61d4adbc22d69530719a0a21572320bebd64315f92e441dc9e99"
+    },
+    {
+      "path": "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts",
+      "sha256": "82f2bf003ef0f10a8e3da50e55fc48a2b087ac9ccc04fd0cce5d6c9d94c89e2e"
+    }
+  ]
+}

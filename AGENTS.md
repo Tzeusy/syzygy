@@ -187,6 +187,19 @@ added 2026-09-07.
 
 - Contract amendment tooling reads both installed `contracts/rfcs/` and mirrored `contracts/candidates/rfcs/` bytes. Probe both locations in isolation: current indexes and budget fixtures derive from the candidate copies, while performed manifests remain immutable. Regenerating the active manifest does not establish successor authority.
 
+- Polaris guide links open synchronously on click; ignore the matching queued
+  hashchange so it cannot undo a later collapse. Browser tests must await the
+  actual hashchange and cover same-fragment clicks and history traversal.
+- Polaris reading selections are metadata-only offsets bound to the exact
+  extracted declaration digest and an independent fidelity review. Source
+  drift must render the full declaration; keyword-based omission can drop
+  qualifications. Scope sticky styling to `.site-nav`, never all `nav` tags.
+- Phase-A pillar indexes follow roots declared by the screened root index,
+  not directory basenames. Reuse the screened root derivation in the
+  manifest; repeating it is another registry-budgeted parse pass.
+- Manifest tree rules supply only blobs. When a named source yields to a
+  tree rule, keep missing/non-blob targets counted, and update literal
+  mutation targets whenever the guarded source fragment changes.
 - Fresh `git worktree`: run `npm ci` inside it first, or `NodeNext` silently
   resolves `@syzygy/*` to the main checkout's `node_modules`.
 - `git ls-tree` needs `-z`, or quoted paths break the parser.

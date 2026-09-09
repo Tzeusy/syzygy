@@ -23,6 +23,7 @@ import {
   PWB_OBSERVER_IDENTITY,
   PWB_RESOURCE_LIMITS,
   admitPhaseARead,
+  createPhaseASeedReader,
   gitBlobObjectId,
   observeProjectShapeSources,
   resourceLimitsDigest,
@@ -63,6 +64,7 @@ const TEXTS: Readonly<Record<string, string>> = {
   'about/craft-and-care/policies/testing.md': '# Testing\n',
   'README.md': '# Root\n',
   'openspec/specs/alpha/spec.md': '# Alpha\n',
+  'openspec/README.md': '[Specs](specs/)\n',
   'roster/atlas/butler.toml': '[butler]\nname = "atlas"\n',
   'roster/atlas/MANIFESTO.md': '# Atlas\n',
 };
@@ -537,20 +539,195 @@ describe('observeProjectShapeSources — determinism', () => {
   });
 });
 
+// The homes the default fixture's root index declares by its links.
+const DECLARED_HOMES: ReadonlySet<string> = new Set([
+  'about/heart-and-soul',
+  'about/legends-and-lore',
+  'about/spec-and-spine',
+  'about/lay-and-land',
+  'about/craft-and-care',
+]);
+
 describe('admitPhaseARead', () => {
   const tree = indexGitTree(TREE);
-  it('admits only tree-matching regular blobs at root-index or pillar-README paths', () => {
+  it('admits only tree-matching regular blobs at the root index or a declared pillar index', () => {
     const root = oidOf('about/README.md');
-    expect(admitPhaseARead(tree, { path: 'about/README.md', objectId: root })).toEqual({ kind: 'admitted', entry: TREE[1] });
-    expect(admitPhaseARead(tree, { path: 'about/heart-and-soul/vision.md', objectId: oidOf('about/heart-and-soul/vision.md') })).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
-    expect(admitPhaseARead(tree, { path: 'roster/atlas/butler.toml', objectId: oidOf('roster/atlas/butler.toml') })).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
-    expect(admitPhaseARead(tree, { path: 'README.md', objectId: oidOf('README.md') })).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
-    expect(admitPhaseARead(tree, { path: 'docs/heart-and-soul/README.md', objectId: root })).toEqual({ kind: 'refused', reason: 'not-in-tree' });
-    expect(admitPhaseARead(tree, { path: 'about/README.md', objectId: 'f'.repeat(40) })).toEqual({ kind: 'refused', reason: 'object-id-differs-from-tree' });
+    expect(admitPhaseARead(tree, { path: 'about/README.md', objectId: root }, DECLARED_HOMES)).toEqual({ kind: 'admitted', entry: TREE[1] });
+    expect(admitPhaseARead(tree, { path: 'about/heart-and-soul/README.md', objectId: oidOf('about/heart-and-soul/README.md') }, DECLARED_HOMES)).toEqual({ kind: 'admitted', entry: TREE[2] });
+    expect(admitPhaseARead(tree, { path: 'about/heart-and-soul/vision.md', objectId: oidOf('about/heart-and-soul/vision.md') }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    expect(admitPhaseARead(tree, { path: 'roster/atlas/butler.toml', objectId: oidOf('roster/atlas/butler.toml') }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    expect(admitPhaseARead(tree, { path: 'README.md', objectId: oidOf('README.md') }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    expect(admitPhaseARead(tree, { path: 'docs/heart-and-soul/README.md', objectId: root }, new Set(['docs/heart-and-soul']))).toEqual({ kind: 'refused', reason: 'not-in-tree' });
+    expect(admitPhaseARead(tree, { path: 'about/README.md', objectId: 'f'.repeat(40) }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'object-id-differs-from-tree' });
     const symlinked = indexGitTree(TREE.map((entry) => (entry.path === 'about/README.md' ? { ...entry, mode: '120000' } : entry)));
-    expect(admitPhaseARead(symlinked, { path: 'about/README.md', objectId: root })).toEqual({ kind: 'refused', reason: 'not-a-regular-blob' });
+    expect(admitPhaseARead(symlinked, { path: 'about/README.md', objectId: root }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-regular-blob' });
     const submodule = indexGitTree([{ mode: '160000', type: 'commit', objectId: root, path: 'about/README.md' }]);
-    expect(admitPhaseARead(submodule, { path: 'about/README.md', objectId: root })).toEqual({ kind: 'refused', reason: 'not-a-regular-blob' });
+    expect(admitPhaseARead(submodule, { path: 'about/README.md', objectId: root }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-regular-blob' });
+  });
+
+  it('a declared home admits its index wherever it sits; a directory merely named for a pillar declares nothing (syzygy-1z3.29)', () => {
+    const withIndex = indexGitTree([...TREE, blob('openspec/README.md')]);
+    const openspecIndex = { path: 'openspec/README.md', objectId: oidOf('openspec/README.md') };
+    expect(admitPhaseARead(withIndex, openspecIndex, new Set(['openspec']))).toEqual({ kind: 'admitted', entry: blob('openspec/README.md') });
+    expect(admitPhaseARead(withIndex, openspecIndex, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    expect(admitPhaseARead(withIndex, openspecIndex, new Set())).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    const named = { path: 'about/heart-and-soul/README.md', objectId: oidOf('about/heart-and-soul/README.md') };
+    expect(admitPhaseARead(withIndex, named, new Set())).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    expect(admitPhaseARead(withIndex, named, new Set(['about/heart-and-soul/']))).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' });
+    // The root index needs no declaration: it is the fixed seed.
+    expect(admitPhaseARead(withIndex, { path: 'about/README.md', objectId: oidOf('about/README.md') }, new Set())).toEqual({ kind: 'admitted', entry: TREE[1] });
+  });
+});
+
+// A root index in the real Butlers shape: the five-row table declares
+// Spec and Spine's home as `openspec/`, a directory not named for the
+// pillar, while `about/spec-and-spine/README.md` still exists undeclared.
+const ROOT_DECLARING_OPENSPEC = [
+  '# Fixture',
+  '',
+  '| Pillar | Purpose | Directory | Start here |',
+  '| --- | --- | --- | --- |',
+  '| Heart and Soul | why | `about/heart-and-soul/` | [Index](heart-and-soul/README.md) |',
+  '| Legends and Lore | design | `about/legends-and-lore/` | [Index](legends-and-lore/README.md) |',
+  '| Spec and Spine | behavior | `openspec/` | OpenSpec |',
+  '| Lay and Land | map | `about/lay-and-land/` | [Index](lay-and-land/README.md) |',
+  '| Craft and Care | quality | `about/craft-and-care/` | [Index](craft-and-care/README.md) |',
+  '',
+].join('\n');
+
+function withRootIndex(text: string): { tree: readonly GitTreeEntry[]; blobOverrides: Readonly<Record<string, Uint8Array>> } {
+  const bytes = encoder.encode(text);
+  const objectId = sha1Blob(bytes);
+  const tree = [...TREE.map((entry) => (entry.path === 'about/README.md' ? { ...entry, objectId, sizeBytes: bytes.byteLength } : entry)), blob('openspec/README.md')];
+  return { tree, blobOverrides: { [objectId]: bytes } };
+}
+
+describe('declared pillar homes (syzygy-1z3.29)', () => {
+  it('reads the pillar index at a declared home that is not named for the pillar', () => {
+    const { observation } = observed(withRootIndex(ROOT_DECLARING_OPENSPEC));
+    expect(observation.manifest.pillars.find((pillar) => pillar.key === 'spec-and-spine')).toMatchObject({
+      state: 'discovered',
+      indexPath: 'openspec/README.md',
+    });
+    expect(observation.reads.find((read) => read.path === 'openspec/README.md')).toMatchObject({ outcome: 'read', bytes: BYTES.get('openspec/README.md')?.byteLength });
+    // The undeclared, pillar-named directory is asked for by nothing.
+    expect(observation.reads.some((read) => read.path === 'about/spec-and-spine/README.md')).toBe(false);
+    expect(observation.manifest.sources.some((source) => source.path === 'about/spec-and-spine/README.md')).toBe(false);
+  });
+
+  it('the other four declared homes read as before, with no refusal in the ledger', () => {
+    const { observation } = observed(withRootIndex(ROOT_DECLARING_OPENSPEC));
+    expect(observation.manifest.pillars.map((pillar) => [pillar.key, pillar.state])).toEqual([
+      ['heart-and-soul', 'discovered'],
+      ['legends-and-lore', 'discovered'],
+      ['spec-and-spine', 'discovered'],
+      ['lay-and-land', 'discovered'],
+      ['craft-and-care', 'discovered'],
+    ]);
+    expect(observation.reads.filter((read) => read.outcome === 'refused')).toEqual([]);
+  });
+});
+
+describe('the seed reader widens phase A only after a validated root index (syzygy-1z3.29 review)', () => {
+  const seedOf = (path: string, tree: readonly GitTreeEntry[] = TREE) => {
+    const entry = tree.find((candidate) => candidate.path === path);
+    if (entry === undefined) throw new Error(`fixture lacks ${path}`);
+    return { path, objectId: entry.objectId };
+  };
+  const reader = (options: RunnerOptions = {}) => {
+    const tree = options.tree ?? TREE;
+    const reads: Parameters<typeof createPhaseASeedReader>[0]['reads'] = [];
+    return {
+      read: createPhaseASeedReader({
+        tree: indexGitTree(tree),
+        limits: PWB_RESOURCE_LIMITS,
+        ledger: createResourceLedger(PWB_RESOURCE_LIMITS),
+        reads,
+        runGit: runner(options).runGit,
+        objectFormat: 'sha1',
+        classifyPhaseA,
+      }),
+      reads,
+    };
+  };
+
+  it('a declared pillar index asked for before the root index is refused, and read after it', () => {
+    const { read, reads } = reader();
+    expect(read(seedOf('about/heart-and-soul/README.md'))).toEqual({ kind: 'unavailable', reason: 'phase A read refused: not-a-phase-a-seed-path' });
+    expect(read(seedOf('about/README.md'))).toMatchObject({ kind: 'text', text: TEXTS['about/README.md'], pillarRoots: expect.any(Map) });
+    expect(read(seedOf('about/heart-and-soul/README.md'))).toEqual({ kind: 'text', text: TEXTS['about/heart-and-soul/README.md'] });
+    expect(reads.map((record) => record.outcome)).toEqual(['refused', 'read', 'read']);
+  });
+
+  it('a root index the classifier excludes declares nothing: its pillar index stays refused', () => {
+    const sentinel = `token=ghp_${'A'.repeat(20)}_PHASE_A_SENTINEL`;
+    const bytes = encoder.encode(`${TEXTS['about/README.md'] ?? ''}\n${sentinel}\n`);
+    const objectId = sha1Blob(bytes);
+    const tree = TREE.map((entry) => entry.path === 'about/README.md' ? { ...entry, objectId, sizeBytes: bytes.byteLength } : entry);
+    const { read, reads } = reader({ tree, blobOverrides: { [objectId]: bytes } });
+    expect(read({ path: 'about/README.md', objectId })).toEqual({ kind: 'unavailable', reason: 'phase A source excluded: secret-matched' });
+    expect(read(seedOf('about/heart-and-soul/README.md', tree))).toEqual({ kind: 'unavailable', reason: 'phase A read refused: not-a-phase-a-seed-path' });
+    expect(reads.map((record) => record.outcome)).toEqual(['secret-matched', 'refused']);
+  });
+
+  it('a root index that fails NUL validation declares nothing either', () => {
+    const bytes = encoder.encode(`${TEXTS['about/README.md'] ?? ''}\u0000`);
+    const objectId = sha1Blob(bytes);
+    const tree = TREE.map((entry) => entry.path === 'about/README.md' ? { ...entry, objectId, sizeBytes: bytes.byteLength } : entry);
+    const { read, reads } = reader({ tree, blobOverrides: { [objectId]: bytes } });
+    expect(read({ path: 'about/README.md', objectId })).toEqual({ kind: 'unavailable', reason: 'seed contains NUL' });
+    expect(read(seedOf('about/heart-and-soul/README.md', tree))).toEqual({ kind: 'unavailable', reason: 'phase A read refused: not-a-phase-a-seed-path' });
+    expect(reads.map((record) => record.outcome)).toEqual(['contains-nul', 'refused']);
+  });
+
+  it('a pillar index naming a pillar-keyed directory declares no home: only the root index widens the set', () => {
+    // A stray `legends-and-lore/README.md` at the repository root, undeclared
+    // by the root index; heart-and-soul's index links it the way a root index
+    // would. Hand-typed expectation: still refused after both reads.
+    const stray = encoder.encode('# stray\n');
+    const strayId = sha1Blob(stray);
+    const hsIndex = encoder.encode('[Lore](../legends-and-lore/README.md)\n');
+    const hsId = sha1Blob(hsIndex);
+    const tree: GitTreeEntry[] = [
+      ...TREE.map((entry) => entry.path === 'about/heart-and-soul/README.md' ? { ...entry, objectId: hsId, sizeBytes: hsIndex.byteLength } : entry),
+      { mode: '100644', type: 'blob', objectId: strayId, sizeBytes: stray.byteLength, path: 'legends-and-lore/README.md' },
+    ];
+    const { read, reads } = reader({ tree, blobOverrides: { [strayId]: stray, [hsId]: hsIndex } });
+    expect(read(seedOf('about/README.md', tree)).kind).toBe('text');
+    expect(read({ path: 'about/heart-and-soul/README.md', objectId: hsId })).toEqual({ kind: 'text', text: '[Lore](../legends-and-lore/README.md)\n' });
+    expect(read({ path: 'legends-and-lore/README.md', objectId: strayId })).toEqual({ kind: 'unavailable', reason: 'phase A read refused: not-a-phase-a-seed-path' });
+    expect(reads.map((record) => [record.path, record.outcome])).toEqual([
+      ['about/README.md', 'read'],
+      ['about/heart-and-soul/README.md', 'read'],
+      ['legends-and-lore/README.md', 'refused'],
+    ]);
+  });
+
+  it('a pillar declared at two different homes admits neither index', () => {
+    const rootText = `${TEXTS['about/README.md'] ?? ''}\nAlso [Heart](../alt/heart-and-soul/README.md).\n`;
+    const rootBytes = encoder.encode(rootText);
+    const rootId = sha1Blob(rootBytes);
+    const alt = encoder.encode('# alt\n');
+    const altId = sha1Blob(alt);
+    const tree: GitTreeEntry[] = [
+      ...TREE.map((entry) => entry.path === 'about/README.md' ? { ...entry, objectId: rootId, sizeBytes: rootBytes.byteLength } : entry),
+      { mode: '100644', type: 'blob', objectId: altId, sizeBytes: alt.byteLength, path: 'alt/heart-and-soul/README.md' },
+    ];
+    const { read } = reader({ tree, blobOverrides: { [rootId]: rootBytes, [altId]: alt } });
+    expect(read({ path: 'about/README.md', objectId: rootId })).toMatchObject({ kind: 'text', text: rootText, pillarRoots: expect.any(Map) });
+    expect(read(seedOf('about/heart-and-soul/README.md', tree))).toEqual({ kind: 'unavailable', reason: 'phase A read refused: not-a-phase-a-seed-path' });
+    expect(read({ path: 'alt/heart-and-soul/README.md', objectId: altId })).toEqual({ kind: 'unavailable', reason: 'phase A read refused: not-a-phase-a-seed-path' });
+    // The unambiguous homes are unaffected.
+    expect(read(seedOf('about/legends-and-lore/README.md', tree)).kind).toBe('text');
+  });
+
+  it('a pillar index that is read declares nothing: only the root index widens the set', () => {
+    const { read } = reader();
+    read(seedOf('about/README.md'));
+    // heart-and-soul's own index links vision.md and missing.md; neither is
+    // a README, and a README under a directory it names is not a home.
+    expect(read(seedOf('about/heart-and-soul/README.md')).kind).toBe('text');
+    expect(read(seedOf('about/heart-and-soul/vision.md'))).toEqual({ kind: 'unavailable', reason: 'phase A read refused: not-a-phase-a-seed-path' });
   });
 });
 

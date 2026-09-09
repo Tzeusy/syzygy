@@ -143,8 +143,10 @@ export interface ProjectShapeSourceManifest {
   readonly digest: string;
 }
 
+export type DeclaredPillarRoots = ReadonlyMap<PillarKey, { readonly root: string; readonly ambiguous: boolean }>;
+
 export type SeedRead =
-  | { readonly kind: 'text'; readonly text: string }
+  | { readonly kind: 'text'; readonly text: string; readonly pillarRoots?: DeclaredPillarRoots }
   | { readonly kind: 'unavailable'; readonly reason: string };
 
 export interface DeriveManifestInput {
@@ -352,6 +354,32 @@ export function manifestIdentity(manifest: ProjectShapeSourceManifest): string {
 const BASELINE_SPEC = /^openspec\/specs\/([^/]+)\/spec\.md$/;
 const ROSTER_BUTLER = /^roster\/([^/]+)\/butler\.toml$/;
 
+// Rule 1's reading of the root index: the home each pillar is declared at,
+// by the `Pillar`/`Directory` table first and then by the index's own links
+// whose target directory is named for a pillar; `ambiguous` when two
+// different homes are declared for one key. Phase A admits a pillar index
+// only at a home this function returns — the registry's "its declared
+// pillar README indexes" — so the observer's allowlist and the manifest's
+// Rule 2 share one derivation (syzygy-1z3.29: a name-based allowlist
+// refused Butlers' Spec and Spine index at its declared home `openspec/`).
+export function declaredPillarRoots(rootIndexText: string): ReadonlyMap<PillarKey, { readonly root: string; readonly ambiguous: boolean }> {
+  const rootsByKey = new Map<PillarKey, { root: string; ambiguous: boolean }>();
+  for (const [key, roots] of rootIndexPillarRoots(rootIndexText)) {
+    rootsByKey.set(key, { root: roots[0] as string, ambiguous: roots.length > 1 });
+  }
+  for (const target of indexLinkTargets(rootIndexText)) {
+    const resolved = resolveLink(PWB_ROOT_INDEX_PATH, target);
+    if (resolved === undefined || resolved.kind === 'ignored') continue;
+    const root = posixBasename(resolved.path) === 'README.md' ? posixDirname(resolved.path) : resolved.path;
+    const key = posixBasename(root);
+    if (!isPillarKey(key)) continue; // narrative link: does not recurse
+    const known = rootsByKey.get(key);
+    if (known === undefined) rootsByKey.set(key, { root, ambiguous: false });
+    else if (known.root !== root) known.ambiguous = true;
+  }
+  return rootsByKey;
+}
+
 export function deriveProjectShapeManifest(input: DeriveManifestInput): DeriveManifestResult {
   if (input.repositoryId.trim() === '') return { kind: 'invalid-input', reason: 'repositoryId is empty' };
   if (input.revision.trim() === '') return { kind: 'invalid-input', reason: 'revision is empty' };
@@ -384,19 +412,7 @@ export function deriveProjectShapeManifest(input: DeriveManifestInput): DeriveMa
     rootIndex = { path: PWB_ROOT_INDEX_PATH, state: 'unavailable', reason: rootRead.reason, anchor: rootAnchor };
   } else {
     rootIndex = { path: PWB_ROOT_INDEX_PATH, state: 'read', anchor: rootAnchor };
-    for (const [key, declaredRoots] of rootIndexPillarRoots(rootRead.text)) {
-      rootsByKey.set(key, { root: declaredRoots[0] as string, ambiguous: declaredRoots.length > 1 });
-    }
-    for (const target of indexLinkTargets(rootRead.text)) {
-      const resolved = resolveLink(PWB_ROOT_INDEX_PATH, target);
-      if (resolved === undefined || resolved.kind === 'ignored') continue;
-      const root = posixBasename(resolved.path) === 'README.md' ? posixDirname(resolved.path) : resolved.path;
-      const key = posixBasename(root);
-      if (!isPillarKey(key)) continue; // narrative link: does not recurse
-      const known = rootsByKey.get(key);
-      if (known === undefined) rootsByKey.set(key, { root, ambiguous: false });
-      else if (known.root !== root) known.ambiguous = true;
-    }
+    for (const [key, declared] of rootRead.pillarRoots ?? declaredPillarRoots(rootRead.text)) rootsByKey.set(key, { root: declared.root, ambiguous: declared.ambiguous });
   }
 
   // Rule 2 — each declared pillar's own README index, restricted to its root.
@@ -452,6 +468,14 @@ export function deriveProjectShapeManifest(input: DeriveManifestInput): DeriveMa
       namedPaths.add(resolved.path);
     }
     for (const path of namedPaths) {
+      // A baseline spec or roster file is owned by Rules 3 and 4 with their
+      // classes (the spec: `baseline-spec` uses each baseline spec directory)
+      // whoever names it; a pillar declared at `openspec/` or `roster/` would
+      // otherwise register it first as a class-less named file, and the tree
+      // rule's add would be silently discarded (review of syzygy-1z3.29).
+      // Missing and non-blob targets stay named sources: tree rules cannot
+      // restore them, and absence must not shrink the declared population.
+      if (tree.entryAt(path)?.type === 'blob' && (BASELINE_SPEC.test(path) || ROSTER_BUTLER.test(path))) continue;
       addSource({
         path,
         rule: 'pillar-named-file',

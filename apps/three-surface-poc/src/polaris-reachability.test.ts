@@ -17,7 +17,7 @@ import type { PocModel, ProjectShape } from '@syzygy/three-surface-poc-core';
 
 import { renderPolarisPage } from './polaris.js';
 import { buildFixtureModel } from './test-model-fixture.js';
-import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET, REJECTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
+import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC, PROJECT_SHAPE_FIXTURE_TEXTS_WITHOUT_PRECEDENCE, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET, REJECTING_AUTHORITY, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 
 const cleanups: string[] = [];
 afterEach(() => {
@@ -30,7 +30,7 @@ afterEach(() => {
 // which must also name its state in text.
 
 const DEPTHS = ['Summary', 'Catalog', 'Detail', 'Exact source'] as const;
-const GROUP_IDS = ['overview', 'boundaries', 'architecture', 'v1', 'catalog', 'capability-detail', 'evidence-and-gaps'] as const;
+const GROUP_IDS = ['overview', 'boundaries', 'v1', 'architecture', 'catalog', 'capability-detail', 'evidence-and-gaps'] as const;
 const CATALOG_CLASS_IDS = ['catalog-entry', 'roster-identity', 'design-contract', 'baseline-spec', 'craft-policy'] as const;
 const ITEM_CLASS_IDS = [...CATALOG_CLASS_IDS, 'principle', 'topology-component', 'success-criterion'] as const;
 const ACCOUNT_KEYS = ['purpose', 'promises', 'refusals', 'architecture', 'v1-scope', 'v1-success'] as const;
@@ -61,6 +61,23 @@ function modelFor(variant: Variant): PocModel {
     case 'secret':
       return buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET) } });
   }
+}
+
+function diagramHtml(): string {
+  const path = 'about/heart-and-soul/architecture.md';
+  const texts = { ...PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC,
+    [path]: PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC[path] + '\n```flow\nReceive --> Decide --> Act\n```\n' };
+  return renderPolarisPage(buildFixtureModel(cleanups, { projectShape: {
+    authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(texts),
+  } }));
+}
+
+function assertDecorativeArrow(arrow: Element): void {
+  expect(arrow.tag).toBe('span');
+  expect(attr(arrow.open, 'aria-hidden')).toBe('true');
+  // Include the arrow itself, boolean attributes and every descendant.
+  expect(arrow.open + arrow.inner).not.toMatch(/\s(?:tabindex|contenteditable|role)(?=[\s=>])/i);
+  expect(arrow.inner).not.toMatch(/<(?:a|button|input|select|textarea|summary|iframe|object|embed|audio|video)\b/i);
 }
 
 function observed(model: PocModel): Extract<ProjectShape, { kind: 'observed' }> {
@@ -197,13 +214,12 @@ describe('Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7
       expect(html).toContain('id="polaris-depth-label"');
       expect(nav.inner).not.toMatch(/onclick|role="button"|tabindex/);
 
-      // Document order: the overview group — the first reading level, the
-      // project's own account — precedes the depth list; every other target
-      // sits after the nav, in the nav's order.
-      const targets = internalHrefs(nav.inner);
+      // The compact contents precede the account; its four-depth route list
+      // follows document order. Separate quick links serve returning readers.
+      const targets = levels.flatMap((level) => internalHrefs(level.inner));
       const positions = targets.map((target) => html.indexOf(` id="${target}"`));
       expect(targets[0]).toBe('polaris-group-overview');
-      expect(positions[0] as number).toBeLessThan(nav.start);
+      expect(positions[0] as number).toBeGreaterThan(nav.start);
       expect(positions.slice(1).every((position) => position > nav.start)).toBe(true);
       for (let index = 1; index < positions.length; index += 1) expect(positions[index], `${variant}: ${targets[index]} after ${targets[index - 1]}`).toBeGreaterThan(positions[index - 1] as number);
 
@@ -327,11 +343,14 @@ describe('Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7
   });
 
   it('carries no pointer-only or layout-only affordance: native controls, named keyboard-scrollable table regions, visible focus, no reordering or hiding rules', () => {
-    for (const variant of VARIANTS) {
-      const html = renderPolarisPage(modelFor(variant));
+    const pages = VARIANTS.map((variant) => ({ variant, html: renderPolarisPage(modelFor(variant)) }));
+    const diagram = diagramHtml();
+    expect(elements(diagram, (_tag, open) => classesOf(open).includes('flow-arrow'))).toHaveLength(2);
+    for (const { variant, html } of [...pages, { variant: 'diagram', html: diagram }]) {
       const idCounts = ids(html);
       expect(html).not.toMatch(/\son(click|keydown|keyup|mouse\w+|touch\w+)=/);
-      expect(html).not.toMatch(/role="button"|<button/);
+      expect(html).not.toMatch(/role="button"/);
+      for (const button of elements(html, (tag) => tag === 'button')) expect(attr(button.open, 'type')).toBe('button');
       for (const match of html.matchAll(/\stabindex="([^"]*)"/g)) expect(match[1]).toBe('0');
       // Every horizontally scrollable region is a focusable landmark named by
       // a heading the page renders.
@@ -352,11 +371,29 @@ describe('Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7
       expect(withoutSkipLink).not.toMatch(/outline\s*:\s*(none|0)\b/);
       expect(withoutSkipLink).not.toMatch(/display\s*:\s*none/);
       expect(withoutSkipLink).not.toMatch(/visibility\s*:\s*hidden/);
-      expect(withoutSkipLink).not.toMatch(/position\s*:\s*(absolute|fixed)/);
+      // Decorative arrows have a textual equivalent and are not controls.
+      // Their positioning must not weaken the guard for other elements.
+      for (const arrow of elements(html, (_tag, open) => classesOf(open).includes('flow-arrow'))) {
+        assertDecorativeArrow(arrow);
+      }
+      const withoutDecorativeArrows = withoutSkipLink.replace(/([^{}]+)\{([^{}]*)\}/g, (rule, selectors: string) =>
+        selectors.split(',').every((selector) => /\.flow-arrow$/.test(selector.trim())) ? '' : rule);
+      expect(withoutDecorativeArrows).not.toMatch(/position\s*:\s*(absolute|fixed)/);
       expect(withoutSkipLink).not.toMatch(/\bfloat\s*:/);
       expect(withoutSkipLink).not.toMatch(/(^|[;{\s])order\s*:/);
       expect(withoutSkipLink).not.toMatch(/flex-direction\s*:\s*(row|column)-reverse/);
     }
+  });
+
+  it('rejects focusable or interactive decorative arrows, including their descendants', () => {
+    const arrow = elements(diagramHtml(), (_tag, open) => classesOf(open).includes('flow-arrow'))[0]!;
+    expect(arrow).toBeDefined();
+    expect(() => assertDecorativeArrow(arrow)).not.toThrow();
+    for (const attribute of ['tabindex="0"', 'contenteditable', 'role="link"']) {
+      expect(() => assertDecorativeArrow({ ...arrow, open: arrow.open.replace('>', ` ${attribute}>`) })).toThrow();
+      expect(() => assertDecorativeArrow({ ...arrow, inner: `<span ${attribute}>arrow</span>` })).toThrow();
+    }
+    expect(() => assertDecorativeArrow({ ...arrow, inner: '<button>arrow</button>' })).toThrow();
   });
 
   it('names every coloured state in text: each element of a colour-bearing class carries the words that state means', () => {

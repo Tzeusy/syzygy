@@ -30,11 +30,11 @@ import type { PhaseAClassification } from './content-classification.js';
 import { createResourceLedger, ParsePassBudgetExceeded, type ParsePassCharge, type ResourceLedger } from './resource-ledger.js';
 import { type GitTreeEntry, type GitTreeIndex, indexGitTree, parseGitLsTree, posixBasename, posixDirname } from './git-tree.js';
 import {
-  PILLAR_KEYS,
   PWB_DISCOVERY_VERSION,
   PWB_INDEX_DEPTH,
   PWB_ROOT_INDEX_PATH,
   canonicalJson,
+  declaredPillarRoots,
   deriveProjectShapeManifest,
   manifestIdentity,
   type ManifestSource,
@@ -147,18 +147,28 @@ export type PhaseAAdmission =
 
 const REGULAR_BLOB_MODES: readonly string[] = ['100644', '100755'];
 
-function isPhaseASeedPath(path: string): boolean {
+function isPhaseASeedPath(path: string, declaredRoots: ReadonlySet<string>): boolean {
   if (path === PWB_ROOT_INDEX_PATH) return true;
   if (posixBasename(path) !== 'README.md') return false;
-  return (PILLAR_KEYS as readonly string[]).includes(posixBasename(posixDirname(path)));
+  return declaredRoots.has(posixDirname(path));
 }
 
-// A seed may be read only when it is the fixed root index or a pillar
-// README (a `README.md` whose directory is named for one of the five
-// pillars), the tree lists exactly that object id at that path, and the
-// entry is a regular blob — never a symlink (120000) or a submodule.
-export function admitPhaseARead(tree: GitTreeIndex, seed: { readonly path: string; readonly objectId: string }): PhaseAAdmission {
-  if (!isPhaseASeedPath(seed.path)) return { kind: 'refused', reason: 'not-a-phase-a-seed-path' };
+// A seed may be read only when it is the fixed root index or a declared
+// pillar index — the `README.md` at a home the already-read root index
+// declares for exactly one pillar (the registry's "its declared pillar
+// README indexes"; `declaredPillarRoots` is the one derivation, shared with
+// the manifest's Rule 2) — the tree lists exactly that object id at that
+// path, and the entry is a regular blob — never a symlink (120000) or a
+// submodule. Before the root index is read nothing but the root index is
+// admissible, and a directory merely named for a pillar declares nothing:
+// Butlers keeps Spec and Spine at `openspec/`, and the earlier name-based
+// rule refused that index as `not-a-phase-a-seed-path` (syzygy-1z3.29).
+export function admitPhaseARead(
+  tree: GitTreeIndex,
+  seed: { readonly path: string; readonly objectId: string },
+  declaredRoots: ReadonlySet<string>,
+): PhaseAAdmission {
+  if (!isPhaseASeedPath(seed.path, declaredRoots)) return { kind: 'refused', reason: 'not-a-phase-a-seed-path' };
   const entry = tree.entryAt(seed.path);
   if (entry === undefined) return { kind: 'refused', reason: 'not-in-tree' };
   if (entry.objectId !== seed.objectId) return { kind: 'refused', reason: 'object-id-differs-from-tree' };
@@ -367,6 +377,119 @@ function gitText(runGit: GitRunner, args: readonly string[]): { readonly kind: '
   return text === undefined ? { kind: 'failed', detail: `git ${args[0] ?? ''} produced non-UTF-8 output` } : { kind: 'text', text };
 }
 
+// The phase-A seed reader: every read passes `admitPhaseARead`, the byte
+// and parse budgets, object-id, NUL and UTF-8 validation and the phase-A
+// classifier before its text is returned; the validated root index is the
+// only thing that widens the admissible set. It is a separate function so
+// the ordering guarantee can be tested directly, seed by seed.
+export interface PhaseASeedReaderDeps {
+  readonly tree: GitTreeIndex;
+  readonly limits: PwbResourceLimits;
+  readonly ledger: ResourceLedger;
+  readonly reads: PhaseAReadRecord[];
+  readonly runGit: GitRunner;
+  readonly objectFormat: 'sha1' | 'sha256';
+  readonly classifyPhaseA: (text: string, charge: ParsePassCharge) => PhaseAClassification;
+}
+
+export function createPhaseASeedReader(deps: PhaseASeedReaderDeps): (seed: { readonly path: string; readonly objectId: string }) => SeedRead {
+  const { tree, limits, ledger, reads, objectFormat } = deps;
+  // The pillar homes the root index declares, filled once its body has
+  // passed validation; until then only the root index itself is admissible.
+  const declaredRoots = new Set<string>();
+  const readSeed = (seed: { readonly path: string; readonly objectId: string }): SeedRead => {
+    const admission = admitPhaseARead(tree, seed, declaredRoots);
+    if (admission.kind === 'refused') {
+      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'refused', bytes: 0, detail: admission.reason });
+      return { kind: 'unavailable', reason: `phase A read refused: ${admission.reason}` };
+    }
+    const overLimit = (limit: keyof PwbResourceLimits, bytes: number): SeedRead => {
+      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'over-limit', bytes, detail: limit });
+      return { kind: 'unavailable', reason: `resource limit ${limit}` };
+    };
+    const declaredSize = admission.entry.sizeBytes;
+    if (declaredSize !== undefined && declaredSize > limits.maxBytesPerSource) {
+      ledger.recordBreach({ limit: 'maxBytesPerSource', declared: limits.maxBytesPerSource, observed: declaredSize, path: seed.path });
+      return overLimit('maxBytesPerSource', 0);
+    }
+    if (declaredSize !== undefined && ledger.projectBody(seed.path, seed.objectId, declaredSize) !== undefined) {
+      return overLimit('maxTotalBytes', 0);
+    }
+    let bytes: Uint8Array;
+    try {
+      bytes = deps.runGit(['cat-file', 'blob', seed.objectId]);
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'git-read-failed', bytes: 0, detail });
+      return { kind: 'unavailable', reason: `git cat-file failed: ${detail}` };
+    }
+    if (declaredSize === undefined && bytes.byteLength > limits.maxBytesPerSource) {
+      ledger.recordBreach({ limit: 'maxBytesPerSource', declared: limits.maxBytesPerSource, observed: bytes.byteLength, path: seed.path });
+      return overLimit('maxBytesPerSource', bytes.byteLength);
+    }
+    // One cumulative counter across both phases, this body counted once.
+    if (ledger.chargeBody(seed.path, seed.objectId, bytes.byteLength) !== undefined) return overLimit('maxTotalBytes', bytes.byteLength);
+    if (gitBlobObjectId(bytes, objectFormat) !== seed.objectId) {
+      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'object-id-mismatch', bytes: bytes.byteLength });
+      return { kind: 'unavailable', reason: 'object id mismatch: bytes are not the tree-named object' };
+    }
+    // Each traversal of the decoded seed is one charged registry pass:
+    // validation, the policy detectors and the active-content scans inside
+    // `classifyPhaseA`, then the link discovery this read feeds.
+    const charge = ledger.chargeFor(seed.path);
+    try {
+      charge('utf8-and-nul-validation');
+    } catch (error) {
+      if (error instanceof ParsePassBudgetExceeded) return overLimit('maxParsePassesPerSource', bytes.byteLength);
+      throw error;
+    }
+    if (bytes.includes(0)) {
+      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'contains-nul', bytes: bytes.byteLength });
+      return { kind: 'unavailable', reason: 'seed contains NUL' };
+    }
+    const text = decodeUtf8(bytes);
+    if (text === undefined) {
+      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'not-utf-8', bytes: bytes.byteLength });
+      return { kind: 'unavailable', reason: 'seed is not valid UTF-8' };
+    }
+    const classification = deps.classifyPhaseA(text, charge);
+    if (classification.kind === 'over-limit') return overLimit(classification.breach.limit, bytes.byteLength);
+    if (classification.kind === 'excluded') {
+      reads.push({
+        path: seed.path,
+        objectId: seed.objectId,
+        outcome: classification.reason,
+        bytes: bytes.byteLength,
+        detail: classification.detail,
+      });
+      return { kind: 'unavailable', reason: `phase A source excluded: ${classification.reason}` };
+    }
+    try {
+      charge('phase-a-link-discovery');
+    } catch (error) {
+      if (error instanceof ParsePassBudgetExceeded) return overLimit('maxParsePassesPerSource', bytes.byteLength);
+      throw error;
+    }
+    reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'read', bytes: bytes.byteLength });
+    // The validated root index names the pillar homes phase A may read
+    // next. This derivation belongs to the link-discovery pass charged
+    // above; return its result so Rule 1 does not traverse the body again.
+    // Only an unambiguous home admits its index.
+    const pillarRoots = seed.path === PWB_ROOT_INDEX_PATH ? declaredPillarRoots(text) : undefined;
+    if (pillarRoots !== undefined) {
+      for (const declared of pillarRoots.values()) {
+        if (!declared.ambiguous) declaredRoots.add(declared.root);
+      }
+    }
+    // The validated body is held for the phase-B reader: the same (path,
+    // object id) body is taken from Git once and traversed by no repeated
+    // validation pass.
+    ledger.remember(seed.path, seed.objectId, { bytes, text });
+    return { kind: 'text', text, ...(pillarRoots === undefined ? {} : { pillarRoots }) };
+  };
+  return readSeed;
+}
+
 export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInput): ProjectShapeObservationResult {
   if (input.repositoryId.trim() === '') return { kind: 'invalid-input', reason: 'repositoryId is empty' };
   if (input.revision.trim() === '' || input.revision.startsWith('-')) {
@@ -407,86 +530,7 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
   // 4. Phase A: manifest derivation with admitted, ledgered seed reads.
   const reads: PhaseAReadRecord[] = [];
   const ledger = input.ledger ?? createResourceLedger(limits);
-  const readSeed = (seed: { readonly path: string; readonly objectId: string }): SeedRead => {
-    const admission = admitPhaseARead(tree, seed);
-    if (admission.kind === 'refused') {
-      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'refused', bytes: 0, detail: admission.reason });
-      return { kind: 'unavailable', reason: `phase A read refused: ${admission.reason}` };
-    }
-    const overLimit = (limit: keyof PwbResourceLimits, bytes: number): SeedRead => {
-      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'over-limit', bytes, detail: limit });
-      return { kind: 'unavailable', reason: `resource limit ${limit}` };
-    };
-    const declaredSize = admission.entry.sizeBytes;
-    if (declaredSize !== undefined && declaredSize > limits.maxBytesPerSource) {
-      ledger.recordBreach({ limit: 'maxBytesPerSource', declared: limits.maxBytesPerSource, observed: declaredSize, path: seed.path });
-      return overLimit('maxBytesPerSource', 0);
-    }
-    if (declaredSize !== undefined && ledger.projectBody(seed.path, seed.objectId, declaredSize) !== undefined) {
-      return overLimit('maxTotalBytes', 0);
-    }
-    let bytes: Uint8Array;
-    try {
-      bytes = input.runGit(['cat-file', 'blob', seed.objectId]);
-    } catch (error) {
-      const detail = error instanceof Error ? error.message : String(error);
-      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'git-read-failed', bytes: 0, detail });
-      return { kind: 'unavailable', reason: `git cat-file failed: ${detail}` };
-    }
-    if (declaredSize === undefined && bytes.byteLength > limits.maxBytesPerSource) {
-      ledger.recordBreach({ limit: 'maxBytesPerSource', declared: limits.maxBytesPerSource, observed: bytes.byteLength, path: seed.path });
-      return overLimit('maxBytesPerSource', bytes.byteLength);
-    }
-    // One cumulative counter across both phases, this body counted once.
-    if (ledger.chargeBody(seed.path, seed.objectId, bytes.byteLength) !== undefined) return overLimit('maxTotalBytes', bytes.byteLength);
-    if (gitBlobObjectId(bytes, objectFormat) !== seed.objectId) {
-      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'object-id-mismatch', bytes: bytes.byteLength });
-      return { kind: 'unavailable', reason: 'object id mismatch: bytes are not the tree-named object' };
-    }
-    // Each traversal of the decoded seed is one charged registry pass:
-    // validation, the policy detectors and the active-content scans inside
-    // `classifyPhaseA`, then the link discovery this read feeds.
-    const charge = ledger.chargeFor(seed.path);
-    try {
-      charge('utf8-and-nul-validation');
-    } catch (error) {
-      if (error instanceof ParsePassBudgetExceeded) return overLimit('maxParsePassesPerSource', bytes.byteLength);
-      throw error;
-    }
-    if (bytes.includes(0)) {
-      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'contains-nul', bytes: bytes.byteLength });
-      return { kind: 'unavailable', reason: 'seed contains NUL' };
-    }
-    const text = decodeUtf8(bytes);
-    if (text === undefined) {
-      reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'not-utf-8', bytes: bytes.byteLength });
-      return { kind: 'unavailable', reason: 'seed is not valid UTF-8' };
-    }
-    const classification = input.classifyPhaseA(text, charge);
-    if (classification.kind === 'over-limit') return overLimit(classification.breach.limit, bytes.byteLength);
-    if (classification.kind === 'excluded') {
-      reads.push({
-        path: seed.path,
-        objectId: seed.objectId,
-        outcome: classification.reason,
-        bytes: bytes.byteLength,
-        detail: classification.detail,
-      });
-      return { kind: 'unavailable', reason: `phase A source excluded: ${classification.reason}` };
-    }
-    try {
-      charge('phase-a-link-discovery');
-    } catch (error) {
-      if (error instanceof ParsePassBudgetExceeded) return overLimit('maxParsePassesPerSource', bytes.byteLength);
-      throw error;
-    }
-    reads.push({ path: seed.path, objectId: seed.objectId, outcome: 'read', bytes: bytes.byteLength });
-    // The validated body is held for the phase-B reader: the same (path,
-    // object id) body is taken from Git once and traversed by no repeated
-    // validation pass.
-    ledger.remember(seed.path, seed.objectId, { bytes, text });
-    return { kind: 'text', text };
-  };
+  const readSeed = createPhaseASeedReader({ tree, limits, ledger, reads, runGit: input.runGit, objectFormat, classifyPhaseA: input.classifyPhaseA });
   const derived = deriveProjectShapeManifest({
     repositoryId: input.repositoryId,
     revision,

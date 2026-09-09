@@ -51,7 +51,7 @@ describe('surface routes', () => {
       expect(response.status).toBe(200);
       expect(response.headers.get('content-type')).toBe('text/html; charset=utf-8');
       const html = await response.text();
-      expect(html).toContain('<nav aria-label="Three-surface POC sections">');
+      expect(html).toContain('<nav class="site-nav" aria-label="Three-surface POC sections">');
       expect(html).toContain('class="legend"');
 
       const rebound = await fetch(`${baseUrl}${path}`, {
@@ -138,7 +138,7 @@ describe('surface routes', () => {
     const baseUrl = `http://${start.daemon.host}:${start.daemon.port}`;
 
     function navHrefs(html: string): string[] {
-      const nav = html.match(/<nav aria-label="Three-surface POC sections">.*?<\/nav>/s)?.[0] ?? '';
+      const nav = html.match(/<nav class="site-nav" aria-label="Three-surface POC sections">.*?<\/nav>/s)?.[0] ?? '';
       return [...nav.matchAll(/href="([^"]*)"/g)].map((match) => match[1] ?? '');
     }
 

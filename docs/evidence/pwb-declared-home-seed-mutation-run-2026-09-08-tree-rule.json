@@ -1,0 +1,53 @@
+{
+  "slice": "syzygy-1z3.29 review finding 1 — Rule 2 yields a baseline spec or roster file to the tree rule that owns it (project-shape-manifest.ts, the namedPaths loop)",
+  "recorded": "2026-09-08",
+  "commit": "f5c7afa6690acecbfd0d7c16b528ee13fc2db8ab",
+  "follows": "docs/evidence/pwb-declared-home-seed-mutation-run-2026-09-08.json (commit 726ab95)",
+  "effectiveActs": [
+    "PWB observer registry-entry amendment (tag pwb-adopt-registry-entry-signed-2026-09-05): readAuthority admits the fixed root index and its declared pillar README indexes",
+    "PWB implementation authorization (decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md) and its continuation"
+  ],
+  "method": "each predicate broken in place at the named commit, project-shape-observation.test.ts and project-shape-manifest.test.ts run with vitest from the worktree root, the source restored byte-for-byte and its SHA-256 re-checked; a mutation is killed when at least one test fails. Fragments are the exact old/new source text so the run is repeatable at the commit.",
+  "sourceSha256AtCommit": "5c753f1447b703e4bb1091c60807f2e3856d65efb1a03aaabd3238b4a3c6d101",
+  "mutations": [
+    {
+      "id": "tree-rule-skip-dropped",
+      "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+      "describes": "the pre-repair behaviour: Rule 2 registers a baseline spec or butler.toml the index names as a class-less pillar-named-file before the tree rule can, so the tree rule’s add is discarded",
+      "old": "      if (BASELINE_SPEC.test(path) || ROSTER_BUTLER.test(path)) continue;\n",
+      "new": "      // mutant: skip removed\n",
+      "outcome": "killed",
+      "failingTests": [
+        "deriveProjectShapeManifest — a declared home over tree-rule files (syzygy-1z3.29 review) a baseline spec named by the Spec and Spine index keeps its tree rule and its baseline-spec class",
+        "deriveProjectShapeManifest — a declared home over tree-rule files (syzygy-1z3.29 review) a butler.toml named by an index at a roster home keeps its tree rule and its roster-identity class"
+      ]
+    },
+    {
+      "id": "roster-arm-dropped",
+      "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+      "describes": "only baseline specs are yielded; a roster file named by an index at a roster home loses its roster-identity class",
+      "old": "      if (BASELINE_SPEC.test(path) || ROSTER_BUTLER.test(path)) continue;\n",
+      "new": "      if (BASELINE_SPEC.test(path)) continue;\n",
+      "outcome": "killed",
+      "failingTests": [
+        "deriveProjectShapeManifest — a declared home over tree-rule files (syzygy-1z3.29 review) a butler.toml named by an index at a roster home keeps its tree rule and its roster-identity class"
+      ]
+    },
+    {
+      "id": "baseline-arm-dropped",
+      "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+      "describes": "only roster files are yielded; a baseline spec named by the Spec and Spine index loses its baseline-spec class",
+      "old": "      if (BASELINE_SPEC.test(path) || ROSTER_BUTLER.test(path)) continue;\n",
+      "new": "      if (ROSTER_BUTLER.test(path)) continue;\n",
+      "outcome": "killed",
+      "failingTests": [
+        "deriveProjectShapeManifest — a declared home over tree-rule files (syzygy-1z3.29 review) a baseline spec named by the Spec and Spine index keeps its tree rule and its baseline-spec class"
+      ]
+    }
+  ],
+  "summary": {
+    "mutations": 3,
+    "killed": 3,
+    "survived": 0
+  }
+}

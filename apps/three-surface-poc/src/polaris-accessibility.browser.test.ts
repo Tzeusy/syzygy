@@ -18,6 +18,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { findBrowserExecutable, launchBrowser, type Browser, type BrowserPage } from './cdp-browser.js';
 import { aaThreshold, candidateBackdrops, checkPolarisAccessibility, composite, contrastRatio, relativeLuminance } from './polaris-accessibility.js';
+import { renderProjectReading } from './polaris.js';
 import { ACCESSIBILITY_VARIANTS, renderVariant, type AccessibilityVariant } from './polaris-accessibility-variants.js';
 
 const cleanups: string[] = [];
@@ -91,6 +92,140 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
     writeFileSync(file, rendered.html);
     return { url: pathToFileURL(file).href, expectedTargets: rendered.expectedTargets };
   }
+
+  it('keeps a separate desktop section rail and an in-flow mobile drawer', async () => {
+    const { url } = pageUrl(ACCESSIBILITY_VARIANTS[0] as AccessibilityVariant);
+    const page = await browser.newPage();
+    try {
+      await page.setViewport(1440, 1000);
+      await page.navigate(url);
+      const wide = await page.evaluate<{ open: boolean; separate: boolean; fits: boolean }>(`(() => {
+        const rail = document.querySelector('.reading-sidebar').getBoundingClientRect();
+        const main = document.querySelector('main').getBoundingClientRect();
+        return { open: document.querySelector('.contents-list').open,
+          separate: rail.right < main.left, fits: document.documentElement.scrollWidth <= innerWidth };
+      })()`);
+      expect(wide).toEqual({ open: true, separate: true, fits: true });
+      await page.evaluate(`document.documentElement.style.scrollBehavior = 'auto'; scrollTo(0, 1600)`);
+      const pinned = await page.evaluate<boolean>(`(() => {
+        const rail = document.querySelector('.reading-sidebar').getBoundingClientRect();
+        const nav = document.querySelector('.site-nav').getBoundingClientRect();
+        return rail.top >= nav.bottom && rail.bottom <= innerHeight;
+      })()`);
+      expect(pinned).toBe(true);
+      await page.setViewport(390, 844);
+      await page.navigate('about:blank');
+      await page.navigate(url);
+      expect(await page.evaluate<boolean>(`!document.querySelector('.contents-list').open && getComputedStyle(document.querySelector('.reading-sidebar')).position === 'static' && document.documentElement.scrollWidth <= innerWidth`)).toBe(true);
+      await page.evaluate(`document.querySelector('.contents-list summary').focus()`);
+      await page.press('Enter');
+      expect(await page.evaluate<boolean>(`document.querySelector('.contents-list').open`)).toBe(true);
+      await page.evaluate(`document.documentElement.style.scrollBehavior = 'auto'; const rail = document.querySelector('.reading-sidebar'); scrollTo(0, rail.offsetTop + rail.offsetHeight + 100)`);
+      expect(await page.evaluate<boolean>(`document.querySelector('.reading-sidebar').getBoundingClientRect().bottom <= 0`)).toBe(true);
+      await page.evaluate(`document.querySelector('.quick-links a').click()`);
+      const destination = await page.evaluate<{ top: number; navBottom: number }>(`({ top: document.querySelector('#polaris-group-v1').getBoundingClientRect().top, navBottom: document.querySelector('.site-nav').getBoundingClientRect().bottom })`);
+      expect(destination.top).toBeGreaterThanOrEqual(destination.navBottom);
+    } finally { await page.close(); }
+  });
+
+  it('keeps diagram labels legible and flow order unambiguous across widths', async () => {
+    const rendered = renderVariant(ACCESSIBILITY_VARIANTS[0] as AccessibilityVariant, cleanups);
+    const short = '```flow\nReceive --> Classify --> Route --> Spawn --> Act --> Log\n```';
+    const long = '```flow\n' + Array.from({ length: 12 }, (_, index) => 'Stage ' + (index + 1)).join(' --> ') + '\n```';
+    const relation = '```relations\n' + JSON.stringify([{ from: 'External clients', to: 'Module tools', description: 'Clients call the declared tool interface.' }]) + '\n```';
+    const diagrams = renderProjectReading({ summary: short + '\n\n' + long + '\n\n' + relation, full: '', condensed: false });
+    const file = join(pages, 'diagram-layout.html');
+    writeFileSync(file, rendered.html.replace('</main>', `<div data-copy-role="project-fact">${diagrams}</div></main>`));
+    const page = await browser.newPage();
+    try {
+      for (const width of [1440, 390]) {
+        await page.setViewport(width, 1000);
+        await page.navigate('about:blank');
+        await page.navigate(pathToFileURL(file).href);
+        const report = await page.evaluate<{ fits: boolean; legible: boolean; shortOrdered: boolean; longOrdered: boolean }>(`(() => {
+          const flows = [...document.querySelectorAll('.source-flow')].map(flow => [...flow.querySelectorAll('.flow-node')].map(node => node.getBoundingClientRect()));
+          const vertical = nodes => nodes.every((node, index) => index === 0 || node.top > nodes[index - 1].bottom);
+          const labels = [...document.querySelectorAll('.flow-node, .relationship-nodes strong')];
+          return { fits: document.documentElement.scrollWidth <= innerWidth,
+            legible: labels.every(node => parseFloat(getComputedStyle(node).fontSize) >= 12 && node.getBoundingClientRect().width >= 40),
+            shortOrdered: innerWidth > 800 ? flows[0].every(node => Math.abs(node.top - flows[0][0].top) < 1) : vertical(flows[0]),
+            longOrdered: vertical(flows[1]) };
+        })()`);
+        expect(report).toEqual({ fits: true, legible: true, shortOrdered: true, longOrdered: true });
+      }
+    } finally { await page.close(); }
+  });
+
+  it('opens a linked component guide and can reveal the complete declaration', async () => {
+    const rendered = renderVariant(ACCESSIBILITY_VARIANTS[0] as AccessibilityVariant, cleanups);
+    const guides = renderProjectReading({ summary: 'The two components have separate responsibilities.',
+      full: 'Runtime\n\nKeeps time.\n\nTools\n\nExpose actions.', condensed: true,
+      chapters: [{ id: 'test-runtime', title: 'Runtime', body: 'Keeps time.' }, { id: 'test-tools', title: 'Tools', body: 'Expose actions.' }] });
+    const file = join(pages, 'component-guides.html');
+    writeFileSync(file, rendered.html.replace('</main>', `<a id="guide-test-link" href="#polaris-guide-test-tools">Read tools</a><div data-copy-role="project-fact">${guides}</div></main>`));
+    const page = await browser.newPage();
+    try {
+      await page.setViewport(390, 844);
+      await page.navigate(pathToFileURL(file).href);
+      expect(await page.evaluate<number>(`document.querySelectorAll('[data-component-guide] details[open]').length`)).toBe(0);
+      // Native hashchange is queued after click. A fast collapse must survive it.
+      expect(await page.evaluate<number>(`(async () => {
+        const navigation = new Promise(resolve => addEventListener('hashchange', resolve, { once: true }));
+        document.querySelector('#guide-test-link').click();
+        const button = document.querySelector('.expand-declaration');
+        button.click();
+        button.click();
+        await navigation;
+        return document.querySelectorAll('[data-component-guide] details[open]').length;
+      })()`)).toBe(0);
+      await page.evaluate(`document.querySelector('#guide-test-link').focus()`);
+      await page.press('Enter');
+      expect(await page.evaluate<boolean>(`document.querySelector('#polaris-guide-test-tools details').open && document.querySelector('#polaris-guide-test-tools').closest('details') === null`)).toBe(true);
+      await page.evaluate(`document.querySelector('.expand-declaration').focus()`);
+      await page.press('Enter');
+      expect(await page.evaluate<number>(`document.querySelectorAll('[data-component-guide] details[open]').length`)).toBe(2);
+      expect(await page.evaluate<string>(`document.querySelector('.expand-declaration').getAttribute('aria-expanded')`)).toBe('true');
+      await page.press('Enter');
+      expect(await page.evaluate<number>(`document.querySelectorAll('[data-component-guide] details[open]').length`)).toBe(0);
+      // Leaving the guide and returning through browser history is a new navigation.
+      await page.evaluate(`new Promise(resolve => {
+        addEventListener('hashchange', resolve, { once: true });
+        location.hash = '#polaris-group-architecture';
+      })`);
+      expect(await page.evaluate<boolean>(`new Promise(resolve => {
+        addEventListener('hashchange', () => resolve(document.querySelector('#polaris-guide-test-tools details').open), { once: true });
+        history.back();
+      })`)).toBe(true);
+    } finally { await page.close(); }
+  });
+
+  it('keeps source records compact while citation targets remain keyboard-reachable', async () => {
+    const { url } = pageUrl(ACCESSIBILITY_VARIANTS[0] as AccessibilityVariant);
+    const page = await browser.newPage();
+    try {
+      await page.navigate(url);
+      expect(await page.evaluate<boolean>(`(() => { const index = document.querySelector('[data-source-index]'); return index.scrollHeight > index.clientHeight && index.clientHeight <= innerHeight; })()`)).toBe(true);
+      const id = await page.evaluate<string>(`document.querySelector('tr[data-polaris-source]').id`);
+      await page.navigate('about:blank');
+      await page.navigate(url + '#' + id);
+      const closed = await page.evaluate<{ open: boolean; hidden: boolean; targetOutsideDisclosure: boolean }>(`(() => {
+        const row = document.getElementById(${JSON.stringify(id)});
+        const record = row.querySelector('.source-record');
+        return { open: record.open, hidden: !record.querySelector('cite').checkVisibility(),
+          targetOutsideDisclosure: row.closest('details') === null };
+      })()`);
+      expect(closed).toEqual({ open: false, hidden: true, targetOutsideDisclosure: true });
+      await page.press('Tab');
+      expect(await page.evaluate<boolean>(`document.activeElement === document.getElementById(${JSON.stringify(id)}).querySelector('.source-record summary')`)).toBe(true);
+      await page.press('Enter');
+      expect(await page.evaluate<boolean>(`document.getElementById(${JSON.stringify(id)}).querySelector('.source-record cite').checkVisibility()`)).toBe(true);
+      await page.press('Enter');
+      await page.press('Tab');
+      const next = await page.evaluate<string | null>(`document.activeElement.closest('tr[data-polaris-source]')?.id ?? null`);
+      expect(next).not.toBeNull();
+      expect(next).not.toBe(id);
+    } finally { await page.close(); }
+  });
 
   for (const variant of ACCESSIBILITY_VARIANTS) {
     it(`${variant.id}: every distinction is keyboard-operable, named for assistive technology, and AA-contrasting`, async () => {

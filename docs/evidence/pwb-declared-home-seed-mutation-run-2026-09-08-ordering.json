@@ -1,0 +1,91 @@
+{
+  "slice": "syzygy-1z3.29 review finding 2 — the phase-A seed reader’s ordering guarantee, asserted at createPhaseASeedReader (project-shape-observation.ts)",
+  "recorded": "2026-09-08",
+  "commit": "40d4cdaa07c0e20df89d7b4cea867defed1b68df",
+  "follows": [
+    "docs/evidence/pwb-declared-home-seed-mutation-run-2026-09-08.json",
+    "docs/evidence/pwb-declared-home-seed-mutation-run-2026-09-08-tree-rule.json"
+  ],
+  "effectiveActs": [
+    "PWB observer registry-entry amendment (tag pwb-adopt-registry-entry-signed-2026-09-05): readAuthority admits the fixed root index and its declared pillar README indexes",
+    "PWB implementation authorization (decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md) and its continuation"
+  ],
+  "method": "each predicate broken in place at the named commit, project-shape-observation.test.ts and project-shape-manifest.test.ts run with vitest from the worktree root, the source restored byte-for-byte and its SHA-256 re-checked; a mutation is killed when at least one test fails. Fragments are the exact old/new source text so the run is repeatable at the commit. Two mutants relocate a block: the old/new fragments show the insertion site, and the note says which block is cut from its original place (the fill block after the read record).",
+  "sourceSha256AtCommit": "70af92588ae98564540f463beb1db767ddd917968be5855bc238f614610df63a",
+  "mutations": [
+    {
+      "id": "fill-hoisted-above-classifier",
+      "file": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "describes": "a root index the classifier excludes (secret-bearing, active content) still declares homes",
+      "old": "    const classification = deps.classifyPhaseA(text, charge);\n",
+      "new": "    if (seed.path === PWB_ROOT_INDEX_PATH) {\n      for (const declared of declaredPillarRoots(text).values()) {\n        if (!declared.ambiguous) declaredRoots.add(declared.root);\n      }\n    }\n    const classification = deps.classifyPhaseA(text, charge);\n",
+      "note": "the fill block is cut from after the read record and pasted before the classifier call (old/new show the insertion; the cut is the block itself)",
+      "outcome": "killed",
+      "failingTests": [
+        "the seed reader widens phase A only after a validated root index (syzygy-1z3.29 review) a root index the classifier excludes declares nothing: its pillar index stays refused"
+      ],
+      "failingTestCount": 1
+    },
+    {
+      "id": "fill-hoisted-above-nul-check",
+      "file": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "describes": "a root index that fails NUL validation still declares homes",
+      "old": "    if (bytes.includes(0)) {\n",
+      "new": "    if (seed.path === PWB_ROOT_INDEX_PATH) {\n      for (const declared of declaredPillarRoots(new TextDecoder().decode(bytes)).values()) {\n        if (!declared.ambiguous) declaredRoots.add(declared.root);\n      }\n    }\n    if (bytes.includes(0)) {\n",
+      "note": "the fill block is cut from after the read record and pasted before the NUL check, decoding bytes itself",
+      "outcome": "killed",
+      "failingTests": [
+        "the seed reader widens phase A only after a validated root index (syzygy-1z3.29 review) a root index the classifier excludes declares nothing: its pillar index stays refused",
+        "the seed reader widens phase A only after a validated root index (syzygy-1z3.29 review) a root index that fails NUL validation declares nothing either"
+      ],
+      "failingTestCount": 2
+    },
+    {
+      "id": "fill-on-any-seed",
+      "file": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "describes": "a pillar index (or any read seed) may declare homes, not only the root index",
+      "old": "    if (seed.path === PWB_ROOT_INDEX_PATH) {\n      for (const declared",
+      "new": "    if (true) {\n      for (const declared",
+      "outcome": "killed",
+      "failingTests": [
+        "the seed reader widens phase A only after a validated root index (syzygy-1z3.29 review) a pillar index naming a pillar-keyed directory declares no home: only the root index widens the set"
+      ],
+      "failingTestCount": 1
+    },
+    {
+      "id": "ambiguous-home-admitted",
+      "file": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "describes": "a pillar declared at two different homes admits both indexes instead of neither",
+      "old": "        if (!declared.ambiguous) declaredRoots.add(declared.root);",
+      "new": "        declaredRoots.add(declared.root);",
+      "outcome": "killed",
+      "failingTests": [
+        "the seed reader widens phase A only after a validated root index (syzygy-1z3.29 review) a pillar declared at two different homes admits neither index"
+      ],
+      "failingTestCount": 1
+    },
+    {
+      "id": "root-index-not-unconditionally-admitted-before-fill",
+      "file": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "describes": "the root index itself is admissible only once a home is declared, so phase A can never start",
+      "old": "  if (path === PWB_ROOT_INDEX_PATH) return true;\n",
+      "new": "  if (path === PWB_ROOT_INDEX_PATH) return declaredRoots.size > 0;\n",
+      "outcome": "killed",
+      "failingTests": [
+        "observeProjectShapeSources — reads only the phase A allowlist issues exactly rev-parse, show, ls-tree and one cat-file per phase A seed, in order",
+        "observeProjectShapeSources — reads only the phase A allowlist exposes the complete population with a per-source identity and stamp",
+        "observeProjectShapeSources — reads only the phase A allowlist a fixture without the absent named file has no degradation",
+        "observeProjectShapeSources — reads only the phase A allowlist refuses a symlinked pillar index without opening it and leaves the pillar counted and Unknown",
+        "observeProjectShapeSources — reads only the phase A allowlist does not open a seed over maxBytesPerSource and records the breach against the declared limit",
+        "observeProjectShapeSources — reads only the phase A allowlist stops reading once maxTotalBytes would be exceeded, keeping the population"
+      ],
+      "failingTestCount": 25
+    }
+  ],
+  "summary": {
+    "mutations": 5,
+    "killed": 5,
+    "survived": 0,
+    "note": "fill-on-any-seed and ambiguous-home-admitted survived a first round of four tests; one isolating counterexample each was added before this recorded round"
+  }
+}

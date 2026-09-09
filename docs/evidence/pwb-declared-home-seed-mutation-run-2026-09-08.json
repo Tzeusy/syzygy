@@ -1,0 +1,110 @@
+{
+  "slice": "syzygy-1z3.29 \u2014 phase-A allowlist admits a declared pillar index at any declared home (project-shape-observation.ts isPhaseASeedPath / readSeed; project-shape-manifest.ts declaredPillarRoots)",
+  "recorded": "2026-09-08",
+  "commit": "726ab9596c5bdf96a20db0a0668075e2f2b5e16c",
+  "effectiveActs": [
+    "PWB observer registry-entry amendment (tag pwb-adopt-registry-entry-signed-2026-09-05): readAuthority admits the fixed root index and its declared pillar README indexes",
+    "PWB implementation authorization (decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md) and its continuation"
+  ],
+  "method": "each predicate broken in place at the named commit, project-shape-observation.test.ts and project-shape-manifest.test.ts run with vitest from the worktree root, the source restored byte-for-byte and its SHA-256 re-checked; a mutation is killed when at least one test fails. Fragments are the exact old/new source text so the run is repeatable at the commit.",
+  "mutations": [
+    {
+      "id": "name-based-rule-restored",
+      "file": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "old": "  return declaredRoots.has(posixDirname(path));",
+      "new": "  return declaredRoots.has(posixDirname(path)) || ['heart-and-soul', 'legends-and-lore', 'spec-and-spine', 'lay-and-land', 'craft-and-care'].includes(posixBasename(posixDirname(path)));",
+      "why": "the pre-fix allowlist arm added back beside the declared-home arm: a pillar-named directory admits again",
+      "testFiles": [
+        "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
+        "packages/three-surface-poc-core/src/project-shape-manifest.test.ts"
+      ],
+      "killed": true,
+      "failingTests": [
+        "admitPhaseARead a declared home admits its index wherever it sits; a directory merely named for a pillar declares nothing (syzygy-1z3.29)"
+      ]
+    },
+    {
+      "id": "declared-home-arm-dropped",
+      "file": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "old": "  return declaredRoots.has(posixDirname(path));",
+      "new": "  return ['heart-and-soul', 'legends-and-lore', 'spec-and-spine', 'lay-and-land', 'craft-and-care'].includes(posixBasename(posixDirname(path)));",
+      "why": "the pre-fix behaviour exactly: declared homes not named for the pillar are refused (the Butlers case)",
+      "testFiles": [
+        "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
+        "packages/three-surface-poc-core/src/project-shape-manifest.test.ts"
+      ],
+      "killed": true,
+      "failingTests": [
+        "admitPhaseARead a declared home admits its index wherever it sits; a directory merely named for a pillar declares nothing (syzygy-1z3.29)",
+        "declared pillar homes (syzygy-1z3.29) reads the pillar index at a declared home that is not named for the pillar",
+        "declared pillar homes (syzygy-1z3.29) the other four declared homes read as before, with no refusal in the ledger"
+      ]
+    },
+    {
+      "id": "any-readme-admitted",
+      "file": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "old": "  return declaredRoots.has(posixDirname(path));",
+      "new": "  return true;",
+      "why": "every README.md becomes a seed regardless of declaration",
+      "testFiles": [
+        "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
+        "packages/three-surface-poc-core/src/project-shape-manifest.test.ts"
+      ],
+      "killed": true,
+      "failingTests": [
+        "admitPhaseARead admits only tree-matching regular blobs at the root index or a declared pillar index",
+        "admitPhaseARead a declared home admits its index wherever it sits; a directory merely named for a pillar declares nothing (syzygy-1z3.29)"
+      ]
+    },
+    {
+      "id": "declared-roots-never-filled",
+      "file": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "old": "        if (!declared.ambiguous) declaredRoots.add(declared.root);",
+      "new": "        if (declared.ambiguous) declaredRoots.add(declared.root);",
+      "why": "the observer fills the set from ambiguous homes only, so no unambiguous pillar index is ever admitted",
+      "testFiles": [
+        "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
+        "packages/three-surface-poc-core/src/project-shape-manifest.test.ts"
+      ],
+      "killed": true,
+      "failingTests": [
+        "observeProjectShapeSources \u2014 reads only the phase A allowlist issues exactly rev-parse, show, ls-tree and one cat-file per phase A seed, in order",
+        "observeProjectShapeSources \u2014 reads only the phase A allowlist exposes the complete population with a per-source identity and stamp",
+        "observeProjectShapeSources \u2014 reads only the phase A allowlist a fixture without the absent named file has no degradation",
+        "observeProjectShapeSources \u2014 reads only the phase A allowlist refuses a symlinked pillar index without opening it and leaves the pillar counted and Unknown",
+        "observeProjectShapeSources \u2014 reads only the phase A allowlist stops reading once maxTotalBytes would be exceeded, keeping the population",
+        "observeProjectShapeSources \u2014 reads only the phase A allowlist records maxIndexDepth and maxSources breaches without shrinking the population",
+        "observeProjectShapeSources \u2014 reads only the phase A allowlist rejects bytes that are not the tree-named object, NUL-bearing bytes and non-UTF-8 bytes",
+        "observeProjectShapeSources \u2014 reads only the phase A allowlist a failing cat-file leaves the seed ledgered as git-read-failed",
+        "observeProjectShapeSources \u2014 reads only the phase A allowlist screens an active-content pillar seed before it can derive that pillar children",
+        "declared pillar homes (syzygy-1z3.29) reads the pillar index at a declared home that is not named for the pillar",
+        "declared pillar homes (syzygy-1z3.29) the other four declared homes read as before, with no refusal in the ledger",
+        "composition with the PWB-REQ-005 gate an admitting authority reaches the observer and is bound as a deterministic input",
+        "phase A charges one shared resource ledger a safe seed costs exactly nine registry passes, each identity once, and its body counts once",
+        "phase A charges one shared resource ledger maxParsePassesPerSource 8 stops the root closed at link discovery, so nothing below it is discovered; 9 reads every seed"
+      ]
+    },
+    {
+      "id": "manifest-table-roots-ignored",
+      "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+      "old": "  for (const [key, roots] of rootIndexPillarRoots(rootIndexText)) {\n    rootsByKey.set(key, { root: roots[0] as string, ambiguous: roots.length > 1 });\n  }",
+      "new": "  for (const [key, roots] of rootIndexPillarRoots(rootIndexText)) {\n    void key; void roots;\n  }",
+      "why": "the shared derivation drops the Pillar/Directory table, leaving link-derived homes only",
+      "testFiles": [
+        "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
+        "packages/three-surface-poc-core/src/project-shape-manifest.test.ts"
+      ],
+      "killed": true,
+      "failingTests": [
+        "deriveProjectShapeManifest \u2014 complete population at one revision recognizes the real-shaped five-row root table and all seven Heart and Soul sources",
+        "declared pillar homes (syzygy-1z3.29) reads the pillar index at a declared home that is not named for the pillar",
+        "declared pillar homes (syzygy-1z3.29) the other four declared homes read as before, with no refusal in the ledger"
+      ]
+    }
+  ],
+  "summary": {
+    "mutants": 5,
+    "killed": 5,
+    "survived": 0
+  }
+}

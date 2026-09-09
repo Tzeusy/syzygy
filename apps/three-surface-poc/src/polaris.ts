@@ -1,3 +1,5 @@
+import { renderPolarisMarkdown } from './polaris-markdown.js';
+import { projectReading, type ProjectReading } from './polaris-reading.js';
 import { escapeHtml } from '@syzygy/cap1-daemon';
 import {
   EXTRACTION_CLASSES,
@@ -81,8 +83,8 @@ export const POLARIS_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}/polaris` as const;
 export const POLARIS_GROUPS = [
   'overview',
   'boundaries',
-  'architecture',
   'v1',
+  'architecture',
   'catalog',
   'capability-detail',
   'evidence-and-gaps',
@@ -322,7 +324,7 @@ export function reasonCountsBlock(claimId: string, counts: ReasonCounts): string
     if (rows.length === 0) return '';
     return `<p${DISCLOSURE}>${copy(which === 'primary' ? 'label.primary-reasons' : 'label.secondary-reasons')}</p>
       <ul data-reason-counts-${which}="${escapeHtml(claimId)}"${DISCLOSURE}>${rows
-        .map(([reason, count]) => `<li data-reason="${escapeHtml(reason)}" data-count="${count}">${unknownReasonRef(reason)}: ${count}. ${copy('label.route')} ${reasonRouteHtml(reason)}</li>`)
+        .map(([reason, count]) => `<li data-reason="${escapeHtml(reason)}" data-count="${count}">${unknownReasonRef(reason)}: ${count}. <details class="reason-remedies"><summary${copyAttr('label.source-remedies')}>${copy('label.source-remedies')}</summary><p>${copy('label.route')} ${reasonRouteHtml(reason)}</p></details></li>`)
         .join('')}</ul>`;
   };
   const primary = list('primary', counts.primary);
@@ -403,9 +405,9 @@ function supportCitations(support: readonly ProjectShapeSupport[], anchors: read
 
 /** One anchored block for one Observed shape claim: its support anchors,
  * bound to the evaluated revision, with the claim's own captured state. */
-function shapeClaimBlock(claim: ProjectShapeClaim, revision: string, targetClass: AnchorTargetClass = 'evidence'): { readonly attrs: string; readonly anchors: readonly NarrativeAnchor[] } {
+function shapeClaimBlock(claim: ProjectShapeClaim, revision: string, targetClass: AnchorTargetClass = 'evidence', blockId = `block:${claim.claimId}`): { readonly attrs: string; readonly anchors: readonly NarrativeAnchor[] } {
   const anchors = claim.support.map((support) => supportAnchor(support, revision, targetClass)).filter((anchor): anchor is AnchorInput => anchor !== undefined);
-  return anchoredBlock(`block:${claim.claimId}`, [{ claimId: claim.claimId, anchors, captured: capturedStateOf(claim) }]);
+  return anchoredBlock(blockId, [{ claimId: claim.claimId, anchors, captured: capturedStateOf(claim) }]);
 }
 
 /** The cause-correct route for one exclusion: what produced it and what,
@@ -484,14 +486,24 @@ function unknownRoutes(claim: ProjectShapeClaim, prefix: string): string {
   const secondaryLine = secondary.length === 0
     ? ''
     : `<br><small>${copy('label.also')} ${secondary.map((reason) => `${escapeHtml(reason)} (${copy('label.route').toLowerCase()} ${escapeHtml(routeOf(claim, reason))})`).join('; ')}</small>`;
-  return `<p class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}>${prefix}${copy('label.unknown')} — ${unknownReasonRef(primary)}. ${copy('label.route')} ${escapeHtml(routeOf(claim, primary))}.${secondaryLine}</p>`;
+  return `<div class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}><p>${prefix.startsWith('Declared by ') ? '' : prefix}${copy('label.unknown')} — ${unknownReasonRef(primary)}.</p><details class="unknown-source-details"><summary${copyAttr('label.source-remedies')}>${copy('label.source-remedies')}</summary><p>${prefix.startsWith('Declared by ') ? prefix : ''}${copy('label.route')} ${escapeHtml(routeOf(claim, primary))}.${secondaryLine}</p></details></div>`;
+}
+
+export function renderProjectReading(reading: ProjectReading, anchorId?: string): string {
+  const label = reading.condensed ? `<p class="excerpt-label"${copyAttr('label.selected-passages')}>${copy('label.selected-passages')}</p>` : '';
+  const chapters = reading.chapters;
+  const full = chapters !== undefined
+    ? `<section class="component-library"><h4${copyAttr('label.component-guides')}>${copy('label.component-guides')}</h4><button type="button" class="expand-declaration" aria-expanded="false"${copyAttr('label.full-account')}>${copy('label.full-account')}</button><div class="component-guides">${chapters.map((chapter) => `<section id="polaris-guide-${escapeHtml(chapter.id)}" data-component-guide><details><summary>${escapeHtml(chapter.title)}</summary><div class="reading-prose">${renderPolarisMarkdown(chapter.body, anchorId)}</div></details></section>`).join('')}</div></section>`
+    : reading.condensed ? `<details class="full-account"><summary${copyAttr('label.full-account')}>${copy('label.full-account')}</summary><div class="reading-prose">${renderPolarisMarkdown(reading.full, anchorId)}</div></details>` : '';
+  return `${label}<div class="reading-prose">${renderPolarisMarkdown(reading.summary, anchorId)}</div>${full}`;
 }
 
 function accountStatement(statement: ProjectAccountStatement, revision: string): string {
   const body = statement.claim.epistemic.label === 'Observed' && statement.statement !== undefined
     ? ((): string => {
         const block = shapeClaimBlock(statement.claim, revision);
-        return `<p${block.attrs}><span data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${escapeHtml(statement.statement)}</span>${supportCitations(statement.claim.support, block.anchors)}</p>`;
+        const reading = projectReading(statement.statement, statement.key);
+        return `<div class="account-reading"${block.attrs}><div data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${renderProjectReading(reading, block.anchors.length === 1 ? block.anchors[0]!.anchorId : undefined)}</div><details class="reading-citations"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')}</summary>${supportCitations(statement.claim.support, block.anchors)}</details></div>`;
       })()
     : unknownRoutes(statement.claim, '');
   return `<section class="claim-section" data-polaris-section="${escapeHtml(statement.claim.claimId)}">
@@ -506,7 +518,7 @@ function itemRow(item: ProjectShapeItem, revision: string): string {
   const identity = item.claim.support[0]?.sourceIdentity;
   const exact = block !== undefined && item.class === 'baseline-spec' && identity !== undefined && activeExactSources.has(identity) ? ` ${exactTextLink(identity)}` : '';
   const statement = block !== undefined
-    ? `<span data-claim-provenance="${escapeHtml(item.claim.claimId)}">${escapeHtml(item.statement ?? item.key)}</span>${supportCitations(item.claim.support, block.anchors)}${exact}`
+    ? `<div class="reading-prose" data-claim-provenance="${escapeHtml(item.claim.claimId)}">${renderPolarisMarkdown(item.statement ?? item.key)}</div>${supportCitations(item.claim.support, block.anchors)}${exact}`
     : unknownRoutes(item.claim, '');
   // The key cell takes the table region's role (declared once on the region,
   // classBlock); the tuple cell holds only the tuple span, which declares its
@@ -530,6 +542,28 @@ function classStatement(shape: Extract<ProjectShape, { kind: 'observed' }>, cls:
   return declaring.length === 0 ? 'No admitted source declares this class.' : `Declared by ${declaring.join(', ')}.`;
 }
 
+function capabilityGuide(shape: Extract<ProjectShape, { kind: 'observed' }>): string {
+  const groups = new Map<string, ProjectShapeItem[]>();
+  for (const item of shape.items.filter((item) => item.class === 'catalog-entry')) {
+    const context = item.context ?? copyText('class.catalog-entry');
+    const group = groups.get(context) ?? [];
+    group.push(item);
+    groups.set(context, group);
+  }
+  const practicalOrder = ['Butlers', 'Staffers', 'Dashboard', 'Connectors'];
+  const rank = (context: string): number => { const index = practicalOrder.indexOf(context); return index < 0 ? practicalOrder.length : index; };
+  const entries = [...groups.entries()].sort(([a], [b]) => rank(a) - rank(b));
+  return `<section class="capability-guide" id="polaris-capability-guide">
+    <p class="guide-intro"${copyAttr('label.guide-intro')}>${copy('label.guide-intro')} <a href="#polaris-class-catalog-entry"${copyAttr('label.complete-catalog')}>${copy('label.complete-catalog')}</a></p>
+    <div class="guide-grid">${entries.map(([context, members]) => {
+      const example = members.find((item) => item.claim.epistemic.label === 'Observed' && item.statement !== undefined);
+      if (example === undefined) return `<section class="guide-entry"><h4${FACT}>${escapeHtml(context)}</h4><p${SCOPE}>${copy('label.complete-catalog')}</p></section>`;
+      const block = shapeClaimBlock(example.claim, shape.identity.revision, 'evidence', `guide:${example.claim.claimId}`);
+      return `<section class="guide-entry"><h4${FACT}>${escapeHtml(context)}</h4><div${block.attrs}><div class="reading-prose" data-claim-provenance="${escapeHtml(example.claim.claimId)}">${renderPolarisMarkdown(example.statement as string)}</div><details class="reading-citations"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')}</summary>${supportCitations(example.claim.support, block.anchors)}</details></div><details class="guide-state"><summary${DISCLOSURE}>${escapeHtml(example.claim.epistemic.label)}</summary>${claimTuple(example.claim)}</details></section>`;
+    }).join('')}</div>
+  </section>`;
+}
+
 function classBlock(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: ExtractionClass, withItems: boolean): string {
   const aggregate = shape.classes[cls];
   const items = shape.items.filter((item) => item.class === cls);
@@ -541,7 +575,9 @@ function classBlock(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: Ext
   const summary = aggregate.claim.epistemic.label === 'Observed'
     ? ((): string => {
         const block = shapeClaimBlock(aggregate.claim, shape.identity.revision);
-        return `<p${block.attrs}><span data-claim-provenance="${escapeHtml(aggregate.claim.claimId)}">${escapeHtml(classStatement(shape, cls))}</span>${supportCitations(aggregate.claim.support, block.anchors)}</p>`;
+        const contexts = cls === 'catalog-entry' ? [...new Set(items.map((item) => item.context).filter((context): context is string => context !== undefined))] : [];
+        const guide = contexts.length === 0 ? '' : `<ul class="catalog-contexts">${contexts.map((context) => `<li>${escapeHtml(context)}</li>`).join('')}</ul>`;
+        return `<details class="class-provenance"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')}</summary><div${block.attrs}><div data-claim-provenance="${escapeHtml(aggregate.claim.claimId)}">${guide}<p>${escapeHtml(classStatement(shape, cls))}</p></div>${supportCitations(aggregate.claim.support, block.anchors)}</div></details>`;
       })()
     : unknownRoutes(aggregate.claim, `${escapeHtml(classStatement(shape, cls))} `);
   return `<section class="claim-section" data-polaris-section="${escapeHtml(aggregate.claim.claimId)}" data-polaris-class="${escapeHtml(cls)}">
@@ -758,13 +794,14 @@ function sourceRow(source: ProjectShapeSource, index: number, revision: string):
     : source.record.outcome;
   const block = source.claim.epistemic.label === 'Observed' ? shapeClaimBlock(source.claim, revision) : undefined;
   const identityCell = block === undefined
-    ? `<small>${escapeHtml(source.identity)}</small>`
-    : `<small><cite data-parity-field="shape-source-identity"${anchorAttrs(block.anchors[0] as NarrativeAnchor)}>${escapeHtml(source.identity)}</cite></small>`;
+    ? `<span>${escapeHtml(source.identity)}</span>`
+    : `<cite data-parity-field="shape-source-identity"${anchorAttrs(block.anchors[0] as NarrativeAnchor)}>${escapeHtml(source.identity)}</cite>`;
   const digest = source.claim.support[0]?.contentDigest;
   const denominator = source.itemDenominator.kind === 'known'
     ? `${source.itemDenominator.value} item(s)`
     : `${copyText('label.unknown')} — ${source.itemDenominator.unknown.unknownReason}`;
-  return `<tr id="polaris-source-${escapeHtml(sourceSlug(source.path))}" data-polaris-source="${escapeHtml(source.claim.claimId)}"${block?.attrs ?? FACT}><td>${index + 1}</td><td><code data-parity-field="shape-source-path">${escapeHtml(source.path)}</code><br>${identityCell}${activeExactSources.has(source.identity) ? `<br>${exactTextLink(source.identity)}` : ''}</td><td>${escapeHtml(source.rule)}${source.pillar === undefined ? '' : ` · ${escapeHtml(source.pillar)}`}</td><td>${escapeHtml(outcome)} · ${escapeHtml(anchorText(source.anchor))}</td><td>${digest === undefined ? `<small${copyAttr('sentence.no-body-read')}>${copy('sentence.no-body-read')}</small>` : `<code data-parity-field="shape-source-digest">${escapeHtml(shortDigest(digest))}</code>`}</td><td>${source.claim.epistemic.label === 'Observed' ? `<span data-claim-provenance="${escapeHtml(source.claim.claimId)}">${escapeHtml(denominator)}</span>` : unknownRoutes(source.claim, '')}<br>${claimTuple(source.claim)}</td></tr>`;
+  const record = `<details class="source-record"><summary${copyAttr('label.source-record')}>${copy('label.source-record')}</summary>${identityCell}<p><b>${copy('table.rule')}:</b> ${escapeHtml(source.rule)}${source.pillar === undefined ? '' : ` · ${escapeHtml(source.pillar)}`}<br><b>${copy('table.outcome')}:</b> ${escapeHtml(outcome)} · ${escapeHtml(anchorText(source.anchor))}<br><b>${copy('table.digest')}:</b> ${digest === undefined ? `<small${copyAttr('sentence.no-body-read')}>${copy('sentence.no-body-read')}</small>` : `<code data-parity-field="shape-source-digest">${escapeHtml(shortDigest(digest))}</code>`}</p></details>`;
+  return `<tr id="polaris-source-${escapeHtml(sourceSlug(source.path))}" data-polaris-source="${escapeHtml(source.claim.claimId)}"${block?.attrs ?? FACT}><td>${index + 1}</td><td><code data-parity-field="shape-source-path">${escapeHtml(source.path)}</code>${activeExactSources.has(source.identity) ? `<br>${exactTextLink(source.identity)}` : ''}${record}</td><td>${source.claim.epistemic.label === 'Observed' ? `<span data-claim-provenance="${escapeHtml(source.claim.claimId)}">${escapeHtml(denominator)}</span>` : unknownRoutes(source.claim, '')}<br>${claimTuple(source.claim)}</td></tr>`;
 }
 
 function exclusionItem(exclusion: Exclusion): string {
@@ -941,7 +978,8 @@ function shapeEvidence(shape: ProjectShape): string {
   </section>
   <section class="claim-section wide" data-polaris-section="shape:sources">
     ${heading(3, 'polaris-shape-sources', 'evidence.sources')}
-    ${tableRegion('polaris-shape-sources', `<table><thead><tr>${(['table.index', 'table.source', 'table.rule', 'table.outcome', 'table.digest', 'table.items'] as const).map((id) => `<th scope="col"${copyAttr(id)}>${copy(id)}</th>`).join('')}</tr></thead><tbody>${shape.sources.map((source, index) => sourceRow(source, index, shape.identity.revision)).join('')}</tbody></table>`)}
+    <p${copyAttr('label.browse-source-records')}>${copy('label.browse-source-records')}</p>
+    ${tableRegion('polaris-shape-sources', `<table><thead><tr>${(['table.index', 'table.source', 'table.items'] as const).map((id) => `<th scope="col"${copyAttr(id)}>${copy(id)}</th>`).join('')}</tr></thead><tbody>${shape.sources.map((source, index) => sourceRow(source, index, shape.identity.revision)).join('')}</tbody></table>`, ' data-source-index')}
   </section>
   <section class="claim-section" data-polaris-section="shape:exclusions">
     ${heading(3, 'polaris-shape-exclusions', 'evidence.exclusions')}
@@ -1153,13 +1191,73 @@ function projectGroupBody(shape: ProjectShape, group: Exclude<PolarisGroup, 'cap
     case 'architecture':
       return `${accountByKey(shape, 'architecture')}${classBlock(shape, 'topology-component', true)}`;
     case 'v1':
-      return `${accountByKey(shape, 'v1-scope')}${accountByKey(shape, 'v1-success')}${classBlock(shape, 'success-criterion', true)}`;
+      return `${capabilityGuide(shape)}${accountByKey(shape, 'v1-scope')}${accountByKey(shape, 'v1-success')}${classBlock(shape, 'success-criterion', true)}`;
     case 'catalog':
       return CATALOG_CLASSES.map((cls) => classBlock(shape, cls, true)).join('');
   }
 }
 
+const SECTION_NAV_SCRIPT = `<script>
+(() => {
+  const drawer = document.querySelector('.reading-sidebar .contents-list');
+  if (!drawer) return;
+  const wide = matchMedia('(min-width: 1000px)');
+  const adapt = () => { drawer.open = wide.matches; };
+  adapt();
+  wide.addEventListener('change', adapt);
+  document.querySelector('.reading-sidebar').addEventListener('click', (event) => {
+    if (event.target instanceof Element && event.target.closest('a') && !wide.matches) drawer.open = false;
+  });
+  document.addEventListener('DOMContentLoaded', () => {
+    let handledHash;
+    const openGuide = (hash, explicitClick = false) => {
+      if (!explicitClick && hash === handledHash) return;
+      handledHash = hash;
+      let id;
+      try { id = decodeURIComponent(hash.slice(1)); } catch { return; }
+      const guide = document.getElementById(id);
+      if (guide && guide.matches('[data-component-guide]')) guide.querySelector('details').open = true;
+    };
+    document.addEventListener('click', (event) => {
+      const link = event.target instanceof Element ? event.target.closest('a[href^="#polaris-guide-"]') : null;
+      if (link) openGuide(link.hash, true);
+    });
+    addEventListener('hashchange', () => openGuide(location.hash));
+    openGuide(location.hash);
+    for (const library of document.querySelectorAll('.component-library')) {
+      const button = library.querySelector('.expand-declaration');
+      const sections = Array.from(library.querySelectorAll('[data-component-guide] > details'));
+      button.addEventListener('click', () => {
+        const open = !sections.every((section) => section.open);
+        for (const section of sections) section.open = open;
+        button.setAttribute('aria-expanded', String(open));
+      });
+      library.addEventListener('toggle', () => button.setAttribute('aria-expanded', String(sections.every((section) => section.open))), true);
+    }
+    const headings = Array.from(document.querySelectorAll('h2[id^="polaris-group-"]'));
+    const links = Array.from(drawer.querySelectorAll('a'));
+    let queued = false;
+    const update = () => {
+      queued = false;
+      let active = headings[0];
+      for (const heading of headings) {
+        if (heading.getBoundingClientRect().top <= 160) active = heading;
+      }
+      for (const link of links) {
+        if (active && link.hash === '#' + active.id) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      }
+    };
+    addEventListener('scroll', () => {
+      if (!queued) { queued = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    update();
+  });
+})();
+</script>`;
+
 const POLARIS_STYLE = `
+  html { scroll-behavior: auto; }
   .band { max-width: 74ch; margin: 0 auto 2rem; padding: 0.5rem 0 0; border-left: 3px solid var(--line); padding-left: 1rem; }
   .band[data-band="argument"] { border-left-style: dotted; }
   .band[data-band="contract"] { border-left-style: double; }
@@ -1197,6 +1295,135 @@ const POLARIS_STYLE = `
   .proposal-label { font-family: var(--font-mono); font-size: .85rem; letter-spacing: .04em; text-transform: uppercase; color: var(--unknown); }
   .proposal .adjacent { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); }
   .proposal h4 { margin: 0 0 .5rem; font-size: 1.05rem; }
+
+  header { width: min(74ch, calc(100% - 2rem)); padding: 2.8rem 0 1rem; }
+  header h1 { font-size: clamp(3.5rem, 7vw, 5.5rem); line-height: 1; margin-block: .7rem 1.4rem; }
+  header .lede { max-width: 48ch; font-size: 1.25rem; line-height: 1.6; }
+  main > .legend { max-width: 74ch; margin: 1.25rem auto 2rem; gap: .5rem 1rem; }
+  main > .notice { max-width: 74ch; margin: 0 auto 2rem; background: transparent; border-left: 1px solid var(--line); font-size: .9rem; color: var(--muted); }
+  .group { margin-top: 4rem; padding: 1.5rem 0 0; border-top: 1px solid var(--line); }
+  .group h2 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.15; letter-spacing: -.025em; }
+  .claim-section { border: 0; margin-bottom: 2.5rem; padding-top: .7rem; }
+  .claim-section h3 { font-size: 1.05rem; color: var(--muted); font-weight: normal; letter-spacing: .02em; }
+  .reading-prose { max-width: 66ch; font-size: 1.12rem; line-height: 1.75; overflow-wrap: anywhere; }
+  .reading-prose p { font-size: inherit; margin: 0 0 1.2em; }
+  .reading-prose h4, .reading-prose h5, .reading-prose h6 { font-size: 1.3rem; line-height: 1.3; margin: 2rem 0 .8rem; color: var(--ink); }
+  .reading-prose ul, .reading-prose ol { padding-left: 1.4rem; margin: .5rem 0 1.5rem; }
+  .reading-prose li { margin-bottom: .7rem; padding-left: .2rem; }
+  .reading-prose li p { margin-bottom: .3rem; }
+  .reading-prose strong { font-weight: bold; color: var(--ink); }
+  .reading-prose code { font-size: .84em; color: var(--cyan); }
+  .reading-prose pre { max-width: 100%; overflow-x: auto; padding: 1rem; background: var(--panel); line-height: 1.5; }
+  .reading-prose blockquote { border-left: 2px solid var(--cyan); margin: 1rem 0; padding-left: 1.3rem; font-size: 1.2em; }
+  .markdown-table { overflow-x: auto; margin-block: 1.5rem; }
+  main, footer { overflow-wrap: anywhere; }
+  :target { scroll-margin-top: 5rem; }
+  .reading-citations { margin-block: .5rem; font-size: .85rem; }
+  .class-provenance { font-size: .85rem; margin-block: .7rem; }
+  .class-provenance > summary { cursor: pointer; color: var(--muted); }
+  .reading-citations > summary { cursor: pointer; color: var(--muted); }
+  .excerpt-label { color: var(--muted); font-size: .85rem !important; }
+  main > .group:first-of-type { margin-top: 1rem; }
+  .reading-citations .citation { font-size: .72rem; overflow-wrap: anywhere; }
+  .tuple-line { margin-top: .7rem; }
+  .claim-tuple { letter-spacing: 0; font-size: .72rem; }
+  .full-account { border-left: 1px solid var(--line); padding: .6rem 0 .6rem 1.2rem; margin: 1.5rem 0; }
+  .full-account > summary { cursor: pointer; color: var(--cyan); }
+  .full-account[open] > summary { margin-bottom: 1.3rem; }
+  .depth-nav { position: static; border: 0; background: transparent; backdrop-filter: none; padding: 0; font-family: var(--font-serif); }
+  .contents-list { border-block: 1px solid var(--line); padding: 1rem 0; }
+  .contents-list > summary { cursor: pointer; color: var(--cyan); font-size: 1rem; }
+  .contents-list ol { margin: 1rem 0 0; padding-left: 1.4rem; }
+  .contents-list li { margin: .75rem 0; line-height: 1.7; }
+  .guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 2rem; }
+  .capability-guide { max-width: 74ch; margin: 1.5rem auto 3rem; }
+  .guide-entry { border-top: 1px solid var(--line); padding-top: 1rem; }
+  .guide-entry h4 { font-size: 1.35rem; margin: 0 0 .75rem; }
+  .guide-entry .reading-prose { font-size: 1rem; line-height: 1.6; }
+  .guide-intro { color: var(--muted); }
+  .guide-state { color: var(--muted); font-size: .75rem; }
+  .guide-state > summary, .unknown-source-details > summary { cursor: pointer; }
+  .unknown-disclosure > p { margin: 0 0 .5rem; }
+  .unknown-source-details, .reason-remedies { font-size: .9rem; }
+  .reason-remedies > summary { cursor: pointer; color: var(--muted); }
+  .quick-links { display: flex; gap: 1.5rem; margin: 0 0 .5rem; font-size: .95rem; }
+  .catalog-contexts { columns: 2; column-gap: 2.5rem; padding-left: 1.2rem; font-size: 1.15rem; line-height: 1.5; }
+  .catalog-contexts li { break-inside: avoid; margin-bottom: .8rem; }
+  .population { border-block: 1px solid var(--line); padding: .75rem 0; }
+  .population > summary { font-size: 1rem; color: var(--cyan); }
+  .population[open] > summary { margin-bottom: 1rem; }
+  [data-source-index] { max-height: min(70vh, 30rem); overflow: auto; }
+  [data-source-index] td:first-child { white-space: nowrap; }
+  .source-record { margin-top: .45rem; font-size: .85rem; }
+  .population .reading-prose { font-size: 1rem; min-width: 22ch; }
+  .population .reading-prose p:last-child { margin-bottom: 0; }
+  .claim-states { border: 0; border-left: 1px solid var(--line); padding: .3rem 1rem; }
+  .reading-layout { display: grid; grid-template-columns: 14rem minmax(0, 1fr); grid-template-areas: "sidebar header" "sidebar content" "sidebar footer"; column-gap: clamp(2rem, 4vw, 4rem); max-width: 96rem; padding-inline: clamp(1rem, 3vw, 3rem); margin-inline: auto; }
+  .reading-sidebar { grid-area: sidebar; position: sticky; top: 5rem; align-self: start; max-height: calc(100vh - 6rem); overflow: auto; margin-top: 3rem; padding-right: .75rem; }
+  .reading-layout > header { grid-area: header; }
+  .reading-layout > main { grid-area: content; }
+  .reading-layout > footer { grid-area: footer; }
+  .reading-layout > header, .reading-layout > main, .reading-layout > footer { min-width: 0; width: 100%; margin-inline: 0; }
+  .reading-layout .group, .reading-layout .claim-section, .reading-layout .band, .reading-layout .relationships, .reading-layout .capability-guide, .reading-layout .scope-instruction, .reading-layout .claim-states { max-width: 91ch; margin-left: 0; }
+  .reading-layout .claim-section.wide { max-width: none; }
+  .reading-prose { max-width: 74ch; }
+  .reading-prose .source-flow { display: grid; grid-template-columns: repeat(var(--flow-columns), minmax(0, 1fr)); gap: 1.3rem; list-style: none; padding: 1.25rem 0; margin: 1.5rem 0; }
+  .source-flow li { position: relative; min-width: 0; padding: 0; margin: 0; }
+  .flow-node { display: block; height: 100%; border: 1px solid var(--line); border-top: 2px solid var(--cyan); background: var(--panel); padding: .75rem .5rem; font: .85rem var(--font-mono); text-transform: capitalize; }
+  .flow-arrow { position: absolute; display: flex; align-items: center; justify-content: center; line-height: 1; top: 50%; right: -1.3rem; width: 1.3rem; text-align: center; transform: translateY(-50%); font-size: 0; }
+  .flow-arrow::after { content: '→'; font-size: 1.2rem; color: var(--muted); }
+  .reading-prose .source-flow[data-flow-long] { grid-template-columns: 1fr; }
+  .source-flow[data-flow-long] .flow-arrow { top: auto; right: calc(50% - .65rem); bottom: -1.3rem; height: 1.3rem; transform: none; }
+  .source-flow[data-flow-long] .flow-arrow::after { content: '↓'; }
+  @media (max-width: 800px) {
+    .reading-prose .source-flow { grid-template-columns: 1fr; }
+    .source-flow .flow-arrow { top: auto; right: calc(50% - .65rem); bottom: -1.3rem; height: 1.3rem; transform: none; }
+    .source-flow .flow-arrow::after { content: '↓'; }
+  }
+  .source-relationships { display: grid; gap: 1rem; margin-block: 1.5rem; }
+  .source-relationship { border: 1px solid var(--line); background: var(--panel); padding: 1.25rem; }
+  .relationship-nodes { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 1rem; font-size: 1rem; }
+  .relationship-nodes > strong { padding: .6rem; border-bottom: 2px solid var(--line); }
+  .relationship-arrow { color: var(--muted); font-size: 1.5rem; }
+  .relationship-description { margin-top: 1rem; font-size: .95rem; }
+  .relationship-description p:last-child { margin-bottom: 0; }
+  .component-library { margin-block: 2rem; }
+  .component-library > h4 { font-size: 1.4rem; margin-bottom: .75rem; }
+  .expand-declaration { background: transparent; border: 1px solid var(--line); color: var(--cyan); padding: .6rem .9rem; cursor: pointer; margin-bottom: 1rem; font: inherit; }
+  .component-guides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  [data-component-guide] { min-width: 0; border: 1px solid var(--line); background: var(--panel); padding: 1rem; }
+  [data-component-guide]:has(details[open]) { grid-column: 1 / -1; }
+  [data-component-guide] summary { cursor: pointer; font-size: 1.1rem; line-height: 1.5; }
+  [data-component-guide] details[open] > summary { margin-bottom: 1.5rem; }
+
+
+  .reading-sidebar .quick-links { flex-wrap: wrap; gap: .6rem 1rem; }
+  .reading-sidebar .contents-list { border-top: 0; }
+  .reading-sidebar .contents-list ol, .reading-sidebar .contents-list ul { list-style: none; padding: 0; }
+  .reading-sidebar .contents-list > ol > li { margin: 1.25rem 0; }
+  .reading-sidebar .contents-list ul { margin: .4rem 0 0; }
+  .reading-sidebar .contents-list ul li { margin: .15rem 0; line-height: 1.4; }
+  .depth-group-label { color: var(--muted); font: .7rem var(--font-mono); text-transform: uppercase; letter-spacing: .08em; }
+  .reading-sidebar .contents-list a { display: block; padding: .35rem .5rem; border-left: 2px solid transparent; text-decoration: none; }
+  .reading-sidebar .contents-list a[aria-current="location"] { color: var(--ink); border-color: var(--cyan); background: var(--panel); }
+  @media (max-width: 999px) {
+    .reading-layout { display: block; padding-inline: 1rem; }
+    .reading-sidebar { position: static; max-height: none; margin-top: 1rem; padding: 0; }
+    .reading-sidebar .depth-nav { max-width: none; margin-bottom: 0; }
+    .reading-sidebar .contents-list { border-block: 1px solid var(--line); }
+    .reading-sidebar .contents-list > ol { columns: 2; column-gap: 2rem; }
+    .reading-sidebar .contents-list > ol > li { break-inside: avoid; }
+  }
+  @media (max-width: 640px) {
+    header { padding-top: 2.5rem; }
+    .reading-sidebar .contents-list > ol { columns: 1; }
+    .catalog-contexts { columns: 1; }
+    .component-guides { grid-template-columns: 1fr; }
+    .guide-grid { grid-template-columns: 1fr; }
+    .site-nav ul { gap: 1rem; font-size: .85rem; }
+    .reading-prose { font-size: 1.05rem; }
+    .group { margin-top: 3rem; }
+  }
 `;
 
 /** Seam for the PWB-REQ-015 sweep: one deep dive rendered on its own with a
@@ -1254,11 +1481,13 @@ export function renderPolarisPage(model: PocModel, mountPrefix = '', viewState: 
 function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): string {
   const observed = shape.kind === 'observed';
   const revision = observed ? shape.identity.revision : '';
+  const architecture = observed ? shape.projectAccount.find((statement) => statement.key === 'architecture' && statement.claim.epistemic.label === 'Observed')?.statement : undefined;
+  const chapters = architecture === undefined ? [] : projectReading(architecture, 'architecture').chapters ?? [];
   const link = (id: string, copyId: PolarisCopyId): string => `<a href="#${escapeHtml(id)}"${copyAttr(copyId)}>${copy(copyId)}</a>`;
   const levels: readonly (readonly [PolarisCopyId, readonly string[]])[] = [
-    ['depth.summary', [link('polaris-group-overview', 'group.overview'), link('polaris-group-boundaries', 'group.boundaries'), link('polaris-group-architecture', 'group.architecture'), link('polaris-group-v1', 'group.v1')]],
+    ['depth.summary', [link('polaris-group-overview', 'group.overview'), link('polaris-group-boundaries', 'group.boundaries'), link('polaris-group-v1', 'group.v1'), link('polaris-group-architecture', 'group.architecture')]],
     ['depth.catalog', [link('polaris-group-catalog', 'group.catalog'), ...(observed ? CATALOG_CLASSES.map((cls) => link(`polaris-class-${cls}`, `class.${cls}`)) : [])]],
-    ['depth.detail', [link('polaris-group-capability-detail', 'group.capability-detail'), ...dives.map((dive) => `<a href="#polaris-deep-dive-${escapeHtml(sourceSlug(dive.capabilityId))}" data-depth-dive="${escapeHtml(dive.capabilityId)}"${FACT}>${escapeHtml(dive.capability.title)}</a>`)]],
+    ['depth.detail', [...chapters.map((chapter) => `<a href="#polaris-guide-${escapeHtml(chapter.id)}"${FACT}>${escapeHtml(chapter.title)}</a>`), link('polaris-group-capability-detail', 'group.capability-detail'), ...dives.map((dive) => `<a href="#polaris-deep-dive-${escapeHtml(sourceSlug(dive.capabilityId))}" data-depth-dive="${escapeHtml(dive.capabilityId)}"${FACT}>${escapeHtml(dive.capability.title)}</a>`)]],
     ['depth.source', [
       link('polaris-group-evidence-and-gaps', 'group.evidence-and-gaps'),
       link('polaris-shape-sources', 'evidence.sources'),
@@ -1272,9 +1501,9 @@ function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): st
       }),
     ]],
   ];
-  return `<nav class="depth-nav" data-polaris-depth-nav aria-labelledby="polaris-depth-label">
-    <p id="polaris-depth-label"${SCOPE}>${copy('depth.label')}</p>
-    <ol>${levels.map(([copyId, links], index) => `<li data-depth-level="${index + 1}"${SCOPE}><span${copyAttr(copyId)}>${copy(copyId)}</span> — ${links.join(', ')}</li>`).join('')}</ol>
+  return `<nav class="depth-nav" data-polaris-depth-nav aria-labelledby="polaris-depth-label"><p class="quick-links"${SCOPE}><a href="#polaris-group-v1"${copyAttr('label.capabilities')}>${copy('label.capabilities')}</a>${observed ? ` <a href="#polaris-account-purpose"${copyAttr('label.terminology')}>${copy('label.terminology')}</a>` : ''}</p>
+    <details class="contents-list"><summary id="polaris-depth-label"${SCOPE}>${copy('depth.label')}</summary>
+    <ol>${levels.map(([copyId, links], index) => `<li data-depth-level="${index + 1}"${SCOPE}><span class="depth-group-label"${copyAttr(copyId)}>${copy(copyId)}</span><ul>${links.map((item) => `<li>${item}</li>`).join('')}</ul></li>`).join('')}</ol></details>
   </nav>`;
 }
 
@@ -1313,17 +1542,16 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     .join('');
 
   const body = `
-    <p class="notice"${copyAttr('notice')}>${copy('notice')} <a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p>
     ${groupHeader('overview')}
     ${projectGroupBody(shape, 'overview')}
+    <p class="notice"${copyAttr('notice')}>${copy('notice')} <a href="#polaris-claim-states"${copyAttr('label.claim-states')}>${copy('label.claim-states')}</a></p>
     ${claimStatesBlock()}
-    ${depthNav(shape, dives)}
     ${groupHeader('boundaries')}
     ${projectGroupBody(shape, 'boundaries')}
-    ${groupHeader('architecture')}
-    ${projectGroupBody(shape, 'architecture')}
     ${groupHeader('v1')}
     ${projectGroupBody(shape, 'v1')}
+    ${groupHeader('architecture')}
+    ${projectGroupBody(shape, 'architecture')}
     ${groupHeader('catalog')}
     ${projectGroupBody(shape, 'catalog')}
     ${groupHeader('capability-detail')}
@@ -1342,11 +1570,13 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
   return pageShell({
     title: 'Polaris · Syzygy three-surface POC',
     current: 'polaris',
-    eyebrow: `Polaris · Butlers ${model.project.revision.slice(0, 12)}`,
+    eyebrow: 'Polaris · Project manifesto',
+    readingLayout: true,
     heading: copyText('shell.heading'),
     lede: copyText('shell.lede'),
     extraStyle: POLARIS_STYLE,
     body: bodyWithNarrative,
+    sidebar: depthNav(shape, dives) + SECTION_NAV_SCRIPT,
     footer: `Evaluation <code>${escapeHtml(model.evaluation.snapshot)}</code> as of <code>${escapeHtml(model.evaluation.asOf)}</code>.`,
     escapeHtml,
     mountPrefix,

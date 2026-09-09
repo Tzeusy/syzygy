@@ -27,6 +27,7 @@ export type KeyName = 'Tab' | 'Enter';
 
 export interface BrowserPage {
   navigate(url: string): Promise<void>;
+  setViewport(width: number, height: number): Promise<void>;
   /** Evaluates `expression` in the page and returns its JSON value. */
   evaluate<T>(expression: string): Promise<T>;
   /** Dispatches a real key press (down + up) through the browser's input pipeline. */
@@ -164,6 +165,10 @@ class CdpPage implements BrowserPage {
 
   async close(): Promise<void> {
     await this.connection.send('Target.closeTarget', { targetId: this.targetId });
+  }
+
+  async setViewport(width: number, height: number): Promise<void> {
+    await this.connection.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false }, this.sessionId);
   }
 
   async navigate(url: string): Promise<void> {

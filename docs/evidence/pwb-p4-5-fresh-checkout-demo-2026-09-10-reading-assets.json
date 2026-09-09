@@ -1,0 +1,1915 @@
+{
+  "task": "syzygy-1z3.21 (PWB task 4.5); exit gate and preflight syzygy-1z3.24.6; mount, envelope and Origin probes syzygy-1z3.24.8",
+  "kind": "fresh-checkout demonstration against the configured Butlers revision",
+  "capturedAt": "2026-09-09T16:23:50.337Z",
+  "node": "v24.6.0",
+  "source": {
+    "root": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/polaris-product-delivery",
+    "head": "0c000368dea293e4c75bb5d8928e9ab2a4e6489c"
+  },
+  "clone": {
+    "head": "0c000368dea293e4c75bb5d8928e9ab2a4e6489c",
+    "headMatchesSource": true,
+    "signingTags": [
+      "pwb-adopt-registry-entry-signed-2026-09-02",
+      "pwb-adopt-registry-entry-signed-2026-09-05",
+      "pwb-approve-policy-signed-2026-09-02",
+      "pwb-approve-policy-signed-2026-09-05",
+      "pwb-consent-observation-signed-2026-09-02",
+      "pwb-state1-amendment-signed-2026-09-02",
+      "pwb-truth-readiness-amendment-signed-2026-09-05"
+    ],
+    "seconds": 0.2
+  },
+  "install": {
+    "seconds": 0.9,
+    "exitCode": 0
+  },
+  "build": {
+    "seconds": 7.4,
+    "exitCode": 0
+  },
+  "test": {
+    "seconds": 42,
+    "exitCode": 1,
+    "junit": {
+      "name": "vitest tests",
+      "tests": "1593",
+      "failures": "1",
+      "errors": "0",
+      "time": "131.280422988"
+    },
+    "junitSha256": "fd4476767fd8b3e5cd950d2939beeb51aa583a070cc53378336172cdbf62fcc4"
+  },
+  "butlers": {
+    "configuredRepository": "/home/tze/GitHub/butlers",
+    "observedRevision": "0b1285ea5cc48b349a4a7935826b5d35cbd0507e",
+    "modelRevision": "0b1285ea5cc48b349a4a7935826b5d35cbd0507e",
+    "observerRevision": "0c000368dea293e4c75bb5d8928e9ab2a4e6489c"
+  },
+  "walkthroughBinding": {
+    "surfaceVersion": "polaris@117b66574277",
+    "evaluationIdentity": "pwb-eval-b81b0cf67fdf87b91dbf4013"
+  },
+  "evaluation": {
+    "snapshot": "butlers:0b1285ea5cc48b349a4a7935826b5d35cbd0507e|working-tree:sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855|observer:0c000368dea293e4c75bb5d8928e9ab2a4e6489c|inputs:sha256:1dce9e7d09965e667a78b7cb0a58146d37bf750f1bddf234f3000542f892dc05",
+    "asOf": "2026-09-09T16:23:23.397Z",
+    "inputsDigest": "1dce9e7d09965e667a78b7cb0a58146d37bf750f1bddf234f3000542f892dc05"
+  },
+  "daemon": {
+    "exitCode": 0,
+    "stderr": ""
+  },
+  "routes": [
+    {
+      "path": "/",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 38706,
+      "sha256": "6181b4c865d421484b77102d850738b4b3cc359ec335ef512116c3d089dcbb03",
+      "retainedAs": "home.html"
+    },
+    {
+      "path": "/polaris",
+      "status": 503,
+      "contentType": "application/json",
+      "bytes": 838,
+      "sha256": "2ef1f64207eac192221f04f4154b20d8fa5ee6400a03923f0eeeb22c1d1381d8",
+      "retainedAs": "polaris.html"
+    },
+    {
+      "path": "/trajectory",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 254976,
+      "sha256": "19c3aaf0567f11a67e70a4a211cc81d68ba1f2e940a04947da4247d9a745efc6",
+      "retainedAs": "trajectory.html"
+    },
+    {
+      "path": "/orrery",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 37048,
+      "sha256": "829fb4fa60abc38df4bcc7e250cca07e136b5503e4a435aa9c77128308925a04",
+      "retainedAs": "orrery.html"
+    },
+    {
+      "path": "/api/poc",
+      "authenticated": false,
+      "status": 401,
+      "bytes": 37
+    },
+    {
+      "path": "/api/poc",
+      "authenticated": true,
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 5431552,
+      "sha256": "338dad73b1f143e78950204a89b0ec6368ca9df9fe866943f311503ae1a6722e",
+      "retainedAs": "api-poc.json"
+    },
+    {
+      "path": "/polaris",
+      "host": "tzeusy.parrot-hen.ts.net",
+      "status": 503,
+      "contentType": "application/json",
+      "bytes": 838,
+      "sha256": "d727b202ca0ef86bdcd12b3fbc2fafeada5fca39efbd722a07f07faa7c9b1517",
+      "retainedAs": "polaris-tailnet.html",
+      "prefixedLinks": false,
+      "disclosureMarkers": 0
+    },
+    {
+      "path": "/api/poc/polaris",
+      "authenticated": false,
+      "status": 401,
+      "bytes": 37
+    },
+    {
+      "path": "/api/poc/polaris",
+      "authenticated": true,
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 625314,
+      "sha256": "1bfcfe85ee49a4758a0c6033405a31dfe9ce523f3ac89bdbd326b9169c91a899",
+      "retainedAs": "api-poc-polaris.json",
+      "kind": "polaris-presentation",
+      "citable": false
+    },
+    {
+      "path": "/polaris",
+      "origin": "https://example.invalid",
+      "status": 403,
+      "bytes": 54,
+      "reason": "browser-origin-refused"
+    }
+  ],
+  "parity": {
+    "humanClaimTuples": 0,
+    "humanDistinctClaimIds": 0,
+    "humanTuplesMismatchingMachine": 0,
+    "machinePresentedClaimIds": 689,
+    "machineDistinctClaimIds": 689,
+    "machineOmittedByDesign": {
+      "reconciledFacts": 432,
+      "projectAccountSectionItems": 6
+    },
+    "machineIdsAbsentFromHuman": 689,
+    "humanIdsAbsentFromMachine": 0
+  },
+  "browserCheck": {
+    "kind": "performed",
+    "commit": "0c000368dea293e4c75bb5d8928e9ab2a4e6489c",
+    "variants": 6,
+    "violations": 0,
+    "seconds": 24,
+    "exitCode": 0,
+    "sha256": "43c94afe4f9ca77c2fd71f1871b74d7711e38d7bc35e37711b8ebb7d54aee1fe"
+  },
+  "preflight": {
+    "ready": false,
+    "findings": [
+      {
+        "limb": "account-statement-unbacked",
+        "detail": "purpose: not rendered exactly once as a claim tuple; promises: not rendered exactly once as a claim tuple; refusals: not rendered exactly once as a claim tuple; architecture: not rendered exactly once as a claim tuple; v1-scope: not rendered exactly once as a claim tuple; v1-success: not rendered exactly once as a claim tuple"
+      },
+      {
+        "limb": "population-unreconciled",
+        "detail": "principle: item rows not rendered exactly once: claim:item:principle:User-federated: one user, one instance, full sovereignty. ×0; claim:item:principle:Modules only add tools --- they never touch core infrastructure. ×0; claim:item:principle:Inter-butler communication is MCP-only through the Switchboard. ×0; claim:item:principle:The daemon is deterministic infrastructure; intelligence is in ephemeral LLM sessions. ×0; claim:item:principle:Git-based config is the source of truth for butler identity; operational tuning lives in the database. ×0; claim:item:principle:Every agent has a governing document that controls its scope. ×0; claim:item:principle:Transport is connector responsibility; butlers never know about transport details. ×0; success-criterion: item rows not rendered exactly once: claim:item:success-criterion:v1:1 ×0; claim:item:success-criterion:v1:2 ×0; claim:item:success-criterion:v1:3 ×0; claim:item:success-criterion:v1:4 ×0; claim:item:success-criterion:v1:5 ×0; claim:item:success-criterion:v1:6 ×0; claim:item:success-criterion:v1:7 ×0; claim:item:success-criterion:v1:8 ×0; claim:item:success-criterion:vision:1 ×0; claim:item:success-criterion:vision:2 ×0; claim:item:success-criterion:vision:3 ×0; claim:item:success-criterion:vision:4 ×0; claim:item:success-criterion:vision:5 ×0; catalog-entry: item rows not rendered exactly once: claim:item:catalog-entry:Multi-butler daemon ×0; claim:item:catalog-entry:Switchboard routing ×0; claim:item:catalog-entry:Module system ×0; claim:item:catalog-entry:Task scheduler ×0; claim:item:catalog-entry:LLM CLI spawner ×0; claim:item:catalog-entry:Session logging ×0; claim:item:catalog-entry:State store ×0; claim:item:catalog-entry:Switchboard ×0; claim:item:catalog-entry:Messenger ×0; claim:item:catalog-entry:QA ×0; claim:item:catalog-entry:General ×0; claim:item:catalog-entry:Health ×0; claim:item:catalog-entry:Relationship ×0; claim:item:catalog-entry:Finance ×0; claim:item:catalog-entry:Education ×0; claim:item:catalog-entry:Travel ×0; claim:item:catalog-entry:Home ×0; claim:item:catalog-entry:Lifestyle ×0; claim:item:catalog-entry:Chronicler ×0; claim:item:catalog-entry:Memory ×0; claim:item:catalog-entry:Contacts ×0; claim:item:catalog-entry:Calendar ×0; claim:item:catalog-entry:Email ×0; claim:item:catalog-entry:Telegram ×0; claim:item:catalog-entry:Approvals ×0; claim:item:catalog-entry:Pipeline ×0; claim:item:catalog-entry:Metrics ×0; claim:item:catalog-entry:Mailbox ×0; claim:item:catalog-entry:Self-healing ×0; claim:item:catalog-entry:Home Assistant ×0; claim:item:catalog-entry:Google Drive ×0; claim:item:catalog-entry:Google Health ×0; claim:item:catalog-entry:WhatsApp ×0; claim:item:catalog-entry:Steam ×0; claim:item:catalog-entry:Insight broker ×0; claim:item:catalog-entry:Document renderer ×0; claim:item:catalog-entry:Telegram bot ×0; claim:item:catalog-entry:Telegram user client ×0; claim:item:catalog-entry:Gmail ×0; claim:item:catalog-entry:Discord ×0; claim:item:catalog-entry:Heartbeat ×0; claim:item:catalog-entry:Live listener ×0; claim:item:catalog-entry:Google Calendar ×0; claim:item:catalog-entry:Google Drive connector ×0; claim:item:catalog-entry:Home Assistant connector ×0; claim:item:catalog-entry:OwnTracks ×0; claim:item:catalog-entry:Spotify ×0; claim:item:catalog-entry:Google Health connector ×0; claim:item:catalog-entry:WhatsApp user client ×0; claim:item:catalog-entry:Steam connector ×0; claim:item:catalog-entry:FastAPI backend ×0; claim:item:catalog-entry:Vite frontend ×0; claim:item:catalog-entry:Settings Console ×0; claim:item:catalog-entry:Dashboard audit log ×0; claim:item:catalog-entry:Webhooks ×0; claim:item:catalog-entry:Data ops ×0; claim:item:catalog-entry:Shared contacts registry ×0; claim:item:catalog-entry:Cross-channel identity resolution ×0; claim:item:catalog-entry:Owner bootstrapping ×0; claim:item:catalog-entry:Context bus ×0; claim:item:catalog-entry:Proactive insight delivery ×0; claim:item:catalog-entry:OpenTelemetry instrumentation ×0; claim:item:catalog-entry:Grafana Alloy ×0; claim:item:catalog-entry:Tempo ×0; claim:item:catalog-entry:Prometheus ×0; topology-component: item rows not rendered exactly once: claim:item:topology-component:1:Spawner ×0; claim:item:topology-component:1:Scheduler ×0; claim:item:topology-component:1:State Store ×0; claim:item:topology-component:1:Session Log ×0; claim:item:topology-component:1:Runtime Config ×0; claim:item:topology-component:1:Route Inbox ×0; claim:item:topology-component:1:Model Routing ×0; claim:item:topology-component:1:Runtime Adapters ×0; claim:item:topology-component:1:Self-Healing ×0; claim:item:topology-component:1:Buffer ×0; claim:item:topology-component:1:Telemetry ×0; claim:item:topology-component:1:Metrics ×0; claim:item:topology-component:1:Skills ×0; claim:item:topology-component:1:Audit ×0; claim:item:topology-component:2:Email ×0; claim:item:topology-component:2:Telegram ×0; claim:item:topology-component:2:Calendar ×0; claim:item:topology-component:2:Memory ×0; claim:item:topology-component:2:Contacts ×0; claim:item:topology-component:2:Pipeline ×0; claim:item:topology-component:2:Approvals ×0; claim:item:topology-component:2:Mailbox ×0; claim:item:topology-component:2:Metrics ×0; claim:item:topology-component:2:Self-Healing ×0; claim:item:topology-component:2:Registry ×0; claim:item:topology-component:3:Gmail ×0; claim:item:topology-component:3:Telegram Bot ×0; claim:item:topology-component:3:Telegram Userbot ×0; claim:item:topology-component:3:Discord ×0; claim:item:topology-component:3:Live Listener ×0; claim:item:topology-component:3:Spotify ×0; claim:item:topology-component:3:OwnTracks ×0; claim:item:topology-component:3:Steam ×0; claim:item:topology-component:3:Google Health ×0; claim:item:topology-component:3:CachedMCPClient ×0; claim:item:topology-component:3:Heartbeat ×0; claim:item:topology-component:3:ConnectorMetrics ×0; claim:item:topology-component:3:CursorStore ×0; claim:item:topology-component:3:Discretion ×0; claim:item:topology-component:3:DiscretionDispatcher ×0; claim:item:topology-component:3:FilteredEventBuffer ×0; claim:item:topology-component:3:GmailPolicy ×0; claim:item:topology-component:3:HealthSocket ×0; claim:item:topology-component:4:Ingestion API ×0; claim:item:topology-component:4:Triage / Thread Affinity ×0; claim:item:topology-component:4:Classifier ×0; claim:item:topology-component:4:Router ×0; claim:item:topology-component:4:Contracts ×0; claim:item:topology-component:4:Butler Registry ×0; claim:item:topology-component:4:Connector Registry ×0; claim:item:topology-component:4:Identity Resolution ×0; claim:item:topology-component:4:Notification ×0; claim:item:topology-component:4:Dead Letter ×0; claim:item:topology-component:4:Extraction ×0; claim:item:topology-component:4:Backfill ×0; claim:item:topology-component:4:Operator ×0; claim:item:topology-component:4a:Source Adapters ×0; claim:item:topology-component:4a:Point Events Store ×0; claim:item:topology-component:4a:Episodes Store ×0; claim:item:topology-component:4a:Correction Overlay ×0; claim:item:topology-component:4a:Chronicler API ×0; claim:item:topology-component:4b:Patrol Loop ×0; claim:item:topology-component:4b:Discovery Sources ×0; claim:item:topology-component:4b:Triage ×0; claim:item:topology-component:4b:Dispatch ×0; claim:item:topology-component:4b:Anonymizer ×0; claim:item:topology-component:4b:Dashboard ×0; claim:item:topology-component:5:FastAPI Backend ×0; claim:item:topology-component:5:Vite Frontend ×0; claim:item:topology-component:5:Dashboard Briefing ×0; claim:item:topology-component:5:BriefingCache ×0; claim:item:topology-component:5:audit_grouping ×0; claim:item:topology-component:5:`/chronicles` ×0; claim:item:topology-component:5:`/qa` ×0; claim:item:topology-component:6:`public.entities` ×0; claim:item:topology-component:6:`public.contacts` ×0; claim:item:topology-component:6:`public.contact_info` ×0; claim:item:topology-component:6:`public.model_catalog` ×0; claim:item:topology-component:6:`public.butler_model_overrides` ×0; claim:item:topology-component:7:CredentialStore ×0; claim:item:topology-component:7:Credential Validation ×0; claim:item:topology-component:7:Google OAuth ×0; claim:item:topology-component:7:Startup Guard ×0; claim:item:topology-component:8:OpenTelemetry SDK ×0; claim:item:topology-component:8:Grafana Alloy ×0; claim:item:topology-component:8:Tempo ×0; claim:item:topology-component:8:Prometheus ×0"
+      },
+      {
+        "limb": "exact-requirement-unreachable",
+        "detail": "openspec/specs/switchboard-identity/spec.md: no verbatim block rendered on the page; no requirement rendered on the page; the page does not link the exact-source route for the current requirement; the exact-source route was not checked"
+      },
+      {
+        "limb": "unknown-invisible",
+        "detail": "no Unknown is visible on the page; 0 visible vs 11 in the model"
+      },
+      {
+        "limb": "claim-strength-unexplained",
+        "detail": "0 claim-state glossaries (need exactly one); the glossary lede is not present exactly once; the glossary does not explain \"Observed\"; the glossary does not explain \"Unknown\"; the glossary does not explain \"fresh\"; the glossary does not explain \"report-fact\"; the glossary does not explain \"unchallenged\"; the glossary does not say how a claim is strengthened"
+      },
+      {
+        "limb": "authority-disclosure-missing",
+        "detail": "consent: 0 disclosure marker(s) on the page (need exactly one); consent: state (1) without the PWB-REQ-005 sentence; policy: 0 disclosure marker(s) on the page (need exactly one); policy: state (1) without the PWB-REQ-005 sentence; registry: 0 disclosure marker(s) on the page (need exactly one); registry: state (1) without the PWB-REQ-005 sentence"
+      },
+      {
+        "limb": "discovery-undisclosed",
+        "detail": "heart-and-soul: discovery state not on the page as discovered; legends-and-lore: discovery state not on the page as discovered; spec-and-spine: discovery state not on the page as discovered; lay-and-land: discovery state not on the page as discovered; craft-and-care: discovery state not on the page as discovered"
+      }
+    ],
+    "observed": {
+      "accountStatementsBacked": 0,
+      "populations": {
+        "principle": {
+          "modeled": 7,
+          "denominator": 7,
+          "rows": 0
+        },
+        "success-criterion": {
+          "modeled": 13,
+          "denominator": 13,
+          "rows": 0
+        },
+        "catalog-entry": {
+          "modeled": 65,
+          "denominator": 65,
+          "rows": 0
+        },
+        "topology-component": {
+          "modeled": 87,
+          "denominator": 87,
+          "rows": 0
+        }
+      },
+      "exactRequirement": {
+        "identity": "repository:butlers-configured-poc@0b1285ea5cc48b349a4a7935826b5d35cbd0507e:openspec/specs/switchboard-identity/spec.md#0a76a0d7a6f04425fa2f0063c5a1c7cf6e261853",
+        "requirements": 0
+      },
+      "unknownsVisible": 0,
+      "unknownsMachine": 11,
+      "sourceRoutesLinked": 0,
+      "fragmentLinks": 0,
+      "claimTuples": 0
+    }
+  },
+  "projectShape": {
+    "kind": "observed",
+    "authority": {
+      "admits": true,
+      "authorizationMode": "owner-trusted-bootstrap",
+      "authorities": [
+        {
+          "authority": "consent",
+          "state": "owner-adopted (bootstrap, uncorrelated)",
+          "independentlyVerified": false,
+          "invalidCase": null
+        },
+        {
+          "authority": "policy",
+          "state": "owner-adopted (bootstrap, uncorrelated)",
+          "independentlyVerified": false,
+          "invalidCase": null
+        },
+        {
+          "authority": "registry",
+          "state": "owner-adopted (bootstrap, uncorrelated)",
+          "independentlyVerified": false,
+          "invalidCase": null
+        }
+      ],
+      "contradiction": null
+    },
+    "identity": {
+      "repositoryId": "repository:butlers-configured-poc",
+      "revision": "0b1285ea5cc48b349a4a7935826b5d35cbd0507e",
+      "sourceClaimedInstant": {
+        "kind": "git-committer-instant",
+        "instant": "2026-09-09T14:50:15Z"
+      },
+      "observer": {
+        "observerId": "polaris-butlers-project-shape",
+        "observerVersion": "1.1.0-candidate.1",
+        "discoveryVersion": "pwb-discovery-v2-candidate.1",
+        "implementationId": "three-surface-poc-core/project-shape-observer",
+        "implementationVersion": "1.0.0"
+      },
+      "policy": {
+        "policyId": "polaris-butlers-project-shape-secrets",
+        "policyVersion": "1.1.0-candidate.1"
+      },
+      "manifestIdentity": "repository:butlers-configured-poc@0b1285ea5cc48b349a4a7935826b5d35cbd0507e/pwb-discovery-v2-candidate.1/sha256:a4537be2565f25b6b0d6f05c21fbab30981f8906e800a809158751f9ef65912d",
+      "manifestDigest": "sha256:a4537be2565f25b6b0d6f05c21fbab30981f8906e800a809158751f9ef65912d",
+      "observationDigest": "sha256:fa826a5a940fc634e66f02e44af6236a1417378389f6a7278d0248cef0bbb1b7"
+    },
+    "counts": {
+      "sources": 271,
+      "sourcesWithKnownItemDenominator": 262,
+      "sourcesWithUnknownDenominator": 9,
+      "items": 408,
+      "modeled": 408,
+      "unknown": 0,
+      "contradicted": 0,
+      "facts": 432,
+      "contradictedFacts": 0,
+      "rulesDeclared": 7,
+      "rulesApplied": 1,
+      "exclusions": 9,
+      "classification": {
+        "sources": 271,
+        "classified": 262,
+        "classifiedByBasis": {
+          "body": 77,
+          "path-only": 185
+        },
+        "excluded": 9,
+        "unavailable": 0,
+        "byRedactionClass": {
+          "excluded-artifact": 1,
+          "unclassifiable-excluded": 8
+        }
+      }
+    },
+    "classes": {
+      "project-account-section": {
+        "denominator": {
+          "kind": "known",
+          "value": 6
+        },
+        "modeled": 6,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "principle": {
+        "denominator": {
+          "kind": "known",
+          "value": 7
+        },
+        "modeled": 7,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "success-criterion": {
+        "denominator": {
+          "kind": "known",
+          "value": 13
+        },
+        "modeled": 13,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "catalog-entry": {
+        "denominator": {
+          "kind": "known",
+          "value": 65
+        },
+        "modeled": 65,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "design-contract": {
+        "denominator": {
+          "kind": "known",
+          "value": 32
+        },
+        "modeled": 32,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "baseline-spec": {
+        "denominator": {
+          "kind": "known",
+          "value": 185
+        },
+        "modeled": 185,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "topology-component": {
+        "denominator": {
+          "kind": "known",
+          "value": 87
+        },
+        "modeled": 87,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "craft-policy": {
+        "denominator": {
+          "kind": "known",
+          "value": 7
+        },
+        "modeled": 7,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 0,
+        "label": "Observed"
+      },
+      "roster-identity": {
+        "denominator": {
+          "kind": "unknown",
+          "reasons": [
+            "excluded-content"
+          ]
+        },
+        "modeled": 6,
+        "unknown": 0,
+        "contradicted": 0,
+        "sourcesWithUnknownDenominator": 7,
+        "label": "Unknown"
+      }
+    },
+    "sources": [
+      {
+        "path": "about/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/engineering-bar.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/interfaces-and-dependencies.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/observability-and-operations.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/performance-discipline.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/review-and-documentation.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/security-and-secrets.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/craft-and-care/testing-and-verification.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/architecture.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/design-language.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/development.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/security.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/v1.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/heart-and-soul/vision.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/components.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/data-flow.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/dependencies.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/deployment.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/detail-page-audit.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/frontend.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "about/lay-and-land/integration.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/lay-and-land/module-vs-butler.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/ideas-ledger.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0001-daemon-lifecycle-and-triggers.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0002-mcp-tool-surface-and-modules.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0003-switchboard-routing-and-ingestion.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0004-identity-and-contact-resolution.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0005-observability-and-telemetry.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0006-database-schema-and-isolation.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0007-dashboard-and-api-surface.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0008-deployment-network-security.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0009-situational-context-bus.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0010-cross-butler-briefing-exception.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0011-proactive-insight-delivery.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0012-finance-transaction-data-model.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0013-dunbar-group-aware-interaction-scoring.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0014-chronicler-time-butler.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0015-qa-staffer-discovery-investigation-pipeline.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0016-s3-blob-storage-contract.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0017-owner-routing-safety-incident-reconciliation.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0018-connector-scope-and-deferral-rationale.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0019-proactive-egress-and-automation-parked.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0020-calendar-cross-domain-overlay-read-exception.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0021-decision-loop-one-tap-approvals-and-decision-memory.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0022-cross-process-event-transport.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0023-durable-approval-delivery-intent-recovery.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0024-messenger-private-email-correspondence-ledger.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0025-tracker-host-beads-projection-exporter.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0026-commitment-lifecycle.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0027-runtime-tool-surface-discovery.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0028-home-physical-actuation-contract.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0029-expected-signals-and-honest-absence.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0030-system-plane-read-exception.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0031-public-entity-graph-projection.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "about/legends-and-lore/rfcs/0032-fleet-case-file.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/README.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/adapter-integration-testing/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/autonomy-suggestions/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/autonomy-tracker/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/build-reproducibility/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/bulk-transaction-ingestion/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-base-spec/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-chronicler/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-concierge/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-education/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-finance/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-general/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-health/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-home/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-lifestyle/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-messenger/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-relationship/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-secrets/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-switchboard/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/butler-travel/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/calendar-conflict-overcommitment-radar/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/calendar-event-proposals/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/calendar-overlay-aggregation/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/catalog-token-limits/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/chronicler-api/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/chronicler-intent-evidence-activity/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/chronicler-source-compatibility/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/complexity-classification/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-base-spec/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-discord/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-filtered-events/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-gmail/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-google-calendar/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-google-drive/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-google-health/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-home-assistant/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-live-listener/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-owntracks/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-replay-queue/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-spotify/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-steam/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-telegram-bot/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/connector-telegram-user-client/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/contacts-identity/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/context-bus/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/conversation-decomposition/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-credentials/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-daemon/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-modules/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-notify/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-scheduler/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-sessions/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-skills/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-spawner/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-state/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/core-telemetry/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/cross-butler-briefing-aggregation/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/cross-butler-briefing-contribution/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/cross-butler-delegation/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/csv-extraction-skill/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-admin-gateway/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-api/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-approvals/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-audit-log/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-briefing/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-butler-management/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-chat-ui/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-chronicles/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-connector-batch-settings/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-connector-filter-ui/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-conversations/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-decisions/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-design-language/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-domain-pages/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-education-api/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-education-ui/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-google-accounts/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-ingestion-dispatch-console/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-model-settings/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-overview/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-permissions/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-relationship/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-settings-console/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-shell/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-spend-dashboard/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-spotify-setup/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-steam/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dashboard-visibility/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/database-security/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/deadline-tracking/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/deployment-and-drift/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/deployment-hardening/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/detail-page-archetype/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/docs-information-architecture/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/dunbar-tier-scoring/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/e2e-ecosystem-staging/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/entity-identity/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/error-fingerprinting/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/error-recovery-corrections/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/event-chains/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/expected-signals/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-alerts/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-anomaly-detection/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-budgets/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-crud-operations/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-data-import/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-data-migration/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-overview/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-pattern-recognition/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-supporting-tables/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/finance-transaction-schema/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/google-account-registry/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/google-multi-account-oauth/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/healing-anonymizer/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/healing-model-tier/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/healing-session-tracking/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/healing-worktree/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/home-dashboard-extensions/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/home-deterministic-jobs/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/home-maintenance-scheduling/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/ingestion-event-registry/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/ingestion-policy/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/ingress-injection/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/insight-delivery/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-catalog-schema/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-discovery-catalog/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-events-enrichment/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-graph-health/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-migration-integration-tests/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/memory-retention-policy/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/model-benchmark-harness/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/model-catalog/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/model-failover/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-approvals/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-calendar/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-contacts/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-dashboard-read/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-document-renderer/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-analytics/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-curriculum/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-diagnostic/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-mastery/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-mind-map/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-spaced-repetition/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-education-teaching-flows/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-email/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-google-drive/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-google-health/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-home-assistant/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-mailbox/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-memory/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-metrics/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-pipeline/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-spotify/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-steam/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/module-telegram/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/owner-timezone-context/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/passive-interaction-sync/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/proactive-insight-engine/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/qa-dashboard/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/qa-investigation-dispatch/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/qa-log-scanner/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/qa-triage/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/relationship-curation/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/relationship-facts/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/routing-scorecard/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/runtime-config-api/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/runtime-config-dashboard-ui/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/runtime-config-table/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/runtime-opencode/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/s3-blob-storage/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/scorecard-reporting/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/seasonal-awareness/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/session-process-logs/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/source-filter-registry/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/staffer-archetype/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/staffer-qa/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/steam-account-registry/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/switchboard-identity/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/switchboard-rule-promotion/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/system-overview-page/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/telegram-user-client-conversation-history/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/testing/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/time-aware-delivery/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/tool-call-scorecard/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "openspec/specs/user-preferences/spec.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/chronicler/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/chronicler/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/concierge/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/concierge/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/education/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/education/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/finance/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/finance/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/general/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/general/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/health/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/health/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/home/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/home/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/lifestyle/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/lifestyle/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/messenger/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/messenger/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/qa/MANIFESTO.md",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/qa/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/relationship/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/relationship/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      },
+      {
+        "path": "roster/switchboard/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/switchboard/butler.toml",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/travel/MANIFESTO.md",
+        "label": "Observed",
+        "reason": null
+      },
+      {
+        "path": "roster/travel/butler.toml",
+        "label": "Unknown",
+        "reason": "excluded-content"
+      }
+    ],
+    "unknownItemsByReason": {},
+    "exclusions": 9,
+    "limitBreaches": 0,
+    "degradation": null,
+    "discovery": [
+      {
+        "key": "heart-and-soul",
+        "state": "discovered",
+        "indexPath": "about/heart-and-soul/README.md",
+        "namedSources": 6
+      },
+      {
+        "key": "legends-and-lore",
+        "state": "discovered",
+        "indexPath": "about/legends-and-lore/README.md",
+        "namedSources": 33
+      },
+      {
+        "key": "spec-and-spine",
+        "state": "discovered",
+        "indexPath": "openspec/README.md",
+        "namedSources": 0
+      },
+      {
+        "key": "lay-and-land",
+        "state": "discovered",
+        "indexPath": "about/lay-and-land/README.md",
+        "namedSources": 8
+      },
+      {
+        "key": "craft-and-care",
+        "state": "discovered",
+        "indexPath": "about/craft-and-care/README.md",
+        "namedSources": 7
+      }
+    ],
+    "contradictions": 0,
+    "claim": {
+      "label": "Unknown",
+      "tier": null,
+      "freshness": "fresh"
+    }
+  },
+  "otherRegions": {
+    "codeStructure": "observed",
+    "workItems": "observed",
+    "workerChange": "unknown",
+    "testArtifactVerification": "unknown",
+    "proposedWork": "proposed-work",
+    "walkthroughJudgment": "evaluated",
+    "walkthroughReadiness": {
+      "kind": "no-run-record",
+      "ready": false,
+      "arms": {}
+    }
+  },
+  "retention": {
+    "directory": "/home/tze/.local/state/syzygy/pwb-p4-5-fresh-checkout-demo-2026-09-10-reading-assets",
+    "note": "exact artifact bytes retained locally, outside the repository; the consent excludes network egress",
+    "files": [
+      {
+        "name": "vitest-junit.xml",
+        "bytes": 484943,
+        "sha256": "fd4476767fd8b3e5cd950d2939beeb51aa583a070cc53378336172cdbf62fcc4"
+      },
+      {
+        "name": "home.html",
+        "bytes": 38706,
+        "sha256": "6181b4c865d421484b77102d850738b4b3cc359ec335ef512116c3d089dcbb03"
+      },
+      {
+        "name": "polaris.html",
+        "bytes": 838,
+        "sha256": "2ef1f64207eac192221f04f4154b20d8fa5ee6400a03923f0eeeb22c1d1381d8"
+      },
+      {
+        "name": "trajectory.html",
+        "bytes": 254976,
+        "sha256": "19c3aaf0567f11a67e70a4a211cc81d68ba1f2e940a04947da4247d9a745efc6"
+      },
+      {
+        "name": "orrery.html",
+        "bytes": 37048,
+        "sha256": "829fb4fa60abc38df4bcc7e250cca07e136b5503e4a435aa9c77128308925a04"
+      },
+      {
+        "name": "api-poc.json",
+        "bytes": 5431552,
+        "sha256": "338dad73b1f143e78950204a89b0ec6368ca9df9fe866943f311503ae1a6722e"
+      },
+      {
+        "name": "polaris-tailnet.html",
+        "bytes": 838,
+        "sha256": "d727b202ca0ef86bdcd12b3fbc2fafeada5fca39efbd722a07f07faa7c9b1517"
+      },
+      {
+        "name": "api-poc-polaris.json",
+        "bytes": 625314,
+        "sha256": "1bfcfe85ee49a4758a0c6033405a31dfe9ce523f3ac89bdbd326b9169c91a899"
+      },
+      {
+        "name": "accessibility-browser-run.json",
+        "bytes": 192188,
+        "sha256": "43c94afe4f9ca77c2fd71f1871b74d7711e38d7bc35e37711b8ebb7d54aee1fe"
+      }
+    ]
+  },
+  "log": [
+    "npx vitest run --reporter=junit --outputFile=/tmp/syzygy-poc-fresh-0sy3uV/vitest-junit.xml exited 1\n"
+  ],
+  "verdictBeforeWrite": {
+    "invariants": [
+      "clone-head-matches-source",
+      "install",
+      "build",
+      "test",
+      "machine-refused-without-credential",
+      "machine-served-with-credential",
+      "human-routes-served",
+      "source-route-served",
+      "tailnet-mount-served",
+      "presentation-served-with-credential",
+      "browser-origin-refused",
+      "butlers-revision-matches-model",
+      "shape-observed",
+      "authority-admits",
+      "parity",
+      "limit-breaches",
+      "preflight-ready",
+      "daemon-exit-clean",
+      "evidence-written"
+    ],
+    "healthy": false,
+    "failed": [
+      "test",
+      "human-routes-served",
+      "source-route-served",
+      "tailnet-mount-served",
+      "parity",
+      "preflight-ready"
+    ]
+  }
+}
