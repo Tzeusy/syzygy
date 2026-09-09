@@ -187,6 +187,9 @@ added 2026-09-07.
 
 - Contract amendment tooling reads both installed `contracts/rfcs/` and mirrored `contracts/candidates/rfcs/` bytes. Probe both locations in isolation: current indexes and budget fixtures derive from the candidate copies, while performed manifests remain immutable. Regenerating the active manifest does not establish successor authority.
 
+- Polaris guide links open synchronously on click; ignore the matching queued
+  hashchange so it cannot undo a later collapse. Browser tests must await the
+  actual hashchange and cover same-fragment clicks and history traversal.
 - Polaris reading selections are metadata-only offsets bound to the exact
   extracted declaration digest and an independent fidelity review. Source
   drift must render the full declaration; keyword-based omission can drop
