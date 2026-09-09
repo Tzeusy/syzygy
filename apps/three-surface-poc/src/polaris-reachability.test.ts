@@ -330,7 +330,8 @@ describe('Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7
       const html = renderPolarisPage(modelFor(variant));
       const idCounts = ids(html);
       expect(html).not.toMatch(/\son(click|keydown|keyup|mouse\w+|touch\w+)=/);
-      expect(html).not.toMatch(/role="button"|<button/);
+      expect(html).not.toMatch(/role="button"/);
+      for (const button of elements(html, (tag) => tag === 'button')) expect(attr(button.open, 'type')).toBe('button');
       for (const match of html.matchAll(/\stabindex="([^"]*)"/g)) expect(match[1]).toBe('0');
       // Every horizontally scrollable region is a focusable landmark named by
       // a heading the page renders.
@@ -351,7 +352,16 @@ describe('Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7
       expect(withoutSkipLink).not.toMatch(/outline\s*:\s*(none|0)\b/);
       expect(withoutSkipLink).not.toMatch(/display\s*:\s*none/);
       expect(withoutSkipLink).not.toMatch(/visibility\s*:\s*hidden/);
-      expect(withoutSkipLink).not.toMatch(/position\s*:\s*(absolute|fixed)/);
+      // Decorative arrows have a textual equivalent and are not controls.
+      // Their positioning must not weaken the guard for other elements.
+      for (const arrow of elements(html, (_tag, open) => classesOf(open).includes('flow-arrow'))) {
+        expect(arrow.tag).toBe('span');
+        expect(attr(arrow.open, 'aria-hidden')).toBe('true');
+        expect(arrow.inner).not.toMatch(/<(a|button|input|select|textarea)\b/);
+      }
+      const withoutDecorativeArrows = withoutSkipLink.replace(/([^{}]+)\{([^{}]*)\}/g, (rule, selectors: string) =>
+        selectors.split(',').every((selector) => /\.flow-arrow$/.test(selector.trim())) ? '' : rule);
+      expect(withoutDecorativeArrows).not.toMatch(/position\s*:\s*(absolute|fixed)/);
       expect(withoutSkipLink).not.toMatch(/\bfloat\s*:/);
       expect(withoutSkipLink).not.toMatch(/(^|[;{\s])order\s*:/);
       expect(withoutSkipLink).not.toMatch(/flex-direction\s*:\s*(row|column)-reverse/);

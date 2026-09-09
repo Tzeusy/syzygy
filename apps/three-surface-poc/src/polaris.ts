@@ -794,18 +794,13 @@ function sourceRow(source: ProjectShapeSource, index: number, revision: string):
     : source.record.outcome;
   const block = source.claim.epistemic.label === 'Observed' ? shapeClaimBlock(source.claim, revision) : undefined;
   const identityCell = block === undefined
-    ? `<small>${escapeHtml(source.identity)}</small>`
-    : `<small><cite data-parity-field="shape-source-identity"${anchorAttrs(block.anchors[0] as NarrativeAnchor)}>${escapeHtml(source.identity)}</cite></small>`;
+    ? `<span>${escapeHtml(source.identity)}</span>`
+    : `<cite data-parity-field="shape-source-identity"${anchorAttrs(block.anchors[0] as NarrativeAnchor)}>${escapeHtml(source.identity)}</cite>`;
   const digest = source.claim.support[0]?.contentDigest;
   const denominator = source.itemDenominator.kind === 'known'
     ? `${source.itemDenominator.value} item(s)`
     : `${copyText('label.unknown')} — ${source.itemDenominator.unknown.unknownReason}`;
-  const record = `<details class="source-record"><summary${copyAttr('label.source-record')}>${copy('label.source-record')}</summary>
-    ${identityCell}
-    <dl><dt>${copy('table.rule')}</dt><dd>${escapeHtml(source.rule)}${source.pillar === undefined ? '' : ` · ${escapeHtml(source.pillar)}`}</dd>
-    <dt>${copy('table.outcome')}</dt><dd>${escapeHtml(outcome)} · ${escapeHtml(anchorText(source.anchor))}</dd>
-    <dt>${copy('table.digest')}</dt><dd>${digest === undefined ? `<small${copyAttr('sentence.no-body-read')}>${copy('sentence.no-body-read')}</small>` : `<code data-parity-field="shape-source-digest">${escapeHtml(shortDigest(digest))}</code>`}</dd></dl>
-  </details>`;
+  const record = `<details class="source-record"><summary${copyAttr('label.source-record')}>${copy('label.source-record')}</summary>${identityCell}<p><b>${copy('table.rule')}:</b> ${escapeHtml(source.rule)}${source.pillar === undefined ? '' : ` · ${escapeHtml(source.pillar)}`}<br><b>${copy('table.outcome')}:</b> ${escapeHtml(outcome)} · ${escapeHtml(anchorText(source.anchor))}<br><b>${copy('table.digest')}:</b> ${digest === undefined ? `<small${copyAttr('sentence.no-body-read')}>${copy('sentence.no-body-read')}</small>` : `<code data-parity-field="shape-source-digest">${escapeHtml(shortDigest(digest))}</code>`}</p></details>`;
   return `<tr id="polaris-source-${escapeHtml(sourceSlug(source.path))}" data-polaris-source="${escapeHtml(source.claim.claimId)}"${block?.attrs ?? FACT}><td>${index + 1}</td><td><code data-parity-field="shape-source-path">${escapeHtml(source.path)}</code>${activeExactSources.has(source.identity) ? `<br>${exactTextLink(source.identity)}` : ''}${record}</td><td>${source.claim.epistemic.label === 'Observed' ? `<span data-claim-provenance="${escapeHtml(source.claim.claimId)}">${escapeHtml(denominator)}</span>` : unknownRoutes(source.claim, '')}<br>${claimTuple(source.claim)}</td></tr>`;
 }
 
@@ -1356,9 +1351,7 @@ const POLARIS_STYLE = `
   .population[open] > summary { margin-bottom: 1rem; }
   [data-source-index] { max-height: min(70vh, 30rem); overflow: auto; }
   [data-source-index] td:first-child { white-space: nowrap; }
-  .source-record { margin-top: .45rem; }
-  .source-record dt { font-weight: 600; margin-top: .45rem; }
-  .source-record dd { margin-left: 0; }
+  .source-record { margin-top: .45rem; font-size: .85rem; }
   .population .reading-prose { font-size: 1rem; min-width: 22ch; }
   .population .reading-prose p:last-child { margin-bottom: 0; }
   .claim-states { border: 0; border-left: 1px solid var(--line); padding: .3rem 1rem; }
