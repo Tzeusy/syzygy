@@ -2818,22 +2818,29 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         contract_successor_manifest_body = read_if_present(POLARIS_NO_SIGNAL_SUBJECT)
     if contract_successor_manifest_digest is None:
         contract_successor_manifest_digest = current_digest(POLARIS_NO_SIGNAL_SUBJECT)
-    phrase = re.compile(re.escape(POLARIS_NO_SIGNAL_LABEL)
-                        + r"\s*:\s*`?([0-9a-f]{64})")
-    contract_records = [
-        tuple(m.group(1) for line in body.splitlines()
-              if (m := phrase.fullmatch(line.strip())))
-        for body in (act_record, contract_successor_dedicated_record)
+    phrase = re.compile(re.escape(POLARIS_NO_SIGNAL_LABEL) + r": ([0-9a-f]{64})")
+    record_bodies = (act_record, contract_successor_dedicated_record)
+    contract_mentions = [
+        tuple(line for line in body.splitlines() if POLARIS_NO_SIGNAL_LABEL in line)
+        for body in record_bodies
     ]
-    contract_attempted = any(contract_records) or bool(contract_successor_dedicated_record)
+    contract_records = [
+        tuple(m.group(1) for line in mentions if (m := phrase.fullmatch(line)))
+        for mentions in contract_mentions
+    ]
+    contract_attempted = any(contract_mentions) or bool(contract_successor_dedicated_record)
     contract_overrides = {}
     if contract_attempted:
         predecessor_valid = not findings
         if not predecessor_valid:
             findings.append(f"{POLARIS_NO_SIGNAL_ACT} — bootstrap predecessor is invalid")
         before_contract = len(findings)
-        for where, values in zip((PERFORMED_ACT_RECORD, POLARIS_NO_SIGNAL_ACT),
-                                 contract_records):
+        for where, values, mentions in zip(
+                (PERFORMED_ACT_RECORD, POLARIS_NO_SIGNAL_ACT),
+                contract_records, contract_mentions):
+            if any(not phrase.fullmatch(line) for line in mentions):
+                findings.append(f"{where} — malformed Polaris successor label occurrence; "
+                                "require one complete bare ceremony line")
             if len(values) != 1:
                 findings.append(f"{where} — expected exactly one performed Polaris "
                                 f"successor record, found {len(values)}")
@@ -5912,6 +5919,13 @@ def selftest():
         "alias": "subject path population/order",
         "extra": "expected 2",
         "malformed": "non-comment line is not a digest row",
+        "malformed-aggregate-original": "malformed Polaris successor label occurrence",
+        "malformed-extra-dedicated": "malformed Polaris successor label occurrence",
+        "malformed-extra-aggregate": "malformed Polaris successor label occurrence",
+        "unmatched-backtick": "malformed Polaris successor label occurrence",
+        "duplicate-quoted": "malformed Polaris successor label occurrence",
+        "duplicate-indented": "malformed Polaris successor label occurrence",
+        "trailing-prose": "malformed Polaris successor label occurrence",
     }
     for mutation, diagnostic in contract_failures.items():
         row = _selftest_cg7h(f"contract-{mutation}")
@@ -6577,6 +6591,30 @@ def _selftest_cg7h(kind):
             del current[f"{CANDIDATES}/{POLARIS_NO_SIGNAL_PATHS[0]}"]
         elif kind == "contract-third-path-drift":
             current[f"{CONTRACT_ROOT}/rfcs/RFC-0000.md"] = mismatched
+        elif kind == "contract-malformed-aggregate-original":
+            # Original valid bodies isolate attempt detection from unsigned drift.
+            for i, path in enumerate(POLARIS_NO_SIGNAL_PATHS, 28):
+                current[f"{CONTRACT_ROOT}/{path}"] = digest(f"contract-{i}")
+                current[f"{CANDIDATES}/{path}"] = digest(f"contract-{i}")
+            performed = performed.replace(contract_phrase, "")
+            performed += f"{POLARIS_NO_SIGNAL_LABEL}: malformed\n"
+            contract_dedicated = ""
+        elif kind == "contract-malformed-extra-dedicated":
+            contract_dedicated += f"{POLARIS_NO_SIGNAL_LABEL}: malformed\n"
+        elif kind == "contract-malformed-extra-aggregate":
+            performed += f"{POLARIS_NO_SIGNAL_LABEL}: malformed\n"
+        elif kind == "contract-unmatched-backtick":
+            malformed_phrase = f"{POLARIS_NO_SIGNAL_LABEL}: `{contract_digest}\n"
+            performed = performed.replace(contract_phrase, malformed_phrase)
+            contract_dedicated = malformed_phrase
+        elif kind == "contract-duplicate-quoted":
+            contract_dedicated += f"`{contract_phrase.rstrip()}`\n"
+        elif kind == "contract-duplicate-indented":
+            performed += f"  {contract_phrase}"
+        elif kind == "contract-trailing-prose":
+            malformed_phrase = f"{contract_phrase.rstrip()} extra text\n"
+            performed = performed.replace(contract_phrase, malformed_phrase)
+            contract_dedicated = malformed_phrase
 
     c = Cap()
     cg7h_general_bootstrap_act(

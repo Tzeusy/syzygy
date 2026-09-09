@@ -16,6 +16,12 @@ Its exact digest is the argument to the proposed label
 `SIGN OFF POLARIS NO-SIGNAL CONTRACT AMENDMENT`.
 Naming these locations creates no performed act or valid subject.
 
+Each record must contain one complete bare ceremony line: the label, a colon
+followed by one ASCII space, and its lowercase SHA-256 argument. Indentation,
+trailing whitespace or prose, alternate spacing and backtick wrapping are not
+accepted. Extra or malformed occurrences of this label are rejected,
+including an attempted aggregate entry without a dedicated record.
+
 The manifest has two digest rows, in this order, relative to the contracts home:
 
 1. `rfcs/RFC-0008/state-vocabulary-and-cost.md`
