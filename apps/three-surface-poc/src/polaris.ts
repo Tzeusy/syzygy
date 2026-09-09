@@ -1295,6 +1295,7 @@ const POLARIS_STYLE = `
   .population > summary { font-size: 1rem; color: var(--cyan); }
   .population[open] > summary { margin-bottom: 1rem; }
   [data-source-index] { max-height: min(70vh, 30rem); overflow: auto; }
+  [data-source-index] td:first-child { white-space: nowrap; }
   .source-record { margin-top: .45rem; }
   .source-record dt { font-weight: 600; margin-top: .45rem; }
   .source-record dd { margin-left: 0; }
