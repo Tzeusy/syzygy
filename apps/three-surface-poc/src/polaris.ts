@@ -1367,7 +1367,7 @@ const POLARIS_STYLE = `
   .reading-prose .source-flow { display: grid; grid-template-columns: repeat(var(--flow-columns), minmax(0, 1fr)); gap: 1.3rem; list-style: none; padding: 1.25rem 0; margin: 1.5rem 0; }
   .source-flow li { position: relative; min-width: 0; padding: 0; margin: 0; }
   .flow-node { display: block; height: 100%; border: 1px solid var(--line); border-top: 2px solid var(--cyan); background: var(--panel); padding: .75rem .5rem; font: .85rem var(--font-mono); text-transform: capitalize; }
-  .flow-arrow { position: absolute; top: 50%; right: -1.3rem; width: 1.3rem; text-align: center; transform: translateY(-50%); font-size: 0; }
+  .flow-arrow { position: absolute; display: flex; align-items: center; justify-content: center; line-height: 1; top: 50%; right: -1.3rem; width: 1.3rem; text-align: center; transform: translateY(-50%); font-size: 0; }
   .flow-arrow::after { content: '→'; font-size: 1.2rem; color: var(--muted); }
   .reading-prose .source-flow[data-flow-long] { grid-template-columns: 1fr; }
   .source-flow[data-flow-long] .flow-arrow { top: auto; right: calc(50% - .65rem); bottom: -1.3rem; height: 1.3rem; transform: none; }
