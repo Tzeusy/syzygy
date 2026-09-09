@@ -185,6 +185,8 @@ added 2026-09-07.
 
 ### Guardrails (keep even when old)
 
+- Contract amendment tooling reads both installed `contracts/rfcs/` and mirrored `contracts/candidates/rfcs/` bytes. Probe both locations in isolation: current indexes and budget fixtures derive from the candidate copies, while performed manifests remain immutable. Regenerating the active manifest does not establish successor authority.
+
 - Fresh `git worktree`: run `npm ci` inside it first, or `NodeNext` silently
   resolves `@syzygy/*` to the main checkout's `node_modules`.
 - `git ls-tree` needs `-z`, or quoted paths break the parser.
