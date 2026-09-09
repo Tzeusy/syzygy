@@ -1,0 +1,41 @@
+{
+  "scope": "Existing POC renderer, synthetic fixture, file URL; not generator or real-project readiness",
+  "browser": "Chrome/120.0.6099.224",
+  "htmlPath": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/polaris-generator-design/docs/evidence/polaris-existing-orrery-fixture-2026-09-09.html",
+  "results": [
+    {
+      "name": "wide",
+      "width": 1365,
+      "height": 900,
+      "dom": {
+        "viewport": 1365,
+        "scrollWidth": 1350,
+        "blocks": 8,
+        "canvasHeight": 200,
+        "headings": [
+          "Where the code lives",
+          "Exact entities",
+          "Exact relationships"
+        ]
+      },
+      "screenshot": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/polaris-generator-design/docs/evidence/polaris-existing-orrery-wide-2026-09-09.png"
+    },
+    {
+      "name": "narrow",
+      "width": 390,
+      "height": 844,
+      "dom": {
+        "viewport": 390,
+        "scrollWidth": 404,
+        "blocks": 8,
+        "canvasHeight": 422.53125,
+        "headings": [
+          "Where the code lives",
+          "Exact entities",
+          "Exact relationships"
+        ]
+      },
+      "screenshot": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/polaris-generator-design/docs/evidence/polaris-existing-orrery-narrow-2026-09-09.png"
+    }
+  ]
+}

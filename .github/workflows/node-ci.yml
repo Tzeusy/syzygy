@@ -49,6 +49,21 @@ jobs:
           command -v strace
           strace --version
 
+      - name: browser-geometry prerequisite (Chrome or Chromium)
+        run: |
+          if [ -n "${SYZYGY_POC_BROWSER:-}" ]; then
+            "$SYZYGY_POC_BROWSER" --version
+            exit 0
+          fi
+          for candidate_browser in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate_browser" >/dev/null 2>&1; then
+              "$candidate_browser" --version
+              exit 0
+            fi
+          done
+          echo "Chrome or Chromium is required for the browser geometry and accessibility checks."
+          exit 1
+
       # Fresh install from the lockfile — a drifted or missing lockfile
       # fails here, before any code runs.
       - name: install (npm ci)

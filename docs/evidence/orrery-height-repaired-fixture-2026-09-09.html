@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Orrery · Syzygy three-surface POC</title>
+  <style>
+  :root {
+    color-scheme: dark;
+    --ink: #dfe9e7;
+    --muted: #8ca3a4;
+    --void: #071012;
+    --panel: #0c181b;
+    --panel-raised: #102126;
+    --line: #294248;
+    --cyan: #78e1d1;
+    --amber: #f1b85b;
+    --unknown: #f3c56f;
+    --focus: #f1b85b;
+    --font-serif: Georgia, 'Times New Roman', serif;
+    --font-mono: 'Courier New', ui-monospace, monospace;
+    --space-1: .5rem;
+    --space-2: 1rem;
+    --space-3: 1.5rem;
+    --space-4: 2.5rem;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background: radial-gradient(circle at 15% 0%, #173238 0, transparent 34rem), var(--void);
+    font-family: var(--font-serif);
+    line-height: 1.5;
+  }
+  a { color: var(--cyan); text-underline-offset: .22em; }
+  a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 4px;
+  }
+  code, .kind, .epistemic, .eyebrow, nav, .legend {
+    font-family: var(--font-mono);
+  }
+  .skip-link {
+    position: absolute;
+    left: -999px;
+    top: 0;
+    background: var(--panel-raised);
+    color: var(--ink);
+    padding: .6rem 1rem;
+    z-index: 10;
+    border: 1px solid var(--line);
+  }
+  .skip-link:focus { left: 1rem; top: 1rem; }
+  header, main, footer { width: min(1180px, calc(100% - 2rem)); margin-inline: auto; }
+  header { padding: 3rem 0 2rem; }
+  .eyebrow { color: var(--cyan); letter-spacing: .15em; text-transform: uppercase; font-size: .77rem; }
+  h1 { max-width: 18ch; font-size: clamp(2.2rem, 5.5vw, 4.4rem); line-height: .95; letter-spacing: -.03em; margin: .5rem 0 1rem; }
+  .lede { max-width: 70ch; font-size: 1.08rem; color: #bfd0d0; }
+  .notice {
+    border-left: 3px solid var(--amber);
+    padding: .85rem 1rem;
+    background: #1b211c;
+    color: #f6dfb5;
+    max-width: 78ch;
+  }
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: color-mix(in srgb, var(--void) 92%, transparent);
+    border-block: 1px solid var(--line);
+    backdrop-filter: blur(10px);
+  }
+  nav ul {
+    width: min(1180px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: .8rem 0;
+    display: flex;
+    gap: 1.25rem;
+    list-style: none;
+    overflow-x: auto;
+  }
+  nav a[aria-current="page"] { color: var(--ink); text-decoration: underline; }
+  .epistemic {
+    display: inline-block;
+    padding: .08rem .5rem;
+    border: 1px solid currentColor;
+    border-radius: .2rem;
+    font-size: .74rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .epistemic-observed { color: var(--cyan); }
+  .epistemic-unknown { color: var(--unknown); background: #3d2f1322; }
+  .legend {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+    font-size: .78rem;
+    color: var(--muted);
+  }
+  .legend li { display: flex; align-items: center; gap: .4rem; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); }
+  table { width: 100%; border-collapse: collapse; background: #091416; font-size: .92rem; }
+  th, td { text-align: left; vertical-align: top; padding: .85rem; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+  tr:target { background: #1e383b; outline: 2px solid var(--cyan); outline-offset: -2px; }
+  .kind { color: #9fc0c2; font-size: .74rem; }
+  small { color: var(--muted); }
+  .unavailable-notice { color: var(--unknown); border: 1px dashed var(--unknown); padding: .75rem 1rem; }
+  footer { padding: 2rem 0 4rem; border-top: 1px solid var(--line); color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  .unavailable-notice { max-width: 78ch; margin: 1rem 0; }
+  #orrery-canvas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+    align-items: end;
+    gap: .6rem;
+    padding: 1.5rem 0 2rem;
+    min-height: 8rem;
+  }
+  .orrery-block {
+    position: relative;
+    border: 1px solid var(--line);
+    background: linear-gradient(160deg, #102126, var(--panel));
+    padding: .6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: var(--block-height, 4rem);
+    overflow-wrap: anywhere;
+  }
+  .orrery-block .block-label { font-family: var(--font-mono); font-size: .68rem; color: var(--muted); }
+  .orrery-block.mapped { border-color: var(--cyan); }
+  .orrery-block.mapped a { display: block; color: var(--cyan); text-decoration: none; font-size: .78rem; }
+  .orrery-block.unmapped { border-style: dashed; border-color: var(--unknown); }
+  .orrery-block.unmapped a { color: var(--unknown); font-size: .78rem; text-decoration: none; }
+  .orrery-scope { max-width: 78ch; }
+  .orrery-height-legend { color: var(--muted); font-size: .78rem; max-width: 78ch; margin: 0 0 1rem; }
+</style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content" data-copy-role="action-label" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>Skip to main content</a>
+  <header>
+    <div class="eyebrow" data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>Orrery · Butlers 1f892687d53c</div>
+    <h1 data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>Where the code lives</h1>
+    <p class="lede" data-copy-role="scope-instruction" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>A deterministic spatial map over observed directory structure and declared capability-to-code mappings. Unmapped code stays visibly Unknown.</p>
+  </header>
+  <nav aria-label="Three-surface POC sections"><ul><li><a href="/" data-copy-role="action-label" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>Overview</a></li><li><a href="/polaris" data-copy-role="action-label" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>Polaris</a></li><li><a href="/trajectory" data-copy-role="action-label" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>Trajectory</a></li><li><a href="/orrery" aria-current="page" data-copy-role="action-label" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>Orrery</a></li></ul></nav>
+  <main id="main-content">
+    <ul class="legend" aria-label="Epistemic encoding legend" data-copy-role="epistemic-disclosure" data-claim-role="epistemic-claim" data-presentation-artifact data-non-citable><li><span class="epistemic epistemic-observed">● Observed</span> A resolvable observation or governed artifact backs this claim.</li><li><span class="epistemic epistemic-unknown">? Unknown</span> No verifying evidence exists yet; the reason is stated beside it.</li></ul>
+    
+      <p class="orrery-scope notice" data-parity-field="orrery-scope">
+        1 of 8 observed files sit in a declared mapping;
+        <span data-parity-field="orrery-unmapped-count">7</span> are unmapped and shown as an explicit Unknown region.
+        Revision <code>1f892687d53c</code>.
+      </p>
+      <noscript>
+        <p class="unavailable-notice">The spatial city rendering requires JavaScript and is unavailable without it. The same facts are in the exact tables below.</p>
+      </noscript>
+      <section id="orrery-canvas" aria-label="Spatial code city (JavaScript-rendered; see exact tables for the no-script form)"></section>
+      <p class="orrery-height-legend">District blocks have a minimum height that grows with relative byte size; longer labels may add height.</p>
+      <script type="application/json" id="orrery-data">{"revision":"1f892687d53c829f9c2a4ee99bccccb23d6158df","districts":[{"id":"district:(root)","path":"(root)","fileCount":1,"totalBytes":15,"languages":["markdown"]},{"id":"district:apps","path":"apps","fileCount":2,"totalBytes":26,"languages":["python","typescript"]},{"id":"district:docs","path":"docs","fileCount":1,"totalBytes":45,"languages":["markdown"]},{"id":"district:openspec","path":"openspec","fileCount":2,"totalBytes":162,"languages":["markdown"]},{"id":"district:src","path":"src","fileCount":1,"totalBytes":31,"languages":["python"]},{"id":"district:tests","path":"tests","fileCount":1,"totalBytes":26,"languages":["python"]}],"mappedRegions":[{"id":"code:identity-resolution","path":"src/butlers/identity.py","capabilityId":"capability:whatsapp-transport-identity","sizeBytes":31}],"mappedFileCount":1,"unmappedFileCount":7,"totalFileCount":8,"unmappedRegionEntityId":"region:unmapped-code"}</script>
+      <script>
+(function () {
+  var dataEl = document.getElementById('orrery-data');
+  var canvas = document.getElementById('orrery-canvas');
+  if (!dataEl || !canvas) return;
+  var data;
+  try { data = JSON.parse(dataEl.textContent || '{}'); } catch (e) { return; }
+  canvas.innerHTML = '';
+  var maxBytes = 1;
+  (data.districts || []).forEach(function (d) { if (d.totalBytes > maxBytes) maxBytes = d.totalBytes; });
+
+  (data.districts || []).slice().sort(function (a, b) {
+    return a.path < b.path ? -1 : a.path > b.path ? 1 : 0;
+  }).forEach(function (district) {
+    var block = document.createElement('div');
+    block.className = 'orrery-block';
+    block.dataset.parityField = 'orrery-district';
+    block.dataset.districtId = district.id;
+    var height = 3 + (district.totalBytes / maxBytes) * 6;
+    block.style.setProperty('--block-height', height.toFixed(2) + 'rem');
+    var label = document.createElement('span');
+    label.className = 'block-label';
+    label.textContent = district.path + ' (' + district.fileCount + ' files)';
+    block.appendChild(label);
+    canvas.appendChild(block);
+  });
+
+  (data.mappedRegions || []).forEach(function (region) {
+    var block = document.createElement('div');
+    block.className = 'orrery-block mapped';
+    var link = document.createElement('a');
+    link.href = '#' + region.id;
+    link.dataset.parityField = 'orrery-mapped-region';
+    link.textContent = region.path;
+    block.appendChild(link);
+    canvas.appendChild(block);
+  });
+
+  if (data.unmappedFileCount > 0) {
+    var unmapped = document.createElement('div');
+    unmapped.className = 'orrery-block unmapped';
+    var unmappedLink = document.createElement('a');
+    unmappedLink.href = '#' + data.unmappedRegionEntityId;
+    unmappedLink.dataset.parityField = 'orrery-unmapped-region';
+    unmappedLink.textContent = 'Unmapped (' + data.unmappedFileCount + ' files)';
+    unmapped.appendChild(unmappedLink);
+    canvas.appendChild(unmapped);
+  }
+})();
+</script>
+      <section class="tables" aria-label="Exact graph tables">
+      <h2 id="entities">Exact entities</h2>
+      <div class="table-wrap"><table><thead><tr><th>Kind</th><th>Entity</th><th>Epistemic state</th><th>Provenance</th></tr></thead><tbody><tr id="project:butlers" data-entity-id="project:butlers">
+        <td><span class="kind" data-parity-field="entity-kind">project</span></td>
+        <td><code data-parity-field="entity-id">project:butlers</code><br><strong data-parity-field="entity-title">Butlers</strong><br><small data-parity-field="entity-detail">The one configured external proving project.</small></td>
+        <td><span class="epistemic epistemic-observed" data-parity-field="epistemic-label">Observed</span><br><small data-parity-field="epistemic-explanation">Git reported the configured repository revision.</small></td>
+        <td><ul class="provenance"><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">git-revision</span>
+        <code data-parity-field="provenance-source">Butlers repository</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        
+      </li></ul></td>
+      </tr><tr id="capability:whatsapp-transport-identity" data-entity-id="capability:whatsapp-transport-identity">
+        <td><span class="kind" data-parity-field="entity-kind">capability</span></td>
+        <td><code data-parity-field="entity-id">capability:whatsapp-transport-identity</code><br><strong data-parity-field="entity-title">WhatsApp transport identity normalization</strong><br><small data-parity-field="entity-detail">Preserve transport metadata while resolving identity through canonical WhatsApp JIDs.</small></td>
+        <td><span class="epistemic epistemic-observed" data-parity-field="epistemic-label">Observed</span><br><small data-parity-field="epistemic-explanation">Validated intent markers name this capability and record approval.</small></td>
+        <td><ul class="provenance"><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">repository-file</span>
+        <code data-parity-field="provenance-source">docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:7364754e2312a46dc74c95ced2a1e8c332f122470a2744960eb205875e7853e1</code>
+      </li><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">repository-file</span>
+        <code data-parity-field="provenance-source">openspec/changes/repair-whatsapp-identity-reconciliation/specs/switchboard-identity/spec.md</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:231b0a60ab01700aab8efc26ffa4367abf6b4b08acc9aba6c28c1c59e25bdd69</code>
+      </li></ul></td>
+      </tr><tr id="intent:req-switchboard-identity-001" data-entity-id="intent:req-switchboard-identity-001">
+        <td><span class="kind" data-parity-field="entity-kind">intent</span></td>
+        <td><code data-parity-field="entity-id">intent:req-switchboard-identity-001</code><br><strong data-parity-field="entity-title">REQ-switchboard-identity-001</strong><br><small data-parity-field="entity-detail">The selected intent revision records owner approval for implementation.</small></td>
+        <td><span class="epistemic epistemic-observed" data-parity-field="epistemic-label">Observed</span><br><small data-parity-field="epistemic-explanation">Required approval, identifier, and relationship markers were validated.</small></td>
+        <td><ul class="provenance"><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">repository-file</span>
+        <code data-parity-field="provenance-source">docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:7364754e2312a46dc74c95ced2a1e8c332f122470a2744960eb205875e7853e1</code>
+      </li><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">repository-file</span>
+        <code data-parity-field="provenance-source">openspec/changes/repair-whatsapp-identity-reconciliation/proposal.md</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:e38cc84d15b35137fd60822e34eb47eb12c018d166fdec59251b4a783a1266e8</code>
+      </li><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">repository-file</span>
+        <code data-parity-field="provenance-source">openspec/changes/repair-whatsapp-identity-reconciliation/specs/switchboard-identity/spec.md</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:231b0a60ab01700aab8efc26ffa4367abf6b4b08acc9aba6c28c1c59e25bdd69</code>
+      </li></ul></td>
+      </tr><tr id="code:identity-resolution" data-entity-id="code:identity-resolution">
+        <td><span class="kind" data-parity-field="entity-kind">code-region</span></td>
+        <td><code data-parity-field="entity-id">code:identity-resolution</code><br><strong data-parity-field="entity-title">Identity resolution code region</strong><br><small data-parity-field="entity-detail">The manually mapped code file at src/butlers/identity.py implements sender-identity resolution.</small></td>
+        <td><span class="epistemic epistemic-observed" data-parity-field="epistemic-label">Observed</span><br><small data-parity-field="epistemic-explanation">The manually mapped code file was captured and hashed.</small></td>
+        <td><ul class="provenance"><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">repository-file</span>
+        <code data-parity-field="provenance-source">src/butlers/identity.py</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:a679a9784ad90026fc055394787e7b85c7a8ec896f91dbac7db29e17cb445a5b</code>
+      </li><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">manual-mapping</span>
+        <code data-parity-field="provenance-source">packages/three-surface-poc-core/src/model.ts#ARTIFACT_PATHS</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:adaa020f78a7313e122ceb610f025308ba767bad0ca1c7405309462c790d593b</code>
+      </li></ul></td>
+      </tr><tr id="test:identity-regression-definition" data-entity-id="test:identity-regression-definition">
+        <td><span class="kind" data-parity-field="entity-kind">test-definition</span></td>
+        <td><code data-parity-field="entity-id">test:identity-regression-definition</code><br><strong data-parity-field="entity-title">Identity regression test definition</strong><br><small data-parity-field="entity-detail">The manually mapped test file at tests/core/test_identity.py defines the identity regression check.</small></td>
+        <td><span class="epistemic epistemic-observed" data-parity-field="epistemic-label">Observed</span><br><small data-parity-field="epistemic-explanation">The manually mapped test file was captured and hashed.</small></td>
+        <td><ul class="provenance"><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">repository-file</span>
+        <code data-parity-field="provenance-source">tests/core/test_identity.py</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:da77b3b40a1cb7c5d97ea437f3fed5dff52bd1c2dca42f4fae9423f95017475d</code>
+      </li><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">manual-mapping</span>
+        <code data-parity-field="provenance-source">packages/three-surface-poc-core/src/model.ts#ARTIFACT_PATHS</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:adaa020f78a7313e122ceb610f025308ba767bad0ca1c7405309462c790d593b</code>
+      </li></ul></td>
+      </tr><tr id="work:whatsapp-single-event-normalization" data-entity-id="work:whatsapp-single-event-normalization">
+        <td><span class="kind" data-parity-field="entity-kind">work-item</span></td>
+        <td><code data-parity-field="entity-id">work:whatsapp-single-event-normalization</code><br><strong data-parity-field="entity-title">Single-event sender normalization work</strong><br><small data-parity-field="entity-detail">Planned demonstration work has not been materialized.</small></td>
+        <td><span class="epistemic epistemic-unknown" data-parity-field="epistemic-label">Unknown</span><br><small data-parity-field="epistemic-explanation">No POC work item has been materialized.</small></td>
+        <td><span class="provenance-none">No positive provenance; this relationship remains Unknown.</span></td>
+      </tr><tr id="evidence:focused-pytest" data-entity-id="evidence:focused-pytest">
+        <td><span class="kind" data-parity-field="entity-kind">test-evidence</span></td>
+        <td><code data-parity-field="entity-id">evidence:focused-pytest</code><br><strong data-parity-field="entity-title">Focused pytest evidence</strong><br><small data-parity-field="entity-detail">A test definition is not a captured test run.</small></td>
+        <td><span class="epistemic epistemic-unknown" data-parity-field="epistemic-label">Unknown</span><br><small data-parity-field="epistemic-explanation">No test artifact has been captured for this evaluation.</small></td>
+        <td><span class="provenance-none">No positive provenance; this relationship remains Unknown.</span></td>
+      </tr><tr id="runtime:live-satisfaction" data-entity-id="runtime:live-satisfaction">
+        <td><span class="kind" data-parity-field="entity-kind">runtime</span></td>
+        <td><code data-parity-field="entity-id">runtime:live-satisfaction</code><br><strong data-parity-field="entity-title">Live runtime satisfaction</strong><br><small data-parity-field="entity-detail">Repository state does not establish deployment or runtime health.</small></td>
+        <td><span class="epistemic epistemic-unknown" data-parity-field="epistemic-label">Unknown</span><br><small data-parity-field="epistemic-explanation">No current runtime observation was supplied.</small></td>
+        <td><span class="provenance-none">No positive provenance; this relationship remains Unknown.</span></td>
+      </tr><tr id="region:unmapped-code" data-entity-id="region:unmapped-code">
+        <td><span class="kind" data-parity-field="entity-kind">unknown-region</span></td>
+        <td><code data-parity-field="entity-id">region:unmapped-code</code><br><strong data-parity-field="entity-title">Unmapped Butlers code</strong><br><small data-parity-field="entity-detail">Everything outside the two manually mapped files is outside this slice.</small></td>
+        <td><span class="epistemic epistemic-unknown" data-parity-field="epistemic-label">Unknown</span><br><small data-parity-field="epistemic-explanation">The first slice does not enumerate or map the remaining code.</small></td>
+        <td><span class="provenance-none">No positive provenance; this relationship remains Unknown.</span></td>
+      </tr></tbody></table></div>
+      <h2 id="relationships">Exact relationships</h2>
+      <div class="table-wrap"><table><thead><tr><th>Kind</th><th>Path</th><th>Claim</th><th>Epistemic state</th><th>Provenance</th></tr></thead><tbody><tr id="relationship:project-to-capability" data-relationship-id="relationship:project-to-capability">
+        <td><span class="kind" data-parity-field="relationship-kind">contains</span></td>
+        <td><code data-parity-field="relationship-id">relationship:project-to-capability</code><br><a data-parity-field="relationship-from" href="#project:butlers">project:butlers</a><br>→ <a data-parity-field="relationship-to" href="#capability:whatsapp-transport-identity">capability:whatsapp-transport-identity</a></td>
+        <td><span data-parity-field="relationship-statement">Butlers declares the selected capability.</span></td>
+        <td><span class="epistemic epistemic-observed" data-parity-field="epistemic-label">Observed</span><br><small data-parity-field="epistemic-explanation">The selected requirement is present in the configured repository.</small></td>
+        <td><ul class="provenance"><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">repository-file</span>
+        <code data-parity-field="provenance-source">openspec/changes/repair-whatsapp-identity-reconciliation/specs/switchboard-identity/spec.md</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:231b0a60ab01700aab8efc26ffa4367abf6b4b08acc9aba6c28c1c59e25bdd69</code>
+      </li></ul></td>
+      </tr><tr id="relationship:capability-to-intent" data-relationship-id="relationship:capability-to-intent">
+        <td><span class="kind" data-parity-field="relationship-kind">governed-by</span></td>
+        <td><code data-parity-field="relationship-id">relationship:capability-to-intent</code><br><a data-parity-field="relationship-from" href="#capability:whatsapp-transport-identity">capability:whatsapp-transport-identity</a><br>→ <a data-parity-field="relationship-to" href="#intent:req-switchboard-identity-001">intent:req-switchboard-identity-001</a></td>
+        <td><span data-parity-field="relationship-statement">The capability is governed by the selected intent revision.</span></td>
+        <td><span class="epistemic epistemic-observed" data-parity-field="epistemic-label">Observed</span><br><small data-parity-field="epistemic-explanation">The relationship is declared by the bounded POC mapping.</small></td>
+        <td><ul class="provenance"><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">repository-file</span>
+        <code data-parity-field="provenance-source">openspec/changes/repair-whatsapp-identity-reconciliation/specs/switchboard-identity/spec.md</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:231b0a60ab01700aab8efc26ffa4367abf6b4b08acc9aba6c28c1c59e25bdd69</code>
+      </li><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">manual-mapping</span>
+        <code data-parity-field="provenance-source">packages/three-surface-poc-core/src/model.ts#ARTIFACT_PATHS</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:adaa020f78a7313e122ceb610f025308ba767bad0ca1c7405309462c790d593b</code>
+      </li></ul></td>
+      </tr><tr id="relationship:capability-to-code" data-relationship-id="relationship:capability-to-code">
+        <td><span class="kind" data-parity-field="relationship-kind">mapped-to</span></td>
+        <td><code data-parity-field="relationship-id">relationship:capability-to-code</code><br><a data-parity-field="relationship-from" href="#capability:whatsapp-transport-identity">capability:whatsapp-transport-identity</a><br>→ <a data-parity-field="relationship-to" href="#code:identity-resolution">code:identity-resolution</a></td>
+        <td><span data-parity-field="relationship-statement">The POC manually maps the capability to this code region.</span></td>
+        <td><span class="epistemic epistemic-observed" data-parity-field="epistemic-label">Observed</span><br><small data-parity-field="epistemic-explanation">The mapping and mapped file are both identified.</small></td>
+        <td><ul class="provenance"><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">repository-file</span>
+        <code data-parity-field="provenance-source">src/butlers/identity.py</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:a679a9784ad90026fc055394787e7b85c7a8ec896f91dbac7db29e17cb445a5b</code>
+      </li><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">manual-mapping</span>
+        <code data-parity-field="provenance-source">packages/three-surface-poc-core/src/model.ts#ARTIFACT_PATHS</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:adaa020f78a7313e122ceb610f025308ba767bad0ca1c7405309462c790d593b</code>
+      </li></ul></td>
+      </tr><tr id="relationship:capability-to-test-definition" data-relationship-id="relationship:capability-to-test-definition">
+        <td><span class="kind" data-parity-field="relationship-kind">mapped-to</span></td>
+        <td><code data-parity-field="relationship-id">relationship:capability-to-test-definition</code><br><a data-parity-field="relationship-from" href="#capability:whatsapp-transport-identity">capability:whatsapp-transport-identity</a><br>→ <a data-parity-field="relationship-to" href="#test:identity-regression-definition">test:identity-regression-definition</a></td>
+        <td><span data-parity-field="relationship-statement">The POC manually maps the capability to this test definition.</span></td>
+        <td><span class="epistemic epistemic-observed" data-parity-field="epistemic-label">Observed</span><br><small data-parity-field="epistemic-explanation">The mapping and mapped file are both identified.</small></td>
+        <td><ul class="provenance"><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">repository-file</span>
+        <code data-parity-field="provenance-source">tests/core/test_identity.py</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:da77b3b40a1cb7c5d97ea437f3fed5dff52bd1c2dca42f4fae9423f95017475d</code>
+      </li><li data-parity-provenance>
+        <span data-parity-field="provenance-kind">manual-mapping</span>
+        <code data-parity-field="provenance-source">packages/three-surface-poc-core/src/model.ts#ARTIFACT_PATHS</code>
+        <code data-parity-field="provenance-revision">1f892687d53c829f9c2a4ee99bccccb23d6158df</code>
+        <code data-parity-field="provenance-digest">sha256:adaa020f78a7313e122ceb610f025308ba767bad0ca1c7405309462c790d593b</code>
+      </li></ul></td>
+      </tr><tr id="relationship:intent-to-work" data-relationship-id="relationship:intent-to-work">
+        <td><span class="kind" data-parity-field="relationship-kind">materializes-as</span></td>
+        <td><code data-parity-field="relationship-id">relationship:intent-to-work</code><br><a data-parity-field="relationship-from" href="#intent:req-switchboard-identity-001">intent:req-switchboard-identity-001</a><br>→ <a data-parity-field="relationship-to" href="#work:whatsapp-single-event-normalization">work:whatsapp-single-event-normalization</a></td>
+        <td><span data-parity-field="relationship-statement">Approved intent materializes as a work item.</span></td>
+        <td><span class="epistemic epistemic-unknown" data-parity-field="epistemic-label">Unknown</span><br><small data-parity-field="epistemic-explanation">The human-triggered materialization step has not run.</small></td>
+        <td><span class="provenance-none">No positive provenance; this relationship remains Unknown.</span></td>
+      </tr><tr id="relationship:work-to-code" data-relationship-id="relationship:work-to-code">
+        <td><span class="kind" data-parity-field="relationship-kind">changes</span></td>
+        <td><code data-parity-field="relationship-id">relationship:work-to-code</code><br><a data-parity-field="relationship-from" href="#work:whatsapp-single-event-normalization">work:whatsapp-single-event-normalization</a><br>→ <a data-parity-field="relationship-to" href="#code:identity-resolution">code:identity-resolution</a></td>
+        <td><span data-parity-field="relationship-statement">The work item changes the mapped code region.</span></td>
+        <td><span class="epistemic epistemic-unknown" data-parity-field="epistemic-label">Unknown</span><br><small data-parity-field="epistemic-explanation">No materialized work item or worker change was supplied.</small></td>
+        <td><span class="provenance-none">No positive provenance; this relationship remains Unknown.</span></td>
+      </tr><tr id="relationship:code-to-evidence" data-relationship-id="relationship:code-to-evidence">
+        <td><span class="kind" data-parity-field="relationship-kind">verified-by</span></td>
+        <td><code data-parity-field="relationship-id">relationship:code-to-evidence</code><br><a data-parity-field="relationship-from" href="#code:identity-resolution">code:identity-resolution</a><br>→ <a data-parity-field="relationship-to" href="#evidence:focused-pytest">evidence:focused-pytest</a></td>
+        <td><span data-parity-field="relationship-statement">A captured test artifact verifies the code against intent.</span></td>
+        <td><span class="epistemic epistemic-unknown" data-parity-field="epistemic-label">Unknown</span><br><small data-parity-field="epistemic-explanation">No test artifact has been captured for this evaluation.</small></td>
+        <td><span class="provenance-none">No positive provenance; this relationship remains Unknown.</span></td>
+      </tr><tr id="relationship:code-to-runtime" data-relationship-id="relationship:code-to-runtime">
+        <td><span class="kind" data-parity-field="relationship-kind">satisfies-at-runtime</span></td>
+        <td><code data-parity-field="relationship-id">relationship:code-to-runtime</code><br><a data-parity-field="relationship-from" href="#code:identity-resolution">code:identity-resolution</a><br>→ <a data-parity-field="relationship-to" href="#runtime:live-satisfaction">runtime:live-satisfaction</a></td>
+        <td><span data-parity-field="relationship-statement">The mapped code satisfies the intent in the live runtime.</span></td>
+        <td><span class="epistemic epistemic-unknown" data-parity-field="epistemic-label">Unknown</span><br><small data-parity-field="epistemic-explanation">No current runtime observation was supplied.</small></td>
+        <td><span class="provenance-none">No positive provenance; this relationship remains Unknown.</span></td>
+      </tr><tr id="relationship:capability-to-unmapped-region" data-relationship-id="relationship:capability-to-unmapped-region">
+        <td><span class="kind" data-parity-field="relationship-kind">coverage-unknown</span></td>
+        <td><code data-parity-field="relationship-id">relationship:capability-to-unmapped-region</code><br><a data-parity-field="relationship-from" href="#capability:whatsapp-transport-identity">capability:whatsapp-transport-identity</a><br>→ <a data-parity-field="relationship-to" href="#region:unmapped-code">region:unmapped-code</a></td>
+        <td><span data-parity-field="relationship-statement">Other code may relate to this capability.</span></td>
+        <td><span class="epistemic epistemic-unknown" data-parity-field="epistemic-label">Unknown</span><br><small data-parity-field="epistemic-explanation">The bounded POC mapping makes no claim about other code.</small></td>
+        <td><span class="provenance-none">No positive provenance; this relationship remains Unknown.</span></td>
+      </tr></tbody></table></div>
+    </section>
+  </main>
+  <footer data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>Code-structure revision <code>1f892687d53c829f9c2a4ee99bccccb23d6158df</code>.</footer>
+</body>
+</html>
