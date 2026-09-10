@@ -34,3 +34,9 @@ source browsing, guide opening, complete-declaration control and diagram layout.
 Final delivery also requires the actual gated Butlers capture and the canonical
 repository battery at the reviewed commit. Captured content and screenshots
 remain in local retention; committed evidence contains identities and outcomes.
+
+Four named explanatory figures are selected from the same digest-bound architecture
+account. The core-loop figure appears between Purpose and Promises; runtime,
+connector and proactive-delivery figures open the architecture account. The section
+outline links directly to each figure. Labels must lie inside the complete retained
+explanations; source drift removes both figures and their navigation links.
