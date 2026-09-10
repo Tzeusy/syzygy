@@ -500,7 +500,7 @@ function introductoryDiagram(shape: Extract<ProjectShape, { kind: 'observed' }>)
   const figure = projectReading(statement.statement, 'architecture').figures?.find((entry) => entry.id === 'core-loop');
   if (figure === undefined) return '';
   const block = shapeClaimBlock(statement.claim, shape.identity.revision, 'evidence', `diagram:${statement.claim.claimId}`);
-  return `<section class="introductory-diagram"${block.attrs}><div data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${readingFigure(figure, block.anchors.length === 1 ? block.anchors[0]!.anchorId : undefined)}</div><details class="reading-citations"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')}</summary>${supportCitations(statement.claim.support, block.anchors)}</details>${tupleLine(statement.claim)}</section>`;
+  return `<section class="introductory-diagram"${block.attrs}><div data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${readingFigure(figure, block.anchors.length === 1 ? block.anchors[0]!.anchorId : undefined)}</div><details class="reading-citations"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')}</summary>${supportCitations(statement.claim.support, block.anchors)}</details></section>`;
 }
 
 export function renderProjectReading(reading: ProjectReading, anchorId?: string): string {
@@ -1516,7 +1516,7 @@ function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): st
   const diagrams = reading?.figures ?? [];
   const link = (id: string, copyId: PolarisCopyId): string => `<a href="#${escapeHtml(id)}"${copyAttr(copyId)}>${copy(copyId)}</a>`;
   const levels: readonly (readonly [PolarisCopyId, readonly string[]])[] = [
-    ['depth.summary', [link('polaris-group-overview', 'group.overview'), ...diagrams.map((figure) => `<a href="#polaris-diagram-${escapeHtml(figure.id)}"${SCOPE}>${escapeHtml(figure.title)}</a>`), link('polaris-group-boundaries', 'group.boundaries'), link('polaris-group-v1', 'group.v1'), link('polaris-group-architecture', 'group.architecture')]],
+    ['depth.summary', [link('polaris-group-overview', 'group.overview'), ...diagrams.filter((figure) => figure.id === 'core-loop').map((figure) => `<a href="#polaris-diagram-${escapeHtml(figure.id)}"${SCOPE}>${escapeHtml(figure.title)}</a>`), link('polaris-group-boundaries', 'group.boundaries'), link('polaris-group-v1', 'group.v1'), link('polaris-group-architecture', 'group.architecture'), ...diagrams.filter((figure) => figure.id !== 'core-loop').map((figure) => `<a href="#polaris-diagram-${escapeHtml(figure.id)}"${SCOPE}>${escapeHtml(figure.title)}</a>`)]],
     ['depth.catalog', [link('polaris-group-catalog', 'group.catalog'), ...(observed ? CATALOG_CLASSES.map((cls) => link(`polaris-class-${cls}`, `class.${cls}`)) : [])]],
     ['depth.detail', [...chapters.map((chapter) => `<a href="#polaris-guide-${escapeHtml(chapter.id)}"${FACT}>${escapeHtml(chapter.title)}</a>`), link('polaris-group-capability-detail', 'group.capability-detail'), ...dives.map((dive) => `<a href="#polaris-deep-dive-${escapeHtml(sourceSlug(dive.capabilityId))}" data-depth-dive="${escapeHtml(dive.capabilityId)}"${FACT}>${escapeHtml(dive.capability.title)}</a>`)]],
     ['depth.source', [
