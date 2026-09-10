@@ -3,6 +3,120 @@
 
 export const ARCHITECTURE_READING_PLAN = {
   "statementSha256": "b6a02d08b19dbd0dee09f15076494fa6bbe4346e6009e07dff28c01fa2b5036c",
+  "figures": [
+    {
+      "id": "core-loop",
+      "title": "From a trigger to action",
+      "nodes": [
+        {
+          "start": 19337,
+          "end": 19344
+        },
+        {
+          "start": 19432,
+          "end": 19440
+        },
+        {
+          "start": 19612,
+          "end": 19617
+        },
+        {
+          "start": 19702,
+          "end": 19707
+        },
+        {
+          "start": 19816,
+          "end": 19819
+        },
+        {
+          "start": 20043,
+          "end": 20046
+        }
+      ],
+      "evidence": [
+        {
+          "start": 19332,
+          "end": 20154
+        }
+      ]
+    },
+    {
+      "id": "runtime",
+      "title": "Where the reasoning happens",
+      "nodes": [
+        {
+          "start": 925,
+          "end": 931
+        },
+        {
+          "start": 1332,
+          "end": 1354
+        },
+        {
+          "start": 1364,
+          "end": 1382
+        }
+      ],
+      "evidence": [
+        {
+          "start": 901,
+          "end": 1204
+        },
+        {
+          "start": 1310,
+          "end": 1452
+        }
+      ]
+    },
+    {
+      "id": "connectors",
+      "title": "How the outside world reaches Butlers",
+      "nodes": [
+        {
+          "start": 13722,
+          "end": 13748
+        },
+        {
+          "start": 13674,
+          "end": 13684
+        },
+        {
+          "start": 13783,
+          "end": 13809
+        }
+      ],
+      "evidence": [
+        {
+          "start": 13674,
+          "end": 13871
+        }
+      ]
+    },
+    {
+      "id": "proactive",
+      "title": "From an insight to a digest",
+      "nodes": [
+        {
+          "start": 20876,
+          "end": 20894
+        },
+        {
+          "start": 20918,
+          "end": 20931
+        },
+        {
+          "start": 21001,
+          "end": 21007
+        }
+      ],
+      "evidence": [
+        {
+          "start": 20784,
+          "end": 21074
+        }
+      ]
+    }
+  ],
   "passages": [
     {
       "start": 0,
@@ -14,10 +128,6 @@ export const ARCHITECTURE_READING_PLAN = {
       "end": 158
     },
     {
-      "start": 901,
-      "end": 1204
-    },
-    {
       "start": 1206,
       "end": 1240,
       "heading": true
@@ -27,23 +137,9 @@ export const ARCHITECTURE_READING_PLAN = {
       "end": 1308
     },
     {
-      "start": 1310,
+      "start": 1453,
       "end": 1721,
       "relationships": [
-        {
-          "from": {
-            "start": 1332,
-            "end": 1354
-          },
-          "to": {
-            "start": 1364,
-            "end": 1382
-          },
-          "body": {
-            "start": 1310,
-            "end": 1453
-          }
-        },
         {
           "from": {
             "start": 1482,
@@ -128,20 +224,6 @@ export const ARCHITECTURE_READING_PLAN = {
     {
       "start": 18648,
       "end": 19201
-    },
-    {
-      "start": 19203,
-      "end": 19216,
-      "heading": true
-    },
-    {
-      "start": 19266,
-      "end": 19330,
-      "format": "flow"
-    },
-    {
-      "start": 19332,
-      "end": 20154
     }
   ],
   "chapters": [

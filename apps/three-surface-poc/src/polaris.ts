@@ -1,5 +1,5 @@
 import { renderPolarisMarkdown } from './polaris-markdown.js';
-import { projectReading, type ProjectReading } from './polaris-reading.js';
+import { projectReading, type ProjectReading, type ReadingFigure } from './polaris-reading.js';
 import { escapeHtml } from '@syzygy/cap1-daemon';
 import {
   EXTRACTION_CLASSES,
@@ -489,13 +489,28 @@ function unknownRoutes(claim: ProjectShapeClaim, prefix: string): string {
   return `<div class="unknown-disclosure" data-unknown-disclosure="${escapeHtml(claim.claimId)}"${DISCLOSURE}><p>${prefix.startsWith('Declared by ') ? '' : prefix}${copy('label.unknown')} — ${unknownReasonRef(primary)}.</p><details class="unknown-source-details"><summary${copyAttr('label.source-remedies')}>${copy('label.source-remedies')}</summary><p>${prefix.startsWith('Declared by ') ? prefix : ''}${copy('label.route')} ${escapeHtml(routeOf(claim, primary))}.${secondaryLine}</p></details></div>`;
 }
 
+function readingFigure(figure: ReadingFigure, anchorId?: string): string {
+  const diagram = renderPolarisMarkdown('```flow\n' + figure.nodes.join(' --> ') + '\n```', anchorId);
+  return `<figure id="polaris-diagram-${escapeHtml(figure.id)}" class="source-figure" data-diagram-id="${escapeHtml(figure.id)}" data-visual-provenance="curated"><figcaption${SCOPE}><span class="figure-kicker">Declared architecture</span><h4>${escapeHtml(figure.title)}</h4></figcaption>${diagram}<details class="figure-explanation"><summary${SCOPE}>Read the diagram explanation</summary><div class="reading-prose">${renderPolarisMarkdown(figure.explanation, anchorId)}</div></details></figure>`;
+}
+
+function introductoryDiagram(shape: Extract<ProjectShape, { kind: 'observed' }>): string {
+  const statement = shape.projectAccount.find((entry) => entry.key === 'architecture');
+  if (statement?.claim.epistemic.label !== 'Observed' || statement.statement === undefined) return '';
+  const figure = projectReading(statement.statement, 'architecture').figures?.find((entry) => entry.id === 'core-loop');
+  if (figure === undefined) return '';
+  const block = shapeClaimBlock(statement.claim, shape.identity.revision, 'evidence', `diagram:${statement.claim.claimId}`);
+  return `<section class="introductory-diagram"${block.attrs}><div data-claim-provenance="${escapeHtml(statement.claim.claimId)}">${readingFigure(figure, block.anchors.length === 1 ? block.anchors[0]!.anchorId : undefined)}</div><details class="reading-citations"><summary${copyAttr('label.source-notes')}>${copy('label.source-notes')}</summary>${supportCitations(statement.claim.support, block.anchors)}</details>${tupleLine(statement.claim)}</section>`;
+}
+
 export function renderProjectReading(reading: ProjectReading, anchorId?: string): string {
   const label = reading.condensed ? `<p class="excerpt-label"${copyAttr('label.selected-passages')}>${copy('label.selected-passages')}</p>` : '';
   const chapters = reading.chapters;
   const full = chapters !== undefined
     ? `<section class="component-library"><h4${copyAttr('label.component-guides')}>${copy('label.component-guides')}</h4><button type="button" class="expand-declaration" aria-expanded="false"${copyAttr('label.full-account')}>${copy('label.full-account')}</button><div class="component-guides">${chapters.map((chapter) => `<section id="polaris-guide-${escapeHtml(chapter.id)}" data-component-guide><details><summary>${escapeHtml(chapter.title)}</summary><div class="reading-prose">${renderPolarisMarkdown(chapter.body, anchorId)}</div></details></section>`).join('')}</div></section>`
     : reading.condensed ? `<details class="full-account"><summary${copyAttr('label.full-account')}>${copy('label.full-account')}</summary><div class="reading-prose">${renderPolarisMarkdown(reading.full, anchorId)}</div></details>` : '';
-  return `${label}<div class="reading-prose">${renderPolarisMarkdown(reading.summary, anchorId)}</div>${full}`;
+  const figures = (reading.figures ?? []).filter((figure) => figure.id !== 'core-loop').map((figure) => readingFigure(figure, anchorId)).join('');
+  return `${figures}${label}<div class="reading-prose">${renderPolarisMarkdown(reading.summary, anchorId)}</div>${full}`;
 }
 
 function accountStatement(statement: ProjectAccountStatement, revision: string): string {
@@ -1185,7 +1200,7 @@ function projectGroupBody(shape: ProjectShape, group: Exclude<PolarisGroup, 'cap
   }
   switch (group) {
     case 'overview':
-      return `${accountByKey(shape, 'purpose')}${accountByKey(shape, 'promises')}${classBlock(shape, 'project-account-section', false)}`;
+      return `${accountByKey(shape, 'purpose')}${introductoryDiagram(shape)}${accountByKey(shape, 'promises')}${classBlock(shape, 'project-account-section', false)}`;
     case 'boundaries':
       return `${accountByKey(shape, 'refusals')}${classBlock(shape, 'principle', true)}`;
     case 'architecture':
@@ -1365,18 +1380,32 @@ const POLARIS_STYLE = `
   .reading-layout > footer { grid-area: footer; }
   .reading-layout > header, .reading-layout > main, .reading-layout > footer { min-width: 0; width: 100%; margin-inline: 0; }
   .reading-layout .group, .reading-layout .claim-section, .reading-layout .band, .reading-layout .relationships, .reading-layout .capability-guide, .reading-layout .scope-instruction, .reading-layout .claim-states { max-width: 91ch; margin-left: 0; }
-  .reading-layout .claim-section.wide { max-width: none; }
+  .reading-layout .claim-section.wide, .reading-layout .claim-section:has(.source-figure) { max-width: none; }
   .reading-prose { max-width: 74ch; }
-  .reading-prose .source-flow { display: grid; grid-template-columns: repeat(var(--flow-columns), minmax(0, 1fr)); gap: 1.3rem; list-style: none; padding: 1.25rem 0; margin: 1.5rem 0; }
+  .introductory-diagram { margin: 2rem 0 3rem; }
+  .source-figure { margin: 1.5rem 0 2.5rem; padding: 1.6rem; border: 1px solid var(--line); border-top: 3px solid var(--cyan); background: var(--panel); }
+  .figure-kicker { color: var(--cyan); font: .75rem var(--mono); text-transform: uppercase; letter-spacing: .14em; }
+  .source-figure h4 { margin: .5rem 0 1.6rem; font-size: clamp(1.3rem, 2vw, 1.8rem); }
+  .source-figure .source-flow { margin: 1.5rem 0 2rem; }
+  .source-figure .flow-node { min-height: 5.2rem; padding: .9rem .65rem; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1rem; border-top: 1px solid var(--cyan); }
+  .source-figure .flow-arrow::after { color: var(--cyan); font-size: 1.4rem; }
+  .figure-explanation { font-size: .9rem; }
+  .figure-explanation summary { cursor: pointer; color: var(--cyan); }
+  .figure-explanation[open] summary { margin-bottom: 1.5rem; }
+  @media (max-width: 800px) {
+    .source-figure { padding: 1rem; }
+    .source-figure .flow-node { min-height: 3.2rem; }
+  }
+  .source-flow { display: grid; grid-template-columns: repeat(var(--flow-columns), minmax(0, 1fr)); gap: 1.3rem; list-style: none; padding: 1.25rem 0; margin: 1.5rem 0; }
   .source-flow li { position: relative; min-width: 0; padding: 0; margin: 0; }
   .flow-node { display: block; height: 100%; border: 1px solid var(--line); border-top: 2px solid var(--cyan); background: var(--panel); padding: .75rem .5rem; font: .85rem var(--font-mono); text-transform: capitalize; }
   .flow-arrow { position: absolute; display: flex; align-items: center; justify-content: center; line-height: 1; top: 50%; right: -1.3rem; width: 1.3rem; text-align: center; transform: translateY(-50%); font-size: 0; }
   .flow-arrow::after { content: '→'; font-size: 1.2rem; color: var(--muted); }
-  .reading-prose .source-flow[data-flow-long] { grid-template-columns: 1fr; }
+  .source-flow[data-flow-long] { grid-template-columns: 1fr; }
   .source-flow[data-flow-long] .flow-arrow { top: auto; right: calc(50% - .65rem); bottom: -1.3rem; height: 1.3rem; transform: none; }
   .source-flow[data-flow-long] .flow-arrow::after { content: '↓'; }
   @media (max-width: 800px) {
-    .reading-prose .source-flow { grid-template-columns: 1fr; }
+    .source-flow { grid-template-columns: 1fr; }
     .source-flow .flow-arrow { top: auto; right: calc(50% - .65rem); bottom: -1.3rem; height: 1.3rem; transform: none; }
     .source-flow .flow-arrow::after { content: '↓'; }
   }
@@ -1482,10 +1511,12 @@ function depthNav(shape: ProjectShape, dives: readonly CapabilityDeepDive[]): st
   const observed = shape.kind === 'observed';
   const revision = observed ? shape.identity.revision : '';
   const architecture = observed ? shape.projectAccount.find((statement) => statement.key === 'architecture' && statement.claim.epistemic.label === 'Observed')?.statement : undefined;
-  const chapters = architecture === undefined ? [] : projectReading(architecture, 'architecture').chapters ?? [];
+  const reading = architecture === undefined ? undefined : projectReading(architecture, 'architecture');
+  const chapters = reading?.chapters ?? [];
+  const diagrams = reading?.figures ?? [];
   const link = (id: string, copyId: PolarisCopyId): string => `<a href="#${escapeHtml(id)}"${copyAttr(copyId)}>${copy(copyId)}</a>`;
   const levels: readonly (readonly [PolarisCopyId, readonly string[]])[] = [
-    ['depth.summary', [link('polaris-group-overview', 'group.overview'), link('polaris-group-boundaries', 'group.boundaries'), link('polaris-group-v1', 'group.v1'), link('polaris-group-architecture', 'group.architecture')]],
+    ['depth.summary', [link('polaris-group-overview', 'group.overview'), ...diagrams.map((figure) => `<a href="#polaris-diagram-${escapeHtml(figure.id)}"${SCOPE}>${escapeHtml(figure.title)}</a>`), link('polaris-group-boundaries', 'group.boundaries'), link('polaris-group-v1', 'group.v1'), link('polaris-group-architecture', 'group.architecture')]],
     ['depth.catalog', [link('polaris-group-catalog', 'group.catalog'), ...(observed ? CATALOG_CLASSES.map((cls) => link(`polaris-class-${cls}`, `class.${cls}`)) : [])]],
     ['depth.detail', [...chapters.map((chapter) => `<a href="#polaris-guide-${escapeHtml(chapter.id)}"${FACT}>${escapeHtml(chapter.title)}</a>`), link('polaris-group-capability-detail', 'group.capability-detail'), ...dives.map((dive) => `<a href="#polaris-deep-dive-${escapeHtml(sourceSlug(dive.capabilityId))}" data-depth-dive="${escapeHtml(dive.capabilityId)}"${FACT}>${escapeHtml(dive.capability.title)}</a>`)]],
     ['depth.source', [

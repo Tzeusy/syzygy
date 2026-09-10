@@ -8,11 +8,19 @@ export interface ReadingChapter {
   readonly body: string;
 }
 
+export interface ReadingFigure {
+  readonly id: string;
+  readonly title: string;
+  readonly nodes: readonly string[];
+  readonly explanation: string;
+}
+
 export interface ProjectReading {
   readonly summary: string;
   readonly full: string;
   readonly condensed: boolean;
   readonly chapters?: readonly ReadingChapter[];
+  readonly figures?: readonly ReadingFigure[];
 }
 
 export interface SourceSpan { readonly start: number; readonly end: number }
@@ -24,6 +32,7 @@ export interface ReadingPassage extends SourceSpan {
 
 export interface ReadingPlan {
   readonly statementSha256: string;
+  readonly figures?: readonly { readonly id: string; readonly title: string; readonly nodes: readonly SourceSpan[]; readonly evidence: readonly SourceSpan[] }[];
   readonly chapters?: readonly { readonly id: string; readonly start: number; readonly headingEnd: number; readonly end: number }[];
   readonly passages: readonly ReadingPassage[];
 }
@@ -56,6 +65,24 @@ export function applyReadingPlan(text: string, plan: ReadingPlan): ProjectReadin
     }
     previousEnd = end;
   }
+  let figures: readonly ReadingFigure[] | undefined;
+  if (plan.figures !== undefined) {
+    const ids = new Set<string>();
+    const inBounds = ({ start, end }: SourceSpan): boolean => Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end > start && end <= text.length;
+    if (plan.figures.length === 0 || plan.figures.length > 8) return full;
+    for (const figure of plan.figures) {
+      if (!/^[a-z][a-z0-9-]{0,63}$/.test(figure.id) || ids.has(figure.id)
+        || !figure.title.trim() || figure.title.length > 100 || figure.title.includes('\n')
+        || figure.nodes.length < 2 || figure.nodes.length > 6 || figure.evidence.length === 0
+        || figure.evidence.some((span) => !inBounds(span) || (span.start > 0 && text[span.start - 1] !== '\n') || (span.end < text.length && text[span.end] !== '\n'))
+        || figure.nodes.some((span) => !inBounds(span) || span.end - span.start > 80 || text.slice(span.start, span.end).trim() === ''
+          || !figure.evidence.some((evidence) => span.start >= evidence.start && span.end <= evidence.end))) return full;
+      ids.add(figure.id);
+    }
+    figures = plan.figures.map((figure) => ({ id: figure.id, title: figure.title,
+      nodes: figure.nodes.map(({ start, end }) => text.slice(start, end)),
+      explanation: figure.evidence.map(({ start, end }) => text.slice(start, end)).join('\n\n') }));
+  }
   let chapters: readonly ReadingChapter[] | undefined;
   if (plan.chapters !== undefined) {
     if (plan.chapters.length === 0 || plan.chapters.length > 24) return full;
@@ -84,7 +111,7 @@ export function applyReadingPlan(text: string, plan: ReadingPlan): ProjectReadin
     }))) + '\n```';
     return format === 'flow' ? passage.replace(/^```\n/, '```flow\n') : `${heading === true ? '### ' : ''}${passage}`;
   }).join('\n\n');
-  return { summary, full: text, condensed: true, ...(chapters === undefined ? {} : { chapters }) };
+  return { summary, full: text, condensed: true, ...(chapters === undefined ? {} : { chapters }), ...(figures === undefined ? {} : { figures }) };
 }
 
 export function projectReading(text: string, key: string): ProjectReading {

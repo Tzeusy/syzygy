@@ -133,7 +133,8 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
     const short = '```flow\nReceive --> Classify --> Route --> Spawn --> Act --> Log\n```';
     const long = '```flow\n' + Array.from({ length: 12 }, (_, index) => 'Stage ' + (index + 1)).join(' --> ') + '\n```';
     const relation = '```relations\n' + JSON.stringify([{ from: 'External clients', to: 'Module tools', description: 'Clients call the declared tool interface.' }]) + '\n```';
-    const diagrams = renderProjectReading({ summary: short + '\n\n' + long + '\n\n' + relation, full: '', condensed: false });
+    const diagrams = renderProjectReading({ summary: short + '\n\n' + long + '\n\n' + relation, full: '', condensed: false,
+      figures: [{ id: 'runtime', title: 'Inside the runtime', nodes: ['Daemon', 'Sessions', 'Tools'], explanation: 'Daemon spawns sessions. Sessions call tools.' }] });
     const file = join(pages, 'diagram-layout.html');
     writeFileSync(file, rendered.html.replace('</main>', `<div data-copy-role="project-fact">${diagrams}</div></main>`));
     const page = await browser.newPage();
@@ -142,16 +143,17 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
         await page.setViewport(width, 1000);
         await page.navigate('about:blank');
         await page.navigate(pathToFileURL(file).href);
-        const report = await page.evaluate<{ fits: boolean; legible: boolean; shortOrdered: boolean; longOrdered: boolean }>(`(() => {
-          const flows = [...document.querySelectorAll('.source-flow')].map(flow => [...flow.querySelectorAll('.flow-node')].map(node => node.getBoundingClientRect()));
+        const report = await page.evaluate<{ fits: boolean; legible: boolean; shortOrdered: boolean; longOrdered: boolean; figureVisible: boolean }>(`(() => {
+          const flows = [...document.querySelectorAll('.source-flow')].filter(flow => !flow.closest('.source-figure')).map(flow => [...flow.querySelectorAll('.flow-node')].map(node => node.getBoundingClientRect()));
           const vertical = nodes => nodes.every((node, index) => index === 0 || node.top > nodes[index - 1].bottom);
           const labels = [...document.querySelectorAll('.flow-node, .relationship-nodes strong')];
           return { fits: document.documentElement.scrollWidth <= innerWidth,
             legible: labels.every(node => parseFloat(getComputedStyle(node).fontSize) >= 12 && node.getBoundingClientRect().width >= 40),
             shortOrdered: innerWidth > 800 ? flows[0].every(node => Math.abs(node.top - flows[0][0].top) < 1) : vertical(flows[0]),
-            longOrdered: vertical(flows[1]) };
+            longOrdered: vertical(flows[1]),
+            figureVisible: document.querySelector('[data-diagram-id="runtime"]').closest('details') === null && document.querySelectorAll('[data-diagram-id="runtime"] .flow-node').length === 3 };
         })()`);
-        expect(report).toEqual({ fits: true, legible: true, shortOrdered: true, longOrdered: true });
+        expect(report).toEqual({ fits: true, legible: true, shortOrdered: true, longOrdered: true, figureVisible: true });
       }
     } finally { await page.close(); }
   });

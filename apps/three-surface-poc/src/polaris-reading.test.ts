@@ -68,4 +68,16 @@ describe('reviewed project reading', () => {
     }
   });
 
+  it('binds diagram labels to retained evidence and removes diagrams on source drift or invalid metadata', () => {
+    const source = 'Daemon spawns sessions.\n\nSessions call tools.';
+    const figure = { id: 'runtime', title: 'Inside the runtime', nodes: [{ start: 0, end: 6 }, { start: 14, end: 22 }], evidence: [{ start: 0, end: 23 }] };
+    const candidate: ReadingPlan = { statementSha256: createHash('sha256').update(source).digest('hex'), passages: [{ start: 0, end: source.length }], figures: [figure] };
+    expect(applyReadingPlan(source, candidate).figures).toEqual([{ id: 'runtime', title: 'Inside the runtime', nodes: ['Daemon', 'sessions'], explanation: 'Daemon spawns sessions.' }]);
+    for (const figures of [[{ ...figure, nodes: [{ start: 0, end: 6 }, { start: 25, end: 33 }] }], [figure, figure], [{ ...figure, evidence: [{ start: 0, end: 22 }] }], [{ ...figure, id: 'bad id' }]]) {
+      expect(applyReadingPlan(source, { ...candidate, figures })).toEqual({ summary: source, full: source, condensed: false });
+    }
+    const changed = source + '\n\nOnly after approval.';
+    expect(applyReadingPlan(changed, candidate)).toEqual({ summary: changed, full: changed, condensed: false });
+  });
+
 });
