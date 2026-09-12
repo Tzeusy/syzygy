@@ -40,3 +40,6 @@ account. The core-loop figure appears between Purpose and Promises; runtime,
 connector and proactive-delivery figures open the architecture account. The section
 outline links directly to each figure. Labels must lie inside the complete retained
 explanations; source drift removes both figures and their navigation links.
+
+For the reusable LLM-assisted authoring process and current tooling gaps, see
+the [Polaris generation kit](polaris-generation/README.md).
