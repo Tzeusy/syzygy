@@ -159,6 +159,12 @@ added 2026-09-07.
 
 ### Architecture
 
+- Polaris POC product goal: generalizable LLM-assisted manifesto generation across
+  projects. Butlers is a proving case; carry improvements into reusable prompts,
+  artifact/tool interfaces and authoring/validation guidance. The practical kit
+  lives at `docs/polaris-generation/README.md`; its candidate guidance is not an
+  adopted specification or permission for new source reads/provider egress.
+
 - `packages/cap1-core/`: pure domain modules; one conformance file per
   CAP1-REQ in `packages/cap1-conformance/`. One `FactModel` feeds both
   channels; an independent oracle compares their outputs.

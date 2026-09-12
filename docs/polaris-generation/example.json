@@ -1,0 +1,119 @@
+{
+  "exampleKind": "synthetic-documentation-handoff",
+  "schemaStatus": "candidate-not-registered",
+  "providerCallPerformed": false,
+  "sourceBundle": {
+    "id": "example-input-v1",
+    "projectId": "seed-library-example",
+    "audience": "New volunteer",
+    "sources": [
+      {
+        "id": "s1",
+        "synthetic": true,
+        "text": "SeedLedger helps a community seed library keep a shared inventory. Volunteers record seed lots and exchanges. The project does not diagnose plant disease.",
+        "sha256": "f57741f0c68ea3c6adaec29006dbcbb2ade4059ecb1a10bfc17490e9a9bd1bd2"
+      }
+    ]
+  },
+  "request": {
+    "runId": "example-run",
+    "stageId": "understand",
+    "attempt": 1,
+    "inputBundleId": "example-input-v1",
+    "promptVersion": "kit-understand-v1",
+    "allowedSourceIds": [
+      "s1"
+    ],
+    "authorizedProviderRoute": null,
+    "toolAllowlist": [],
+    "budgets": {
+      "maxOutputTokens": 1500,
+      "maxOutputBytes": 12000,
+      "maxAssets": 6,
+      "maxRepairAttempts": 2
+    },
+    "acceptedOutputKind": "claim-ledger",
+    "outputVersion": "candidate-v1"
+  },
+  "illustrativeOutput": {
+    "editorialState": "editorial-draft",
+    "claims": [
+      {
+        "id": "c1",
+        "statement": "SeedLedger helps a community seed library keep a shared inventory.",
+        "support": [
+          {
+            "sourceId": "s1",
+            "start": 0,
+            "end": 66
+          }
+        ],
+        "meaning": "declared-intent",
+        "qualifications": [
+          {
+            "claimId": "c3"
+          }
+        ]
+      },
+      {
+        "id": "c2",
+        "statement": "Volunteers record seed lots and exchanges.",
+        "support": [
+          {
+            "sourceId": "s1",
+            "start": 67,
+            "end": 109
+          }
+        ],
+        "meaning": "declared-intent",
+        "qualifications": []
+      },
+      {
+        "id": "c3",
+        "statement": "The project does not diagnose plant disease.",
+        "support": [
+          {
+            "sourceId": "s1",
+            "start": 110,
+            "end": 154
+          }
+        ],
+        "meaning": "declared-intent",
+        "qualifications": []
+      }
+    ],
+    "unresolved": [
+      {
+        "question": "How is a seed exchange recorded and reconciled?",
+        "reason": "No workflow evidence supplied; do not invent a diagram."
+      }
+    ],
+    "assetDispositions": [
+      {
+        "kind": "curated-relationship-diagram",
+        "state": "unresolved",
+        "reason": "The supplied description establishes purpose and activities, not mechanism or directed relationships."
+      }
+    ],
+    "coverage": [
+      {
+        "sourceId": "s1",
+        "claimIds": [
+          "c1",
+          "c2",
+          "c3"
+        ]
+      }
+    ]
+  },
+  "illustrativeLaterDraft": {
+    "text": "A shared seed collection needs a shared memory. SeedLedger helps volunteers keep track of seed lots and exchanges. It does not diagnose plant disease.",
+    "claimIds": [
+      "c1",
+      "c2",
+      "c3"
+    ],
+    "framing": "The opening metaphor is editorial framing, not a source quotation.",
+    "editorialState": "editorial-draft"
+  }
+}
