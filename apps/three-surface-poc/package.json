@@ -6,6 +6,7 @@
   "main": "./dist/main.js",
   "dependencies": {
     "@syzygy/cap1-daemon": "0.0.0",
-    "@syzygy/three-surface-poc-core": "0.0.0"
+    "@syzygy/three-surface-poc-core": "0.0.0",
+    "@syzygy/polaris-generation-core": "0.0.0"
   }
 }

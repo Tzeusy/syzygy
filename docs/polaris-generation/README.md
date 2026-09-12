@@ -24,6 +24,14 @@ applicable specification and implementation gates. The generator specification a
 to the owning acts. This kit remains supporting authoring guidance, and its
 examples are not runtime completion evidence.
 
+## Executable development slice
+
+The [generation core](../../packages/polaris-generation-core/README.md#editorial-pipeline)
+now runs inventory, plan, author, edit, fidelity and repair through explicit
+adapters. A synthetic operator command produces inspectable prose, relationship
+diagrams and component deep dives. It verifies the machinery; live provider
+integration, full owner controls and real-project quality proof remain unfinished.
+
 ## Start here
 
 1. Read [the authoring guide](AUTHORING.md) for the reader experience and pass prompts.

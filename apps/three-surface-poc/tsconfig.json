@@ -5,9 +5,18 @@
     "outDir": "dist",
     "tsBuildInfoFile": "dist/.tsbuildinfo"
   },
-  "include": ["src"],
+  "include": [
+    "src"
+  ],
   "references": [
-    { "path": "../../packages/cap1-daemon" },
-    { "path": "../../packages/three-surface-poc-core" }
+    {
+      "path": "../../packages/cap1-daemon"
+    },
+    {
+      "path": "../../packages/three-surface-poc-core"
+    },
+    {
+      "path": "../../packages/polaris-generation-core"
+    }
   ]
 }
