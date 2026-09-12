@@ -19,8 +19,10 @@ validation rules or compiled source offsets.
 
 This kit is the practical authoring handoff for that slice. Runtime orchestration
 and generalized draft-bundle ingestion remain to be implemented through the
-applicable specification and implementation gates. The broader generator specification remains separate candidate work. This kit
-is self-contained and does not claim that specification is adopted.
+applicable specification and implementation gates. The generator specification and implementation authorization are now recorded;
+[PROJECT-STATUS.md](../../PROJECT-STATUS.md#generalized-polaris-generation) routes
+to the owning acts. This kit remains supporting authoring guidance, and its
+examples are not runtime completion evidence.
 
 ## Start here
 

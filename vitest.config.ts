@@ -20,6 +20,13 @@ export default defineConfig({
       {
         extends: true,
         test: {
+          name: '@syzygy/polaris-generation-core',
+          include: ['packages/polaris-generation-core/src/**/*.test.ts'],
+        },
+      },
+      {
+        extends: true,
+        test: {
           name: '@syzygy/cap1-conformance',
           include: ['packages/cap1-conformance/src/**/*.test.ts'],
         },
