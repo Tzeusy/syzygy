@@ -1,0 +1,459 @@
+{
+  "kind": "polaris-generator-host-overlap",
+  "version": 1,
+  "baseline": "f4589e26aed9886a5776e5ac7a1c4fad4627fd26",
+  "status": "candidate-analysis-not-authority",
+  "candidateScope": [
+    "013",
+    "017",
+    "019",
+    "020",
+    "021",
+    "022",
+    "025"
+  ],
+  "operations": [
+    {
+      "id": "H01",
+      "operation": "Retain current machine coverage admission",
+      "candidateRequirements": [
+        "REQ-polaris-generation-021"
+      ],
+      "disposition": "reuse-unchanged",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "CAP1-REQ-015",
+          "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+          "scenario": "Admission is by credential, never location",
+          "scenarioLine": 582
+        }
+      ],
+      "codeSeams": [
+        "packages/cap1-daemon/src/server.ts:createDaemon",
+        "packages/cap1-daemon/src/credentials.ts:verifyCredential"
+      ],
+      "decision": "Preserve credential-before-handler and no-data refusal on existing CAP1 routes. This establishes neither principal scopes nor generator credential lifecycle.",
+      "requiredVerification": "Probe existing missing/invalid/valid credential outcomes and same credential from distinct locations; instrument handler to prove denial precedes invocation."
+    },
+    {
+      "id": "H02",
+      "operation": "Admit generator browser reads and mutations",
+      "candidateRequirements": [
+        "REQ-polaris-generation-021"
+      ],
+      "disposition": "new-behavior",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "CAP1-REQ-015",
+          "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+          "scenario": "Admission is by credential, never location",
+          "scenarioLine": 582
+        }
+      ],
+      "codeSeams": [
+        "apps/three-surface-poc/src/browser-origin.ts:browserRequestAllowed",
+        "packages/cap1-daemon/src/server.ts:Route"
+      ],
+      "decision": "Add explicit generator route admission with session/principal/project/operation and per-session mutation proof. Existing host/origin helper allows missing Origin and has no session; it cannot authorize generation. Preserve existing route contracts through separate route registration, not a global silent replacement.",
+      "requiredVerification": "Enumerate preparation/start/progress/artifact/resume/retry/cancel/reject/review/ceremony/authorship/reversal/export/recovery routes and vary session, scopes, proof, Host and present Origin/Sec-Fetch-Site; denial must precede data/effects."
+    },
+    {
+      "id": "H03",
+      "operation": "Issue rotate revoke generator credentials",
+      "candidateRequirements": [
+        "REQ-polaris-generation-021"
+      ],
+      "disposition": "new-behavior",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "CAP1-REQ-015",
+          "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+          "scenario": "Admission is by credential, never location",
+          "scenarioLine": 582
+        }
+      ],
+      "codeSeams": [
+        "packages/cap1-daemon/src/credentials.ts:ensureCredential",
+        "packages/cap1-daemon/src/server.ts:createDaemon"
+      ],
+      "decision": "Use a generator credential/verifier boundary with owner-attended issuance and explicit scopes. Existing daemon startup mints/persists a presentable token and captures expectedToken once; do not reuse that persistence or claim it implements next-request revocation. Preserve legacy CAP1 token behavior on its existing routes until its own change is scoped.",
+      "requiredVerification": "Show no unattended generator issuance, verifier-only server storage, scope denial, declared rotation overlap and next-request identity/instance revocation."
+    },
+    {
+      "id": "H04",
+      "operation": "Host deployment and shared-origin credential isolation",
+      "candidateRequirements": [
+        "REQ-polaris-generation-021",
+        "REQ-polaris-generation-022"
+      ],
+      "disposition": "unresolved",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "CAP1-REQ-015",
+          "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+          "scenario": "Admission is by credential, never location",
+          "scenarioLine": 582
+        }
+      ],
+      "codeSeams": [
+        "packages/cap1-daemon/src/server.ts:createDaemon",
+        "apps/three-surface-poc/src/browser-origin.ts:TAILNET_HOST",
+        "apps/three-surface-poc/src/tailnet.ts"
+      ],
+      "decision": "Root must select and document generator host/process/origin boundary. Shared legacy human-open routes and startup token issuance must not become a bypass of generator-only policy. Separate protected route registration is an engineering option, not proof that a shared-process or shared-origin threat boundary suffices. No current approved scenario here names the new session/egress/audit boundary.",
+      "requiredVerification": "Freeze actual host/origin/process route inventory and demonstrate legacy credentials/routes cannot retrieve generated content or perform generator operations; verify loopback default and exposure refusal."
+    },
+    {
+      "id": "H05",
+      "operation": "Read existing Butlers project-shape source",
+      "candidateRequirements": [
+        "REQ-polaris-generation-025",
+        "REQ-polaris-generation-017"
+      ],
+      "disposition": "reuse-unchanged",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "PWB-REQ-005",
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "scenario": "Missing observation consent blocks content reads",
+          "scenarioLine": 296
+        },
+        {
+          "requirement": "PWB-REQ-005",
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "scenario": "Failed state-(2) correlation blocks without fallback",
+          "scenarioLine": 316
+        }
+      ],
+      "codeSeams": [
+        "apps/three-surface-poc/src/main.ts",
+        "apps/three-surface-poc/src/git-observation.ts:resolvePwbRepositoryBinding",
+        "packages/three-surface-poc-core/src/body-read-authority.ts:evaluateBodyReadAuthority"
+      ],
+      "decision": "Convert only successfully admitted PWB captures. Keep the fixed locator, five authority evaluation inputs and source grammar; generator JSON cannot confer permission.",
+      "requiredVerification": "Instrument actual blob reader and prove no reads on gate failure; retain existing valid-state scenarios independently."
+    },
+    {
+      "id": "H06",
+      "operation": "Admit a second project and classify provider-bound composites",
+      "candidateRequirements": [
+        "REQ-polaris-generation-025",
+        "REQ-polaris-generation-017"
+      ],
+      "disposition": "new-behavior",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "CAP1-REQ-016",
+          "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+          "scenario": "Consent is per project pair",
+          "scenarioLine": 628
+        },
+        {
+          "requirement": "PWB-REQ-005",
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "scenario": "Missing observation consent blocks content reads",
+          "scenarioLine": 296
+        }
+      ],
+      "codeSeams": [
+        "packages/cap1-core/src/consent.ts",
+        "packages/three-surface-poc-core/src/content-classification.ts",
+        "apps/three-surface-poc/src/git-observation.ts"
+      ],
+      "decision": "Introduce a separately admitted project adapter and provider/content-policy resolution; do not edit the PWB locator into a generic crawler. Existing observation consent establishes no provider consent or generic classification order.",
+      "requiredVerification": "Use two admitted project identities with cross-project denial; refuse indeterminate composite classification and missing policy/consent before provider effect."
+    },
+    {
+      "id": "H07",
+      "operation": "Screen incoming sources and generated artifacts",
+      "candidateRequirements": [
+        "REQ-polaris-generation-025",
+        "REQ-polaris-generation-019"
+      ],
+      "disposition": "new-behavior",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "PWB-REQ-006",
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "scenario": "Active repository content remains inert",
+          "scenarioLine": 404
+        },
+        {
+          "requirement": "PWB-REQ-003",
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "scenario": "Excluded source fails closed",
+          "scenarioLine": 184
+        }
+      ],
+      "codeSeams": [
+        "packages/three-surface-poc-core/src/content-classification.ts",
+        "apps/three-surface-poc/src/verbatim-route.ts"
+      ],
+      "decision": "Reuse detector/scanner functions only under their effective policy; add every-ingest screening at generated artifact, provider receipt and diagnostic boundaries. Current PWB screening does not automatically cover new stores.",
+      "requiredVerification": "Inject excluded content into every new ingest and assert permitted metadata-only retention; test partial-redaction semantics only if effective policy permits it."
+    },
+    {
+      "id": "H08",
+      "operation": "Adapt captured anchors into generic draft bundles",
+      "candidateRequirements": [
+        "REQ-polaris-generation-019"
+      ],
+      "disposition": "new-behavior",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "PWB-REQ-014",
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "scenario": "A project claim is supported without making Polaris authority",
+          "scenarioLine": 799
+        },
+        {
+          "requirement": "PWB-REQ-020",
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "scenario": "Complete model has wire parity",
+          "scenarioLine": 928
+        }
+      ],
+      "codeSeams": [
+        "apps/three-surface-poc/src/polaris-narrative.ts:NarrativeRegistry",
+        "packages/three-surface-poc-core/src/project-shape-model.ts"
+      ],
+      "decision": "Explicit compatibility adapter preserves existing PWB form; generic canonical variants do not replace it. Missing evaluation cannot be coerced from revision.",
+      "requiredVerification": "Run existing PWB parity plus adapter mutation with revision but no canonical evaluation, duplicate handles and claimed curated state."
+    },
+    {
+      "id": "H09",
+      "operation": "Serve exact requirements beside generated interpretation",
+      "candidateRequirements": [
+        "REQ-polaris-generation-019",
+        "REQ-polaris-generation-025"
+      ],
+      "disposition": "reuse-unchanged",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "PWB-REQ-011",
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "scenario": "Consented baseline requirement renders verbatim",
+          "scenarioLine": 657
+        },
+        {
+          "requirement": "PWB-REQ-015",
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "scenario": "Proposed work stays beside exact current intent",
+          "scenarioLine": 847
+        }
+      ],
+      "codeSeams": [
+        "apps/three-surface-poc/src/polaris-source.ts:resolveSourceRoute",
+        "apps/three-surface-poc/src/verbatim-route.ts"
+      ],
+      "decision": "Keep admitted exact-source route and authority bands for PWB. New generic source resolver may reference this adapter but cannot substitute generated prose for normative bytes.",
+      "requiredVerification": "Compare exact object identity and full source text; refusal cases reveal no body and preserve explanatory state."
+    },
+    {
+      "id": "H10",
+      "operation": "Observe scheduler-owned work lifecycle",
+      "candidateRequirements": [
+        "REQ-polaris-generation-013"
+      ],
+      "disposition": "reuse-unchanged",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "POC-REQ-010",
+          "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+          "scenario": "Items read at a Dolt head",
+          "scenarioLine": 243
+        },
+        {
+          "requirement": "POC-REQ-012",
+          "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+          "scenario": "Divergent export ignored",
+          "scenarioLine": 318
+        },
+        {
+          "requirement": "POC-REQ-043",
+          "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+          "scenario": "Closed but unverified",
+          "scenarioLine": 755
+        }
+      ],
+      "codeSeams": [
+        "packages/three-surface-poc-core/src/work-items.ts",
+        "apps/three-surface-poc/src/trajectory.ts"
+      ],
+      "decision": "Reuse revision-stamped Dolt observation and activity-is-not-satisfaction behavior for existing POC work. Run stages remain distinct execution records; this is not evidence for arbitrary scheduler adapter support.",
+      "requiredVerification": "Diverge passive export, vary closed work without evidence and inspect matching human/machine states at exact Dolt revision."
+    },
+    {
+      "id": "H11",
+      "operation": "Prepare and materialize generalized warranted work",
+      "candidateRequirements": [
+        "REQ-polaris-generation-013",
+        "REQ-polaris-generation-020",
+        "REQ-polaris-generation-017"
+      ],
+      "disposition": "new-behavior",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "POC-REQ-010",
+          "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+          "scenario": "Items read at a Dolt head",
+          "scenarioLine": 243
+        },
+        {
+          "requirement": "POC-REQ-043",
+          "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+          "scenario": "Closed but unverified",
+          "scenarioLine": 755
+        }
+      ],
+      "codeSeams": [
+        "apps/three-surface-poc/src/materialize-action.ts:buildTrajectoryMaterializationPacket",
+        "packages/three-surface-poc-core/src/materialization.ts:materializeWorkItem"
+      ],
+      "decision": "Implement a new typed generalized operation. Existing action is one fixed POC packet/externalRef, and lost-record lookup reconstructs a local record; neither its idempotency nor origin='reused' proves the candidate's immutable join/orphan adjudication protocol. Preserve the current bounded action rather than silently reinterpreting its record.",
+      "requiredVerification": "Concurrent starts produce one operation; scheduler success followed by record failure remains explicit orphan/uncertain outcome with no provider dispatch; exact reusable warrant is re-evaluated."
+    },
+    {
+      "id": "H12",
+      "operation": "Reserve dispatch and expose run progress/cancel/retry",
+      "candidateRequirements": [
+        "REQ-polaris-generation-013",
+        "REQ-polaris-generation-020"
+      ],
+      "disposition": "new-behavior",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "POC-REQ-040",
+          "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+          "scenario": "Items placed by observed status",
+          "scenarioLine": 637
+        },
+        {
+          "requirement": "POC-REQ-043",
+          "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+          "scenario": "Closed but unverified",
+          "scenarioLine": 755
+        }
+      ],
+      "codeSeams": [
+        "apps/three-surface-poc/src/trajectory.ts",
+        "packages/three-surface-poc-core/src/materialization.ts"
+      ],
+      "decision": "Add subordinate run/attempt control with conditional reservation and distinct scheduler observations. Neither renderer state nor existing materialization file is an execution-control transaction.",
+      "requiredVerification": "Race cancellation/late completion, uncertain dispatch and duplicate requests; prove budget and single-dispatch properties at adapter effects; generation progress never supplies normalized work/chain conclusions."
+    },
+    {
+      "id": "H13",
+      "operation": "Register and resolve provider/lifecycle/artifact adapters",
+      "candidateRequirements": [
+        "REQ-polaris-generation-017"
+      ],
+      "disposition": "new-behavior",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "CAP1-REQ-046",
+          "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+          "scenario": "Stamp is not status",
+          "scenarioLine": 1526
+        }
+      ],
+      "codeSeams": [
+        "packages/three-surface-poc-core/src/body-read-authority.ts",
+        "packages/cap1-daemon/src/consent-loading.ts"
+      ],
+      "decision": "Existing PWB authority loading illustrates independently resolved acts; it is not registration of new adapters. Implement exact declared version/owner-route resolution separately; serialized approval is insufficient.",
+      "requiredVerification": "Substitute adapter implementation/version and registry subject; fail before effects and preserve explicit unknown capture outcome."
+    },
+    {
+      "id": "H14",
+      "operation": "Protect audit and enforce prospective effect revocation",
+      "candidateRequirements": [
+        "REQ-polaris-generation-022",
+        "REQ-polaris-generation-025"
+      ],
+      "disposition": "unresolved",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "CAP1-REQ-062",
+          "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+          "scenario": "Stale evidence degrades",
+          "scenarioLine": 1872
+        },
+        {
+          "requirement": "PWB-REQ-005",
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "scenario": "Failed state-(2) correlation blocks without fallback",
+          "scenarioLine": 316
+        }
+      ],
+      "codeSeams": [
+        "packages/cap1-daemon/src/server.ts",
+        "apps/three-surface-poc/src/main.ts"
+      ],
+      "decision": "Select concrete protected audit/stop-control boundary before live effects. Current same-user state files and startup credential are not protected audit. Existing body-read gates do not establish immediate revocation for provider/worker effects. Root owns this design disposition.",
+      "requiredVerification": "Demonstrate denied writes by generator actor, audit outage refusal of new effects, still-functional protective stops and next-effect fresh admission after revocation."
+    },
+    {
+      "id": "H15",
+      "operation": "Change an existing adopted route or PWB behavior instead of preserving adapter boundaries",
+      "candidateRequirements": [
+        "REQ-polaris-generation-019",
+        "REQ-polaris-generation-021",
+        "REQ-polaris-generation-025"
+      ],
+      "disposition": "required-signed-spec-amendment",
+      "approvedScenarioReferences": [
+        {
+          "requirement": "PWB-REQ-005",
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "scenario": "Missing observation consent blocks content reads",
+          "scenarioLine": 296
+        },
+        {
+          "requirement": "PWB-REQ-011",
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "scenario": "Consented baseline requirement renders verbatim",
+          "scenarioLine": 657
+        },
+        {
+          "requirement": "PWB-REQ-014",
+          "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+          "scenario": "A project claim is supported without making Polaris authority",
+          "scenarioLine": 799
+        },
+        {
+          "requirement": "CAP1-REQ-015",
+          "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+          "scenario": "Admission is by credential, never location",
+          "scenarioLine": 582
+        }
+      ],
+      "codeSeams": [
+        "apps/three-surface-poc/src/git-observation.ts",
+        "apps/three-surface-poc/src/polaris-narrative.ts",
+        "packages/cap1-daemon/src/server.ts"
+      ],
+      "decision": "Conditional boundary: any proposal that broadens existing PWB reads, replaces its wire meaning/exact-source behavior, or changes adopted route outcomes must take an explicit signed semantic amendment. The selected additive adapter design avoids those changes; this row is not a claim that an amendment was performed or currently required for every new route.",
+      "requiredVerification": "Review actual diff against each cited scenario; any changed promised outcome changes this conditional row into a concrete amendment subject before implementation."
+    }
+  ],
+  "limitations": [
+    "Approved scenario references identify preserved related obligations, not implementation authorization for new behavior.",
+    "Unresolved host and protected-audit design choices remain open.",
+    "No owner N/A, specification adoption, provider consent or implementation act is recorded by this artifact."
+  ],
+  "approvedSourceDigests": [
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "sha256": "65b66c913cd2650881a9df8cb34a3c63b3f518041e83f45d2451980d9f1d0448"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "sha256": "f0eda5b9ec8766e2b4b961fb2940c4ece7aa97b1c397e10d570abb04f5dd960e"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "sha256": "42d073cdeaf7fa7940c5e822b05213267ec1d0064faaaad092f21d264b76a2b1"
+    }
+  ]
+}

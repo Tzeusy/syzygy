@@ -1,0 +1,96 @@
+{
+  "kind": "polaris-generator-rfc1-4-coverage-confirmation",
+  "version": 2,
+  "status": "PASS for R14-1/R14-2 candidate repair only; not adoption or whole-inventory discharge",
+  "priorEvidence": {
+    "path": "docs/evidence/polaris-generator-rfc1-4-coverage-2026-09-12.json",
+    "sha256": "e6f7c2b6a65ac5a5705aa1efbe7553014e31b36fd7b515269745f3bf7dfefd79",
+    "preserved": true
+  },
+  "subjectBindings": [
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "sha256": "187fe3e00f57a8a8f262b3f608f8bd837960b76a3189543992885ecc4d49476f"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/ASSET-CONTRACT.md",
+      "sha256": "0804b40250c7bfb284bac97567e0278cfd16e6c8b5a5d5c25db28e8e7efb60d9"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/APPLICABILITY-DECISIONS.md",
+      "sha256": "faeae75a1b265667db5969849dec52f8796da69af1407652b053b6554d26b23e"
+    }
+  ],
+  "sourceBindingsRechecked": [
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md",
+      "sha256": "646e60cce00ce329852644f0094781351bc33de669e577e39856abba15b8d034"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0002/challenge-lifecycle.md",
+      "sha256": "297da306408d1659bff47f17f66e7780394180e57122e48dc202e6efc3f95245"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0002/reconciliation-chain.md",
+      "sha256": "dd5ea2b3bb818bd7fbf2087332d4648daacee136c0218c1731f149a0458429c0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md",
+      "sha256": "b3ec3946d23f745668fa73cb6ca4c8f6555bf964d65763df0d31b62167e27566"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0002/snapshot-and-evaluation-core.md",
+      "sha256": "661034851c288f2dffea4f45b8f979c61c87a38fff72297f0682d3b92cf01bb1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0003/governance-homes-and-owner-acts.md",
+      "sha256": "a9573ba6efb113ae053c7ddbc0a7b9e72f292470f2093fbc47b7a04eec75cfab"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0003/manifests-and-namespace.md",
+      "sha256": "3874e0e08eeeb2042eb3ce1b6760170ee073a0dcdafa253bec44c32828e312a9"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0004/execution-record.md",
+      "sha256": "336e1c2c28cfb46121acb1ac90f03cb556e089601489095e847feddf6bca44d1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0004/fidelity-joins-and-mappings.md",
+      "sha256": "847f91a9bcb8651ab85d4d798723ac2094ea805f93fa98627aa6bd1b4e93951a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0004/general-contract.md",
+      "sha256": "b21fc950103964c34e2f9b2d78c97ac8e03720f311738e0e6323afb29b8d6f0e"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0004/named-adapters.md",
+      "sha256": "5a816aa750379358cf805ca8c9fd1cf75b6fd269625589f697a2f11ee759a353"
+    }
+  ],
+  "findings": [
+    {
+      "id": "R14-1",
+      "outcome": "candidate repair confirmed; owner applicability adoption still pending",
+      "evidence": "| GNA-1 | RFC7-35 workspace artifact, arrangement/truth separation and workspace-entry behavior; matrix rows RFC7-35.c01-c03; the workspace manifest residence, closed fields, project-identity references, arrangement/local-state and truth-separation consequences of RFC3-10 through RFC3-13 | No workspace artifact or editor is introduced. Project selection is not workspace arrangement. Existing workspace obligations remain for their owning capability. |",
+      "assessment": "GNA-1 now explicitly names RFC3-10 through RFC3-13 workspace manifest residence, closed fields, project identity references, arrangement/local-state and truth separation. The preceding scope states one-project generation and no workspace composition. This addresses the missing proposed subject without inventing a workspace feature or claiming an effective owner N/A."
+    },
+    {
+      "id": "R14-2",
+      "outcome": "candidate repair confirmed; implementation verification outstanding",
+      "requirement": "REQ-polaris-generation-003",
+      "scenario": "#### Scenario: Typed source relations are not flattened for layout\n\n- **WHEN** admitted source relations include declared dependency, operative depends_on, implementation mapping and multiple placed_in relationships\n- **THEN** adaptation and presentation preserve each owning type, direction, evaluation and nonfunctional placement cardinality\n- **AND** explanatory curated edges cannot mint kernel relations or replace unsupported conversion with a guessed unique placement",
+      "mandatorySupport": "A source-to-asset adapter preserves the owning kernel's typed relation identity,\ndirection, multiplicity and evaluation. A declared dependency is not coerced into\nan operative depends_on edge; neither is an implementation mapping. Multiple\nplaced_in relations remain nonfunctional and cannot become a guessed unique\nplacement because the layout prefers a tree. Curated explanatory edges use their\nown supported meanings and do not mint or substitute kernel relations. Unsupported\nconversion is unresolved, not a lossy relabeling into an attractive diagram.",
+      "assessment": "Owning typed identity, direction, multiplicity and evaluation are explicit in the asset contract. The named scenario tests dependency kinds, implementation mapping and nonfunctional placed_in, and forbids guessed unique placement. This addresses the source-to-asset ambiguity; runtime tests remain necessary."
+    }
+  ],
+  "counts": {
+    "currentRequirements": 29,
+    "currentScenarios": 154
+  },
+  "remainingActualFindings": [],
+  "limits": [
+    "No additional defect was identified within the two requested repair subjects. This is not a new complete RFC1-4 limb audit.",
+    "The v1 scoped mappings and 904 quoted locator units remain preserved; v2 does not silently refresh their old candidate subject into a whole-clause approval.",
+    "Formal package review, owner applicability adoption, specification/implementation authority and actual generator completion remain separate."
+  ]
+}

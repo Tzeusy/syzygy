@@ -1942,6 +1942,18 @@ POLARIS_NO_SIGNAL_PATHS = (
 )
 
 
+POLARIS_GENERATOR_APPROVAL_LABEL = (
+    "ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION"
+)
+POLARIS_GENERATOR_APPROVAL_SUBJECT = (
+    "docs/evidence/polaris-generator-approval-offer-2026-09-12.json"
+)
+POLARIS_GENERATOR_APPROVAL_ACTS = tuple(
+    f"{DECISIONS}/POLARIS-GENERATOR-{kind}-ACT.md" for kind in (
+        "SPECIFICATION-ADOPTION", "APPLICABILITY", "IMPLEMENTATION-AUTHORIZATION")
+)
+
+
 def _act_subjects():
     out = []
     for e in registry_current():
@@ -1974,6 +1986,10 @@ def _act_subjects():
         ))
     out.append((POLARIS_NO_SIGNAL_LABEL, POLARIS_NO_SIGNAL_SUBJECT,
                 re.compile(re.escape(POLARIS_NO_SIGNAL_LABEL)
+                           + r"\s*:\s*`?([0-9a-f]{64})")))
+    out.append((POLARIS_GENERATOR_APPROVAL_LABEL,
+                POLARIS_GENERATOR_APPROVAL_SUBJECT,
+                re.compile(re.escape(POLARIS_GENERATOR_APPROVAL_LABEL)
                            + r"\s*:\s*`?([0-9a-f]{64})")))
     for label, subject, _act in PWB_EFFECT_ACTS:
         if not any(l == label for l, _rel, _pat in out):
@@ -2126,6 +2142,8 @@ ACT_QUOTE_EXEMPT = (
 #: preflight and packet) carried a qualifying banner, so only the live
 #: offering and the craft install record remain registered.
 ACT_DIGEST_COPY_FILES = {
+    "docs/design/POLARIS-GENERATOR-SIGNOFF-OFFER.md":
+        (POLARIS_GENERATOR_APPROVAL_LABEL,),
     f"{CANDIDATES}/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md":
         tuple(f"ACCEPT FOUNDATIONAL WAVE {w}" for w in WAVE_IDS) + (
          "CONFIRM CRAFT AMENDMENT: CC-TEST-2",
@@ -2197,6 +2215,21 @@ def _activate_pwb_state1_act_copy_registry():
 
 
 _activate_pwb_state1_act_copy_registry()
+
+
+def _activate_polaris_generator_act_copy_registry():
+    """A prepared offer grants nothing; performed copies must remain complete."""
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    for act in POLARIS_GENERATOR_APPROVAL_ACTS:
+        if not os.path.isfile(os.path.join(ROOT, act)):
+            continue
+        labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+        if POLARIS_GENERATOR_APPROVAL_LABEL not in labels:
+            ACT_DIGEST_COPY_FILES[aggregate] = labels + (POLARIS_GENERATOR_APPROVAL_LABEL,)
+        ACT_DIGEST_COPY_FILES[act] = (POLARIS_GENERATOR_APPROVAL_LABEL,)
+
+
+_activate_polaris_generator_act_copy_registry()
 
 
 def _activate_pwb_truth_amendment_act_copy_registry():
@@ -5736,6 +5769,17 @@ def selftest():
     cases.append(("CG-7e performed PWB truth act requires aggregate record copy",
                   row[0] == "FAIL"
                   and any(PERFORMED_ACT_RECORD in d for d in row[4])))
+
+    for act in POLARIS_GENERATOR_APPROVAL_ACTS:
+        link = (POLARIS_GENERATOR_APPROVAL_LABEL, POLARIS_GENERATOR_APPROVAL_SUBJECT,
+                act, _activate_polaris_generator_act_copy_registry)
+        row = _selftest_pwb_act_copy_registry("valid", link)
+        cases.append((f"CG-7e generator {os.path.basename(act)} copies registered",
+                      row[0] == "OK" and row[2] == 2 and row[3] == 0))
+        row = _selftest_pwb_act_copy_registry("missing-aggregate", link)
+        cases.append((f"CG-7e generator {os.path.basename(act)} missing aggregate refused",
+                      row[0] == "FAIL"
+                      and any(PERFORMED_ACT_RECORD in d for d in row[4])))
 
     row, registered = _selftest_pwb_effect_act_copy_registry("valid")
     cases.append(("CG-7e performed PWB effect act registers exactly its two copies",

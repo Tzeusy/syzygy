@@ -1,0 +1,2548 @@
+{
+  "A1": "explicitly absent",
+  "acts": {
+    "APPLICABILITY": "Adopt GNA-1, GNA-2 and GNA-3 only within APPLICABILITY-DECISIONS.md's exact scope, and the exact conditional coverage references in the bound offer. No blanket waiver; conditional obligations remain attached to future enablement.",
+    "IMPLEMENTATION-AUTHORIZATION": "Authorize the full EXECUTION-PHASES.md implementation goal, including protected effect host, complete owner experience, two-project and changed-source proof obligations. Phase A alone is not completion. Real-project reads, provider egress and destination writes remain separately admitted; no effect, production release, broad remote access or observed-project code execution is authorized by this act.",
+    "SPECIFICATION-ADOPTION": "Adopt the exact specification-role artifacts in the bound offer."
+  },
+  "baseline": "f4589e26aed9886a5776e5ac7a1c4fad4627fd26",
+  "conditional_references": [
+    {
+      "path": "docs/evidence/polaris-generator-non7-current-binding-bridge-2026-09-12.json",
+      "reference": "json:/ownerScopeSubjects/proposed-disabled-computed-scope",
+      "selected_sha256": "31db6939bbeb71055b73be5c6ee34d8c6da2f517e8f8ce6c15456fc58f464488",
+      "sha256": "eb96f9265808c21fd952184c5947ed460a0bc632eb99341ee38c88234d627882"
+    },
+    {
+      "path": "docs/evidence/polaris-generator-non7-current-binding-bridge-2026-09-12.json",
+      "reference": "json:/ownerScopeSubjects/proposed-nonintroduced-consumer-scope",
+      "selected_sha256": "e55452ccde4b21e06bbabc22c8cf7d1c436c6424dca49e83194c9256922fed95",
+      "sha256": "eb96f9265808c21fd952184c5947ed460a0bc632eb99341ee38c88234d627882"
+    }
+  ],
+  "governing": [
+    {
+      "path": ".syzygy/governance/contracts/candidates/00-README.md",
+      "sha256": "949ea51f0bfc715d7c1ed7d21faf26b97057c86674443bfb7b60deb2af27f529"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/01-REV9-ADVERSARIAL-FINDINGS.md",
+      "sha256": "296b0669824fff0e4fd6356d8ac9b98d2ef02c750b4ae50e109187418f09f008"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/02-OWNER-DIRECTION-RECORD.md",
+      "sha256": "17f1e27cc420a09154151ee28be21d8f50c3a14fb316fb8b131fc150d3fbb203"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/03-ACTIVE-CONTRACT-COMPACTION-REPORT.md",
+      "sha256": "ec00d71c6d4260612be166e0a8a9fefaa82acc5750a1a371e37666b88ab5d4db"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md",
+      "sha256": "bed62d24df94e11dd7bb5db8581e0c2bc65ef3bd06bfa2c4879e68cec24cab97"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/05-CONTRACT-INDEX.yaml",
+      "sha256": "0772fa4889aae40791833d752c884d04df58cb5a5d29622e33bcc1214ddf7c3a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/06-CONTEXT-LOAD-MAP.md",
+      "sha256": "aea41e5145b3a60725488aa59a0c26c4ddaa94f4171fef8a6b3b0ba746d37fc0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/07-AUTONOMY-EXTENSION-REGISTER.md",
+      "sha256": "43c654caad2eb5cecb6d62367076d7cebd5489525c83fcffada06a5079f40a76"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/08-OPEN-QUESTION-TRIAGE.md",
+      "sha256": "c3f1fa566935ee41d4daf24f4d4bf3dbad56dfb23cbae7e2b85cdd5327fd5a53"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/09-OPEN-SPEC-READINESS-REPORT.md",
+      "sha256": "0216ecb243580587c0007624cfbb40a5d88ad67dc16685dd45796342e49f8594"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/10-EXIT-REPORT.md",
+      "sha256": "06f31f93f626649348f51b73560994393ef813689218148562f400d4b512e112"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/ACCEPTANCE-PHRASE-REGISTRY.yaml",
+      "sha256": "0783ab424911090aab076a419fcb7fdc315c169e41bf692c817ac38effc560e4"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/ACTIVE-CONTRACT-MANIFEST.txt",
+      "sha256": "82afd6266cba94a393343f267b763df564a6c3dcff577a98fc5954adb4977460"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/CAPABILITY-1-CHARTER.yaml",
+      "sha256": "acb6290f904c9cd8f8c07a2e1759645b59e0b2ae64a6f41aeaceedfb88ebad01"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/CAPABILITY-1-GENERATED-VIEWS.md",
+      "sha256": "a75b31cb57e2808fed97e696c8273de63e058c9476ece94083ec532bd9dbb2da"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/COMPACTION-CHARTER.md",
+      "sha256": "570114377d128fb7d6a1f407e6429848dc4663572b68702eec601c8a9d80817b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/CONTEXT-BUDGET-REPORT.md",
+      "sha256": "09b0472a36a44a07f75e69d17ba49b5b0d758a9f69162f7fc4c44741f028a477"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/CONTRACT-DEPENDENCY-INDEX.md",
+      "sha256": "c9b3b484589ab2e83b13a0c57a6999827852945fade9c7da6dc9418cc4a8f27a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/DEFERRED-WAVE-POSTURE.md",
+      "sha256": "3da010ce16f6eb5f653ea4c3e481d34e6b1331e008620457b3bb092442bfce47"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md",
+      "sha256": "9ed58e754c5d56c892118fd491365234ba126572bd20de8b71a5ad54f7a7066d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-DRAFT.md",
+      "sha256": "69cd76d3800afadc6cd21094ba6fabd015185cc7de6f1dcae767aae32e7dcec8"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md",
+      "sha256": "ed47c5363d3b4514a312f6c4064c248bc4bb527bde884c1f2b97902e59eca3f6"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/FIRST-OPENSPEC-SEQUENCE.md",
+      "sha256": "9319189aac5fb879d0c7f0436879ba6e3981551e77ab2cb94576fc87f04852c9"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-SEMANTIC-DELTA.md",
+      "sha256": "b4e443adebab08de9fdd0826b2657f18c1da5f59816a0da806de88249773c377"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/HISTORICAL-INDEX.md",
+      "sha256": "5a99c644edc2b36fbabbd0fdce1fef0db5cb276c8c2d2fbbd2ead6012b030bab"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/HOW-TO-AUTHOR-A-SYZYGY-SPEC.md",
+      "sha256": "5b7e46d7e96e20494924431ec269e7602701b5b45a01ecd13505751187bed0c2"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/LEAD-SWEEP-NOTES.md",
+      "sha256": "80d76ede689fefbde5cc9b4fbf77ab527a2f208abce2cbef3ec77ac72dad69aa"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/POLARIS-POC-BOOTSTRAP-OBSERVATION-EXCEPTION-SEMANTIC-DELTA.md",
+      "sha256": "40c67becba9ec950ced9d7678a8cbc5d723fd4395cf3cd2b222e516cdbaec1d5"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/POLARIS-TRUSTED-BOOTSTRAP-OBSERVATION-SEMANTIC-DELTA.md",
+      "sha256": "1ed53443daf5c320f2cd5b9a440470497dca2fd8bf2c61620058c69353155f3a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/PROJECT-OVERVIEW-ACT-4-SEMANTIC-DELTA.md",
+      "sha256": "11d5415b475c1fdf33fcc6ab1a619f873c78f322f9986871ef90fbf318b94645"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/README.md",
+      "sha256": "6162230040d564cd37eb9922c95e8cc3cdce1c5b0ba74f38dec1899c466d1e2c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/ROUND-ESTATE.md",
+      "sha256": "ffa669a2f699e308a6f63d445863203b8491469f8bc090d5a014ffe6e2089fd1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX-REV10.md",
+      "sha256": "1732f45fa113c6e40e7e1be5af2053b0e2c225467d45f54be7e796c5ff6f950a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+      "sha256": "cc5c93550fc71a4d210ed5ec85ee3b9f5e8b7fcd8fb535cd4756ed4313849e86"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/TASK-ROUTER.md",
+      "sha256": "188e0a8ca2b0a872373f9f218bb2432c4595af4299deedc7792439af5579c5f6"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/WORKER-REPORT-DIGEST.md",
+      "sha256": "afd403bdb6ed5e9bff9e03c8c0a6ecbacd125b94e7a92af0ca4edc8778f33b91"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-1-polaris-narrative.md",
+      "sha256": "02dd9a7413d91c46432519a0a5ccf1eda43d443e3226af8a82c71e9681c2fd1f"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-10-trajectory-lifecycle.md",
+      "sha256": "df10b814b084eb035179148f9c240cd945ff06a1b739f1276406ec3c7ee08949"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-2-trajectory-adapter.md",
+      "sha256": "1511475cac618e227ff96f394fd36eff87a072701ccb139fbbe44e8aa740c211"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-3-orrery-lens.md",
+      "sha256": "002c42cad016e2b9cf3243dc5f51c25b4a027591b9e19d9d24d85cb9995ad22c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-4-execution-profile.md",
+      "sha256": "cf901b6c132d6ee642a0852278344d6293a78e66bb66277f48e3e1893ad51819"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-5-cross-project-mission.md",
+      "sha256": "3b0ef5d83e5b1e584a0de1fa15997998a2e5b8c950ada0f5afedff1aee99a3cb"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-6-doctrine-amendment.md",
+      "sha256": "3970c11bad78d28656b25e6f851db72a4280274c9938a1d7bdf34c710dc660aa"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-7-kernel-identity.md",
+      "sha256": "d78371cd6cb127c4088ed4bf772f205c90c935f133591c9690d55d5fb8130435"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-8-openspec-authoring.md",
+      "sha256": "2846e9f71fe79adf05522332c876cf7b5caf08815174d72a62f5551af0409a49"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-9-evidence-adapter.md",
+      "sha256": "48072a3ff634c4075b9379f764badb7ac3e3fdcb7e85f78b3f4f3164fb224400"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/semantic-equivalence-fixtures.md",
+      "sha256": "c2dab3d2724d9a92228941cb5d8e07cdb9b9bfe2336c1bdd61aaf9297589b059"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/ACT-SEMANTICS.md",
+      "sha256": "3d97fd30c592e70d4255d0f0155dd62357f056611484f3a88c6ae159f1a8c6e4"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/CANDIDATE-TRANSACTION-REPORT.md",
+      "sha256": "459ffe66474d6ba80e1890d9f1b8090f3963a0de23390f2804bfd36037069c02"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/CONTRACT-AMENDMENT-MANIFEST.txt",
+      "sha256": "480c06d79f237f3a8d18d40a3de97e772a2da70db6cf976578eeab5c177cc4b1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/IMPACT-LEDGER.md",
+      "sha256": "4144b8499966062852b7092c97a61df507e194c48cc484fe0302385d40c61911"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/OWNER-SIGNOFF-PACKET.md",
+      "sha256": "bcaa63a81541b5b274d429ec2eee0c8c5334206133efb8234ad02c7fb2d95024"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/PWB-COVERAGE-AMENDMENT-MANIFEST.txt",
+      "sha256": "5cda673c604f298cc45d05ca358b2cc410b6a74f1664c55f4f1056ce8c1f45ea"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/REVIEW-BRIEF.md",
+      "sha256": "bcd8db3050a25663035a05fc2a80df22605cf3306d570c7e12013ea4ec5875ee"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/TRANSACTION-MANIFEST.txt",
+      "sha256": "1885a323c659364f98e81cdf04479cebfecf5b22d350928d046ebb5b7c5268f6"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/README.md",
+      "sha256": "be52d35946b786e44d218c4f110052dc82d4bb023d7e4df5e23c3ac25d3bdb00"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0001-history.md",
+      "sha256": "ba796ab15974a3fd2d5a49159e8f5d881c38409648c931056a9325bbc9242ad8"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0002-history.md",
+      "sha256": "4bb3bf14da44b125f07df763ea453fc8933179fc8fb6abd7dffcbf83dbd64def"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0003-history.md",
+      "sha256": "d678b8a0d5acb19d72e6b865f63ce1f69bb09448690d7c2b0649a23e208dcc39"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0004-history.md",
+      "sha256": "b5572cc5f73f0edabad63f22fef3091155e389664721743518a3be1f1a478412"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0005-history.md",
+      "sha256": "b283e7d55e2dd2f85c080515b9948be0eab33b06c555cad3999a5c8d1b966304"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0006-history.md",
+      "sha256": "721ff40e1ee2975666a588ad82ee83b2ff8ce6b640340b25f9f6a87afd4dc48b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0007-history.md",
+      "sha256": "c328b6157dc8d3cd8d04b0c9b572b12e180c323a3f924b34ab834a35b17f7b02"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0008-history.md",
+      "sha256": "22433398383591d61a91d720e39b83b7a6a37d658d02c5e353e26f8c60a9ea47"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0009-history.md",
+      "sha256": "f16022b590959c9b4f16919f5143de988e47e508e60ed4d5e95bcdb2f05511d5"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0010-history.md",
+      "sha256": "aaa670c70a062b84a8b3e1b5b267c47e3697a8fc9e2ef8918cb0490f36ac92bc"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/TASK-TO-CONTRACT-INDEX.md",
+      "sha256": "815a8ee59d2694772c3aee19a9a860ed818fe3d746af83f8fd72f481268c659d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0001-project-graph-identity-state-planes.md",
+      "sha256": "34f930c5f2ac94e5b6b0b1b9ee33f466acb090a774d61939f1bbc47b6e8db096"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0002-observation-evaluation-reconciliation.md",
+      "sha256": "3f57935cb48f039aab51569513ed72033f3524d1fc6ec86f762424c17235d74b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0003-project-workspace-manifests.md",
+      "sha256": "90c1279d0047c6ae103e5d798f7f354a90531bdab0d16eef966c7d3e320c970c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0004-observation-sources-evidence-adapters.md",
+      "sha256": "bb0fce86dc8640ea2e3238e7cd3c6bb3c69e9cb693ccf621d4736ccf54d7b914"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0005-authentication-consent-execution-profiles.md",
+      "sha256": "ebfe7401f235b4a74d6d262b6e30936a6fb2eafccb250e2ca425bfe975115263"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+      "sha256": "20bd414e1b303c029f841438aae9985239c3822c5ebd5da8aa019ded458f6096"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0007-polaris-intent-surface.md",
+      "sha256": "2b94c3b77ba98e9c0503278eb4f0a9cc1360bb9c5d4cfd1604650e62f48b0d11"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "sha256": "74f59fdebbddd4a3dada36f44759aaad2854129ff5338a4c12be8290ba3fa6ec"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0009-orrery-map-surface.md",
+      "sha256": "ceabc3e37d4b9821dabf9bdb7d0ec889ac85da93d618a53ff668c1fb5d4a9606"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/matrix-rows/RFC-0001-rows.md",
+      "sha256": "d4ce392e53db2b7b2ae53c8b00ac064e40b1fa04e0426ff520006aedf06cca88"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/matrix-rows/RFC-0002-rows.md",
+      "sha256": "d2dc2dae14cc86a2dbc3a6ca43b16643c97a30d77034e29b13ffd857fdce97f9"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/matrix-rows/RFC-0003-rows.md",
+      "sha256": "5590ebeeef6a2921452889c3e4f872f5f2ef8fdec7bd64c0f14fc510d3622a86"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/matrix-rows/RFC-0004-rows.md",
+      "sha256": "c35584cf7a5929d997f7880998844d39d475f8a01fa9d827353ff4c309d212f4"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/matrix-rows/RFC-0005-rows.md",
+      "sha256": "0ab7a508f5929aafd5159e687c2d7f88e56f2c5938c22efd6608f6bbaa6f1a62"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/matrix-rows/RFC-0006-rows.md",
+      "sha256": "91c588d9e810047f99e1116eabb7465bdcf0efa8505ffed53ec72e21ee5fd722"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/matrix-rows/RFC-0007-rows.md",
+      "sha256": "6f8113d7e7b9f72b1647c60d9b3d853317dc2761a3fbbb1ee1777be36957f4da"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/matrix-rows/RFC-0008-rows.md",
+      "sha256": "edd75800ed3e5b1130c8bc30beea0c4e2c20e02dba9765bb6ad8fade38c1ce7f"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/matrix-rows/RFC-0009-rows.md",
+      "sha256": "69c08b9c85a94bb0b2ba3ae26b5b3fe4e44564141af7f1c93393a8e42a3ec42f"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/policy-candidates/CC-REV-2-LAGGING-SPECIFICATION-AMENDMENT-OFFER.md",
+      "sha256": "1ab6639cc1a96402fd68f3f5314bfdb2a9cef0f32466b04cf07fd4b013a50709"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY-COMPACT.md",
+      "sha256": "864514aa4cceed8e1b69e833f6e41a56a86e2d589eb6b3f7bc7bfc327f45484b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md",
+      "sha256": "182d8e8d6629c8625b68b44f306082dd717e0fcc93aa925a189fcf734893a8f2"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/policy-candidates/DOCTRINE-AMENDMENT-ACTUATOR-DEFINITION.md",
+      "sha256": "6ff5fbac8116ac41d6905db3bdacd32e625cbb6510c37429f31bd7da8894b1c8"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/policy-candidates/DOCTRINE-EDITORIAL-AMENDMENT-GLOSSARY-CITATION.md",
+      "sha256": "199271a449688bc6669879751b79c3c1f39a97656ce2783d24ea1994effe48f0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/policy-candidates/NORMATIVE-CHANGE-WORKFLOW.md",
+      "sha256": "757ba5ec153b96e7fffbce386c852fb41eed7ca94bb3bc2996b182471a64c4b1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/policy-candidates/SEMANTIC-DELTA-TEMPLATE.md",
+      "sha256": "b03932c143f87b51012b520f0e2210581f70080f736688ec5bde5bdf49481037"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/policy-candidates/SHAPE-TO-SPEC-IMPACT-POLICY-CANDIDATE.md",
+      "sha256": "cd6ec838e701f0258889d0c3c2776fc91fe1686829379b789ae5b151b04c27c0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md",
+      "sha256": "6093dbbe519dad6c35a5aaeeb31355d2e435d76ec4f0c2c9affb0d1e5b6b5621"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/policy-candidates/TERM-REGISTRY.md",
+      "sha256": "4ab5e5b68406c55df8168f76c3e77bd6966c847e4ec01d503174196adc3767c5"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md",
+      "sha256": "e45be8999697547b7aac0cecc9e14a1f088fcbf7993891cbbeb24f0e679589be"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-effect-acts/CANDIDATE-REPORT.md",
+      "sha256": "45b508f71c5243cc517410e883422a0eab86b4522bdc1760f94fe8ad8361348e"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-effect-acts/OWNER-SIGNOFF-PACKET.md",
+      "sha256": "c77936c5ae09ccc12f42eb0c7f6d9c604fa378c5e60c441051bec680d8f3a198"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-effect-acts/PWB-EFFECT-ACTS-MANIFEST.txt",
+      "sha256": "d259c3798b2961489d31c55af09e86c9711c0cfd4e5ec626211fdc2447a54150"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-state1-amendment/CANDIDATE-REPORT.md",
+      "sha256": "87230f320f578605abff8834dfe5406d7fab7664dd23bf0eac323be46b71de34"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-state1-amendment/IMPACT-LEDGER.md",
+      "sha256": "787568be704b2c4d436314243607a22167343f7a694960e8c95dd881908e1334"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-state1-amendment/OWNER-SIGNOFF-PACKET.md",
+      "sha256": "ac4ea8094c2f4a0b9c93566a17f52b7a0ed804b140c4c9f9b3752822f37950b7"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-state1-amendment/PWB-AMENDMENT-MANIFEST.txt",
+      "sha256": "14a84abadf0ba96d968e99bd5b60302895e8a44e6e005b4d2fc76345e7863b1e"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-state1-amendment/REVIEW-BRIEF.md",
+      "sha256": "a9441883955604ccc234363dd92ff8e25924b28337cb415867bb1331939a2a35"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-state1-amendment/SEMANTIC-DELTA.md",
+      "sha256": "049a92b25c2fec111307f126a0023a19ee94fab0d2e56ef66ad6b9b8a5a5d40b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/IMPACT-LEDGER.md",
+      "sha256": "c553a2abeac71b06b8bc26c869266fb95e86ef1177de8124d726ecbd5b6961df"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/OWNER-DECISION-PACKET.md",
+      "sha256": "a861a9c256c99fcd08e9ca7b5fd941bd53966a3a4beaad2cd455f0dc81b02c29"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt",
+      "sha256": "97e3d8f833d3448efb5a35b8d7bd3419b2e17d790f170a5d19976a6e076d578a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/PWB-EFFECT-AMENDMENT-MANIFEST.txt",
+      "sha256": "e0b5f285fa83b9d756917847e3f3277a3f104a3a7ec5868b951658c54c68a3a3"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/REVIEW-BRIEF.md",
+      "sha256": "9012749eecf57261aed1bc845c851f07e4515ad8efa1cafd838cb08634a294f4"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/SEMANTIC-DELTA.md",
+      "sha256": "aab5aaa2d479d0e4b3a026779201cf7dcbd08a575dfc440060ccfc0efaaae856"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/pwb-walkthrough/OWNER-WALKTHROUGH-PACKET.md",
+      "sha256": "3d11727fc9d951d48d259e2a8751d3ef0636d15615fe440f8b21521ff94dac00"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/reviews/DISPOSITIONS.md",
+      "sha256": "3ebfc6346224e6886aaba0a351127649721268ec1127f60c9dc19e8f165a464b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/reviews/rev10-boundary-review.md",
+      "sha256": "3c2dce1208b85df0402d212cfe399c93b2dbdb1d452d5663fd671930a4dad917"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/reviews/rev10-confirming-review.md",
+      "sha256": "0d741a61bf1cd8140f1e67a0fdf560c09a6e88fb31a9bec9152474c9bc40a02a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/reviews/rev10-digestibility-review.md",
+      "sha256": "0a2e6f04a25b2b8c84863978fc144059915e33f00c4dca723465d83c30d93a4d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/reviews/rev10-equivalence-review.md",
+      "sha256": "81ef0c060fabb7feb3b9257f7606fb4091a06ab3ba8048dc493758132847285d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/reviews/rev10-portability-review.md",
+      "sha256": "6063bee9c6fc834a76834b8dbaec70083bde0ef76228cf6cd29b837b70ff3fb7"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/reviews/rev10-safety-review.md",
+      "sha256": "638016fd52fb835d5f00bbf46a3663f98675a6d9cbccd87a1f47b6115ddcfb99"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/reviews/rev10-transaction-review-resend.md",
+      "sha256": "620eeea67e351352e56eef98dd163adf9df0adac44955c40cf0a946ff3df3757"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/reviews/rev10-transaction-review.md",
+      "sha256": "28c03d9604a3eef8299f22e8be41ad27591d40b06a24dbd3330e8355718353f8"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0001-project-graph-identity-state-planes.md",
+      "sha256": "646e60cce00ce329852644f0094781351bc33de669e577e39856abba15b8d034"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0002/README.md",
+      "sha256": "d35e8db729630d1e1a3604c0899ca23f23367fe4edffeec6772341130069e94c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0002/challenge-lifecycle.md",
+      "sha256": "297da306408d1659bff47f17f66e7780394180e57122e48dc202e6efc3f95245"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0002/reconciliation-chain.md",
+      "sha256": "dd5ea2b3bb818bd7fbf2087332d4648daacee136c0218c1731f149a0458429c0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0002/rendering-vocabularies.md",
+      "sha256": "b3ec3946d23f745668fa73cb6ca4c8f6555bf964d65763df0d31b62167e27566"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0002/snapshot-and-evaluation-core.md",
+      "sha256": "661034851c288f2dffea4f45b8f979c61c87a38fff72297f0682d3b92cf01bb1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0003/README.md",
+      "sha256": "10959f7ccbfcc57827dbb4268051a462e5bba66a57086158d3e2c038ddd2ca95"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0003/governance-homes-and-owner-acts.md",
+      "sha256": "a9573ba6efb113ae053c7ddbc0a7b9e72f292470f2093fbc47b7a04eec75cfab"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0003/manifests-and-namespace.md",
+      "sha256": "3874e0e08eeeb2042eb3ce1b6760170ee073a0dcdafa253bec44c32828e312a9"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0004/README.md",
+      "sha256": "716dd75fdd851d16c31249879e7a1f77c9444f40351d941146860b93743227a1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0004/execution-record.md",
+      "sha256": "336e1c2c28cfb46121acb1ac90f03cb556e089601489095e847feddf6bca44d1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0004/fidelity-joins-and-mappings.md",
+      "sha256": "847f91a9bcb8651ab85d4d798723ac2094ea805f93fa98627aa6bd1b4e93951a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0004/general-contract.md",
+      "sha256": "b21fc950103964c34e2f9b2d78c97ac8e03720f311738e0e6323afb29b8d6f0e"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0004/named-adapters.md",
+      "sha256": "5a816aa750379358cf805ca8c9fd1cf75b6fd269625589f697a2f11ee759a353"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0005/README.md",
+      "sha256": "b9b71bf7427ba3e4cc7fa98d3006fec47ecfcf92ed176aa84a6c6a02bfedaed3"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0005/admission-and-boundary.md",
+      "sha256": "ae019a49fe102c55ce457dedc07c459ba1e1e135852459f06f27fd7b4760ee21"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0005/consent-egress-secrets.md",
+      "sha256": "ef34d94bdd7e76bc61a69a9f2bf43140a7752a9b38feebbe8919a7807471eeec"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0005/execution-profiles.md",
+      "sha256": "4e87900dec1e96af90e7a2c07b24577dc33d39c66275d2884a38d7616797f6c0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+      "sha256": "5959f852c300b715ad039a6b5ba0c0106b8115d8fa4f8779cfd3e7f15eb72f95"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0007/README.md",
+      "sha256": "32635db0cfe4bb53e3a71702b1cc6aaea056917d40ed2a29735f37a638d3a0bd"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0007/narrative-contract.md",
+      "sha256": "5e5a412777e3299673ddd507f26a3bad0193d1e86685991262c17598b5a2e2a2"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0007/rendering-and-surface.md",
+      "sha256": "d4ab9646269e4f22274f46ecc9687ac321572372d62a0f30a96a66e306edb9fa"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/README.md",
+      "sha256": "01e45d7492d08dc04df49b497ac7b97e99aebab6d3b086406287e0e92decc146"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/accounting-reconciliation-and-release.md",
+      "sha256": "a7bcc33095030ef93d038e1974dc81535a4d61387b649bbace1cba4faa4cef8f"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/identity-authority-materialization.md",
+      "sha256": "efc60c5dfe0b24f864663599f33540c67a6faff218a0c67e0022777a07ccb0e6"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "sha256": "5902deaaa1e89248ed09792ffc4c46a4b2ea41645054d64ad6a836056d0c71a8"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0009/README.md",
+      "sha256": "ea202e4be72ef72322d1fc99cf6b84229a28178bd5d7b6df16cfb28643afa32c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0009/interaction-parity-and-release.md",
+      "sha256": "94acbf0f30638d4720cb55cb3a3e8fc9b0143fda5b3fb0eb3d4542139ec668bb"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0009/semantic-geography.md",
+      "sha256": "378cff396f381bd2cb7c189be7d3c5e74b52b43ace80ae6b47387b7a6b596eb1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0009/visual-grammar-and-lenses.md",
+      "sha256": "93dbabe89d3edd0d37f43e87b2ec24480b050c5acad45399300b0d029916f78d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0010/README.md",
+      "sha256": "862691ffbd97c1f81171395b5b3f39f7f1fd85cab510a7a65877c337e0413495"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0010/budget-reservation.md",
+      "sha256": "45211663bee3e28215800c879ad98e424b8bbf2f0ffa3098b2e216cabb28d1e0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0010/effects-recovery-and-stop.md",
+      "sha256": "02f3d6dc3680179485c3ea2ff1e25a42a122c6dafec86d3a26faf56503fe1400"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md",
+      "sha256": "98fa3a214df31d36a9e9cdc03a8e656f8d8fe6e5287f98fe6a6bb82e178c7036"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0010/portfolio-and-cross-project-consent.md",
+      "sha256": "5c3af76a37216d7e98926fe64af2cb64f9a98e6e6a79164edf7dcc64f1432b02"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0010/prevention-envelope-and-attention.md",
+      "sha256": "d48bb558cb6c3dac34d880126a2d5388a5a740cc23bd26122a232a2c06f4cda9"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0011/README.md",
+      "sha256": "b3b27b3da6e231e1e23ce2168df4f978871ff68361dd90a592592fa74ccd553b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0011/deterministic-selection-and-budget.md",
+      "sha256": "957c862d958a6c556675f39996bed78215a994ff1e1182484adb667f1f478bed"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0011/packet-identity-provenance-and-memory.md",
+      "sha256": "29fc7c1adbca8370d590bd3e41ffeffe46b243ba3748b94cfb744b861b7e71d7"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/ACTIVE-AUTHORITY-MAP.md",
+      "sha256": "223b431a1c14a8942de5332eaf09c12115332e50585bb9f09d1f2a9b9036eb12"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/ARTIFACT-INVENTORY.md",
+      "sha256": "f10e8238dd08636beacd1ffb7488d5ca5cea9ebd3a1729b3798fba73ceb952cd"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/COMPACTION-EQUIVALENCE-REPORT.md",
+      "sha256": "fc09a1688d0b34d82ab8d2d4da560428940a85cda4ddffea3e9ef294f8f5b943"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/CONTEXT-COMPILER-FIXTURE-REPORT.md",
+      "sha256": "cb9cc80651879a93d74881fb717fb52e64bf350e0d6047ef0786d4680f195818"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/FINAL-HUMAN-CLARITY-REVIEW.md",
+      "sha256": "dcc6534e2fe364d8c2b7b8f29cf370ef968c40e8626ad6cf94951ece9094d3d1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/FINAL-OWNER-ACCEPTANCE-RECORD.md",
+      "sha256": "0079720ae01e60ab71db9e86ad401242609e0a7fd9122a035340ad8fe40bde04"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/FINAL-PRE-SPECIFICATION-READINESS-REPORT.md",
+      "sha256": "f5fcd2b9a8f6ff74684b8f8118773e1b788bb6cca44e887d36ba369f3cf6ecef"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/HISTORICAL-ARCHIVE-INDEX.md",
+      "sha256": "8fcf0f42a806fa1b1110842925368dc724616baeff4d6e0dc5a582069977c990"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/KNOWLEDGE-HEALTH-BRIEF.md",
+      "sha256": "d12f33db17963872cab89bcb37298052e199b42ee56261fec57b9ec72ec3d5c0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/MISSION-CONTROL-REVIEW.md",
+      "sha256": "d098c287e002616b9b41c7e3c250bb0e108f88345f3b2df8a7dd3bc110378cbc"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/OWNER-ROUND-CHARTER.md",
+      "sha256": "a33142da891cdeb0bb2fdbb1cd28615ef1fe16ae8e0be4e6ee575a3046946d07"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/PUBLIC-CLONE-AUTHORITY-MATRIX.md",
+      "sha256": "e455c119245c285f6873146a27c72bb09592eebd0128b5b1701a9e6aa9c72e61"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/PUBLIC-CLONE-VERIFICATION-REPORT.md",
+      "sha256": "12657401e5c5a6953cd49d87f84a825a68d9d7f3687a6cc29f2a83440eacdfee"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/README.md",
+      "sha256": "331bd73f80da50b5e5967242ddcfc8b7f939b9bdbcdc3b66225b5c1121c799c8"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/REFRACTOR-PREFLIGHT-REPORT.md",
+      "sha256": "65fe972e9ebb5eda61895ea1e6f477ba0b97286506940c995f8b558298adcb25"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/ROUND-DISPOSITIONS.md",
+      "sha256": "fa186d7f5849b2bee365e2de626852732f7ddbce0e0c86520769dcf46523d4be"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md",
+      "sha256": "77e7367be1501e918306e1eea73fc58455d14d76c817de9a26ccb30fe08476fb"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/TERM-MIGRATION-REPORT.md",
+      "sha256": "67b63d32828f77ad41680001a1005776c851486f4ad3b892a77943a57c4bc3b1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-1-fresh-engineer-RAW.md",
+      "sha256": "8f527a1c66d20ba8996a078bf8c41ce4a2257eeef6e4f7ce8ce109740572379d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-2-vision-doctrine-RAW.md",
+      "sha256": "f06f9b736563b4680bd9c381c94fc7181e5b947bc9b57ca0800e51fe0fc0f7c5"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-3-anti-rot-RAW.md",
+      "sha256": "decd0c38d08472cb84b45c8ba2049afc8ce7cc75f7375e6f04f9f8080a1530b5"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-4-contract-compaction-RAW.md",
+      "sha256": "a34c189421b5e6848ad6d1763f21537f6d21bf132ed235f3156956f7259ec2c6"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-5-context-compiler-RAW.md",
+      "sha256": "e3ee4e4ee7eed33447414b0d0b4ffaa4eec88a75fd0c80e1ce92d2c13a63f97d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-6-mission-autonomy-RAW.md",
+      "sha256": "cf1e0c125f02e767153884c1d60429395b511b32aa232650f12f2cf0b44c9e86"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-7-evidence-security-RAW.md",
+      "sha256": "7866eb666365fd124d5872295bbfb686f87561ed16a025023624c0af5ebaf98b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-8-public-clone-RAW.md",
+      "sha256": "fd3c14b1ad5f809ab17085ed10858838f672cea6bbff3eefcda169aac6494a7e"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/CURRENT-AUTHORITY-AND-CANDIDATE-MAP.md",
+      "sha256": "8b51cb69914c96248d17d1f15ca259decd1a8d314490d8a51c2d698c022ae84d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/CURRENT-REFRACTOR-PREFLIGHT.md",
+      "sha256": "a2799856ab05e57e0f58db616fbda9898a24d34f96421644a5edc1e429b729e0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/DEPENDENCY-CLOSURE-REPORT.md",
+      "sha256": "13a7aa88a9701f15b91c82bbd991536380a9634e25212bb56c3db96dea3c19e4"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/DISPOSITIONS-RC-11-RC-12.md",
+      "sha256": "25be56b597f4379b25ac5c94d120aa30491044ac924530b26fb12185fe58f443"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/FINAL-CONTEXT-COMPILER-FIXTURE-REPORT.md",
+      "sha256": "474e108484511ae54c2e637c0da7620b9b013130af393e4021f6aa1f51ec27b1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/FINAL-HUMAN-CLARITY-REVIEW.md",
+      "sha256": "e8ce48f11ebee350bafcfccb01ab8bb181dd846174236a7a538c7795d0c7372a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md",
+      "sha256": "218cebf4478fe40c9b1ed57e684282deae0d725d8e2db86030fe2895097b762b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/FINAL-PRE-SPECIFICATION-READINESS-REPORT.md",
+      "sha256": "f07c54b40a5ecbd70b7b89a8bb9607f6e65881c2f4cc8b2c7ad323ec6fa14b6c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/MISSION-SAFETY-CLOSURE-REPORT.md",
+      "sha256": "89633a3c2385993454b09f4c5c2f9cf2fbfb02b04f8295e99589d059d77dacdb"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/PUBLIC-CLONE-VERIFICATION-REPORT.md",
+      "sha256": "c1f670cc4300e1b9e587710d6f697c56d1c98c644da75c9f4455dbb43be77402"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/README.md",
+      "sha256": "57263a0764565395a3a1f9ea062504a702c57424aee60edc29997b011e6d5b52"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/SUBSTRATE-REPRODUCIBILITY-REPORT.md",
+      "sha256": "96b07b57d46544e96e386980027075badbf2c328473135a69cdab29dd3536118"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/TERM-CLOSURE-REPORT.md",
+      "sha256": "af5ca4c871fc4f2bc7306365f86c2f827abef45c680e3eea1cb551349fa802c9"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/matrix-parts/RFC-0006.md",
+      "sha256": "e3532163394b555294567dbdd304542ccc19898692d9078727e06942bafb1103"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/matrix-parts/RFC-0007-0011.md",
+      "sha256": "6dec9b54d4a467414abf5a686e9c43ff0a020418d30d7fe87ce9bb5839076de3"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/matrix-parts/RFC-0008-0010.md",
+      "sha256": "626651193e81df9f23a9dd04662d8d866cd1c7796042f88f14b86207277f8f27"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/matrix-parts/RFC-0009.md",
+      "sha256": "6557f6bc8302a22957b4782bcbee54b1490a563f45ca8b22174358e6b309f0ea"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-1-fresh-engineer-RAW.md",
+      "sha256": "531f7d88bea5e1c1d7994e3945da1c0747ec1a6bae9f7e44beb96b9dbf98d065"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-10-final-confirming-RAW.md",
+      "sha256": "4ab6df000b3782b366d01b1717ccd75ed8fb4c65029eb93f8ad09ba3dae8a3d3"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-11-repair-confirming-RAW.md",
+      "sha256": "90e487c350c9d795aa760d6f69503761020e36fb64e532e39e571972013d96e4"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-12-budget-waiver-RAW.md",
+      "sha256": "d8c1a72b7edd0de140d9cbe2774bd56fb1bf96c7ca50ff94ff9f42937a1aa008"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-2-vision-polaris-RAW.md",
+      "sha256": "2cc578b11c2cc55024638d6dd080352023bb7c198ae5ea41e83de97aa48f5869"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-3-vocabulary-RAW.md",
+      "sha256": "1bcfbe04cf1b6e92fffa46649fddb607da08290091373d3254a74fd18c179bea"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-4-contract-semantics-RAW.md",
+      "sha256": "a945a9f811f2fa91872425325538eba04ccd98bb55652d782a0d2d75ec3ae4b3"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-5-rfc-openspec-boundary-RAW.md",
+      "sha256": "2e0c206edd2474bc91243cefa92c33f9bbe32b69180f2d08c891dba3c036a042"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-6-context-compiler-RAW.md",
+      "sha256": "e67ed54817733ee9b74d7b15828d48bf5e77df0612fdc6992a4e19e0c86b6153"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-7-mission-safety-RAW.md",
+      "sha256": "228ddfc4c8ffccbd31a5d13779624aac2bc7e9dbafc169b68b4f52b863e9f1ab"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-8-evidence-security-RAW.md",
+      "sha256": "e0969095ec4e38d183fe65c42b7dbe4e6248cdfcd2b3063b5799974b842536a8"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-9-public-clone-RAW.md",
+      "sha256": "eff5c4fecf2695c6336981bf36372057ac07948c7b463211f4b600bfe02e9a09"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/CONTRACT-RELATION-CLOSURE-REPORT.md",
+      "sha256": "4880e0f740c245cf2995613b3821677f635d8062a65c68116af012f2278bd8a1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/FINAL-CLOSURE-PREFLIGHT.md",
+      "sha256": "c31594ad2d4782b61c2bea5bec052d2c21e45c2e5feff83e47a79e3acd3ca56d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/FINAL-CONTEXT-SELECTION-REPORT.md",
+      "sha256": "940f6cee7af2ed7cd1bba80173a4b3ad7c2933725f19fdb2ba17bc27fbc90c8e"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/FINAL-EXACT-MANIFEST-REVIEW.md",
+      "sha256": "fb39f3809e4d289be518611a0b833d932b636ab01062e4be03d7854f49ceeb89"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/FINAL-OWNER-ACCEPTANCE-PACKET.md",
+      "sha256": "cdee9b919e330aead73a5656b34ca371e0093cb0f69c4c671bf982e56bac3893"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/FINAL-PRE-SPECIFICATION-READINESS-REPORT.md",
+      "sha256": "c018e13d9abd3294561d0ac23fb9639ebb1ce0f5bfcf24f0b6c0e0eb74132b04"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/FINAL-PUBLIC-CLONE-REPORT.md",
+      "sha256": "664e8e8d224fa5968b576b94de9d6e2cb37f286865be834cb76710ab6fcbf1c5"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/FIRST-OPENSPEC-SEQUENCE.md",
+      "sha256": "035e54b6362cefb7cf8abae4153d77cfb02996b24debcb08ecb012184a08f60a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/FUTURE-CODE-COMPREHENSION-BRIEF.md",
+      "sha256": "89120cce153f2508810bb2fb16a4c8891d0969250208ef3bde351fdf0c764ed2"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/HUMAN-CLARITY-CLOSURE-REPORT.md",
+      "sha256": "70350b247548d852776866b12c8848d5d0fc9ec80f8361a720f155dbf14131d4"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/HUMAN-ENTRY-POINT-BRIEF.md",
+      "sha256": "0cacf77334d74cccdf2a2b1b5a962dfb86f593d16ace226950ac21ccb9ae85e3"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/MISSION-CONTRACT-SEMANTIC-DELTA.md",
+      "sha256": "83a97684b48e8f6dd034a48981d587927524dfd1523e82775ba3b21599f169b0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/MISSION-SAFETY-CLOSURE-REPORT-vNEXT.md",
+      "sha256": "e7ea9aa4151968fbd7377a166e7e8d53b29ba85f756e626105552cbf88c38250"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/OWNER-DECISION-PACKETS.md",
+      "sha256": "9b3c78c46415f41dfbf91ffb7e66e0441da985a8db79a1e24d2082074ee9fb61"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/PROJECT-SHAPE-FACETS-BRIEF.md",
+      "sha256": "0aed9ef6b8d93420c29d95a09d3f0c2079dc60143e81bf7f37997bba41e07647"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/PROJECT-SHAPE-FACETS-ROUTING.md",
+      "sha256": "624d1b5dd2f9cf3721c768a3ff16eaa26ef1e148d8be272c6713457797d1a95c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/PUBLIC-VOCABULARY-COMPREHENSION-REPORT.md",
+      "sha256": "83b9236a52cb738c7e11238c9bf1f82685fdc072bbc947b7a0bb3bbd817d03e1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/README.md",
+      "sha256": "4c20fb2f86434581051c16e8d8d546cea35f28d72f7907a2fe9222de91f43a92"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/RELATION-MODEL-DECISION.md",
+      "sha256": "cff40bfd21f06470d950c2a05fe7f314ec67d07d89a41b4d7fdce81b63ed17dd"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/SOURCE-OF-TRUTH-CLOSURE-REPORT.md",
+      "sha256": "1a0a913f47dd017b82f5bbd70e83ae48272877a228b963569a32ef26092a90e1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/TERM-REGISTRY-SEMANTIC-DELTA.md",
+      "sha256": "18b40186fceaf618a9555dda7d2749d7023e875b5ea56322def507ebdeab591d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/UNIVERSAL-VISIBILITY-REVIEW.md",
+      "sha256": "9b081828e7b46401d622246e2c3e21b48cb1fdbef025f7fd526d2af800c68894"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-1-mission-safety-confirming-RAW.md",
+      "sha256": "13c3af88fc94875e0ca759933ecf63338a93c140475188fc11a7531470706353"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-1b-mission-safety-RAW.md",
+      "sha256": "933365afd868daa21766ddff525686781cd3f37e932ebc2b1a194ce71e0e9699"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-1b-mission-safety-confirming-RAW.md",
+      "sha256": "7560e3ba4f2997db1c19654c417884130b5eca5f212cca267698d3be7cd8bc71"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-2-human-clarity-RAW.md",
+      "sha256": "34466be571335c81facc9b4fc92ab5f0d210b74e3b0f03ba9aa753aff3b09722"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-3-vocabulary-RAW.md",
+      "sha256": "248a0212aff214b05fcb3407dd1518e10b95662d5853cb5918cf40d364819beb"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-4-contract-relation-RAW.md",
+      "sha256": "1b14d1db53ba0daa95c31be0012279af9764df878c9365aa22420f13d4561e30"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-5-context-selection-RAW.md",
+      "sha256": "41406182dc91fda51080916109e42090aaba9119a03769ab849e39ad4e58a8ed"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-6-source-of-truth-RAW.md",
+      "sha256": "30e04365016f9e4a0ace991a1d18f088791b4c711b694fabd777db611dc75305"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-7-public-clone-RAW.md",
+      "sha256": "df7edd4fbfb0fac3584134f1bfaa40ba9a4ee6087e2aad1aef7787c179262d7c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-8-exact-manifest-RAW.md",
+      "sha256": "e8f8f53392ae85c9b563ff8ee3354e150153244dbed1cdab81c20784c012bca7"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md",
+      "sha256": "c4f11eeef4b8d73c8d8ac85cb557e2d2bb87f79a8fbdc44212502690ae02cc04"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/CLONE-VERIFICATION.md",
+      "sha256": "3b32490d7c80301343077ccf08b8ffd7f59655342a092340490078a059a57491"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/FIRST-OPENSPEC-SEQUENCE.md",
+      "sha256": "cb5db45d241d386214de8583a64d5ab6e23afb982d12c804d4a76d639d151cbd"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/OWNER-DECISION-PACKETS.md",
+      "sha256": "c256ac02cdb09db99969db54506c0658ffedd879905efbe7246825337a563814"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/OWNER-WORK-ORDER.md",
+      "sha256": "2328e0bee4a13de347adfc3d46d95ea42f88d4567cc87297d2b73a87454699aa"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/POST-INSTALL-LINK-REPORT.md",
+      "sha256": "587af3fdfe5e8a77367bea098d06d206e8a86f7de53355c3af3aaaa5894b6959"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/README.md",
+      "sha256": "2cd19b3b095dd41c67b6e5599c572f86952ff0baec571f27b301b6bf100c5f0c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/SEMANTIC-DELTA-RECORD.md",
+      "sha256": "00f18203de7eb40c593fa2b5193882ab35f3878f3e20df227be3381ce853e923"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/STRUCTURAL-CLOSURE-PREFLIGHT.md",
+      "sha256": "8b1fd1cda2606dbc23bc60b2920f47cc239694bb847c0a27b562d064a28cd301"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/DELIVERY-AND-VERDICT-REGISTER.md",
+      "sha256": "c293671bb1ba0f86c594c5061a02b3c1d16d6920d44c178ed59ce9f515d7bb33"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/DISPOSITION-REGISTER.md",
+      "sha256": "eacebec605d21a592935dcb641ab0acfab64c48d3fe88bdda75276f1e60d3a9b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md",
+      "sha256": "23167ec9be1d614fb133c9edaa81412eae5b11ba265b01a97e421eef61c62ff8"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-10-human-view-RAW.md",
+      "sha256": "2e5a9e4412214ecfa957bd03e18f6389d062db2c0a609ea8a966eaf5da5c14b9"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-11-context-packet-RAW.md",
+      "sha256": "ff4dbf7588b0e4cc033f80cae5caf1d5537e13fc0ef9e1dbc5ab401f2685f75c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-12-context-selection-RAW.md",
+      "sha256": "1b706217af3be8a3a56ae234585bf97fea52e8555ad8c32c38518a772f680b80"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-13-mission-prevention-RAW.md",
+      "sha256": "0d814c274857210af6ab4d43402782abca7cc9c390e100f045943d449a229760"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-14-mission-effects-RAW.md",
+      "sha256": "51ba431160c915c31342c6e01e57df1faa79da187546487e0be0bff48c479a9e"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md",
+      "sha256": "200e05e017216581e530bbc7e0d7dbd1b630abad9166af9f3f65aa1634bc0ce0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-16-vocabulary-RAW.md",
+      "sha256": "ce29a10b1caf485207f34e160811182524b5a32b043865639af5345edb1366e9"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md",
+      "sha256": "0c0d0756b78d602c5e56c9112bcd67d2a44f293d2322dbc0ee57a4492ada89f8"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-18-wave-a-RAW.md",
+      "sha256": "67b297c35338d476fadecfcfd80fe2e16e92cf796285e3260e725cc4f5b907c5"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-19-wave-b-RAW.md",
+      "sha256": "359e363920b64ba6a6d7f6fae50063590fdc43e3c21f20705a19bc3bf996c828"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-20-wave-d1-RAW.md",
+      "sha256": "609fab50ea71b36b82b8d1c9eabb633fca8ef37299d616374bdac73491ea4151"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-21-wave-d2-RAW.md",
+      "sha256": "ecc8c10dbe68e457fcda3ea2c1363db7684171b11d5e242e17404ca51844b30d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-22-wave-c1-RAW.md",
+      "sha256": "319f17ddd1cdacdf0dccf092f91fd5f9816c3b467dee9b84522919a553b43076"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-23-wave-c2-RAW.md",
+      "sha256": "3696117dfa599b8c622a3dab889f493716ea729dfe972d99c46a26bc48bc0ca3"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-9-core-authority-RAW.md",
+      "sha256": "828d7f0a8d5fc1b0558c46c1d8e7641f96640b60a2dc9e61bfc885db2871f044"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/CONSUMER-COMMITMENT-TABLE.md",
+      "sha256": "b0e28bec3818e29dc2100965c2086e45be2951924628f423080c20e0be5fe588"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/FIRST-SPEC-TRACE-TABLE.md",
+      "sha256": "a148e710f89ae13d48f15a9851e9465bccde3287ee5bc2463ee06d241644802c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/GOVERNANCE-REDUCTION-PLAN.md",
+      "sha256": "75dfa13b03814c6a58de7e18b9553e35aeb18c4d482e99d5e1fc6722911e7810"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-CLOSURE-PREFLIGHT.md",
+      "sha256": "b95eceb45138474c5b4435963e0829d7007246e9781821a702edad83683035ba"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.10-SEMANTIC-DELTA.md",
+      "sha256": "23ecb2cccb1b901c3ddc1410da0e999384f3e5c4af856b86d7e4f29ccd7af4ac"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.11-SEMANTIC-DELTA.md",
+      "sha256": "1e7bb0c8c1d2b6c124d01d1dd624cf89e8105b581c28d876ddf03f3d7b691d7c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.12-SEMANTIC-DELTA.md",
+      "sha256": "8e0737869b337435841b396a0634dfe5bb40846600e8922be0915c7e4c246125"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.13-SEMANTIC-DELTA.md",
+      "sha256": "27106e9390092b9dca611e4298bc73f921daf10d2ffccb0160ec03208a116374"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.14-SEMANTIC-DELTA.md",
+      "sha256": "bdc6d4c87145d483abee94e64d3ee064fd787e5b100a365c5a7c6b2818b2b89a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.15-SEMANTIC-DELTA.md",
+      "sha256": "f76fef50da423ef567835295abb73c1b33d812ea026fa030ddd88b8012ccdadd"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.16-SEMANTIC-DELTA.md",
+      "sha256": "6e76cc59561fcf68c029f2b0f3a745fff2f586dabe52e251b03c8c8b04f8ee60"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.17-SEMANTIC-DELTA.md",
+      "sha256": "cb4918015c38861d1c04ec5a4ff0991e26c72098dca510ef86aba8d04b33baa9"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.18-SEMANTIC-DELTA.md",
+      "sha256": "e84bf373d1a5bc7005939f75c5daa4a93eeba2ee0226d998db244f9730743ca0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.4-SEMANTIC-DELTA.md",
+      "sha256": "3c52291af439a36c96c1b3fbe9d03dcf1a1fb651f08058bed72356aa99d2ceed"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.5-SEMANTIC-DELTA.md",
+      "sha256": "1aa8bf509557e3be2c272973ec5f3434282e54e575df1d18e6f963a0601bd739"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.6-SEMANTIC-DELTA.md",
+      "sha256": "67820bb24c62e4a12d8d9501d0873782ff1afdc589fe778753c53e699e489c92"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.7-SEMANTIC-DELTA.md",
+      "sha256": "5d6b775ad85e66be9b340b68f7a05c59a0410c6fac9a1df5eb12ef260a7b65ee"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.8-SEMANTIC-DELTA.md",
+      "sha256": "0839503222da3f28240c28edcf1b81d272f6e8f8c8b439c955ac19d57d12b6c2"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-GATE-v1.9-SEMANTIC-DELTA.md",
+      "sha256": "0acf4eed25acf91b54fb81bc2d17237b99242e149c5292d6fdc97e34f6ab0d0c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/README.md",
+      "sha256": "67248754f4e2c7b70701f8efd488f4a2461ab9d9c09abc5fe48fa83130db6fe6"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/SHAPE-TO-SPEC-PROPAGATION-FIXTURE.md",
+      "sha256": "580e77d8003e1d625217f08cb264f9c34b37774d9f56454011a1f2ec05455a70"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/VALIDATOR-AUTHORITY-INVENTORY.md",
+      "sha256": "4ebc6edf7a761b1d047e54b57ab989860564a08e4e170bbadcea58cd02cf7f23"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/VOCAB-OVERVIEW-DELTA.md",
+      "sha256": "f1eb811bd28ff887b601298df2e47f15fd600c2b52976d12bce9403adb5c8580"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-A-CLOSURE-REPORT.md",
+      "sha256": "c4bf0c83c4da9057072aded781a48dddcfbcef516095dc7cf1225eb61ac41b4a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-A-SEMANTIC-DELTA.md",
+      "sha256": "c68d04e3be3f96c943f1b28183458c2135fbe51ece50e3b403e124df9d2352f3"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-B-CLOSURE-REPORT.md",
+      "sha256": "73ac5b29da0797fedc7760b56b8f20f65e805ef8dd2db2859c7664864453882b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-B-SEMANTIC-DELTA.md",
+      "sha256": "af5b82cf9519ca85349fa3502aa8861b5e664396e8a3ecad00541887df9e5ac7"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/DELIVERY-AND-VERDICT-REGISTER.md",
+      "sha256": "f615b2fa67e3664cc2df30a9b1dc558c7764375072ed3d2bbbc2ca14deb65d20"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/DISPOSITION-REGISTER.md",
+      "sha256": "b1ff374271edc05dd4381f28d272614817ce0e70aa908c5903d8ea41dd01baf6"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-24-launch-gate-RAW.md",
+      "sha256": "906244168d1f5a8b4c9cbb9e6f512be5d4a0935c1fe72066623fd643a48ad23b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-25-active-path-RAW.md",
+      "sha256": "27d34235b25036d0e010bd785c14759f6c9a733cbbef54f2d61a2b92ef9f940b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-26-wave-a-RAW.md",
+      "sha256": "60cb346f0b95c7840f7481477b8b3b20c97a354b05fb7432cb2e78b03ecb90e2"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-27-wave-b-RAW.md",
+      "sha256": "67e14a3efb85467a4101d9ab9d58ca77a20d6e9a3b15391de0bd89ca5623acc3"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-28-spec-authoring-RAW.md",
+      "sha256": "ff63be699c6eb291d6a1584ecce3ce51914e21b49fdf087d0aad53b457d7c8e3"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-29-human-language-RAW.md",
+      "sha256": "07dd8487fff5bdd9ebd8e5e0f28b43f64ea605b30d230ff979f649206b71d7c5"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-30-owner-packet-RAW.md",
+      "sha256": "e1d510706fb1a95be31b1820cd1576430674a7f7f2652b75012a416c2953fda1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-31-wave-a-RAW.md",
+      "sha256": "6e388e93fe12e49edd670a4acb715885005f1868eb8f53378cd808284c97cfb8"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-31b-wave-a-RAW.md",
+      "sha256": "c7e3293d029ae6157ac8aac39232848fefb35fa6e8ccbefa852c9e139693e1f9"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32-wave-b-RAW.md",
+      "sha256": "31444981005619e0ac4e5ab0189f4115aa8076b4ab4a3ebd5385c25bae0b6804"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32b-wave-b-RAW.md",
+      "sha256": "8730fe32d5ed0d9c27f6fdd2e0180d9bd95d2adf1bf5f4d0694474014b4697f7"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32c-wave-b-RAW.md",
+      "sha256": "7cc866f5f3c81a5014044e6cc765472ec1654ae55ad459367a22f8735c3a4bf2"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-33-instrument-v15-RAW.md",
+      "sha256": "1baac2721f852f2be8cb787cfbba8253d556a79d8a2c702aad3c9a65cb5ac207"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-34-instrument-v16-RAW.md",
+      "sha256": "2458970ab60f3bc254696e543178bb5c350452b06932b23ecd4411d0db9adfc0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-35-instrument-v17-RAW.md",
+      "sha256": "de568d7bfc8d171aeae0f02ed55dc8b7addd95d92b156fbf8ba50f87d2db2dbf"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-36-instrument-v18-RAW.md",
+      "sha256": "05d8981937c5f94771f2306b57f28fd7f0b860ab412c89ebc2d3576ee382302f"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-37-instrument-v19-RAW.md",
+      "sha256": "4f9d74e892920e0917097190ecc292d13dc8842e2acabda24720e30f9b6cfa1f"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-38-instrument-v110-RAW.md",
+      "sha256": "29b102000d2936a4d46345b3ac4f0429a1ea31043d91151f26a909bb52e99a3c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-39-instrument-v111-RAW.md",
+      "sha256": "0fac98b0e6eb720ff528e0f78d7ba88cb24a350586e2da8b677d04b14d02c8f4"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-40-instrument-v112-RAW.md",
+      "sha256": "8dfb74e1671e405f7bd1f58ac5ebec77bdbdab25aee64ed804bd1cd43a86167a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-41-instrument-v113-RAW.md",
+      "sha256": "2d01263430025b8c76b6d118aa993c322895106f4a63b1cb3c087f40e5026acd"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-42-instrument-v114-RAW.md",
+      "sha256": "3ca204d8b6019ba37a647550d40ad48e4c9e2a2a46c8778173a1d772d0d287ae"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-43-instrument-v115-RAW.md",
+      "sha256": "c161cebff33ec328cc792317ab3fb2a26b99236240dd155cbb6a25562fd6ce7c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-44-instrument-v116-RAW.md",
+      "sha256": "bb8bab5817f8e6c80dc14f5554b1d20aac513949f1648fe0486ddaf3cfe9ae9f"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-45-instrument-v117-RAW.md",
+      "sha256": "c122c9a5ad53c9d947aca0ed5e3033f285e356735a50ac2dc4523f63662ca370"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/CAPABILITY-1-CONTEXT-ROUTE-REPORT.md",
+      "sha256": "9cbaed29cf719b9d4f310a35a75805a2830a1b49cd5cb4fce830d4ba2bd1d4d8"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/CAPABILITY-1-OWNER-DECISION-PACKET.md",
+      "sha256": "6e9da101a95e0b91a439526455fa202d2b7e2ddd7b837b1c6d60af553e978995"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/CAPABILITY-1-SPEC-OUTLINE-EXERCISE-RAW.md",
+      "sha256": "984611353ec3db674e72077954d3ef061b488be0def8940e2e52e807d78e63c5"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/CAPABILITY-1-SPEC-OUTLINE-EXERCISE.md",
+      "sha256": "4a7c254233e079caa19ecc5acfea271f7b597d8ff26234da04d1207d942ac7c1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/DEFAULT-PATH-TERMINOLOGY-PROPOSAL.md",
+      "sha256": "e4b6731bd093daa1b29251976ed1333a9e9f33713fe4a691b7aae1ba96deab1a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/FINAL-CAPABILITY-1-READINESS-REPORT.md",
+      "sha256": "796a002d7e7c203752e2c5a1a17c69aab1e9e61d7f195dae841977636e3ca742"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/FINAL-LAUNCH-CLOSURE-PREFLIGHT.md",
+      "sha256": "8636f891e1721be36a992f470b55605c9da30aac2c8dfa3cdb6e9ad630df2d75"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/FINAL-PUBLIC-CLONE-REPORT.md",
+      "sha256": "29ad63fc8714c1bc776327de572000c19fa5ad881f7f716788edef6f426579a9"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/LAUNCH-GATE-v2.0-SEMANTIC-DELTA.md",
+      "sha256": "1e5281639d15adecefc746b087ad553d3d4bb8186cb66a913614e276620fc93d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/P33-SEMANTIC-INSTALL-ANALYSIS.md",
+      "sha256": "979dd8314b0d835fb1bb604c1e30c3e1085044ac28d24cc84356987fa8678b59"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/README.md",
+      "sha256": "f14951c831d63d3d463e5d07f46e85df528b65583dc1533631aafd60f7010615"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json",
+      "sha256": "ef6f111a9a4af779b835953e999ddfef7d3addb9cd4c6e84aa357f3c9bbb3714"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.md",
+      "sha256": "241994496ee591a8a054dbb55ac0ebc0243a2c916efb25d5c23800cb29aff32e"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/reviews/DISPOSITION-REGISTER.md",
+      "sha256": "d2e1049eec97beb3570964208f88902e513aaa5218c1eb93e3b404a0235ee83e"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-47-launch-record-schema-RAW.md",
+      "sha256": "edc5018b8f51c3f10daf5cbe3473acdb9919716483cd59bf794fb3149ad82664"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-48-launch-policy-v2.0-RAW.md",
+      "sha256": "ba0069438008cd558b37c3bda7af72a0a0dc5c93a0b32f6fcb9929c2ea8e8353"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-49-p33-install-shape-RAW.md",
+      "sha256": "78d1c041e2c8aeb4902b12e0ad8b290f10c426ef551a569d49e49cb66afdbbf7"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-50-default-path-human-clarity-RAW.md",
+      "sha256": "fcfd75bc4df81cc6f277824fa6714c8957a2d22a529ad3f99d16d81c4eb40945"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-51-spec-acceptance-and-impact-RAW.md",
+      "sha256": "4342c80f18d5593290d771dee36d6e9a8106e1e7a7663b3b51e4990b396e35e3"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-52-owner-packet-one-sitting-RAW.md",
+      "sha256": "477e5c7466a0a06373f1dc610c696fedf8c71cd434a8493dca30f1d25c15c503"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-53-capability-1-task-route-RAW.md",
+      "sha256": "590fa30402b2d38f2f5981a41b3831e8f830228c4a27e9ab85f7e79a59479c2a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/CAPABILITY-1-OWNER-DECISION-INDEX.md",
+      "sha256": "6e2ff1aca1d6158aba5945c498bf356c6d76eb2fff798ba3d8e89bf5f612f8e0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/CAPABILITY-1-PLANNING-CHARTER-ACCOUNT.md",
+      "sha256": "210f53ae16a1c4ca81534a1d2879574059dbe7b191021633b4d3c88e2e05a504"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/DEFAULT-PATH-CURRENCY-ACCOUNT.md",
+      "sha256": "2e4cd1a8db1ac7995a8235c1c4a6b05ecc6b4626d4f074781c6faaabde252fb6"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/FINAL-CAPABILITY-1-READINESS-REPORT.md",
+      "sha256": "26f3571bbfea4b1f14fb33fdb5d8a2492a101295a18d5f706cf03c1a679a9ef5"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/FINAL-OWNER-AND-SPEC-CLOSURE-PREFLIGHT.md",
+      "sha256": "9673cdd1b03c2152991a40be7549327494d419ccae36362eb04174cbfdbf38b8"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/FINAL-PUBLIC-CLONE-REPORT.md",
+      "sha256": "dcbbe2ba6552d042e1f167a3adbd9a168797b2ae5733b3c8563bfa36b759417b"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/LAUNCH-GATE-v2.1-SEMANTIC-DELTA.md",
+      "sha256": "088fdb76a448c87de8645570df4f558607f4e3a74b5af99d4f89e45eb41bc7ad"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/LAUNCH-GATE-v2.2-SEMANTIC-DELTA.md",
+      "sha256": "c5d0ef4d6ea9cc43f26bdb300cecc8a11fea104526d88ea60793a1ad3129dcd1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/P33-SEMANTIC-INSTALL-ANALYSIS.md",
+      "sha256": "fe4b3e1c1312f91febcf2a6d99b8f55829235500bac7117eb2c7ebca8c6a1d54"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/README.md",
+      "sha256": "9c6267e143bb79c75ed59f6297861b6b76f545013e39b6e72dee9411f75ee91d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2-ANSWER-KEY.md",
+      "sha256": "48286cc113ddfb797eb368c624122c77dc509cf7f036ab44f404109b98da4e3e"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md",
+      "sha256": "685a71f7a52652a314f144ba1599982812921ede88220e69a0d5d327272ed4e0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-3-ANSWER-KEY.md",
+      "sha256": "ead3e2470cfc66ffd336753dbd6b9053527c76c31d237d2dcfef189ba031a5cc"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-3.md",
+      "sha256": "60c6d4d263f99469464a6b822178f31649e9e1b03540c11c0e6ebbaab3acc952"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA.md",
+      "sha256": "4a3e32858ac7417280f79c3aa4a2f79fa380a9c3e5883568be5ce12108dca190"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/reviews/DISPOSITION-REGISTER.md",
+      "sha256": "3583f0a91316f39f49817a5bc0ba10250cea0c7a8223a30225613cd1cf47b083"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-54-p33-install-shape-RAW.md",
+      "sha256": "aa889a65d3cd68c9a176b139018f20b3ea56c41658d9e1b4b1d60d12a7975be1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-55-launch-policy-v2.1-RAW.md",
+      "sha256": "cca368e458fb3924dce1a65c41bd01fedb76581815e0abd634d3bfabd12b21cc"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-56-launch-machinery-v2.1-RAW.md",
+      "sha256": "d5b3b8500095a5f3b5defc3e0d8e08233c41671b2ed387183862e28218558924"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-59-blind-propagation-RAW.md",
+      "sha256": "570f34b4061a624f488c28af1c92b028e32d33192cf35a850d0208df1e26246d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-60-capability-1-outline-exercise-RAW.md",
+      "sha256": "fb9be462b1e78b80ea929af116db9e580953dfd689aac4fc6e3489503634ba94"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08h/LAUNCH-GATE-v2.3-SEMANTIC-DELTA.md",
+      "sha256": "b653cbcee6efb82d9b58bb772465a9f8ddded64d38c7bd4e05d1a51a5c61f0ea"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08h/LAUNCH-GATE-v2.4-SEMANTIC-DELTA.md",
+      "sha256": "9f7238427a9e0671de24b9040fcc309367916a79611ced46758701863b4d585a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08h/README.md",
+      "sha256": "c62b47dad9073a29fb9c696b850517ef96a194b5bbea3a085f3fbf4d4445d703"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08h/reviews/DISPOSITION-REGISTER.md",
+      "sha256": "29a1fa7e4952d3cbbf7e38747e25c2c8e2c7f30827b8f6b5ee4ae1bee21fee12"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-61-launch-policy-v2.2-RAW.md",
+      "sha256": "61bee41eb871f21f63aaa7bd21154e7ce321e18d309411cfa2a428ae0e9b4bad"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-62-launch-machinery-v2.2-RAW.md",
+      "sha256": "28843a7a3c1b44c8aebcc5e90950248100aaa78618108221ee86205931f218c4"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-63-p41-spec-acceptance-packet-RAW.md",
+      "sha256": "f76dc79c8e8dee25c1b19c94b7ac2245d13ab1728d7ab7ca42f61b9d80eb6f90"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-64-p42-impact-packet-RAW.md",
+      "sha256": "73c50c9b51d9e70d70e61bcdd4d263e1048e4400cba393bf51b604988aa3fa6f"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-65-launch-policy-v2.3-RAW.md",
+      "sha256": "1614f0c60e2965536fe96444d486b608e59c4663202ed05f34869093bcf4fce3"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-66-launch-machinery-v2.3-RAW.md",
+      "sha256": "3dc03f4f5b8b0ec69df74512504dc0d4029944ff0752b72417170d5e411cc3ff"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-67-launch-policy-v2.4-RAW.md",
+      "sha256": "6267541a5a0320bae809f779ba62669b6bb4104ff1bdab0f459d9b772a086862"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-68-launch-machinery-v2.4-RAW.md",
+      "sha256": "1de73296a7935028753a9e1f7ba6c0c87cae870e2efa1a09c1bb2126a8c87bf0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08i/CAPABILITY-1-OUTLINE-EXERCISE-2.md",
+      "sha256": "651a34996c50c44c7629f0272468cbad131209b9b9f6970ffdf5cb855d24ade5"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08i/CONVERGENCE-PREFLIGHT.md",
+      "sha256": "f3c1551826f7ffc3ddc20dcde801acf0139a5bcaf3e6d4d1660851c54d7f76e1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08i/FINAL-CAPABILITY-1-READINESS-REPORT.md",
+      "sha256": "ec82b8a2c196238dc88c57679726770904619264e42907597d1d2610590da4c6"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08i/GOVERNANCE-REDUCTION-PLAN.md",
+      "sha256": "1e98482cdf9b4dc5e9e767de72a5ad4c6cf8cf30faea7421ded9296deb5091e0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08i/PASS-CHECKPOINT.md",
+      "sha256": "39c1d4906e2aae5b6b4fcdd236231916c194ce19b70b42beb5b1bf94fec814c0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08i/README.md",
+      "sha256": "936961b04d1fba81ddbd34ed2214e65ab915142d50d582d0631c8a685ac333c5"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08i/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA-2.md",
+      "sha256": "a2383f9d2a0cb6c812af877f3ea2641dcb59dc94d0ebeee8b6843a2876343145"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08i/reviews/RD-69-DISPOSITION-REGISTER.md",
+      "sha256": "e868f1475fb6b90b223918c0880614c5b7ddcb6a6dbf0d4672e89dfe85f9b2b4"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08i/reviews/RD-69-p41-p42-combined-RAW.md",
+      "sha256": "2b2eaf76843f953c2cc17370ec5553997953f9a653e432b80b60472427256dc1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08i/reviews/RD-70-p41-p42-confirming-RAW.md",
+      "sha256": "01ec2285604bba59078009244251d12b99bd166755ff867e6827db27843eaf93"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08j/ADMINISTRATION-1-DISPOSITION-REGISTER.md",
+      "sha256": "de5032a694b5ce0f65cba1046aa6b5b4dd65baab7dc6183ea6e4e87aba9b5b2d"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08j/C2-NORMATIVE-POPULATION-REPORT.md",
+      "sha256": "81d80fcf4fa41d098bf8667d8f122188162ef076210ed8a4a4a31316c1fa1c11"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08j/D3-COINED-TERM-REPORT.md",
+      "sha256": "52fabcba6a8508e6338d0d78699f96aada1f07322b691ad56b43dca5065c9641"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08j/README.md",
+      "sha256": "7b552272e79e23cbd313706cb2aa22d04111e3b5f157f09f7bec92abd724a5fa"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08j/THESIS-RISK-ORDERING.md",
+      "sha256": "1ca6ac101e9aeb52f1689f84cba7c64be8b45c2e339ab358f4f26c4d4f2be0bd"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08j/sweep_c2_normative_population.py",
+      "sha256": "082cbc8ee0bc97570c963528d5758730699df158235e5aa5df53dff82ea20aff"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08j/sweep_d3_coined_terms.py",
+      "sha256": "e31363f54954cc448772a66008064428e864b2185490f472f235b85551478a5a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08k/CAPABILITY-1-ADOPTION-ACT-PREPARED.md",
+      "sha256": "17b597ba8c36adc9dec11969492c146917b41e70aa80ffacd9a76254b890c324"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08k/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-PREPARED.md",
+      "sha256": "0c3caca0aae8fe3d8869f8e501002b158702654f038575d44034a681e621fe55"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08k/README.md",
+      "sha256": "7b05f064dd7434e1e07e2db0ae2a7cd284b83bb9cefbbfba872d20657b18f373"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08k/REVIEW-BINDING.md",
+      "sha256": "6a3f4f6999126b1faeb08c6485253a037f093fdbef665f8d3a5f395653cd58fe"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08k/reviews/RS-1-COMPREHENSION-RAW.md",
+      "sha256": "785383fa734d174cb7c97338b60f7bb7b20b452a3872bbdf9a2cad44722385a2"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08k/reviews/RS-2-TESTABILITY-RAW.md",
+      "sha256": "a69c9e41134cccacb8a1295822eb15031e1d46dd1ca654c36c0c9bdd749a4717"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08k/reviews/RS-3-AUTHORITY-RAW.md",
+      "sha256": "56a0553d4e212853e71d0b813c7dc39b27e8d4fc01d3a720cf8c0270cbc891ba"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08k/reviews/RS-4-CONFIRMING-RAW.md",
+      "sha256": "dad355499d4747c4ce780a4c42b7b5df549be545374ca2f8a01ff5679717a8f4"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08k/reviews/RS-5-TARGETED-CONFIRMATION-RAW.md",
+      "sha256": "58c0da3244e30fffb04c522f87ba2ba96f552e73e0ffa9591acb2f9bb3c3abd2"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/scripts/build_active_manifest.py",
+      "sha256": "d4faf3e62ab1e5675c23a1a9405fc4fa7c61a8dabd5b4c4a7771bd2ac084b2b7"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/scripts/build_budget_report.py",
+      "sha256": "27dd6ee022b3fd26aec4f7ec32825b4219040cce31de65723c52f4b639db7760"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/scripts/build_capability_1_views.py",
+      "sha256": "8f08f104d81bb51648c37cbddd1b83855f33380d4a2e6db6e1b3660edc8d101e"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py",
+      "sha256": "0d4f5b47d80d54981f2efb2dfa4c7b2222c81e2cb23e3a2a1183cd7d91f81b21"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/scripts/build_dependency_index.py",
+      "sha256": "d1298953bb42c3b8ef915aacc3bf0af861fd9aca0cdd026f376a2abb97f5cf62"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/scripts/build_task_router.py",
+      "sha256": "f1a663832c4823444226b285d8a1f2281452b778720b193efaac63de25b637cf"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/scripts/context_load.py",
+      "sha256": "f8d1f30d1b1d0dc7708e997634eb84f850c461146613379b16892ef53603ca67"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/scripts/verify_final_prespec.py",
+      "sha256": "0ca5aa9245b5ea3e80080e10146d7ee6100d4be245d792debab2db1b1e671397"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/wave-manifests/WAVE-A-MANIFEST.txt",
+      "sha256": "8972d9630b95f5d4266432dbb1b3602114576bbd6c0f29d6f9bd6f905b1f884a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/wave-manifests/WAVE-B-MANIFEST.txt",
+      "sha256": "193e3c1e15e4b1375f938d62c9e8c1a442984313e0794ada5965d2cdf9d7e3ed"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/wave-manifests/WAVE-C1-MANIFEST.txt",
+      "sha256": "ad083c73b3dfe0a916d0f7b9b917886e18ec2bb0a25b1df3568c07d013875046"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/wave-manifests/WAVE-C2-MANIFEST.txt",
+      "sha256": "a0387663ec2d980fb41e8f984392c743bdb52b48610ce3f10428aa011d91eeda"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/wave-manifests/WAVE-D1-MANIFEST.txt",
+      "sha256": "ae431661278a35099cadabbf2e1e7fc64ce80090a6a1610241526c8f535624de"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/wave-manifests/WAVE-D2-MANIFEST.txt",
+      "sha256": "617456179d44ef300b4686dbc9feb45d54c1b688aaac9b3d826112adc8c3ce14"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md",
+      "sha256": "646e60cce00ce329852644f0094781351bc33de669e577e39856abba15b8d034"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0002/README.md",
+      "sha256": "d35e8db729630d1e1a3604c0899ca23f23367fe4edffeec6772341130069e94c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0002/challenge-lifecycle.md",
+      "sha256": "297da306408d1659bff47f17f66e7780394180e57122e48dc202e6efc3f95245"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0002/reconciliation-chain.md",
+      "sha256": "dd5ea2b3bb818bd7fbf2087332d4648daacee136c0218c1731f149a0458429c0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md",
+      "sha256": "b3ec3946d23f745668fa73cb6ca4c8f6555bf964d65763df0d31b62167e27566"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0002/snapshot-and-evaluation-core.md",
+      "sha256": "661034851c288f2dffea4f45b8f979c61c87a38fff72297f0682d3b92cf01bb1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0003/README.md",
+      "sha256": "10959f7ccbfcc57827dbb4268051a462e5bba66a57086158d3e2c038ddd2ca95"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0003/governance-homes-and-owner-acts.md",
+      "sha256": "a9573ba6efb113ae053c7ddbc0a7b9e72f292470f2093fbc47b7a04eec75cfab"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0003/manifests-and-namespace.md",
+      "sha256": "3874e0e08eeeb2042eb3ce1b6760170ee073a0dcdafa253bec44c32828e312a9"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0004/README.md",
+      "sha256": "716dd75fdd851d16c31249879e7a1f77c9444f40351d941146860b93743227a1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0004/execution-record.md",
+      "sha256": "336e1c2c28cfb46121acb1ac90f03cb556e089601489095e847feddf6bca44d1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0004/fidelity-joins-and-mappings.md",
+      "sha256": "847f91a9bcb8651ab85d4d798723ac2094ea805f93fa98627aa6bd1b4e93951a"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0004/general-contract.md",
+      "sha256": "b21fc950103964c34e2f9b2d78c97ac8e03720f311738e0e6323afb29b8d6f0e"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0004/named-adapters.md",
+      "sha256": "5a816aa750379358cf805ca8c9fd1cf75b6fd269625589f697a2f11ee759a353"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0005/README.md",
+      "sha256": "b9b71bf7427ba3e4cc7fa98d3006fec47ecfcf92ed176aa84a6c6a02bfedaed3"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0005/admission-and-boundary.md",
+      "sha256": "ae019a49fe102c55ce457dedc07c459ba1e1e135852459f06f27fd7b4760ee21"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md",
+      "sha256": "ef34d94bdd7e76bc61a69a9f2bf43140a7752a9b38feebbe8919a7807471eeec"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0005/execution-profiles.md",
+      "sha256": "4e87900dec1e96af90e7a2c07b24577dc33d39c66275d2884a38d7616797f6c0"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+      "sha256": "5959f852c300b715ad039a6b5ba0c0106b8115d8fa4f8779cfd3e7f15eb72f95"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0007/README.md",
+      "sha256": "32635db0cfe4bb53e3a71702b1cc6aaea056917d40ed2a29735f37a638d3a0bd"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0007/narrative-contract.md",
+      "sha256": "5e5a412777e3299673ddd507f26a3bad0193d1e86685991262c17598b5a2e2a2"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md",
+      "sha256": "d4ab9646269e4f22274f46ecc9687ac321572372d62a0f30a96a66e306edb9fa"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/README.md",
+      "sha256": "01e45d7492d08dc04df49b497ac7b97e99aebab6d3b086406287e0e92decc146"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/accounting-reconciliation-and-release.md",
+      "sha256": "a7bcc33095030ef93d038e1974dc81535a4d61387b649bbace1cba4faa4cef8f"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/identity-authority-materialization.md",
+      "sha256": "efc60c5dfe0b24f864663599f33540c67a6faff218a0c67e0022777a07ccb0e6"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "sha256": "5902deaaa1e89248ed09792ffc4c46a4b2ea41645054d64ad6a836056d0c71a8"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0009/README.md",
+      "sha256": "ea202e4be72ef72322d1fc99cf6b84229a28178bd5d7b6df16cfb28643afa32c"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0009/interaction-parity-and-release.md",
+      "sha256": "94acbf0f30638d4720cb55cb3a3e8fc9b0143fda5b3fb0eb3d4542139ec668bb"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0009/semantic-geography.md",
+      "sha256": "378cff396f381bd2cb7c189be7d3c5e74b52b43ace80ae6b47387b7a6b596eb1"
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0009/visual-grammar-and-lenses.md",
+      "sha256": "93dbabe89d3edd0d37f43e87b2ec24480b050c5acad45399300b0d029916f78d"
+    },
+    {
+      "path": ".syzygy/governance/decisions/A6-RESOURCE-ENVELOPE-DECISION.md",
+      "sha256": "5ffd5745564d653be5e2996d1d603286bab70bcd9596916bc24fdf20412a51a9"
+    },
+    {
+      "path": ".syzygy/governance/decisions/A6-SCOPE-VS-CAPACITY-ASSESSMENT.md",
+      "sha256": "ded76caadde5913c62817a639f62baa99dae3e825920cf011273ee2b3ccc7ceb"
+    },
+    {
+      "path": ".syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md",
+      "sha256": "17e496e52d1e21137a936ee8ff6d19e94435eaf15d86e83b67e6fd5f48e218f7"
+    },
+    {
+      "path": ".syzygy/governance/decisions/ADMINISTRATION-1-OWNER-INPUTS-DECISION.md",
+      "sha256": "e9c7cc4d3252674d097e8c99584ef7c265d4acc3421758ef3d42f2383a591f06"
+    },
+    {
+      "path": ".syzygy/governance/decisions/BOUNDED-MISSION-DOCTRINE-INTERPRETATION-ACT.md",
+      "sha256": "6dbf81ee2dca7519bb3caa1b879adeb07d6a4095a4bce446683055d03bf280e1"
+    },
+    {
+      "path": ".syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md",
+      "sha256": "5d705d75f993059d5ae5561b1a6f99d143462d9d2e5bcea8ecc9b0c258777841"
+    },
+    {
+      "path": ".syzygy/governance/decisions/CAPABILITY-1-IMPLEMENTATION-AUTHORIZATION-ACT.md",
+      "sha256": "0c8a18596847e8cca8bff26f4a7afca142053f62334bf18ccf7c3727bba28aed"
+    },
+    {
+      "path": ".syzygy/governance/decisions/CAPABILITY-1-SPECIFICATION-ADOPTION-ACT.md",
+      "sha256": "2078de1fea3c30785b7a21bf9c29d9118b1fdeef46d6205e8aaa084a4a635e15"
+    },
+    {
+      "path": ".syzygy/governance/decisions/CAPABILITY-1-SPECIFICATION-AUTHORING-DECISION.md",
+      "sha256": "fd45ced03d1b7fc63e6d78480e05edc3f6334c9dda1d0d89d37005a74434fa38"
+    },
+    {
+      "path": ".syzygy/governance/decisions/CC-REV-2-LAGGING-SPEC-EXCEPTION-DECISION.md",
+      "sha256": "1fc855f0bd747fb63f89ccb5c1cc1b171fe738d82a1ef529b641388688ba81bd"
+    },
+    {
+      "path": ".syzygy/governance/decisions/D4-RULING-DECISION.md",
+      "sha256": "6e6351d9b992b2ef701108bfbd8e83c953c63e1c4eb91bd666496c8f46972978"
+    },
+    {
+      "path": ".syzygy/governance/decisions/DECISION-HISTORY.md",
+      "sha256": "905cec7b4b383d82f2e27711bdcefffb80de770dc95df3f0d0dddc4c2938c7c4"
+    },
+    {
+      "path": ".syzygy/governance/decisions/DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md",
+      "sha256": "a040ce1a612a2fcbb4a5b3cb442617251c75add8783f9e6d461b21a55a6be05c"
+    },
+    {
+      "path": ".syzygy/governance/decisions/DOCUMENTATION-ESTATE-DECISION-PACKET.md",
+      "sha256": "cc126ed927dc541da2166bcb878ba3baaaa486946fa9acf3f1b87609a5d40852"
+    },
+    {
+      "path": ".syzygy/governance/decisions/DOCUMENTATION-ESTATE-OWNER-RULINGS-DECISION.md",
+      "sha256": "04bfa385014891cce5f1d593147b36d6bfb20ddb3929fe9184e5e36025d50775"
+    },
+    {
+      "path": ".syzygy/governance/decisions/F2-GOVERNANCE-REDUCTION-DECISION.md",
+      "sha256": "acb66f2c49aa58be1273cce1b8529cb501c80ef48cb7445ba40b1bd1aef6246e"
+    },
+    {
+      "path": ".syzygy/governance/decisions/F6-GOVERNANCE-CEILING-DECISION.md",
+      "sha256": "aff8ade9731f7e07e6a90dd5024fbced5075f9f72ea7425741008f8f9bb1dd97"
+    },
+    {
+      "path": ".syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md",
+      "sha256": "3534db031087eb1de0f5eaae8fcfbc50e8f546e44b8440e0a5e4936e394ede8c"
+    },
+    {
+      "path": ".syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-DIRECTION.md",
+      "sha256": "ff99ce1b4ff96df31512e8e4ab52e56f955f21478a45b1ddfc59bab3aaa88c75"
+    },
+    {
+      "path": ".syzygy/governance/decisions/HUMAN-ENTRY-DECISION.md",
+      "sha256": "5300f59825ddbc03256151c273992346eca956bb7994a89949cb18e2dd49eb95"
+    },
+    {
+      "path": ".syzygy/governance/decisions/KNOWLEDGE-HYGIENE-DECISION.md",
+      "sha256": "e4bd7f4beb95f4007f5e2669be006d8fe17a8e7c575205536de2ee6008dfa837"
+    },
+    {
+      "path": ".syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md",
+      "sha256": "7757da473e100f6f57c23e7a9a5ba947450bba518aac0a2cf671e1fb10567fc2"
+    },
+    {
+      "path": ".syzygy/governance/decisions/LAUNCH-REPAIR-STOP-CONDITION-DECISION.md",
+      "sha256": "6e1297821090cf101cc2d20d8607fc7ff97776a86a461d53b6ec7d6e85d2702c"
+    },
+    {
+      "path": ".syzygy/governance/decisions/LICENSE-CHOICE-DECISION.md",
+      "sha256": "f94c1206a66b1a0ec76cf0a85f5a728abae01f3f4b6423d35892ecf6ac9a2ca0"
+    },
+    {
+      "path": ".syzygy/governance/decisions/LICENSE-DECISION-PACKET.md",
+      "sha256": "bc9ff3aebb80455fd9f222802f66088f909e14b89768d169a1f52acbb9c8f97c"
+    },
+    {
+      "path": ".syzygy/governance/decisions/MERGED-UNRECONCILED-DECISION.md",
+      "sha256": "bc2724c659d6a7c7fbe9a92ea5801e9c255e86f0dd6a4c5eda7687b0a747aa10"
+    },
+    {
+      "path": ".syzygy/governance/decisions/OPENSPEC-FORM-AND-VERSION-DECISION.md",
+      "sha256": "4a4c6c46fd98dfcf810a8aaf2442c230ff93af678d8cb47d231538eb486f3a6a"
+    },
+    {
+      "path": ".syzygy/governance/decisions/OPENSPEC-MULTI-CHANGE-DIRECTION.md",
+      "sha256": "0062f5a1a71cf1ef0f5a6cf073d8e74c5026a82033453a618a1833f06b02bea5"
+    },
+    {
+      "path": ".syzygy/governance/decisions/OWNER-ANSWERS-2026-08-01.md",
+      "sha256": "517e3704745e53e4e9c004f66a15556bb020334f011de15ccfc87601f8801484"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+      "sha256": "b94d1b0a510c33bfe5de21067f93b4e2e43bd1fc16d2828f7e4f29fa1ae47477"
+    },
+    {
+      "path": ".syzygy/governance/decisions/POLARIS-POST-CEILING-CORRECTION-AUTHORIZATION.md",
+      "sha256": "0beb92a986186ee2343dc70319676ef5d2278e2eb45f75ec8e59beebd46f2653"
+    },
+    {
+      "path": ".syzygy/governance/decisions/POLARIS-PROJECT-WIDE-POC-EVALUATION-DIRECTION.md",
+      "sha256": "9f32c075343e2ec081527c55be605aacf803978117ebd9e028ca24f4a68e3db4"
+    },
+    {
+      "path": ".syzygy/governance/decisions/POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md",
+      "sha256": "5539ecb031d9605ab66e8b3ad3d46363d08ee894819fc7396800f061ed61a00e"
+    },
+    {
+      "path": ".syzygy/governance/decisions/POLARIS-TRUSTED-BOOTSTRAP-OBSERVATION-DIRECTION.md",
+      "sha256": "4e2f95a14f2d3e65a9343599aef31f6b9f6046f482b490feb793be630f39fcbf"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PROCESS-LESSONS.md",
+      "sha256": "aaf323feaabf6038c6e8919cb2343a1aeba7ced23a2b6e95cf6905fcc2515ae9"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PROJECT-OPERATING-CONSTRAINTS-DECISION.md",
+      "sha256": "f8f19f680b4f196d93e84661ee8a3e2b27faa6aec14479e5dbcda7b9ed4e1ad5"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PROJECT-SHAPE-FACETS-DECISION.md",
+      "sha256": "f3371e5ae5277ed191e6df9b2ee0f2c3a300be5148b716095d17576f1063e399"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md",
+      "sha256": "e69056a662deca11cba55de74bea92b8d7e91ab999893cc5ff2d7db204bc391a"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-CYCLE-OWNER-RULINGS-DECISION.md",
+      "sha256": "db9f5aa11cf12c325e64a13ff4ce5050326b54ec71944f7437ad8149503abf17"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-CYCLE-REPORT-DECISION-PACKET.md",
+      "sha256": "9ef9cedfb84638a6881aedab20822cfb5b584e62008b2387789130988bc4114d"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md",
+      "sha256": "459a766ab71aebedcfeb760fa26e0c04e1cb494fc76e13d4f227f7680890b9e8"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md",
+      "sha256": "0192e9c37a00783633506ad3794203093ec10791b80f63f1f85138c943513991"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md",
+      "sha256": "4d3125486f92f5d53b0955d2acf362e0fbcc83e5a8b61913f1b54541155806a5"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md",
+      "sha256": "5076cf90ab7756b36164f03b45a64b4341890732e37d091931071c2047315781"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md",
+      "sha256": "e02c0e6fbe408c4aac7d60f86e116bc8d4b79672a0c3a4dd4d6cf1a9f6bf59bb"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md",
+      "sha256": "e766803dafcfbf0c5d40fdc499af7a83239864afd2a09696a7d7a21f81618a0a"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-STATE1-AMENDMENT-ACT.md",
+      "sha256": "1a818b2644785ae329a7af863c860d47b17ace586b23319a3a6a0458e2c0790b"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-STATE1-AMENDMENT-DIRECTION.md",
+      "sha256": "d263acc5c6f830f86e119b204dbb642c24cda819fa4419ad8862435e526b4bec"
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md",
+      "sha256": "a06b4d645f4cc1bada857f979fe75378234bedd8cd42975de7c749dcbda69fe4"
+    },
+    {
+      "path": ".syzygy/governance/decisions/README.md",
+      "sha256": "c64cf54d74d0ea30db84a40d87f3ba967bfe280d752c868bc4344e58bba4b8b7"
+    },
+    {
+      "path": ".syzygy/governance/decisions/SHAPE-TO-SPEC-IMPACT-DECISION.md",
+      "sha256": "c3297c62783570d0646efb60f22fd9ac00c7a3a74eec438a2897f08a404ad94e"
+    },
+    {
+      "path": ".syzygy/governance/decisions/SPECIFICATION-ACCEPTANCE-DECISION.md",
+      "sha256": "c55a9222036bf8d31392c06092cf115167bdd072ac767dc28ea19dcf71a4dd1a"
+    },
+    {
+      "path": ".syzygy/governance/decisions/SPECIFICATION-GRANULARITY-DECISION.md",
+      "sha256": "7e2ee8ac597bea8e7d087dda0f769a206ac7223957f51e98e800c892168e1db7"
+    },
+    {
+      "path": ".syzygy/governance/decisions/SURFACE-DECISION-RECORD.md",
+      "sha256": "bcc6d786fc215e08bd91edb7fba5e28565fb99c3fbac296952983fd8c3bd5f0a"
+    },
+    {
+      "path": ".syzygy/governance/decisions/TERM-REGISTRY-DRAFTING-VOCABULARY-DECISION.md",
+      "sha256": "e544809f61e7e8d1e63e7e46c62633f42e76166f888fa91a10d00a5e4fdc2a1b"
+    },
+    {
+      "path": ".syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md",
+      "sha256": "a1209a61a182deb12fd26243edba5505fb1512c1de33abef6af63cbca15ecf26"
+    },
+    {
+      "path": ".syzygy/governance/decisions/THREE-SURFACE-POC-MODE-DIRECTION.md",
+      "sha256": "e27f5ee30fbf080c5f86dc7c710b01287d2812ab3ef8cce9aa00c8f0518a3567"
+    },
+    {
+      "path": ".syzygy/governance/decisions/THREE-SURFACE-POC-REDESIGN-DIRECTION.md",
+      "sha256": "9f0159f30845cf571659e0e68e6b89e9b13ee7928685028b96b4037f27dec2c8"
+    },
+    {
+      "path": ".syzygy/governance/decisions/THREE-SURFACE-POC-SPEC-AUTHORIZATION.md",
+      "sha256": "a5e82deaaf41fa7af26a54ac1723d63d6e757b7086ec417f01d8d978664530ce"
+    },
+    {
+      "path": ".syzygy/governance/decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md",
+      "sha256": "289d4e358aaeb9d2ea2f4e80b507bf376c15b7f8141c2da9337cb7618b73f004"
+    },
+    {
+      "path": ".syzygy/governance/decisions/UNKNOWNS-AND-GAPS-DECISION.md",
+      "sha256": "096791ce0e95b8513eeaede5cbf726c3dea86d8048f58fa37d854623893a59c8"
+    },
+    {
+      "path": ".syzygy/governance/decisions/WAVE-A-INSTALL-SHAPE-DECISION.md",
+      "sha256": "2591ab3d0b504896fb2aa135fee3c22b8eccf2d0ab9f5aac9fe56838be1cb5f1"
+    },
+    {
+      "path": ".syzygy/governance/decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1-VALIDATION-TRANSCRIPT-RAW.txt",
+      "sha256": "05c77795001fec5ea4d4f0408cbaa667c474ed4047b0cc31e81b82357646a628"
+    },
+    {
+      "path": ".syzygy/governance/decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json",
+      "sha256": "3a7a038293b56f9f6c47cd4c202eeb5d68bd6017f75056119fcd2739bc8bcd75"
+    },
+    {
+      "path": ".syzygy/governance/decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.md",
+      "sha256": "2738f13d9f7e767e5c59d94d3eee4ffe893b894e61cef254ac83607fd7695c09"
+    },
+    {
+      "path": ".syzygy/governance/decisions/launch-gate/HISTORY.md",
+      "sha256": "ab0695b08bbf609d2962c74e94cfa2ec1ff0261941432642d9e3f5a91f627416"
+    },
+    {
+      "path": ".syzygy/governance/decisions/launch-gate/README.md",
+      "sha256": "c5defbca3b53d51ca327a9082c331099e6d84c3ad303cdf0cd6cb99e69485753"
+    },
+    {
+      "path": ".syzygy/governance/decisions/launch-gate/TREND-LOG.md",
+      "sha256": "badff69d1944872a689a1cf79be7c75d967bd3ba6a577029d1a09b206ac46fe8"
+    },
+    {
+      "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+      "sha256": "0765f4d534afad9003463790113fd433d250550091df783c1ff372d227643e4f"
+    },
+    {
+      "path": ".syzygy/governance/doctrine/README.md",
+      "sha256": "01415f8489752915b8a42394841feb318df82e26fae2886822bd81a0daa5804f"
+    },
+    {
+      "path": ".syzygy/governance/doctrine/architecture.md",
+      "sha256": "e19d255f9a2f2ddaf4da83eb0fe74f17b17d96d31b31bb03f76accb1a2ac11de"
+    },
+    {
+      "path": ".syzygy/governance/doctrine/security.md",
+      "sha256": "9f3983e29cc32ddc9c000b59abb8b623b9265779a746824ca800d10a70940796"
+    },
+    {
+      "path": ".syzygy/governance/doctrine/trust-and-evidence.md",
+      "sha256": "a79ee038cf03568e72d70f3fae3b0aced4839dab97084a926144d629b48dfc25"
+    },
+    {
+      "path": ".syzygy/governance/doctrine/v1.md",
+      "sha256": "aba82d1fec25d38770a94a359aef65a23506896babfaa77256c931116d229dbb"
+    },
+    {
+      "path": ".syzygy/governance/doctrine/vision.md",
+      "sha256": "816ad50c59abb08ab85dcb1be18e39c4123695521914249d9ded1a980beafa86"
+    },
+    {
+      "path": ".syzygy/governance/policies/GOVERNANCE-SUBSTRATE-LOCK.yaml",
+      "sha256": "097ccc2dc3930cb89d122ec36b9b61b852de5dc1d8516510313d689b07471509"
+    },
+    {
+      "path": ".syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json",
+      "sha256": "d148f0360841cfc30cdc9ecedbffe722e31044e4bb048cd33f83cc193ee88e75"
+    },
+    {
+      "path": ".syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md",
+      "sha256": "21d6a483ee62822b6b86790a07d38934bcb06950ffe95b025f549f0a3230c795"
+    },
+    {
+      "path": ".syzygy/governance/policies/craft-and-care/README.md",
+      "sha256": "0e230d7deb74a46af87149cda4c54e81680c5640455ac34829b0c383d25d6479"
+    },
+    {
+      "path": ".syzygy/governance/policies/craft-and-care/agent-provenance-and-execution-evidence.md",
+      "sha256": "f156d3a17b34abce1b1c2b1d1046dc6e7f31ce720110c6775735fefe93fc8d11"
+    },
+    {
+      "path": ".syzygy/governance/policies/craft-and-care/engineering-bar.md",
+      "sha256": "7f94efc1c7a8d4aea38ede92d16de9164f11f192bd711a8b1699fa1d28b40d02"
+    },
+    {
+      "path": ".syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md",
+      "sha256": "ce999d200ce575c632da6156b9a7f824e735a862fe878c7f0b552a9e53ac2f3d"
+    },
+    {
+      "path": ".syzygy/governance/policies/craft-and-care/observability-and-operations.md",
+      "sha256": "a05db356291c0874dcd65b478b388797dec64e548a38fabba0d96246d76932a4"
+    },
+    {
+      "path": ".syzygy/governance/policies/craft-and-care/performance-and-visual-discipline.md",
+      "sha256": "de99b2c19c7a4754cb3cbd22dec12a499980c0a5c7c703d3e1c5e6e1d88b19da"
+    },
+    {
+      "path": ".syzygy/governance/policies/craft-and-care/review-and-documentation.md",
+      "sha256": "e1e465cd913f6a9f9fee4a8e3c9b3a985e4e28e0c81b904b9bbdcefb0099c958"
+    },
+    {
+      "path": ".syzygy/governance/policies/craft-and-care/security-and-secrets.md",
+      "sha256": "b7889681fe5d64b3279e12a609d01ecb2f00b436b072e12ec318e4194afb18a0"
+    },
+    {
+      "path": ".syzygy/governance/policies/craft-and-care/testing-and-verification.md",
+      "sha256": "7a716090bc827121b3f70c4f7e252fc5680cd8a56d7b4121b70f3673489690a0"
+    },
+    {
+      "path": ".syzygy/intent/OVERVIEW.md",
+      "sha256": "a975fb96159042b43b4ddc147301aff44e839e618bc5a815261aa882e136f9c0"
+    },
+    {
+      "path": ".syzygy/map/topology-candidates/01-system-context.md",
+      "sha256": "b081089317f476d9e33b669a4ef41fa659dfc32fccb628ada5efc4cc666fa009"
+    },
+    {
+      "path": ".syzygy/map/topology-candidates/02-project-workspace-repos.md",
+      "sha256": "6e0c75afb915fd07cc70d80d0515834cf04d33c475daba23f0188057a4bca90d"
+    },
+    {
+      "path": ".syzygy/map/topology-candidates/03-kernel-and-surfaces.md",
+      "sha256": "50e48478b352f7864f1dbc201dbe1fcd3d1aa847cb6a4cc791300796d0446178"
+    },
+    {
+      "path": ".syzygy/map/topology-candidates/04-authority-write-boundaries.md",
+      "sha256": "a9aff9170547863be863b0bb4e80c8d34baaad13e855fdc22104e561aaf96590"
+    },
+    {
+      "path": ".syzygy/map/topology-candidates/05-observation-evidence-flow.md",
+      "sha256": "27a9b38d9d34d60ad06feb2542a45b81e95840f35406a9d026710633e77f716f"
+    },
+    {
+      "path": ".syzygy/map/topology-candidates/06-intent-to-reconciliation-flow.md",
+      "sha256": "d6712766e58842244c67e9d3e50fca94fd9c59ff838f1b6f6f6cc876e4d6b8ca"
+    },
+    {
+      "path": ".syzygy/map/topology-candidates/07-client-trust-boundaries.md",
+      "sha256": "0f6e903a1c72ef1cd6dca906ef5a7d7b04e92a18db0f6d82c2e67cc0fd5947ec"
+    },
+    {
+      "path": ".syzygy/map/topology-candidates/08-adapter-external-systems.md",
+      "sha256": "21768048fce64d7f33ff4a4bf9d1e72ed0954c7c359db0aaaf2aba4b7ea700b4"
+    },
+    {
+      "path": ".syzygy/map/topology-candidates/BUNDLE-MANIFEST.md",
+      "sha256": "568a6f17659af770a5f052922b10299fceb564cc4601b65d5c5a3c13d9dba096"
+    },
+    {
+      "path": ".syzygy/map/topology-candidates/README.md",
+      "sha256": "40c58ab003e430f02067cf7f72749980021e90f172f05e36f85e30b0aeca6a66"
+    },
+    {
+      "path": ".syzygy/map/topology-candidates/TRACKING-NOTE.md",
+      "sha256": "e6c62d720ef7c3afa5dac0bf5788f123f05c569cafee758feb0824bf65547387"
+    },
+    {
+      "path": "openspec/README.md",
+      "sha256": "48d7a5fb02cd4f436e18f8ecee910d8d606f4bb9d7b84b4d06af464908fa5981"
+    },
+    {
+      "path": "openspec/changes/archive/README.md",
+      "sha256": "40edf75352b29ef874da60051ab677a181aecd69993d42eb479f9a4a0a653d1d"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/.openspec.yaml",
+      "sha256": "bd2504cb580ca73eeb2510481ca4665ee11e2127360fc0be12c104f347fb515f"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md",
+      "sha256": "517d698b55425701919132163d316c3c891097d7a7058281b404e89bd05adcac"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md",
+      "sha256": "77f6b685f7a92eff39d874b92ed36b99e832ded16d1970f1242b6750641b5349"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE.md",
+      "sha256": "ada47e4b993951873855a3055e0958bd5e0947ab51060404b0ef11eaff84c578"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md",
+      "sha256": "2b5a453baf53ec03278b5950abe3689267b085275fb21f1a2ef54010b02532f0"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0001-0003.md",
+      "sha256": "f28404be66a4241503f2214757d640361751934b2ab308dafeada5c6d2152e50"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0004-0006.md",
+      "sha256": "ec091e743cb95070b30980021f2b5bdf054128161a86f6f8a8bbdf7678ffbc29"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md",
+      "sha256": "6e480d6b94734abd41b15fbdcab1e6d7df9d60f68f0f3f5b0d66f98462728cd0"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/contract-coverage-parts/RFC-0001-0003.md",
+      "sha256": "dd64afe3df653bb311aa4d0a94fcb96c444bbb8c254649d49b87569aaa8fecc0"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/contract-coverage-parts/RFC-0004-0006.md",
+      "sha256": "5ee83a2cec0aee04703d6034a8846eca300012f81abba8566709181c4d2957d6"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/contract-coverage-parts/RFC-0007-0009.md",
+      "sha256": "2f23e7b2d7e3a7a75302cf38d585ea88f06f37b67b52b286271b6b3469bc27b1"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/design.md",
+      "sha256": "b89fae42697810692507b5a049aa66949a04afd95d1df1783e95d910e7bfb53e"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/proposal.md",
+      "sha256": "2054c425e02f4eaffb1a2eeec07238fe4975a8f6eb41d1bc429a4a891fb93a38"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+      "sha256": "42d073cdeaf7fa7940c5e822b05213267ec1d0064faaaad092f21d264b76a2b1"
+    },
+    {
+      "path": "openspec/changes/polaris-project-wide-butlers-model/tasks.md",
+      "sha256": "74c9957fa1bb7584222b81a1d12368f5ed0039db3b1851b874a7c429bd9ffecc"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/.openspec.yaml",
+      "sha256": "727fc3b35bb3eb09ccede6d08cbc829ea0044b031816d47842ec2573bff99290"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/CAPABILITY-COVERAGE.md",
+      "sha256": "2f6f4de4650b6800b968d243dd5887919ea7d4da550413db570d6928ac7646e9"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/CONTRACT-COVERAGE.md",
+      "sha256": "15431d8ba1fe25a61e4dc2713c4d51fad1cf6d25ef7a9103cc616265102289c9"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/GOVERNING-DEPENDENCIES.md",
+      "sha256": "a00ccbf24f2e106ec3a396b8ae637097b4aaca9965548aab6d1cda0f37851c8e"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/design.md",
+      "sha256": "a7a90828ed51fd5e98d8cbc9f35f2aa88b5cdd75f6a53f905b816dcc11267652"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/proposal.md",
+      "sha256": "a9e170909acb672d7c46d02a6a8456511680feef4ef994ab5c297315961b735e"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md",
+      "sha256": "65b66c913cd2650881a9df8cb34a3c63b3f518041e83f45d2451980d9f1d0448"
+    },
+    {
+      "path": "openspec/changes/project-registration-and-honest-shape-visibility/tasks.md",
+      "sha256": "c037aa188970c1314d8e0adfcdc1b6f890c20e05fa3feb841483d8bc5aabaf33"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/.openspec.yaml",
+      "sha256": "9187547d8cc17017ebd44132527d2d5e096d1ef9705de80cc4f1cf34531f6976"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md",
+      "sha256": "f29a01f6a5725f4ac7085fa04a62de757fd16153d507ae5e415ae0b501fdc0a4"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md",
+      "sha256": "4bdcf6c6dbd07aad7d44fb1d6fbb9ae37ea56bed2ed66532231cdc37a71c1da4"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/design.md",
+      "sha256": "0847bf5f78155712c13535a3de4a25be300ee6a726b5199e84e318103c28695c"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/proposal.md",
+      "sha256": "6459f56cba26e0bc38c71a4a93ea571aa11eabdc847c96c81f8afcf30b72eddb"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+      "sha256": "f0eda5b9ec8766e2b4b961fb2940c4ece7aa97b1c397e10d570abb04f5dd960e"
+    },
+    {
+      "path": "openspec/changes/three-surface-poc-experience/tasks.md",
+      "sha256": "97cee9fe8306a051e0db7237394f5853c12061212b5fa1a2acd6a44c4e0f2a9d"
+    },
+    {
+      "path": "openspec/config.yaml",
+      "sha256": "2629206a18cd40c4d6450f3cdafd046ecef12c2604f675281ffbfa69b9a84923"
+    },
+    {
+      "path": "openspec/specs/README.md",
+      "sha256": "4d99d84fcab02940b1a0a06082401fc5f0acba073d5fe452904630d2fcfb7e90"
+    }
+  ],
+  "owner": "Tzeusy",
+  "package": "package:syzygy:polaris-manifesto-generation",
+  "project": "project:syzygy",
+  "provenance": "owner-adopted (bootstrap, uncorrelated)",
+  "reviews": [
+    {
+      "path": "docs/reviews/R-POLARIS-GENERATOR-RECORDER-CONFIRMATION-2026-09-12-RAW.md",
+      "sha256": "f55e37221c8215903f4dc1ea5e3206786601f8f7c24985de6d85e64b43d7adc1"
+    },
+    {
+      "path": "docs/reviews/R-POLARIS-GENERATOR-SCOPE-CONFIRMATION-2026-09-12-RAW.md",
+      "sha256": "498d6f53750119e9aca4b5eeb633953a03d99f146899e228623facdde0c2cb8e"
+    }
+  ],
+  "sources": [
+    {
+      "path": "docs/design/POLARIS-GENERATOR-DELIVERY.md",
+      "roles": [
+        "implementation-guidance"
+      ],
+      "sha256": "51f878fe4cb0dc90ca033ecef399a61d3fa2b825794bf69fdcb256dfc1e407bb"
+    },
+    {
+      "path": "docs/design/POLARIS-GENERATOR-OWNER-PACKET.md",
+      "roles": [
+        "implementation-guidance"
+      ],
+      "sha256": "a26ef879ee068198cc702a6ad20ab241fbadb9ff8902104eb755d08506d9b760"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/.openspec.yaml",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "2f19e85bc27192bfcfbe4fcfb49c1e49b7569f6d840f97966b535a07da28bc59"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/ADAPTER-DECLARATIONS.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "3836b93909611fd59890450383e897f9635ee4ba4cd4b5a22ccd611d9ea33564"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/APPLICABILITY-DECISIONS.md",
+      "roles": [
+        "specification",
+        "applicability"
+      ],
+      "sha256": "faeae75a1b265667db5969849dec52f8796da69af1407652b053b6554d26b23e"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/ASSET-CONTRACT.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "0804b40250c7bfb284bac97567e0278cfd16e6c8b5a5d5c25db28e8e7efb60d9"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/CAPABILITY-COVERAGE.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "4589e9ee4a5303fdc25d216a0a63e6d732c1185b5a1eb8bb23c7f1b8199b39e0"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/DESIGN-ACCEPTANCE.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "d2ff62db58995ef1fe44b3b6044917743ab5546b56827ba492f1b8ff8580f067"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/EFFECT-HOST-DESIGN.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "11e5c16a9965774eba7e1743e3228fbb5a13c6857829ae79cd61fcc90c59d559"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/ENTRY-AND-WALKTHROUGH.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "b65cd0f69b7800d683ae2d2e3b3053dde1d7c0607f430f90b033eef5c6817f96"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/EXECUTION-PHASES.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "8e3e2c4494df964addb76a885a5b349051f5a0a543346ff4dc15f7c1598b1245"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/GOVERNING-DEPENDENCIES.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "4edf4fe9744370fc61c250926d353890ee6283eb4898e83709ab76e2b627dfa3"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/INTERFACES.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "96e7e396c825d614503253ea45cd0c4317051516c5159e8f120d2786be7243dc"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/NAVIGATION-CONTRACT.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "e30570230c93516adb8d44e30bb810dc4df5ccde3f7d9a32a215214af3cdc321"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/OWNER-FLOW.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "414d845d91b52578c58474446d5feb6c7dc9f1185d8625e4c8ae794edc48c5a9"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/SCHEMA-CONTRACT.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "722eea7233cfb913f4f2e21060f359d721a86336efa1a3851e31ba113a857e8f"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/SECURITY-CONTRACT.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "c6f2703a92a33d31fa5f0644cb4ce669048187d6aa72ce61a4c3aee90bdad6b5"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/SOURCE-POLICY.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "af26acc453396d8b8ddbad94d939bd56f3d87b30ef2a0d3a411c378c48fbba89"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/WORK-STATE-CONTRACT.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "b86d0b944c395bbe66c4363d34be54531c55b6f72e76862626946851e199a986"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/design.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "236f9e015449b52fdcb8b75365d8600c0c1096f10784d0030abe56c55fce90ec"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/proposal.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "67970484f22a9882d09d896813d2b2b951cd87dd66ffb939a2001c092fc38651"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "a8199646c3b7953e8c4101d70d0307813dd1b3927d0b403f76c22d280dd6a89b"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/tasks.md",
+      "roles": [
+        "specification"
+      ],
+      "sha256": "d781a1b45fc0e4d216537f40a9e519d41df94eaf1ff252f3484c5f7fd5f794f6"
+    }
+  ],
+  "subject": {
+    "path": "docs/evidence/polaris-generator-review-subject-2026-09-12.json",
+    "sha256": "86a7564cfcfaa5d1be050a1e52c32e0bdbc9e6f9c94f917f5a869861d3d231b0"
+  },
+  "version": 1
+}

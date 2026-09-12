@@ -1,0 +1,319 @@
+{
+  "kind": "generator-candidate-resumption-inventory",
+  "baseline": "f4589e26aed9886a5776e5ac7a1c4fad4627fd26",
+  "sourceFiles": [
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/.openspec.yaml",
+      "sha256": "2f19e85bc27192bfcfbe4fcfb49c1e49b7569f6d840f97966b535a07da28bc59"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/ADAPTER-DECLARATIONS.md",
+      "sha256": "3836b93909611fd59890450383e897f9635ee4ba4cd4b5a22ccd611d9ea33564"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/ASSET-CONTRACT.md",
+      "sha256": "c250ee69072b0d4d1bab8da246712f463b70f630fb30e92bb51f3b0f13869f15"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/CAPABILITY-COVERAGE.md",
+      "sha256": "3e9b61f585ab8fd72f58bbe71b60f9277c5dfd38e3eddb149e53f6eba427624d"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/DESIGN-ACCEPTANCE.md",
+      "sha256": "d2ff62db58995ef1fe44b3b6044917743ab5546b56827ba492f1b8ff8580f067"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/ENTRY-AND-WALKTHROUGH.md",
+      "sha256": "cdc817aed4f1ffae8f83a6a3e23ffa080eb5a0b0e16aed1efe9fda85bf98d0bf"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/GOVERNING-DEPENDENCIES.md",
+      "sha256": "a9d1c255f10a5e20a4d5649aeec2dfe56dc376a71def6c417f008e7ef5bc89b1"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/INTERFACES.md",
+      "sha256": "96e7e396c825d614503253ea45cd0c4317051516c5159e8f120d2786be7243dc"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/NAVIGATION-CONTRACT.md",
+      "sha256": "e30570230c93516adb8d44e30bb810dc4df5ccde3f7d9a32a215214af3cdc321"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/OWNER-FLOW.md",
+      "sha256": "414d845d91b52578c58474446d5feb6c7dc9f1185d8625e4c8ae794edc48c5a9"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/SCHEMA-CONTRACT.md",
+      "sha256": "722eea7233cfb913f4f2e21060f359d721a86336efa1a3851e31ba113a857e8f"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/SECURITY-CONTRACT.md",
+      "sha256": "b4182fff554bfb5cf8053738b430e3a29f343670f2317f524fb21a4c8bdf488e"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/SOURCE-POLICY.md",
+      "sha256": "af26acc453396d8b8ddbad94d939bd56f3d87b30ef2a0d3a411c378c48fbba89"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/WORK-STATE-CONTRACT.md",
+      "sha256": "e7b96a532e3a64da10f2a5433e13e732c5d63df08ab1d7eaf9e906c66c68c9e7"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/WORK-STATE-NO-SIGNAL-DELTA.md",
+      "sha256": "ee031ece19eba7785fe0a44b2506bae23e98983900036985110ca528c5bebd76"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/design.md",
+      "sha256": "fcb70c557d4723d4e9a7699f2ac34bfa7f0cf42cdd348c32b050a27fe49e6e31"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/proposal.md",
+      "sha256": "9ffb130222b6b7251936fd4134d363c514b0f69f64c2e29b5f20df8d92367f18"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "sha256": "2606f49320712b8b1f25974dec4fc0295ad585d4aa0a75ae5cce2592c4dce2be"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/tasks.md",
+      "sha256": "6f468f0d14a1512a4c4e5ff63ac7034c4d7529dfdcb075b250df2382e80539d4"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-polaris-generation-001",
+      "title": "Admitted project input",
+      "scenarios": 2,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-002",
+      "title": "Project argument and voice",
+      "scenarios": 3,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-003",
+      "title": "Bounded anchored assets",
+      "scenarios": 5,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-004",
+      "title": "Understandable reading depths",
+      "scenarios": 4,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-005",
+      "title": "Explicit bounded generation",
+      "scenarios": 2,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-006",
+      "title": "Independent review and repair",
+      "scenarios": 3,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-007",
+      "title": "Cancellation and interruption",
+      "scenarios": 4,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-008",
+      "title": "Safe resume and duplicate requests",
+      "scenarios": 7,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-009",
+      "title": "Source drift and regeneration",
+      "scenarios": 2,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-010",
+      "title": "Human authorship provenance",
+      "scenarios": 2,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-011",
+      "title": "Rejection and retention",
+      "scenarios": 6,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-012",
+      "title": "Safe accessible presentation",
+      "scenarios": 2,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-013",
+      "title": "Shared drafting lifecycle",
+      "scenarios": 6,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-014",
+      "title": "Reusable product validation",
+      "scenarios": 3,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-015",
+      "title": "Presentation profile admission",
+      "scenarios": 2,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-016",
+      "title": "Authored artifact ownership and writes",
+      "scenarios": 4,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-017",
+      "title": "Registered adapter boundaries",
+      "scenarios": 5,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-018",
+      "title": "Complete execution history",
+      "scenarios": 5,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-019",
+      "title": "Versioned interchange and reference integrity",
+      "scenarios": 6,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-020",
+      "title": "Guided start and materialization",
+      "scenarios": 5,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-021",
+      "title": "Scoped caller admission for generator operations",
+      "scenarios": 5,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-022",
+      "title": "Protected audit and prospective revocation",
+      "scenarios": 6,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-023",
+      "title": "Fixed manifesto entry and repository discoverability",
+      "scenarios": 3,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-024",
+      "title": "Owner walkthrough and review-freeze discipline",
+      "scenarios": 6,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-025",
+      "title": "Provenance-bound source policy",
+      "scenarios": 6,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-026",
+      "title": "Stable selection and explicit context",
+      "scenarios": 5,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-027",
+      "title": "Shared facts and honest aggregate composition",
+      "scenarios": 5,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-028",
+      "title": "Evidence-derived work state and liveness",
+      "scenarios": 5,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    },
+    {
+      "id": "REQ-polaris-generation-029",
+      "title": "Captured work history and traceable accounting",
+      "scenarios": 6,
+      "status": "candidate-not-adopted",
+      "implementationEvidence": "not-established-for-generator",
+      "reviewDisposition": "pending-current-scope-review"
+    }
+  ],
+  "requirementCount": 29,
+  "scenarioCount": 125,
+  "authority": "none; inventory and delivery proposal only"
+}
