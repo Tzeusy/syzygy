@@ -92,6 +92,26 @@ jobs:
       - name: build_capability_1_spec_dependencies --selftest
         run: python3 scripts/build_capability_1_spec_dependencies.py --selftest
 
+      # Generated evidence and dependency projections that guard performed
+      # transaction history and the current Polaris/PWB specifications.
+      - name: build_general_trusted_bootstrap_impact_ledger --check
+        run: python3 scripts/build_general_trusted_bootstrap_impact_ledger.py --check
+
+      - name: build_general_trusted_bootstrap_transaction --check
+        run: python3 scripts/build_general_trusted_bootstrap_transaction.py --check
+
+      - name: build_polaris_project_wide_contract_coverage --check
+        run: python3 scripts/build_polaris_project_wide_contract_coverage.py --check
+
+      - name: build_polaris_project_wide_spec_dependencies --check
+        run: python3 scripts/build_polaris_project_wide_spec_dependencies.py --check
+
+      - name: build_pwb_truth_policy_amendment --check
+        run: python3 scripts/build_pwb_truth_policy_amendment.py --check
+
+      - name: build_three_surface_poc_spec_dependencies --check
+        run: python3 scripts/build_three_surface_poc_spec_dependencies.py --check
+
       # The directive register: every governing identifier and its definition
       # site, across all five trees. --check fails when a clause moves, is
       # renumbered against CC-REV-7, or gains a definition the page has not

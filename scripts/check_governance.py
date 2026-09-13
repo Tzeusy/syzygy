@@ -4323,10 +4323,27 @@ BATTERY_HEADING = "## How to verify this page"
 #: Written as words because that is how the claim is written. A digit form
 #: would silently miss the sentence this check exists to police.
 _NUMBER_WORDS = {
-    "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
-    "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16,
-    "seventeen": 17, "eighteen": 18, "nineteen": 19, "twenty": 20,
+    "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4,
+    "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
+    "ten": 10, "eleven": 11, "twelve": 12, "thirteen": 13,
+    "fourteen": 14, "fifteen": 15, "sixteen": 16, "seventeen": 17,
+    "eighteen": 18, "nineteen": 19, "twenty": 20, "thirty": 30,
+    "forty": 40, "fifty": 50, "sixty": 60, "seventy": 70,
+    "eighty": 80, "ninety": 90,
 }
+
+
+def _number_word(value):
+    """Parse a simple English count word from zero through ninety-nine."""
+    parts = value.lower().split("-")
+    if len(parts) == 1:
+        return _NUMBER_WORDS.get(parts[0])
+    if (len(parts) == 2
+            and _NUMBER_WORDS.get(parts[0], 0) >= 20
+            and _NUMBER_WORDS.get(parts[0], 0) % 10 == 0
+            and 1 <= _NUMBER_WORDS.get(parts[1], 0) <= 9):
+        return _NUMBER_WORDS[parts[0]] + _NUMBER_WORDS[parts[1]]
+    return None
 
 
 def _battery_commands(sh_block):
@@ -4427,10 +4444,12 @@ def cg26_battery_parity(res, status=None, workflow=None):
                         f"and did not")
 
     # The stated count is a third hand-maintained copy of the same fact.
-    for claim in re.finditer(r"\bThe (\w+) checks above are the same (\w+)\b",
-                             status_text):
-        said = _NUMBER_WORDS.get(claim.group(1).lower())
-        also = _NUMBER_WORDS.get(claim.group(2).lower())
+    for claim in re.finditer(
+            r"\bThe ([a-z]+(?:-[a-z]+)*) checks above are the same "
+            r"([a-z]+(?:-[a-z]+)*)\b",
+            status_text):
+        said = _number_word(claim.group(1))
+        also = _number_word(claim.group(2))
         for n, which in ((said, "published"), (also, "hosted")):
             if n is None:
                 findings.append(
@@ -5709,6 +5728,34 @@ def selftest():
     cases.append(("CG-26 miscounted parity sentence detected",
                   c.rows[0][0] == "FAIL"
                   and any("claims 14 published checks" in d
+                          for d in c.rows[0][4])))
+
+    twenty_six = "".join(f"python3 scripts/check-{n}.py\n" for n in range(26))
+    twenty_six_workflow = _wf(
+        *(f"python3 scripts/check-{n}.py" for n in range(26)))
+    c = Cap()
+    cg26_battery_parity(
+        c,
+        status=_st(
+            twenty_six,
+            "The twenty-six checks above are the same twenty-six the hosted "
+            "workflow runs."),
+        workflow=twenty_six_workflow)
+    cases.append(("CG-26 hyphenated number words parse past twenty",
+                  c.rows[0][0] == "OK"))
+
+    c = Cap()
+    cg26_battery_parity(
+        c,
+        status=_st(
+            twenty_six,
+            "The twenty-six checks above are the same twenty-six the hosted "
+            "workflow runs."),
+        workflow=_wf(
+            *(f"python3 scripts/check-{n}.py" for n in range(25))))
+    cases.append(("CG-26 hyphenated number-word miscount detected",
+                  c.rows[0][0] == "FAIL"
+                  and any("claims 26 hosted checks" in d
                           for d in c.rows[0][4])))
 
     c = Cap()
