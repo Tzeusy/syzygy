@@ -1511,6 +1511,16 @@ PWB_TRUTH_AMENDMENT_SUBJECT = (
     f"{PWB_TRUTH_AMENDMENT_DIR}/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt")
 PWB_TRUTH_AMENDMENT_ACT = (
     f"{DECISIONS}/PWB-TRUTH-READINESS-AMENDMENT-ACT.md")
+#: Lane B of the 2026-09-13 Polaris page-size funnel (P-67 question 2):
+#: registered before its packet exists so a stale argument copy fails CG-7d
+#: and CG-7e. Its manifest hashes proposed bytes (candidate patches applied),
+#: so it binds current bytes only once its act record exists.
+PWB_SCOPED_AMENDMENT_LABEL = "SIGN OFF PWB SCOPED-ATTRIBUTES AMENDMENT"
+PWB_SCOPED_AMENDMENT_DIR = f"{CANDIDATES}/pwb-scoped-attributes-amendment"
+PWB_SCOPED_AMENDMENT_SUBJECT = (
+    f"{PWB_SCOPED_AMENDMENT_DIR}/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt")
+PWB_SCOPED_AMENDMENT_ACT = (
+    f"{DECISIONS}/PWB-SCOPED-ATTRIBUTES-AMENDMENT-ACT.md")
 #: PWB task 1.7 — three separate effect-specific owner acts (PWB-REQ-005).
 #: Each act's argument is the SHA-256 of the artifact it binds, so RFC3-16(b)
 #: item 3 is satisfied by the phrase itself; the packet lives in
@@ -1567,6 +1577,8 @@ PWB_STATE1_SUBJECTS = tuple(sorted((
 #: The truth-and-readiness amendment binds the same closed eleven-path
 #: population as the state-(1) amendment; only the bytes differ.
 PWB_TRUTH_AMENDMENT_SUBJECTS = PWB_STATE1_SUBJECTS
+#: The scoped-attributes amendment binds the same eleven paths again.
+PWB_SCOPED_AMENDMENT_SUBJECTS = PWB_STATE1_SUBJECTS
 #: Successor chain over the PWB behavioral package, in performance order.
 #: The latest validly performed link binds current bytes; every earlier
 #: link's rows are immutable act-time history.
@@ -1575,6 +1587,8 @@ PWB_SUCCESSOR_CHAIN = (
      PWB_STATE1_SUBJECTS),
     (PWB_TRUTH_AMENDMENT_LABEL, PWB_TRUTH_AMENDMENT_SUBJECT,
      PWB_TRUTH_AMENDMENT_ACT, PWB_TRUTH_AMENDMENT_SUBJECTS),
+    (PWB_SCOPED_AMENDMENT_LABEL, PWB_SCOPED_AMENDMENT_SUBJECT,
+     PWB_SCOPED_AMENDMENT_ACT, PWB_SCOPED_AMENDMENT_SUBJECTS),
 )
 GENERAL_BOOTSTRAP_PWB_PATHS = tuple(sorted((
     "openspec/changes/polaris-project-wide-butlers-model/"
@@ -1989,6 +2003,13 @@ def _act_subjects():
             re.compile(re.escape(PWB_TRUTH_AMENDMENT_LABEL)
                        + r"\s*:\s*`?([0-9a-f]{64})"),
         ))
+    if not any(label == PWB_SCOPED_AMENDMENT_LABEL for label, _rel, _pat in out):
+        out.append((
+            PWB_SCOPED_AMENDMENT_LABEL,
+            PWB_SCOPED_AMENDMENT_SUBJECT,
+            re.compile(re.escape(PWB_SCOPED_AMENDMENT_LABEL)
+                       + r"\s*:\s*`?([0-9a-f]{64})"),
+        ))
     out.append((POLARIS_NO_SIGNAL_LABEL, POLARIS_NO_SIGNAL_SUBJECT,
                 re.compile(re.escape(POLARIS_NO_SIGNAL_LABEL)
                            + r"\s*:\s*`?([0-9a-f]{64})")))
@@ -2192,6 +2213,8 @@ ACT_DIGEST_COPY_FILES = {
         PWB_EFFECT_ACT_LABELS[1:],
     f"{PWB_TRUTH_AMENDMENT_DIR}/OWNER-DECISION-PACKET.md":
         (PWB_TRUTH_AMENDMENT_LABEL,) + PWB_EFFECT_ACT_LABELS[1:],
+    f"{PWB_SCOPED_AMENDMENT_DIR}/OWNER-DECISION-PACKET.md":
+        (PWB_SCOPED_AMENDMENT_LABEL,),
     # The owner-act record quotes each performed act's exact phrase and
     # argument (ceremony step 4). Extend this tuple as acts are performed;
     # a stale copy here would misstate what was accepted.
@@ -2269,6 +2292,25 @@ def _activate_pwb_truth_amendment_act_copy_registry():
 
 
 _activate_pwb_truth_amendment_act_copy_registry()
+
+
+def _activate_pwb_scoped_amendment_act_copy_registry():
+    """Same transition rule, for the lane B scoped-attributes successor.
+
+    Once `PWB-SCOPED-ATTRIBUTES-AMENDMENT-ACT.md` exists, it and the aggregate
+    record must both carry the exact current behavior-manifest digest. A no-op
+    until then; the packet copy is registered statically above.
+    """
+    if not os.path.isfile(os.path.join(ROOT, PWB_SCOPED_AMENDMENT_ACT)):
+        return
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+    if PWB_SCOPED_AMENDMENT_LABEL not in labels:
+        ACT_DIGEST_COPY_FILES[aggregate] = labels + (PWB_SCOPED_AMENDMENT_LABEL,)
+    ACT_DIGEST_COPY_FILES[PWB_SCOPED_AMENDMENT_ACT] = (PWB_SCOPED_AMENDMENT_LABEL,)
+
+
+_activate_pwb_scoped_amendment_act_copy_registry()
 
 
 def _activate_polaris_no_signal_act_copy_registry():
@@ -2629,6 +2671,9 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
                                truth_dedicated_record=None,
                                truth_manifest_body=None,
                                truth_manifest_digest=None,
+                               scoped_dedicated_record=None,
+                               scoped_manifest_body=None,
+                               scoped_manifest_digest=None,
                                contract_successor_dedicated_record=None,
                                contract_successor_manifest_body=None,
                                contract_successor_manifest_digest=None):
@@ -2742,6 +2787,12 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         truth_manifest_body = read_if_present(PWB_TRUTH_AMENDMENT_SUBJECT)
     if truth_manifest_digest is None:
         truth_manifest_digest = current_digest(PWB_TRUTH_AMENDMENT_SUBJECT)
+    if scoped_dedicated_record is None:
+        scoped_dedicated_record = read_if_present(PWB_SCOPED_AMENDMENT_ACT)
+    if scoped_manifest_body is None:
+        scoped_manifest_body = read_if_present(PWB_SCOPED_AMENDMENT_SUBJECT)
+    if scoped_manifest_digest is None:
+        scoped_manifest_digest = current_digest(PWB_SCOPED_AMENDMENT_SUBJECT)
 
     specs = (
         (GENERAL_BOOTSTRAP_LABEL, GENERAL_BOOTSTRAP_SUBJECT,
@@ -2800,6 +2851,9 @@ def cg7h_general_bootstrap_act(res, act_record=None, dedicated_record=None,
         PWB_TRUTH_AMENDMENT_LABEL: (
             truth_dedicated_record, truth_manifest_body,
             truth_manifest_digest),
+        PWB_SCOPED_AMENDMENT_LABEL: (
+            scoped_dedicated_record, scoped_manifest_body,
+            scoped_manifest_digest),
     }
     attempted_links = []
     for label, subject, act_rel, subjects in PWB_SUCCESSOR_CHAIN:

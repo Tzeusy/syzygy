@@ -1,0 +1,138 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+index 543469d..319a688 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -450,22 +450,55 @@ secondary reason counts without a headline status, composite maturity or
+ inferred success. Default Polaris status presentation SHALL not render trends,
+ metric walls or count walls; coverage counts remain available on demand.
+ 
++In the human view, a tuple field whose value is the same for every claim
++under one enclosing scope MAY be carried once on that scope instead of on
++each claim. The inheritance rule is: a claim's value for a field it does not
++carry itself is the value of the nearest enclosing scope that carries the
++field; a claim under no such scope leaves the field absent, which the
++falsifier below forbids. A scope SHALL be one element carrying a
++machine-readable scope marker, SHALL carry a field only when every claim
++under it has that value in the machine answer, and contributes no tuple of
++its own after expansion. Where claims under one element differ in a field,
++that element carries nothing for the field and each claim carries it itself;
++this holds for evaluation identity as for every other field, and nothing
++fails to render. Claim identity is never carried by a scope. A scope SHALL
++state every value it carries as text on the scope element, in reading order
++before the claims under it, so that a reader without vision meets each
++value once where a sighted reader does (PWB-REQ-016). The resolution route
++of an Unknown reason stays on the claim's own element even where the reason
++is scope-carried. The machine answer SHALL carry every field on every claim
++and SHALL not inherit.
++
+ - **Case (sweep)**: enumerate every project entity, claim and aggregate across
+   two evaluations of the same semantic subjects, including fixtures for every
+   admitted label, tier, reason, freshness, challenge and sibling state plus
+-  out-of-vocabulary and missing-currency cases.
+-- **Observable**: human and machine views expose identical complete tuples;
+-  invalid/missing currency stays Unknown and aggregates expand to members.
+-- **Oracle**: compare each tuple and tier meaning to independent literal
+-  vocabularies and provenance-verified currency inputs; verify stable semantic
+-  identity across the two evaluation instances; exhaust challenge/sibling
+-  separation, aggregate label/tier/freshness/reason counts and supports links;
+-  zero invalid, missing or folded values decides.
++  out-of-vocabulary and missing-currency cases, and scoped fixtures: a scope
++  whose every claim shares a field, an Unknown claim under a scope carrying a
++  positive label, an over-asserting scope, a scope value with no text on its
++  element, and a scope-carried Unknown reason whose route stays on the claim.
++- **Observable**: human and machine views expose identical complete tuples
++  once the human view is expanded under the inheritance rule; invalid/missing
++  currency stays Unknown and aggregates expand to members.
++- **Oracle**: expand every scope with the checker's own statement of the
++  inheritance rule, then compare each tuple and tier meaning to independent
++  literal vocabularies and provenance-verified currency inputs; verify stable
++  semantic identity across the two evaluation instances; exhaust
++  challenge/sibling separation, aggregate label/tier/freshness/reason counts
++  and supports links; zero invalid, missing, folded or scope-hidden values,
++  zero over-asserting scopes, zero scope values without text and zero
++  scope-carried reasons without a route on the claim decides.
+ - **Oracle independence**: the checker hard-codes the accepted vocabularies and
+-  reads captured authority/evidence, importing no production vocabulary.
++  the inheritance rule and reads captured authority/evidence and the machine
++  answer, importing no production vocabulary or rendering code.
+ - **Falsifier**: a positive claim lacks current support, a tuple field is
+-  absent/out of vocabulary, a reason has no route, Unknown is folded into a
+-  total, or an aggregate claims its own headline status.
++  absent/out of vocabulary after expansion, a claim's expanded value for any
++  field differs from the value the machine answer carries for that claim (a
++  scope value hiding a differing member), a scope carries a field for which
++  any claim under it has a different value in the machine answer (an
++  over-asserting scope), a scope value has no text on the scope element, a
++  scope-carried reason's route is not on the claim, a reason has no route,
++  Unknown is folded into a total, or an aggregate claims its own headline
++  status.
+ 
+ #### Scenario: Missing current evidence remains explicit Unknown
+ 
+@@ -473,11 +506,20 @@ metric walls or count walls; coverage counts remain available on demand.
+ - **THEN** its claim renders Unknown with the exact primary reason and route
+ - **AND** its tier, freshness and evaluation identity remain visible
+ 
++#### Scenario: A field shared by every claim under one scope is carried once
++
++- **WHEN** every claim under one scope has the same value for a tuple field
++  in the machine answer
++- **THEN** the scope may carry that field once and each claim's expanded
++  tuple equals its machine tuple
++- **AND** where claims under one element differ, each carries the field
++  itself, and a scope that carries the field at all fails the oracle
++
+ ```yaml
+ warrants:
+   primary: VIS-2
+   doctrine: [VIS-1, VIS-2, VIS-7]
+-  contracts: [RFC1-18, RFC1-19, RFC1-24, RFC2-9, RFC2-10, RFC2-23, RFC2-24, RFC2-25, RFC6-14, RFC6-17, RFC7-16, RFC7-33]
++  contracts: [RFC1-18, RFC1-19, RFC1-24, RFC2-9, RFC2-10, RFC2-23, RFC2-24, RFC2-25, RFC6-14, RFC6-17, RFC7-16, RFC7-33, RFC7-34]
+   policies: [CC-BAR-3, CC-BAR-4, CC-TEST-5, CC-TEST-6]
+   decisions: [POLARIS-DIR-2026-08-31]
+   topology: []
+@@ -907,23 +949,33 @@ Every project-shape identity, statement, source anchor, coverage state,
+ denominator, contradiction, body-read authority state and walkthrough-judgment
+ state or disclosure Polaris presents SHALL be recoverable from the same
+ evaluation in the machine answer, preserving multiplicity and exact provenance
+-state.
+-
+-- **Case (sweep)**: enumerate every project-shape parity marker on Polaris and
+-  every corresponding machine-answer fact at one evaluation, including every
+-  PWB-REQ-005 authority state and PWB-REQ-022 judgment state and disclosure.
++state. Recoverability is judged after the human view is expanded under the
++PWB-REQ-007 inheritance rule; a scope value SHALL never stand in for a claim
++whose own value differs, and a scope element contributes no marker of its
++own after expansion.
++
++- **Case (sweep)**: enumerate every project-shape parity marker on Polaris,
++  expanding scopes, and every corresponding machine-answer fact at one
++  evaluation, including every PWB-REQ-005 authority state and PWB-REQ-022
++  judgment state and disclosure.
+ - **Observable**: both populations contain equivalent multisets.
+ - **Oracle**: an independent order-insensitive, multiplicity-preserving
+-  comparator reports both denominators and zero differences.
++  comparator expands scopes with its own statement of the inheritance rule
++  and reports both denominators and zero differences.
+ - **Oracle independence**: the comparator extracts each channel separately and
+-  imports no production vocabulary or rendering code.
++  imports no production vocabulary or rendering code; its expansion of the
++  inheritance rule is its own.
+ - **Mutation proof**: for each fact, authority-state, judgment-state and
+   disclosure marker class, independently inject a missing, duplicated,
+-  changed, collapsed and wrong-evaluation marker and confirm the comparator
+-  fails before restoration; report both channel denominators for every run.
++  changed, collapsed, wrong-evaluation, scope-hidden (a scope value that
++  hides one member's differing value) and over-asserting-scope marker (a
++  scope value one member does not have, the member carrying its own) and
++  confirm the comparator fails before restoration; report both channel
++  denominators for every run.
+ - **Falsifier**: one fact, authority state, judgment state or disclosure is
+-  missing, duplicated, changed, collapsed or associated with a different
+-  evaluation in either channel.
++  missing, duplicated, changed, collapsed, hidden behind a scope value,
++  contradicted by a scope value or associated with a different evaluation
++  in either channel.
+ 
+ #### Scenario: Complete model has wire parity
+ 
