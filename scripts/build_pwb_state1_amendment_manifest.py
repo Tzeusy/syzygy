@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Build and verify the exact eleven-artifact PWB state-(1) amendment manifest."""
+"""Build and verify the historical PWB state-(1) amendment manifest.
+
+The eleven 2026-09-02 subject digests were superseded by the owner's
+truth-and-readiness amendment on 2026-09-05. That manifest is immutable
+history, so ``--check`` now fails by design and the default write mode must not
+be used to regenerate it. ``--selftest`` remains the safe way to exercise this
+generator's predicates.
+"""
 
 from __future__ import annotations
 
@@ -436,7 +443,7 @@ def selftest() -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--selftest", action="store_true")
     parser.add_argument(

@@ -244,6 +244,12 @@ python3 $CS/build_capability_1_views.py --check      # capability 1: charter -> 
 python3 $CS/build_capability_1_views.py --selftest
 python3 scripts/build_capability_1_spec_dependencies.py --check  # capability 1 spec: warrants -> generated union
 python3 scripts/build_capability_1_spec_dependencies.py --selftest
+python3 scripts/build_general_trusted_bootstrap_impact_ledger.py --check
+python3 scripts/build_general_trusted_bootstrap_transaction.py --check
+python3 scripts/build_polaris_project_wide_contract_coverage.py --check
+python3 scripts/build_polaris_project_wide_spec_dependencies.py --check
+python3 scripts/build_pwb_truth_policy_amendment.py --check
+python3 scripts/build_three_surface_poc_spec_dependencies.py --check
 python3 scripts/build_directive_register.py --check     # every identifier -> its definition site
 python3 scripts/build_directive_register.py --selftest
 DR=.syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json
@@ -252,12 +258,19 @@ python3 scripts/render_launch_administration.py $DR --check
 git tag --list 'doctrine-*'
 ```
 
-The twenty checks above are the same twenty the hosted workflow runs
+The twenty-six checks above are the same twenty-six the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.
 **CG-26** parses both lists and fails on any divergence, including a
 miscounted number in the sentence above.
+
+Two historical generators are deliberately absent from both lists:
+`scripts/build_pwb_effect_acts_packet.py` and
+`scripts/build_pwb_state1_amendment_manifest.py`. Their 2026-09-02 packets
+were superseded by the 2026-09-05 acts, so `--check` now fails by design and
+the immutable historical manifests must not be regenerated. Their `--selftest`
+modes remain safe for exercising the generator predicates.
 
 **Read the output, not the exit code** — a PASS over zero examined items
 verified nothing. Every check prints its own denominator; the WARNs are

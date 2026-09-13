@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and verify the three-artifact PWB effect-act manifest and owner packet.
+"""Build and verify the historical three-artifact PWB effect-act packet.
 
 The three artifacts are the effect-specific authorities PWB-REQ-005 requires
 before any Butlers project-shape body read: the observation-consent record, the
@@ -8,6 +8,11 @@ adapter-registry entry. Each takes effect only through its own separate human
 owner act bound to that artifact's exact SHA-256 (RFC3-16(b) item 3). This
 script performs no act; it renders the closed population, verifies drift and
 generates the plain-language packet the owner reads.
+
+The policy and registry subjects were superseded by separate owner acts on
+2026-09-05. Their 2026-09-02 packet is immutable history, so ``--check`` now
+fails by design and the default write mode must not be used to regenerate it.
+``--selftest`` remains the safe way to exercise this generator's predicates.
 """
 
 from __future__ import annotations
