@@ -1,0 +1,946 @@
+{
+  "status": "Bounded local search; no effective mapping established, not a global absence claim",
+  "scope": "Tracked text files under .syzygy/governance plus PROJECT-STATUS.md",
+  "patterns": [
+    "substrate-to-normalized",
+    "normaliz(?:ed|ation)[ -](?:work[ -])?(?:state|mapping)",
+    "activity-undetermined"
+  ],
+  "caseInsensitive": true,
+  "textFilesRead": 540,
+  "matchingFiles": 58,
+  "matchingLines": 232,
+  "matches": [
+    {
+      "path": ".syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md",
+      "line": 894
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX-REV10.md",
+      "line": 133
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+      "line": 257
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+      "line": 259
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+      "line": 262
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+      "line": 263
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+      "line": 593
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+      "line": 595
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+      "line": 607
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+      "line": 610
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+      "line": 749
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md",
+      "line": 905
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-10-trajectory-lifecycle.md",
+      "line": 43
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-10-trajectory-lifecycle.md",
+      "line": 178
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-2-trajectory-adapter.md",
+      "line": 5
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-2-trajectory-adapter.md",
+      "line": 11
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/context-selection-9-evidence-adapter.md",
+      "line": 174
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/fixtures/semantic-equivalence-fixtures.md",
+      "line": 47
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0008-history.md",
+      "line": 40
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0008-history.md",
+      "line": 186
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0008-history.md",
+      "line": 371
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0008-history.md",
+      "line": 375
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0008-history.md",
+      "line": 381
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0008-history.md",
+      "line": 422
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0008-history.md",
+      "line": 424
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0008-history.md",
+      "line": 440
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/RFC-0008-history.md",
+      "line": 443
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0003-project-workspace-manifests.md",
+      "line": 478
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0004-observation-sources-evidence-adapters.md",
+      "line": 504
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0004-observation-sources-evidence-adapters.md",
+      "line": 885
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0004-observation-sources-evidence-adapters.md",
+      "line": 967
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 25
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 60
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 294
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 296
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 308
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 325
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 327
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 331
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 335
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 343
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 352
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 359
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 379
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 395
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 397
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 401
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 404
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 429
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 565
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 689
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 804
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 881
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 888
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 913
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 917
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 923
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 982
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 985
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 1011
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 1012
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md",
+      "line": 1037
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0009-orrery-map-surface.md",
+      "line": 1049
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0009-orrery-map-surface.md",
+      "line": 1422
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0009-orrery-map-surface.md",
+      "line": 1424
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0009-orrery-map-surface.md",
+      "line": 1486
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/matrix-rows/RFC-0008-rows.md",
+      "line": 90
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/reviews/rev10-digestibility-review.md",
+      "line": 77
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0003/governance-homes-and-owner-acts.md",
+      "line": 190
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0004/README.md",
+      "line": 175
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0004/README.md",
+      "line": 193
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0004/named-adapters.md",
+      "line": 314
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0004/named-adapters.md",
+      "line": 419
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+      "line": 281
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+      "line": 366
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+      "line": 396
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+      "line": 410
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+      "line": 570
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/README.md",
+      "line": 98
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/README.md",
+      "line": 161
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/README.md",
+      "line": 168
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/README.md",
+      "line": 244
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/accounting-reconciliation-and-release.md",
+      "line": 66
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/accounting-reconciliation-and-release.md",
+      "line": 134
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/accounting-reconciliation-and-release.md",
+      "line": 253
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/accounting-reconciliation-and-release.md",
+      "line": 282
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/accounting-reconciliation-and-release.md",
+      "line": 412
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/identity-authority-materialization.md",
+      "line": 57
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 3
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 7
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 40
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 53
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 61
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 76
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 78
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 90
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 103
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 108
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 110
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 144
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 175
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 195
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 211
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 213
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 217
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 220
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 246
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 356
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 364
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 380
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 418
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0009/interaction-parity-and-release.md",
+      "line": 63
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0009/interaction-parity-and-release.md",
+      "line": 64
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0009/interaction-parity-and-release.md",
+      "line": 122
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0009/visual-grammar-and-lenses.md",
+      "line": 227
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0009/visual-grammar-and-lenses.md",
+      "line": 236
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0010/README.md",
+      "line": 147
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md",
+      "line": 112
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/TERM-MIGRATION-REPORT.md",
+      "line": 138
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-5-context-compiler-RAW.md",
+      "line": 508
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-5-context-compiler-RAW.md",
+      "line": 611
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-5-context-compiler-RAW.md",
+      "line": 842
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/matrix-parts/RFC-0008-0010.md",
+      "line": 65
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/matrix-parts/RFC-0008-0010.md",
+      "line": 67
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/matrix-parts/RFC-0008-0010.md",
+      "line": 79
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/matrix-parts/RFC-0008-0010.md",
+      "line": 82
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/matrix-parts/RFC-0008-0010.md",
+      "line": 169
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/matrix-parts/RFC-0009.md",
+      "line": 76
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-12-budget-waiver-RAW.md",
+      "line": 257
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-5-rfc-openspec-boundary-RAW.md",
+      "line": 210
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-5-rfc-openspec-boundary-RAW.md",
+      "line": 277
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-5-rfc-openspec-boundary-RAW.md",
+      "line": 494
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-6-context-compiler-RAW.md",
+      "line": 373
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-7-mission-safety-RAW.md",
+      "line": 359
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-5-context-selection-RAW.md",
+      "line": 753
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-10-human-view-RAW.md",
+      "line": 76
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-10-human-view-RAW.md",
+      "line": 84
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-10-human-view-RAW.md",
+      "line": 90
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md",
+      "line": 43
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md",
+      "line": 49
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md",
+      "line": 55
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md",
+      "line": 60
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md",
+      "line": 84
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md",
+      "line": 90
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md",
+      "line": 136
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md",
+      "line": 141
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md",
+      "line": 148
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-18-wave-a-RAW.md",
+      "line": 166
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-18-wave-a-RAW.md",
+      "line": 177
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-18-wave-a-RAW.md",
+      "line": 270
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-9-core-authority-RAW.md",
+      "line": 66
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-9-core-authority-RAW.md",
+      "line": 68
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-9-core-authority-RAW.md",
+      "line": 70
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-9-core-authority-RAW.md",
+      "line": 82
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-A-SEMANTIC-DELTA.md",
+      "line": 424
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-A-SEMANTIC-DELTA.md",
+      "line": 431
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-A-SEMANTIC-DELTA.md",
+      "line": 433
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-A-SEMANTIC-DELTA.md",
+      "line": 444
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-A-SEMANTIC-DELTA.md",
+      "line": 454
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-B-SEMANTIC-DELTA.md",
+      "line": 460
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-B-SEMANTIC-DELTA.md",
+      "line": 462
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-B-SEMANTIC-DELTA.md",
+      "line": 543
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/WAVE-B-SEMANTIC-DELTA.md",
+      "line": 989
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/DELIVERY-AND-VERDICT-REGISTER.md",
+      "line": 31
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/DISPOSITION-REGISTER.md",
+      "line": 270
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-27-wave-b-RAW.md",
+      "line": 38
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-27-wave-b-RAW.md",
+      "line": 48
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-27-wave-b-RAW.md",
+      "line": 159
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32-wave-b-RAW.md",
+      "line": 37
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32-wave-b-RAW.md",
+      "line": 46
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32-wave-b-RAW.md",
+      "line": 48
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32-wave-b-RAW.md",
+      "line": 151
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32b-wave-b-RAW.md",
+      "line": 67
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32b-wave-b-RAW.md",
+      "line": 75
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32b-wave-b-RAW.md",
+      "line": 81
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32b-wave-b-RAW.md",
+      "line": 82
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32b-wave-b-RAW.md",
+      "line": 83
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32b-wave-b-RAW.md",
+      "line": 210
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32b-wave-b-RAW.md",
+      "line": 229
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32c-wave-b-RAW.md",
+      "line": 163
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32c-wave-b-RAW.md",
+      "line": 277
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-60-capability-1-outline-exercise-RAW.md",
+      "line": 95
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-60-capability-1-outline-exercise-RAW.md",
+      "line": 215
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-60-capability-1-outline-exercise-RAW.md",
+      "line": 317
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0003/governance-homes-and-owner-acts.md",
+      "line": 190
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0004/README.md",
+      "line": 175
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0004/README.md",
+      "line": 193
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0004/named-adapters.md",
+      "line": 314
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0004/named-adapters.md",
+      "line": 419
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+      "line": 281
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+      "line": 366
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+      "line": 396
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+      "line": 410
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0006-cross-surface-selection-query-drawer.md",
+      "line": 570
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/README.md",
+      "line": 98
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/README.md",
+      "line": 161
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/README.md",
+      "line": 168
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/README.md",
+      "line": 244
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/accounting-reconciliation-and-release.md",
+      "line": 66
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/accounting-reconciliation-and-release.md",
+      "line": 134
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/accounting-reconciliation-and-release.md",
+      "line": 253
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/accounting-reconciliation-and-release.md",
+      "line": 282
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/accounting-reconciliation-and-release.md",
+      "line": 412
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/identity-authority-materialization.md",
+      "line": 57
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 3
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 7
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 40
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 53
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 61
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 76
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 78
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 90
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 103
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 108
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 110
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 144
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 175
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 195
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 211
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 213
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 217
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 220
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 246
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 356
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 364
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 380
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md",
+      "line": 418
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0009/interaction-parity-and-release.md",
+      "line": 63
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0009/interaction-parity-and-release.md",
+      "line": 64
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0009/interaction-parity-and-release.md",
+      "line": 122
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0009/visual-grammar-and-lenses.md",
+      "line": 227
+    },
+    {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0009/visual-grammar-and-lenses.md",
+      "line": 236
+    }
+  ],
+  "interpretation": "Search locates mapping obligations and candidate/historical discussion. The separate clause analysis did not establish an effective normalization artifact resolving claimed work with an effective bound and no captured qualifying signal. No accepted state predicate is changed by this result.",
+  "decisionNote": "docs/design/polaris-generator-no-progress-signal-decision-2026-09-09.md",
+  "filePopulationSha256": "7de819c15ffd9b36ecfe4e7ecb29bcb03e5c762a5ada3429d9cd684b70f584f2"
+}

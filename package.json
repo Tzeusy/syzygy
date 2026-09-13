@@ -11,7 +11,7 @@
   "scripts": {
     "test": "vitest run",
     "test:system": "npm run build && vitest run --config packages/cap1-system/vitest.config.ts",
-    "build": "tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system",
+    "build": "tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core",
     "build:poc": "tsc -b --force packages/cap1-core packages/cap1-daemon packages/three-surface-poc-core apps/three-surface-poc",
     "poc": "npm run build:poc --silent && node apps/three-surface-poc/dist/main.js",
     "poc:capture-test-artifact": "npm run build:poc --silent && node apps/three-surface-poc/dist/capture-test-artifact-main.js",
@@ -19,7 +19,9 @@
     "poc:accessibility-check": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-accessibility-main.js",
     "poc:fresh-checkout-demo": "npm run build:poc --silent && node apps/three-surface-poc/dist/fresh-checkout-demo-main.js",
     "poc:pwb-mutation-sweep": "npm run build:poc --silent && node apps/three-surface-poc/dist/pwb-mutation-sweep-main.js",
-    "typecheck": "tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system"
+    "typecheck": "tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core",
+    "test:polaris-generation": "vitest run --project @syzygy/polaris-generation-core",
+    "poc:generator-demo": "npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/pipeline-demo-main.js"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",

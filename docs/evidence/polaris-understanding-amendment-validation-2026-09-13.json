@@ -1,0 +1,79 @@
+{
+  "kind": "candidate-understanding-amendment-synthesis-validation",
+  "baselineCommit": "cb0614a",
+  "subject": [
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/.openspec.yaml",
+      "sha256": "7e69d8445cf79fa4a5398138abf3cd1865bd0750cc53f44a98ef9904f1395f73"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/COVERAGE.md",
+      "sha256": "a9506370bb972502a8cb37c6a66c6e14c787bf6dab878cae2e1b0d62018c1acf"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/GOVERNING-DEPENDENCIES.md",
+      "sha256": "315207c0be81915f2461c1d94a8468a39171b98f1a11deeddd78e8ee676ba32e"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/SYNTHESIS-MAP.json",
+      "sha256": "2d961976b315d64f69bb5675e30614866b42fee75450bc6ab929f69e32d13d75"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/design.md",
+      "sha256": "5b06017d100d635125b1b663be4d8ed766e41e9f66b0e85e218f3234eb51fd17"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/proposal.md",
+      "sha256": "284859db3e1c4c5b763f8349584c35ac89d19dceef7d8a3b45238cf5f7d01ffd"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "sha256": "b7c95f57ca5f67a18570b7124d20b223dff99aea2a936efef76d5940a400f93f"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-understanding-amendment/tasks.md",
+      "sha256": "f0e78d5915f076af4117cb839dee0afb27303b2578eea488c952706e382df68c"
+    }
+  ],
+  "predecessorRequirements": 29,
+  "modifiedRequirements": 7,
+  "addedRequirements": 2,
+  "preservedScenariosInModifiedBlocks": 33,
+  "amendmentScenarios": 56,
+  "effectiveRequirements": 31,
+  "effectiveScenarios": 177,
+  "effectiveIsAdopted": false,
+  "frozenPredecessorSubjectUnchanged": true,
+  "strictOpenSpec": {
+    "items": [
+      {
+        "id": "polaris-manifesto-understanding-amendment",
+        "type": "change",
+        "valid": true,
+        "issues": [],
+        "durationMs": 14
+      }
+    ],
+    "summary": {
+      "totals": {
+        "items": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "byType": {
+        "change": {
+          "items": 1,
+          "passed": 1,
+          "failed": 0
+        }
+      }
+    },
+    "version": "1.0",
+    "root": {
+      "path": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/polaris-generalized-generator",
+      "source": "nearest"
+    }
+  },
+  "scopedAuthoring": "\nspec-trace-check: 9 requirements, 9 IDs, 0 error(s), 0 warning(s) \u2014 PASS\nnote: no test tree found \u2014 skipping test-citation coverage\n",
+  "limits": "Mechanical synthesis checks; not adoption, implementation evidence or exhaustive semantic coverage. Independent semantic review is separate."
+}

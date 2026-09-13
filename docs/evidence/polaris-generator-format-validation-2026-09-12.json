@@ -1,0 +1,33 @@
+{
+  "kind": "candidate-format-validation",
+  "requirements": 29,
+  "scenarios": 154,
+  "scope": "current generator candidate only",
+  "pinnedOpenspecVersion": "1.9.0",
+  "openspecValidation": {
+    "totals": {
+      "items": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "byType": {
+      "change": {
+        "items": 1,
+        "passed": 1,
+        "failed": 0
+      }
+    }
+  },
+  "authoringTraceExit": 0,
+  "authoringTraceSummary": "spec-trace-check: 29 requirements, 29 IDs, 0 error(s), 0 warning(s) \u2014 PASS",
+  "formatChanges": [
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "beforeSha256": "187fe3e00f57a8a8f262b3f608f8bd837960b76a3189543992885ecc4d49476f",
+      "afterSha256": "a8199646c3b7953e8c4101d70d0307813dd1b3927d0b403f76c22d280dd6a89b",
+      "wordSequenceIdentical": true
+    }
+  ],
+  "priorWholeTreeTrace": "169 remaining errors outside this candidate; frozen predecessor formats not edited",
+  "implementationEvidence": false
+}

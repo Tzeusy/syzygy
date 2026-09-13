@@ -159,6 +159,11 @@ added 2026-09-07.
 
 ### Architecture
 
+- Polaris generation requirement lookup composes the original
+  `openspec/changes/polaris-manifesto-generation/` with the explicit
+  `polaris-manifesto-understanding-amendment/` overlay. Resolve adoption through
+  the dedicated acts; preserve reviewed source banners and predecessor bytes.
+
 - Polaris POC product goal: generalizable LLM-assisted manifesto generation across
   projects. Butlers is a proving case; carry improvements into reusable prompts,
   artifact/tool interfaces and authoring/validation guidance. The practical kit

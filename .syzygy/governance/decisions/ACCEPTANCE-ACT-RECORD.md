@@ -326,3 +326,195 @@ owner-adopted (bootstrap, uncorrelated)** for its own PWB-REQ-005 role only.
 The other effect authorities and the continuation of PWB implementation
 authorization remain separate; no body read, write, egress, execution,
 deployment, release, recovery or mission authority follows from this act.
+
+<!-- POLARIS-GENERATOR-SPECIFICATION-ADOPTION:BEGIN -->
+# Polaris generator specification-adoption owner act
+
+Date: 2026-09-12
+
+Act instant: 2026-09-12T09:27:55Z
+
+Owner: Tzeusy
+
+Project identity: project:syzygy
+
+Artifact/package identity: package:syzygy:polaris-manifesto-generation
+
+Act identity: act:syzygy:polaris-generator:specification-adoption:48216b0607b1b82fa21f2c5f5a3499d604541b7a0a9bf93c9fd5f7c8deab29dd
+
+Act type: specification-adoption
+
+Supersession relationship: none; new act, no predecessor.
+
+Revocation relationship: none; this act revokes no prior act.
+
+Provenance state: owner-adopted (bootstrap, uncorrelated)
+
+A1 audit-record identity: explicitly absent
+
+Exact offer SHA-256: 48216b0607b1b82fa21f2c5f5a3499d604541b7a0a9bf93c9fd5f7c8deab29dd
+
+Scope references: the exact offer's /sources artifact-role manifest, /acts/SPECIFICATION-ADOPTION,
+/project and /package identities, /governing baseline, /reviews evidence, and
+/conditional_references selected-value digests. Applicability further binds the
+APPLICABILITY-DECISIONS.md source row; implementation binds EXECUTION-PHASES.md.
+
+Exact transaction phrase:
+
+```text
+ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION: 48216b0607b1b82fa21f2c5f5a3499d604541b7a0a9bf93c9fd5f7c8deab29dd
+```
+
+The SHA-256 argument binds the complete immutable offer, including source, role,
+governing baseline, review and conditional-reference digests. It asserts no
+committed-source identity.
+
+Adopt the exact specification-role artifacts in the bound offer.
+
+This record does not claim independently verified authorship, review verdict,
+successful effects or implementation completion.
+<!-- POLARIS-GENERATOR-SPECIFICATION-ADOPTION:END -->
+
+<!-- POLARIS-GENERATOR-APPLICABILITY:BEGIN -->
+# Polaris generator applicability owner act
+
+Date: 2026-09-12
+
+Act instant: 2026-09-12T09:27:55Z
+
+Owner: Tzeusy
+
+Project identity: project:syzygy
+
+Artifact/package identity: package:syzygy:polaris-manifesto-generation
+
+Act identity: act:syzygy:polaris-generator:applicability:48216b0607b1b82fa21f2c5f5a3499d604541b7a0a9bf93c9fd5f7c8deab29dd
+
+Act type: applicability
+
+Supersession relationship: none; new act, no predecessor.
+
+Revocation relationship: none; this act revokes no prior act.
+
+Provenance state: owner-adopted (bootstrap, uncorrelated)
+
+A1 audit-record identity: explicitly absent
+
+Exact offer SHA-256: 48216b0607b1b82fa21f2c5f5a3499d604541b7a0a9bf93c9fd5f7c8deab29dd
+
+Scope references: the exact offer's /sources artifact-role manifest, /acts/APPLICABILITY,
+/project and /package identities, /governing baseline, /reviews evidence, and
+/conditional_references selected-value digests. Applicability further binds the
+APPLICABILITY-DECISIONS.md source row; implementation binds EXECUTION-PHASES.md.
+
+Exact transaction phrase:
+
+```text
+ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION: 48216b0607b1b82fa21f2c5f5a3499d604541b7a0a9bf93c9fd5f7c8deab29dd
+```
+
+The SHA-256 argument binds the complete immutable offer, including source, role,
+governing baseline, review and conditional-reference digests. It asserts no
+committed-source identity.
+
+Adopt GNA-1, GNA-2 and GNA-3 only within APPLICABILITY-DECISIONS.md's exact scope, and the exact conditional coverage references in the bound offer. No blanket waiver; conditional obligations remain attached to future enablement.
+
+This record does not claim independently verified authorship, review verdict,
+successful effects or implementation completion.
+<!-- POLARIS-GENERATOR-APPLICABILITY:END -->
+
+<!-- POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION:BEGIN -->
+# Polaris generator implementation-authorization owner act
+
+Date: 2026-09-12
+
+Act instant: 2026-09-12T09:27:55Z
+
+Owner: Tzeusy
+
+Project identity: project:syzygy
+
+Artifact/package identity: package:syzygy:polaris-manifesto-generation
+
+Act identity: act:syzygy:polaris-generator:implementation-authorization:48216b0607b1b82fa21f2c5f5a3499d604541b7a0a9bf93c9fd5f7c8deab29dd
+
+Act type: implementation-authorization
+
+Supersession relationship: none; new act, no predecessor.
+
+Revocation relationship: none; this act revokes no prior act.
+
+Provenance state: owner-adopted (bootstrap, uncorrelated)
+
+A1 audit-record identity: explicitly absent
+
+Exact offer SHA-256: 48216b0607b1b82fa21f2c5f5a3499d604541b7a0a9bf93c9fd5f7c8deab29dd
+
+Scope references: the exact offer's /sources artifact-role manifest, /acts/IMPLEMENTATION-AUTHORIZATION,
+/project and /package identities, /governing baseline, /reviews evidence, and
+/conditional_references selected-value digests. Applicability further binds the
+APPLICABILITY-DECISIONS.md source row; implementation binds EXECUTION-PHASES.md.
+
+Exact transaction phrase:
+
+```text
+ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION: 48216b0607b1b82fa21f2c5f5a3499d604541b7a0a9bf93c9fd5f7c8deab29dd
+```
+
+The SHA-256 argument binds the complete immutable offer, including source, role,
+governing baseline, review and conditional-reference digests. It asserts no
+committed-source identity.
+
+Authorize the full EXECUTION-PHASES.md implementation goal, including protected effect host, complete owner experience, two-project and changed-source proof obligations. Phase A alone is not completion. Real-project reads, provider egress and destination writes remain separately admitted; no effect, production release, broad remote access or observed-project code execution is authorized by this act.
+
+This record does not claim independently verified authorship, review verdict,
+successful effects or implementation completion.
+<!-- POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION:END -->
+
+<!-- POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION:BEGIN -->
+# Polaris understanding specification amendment adoption
+
+Owner: Tzeusy
+
+Act instant: 2026-09-13T01:58:26Z
+
+Project identity: project:syzygy
+
+Artifact identity: specification:syzygy:polaris-generation:understanding-amendment
+
+Act type: adopt specification amendment
+
+Provenance: owner-adopted (bootstrap, uncorrelated)
+
+A1 audit-record identity: explicitly absent
+
+Owner instruction, recorded verbatim: “Adopt it”
+
+The instruction refers to the reviewed formal amendment offered immediately
+before it. The manifest below binds its exact eight-file subject and retained
+review/context hashes. This recorder-generated binding is not presented as a
+longer phrase typed by the owner:
+
+ADOPT POLARIS UNDERSTANDING AMENDMENT: 3f4b96956b85a268532521ee5d0b1212d28537af7fddf09f89c877bd54bbc40d
+
+Manifest: docs/evidence/polaris-understanding-adoption-manifest-2026-09-13.json
+
+Scope: adopt the specification amendment at the manifest's exact bytes.
+REQ-polaris-generation-002, 004, 006, 009, 012, 014 and 019 take their full
+amended clauses and preserved scenarios; 030 and 031 are added. The other 22
+predecessor requirements remain unchanged. Effective composition is 31
+requirements and 177 scenarios, not an implementation completion verdict.
+
+Supersession relationship: partial specification amendment to the subject of
+POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md. Only the seven named requirement
+blocks are superseded by their extended blocks; the predecessor remains in force
+for its unchanged requirements and is preserved byte-for-byte.
+
+Revocation relationship: none. Existing implementation and applicability acts
+retain their own exact scopes. This act grants no implementation extension,
+source/provider/content permission, write consent, deployment or release.
+
+Adoption leaves the reviewed files and their candidate-era banners unchanged.
+The act record determines effective status. This is bootstrap owner provenance,
+not independent authorship verification, runtime evidence or product readiness.
+<!-- POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION:END -->

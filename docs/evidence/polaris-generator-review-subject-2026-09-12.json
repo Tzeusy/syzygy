@@ -1,0 +1,103 @@
+{
+  "kind": "frozen-candidate-review-subject",
+  "baseline": "f4589e26aed9886a5776e5ac7a1c4fad4627fd26",
+  "authority": "none; candidate review only",
+  "requirements": 29,
+  "scenarios": 154,
+  "subjects": [
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/.openspec.yaml",
+      "sha256": "2f19e85bc27192bfcfbe4fcfb49c1e49b7569f6d840f97966b535a07da28bc59"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/ADAPTER-DECLARATIONS.md",
+      "sha256": "3836b93909611fd59890450383e897f9635ee4ba4cd4b5a22ccd611d9ea33564"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/APPLICABILITY-DECISIONS.md",
+      "sha256": "faeae75a1b265667db5969849dec52f8796da69af1407652b053b6554d26b23e"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/ASSET-CONTRACT.md",
+      "sha256": "0804b40250c7bfb284bac97567e0278cfd16e6c8b5a5d5c25db28e8e7efb60d9"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/CAPABILITY-COVERAGE.md",
+      "sha256": "4589e9ee4a5303fdc25d216a0a63e6d732c1185b5a1eb8bb23c7f1b8199b39e0"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/DESIGN-ACCEPTANCE.md",
+      "sha256": "d2ff62db58995ef1fe44b3b6044917743ab5546b56827ba492f1b8ff8580f067"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/EFFECT-HOST-DESIGN.md",
+      "sha256": "11e5c16a9965774eba7e1743e3228fbb5a13c6857829ae79cd61fcc90c59d559"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/ENTRY-AND-WALKTHROUGH.md",
+      "sha256": "b65cd0f69b7800d683ae2d2e3b3053dde1d7c0607f430f90b033eef5c6817f96"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/EXECUTION-PHASES.md",
+      "sha256": "8e3e2c4494df964addb76a885a5b349051f5a0a543346ff4dc15f7c1598b1245"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/GOVERNING-DEPENDENCIES.md",
+      "sha256": "4edf4fe9744370fc61c250926d353890ee6283eb4898e83709ab76e2b627dfa3"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/INTERFACES.md",
+      "sha256": "96e7e396c825d614503253ea45cd0c4317051516c5159e8f120d2786be7243dc"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/NAVIGATION-CONTRACT.md",
+      "sha256": "e30570230c93516adb8d44e30bb810dc4df5ccde3f7d9a32a215214af3cdc321"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/OWNER-FLOW.md",
+      "sha256": "414d845d91b52578c58474446d5feb6c7dc9f1185d8625e4c8ae794edc48c5a9"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/SCHEMA-CONTRACT.md",
+      "sha256": "722eea7233cfb913f4f2e21060f359d721a86336efa1a3851e31ba113a857e8f"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/SECURITY-CONTRACT.md",
+      "sha256": "c6f2703a92a33d31fa5f0644cb4ce669048187d6aa72ce61a4c3aee90bdad6b5"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/SOURCE-POLICY.md",
+      "sha256": "af26acc453396d8b8ddbad94d939bd56f3d87b30ef2a0d3a411c378c48fbba89"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/WORK-STATE-CONTRACT.md",
+      "sha256": "b86d0b944c395bbe66c4363d34be54531c55b6f72e76862626946851e199a986"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/design.md",
+      "sha256": "236f9e015449b52fdcb8b75365d8600c0c1096f10784d0030abe56c55fce90ec"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/proposal.md",
+      "sha256": "67970484f22a9882d09d896813d2b2b951cd87dd66ffb939a2001c092fc38651"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "sha256": "a8199646c3b7953e8c4101d70d0307813dd1b3927d0b403f76c22d280dd6a89b"
+    },
+    {
+      "path": "openspec/changes/polaris-manifesto-generation/tasks.md",
+      "sha256": "d781a1b45fc0e4d216537f40a9e519d41df94eaf1ff252f3484c5f7fd5f794f6"
+    },
+    {
+      "path": "docs/design/POLARIS-GENERATOR-DELIVERY.md",
+      "sha256": "51f878fe4cb0dc90ca033ecef399a61d3fa2b825794bf69fdcb256dfc1e407bb"
+    },
+    {
+      "path": "docs/design/POLARIS-GENERATOR-OWNER-PACKET.md",
+      "sha256": "a26ef879ee068198cc702a6ad20ab241fbadb9ff8902104eb755d08506d9b760"
+    }
+  ],
+  "revision": "format-repaired-v2",
+  "formatRepair": "Whitespace-only contiguous normative paragraph; word sequence unchanged."
+}

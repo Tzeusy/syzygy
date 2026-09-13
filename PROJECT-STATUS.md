@@ -1,6 +1,6 @@
 # Project status
 
-> **As-of: 2026-09-06.** To check whether that is still true, run
+> **As-of: 2026-09-13 (Polaris understanding amendment adopted; older entries retain their cited evidence dates).** To check whether that is still true, run
 > `git log -1 --date=short --format='%h %ad' PROJECT-STATUS.md`: it names the
 > commit that last touched this page. **If its date is later than the As-of
 > above, someone edited this page without restating this line**, and the rows
@@ -16,6 +16,32 @@
 > is at `.syzygy/governance/decisions/launch-gate/HISTORY.md`; process
 > lessons are at `.syzygy/governance/decisions/PROCESS-LESSONS.md`; each
 > pass's reports live in the `round-*` trees. None is default reading.
+
+## Generalized Polaris generation
+
+[Observed] On 2026-09-12 the owner adopted the generator specification and scoped
+applicability judgments, and authorized its full implementation. The owning
+records are [specification adoption](.syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md),
+[applicability](.syzygy/governance/decisions/POLARIS-GENERATOR-APPLICABILITY-ACT.md)
+and [implementation authorization](.syzygy/governance/decisions/POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md).
+These are bootstrap owner acts with A1 explicitly absent. The exact specification
+bytes retain their original candidate banners; the acts determine their status.
+
+[Observed] The owner adopted the [project-understanding amendment](.syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md)
+on 2026-09-13. It extends seven generator requirements and adds discovery and
+owner clarification as 030/031. Read the predecessor together with
+[the adopted amendment](openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md):
+31 requirements and 177 scenarios in the effective composition. Its reviewed
+candidate-era banners remain unchanged; the act determines status. This is
+specification adoption, with no new implementation or effect permission inferred.
+
+Implementation is in progress. Completion requires the full owner workflow and
+reviewed output from the unchanged generator on two separately admitted real
+projects, including source-change regeneration. Existing Butlers presentation
+and synthetic checks do not prove this outcome. Project reads, provider egress
+and output writes remain separately admitted. The older single-project POC
+boundary below still describes the existing PWB runtime, not this new generator's
+full authorized implementation target.
 
 ## Lifecycle stage
 

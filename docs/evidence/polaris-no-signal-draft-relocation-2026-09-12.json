@@ -1,0 +1,8 @@
+{
+  "kind": "unadopted-draft-relocation",
+  "reason": "Keep the independent RFC8 predicate amendment outside the generator specification adoption subject. No bytes or accepted predicate changed.",
+  "originalPath": "openspec/changes/polaris-manifesto-generation/WORK-STATE-NO-SIGNAL-DELTA.md",
+  "retainedPath": "docs/design/polaris-no-signal-independent-amendment-draft.md",
+  "sha256": "ee031ece19eba7785fe0a44b2506bae23e98983900036985110ca528c5bebd76",
+  "priorReviewApplicability": "historical subject; not confirmation of current generator package"
+}
