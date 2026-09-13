@@ -1,0 +1,152 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+index 543469d..59ee1d4 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
+@@ -450,22 +450,40 @@ secondary reason counts without a headline status, composite maturity or
+ inferred success. Default Polaris status presentation SHALL not render trends,
+ metric walls or count walls; coverage counts remain available on demand.
+ 
++In the human view, a tuple field whose value is identical for every claim
++under one enclosing scope MAY be carried once on that scope instead of on
++each claim; the claim still carries the field by the inheritance rule, and a
++claim whose value differs from its scope's SHALL carry the field itself. The
++inheritance rule is: a claim's value for a field it does not carry is the
++value of the nearest enclosing scope that carries the field; a claim under no
++such scope leaves the field absent. A scope SHALL be one element carrying a
++machine-readable scope marker; every claim under it SHALL carry its Claim
++identity itself. A page whose claims would carry two distinct evaluation
++identities SHALL fail to render rather than carry either on a scope. The
++machine answer SHALL carry every field on every claim and SHALL not inherit.
++
+ - **Case (sweep)**: enumerate every project entity, claim and aggregate across
+   two evaluations of the same semantic subjects, including fixtures for every
+   admitted label, tier, reason, freshness, challenge and sibling state plus
+   out-of-vocabulary and missing-currency cases.
+-- **Observable**: human and machine views expose identical complete tuples;
+-  invalid/missing currency stays Unknown and aggregates expand to members.
+-- **Oracle**: compare each tuple and tier meaning to independent literal
+-  vocabularies and provenance-verified currency inputs; verify stable semantic
+-  identity across the two evaluation instances; exhaust challenge/sibling
+-  separation, aggregate label/tier/freshness/reason counts and supports links;
+-  zero invalid, missing or folded values decides.
++- **Observable**: human and machine views expose identical complete tuples
++  once the human view is expanded under the inheritance rule; invalid/missing
++  currency stays Unknown and aggregates expand to members.
++- **Oracle**: expand every scope with the checker's own statement of the
++  inheritance rule, then compare each tuple and tier meaning to independent
++  literal vocabularies and provenance-verified currency inputs; verify stable
++  semantic identity across the two evaluation instances; exhaust
++  challenge/sibling separation, aggregate label/tier/freshness/reason counts
++  and supports links; zero invalid, missing, folded or scope-hidden values
++  decides.
+ - **Oracle independence**: the checker hard-codes the accepted vocabularies and
+-  reads captured authority/evidence, importing no production vocabulary.
++  the inheritance rule and reads captured authority/evidence, importing no
++  production vocabulary or rendering code.
+ - **Falsifier**: a positive claim lacks current support, a tuple field is
+-  absent/out of vocabulary, a reason has no route, Unknown is folded into a
+-  total, or an aggregate claims its own headline status.
++  absent/out of vocabulary after expansion, a scope carries a value that
++  differs from a claim under it that does not carry the field itself, a reason
++  has no route, Unknown is folded into a total, or an aggregate claims its own
++  headline status.
+ 
+ #### Scenario: Missing current evidence remains explicit Unknown
+ 
+@@ -473,6 +491,14 @@ metric walls or count walls; coverage counts remain available on demand.
+ - **THEN** its claim renders Unknown with the exact primary reason and route
+ - **AND** its tier, freshness and evaluation identity remain visible
+ 
++#### Scenario: A field shared by every claim under one scope is carried once
++
++- **WHEN** every claim under one scope has the same value for a tuple field
++- **THEN** the scope may carry that field once and each claim's expanded tuple
++  equals its machine tuple
++- **AND** a claim whose value differs carries the field itself, and a scope
++  whose value would hide that difference fails the oracle
++
+ ```yaml
+ warrants:
+   primary: VIS-2
+@@ -762,7 +788,11 @@ Group: Presentation. Form: **invariant**.
+ 
+ Every owner-visible narrative unit SHALL carry `presentation-artifact` and
+ `non-citable` attributes and exactly one claim role: anchored project fact,
+-explicitly non-normative framing, or epistemically labeled claim. Every
++explicitly non-normative framing, or epistemically labeled claim. In the human
++view the two attributes MAY be carried once by an enclosing scope under the
++PWB-REQ-007 inheritance rule; every owner-visible narrative unit under that
++scope then carries them by that rule, the claim role stays on each unit, and
++the machine form carries both attributes on every unit. Every
+ anchored claim block SHALL have a typed, revision-bound anchor set that covers
+ all its claims, contains no unused anchors and is small enough for a reader to
+ identify which anchor supports which claim. No project artifact, evidence,
+@@ -780,10 +810,12 @@ and coordinates SHALL never serve as anchor identity.
+   populations at the evaluated revisions. Repeat after deleting Polaris
+   presentation and after injecting personal view state and a later-read target
+   mutation.
+-- **Observable**: claim roles and non-authority attributes are machine-readable;
+-  every claim has exact/minimal anchors and no downstream authority reference
+-  targets Polaris.
+-- **Oracle**: independent claim-to-source mapping establishes covering,
++- **Observable**: claim roles are machine-readable on every unit and the
++  non-authority attributes are machine-readable on every unit directly or by
++  scope expansion; every claim has exact/minimal anchors and no downstream
++  authority reference targets Polaris.
++- **Oracle**: the oracle expands scopes with its own statement of the
++  inheritance rule; independent claim-to-source mapping establishes covering,
+   minimality, closed target class, durable identity, exact narrative-vs-kernel
+   machine type and captured target state; removing any used anchor fails one
+   claim and adding an unused anchor fails surplus; a later-read mutation cannot
+@@ -793,8 +825,8 @@ and coordinates SHALL never serve as anchor identity.
+ - **Oracle independence**: expected source spans and reference targets come
+   from captured artifacts, not the rendered claim blocks.
+ - **Falsifier**: an unclassified narrative unit, uncovered claim, surplus or
+-  ambiguous anchor, missing non-citable attribute, or downstream citation to
+-  Polaris.
++  ambiguous anchor, a non-citable or presentation-artifact attribute missing
++  after scope expansion, or downstream citation to Polaris.
+ 
+ #### Scenario: A project claim is supported without making Polaris authority
+ 
+@@ -907,23 +939,29 @@ Every project-shape identity, statement, source anchor, coverage state,
+ denominator, contradiction, body-read authority state and walkthrough-judgment
+ state or disclosure Polaris presents SHALL be recoverable from the same
+ evaluation in the machine answer, preserving multiplicity and exact provenance
+-state.
+-
+-- **Case (sweep)**: enumerate every project-shape parity marker on Polaris and
+-  every corresponding machine-answer fact at one evaluation, including every
+-  PWB-REQ-005 authority state and PWB-REQ-022 judgment state and disclosure.
++state. Recoverability is judged after the human view is expanded under the
++PWB-REQ-007 inheritance rule; a scope value SHALL never stand in for a claim
++whose own value differs.
++
++- **Case (sweep)**: enumerate every project-shape parity marker on Polaris,
++  expanding scopes, and every corresponding machine-answer fact at one
++  evaluation, including every PWB-REQ-005 authority state and PWB-REQ-022
++  judgment state and disclosure.
+ - **Observable**: both populations contain equivalent multisets.
+ - **Oracle**: an independent order-insensitive, multiplicity-preserving
+-  comparator reports both denominators and zero differences.
++  comparator expands scopes with its own statement of the inheritance rule
++  and reports both denominators and zero differences.
+ - **Oracle independence**: the comparator extracts each channel separately and
+-  imports no production vocabulary or rendering code.
++  imports no production vocabulary or rendering code; its expansion of the
++  inheritance rule is its own.
+ - **Mutation proof**: for each fact, authority-state, judgment-state and
+   disclosure marker class, independently inject a missing, duplicated,
+-  changed, collapsed and wrong-evaluation marker and confirm the comparator
+-  fails before restoration; report both channel denominators for every run.
++  changed, collapsed, wrong-evaluation and scope-hidden marker (a scope value
++  that hides one member's differing value) and confirm the comparator fails
++  before restoration; report both channel denominators for every run.
+ - **Falsifier**: one fact, authority state, judgment state or disclosure is
+-  missing, duplicated, changed, collapsed or associated with a different
+-  evaluation in either channel.
++  missing, duplicated, changed, collapsed, hidden behind a scope value or
++  associated with a different evaluation in either channel.
+ 
+ #### Scenario: Complete model has wire parity
+ 

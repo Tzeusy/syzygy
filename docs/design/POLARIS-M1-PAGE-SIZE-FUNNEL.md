@@ -233,6 +233,12 @@ not the package and it binds nothing.
 
 ### Draft semantic delta — scoped epistemic attributes on the human channel
 
+> **Superseded 2026-09-14.** This sketch was finalized as the candidate
+> package `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/`
+> (bead `syzygy-dov.17`, register row P-68). Where the two differ, the
+> package's `SEMANTIC-DELTA.md` and `proposed/spec.md.patch` are the
+> proposed text; this section is kept as the funnel record it was.
+
 **Artifacts:** the signed PWB behavior package (successor of
 `contracts/candidates/pwb-truth-policy-amendment/`), restating
 `openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md`.

@@ -1,0 +1,32 @@
+diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/openspec/changes/polaris-project-wide-butlers-model/design.md
+index b2d2556..6991413 100644
+--- a/openspec/changes/polaris-project-wide-butlers-model/design.md
++++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
+@@ -267,6 +267,27 @@ body. If any gate fails, exact text remains Unknown. Any proposal to read a
+ body outside that population or return a raw artifact requires a separate
+ consent amendment and act.
+ 
++### 9. Carry a shared claim field once per scope
++
++The human page carries every claim's complete epistemic tuple, evaluation
++identity and non-authority attributes on the claim's own element. On the
++whole declared Butlers project that repetition is most of the per-item cost:
++after the 2026-09-13 lane A trim the page still sits above the ruled 1.4 MB
++working target under the 2 MiB response ceiling, and the tuple plus support
++citations are the whole remaining per-item cost. The amendment lets a field
++whose value is identical for every claim under one enclosing scope be stated
++once on that scope, under one inheritance rule stated in PWB-REQ-007: a claim
++carries the nearest enclosing scope's value for any field it does not carry
++itself, and a claim whose value differs carries the field itself. Claim
++identity is never inherited. The machine answer never inherits and keeps
++every field on every claim. Every oracle expands scopes with its own
++statement of the rule, so the comparator still imports no rendering code and
++PWB-REQ-020's collapsed falsifier still fires when a scope value would hide a
++differing member. A render that would carry two distinct evaluation
++identities fails instead of hoisting either. Rejected: an inheritance rule
++known only to the renderer, and dropping tuple fields a reader is presumed
++not to need.
++
+ ## Data Flow
+ 
+ 1. Bind the configured Butlers repository to an exact Git revision.
