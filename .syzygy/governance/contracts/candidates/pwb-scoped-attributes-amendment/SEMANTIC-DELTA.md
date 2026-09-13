@@ -14,7 +14,7 @@
   eleven-artifact signed PWB behavioral package). Three of the eleven
   change: `specs/polaris-project-wide-butlers-model/spec.md`, `design.md`
   and the regenerated `GOVERNING-DEPENDENCIES.md` (its source-digest line
-  only). The other eight rows of `PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt`
+  and its `RFC7-34` row, which gains PWB-REQ-007). The other eight rows of `PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt`
   equal current bytes.
 - `.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md`
   (accepted contract module) and its byte-identical candidate mirror
@@ -26,8 +26,10 @@
   by a contract successor act of its own (see "Migration").
 
 **Stable IDs affected:** `PWB-REQ-007`, `PWB-REQ-020`, `RFC7-33`. No
-requirement or clause is minted, retired or renumbered. No warrant list
-changes. `PWB-REQ-014` was in the first draft and is **not** amended: its
+requirement or clause is minted, retired or renumbered. One warrant list
+changes: PWB-REQ-007's `contracts:` list gains `RFC7-34`, the clause its
+new scope-text obligation answers, and the generated
+`GOVERNING-DEPENDENCIES.md` follows (review 3, F11). `PWB-REQ-014` was in the first draft and is **not** amended: its
 `non-citable` / `presentation-artifact` attributes stay on every unit,
 because RFC7-33's sub-clause "Non-citability travels, on every rendering"
 names them as the one field a consumer holding a detached unit cannot
@@ -38,13 +40,17 @@ recoverability" below says how the rule satisfies them (review 2, F3).
 **Change class:** Normative (behavioral and contract). The amended spec
 clauses admit a human rendering the current clauses forbid and add one
 falsifier class; the contract clause gains one permission paragraph for
-the interactive surface. Nothing is newly forbidden; no falsifier is
-weakened.
+the interactive surface. That permission reaches every RFC7-33
+distinction except the two it names (`non-citable` /
+`presentation-artifact`), not only the tuple fields this specification
+scopes; a surface can take it only through a governing specification that
+states an inheritance rule, and today only PWB-REQ-007 does (review 3,
+F9). Nothing is newly forbidden; no falsifier is weakened.
 
 **Author:** the pursuit session for bead `syzygy-dov.17` (agents), drafting
 only.
 
-**Date:** 2026-09-14 (third draft; the first two drafts' reviews are
+**Date:** 2026-09-14 (fourth draft; the first three drafts' reviews are
 dispositioned under "Review").
 
 **Baseline:** commit `a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d` (main);
@@ -86,9 +92,21 @@ distinction "as a machine-readable attribute on the rendered unit". Lane B
 lets shared tuple values be stated once per enclosing scope, in the
 specification and in the contract. The funnel packet's estimate
 (`docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md`, lane B) was roughly 450 KB
-on the pre-lane-A capture, of which about 100 KB was the two non-authority
-attributes; with PWB-REQ-014 unchanged the estimate is about 350 KB
-[Inferred; not yet measured on the lane A page].
+on the pre-lane-A capture, but its 300 KB tuple component was computed per
+row under a model in which a member overrides its scope, which this package
+rejects (decision 9); under a strict rule one differing claim removes the
+hoist for that field over its whole scope, so that figure, and the 350 KB
+residue earlier drafts quoted, were upper bounds (review 3, F1). Under the
+rule this package states, one lawful implementation over the retained lane
+A capture saves about 190 KB: 189,548 bytes on the tailnet form, nearest
+enclosing table or list as the scope, computed by
+`scripts/estimate_pwb_scoped_attributes_saving.py` and recorded with the
+capture digests in `docs/evidence/pwb-laneb-strict-scope-estimate-2026-09-14.json`
+[Inferred: an estimate over a retained capture, not a rendered page]. On
+this capture label, tier and primary reason hoist for 409 of 713 tuples;
+secondary reasons, freshness, challenge state and evaluation identity for
+all 713. That would put the tailnet form near 1,295,000 bytes, about
+105 KB under the 1,400,000 target [Inferred].
 
 ## Current meaning (quoted, current bytes at the baseline)
 
@@ -154,8 +172,9 @@ into an agent prompt, or a reader who cannot see it.
 
 ## Proposed meaning (quoted, the bytes the patches produce)
 
-PWB-REQ-007 gains one paragraph after its prose, the four bullets change,
-and one scenario is added (`proposed/spec.md.patch`):
+PWB-REQ-007 gains one paragraph after its prose, the five bullets change,
+one scenario is added, and its warrant block's `contracts:` list gains
+`RFC7-34` (`proposed/spec.md.patch`):
 
 ```
 In the human view, a tuple field whose value is the same for every claim
@@ -172,11 +191,20 @@ this holds for evaluation identity as for every other field, and nothing
 fails to render. Claim identity is never carried by a scope. A scope SHALL
 state every value it carries as text on the scope element, in reading order
 before the claims under it, so that a reader without vision meets each
-value once where a sighted reader does (PWB-REQ-016). The machine answer
-SHALL carry every field on every claim and SHALL not inherit.
+value once where a sighted reader does (PWB-REQ-016). The resolution route
+of an Unknown reason stays on the claim's own element even where the reason
+is scope-carried. The machine answer SHALL carry every field on every claim
+and SHALL not inherit.
 ```
 
 ```
+- **Case (sweep)**: enumerate every project entity, claim and aggregate across
+  two evaluations of the same semantic subjects, including fixtures for every
+  admitted label, tier, reason, freshness, challenge and sibling state plus
+  out-of-vocabulary and missing-currency cases, and scoped fixtures: a scope
+  whose every claim shares a field, an Unknown claim under a scope carrying a
+  positive label, an over-asserting scope, a scope value with no text on its
+  element, and a scope-carried Unknown reason whose route stays on the claim.
 - **Observable**: human and machine views expose identical complete tuples
   once the human view is expanded under the inheritance rule; invalid/missing
   currency stays Unknown and aggregates expand to members.
@@ -185,8 +213,9 @@ SHALL carry every field on every claim and SHALL not inherit.
   literal vocabularies and provenance-verified currency inputs; verify stable
   semantic identity across the two evaluation instances; exhaust
   challenge/sibling separation, aggregate label/tier/freshness/reason counts
-  and supports links; zero invalid, missing, folded or scope-hidden values
-  decides.
+  and supports links; zero invalid, missing, folded or scope-hidden values,
+  zero over-asserting scopes, zero scope values without text and zero
+  scope-carried reasons without a route on the claim decides.
 - **Oracle independence**: the checker hard-codes the accepted vocabularies and
   the inheritance rule and reads captured authority/evidence and the machine
   answer, importing no production vocabulary or rendering code.
@@ -196,8 +225,9 @@ SHALL carry every field on every claim and SHALL not inherit.
   scope value hiding a differing member), a scope carries a field for which
   any claim under it has a different value in the machine answer (an
   over-asserting scope), a scope value has no text on the scope element, a
-  reason has no route, Unknown is folded into a total, or an aggregate
-  claims its own headline status.
+  scope-carried reason's route is not on the claim, a reason has no route,
+  Unknown is folded into a total, or an aggregate claims its own headline
+  status.
 ```
 
 ```
@@ -277,10 +307,13 @@ stands in full.
 before "Data Flow" (`proposed/design.md.patch`); it restates the rule,
 names the `scope-hidden` and `over-asserting-scope` falsifiers beside the
 unchanged `collapsed` and `duplicated` ones, says that a scope states its
-values as text for the non-visual reading, says why PWB-REQ-014's
-attributes stay per unit, dates
-its measured figures to the lane A evidence record, and lists the rejected
-alternatives. It binds nothing the spec does not.
+values as text for the non-visual reading and that a reader arriving by
+anchor recovers a scoped value at the enclosing scope, says that the
+scope-text falsifier in PWB-REQ-007 is what obliges the accessibility
+checker while PWB-REQ-016's own oracle is unchanged, says why
+PWB-REQ-014's attributes stay per unit, dates its measured figures to the
+lane A evidence record and the strict-rule estimate, and lists the
+rejected alternatives. It binds nothing the spec does not.
 
 ## What explicitly does NOT change
 
@@ -315,9 +348,14 @@ alternatives. It binds nothing the spec does not.
   so the opener is never a false universal on its own.
 - Anchor sets, anchor identity classes, the non-authority of Polaris, and
   PWB-REQ-011/015/021/022.
-- PWB-REQ-016. It is not patched, and the population its falsifier ranges
-  over keeps one text carrier per value: the scope's own text, read before
-  its claims. See the next section.
+- PWB-REQ-016, its Oracle bullet included. It is not patched, and the
+  population its falsifier ranges over keeps one text carrier per value:
+  the scope's own text, read before its claims. What obliges the
+  accessibility checker is PWB-REQ-007's scope-text falsifier, not a new
+  duty read into PWB-REQ-016 (review 3, F7). See the next section.
+- The resolution route of an Unknown reason: it stays on the claim's own
+  element even where the reason is scope-carried, so a route is never
+  shared between two claims (review 3, F10).
 - Oracle independence. Each checker expands scopes with its own statement of
   the rule and still imports no production vocabulary or rendering code.
 - Aggregates (the existing "aggregates expand to members") are unrelated to
@@ -358,18 +396,63 @@ has no text on the scope element" a falsifier. Under that requirement a
 value is recoverable by text at exactly one place per scope, the place a
 sighted reader also reads first, and the containment relation that
 carries it to each claim is structure, which RFC7-34 admits and a
-tree-walking oracle can follow. PWB-REQ-016's oracle therefore expands
-scopes like every other oracle, with its own statement of the rule, and its
-falsifier "a color/layout-only distinction" is unchanged in meaning: a
-scope value is neither. Nothing here relies on position or layout; reading
-order is document order, which the accessibility tree preserves.
+tree-walking oracle can follow. PWB-REQ-016 itself is unchanged, its
+Oracle bullet included: what obliges the accessibility checker is
+PWB-REQ-007's scope-text falsifier, which the checker tests by asserting
+that every scope's text precedes, in the tree, the claims it covers.
+PWB-REQ-016's falsifier "a color/layout-only distinction" is unchanged in
+meaning: a scope value is neither. Nothing here relies on position or
+layout; reading order is document order, which the accessibility tree
+preserves.
+
+Arrival is not always linear. A reader who reaches a claim by its anchor or
+an exact-source route (PWB-REQ-011) lands inside the scope, after its
+text, and finds on the claim's own element only the fields the scope does
+not carry; the scoped values are recovered by moving to the enclosing
+scope, which the scope marker makes findable and the accessibility tree
+exposes as the claim's ancestor. That is a change in what a deep link
+delivers on the claim's own element, for every reader, sighted or not, and
+the packet's risk paragraph says so (review 3, F12).
 
 Consequences the ledger carries: the accessibility checker
 (`polaris-accessibility.ts`) is an implementation site (it must expand
 scopes or assert the scope text precedes its claims), and the cold-open
 walkthrough PWB-REQ-016 requires for a material narrative change is owed
 after implementation, in the non-visual mode, as it is for any such change.
-RFC7-34 is added to the warrant list below.
+RFC7-34 is added to the warrant list below and to PWB-REQ-007's own
+warrant block.
+
+## Evaluation identity and density (RFC7-16)
+
+PWB-REQ-007 warrants on RFC7-16 and this package lists it as unchanged, so
+the clause is quoted rather than assumed (review 3, F8):
+
+```
+**RFC7-16 — Status in the narrative: minimal by default (SDR-17).** Every
+rendered status is kernel-computed at an identified evaluation and carries the
+label + tier + reason + freshness vocabulary **verbatim** (RFC6-14); staleness
+is visible on the narrative page itself — the narrative is a primary surface
+[Observed: trust-and-evidence.md, Staleness]. Default density is minimal: per
+capability or major claim, one epistemic state — **its label with its RFC2-25
+tier**, and its freshness — with its evaluation identity and a
+drawer/Trajectory handoff; no metric walls, trends, counts, or **composite
+maturity number**.
+```
+
+Three obligations, none a locus rule. "Carries the vocabulary verbatim" is
+fidelity to RFC6-14's closed vocabulary: a scope states the same closed
+words, once, and expansion returns the same words to each claim. "Per
+capability or major claim, one epistemic state ... with its evaluation
+identity" is a completeness floor per claim, and the amended PWB-REQ-007
+keeps it: after expansion every claim has exactly one label, tier,
+freshness and evaluation identity, and "absent after expansion" is a
+falsifier. "Default density is minimal" is a ceiling on what is shown,
+which stating a shared value once respects better than repeating it. The
+locus clause, the one that said where a value sits, was RFC7-33, and it is
+the one patched. RFC7-16 is therefore unchanged and not invalidated;
+should a reviewer read its per-claim floor as a per-element floor, the
+resolution is to patch RFC7-16 beside RFC7-33 in the same contract act,
+which CC-REV-2 would then require.
 
 ## Warrant
 
@@ -395,14 +478,23 @@ Decision basis:
 - `docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json` — the
   sizes and per-item cost above [Observed].
 - `docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md` §"Lane B" and §"Draft
-  semantic delta" — the sketch this delta finalizes and the saving estimate
-  [Inferred]; the funnel's superseded note says which parts this package
-  dropped.
+  semantic delta" — the sketch this delta finalizes [Inferred]. §"Draft
+  semantic delta" carries a section-level superseded note; §"Lane B"
+  carries three sentence-level superseded marks dated 2026-09-14, at the
+  per-row override decision 9 rejects, at the build-time evaluation-id
+  assertion this package removed, and at the 450 KB figure (review 3, F2).
+- `docs/evidence/pwb-laneb-strict-scope-estimate-2026-09-14.json` — the
+  strict-rule saving estimate over the retained lane A captures, named by
+  byte count and SHA-256, produced by
+  `scripts/estimate_pwb_scoped_attributes_saving.py` [Inferred as an
+  estimate; the tuple population it parses is Observed and equals the lane
+  A record's count].
 - `docs/reviews/R-PWB-M1-POLARIS-LANE-A-RAW.md` — the lane A review, whose
   findings were dispositioned in the evidence record.
-- `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md` and
-  `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md` — the first two
-  reviews of this package (both REVISE), whose findings shaped this draft.
+- `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md`,
+  `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md` and
+  `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-3-RAW.md` — the first three
+  reviews of this package (all REVISE), whose findings shaped this draft.
 - The in-place trial recorded under "Baseline" above [Observed, scratch
   worktree, 2026-09-14; not retained as a file].
 
@@ -453,7 +545,8 @@ Two acts, in this order; neither is offered yet.
    module's bytes feed, or the battery is red at the act [Observed, review
    2, patch applied in a scratch copy]: `ACTIVE-CONTRACT-MANIFEST.txt`
    (CG-7a, the module's digest row), `DIRECTIVE-REGISTER.md` (every
-   RFC-0007 clause after the insert point moves by fifteen lines) and
+   RFC-0007 clause after the insert point moves by seventeen lines, the
+   contract patch's net; RFC7-34 from 241 to 258) and
    `fixtures/context-selection-8-openspec-authoring.md` (CG-18, a stated
    packet digest and word count). The ledger's path sweep lists every
    tracked file that names the module path; the recorder's `--check` runs
@@ -589,5 +682,63 @@ the governing references, read-only.
 
 ### Review 3
 
-Pending. Appended when the third raw lands under `docs/reviews/` with the
-same basename stem and the suffix `-3-RAW.md`.
+- Raw: `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-3-RAW.md` (retained
+  verbatim). Reviewed commit `4f41bcfd1904b5e059a61abb6b3c219f88ba10c8`;
+  the manifest that commit carried is superseded by this draft's.
+- Verdict, copied exactly: **REVISE**.
+- Findings and dispositions (F1–F3 blocking, F4–F12 non-blocking, F13–F15
+  editorial in the raw's own grouping); every one accepted:
+  - F1, the 350 KB figure was the residue of the funnel's per-row override
+    model, which this package rejects, and was described only as
+    unmeasured: **accepted**. Re-derived under the strict rule from the
+    retained lane A captures by a retained script; about 190 KB, recorded
+    with the capture digests; the funnel figure is now described as an
+    upper bound in the delta, the packet, the design decision and the P-68
+    row.
+  - F2, the funnel's §"Lane B" was cited as covered by a note that sits in
+    another section: **accepted**. Three sentence-level marks added in
+    §"Lane B", original text kept and dated; the evidence bullet here says
+    which section carries which mark.
+  - F3, the ledger's opener-quotation sweep returned twelve files, not two:
+    **accepted**. The sentence now states what the sweep returns, member by
+    member, and what each member is.
+  - F4, the register shift is seventeen lines, not fifteen: **accepted**.
+  - F5, PWB-REQ-007's Case and Oracle did not cover two new falsifier limbs:
+    **accepted**. The Case gains scoped fixtures including an Unknown member
+    and an over-asserting scope; the Oracle's deciding sentence names every
+    limb.
+  - F6, the P-68 row was a review behind and named one falsifier:
+    **accepted**; the row names all three raws, the outstanding fourth, the
+    three predicates and the scope-text obligation.
+  - F7, decision 9 put an obligation on PWB-REQ-016's oracle: **accepted**;
+    decision 9 and this delta now say the scope-text falsifier in
+    PWB-REQ-007 obliges the checker and PWB-REQ-016's oracle is unchanged.
+  - F8, RFC7-16 warranted but never quoted: **accepted**; quoted and argued
+    in its own section above.
+  - F9, the contract permission is broader than the tuple fields: **accepted
+    as disclosure**; the change class and the packet state the breadth and
+    the spec-side guard. The paragraph is not narrowed, so that a later
+    specification can take the permission without a second contract act.
+  - F10, an Unknown reason's route had no stated locus: **accepted**; the
+    route stays on the claim, with a falsifier limb.
+  - F11, PWB-REQ-007 gained an RFC7-34 obligation without the warrant:
+    **accepted**; `RFC7-34` added to its `contracts:` list and
+    `GOVERNING-DEPENDENCIES.md` regenerated (its `RFC7-34` row gains
+    PWB-REQ-007).
+  - F12, anchored arrival not addressed: **accepted**; one paragraph in the
+    non-visual section, one sentence in decision 9 and one in the packet's
+    risk paragraph.
+  - F13, the packet's measured figures unlabeled: **accepted**; labeled
+    `[Observed]` with the record named.
+  - F14, one patched design line exceeded 78 columns: **accepted**;
+    decision 9 reflowed.
+  - F15, a missing blank line in the ledger and a `--diff` that names one
+    mirror: **accepted**; blank line added; `--diff` now prints, to stderr,
+    the two mirror paths the contract patch is applied to.
+  - The brief's two-valued verdict set versus the reviewer's three:
+    **accepted**; the brief now names the three-valued set.
+
+### Review 4
+
+Pending. Appended when the fourth raw lands under `docs/reviews/` with the
+same basename stem and the suffix `-4-RAW.md`.

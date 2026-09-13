@@ -186,6 +186,14 @@ things may be stated on a scope instead of on each leaf beneath it:
   item table shares it, rendered once beside the table caption as
   "N of N items: Observed · report-fact · fresh · unchallenged", with the
   per-row span kept only for rows whose tuple differs;
+
+  > **Superseded 2026-09-14, this bullet.** The per-row override ("with
+  > the per-row span kept only for rows whose tuple differs") is not the
+  > rule the candidate package states: under
+  > `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/`
+  > a scope carries a field only when every claim under it has that value,
+  > and a member never overrides its scope (design decision 9 rejects it).
+
 - `data-presentation-artifact` and `data-non-citable`, on the section that
   contains only presentation units.
 
@@ -198,9 +206,21 @@ the human multiset it reports still has one tuple per claim and PWB-REQ-020's
 build-time assertion fails the render if one page carries two distinct
 evaluation ids, so the hoist cannot go stale silently.
 
+> **Superseded 2026-09-14, the preceding two sentences.** The candidate
+> package has no build-time assertion: evaluation identity follows the
+> same rule as every other field, claims that differ carry it themselves,
+> and nothing fails to render (its first review, F4).
+
 Saving on the capture: about 49.6 KB (evaluation id), about 300 KB (tuples
 of the rows whose tuple equals the table's), about 100 KB (flags); together
 roughly 450 KB and about a third of the per-item slope.
+
+> **Superseded 2026-09-14, this paragraph.** The 300 KB tuple component
+> was computed per row under the override model marked above, so 450 KB
+> is an upper bound for the strict rule, and the 100 KB flag share left
+> scope when PWB-REQ-014 was dropped from the package. The strict-rule
+> estimate over the retained lane A capture is about 190 KB
+> (`docs/evidence/pwb-laneb-strict-scope-estimate-2026-09-14.json`).
 
 Trade-offs rejected: an inheritance rule known only to the renderer (the
 comparator must import no rendering code, PWB-REQ-020); dropping fields the

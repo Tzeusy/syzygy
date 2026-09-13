@@ -1,8 +1,8 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-index 543469d..47e37d8 100644
+index 543469d..319a688 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -450,22 +450,48 @@ secondary reason counts without a headline status, composite maturity or
+@@ -450,22 +450,55 @@ secondary reason counts without a headline status, composite maturity or
  inferred success. Default Polaris status presentation SHALL not render trends,
  metric walls or count walls; coverage counts remain available on demand.
  
@@ -20,13 +20,15 @@ index 543469d..47e37d8 100644
 +fails to render. Claim identity is never carried by a scope. A scope SHALL
 +state every value it carries as text on the scope element, in reading order
 +before the claims under it, so that a reader without vision meets each
-+value once where a sighted reader does (PWB-REQ-016). The machine answer
-+SHALL carry every field on every claim and SHALL not inherit.
++value once where a sighted reader does (PWB-REQ-016). The resolution route
++of an Unknown reason stays on the claim's own element even where the reason
++is scope-carried. The machine answer SHALL carry every field on every claim
++and SHALL not inherit.
 +
  - **Case (sweep)**: enumerate every project entity, claim and aggregate across
    two evaluations of the same semantic subjects, including fixtures for every
    admitted label, tier, reason, freshness, challenge and sibling state plus
-   out-of-vocabulary and missing-currency cases.
+-  out-of-vocabulary and missing-currency cases.
 -- **Observable**: human and machine views expose identical complete tuples;
 -  invalid/missing currency stays Unknown and aggregates expand to members.
 -- **Oracle**: compare each tuple and tier meaning to independent literal
@@ -34,6 +36,10 @@ index 543469d..47e37d8 100644
 -  identity across the two evaluation instances; exhaust challenge/sibling
 -  separation, aggregate label/tier/freshness/reason counts and supports links;
 -  zero invalid, missing or folded values decides.
++  out-of-vocabulary and missing-currency cases, and scoped fixtures: a scope
++  whose every claim shares a field, an Unknown claim under a scope carrying a
++  positive label, an over-asserting scope, a scope value with no text on its
++  element, and a scope-carried Unknown reason whose route stays on the claim.
 +- **Observable**: human and machine views expose identical complete tuples
 +  once the human view is expanded under the inheritance rule; invalid/missing
 +  currency stays Unknown and aggregates expand to members.
@@ -42,8 +48,9 @@ index 543469d..47e37d8 100644
 +  literal vocabularies and provenance-verified currency inputs; verify stable
 +  semantic identity across the two evaluation instances; exhaust
 +  challenge/sibling separation, aggregate label/tier/freshness/reason counts
-+  and supports links; zero invalid, missing, folded or scope-hidden values
-+  decides.
++  and supports links; zero invalid, missing, folded or scope-hidden values,
++  zero over-asserting scopes, zero scope values without text and zero
++  scope-carried reasons without a route on the claim decides.
  - **Oracle independence**: the checker hard-codes the accepted vocabularies and
 -  reads captured authority/evidence, importing no production vocabulary.
 +  the inheritance rule and reads captured authority/evidence and the machine
@@ -56,12 +63,13 @@ index 543469d..47e37d8 100644
 +  scope value hiding a differing member), a scope carries a field for which
 +  any claim under it has a different value in the machine answer (an
 +  over-asserting scope), a scope value has no text on the scope element, a
-+  reason has no route, Unknown is folded into a total, or an aggregate
-+  claims its own headline status.
++  scope-carried reason's route is not on the claim, a reason has no route,
++  Unknown is folded into a total, or an aggregate claims its own headline
++  status.
  
  #### Scenario: Missing current evidence remains explicit Unknown
  
-@@ -473,6 +499,15 @@ metric walls or count walls; coverage counts remain available on demand.
+@@ -473,11 +506,20 @@ metric walls or count walls; coverage counts remain available on demand.
  - **THEN** its claim renders Unknown with the exact primary reason and route
  - **AND** its tier, freshness and evaluation identity remain visible
  
@@ -77,7 +85,13 @@ index 543469d..47e37d8 100644
  ```yaml
  warrants:
    primary: VIS-2
-@@ -907,23 +942,33 @@ Every project-shape identity, statement, source anchor, coverage state,
+   doctrine: [VIS-1, VIS-2, VIS-7]
+-  contracts: [RFC1-18, RFC1-19, RFC1-24, RFC2-9, RFC2-10, RFC2-23, RFC2-24, RFC2-25, RFC6-14, RFC6-17, RFC7-16, RFC7-33]
++  contracts: [RFC1-18, RFC1-19, RFC1-24, RFC2-9, RFC2-10, RFC2-23, RFC2-24, RFC2-25, RFC6-14, RFC6-17, RFC7-16, RFC7-33, RFC7-34]
+   policies: [CC-BAR-3, CC-BAR-4, CC-TEST-5, CC-TEST-6]
+   decisions: [POLARIS-DIR-2026-08-31]
+   topology: []
+@@ -907,23 +949,33 @@ Every project-shape identity, statement, source anchor, coverage state,
  denominator, contradiction, body-read authority state and walkthrough-judgment
  state or disclosure Polaris presents SHALL be recoverable from the same
  evaluation in the machine answer, preserving multiplicity and exact provenance

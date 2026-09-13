@@ -339,6 +339,9 @@ def main(argv: list[str]) -> int:
     if args.diff:
         for patch in patch_files() + [ROOT / CONTRACT_PATCH]:
             sys.stdout.write(patch.read_text())
+        print(f"note: the contract patch is applied to both mirrors: "
+              f"{CONTRACT_SUBJECT.as_posix()} and {CONTRACT_MIRROR.as_posix()}",
+              file=sys.stderr)
         return 0
     if args.apply:
         return apply(args.at_adoption)

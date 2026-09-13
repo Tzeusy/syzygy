@@ -25,25 +25,31 @@ denominator; the beads that cite these identifiers are `syzygy-dov.1` and
 
 At the commit that carries this draft the same two sweeps, over every
 tracked file at that commit — this package's own files, its retained
-reviews and the register row included — return **89 files** over
-**1,228**. The 9 files beyond the baseline 80 are enumerated here so the
-figure can be re-derived rather than re-read; none is an implementation
-site, and the table below stays the baseline table:
+reviews, the estimate script and record, and the register row included —
+return **93 files** over **1,231**. The 13 files beyond the baseline 80
+are enumerated here so the figure can be re-derived rather than re-read;
+none is an implementation site, and the table below stays the baseline
+table:
 
 - `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/IMPACT-LEDGER.md`
 - `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/OWNER-DECISION-PACKET.md`
 - `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/REVIEW-BRIEF.md`
 - `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/SEMANTIC-DELTA.md`
+- `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/GOVERNING-DEPENDENCIES.md.patch`
 - `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/design.md.patch`
 - `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/spec.md.patch`
 - `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`
+- `docs/evidence/pwb-laneb-strict-scope-estimate-2026-09-14.json`
 - `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md`
+- `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-3-RAW.md`
 - `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md`
+- `scripts/estimate_pwb_scoped_attributes_saving.py`
+
 ## Classes
 
 | class | files | disposition |
 |---|---|---|
-| signed package | 6 | six of the eleven manifest rows cite the identifiers; separately, three of the eleven rows change under the patches (`spec.md`, `design.md`, `GOVERNING-DEPENDENCIES.md`) and eight are byte-identical, the coverage files among them restating clause titles that stay true |
+| signed package | 6 | six of the eleven manifest rows cite the identifiers; separately, three of the eleven rows change under the patches (`spec.md`, `design.md`, and `GOVERNING-DEPENDENCIES.md`, whose source-digest line and `RFC7-34` row follow the spec) and eight are byte-identical, the coverage files among them restating clause titles that stay true |
 | unbound spec companion | 3 | not in the manifest; `tasks.md` takes implementation rows after adoption, the two coverage parts restate parity findings that remain true |
 | other openspec change | 1 | cites PWB-REQ-014/020 as the parity floor the generator inherits; the floor is unchanged in the machine form |
 | renderer / model | 8 | implementation sites after adoption: the claim element, the narrative unit and the shared model's tuple emission; no change while candidate |
@@ -193,12 +199,29 @@ longer amended.
 
 The contract patch touches one clause, so a second sweep with its own
 denominator, same population and predicate as above: `RFC7-33\b` by Python
-`re`, and `git grep -l -F RFC7-33`, agree on **78 files** over **1,228**
-(the ledger itself and the P-68 register row are members). None quotes the
-paragraph the patch inserts (the paragraph is new); RFC7-33's opening
-sentence gains a parenthetical and no citer quotes that sentence in full,
-verified by `grep -F "on the rendered unit**, served identically"` over the
-same population, which returns only the module and its mirror.
+`re`, and `git grep -l -F RFC7-33`, agree on **81 files** over **1,231**
+(the ledger itself, the P-68 register row, the spec and dependency patches
+that carry PWB-REQ-007's warrant line, and the three retained reviews of
+this package are members). None quotes the paragraph the patch inserts
+(the paragraph is new). RFC7-33's opening sentence gains a parenthetical;
+the sweep `grep -F "on the rendered unit**, served identically"` over the
+same population returns **12 files** (review 3, F3; earlier drafts said
+two), every one enumerated here, and none of them is a citer that would go
+false — the frozen records quote the sentence as it stood, which stays
+true as history, and the package's own files quote it as the before-text:
+
+- `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/IMPACT-LEDGER.md` — this ledger (the sweep literal)
+- `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/SEMANTIC-DELTA.md` — the delta's before/after quotation
+- `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/contract/RFC-0007-rendering-and-surface.md.patch` — the contract patch's context lines
+- `.syzygy/governance/contracts/candidates/rfcs/RFC-0007/rendering-and-surface.md` — its candidate mirror
+- `.syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-60-capability-1-outline-exercise-RAW.md` — a retained round review quoting the clause as it stood
+- `.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md` — the module
+- `docs/evidence/polaris-generator-rfc7-coverage-2026-09-12.json` — frozen generator coverage evidence carrying the clause text as it stood
+- `docs/evidence/polaris-generator-rfc7-coverage-v2-2026-09-12.json` — frozen generator coverage evidence carrying the clause text as it stood
+- `docs/evidence/polaris-generator-rfc7-coverage-v3-2026-09-12.json` — frozen generator coverage evidence carrying the clause text as it stood
+- `docs/evidence/polaris-generator-rfc7-coverage-v4-2026-09-12.json` — frozen generator coverage evidence carrying the clause text as it stood
+- `docs/evidence/polaris-generator-rfc7-coverage-v5-2026-09-12.json` — frozen generator coverage evidence carrying the clause text as it stood
+- `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md` — the second retained review of this package
 
 | class | files | disposition |
 |---|---|---|
@@ -213,12 +236,12 @@ same population, which returns only the module and its mirror.
 | generated register | 1 | regenerated by `build_directive_register.py`; RFC7-33's own definition line is unchanged, every RFC-0007 clause defined after the insert point moves |
 | openspec change | 16 | specifications that warrant on RFC7-33; the permission is opt-in and none of these takes it, so their text stays true |
 | pending register | 1 | the P-68 row; edited only when the owner rules |
-| retained review | 16 | raw reviewer output; never edited |
+| retained review | 17 | raw reviewer output; never edited |
 | round record | 3 | historical round material; never edited |
 | script | 1 | this package's builder, which names the clause |
-| this package | 5 | the candidate package's own prose and patches, which cite the clause they amend |
+| this package | 7 | the candidate package's own prose and patches, which cite the clause they amend |
 
-Sum: 78.
+Sum: 81.
 
 | file | class |
 |---|---|
@@ -238,7 +261,9 @@ Sum: 78.
 | `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/OWNER-DECISION-PACKET.md` | this package |
 | `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/REVIEW-BRIEF.md` | this package |
 | `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/SEMANTIC-DELTA.md` | this package |
+| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/GOVERNING-DEPENDENCIES.md.patch` | this package |
 | `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/design.md.patch` | this package |
+| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/spec.md.patch` | this package |
 | `.syzygy/governance/contracts/candidates/rfcs/RFC-0007/README.md` | candidate contract mirror |
 | `.syzygy/governance/contracts/candidates/rfcs/RFC-0007/narrative-contract.md` | candidate contract mirror |
 | `.syzygy/governance/contracts/candidates/rfcs/RFC-0007/rendering-and-surface.md` | candidate contract mirror |
@@ -276,6 +301,7 @@ Sum: 78.
 | `docs/reviews/R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-4-RAW.md` | retained review |
 | `docs/reviews/R-PWB-LIVE-EXACT-HEAD-TRUTH-RAW.md` | retained review |
 | `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md` | retained review |
+| `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-3-RAW.md` | retained review |
 | `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md` | retained review |
 | `docs/reviews/R-PWB-STATE1-FINAL-ORACLES-RAW.md` | retained review |
 | `openspec/changes/polaris-manifesto-generation/DESIGN-ACCEPTANCE.md` | openspec change |
@@ -306,7 +332,7 @@ Sum: 78.
 An identifier sweep cannot find the artifacts that cite the module by
 **path**, and those are the ones a performed contract act must regenerate
 in the same change. Over the same population, `git grep -l -F` and Python
-`re` for `rfcs/RFC-0007/rendering-and-surface.md` agree on **48 files**:
+`re` for `rfcs/RFC-0007/rendering-and-surface.md` agree on **49 files**:
 
 - `.syzygy/governance/contracts/candidates/ACTIVE-CONTRACT-MANIFEST.txt`
 - `.syzygy/governance/contracts/candidates/CAPABILITY-1-GENERATED-VIEWS.md`
@@ -353,6 +379,7 @@ in the same change. Over the same population, `git grep -l -F` and Python
 - `docs/reviews/R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-1-RAW.md`
 - `docs/reviews/R-POLARIS-PROJECT-WIDE-SPEC-REVIEW-RAW.md`
 - `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md`
+- `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-3-RAW.md`
 - `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md`
 - `openspec/changes/polaris-project-wide-butlers-model/contract-coverage-parts/RFC-0007-0009.md`
 - `scripts/build_pwb_scoped_attributes_amendment.py`

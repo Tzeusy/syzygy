@@ -7,10 +7,12 @@ printed by `python3 scripts/build_pwb_scoped_attributes_amendment.py
 --diff`; nothing in `openspec/` or the accepted contract is changed on the
 reviewed commit.
 
-This is the third round. The first two raw reviews,
-`docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md` (twenty findings) and
-`docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md` (nine), both returned
-REVISE; every finding is dispositioned in `SEMANTIC-DELTA.md` §Review.
+This is the fourth round. The first three raw reviews,
+`docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md` (twenty findings),
+`docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md` (nine) and
+`docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-3-RAW.md` (fifteen), all
+returned REVISE; every finding is dispositioned in `SEMANTIC-DELTA.md`
+§Review.
 Judge the repaired bytes on their own, then check that every disposition
 holds against them.
 
@@ -71,8 +73,12 @@ Review criteria:
     RFC7-34, a scope-carried value is recoverable by text and structure for
     a reader without vision, the requirement is in the amended clause with
     a falsifier, and the ledger names the accessibility checker.
+11. The saving figure the owner is given is derived under the package's
+    own rule from a named retained capture by a retained script, labeled,
+    and the funnel's earlier figure is marked superseded at its sentences.
 
 The raw review must state the exact reviewed commit, the manifest SHA-256,
-one exact verdict (`CONFIRM` or `REVISE`), and every finding with the file
+one exact verdict from the set `CONFIRM`, `CONFIRM WITH EXCEPTIONS`,
+`REVISE`, and every finding with the file
 and line it anchors to. A reviewer who authors a semantic fix retires their
 review; repaired bytes need a new fresh reviewer.

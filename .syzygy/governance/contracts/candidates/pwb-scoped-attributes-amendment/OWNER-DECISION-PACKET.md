@@ -5,7 +5,7 @@
 > request, a review, a manifest, silence or a general "approved" performs no
 > act.
 
-Date: 2026-09-14 (third draft; the first two drafts' reviews returned
+Date: 2026-09-14 (fourth draft; the first three drafts' reviews returned
 REVISE and their dispositions are in `SEMANTIC-DELTA.md` §Review).
 
 Register row: P-68 in `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`.
@@ -16,7 +16,7 @@ after** the three behavior patches under `proposed/` are applied. Three
 rows differ from the tree today; eight equal it.
 
 Behavior manifest SHA-256:
-`fc644d010ebfb02351e5e84d2c382d004f5e4f96884959dc407656cb66a0ac9b`
+`66885051782236eb3ffce6991fc8589170b015d0363aa6bd5389b59f52f8f05b`
 
 The package also carries one **contract** patch,
 `proposed/contract/RFC-0007-rendering-and-surface.md.patch`, which is not a
@@ -34,7 +34,9 @@ spec amendment (lane B) once lane A is measured. Lane A is measured and
 reviewed: the Polaris page went from 2,132,656 to 1,478,637 bytes (direct)
 and from 2,138,506 to 1,484,487 bytes (tailnet mount), which is inside the
 2 MiB ceiling with about 612 KB of headroom but still 78,637 / 84,487 bytes
-over the 1,400,000-byte working target you set. What remains per item is
+over the 1,400,000-byte working target you set [Observed,
+`docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json`]. What
+remains per item is
 the claim tuple and its citations, repeated on every claim even when every
 claim in a table carries the same values. The current clauses forbid
 stating those values once: PWB-REQ-007 in the spec, and the accepted
@@ -64,13 +66,18 @@ In the human page only:
 - a scope states what it carries as text on its own element, before its
   claims, so a reader without vision meets each value once where a sighted
   reader does (PWB-REQ-016 is not amended; the delta shows how it holds);
+  an Unknown reason's resolution route stays on the claim even where the
+  reason is scope-carried;
 - parity is judged after every oracle expands scopes with its own statement
   of the rule; a scope value that hides a differing member (`scope-hidden`)
   and a scope value some member does not have (`over-asserting-scope`) are
   new, named falsifier and mutant classes (PWB-REQ-020);
 - RFC7-33 gains one permission paragraph for the interactive surface,
   excluding the `non-citable` / `presentation-artifact` distinctions, whose
-  sub-clause stands in full (contract patch).
+  sub-clause stands in full (contract patch). The permission reaches every
+  other RFC7-33 distinction, not only the tuple fields; it can be used only
+  through a governing specification that states an inheritance rule, and
+  today that is PWB-REQ-007 alone. You are ruling on that breadth.
 
 ## What the package does not change
 
@@ -79,20 +86,27 @@ No field is dropped in any channel; Unknown never folds; a scope never
 carries a value some claim under it lacks; one tuple per rendered claim
 still enters the parity multiset; PWB-REQ-014's attributes stay on every
 unit; anchors, non-authority of Polaris, PWB-REQ-011/015/016/021/022 and
-every warrant list are untouched. The full quoted current and proposed text
+every warrant list but PWB-REQ-007's, which gains RFC7-34, are untouched. The full quoted current and proposed text
 is in `SEMANTIC-DELTA.md`; the exact bytes are the patches under
 `proposed/`.
 
 ## What it buys and what it costs
 
-Estimated saving on the pre-lane-A capture: about 350 KB (roughly 50 KB
-evaluation identity and 300 KB tuple fields; the 100 KB attribute share
-the funnel counted is no longer in scope) [Inferred — the funnel estimate
-minus its attribute share; the lane A page has not been measured with
-scopes, and the number is confirmed only by the implementation bead's
-measurement]. Applied to the lane A page that would land near 1,130,000
-bytes, under the 1,400,000 target with room for the P-60/P-61 Butlers
-repairs' 418–443 KB [Inferred]. Cost: the renderer, three oracles and the
+Estimated saving: about 190 KB (189,548 bytes on the tailnet form) under
+the package's own strict rule, computed over the retained lane A capture
+with the nearest table or list as the scope, by a retained script, and
+recorded with the capture digests in
+`docs/evidence/pwb-laneb-strict-scope-estimate-2026-09-14.json` [Inferred
+— an estimate of one lawful implementation, not a rendered page; the
+implementation bead's measurement confirms or refutes it]. Earlier drafts
+quoted 350 KB; that was the funnel's 450 KB minus its attribute share, and
+the funnel's tuple component was computed per row under a model in which a
+member may override its scope, which this package forbids, so it was an
+upper bound and not an estimate of this rule. Applied to the lane A page
+the strict figure lands near 1,295,000 bytes, about 105 KB under the
+1,400,000 target, with the P-60/P-61 Butlers repairs' 418–443 KB (costed on
+the pre-lane-A page) still inside the ceiling by about 359 KB [Inferred].
+Cost: the renderer, three oracles and the
 mutation sweep change (listed in `IMPACT-LEDGER.md`); every human-page
 reader of tuples must now apply the inheritance rule; and an RFC-0007
 successor ceremony (recorder, manifest over both contract mirrors, history
@@ -107,7 +121,11 @@ it; the oracles, not the reader, are the guarantee. A screen-reader user
 hears each scoped value once, as the scope's own text before the claims it
 covers, instead of on every claim; the accessibility checker and the
 non-visual cold-open walkthrough PWB-REQ-016 already requires are what
-confirm that after implementation.
+confirm that after implementation. A reader who arrives at a claim by a
+deep link or exact-source route lands inside the scope, after its text,
+and finds the scoped values by moving to the enclosing scope rather than
+on the claim's own element; that is a change for every reader, not only
+the non-visual one.
 
 ## The decision
 
@@ -117,15 +135,17 @@ confirm that after implementation.
 successor tooling in the shape of the 2026-09-05 no-signal ceremony; offer
 the RFC7-33 contract successor for its own act; then offer this behavior
 manifest for the PWB act. Nothing is implemented until both acts are
-performed. On the 350 KB estimate holding, this is the only path that
-meets the target you set without cutting items [Inferred: the estimate is
-unmeasured on the lane A page; if the implementation bead measures
-materially less, (a) does not reach the target either and the target
-question returns to you].
+performed. On the strict-rule estimate holding (about 190 KB, leaving
+about 105 KB under the target), this is the only path that meets the
+target you set without cutting items [Inferred: the estimate is of one
+lawful implementation over the retained lane A capture, not a rendered
+page; if the implementation bead measures materially less, (a) does not
+reach the target either and the target question returns to you].
 
 **(b) Revise the target and close lane B.** The lane A page sits about
-612 KB under the response ceiling, and the pending Butlers repairs add at
-most 443 KB, so a working target of the ceiling minus that margin holds
+612 KB under the response ceiling [Observed], and the pending Butlers
+repairs add at most 443 KB [Inferred, costed on the pre-lane-A page], so a
+working target of the ceiling minus that margin holds
 without any spec or contract change. Lane B is banner-marked declined and
 the register row closes with the new target stated.
 
@@ -141,13 +161,13 @@ in every case until an act says otherwise.
 The behavior act phrase for this manifest would be:
 
 ```
-SIGN OFF PWB SCOPED-ATTRIBUTES AMENDMENT: fc644d010ebfb02351e5e84d2c382d004f5e4f96884959dc407656cb66a0ac9b
+SIGN OFF PWB SCOPED-ATTRIBUTES AMENDMENT: 66885051782236eb3ffce6991fc8589170b015d0363aa6bd5389b59f52f8f05b
 ```
 
 It is registered so that the governance checks see it go stale, but it is
 **not offered** in this packet: the RFC7-33 contract successor has to be
-performed first, and a second fresh-context review has to confirm the
-repaired package. If you reply with this phrase now, no recorder exists
+performed first, and a fresh-context review has to confirm the repaired
+package. If you reply with this phrase now, no recorder exists
 that would accept it, and nothing is performed.
 
 ## Two acts, in order (what happens after a "yes" to (a))

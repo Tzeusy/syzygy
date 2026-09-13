@@ -1,0 +1,133 @@
+{
+ "kind": "pwb-laneb-strict-scope-estimate",
+ "task": "syzygy-dov.17",
+ "date": "2026-09-14",
+ "script": "scripts/estimate_pwb_scoped_attributes_saving.py",
+ "labels": {
+  "tuples": "[Observed] parsed from the retained capture, equal to the lane A record's data-claim-id count and to a regex count",
+  "netSavingBytes": "[Inferred] an estimate of one lawful implementation of the candidate rule over the retained capture; no page has been rendered with scopes",
+  "projection": "[Inferred] arithmetic over the lane A measurement and this estimate"
+ },
+ "rule": "strict, as the candidate PWB-REQ-007 states it: a scope carries a field only when every claim under it has that value in the machine answer; a scope states its values as text once; claim identity and an Unknown reason's route stay on the claim",
+ "inputs": {
+  "polaris-tailnet.html": {
+   "bytes": 1484487,
+   "sha256": "e8a04b4631dedbda159dd162d25f4e8a7ed4f9f4059a37ca1bca87b717790111",
+   "sameAsLaneARecordAfterCapture": true
+  },
+  "polaris-direct.html": {
+   "bytes": 1478637,
+   "sha256": "2fecdd01e1a2ff577567495796ea7e59ab89f1420be6033e23314d26442ea094",
+   "sameAsLaneARecordAfterCapture": true
+  }
+ },
+ "populationCrossCheck": {
+  "parserTuples": 713,
+  "regexTupleSpans": 713,
+  "laneARecordDataClaimIdAfter": 713
+ },
+ "estimates": {
+  "polaris-tailnet.html": [
+   {
+    "mode": "container",
+    "tuples": 713,
+    "scopes": 10,
+    "scopesHoistingSomething": 10,
+    "attributeBytesRemoved": 167615,
+    "textBytesRemoved": 25397,
+    "scopeBytesAdded": 3464,
+    "netSavingBytes": 189548,
+    "hoistedPerField": {
+     "data-epistemic-label": 409,
+     "data-epistemic-tier": 409,
+     "data-epistemic-primary-reason": 409,
+     "data-epistemic-secondary-reasons": 713,
+     "data-epistemic-freshness": 713,
+     "data-challenge-state": 713,
+     "data-evaluation-id": 713
+    }
+   },
+   {
+    "mode": "section",
+    "tuples": 713,
+    "scopes": 27,
+    "scopesHoistingSomething": 9,
+    "attributeBytesRemoved": 164550,
+    "textBytesRemoved": 25005,
+    "scopeBytesAdded": 3092,
+    "netSavingBytes": 186463,
+    "hoistedPerField": {
+     "data-epistemic-label": 410,
+     "data-epistemic-tier": 410,
+     "data-epistemic-primary-reason": 410,
+     "data-epistemic-secondary-reasons": 695,
+     "data-epistemic-freshness": 695,
+     "data-challenge-state": 695,
+     "data-evaluation-id": 695
+    }
+   }
+  ],
+  "polaris-direct.html": [
+   {
+    "mode": "container",
+    "tuples": 713,
+    "scopes": 10,
+    "scopesHoistingSomething": 10,
+    "attributeBytesRemoved": 167615,
+    "textBytesRemoved": 25397,
+    "scopeBytesAdded": 3464,
+    "netSavingBytes": 189548,
+    "hoistedPerField": {
+     "data-epistemic-label": 409,
+     "data-epistemic-tier": 409,
+     "data-epistemic-primary-reason": 409,
+     "data-epistemic-secondary-reasons": 713,
+     "data-epistemic-freshness": 713,
+     "data-challenge-state": 713,
+     "data-evaluation-id": 713
+    }
+   },
+   {
+    "mode": "section",
+    "tuples": 713,
+    "scopes": 27,
+    "scopesHoistingSomething": 9,
+    "attributeBytesRemoved": 164550,
+    "textBytesRemoved": 25005,
+    "scopeBytesAdded": 3092,
+    "netSavingBytes": 186463,
+    "hoistedPerField": {
+     "data-epistemic-label": 410,
+     "data-epistemic-tier": 410,
+     "data-epistemic-primary-reason": 410,
+     "data-epistemic-secondary-reasons": 695,
+     "data-epistemic-freshness": 695,
+     "data-challenge-state": 695,
+     "data-evaluation-id": 695
+    }
+   }
+  ]
+ },
+ "headline": {
+  "scopeMode": "container (nearest enclosing table or list)",
+  "netSavingBytesTailnet": 189548,
+  "netSavingBytesDirect": 189548,
+  "sectionModeTailnet": 186463
+ },
+ "comparedToFunnel": {
+  "funnelLaneBEstimateBytes": 450000,
+  "funnelMinusAttributeShareBytes": 350000,
+  "strictRuleBytes": 189548,
+  "note": "the funnel's 300 KB tuple component was computed per row under a model in which a member may override its scope; the candidate rejects that model (design decision 9), and under the strict rule one differing claim removes the hoist for that field over its whole scope, so the funnel residue was an upper bound, not a point estimate. On this capture label, tier and primary reason hoist for 409 of 713 tuples; secondary reasons, freshness, challenge state and evaluation identity hoist for all 713."
+ },
+ "projection": {
+  "tailnetAfterLaneA": 1484487,
+  "minusStrictEstimate": 1294939,
+  "workingTarget": 1400000,
+  "underTargetBy": 105061,
+  "plusButlersRepairsMax": 1737939,
+  "ceilingBytes": 2097152,
+  "headroomAfterRepairs": 359213,
+  "note": "[Inferred] the P-60/P-61 repairs were costed at 418-443 KB on the pre-lane-A page; their post-lane-A cost is unmeasured"
+ }
+}
