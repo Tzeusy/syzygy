@@ -4622,9 +4622,9 @@ def _currency_contexts(body):
     """Split currency claims into blank-line contexts, or GFM table rows.
 
     Ordinary prose retains CG-27's paragraph semantics. A genuine GFM table
-    (header, matching delimiter row, and contiguous pipe rows) is the one
-    supported exception: each header/data row is independently checked so a
-    historical, owner, or as-of token in a sibling row cannot satisfy the
+    (header, matching delimiter row, and subsequent nonblank data rows) is
+    the supported exception: each header/data row is independently checked so
+    a historical, owner, or as-of token in a sibling row cannot satisfy the
     current claim. Fenced code is left in ordinary contexts and malformed or
     lone-pipe lines never create row boundaries.
     """
@@ -4640,6 +4640,9 @@ def _currency_contexts(body):
             run = marker.group(1)
             char = run[0]
             if not in_fence:
+                info = line[marker.end():]
+                if char == "`" and "`" in info:
+                    continue
                 in_fence, fence_char, fence_width = True, char, len(run)
             elif (char == fence_char and len(run) >= fence_width and
                   not line[marker.end():].strip()):
@@ -5786,6 +5789,22 @@ def selftest():
              "| Wave A is accepted. | Current state |\n"
              "| Prior note | Historically true. |\n")[2:4]
         == (1, 1)))
+
+    cases.append((
+        "CG-27 a backtick in the info string prevents a fence from opening",
+        _cur("# F\n\n```bad`info\n\n"
+             "| Claim | Note |\n| --- | --- |\n"
+             "| Wave A is accepted. | Current state |\n"
+             "| Prior note | Historically true. |\n\n```\n")[2:4]
+        == (1, 1)))
+
+    cases.append((
+        "CG-27 a tilde fence permits a backtick in its info string",
+        _cur("# F\n\n~~~bad`info\n\n"
+             "| Claim | Note |\n| --- | --- |\n"
+             "| Wave A is accepted. | Current state |\n"
+             "| Prior note | Historically true. |\n\n~~~\n")[3]
+        == 0))
 
     cases.append((
         "CG-27 even backslashes leave a trailing boundary pipe unescaped",
