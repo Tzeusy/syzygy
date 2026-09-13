@@ -7,9 +7,10 @@ printed by `python3 scripts/build_pwb_scoped_attributes_amendment.py
 --diff`; nothing in `openspec/` or the accepted contract is changed on the
 reviewed commit.
 
-This is the second round. The first raw review,
-`docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md`, returned REVISE with
-twenty findings; each is dispositioned in `SEMANTIC-DELTA.md` §Review.
+This is the third round. The first two raw reviews,
+`docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md` (twenty findings) and
+`docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md` (nine), both returned
+REVISE; every finding is dispositioned in `SEMANTIC-DELTA.md` §Review.
 Judge the repaired bytes on their own, then check that every disposition
 holds against them.
 
@@ -17,8 +18,8 @@ Required baseline:
 
 - `VIS-1`, `VIS-2`, `VIS-4`, `VIS-7`;
 - `CC-REV-2`, `CC-REV-4`, `CC-REV-6`, `CC-TEST-5`, `CC-TEST-6`;
-- `RFC6-22`, `RFC6-23`, `RFC7-16`, `RFC7-33` (both the installed module and
-  its candidate mirror);
+- `RFC6-22`, `RFC6-23`, `RFC7-16`, `RFC7-33` and `RFC7-34` (both the
+  installed module and its candidate mirror); `PWB-REQ-016`;
 - the current signed PWB eleven-artifact package and its performed
   2026-09-05 amendment act (`PWB-TRUTH-READINESS-AMENDMENT-ACT.md`);
 - the performed RFC-0008/0009 contract successor ceremony
@@ -66,6 +67,10 @@ Review criteria:
 9. Owner packet: one direction decision with its options; the phrase is
    present but stated as not offered; silence and partial answers perform
    nothing; nothing in it authorizes an implementation or a contract change.
+10. Non-visual recoverability: against the quoted text of PWB-REQ-016 and
+    RFC7-34, a scope-carried value is recoverable by text and structure for
+    a reader without vision, the requirement is in the amended clause with
+    a falsifier, and the ledger names the accessibility checker.
 
 The raw review must state the exact reviewed commit, the manifest SHA-256,
 one exact verdict (`CONFIRM` or `REVISE`), and every finding with the file

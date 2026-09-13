@@ -1,8 +1,8 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/design.md b/openspec/changes/polaris-project-wide-butlers-model/design.md
-index b2d2556..6430a9e 100644
+index b2d2556..3c7fdab 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/design.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/design.md
-@@ -267,6 +267,35 @@ body. If any gate fails, exact text remains Unknown. Any proposal to read a
+@@ -267,6 +267,39 @@ body. If any gate fails, exact text remains Unknown. Any proposal to read a
  body outside that population or return a raw artifact requires a separate
  consent amendment and act.
  
@@ -22,12 +22,16 @@ index b2d2556..6430a9e 100644
 +itself; a scope carries a field only when every claim under it has that
 +value in the machine answer; where claims differ, each carries the field
 +itself, evaluation identity included, and nothing fails to render. Claim
-+identity is never carried by a scope. The machine answer never inherits and
-+keeps every field on every claim. Every oracle expands scopes with its own
-+statement of the rule, so the comparator still imports no rendering code,
-+and PWB-REQ-020 gains the `scope-hidden` falsifier and mutant class — a
-+scope value that hides one member's differing value — beside its unchanged
-+`collapsed` and `duplicated` falsifiers. PWB-REQ-014's non-authority
++identity is never carried by a scope. A scope states what it carries as
++text on its own element, read before its claims, so the non-visual reading
++(PWB-REQ-016, RFC7-34) meets each value once where the sighted reading
++does; the accessibility-tree oracle expands scopes like every other. The
++machine answer never inherits and keeps every field on every claim. Every
++oracle expands scopes with its own statement of the rule, so the comparator
++still imports no rendering code, and PWB-REQ-020 gains the `scope-hidden`
++and `over-asserting-scope` falsifier and mutant classes — a scope value
++that hides one member's differing value, and a scope value one member does
++not have — beside its unchanged `collapsed` and `duplicated` falsifiers. PWB-REQ-014's non-authority
 +attributes stay on every unit: RFC7-33's non-citability sub-clause names
 +them as the one field whose omission is unrecoverable at a consumer holding
 +a detached unit. Rejected: an inheritance rule known only to the renderer;

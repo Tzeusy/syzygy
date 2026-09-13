@@ -1,8 +1,17 @@
 diff --git a/.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md b/.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md
-index d2eab9b..2a22d12 100644
+index d2eab9b..75c3afc 100644
 --- a/.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md
 +++ b/.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md
-@@ -216,6 +216,21 @@ from day one (vision.md); endpoints are V0-mandatory (v1.md)]. A distinction
+@@ -209,13 +209,30 @@ claim-block **type name** (below), band membership and its authority class,
+ curated-versus-computed provenance, adopted versus unadopted, editorial-draft
+ state, proposal-context membership, review state, RFC7-11(a)'s
+ **target-changed** state, label + tier + reason + freshness — is carried as a
+-**machine-readable attribute on the rendered unit**, served identically
++**machine-readable attribute on the rendered unit** (except as the
++interactive-surface paragraph below permits), served identically
+ through the machine-queryable endpoints (RFC6-13/14) and preserved in
+ plain-text or exported renderings [Observed: agents are a first-class consumer
+ from day one (vision.md); endpoints are V0-mandatory (v1.md)]. A distinction
  available only to pixels does not survive an endpoint response, a copy-paste
  into an agent prompt, or a reader who cannot see it.
  
@@ -13,8 +22,9 @@ index d2eab9b..2a22d12 100644
 +machine-readably as a scope, in place of on each unit; a unit under a scope
 +then carries the value by expansion, under an inheritance rule the governing
 +specification states once and every oracle restates independently. A scope
-+never carries a value that any unit under it lacks, never carries a unit's
-+identity, and is expanded before any parity comparison. The machine-queryable
++never carries a value that is not the value of every unit under it, never
++carries a unit's identity, states what it carries as text on its own element
++(RFC7-34), and is expanded before any parity comparison. The machine-queryable
 +endpoints and every plain-text or exported rendering carry every distinction
 +on the unit itself, unchanged by this paragraph. A unit copied out of the
 +interactive surface without its scope has lost what the scope carried, which

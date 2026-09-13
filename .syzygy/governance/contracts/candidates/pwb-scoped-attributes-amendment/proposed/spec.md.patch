@@ -1,8 +1,8 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-index 543469d..983d05f 100644
+index 543469d..47e37d8 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -450,22 +450,42 @@ secondary reason counts without a headline status, composite maturity or
+@@ -450,22 +450,48 @@ secondary reason counts without a headline status, composite maturity or
  inferred success. Default Polaris status presentation SHALL not render trends,
  metric walls or count walls; coverage counts remain available on demand.
  
@@ -17,8 +17,11 @@ index 543469d..983d05f 100644
 +its own after expansion. Where claims under one element differ in a field,
 +that element carries nothing for the field and each claim carries it itself;
 +this holds for evaluation identity as for every other field, and nothing
-+fails to render. Claim identity is never carried by a scope. The machine
-+answer SHALL carry every field on every claim and SHALL not inherit.
++fails to render. Claim identity is never carried by a scope. A scope SHALL
++state every value it carries as text on the scope element, in reading order
++before the claims under it, so that a reader without vision meets each
++value once where a sighted reader does (PWB-REQ-016). The machine answer
++SHALL carry every field on every claim and SHALL not inherit.
 +
  - **Case (sweep)**: enumerate every project entity, claim and aggregate across
    two evaluations of the same semantic subjects, including fixtures for every
@@ -50,12 +53,15 @@ index 543469d..983d05f 100644
 -  total, or an aggregate claims its own headline status.
 +  absent/out of vocabulary after expansion, a claim's expanded value for any
 +  field differs from the value the machine answer carries for that claim (a
-+  scope value hiding a differing member), a reason has no route, Unknown is
-+  folded into a total, or an aggregate claims its own headline status.
++  scope value hiding a differing member), a scope carries a field for which
++  any claim under it has a different value in the machine answer (an
++  over-asserting scope), a scope value has no text on the scope element, a
++  reason has no route, Unknown is folded into a total, or an aggregate
++  claims its own headline status.
  
  #### Scenario: Missing current evidence remains explicit Unknown
  
-@@ -473,6 +493,15 @@ metric walls or count walls; coverage counts remain available on demand.
+@@ -473,6 +499,15 @@ metric walls or count walls; coverage counts remain available on demand.
  - **THEN** its claim renders Unknown with the exact primary reason and route
  - **AND** its tier, freshness and evaluation identity remain visible
  
@@ -66,12 +72,12 @@ index 543469d..983d05f 100644
 +- **THEN** the scope may carry that field once and each claim's expanded
 +  tuple equals its machine tuple
 +- **AND** where claims under one element differ, each carries the field
-+  itself, and a scope value that would hide the difference fails the oracle
++  itself, and a scope that carries the field at all fails the oracle
 +
  ```yaml
  warrants:
    primary: VIS-2
-@@ -907,23 +936,30 @@ Every project-shape identity, statement, source anchor, coverage state,
+@@ -907,23 +942,33 @@ Every project-shape identity, statement, source anchor, coverage state,
  denominator, contradiction, body-read authority state and walkthrough-judgment
  state or disclosure Polaris presents SHALL be recoverable from the same
  evaluation in the machine answer, preserving multiplicity and exact provenance
@@ -102,14 +108,17 @@ index 543469d..983d05f 100644
    disclosure marker class, independently inject a missing, duplicated,
 -  changed, collapsed and wrong-evaluation marker and confirm the comparator
 -  fails before restoration; report both channel denominators for every run.
-+  changed, collapsed, wrong-evaluation and scope-hidden marker (a scope value
-+  that hides one member's differing value) and confirm the comparator fails
-+  before restoration; report both channel denominators for every run.
++  changed, collapsed, wrong-evaluation, scope-hidden (a scope value that
++  hides one member's differing value) and over-asserting-scope marker (a
++  scope value one member does not have, the member carrying its own) and
++  confirm the comparator fails before restoration; report both channel
++  denominators for every run.
  - **Falsifier**: one fact, authority state, judgment state or disclosure is
 -  missing, duplicated, changed, collapsed or associated with a different
 -  evaluation in either channel.
-+  missing, duplicated, changed, collapsed, hidden behind a scope value or
-+  associated with a different evaluation in either channel.
++  missing, duplicated, changed, collapsed, hidden behind a scope value,
++  contradicted by a scope value or associated with a different evaluation
++  in either channel.
  
  #### Scenario: Complete model has wire parity
  

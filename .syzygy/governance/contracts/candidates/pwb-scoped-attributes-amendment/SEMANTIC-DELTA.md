@@ -19,8 +19,9 @@
 - `.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md`
   (accepted contract module) and its byte-identical candidate mirror
   `.syzygy/governance/contracts/candidates/rfcs/RFC-0007/rendering-and-surface.md`.
-  One clause changes, RFC7-33, by the insert-only patch
-  `proposed/contract/RFC-0007-rendering-and-surface.md.patch`. The
+  One clause changes, RFC7-33, by the patch
+  `proposed/contract/RFC-0007-rendering-and-surface.md.patch` (one
+  parenthetical added to the opening sentence, one paragraph inserted). The
   contract module is **not** a row of the behavior manifest: it binds only
   by a contract successor act of its own (see "Migration").
 
@@ -30,7 +31,9 @@ changes. `PWB-REQ-014` was in the first draft and is **not** amended: its
 `non-citable` / `presentation-artifact` attributes stay on every unit,
 because RFC7-33's sub-clause "Non-citability travels, on every rendering"
 names them as the one field a consumer holding a detached unit cannot
-recover (review 1, F1).
+recover (review 1, F1). `PWB-REQ-016` and `RFC7-34` (non-visual
+recoverability) are not amended either; the section "Non-visual
+recoverability" below says how the rule satisfies them (review 2, F3).
 
 **Change class:** Normative (behavioral and contract). The amended spec
 clauses admit a human rendering the current clauses forbid and add one
@@ -41,11 +44,13 @@ weakened.
 **Author:** the pursuit session for bead `syzygy-dov.17` (agents), drafting
 only.
 
-**Date:** 2026-09-14 (second draft; the first draft's review is
+**Date:** 2026-09-14 (third draft; the first two drafts' reviews are
 dispositioned under "Review").
 
-**Baseline:** commit `a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d` (main).
-The proposed bytes are the patches under `proposed/` applied to that
+**Baseline:** commit `a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d` (main);
+none of the eleven behavior subjects or the RFC-0007 module changes
+between this baseline and the commit that carries this draft, so the
+patches apply at both. The proposed bytes are the patches under `proposed/` applied to that
 baseline; `scripts/build_pwb_scoped_attributes_amendment.py --diff` prints
 them and `--check` verifies that the three behavior patches still apply,
 that the manifest hashes their result, that the contract patch applies to
@@ -129,7 +134,7 @@ state.
 
 RFC7-33, the opening paragraph (the sub-clause that follows it,
 "Non-citability travels, on every rendering.", is unchanged and is not
-quoted):
+quoted); the patch adds one parenthetical after "on the rendered unit**":
 
 ```
 **RFC7-33 — Every distinction, machine-readable.** Every distinction this
@@ -164,8 +169,11 @@ under it has that value in the machine answer, and contributes no tuple of
 its own after expansion. Where claims under one element differ in a field,
 that element carries nothing for the field and each claim carries it itself;
 this holds for evaluation identity as for every other field, and nothing
-fails to render. Claim identity is never carried by a scope. The machine
-answer SHALL carry every field on every claim and SHALL not inherit.
+fails to render. Claim identity is never carried by a scope. A scope SHALL
+state every value it carries as text on the scope element, in reading order
+before the claims under it, so that a reader without vision meets each
+value once where a sighted reader does (PWB-REQ-016). The machine answer
+SHALL carry every field on every claim and SHALL not inherit.
 ```
 
 ```
@@ -185,8 +193,11 @@ answer SHALL carry every field on every claim and SHALL not inherit.
 - **Falsifier**: a positive claim lacks current support, a tuple field is
   absent/out of vocabulary after expansion, a claim's expanded value for any
   field differs from the value the machine answer carries for that claim (a
-  scope value hiding a differing member), a reason has no route, Unknown is
-  folded into a total, or an aggregate claims its own headline status.
+  scope value hiding a differing member), a scope carries a field for which
+  any claim under it has a different value in the machine answer (an
+  over-asserting scope), a scope value has no text on the scope element, a
+  reason has no route, Unknown is folded into a total, or an aggregate
+  claims its own headline status.
 ```
 
 ```
@@ -197,7 +208,7 @@ answer SHALL carry every field on every claim and SHALL not inherit.
 - **THEN** the scope may carry that field once and each claim's expanded
   tuple equals its machine tuple
 - **AND** where claims under one element differ, each carries the field
-  itself, and a scope value that would hide the difference fails the oracle
+  itself, and a scope that carries the field at all fails the oracle
 ```
 
 PWB-REQ-020:
@@ -222,18 +233,27 @@ own after expansion.
   inheritance rule is its own.
 - **Mutation proof**: for each fact, authority-state, judgment-state and
   disclosure marker class, independently inject a missing, duplicated,
-  changed, collapsed, wrong-evaluation and scope-hidden marker (a scope value
-  that hides one member's differing value) and confirm the comparator fails
-  before restoration; report both channel denominators for every run.
+  changed, collapsed, wrong-evaluation, scope-hidden (a scope value that
+  hides one member's differing value) and over-asserting-scope marker (a
+  scope value one member does not have, the member carrying its own) and
+  confirm the comparator fails before restoration; report both channel
+  denominators for every run.
 - **Falsifier**: one fact, authority state, judgment state or disclosure is
-  missing, duplicated, changed, collapsed, hidden behind a scope value or
-  associated with a different evaluation in either channel.
+  missing, duplicated, changed, collapsed, hidden behind a scope value,
+  contradicted by a scope value or associated with a different evaluation
+  in either channel.
 ```
 
-RFC7-33 gains one paragraph between its opening paragraph and the
-non-citability sub-clause (`proposed/contract/RFC-0007-rendering-and-surface.md.patch`,
-insert-only, applied identically to the installed module and the candidate
-mirror):
+RFC7-33's opening sentence gains a parenthetical, so that a reader who
+quotes only the opener (verification rule 8) sees that an exception
+exists, and one paragraph is inserted between the opening paragraph and
+the non-citability sub-clause (`proposed/contract/RFC-0007-rendering-and-surface.md.patch`,
+applied identically to the installed module and the candidate mirror):
+
+```
+**machine-readable attribute on the rendered unit** (except as the
+interactive-surface paragraph below permits), served identically
+```
 
 ```
 **Scope-carried values on the interactive surface.** On the interactive
@@ -243,8 +263,9 @@ enclosing element MAY be carried once on that element, marked
 machine-readably as a scope, in place of on each unit; a unit under a scope
 then carries the value by expansion, under an inheritance rule the governing
 specification states once and every oracle restates independently. A scope
-never carries a value that any unit under it lacks, never carries a unit's
-identity, and is expanded before any parity comparison. The machine-queryable
+never carries a value that is not the value of every unit under it, never
+carries a unit's identity, states what it carries as text on its own element
+(RFC7-34), and is expanded before any parity comparison. The machine-queryable
 endpoints and every plain-text or exported rendering carry every distinction
 on the unit itself, unchanged by this paragraph. A unit copied out of the
 interactive surface without its scope has lost what the scope carried, which
@@ -254,8 +275,10 @@ stands in full.
 
 `design.md` gains decision 9, "Carry a shared claim field once per scope",
 before "Data Flow" (`proposed/design.md.patch`); it restates the rule,
-names the `scope-hidden` falsifier beside the unchanged `collapsed` and
-`duplicated` ones, says why PWB-REQ-014's attributes stay per unit, dates
+names the `scope-hidden` and `over-asserting-scope` falsifiers beside the
+unchanged `collapsed` and `duplicated` ones, says that a scope states its
+values as text for the non-visual reading, says why PWB-REQ-014's
+attributes stay per unit, dates
 its measured figures to the lane A evidence record, and lists the rejected
 alternatives. It binds nothing the spec does not.
 
@@ -287,15 +310,66 @@ alternatives. It binds nothing the spec does not.
   `non-citable` attributes stay on every owner-visible narrative unit in
   every channel. The contract paragraph excludes them by name.
 - RFC7-33's sub-clause "Non-citability travels, on every rendering" and every
-  other clause of RFC-0007; RFC7-33's opening paragraph is not edited, only
-  followed by the new one.
+  other clause of RFC-0007, RFC7-34 included. RFC7-33's opening paragraph
+  keeps every word and gains one parenthetical pointing at the exception,
+  so the opener is never a false universal on its own.
 - Anchor sets, anchor identity classes, the non-authority of Polaris, and
-  PWB-REQ-011/015/016/021/022.
+  PWB-REQ-011/015/021/022.
+- PWB-REQ-016. It is not patched, and the population its falsifier ranges
+  over keeps one text carrier per value: the scope's own text, read before
+  its claims. See the next section.
 - Oracle independence. Each checker expands scopes with its own statement of
   the rule and still imports no production vocabulary or rendering code.
 - Aggregates (the existing "aggregates expand to members") are unrelated to
   scopes: an aggregate is a claim about a population; a scope is a carrier of
   shared field values for the claims under it.
+
+## Non-visual recoverability (PWB-REQ-016, RFC7-34)
+
+The rule moves a value off the claim's element and onto an enclosing
+element, so the two clauses that govern what a reader without vision gets
+have to be answered, not assumed. Quoted:
+
+```
+Every project distinction and summary-to-source path SHALL be recoverable by
+text and operable by keyboard without relying on color, position or layout.
+```
+(PWB-REQ-016, first sentence; its oracle "compare[s] the complete
+interactive/path population to keyboard and accessibility-tree traces"; its
+falsifier includes "a color/layout-only distinction".)
+
+```
+**RFC7-34 — Non-visual recoverability.** Every such distinction is recoverable
+**without colour, position, or layout** — by label, text, or structure;
+```
+(RFC7-34, first sentence.)
+
+Today the tuple reaches the accessibility tree as the text of the claim's
+own span ("Verified · tier · freshness · challenge") with the machine
+values as attributes beside it; the attributes are not in the tree, the
+text is. A scope that carried its values as attributes only would satisfy
+RFC7-34's "structure" reading and fail PWB-REQ-016's "by text": the
+non-visual reader would meet a claim with fewer words than the sighted
+reader sees in the table. So the amended PWB-REQ-007 requires the scope to
+state every value it carries **as text on the scope element, in reading
+order before the claims under it** (a caption or heading sentence such as
+"every claim in this table: Verified · current"), and makes "a scope value
+has no text on the scope element" a falsifier. Under that requirement a
+value is recoverable by text at exactly one place per scope, the place a
+sighted reader also reads first, and the containment relation that
+carries it to each claim is structure, which RFC7-34 admits and a
+tree-walking oracle can follow. PWB-REQ-016's oracle therefore expands
+scopes like every other oracle, with its own statement of the rule, and its
+falsifier "a color/layout-only distinction" is unchanged in meaning: a
+scope value is neither. Nothing here relies on position or layout; reading
+order is document order, which the accessibility tree preserves.
+
+Consequences the ledger carries: the accessibility checker
+(`polaris-accessibility.ts`) is an implementation site (it must expand
+scopes or assert the scope text precedes its claims), and the cold-open
+walkthrough PWB-REQ-016 requires for a material narrative change is owed
+after implementation, in the non-visual mode, as it is for any such change.
+RFC7-34 is added to the warrant list below.
 
 ## Warrant
 
@@ -304,7 +378,9 @@ the ceiling rather than answer a 503 with nothing), VIS-2 (no field is
 dropped, folded or made Unknown by the change), RFC6-22 and RFC6-23
 (equivalent channels, no disagreement on label, tier, reason, freshness),
 RFC7-16 (evaluation identity on every claim, restored by expansion),
-CC-TEST-5 and CC-TEST-6 (the falsifier set grows by one class and the
+RFC7-34 (every distinction recoverable by label, text or structure; the
+scope's text is the label, containment the structure), CC-TEST-5 and
+CC-TEST-6 (the falsifier set grows by one class and the
 mutation proof names it). RFC7-33 is the clause the spec change
 invalidates, so CC-REV-2 ("invalidated accepted contracts must be updated
 in the same logical change") is why the contract patch travels in this
@@ -324,8 +400,9 @@ Decision basis:
   dropped.
 - `docs/reviews/R-PWB-M1-POLARIS-LANE-A-RAW.md` — the lane A review, whose
   findings were dispositioned in the evidence record.
-- `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md` — the first review of
-  this package (verdict REVISE), whose findings shaped this draft.
+- `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md` and
+  `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md` — the first two
+  reviews of this package (both REVISE), whose findings shaped this draft.
 - The in-place trial recorded under "Baseline" above [Observed, scratch
   worktree, 2026-09-14; not retained as a file].
 
@@ -334,8 +411,9 @@ Decision basis:
 Introduced: **scope** (one element carrying a machine-readable scope marker,
 under which claims may inherit tuple field values) and the **inheritance
 rule** (stated once, in PWB-REQ-007; restated by RFC7-33 as the rule "the
-governing specification states once"). **scope-hidden** names the new
-falsifier and mutant class. Nothing retired.
+governing specification states once"). **scope-hidden** and
+**over-asserting-scope** name the new falsifier and mutant classes.
+Nothing retired.
 
 ## Downstream impact
 
@@ -344,13 +422,15 @@ tracked files cite at least one, over a denominator of 1,216 tracked files
 at the baseline, by two methods that agree (Python regular expression over
 every tracked file; `git grep -F` per identifier, union); at the commit
 that carries this draft the same sweep returns a larger figure, stated in
-the ledger with the additions enumerated (they are this package's own
-files and the retained raw review). For `RFC7-33` the ledger carries a
-second sweep with its own denominator. Every file is classified there; the
-ones the implementation must touch are the renderer, the claim-states copy,
-the two oracles that read tuples, and the mutation sweep. No Capability 1
-file changes: the contract paragraph is a permission, and Capability 1's
-surfaces do not take it.
+the ledger with its predicate and every addition enumerated. For `RFC7-33`
+the ledger carries a second sweep with its own denominator, and for the
+module *path* a third, because the artifacts a contract act must
+regenerate cite the file by path, not by clause identifier. Every file is
+classified there; the ones the implementation must touch are the renderer,
+the claim-states copy, the two oracles that read tuples, the accessibility
+checker, and the mutation sweep. No Capability 1 file changes: the
+contract paragraph is a permission, and Capability 1's surfaces do not
+take it.
 
 ## Migration and supersession plan
 
@@ -369,7 +449,16 @@ Two acts, in this order; neither is offered yet.
    the contract patch, identical in `contracts/rfcs/` and the candidate
    mirror; a history entry in `contracts/candidates/history/RFC-0007-history.md`;
    a successor manifest; the seam extended; a packet with one phrase. Only
-   that act changes RFC7-33.
+   that act changes RFC7-33. The same change must regenerate what the
+   module's bytes feed, or the battery is red at the act [Observed, review
+   2, patch applied in a scratch copy]: `ACTIVE-CONTRACT-MANIFEST.txt`
+   (CG-7a, the module's digest row), `DIRECTIVE-REGISTER.md` (every
+   RFC-0007 clause after the insert point moves by fifteen lines) and
+   `fixtures/context-selection-8-openspec-authoring.md` (CG-18, a stated
+   packet digest and word count). The ledger's path sweep lists every
+   tracked file that names the module path; the recorder's `--check` runs
+   the whole published battery after applying, and nothing else is
+   assumed clean.
 4. **Behavior amendment (PWB).** On the exact phrase for the behavior
    manifest, a dedicated recorder (the 2026-09-05 shape) applies the three
    behavior patches with the builder's `--apply --at-adoption`, verifies
@@ -461,5 +550,44 @@ the governing references, read-only.
 
 ### Review 2
 
-Pending. Appended when the second raw lands under `docs/reviews/` with the
-same basename stem as the first and the suffix `-2-RAW.md`.
+- Raw: `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md` (retained
+  verbatim). Reviewed commit `b89e7c7417ba04ccd4d683b7ae939934f348a58b`;
+  the manifest that commit carried is superseded by this draft's.
+- Verdict, copied exactly: **REVISE**.
+- Findings and dispositions (F1–F3 blocking, F4–F7 non-blocking, F8–F9
+  editorial in the raw's own grouping):
+  - F1, the PWB citer count at the reviewed commit was wrong by one and
+    its enumeration omitted the P-68 register row: **accepted**. The
+    ledger now states the predicate (every tracked file at the commit,
+    this package's own files, its retained reviews and the register row
+    included), the figure is re-derived after the last edit of the pass,
+    and every addition is enumerated.
+  - F2, the RFC7-33 count was short by two (the ledger itself and the
+    register row): **accepted**; same repair, class table regenerated.
+  - F3, PWB-REQ-016 and RFC7-34 never examined: **accepted**. New section
+    "Non-visual recoverability"; the spec paragraph now requires the
+    scope's values as text on the scope element before its claims, with a
+    falsifier; RFC7-34 warranted; `polaris-accessibility.ts` marked must;
+    the packet says what a non-visual reader gets.
+  - F4, an over-asserting scope had no falsifier: **accepted**. PWB-REQ-007's
+    falsifier gains the scope-level predicate; PWB-REQ-020's mutation proof
+    and falsifier gain the `over-asserting-scope` class.
+  - F5, the contract act's regenerations were not enumerated and the
+    register wording was wrong: **accepted**. Migration step 3 names the
+    three artifacts and the path sweep; the ledger's register row says
+    clauses after the insert point move.
+  - F6, the packet's "only path" claim was an unlabeled categorical on an
+    Inferred estimate: **accepted**; labeled and conditioned in the packet
+    and the P-68 row.
+  - F7, the unedited RFC7-33 opener became a partial universal:
+    **accepted**. The patch adds a parenthetical exception marker to the
+    opener; it is no longer insert-only, and the delta says so.
+  - F8, the contract's precondition was looser than the spec's:
+    **accepted**, the resolution wording taken.
+  - F9, the baseline commit's relation to the reviewed commit was unstated:
+    **accepted**, one sentence added here and in the ledger.
+
+### Review 3
+
+Pending. Appended when the third raw lands under `docs/reviews/` with the
+same basename stem and the suffix `-3-RAW.md`.

@@ -5,8 +5,8 @@
 > request, a review, a manifest, silence or a general "approved" performs no
 > act.
 
-Date: 2026-09-14 (second draft; the first draft's review returned REVISE and
-its dispositions are in `SEMANTIC-DELTA.md` §Review).
+Date: 2026-09-14 (third draft; the first two drafts' reviews returned
+REVISE and their dispositions are in `SEMANTIC-DELTA.md` §Review).
 
 Register row: P-68 in `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`.
 
@@ -16,7 +16,7 @@ after** the three behavior patches under `proposed/` are applied. Three
 rows differ from the tree today; eight equal it.
 
 Behavior manifest SHA-256:
-`7d9bcdb2aa5145b63b63b8729564996aab4abeadaba3e229c02739dc0caf9206`
+`fc644d010ebfb02351e5e84d2c382d004f5e4f96884959dc407656cb66a0ac9b`
 
 The package also carries one **contract** patch,
 `proposed/contract/RFC-0007-rendering-and-surface.md.patch`, which is not a
@@ -61,9 +61,13 @@ In the human page only:
   differ, each carries the field itself, evaluation identity included;
   Claim identity is never inherited; the machine answer never inherits
   (PWB-REQ-007);
+- a scope states what it carries as text on its own element, before its
+  claims, so a reader without vision meets each value once where a sighted
+  reader does (PWB-REQ-016 is not amended; the delta shows how it holds);
 - parity is judged after every oracle expands scopes with its own statement
-  of the rule, and a scope value that hides a differing member is a new,
-  named falsifier and mutant class, `scope-hidden` (PWB-REQ-020);
+  of the rule; a scope value that hides a differing member (`scope-hidden`)
+  and a scope value some member does not have (`over-asserting-scope`) are
+  new, named falsifier and mutant classes (PWB-REQ-020);
 - RFC7-33 gains one permission paragraph for the interactive surface,
   excluding the `non-citable` / `presentation-artifact` distinctions, whose
   sub-clause stands in full (contract patch).
@@ -99,7 +103,11 @@ RFC-0008/0009.
 Risk you should weigh: a reader of the raw HTML who does not expand scopes
 sees fewer tuple fields on a claim than the machine form carries. The rule
 is stated once in the spec and the page's claim-states lede would restate
-it; the oracles, not the reader, are the guarantee.
+it; the oracles, not the reader, are the guarantee. A screen-reader user
+hears each scoped value once, as the scope's own text before the claims it
+covers, instead of on every claim; the accessibility checker and the
+non-visual cold-open walkthrough PWB-REQ-016 already requires are what
+confirm that after implementation.
 
 ## The decision
 
@@ -109,8 +117,11 @@ it; the oracles, not the reader, are the guarantee.
 successor tooling in the shape of the 2026-09-05 no-signal ceremony; offer
 the RFC7-33 contract successor for its own act; then offer this behavior
 manifest for the PWB act. Nothing is implemented until both acts are
-performed. This is the only path that meets the target you set without
-cutting items.
+performed. On the 350 KB estimate holding, this is the only path that
+meets the target you set without cutting items [Inferred: the estimate is
+unmeasured on the lane A page; if the implementation bead measures
+materially less, (a) does not reach the target either and the target
+question returns to you].
 
 **(b) Revise the target and close lane B.** The lane A page sits about
 612 KB under the response ceiling, and the pending Butlers repairs add at
@@ -130,7 +141,7 @@ in every case until an act says otherwise.
 The behavior act phrase for this manifest would be:
 
 ```
-SIGN OFF PWB SCOPED-ATTRIBUTES AMENDMENT: 7d9bcdb2aa5145b63b63b8729564996aab4abeadaba3e229c02739dc0caf9206
+SIGN OFF PWB SCOPED-ATTRIBUTES AMENDMENT: fc644d010ebfb02351e5e84d2c382d004f5e4f96884959dc407656cb66a0ac9b
 ```
 
 It is registered so that the governance checks see it go stale, but it is

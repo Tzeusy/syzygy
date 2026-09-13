@@ -2,7 +2,9 @@
 
 > **Candidate — binds nothing.** Companion to `SEMANTIC-DELTA.md`.
 
-Baseline: commit `a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d`.
+Baseline: commit `a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d`; none of the
+eleven behavior subjects or the RFC-0007 module changes between it and the
+commit that carries this draft.
 
 ## Discovery method
 
@@ -21,10 +23,12 @@ tracked files. `.beads/issues.jsonl` is untracked (ignored) and outside the
 denominator; the beads that cite these identifiers are `syzygy-dov.1` and
 `syzygy-dov.17`, read directly.
 
-At the commit that carries this draft the same two sweeps return
-**87 files** over **1,227**; every file beyond the baseline 80 is this
-package's own or its retained review, none is an implementation site, and
-the table below stays the baseline table:
+At the commit that carries this draft the same two sweeps, over every
+tracked file at that commit — this package's own files, its retained
+reviews and the register row included — return **89 files** over
+**1,228**. The 9 files beyond the baseline 80 are enumerated here so the
+figure can be re-derived rather than re-read; none is an implementation
+site, and the table below stays the baseline table:
 
 - `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/IMPACT-LEDGER.md`
 - `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/OWNER-DECISION-PACKET.md`
@@ -32,8 +36,9 @@ the table below stays the baseline table:
 - `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/SEMANTIC-DELTA.md`
 - `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/design.md.patch`
 - `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/spec.md.patch`
+- `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`
+- `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md`
 - `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md`
-
 ## Classes
 
 | class | files | disposition |
@@ -76,7 +81,7 @@ and the register.
 | `openspec/changes/polaris-manifesto-generation/design.md` | other openspec change | 0 | 1 | 1 | — |
 | `apps/three-surface-poc/src/fresh-checkout-demo-main.ts` | renderer / model | 0 | 0 | 1 | — |
 | `apps/three-surface-poc/src/fresh-checkout-verdict.ts` | renderer / model | 0 | 0 | 1 | — |
-| `apps/three-surface-poc/src/polaris-accessibility.ts` | renderer / model | 0 | 0 | 1 | — |
+| `apps/three-surface-poc/src/polaris-accessibility.ts` | renderer / model | 0 | 0 | 1 | **must** |
 | `apps/three-surface-poc/src/polaris-copy.ts` | renderer / model | 1 | 1 | 0 | **must** |
 | `apps/three-surface-poc/src/polaris-narrative.ts` | renderer / model | 0 | 3 | 0 | — |
 | `apps/three-surface-poc/src/polaris.ts` | renderer / model | 3 | 2 | 0 | **must** |
@@ -171,6 +176,9 @@ Read at the baseline; line numbers are for that commit only.
   `scope-hidden` mutant per marker class (a scope value that hides one
   member's differing value) beside missing/duplicated/changed/collapsed/
   wrong-evaluation.
+- `apps/three-surface-poc/src/polaris-accessibility.ts` — the PWB-REQ-016
+  checker; gains its own expansion of the rule, or the assertion that every
+  scope's text precedes the claims it covers in reading order.
 - `packages/three-surface-poc-core/src/project-shape-model.ts` — the
   machine-form tuple emission is unchanged by design; listed because it
   cites the clauses.
@@ -184,11 +192,13 @@ longer amended.
 ## RFC7-33 citers (the contract patch)
 
 The contract patch touches one clause, so a second sweep with its own
-denominator: `RFC7-33\b` by Python `re` over every tracked file plus the
-files this draft adds, and `git grep -l -F RFC7-33` over the same
-population, agree on **75 files** over **1,227**. None quotes the paragraph
-the patch inserts (the paragraph is new), and RFC7-33's opening paragraph
-and sub-clause are not edited, so no citer's quotation goes stale.
+denominator, same population and predicate as above: `RFC7-33\b` by Python
+`re`, and `git grep -l -F RFC7-33`, agree on **78 files** over **1,228**
+(the ledger itself and the P-68 register row are members). None quotes the
+paragraph the patch inserts (the paragraph is new); RFC7-33's opening
+sentence gains a parenthetical and no citer quotes that sentence in full,
+verified by `grep -F "on the rendered unit**, served identically"` over the
+same population, which returns only the module and its mirror.
 
 | class | files | disposition |
 |---|---|---|
@@ -199,14 +209,16 @@ and sub-clause are not edited, so no citer's quotation goes stale.
 | decision record | 2 | performed administrations; never edited |
 | docs | 2 | coverage and design notes citing the clause; unchanged, none quotes the amended paragraph |
 | evidence record | 6 | frozen evidence; never edited |
-| generated index or candidate record | 14 | generated views and candidate records that cite the clause identifier; regenerated or unchanged, none quotes the amended paragraph |
-| generated register | 1 | regenerated by `build_directive_register.py`; RFC7-33's definition line moves by the insert |
+| generated index or candidate record | 10 | generated views and candidate records that cite the clause identifier; regenerated or unchanged, none quotes the amended paragraph |
+| generated register | 1 | regenerated by `build_directive_register.py`; RFC7-33's own definition line is unchanged, every RFC-0007 clause defined after the insert point moves |
 | openspec change | 16 | specifications that warrant on RFC7-33; the permission is opt-in and none of these takes it, so their text stays true |
-| retained review | 15 | raw reviewer output; never edited |
+| pending register | 1 | the P-68 row; edited only when the owner rules |
+| retained review | 16 | raw reviewer output; never edited |
 | round record | 3 | historical round material; never edited |
 | script | 1 | this package's builder, which names the clause |
+| this package | 5 | the candidate package's own prose and patches, which cite the clause they amend |
 
-Sum: 75.
+Sum: 78.
 
 | file | class |
 |---|---|
@@ -222,10 +234,11 @@ Sum: 75.
 | `.syzygy/governance/contracts/candidates/history/RFC-0007-history.md` | contract history |
 | `.syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0007-polaris-intent-surface.md` | contract history |
 | `.syzygy/governance/contracts/candidates/matrix-rows/RFC-0007-rows.md` | generated index or candidate record |
-| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/OWNER-DECISION-PACKET.md` | generated index or candidate record |
-| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/REVIEW-BRIEF.md` | generated index or candidate record |
-| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/SEMANTIC-DELTA.md` | generated index or candidate record |
-| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/design.md.patch` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/IMPACT-LEDGER.md` | this package |
+| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/OWNER-DECISION-PACKET.md` | this package |
+| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/REVIEW-BRIEF.md` | this package |
+| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/SEMANTIC-DELTA.md` | this package |
+| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/design.md.patch` | this package |
 | `.syzygy/governance/contracts/candidates/rfcs/RFC-0007/README.md` | candidate contract mirror |
 | `.syzygy/governance/contracts/candidates/rfcs/RFC-0007/narrative-contract.md` | candidate contract mirror |
 | `.syzygy/governance/contracts/candidates/rfcs/RFC-0007/rendering-and-surface.md` | candidate contract mirror |
@@ -246,6 +259,7 @@ Sum: 75.
 | `.syzygy/governance/contracts/rfcs/RFC-0007/narrative-contract.md` | accepted contract module |
 | `.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md` | accepted contract module |
 | `.syzygy/governance/contracts/rfcs/RFC-0008/accounting-reconciliation-and-release.md` | accepted contract module |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | pending register |
 | `.syzygy/governance/decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json` | decision record |
 | `.syzygy/governance/decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.md` | decision record |
 | `DIRECTIVE-REGISTER.md` | generated register |
@@ -261,6 +275,7 @@ Sum: 75.
 | `docs/reviews/R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-3-RAW.md` | retained review |
 | `docs/reviews/R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-4-RAW.md` | retained review |
 | `docs/reviews/R-PWB-LIVE-EXACT-HEAD-TRUTH-RAW.md` | retained review |
+| `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md` | retained review |
 | `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md` | retained review |
 | `docs/reviews/R-PWB-STATE1-FINAL-ORACLES-RAW.md` | retained review |
 | `openspec/changes/polaris-manifesto-generation/DESIGN-ACCEPTANCE.md` | openspec change |
@@ -285,6 +300,74 @@ Sum: 75.
 | `packages/cap1-daemon/src/routes-human.ts` | Capability 1 code |
 | `packages/cap1-daemon/src/routes-machine.ts` | Capability 1 code |
 | `scripts/build_pwb_scoped_attributes_amendment.py` | script |
+
+## Files that name the module by path (what a contract act regenerates)
+
+An identifier sweep cannot find the artifacts that cite the module by
+**path**, and those are the ones a performed contract act must regenerate
+in the same change. Over the same population, `git grep -l -F` and Python
+`re` for `rfcs/RFC-0007/rendering-and-surface.md` agree on **48 files**:
+
+- `.syzygy/governance/contracts/candidates/ACTIVE-CONTRACT-MANIFEST.txt`
+- `.syzygy/governance/contracts/candidates/CAPABILITY-1-GENERATED-VIEWS.md`
+- `.syzygy/governance/contracts/candidates/CONTEXT-BUDGET-REPORT.md`
+- `.syzygy/governance/contracts/candidates/CONTRACT-DEPENDENCY-INDEX.md`
+- `.syzygy/governance/contracts/candidates/TASK-ROUTER.md`
+- `.syzygy/governance/contracts/candidates/fixtures/context-selection-8-openspec-authoring.md`
+- `.syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/CONTRACT-AMENDMENT-MANIFEST.txt`
+- `.syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/IMPACT-LEDGER.md`
+- `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/IMPACT-LEDGER.md`
+- `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/SEMANTIC-DELTA.md`
+- `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/contract/RFC-0007-rendering-and-surface.md.patch`
+- `.syzygy/governance/contracts/candidates/reviews/rev10-boundary-review.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08/CONTEXT-COMPILER-FIXTURE-REPORT.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-5-context-compiler-RAW.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-4-contract-semantics-RAW.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-5-rfc-openspec-boundary-RAW.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-6-context-compiler-RAW.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-2-human-clarity-RAW.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08e/WAVE-B-SEMANTIC-DELTA.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-27-wave-b-RAW.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32-wave-b-RAW.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32b-wave-b-RAW.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32c-wave-b-RAW.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08f/CAPABILITY-1-CONTEXT-ROUTE-REPORT.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-53-capability-1-task-route-RAW.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-60-capability-1-outline-exercise-RAW.md`
+- `.syzygy/governance/contracts/candidates/round-2026-08i/reviews/RD-70-p41-p42-confirming-RAW.md`
+- `.syzygy/governance/contracts/candidates/scripts/build_task_router.py`
+- `.syzygy/governance/contracts/candidates/wave-manifests/WAVE-B-MANIFEST.txt`
+- `DIRECTIVE-REGISTER.md`
+- `docs/evidence/polaris-generator-adoption-clone-validation-2026-09-12.json`
+- `docs/evidence/polaris-generator-approval-offer-2026-09-12.json`
+- `docs/evidence/polaris-generator-approval-tool-validation-2026-09-12.json`
+- `docs/evidence/polaris-generator-concrete-offer-validation-2026-09-12.json`
+- `docs/evidence/polaris-generator-rfc7-coverage-2026-09-12.json`
+- `docs/evidence/polaris-generator-rfc7-coverage-v2-2026-09-12.json`
+- `docs/evidence/polaris-generator-rfc7-coverage-v3-2026-09-12.json`
+- `docs/evidence/polaris-generator-rfc7-coverage-v4-2026-09-12.json`
+- `docs/evidence/polaris-generator-rfc7-coverage-v5-2026-09-12.json`
+- `docs/evidence/polaris-pipeline-synthetic-verification-2026-09-13.json`
+- `docs/evidence/polaris-understanding-adoption-clone-validation-2026-09-13.json`
+- `docs/reviews/R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-1-RAW.md`
+- `docs/reviews/R-POLARIS-PROJECT-WIDE-SPEC-REVIEW-RAW.md`
+- `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-2-RAW.md`
+- `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md`
+- `openspec/changes/polaris-project-wide-butlers-model/contract-coverage-parts/RFC-0007-0009.md`
+- `scripts/build_pwb_scoped_attributes_amendment.py`
+
+Of these, three go stale when the patch is applied [Observed, review 2:
+patch applied to both mirrors in a scratch copy, battery run]:
+`ACTIVE-CONTRACT-MANIFEST.txt` (CG-7a, the module's digest row),
+`DIRECTIVE-REGISTER.md` (`build_directive_register.py --check`, clause
+lines after the insert point) and
+`fixtures/context-selection-8-openspec-authoring.md` (CG-18, a stated
+packet digest and word count). The rest are retained reviews, frozen
+evidence, performed manifests that hash the *current* bytes and stay true
+as history, generated views the recorder's post-apply battery re-checks,
+and this package. The recorder's `--check` runs the whole published battery
+after applying; nothing is assumed clean.
 
 ## Merge and effect boundary
 
