@@ -1,0 +1,673 @@
+{
+ "kind": "pwb-m1-polaris-lane-a-measurement",
+ "task": "syzygy-dov.1 (M1 page size, P0-CEILING; P-67 lane A: implementation-only trim of the Polaris human page under the P-63 discipline, measured before and after at the same Butlers revision)",
+ "date": "2026-09-13",
+ "ruling": ".syzygy/governance/decisions/POLARIS-M1-PAGE-SIZE-OWNER-RULING-DECISION.md (Q1 yes: lane A under the existing bead; Q2 yes: lane B semantic delta drafted after lane A is measured; Q3 accepted: sublinear unattainable, restated target under 1.4 MB at Butlers head on both host forms and under 1,000 bytes per new item after lane B)",
+ "labels": "Every number below is [Observed] from the retained captures unless marked [Inferred].",
+ "method": {
+  "daemon": "node apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir <session scratchpad>/m1/state-<label>; run from a detached git worktree at the named commit with a clean tree after npm ci and npm run build:poc inside the worktree; one private daemon per capture, killed after the capture; the loopback daemon on port 7478 was never contacted",
+  "requests": [
+   "GET /polaris (direct form, Host = the daemon loopback address)",
+   "GET /polaris with Host: tzeusy.parrot-hen.ts.net (tailnet form; internal links carry the /butlers-syzygy mount prefix)",
+   "GET /api/poc/polaris with the bearer read from the private state directory (the PWB-REQ-014 machine presentation envelope)",
+   "GET /api/poc with the same bearer (the shared PocModel; the item denominator)"
+  ],
+  "beforeCapture": "The pre-trim page breaches the 2,097,152-byte human ceiling at Butlers head, so the before worktree is 8887cff plus one scratch commit (30b1535, never pushed, reachable from no ref after worktree removal) that raises maxHumanResponseBytes in packages/three-surface-poc-core/src/project-shape-observation.ts to 4,194,304 for measurement only. The daemon otherwise serves 8887cff bytes. The captured direct size (2,132,656) equals the observed field of the 503 body the unmodified 8887cff daemon served at Butlers 7c8743f63 (recorded in docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md), which corroborates the scratch method.",
+  "invariantsScript": "retained inline below as invariantsScript; run from the session scratchpad over the four captures",
+  "beforeCaptureCorroboration": "[Observed] the 503 observed field (2,132,656) was taken at Butlers 7c8743f63 and this capture at 2e3bac977; git diff --name-only between them lists 61 files, none of which is among the 278 observed sources in api-poc.json (intersection empty), so the two trees present the same shape input"
+ },
+ "measurementScript": "#!/usr/bin/env bash\n# usage: measure.sh <syzygy-worktree> <label>\n# One private daemon per capture from the worktree root; both host forms;\n# the envelope fetched with the daemon's own credential file (never printed).\nset -u\nWT=\"$1\"; LABEL=\"$2\"\nS=$SESSION_SCRATCHPAD\nOUT=\"$S/m1/measure/$LABEL\"; mkdir -p \"$OUT\"\nSTATE=\"$S/m1/state-$LABEL\"; rm -rf \"$STATE\"; mkdir -p \"$STATE\"\ncd \"$WT\"\nnode apps/three-surface-poc/dist/main.js --repo /home/tze/GitHub/butlers --port 0 --state-dir \"$STATE\" > \"$OUT/daemon.log\" 2>&1 &\nPID=$!\nfor i in $(seq 1 180); do\n  if grep -q 'Syzygy Three-Surface POC: http' \"$OUT/daemon.log\" 2>/dev/null; then break; fi\n  if ! kill -0 $PID 2>/dev/null; then echo \"daemon died\"; cat \"$OUT/daemon.log\"; exit 1; fi\n  sleep 1\ndone\nURL=$(grep -o 'http://[^ ]*/' \"$OUT/daemon.log\" | head -1)\necho \"daemon $URL pid=$PID\"\ngrep -E 'Observed revision' \"$OUT/daemon.log\"\ncurl -s -o \"$OUT/polaris-direct.html\" -w \"direct status=%{http_code} bytes=%{size_download}\\n\" \"${URL}polaris\"\ncurl -s -o \"$OUT/polaris-tailnet.html\" -H 'Host: tzeusy.parrot-hen.ts.net' -w \"tailnet status=%{http_code} bytes=%{size_download}\\n\" \"${URL}polaris\"\nTOKEN_FILE=$(find \"$STATE\" -name 'machine-credential.token' | head -1)\ncurl -s -o \"$OUT/api-polaris.json\" -H \"Authorization: Bearer $(cat \"$TOKEN_FILE\")\" -w \"envelope status=%{http_code} bytes=%{size_download}\\n\" \"${URL}api/poc/polaris\"\ncurl -s -o \"$OUT/api-poc.json\" -H \"Authorization: Bearer $(cat \"$TOKEN_FILE\")\" -w \"machine status=%{http_code} bytes=%{size_download}\\n\" \"${URL}api/poc\"\nkill $PID; wait $PID 2>/dev/null\necho \"syzygy=$(git -C \"$WT\" rev-parse HEAD) butlers=$(git -C /home/tze/GitHub/butlers rev-parse HEAD)\"\n",
+ "invariantsScript": "import json, re, html as H, sys, collections, hashlib, os\nS=os.environ['SESSION_SCRATCHPAD']+'/m1/measure'\ndef load(label, name): return open(f'{S}/{label}/{name}', encoding='utf-8').read()\nB=load('before','polaris-tailnet.html'); A=load('after','polaris-tailnet.html')\nBd=load('before','polaris-direct.html'); Ad=load('after','polaris-direct.html')\nout={'form':'tailnet capture before vs after at the same Butlers revision; multisets compared after HTML-unescaping'}\nATTRS=['data-claim-id','data-polaris-item','data-polaris-source','id','data-narrative-block','data-claim-provenance','data-unknown-disclosure','data-polaris-gap','data-anchor-id','data-parity-field','data-polaris-section','data-polaris-class','href','data-evaluation-id','data-presentation-artifact','data-non-citable']\ndef attrvals(h,name):\n    if name in ('data-presentation-artifact','data-non-citable'):\n        return [m.group(0) for m in re.finditer(r'\\s'+name+r'(?=[\\s>])',h)]\n    return [H.unescape(m.group(1)) for m in re.finditer(r'\\s'+re.escape(name)+r'=\"([^\"]*)\"',h)]\nout['attributes']={}\nfor a in ATTRS:\n    b=collections.Counter(attrvals(B,a)); c=collections.Counter(attrvals(A,a))\n    rec={'before':sum(b.values()),'after':sum(c.values()),'equalMultiset':b==c,'distinctBefore':len(b),'distinctAfter':len(c)}\n    if b!=c:\n        rec['onlyBefore']=sorted((b-c).elements())[:20]; rec['onlyAfter']=sorted((c-b).elements())[:20]\n    out['attributes'][a]=rec\n# tuples\nTUP=re.compile(r'<span class=\"claim-tuple\"([^>]*)>')\ndef tuples(h):\n    res=[]\n    for m in TUP.finditer(h):\n        at=dict(re.findall(r'\\s(data-[\\w-]+)=\"([^\"]*)\"',m.group(1)))\n        res.append(tuple(H.unescape(at.get(k,'')) for k in ['data-claim-id','data-epistemic-label','data-epistemic-tier','data-epistemic-primary-reason','data-epistemic-secondary-reasons','data-epistemic-freshness','data-challenge-state']))\n    return res\ntb,ta=tuples(B),tuples(A)\nout['claimTuples']={'before':len(tb),'after':len(ta),'equalMultisetModuloEvaluationId':collections.Counter(tb)==collections.Counter(ta),'distinctEvaluationIds':{'before':len(set(attrvals(B,'data-evaluation-id'))),'after':len(set(attrvals(A,'data-evaluation-id')))}}\nout['unknownClaimSet']={'before':len({t[0] for t in tb if t[1]=='Unknown'}),'after':len({t[0] for t in ta if t[1]=='Unknown'}),'equal':{t[0] for t in tb if t[1]=='Unknown'}=={t[0] for t in ta if t[1]=='Unknown'}}\n# narrative: before in-page script vs after envelope\nm=re.search(r'<script type=\"application/json\" id=\"polaris-narrative\"[^>]*>([\\s\\S]*?)</script>',B)\nnb=json.loads(m.group(1)); env=json.loads(load('after','api-polaris.json')); na=env['narrative']\nenvb=json.loads(load('before','api-polaris.json'))\ndef scrub(o):\n    s=json.dumps(o,sort_keys=True)\n    s=re.sub(r'observer:[0-9a-f]{40}','observer:X',s); s=re.sub(r'\\d{4}-\\d\\d-\\d\\dT[\\d:.]+Z','T',s); s=re.sub(r'inputs:sha256:[0-9a-f]{64}','inputs:X',s)\n    return s\nout['narrativeJson']={'beforeInPage':{'blocks':len(nb['blocks']),'anchors':sum(len(b['anchors']) for b in nb['blocks']),'bytes':len(m.group(1).encode())},\n 'afterEnvelope':{'blocks':len(na['blocks']),'anchors':sum(len(b['anchors']) for b in na['blocks']),'envelopeBytes':len(load('after','api-polaris.json').encode())},\n 'beforeEnvelopeEqualsBeforeInPage':scrub(envb['narrative'])==scrub(nb),\n 'afterEnvelopeEqualsBeforeInPageModuloObserverAndTimestamps':scrub(na)==scrub(nb),\n 'afterPageHasScript':'<script type=\"application/json\"' in A}\n# visible text\ndef text(h):\n    h=re.sub(r'<style[\\s\\S]*?</style>|<script[\\s\\S]*?</script>','',h); h=re.sub(r'<[^>]+>',' ',h); h=H.unescape(h)\n    h=re.sub(r'[0-9a-f]{40}','REV',h); h=re.sub(r'sha256:[0-9a-f]{64}','DIG',h); h=re.sub(r'[0-9a-f]{64}','DIG',h); h=re.sub(r'\\d{4}-\\d\\d-\\d\\dT[\\d:.]+Z','T',h); h=re.sub(r'pwb-eval-[0-9a-f]+','EVAL',h); h=re.sub(r'polaris@[0-9a-f]+','SV',h); h=re.sub(r'(?<![0-9a-zA-Z])[0-9a-f]{12}(?![0-9a-zA-Z])','H12',h); h=re.sub(r'working-tree:sha256:\\S+','WT',h)\n    return [w for w in re.sub(r'\\s+',' ',h).split(' ') if w]\nwb,wa=collections.Counter(text(B)),collections.Counter(text(A))\nonlyb=wb-wa; onlya=wa-wb\nout['visibleText']={'equalModuloPerRunIdentities':wb==wa,'perRunIdentityScrub':'40-hex revisions, 64-hex digests, 12-hex short digests, ISO instants, pwb-eval ids, polaris@ surface versions, working-tree strings','wordsOnlyBefore':sum(onlyb.values()),'wordsOnlyAfter':sum(onlya.values()),'onlyAfterSample':sorted(onlya.elements())[:20],'onlyBeforeTop':onlyb.most_common(12)}\n# which words vanished: expect the header words and repeated keys of compact-list classes\nLIST=re.compile(r'<section class=\"claim-section\"[^>]*data-polaris-class=\"([^\"]+)\"[^>]*>([\\s\\S]*?)</section>')\nlistclasses={}\nfor mm in LIST.finditer(A):\n    if '<ul class=\"item-list\"' in mm.group(2): listclasses[mm.group(1)]=len(re.findall(r'<li data-polaris-item=',mm.group(2)))\nout['compactListClasses']=listclasses\nkeys=collections.Counter()\nfor mm in LIST.finditer(B):\n    if mm.group(1) in listclasses:\n        for cell in re.findall(r'<tr data-polaris-item=\"[^\"]*\"><td><code>[^<]*</code></td><td[^>]*><div class=\"reading-prose\"[^>]*>([\\s\\S]*?)</div>',mm.group(2)): keys.update(text(cell))\nhdr=collections.Counter()\nfor cls in listclasses: hdr.update(text('Key Declared Epistemic state'))\nout['visibleText']['vanishedEqualsRepeatedKeysPlusHeaders']=(onlyb==keys+hdr)\nout['visibleText']['expected']={'repeatedKeyWordsInDeclaredCells':sum(keys.values()),'headerWords':sum(hdr.values()),'classesTrimmed':len(listclasses)}\nif onlyb!=keys+hdr:\n    out['visibleText']['vanishedMinusExpected']=(onlyb-(keys+hdr)).most_common(15); out['visibleText']['expectedMinusVanished']=((keys+hdr)-onlyb).most_common(15)\ndef bytag(h):\n    return dict(collections.Counter(m.group(1) for m in re.finditer(r'<(\\w+)[^>]*\\sdata-presentation-artifact(?=[\\s>])',h)))\ntb_,ta_=bytag(B),bytag(A)\nout['presentationMarkersByTag']={'before':tb_,'after':ta_,'delta':{k:ta_.get(k,0)-tb_.get(k,0) for k in set(tb_)|set(ta_) if ta_.get(k,0)!=tb_.get(k,0)}}\n# per-item cost\ndef mean(xs): return round(sum(xs)/len(xs)) if xs else None\nli=[len(x.encode()) for x in re.findall(r'<li data-polaris-item=\"[\\s\\S]*?</li>',A)]\ntr=[len(x.encode()) for x in re.findall(r'<tr data-polaris-item=\"[\\s\\S]*?</tr>',A)]\ntrb=[len(x.encode()) for x in re.findall(r'<tr data-polaris-item=\"[\\s\\S]*?</tr>',B)]\nblocks=[len(json.dumps(b,separators=(',',':')).encode()) for b in na['blocks']]\nout['perItemCost']={'afterCompactListEntry':{'count':len(li),'meanBytes':mean(li),'maxBytes':max(li)},'afterStatementTableRow':{'count':len(tr),'meanBytes':mean(tr)},'beforeTableRowAllClasses':{'count':len(trb),'meanBytes':mean(trb)},'envelopeNarrativeBlock':{'count':len(blocks),'meanBytes':mean(blocks),'note':'off the human page since lane A; paid only by /api/poc/polaris readers'},'pageBytesPerMachineItem':{'before':round(len(B.encode())/415),'after':round(len(A.encode())/415)}}\n# fragment targets\ndef frags(h):\n    ids=collections.Counter(attrvals(h,'id')); hrefs=[x[1:] for x in attrvals(h,'href') if x.startswith('#')]\n    dangling=sorted({x for x in hrefs if x not in ids})\n    inside=[]\n    for d in re.finditer(r'<details[\\s\\S]*?</details>',h):\n        inside+=re.findall(r'\\sid=\"([^\"]*)\"',d.group(0))\n    return {'fragmentHrefs':len(hrefs),'dangling':dangling,'idsInsideDetails':sorted(set(inside))[:10],'duplicateIds':[k for k,v in ids.items() if v>1]}\nout['fragmentTargets']={'before':frags(B),'after':frags(A)}\ndef mount(h):\n    hs=attrvals(h,'href'); internal=[x for x in hs if x.startswith('/')]\n    return {'prefixedInternalHrefs':sum(1 for x in internal if x.startswith('/butlers-syzygy')),'unprefixedInternalHrefs':sum(1 for x in internal if not x.startswith('/butlers-syzygy'))}\nout['tailnetMountPrefix']={'before':mount(B),'after':mount(A),'directFormUnprefixed':{'before':mount(Bd)['prefixedInternalHrefs'],'after':mount(Ad)['prefixedInternalHrefs']}}\n# item row presence: every machine item once (from /api/poc)\nmodel=json.loads(load('after','api-poc.json'))\nitems=[i['claim']['claimId'] for i in model['projectShape']['items']] if model['projectShape']['kind']=='observed' else []\ncnt=collections.Counter(attrvals(A,'data-polaris-item'))\nout['itemRows']={'machineItems':len(items),'renderedOnce':sum(1 for i in items if cnt[i]==1),'notOnce':[i for i in items if cnt[i]!=1][:10]}\n# sizes and digests\ndef size(label,name):\n    b=open(f'{S}/{label}/{name}','rb').read(); return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}\nout['captures']={l:{n:size(l,n) for n in ['polaris-direct.html','polaris-tailnet.html','api-polaris.json']} for l in ['before','after']}\njson.dump(out,open(os.environ['SESSION_SCRATCHPAD']+'/m1/invariants.json','w'),indent=1)\nprint(json.dumps({k:v for k,v in out.items() if k!='attributes'},indent=1)[:6000])\nprint(json.dumps({a:r for a,r in out['attributes'].items()},indent=0)[:3000])\n",
+ "butlers": {
+  "repository": "/home/tze/GitHub/butlers",
+  "revision": "2e3bac97790b4bd8906dcac63eadb5642a0bb1ac",
+  "workingTree": "clean (working-tree:sha256 of the empty string in the evaluation identity on both captures)",
+  "note": "the same Butlers revision for both captures; it includes the P-60/P-61/P-62 repairs that grew the page past the ceiling on 2026-09-13"
+ },
+ "syzygy": {
+  "before": {
+   "commit": "8887cff (served bytes) under scratch commit 30b1535825948a09a8befb21ac5822eaa35f62c8 (ceiling raised for measurement only)",
+   "surfaceVersion": "polaris@5f18c0540353",
+   "note": "main before the lane A commit; the surface version hashes the src trees, which the scratch commit changes only in the core ceiling constant"
+  },
+  "after": {
+   "commit": "2ef68f5b28307003e8fc38668986765ab0f884b5",
+   "surfaceVersion": "polaris@baee0208e8c0",
+   "note": "the lane A commit on main (not yet pushed at measurement time); a rebase-merge would re-hash it, so the surface version is the stable anchor"
+  }
+ },
+ "captures": {
+  "before": {
+   "polaris-direct.html": {
+    "bytes": 2132656,
+    "sha256": "bf9255d5f3a0d507a18e6ce46ed3f5d57f2fbced3167fa925ebf804b1d4c80a9"
+   },
+   "polaris-tailnet.html": {
+    "bytes": 2138506,
+    "sha256": "19cd0dbb3dec4f0b2d8108afe9650491287797459fa440928329c7854673bb54"
+   },
+   "api-polaris.json": {
+    "bytes": 640592,
+    "sha256": "614b6ba9b67e74eede3bf6a58f98bff5d552b70af87d5af523a399320b1d7dfc"
+   },
+   "api-poc.json": {
+    "bytes": 5520314,
+    "sha256": "9208ce77403c077a12c651e1091fd4cf7da931cb7c6fb4967f1ab51f07df9977"
+   }
+  },
+  "after": {
+   "polaris-direct.html": {
+    "bytes": 1478637,
+    "sha256": "2fecdd01e1a2ff577567495796ea7e59ab89f1420be6033e23314d26442ea094"
+   },
+   "polaris-tailnet.html": {
+    "bytes": 1484487,
+    "sha256": "e8a04b4631dedbda159dd162d25f4e8a7ed4f9f4059a37ca1bca87b717790111"
+   },
+   "api-polaris.json": {
+    "bytes": 640592,
+    "sha256": "ab3b517be1e62a0a7f4cabe73d870f9aa6bea7d2bbbadf0d27a2f00c34eca22e"
+   },
+   "api-poc.json": {
+    "bytes": 5520314,
+    "sha256": "a89b0e059b5fdadc5f359c2bee58115cd50747399cfb00444703e0fafdfb466e"
+   }
+  }
+ },
+ "result": {
+  "direct": {
+   "before": 2132656,
+   "after": 1478637,
+   "saving": 654019
+  },
+  "tailnet": {
+   "before": 2138506,
+   "after": 1484487,
+   "saving": 654019
+  },
+  "ceilingBytes": 2097152,
+  "tailnetHeadroom": {
+   "before": -41354,
+   "after": 612665
+  },
+  "savingShareOfBefore": 0.3067,
+  "q3Target": {
+   "bytes": 1400000,
+   "directMet": false,
+   "tailnetMet": false,
+   "shortfall": {
+    "direct": 78637,
+    "tailnet": 84487
+   },
+   "note": "[Observed] lane A alone does not reach the restated Q3 target; the ruling sequences lane B (semantic delta) after this measurement for the remainder"
+  },
+  "apiEnvelope": {
+   "before": 640592,
+   "after": 640592,
+   "note": "unchanged size; the machine form is the same object the page used to embed (see invariants.narrativeJson)"
+  },
+  "machineModelBytes": 5520314
+ },
+ "trim": {
+  "files": [
+   "apps/three-surface-poc/src/polaris.ts",
+   "apps/three-surface-poc/src/polaris-narrative.ts (NARRATIVE_SCRIPT_ID, narrativeScript and parseNarrativeScript removed)",
+   "seven test files moved to renderPolarisPresentation(...).narrative as the machine-form source",
+   "docs/PWB-IMPLEMENTATION-PLAN.md (the sentence describing the in-page script marked superseded in place)",
+   ".syzygy/governance/decisions/POLARIS-M1-PAGE-SIZE-OWNER-RULING-DECISION.md (new), PENDING-OWNER-DECISIONS.md (P-67 row removed; 21 open + 5 acceptance-act rows = 26) and DECISION-HISTORY.md (P-67 resolved section): the owner ruling record, carried in the same commit; no digest bound, openspec untouched"
+  ],
+  "mechanisms": [
+   "the PWB-REQ-014 narrative JSON is no longer embedded in the human page as <script type=\"application/json\" id=\"polaris-narrative\">; renderPolarisPresentation still returns {html, narrative} and /api/poc/polaris still serves the narrative of the same render (639,806 bytes of the page, no reader but tests)",
+   "a class whose items all lack a statement renders as a compact <ul class=\"item-list\"> of <li data-polaris-item> entries (key, support citations, claim tuple) instead of a three-column table whose Declared cell repeated the key; five classes qualify at this Butlers revision (topology-component 87, roster-identity 6, design-contract 32, baseline-spec 192, craft-policy 7); classes with statements keep the table"
+  ],
+  "kept": [
+   "every claim id, item, source, narrative block, provenance, anchor, parity field, section, class, Unknown disclosure, gap and href (multiset-equal, see invariants)",
+   "the claim tuple multiset modulo the per-run evaluation instant",
+   "every fragment target (no dangling href, no id inside <details>)",
+   "the tailnet mount prefix on every internal link (390 prefixed, 0 unprefixed, both captures)"
+  ],
+  "savingBreakdown": {
+   "inPageScriptPayloadBytes": 639806,
+   "inPageScriptElementBytes": 639914,
+   "listFormBytes": 14105,
+   "listFormPerItem": "[Observed] over the same 324 items, the before table row summed to 492,902 bytes and the after list entry to 481,517: 35.1 bytes per item on the row alone, 43.5 including the removed table scaffolding (14,105 / 324); the per-item cost is dominated by the support citations and the claim tuple, which lane A does not touch"
+  }
+ },
+ "invariants": {
+  "form": "tailnet capture before vs after at the same Butlers revision; multisets compared after HTML-unescaping",
+  "attributes": {
+   "data-claim-id": {
+    "before": 713,
+    "after": 713,
+    "equalMultiset": true,
+    "distinct": {
+     "before": 703,
+     "after": 703
+    }
+   },
+   "data-polaris-item": {
+    "before": 409,
+    "after": 409,
+    "equalMultiset": true,
+    "distinct": {
+     "before": 409,
+     "after": 409
+    }
+   },
+   "data-polaris-source": {
+    "before": 278,
+    "after": 278,
+    "equalMultiset": true,
+    "distinct": {
+     "before": 278,
+     "after": 278
+    }
+   },
+   "id": {
+    "before": 351,
+    "after": 350,
+    "equalMultiset": false,
+    "distinct": {
+     "before": 351,
+     "after": 350
+    },
+    "difference": "the removed <script id=\"polaris-narrative\"> was the one id dropped; every other id is present once on both forms"
+   },
+   "data-narrative-block": {
+    "before": 714,
+    "after": 714,
+    "equalMultiset": true,
+    "distinct": {
+     "before": 714,
+     "after": 714
+    }
+   },
+   "data-claim-provenance": {
+    "before": 714,
+    "after": 714,
+    "equalMultiset": true,
+    "distinct": {
+     "before": 703,
+     "after": 703
+    }
+   },
+   "data-unknown-disclosure": {
+    "before": 22,
+    "after": 22,
+    "equalMultiset": true,
+    "distinct": {
+     "before": 22,
+     "after": 22
+    }
+   },
+   "data-polaris-gap": {
+    "before": 1,
+    "after": 1,
+    "equalMultiset": true,
+    "distinct": {
+     "before": 1,
+     "after": 1
+    }
+   },
+   "data-anchor-id": {
+    "before": 935,
+    "after": 935,
+    "equalMultiset": true,
+    "distinct": {
+     "before": 916,
+     "after": 916
+    }
+   },
+   "data-parity-field": {
+    "before": 1570,
+    "after": 1570,
+    "equalMultiset": true,
+    "distinct": {
+     "before": 23,
+     "after": 23
+    }
+   },
+   "data-polaris-section": {
+    "before": 44,
+    "after": 44,
+    "equalMultiset": true,
+    "distinct": {
+     "before": 44,
+     "after": 44
+    }
+   },
+   "data-polaris-class": {
+    "before": 9,
+    "after": 9,
+    "equalMultiset": true,
+    "distinct": {
+     "before": 9,
+     "after": 9
+    }
+   },
+   "href": {
+    "before": 1089,
+    "after": 1089,
+    "equalMultiset": true,
+    "distinct": {
+     "before": 444,
+     "after": 444
+    }
+   },
+   "data-evaluation-id": {
+    "before": 713,
+    "after": 713,
+    "equalMultiset": false,
+    "distinct": {
+     "before": 1,
+     "after": 1
+    },
+    "difference": "per-run evaluation instant; one distinct value on each capture, as before"
+   },
+   "data-presentation-artifact": {
+    "before": 2669,
+    "after": 2653,
+    "equalMultiset": false,
+    "distinct": {
+     "before": 1,
+     "after": 1
+    },
+    "difference": "16 fewer markers: the 15 table headers (5 trimmed classes x 3 <th>, each carried the marker) and the 1 in-page script; the 324 statement-less item cells moved from <td> to <span> one-for-one, and the 5 table-region <div> markers moved to the 5 <ul> lists (see presentationMarkersByTag)"
+   },
+   "data-non-citable": {
+    "before": 2669,
+    "after": 2653,
+    "equalMultiset": false,
+    "distinct": {
+     "before": 1,
+     "after": 1
+    },
+    "difference": "16 fewer markers: the 15 table headers (5 trimmed classes x 3 <th>, each carried the marker) and the 1 in-page script; the 324 statement-less item cells moved from <td> to <span> one-for-one, and the 5 table-region <div> markers moved to the 5 <ul> lists (see presentationMarkersByTag)"
+   }
+  },
+  "presentationMarkersByTag": {
+   "before": {
+    "a": 427,
+    "div": 43,
+    "h1": 1,
+    "p": 92,
+    "summary": 349,
+    "li": 35,
+    "span": 724,
+    "script": 1,
+    "h2": 7,
+    "h3": 39,
+    "section": 1,
+    "figcaption": 4,
+    "th": 32,
+    "td": 409,
+    "h4": 15,
+    "button": 1,
+    "ul": 4,
+    "pre": 6,
+    "tr": 285,
+    "small": 193,
+    "footer": 1
+   },
+   "after": {
+    "a": 427,
+    "div": 38,
+    "h1": 1,
+    "p": 92,
+    "summary": 349,
+    "li": 35,
+    "span": 1048,
+    "h2": 7,
+    "h3": 39,
+    "section": 1,
+    "figcaption": 4,
+    "th": 17,
+    "td": 85,
+    "h4": 15,
+    "button": 1,
+    "ul": 9,
+    "pre": 6,
+    "tr": 285,
+    "small": 193,
+    "footer": 1
+   },
+   "delta": {
+    "td": -324,
+    "div": -5,
+    "script": -1,
+    "ul": 5,
+    "span": 324,
+    "th": -15
+   }
+  },
+  "unknownClaimSet": {
+   "before": 11,
+   "after": 11,
+   "equal": true
+  },
+  "claimTuples": {
+   "before": 713,
+   "after": 713,
+   "equalMultisetModuloEvaluationId": true,
+   "distinctEvaluationIds": {
+    "before": 1,
+    "after": 1
+   }
+  },
+  "narrativeJson": {
+   "beforeInPage": {
+    "blocks": 714,
+    "anchors": 916,
+    "bytes": 639806
+   },
+   "afterEnvelope": {
+    "blocks": 714,
+    "anchors": 916,
+    "envelopeBytes": 640592
+   },
+   "beforeEnvelopeEqualsBeforeInPage": true,
+   "afterPageHasScript": false,
+   "afterEnvelopeEqualsBeforeInPageModuloPerRunIdentities": true,
+   "perRunIdentities": "observer revision, ISO instants, input digests, pwb-eval ids and the polaris@ surface version scrubbed before comparison; block count 714 and anchor count 916 on both",
+   "afterEnvelopeEqualsBeforeInPageModuloObserverAndTimestamps_narrowScrub": false,
+   "narrowScrub": "observer revision, ISO instants and inputs digests only; false because pwb-eval ids and the polaris@ surface version also differ per run — the wide-scrub comparison above is the claim"
+  },
+  "visibleText": {
+   "equalModuloPerRunIdentities": false,
+   "perRunIdentityScrub": "40-hex revisions, 64-hex digests, 12-hex short digests, ISO instants, pwb-eval ids, polaris@ surface versions, working-tree strings",
+   "wordsOnlyBefore": 385,
+   "wordsOnlyAfter": 0,
+   "onlyBeforeTop": [
+    [
+     "Key",
+     5
+    ],
+    [
+     "Declared",
+     5
+    ],
+    [
+     "state",
+     5
+    ],
+    [
+     "Epistemic",
+     5
+    ],
+    [
+     "6:",
+     5
+    ],
+    [
+     "Store",
+     3
+    ],
+    [
+     "API",
+     2
+    ],
+    [
+     "1:Runtime",
+     2
+    ],
+    [
+     "Adapters",
+     2
+    ],
+    [
+     "3:Telegram",
+     2
+    ],
+    [
+     "Registry",
+     2
+    ],
+    [
+     "5:",
+     2
+    ]
+   ],
+   "vanishedEqualsRepeatedKeysPlusHeaders": true,
+   "expected": {
+    "repeatedKeyWordsInDeclaredCells": 365,
+    "headerWords": 20,
+    "classesTrimmed": 5
+   }
+  },
+  "visibleTextNote": "[Observed] not equal by design: the 385 words present only before are exactly the 20 table-header words (Key / Declared / Epistemic state, five classes) and the 365 words of the Declared cells that repeated each statement-less item key through the markdown renderer; no word is present only after",
+  "fragmentTargets": {
+   "before": {
+    "fragmentHrefs": 699,
+    "dangling": [],
+    "idsInsideDetails": [
+     "polaris-claim-states",
+     "polaris-claim-states-lede",
+     "polaris-depth-label"
+    ],
+    "duplicateIds": []
+   },
+   "after": {
+    "fragmentHrefs": 699,
+    "dangling": [],
+    "idsInsideDetails": [
+     "polaris-claim-states",
+     "polaris-claim-states-lede",
+     "polaris-depth-label"
+    ],
+    "duplicateIds": []
+   }
+  },
+  "tailnetMountPrefix": {
+   "before": {
+    "prefixedInternalHrefs": 390,
+    "unprefixedInternalHrefs": 0
+   },
+   "after": {
+    "prefixedInternalHrefs": 390,
+    "unprefixedInternalHrefs": 0
+   },
+   "directForm": {
+    "prefixedInternalHrefs": {
+     "before": 0,
+     "after": 0
+    },
+    "unprefixedInternalHrefs": {
+     "before": 390,
+     "after": 390
+    }
+   }
+  },
+  "itemRows": {
+   "machineItems": 415,
+   "renderedOnce": 409,
+   "notOnce": [
+    "claim:item:project-account-section:architecture",
+    "claim:item:project-account-section:v1-scope",
+    "claim:item:project-account-section:v1-success",
+    "claim:item:project-account-section:purpose",
+    "claim:item:project-account-section:promises",
+    "claim:item:project-account-section:refusals"
+   ],
+   "note": "409 of 415 machine items render once as an item row on both captures; the 6 project-account-section items render as sections, not rows, before and after alike"
+  },
+  "compactListClasses": {
+   "topology-component": 87,
+   "roster-identity": 6,
+   "design-contract": 32,
+   "baseline-spec": 192,
+   "craft-policy": 7
+  },
+  "machineModel": {
+   "apiPocByteIdenticalModuloNamedFields": true,
+   "fieldsDiffering": [
+    "inputsDigest and the inputs segment of the evaluation identity",
+    "observationDigest",
+    "resourceLimitsDigest — differs because the before worktree carries the scratch commit raising the human response ceiling, which is a declared resource limit; this is the one non-per-run difference and it is the measurement method itself",
+    "the Syzygy observer revision (also the revision of every manual-mapping source)",
+    "the polaris@ surface version",
+    "the pwb-eval evaluation identity",
+    "ISO instants"
+   ],
+   "note": "[Observed] outside those fields the two 5,520,314-byte machine models are byte-identical: the shape input to both renders is the same object"
+  }
+ },
+ "perItemCost": {
+  "afterCompactListEntry": {
+   "count": 324,
+   "meanBytes": 1486,
+   "maxBytes": 1811
+  },
+  "afterStatementTableRow": {
+   "count": 85,
+   "meanBytes": 1482
+  },
+  "beforeTableRowAllClasses": {
+   "count": 409,
+   "meanBytes": 1513
+  },
+  "envelopeNarrativeBlock": {
+   "count": 714,
+   "meanBytes": 892,
+   "note": "off the human page since lane A; paid only by /api/poc/polaris readers"
+  },
+  "pageBytesPerMachineItem": {
+   "before": 5153,
+   "after": 3577
+  },
+  "sameItemsRowVsEntry": {
+   "items": 324,
+   "beforeRowBytes": 492902,
+   "afterEntryBytes": 481517,
+   "meanSavingPerItem": 35.1
+  }
+ },
+ "mutants": {
+  "commit": "2ef68f5b28307003e8fc38668986765ab0f884b5",
+  "ranAt": "2026-09-13T13:30:32+00:00",
+  "discipline": "rule 6: each mutant applied to the working tree at the named commit, its guarding test files run, the file reverted with git checkout -- before the next; the old and new fragments are stored so the run is repeatable",
+  "mutants": [
+   {
+    "id": "list-container-renamed",
+    "file": "apps/three-surface-poc/src/polaris.ts",
+    "guard": "classes-with-item-tables: the list container is detected by its literal opening",
+    "old": "<ul class=\"item-list\"${FACT}>",
+    "new": "<ul class=\"items\"${FACT}>",
+    "testFiles": [
+     "apps/three-surface-poc/src/polaris-parity-sweep.test.ts"
+    ],
+    "exitCode": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  1 failed (1)",
+     "      Tests  24 failed | 19 passed (43)",
+     "⎯⎯⎯⎯⎯⎯ Failed Tests 24 ⎯⎯⎯⎯⎯⎯⎯",
+     " FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-parity-sweep.test.ts > PWB-REQ-020 exhaustive Polaris parity sweep > observed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+     " FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-parity-sweep.test.ts > PWB-REQ-020 exhaustive Polaris parity sweep > observed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+     " FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-parity-sweep.test.ts > PWB-REQ-020 exhaustive Polaris parity sweep > observed shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+     " FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-parity-sweep.test.ts > PWB-REQ-020 exhaustive Polaris parity sweep > observed shape / unlawful judgment: every marker family matches the machine answer as a multiset",
+     " FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-parity-sweep.test.ts > PWB-REQ-020 exhaustive Polaris parity sweep > observed shape / lawful-state-1 judgment: every marker family matches the machine answer as a multiset"
+    ]
+   },
+   {
+    "id": "list-container-dropped",
+    "file": "apps/three-surface-poc/src/polaris.ts",
+    "guard": "item-rows: expected rows come from the machine answer, never gated on container detection",
+    "old": "        ? population('items', cls, items.length, 'label.show-items', `<ul class=\"item-list\"${FACT}>${items.map((item) => itemEntry(item, shape.identity.revision)).join('')}</ul>`)",
+    "new": "        ? ''",
+    "testFiles": [
+     "apps/three-surface-poc/src/polaris-parity-sweep.test.ts",
+     "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+     "apps/three-surface-poc/src/polaris-reachability.test.ts"
+    ],
+    "exitCode": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  3 failed (3)",
+     "      Tests  26 failed | 32 passed (58)",
+     "⎯⎯⎯⎯⎯⎯ Failed Tests 26 ⎯⎯⎯⎯⎯⎯⎯",
+     " FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-first-reading.test.ts > Polaris progressive disclosure (PWB-REQ-011 as amended; PWB-LIVE-13) > keeps each item population and the exclusions complete behind a native disclosure whose control names the count, leaves the sources table open for fragment navigation, and hides nothing by style",
+     " FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-parity-sweep.test.ts > PWB-REQ-020 exhaustive Polaris parity sweep > observed shape / not-evaluated judgment: every marker family matches the machine answer as a multiset",
+     " FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-parity-sweep.test.ts > PWB-REQ-020 exhaustive Polaris parity sweep > observed shape / absent-run-record judgment: every marker family matches the machine answer as a multiset",
+     " FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-parity-sweep.test.ts > PWB-REQ-020 exhaustive Polaris parity sweep > observed shape / absent-judgment judgment: every marker family matches the machine answer as a multiset",
+     " FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-parity-sweep.test.ts > PWB-REQ-020 exhaustive Polaris parity sweep > observed shape / unlawful judgment: every marker family matches the machine answer as a multiset"
+    ]
+   },
+   {
+    "id": "script-re-embedded",
+    "file": "apps/three-surface-poc/src/polaris.ts",
+    "guard": "the human page carries no copy of the machine form",
+    "old": "    body,\n    sidebar:",
+    "new": "    body: `<script type=\"application/json\" id=\"polaris-narrative\">{}</script>${body}`,\n    sidebar:",
+    "testFiles": [
+     "apps/three-surface-poc/src/polaris-narrative.test.ts",
+     "apps/three-surface-poc/src/polaris-presentation-route.test.ts"
+    ],
+    "exitCode": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  2 failed (2)",
+     "      Tests  2 failed | 6 passed (8)",
+     "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯",
+     " FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-narrative.test.ts > Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9) > gives every anchored block a typed, revision-bound anchor set that exactly covers its claims (no uncovered claim, no surplus anchor) and captures target state",
+     " FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-presentation-route.test.ts > Polaris machine presentation envelope (PWB-REQ-014; RFC7-2, RFC7-3) > refuses without the bearer and, with it, serves the narrative of the same render the human page comes from — every anchor cited on the page, no copy of the JSON on the page — marked non-citable"
+    ]
+   },
+   {
+    "id": "route-serves-empty-narrative",
+    "file": "apps/three-surface-poc/src/routes.ts",
+    "guard": "the envelope is the narrative of the same render (route-read)",
+    "old": "      narrative,\n    };\n    return boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(envelope));",
+    "new": "      narrative: { ...narrative, blocks: [] },\n    };\n    return boundedResponse(model, limits, 'maxMachineResponseBytes', 'application/json', JSON.stringify(envelope));",
+    "testFiles": [
+     "apps/three-surface-poc/src/polaris-presentation-route.test.ts"
+    ],
+    "exitCode": 1,
+    "outcome": "killed",
+    "summary": [
+     " Test Files  1 failed (1)",
+     "      Tests  1 failed | 1 passed (2)",
+     "⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯",
+     " FAIL  |@syzygy/three-surface-poc-app| apps/three-surface-poc/src/polaris-presentation-route.test.ts > Polaris machine presentation envelope (PWB-REQ-014; RFC7-2, RFC7-3) > refuses without the bearer and, with it, serves the narrative of the same render the human page comes from — every anchor cited on the page, no copy of the JSON on the page — marked non-citable"
+    ]
+   }
+  ]
+ },
+ "verification": {
+  "appSuite": "npx vitest run --project @syzygy/three-surface-poc-app at 2ef68f5: 40 files passed, 1 skipped; 383 tests passed, 1 skipped; exit 0 — run twice with the same counts (second run retained at the session scratchpad as app-suite-run2.log)",
+  "fullSuite": "npm test at the 2ef68f5 working tree: 123 files passed, 3 skipped; 1686 tests passed, 3 skipped; exit 0; the browser project ran (polaris-accessibility.browser.test.ts, 13 tests passed)",
+  "typecheck": "npm run typecheck at 2ef68f5: no diagnostics, exit 0 (after npm ci, which relinked @syzygy/polaris-generation-core; before npm ci the workspace reported 42 phantom errors unrelated to this change)",
+  "governance": "python3 scripts/check_governance.py at 2ef68f5: 32 OK, 20 WARN, 0 FAIL (52 checks)",
+  "newGuards": [
+   "polaris-presentation-route.test.ts: the human page carries no <script type=\"application/json\"> and no \"kind\":\"polaris-narrative\" string; the envelope equals the same-render narrative; every envelope anchorId is cited on the page by data-anchor-id",
+   "polaris-parity-sweep.test.ts: class tables are found by <tbody> or <ul class=\"item-list\">; itemExpected is pushed for every class in CLASSES_WITH_ITEM_TABLES from the machine answer, ungated",
+   "polaris-first-reading / polaris-reachability: item rows are <tr> or <li>"
+  ]
+ },
+ "nonGoalsHonoured": [
+  "no PWB observer-registry, spec or policy change (PWB-REQ-007/014/020 untouched; the machine form is still served, only its in-page copy is gone); the decisions register did change, to record the P-67 ruling",
+  "no claim or Unknown removed (see invariants)",
+  "no Butlers change",
+  "the daemon on port 7478 untouched",
+  "the scratch ceiling commit exists only in the before worktree and is removed with it"
+ ],
+ "followUp": {
+  "laneB": "[Inferred] per the ruling (Q2), a lane B semantic-delta package (scoped epistemic attributes on PWB-REQ-007/014/020) is drafted against these numbers as a follow-up bead; the after page is 84487 bytes over the Q3 target on the tailnet form and each statement-less item still costs about 1486 bytes, against the 1,000-byte per-item target"
+ },
+ "review": {
+  "raw": "docs/reviews/R-PWB-M1-POLARIS-LANE-A-RAW.md",
+  "reviewedEvidenceSha256": "5146831e851ecb03553a5b7e4ba61284d111b3a61066649dd4d70e0a493de619",
+  "verdict": "CONFIRMED WITH FINDINGS",
+  "reviewer": "fresh-context opus reviewer, 2026-09-13; reproduced both captures (all eight sizes; bytes identical once the per-run observation digest and instants are scrubbed), recomputed every [Observed] number, verified PWB-REQ-014 and PWB-REQ-020 by id on both captures, confirmed all four mutants as genuine guards",
+  "dispositions": [
+   "1 (should-fix, commit not implementation-only): trim.files now lists the three decisions-register files carried in 2ef68f5 and nonGoalsHonoured names the PWB observer registry explicitly",
+   "2 (should-fix, directFormUnprefixed mislabelled): field replaced by directForm with prefixed {0,0} and unprefixed {390,390}",
+   "3 (should-fix, per-item saving over mismatched populations): savingBreakdown recomputed over the same 324 items (35.1 bytes per row, 43.5 with scaffolding; element 639,914, remainder 14,105)",
+   "4 (note, api-poc sha256 missing): added to captures for both labels",
+   "5 (note, before-method corroboration across two Butlers trees): the 61-file diff touches none of the 278 observed sources; stated under method",
+   "6 (note, narrow-scrub false retained): field renamed and its scrub named beside the wide-scrub true",
+   "7 (note, mutants.py mutated the main checkout): accepted as a lesson; no change to the record, the run completed with a clean tree and each file reverted",
+   "8 (note, stronger invariant): /api/poc byte-identical outside seven named identity fields, one of which (resourceLimitsDigest) records the scratch ceiling raise; recorded under invariants.machineModel",
+   "The evidence file was amended after the review for these dispositions; the review binds the bytes at reviewedEvidenceSha256, not the current file"
+  ]
+ }
+}
