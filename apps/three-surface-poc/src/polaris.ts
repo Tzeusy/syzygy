@@ -49,7 +49,6 @@ import {
   NarrativeRegistry,
   artifactAnchor,
   capturedStateOf,
-  narrativeScript,
   provenanceAnchor,
   supportAnchor,
   type AnchorInput,
@@ -541,6 +540,22 @@ function itemRow(item: ProjectShapeItem, revision: string): string {
   return `<tr data-polaris-item="${escapeHtml(item.claim.claimId)}"><td><code>${escapeHtml(item.key)}</code></td><td${block?.attrs ?? FACT}>${statement}</td><td>${claimTuple(item.claim)}</td></tr>`;
 }
 
+/** One compact entry for an item whose extractor captures no statement (the
+ * key is the whole declaration: baseline specs, design contracts, craft
+ * policies, roster identities). It is the table row it replaces — the same
+ * item marker, citations, exact-text link and tuple — without a "declared"
+ * cell repeating the key. The fact role sits once on the enclosing list
+ * (classBlock); the entry inherits it and the tuple span declares its own. */
+function itemEntry(item: ProjectShapeItem, revision: string): string {
+  const block = item.claim.epistemic.label === 'Observed' ? shapeClaimBlock(item.claim, revision) : undefined;
+  const identity = item.claim.support[0]?.sourceIdentity;
+  const exact = block !== undefined && item.class === 'baseline-spec' && identity !== undefined && activeExactSources.has(identity) ? ` ${exactTextLink(identity)}` : '';
+  const support = block !== undefined
+    ? `<span class="item-support"${block.attrs}><span data-claim-provenance="${escapeHtml(item.claim.claimId)}">${supportCitations(item.claim.support, block.anchors)}</span>${exact}</span>`
+    : unknownRoutes(item.claim, '');
+  return `<li data-polaris-item="${escapeHtml(item.claim.claimId)}"><code>${escapeHtml(item.key)}</code> ${support} ${claimTuple(item.claim)}</li>`;
+}
+
 export function denominatorText(aggregate: Pick<ProjectShapeClassAggregate, 'denominator' | 'modeled' | 'unknown' | 'contradicted' | 'sourcesWithUnknownDenominator'>): string {
   const denominator = aggregate.denominator.kind === 'known'
     ? `${aggregate.denominator.value} declared`
@@ -586,7 +601,9 @@ function classBlock(shape: Extract<ProjectShape, { kind: 'observed' }>, cls: Ext
     ? ''
     : items.length === 0
       ? `<p${copyAttr('sentence.no-items')}><small>${copy('sentence.no-items')}</small></p>`
-      : population('items', cls, items.length, 'label.show-items', tableRegion(`polaris-class-${cls}`, `<table><thead><tr><th scope="col"${copyAttr('table.key')}>${copy('table.key')}</th><th scope="col"${copyAttr('table.declared')}>${copy('table.declared')}</th><th scope="col"${copyAttr('table.epistemic-state')}>${copy('table.epistemic-state')}</th></tr></thead><tbody>${items.map((item) => itemRow(item, shape.identity.revision)).join('')}</tbody></table>`, FACT));
+      : items.every((item) => item.statement === undefined)
+        ? population('items', cls, items.length, 'label.show-items', `<ul class="item-list"${FACT}>${items.map((item) => itemEntry(item, shape.identity.revision)).join('')}</ul>`)
+        : population('items', cls, items.length, 'label.show-items', tableRegion(`polaris-class-${cls}`, `<table><thead><tr><th scope="col"${copyAttr('table.key')}>${copy('table.key')}</th><th scope="col"${copyAttr('table.declared')}>${copy('table.declared')}</th><th scope="col"${copyAttr('table.epistemic-state')}>${copy('table.epistemic-state')}</th></tr></thead><tbody>${items.map((item) => itemRow(item, shape.identity.revision)).join('')}</tbody></table>`, FACT));
   const summary = aggregate.claim.epistemic.label === 'Observed'
     ? ((): string => {
         const block = shapeClaimBlock(aggregate.claim, shape.identity.revision);
@@ -1299,6 +1316,8 @@ const POLARIS_STYLE = `
   .claim-states ul { padding-left: 1.2rem; }
   .unknown-disclosure { color: var(--unknown); border-left: 3px solid var(--unknown); padding-left: .9rem; }
   .table-scroll { overflow-x: auto; }
+  .item-list { margin: 0; padding-left: 1.2rem; }
+  .item-list li { margin: .35rem 0; overflow-wrap: anywhere; }
   .depth-nav { max-width: 74ch; margin: 0 auto 2rem; font-size: .95rem; }
   .depth-nav p { margin: 0 0 .3rem; }
   .depth-nav ol { margin: 0; padding-left: 1.4rem; }
@@ -1594,9 +1613,9 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     ${walkthroughReadinessSection(model)}
     ${codeStructureSection(model)}
     ${workItemsSection(model)}`;
-  // The machine form of the presentation artifact precedes every group so no
-  // group slice carries it; it is computed after the body registered its blocks.
-  const bodyWithNarrative = `${narrativeScript(narrative.narrative())}${body}`;
+  // The machine form of the presentation artifact is not embedded here: the
+  // authenticated presentation route serves it from the same render
+  // (renderPolarisPresentation), so the human page carries each fact once.
 
   return pageShell({
     title: 'Polaris · Syzygy three-surface POC',
@@ -1606,7 +1625,7 @@ function renderPolarisBody(model: PocModel, mountPrefix: string, narrative: Narr
     heading: copyText('shell.heading'),
     lede: copyText('shell.lede'),
     extraStyle: POLARIS_STYLE,
-    body: bodyWithNarrative,
+    body,
     sidebar: depthNav(shape, dives) + SECTION_NAV_SCRIPT,
     footer: `Evaluation <code>${escapeHtml(model.evaluation.snapshot)}</code> as of <code>${escapeHtml(model.evaluation.asOf)}</code>.`,
     escapeHtml,

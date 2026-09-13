@@ -220,7 +220,8 @@ describe('Polaris progressive disclosure (PWB-REQ-011 as amended; PWB-LIVE-13)',
       const cls = /data-polaris-items="([^"]+)"/.exec(details.tag)?.[1];
       const count = shape.items.filter((item) => item.class === cls).length;
       expect(details.inner).toContain(`>Show items (${count})</summary>`);
-      expect(details.inner.split('<tr data-polaris-item="').length - 1).toBe(count);
+      // A row is a table row or, for a statement-less class, a list entry.
+      expect(details.inner.match(/<(?:tr|li) data-polaris-item="/g)?.length ?? 0).toBe(count);
     }
     expect(exclusionPopulations.length).toBe(1);
     expect(exclusionPopulations[0]?.inner).toContain(`>Show exclusions (${shape.exclusions.length})</summary>`);

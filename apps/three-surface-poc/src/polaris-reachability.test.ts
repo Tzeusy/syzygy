@@ -268,7 +268,8 @@ describe('Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7
       const section = elements(html, (tag, open) => tag === 'section' && attr(open, 'data-polaris-class') === cls)[0];
       expect(section, cls).toBeDefined();
       expect(idCounts.get(`polaris-class-${cls}`)).toBe(1);
-      const rows = elements((section as Element).inner, (tag, open) => tag === 'tr' && attr(open, 'data-polaris-item') !== undefined);
+      // An item row is a table row or, for a statement-less class, a list entry.
+      const rows = elements((section as Element).inner, (tag, open) => (tag === 'tr' || tag === 'li') && attr(open, 'data-polaris-item') !== undefined);
       const expectedRows = shape.items.filter((item) => item.class === cls);
       expect(rows.length, cls).toBe(expectedRows.length);
       for (const row of rows) {
@@ -355,7 +356,9 @@ describe('Polaris keyboard and text reachability (PWB-REQ-011, PWB-REQ-016; RFC7
       // Every horizontally scrollable region is a focusable landmark named by
       // a heading the page renders.
       const regions = elements(html, (tag, open) => tag === 'div' && classesOf(open).includes('table-scroll'));
-      if (variant === 'observed' || variant === 'secret') expect(regions.length).toBeGreaterThan(5);
+      // Sources, root-index and the statement-bearing class tables; the
+      // statement-less classes render compact lists, which need no region.
+      if (variant === 'observed' || variant === 'secret') expect(regions.length).toBeGreaterThan(3);
       for (const region of regions) {
         expect(attr(region.open, 'role')).toBe('region');
         expect(attr(region.open, 'tabindex')).toBe('0');

@@ -14,8 +14,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
 import { PWB_RESOURCE_LIMITS, type PocModel } from '@syzygy/three-surface-poc-core';
 
-import { POLARIS_HUMAN_PATH } from './polaris.js';
-import { parseNarrativeScript, type PolarisNarrative } from './polaris-narrative.js';
+import { POLARIS_HUMAN_PATH, renderPolarisPresentation } from './polaris.js';
+import { type PolarisNarrative } from './polaris-narrative.js';
 import { POC_MACHINE_PATH, POLARIS_PRESENTATION_KIND, POLARIS_PRESENTATION_PATH, pocRoutes, type PolarisPresentationEnvelope } from './routes.js';
 import { TAILNET_MOUNT_PREFIX } from './tailnet.js';
 import { buildFixtureModel } from './test-model-fixture.js';
@@ -51,7 +51,7 @@ function multisets(narrative: PolarisNarrative): { blocks: string[]; anchors: st
 }
 
 describe('Polaris machine presentation envelope (PWB-REQ-014; RFC7-2, RFC7-3)', () => {
-  it('refuses without the bearer and, with it, serves the same block, anchor and band multisets the human page carries, marked non-citable', async () => {
+  it('refuses without the bearer and, with it, serves the narrative of the same render the human page comes from — every anchor cited on the page, no copy of the JSON on the page — marked non-citable', async () => {
     const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_SECRET) } });
     expect(model.projectShape.kind).toBe('observed');
     const { baseUrl, token } = await startPoc(model);
@@ -70,13 +70,23 @@ describe('Polaris machine presentation envelope (PWB-REQ-014; RFC7-2, RFC7-3)', 
     expect(envelope.project).toEqual({ revision: model.project.revision });
 
     const humanHtml = await (await fetch(`${baseUrl}${POLARIS_HUMAN_PATH}`)).text();
-    const fromPage = parseNarrativeScript(humanHtml);
-    expect(fromPage.blocks.length).toBeGreaterThan(0);
-    expect(envelope.narrative).toEqual(fromPage);
-    expect(multisets(envelope.narrative)).toEqual(multisets(fromPage));
+    // The human page carries no copy of the machine form; the envelope is the
+    // narrative of the same render (an independent render of the same model
+    // yields the same block, anchor and band multisets), and every anchor
+    // the envelope names is cited on the page by its anchor id.
+    expect(humanHtml).not.toContain('<script type="application/json"');
+    expect(humanHtml).not.toContain('"kind":"polaris-narrative"');
+    const sameRender = renderPolarisPresentation(model).narrative;
+    expect(sameRender.blocks.length).toBeGreaterThan(0);
+    expect(envelope.narrative).toEqual(sameRender);
+    expect(multisets(envelope.narrative)).toEqual(multisets(sameRender));
+    const citedAnchorIds = new Set([...humanHtml.matchAll(/\sdata-anchor-id="([^"]*)"/g)].map((match) => match[1] as string));
+    const envelopeAnchorIds = envelope.narrative.blocks.flatMap((block) => block.anchors.map((anchor) => anchor.anchorId));
+    expect(envelopeAnchorIds.length).toBeGreaterThan(0);
+    expect(envelopeAnchorIds.filter((anchorId) => !citedAnchorIds.has(anchorId))).toEqual([]);
     // The registry carries the anchored blocks; every block is anchored and
     // every anchor is revision-bound to the evaluated shape.
-    expect(multisets(fromPage).anchors.length).toBeGreaterThan(0);
+    expect(multisets(sameRender).anchors.length).toBeGreaterThan(0);
     for (const block of envelope.narrative.blocks) {
       expect(block).toMatchObject({ kind: 'narrative-block', presentation: 'presentation-artifact', citable: false });
       expect(block.anchors.length).toBeGreaterThan(0);

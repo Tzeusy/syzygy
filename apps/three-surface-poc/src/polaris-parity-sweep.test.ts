@@ -488,15 +488,22 @@ function sweep(model: PocModel): SweepResult {
   const classesWithTables: string[] = [];
   for (const section of containers(html, 'data-polaris-class')) {
     const rows = containers(section.inner, 'data-polaris-item').map((row) => `${section.value}:${row.value}`);
-    if (section.inner.includes('<tbody>')) classesWithTables.push(section.value);
+    // An item container is a three-column table or, for a class whose items
+    // carry no statement, a compact list; both are detected by their literal
+    // opening so a hoisted attribute cannot masquerade as one.
+    if (section.inner.includes('<tbody>') || section.inner.includes('<ul class="item-list"')) classesWithTables.push(section.value);
     itemRows.push(...rows);
-    if (observed !== undefined && section.inner.includes('<tbody>')) {
+    // Expected rows come from the machine answer alone, never gated on the
+    // container being detected: a class whose container vanished reports its
+    // items as missing instead of an empty-versus-empty pass.
+    if (observed !== undefined && (CLASSES_WITH_ITEM_TABLES as readonly string[]).includes(section.value)) {
       itemExpected.push(...observed.items.filter((item) => item.class === section.value).map((item) => `${section.value}:${item.claim.claimId}`));
     }
   }
   reports.push(compareMultisets('item-rows', itemRows, itemExpected));
-  // A class table exists exactly when the machine holds at least one item of
-  // that class; an empty class is an aggregate statement, never an empty table.
+  // A class item container (table or compact list) exists exactly when the
+  // machine holds at least one item of that class; an empty class is an
+  // aggregate statement, never an empty container.
   reports.push(compareMultisets('classes-with-item-tables', classesWithTables, observed === undefined ? [] : CLASSES_WITH_ITEM_TABLES.filter((cls) => observed.items.some((item) => item.class === cls))));
   reports.push(compareMultisets('source-rows', containers(html, 'data-polaris-source').map((row) => row.value), observed === undefined ? [] : observed.sources.map((source) => source.claim.claimId)));
   reports.push(compareMultisets('exclusions', containers(html, 'data-polaris-exclusion').map((row) => row.value), observed === undefined ? [] : observed.exclusions.map((exclusion) => exclusion.repositoryRelativePath)));

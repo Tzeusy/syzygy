@@ -6,8 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { PocModel, ProposedWork } from '@syzygy/three-surface-poc-core';
 
 import { deriveCapabilityDeepDives, resolveVerbatim, type CapabilityDeepDive, type VerbatimLeaf } from './capability-detail.js';
-import { parseNarrativeScript } from './polaris-narrative.js';
-import { renderCapabilityDeepDive, renderPolarisPage } from './polaris.js';
+import { renderCapabilityDeepDive, renderPolarisPage, renderPolarisPresentation } from './polaris.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import {
   ADMITTING_AUTHORITY,
@@ -143,7 +142,7 @@ describe('Polaris capability deep dive bands (PWB-REQ-015; RFC7-17)', () => {
   it('renders exactly the three bands in order, every block under exactly one band and class, in Base mode with observed reality, over every shape state', () => {
     for (const variant of ['unevaluated', 'draft', 'adopted'] as const) {
       const model = modelFor(variant);
-      const html = renderPolarisPage(model);
+      const { html, narrative } = renderPolarisPresentation(model);
       const dive = deepDiveSlice(html);
       expect(dive).toContain('data-reading-mode="Base"');
       expect(dive).toContain('data-reading-mode-value="Base"');
@@ -166,7 +165,6 @@ describe('Polaris capability deep dive bands (PWB-REQ-015; RFC7-17)', () => {
         if (block.depth > 1) expect(block.band, block.attrs).toBe(block.enclosingBand);
       }
       // The machine form names the same block population, band by band.
-      const narrative = parseNarrativeScript(html);
       expect(narrative.deepDives).toHaveLength(1);
       const form = narrative.deepDives[0] as (typeof narrative.deepDives)[number];
       expect(form.capabilityId).toBe(model.capabilityId);
@@ -207,13 +205,14 @@ describe('Polaris capability deep dive bands (PWB-REQ-015; RFC7-17)', () => {
     const before = JSON.stringify(model);
     // Production: no reader, so the leaf identity is captured and the text is
     // disclosed as outside the consented content class.
-    const bare = renderPolarisPage(model);
+    const bareRender = renderPolarisPresentation(model);
+    const bare = bareRender.html;
     const bareDive = deepDiveSlice(bare);
     expect(bareDive).toContain('data-contract-part="requirement-text"');
     expect(bareDive).toContain('data-verbatim="not-rendered"');
     expect(bareDive).not.toContain('data-verbatim-text');
     expect(bareDive).toContain('data-unknown-reason="unconsented-source-or-provider"');
-    const bareForm = parseNarrativeScript(bare).deepDives[0];
+    const bareForm = bareRender.narrative.deepDives[0];
     expect(bareForm?.intent.verbatim).toBe('not-rendered');
     expect(bareForm?.intent.reason).toBe('unconsented-source-or-provider');
     const machine = JSON.parse(before) as PocModel;
@@ -231,7 +230,8 @@ describe('Polaris capability deep dive bands (PWB-REQ-015; RFC7-17)', () => {
       reads.push(leaf);
       return leaf.path === PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH ? new TextEncoder().encode(BASELINE_TEXT) : undefined;
     };
-    const rendered = renderPolarisPage(model, '', {}, { verbatim: reader });
+    const renderedRender = renderPolarisPresentation(model, '', {}, { verbatim: reader });
+    const rendered = renderedRender.html;
     const renderedDive = deepDiveSlice(rendered);
     expect(reads).toEqual([{ path: PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PATH, revision: shapeRevision, identity: leafIdentity }]);
     expect(renderedDive).toContain('data-verbatim="rendered"');
@@ -242,12 +242,12 @@ describe('Polaris capability deep dive bands (PWB-REQ-015; RFC7-17)', () => {
     expect([...renderedDive.matchAll(/data-verbatim-requirement="([^"]*)"/g)].map((match) => match[1])).toEqual(PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS.map((requirement) => requirement.title));
     expect(rendered).not.toContain(PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_PURPOSE);
     expect(rendered).not.toContain('# Switchboard identity');
-    expect(parseNarrativeScript(rendered).deepDives[0]?.intent.verbatim).toBe('rendered');
-    expect(parseNarrativeScript(rendered).deepDives[0]?.intent.requirements).toEqual(PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS.map((requirement) => requirement.title));
+    expect(renderedRender.narrative.deepDives[0]?.intent.verbatim).toBe('rendered');
+    expect(renderedRender.narrative.deepDives[0]?.intent.requirements).toEqual(PROJECT_SHAPE_FIXTURE_BASELINE_SPEC_REQUIREMENTS.map((requirement) => requirement.title));
     // Each block appears exactly once on the page — the verbatim block — and
     // never in the machine form: no reorganized second copy.
     for (const text of REQUIREMENT_TEXTS) expect(rendered.split(escapeForSplit(text)).length - 1).toBe(1);
-    const machineForm = /<script type="application\/json"[^>]*>[\s\S]*?<\/script>/.exec(rendered)?.[0] as string;
+    const machineForm = JSON.stringify(renderedRender.narrative);
     for (const text of REQUIREMENT_TEXTS) expect(machineForm).not.toContain(text.split('\n')[2]);
     // The text sits inside the current-authority part, before the proposal.
     const textAt = renderedDive.indexOf('data-verbatim-text');
@@ -297,7 +297,7 @@ describe('Polaris capability deep dive bands (PWB-REQ-015; RFC7-17)', () => {
     expect(draft).not.toContain('data-capability-adoption-state="adopted"');
     expect(draft).not.toContain('data-parity-field="current-authority-path"');
     expect(draft).toContain('data-unknown-reason="missing-declaration"');
-    expect(parseNarrativeScript(renderPolarisPage(draftModel)).deepDives[0]?.adoption).toBe('draft');
+    expect(renderPolarisPresentation(draftModel).narrative.deepDives[0]?.adoption).toBe('draft');
     // Oracle: the machine answer's own current-authority lookup.
     expect(draftModel.proposedWork.currentAuthority.kind).toBe('unknown');
 
@@ -314,7 +314,7 @@ describe('Polaris capability deep dive bands (PWB-REQ-015; RFC7-17)', () => {
 
   it('renders every proposal adjacent to the current intent, visibly distinct, non-anchorable and non-status-bearing; competing proposals stay separate futures', () => {
     const model = modelFor('adopted');
-    const html = renderPolarisPage(model);
+    const { html, narrative } = renderPolarisPresentation(model);
     const dive = deepDiveSlice(html);
     const machine = JSON.parse(JSON.stringify(model)) as PocModel;
     const proposal = sections(dive).find((section) => section.attrs.includes('data-proposed-work-part="proposal"')) as SectionRecord;
@@ -334,7 +334,6 @@ describe('Polaris capability deep dive bands (PWB-REQ-015; RFC7-17)', () => {
       expect(proposal.inner).toContain(`data-proposal-artifact="${digest}"`);
       expect(html).not.toContain(`#${digest}`);
     }
-    const narrative = parseNarrativeScript(html);
     for (const block of narrative.blocks) {
       expect(block.claims).not.toContain(machine.proposedWork.id);
       for (const anchor of block.anchors) expect(digests).not.toContain(anchor.targetId);

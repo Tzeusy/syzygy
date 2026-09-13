@@ -5,8 +5,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
-import { parseNarrativeScript } from './polaris-narrative.js';
-import { renderPolarisPage } from './polaris.js';
+import type { PolarisNarrative } from './polaris-narrative.js';
+import { renderPolarisPresentation } from './polaris.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import { ADMITTING_AUTHORITY, PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC, projectShapeFixtureGit } from './test-project-shape-fixture.js';
 
@@ -42,7 +42,7 @@ function walk(directory: string, accept: (path: string) => boolean, out: string[
   return out;
 }
 
-function machineReferences(model: PocModel, html: string): string[] {
+function machineReferences(model: PocModel, narrative: PolarisNarrative): string[] {
   const refs: string[] = [];
   for (const entity of model.entities) for (const item of entity.provenance) refs.push(item.source, item.revision);
   for (const relationship of model.relationships) for (const item of relationship.provenance) refs.push(item.source, item.revision);
@@ -55,20 +55,20 @@ function machineReferences(model: PocModel, html: string): string[] {
   }
   refs.push(model.proposedWork.proposal.path, model.proposedWork.delta.path);
   if (model.proposedWork.currentAuthority.kind === 'baseline-spec') refs.push(model.proposedWork.currentAuthority.path);
-  for (const block of parseNarrativeScript(html).blocks) for (const anchor of block.anchors) refs.push(anchor.targetId, anchor.locator);
+  for (const block of narrative.blocks) for (const anchor of block.anchors) refs.push(anchor.targetId, anchor.locator);
   return refs.filter((ref) => ref !== '');
 }
 
 describe('Zero downstream citations of Polaris as authority (PWB-REQ-014)', () => {
   it('no machine reference on the model or its narrative anchors targets the Polaris surface', () => {
     const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC) } });
-    const html = renderPolarisPage(model);
-    const refs = machineReferences(model, html);
+    const { narrative } = renderPolarisPresentation(model);
+    const refs = machineReferences(model, narrative);
     expect(refs.length).toBeGreaterThan(100);
     expect(refs.filter((ref) => POLARIS_SURFACE.test(ref))).toEqual([]);
     // The anchors' own targets are project artifacts, evidence, decisions or
     // work — never a presentation surface.
-    for (const block of parseNarrativeScript(html).blocks) for (const anchor of block.anchors) expect(anchor.targetClass).not.toMatch(/presentation|polaris|surface/i);
+    for (const block of narrative.blocks) for (const anchor of block.anchors) expect(anchor.targetClass).not.toMatch(/presentation|polaris|surface/i);
   });
 
   it('every OpenSpec warrant entry belongs to a known id family and none targets Polaris (POLARIS-DIR-* ids are owner decisions)', () => {

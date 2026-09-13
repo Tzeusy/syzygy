@@ -190,18 +190,9 @@ export class NarrativeRegistry {
   }
 }
 
-export const NARRATIVE_SCRIPT_ID = 'polaris-narrative';
-
-/** The machine form of the presentation artifact, embedded in the page and
- * served as the authenticated envelope at `/api/poc/polaris` from the same
- * capture. It is not `/api/poc` and never becomes part of it. */
-export function narrativeScript(narrative: PolarisNarrative): string {
-  const json = JSON.stringify(narrative).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
-  return `<script type="application/json" id="${NARRATIVE_SCRIPT_ID}" data-presentation-artifact data-non-citable>${json}</script>`;
-}
-
-export function parseNarrativeScript(html: string): PolarisNarrative {
-  const match = new RegExp(`<script type="application/json" id="${NARRATIVE_SCRIPT_ID}"[^>]*>([\\s\\S]*?)</script>`).exec(html);
-  if (match === null) throw new Error('narrative script absent');
-  return JSON.parse(match[1] as string) as PolarisNarrative;
-}
+// The machine form of the presentation artifact (`PolarisNarrative`) is not
+// embedded in the human page: `renderPolarisPresentation` returns it beside
+// the HTML of the same render, and the authenticated envelope at
+// `/api/poc/polaris` serves it. It is not `/api/poc` and never becomes part
+// of it. (Until 2026-09-13 it was also an in-page JSON script; that copy was
+// 30% of the page and had no reader but tests.)

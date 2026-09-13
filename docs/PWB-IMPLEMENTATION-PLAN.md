@@ -862,7 +862,11 @@ structure → the tree; work items → the Dolt revision; the proposal → its
 proposal (work) and delta (requirement) digests. The machine form is an
 `application/json` script placed before the first group (`polaris-narrative`),
 distinct from the kernel claim tuple and from `/api/poc`, which is unchanged by
-construction. Personal view state (`PolarisViewState.openCoverageCounts`) is a
+construction. **Superseded 2026-09-13** (bead `syzygy-dov.1`, the P-67 lane A
+trim): the sentence before this one describes the page as it was until that
+date; the in-page script is no longer emitted. The machine form is returned by
+`renderPolarisPresentation` beside the HTML of the same render and served only
+at the authenticated presentation route. Personal view state (`PolarisViewState.openCoverageCounts`) is a
 render parameter that only toggles `<details open>`.
 `polaris-narrative.test.ts` is the oracle (hand-typed roles and classes, an
 independent claim-to-anchor re-derivation from the model JSON checking exact

@@ -3,8 +3,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import type { PocModel, ProjectShape, ProjectShapeClaim } from '@syzygy/three-surface-poc-core';
 
-import { NarrativeRegistry, parseNarrativeScript } from './polaris-narrative.js';
-import { renderPolarisPage } from './polaris.js';
+import { NarrativeRegistry } from './polaris-narrative.js';
+import { renderPolarisPage, renderPolarisPresentation } from './polaris.js';
 import { buildFixtureModel } from './test-model-fixture.js';
 import {
   ADMITTING_AUTHORITY,
@@ -161,10 +161,9 @@ describe('Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9)',
     const texts = { ...PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC,
       [path]: PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC[path] + '\n```flow\nReceive --> Decide --> Act\n```\n' };
     const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(texts) } });
-    const html = renderPolarisPage(model);
+    const { html, narrative } = renderPolarisPresentation(model);
     const nodes = [...html.matchAll(/<span class="flow-node"([^>]*)>/g)];
     expect(nodes).toHaveLength(3);
-    const narrative = parseNarrativeScript(html);
     const block = narrative.blocks.find((entry) => entry.claims.includes('claim:project-account:architecture'));
     expect(block?.anchors).toHaveLength(1);
     for (const node of nodes) expect(attr(node[1]!, 'data-anchor-id')).toBe(block!.anchors[0]!.anchorId);
@@ -176,9 +175,11 @@ describe('Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9)',
     let blocks = 0;
     for (const variant of VARIANTS) {
       const model = modelFor(variant);
-      const html = renderPolarisPage(model);
+      const { html, narrative } = renderPolarisPresentation(model);
       const machine = JSON.parse(JSON.stringify(model)) as PocModel;
-      const narrative = parseNarrativeScript(html);
+      // The human page carries no copy of the machine form (it is served at
+      // the presentation route from this same render).
+      expect(html).not.toContain('<script type="application/json"');
       expect(narrative.kind).toBe('polaris-narrative');
       expect(narrative.citable).toBe(false);
       expect(narrative.presentation).toBe('presentation-artifact');
@@ -244,16 +245,16 @@ describe('Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9)',
 
   it('freezes captured target state: a later mutation of the model cannot rewrite an anchor', () => {
     const model = modelFor('observed');
-    const html = renderPolarisPage(model);
-    const before = parseNarrativeScript(html);
+    const before = renderPolarisPresentation(model).narrative;
+    const beforeSnapshot = JSON.parse(JSON.stringify(before)) as typeof before;
     const shape = model.projectShape;
     if (shape.kind !== 'observed') throw new Error('fixture must observe');
     const source = shape.sources[0] as { claim: { epistemic: { tier?: string } } };
     (source.claim.epistemic as { tier?: string }).tier = 'derived-fact';
     // The already-rendered artifact is unchanged; a fresh render reflects the
     // later-read state as a *new* capture, never by rewriting the old one.
-    expect(parseNarrativeScript(html)).toEqual(before);
-    const after = parseNarrativeScript(renderPolarisPage(model));
+    expect(JSON.parse(JSON.stringify(before))).toEqual(beforeSnapshot);
+    const after = renderPolarisPresentation(model).narrative;
     const sourceBlock = (n: typeof before): string | undefined => n.blocks.find((block) => block.blockId === `block:${shape.sources[0]?.claim.claimId ?? ''}`)?.anchors[0]?.captured.tier;
     expect(sourceBlock(before)).toBe('report-fact');
     expect(sourceBlock(after)).toBe('derived-fact');
@@ -282,13 +283,15 @@ describe('Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9)',
   it('keeps personal view state and the presentation artifact outside the truth model', () => {
     const model = modelFor('observed');
     const truthBefore = JSON.stringify(model);
-    const plain = renderPolarisPage(model);
-    const withView = renderPolarisPage(model, '', { openCoverageCounts: ['claim:class:principle', 'claim:project-shape'] });
+    const plainRender = renderPolarisPresentation(model);
+    const withViewRender = renderPolarisPresentation(model, '', { openCoverageCounts: ['claim:class:principle', 'claim:project-shape'] });
+    const plain = plainRender.html;
+    const withView = withViewRender.html;
     expect(JSON.stringify(model)).toBe(truthBefore);
     expect(withView).not.toBe(plain);
     expect(withView.replace(/<details class="coverage-counts" data-coverage-counts="[^"]+" open>/g, (m) => m.replace(' open', ''))).toBe(plain);
     expect(withView.match(/<details class="coverage-counts"[^>]* open>/g)?.length).toBe(2);
-    expect(parseNarrativeScript(withView)).toEqual(parseNarrativeScript(plain));
+    expect(withViewRender.narrative).toEqual(plainRender.narrative);
     // Deleting Polaris presentation leaves truth unchanged: the model carries
     // no narrative, role, anchor or view field at all.
     expect(truthBefore).not.toMatch(/"(narrative|blocks|claimRole|anchorId|targetClass|viewState|openCoverageCounts|presentation|citable)"/);
@@ -299,7 +302,7 @@ function countNested(inner: string): number {
   // Provenance spans inside a *nested* anchored block are that block's, not
   // the enclosing framing unit's.
   let total = 0;
-  for (const nested of inner.matchAll(/<(p|li|td|tr)([^>]*data-claim-role="anchored-project-fact"[^>]*)>([\s\S]*?)<\/\1>/g)) {
+  for (const nested of inner.matchAll(/<(p|li|td|tr|span)([^>]*data-claim-role="anchored-project-fact"[^>]*)>([\s\S]*?)<\/\1>/g)) {
     total += nested[3]?.match(/data-claim-provenance=/g)?.length ?? 0;
   }
   return total;

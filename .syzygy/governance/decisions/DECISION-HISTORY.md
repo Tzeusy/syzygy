@@ -12,6 +12,18 @@
 > cells — are preserved verbatim in git history at commit `9c43fc5`
 > (`git show 9c43fc5:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`).
 
+## Resolved on 2026-09-13 (the Polaris page-size question, P-67)
+
+The three batched questions from the M1 feature-request funnel
+(`docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md`, filed the same day) were
+ruled by the owner in one reply agreeing with every recommendation. The
+rulings record is `POLARIS-M1-PAGE-SIZE-OWNER-RULING-DECISION.md`, which
+owns the full detail and quotes the reply verbatim.
+
+| # | What happened |
+|---|---|
+| P-67 | **Ruled — Q1 yes, Q2 yes after lane A is measured, Q3 accept**: an implementation-only trim of the Polaris human page in the P-63 shape (narrative JSON off the page, compact list for statement-less classes) under bead `syzygy-dov.1`; the scoped-attributes semantic delta on PWB-REQ-007/014/020 to be drafted after the trim is measured, adoption by its own later act; and the honest target recorded — a smaller per-item slope and a removed constant, never a sublinear page under PWB-REQ-011/020/021. P-52 untouched. |
+
 ## Resolved on 2026-09-07 (the written-estate questions, P-54…P-59 and P-66)
 
 The seven questions gathered by the documentation-estate packet
@@ -157,6 +169,10 @@ repository.
 
 ## The register's as-of chronology (oldest last)
 
+- **2026-09-13** — P-67 (Polaris page size at the ceiling) filed and
+  ruled the same day in one owner reply ("Agreed"); row moved to
+  resolved; `POLARIS-M1-PAGE-SIZE-OWNER-RULING-DECISION.md` owns it.
+  P-52 stays open.
 - **2026-09-07** — the PWB cycle questions P-60…P-65 ruled in one owner
   reply (A on every row) and applied on its own apply instruction: rows
   moved to resolved; `PWB-CYCLE-OWNER-RULINGS-DECISION.md` owns them.
