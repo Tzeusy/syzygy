@@ -17,8 +17,8 @@ independent review → repair. Project identity, vocabulary, sources and audienc
 are inputs. Changing projects must not require editing prompts, renderer code,
 validation rules or compiled source offsets.
 
-This kit is the practical authoring handoff for that slice. Runtime orchestration
-and generalized draft-bundle ingestion remain to be implemented through the
+This kit is the practical authoring handoff for that slice. Production adapter integration
+and full authored-bundle ingestion remain to be implemented through the
 applicable specification and implementation gates. The generator specification and implementation authorization are now recorded;
 [PROJECT-STATUS.md](../../PROJECT-STATUS.md#generalized-polaris-generation) routes
 to the owning acts. This kit remains supporting authoring guidance, and its
@@ -31,6 +31,8 @@ now runs inventory, plan, author, edit, fidelity and repair through explicit
 adapters. A synthetic operator command produces inspectable prose, relationship
 diagrams and component deep dives. It verifies the machinery; live provider
 integration, full owner controls and real-project quality proof remain unfinished.
+
+The agreed product direction is synthesized in the [formal understanding amendment](../../openspec/changes/polaris-manifesto-understanding-amendment/proposal.md): unfamiliar-repository discovery, consequential owner questions, supported understanding and argument, research repair, and independent evaluation. Its [design](../../openspec/changes/polaris-manifesto-understanding-amendment/design.md) carries the product vision; its behavioral requirements are the proposed specification home. The [original discussion packet](../design/polaris-product-understanding/README.md) remains the retained source, not a parallel implementation contract. The [owner adoption record](../../.syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md) now binds the formal amendment. Read it with the predecessor specification; its candidate-era banners are preserved at their reviewed bytes.
 
 ## Start here
 

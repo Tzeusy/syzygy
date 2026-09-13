@@ -1954,6 +1954,11 @@ POLARIS_GENERATOR_APPROVAL_ACTS = tuple(
 )
 
 
+POLARIS_UNDERSTANDING_LABEL = "ADOPT POLARIS UNDERSTANDING AMENDMENT"
+POLARIS_UNDERSTANDING_SUBJECT = "docs/evidence/polaris-understanding-adoption-manifest-2026-09-13.json"
+POLARIS_UNDERSTANDING_ACT = f"{DECISIONS}/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md"
+
+
 def _act_subjects():
     out = []
     for e in registry_current():
@@ -1990,6 +1995,9 @@ def _act_subjects():
     out.append((POLARIS_GENERATOR_APPROVAL_LABEL,
                 POLARIS_GENERATOR_APPROVAL_SUBJECT,
                 re.compile(re.escape(POLARIS_GENERATOR_APPROVAL_LABEL)
+                           + r"\s*:\s*`?([0-9a-f]{64})")))
+    out.append((POLARIS_UNDERSTANDING_LABEL, POLARIS_UNDERSTANDING_SUBJECT,
+                re.compile(re.escape(POLARIS_UNDERSTANDING_LABEL)
                            + r"\s*:\s*`?([0-9a-f]{64})")))
     for label, subject, _act in PWB_EFFECT_ACTS:
         if not any(l == label for l, _rel, _pat in out):
@@ -2230,6 +2238,19 @@ def _activate_polaris_generator_act_copy_registry():
 
 
 _activate_polaris_generator_act_copy_registry()
+
+
+def _activate_polaris_understanding_act_copy_registry():
+    if not os.path.isfile(os.path.join(ROOT, POLARIS_UNDERSTANDING_ACT)):
+        return
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+    if POLARIS_UNDERSTANDING_LABEL not in labels:
+        ACT_DIGEST_COPY_FILES[aggregate] = labels + (POLARIS_UNDERSTANDING_LABEL,)
+    ACT_DIGEST_COPY_FILES[POLARIS_UNDERSTANDING_ACT] = (POLARIS_UNDERSTANDING_LABEL,)
+
+
+_activate_polaris_understanding_act_copy_registry()
 
 
 def _activate_pwb_truth_amendment_act_copy_registry():
@@ -5780,6 +5801,16 @@ def selftest():
         cases.append((f"CG-7e generator {os.path.basename(act)} missing aggregate refused",
                       row[0] == "FAIL"
                       and any(PERFORMED_ACT_RECORD in d for d in row[4])))
+
+    understanding_link = (POLARIS_UNDERSTANDING_LABEL, POLARIS_UNDERSTANDING_SUBJECT,
+                          POLARIS_UNDERSTANDING_ACT,
+                          _activate_polaris_understanding_act_copy_registry)
+    row = _selftest_pwb_act_copy_registry("valid", understanding_link)
+    cases.append(("CG-7e understanding adoption copies registered",
+                  row[0] == "OK" and row[2] == 2 and row[3] == 0))
+    row = _selftest_pwb_act_copy_registry("missing-aggregate", understanding_link)
+    cases.append(("CG-7e understanding adoption missing aggregate refused",
+                  row[0] == "FAIL" and any(PERFORMED_ACT_RECORD in d for d in row[4])))
 
     row, registered = _selftest_pwb_effect_act_copy_registry("valid")
     cases.append(("CG-7e performed PWB effect act registers exactly its two copies",

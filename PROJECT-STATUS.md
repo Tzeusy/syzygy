@@ -1,6 +1,6 @@
 # Project status
 
-> **As-of: 2026-09-12 (generator authorization added; older entries retain their cited evidence dates).** To check whether that is still true, run
+> **As-of: 2026-09-13 (Polaris understanding amendment adopted; older entries retain their cited evidence dates).** To check whether that is still true, run
 > `git log -1 --date=short --format='%h %ad' PROJECT-STATUS.md`: it names the
 > commit that last touched this page. **If its date is later than the As-of
 > above, someone edited this page without restating this line**, and the rows
@@ -26,6 +26,14 @@ records are [specification adoption](.syzygy/governance/decisions/POLARIS-GENERA
 and [implementation authorization](.syzygy/governance/decisions/POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md).
 These are bootstrap owner acts with A1 explicitly absent. The exact specification
 bytes retain their original candidate banners; the acts determine their status.
+
+[Observed] The owner adopted the [project-understanding amendment](.syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md)
+on 2026-09-13. It extends seven generator requirements and adds discovery and
+owner clarification as 030/031. Read the predecessor together with
+[the adopted amendment](openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md):
+31 requirements and 177 scenarios in the effective composition. Its reviewed
+candidate-era banners remain unchanged; the act determines status. This is
+specification adoption, with no new implementation or effect permission inferred.
 
 Implementation is in progress. Completion requires the full owner workflow and
 reviewed output from the unchanged generator on two separately admitted real
