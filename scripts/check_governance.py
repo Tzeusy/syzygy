@@ -4539,17 +4539,30 @@ def _leading_banner(body):
     return "\n".join(out)
 
 
-_GFM_FENCE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
+_GFM_FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 _GFM_DELIMITER_CELL = re.compile(r"^:?-{3,}:?$")
+
+
+def _ends_with_unescaped_pipe(text):
+    """Whether ``text`` ends in a pipe preceded by an even slash run."""
+    if not text.endswith("|"):
+        return False
+    backslashes = 0
+    for char in reversed(text[:-1]):
+        if char != "\\":
+            break
+        backslashes += 1
+    return backslashes % 2 == 0
 
 
 def _gfm_row_cells(line):
     """Return cells for a plausible GFM row, or ``None``.
 
     This is intentionally only the small grammar needed to distinguish a
-    table block from prose. A row needs at least two cells and an unescaped
-    pipe; indentation deep enough for an indented code block is not a table.
-    Escaped pipes stay in their cell so they cannot manufacture a table.
+    table block from prose. A multi-column row needs an unescaped pipe; a
+    boundary-pipe row may contain one cell. Indentation deep enough for an
+    indented code block is not a table. Escaped pipes stay in their cell so
+    they cannot manufacture a table.
     """
     leading = line[:len(line) - len(line.lstrip())]
     if (not line.strip() or "\t" in leading or
@@ -4572,9 +4585,24 @@ def _gfm_row_cells(line):
     # boundary cells they introduce; an empty interior cell is valid.
     if text.startswith("|"):
         cells = cells[1:]
-    if text.endswith("|") and not text.endswith("\\|"):
+    if _ends_with_unescaped_pipe(text):
         cells = cells[:-1]
-    return tuple(cells) if len(cells) >= 2 else None
+    has_boundary = text.startswith("|") or _ends_with_unescaped_pipe(text)
+    return (tuple(cells)
+            if len(cells) >= 2 or (has_boundary and cells) else None)
+
+
+def _gfm_data_row(line):
+    """Whether ``line`` can continue a recognized GFM table body.
+
+    GFM fills missing cells, so a data row need not contain a pipe. The table
+    header and delimiter establish the table; thereafter a nonblank line at
+    ordinary paragraph indentation remains a row in the deliberately small
+    grammar CG-27 needs.
+    """
+    leading = line[:len(line) - len(line.lstrip())]
+    return (bool(line.strip()) and "\t" not in leading and
+            len(line) - len(line.lstrip(" ")) <= 3)
 
 
 def _gfm_table_start(lines, index, fenced):
@@ -4631,7 +4659,7 @@ def _currency_contexts(body):
             contexts.append(lines[i])
             i += 2  # header and delimiter; the delimiter is not a row
             while (i < len(lines) and not fenced[i] and
-                   _gfm_row_cells(lines[i]) is not None):
+                   _gfm_data_row(lines[i])):
                 contexts.append(lines[i])
                 i += 1
             continue
@@ -5739,6 +5767,32 @@ def selftest():
     cases.append((
         "CG-27 a sibling table row's historical marker does not exempt the current claim",
         _cur(_TABLE_SIBLING_HISTORICAL)[3] == 1))
+
+    cases.append((
+        "CG-27 pipe-less GFM data rows remain independent claim contexts",
+        _cur("# F\n\nClaim | Note\n--- | ---\n"
+             "Wave A is accepted.\nHistorically true.\n")[2:4]
+        == (1, 1)))
+
+    cases.append((
+        "CG-27 one-column GFM table rows remain independent claim contexts",
+        _cur("# F\n\n| Claim |\n| --- |\n"
+             "| Wave A is accepted. |\n| Historically true. |\n")[2:4]
+        == (1, 1)))
+
+    cases.append((
+        "CG-27 tab-indented code does not open a fenced-code block",
+        _cur("# F\n\n\t```\n\n| Claim | Note |\n| --- | --- |\n"
+             "| Wave A is accepted. | Current state |\n"
+             "| Prior note | Historically true. |\n")[2:4]
+        == (1, 1)))
+
+    cases.append((
+        "CG-27 even backslashes leave a trailing boundary pipe unescaped",
+        _cur("# F\n\n| Claim | Evidence\\\\|\n| --- | --- |\n"
+             "| Wave A is accepted. | Current state |\n"
+             "| Prior note | Historically true. |\n")[2:4]
+        == (1, 1)))
 
     def _table(*rows, banner=""):
         return ("# F\n\n" + banner +
