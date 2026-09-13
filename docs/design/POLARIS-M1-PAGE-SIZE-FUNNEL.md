@@ -197,6 +197,12 @@ things may be stated on a scope instead of on each leaf beneath it:
 - `data-presentation-artifact` and `data-non-citable`, on the section that
   contains only presentation units.
 
+  > **Superseded 2026-09-14, this bullet.** The candidate package does not
+  > amend PWB-REQ-014: the two non-authority attributes stay on every
+  > presentation unit (its first review, F1), and the RFC7-33 patch names
+  > that sub-clause as the one distinction its permission excludes.
+
+
 The **inheritance rule**, stated once in the page's claim-states lede and in
 the machine form: a leaf marker's value for a field is the nearest ancestor
 scope's value when the leaf does not carry the field itself. The parity

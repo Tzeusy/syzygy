@@ -35,8 +35,13 @@
     "scopesHoistingSomething": 10,
     "attributeBytesRemoved": 167615,
     "textBytesRemoved": 25397,
-    "scopeBytesAdded": 3464,
-    "netSavingBytes": 189548,
+    "scopeBytesAdded": 4110,
+    "netSavingBytes": 188902,
+    "pageLevelGroup": {
+     "members": 26,
+     "netSavingBytes": 4871
+    },
+    "netSavingBytesContainersOnly": 184031,
     "hoistedPerField": {
      "data-epistemic-label": 409,
      "data-epistemic-tier": 409,
@@ -54,8 +59,13 @@
     "scopesHoistingSomething": 9,
     "attributeBytesRemoved": 164550,
     "textBytesRemoved": 25005,
-    "scopeBytesAdded": 3092,
-    "netSavingBytes": 186463,
+    "scopeBytesAdded": 3672,
+    "netSavingBytes": 185883,
+    "pageLevelGroup": {
+     "members": 0,
+     "netSavingBytes": 0
+    },
+    "netSavingBytesContainersOnly": 185883,
     "hoistedPerField": {
      "data-epistemic-label": 410,
      "data-epistemic-tier": 410,
@@ -75,8 +85,13 @@
     "scopesHoistingSomething": 10,
     "attributeBytesRemoved": 167615,
     "textBytesRemoved": 25397,
-    "scopeBytesAdded": 3464,
-    "netSavingBytes": 189548,
+    "scopeBytesAdded": 4110,
+    "netSavingBytes": 188902,
+    "pageLevelGroup": {
+     "members": 26,
+     "netSavingBytes": 4871
+    },
+    "netSavingBytesContainersOnly": 184031,
     "hoistedPerField": {
      "data-epistemic-label": 409,
      "data-epistemic-tier": 409,
@@ -94,8 +109,13 @@
     "scopesHoistingSomething": 9,
     "attributeBytesRemoved": 164550,
     "textBytesRemoved": 25005,
-    "scopeBytesAdded": 3092,
-    "netSavingBytes": 186463,
+    "scopeBytesAdded": 3672,
+    "netSavingBytes": 185883,
+    "pageLevelGroup": {
+     "members": 0,
+     "netSavingBytes": 0
+    },
+    "netSavingBytesContainersOnly": 185883,
     "hoistedPerField": {
      "data-epistemic-label": 410,
      "data-epistemic-tier": 410,
@@ -109,25 +129,39 @@
   ]
  },
  "headline": {
-  "scopeMode": "container (nearest enclosing table or list)",
-  "netSavingBytesTailnet": 189548,
-  "netSavingBytesDirect": 189548,
-  "sectionModeTailnet": 186463
+  "scopeMode": "container (nearest enclosing table or list; the 26 tuples under neither fall into one page-level group, reported separately)",
+  "netSavingBytesTailnet": 188902,
+  "netSavingBytesDirect": 188902,
+  "netSavingBytesContainersOnlyTailnet": 184031,
+  "pageLevelGroup": {
+   "members": 26,
+   "netSavingBytes": 4871,
+   "note": "claims that sit outside every table and list, scattered across sections; their implied scope element is the page body, and whether an implementation would build that scope is a judgment the reader makes with this figure in hand (review 4, F3)"
+  },
+  "sectionModeTailnet": 185883,
+  "scopeTextModel": "every hoisted value is charged as text on the scope element, the non-visible fields included and an empty value as the word 'none' (review 4, F4); the earlier draft charged the four visible fields only, 646 bytes less overhead over ten scopes"
  },
  "comparedToFunnel": {
   "funnelLaneBEstimateBytes": 450000,
   "funnelMinusAttributeShareBytes": 350000,
-  "strictRuleBytes": 189548,
+  "strictRuleBytes": 188902,
   "note": "the funnel's 300 KB tuple component was computed per row under a model in which a member may override its scope; the candidate rejects that model (design decision 9), and under the strict rule one differing claim removes the hoist for that field over its whole scope, so the funnel residue was an upper bound, not a point estimate. On this capture label, tier and primary reason hoist for 409 of 713 tuples; secondary reasons, freshness, challenge state and evaluation identity hoist for all 713."
+ },
+ "supersedes": {
+  "priorHeadlineBytes": 189548,
+  "reviewedAtCommit": "c2efa5196b92220be1073876e9f2400bc91ce43f",
+  "reason": "review 4 F3 and F4: page-level group disclosed and text charged for every hoisted field"
  },
  "projection": {
   "tailnetAfterLaneA": 1484487,
-  "minusStrictEstimate": 1294939,
+  "minusStrictEstimate": 1295585,
+  "minusContainersOnlyEstimate": 1300456,
   "workingTarget": 1400000,
-  "underTargetBy": 105061,
-  "plusButlersRepairsMax": 1737939,
+  "underTargetBy": 104415,
+  "underTargetByContainersOnly": 99544,
+  "plusButlersRepairsMax": 1738585,
   "ceilingBytes": 2097152,
-  "headroomAfterRepairs": 359213,
+  "headroomAfterRepairs": 358567,
   "note": "[Inferred] the P-60/P-61 repairs were costed at 418-443 KB on the pre-lane-A page; their post-lane-A cost is unmeasured"
  }
 }

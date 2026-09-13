@@ -17,9 +17,15 @@ plus the hoisted text segments of the tuple's visible text (label, tier,
 freshness, challenge joined by " · "; an Unknown reason's parenthetical stays
 with the label). Bytes added, per scope that hoists anything, are one scope
 marker attribute, the hoisted attributes once, and one caption element
-stating the hoisted text once. Net saving = removed - added. The figure is an
-estimate of one lawful implementation, not a measurement of a rendered page:
-label it [Inferred] wherever it is quoted.
+stating every hoisted value as text once (the amended clause obliges text
+for every value a scope carries, so the non-visible fields are charged too;
+an empty value is charged as the word "none"). Net saving = removed - added.
+Tuples under no table or list fall into one page-level group named "body";
+its contribution is reported separately and a containers-only figure is
+given beside the headline, because whether a page-level scope is one an
+implementation would build is a judgment, not a measurement. The figure is
+an estimate of one lawful implementation, not a measurement of a rendered
+page: label it [Inferred] wherever it is quoted.
 """
 from __future__ import annotations
 
@@ -108,23 +114,31 @@ def estimate(html: str, mode: str) -> dict:
     removed_attr = removed_text = added = 0
     scopes = 0
     hoisted: Counter = Counter()
-    for members in groups.values():
+    body_group = {"members": 0, "netSavingBytes": 0}
+    for name, members in groups.items():
         hoist = [f for f in FIELDS if len(members) > 1 and len({m["attrs"].get(f) for m in members}) == 1]
         if not hoist:
             continue
         scopes += 1
         value = {f: members[0]["attrs"].get(f) or "" for f in hoist}
-        text_once = " · ".join(value[f] for f in FIELDS if f in TEXT_FIELDS and f in hoist)
-        added += len(' data-claim-scope="1"') + sum(len(f' {f}="{value[f]}"') for f in hoist)
-        added += len('<p class="claim-scope"></p>') + len(text_once)
+        text_once = " · ".join(value[f] or "none" for f in FIELDS if f in hoist)
+        g_added = len(' data-claim-scope="1"') + sum(len(f' {f}="{value[f]}"') for f in hoist)
+        g_added += len('<p class="claim-scope"></p>') + len(text_once)
+        g_removed = 0
         for member in members:
             for f in hoist:
+                g_removed += len(f' {f}="{member["attrs"].get(f) or ""}"')
                 removed_attr += len(f' {f}="{member["attrs"].get(f) or ""}"')
                 hoisted[f] += 1
             parts = member["text"].split(" · ")
             if len(parts) == 4:
                 kept = [parts[i] for f, i in TEXT_FIELDS.items() if f not in hoist]
-                removed_text += len(member["text"]) - len(" · ".join(kept))
+                delta = len(member["text"]) - len(" · ".join(kept))
+                removed_text += delta
+                g_removed += delta
+        added += g_added
+        if name == "body":
+            body_group = {"members": len(members), "netSavingBytes": g_removed - g_added}
     return {
         "mode": mode,
         "tuples": len(parser.tuples),
@@ -134,6 +148,8 @@ def estimate(html: str, mode: str) -> dict:
         "textBytesRemoved": removed_text,
         "scopeBytesAdded": added,
         "netSavingBytes": removed_attr + removed_text - added,
+        "pageLevelGroup": body_group,
+        "netSavingBytesContainersOnly": removed_attr + removed_text - added - body_group["netSavingBytes"],
         "hoistedPerField": {f: hoisted[f] for f in FIELDS},
     }
 

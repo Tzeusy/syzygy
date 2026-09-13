@@ -38,8 +38,11 @@ recoverability) are not amended either; the section "Non-visual
 recoverability" below says how the rule satisfies them (review 2, F3).
 
 **Change class:** Normative (behavioral and contract). The amended spec
-clauses admit a human rendering the current clauses forbid and add one
-falsifier class; the contract clause gains one permission paragraph for
+clauses admit a human rendering the current clauses forbid and add two
+falsifier and mutant classes, `scope-hidden` and `over-asserting-scope`,
+with four new falsifier limbs in PWB-REQ-007 (scope-hidden,
+over-asserting scope, no scope text, scope-carried reason without a route
+on the claim); the contract clause gains one permission paragraph for
 the interactive surface. That permission reaches every RFC7-33
 distinction except the two it names (`non-citable` /
 `presentation-artifact`), not only the tuple fields this specification
@@ -98,15 +101,20 @@ rejects (decision 9); under a strict rule one differing claim removes the
 hoist for that field over its whole scope, so that figure, and the 350 KB
 residue earlier drafts quoted, were upper bounds (review 3, F1). Under the
 rule this package states, one lawful implementation over the retained lane
-A capture saves about 190 KB: 189,548 bytes on the tailnet form, nearest
+A capture saves about 190 KB: 188,902 bytes on the tailnet form, nearest
 enclosing table or list as the scope, computed by
 `scripts/estimate_pwb_scoped_attributes_saving.py` and recorded with the
 capture digests in `docs/evidence/pwb-laneb-strict-scope-estimate-2026-09-14.json`
-[Inferred: an estimate over a retained capture, not a rendered page]. On
-this capture label, tier and primary reason hoist for 409 of 713 tuples;
-secondary reasons, freshness, challenge state and evaluation identity for
-all 713. That would put the tailnet form near 1,295,000 bytes, about
-105 KB under the 1,400,000 target [Inferred].
+[Inferred: an estimate over a retained capture, not a rendered page]. Of
+that, 4,871 bytes come from the 26 claims that sit under no table or list,
+modelled as one page-level scope; without them the figure is 184,031
+(review 4, F3). Every hoisted value is charged as text on the scope, the
+non-visible fields included (review 4, F4). On this capture label, tier
+and primary reason hoist for 409 of 713 tuples; secondary reasons,
+freshness, challenge state and evaluation identity for all 713. That would
+put the tailnet form near 1,295,600 bytes, about 104 KB under the
+1,400,000 target, or about 100 KB under it on the containers-only figure
+[Inferred].
 
 ## Current meaning (quoted, current bytes at the baseline)
 
@@ -463,12 +471,20 @@ dropped, folded or made Unknown by the change), RFC6-22 and RFC6-23
 RFC7-16 (evaluation identity on every claim, restored by expansion),
 RFC7-34 (every distinction recoverable by label, text or structure; the
 scope's text is the label, containment the structure), CC-TEST-5 and
-CC-TEST-6 (the falsifier set grows by one class and the
-mutation proof names it). RFC7-33 is the clause the spec change
-invalidates, so CC-REV-2 ("invalidated accepted contracts must be updated
-in the same logical change") is why the contract patch travels in this
-package rather than being left to a later cleanup; its binding still needs
-its own act, because a contract change is an act escalation trigger.
+CC-TEST-6 (the falsifier set grows by two classes and the
+mutation proof names both). RFC7-33 is the clause the spec change
+invalidates, and CC-REV-2 reads:
+
+```
+A change that invalidates any authoritative artifact updates **every**
+invalidated authoritative artifact in the same logical change: behavioral
+specs (`openspec/`), declared topology, accepted contracts, and the policies
+in this cluster.
+```
+
+That is why the contract patch travels in this package rather than being
+left to a later cleanup; its binding still needs its own act, because a
+contract change is an act escalation trigger.
 Decision basis:
 `.syzygy/governance/decisions/POLARIS-M1-PAGE-SIZE-OWNER-RULING-DECISION.md`
 (P-67, 2026-09-13, question 2) and the P-63 ceiling posture it builds on.
@@ -563,7 +579,8 @@ Two acts, in this order; neither is offered yet.
    that record's digest copy, a no-op until the file exists.
 5. Only after both acts does an implementation bead exist. It carries the
    renderer change, the claim-states lede, the comparators' own expansion,
-   the `scope-hidden` mutant class and a measurement in the lane A shape;
+   the `scope-hidden` and `over-asserting-scope` mutant classes and a
+   measurement in the lane A shape;
    `tasks.md` (unbound) takes its rows then.
 6. Rollback is a later successor act on each side; the 2026-09-05 package
    and the accepted RFC-0007 stay the authorities until then and their
@@ -740,5 +757,40 @@ the governing references, read-only.
 
 ### Review 4
 
-Pending. Appended when the fourth raw lands under `docs/reviews/` with the
-same basename stem and the suffix `-4-RAW.md`.
+- Raw: `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-4-RAW.md` (retained
+  verbatim). Reviewed commit `c2efa5196b92220be1073876e9f2400bc91ce43f`;
+  the manifest that commit carried is the one this draft still carries (no
+  manifest subject changed after the review; the raw and the packet state
+  its SHA-256).
+- Verdict, copied exactly: **CONFIRM WITH EXCEPTIONS**. All eleven
+  criteria judged met; six exceptions, four non-blocking and two editorial.
+- Dispositions. The edits below were made after the review and are not
+  covered by it (verification rule 10); none touches a manifest subject,
+  the rule, the counts or the owner's choice, and each is listed so the
+  owner can see what the confirmed bytes did not contain:
+  - F1, PWB-REQ-007's own opening SHALL keeps an unmarked universal above
+    the new exception, the shape the package repaired in RFC7-33's opener:
+    **accepted, held**. The repair edits `proposed/spec.md.patch`, a
+    manifest subject, so it travels with the next spec-patch edit before
+    the behavior act, and the packet says so. Until then the amended
+    falsifier ("absent after expansion") and the paragraph's place inside
+    the same requirement carry the reading.
+  - F2, three sites routed the implementation to one mutant class where
+    the amended PWB-REQ-020 mandates two: **accepted**; the ledger's class
+    row, its mutation-sweep site and migration step 5 now name
+    `over-asserting-scope` beside `scope-hidden`.
+  - F3, the estimate's ten scopes include one page-level group of 26
+    claims: **accepted**; the estimator reports the group and a
+    containers-only figure, and the record, this delta and the packet
+    state both.
+  - F4, the estimator charged scope text for the four visible fields only:
+    **accepted**; every hoisted value is now charged as text (an empty
+    value as the word "none"); the headline moved from 189,548 to 188,902
+    bytes and the record notes the change.
+  - F5, CC-REV-2 paraphrased inside quotation marks: **accepted**; the
+    clause is quoted verbatim in the Warrant section.
+  - F6a, "one falsifier class" where two classes and four limbs are added:
+    **accepted**; the change class and the Warrant section enumerate them.
+  - F6b, the funnel's PWB-REQ-014 bullet in §"Lane B" carried no
+    sentence-level mark: **accepted**; a fourth dated mark added at the
+    bullet, text kept.

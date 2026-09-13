@@ -6,7 +6,13 @@
 > act.
 
 Date: 2026-09-14 (fourth draft; the first three drafts' reviews returned
-REVISE and their dispositions are in `SEMANTIC-DELTA.md` §Review).
+REVISE, the fourth review returned CONFIRM WITH EXCEPTIONS on commit
+c2efa5196b92220be1073876e9f2400bc91ce43f, and every disposition is in
+`SEMANTIC-DELTA.md` §Review). Five of the six exceptions were repaired
+after that review, in prose, the estimate record and the estimator only;
+those edits are not covered by the review and are listed there. The sixth,
+a clarity qualifier on PWB-REQ-007's opening sentence, edits a manifest
+subject and is held for the next spec-patch edit before the behavior act.
 
 Register row: P-68 in `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`.
 
@@ -92,20 +98,25 @@ is in `SEMANTIC-DELTA.md`; the exact bytes are the patches under
 
 ## What it buys and what it costs
 
-Estimated saving: about 190 KB (189,548 bytes on the tailnet form) under
+Estimated saving: about 190 KB (188,902 bytes on the tailnet form) under
 the package's own strict rule, computed over the retained lane A capture
 with the nearest table or list as the scope, by a retained script, and
 recorded with the capture digests in
 `docs/evidence/pwb-laneb-strict-scope-estimate-2026-09-14.json` [Inferred
 — an estimate of one lawful implementation, not a rendered page; the
-implementation bead's measurement confirms or refutes it]. Earlier drafts
+implementation bead's measurement confirms or refutes it]. Of that,
+4,871 bytes come from the 26 claims that sit under no table or list,
+modelled as one page-level scope; if an implementation builds no such
+scope the figure is 184,031 bytes, and neither value moves the choice
+below. Earlier drafts
 quoted 350 KB; that was the funnel's 450 KB minus its attribute share, and
 the funnel's tuple component was computed per row under a model in which a
 member may override its scope, which this package forbids, so it was an
 upper bound and not an estimate of this rule. Applied to the lane A page
-the strict figure lands near 1,295,000 bytes, about 105 KB under the
-1,400,000 target, with the P-60/P-61 Butlers repairs' 418–443 KB (costed on
-the pre-lane-A page) still inside the ceiling by about 359 KB [Inferred].
+the strict figure lands near 1,295,600 bytes, about 104 KB under the
+1,400,000 target (about 100 KB on the containers-only figure), with the
+P-60/P-61 Butlers repairs' 418–443 KB (costed on the pre-lane-A page)
+still inside the ceiling by about 359 KB [Inferred].
 Cost: the renderer, three oracles and the
 mutation sweep change (listed in `IMPACT-LEDGER.md`); every human-page
 reader of tuples must now apply the inheritance rule; and an RFC-0007
@@ -136,7 +147,7 @@ successor tooling in the shape of the 2026-09-05 no-signal ceremony; offer
 the RFC7-33 contract successor for its own act; then offer this behavior
 manifest for the PWB act. Nothing is implemented until both acts are
 performed. On the strict-rule estimate holding (about 190 KB, leaving
-about 105 KB under the target), this is the only path that meets the
+about 100 KB under the target), this is the only path that meets the
 target you set without cutting items [Inferred: the estimate is of one
 lawful implementation over the retained lane A capture, not a rendered
 page; if the implementation bead measures materially less, (a) does not
