@@ -1,0 +1,26 @@
+diff --git a/.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md b/.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md
+index d2eab9b..2a22d12 100644
+--- a/.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md
++++ b/.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md
+@@ -216,6 +216,21 @@ from day one (vision.md); endpoints are V0-mandatory (v1.md)]. A distinction
+ available only to pixels does not survive an endpoint response, a copy-paste
+ into an agent prompt, or a reader who cannot see it.
+ 
++**Scope-carried values on the interactive surface.** On the interactive
++human surface only, a distinction other than `non-citable` /
++`presentation-artifact` whose value is the same for every unit under one
++enclosing element MAY be carried once on that element, marked
++machine-readably as a scope, in place of on each unit; a unit under a scope
++then carries the value by expansion, under an inheritance rule the governing
++specification states once and every oracle restates independently. A scope
++never carries a value that any unit under it lacks, never carries a unit's
++identity, and is expanded before any parity comparison. The machine-queryable
++endpoints and every plain-text or exported rendering carry every distinction
++on the unit itself, unchanged by this paragraph. A unit copied out of the
++interactive surface without its scope has lost what the scope carried, which
++is why non-citability is excluded from this permission: the sub-clause below
++stands in full.
++
+ **Non-citability travels, on every rendering.** Every narrative-model unit
+ (RFC7-5) carries the **`non-citable` / `presentation-artifact`** attribute,
+ required on **every** exported, embedded, or plain-text rendering — not only

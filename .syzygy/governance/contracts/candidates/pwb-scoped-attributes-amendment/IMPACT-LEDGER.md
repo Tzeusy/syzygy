@@ -21,11 +21,24 @@ tracked files. `.beads/issues.jsonl` is untracked (ignored) and outside the
 denominator; the beads that cite these identifiers are `syzygy-dov.1` and
 `syzygy-dov.17`, read directly.
 
+At the commit that carries this draft the same two sweeps return
+**87 files** over **1,227**; every file beyond the baseline 80 is this
+package's own or its retained review, none is an implementation site, and
+the table below stays the baseline table:
+
+- `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/IMPACT-LEDGER.md`
+- `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/OWNER-DECISION-PACKET.md`
+- `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/REVIEW-BRIEF.md`
+- `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/SEMANTIC-DELTA.md`
+- `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/design.md.patch`
+- `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/spec.md.patch`
+- `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md`
+
 ## Classes
 
 | class | files | disposition |
 |---|---|---|
-| signed package | 6 | the amendment subject itself; three rows change, eight are byte-identical (the coverage files restate the clause titles only and stay true) |
+| signed package | 6 | six of the eleven manifest rows cite the identifiers; separately, three of the eleven rows change under the patches (`spec.md`, `design.md`, `GOVERNING-DEPENDENCIES.md`) and eight are byte-identical, the coverage files among them restating clause titles that stay true |
 | unbound spec companion | 3 | not in the manifest; `tasks.md` takes implementation rows after adoption, the two coverage parts restate parity findings that remain true |
 | other openspec change | 1 | cites PWB-REQ-014/020 as the parity floor the generator inherits; the floor is unchanged in the machine form |
 | renderer / model | 8 | implementation sites after adoption: the claim element, the narrative unit and the shared model's tuple emission; no change while candidate |
@@ -38,8 +51,14 @@ denominator; the beads that cite these identifiers are `syzygy-dov.1` and
 | governance package | 3 | the performed 2026-09-02 package; never edited |
 | root page | 1 | AGENTS.md's parity guardrail (per tuple, never per id) stays true; expansion keeps one tuple per claim |
 
-Sum: 80. Files the implementation must change after adoption are marked
-**must** in the last column; every other row is untouched by this package.
+Sum: 80. The last column takes three values: **must** (a file the
+implementation bead after both acts must change), `model` (the shared
+model whose emission is deliberately unchanged, listed because it decides
+what the renderer may scope), and `—` (no change is expected of the file by
+this package or its implementation; if the bead finds one, the ledger is
+wrong and is corrected before the bead closes). This package itself changes
+no file outside its own directory, the governance checks, the CI battery
+and the register.
 
 ## Every citing file
 
@@ -58,17 +77,17 @@ Sum: 80. Files the implementation must change after adoption are marked
 | `apps/three-surface-poc/src/fresh-checkout-demo-main.ts` | renderer / model | 0 | 0 | 1 | — |
 | `apps/three-surface-poc/src/fresh-checkout-verdict.ts` | renderer / model | 0 | 0 | 1 | — |
 | `apps/three-surface-poc/src/polaris-accessibility.ts` | renderer / model | 0 | 0 | 1 | — |
-| `apps/three-surface-poc/src/polaris-copy.ts` | renderer / model | 1 | 1 | 0 | — |
-| `apps/three-surface-poc/src/polaris-narrative.ts` | renderer / model | 0 | 3 | 0 | **must** |
+| `apps/three-surface-poc/src/polaris-copy.ts` | renderer / model | 1 | 1 | 0 | **must** |
+| `apps/three-surface-poc/src/polaris-narrative.ts` | renderer / model | 0 | 3 | 0 | — |
 | `apps/three-surface-poc/src/polaris.ts` | renderer / model | 3 | 2 | 0 | **must** |
 | `apps/three-surface-poc/src/routes.ts` | renderer / model | 0 | 1 | 0 | — |
 | `packages/three-surface-poc-core/src/project-shape-model.ts` | renderer / model | 4 | 0 | 1 | model |
-| `apps/three-surface-poc/src/polaris-authority-sweep.test.ts` | oracle / test | 0 | 1 | 0 | **must** |
+| `apps/three-surface-poc/src/polaris-authority-sweep.test.ts` | oracle / test | 0 | 1 | 0 | — |
 | `apps/three-surface-poc/src/polaris-epistemic-tuples.test.ts` | oracle / test | 2 | 0 | 0 | **must** |
 | `apps/three-surface-poc/src/polaris-first-reading.test.ts` | oracle / test | 0 | 0 | 2 | — |
-| `apps/three-surface-poc/src/polaris-narrative.test.ts` | oracle / test | 0 | 2 | 0 | **must** |
+| `apps/three-surface-poc/src/polaris-narrative.test.ts` | oracle / test | 0 | 2 | 0 | — |
 | `apps/three-surface-poc/src/polaris-parity-sweep.test.ts` | oracle / test | 0 | 0 | 3 | **must** |
-| `apps/three-surface-poc/src/polaris-presentation-route.test.ts` | oracle / test | 0 | 2 | 0 | **must** |
+| `apps/three-surface-poc/src/polaris-presentation-route.test.ts` | oracle / test | 0 | 2 | 0 | — |
 | `apps/three-surface-poc/src/polaris-proposed-work.test.ts` | oracle / test | 0 | 1 | 0 | — |
 | `apps/three-surface-poc/src/polaris-reachability.test.ts` | oracle / test | 0 | 0 | 2 | — |
 | `apps/three-surface-poc/src/pwb-mutation-sweep.ts` | oracle / test | 0 | 0 | 4 | **must** |
@@ -132,11 +151,13 @@ Counts are occurrences of the full identifier per file.
 
 Read at the baseline; line numbers are for that commit only.
 
-- `apps/three-surface-poc/src/polaris.ts` — emits the per-claim tuple span
-  and the per-unit non-authority attributes; gains the scope element, the
-  shared-value hoist per item table and the one-evaluation assertion.
-- `apps/three-surface-poc/src/polaris-narrative.ts` — narrative units carry
-  the two attributes; may hoist them to the enclosing section.
+- `apps/three-surface-poc/src/polaris.ts` — emits the per-claim tuple span;
+  gains the scope element and the shared-value hoist per item table, under
+  the strict rule (a field is hoisted only when every claim in the table
+  has that value in the machine answer). The per-unit non-authority
+  attributes it emits are unchanged.
+- `apps/three-surface-poc/src/polaris-copy.ts` — the claim-states lede
+  (`label.claim-states`) restates the inheritance rule for the reader.
 - `apps/three-surface-poc/src/polaris-parity-sweep.test.ts` — `leafMarkers`
   (line 110) reads every claim's attributes from the leaf; the claim-tuple
   extraction (lines 415–423) joins eight fields per claim. It gains its own
@@ -150,18 +171,128 @@ Read at the baseline; line numbers are for that commit only.
   `scope-hidden` mutant per marker class (a scope value that hides one
   member's differing value) beside missing/duplicated/changed/collapsed/
   wrong-evaluation.
-- `apps/three-surface-poc/src/polaris-authority-sweep.test.ts`,
-  `polaris-presentation-route.test.ts`, `polaris-narrative.test.ts` — read
-  the two attributes per unit; gain expansion or assert the scope.
 - `packages/three-surface-poc-core/src/project-shape-model.ts` — the
   machine-form tuple emission is unchanged by design; listed because it
   cites the clauses.
+
+Not implementation sites, though the first draft listed them:
+`polaris-narrative.ts`, `polaris-authority-sweep.test.ts`,
+`polaris-presentation-route.test.ts` and `polaris-narrative.test.ts` read
+or emit the two PWB-REQ-014 attributes per unit, and PWB-REQ-014 is no
+longer amended.
+
+## RFC7-33 citers (the contract patch)
+
+The contract patch touches one clause, so a second sweep with its own
+denominator: `RFC7-33\b` by Python `re` over every tracked file plus the
+files this draft adds, and `git grep -l -F RFC7-33` over the same
+population, agree on **75 files** over **1,227**. None quotes the paragraph
+the patch inserts (the paragraph is new), and RFC7-33's opening paragraph
+and sub-clause are not edited, so no citer's quotation goes stale.
+
+| class | files | disposition |
+|---|---|---|
+| Capability 1 code | 5 | honours RFC7-33 per unit; the permission is opt-in and Capability 1 does not take it; no change |
+| accepted contract module | 4 | `rfcs/RFC-0007/rendering-and-surface.md` is the amendment subject of the contract act and changes only by that act; the RFC-0007 README, the narrative module and the RFC-0008 module cite the clause and are untouched |
+| candidate contract mirror | 4 | each must equal its accepted module byte for byte; the contract patch applies to the rendering module's mirror exactly as to the module, the other three are untouched |
+| contract history | 2 | takes the successor entry when the contract act is performed; unchanged until then |
+| decision record | 2 | performed administrations; never edited |
+| docs | 2 | coverage and design notes citing the clause; unchanged, none quotes the amended paragraph |
+| evidence record | 6 | frozen evidence; never edited |
+| generated index or candidate record | 14 | generated views and candidate records that cite the clause identifier; regenerated or unchanged, none quotes the amended paragraph |
+| generated register | 1 | regenerated by `build_directive_register.py`; RFC7-33's definition line moves by the insert |
+| openspec change | 16 | specifications that warrant on RFC7-33; the permission is opt-in and none of these takes it, so their text stays true |
+| retained review | 15 | raw reviewer output; never edited |
+| round record | 3 | historical round material; never edited |
+| script | 1 | this package's builder, which names the clause |
+
+Sum: 75.
+
+| file | class |
+|---|---|
+| `.syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/05-CONTRACT-INDEX.yaml` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/CAPABILITY-1-CHARTER.yaml` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/CAPABILITY-1-GENERATED-VIEWS.md` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/FIRST-OPENSPEC-SEQUENCE.md` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/POLARIS-TRUSTED-BOOTSTRAP-OBSERVATION-SEMANTIC-DELTA.md` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX-REV10.md` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/TASK-ROUTER.md` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/history/RFC-0007-history.md` | contract history |
+| `.syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0007-polaris-intent-surface.md` | contract history |
+| `.syzygy/governance/contracts/candidates/matrix-rows/RFC-0007-rows.md` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/OWNER-DECISION-PACKET.md` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/REVIEW-BRIEF.md` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/SEMANTIC-DELTA.md` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/proposed/design.md.patch` | generated index or candidate record |
+| `.syzygy/governance/contracts/candidates/rfcs/RFC-0007/README.md` | candidate contract mirror |
+| `.syzygy/governance/contracts/candidates/rfcs/RFC-0007/narrative-contract.md` | candidate contract mirror |
+| `.syzygy/governance/contracts/candidates/rfcs/RFC-0007/rendering-and-surface.md` | candidate contract mirror |
+| `.syzygy/governance/contracts/candidates/rfcs/RFC-0008/accounting-reconciliation-and-release.md` | candidate contract mirror |
+| `.syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-4-contract-compaction-RAW.md` | retained review |
+| `.syzygy/governance/contracts/candidates/round-2026-08b/matrix-parts/RFC-0007-0011.md` | round record |
+| `.syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-5-rfc-openspec-boundary-RAW.md` | retained review |
+| `.syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-2-human-clarity-RAW.md` | retained review |
+| `.syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-10-human-view-RAW.md` | retained review |
+| `.syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-19-wave-b-RAW.md` | retained review |
+| `.syzygy/governance/contracts/candidates/round-2026-08e/WAVE-B-SEMANTIC-DELTA.md` | round record |
+| `.syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32-wave-b-RAW.md` | retained review |
+| `.syzygy/governance/contracts/candidates/round-2026-08f/CAPABILITY-1-CONTEXT-ROUTE-REPORT.md` | round record |
+| `.syzygy/governance/contracts/candidates/round-2026-08f/CAPABILITY-1-SPEC-OUTLINE-EXERCISE-RAW.md` | retained review |
+| `.syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-53-capability-1-task-route-RAW.md` | retained review |
+| `.syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-60-capability-1-outline-exercise-RAW.md` | retained review |
+| `.syzygy/governance/contracts/rfcs/RFC-0007/README.md` | accepted contract module |
+| `.syzygy/governance/contracts/rfcs/RFC-0007/narrative-contract.md` | accepted contract module |
+| `.syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md` | accepted contract module |
+| `.syzygy/governance/contracts/rfcs/RFC-0008/accounting-reconciliation-and-release.md` | accepted contract module |
+| `.syzygy/governance/decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json` | decision record |
+| `.syzygy/governance/decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.md` | decision record |
+| `DIRECTIVE-REGISTER.md` | generated register |
+| `docs/design/POLARIS-GENERATOR-RFC7-COVERAGE.md` | docs |
+| `docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md` | docs |
+| `docs/evidence/polaris-generator-non7-current-binding-bridge-2026-09-12.json` | evidence record |
+| `docs/evidence/polaris-generator-rfc7-coverage-2026-09-12.json` | evidence record |
+| `docs/evidence/polaris-generator-rfc7-coverage-v2-2026-09-12.json` | evidence record |
+| `docs/evidence/polaris-generator-rfc7-coverage-v3-2026-09-12.json` | evidence record |
+| `docs/evidence/polaris-generator-rfc7-coverage-v4-2026-09-12.json` | evidence record |
+| `docs/evidence/polaris-generator-rfc7-coverage-v5-2026-09-12.json` | evidence record |
+| `docs/reviews/R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-2-RAW.md` | retained review |
+| `docs/reviews/R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-3-RAW.md` | retained review |
+| `docs/reviews/R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-4-RAW.md` | retained review |
+| `docs/reviews/R-PWB-LIVE-EXACT-HEAD-TRUTH-RAW.md` | retained review |
+| `docs/reviews/R-PWB-SCOPED-ATTRIBUTES-DELTA-RAW.md` | retained review |
+| `docs/reviews/R-PWB-STATE1-FINAL-ORACLES-RAW.md` | retained review |
+| `openspec/changes/polaris-manifesto-generation/DESIGN-ACCEPTANCE.md` | openspec change |
+| `openspec/changes/polaris-manifesto-generation/GOVERNING-DEPENDENCIES.md` | openspec change |
+| `openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md` | openspec change |
+| `openspec/changes/polaris-manifesto-understanding-amendment/GOVERNING-DEPENDENCIES.md` | openspec change |
+| `openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md` | openspec change |
+| `openspec/changes/polaris-project-wide-butlers-model/CONTRACT-COVERAGE-REPAIR-DELTA.md` | openspec change |
+| `openspec/changes/polaris-project-wide-butlers-model/GOVERNING-DEPENDENCIES.md` | openspec change |
+| `openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md` | openspec change |
+| `openspec/changes/polaris-project-wide-butlers-model/contract-coverage-parts/RFC-0007-0009.md` | openspec change |
+| `openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md` | openspec change |
+| `openspec/changes/project-registration-and-honest-shape-visibility/CONTRACT-COVERAGE.md` | openspec change |
+| `openspec/changes/project-registration-and-honest-shape-visibility/GOVERNING-DEPENDENCIES.md` | openspec change |
+| `openspec/changes/project-registration-and-honest-shape-visibility/specs/project-registration-and-honest-shape-visibility/spec.md` | openspec change |
+| `openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md` | openspec change |
+| `openspec/changes/three-surface-poc-experience/GOVERNING-DEPENDENCIES.md` | openspec change |
+| `openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` | openspec change |
+| `packages/cap1-core/src/distinction.ts` | Capability 1 code |
+| `packages/cap1-core/src/epistemic.ts` | Capability 1 code |
+| `packages/cap1-core/src/parity.ts` | Capability 1 code |
+| `packages/cap1-daemon/src/routes-human.ts` | Capability 1 code |
+| `packages/cap1-daemon/src/routes-machine.ts` | Capability 1 code |
+| `scripts/build_pwb_scoped_attributes_amendment.py` | script |
 
 ## Merge and effect boundary
 
 Merging this package to main changes no authority: the manifest rows hash
 bytes that are not in the tree, the builder refuses `--apply` without
-`--at-adoption`, and CG-7h keeps binding the 2026-09-05 package. The owner
+`--at-adoption`, the contract patch is applied by no script at all (its
+act's recorder does not yet exist), and CG-7h keeps binding the 2026-09-05
+package while the accepted RFC-0007 stays as accepted. The owner
 phrase in `OWNER-DECISION-PACKET.md` is registered in
 `scripts/check_governance.py` so that a stale copy of its argument fails
 CG-7d and CG-7e before the act exists.

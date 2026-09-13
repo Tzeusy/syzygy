@@ -10,6 +10,16 @@ edit in place would read as drift. The proposed bytes live as unified diffs
 under `proposed/` and the manifest rows hash the bytes those diffs produce
 when applied to the current tree. `--apply` writes them into the tree; it is
 the adoption step and belongs in the same change as the owner's act record.
+
+The package also carries one contract patch, `proposed/contract/`, for the
+RFC-0007 module RFC7-33 lives in. It is NOT a manifest row: a contract module
+binds by its own successor ceremony over the installed and candidate mirror
+bytes, so `--check` only verifies that the patch applies to both identical
+mirrors and changes them, and `--apply` never touches it.
+
+Bare invocation refuses to overwrite the manifest; pass `--write` to
+regenerate it. Once the packet quotes the manifest digest, a regeneration
+retires the packet's argument (CG-7d/CG-7e catch the stale copy).
 """
 
 from __future__ import annotations
@@ -30,6 +40,11 @@ CANDIDATE = pathlib.Path(
     ".syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment"
 )
 PROPOSED = CANDIDATE / "proposed"
+CONTRACT_PATCH = PROPOSED / "contract" / "RFC-0007-rendering-and-surface.md.patch"
+CONTRACT_SUBJECT = pathlib.Path(
+    ".syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md")
+CONTRACT_MIRROR = pathlib.Path(
+    ".syzygy/governance/contracts/candidates/rfcs/RFC-0007/rendering-and-surface.md")
 BEHAVIOR_OUT = CANDIDATE / "PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt"
 TITLE = "PWB SCOPED-ATTRIBUTES BEHAVIOR AMENDMENT MANIFEST"
 
@@ -116,10 +131,58 @@ def proposed_bytes(
         return {rel: (base / rel).read_bytes() for rel in BEHAVIOR_SUBJECTS}
 
 
+def apply_patch(rel: pathlib.Path, body: bytes, patch: pathlib.Path) -> bytes:
+    """`body` at repo path `rel` with one unified diff applied, in a scratch tree."""
+    with tempfile.TemporaryDirectory() as scratch:
+        base = pathlib.Path(scratch)
+        (base / rel).parent.mkdir(parents=True, exist_ok=True)
+        (base / rel).write_bytes(body)
+        done = subprocess.run(
+            ["git", "apply", "--whitespace=nowarn", str(patch)],
+            cwd=base, capture_output=True, text=True)
+        if done.returncode != 0:
+            raise ValueError(
+                f"{patch.name} does not apply to the current bytes of {rel.as_posix()}: "
+                f"{done.stderr.strip()}")
+        return (base / rel).read_bytes()
+
+
+def contract_findings(
+    installed: bytes | None = None,
+    mirror: bytes | None = None,
+    patch: pathlib.Path | None = None,
+) -> list[str]:
+    """The contract patch must apply to both identical mirrors and change them."""
+    findings: list[str] = []
+    patch = ROOT / CONTRACT_PATCH if patch is None else patch
+    if installed is None:
+        if not (ROOT / CONTRACT_SUBJECT).is_file():
+            return [f"missing contract subject: {CONTRACT_SUBJECT.as_posix()}"]
+        installed = (ROOT / CONTRACT_SUBJECT).read_bytes()
+    if mirror is None:
+        if not (ROOT / CONTRACT_MIRROR).is_file():
+            return [f"missing contract mirror: {CONTRACT_MIRROR.as_posix()}"]
+        mirror = (ROOT / CONTRACT_MIRROR).read_bytes()
+    if installed != mirror:
+        findings.append(
+            f"installed and candidate mirror bytes differ: {CONTRACT_SUBJECT.as_posix()}"
+            f" vs {CONTRACT_MIRROR.as_posix()}")
+    if not patch.is_file():
+        return findings + [f"missing contract patch: {CONTRACT_PATCH.as_posix()}"]
+    try:
+        proposed = apply_patch(CONTRACT_SUBJECT, installed, patch)
+    except ValueError as error:
+        return findings + [str(error)]
+    if proposed == installed:
+        findings.append(f"contract patch changes nothing: {CONTRACT_SUBJECT.as_posix()}")
+    return findings
+
+
 def render(values: dict[pathlib.Path, bytes]) -> str:
     lines = [
         f"# {TITLE}",
-        "# Candidate; this file and its rows bind nothing by themselves.",
+        "# These rows bind only by the owner act that names this file's digest in",
+        "# ACCEPTANCE-ACT-RECORD.md; until that act is performed they bind nothing.",
         f"# {len(BEHAVIOR_SUBJECTS)} artifacts; rows sorted by codepoint path.",
         "# All rows take effect together or none do.",
         "# Rows hash the PROPOSED bytes: current bytes with proposed/*.patch",
@@ -165,6 +228,7 @@ def check() -> list[str]:
         findings.append(f"manifest missing: {BEHAVIOR_OUT.as_posix()}")
     else:
         findings.extend(verify_manifest(target.read_text(), render(proposed)))
+    findings.extend(contract_findings())
     return findings
 
 
@@ -217,8 +281,27 @@ def selftest() -> int:
         else:
             print("SELFTEST FAILED: a corrupted patch applied")
             return 1
-    print("selftest: closed population, byte drift, path order, subject drift and "
-          "patch corruption fail closed")
+    installed = (ROOT / CONTRACT_SUBJECT).read_bytes()
+    if contract_findings():
+        print("SELFTEST FAILED: the contract patch does not verify on current bytes")
+        return 1
+    if not contract_findings(mirror=installed + b"\nmutation\n"):
+        print("SELFTEST FAILED: mirror drift passed")
+        return 1
+    with tempfile.TemporaryDirectory() as scratch:
+        broken = pathlib.Path(scratch) / "contract.patch"
+        original = (ROOT / CONTRACT_PATCH).read_text()
+        corrupted = original.replace(
+            " into an agent prompt, or a reader who cannot see it.",
+            " into an agent prompt, or a reader who cannot see itz.", 1)
+        assert corrupted != original
+        broken.write_text(corrupted)
+        if not contract_findings(patch=broken):
+            print("SELFTEST FAILED: a corrupted contract patch applied")
+            return 1
+    print("selftest: closed population, byte drift, path order, subject drift, "
+          "patch corruption, contract mirror drift and contract patch corruption "
+          "fail closed")
     return 0
 
 
@@ -248,11 +331,13 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--at-adoption", action="store_true")
     parser.add_argument("--diff", action="store_true",
                         help="print the proposed diffs and exit")
+    parser.add_argument("--write", action="store_true",
+                        help="regenerate the manifest (retires any packet quoting it)")
     args = parser.parse_args(argv)
     if args.selftest:
         return selftest()
     if args.diff:
-        for patch in patch_files():
+        for patch in patch_files() + [ROOT / CONTRACT_PATCH]:
             sys.stdout.write(patch.read_text())
         return 0
     if args.apply:
@@ -266,8 +351,13 @@ def main(argv: list[str]) -> int:
             return 1
         print(f"PWB scoped-attributes amendment manifest matches {len(BEHAVIOR_SUBJECTS)} "
               f"proposed behavior subjects ({len(PATCHED)} patched, "
-              f"{len(BEHAVIOR_SUBJECTS) - len(PATCHED)} unchanged)")
+              f"{len(BEHAVIOR_SUBJECTS) - len(PATCHED)} unchanged); the contract "
+              f"patch applies to both identical RFC-0007 mirrors")
         return 0
+    if not args.write:
+        print("refusing: regenerating the manifest changes the act argument; pass "
+              "--write, then update every registered copy of the digest")
+        return 2
     body = render(proposed_bytes())
     target = ROOT / BEHAVIOR_OUT
     target.parent.mkdir(parents=True, exist_ok=True)

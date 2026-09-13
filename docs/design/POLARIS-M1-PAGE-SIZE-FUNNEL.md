@@ -237,7 +237,12 @@ not the package and it binds nothing.
 > package `.syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/`
 > (bead `syzygy-dov.17`, register row P-68). Where the two differ, the
 > package's `SEMANTIC-DELTA.md` and `proposed/spec.md.patch` are the
-> proposed text; this section is kept as the funnel record it was.
+> proposed text; this section is kept as the funnel record it was. The
+> package's first fresh-context review (2026-09-14, verdict REVISE) found
+> that scoping the PWB-REQ-014 non-authority attributes contradicts
+> RFC7-33's non-citability sub-clause, so the package leaves PWB-REQ-014
+> unchanged and carries an RFC7-33 contract delta for the tuple fields; the
+> saving below is overstated by the attribute share for that reason.
 
 **Artifacts:** the signed PWB behavior package (successor of
 `contracts/candidates/pwb-truth-policy-amendment/`), restating

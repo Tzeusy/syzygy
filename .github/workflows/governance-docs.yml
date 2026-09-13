@@ -109,6 +109,12 @@ jobs:
       - name: build_pwb_truth_policy_amendment --check
         run: python3 scripts/build_pwb_truth_policy_amendment.py --check
 
+      - name: build_pwb_scoped_attributes_amendment --check
+        run: python3 scripts/build_pwb_scoped_attributes_amendment.py --check
+
+      - name: build_pwb_scoped_attributes_amendment --selftest
+        run: python3 scripts/build_pwb_scoped_attributes_amendment.py --selftest
+
       - name: build_three_surface_poc_spec_dependencies --check
         run: python3 scripts/build_three_surface_poc_spec_dependencies.py --check
 

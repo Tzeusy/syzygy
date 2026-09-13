@@ -1,22 +1,24 @@
 diff --git a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-index 543469d..59ee1d4 100644
+index 543469d..983d05f 100644
 --- a/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
 +++ b/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md
-@@ -450,22 +450,40 @@ secondary reason counts without a headline status, composite maturity or
+@@ -450,22 +450,42 @@ secondary reason counts without a headline status, composite maturity or
  inferred success. Default Polaris status presentation SHALL not render trends,
  metric walls or count walls; coverage counts remain available on demand.
  
-+In the human view, a tuple field whose value is identical for every claim
++In the human view, a tuple field whose value is the same for every claim
 +under one enclosing scope MAY be carried once on that scope instead of on
-+each claim; the claim still carries the field by the inheritance rule, and a
-+claim whose value differs from its scope's SHALL carry the field itself. The
-+inheritance rule is: a claim's value for a field it does not carry is the
-+value of the nearest enclosing scope that carries the field; a claim under no
-+such scope leaves the field absent. A scope SHALL be one element carrying a
-+machine-readable scope marker; every claim under it SHALL carry its Claim
-+identity itself. A page whose claims would carry two distinct evaluation
-+identities SHALL fail to render rather than carry either on a scope. The
-+machine answer SHALL carry every field on every claim and SHALL not inherit.
++each claim. The inheritance rule is: a claim's value for a field it does not
++carry itself is the value of the nearest enclosing scope that carries the
++field; a claim under no such scope leaves the field absent, which the
++falsifier below forbids. A scope SHALL be one element carrying a
++machine-readable scope marker, SHALL carry a field only when every claim
++under it has that value in the machine answer, and contributes no tuple of
++its own after expansion. Where claims under one element differ in a field,
++that element carries nothing for the field and each claim carries it itself;
++this holds for evaluation identity as for every other field, and nothing
++fails to render. Claim identity is never carried by a scope. The machine
++answer SHALL carry every field on every claim and SHALL not inherit.
 +
  - **Case (sweep)**: enumerate every project entity, claim and aggregate across
    two evaluations of the same semantic subjects, including fixtures for every
@@ -41,75 +43,35 @@ index 543469d..59ee1d4 100644
 +  decides.
  - **Oracle independence**: the checker hard-codes the accepted vocabularies and
 -  reads captured authority/evidence, importing no production vocabulary.
-+  the inheritance rule and reads captured authority/evidence, importing no
-+  production vocabulary or rendering code.
++  the inheritance rule and reads captured authority/evidence and the machine
++  answer, importing no production vocabulary or rendering code.
  - **Falsifier**: a positive claim lacks current support, a tuple field is
 -  absent/out of vocabulary, a reason has no route, Unknown is folded into a
 -  total, or an aggregate claims its own headline status.
-+  absent/out of vocabulary after expansion, a scope carries a value that
-+  differs from a claim under it that does not carry the field itself, a reason
-+  has no route, Unknown is folded into a total, or an aggregate claims its own
-+  headline status.
++  absent/out of vocabulary after expansion, a claim's expanded value for any
++  field differs from the value the machine answer carries for that claim (a
++  scope value hiding a differing member), a reason has no route, Unknown is
++  folded into a total, or an aggregate claims its own headline status.
  
  #### Scenario: Missing current evidence remains explicit Unknown
  
-@@ -473,6 +491,14 @@ metric walls or count walls; coverage counts remain available on demand.
+@@ -473,6 +493,15 @@ metric walls or count walls; coverage counts remain available on demand.
  - **THEN** its claim renders Unknown with the exact primary reason and route
  - **AND** its tier, freshness and evaluation identity remain visible
  
 +#### Scenario: A field shared by every claim under one scope is carried once
 +
 +- **WHEN** every claim under one scope has the same value for a tuple field
-+- **THEN** the scope may carry that field once and each claim's expanded tuple
-+  equals its machine tuple
-+- **AND** a claim whose value differs carries the field itself, and a scope
-+  whose value would hide that difference fails the oracle
++  in the machine answer
++- **THEN** the scope may carry that field once and each claim's expanded
++  tuple equals its machine tuple
++- **AND** where claims under one element differ, each carries the field
++  itself, and a scope value that would hide the difference fails the oracle
 +
  ```yaml
  warrants:
    primary: VIS-2
-@@ -762,7 +788,11 @@ Group: Presentation. Form: **invariant**.
- 
- Every owner-visible narrative unit SHALL carry `presentation-artifact` and
- `non-citable` attributes and exactly one claim role: anchored project fact,
--explicitly non-normative framing, or epistemically labeled claim. Every
-+explicitly non-normative framing, or epistemically labeled claim. In the human
-+view the two attributes MAY be carried once by an enclosing scope under the
-+PWB-REQ-007 inheritance rule; every owner-visible narrative unit under that
-+scope then carries them by that rule, the claim role stays on each unit, and
-+the machine form carries both attributes on every unit. Every
- anchored claim block SHALL have a typed, revision-bound anchor set that covers
- all its claims, contains no unused anchors and is small enough for a reader to
- identify which anchor supports which claim. No project artifact, evidence,
-@@ -780,10 +810,12 @@ and coordinates SHALL never serve as anchor identity.
-   populations at the evaluated revisions. Repeat after deleting Polaris
-   presentation and after injecting personal view state and a later-read target
-   mutation.
--- **Observable**: claim roles and non-authority attributes are machine-readable;
--  every claim has exact/minimal anchors and no downstream authority reference
--  targets Polaris.
--- **Oracle**: independent claim-to-source mapping establishes covering,
-+- **Observable**: claim roles are machine-readable on every unit and the
-+  non-authority attributes are machine-readable on every unit directly or by
-+  scope expansion; every claim has exact/minimal anchors and no downstream
-+  authority reference targets Polaris.
-+- **Oracle**: the oracle expands scopes with its own statement of the
-+  inheritance rule; independent claim-to-source mapping establishes covering,
-   minimality, closed target class, durable identity, exact narrative-vs-kernel
-   machine type and captured target state; removing any used anchor fails one
-   claim and adding an unused anchor fails surplus; a later-read mutation cannot
-@@ -793,8 +825,8 @@ and coordinates SHALL never serve as anchor identity.
- - **Oracle independence**: expected source spans and reference targets come
-   from captured artifacts, not the rendered claim blocks.
- - **Falsifier**: an unclassified narrative unit, uncovered claim, surplus or
--  ambiguous anchor, missing non-citable attribute, or downstream citation to
--  Polaris.
-+  ambiguous anchor, a non-citable or presentation-artifact attribute missing
-+  after scope expansion, or downstream citation to Polaris.
- 
- #### Scenario: A project claim is supported without making Polaris authority
- 
-@@ -907,23 +939,29 @@ Every project-shape identity, statement, source anchor, coverage state,
+@@ -907,23 +936,30 @@ Every project-shape identity, statement, source anchor, coverage state,
  denominator, contradiction, body-read authority state and walkthrough-judgment
  state or disclosure Polaris presents SHALL be recoverable from the same
  evaluation in the machine answer, preserving multiplicity and exact provenance
@@ -120,7 +82,8 @@ index 543469d..59ee1d4 100644
 -  PWB-REQ-005 authority state and PWB-REQ-022 judgment state and disclosure.
 +state. Recoverability is judged after the human view is expanded under the
 +PWB-REQ-007 inheritance rule; a scope value SHALL never stand in for a claim
-+whose own value differs.
++whose own value differs, and a scope element contributes no marker of its
++own after expansion.
 +
 +- **Case (sweep)**: enumerate every project-shape parity marker on Polaris,
 +  expanding scopes, and every corresponding machine-answer fact at one

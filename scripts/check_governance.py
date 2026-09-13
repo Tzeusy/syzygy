@@ -2294,6 +2294,25 @@ def _activate_pwb_truth_amendment_act_copy_registry():
 _activate_pwb_truth_amendment_act_copy_registry()
 
 
+def _activate_pwb_scoped_amendment_act_copy_registry():
+    """Same transition rule, for the lane B scoped-attributes successor.
+
+    Once `PWB-SCOPED-ATTRIBUTES-AMENDMENT-ACT.md` exists, it and the aggregate
+    record must both carry the exact current behavior-manifest digest. A no-op
+    until then; the packet copy is registered statically above.
+    """
+    if not os.path.isfile(os.path.join(ROOT, PWB_SCOPED_AMENDMENT_ACT)):
+        return
+    aggregate = f"{DECISIONS}/ACCEPTANCE-ACT-RECORD.md"
+    labels = ACT_DIGEST_COPY_FILES.get(aggregate, ())
+    if PWB_SCOPED_AMENDMENT_LABEL not in labels:
+        ACT_DIGEST_COPY_FILES[aggregate] = labels + (PWB_SCOPED_AMENDMENT_LABEL,)
+    ACT_DIGEST_COPY_FILES[PWB_SCOPED_AMENDMENT_ACT] = (PWB_SCOPED_AMENDMENT_LABEL,)
+
+
+_activate_pwb_scoped_amendment_act_copy_registry()
+
+
 def _activate_polaris_no_signal_act_copy_registry():
     """Require both record copies only once the dedicated record exists."""
     if not os.path.isfile(os.path.join(ROOT, POLARIS_NO_SIGNAL_ACT)):
