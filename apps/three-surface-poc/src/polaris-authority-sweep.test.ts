@@ -20,8 +20,11 @@ const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 /** How the Polaris surface would be named if something cited it. */
 const POLARIS_SURFACE = /(^|[^A-Za-z0-9-])\/polaris\b|polaris\.ts\b|apps\/three-surface-poc\/src\/polaris|\/api\/poc\b|^polaris$/i;
 
+const GENERATOR_REQUIREMENT = /^REQ-polaris-generation-\d{3}$/;
+
 /** Hand-typed warrant id families (a new family must be added here). */
 const WARRANT_FAMILIES = [
+  GENERATOR_REQUIREMENT,
   /^(VIS|SEC|SDR|RFC\d+|CC-[A-Z]+|POC-REQ|PWB-REQ|CAP1-REQ)-\d+[a-z]?(\([a-z]\))?$/,
   /^(POC|POLARIS|PWB-STATE1-AMENDMENT)-DIR-\d{4}-\d{2}-\d{2}$/,
   /^P-\d+-ruling-\d{4}-\d{2}-\d{2}( \(decisions\/[A-Z0-9-]+\.md\))?$/,
@@ -71,8 +74,12 @@ describe('Zero downstream citations of Polaris as authority (PWB-REQ-014)', () =
   it('every OpenSpec warrant entry belongs to a known id family and none targets Polaris (POLARIS-DIR-* ids are owner decisions)', () => {
     const specs = walk(join(REPO_ROOT, 'openspec'), (path) => path.endsWith('.md'));
     const entries: { file: string; key: string; value: string }[] = [];
+    const declaredGeneratorRequirements = new Set<string>();
     for (const file of specs) {
       const text = readFileSync(file, 'utf8');
+      for (const match of text.matchAll(/^ID: (REQ-polaris-generation-\d{3})$/gm)) {
+        declaredGeneratorRequirements.add(match[1] as string);
+      }
       for (const block of text.matchAll(/```yaml\s*\nwarrants:\n([\s\S]*?)```/g)) {
         for (const line of (block[1] as string).split('\n')) {
           const match = /^\s+([a-z_]+):\s*(.*)$/.exec(line);
@@ -90,8 +97,20 @@ describe('Zero downstream citations of Polaris as authority (PWB-REQ-014)', () =
     const polarisNamed = entries.filter((entry) => /polaris/i.test(entry.value));
     expect(polarisNamed.length).toBeGreaterThan(0);
     for (const entry of polarisNamed) {
-      expect(entry.key).toBe('decisions');
-      expect(entry.value).toMatch(/^POLARIS-DIR-\d{4}-\d{2}-\d{2}$/);
+      if (GENERATOR_REQUIREMENT.test(entry.value)) {
+        expect(entry.key).toBe('parent_requirements');
+        expect(declaredGeneratorRequirements.has(entry.value), 'parent requirement must have an owning declaration').toBe(true);
+      } else {
+        expect(entry.key).toBe('decisions');
+        expect(entry.value).toMatch(/^POLARIS-DIR-\d{4}-\d{2}-\d{2}$/);
+      }
+    }
+  });
+
+  it('recognizes generator requirement identity syntax without accepting presentation references', () => {
+    expect(GENERATOR_REQUIREMENT.test('REQ-polaris-generation-001')).toBe(true);
+    for (const value of ['polaris', '/polaris', '/api/poc', 'polaris.ts', 'REQ-polaris-generation-1', 'REQ-polaris-generation-001/preview']) {
+      expect(GENERATOR_REQUIREMENT.test(value)).toBe(false);
     }
   });
 
