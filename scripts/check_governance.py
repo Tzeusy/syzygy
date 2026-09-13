@@ -4539,6 +4539,112 @@ def _leading_banner(body):
     return "\n".join(out)
 
 
+_GFM_FENCE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
+_GFM_DELIMITER_CELL = re.compile(r"^:?-{3,}:?$")
+
+
+def _gfm_row_cells(line):
+    """Return cells for a plausible GFM row, or ``None``.
+
+    This is intentionally only the small grammar needed to distinguish a
+    table block from prose. A row needs at least two cells and an unescaped
+    pipe; indentation deep enough for an indented code block is not a table.
+    Escaped pipes stay in their cell so they cannot manufacture a table.
+    """
+    leading = line[:len(line) - len(line.lstrip())]
+    if (not line.strip() or "\t" in leading or
+            len(line) - len(line.lstrip(" ")) > 3):
+        return None
+
+    text = line.strip()
+    cells, start, escaped = [], 0, False
+    for i, char in enumerate(text):
+        if char == "\\" and not escaped:
+            escaped = True
+            continue
+        if char == "|" and not escaped:
+            cells.append(text[start:i].strip())
+            start = i + 1
+        escaped = False
+    cells.append(text[start:].strip())
+
+    # Leading/trailing pipes are optional in GFM. Remove only the empty
+    # boundary cells they introduce; an empty interior cell is valid.
+    if text.startswith("|"):
+        cells = cells[1:]
+    if text.endswith("|") and not text.endswith("\\|"):
+        cells = cells[:-1]
+    return tuple(cells) if len(cells) >= 2 else None
+
+
+def _gfm_table_start(lines, index, fenced):
+    """Return the header width when ``lines[index:index + 2]`` starts a table."""
+    if index + 1 >= len(lines) or fenced[index] or fenced[index + 1]:
+        return None
+    header = _gfm_row_cells(lines[index])
+    delimiter = _gfm_row_cells(lines[index + 1])
+    if header is None or delimiter is None or len(header) != len(delimiter):
+        return None
+    if not all(_GFM_DELIMITER_CELL.fullmatch(cell) for cell in delimiter):
+        return None
+    return len(header)
+
+
+def _currency_contexts(body):
+    """Split currency claims into blank-line contexts, or GFM table rows.
+
+    Ordinary prose retains CG-27's paragraph semantics. A genuine GFM table
+    (header, matching delimiter row, and contiguous pipe rows) is the one
+    supported exception: each header/data row is independently checked so a
+    historical, owner, or as-of token in a sibling row cannot satisfy the
+    current claim. Fenced code is left in ordinary contexts and malformed or
+    lone-pipe lines never create row boundaries.
+    """
+    lines = body.splitlines()
+    if not lines:
+        return []
+
+    fenced, in_fence, fence_char, fence_width = [], False, None, 0
+    for line in lines:
+        fenced.append(in_fence)
+        marker = _GFM_FENCE.match(line)
+        if marker:
+            run = marker.group(1)
+            char = run[0]
+            if not in_fence:
+                in_fence, fence_char, fence_width = True, char, len(run)
+            elif (char == fence_char and len(run) >= fence_width and
+                  not line[marker.end():].strip()):
+                in_fence, fence_char, fence_width = False, None, 0
+
+    contexts, paragraph = [], []
+
+    def flush_paragraph():
+        if paragraph:
+            contexts.append("\n".join(paragraph))
+            paragraph.clear()
+
+    i = 0
+    while i < len(lines):
+        if _gfm_table_start(lines, i, fenced) is not None:
+            flush_paragraph()
+            contexts.append(lines[i])
+            i += 2  # header and delimiter; the delimiter is not a row
+            while (i < len(lines) and not fenced[i] and
+                   _gfm_row_cells(lines[i]) is not None):
+                contexts.append(lines[i])
+                i += 1
+            continue
+
+        paragraph.append(lines[i])
+        if not lines[i].strip():
+            flush_paragraph()
+        i += 1
+
+    flush_paragraph()
+    return contexts
+
+
 def cg27_default_path_currency(res, corpus=None):
     """A default-path file asserting current state derives it, or banners it.
 
@@ -4553,14 +4659,21 @@ def cg27_default_path_currency(res, corpus=None):
     precedence banner. A check that under-enforces its clause is safe; one
     that over-enforces invents obligation nobody approved.
 
-    **What counts as satisfied**, per assertion, in this order:
+    **What counts as satisfied**, per assertion context, in this order:
 
-    1. the paragraph is talking about the past — `CURRENCY_HISTORICAL`;
-    2. the paragraph names the record that owns that class of fact;
+    1. the context is talking about the past — `CURRENCY_HISTORICAL`;
+    2. the context names the record that owns that class of fact;
     3. the file's **leading** banner names it — a precedence banner scoped
        to the owner is what makes the claim derivable, which is why a banner
        naming `PROJECT-STATUS.md` does nothing for a gate-version claim;
     4. the assertion carries its own as-of date.
+
+    A genuine GFM table is segmented into one context per header/data row.
+    This is deliberately narrower than treating every pipe-containing line
+    as a row: only a valid header plus matching GFM delimiter and contiguous
+    rows qualify. Malformed or lone-pipe prose retains paragraph semantics.
+    The file's leading banner remains file-scoped, while paragraph and table
+    row evidence remains local to the assertion.
 
     **RESIDUAL LIMIT, and it is the important one.** This never checks
     whether a claim is *true*. It checks whether a reader who meets the
@@ -4585,23 +4698,22 @@ def cg27_default_path_currency(res, corpus=None):
             continue
         banner = _leading_banner(body)
         for cls, owner, pat in CURRENCY_CLASSES:
-            for m in pat.finditer(body):
-                examined += 1
-                start = body.rfind("\n\n", 0, m.start()) + 2
-                end = body.find("\n\n", m.end())
-                para = body[start: end if end > 0 else len(body)]
-                if CURRENCY_HISTORICAL.search(para):
-                    continue
-                if owner in para or owner in banner:
-                    continue
-                if CURRENCY_ASOF.search(para):
-                    continue
-                quote = " ".join(m.group(0).split())[:90]
-                findings.append(
-                    f"{rel} — `{cls}` claim with nothing to check it "
-                    f"against: \"{quote}\". Name `{owner}`, which owns this "
-                    f"fact, in the paragraph or in the file's leading "
-                    f"banner; or carry an as-of date")
+            for context in _currency_contexts(body):
+                for m in pat.finditer(context):
+                    examined += 1
+                    if CURRENCY_HISTORICAL.search(context):
+                        continue
+                    if owner in context or owner in banner:
+                        continue
+                    if CURRENCY_ASOF.search(context):
+                        continue
+                    quote = " ".join(m.group(0).split())[:90]
+                    findings.append(
+                        f"{rel} — `{cls}` claim with nothing to check it "
+                        f"against: \"{quote}\". Name `{owner}`, which owns "
+                        f"this fact, in the paragraph or its table row, or "
+                        f"in the file's leading banner; or carry an as-of "
+                        f"date")
 
     note = (f"{len(corpus) - len(unreadable)} of {len(CURRENCY_DEFAULT_PATH)} "
             f"default-path file(s) read, {len(CURRENCY_CLASSES)} claim class"
@@ -5614,6 +5726,93 @@ def selftest():
                       _cur(_bad)[3] == 1))
         cases.append((f"CG-27 {_name} — anchored twin raises nothing",
                       _cur(_good)[3] == 0))
+
+    # Rule 6 regression fixture: before table rows become independent
+    # contexts, the historical marker in the sibling row exempts this current
+    # claim because Markdown treats the whole table as one paragraph.
+    _TABLE_SIBLING_HISTORICAL = (
+        "# F\n\n"
+        "| Claim | Note |\n"
+        "| --- | --- |\n"
+        "| Wave A is accepted. | Current state |\n"
+        "| Prior note | Historically, Wave A was accepted. |\n")
+    cases.append((
+        "CG-27 a sibling table row's historical marker does not exempt the current claim",
+        _cur(_TABLE_SIBLING_HISTORICAL)[3] == 1))
+
+    def _table(*rows, banner=""):
+        return ("# F\n\n" + banner +
+                "| Claim | Evidence |\n| --- | --- |\n" +
+                "\n".join(rows) + "\n")
+
+    cases.append((
+        "CG-27 a same-row historical marker exempts the table claim",
+        _cur(_table(
+            "| Wave A is accepted. | Historically, this was true. |"))[3]
+        == 0))
+
+    cases.append((
+        "CG-27 a sibling table row's owner does not satisfy the current claim",
+        _cur(_table(
+            "| Wave A is accepted. | Current state |",
+            "| Other note | `PROJECT-STATUS.md` owns the wave state. |"))[3]
+        == 1))
+
+    cases.append((
+        "CG-27 a sibling table row's as-of date does not satisfy the current claim",
+        _cur(_table(
+            "| P-33 is satisfied, so authoring may begin. | Current state |",
+            "| Measurement note | counted as of 2026-08-13 |"))[3]
+        == 1))
+
+    cases.append((
+        "CG-27 same-row owner and as-of evidence satisfy table claims",
+        _cur(_table(
+            "| Wave A is accepted. | `PROJECT-STATUS.md` |",
+            "| The launch gate stands at v1.4. | `launch-gate-pre-specifications.md` |",
+            "| P-33 is satisfied, so authoring may begin. | as of 2026-08-13 |"))[3]
+        == 0))
+
+    cases.append((
+        "CG-27 a leading owner banner satisfies a table claim",
+        _cur(_table(
+            "| Wave B is confirmed and the act was performed. | Current state |",
+            banner="> `PROJECT-STATUS.md` owns current wave state.\n\n"))[3]
+        == 0))
+
+    cases.append((
+        "CG-27 malformed table pipes retain paragraph semantics",
+        _cur("# F\n\n| Claim | Evidence |\n| not a delimiter |\n"
+             "| Wave A is accepted. | Current state |\n"
+             "| Prior note | Historically, Wave A was accepted. |\n")[0:4]
+        == ("OK", "CG-27  default-path current-state claims are derived or bannered",
+            2, 0)))
+
+    cases.append((
+        "CG-27 lone pipe lines are not table rows",
+        _cur("# F\n\n| Wave A is accepted.\n"
+             "| Historically, Wave A was accepted.\n")[3] == 0))
+
+    cases.append((
+        "CG-27 fenced table syntax retains paragraph semantics",
+        _cur("# F\n\n````text\n```\n| Claim | Evidence |\n| --- | --- |\n"
+             "| Wave A is accepted. | Current state |\n"
+             "| Prior note | Historically, Wave A was accepted. |\n"
+             "````\n")[3] == 0))
+
+    cases.append((
+        "CG-27 tab-indented table syntax retains paragraph semantics",
+        _cur("# F\n\n\t| Claim | Evidence |\n\t| --- | --- |\n"
+             "\t| Wave A is accepted. | Current state |\n"
+             "\t| Prior note | Historically, Wave A was accepted. |\n")[3]
+        == 0))
+
+    c = _cur(_table(
+        "| Wave A is accepted and Wave B is confirmed. | Current state |",
+        "| Prior note | Historically, both were accepted. |"))
+    cases.append((
+        "CG-27 multiple claims in one table row are counted independently",
+        c[0] == "FAIL" and c[2] == 2 and c[3] == 2))
 
     # The charter's fifth fixture: a statement that says it is about the past
     # is not asserting current state, and must not be reported.
