@@ -1,0 +1,938 @@
+{
+  "kind": "polaris-m6-generator-honesty-funnel-evidence",
+  "version": 1,
+  "bead": "syzygy-dov.6",
+  "move": "M6",
+  "date": "2026-09-15",
+  "packet": "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md",
+  "status": "candidate; binds nothing; planning only; no independent review yet",
+  "commit": {
+    "baseline": "a9f671e",
+    "note": "Every measurement below was taken in a worktree at a9f671e this session.",
+    "m6_surface_identical_to": "1932f74",
+    "m6_surface_diff_1932f74_to_a9f671e": {
+      "method": "git diff --numstat 1932f74 a9f671e -- packages/polaris-generation-core docs/polaris-generation package.json apps/three-surface-poc/src/polaris-generation",
+      "rows": 0,
+      "meaning": "the whole M6 surface is byte-identical between the commit the S9 agent read and this packet's baseline"
+    },
+    "dossier_syzygy_audited_at": "f4589e2",
+    "dossier_audit_commit_discrepancy": {
+      "claim_label": "Observed",
+      "finding": "At f4589e2 the entire packages/polaris-generation-core package did not exist. git diff --numstat f4589e2 a9f671e over the four M6 paths shows 22 files added with 0 deletions, including every file L3 and S9 cite. S9-F1's own evidence names the tree it read as main @ 1932f74, and f4589e2 is an ancestor of 1932f74 (git merge-base --is-ancestor returns true).",
+      "consequence": "The dossier's syzygy_audited_at value does not hold for surfaces L3 and S9; the correct audit base for those two is 1932f74. No line citation is affected, because the surface is byte-identical across 1932f74..a9f671e."
+    }
+  },
+  "file_digests_sha256": {
+    "packages/polaris-generation-core/src/provider-draft.ts": "2cd7f1c069733fc13ca3335ccdd9a1f660c0ca9ea792819ea9cd06210206e4c2",
+    "packages/polaris-generation-core/src/prompts.ts": "b45b014eb184df22d1ecab1cfca34f6a7ec201d61953cd60b8b7e66ac79b437c",
+    "packages/polaris-generation-core/src/pipeline.ts": "0533cfc30a50034223f871c45271abf909e352925099880f7263851997ac2239",
+    "packages/polaris-generation-core/src/index.ts": "d60ca390e56207630faf5700d7da9d8a96c4735673ac0d5ea1635dfe8a6eac46",
+    "packages/polaris-generation-core/README.md": "d4485e67c9a2521e00f80bc5744ac59f4fa5eb12f51b648bf21b503d34dfae0d",
+    "docs/polaris-generation/README.md": "09ca9c0f5a5c872054153a402cb0df655ad6df69432ae80d1e69ef8b8a50fabf",
+    "docs/polaris-generation/AUTHORING.md": "f174270cb4ad8b6a86905754572fc7f52d41cf2632dcb8ef9203ee7d30f31e55",
+    "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md": "f5c0fa6c58dbdf6adfe84c37754cda8e37d3f4f40a210fb81e835c5409c9c22b",
+    "docs/polaris-generation/example.json": "882d7d9205ae26fa5b46086acfd5af2fce9e197d9bb3f6d8d05efc98101eebd2",
+    "package.json": "b767c375a4e5b414e05590ed162a06fa4f203c8a371fc8c08264062efeb1c995",
+    "apps/three-surface-poc/src/polaris-generation/draft-preview.ts": "1f3e9e963d0817d740b476585e4fdb412883d1f92c79e74967dabc3f182661ee"
+  },
+  "file_bytes": {
+    "packages/polaris-generation-core/src/provider-draft.ts": 9810,
+    "packages/polaris-generation-core/src/prompts.ts": 7517,
+    "packages/polaris-generation-core/src/pipeline.ts": 13959,
+    "packages/polaris-generation-core/src/index.ts": 711,
+    "packages/polaris-generation-core/README.md": 4014,
+    "docs/polaris-generation/README.md": 7217,
+    "docs/polaris-generation/AUTHORING.md": 7837,
+    "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md": 7937,
+    "docs/polaris-generation/example.json": 3175,
+    "package.json": 1881,
+    "apps/three-surface-poc/src/polaris-generation/draft-preview.ts": 9336
+  },
+  "digest_policy_note": "Digests are recorded only for implementation-plane files. No digest of a bound openspec artifact, no act argument and no truncated signed digest is reproduced here, per CG-7e/CG-15; the two digest records consulted are cited by path: docs/evidence/polaris-generator-rfc7-coverage-v2-2026-09-12.json and docs/evidence/polaris-understanding-adoption-manifest-2026-09-13.json.",
+  "measurements": {
+    "M1_demo_command_chain": {
+      "finding_reverified": "S9-F1",
+      "claim_label": "Observed",
+      "command_location": "packages/polaris-generation-core/README.md line 55; the only occurrence of poc:generator-demo in either README (literal sweep, denominator 2 files)",
+      "command": "npm run poc:generator-demo -- --out <scratch>",
+      "chain": "package.json line 24: npm run build:poc --silent && node apps/three-surface-poc/dist/polaris-generation/pipeline-demo-main.js",
+      "runs": [
+        {
+          "run": 1,
+          "condition": "as-is, after npm ci in the worktree",
+          "exit": 0,
+          "stdout_exact": "Created three synthetic pipeline previews and their stage records. No real provider or project was used.",
+          "outputs": [
+            "archive.html",
+            "archive.json",
+            "garden-changed.html",
+            "garden-changed.json",
+            "garden.html",
+            "garden.json",
+            "report.json"
+          ],
+          "output_bytes_total": 41940
+        },
+        {
+          "run": 2,
+          "condition": "node_modules/@syzygy/polaris-generation-core moved aside; dist/ of packages/polaris-generation-core and apps/three-surface-poc removed",
+          "exit": 2,
+          "error_TS_lines": 42,
+          "TS2307_lines": 5,
+          "distinct_files": 6,
+          "files": [
+            "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts",
+            "apps/three-surface-poc/src/polaris-generation/draft-preview.test.ts",
+            "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+            "apps/three-surface-poc/src/polaris-generation/pipeline-demo-main.ts",
+            "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+            "apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts"
+          ],
+          "first_error_exact": "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts(6,36): error TS2307: Cannot find module '@syzygy/polaris-generation-core' or its corresponding type declarations."
+        },
+        {
+          "run": 3,
+          "condition": "symlink restored, rebuilt, rerun",
+          "exit": 0,
+          "stdout_exact": "Created three synthetic pipeline previews and their stage records. No real provider or project was used."
+        }
+      ],
+      "counterexample_direction": "both; the failure appears when the workspace symlink is absent and disappears when it is restored (verification rule 6)",
+      "what_the_readme_omits": "any setup step. Literal 'npm ci' occurs 0 times in packages/polaris-generation-core/README.md and 0 times in the four kit files. Denominator: 5 files.",
+      "additional_defect_not_in_dossier": "package.json line 15's build:poc tsc -b list names four projects and does not name packages/polaris-generation-core; the package builds only transitively through apps/three-surface-poc's project reference.",
+      "dossier_figure_that_differs": "The dossier says the demo 'fails with TS2307 from a fresh checkout'. At a9f671e after npm ci it succeeds (exit 0). The break is conditional on install state, not on a fresh checkout. The finding's own evidence already names that cause."
+    },
+    "M2a_prompt_instruction_sweep": {
+      "findings_reverified": [
+        "L3-F1",
+        "S9-F2"
+      ],
+      "claim_label": "Observed",
+      "predicate": "a sentence in packages/polaris-generation-core/src/prompts.ts that directs the model to express missing, unsupported or changed material using a named schema ('the supplied schema', \"the schema's\", 'the trusted schema')",
+      "denominator": "the whole file: 30 lines, 7517 bytes",
+      "count": 5,
+      "occurrences": [
+        {
+          "line": 6,
+          "stage": "common",
+          "text": "Follow the supplied schema's unresolved/failure representation when support or capability is missing"
+        },
+        {
+          "line": 13,
+          "stage": "plan",
+          "text": "Account for every requested asset with the schema's disposition and a reason; unsupported required assets remain unresolved."
+        },
+        {
+          "line": 18,
+          "stage": "edit",
+          "text": "Preserve source support and report changed content and affected references using the supplied schema."
+        },
+        {
+          "line": 21,
+          "stage": "fidelity",
+          "text": "Return findings tied to supplied handles, severity and unresolved reasons using the trusted schema."
+        },
+        {
+          "line": 22,
+          "stage": "repair",
+          "text": "Return the schema's affected content and finding-to-change dispositions; retain explicit unresolved findings when a valid repair is unsupported."
+        }
+      ],
+      "broader_literal_sweep_same_denominator_case_insensitive": {
+        "unresolved": {
+          "count": 6,
+          "lines": [
+            6,
+            6,
+            10,
+            13,
+            21,
+            22
+          ],
+          "note": "the line-10 occurrence is 'unresolved questions', a property of source content rather than a schema representation; this is why the directive count is 5 and not 6"
+        },
+        "disposition": {
+          "count": 5,
+          "lines": [
+            10,
+            13,
+            16,
+            21,
+            22
+          ]
+        },
+        "omission": {
+          "count": 2,
+          "lines": [
+            10,
+            20
+          ]
+        },
+        "omitted": {
+          "count": 0
+        },
+        "unsupported": {
+          "count": 5
+        },
+        "unknown": {
+          "count": 1,
+          "lines": [
+            27
+          ],
+          "note": "the error string 'unknown-generation-stage', not an epistemic use"
+        },
+        "inferred": {
+          "count": 1,
+          "lines": [
+            6
+          ]
+        }
+      }
+    },
+    "M2b_schema_field_census": {
+      "findings_reverified": [
+        "L3-F1",
+        "S9-F2"
+      ],
+      "claim_label": "Observed",
+      "method": "import stageSchema from the package's own built dist/provider-draft.js; walk each of the six stage schemas recursively; collect every object 'properties' key and every string 'enum'",
+      "denominator": "all six landed stages",
+      "per_stage": {
+        "inventory": {
+          "version": "polaris-provider-inventory-v1",
+          "field_count": 5,
+          "fields": [
+            "entries",
+            "id",
+            "kind",
+            "sourceIds",
+            "statement"
+          ]
+        },
+        "plan": {
+          "version": "polaris-provider-plan-v1",
+          "field_count": 5,
+          "fields": [
+            "id",
+            "reason",
+            "sections",
+            "sourceIds",
+            "title"
+          ]
+        },
+        "author": {
+          "version": "polaris-provider-author-v1",
+          "field_count": 15,
+          "fields": [
+            "deepDives",
+            "diagrams",
+            "edges",
+            "from",
+            "id",
+            "introduction",
+            "label",
+            "nodes",
+            "paragraphs",
+            "sectionId",
+            "sections",
+            "sourceIds",
+            "text",
+            "title",
+            "to"
+          ]
+        },
+        "edit": {
+          "version": "polaris-provider-edit-v1",
+          "field_count": 15,
+          "fields": [
+            "deepDives",
+            "diagrams",
+            "edges",
+            "from",
+            "id",
+            "introduction",
+            "label",
+            "nodes",
+            "paragraphs",
+            "sectionId",
+            "sections",
+            "sourceIds",
+            "text",
+            "title",
+            "to"
+          ]
+        },
+        "repair": {
+          "version": "polaris-provider-repair-v1",
+          "field_count": 15,
+          "fields": [
+            "deepDives",
+            "diagrams",
+            "edges",
+            "from",
+            "id",
+            "introduction",
+            "label",
+            "nodes",
+            "paragraphs",
+            "sectionId",
+            "sections",
+            "sourceIds",
+            "text",
+            "title",
+            "to"
+          ]
+        },
+        "fidelity": {
+          "version": "polaris-provider-fidelity-v1",
+          "field_count": 6,
+          "fields": [
+            "blockIds",
+            "findings",
+            "inventoryIds",
+            "message",
+            "severity",
+            "target"
+          ]
+        }
+      },
+      "distinct_field_names_across_all_six": 25,
+      "distinct_field_names": [
+        "blockIds",
+        "deepDives",
+        "diagrams",
+        "edges",
+        "entries",
+        "findings",
+        "from",
+        "id",
+        "introduction",
+        "inventoryIds",
+        "kind",
+        "label",
+        "message",
+        "nodes",
+        "paragraphs",
+        "reason",
+        "sectionId",
+        "sections",
+        "severity",
+        "sourceIds",
+        "statement",
+        "target",
+        "text",
+        "title",
+        "to"
+      ],
+      "enums": [
+        {
+          "path": "inventory.entries[].kind",
+          "values": [
+            "purpose",
+            "beneficiary",
+            "thesis",
+            "capability",
+            "choice",
+            "term",
+            "qualification",
+            "conflict",
+            "other"
+          ],
+          "count": 9
+        },
+        {
+          "path": "fidelity.findings[].severity",
+          "values": [
+            "blocking",
+            "advisory"
+          ],
+          "count": 2
+        }
+      ],
+      "the_zero": {
+        "predicate": "a field whose name, or whose enum values, admit a per-asset or per-claim disposition, an unresolved state, an omitted state, or an epistemic class (quoted vs inferred vs synthesised)",
+        "denominator": "25 field names and 11 enum values",
+        "count": 0,
+        "nearest_candidates_and_why_they_do_not_qualify": [
+          "plan.sections[].reason - the free-text justification for a section's presence, not a disposition on a requested asset",
+          "fidelity.findings[].severity - a triage level with two values, not a disposition"
+        ],
+        "second_method_agreeing": "a literal case-insensitive sweep for 'disposition', 'unresolved' and 'unnecessary' over provider-draft.ts and pipeline.ts returns 0 matches (verification rule 2)"
+      },
+      "author_edit_repair_schema_identity": {
+        "method": "JSON.stringify equality over the three returned schema objects",
+        "author_equals_edit": true,
+        "author_equals_repair": true,
+        "source_line": "packages/polaris-generation-core/src/provider-draft.ts line 33"
+      }
+    },
+    "M3_fidelity_coverage_shape": {
+      "finding_reverified": "L3-F4",
+      "claim_label": "Observed",
+      "schema_lines": "packages/polaris-generation-core/src/provider-draft.ts lines 30-32",
+      "per_entry_fields_on_inventoryIds": 0,
+      "per_entry_fields_on_blockIds": 0,
+      "entry_type_both_directions": "handle (string, minLength 1, maxLength 100, pattern ^[A-Za-z0-9][A-Za-z0-9_.:-]*$, declared at line 14)",
+      "per_entry_fields_on_a_finding": 3,
+      "finding_fields": [
+        "severity",
+        "message",
+        "target"
+      ],
+      "findings_minItems": 0,
+      "findings_minItems_line": 31,
+      "verdict_function": "reviewVerdict at lines 148-152; blocking is true only if some finding has severity 'blocking'",
+      "denominator_discipline_preserved_by_every_slice": "same() at lines 86-89 throws incomplete-coverage; called at lines 127 and 128 against the inventory entry id set and draftHandles(context.draft).blocks"
+    },
+    "M4_edit_repair_and_the_absent_comparison": {
+      "finding_reverified": "L3-F2",
+      "claim_label": "Observed",
+      "pipeline_sites": {
+        "edit": "packages/polaris-generation-core/src/pipeline.ts line 262",
+        "repair": "packages/polaris-generation-core/src/pipeline.ts line 267"
+      },
+      "both_overwrite_prior_draft": true,
+      "validators_exported_by_the_package": [
+        "validateStage (provider-draft.ts line 107)",
+        "reviewVerdict (provider-draft.ts line 148)"
+      ],
+      "other_exports": [
+        "encodeCanonicalJson",
+        "digestCanonicalJson",
+        "parseBoundedJson",
+        "stageSchema"
+      ],
+      "export_sweep_method": "literal sweep for lines beginning 'export' followed by function / async function / const / interface / type, over the four non-test sources",
+      "absence_claim": {
+        "statement": "no validator in the package compares a stage's output to its input",
+        "predicate": "occurrences of the literal 'context.draft' and of the literal 'priorDraft' in provider-draft.ts",
+        "denominator": "the whole file, 152 lines",
+        "context_draft_lines": [
+          124,
+          126
+        ],
+        "context_draft_branch": "both are inside the fidelity branch (lines 121-130)",
+        "priorDraft_count": 0,
+        "else_branch_reads": {
+          "lines": [
+            133,
+            134,
+            137
+          ],
+          "reads": "context.plan only"
+        },
+        "consequence": "an edit output that drops arbitrarily many prior blocks validates, provided it still covers the plan's section ids (line 137); the next fidelity call's blockIds denominator is then recomputed from the shrunken draft (line 128)"
+      }
+    },
+    "M5_kit_promises_vs_schema": {
+      "finding_reverified": "S9-F3",
+      "claim_label": "Observed",
+      "promises": [
+        {
+          "quote": "For each visual supply its reader question, named nodes, typed edges, edge meaning, source support, necessary qualifications, text equivalent and proposed placement.",
+          "at": "docs/polaris-generation/AUTHORING.md lines 45-46",
+          "promised_fields": 8,
+          "schema_fields_present": 2,
+          "present": [
+            "named nodes (nodes[].label)",
+            "source support (sourceIds)"
+          ],
+          "absent": [
+            "reader question",
+            "edge meaning distinct from label",
+            "qualifications",
+            "text equivalent",
+            "proposed placement",
+            "legend"
+          ],
+          "schema_at": "provider-draft.ts lines 24-27"
+        },
+        {
+          "quote": "one meaningful trade-off, and links back to the parent and to its evidence",
+          "at": "docs/polaris-generation/AUTHORING.md line 62",
+          "promised_fields": 3,
+          "schema_fields_present": 0,
+          "schema_at": "provider-draft.ts line 28 (deepDives: id, title, sectionId, paragraphs)"
+        },
+        {
+          "quote": "add a glossary when it helps further reading",
+          "at": "docs/polaris-generation/AUTHORING.md line 26",
+          "schema_field": null,
+          "sweep": "the literal 'glossar' (case-insensitive) occurs 0 times in provider-draft.ts and pipeline.ts, and once in prompts.ts line 13 as prose; denominator: the four non-test sources"
+        },
+        {
+          "quote": "Glossary entries are shared by inline definitions and glossary routes",
+          "at": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md line 40",
+          "schema_field": null
+        },
+        {
+          "quote": "Every requested asset has a produced, unnecessary-with-reason or unresolved disposition",
+          "at": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md line 43",
+          "schema_field": null
+        },
+        {
+          "quote": "Give every requested asset a planned, unnecessary-with-reason or unresolved disposition.",
+          "at": "docs/polaris-generation/AUTHORING.md line 102, inside a copy-pasteable Plan prompt block",
+          "schema_field": null
+        }
+      ],
+      "line_corrections_to_the_finding": {
+        "AUTHORING.md diagram promise": "S9-F3 cited 45-49; the sentence ends at 46",
+        "AUTHORING.md deep-dive trade-off": "S9-F3 cited 60-63; the clause is on 62",
+        "ARTIFACTS-AND-TOOLS.md glossary": "S9-F3 cited 40-41; the sentence begins at 40"
+      }
+    },
+    "M6_no_egress_boundary_across_the_kit": {
+      "finding_reverified": "S9-F4",
+      "claim_label": "Observed",
+      "denominator": {
+        "files": 4,
+        "lines": 473,
+        "per_file": {
+          "docs/polaris-generation/README.md": 102,
+          "docs/polaris-generation/AUTHORING.md": 144,
+          "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md": 108,
+          "docs/polaris-generation/example.json": 119
+        }
+      },
+      "predicate_1": {
+        "literal": "egress",
+        "case_sensitive": true,
+        "count": 1,
+        "occurrences": [
+          {
+            "file": "docs/polaris-generation/README.md",
+            "line": 4,
+            "text": "This kit grants no source access, provider egress, authorship adoption or release."
+          }
+        ]
+      },
+      "predicate_2": {
+        "literal": "grants no",
+        "case_sensitive": true,
+        "count": 2,
+        "occurrences": [
+          {
+            "file": "docs/polaris-generation/README.md",
+            "line": 4
+          },
+          {
+            "file": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md",
+            "line": 15,
+            "text": "verified outside the LLM; putting a grant-shaped string in JSON grants nothing.",
+            "note": "about the invalidity of a self-asserted grant, not about whether the document grants anything"
+          }
+        ]
+      },
+      "AUTHORING_md_occurrences_of_either": 0,
+      "AUTHORING_md_stage_prompts_heading_line": 72,
+      "ARTIFACTS_per_stage_envelope_heading_line": 8,
+      "doctrine_tag_correction": {
+        "finding_said": "SEC-1",
+        "correct": "SEC-2",
+        "why": "SEC-1 (.syzygy/governance/doctrine/security.md line 10) is 'Authenticated by default' and governs endpoint authentication. SEC-2 (line 25) is 'Portfolio data leaves owner-controlled infrastructure only through explicit, scoped consent' and states in terms: 'Model providers are such services.'"
+      }
+    },
+    "M7_landed_validator_over_example_json": {
+      "claim_label": "Observed",
+      "subject": "docs/polaris-generation/example.json",
+      "method": "parse the file; build the validator context from its own sourceBundle.sources (one source, id s1); call validateStage for each of the six landed stages against each of three payloads (illustrativeOutput, illustrativeLaterDraft, the whole file); separately call stageSchema for the stage the file names",
+      "denominator": "18 validateStage calls plus 1 stageSchema call",
+      "results": {
+        "stageSchema('understand')": "throws invalid-stage",
+        "all 18 validateStage calls": "each throws invalid-fields"
+      },
+      "throws": 19,
+      "passes": 0,
+      "cause": "check() at provider-draft.ts lines 61-63 requires the payload's key set to equal the schema's required set exactly, so an object with a field the schema does not name is rejected before its contents are examined. illustrativeOutput carries editorialState, claims, unresolved, assetDispositions and coverage - five keys, none of which appears in the 25-name census.",
+      "fairness_qualification": "The file does not claim validator-conformance. Its own exampleKind is 'synthetic-documentation-handoff', its schemaStatus is 'candidate-not-registered', its stageId is 'understand' (a stage the landed pipeline does not have), and docs/polaris-generation/README.md lines 41-42 call it 'one small handoff... neither a complete manifesto nor a successful generator run'. The defect is the kit's routing at README.md line 41 ('Inspect the synthetic example'), which does not say which half is executable."
+    },
+    "M8_tasks_md_checkbox_count": {
+      "claim_label": "Observed",
+      "file": "openspec/changes/polaris-manifesto-generation/tasks.md",
+      "predicate": "^- \\[[ xX]\\] ",
+      "denominator": "the whole file, 52 lines",
+      "total_boxes": 24,
+      "unchecked": 24,
+      "checked": 0,
+      "dossier_prerequisite_claim": "none (confirm against generator tasks.md)",
+      "verdict": "confirmed in the sense the dossier meant it: no doctrine amendment, owner act or spec amendment is needed to FILE the work, and every slice duplicates an unchecked task and is filed against it rather than as new scope. It does not follow that no owner ruling is needed to LAND it: Q1 and Q3 are genuine gates."
+    },
+    "M9_file_set_intersection": {
+      "claim_label": "Observed",
+      "method": "extract every code span from each sibling packet; keep those that are implementation-plane paths (apps/, packages/, scripts/, docs/polaris-generation/, or package.json) AND resolve as a real file in this worktree; intersect with M6's 23-file candidate surface",
+      "m6_surface_count": 23,
+      "m6_surface": [
+        "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/draft-preview.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+        "apps/three-surface-poc/src/polaris-generation/pipeline-demo-main.ts",
+        "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+        "apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts",
+        "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md",
+        "docs/polaris-generation/AUTHORING.md",
+        "docs/polaris-generation/README.md",
+        "docs/polaris-generation/example.json",
+        "package.json",
+        "packages/polaris-generation-core/README.md",
+        "packages/polaris-generation-core/src/canonical-json.test.ts",
+        "packages/polaris-generation-core/src/canonical-json.ts",
+        "packages/polaris-generation-core/src/index.ts",
+        "packages/polaris-generation-core/src/parse-json.test.ts",
+        "packages/polaris-generation-core/src/parse-json.ts",
+        "packages/polaris-generation-core/src/pipeline.test.ts",
+        "packages/polaris-generation-core/src/pipeline.ts",
+        "packages/polaris-generation-core/src/prompts.test.ts",
+        "packages/polaris-generation-core/src/prompts.ts",
+        "packages/polaris-generation-core/src/provider-draft.test.ts",
+        "packages/polaris-generation-core/src/provider-draft.ts"
+      ],
+      "per_sibling": {
+        "M1 (lane A, on main)": {
+          "their_resolving_impl_paths": 3,
+          "intersection": 0
+        },
+        "M2 (PR #36, P-69)": {
+          "their_resolving_impl_paths": 17,
+          "intersection": 0
+        },
+        "M3 (PR #37, P-70)": {
+          "their_resolving_impl_paths": 15,
+          "intersection": 0
+        },
+        "M4 (PR #38, P-71)": {
+          "their_resolving_impl_paths": 26,
+          "intersection": 0
+        },
+        "M5 (PR #39, P-72)": {
+          "their_resolving_impl_paths": 11,
+          "intersection": 0
+        },
+        "laneB (PR #35, P-68)": {
+          "their_resolving_impl_paths": 3,
+          "intersection": 0,
+          "paths": [
+            "scripts/build_pwb_scoped_attributes_amendment.py",
+            "scripts/check_governance.py",
+            "scripts/estimate_pwb_scoped_attributes_saving.py"
+          ]
+        }
+      },
+      "near_misses_named": [
+        {
+          "sibling": "M4",
+          "span": "apps/three-surface-poc/src/polaris-generation/",
+          "where": "its line 49",
+          "context": "a baseline-provenance paragraph establishing what changed between f4589e2 and a9f671e; proposes touching no file inside it"
+        },
+        {
+          "sibling": "M5",
+          "span": "packages/polaris-generation-core/",
+          "where": "its line 29",
+          "context": "same; its own sentence says 'none of the files this packet cites'"
+        }
+      ],
+      "shared_governance_file": {
+        "path": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+        "touched_by": [
+          "M2",
+          "M3",
+          "M4",
+          "M5",
+          "laneB"
+        ],
+        "touched_by_M6": false,
+        "disclosure": "This packet writes exactly two files and no register row, so its six owner questions are unregistered as of this commit. Whoever lands this packet should file them."
+      },
+      "sequencing_risk": "laneB edits scripts/check_governance.py, which this packet's two files must pass. Land laneB first, then re-run the check before merging this packet."
+    },
+    "M10_specification_mapping": {
+      "claim_label": "Observed",
+      "effective_composition": {
+        "requirements": 31,
+        "scenarios": 177,
+        "authority": ".syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md, Scope paragraph"
+      },
+      "amended_requirements": [
+        "002",
+        "004",
+        "006",
+        "009",
+        "012",
+        "014",
+        "019"
+      ],
+      "added_requirements": [
+        "030",
+        "031"
+      ],
+      "unchanged_predecessor_requirements": 22,
+      "base_spec": "openspec/changes/polaris-manifesto-generation/specs/polaris-generation/spec.md",
+      "overlay_spec": "openspec/changes/polaris-manifesto-understanding-amendment/specs/polaris-generation/spec.md",
+      "per_slice": {
+        "slice 1 onramp": {
+          "requirement": null,
+          "scenario": null,
+          "rfc2_26_consequence_class": null,
+          "tasks_md_task": "3.5 (tasks.md line 50)"
+        },
+        "slice 2 asset disposition": {
+          "requirements": [
+            {
+              "id": "REQ-polaris-generation-019",
+              "at": "overlay line 453",
+              "predecessor_at": "base line 1015",
+              "scenario": "Two requested diagrams have different obligations",
+              "scenario_at": "overlay lines 465-469"
+            },
+            {
+              "id": "REQ-polaris-generation-004",
+              "at": "overlay line 78",
+              "scenario": "Required visual unavailable",
+              "scenario_at": "overlay lines 103-107"
+            },
+            {
+              "id": "REQ-polaris-generation-003",
+              "at": "base line 98",
+              "scenario": "Computed output has no enabled production renderer",
+              "scenario_at": "base lines 159-163"
+            }
+          ],
+          "limb_1": "available",
+          "tasks_md_task": "2.2 (tasks.md line 22)"
+        },
+        "slice 3 coverage rows": {
+          "requirements": [
+            {
+              "id": "REQ-polaris-generation-006",
+              "at": "overlay line 180",
+              "predecessor_at": "base line 302",
+              "scenario": "Source trade-off omitted entirely",
+              "scenario_at": "overlay lines 199-203"
+            }
+          ],
+          "limb_1": "available",
+          "tasks_md_task": "2.4 (tasks.md line 24)"
+        },
+        "slice 4 edit/repair accounting": {
+          "requirements": [
+            {
+              "id": "REQ-polaris-generation-006",
+              "at": "overlay line 180",
+              "clause": "The original finding, repair, dispositions and input/output identities SHALL remain traceable"
+            }
+          ],
+          "scenarios_read": [
+            "overlay 187",
+            "overlay 193",
+            "overlay 199",
+            "overlay 205",
+            "overlay 214"
+          ],
+          "scenario_count_under_REQ_006": 5,
+          "scenario_naming_the_edit_stage_deletion_case": 0,
+          "limb_1": "requirement available, scenario partial",
+          "tasks_md_task": "2.4 (tasks.md line 24)"
+        },
+        "slice 5 boundary restatement": {
+          "requirement": null,
+          "scenario": null,
+          "doctrine": "SEC-2",
+          "rfc2_26_consequence_class": null
+        },
+        "slice 6 deferred": {
+          "requirements_that_would_apply": [
+            {
+              "id": "REQ-polaris-generation-003",
+              "at": "base line 98",
+              "scenario": "Editorial relationship diagram",
+              "scenario_at": "base lines 117-121"
+            },
+            {
+              "id": "REQ-polaris-generation-004",
+              "at": "overlay line 78",
+              "scenario": "No supported optional asset",
+              "scenario_at": "overlay lines 91-95"
+            }
+          ],
+          "limb_1": "deferred, not run"
+        }
+      },
+      "rfc2_26_test": {
+        "clause_at": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md lines 196-221",
+        "heading_at": "line 194",
+        "quoted_in_packet": "in full, both paragraphs, no elision",
+        "denominator": 6,
+        "denominator_source": "the six slice rows of the packet's Gate 3 'The authorizing act, per slice' table"
+      },
+      "disposition_enum_spelling_residue": {
+        "claim_label": "Observed",
+        "spellings": [
+          {
+            "literal": "produced, omitted or unresolved",
+            "at": "overlay line 453 and base line 1015 (REQ-polaris-generation-019)",
+            "bound": true
+          },
+          {
+            "literal": "produced, reasoned-omission or unresolved",
+            "at": "overlay line 78 (REQ-polaris-generation-004)",
+            "bound": true
+          },
+          {
+            "literal": "Produced / Omitted / Unresolved",
+            "at": "openspec/changes/polaris-manifesto-generation/SCHEMA-CONTRACT.md lines 35-39",
+            "bound": true
+          },
+          {
+            "literal": "planned, unnecessary-with-reason or unresolved",
+            "at": "docs/polaris-generation/AUTHORING.md line 102",
+            "bound": false
+          },
+          {
+            "literal": "produced, unnecessary-with-reason or unresolved",
+            "at": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md line 43",
+            "bound": false
+          }
+        ],
+        "consequence": "Whichever literal the executable schema adopts will disagree with at least one bound artifact, and no bound artifact may be edited to agree. This is Q1's residue and is the owner's to settle."
+      }
+    },
+    "M11_acts": {
+      "claim_label": "Observed",
+      "implementation_authorization": {
+        "path": ".syzygy/governance/decisions/POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md",
+        "date": "2026-09-12",
+        "authorization_sentence_line": 42,
+        "authorization_sentence_verbatim": "Authorize the full EXECUTION-PHASES.md implementation goal, including protected effect host, complete owner experience, two-project and changed-source proof obligations. Phase A alone is not completion. Real-project reads, provider egress and destination writes remain separately admitted; no effect, production release, broad remote access or observed-project code execution is authorized by this act."
+      },
+      "specification_adoption": {
+        "path": ".syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md",
+        "date": "2026-09-12",
+        "scope_sentence_line": 42
+      },
+      "applicability": {
+        "path": ".syzygy/governance/decisions/POLARIS-GENERATOR-APPLICABILITY-ACT.md",
+        "date": "2026-09-12",
+        "scope_sentence_line": 42
+      },
+      "understanding_amendment": {
+        "path": ".syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md",
+        "date": "2026-09-13",
+        "grants_no_implementation_extension_line": 40,
+        "verbatim": "This act grants no implementation extension, source/provider/content permission, write consent, deployment or release."
+      },
+      "phase_for_every_slice": "A",
+      "phase_A_scope_verbatim": "Implement the source/draft contracts, immutable identities and support, bounded pure stage controller, dependency invalidation, trusted rendering and fixture adapters. (EXECUTION-PHASES.md lines 10-11)",
+      "phase_A_requirement_set_verbatim": "Requirements 001-012, 014-019 and 025 provide the data/reading/failure behavior for these mechanics. (EXECUTION-PHASES.md line 18)",
+      "offer_file_set": {
+        "record": "docs/evidence/polaris-generator-current-scope-2026-09-12.json",
+        "rows": 21,
+        "note": "SCHEMA-CONTRACT.md, ASSET-CONTRACT.md, SOURCE-POLICY.md, EXECUTION-PHASES.md, tasks.md and the base spec are all rows; every one is therefore digest-bound and no slice proposes editing one."
+      },
+      "pre_act_banner_caution": "docs/evidence/polaris-generator-current-scope-2026-09-12.json carries status 'unadopted; awaiting final independent review and owner acts' and implementedGenerator false. It is a pre-act snapshot whose status line was never rewritten; the three acts were performed 2026-09-12. Both specification files likewise still open 'Candidate specification - binds nothing until the required owner adoption' over bytes an act bound. Read the act record, never the package banner."
+    }
+  },
+  "owner_questions": [
+    {
+      "id": "Q1",
+      "gist": "Is adding a disposition field to the provider stage schemas an implementation of the adopted specification, or an amendment to it?",
+      "recommended": "an implementation; no CC-REV-2 delta for the field itself",
+      "arms": 2,
+      "default_if_unanswered": "slices 2, 3 and 4 do not ship"
+    },
+    {
+      "id": "Q2",
+      "gist": "Does the support discriminant (quoted / synthesis / inference / unresolved replacing bare sourceIds) go in with slice 2, or is it deferred?",
+      "recommended": "defer to its own funnel",
+      "arms": 2,
+      "default_if_unanswered": "deferred; the claim-level hole is recorded as open"
+    },
+    {
+      "id": "Q3",
+      "gist": "Should the fidelity verdict become fail-closed over coverage rows, so silence blocks readiness instead of passing it?",
+      "recommended": "yes",
+      "arms": 2,
+      "default_if_unanswered": "rows added, polarity unchanged; readiness still passes on silence"
+    },
+    {
+      "id": "Q4",
+      "gist": "example.json fails the landed validator 19 of 19; regenerate it from a real validation, or re-label it?",
+      "recommended": "regenerate, keeping a separated illustrative block for the understanding stage",
+      "arms": 2,
+      "default_if_unanswered": "the one-sentence re-labelling arm"
+    },
+    {
+      "id": "Q5",
+      "gist": "The onramp: install line only, or install line plus a fresh-install battery assertion, and is the package added to build:poc's explicit tsc -b list?",
+      "recommended": "all three",
+      "arms": 2,
+      "default_if_unanswered": "the install line lands, the assertion does not"
+    },
+    {
+      "id": "Q6",
+      "gist": "Which act covers the five slices, and does RFC2-26 gate any of them?",
+      "recommended": "the existing implementation-authorization act covers all five; RFC2-26 gates none",
+      "arms": 2,
+      "default_if_unanswered": "slices 1 and 5 proceed; slices 2, 3 and 4 hold"
+    }
+  ],
+  "figures_that_differ_from_the_dossier": [
+    "The README's demo command chain SUCCEEDS at a9f671e after npm ci (exit 0); the dossier says it 'fails with TS2307 from a fresh checkout'. The break is conditional on the workspace symlink, established by counterexample in both directions.",
+    "The dossier's syzygy_audited_at is f4589e2, at which the entire generation package did not exist. The audit base for surfaces L3 and S9 is 1932f74; the M6 surface is byte-identical across 1932f74..a9f671e.",
+    "S9-F4 tags SEC-1 (endpoint authentication); the governing doctrine for the no-egress boundary is SEC-2.",
+    "M6's Slices list has five entries where its What bullet names six moves; S9-M3 (the diagram/deep-dive/glossary gap) appears in the What and in evidence_findings and in no slice. It is carried in the packet as a deferred slice 6 with its mapping recorded.",
+    "S9-F3's line ranges are slightly long in three places: AUTHORING.md 45-49 (the sentence ends at 46), 60-63 (the clause is on 62), ARTIFACTS-AND-TOOLS.md 40-41 (begins at 40).",
+    "A defect the dossier does not name: package.json line 15's build:poc tsc -b list omits packages/polaris-generation-core, which builds only transitively."
+  ],
+  "not_verifiable_this_session": [
+    "Whether the sibling branches' actual diffs stay inside the paths their packets cite, until they land.",
+    "Which arm the owner takes on Q1, and therefore whether slices 2, 3 and 4 are one change or a change plus an amendment.",
+    "Which disposition literal the owner will choose; three bound spellings are in force simultaneously and none may be edited to agree.",
+    "Whether an account of what an editor changed counts as an 'API answer over epistemic state' under RFC2-26's consequence list; this packet states the reading and does not resolve it."
+  ],
+  "conventions_checked": {
+    "packet_non_fence_lines": 1073,
+    "wrapped_code_spans": 0,
+    "lines_over_78_outside_fences_tables_headings": 2,
+    "lines_over_78_note": "each is a single unbreakable code-span path",
+    "distinct_code_spans": 261,
+    "code_spans_with_slash_that_do_not_resolve": 10,
+    "code_spans_with_slash_exceptions": [
+      ".syzygy/**",
+      "openspec/**",
+      "apps/**",
+      "packages/**",
+      "docs/**",
+      "TS2307: Cannot find module '@syzygy/polaris-generation-core'",
+      "TS2307: Cannot find module '@syzygy/polaris-generation-core' or its corresponding type declarations",
+      "decisions/",
+      "dist/",
+      "dist/provider-draft.js"
+    ],
+    "observed_repository_paths_backticked": 0,
+    "act_arguments_or_signed_digests_reproduced": 0,
+    "cg_1b_note": "The path of this packet's first review is named without a code span, because CG-1b requires every code-span path to resolve and it does not exist yet. An earlier draft backticked it and CG-1b failed on exactly that reference.",
+    "lines_over_78_at": [
+      657,
+      787
+    ]
+  },
+  "independent_review": {
+    "count": 0,
+    "note": "This packet has had no independent review. It is a first draft and should be reviewed in fresh context; the raw belongs at docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-RAW.md. Verification rule 10: any later edit retires a review bound to these bytes."
+  },
+  "packet_measured": {
+    "path": "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md",
+    "bytes": 86188,
+    "sha256": "5ff5520f5d4c3e709512c65bf81ca65ce4ac289c223d06a31f341999a418883d",
+    "total_lines": 1122,
+    "note": "measured this session after the last edit to the packet; verification rule 10 binds a review to exactly these bytes"
+  },
+  "governance_check": {
+    "command": "python3 scripts/check_governance.py",
+    "run_in": "the worktree at a9f671e with both files present",
+    "baseline_before_these_files": "32 OK, 20 WARN, 0 FAIL (52 checks)",
+    "last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+    "note": "An earlier draft failed CG-1b on one code-span path (the not-yet-written first review) and was repaired by naming it without a code span."
+  }
+}
