@@ -1,0 +1,324 @@
+{
+  "generated": "2026-09-14",
+  "purpose": "Evidence computed this session for the M5 agent-briefing funnel packet (bead syzygy-dov.5).",
+  "syzygy_commit": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
+  "worktree_branch": "agent/syzygy-dov.5",
+  "capture": {
+    "path": "scratchpad/m1/measure/after/api-poc.json",
+    "bytes": 5520314,
+    "sha256": "a89b0e059b5fdadc5f359c2bee58115cd50747399cfb00444703e0fafdfb466e",
+    "whole_file_compact_bytes": 5521960,
+    "provenance": "retained lane A 'after' capture, Butlers evaluation revision 2e3bac97790b (committed 2026-09-13T10:31:11Z), captured 2026-09-13T13:33:24.295Z",
+    "sha256_verified_against": [
+      "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md capture table (m4wt worktree, read this session)",
+      "scratchpad/m1/measure/after/*.html sha256 recomputed this session and matched the M2 evidence file's polaris-tailnet.html hash"
+    ]
+  },
+  "companion_captures_sha256_reverified_this_session": {
+    "api-poc.json": "a89b0e059b5fdadc5f359c2bee58115cd50747399cfb00444703e0fafdfb466e",
+    "api-polaris.json": "ab3b517be1e62a0a7f4cabe73d870f9aa6bea7d2bbbadf0d27a2f00c34eca22e",
+    "polaris-tailnet.html": "e8a04b4631dedbda159dd162d25f4e8a7ed4f9f4059a37ca1bca87b717790111",
+    "polaris-direct.html": "2fecdd01e1a2ff577567495796ea7e59ab89f1420be6033e23314d26442ea094"
+  },
+  "bytes_per_top_level_key": {
+    "method": "json.dumps(v, separators=(',', ':')).encode('utf8') length per top-level key, share against whole raw file bytes",
+    "denominator_bytes": 5520314,
+    "keys": {
+      "schema": {
+        "bytes": 29,
+        "share_percent": 0.0005
+      },
+      "evaluation": {
+        "bytes": 595,
+        "share_percent": 0.0108
+      },
+      "project": {
+        "bytes": 106,
+        "share_percent": 0.0019
+      },
+      "observerRevision": {
+        "bytes": 42,
+        "share_percent": 0.0008
+      },
+      "capabilityId": {
+        "bytes": 40,
+        "share_percent": 0.0007
+      },
+      "entities": {
+        "bytes": 4899,
+        "share_percent": 0.0887
+      },
+      "relationships": {
+        "bytes": 4547,
+        "share_percent": 0.0824
+      },
+      "codeStructure": {
+        "bytes": 1493219,
+        "share_percent": 27.0495
+      },
+      "workItems": {
+        "bytes": 2273467,
+        "share_percent": 41.1837
+      },
+      "workerChange": {
+        "bytes": 87,
+        "share_percent": 0.0016
+      },
+      "testArtifactVerification": {
+        "bytes": 103,
+        "share_percent": 0.0019
+      },
+      "orrery": {
+        "bytes": 2588,
+        "share_percent": 0.0469
+      },
+      "trajectory": {
+        "bytes": 80130,
+        "share_percent": 1.4515
+      },
+      "materializedBeadId": {
+        "bytes": 4,
+        "share_percent": 0.0001
+      },
+      "projectShape": {
+        "bytes": 1657461,
+        "share_percent": 30.0248
+      },
+      "proposedWork": {
+        "bytes": 2278,
+        "share_percent": 0.0413
+      },
+      "walkthroughJudgment": {
+        "bytes": 291,
+        "share_percent": 0.0053
+      },
+      "walkthroughReadiness": {
+        "bytes": 322,
+        "share_percent": 0.0058
+      },
+      "surfaces": {
+        "bytes": 1440,
+        "share_percent": 0.0261
+      }
+    }
+  },
+  "agent_briefing_sets": {
+    "minimal_orientation_14_fields": {
+      "fields": [
+        "evaluation",
+        "project",
+        "observerRevision",
+        "identity.scope",
+        "authority",
+        "entities",
+        "relationships",
+        "proposedWork",
+        "exclusions",
+        "counts",
+        "rootSummary",
+        "walkthroughReadiness",
+        "walkthroughJudgment",
+        "materializedBeadId"
+      ],
+      "bytes_as_one_compact_object": 18719,
+      "bytes_sum_of_parts_separately": 18489,
+      "share_percent_of_whole": 0.3391,
+      "dossier_pre_lane_a_figure": {
+        "bytes": 18710,
+        "share_percent": 0.34,
+        "denominator_bytes": 5508208
+      }
+    },
+    "minimal_plus_classes_and_claim": {
+      "bytes_as_one_compact_object": 148815,
+      "share_percent_of_whole": 2.6958,
+      "dossier_pre_lane_a_figure": {
+        "bytes": 148785,
+        "share_percent": 2.7,
+        "denominator_bytes": 5508208
+      }
+    },
+    "one_claim_briefing_example": {
+      "subject": "claim:baseline-spec:switchboard-identity",
+      "note": "New measurement this session, not in the dossier. mayNot omitted (field does not yet exist); estimated to add a few hundred bytes for ~5 rows.",
+      "bytes_as_one_compact_object": 2804,
+      "share_percent_of_whole": 0.0508,
+      "fields": [
+        "subject",
+        "evaluation",
+        "consentScope",
+        "authority",
+        "claim",
+        "chain",
+        "unknownsTouchingSubject",
+        "exclusionsTouchingSubject",
+        "exactSourceRoutes"
+      ]
+    }
+  },
+  "literal_substring_counts": {
+    "method": "str.count over the whole decoded UTF-8 capture text, two runs agreeing",
+    "this_capture": {
+      "externalRef": 0,
+      "governingIntent": 0,
+      "syzygy-poc:work:": 0,
+      "mayNot": 0,
+      "forbidden": 3,
+      "prohibit": 1,
+      "materializedBeadId": 1
+    },
+    "dossier_pre_lane_a_capture": {
+      "externalRef": 0,
+      "governingIntent": 0,
+      "syzygy-poc:work:": 0,
+      "mayNot": null,
+      "forbidden": 3,
+      "prohibit": 1,
+      "materializedBeadId": 1
+    }
+  },
+  "project_shape_counts_this_evaluation": {
+    "sources": 278,
+    "sourcesWithKnownItemDenominator": 269,
+    "sourcesWithUnknownDenominator": 9,
+    "items": 415,
+    "modeled": 415,
+    "unknown": 0,
+    "contradicted": 0,
+    "facts": 439,
+    "contradictedFacts": 0,
+    "rulesDeclared": 7,
+    "rulesApplied": 1,
+    "exclusions": 9,
+    "classification": {
+      "sources": 278,
+      "classified": 269,
+      "classifiedByBasis": {
+        "body": 77,
+        "path-only": 192
+      },
+      "excluded": 9,
+      "unavailable": 0,
+      "byRedactionClass": {
+        "excluded-artifact": 1,
+        "unclassifiable-excluded": 8
+      }
+    }
+  },
+  "authority_this_evaluation": {
+    "authorizationMode": "owner-trusted-bootstrap",
+    "authorities": [
+      {
+        "authority": "consent",
+        "state": "owner-adopted (bootstrap, uncorrelated)",
+        "independentlyVerified": false,
+        "actIdentity": "PWB-BUTLERS-OBSERVATION-CONSENT-2026-09-02"
+      },
+      {
+        "authority": "policy",
+        "state": "owner-adopted (bootstrap, uncorrelated)",
+        "independentlyVerified": false,
+        "actIdentity": "PWB-SECRET-CLASSIFICATION-POLICY-APPROVAL-AMENDMENT-2026-09-05"
+      },
+      {
+        "authority": "registry",
+        "state": "owner-adopted (bootstrap, uncorrelated)",
+        "independentlyVerified": false,
+        "actIdentity": "PWB-OBSERVER-REGISTRY-ENTRY-ADOPTION-AMENDMENT-2026-09-05"
+      }
+    ]
+  },
+  "identity_scope_this_evaluation": {
+    "repositoryId": "repository:butlers-configured-poc",
+    "contentClass": "declared-project-shape-text",
+    "phase": "A"
+  },
+  "subject_naming_finding": {
+    "proposedWork_changeId_this_evaluation": "repair-whatsapp-identity-reconciliation",
+    "materialization_external_ref_constant": "syzygy-poc:work:whatsapp-single-event-normalization",
+    "worker_change_intent_id_constant": "REQ-connector-base-spec-001",
+    "note": "Three distinct subjects live inside one evaluation: the dynamically observed proposedWork.changeId, the fixed MaterializationPacket subject, and the fixed worker-change badge intent. Not the same claim; a naive briefing must not conflate them."
+  },
+  "route_table_reverified_at_a9f671e": [
+    {
+      "route": "/",
+      "credentialClass": "human-open"
+    },
+    {
+      "route": "polaris/trajectory/orrery (direct+tailnet)",
+      "credentialClass": "human-open"
+    },
+    {
+      "route": "/polaris/source (direct+tailnet)",
+      "credentialClass": "human-open",
+      "note": "browserRequestAllowed only; no bearer token"
+    },
+    {
+      "route": "/api/poc (direct+tailnet)",
+      "credentialClass": "machine-credentialed"
+    },
+    {
+      "route": "/api/poc/polaris (direct+tailnet)",
+      "credentialClass": "machine-credentialed"
+    }
+  ],
+  "line_numbers_reverified_at_a9f671e": {
+    "note": "git diff --stat f4589e2..a9f671e over these 9 files returns no rows; every line number below held at both commits. The dossier's own citations were already imprecise at f4589e2.",
+    "files_confirmed_unchanged_f4589e2_to_a9f671e": [
+      "apps/three-surface-poc/src/routes.ts",
+      "apps/three-surface-poc/src/browser-origin.ts",
+      "apps/three-surface-poc/src/materialize-action.ts",
+      "packages/three-surface-poc-core/src/model.ts",
+      "packages/three-surface-poc-core/src/proposed-work.ts",
+      "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "packages/three-surface-poc-core/src/authority-disclosure.ts",
+      "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "packages/three-surface-poc-core/src/materialization.ts"
+    ],
+    "citations": {
+      "routes.ts machineHandle": {
+        "actual": "159-162",
+        "dossier": "159-162",
+        "match": true
+      },
+      "routes.ts POLARIS_SOURCE_PATH registration": {
+        "actual": "221 (222 tailnet)",
+        "dossier": "196-200,222-223",
+        "match": false,
+        "note": "196-200 is humanSurfaceRoutes's internal handle closure (Trajectory/Orrery family), not POLARIS_SOURCE_PATH's own registration"
+      },
+      "routes.ts machine-credentialed route block": {
+        "actual": "225-238",
+        "dossier": "232-239",
+        "match": false,
+        "note": "dossier range starts inside the block, missing 225-229, and ends one line past the array's close"
+      },
+      "materialize-action.ts renderMaterializePanel": {
+        "actual": "55-82",
+        "dossier": "55-80 / 55-81",
+        "match": "partial",
+        "note": "closing brace is line 82"
+      },
+      "materialize-action.ts MATERIALIZE_HUMAN_PATH": {
+        "actual": "17",
+        "dossier": "17",
+        "match": true
+      }
+    }
+  },
+  "pending_register_state": {
+    "main_at_a9f671e_last_row": "P-67",
+    "note": "P-68 (lane B), P-69 (M2), P-70 (M3), P-71 (M4) each exist only on their own branch, per the M4 packet's own baseline check. This packet's questions would queue as P-72; the register itself is not edited by this packet, per its write-boundary limit to two files."
+  },
+  "pwb_resource_limits_this_worktree": {
+    "maxHumanResponseBytes": 2097152,
+    "maxMachineResponseBytes": 8388608,
+    "source": "packages/three-surface-poc-core/src/project-shape-observation.ts lines 81-82"
+  },
+  "not_verifiable_this_session": [
+    "Whether Q1's PWB-delta or POC-delta arm is the one the owner will choose; both are lawful on this packet's own reading.",
+    "The exact byte cost of authority.mayNot once built (estimated at a few hundred bytes for ~5 rows; not yet implemented, so not measured).",
+    "Whether M3's polaris.ts edits (register row P-70) land in a region that would textually conflict with slice 2's authority-disclosure block edit; only M3's own Gate 3 table was read, not its full diff, since M3 was outside this packet's assigned reading list.",
+    "The registry entry's exact digest as currently recorded in decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md was not quoted anywhere in this packet, per AGENTS.md's guardrail against quoting a truncated signed digest outside ACT_DIGEST_COPY_FILES; its value was not independently re-derived this session."
+  ]
+}
