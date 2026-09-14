@@ -691,8 +691,8 @@
     "orrery_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown_raw": 11, "epistemic_unknown_style_rule": 1, "epistemic_unknown_legend_item": 1, "epistemic_unknown_rendered": 9 },
     "home_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown_raw": 18, "epistemic_unknown_style_rule": 1, "epistemic_unknown_legend_item": 1, "epistemic_unknown_rendered": 16 },
     "superseded_2026_09_15_review_2_G3": "This block previously recorded polaris_lane_a_tailnet.epistemic_unknown as null while the packet asserted in prose that the class occurred on Polaris 'including Polaris's own 22 disclosures'. Measured: Polaris carries 2 occurrences, the stylesheet rule and the legend item; an element-inner sweep of all 22 data-unknown-disclosure elements (offsets 378631 through 1462622) finds 0. The prose clause was false and is superseded in place in the packet.",
-    "largest_of_three_recheck": "Still holds on the corrected figures: the third encoding (bare epistemic-unknown claim span, no disclosure wrapper, reason or route) is 299 on Trajectory plus 9 on Orrery = 308 across the two surfaces, against Polaris's 13 routed disclosures and 9 bare-prose ones. Home's 16 is outside POC-REQ-060's three-surface population.",
-    "conclusion": "Trajectory and Orrery render every Unknown through the bare epistemic-unknown class with no disclosure wrapper, reason or route; POC-REQ-060's sweep as originally specified has denominator 0 on both and passes vacuously there"
+    "largest_of_three_recheck": "SUPERSEDED 2026-09-15 per review 3, H2. This field read: 'Still holds on the corrected figures: the third encoding (bare epistemic-unknown claim span, no disclosure wrapper, reason or route) is 299 on Trajectory plus 9 on Orrery = 308 across the two surfaces, against Polaris's 13 routed disclosures and 9 bare-prose ones.' Ranking the encodings across marker families is the comparison the packet's own next sentence forbids, and the terms count different objects (epistemic-unknown spans against disclosure elements). Restated as measured: each surface's Unknowns are encoded by a marker the other two do not share; the per-family denominators are reported unranked. Home's 16 is outside POC-REQ-060's three-surface population.",
+    "conclusion": "Trajectory and Orrery emit 0 data-unknown-disclosure elements, so POC-REQ-060's sweep as originally specified has denominator 0 on both and passes vacuously there. CORRECTED 2026-09-15 per review 3, H1: this field read 'Trajectory and Orrery render every Unknown through the bare epistemic-unknown class with no disclosure wrapper, reason or route', which asserts one class literal exhausts those surfaces' rendered Unknown population. The predicate run counts occurrences of that literal only; a fourth family, provenance_none_census below, sits outside both censused families and reaches the same nine Orrery objects."
   },
   "register_rows": {
     "main_at_a9f671e_last_numbered_row": "P-53",
@@ -769,11 +769,11 @@
     "disposition_summary": {
       "G1": "re-derived and confirmed; shared set with M2 is five files, both denominators published (M2 9, M4 13)",
       "G2": "re-derived and confirmed; M2 slice 2 also renders into the opening band, so the reconciliation is three-way and the recommendation changed",
-      "G3": "re-derived and confirmed; raw/rendered split published, polaris null replaced with 2, 'largest of the three' re-checked and still holds",
+      "G3": "re-derived and confirmed; raw/rendered split published, polaris null replaced with 2. The 'largest of the three' re-check recorded here is SUPERSEDED 2026-09-15 per review 3, H2 (a cross-family ranking the packet's own next sentence forbids), and the two-literal census itself is widened by review 3, H1 (fourth family, provenance-none)",
       "G4": "re-derived and confirmed; Q6 preamble rewritten to an engineering choice, minting clause returned to Q2",
       "G5": "re-derived and confirmed; body section lines 44-52, source order restored, tasks-range clause kept",
       "G6": "re-derived and confirmed; UNKNOWN_REASON_ROUTES is at project-shape-model.ts 88-102 and neither M2 slice 5 (162-193) nor M4 slice 2 (115-118, 150-154) edits it; register sentence corrected to the shared file and the shared claim() construction site at line 176",
-      "G7": "re-derived and confirmed, and now doubly stale: the M3 worktree has moved twice past b34fca7, which remains an ancestor; head mentions removed from the Collision section",
+      "G7": "re-derived and confirmed, and now doubly stale: the M3 worktree has moved twice past that head, which remains an ancestor. CORRECTED 2026-09-15 per review 3, H3: this field read 'head mentions removed from the Collision section', which was false - the head stood in live Collision-section prose until the review-3 pass removed it. Head mentions were removed from Q7 only; the ones that remain (review-1 disposition row, review-2 G7 row, and this record's own review-1 block) are historical records of what each repair session read",
       "G8": "re-derived and confirmed; VIS-5 requires the effect to run through a typed adapter and names no number of adapters",
       "G9": "re-derived and confirmed; M3 names polaris.ts in slices 1, 3, 5, 6 and M2 in slices 1, 2, 6 with slice 2's region located",
       "G10": "re-derived and confirmed; routes.ts carries 13 'model.' occurrences over nine lines, line 89 carries four, and five (not four) lie outside renderPocPage",
@@ -788,7 +788,7 @@
       "G10_routes_ts_model_hits": "awk count of the literal 'model.' per line at 6218726: 35:1, 78:1, 87:1, 89:4, 92:2, 127:1, 133:1, 171:1, 172:1 = 13; renderPocPage spans lines 77-96."
     },
     "recommended_answers_changed": {
-      "Q7": "the opening-band reconciliation changed from two-way (M3 slice 3 lands first, M4 slice 3 extends it) to three-way: M2 slice 2 also renders into that band, so the first of the three to land builds the container and owns its single ordering oracle and the other two add payload blocks with their own payload oracles; the block order within the band is the owner's. Q7 also now states the M2 shared set as five files and names the polaris-copy.ts declared-copy array as a merge-conflict site.",
+      "Q7": "the opening-band reconciliation changed from two-way (M3 slice 3 lands first, M4 slice 3 extends it) to three-way: M2 slice 2 also renders into that band, so the first of the three to land builds the container and owns its single ordering oracle and the other two add payload blocks with their own payload oracles; the block order within the band is the owner's. Q7 also now states the M2 shared set as five files and names the polaris-copy.ts declared-copy array as the shared copy-oracle reconciliation site - RENAMED 2026-09-15 per review 3, H7 from 'a merge-conflict site', since the two edits sit 143 lines apart (M2 slice 1 at 45-49, M4 slice 3 beside 192-193) and do not textually conflict; the real coupling is the shared UNREACHED_IN_FIXTURES set, which carries the same sequencing conclusion.",
       "Q1_Q2_Q3_Q4_Q5_Q6": "unchanged in recommendation; Q1's and Q6's supporting figures and framing were corrected (G3, G4, G10) without changing which arm is recommended."
     },
     "rule_10": "This review binds the bytes it names (packet 116002 / evidence 31201 / register 29879 at 6218726) and not the repaired bytes; the repairs above are uncovered until a third review confirms them."
@@ -798,5 +798,63 @@
     "Whether P-68, P-69 and P-70 remain at the numbers and branch heads their packets state: only the branches' own packet text was read, and both may have moved since. [Unknown]",
     "The byte cost of slices 1, 3 and 5: a projection about unbuilt code, to be replaced by the before/after measurement Gate 6 requires. [Inferred]",
     "Whether the owner reads a rendered resolution route as a 'disclosure Polaris presents' under PWB-REQ-020's enumerated population: this packet's reading is that it is, labelled Inferred in the packet. [Unknown]"
-  ]
+  ],
+  "provenance_none_census": {
+    "added": "2026-09-15, review 3, H1",
+    "method": "literal occurrences of the string provenance-none over the whole served page of each retained capture; each occurrence then assigned to its enclosing tag. The partition accounts for every occurrence on every page.",
+    "source": "apps/three-surface-poc/src/exact-tables.ts line 10 emits the span whenever an entity's or relationship's provenance array is empty; its only style rule is apps/three-surface-poc/src/routes.ts line 73, inside HOME_STYLE (declared line 57, passed as extraStyle at line 90 only, the home route). apps/three-surface-poc/src/design-tokens.ts line 25 declares className epistemic-unknown and names provenance-none nowhere.",
+    "polaris_lane_a_tailnet": { "total": 0, "style_rule": 0, "rendered_spans": 0 },
+    "polaris_lane_a_direct": { "total": 0, "style_rule": 0, "rendered_spans": 0 },
+    "trajectory_pre_lane_a": { "total": 0, "style_rule": 0, "rendered_spans": 0 },
+    "orrery_pre_lane_a": { "total": 9, "style_rule": 0, "rendered_spans": 9 },
+    "home_pre_lane_a": { "total": 10, "style_rule": 1, "rendered_spans": 9 },
+    "orrery_enclosing_tr_ids": [
+      "work:whatsapp-single-event-normalization",
+      "evidence:focused-pytest",
+      "runtime:live-satisfaction",
+      "region:unmapped-code",
+      "relationship:intent-to-work",
+      "relationship:work-to-code",
+      "relationship:code-to-evidence",
+      "relationship:code-to-runtime",
+      "relationship:capability-to-unmapped-region"
+    ],
+    "conclusion": "Exactly the nine objects Q1 is about - the four entity Unknowns and the five relationship Unknowns - are rendered a third time, by a marker in neither censused family. POC-REQ-060's falsifier is met on both limbs: a class outside the declared table styling epistemic state (routes.ts 73, home only), and the same class rendering with the declared Unknown colour on home and with no declared encoding on Orrery. The requirement text is at openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md lines 927-946; the falsifier's second limb is line 946."
+  },
+  "review3": {
+    "raw": "docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-3-RAW.md",
+    "bytes": 31656,
+    "sha256": "ebce963f86f302940cc78f98dbe91325ae5c7b0ffa88e423b1fe05669035ccfe",
+    "verdict": "REVISE - one blocking, three non-blocking, five editorial",
+    "reviewed_commit": "f911a45",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md": { "bytes": 139094, "sha256": "09116fcfc1fb21127670813196b297705b2a7862edb18dd4fb713391899f0750" },
+      "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json": { "bytes": 38933, "sha256": "d7a7aaffd5a1e5a8fd5dc8a3997c9f56e72b4b762bdec42f108886acb7d5b7ed" },
+      ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": { "bytes": 32781, "sha256": "38ee2b8e01a2fd483caad90e0a07867a779edf7db1cef5deb7e09065a1eb8f9c" }
+    },
+    "repairs_applied_this_session": true,
+    "disposition_summary": {
+      "H1": "CONFIRMED and applied (blocking). provenance-none counted on all five retained captures with the predicate and denominator stated; the nine Orrery enclosing tr ids enumerated; exact-tables.ts:10, design-tokens.ts:25, routes.ts:73 and HOME_STYLE's single use at routes.ts:90, and orrery.ts's import at line 4 with calls at 125 and 151, all read at source. Added as a fourth census family with per-surface denominators and the Orrery-versus-home style asymmetry; 'every Unknown' replaced at Q1 and in slice 1's Tests with the predicate actually run; Q1's recommendation and slice 1's Tests now require the shared marker to cover it, with a rule-6 mutant; Gate 3's slice-5 row records that exact-tables.ts and routes.ts 34-96 are where it lives.",
+      "H2": "CONFIRMED and applied (non-blocking). The 'largest of the three' ranking compares two families that count different objects and is withdrawn at Q1, in the review-2 G3 disposition and in this record; restated as 'each surface's Unknowns are encoded by a marker the other two do not share', reported per family and unranked.",
+      "H3": "CONFIRMED and applied (non-blocking). Short M3 head counted: 4 literal occurrences over 3 packet lines (Collision section live prose, review-1 disposition row, review-2 G7 row twice) plus 2 in this record's review-1 block. The Collision-section mention is removed; review 2's G7 disposition is restated to the true count and names the remainder as historical records; this record's G7 field is corrected.",
+      "H4": "CONFIRMED and applied (non-blocking). POC-REQ-060 read at spec lines 925-948 and PWB-REQ-020 at 900-927 and PWB-REQ-004 at 488-500. Both elisions marked with an ellipsis naming what was elided (POC Oracle 941-942 and Oracle independence 943-944; PWB Oracle 916-917, Oracle independence 918-919, Mutation proof 920-923); the POC range extended to 946 and the PWB-REQ-004 range corrected to 491-498; slice 2 now states that PWB-REQ-020's Mutation proof bullet is the source of its per-class injection obligation, quoted in full.",
+      "H5": "CONFIRMED and applied (editorial). Re-derived last, after every other review-3 edit, with the predicate and denominator stated in the F21 disposition itself.",
+      "H6": "CONFIRMED and applied (editorial). Both conventions re-derived on the lane A tailnet capture: the table's Offset column is the enclosing element's opening angle bracket, Q1's is the data-unknown-disclosure attribute position, delta 32 at both ends over all 22 elements. Stated above the table.",
+      "H7": "CONFIRMED and applied (editorial). M2 slice 1's cited region is polaris-copy.ts 45-49 and M4 slice 3 adds rows beside label.deferred / label.no-route at 192-193, 143 lines apart, so the two do not textually conflict; renamed to the shared copy-oracle reconciliation site in the packet, this record and the register. The sequencing conclusion is unchanged - the coupling is the shared UNREACHED_IN_FIXTURES set at polaris-copy.test.ts:296.",
+      "H8": "CONFIRMED and applied (editorial). Q6's row now opens 'Both arms are lawful; deletion has a cost the move does not name, stated here so the choice is made knowing it', with the superseded phrase quoted and dated.",
+      "H9": "CONFIRMED and applied (editorial). The conflict check, the boundaries-crossed sentence and the not-touched-by-any-slice sentence each carry an [Inferred] label naming the eight-slice denominator they were checked against."
+    },
+    "re_derived_before_applying": {
+      "H1_provenance_none_counts": "Polaris tailnet 0, Polaris direct 0, Trajectory 0, Orrery 9 rendered / 0 style, home 9 rendered / 1 style rule. See provenance_none_census above for the method and the nine enclosing tr ids.",
+      "H1_poc_req_060_falsifier": "spec.md lines 945-946: '- **Falsifier**: one surface encoding Unknown (or Observed) differently / from the declared table, or a surface styling epistemic state ad hoc.' Both limbs are met by the provenance-none rendering.",
+      "H3_head_occurrence_count": "4 literal occurrences over 3 lines of the packet and 2 in this record, counted this session with the whole file as denominator.",
+      "H4_pwb_req_020_mutation_proof": "spec lines 920-923, quoted in full under slice 2: per-class injection of missing, duplicated, changed, collapsed and wrong-evaluation markers, comparator fails before restoration, both channel denominators reported for every run.",
+      "H6_offset_delta": "Re-derived on the lane A tailnet capture: 22 data-unknown-disclosure attributes at offsets 378631..1462622; their enclosing elements' opening brackets at 378599..1462590; delta 32 at both ends.",
+      "H7_copy_array_distance": "polaris-copy.ts: M2 slice 1's region 45-49; M4 slice 3's rows beside label.deferred (192) and label.no-route (193); 143 lines apart. UNREACHED_IN_FIXTURES is declared at polaris-copy.test.ts line 296."
+    },
+    "recommended_answers_changed": {
+      "none": "No recommended answer changed after review 3. Q1's remedy widened in scope - the re-specified shared marker must also cover the provenance-none rendering - but the recommended arm (a non-conformance, repaired by slice 1) turns on the zero-denominator fact, which the fourth family neither creates nor removes. Q2 through Q7 are untouched in recommendation."
+    },
+    "rule_10": "This review binds the bytes it names (packet 139094 / evidence 38933 / register 32781 at f911a45) and not the repaired bytes; every review-3 repair is uncovered until a fourth review confirms them. That raw will be a fourth -RAW.md file, never an overwrite of any retained one."
+  }
 }
