@@ -48,7 +48,7 @@ packet recommends one and says why (review 2 finding G9).
 | Q4 | **How is re-observation triggered?** Arm (a): an explicit operator route in the shape of the existing materialize route. Arm (b): a timer, poll or file watcher inside the daemon. Disclosed for confirmation: arm (b) is unauthorized today and would need its own act. | **Arm (a), no timer.** **No act found that authorizes a background poller**; it is new daemon behaviour and the 2026-09-02 authorization's "any scope beyond the signed change" trigger is the hook, so arm (b) is not available without a further owner act. The operator route needs none: it changes no consent, policy, registry or spec subject and rides the 2026-09-05 implementation-authorization continuation. Design argument: a human-triggered re-evaluation keeps re-observation an operator fact, not a background one, and every new `asOf` then has a new observation behind it (the inverse of L4-F4, where `asOf` moved with no observation). An earlier draft leaned on AGENTS.md's "no unattended agent coordination"; a single daemon's timer is not agent coordination, and that sentence is withdrawn (review 1 finding F5). |
 | Q5 | **The legend promises three states the pipeline cannot produce. Delete them, or mark them?** Both arms are lawful: no clause requires a rendered glossary to carry vocabulary members no claim uses, and the walkthrough preflight requires only presented terms to be explained. | **Mark, do not delete.** RFC2-10 closes the freshness vocabulary at four values and requires a condition outside the four to be "disclosed as a fact of the render". Marking keeps the closed vocabulary visible to the reader and lets one copy oracle carry the legend through slice 5 without a second edit; deleting would make the page silent about three states the contract still defines, which is worse, not unlawful (review 2 finding G9). Mark each unreachable entry in place with the reason it is unreachable (no currency bound is declared; supersession is not modelled) and a route, guarded by a copy-oracle test. The walkthrough preflight permits this: it requires the glossary to explain every **rendered** term, not every vocabulary member. |
 | Q6 | **Sequencing against the lane B package, and the honest target.** The scoped-attributes semantic delta (`syzygy-dov.17`, owner decision P-68) rewrites the same clause region of PWB-REQ-007 that M2's currency work reads. | **No M2 spec package is opened until P-68 is ruled.** Slices 1–4 and 6 touch no governed artifact and may run now; slice 5's registry act touches the registry entry, not the spec, so it also does not collide — but any *later* PWB spec text M2 wants must wait for P-68 and then rebase onto the amended bytes. Honest target: `data-epistemic-freshness` takes at least two distinct values over the rendered population at one evaluation, every legend sentence is either reachable or marked unreachable with its reason, and the page's first human-visible instant moves from 58.0% depth into the opening band. |
-| Q7 | **What freshness value does a claim of a class with no declared currency bound render?** `assessCurrency`'s `no-bound-declared` arm returns `label: 'Unknown'` and reason `no-currency-bound-declared` but no `freshness` field [Observed: `packages/cap1-core/src/staleness.ts` lines 98–104]; PWB-REQ-007 requires freshness on every tuple; RFC2-10 closes the vocabulary at four and says "no implementation may mint, spell, or force-fit a freshness value it does not carry", so the choice may not be made by whoever implements the render first. Every class is in this arm until its bound is acted, so it is the arm reached first. | **`stale`, with primary reason `no-currency-bound-declared` kept distinct.** CAP1-REQ-062 puts an unbounded class under the same invariant as out-of-bound evidence ("SHALL NOT support a current or favourable answer") — both render Unknown, with distinct reasons — and assigns neither a freshness value; `fresh` is the defect M2 removes, a fifth value is forbidden, and omission is forbidden; `stale` is the one closed value whose legend sentence a reader can reconcile with "no bound is declared" once the reason sits beside it [Inferred]. Alternative the owner may prefer: amend the engine's `no-bound-declared` return to carry an explicit freshness, which is a Capability 1 conformance change (CAP1-REQ-062) and needs its own CC-REV-2 route. Until Q7 is ruled, slice 5 cannot render any undeclared class. |
+| Q7 | **What freshness value does a claim of a class with no declared currency bound render?** `assessCurrency`'s `no-bound-declared` arm returns `label: 'Unknown'` and reason `no-currency-bound-declared` but no `freshness` field [Observed: `packages/cap1-core/src/staleness.ts` lines 98–104]; PWB-REQ-007 requires freshness on every tuple; RFC2-10 closes the vocabulary at four and says "no implementation may mint, spell, or force-fit a freshness value it does not carry", so the choice may not be made by whoever implements the render first. Every class is in this arm until its bound is acted, so it is the arm reached first. | **`stale`, with primary reason `no-currency-bound-declared` kept distinct.** CAP1-REQ-062 puts an unbounded class under the same invariant as out-of-bound evidence ("SHALL NOT support a current or favourable answer") — both render Unknown, with distinct reasons — and assigns neither a freshness value; `fresh` is the defect M2 removes, a fifth value is forbidden, and omission is forbidden; `stale` is the one closed value whose legend sentence a reader can reconcile with "no bound is declared" once the reason sits beside it [Inferred]. Against this recommendation stands the RFC2-10 sentence this packet relies on for Q3: "A condition genuinely outside the four is disclosed as a fact of the render, never dressed as a freshness state" — and "no bound is declared" is a condition outside the four, so `stale` here is a candidate for exactly that dressing. It is still preferred because PWB-REQ-007 requires a freshness value on every project-shape tuple (its Falsifier: "a tuple field is absent/out of vocabulary"), so the disclosure route cannot discharge the slot on these claims the way it can for the probe, and the reason beside the value is the disclosure; the alternative does not escape the sentence either, it moves the same choice into the engine (review 4 finding J3). Alternative the owner may prefer: amend the engine's `no-bound-declared` return to carry an explicit freshness, which is a Capability 1 conformance change (CAP1-REQ-062) and needs its own CC-REV-2 route. Until Q7 is ruled, slice 5 cannot render any undeclared class. |
 
 ## Gate 0 — Baseline
 
@@ -56,7 +56,7 @@ packet recommends one and says why (review 2 finding G9).
 |---|---|---|
 | Doctrine (heart-and-soul) | Yes, adopted: VIS-1…7, SEC-1…5 | VIS-2 (currency bound, no silent green), VIS-7 (every encoding means what its legend says; the identity test), plus `architecture.md`'s time-as-explicit-input paragraph and `trust-and-evidence.md`'s staleness section |
 | Decisions (legends-and-lore) | Yes | P-52 (the eight-item POC cap — M2 runs under `syzygy-dov.2`, so no new POC bead is filed and P-52 stays untouched); the P-67 ruling's sequencing sentence; P-68, queued and unruled |
-| Specification (openspec) | Yes, signed and digest-bound: `openspec/changes/polaris-project-wide-butlers-model/` | PWB-REQ-007 (the complete tuple and its currency scenario), PWB-REQ-006 (the registry's declared envelope), PWB-REQ-016, PWB-REQ-020 (parity), PWB-REQ-021 (the `claim-strength` answer identity). CAP1-REQ-062 governs Capability 1, not PWB, but owns the engine this move wires |
+| Specification (openspec) | Yes, signed and digest-bound: `openspec/changes/polaris-project-wide-butlers-model/` | PWB-REQ-007 (the complete tuple and its currency scenario), PWB-REQ-006 (the registry's declared envelope), PWB-REQ-016, PWB-REQ-020 (parity), PWB-REQ-021 (the `claim-strength` answer identity), PWB-REQ-004 (the closed project-fact population slice 2's probe claim must stay outside). CAP1-REQ-062 governs Capability 1, not PWB, but owns the engine this move wires |
 | Topology (lay-and-land) | Candidate bundle only | Nothing beyond the core-versus-app placement already in force |
 | Craft (craft-and-care) | Yes, owner-approved | CC-TEST-5/6 oracles, rule-6 mutation evidence, retained evidence, independent raw review |
 
@@ -70,7 +70,7 @@ them [Observed: three independent sweeps of the capture, agreeing; see
 "Measurements" below]. Eleven of those 713 are `Unknown` claims at tier
 `unstated` — claims no evidence reached — and they too are described to the
 reader as "captured at this evaluation" [Observed]. Meanwhile
-`packages/cap1-core/src/staleness.ts` lines 87–157 already contains
+`packages/cap1-core/src/staleness.ts` lines 87–155 already contains
 `assessCurrency`, a complete fail-closed currency judge, and nothing outside
 `packages/cap1-core` and `packages/cap1-conformance` refers to it
 [Observed: 0 references, two methods].
@@ -119,9 +119,11 @@ instant of the evaluation until 58.0% of the way down.
    values over the rendered population, and the machine answer carries the
    same values for the same claim ids.
 2. Every freshness sentence in the rendered glossary is either reachable at
-   that evaluation or carries, in the rendered text, the reason it is not and
-   the route that would make it reachable. A copy-oracle test fails if a
-   sentence is neither.
+   that evaluation or carries, in the rendered text, the reason it is not
+   and, where one exists, the route that would make it reachable (slice 1's
+   `superseded` marker has a reason and no route, by design). The copy
+   oracle enforces the marker in both directions and does not test for a
+   route (review 4 finding J4).
 3. Re-reading one identified evaluation at two different wall-clock times
    yields a byte-identical page, and `asOf` does not advance without a new
    observation. A test mutates the clock and asserts both.
@@ -382,7 +384,7 @@ content class, and the signed PWB specification text.
 | Slice | Owner act needed | Named act |
 |---|---|---|
 | 1 Legend | **No** | rides `decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` (2026-09-05); no escalation trigger is crossed — no spec amendment, no security/privacy/retention change, no registry-envelope change |
-| 2 Horizon | **No**, on the recommended design | same continuation. The live head resolution is a `git-revision` input, an input class the registry entry already declares. The implementation-authorization act's escalation trigger (`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md`, "Escalation triggers") is scoped to the content class and the repository ("any observation outside the consented content class or repository"); the consent act contributes the scope sentence naming "the Butlers revision the POC observes" and has no trigger section of its own (review 2 finding G6); the probe reads a ref of the already-consented repository, not a Git object of the source population at any revision, so no body read is added and the observation trigger is not crossed; the same section's envelope trigger ("a change to the constraints or envelope the registry entry declares") is not crossed either, because the head resolution is a `git-revision` read charged to no source-body limit and changes no declared `resourceLimits` value [Inferred: the design reads `rev-parse HEAD` only, exactly as `git-observation.ts` already does at line 61 and `main.ts` at lines 80–81; restated after review 1 finding F6 and review 3 findings H6 and H8] |
+| 2 Horizon | **No**, on the recommended design | same continuation. The live head resolution is a `git-revision` input, an input class the registry entry already declares. The implementation-authorization act's escalation trigger (`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md`, "Escalation triggers") is scoped to the content class and the repository ("any observation outside the consented content class or repository"); the consent act contributes the scope sentence naming "the Butlers revision the POC observes" and has no trigger section of its own (review 2 finding G6); the probe reads a ref of the already-consented repository, not a Git object of the source population at any revision, so no body read is added and the observation trigger is not crossed; the same section's envelope trigger ("a change to the constraints or envelope the registry entry declares") is not crossed either, because the head resolution is a `git-revision` read charged to no source-body limit and changes no declared `resourceLimits` value; the spec-amendment trigger ("an amendment to the signed PWB specification") is not crossed because the probe's count is an epistemically labeled claim under PWB-REQ-014, not a project fact, and PWB-REQ-004's closed population ("The POC SHALL admit project facts only from this closed population … an injected or unrecognized fact, class, key, catalog or account key SHALL mint nothing", lines 491–498) is neither entered nor amended — the probe mints nothing inside it (review 4 finding J1; if that reading is rejected the row flips to yes and slice 2 joins Q6) [Inferred: the design reads `rev-parse HEAD` only, exactly as `git-observation.ts` already does at line 61 and `main.ts` at lines 80–81; restated after review 1 finding F6 and review 3 findings H6 and H8] |
 | 3 `evidence` block | **No** | same continuation; the machine payload's field set is not an act-bound artifact |
 | 4 `asOf` immutability test | **No** | same continuation; it adds a test and removes a clock read |
 | 6 Lapsed-selection announcement | **No** | same continuation; it adds one rendered sentence and one field on a render-time type, reads nothing new |
@@ -442,17 +444,48 @@ A **currency probe** is a second identified evaluation with one job: resolve
 the repository's current head and compare it to the pinned revision the model
 renders. It carries its own identity, of the form
 `evaluation:pwb-currency-probe:<instant>`, its own instant and its own tuple,
-and it is a `presentation-artifact` under PWB-REQ-014 only where it frames;
-the count itself is a project fact with a claim id, so PWB-REQ-020 parity
-applies to it like any other.
+and under PWB-REQ-014's three claim roles ("anchored project fact,
+explicitly non-normative framing, or epistemically labeled claim") it is an
+**epistemically labeled claim** and a disclosed fact of the render (RFC2-10:
+"A condition genuinely outside the four is disclosed as a fact of the
+render"). It is *not* a project fact: PWB-REQ-004 closes that population
+("The POC SHALL admit project facts only from this closed population:
+`item:<class>:<declared-key>` and `count:<class>` … `catalog-count:<catalog-key>`
+… and `project-account:<key>` … Every declaration SHALL be emitted by the
+extractor assigned to an admitted source; an injected or unrecognized fact,
+class, key, catalog or account key SHALL mint nothing", the digest-bound
+spec at lines 491–498), the probe's count is in none of those four forms
+and is emitted by no extractor, and the probe mints nothing inside that
+population — it is a claim *about* the pinned evaluation, carrying its own
+claim id, tier, challenge state and evaluation identity, and it enters
+PWB-REQ-020's parity population as a "disclosure Polaris presents", so
+parity applies to it like any other (review 4 finding J1; an earlier draft
+called the count "a project fact", which would have put slice 2 on the
+wrong side of PWB-REQ-004). If the owner or a reviewer reads the count as a
+project fact after all, slice 2 acquires a PWB-REQ-004 spec delta, its act
+row flips to yes, and it joins Q6's collision — the same contingency slice 3
+states for PWB-REQ-020.
+
+**The probe's own freshness.** The probe claim carries no freshness value,
+before slice 5 and after it. It is not a project-shape claim, so
+PWB-REQ-007's complete-tuple requirement does not reach it, and RFC2-10's
+disclosure route is exactly what it is: a fact of the render. Its bracket
+therefore has no freshness slot, `data-epistemic-freshness` is never set on
+it (S3 already requires that no freshness value on the page derive from
+it), and slice 5's `currencyBounds` array carries no row for it, stated
+there so no implementer adds one. Rendering the probe `fresh` would
+reintroduce, on the page's most prominent new claim, the unearned value M2
+exists to remove (review 4 finding J2; an earlier draft's rendering did
+exactly that).
 
 Rendered in the opening band, before the first catalog section:
 
 > Evaluated at revision 2e3bac97790b, committed 2026-09-13T10:31:11Z,
 > captured 2026-09-13T13:33:24.295Z — 3 hours before this probe. Since that
 > revision, **N sources on this page have changed** and M have been added.
-> [Observed · report-fact · fresh · unchallenged, probe
-> `evaluation:pwb-currency-probe:…`] · What this means
+> [Observed · report-fact · unchallenged · probe
+> `evaluation:pwb-currency-probe:…` — a disclosure of the render, no
+> freshness value] · What this means
 
 The relative-age string ("3 hours before this probe") is display formatting
 and `architecture.md`:236 excludes it from the identity test by name. The
@@ -508,9 +541,9 @@ or a reviewer reads declared bounds as a "disclosure" in PWB-REQ-020's
 sense, slice 3 acquires a PWB-REQ-020 spec delta and joins Q6's collision,
 and the page must then render the bounds too]. One precedent the capture
 does *not* offer, stated so no reader reaches for it: the 415 machine items
-against 409 rendered item rows are not six facts absent from the page. The
-six `project-account-section` items are each rendered once as the
-account's own section (`data-polaris-section="claim:project-account:<key>"`
+against 409 rendered item rows are not six statements absent from the page.
+The six `project-account-section` items' statements are each rendered once
+as the account's own section (`data-polaris-section="claim:project-account:<key>"`
 occurs 6 times, one per key; the string
 `claim:item:project-account-section:<key>` occurs 0 times for each of the
 six), their statements and anchors byte-identical to the six
@@ -520,8 +553,16 @@ from the item-row family for exactly that stated reason
 "presented once, as the account's own section claims, never as an item
 table") [Observed: both channels of the retained lane A capture and the
 test source, re-derived 2026-09-14 after review 3 finding H1; an earlier
-draft read the gap as machine-only facts and was wrong]. Every fact is in
-both channels; the gap is one of rendering form. The existing parity sweep
+draft read the gap as machine-only facts and was wrong]. Every one of the
+six statements and anchor sets is in both channels under the account's own
+claim id; what the machine carries and the page does not is six *claim
+identities* — the machine `facts` population holds both
+`item:project-account-section:<key>` and `project-account:<key>` for each
+of the six keys, twelve keys among 439, and PWB-REQ-004 names the two forms
+as separate members of its closed population — which PWB-REQ-020's
+one-directional human-to-machine invariant permits and the parity sweep
+omits by name (review 4 finding J6; "every fact is in both channels" was
+false at the spec's own fact granularity). The existing parity sweep
 already checks per tuple against the machine claim by id and both id sets,
 so any horizon fact rendered on one side only fails it.
 
@@ -544,19 +585,25 @@ evaluation identity changed with it.
 The dossier's L4-M5, which an earlier draft carried only as scenario S9 and
 a Gate 6 mutation target without a slice (review 2 finding G3).
 `applyReadingPlan` (`apps/three-surface-poc/src/polaris-reading.ts` line 44)
-returns the full declaration with `condensed: false` whenever the pinned
-statement digest no longer matches the observed bytes or the plan has no
-passages, and the return carries no reason; the renderer at `polaris.ts`
+returns the full declaration with `condensed: false` at thirteen guard
+returns — the pinned-digest mismatch and the empty-passage list at line 44,
+and eleven structural guards on passages, figures and chapters at lines 48,
+49, 50, 51, 53, 61, 64, 72, 79, 88, 99 and 103 — and none of them carries a
+reason (review 4 finding J5; "whenever … digest … or … no passages" was two
+of thirteen); the renderer at `polaris.ts`
 lines 506–510 then shows neither the "selected passages" label nor the
 "full account" disclosure, so the page is byte-for-byte what it would be
 had no selection ever been offered [Observed, both files at `a9f671e`].
 The slice adds one field to the `ProjectReading` type — the reason the
-selection was not applied (`digest-mismatch` or `no-passages`) — and one
-rendered sentence beside the full declaration: that a reviewed selection
-existed, was withdrawn because the declaration's bytes changed, and returns
-when a re-review against the new bytes is recorded. It is a disclosure of
-a render fact (RFC2-10's phrase), not a freshness value, and it reads
-nothing new: the digest comparison already runs. No act: no governed
+selection was not applied (`digest-mismatch`, `no-passages` or
+`plan-malformed`, the last covering the eleven structural guards so that no
+full-declaration return stays silent) — and one rendered sentence beside
+the full declaration: that a reviewed selection existed, was withdrawn (for
+`digest-mismatch`: because the declaration's bytes changed, returning when
+a re-review against the new bytes is recorded; for the other two: because
+the recorded plan could not be applied, naming the reason). It is a
+disclosure of a render fact (RFC2-10's phrase), not a freshness value, and
+it reads nothing new: the digest comparison already runs. No act: no governed
 artifact, no consent surface, no spec text.
 
 **Test.** Build with a plan whose `statementSha256` is deliberately wrong
@@ -570,7 +617,9 @@ fails.
 
 The registry entry gains, beside `resourceLimits` and
 `resourceLimitSemantics`, a `currencyBounds` array — one row per claim class,
-each with `claimClass` and `maxAgeMs` — plus a `currencyBoundSemantics`
+each with `claimClass` and `maxAgeMs`, one per project-shape claim class
+and none for slice 2's currency probe, which carries no freshness value —
+plus a `currencyBoundSemantics`
 object in the same style as the existing `resourceLimitSemantics`, saying
 what the bound is measured from (the source's committer instant) and to (the
 evaluation's as-of instant). The entry's bytes are digest-bound by
@@ -587,7 +636,7 @@ class, the evidence record, the declared bounds and the evaluation's `asOf`.
 `assessCurrency` has five return paths over three `state` values
 (`no-bound-declared`; `stale` with basis `unreadable-instant`,
 `future-dated-instant` or `age-exceeds-bound`; `current`) [Observed:
-`packages/cap1-core/src/staleness.ts` lines 87–157]. Four map straight onto
+`packages/cap1-core/src/staleness.ts` lines 87–155]. Four map straight onto
 the tuple: `current` → `fresh`; the three `stale` returns → Unknown with
 `stale-beyond-currency-bound` and freshness `stale`, the future-dated and
 unreadable bases failing closed, which is the polarity AGENTS.md records as
@@ -610,8 +659,19 @@ favourable answer"), both rendering Unknown with distinct reasons and
 neither assigned a freshness value, and `stale` is the one closed-vocabulary value whose
 legend sentence ("older than the declared currency bound") a reader can
 reconcile with "no bound is declared" once the reason is beside it
-[Inferred]. Until Q7 is ruled, slice 5 is not implementable for any class
-without a declared bound, which is every class today.
+[Inferred]. The strongest counter-argument is RFC2-10's own sentence,
+quoted under Gate 2 and relied on for Q3: "A condition genuinely outside the
+four is disclosed as a fact of the render, never dressed as a freshness
+state." No declared bound is such a condition, so rendering `stale` for it
+is a candidate for that dressing; the packet still prefers it because
+PWB-REQ-007 requires the freshness field on every project-shape tuple (its
+Falsifier names "a tuple field is absent/out of vocabulary"), which the
+disclosure route cannot satisfy on these claims, and because the alternative
+— amending the engine so `no-bound-declared` carries a value — places the
+same choice inside Capability 1 rather than escaping the sentence (review 4
+finding J3). The owner rules with both in view. Until Q7 is ruled, slice 5
+is not implementable for any class without a declared bound, which is every
+class today.
 
 **Trade-offs rejected.** (a) Declaring one bound for all classes: cheaper, but
 RFC2-9 declares bounds per claim class and the classes genuinely differ (a
@@ -638,8 +698,17 @@ already
 binds. Slice 1 makes the rendered legend match what the evaluation produces,
 which VIS-7 already requires. Slice 2 adds a disclosed fact of the render,
 which RFC2-10 already names as the lawful home for a condition outside the
-four values. Slice 3 adds machine fields outside PWB-REQ-020's enumerated
-parity population and renders every horizon fact in both channels, so the
+four values, and an epistemically labeled claim, which PWB-REQ-014 already
+names as one of its three claim roles; it adds no project fact, so
+PWB-REQ-004's closed population ("The POC SHALL admit project facts only
+from this closed population … an injected or unrecognized fact, class, key,
+catalog or account key SHALL mint nothing", lines 491–498) is untouched —
+the probe's count is in none of the four admitted forms and is emitted by
+no extractor, and the slice neither enters nor amends that population
+(review 4 finding J1). Were the owner to read the count as a project fact,
+slice 2 would need a PWB-REQ-004 delta and would join Q6's collision.
+Slice 3 adds machine fields outside PWB-REQ-020's enumerated parity
+population and renders every horizon fact in both channels, so the
 equal-multiset Observable holds [Inferred, see slice 3 for the reading and
 its condition]. Slice 4 removes a clock read that VIS-2's last sentence
 already forbids.
@@ -670,9 +739,10 @@ lane B head-on; Q1 is therefore also the collision gate.
 **S1 — An unreachable freshness state is marked, not promised.**
 WHEN a freshness value in the closed four-value vocabulary is rendered by no
 claim tuple at this evaluation, THEN its glossary sentence carries the reason
-it is unreachable and the route that would make it reachable, AND a copy
-oracle fails if any unreachable value's sentence lacks a marker or any
-rendered value's sentence carries one.
+it is unreachable and, where one exists, the route that would make it
+reachable, AND a copy oracle fails if any unreachable value's sentence lacks
+a marker or any rendered value's sentence carries one (the oracle enforces
+the marker, not the route).
 
 **S2 — A reachable state loses its marker automatically.**
 WHEN the currency bound lands and at least one claim renders `stale`, THEN
@@ -715,10 +785,13 @@ and the invalid declaration is disclosed as a contradiction (RFC2-9's own
 arm), AND no claim leaves Unknown on the strength of the unacted file.
 
 **S9 — A lapsed reviewed selection announces itself.**
-WHEN a reviewed reading selection's pinned statement digest does not match the
-observed statement bytes, THEN the page renders the complete declaration *and*
-says that a reviewed selection was withdrawn, why, and what would restore it
-(a re-review against the new bytes), AND a test asserts both halves.
+WHEN a reviewed reading selection is not applied — its pinned statement
+digest does not match the observed statement bytes, its plan has no
+passages, or a structural guard rejects the plan — THEN the page renders
+the complete declaration *and* says that a reviewed selection was withdrawn
+and why, naming the reason (`digest-mismatch`, `no-passages` or
+`plan-malformed`) and, for a digest mismatch, what would restore it (a
+re-review against the new bytes), AND a test asserts both halves.
 
 **Out of scope, explicitly.** Amending the PWB specification; amending
 doctrine (none is needed — `architecture.md`:236's relative-age exclusion
@@ -938,8 +1011,35 @@ bytes are uncovered until a fourth review confirms them.
 | H6 envelope trigger unaddressed | non-blocking | Accepted and repaired: one clause in the slice 2 act row |
 | H7 slice 6 size | editorial | Accepted and repaired: medium, in all three places |
 | H8 citation crossed two files | editorial | Accepted and repaired |
-| H9 `assessCurrency` span | editorial | Accepted and repaired: 87–157 |
+| H9 `assessCurrency` span | editorial | Accepted and applied, then found not to be a defect: the function opens at line 87 and its closing brace is line 155, so the original "87–155" was correct and the repair moved it two lines past the function; restored after review 4 finding J7 |
 | H10 evidence key inverted | editorial | Accepted and repaired: renamed `before_first_evaluation_instant` |
+
+None of the seven recommended answers changed.
+
+### Review 4 and repairs (2026-09-14)
+
+A fourth independent fresh-context review, of the packet at commit
+`68123fc`, is retained verbatim at
+`docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-4-RAW.md` (33108 bytes,
+sha256 `804b11f8284942bca33d2eaa91822ba72f0f91c634be482f62a17c4b3eabef8f`). Its verdict word, copied exactly: **REVISE** — one
+blocking, five non-blocking, two editorial. It verified H1–H8 and H10
+repaired and found H9 repaired to a false span (J7). Every finding below
+was re-derived against the source and the retained captures before it was
+applied (the thirteen guard returns, the twelve project-account fact keys
+among 439, the function's closing brace at line 155). Every edit below
+post-dates review 4; the current bytes are uncovered until a fifth review
+confirms them.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| J1 slice 2 called the horizon count "a project fact", a closed population under PWB-REQ-004 the packet never cited | blocking | Accepted and repaired: the count restated as an epistemically labeled claim (PWB-REQ-014) and a disclosed fact of the render (RFC2-10), not a project fact; PWB-REQ-004 lines 491–498 quoted in slice 2, the slice-2 act row and Gate 5, with the contingency stated as slice 3 states its own; PWB-REQ-004 added to the Gate 0 specification row |
+| J2 the probe's own claim rendered `fresh` with no declared bound | non-blocking | Accepted and repaired: the probe carries no freshness value before or after slice 5, its bracket has no freshness slot, and slice 5's `currencyBounds` sketch says it has no row |
+| J3 Q7 never weighed against RFC2-10's "never dressed as a freshness state" | non-blocking | Accepted and repaired: the sentence quoted against the recommendation in Q7 and in slice 5, with why `stale` plus a distinct reason is still preferred and why the engine amendment does not escape it; the recommendation unchanged, the owner rules with both in view |
+| J4 criterion 2 and S1 required a route the `superseded` marker lacks | non-blocking | Accepted and repaired: both weakened to "and, where one exists, the route"; the oracle stated to enforce the marker, not the route |
+| J5 "whenever" overstated `applyReadingPlan`'s reasons | non-blocking | Accepted and repaired: thirteen guard returns named by line; a third reason value `plan-malformed` covers the eleven structural guards so no full-declaration return stays silent; S9 restated |
+| J6 "every fact is in both channels" false at fact granularity | non-blocking | Accepted and repaired: statements and anchor sets shared, six claim identities machine-only, the twelve keys named, PWB-REQ-020's direction and the sweep's omission stated |
+| J7 the H9 repair made a true span false | editorial | Accepted and repaired: "87–155" restored in both places; the review-3 disposition row now says H9 was not a defect |
+| J8 the P-69 row mischaracterized review 2's blocking findings | editorial | Accepted and repaired: "two register/packet mismatches and a scenario with no slice" |
 
 None of the seven recommended answers changed.
 

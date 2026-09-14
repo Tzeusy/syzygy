@@ -192,5 +192,34 @@
     "statements_and_anchors_identical_to_projectAccount_entries": "6 of 6 (review 3)",
     "sweep_omission": "apps/three-surface-poc/src/polaris-parity-sweep.test.ts lines 202-209, by stated reason",
     "note": "Re-derived 2026-09-14 after review 3 finding H1. The earlier pwb_req_020_precedent block, which read these as unrendered machine-only facts, was wrong and is withdrawn."
+  },
+  "review4": {
+    "raw": "docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-4-RAW.md",
+    "bytes": 33108,
+    "sha256": "804b11f8284942bca33d2eaa91822ba72f0f91c634be482f62a17c4b3eabef8f",
+    "verdict": "REVISE",
+    "reviewed_commit": "68123fc",
+    "repairs": "J1-J8 all accepted and repaired after the review; the review-3 H9 repair reverted (87-155 was correct)",
+    "re_derived_before_applying": {
+      "applyReadingPlan_return_full_lines": [
+        44,
+        48,
+        49,
+        50,
+        51,
+        53,
+        61,
+        64,
+        72,
+        79,
+        88,
+        99,
+        103
+      ],
+      "machine_facts_total": 439,
+      "project_account_fact_keys": 13,
+      "project_account_fact_keys_note": "six item:project-account-section:<key>, six project-account:<key>, one count:project-account-section; keys re-derived from projectShape.facts[].fact.fact in the retained api-poc.json",
+      "assessCurrency_span": "87-155"
+    }
   }
 }
