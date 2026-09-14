@@ -1186,5 +1186,100 @@
       "none": "No recommended answer changed after review 6. L1 is blocking but carries an EXISTING answer - slice 3 under the same open RFC2-26 gate as slices 4 and 5, decided after review 5's K2 - into three live sites it had not reached, and narrows two sentences that claimed it already had. L2 through L6 qualify, route, measure or correct a count. Q1 through Q7 keep the recommendations they carried into this review."
     },
     "rule_10": "This review binds the bytes it names (packet 220411 / evidence 71802 / register 44722 at 1dd5639) and not the repaired bytes; every review-6 repair is uncovered until a seventh review confirms them. That raw will be a seventh -RAW.md file, never an overwrite of a retained one."
+  },
+  "review7": {
+    "raw": "docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-7-RAW.md",
+    "bytes": 24884,
+    "sha256": "af47eef81c8d074319624bbfa38caad0ba03f9e63f5092b53b25dcf361318bdc",
+    "verdict": "CONFIRM WITH EXCEPTIONS - no blocking, one non-blocking, four editorial",
+    "reviewed_commit": "4b431fb",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md": {
+        "bytes": 236948,
+        "sha256": "dae20e6538d5cbf692165f91ffb348f976ef92eb60d405924310b4ad049bc30e"
+      },
+      "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json": {
+        "bytes": 80636,
+        "sha256": "4844e9a10d33425d00b6dc3a3269f42ee60a89a5124e6c152409f569ebee7011"
+      },
+      ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+        "bytes": 47510,
+        "sha256": "c272f73b6f4ebfcfe21b799ab5f904d02bba94a9580f824e762a59ffd68942af"
+      }
+    },
+    "repairs_applied_this_session": true,
+    "l1_l6_verification_as_review7_states_it": {
+      "REPAIRED": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6"
+      ],
+      "PARTIAL": [],
+      "denominator": 6,
+      "regressions_found_in_F1_F22_G1_G11_H1_H9_J1_J9_K1_K7": "none",
+      "k1_partial_at_review_6": "now complete - the only respect in which it fell short was L1's three sites and two sentences, and all five are repaired"
+    },
+    "disposition_summary": {
+      "M1": "CONFIRMED and applied (editorial). The L3 cell publishes an anchor absence with its predicate and denominator and 0 occurrences in either file, marked 'Checked before editing'. Re-run this session at 4b431fb over both whole files with the same predicate by grep -F: 1 in the packet, 0 in the register, and the single packet hit is the L3 cell itself, the code span in which the predicate is written. At 1dd5639 the same predicate returns 0 in both. The published 0 stands unedited with its 'Checked before editing' framing; a dated clause beside it publishes the 1/0 figure at the reviewed commit, names the one hit, gives the 1dd5639 figure, and states that the conclusion about anchors and hrefs is unaffected because the hit is a predicate and not a link.",
+      "M2": "CONFIRMED and applied (non-blocking). PWB-REQ-002 is at PWB spec line 115, its scenario 'Declared shape reconciles' at 142, whose THEN/AND require that every category reports modeled, Unknown and contradicted counts summing to its denominator, and whose Observable is that per-category identities and reconciling counts are visible in the machine answer and reachable from Polaris - the one approved requirement-and-scenario pair in either signed spec requiring rendered aggregate counts, and the nearest candidate the slice-3 cell did not name. One sentence in the cell now names it as the sixth candidate read and why it does not map, on two independent grounds: it partitions extraction categories into the three coverage states where slice 3's band partitions RFC2-24 gap reasons (gapReasonCounts), a different projection over a different population; and its observable is satisfied today by the existing gaps section, which is reachable from Polaris and asserts no opening position. The closed 'five ... are the candidates' wording is kept and dated in place. Limb 1 remains unavailable; the conclusion and the recommended answer are unchanged. Mirrored here only - review 6's L4_signed_spec_population values are that review's own record and are untouched.",
+      "M3": "CONFIRMED and applied (editorial). The Q7 cell restated the reconciliation rule ('whichever of M2 slice 2, M3 slice 3 and M4 slice 3 lands first builds the band container and owns its single ordering oracle ... Reconcile explicitly before any of the three starts') with no RFC2-26 gate on the sentence, while the two sites review 6's L1 repaired each took one. The cell now carries the Collision section's clause word for word, dated. Editorial and not a repeat of L1 because the same cell opens with the gate in its bolded recommendation and closes with the K2 widening paragraph.",
+      "M4": "CONFIRMED for three of the four paragraphs named, NOT CONFIRMED for the fourth, and applied accordingly (editorial). Predicate: the literal 'uncovered'; denominator: the whole packet at 4b431fb - 5 hits, the review-2 through review-6 rule-10 paragraphs. The review-2, review-4 and review-5 paragraphs read 'uncovered until a third / fifth / sixth review confirms them' untensed. The review-3 paragraph was ALREADY re-tensed per review 4, so the finding's 'all four' is one too many; that one is recorded rather than applied and is left exactly as review 4 wrote it. Applied to the three that carry the defect plus review 6's own paragraph, which review 7's retention has now discharged and which the finding could not have named - four re-tensed in the register's shape, each naming the review section that discharged it, dated 2026-09-15 per review 7, M4.",
+      "M5": "CONFIRMED at both sites and applied (editorial). Gate 5's 'What the extended test changes' paragraph ended its disclosure list 'and in the pull request' (the phrase wrapped across two lines) and the K2 disposition row ended 'and the pull request'; every other item in both lists is a named site inside one of the three reviewed artifacts, while the last carried no identifier, no date and no epistemic label. The identifier-and-date arm was taken rather than dropping the clause, so the disclosure is not silently narrowed: both sites now read 'and in PR #38, body edited 2026-09-15 [Observed at that date; a PR body is editable later]', in the shape the sibling references already use, with the superseded bare wording quoted and dated at each."
+    },
+    "re_derived_before_applying": {
+      "M1_anchor_recheck": {
+        "predicate": "the L3 cell's own literal, by grep -F, over both whole files",
+        "at_4b431fb": {"packet": 1, "register": 0, "note": "the single packet hit is the L3 cell's own code span, the bytes in which the predicate is written"},
+        "at_1dd5639": {"packet": 0, "register": 0, "method": "git show 1dd5639:<path> | grep -c -F"},
+        "consequence": "the published 0 is true of the bytes it was taken at and not reproducible at the reviewed commit; the anchor-and-href conclusion is unaffected because the one hit is a predicate, not a link"
+      },
+      "M2_pwb_req_002_at_source": {
+        "requirement_line": 115,
+        "scenario": "Declared shape reconciles",
+        "scenario_line": 142,
+        "then_and": "THEN Polaris accounts for all D items exactly once / AND every category reports modeled, Unknown and contradicted counts that sum to its denominator",
+        "observable": "per-category identities and reconciling counts are visible in the machine answer and reachable from Polaris",
+        "slice_3_cell_named_five": true,
+        "slice_3_cell_closing_phrase": "The five requirements named above are the candidates",
+        "why_it_does_not_map": "it partitions extraction categories into the three coverage states, where slice 3's band partitions RFC2-24 gap reasons (gapReasonCounts) - a different projection over a different population; and its observable is satisfied today by the existing gaps section, reachable from Polaris and asserting no opening position, so it carries no opening-position claim for the band to conform to",
+        "candidates_read_total": 6,
+        "population_denominator": "41 approved requirements and 55 scenarios over both signed spec files whole, the review-6 L4 denominator",
+        "conclusion": "limb 1 remains unavailable; the conclusion and the recommended answer are unchanged"
+      },
+      "M3_q7_cell_gate": {
+        "ungated_sentence_present_in_q7_cell": true,
+        "sibling_sites_gated_by_review_6_L1": [
+          "Collision section - None of that schedules M4 slice 3: it is not built before Q7's RFC2-26 ruling either",
+          "prose handoff Q7 paragraph - M4 slice 3 is not built before both that reconciliation and Q7's RFC2-26 ruling"
+        ],
+        "why_editorial": "the same cell opens with the gate in its bolded recommendation and closes with the K2 widening paragraph, so the sentence is bracketed by the gate; L1's site had no gate anywhere in its section"
+      },
+      "M4_rule_10_tense_audit": {
+        "predicate": "the literal 'uncovered'",
+        "denominator": "the whole packet at 4b431fb",
+        "hits": 5,
+        "untensed_confirmed": ["review-2 paragraph", "review-4 paragraph", "review-5 paragraph"],
+        "already_re_tensed_not_confirmed": "the review-3 paragraph, re-tensed 2026-09-15 per review 4 - the finding's 'all four' is one too many",
+        "register_shape_confirmed_at": "its three parallel paragraphs, reading 'which has since happened; see the next paragraph (re-tensed 2026-09-15 per review N)'",
+        "applied_to": ["review-2 paragraph", "review-4 paragraph", "review-5 paragraph", "review-6 paragraph"],
+        "review_6_paragraph_rationale": "review 7's retention discharges it; the finding could not have named it"
+      },
+      "M5_pull_request_sites": {
+        "site_1": "Gate 5's 'What the extended test changes' paragraph, the phrase wrapped across two lines as 'and in the pull' / 'request'",
+        "site_2": "the K2 disposition row, reading 'and the pull request'",
+        "defect": "a present-tense claim about an artifact outside the three reviewed here, with no identifier, no date and no epistemic label, uncheckable by a read-only reviewer",
+        "arm_taken": "identifier and date rather than dropping the clause, so the disclosure is not silently narrowed",
+        "applied_wording": "and in PR #38, body edited 2026-09-15 [Observed at that date; a PR body is editable later]"
+      }
+    },
+    "recommended_answers_changed": {
+      "none": "No recommended answer changed after review 7. M1 and M4 date a claim about coverage rather than move one; M3 repeats a gate the same cell already states twice; M5 gives a disclosure site its identifier; M2 adds a sixth requirement to a read population while re-deriving - and leaving unchanged - the conclusion that slice 3's limb 1 is unavailable and that slice 3 stays under the open RFC2-26 gate. Q1 through Q7 keep the recommendations they carried into this review, word for word."
+    },
+    "rule_10": "This review binds the bytes it names (packet 236948 / evidence 80636 / register 47510 at 4b431fb) and not the repaired bytes; the five exception repairs are uncovered until an eighth review confirms them. That raw will be an eighth -RAW.md file, never an overwrite of a retained one.",
+    "gate": "at the owner gate on review 7's CONFIRM WITH EXCEPTIONS with all five exceptions applied - no blocking finding, no recommended answer moved, and the review-6 repairs verified 6 REPAIRED over 6; P-71 is ready to be ruled",
+    "uncovered_until": "an eighth independent fresh-context review, for the five exception repairs recorded here; all five post-date review 7 (verification rule 10)"
   }
 }
