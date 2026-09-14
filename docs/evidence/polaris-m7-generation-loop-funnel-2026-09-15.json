@@ -1,0 +1,794 @@
+{
+ "kind": "polaris-m7-generation-loop-funnel-evidence",
+ "status": "candidate; binds nothing; planning only; no independent review yet",
+ "move": "M7",
+ "bead": "syzygy-dov.7",
+ "packet": "docs/design/POLARIS-M7-GENERATION-LOOP-FUNNEL.md",
+ "commit": "a9f671e",
+ "commit_full": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
+ "dossier": {
+  "prose": "docs/pursuits/2026-09-13-vision-pursuit.md",
+  "data": "docs/pursuits/2026-09-13-vision-pursuit-data.json",
+  "syzygy_audited_at_recorded_in_dossier": "f4589e2",
+  "tree_the_L3_agent_actually_read": "1932f74",
+  "merges": [
+   "L3-M4",
+   "L3-M5",
+   "L3-M6",
+   "L3-M7",
+   "L3-M9",
+   "L3-M8"
+  ],
+  "evidence_findings": [
+   "L3-F3",
+   "L3-F5",
+   "L3-F6",
+   "L3-F7",
+   "L3-F8"
+  ],
+  "prerequisite_line": "none; owner act for egress",
+  "prerequisite_line_survives": "yes, for filing; corrected in two respects — the route carries a prerequisite the line does not name (Q3), and the self-corpus read may need a ruling before any egress question arises (Q2)"
+ },
+ "independent_review": {
+  "count": 0,
+  "raws": [],
+  "verdicts": [],
+  "note": "first draft; by verification rule 10 nothing in the packet is covered until a fresh-context review reads these exact bytes"
+ },
+ "owner_questions": [
+  {
+   "id": "Q1",
+   "gist": "Does the observer registry's git-tree-entry source identity satisfy RFC7-10's five closed anchor classes, or does citing a project source file need a sixth class?",
+   "slices": [
+    1
+   ],
+   "recommended": "admit it as RFC7-10's evidence-artifact-with-integrity-digest class, in a recorded ruling",
+   "default_if_unanswered": "third arm — ship the identity fields and record REQ-003's anchor sentence as unsatisfied",
+   "lawful_arms": 3
+  },
+  {
+   "id": "Q2",
+   "gist": "Is running the generator over Syzygy's own governed corpus a 'real-project read' the implementation act reserves, or the observing project reading its own tree?",
+   "slices": [
+    3
+   ],
+   "recommended": "the observing project reading its own tree; no consent record, registry entry or act — ruling recorded",
+   "default_if_unanswered": "slice 3 does not ship",
+   "lawful_arms": 2
+  },
+  {
+   "id": "Q3",
+   "gist": "Slice 4's machine-credentialed draft route fails P-72's 'derived read-only machine view' membership test by construction; extend that category, mint a second, or serve no route?",
+   "slices": [
+    4
+   ],
+   "recommended": "fold into P-72 as a second declared category, 'generated editorial draft view', ruled with P-72's Q1 and Q2",
+   "default_if_unanswered": "second arm — no route; the drafted-act limb is independent",
+   "lawful_arms": 2,
+   "sibling_question": "P-72 Q1/Q2"
+  },
+  {
+   "id": "Q4",
+   "gist": "Slice 4's drafted act is an RFC7-21 per-block authorship act over Syzygy's own draft; does it ride P-71's Q3 ruling, or is it a different subject?",
+   "slices": [
+    4
+   ],
+   "recommended": "take P-71's arm (b) — a pure drafter returning packet data, writing no file",
+   "default_if_unanswered": "arm (b)",
+   "lawful_arms": 2,
+   "sibling_question": "P-71 Q3"
+  },
+  {
+   "id": "Q5",
+   "gist": "Is replacing the admit port's 'an already-dispatched identity MUST refuse' with reserve/complete an implementation of REQ-008, or a change to a reviewed effect-boundary safety property?",
+   "slices": [
+    6
+   ],
+   "recommended": "implementation of REQ-008, conditional on retaining the replay prohibition for in-flight and uncertain identities",
+   "default_if_unanswered": "second arm — caller-side cache; REQ-008's 'Resume valid work' scenario stays unimplemented",
+   "lawful_arms": 2
+  }
+ ],
+ "slices": [
+  {
+   "n": 1,
+   "title": "Observation-typed sources and durable citations",
+   "source_move": "L3-M5",
+   "size": "large",
+   "act": "POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md",
+   "clause": "REQ-polaris-generation-003, base line 98",
+   "clause_origin": "predecessor text",
+   "phase": "A",
+   "task": "2.2 (tasks.md line 22)",
+   "question": "Q1 (conformance claim only)"
+  },
+  {
+   "n": 2,
+   "title": "Structural independence: per-stage routes, fidelity envelope without the plan",
+   "source_move": "L3-M4",
+   "size": "medium",
+   "act": "same",
+   "clause": "REQ-polaris-generation-006, base 302 / overlay 180",
+   "clause_origin": "predecessor text, identical in both files",
+   "phase": "A",
+   "task": "2.4 (tasks.md line 24)",
+   "question": null
+  },
+  {
+   "n": 3,
+   "title": "Self-corpus proof with a scripted responder",
+   "source_move": "L3-M6",
+   "size": "medium",
+   "act": "same",
+   "clause": "REQ-polaris-generation-014, base 755 / overlay 367",
+   "clause_origin": "predecessor text, identical in both files",
+   "phase": "A",
+   "task": "3.3 (tasks.md line 47), as preparation and never as its discharge",
+   "question": "Q2"
+  },
+  {
+   "n": 4,
+   "title": "Draft route and a drafted per-block authorship act",
+   "source_move": "L3-M7",
+   "size": "large",
+   "act": "same",
+   "clause": "REQ-polaris-generation-020, base 1083 (Phase B) and REQ-polaris-generation-010, base 528 (Phase A)",
+   "clause_origin": "predecessor text",
+   "phase": "B for the route and control; A for the authorship gate",
+   "task": "2.8 (tasks.md line 31)",
+   "question": "Q3 and Q4"
+  },
+  {
+   "n": 5,
+   "title": "Name the egress act and what it buys",
+   "source_move": "L3-M9",
+   "size": "small",
+   "act": "same",
+   "clause": "argued from SEC-2 directly",
+   "clause_origin": "n/a",
+   "phase": "n/a",
+   "task": "none precisely; kit guidance plus a status correction",
+   "question": null
+  },
+  {
+   "n": 6,
+   "title": "Stage-scoped inputs and resumable attempts",
+   "source_move": "L3-M8 limbs (a) and (b)",
+   "size": "medium",
+   "act": "same",
+   "clause": "REQ-polaris-generation-008, base line 400",
+   "clause_origin": "predecessor text",
+   "phase": "A",
+   "task": "2.3 (tasks.md line 23)",
+   "question": "Q5 for limb (b)"
+  },
+  {
+   "n": 7,
+   "title": "Drift band (deferred)",
+   "source_move": "L3-M8 limb (c)",
+   "size": "not sized",
+   "act": "not evaluated",
+   "clause": "REQ-polaris-generation-009, overlay line 243",
+   "clause_origin": "amended requirement; not swept",
+   "phase": "not evaluated",
+   "task": "not evaluated",
+   "question": null
+  }
+ ],
+ "measurements": {
+  "plane_disjointness": {
+   "predicate": "literal occurrences of 'three-surface-poc-core', 'PocModel' and 'projectShape'",
+   "denominator": "the 20 files of packages/polaris-generation-core/src and apps/three-surface-poc/src/polaris-generation",
+   "denominator_count": 20,
+   "hits": 0,
+   "method": "recursive grep this session; corroborated by the source-schema type census below (verification rule 2)"
+  },
+  "route_table": {
+   "file": "apps/three-surface-poc/src/routes.ts",
+   "wc_l": 240,
+   "route_array_lines": "206-239",
+   "entries": 15,
+   "distinct_paths": 15,
+   "human_open": 11,
+   "machine_credentialed": 4,
+   "machine_logical_routes": 2,
+   "method": "pocRoutes() called on the built module this session",
+   "generation_or_draft_literals": {
+    "predicate": "case-insensitive 'generation' and 'draft'",
+    "denominator": "the whole 240-line file",
+    "hits": 0
+   }
+  },
+  "stage_envelopes": {
+   "method": "a sentinel string placed in one source text; each stage's encoded envelope parsed at the generate port this session",
+   "denominator": "every stage the shipped synthetic fixture admits (5; no repair cycle)",
+   "rows": [
+    {
+     "stage": "inventory",
+     "input_keys": [
+      "readerQuestions",
+      "sources"
+     ],
+     "sentinel_occurrences": 1
+    },
+    {
+     "stage": "plan",
+     "input_keys": [
+      "inventory",
+      "readerQuestions",
+      "sources"
+     ],
+     "sentinel_occurrences": 2
+    },
+    {
+     "stage": "author",
+     "input_keys": [
+      "inventory",
+      "plan",
+      "readerQuestions",
+      "sources"
+     ],
+     "sentinel_occurrences": 2
+    },
+    {
+     "stage": "edit",
+     "input_keys": [
+      "draft",
+      "inventory",
+      "plan",
+      "readerQuestions",
+      "sources"
+     ],
+     "sentinel_occurrences": 4
+    },
+    {
+     "stage": "fidelity",
+     "input_keys": [
+      "draft",
+      "inventory",
+      "plan",
+      "readerQuestions",
+      "sources"
+     ],
+     "sentinel_occurrences": 4
+    }
+   ],
+   "sentinel_total": 13,
+   "finding": "sources is a key of all five envelopes; fidelity carries plan and inventory does not"
+  },
+  "input_bytes_per_stage": {
+   "method": "unchanged runGenerationPipeline over the shipped synthetic fixture with a capturing admit port recording AttemptInput.inputBytes",
+   "rows": [
+    {
+     "stage": "inventory",
+     "ordinal": 0,
+     "inputBytes": 3422
+    },
+    {
+     "stage": "plan",
+     "ordinal": 1,
+     "inputBytes": 4297
+    },
+    {
+     "stage": "author",
+     "ordinal": 2,
+     "inputBytes": 7971
+    },
+    {
+     "stage": "edit",
+     "ordinal": 3,
+     "inputBytes": 8807
+    },
+    {
+     "stage": "fidelity",
+     "ordinal": 4,
+     "inputBytes": 6283
+    }
+   ],
+   "total": 30780,
+   "source_bytes_json_stringify": 439,
+   "ratio_total_over_corpus": 70.11,
+   "marginal_slope": {
+    "runs": [
+     [
+      439,
+      30780
+     ],
+     [
+      3439,
+      65780
+     ],
+     [
+      6439,
+      100780
+     ]
+    ],
+    "bytes_billed_per_source_byte": 11.67,
+    "scope": "fixture-dependent: this fixture echoes each source's text into an inventory statement and a draft paragraph. The structural part — the corpus encoded once per stage — is 5 in a no-repair run and 7 with one repair cycle (pipeline.ts 259-269)"
+   }
+  },
+  "prompt_and_schema_bytes": {
+   "method": "promptForStage and stageSchema called on the built module this session",
+   "system_bytes": {
+    "inventory": 1971,
+    "plan": 2371,
+    "author": 2459,
+    "edit": 1968,
+    "fidelity": 2515,
+    "repair": 1847
+   },
+   "schema_bytes": {
+    "inventory": 750,
+    "plan": 641,
+    "author": 3961,
+    "edit": 3961,
+    "fidelity": 881,
+    "repair": 3961
+   },
+   "system_total_all_six": 13131,
+   "system_total_no_repair_five": 11284,
+   "schema_total_all_six": 14155,
+   "correction_to_L3_F7": "the prompt is transmitted twice (envelope line 176 and the separate system argument at line 219) and billed once (the charge at lines 177-179 is Buffer.byteLength(encoded), the envelope alone)"
+  },
+  "self_corpus": {
+   "predicate": "every tracked .md under .syzygy/governance/doctrine, every top-level tracked .md under .syzygy/governance/decisions, and every tracked .md under .syzygy/governance/contracts/rfcs",
+   "files": 105,
+   "raw_bytes": 1266454,
+   "characters": 1258724,
+   "over_100000_char_per_source_cap": 0,
+   "largest_source_characters": 55836,
+   "inventory_envelope_encoded_bytes": 1294284,
+   "encode_limit_probe": {
+    "1000000": "rejected: byte-limit",
+    "2000000": "accepted",
+    "4000000": "accepted",
+    "8000000": "accepted",
+    "16000000": "accepted"
+   },
+   "cumulative_floor_for_a_no_repair_run": 6471420,
+   "cumulative_floor_label": "Inferred — 5 x the measured envelope, from the stage-input construction traced at pipeline.ts 259-269; no such run has been executed"
+  },
+  "landed_caps": {
+   "per_source_max_characters": 100000,
+   "source_list_max_items": 200,
+   "site": "packages/polaris-generation-core/src/provider-draft.ts lines 15 and 109",
+   "butlers_capture": {
+    "sources": 278,
+    "bodies": 86,
+    "body_bytes": 1120065,
+    "source": "the retained machine capture's projectShape.counts and projectShape.resourceUse",
+    "consequence": "86 bodies fit the 200-item cap; 278 sources do not. The cap binds the population, not the body count"
+   }
+  },
+  "clause_origin_sweep": {
+   "method": "Python re over both specification files this session",
+   "denominator": "the two files (predecessor 1719 lines, overlay 637 lines by wc -l)",
+   "sentences": [
+    {
+     "clause": "REQ-003 anchor / RFC7-10",
+     "base_lines": [
+      98
+     ],
+     "overlay_lines": []
+    },
+    {
+     "clause": "REQ-006 reviewers-without-the-authoring-conversation",
+     "base_lines": [
+      302
+     ],
+     "overlay_lines": [
+      180
+     ]
+    },
+    {
+     "clause": "REQ-006 authoring stage shall not narrow its own denominator",
+     "base_lines": [
+      302
+     ],
+     "overlay_lines": [
+      180
+     ]
+    },
+    {
+     "clause": "REQ-014 two substantively different real project domains",
+     "base_lines": [
+      755
+     ],
+     "overlay_lines": [
+      367
+     ]
+    },
+    {
+     "clause": "REQ-014 synthetic tests remain explicitly limited evidence",
+     "base_lines": [
+      755
+     ],
+     "overlay_lines": [
+      367
+     ]
+    },
+    {
+     "clause": "REQ-010 editorial-draft until an attributed per-block authorship act",
+     "base_lines": [
+      528
+     ],
+     "overlay_lines": []
+    },
+    {
+     "clause": "REQ-020 guided start without manually assembling records",
+     "base_lines": [
+      1083
+     ],
+     "overlay_lines": []
+    },
+    {
+     "clause": "REQ-008 resumed run reuses only verified checkpoints",
+     "base_lines": [
+      400
+     ],
+     "overlay_lines": []
+    },
+    {
+     "clause": "REQ-008 duplicate starts shall not duplicate provider effects",
+     "base_lines": [
+      400
+     ],
+     "overlay_lines": []
+    },
+    {
+     "clause": "REQ-003 human HTML and machine presentation derive from the same bundle",
+     "base_lines": [
+      98
+     ],
+     "overlay_lines": []
+    }
+   ],
+   "result": "every M7 clause is predecessor text; none is overlay-only, so the arm of P-73's Q6 that gates M6 slice 4 reaches no M7 slice"
+  },
+  "tasks_md": {
+   "predicate": "^- \\[[ xX]\\] ",
+   "denominator": "the whole file, 51 lines by wc -l",
+   "boxes": 24,
+   "checked": 0
+  },
+  "bound_bytes": {
+   "act_manifest_sweep": {
+    "predicate": "each of the 15 paths named in Gate 3's topology table, searched in every tracked *-MANIFEST.txt, every tracked docs/evidence/*manifest*.json, and ACCEPTANCE-ACT-RECORD.md",
+    "manifest_population": 21,
+    "hits_per_path": 0,
+    "paths": [
+     "packages/polaris-generation-core/src/pipeline.ts",
+     "packages/polaris-generation-core/src/provider-draft.ts",
+     "packages/polaris-generation-core/src/prompts.ts",
+     "packages/polaris-generation-core/src/index.ts",
+     "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+     "apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts",
+     "apps/three-surface-poc/src/polaris-generation/pipeline-demo-main.ts",
+     "apps/three-surface-poc/src/routes.ts",
+     "docs/polaris-generation/README.md",
+     "package.json",
+     "PROJECT-STATUS.md",
+     "packages/three-surface-poc-core/src/project-shape-observation.ts",
+     "apps/three-surface-poc/src/polaris-source.ts",
+     "packages/polaris-generation-core/src/pipeline.test.ts",
+     "packages/polaris-generation-core/README.md"
+    ],
+    "path_count": 15
+   },
+   "generator_scope_record": {
+    "path": "docs/evidence/polaris-generator-current-scope-2026-09-12.json",
+    "rows": 21,
+    "all_under": "openspec/changes/polaris-manifesto-generation/",
+    "implementation_paths": 0,
+    "note": "the acts bind an immutable offer by its own SHA-256, not this record; it is cited as the enumeration of the package's governed files"
+   },
+   "synthetic_verification_record": {
+    "path": "docs/evidence/polaris-pipeline-synthetic-verification-2026-09-13.json",
+    "rows": 17,
+    "rows_matching_current_bytes": 17,
+    "rows_mismatching": 0,
+    "method": "sha256 recomputed for each row this session and compared; no value reproduced, per CG-15",
+    "consequence": "slices 1, 2, 4 and 6 rewrite five of those rows and retire the record's binding to them; the re-run should happen once, after M6 and M7 both land"
+   },
+   "registry_entry": {
+    "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+    "bound_by": [
+     "PWB-OBSERVER-REGISTRY-ENTRY-ACT.md",
+     "PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md"
+    ],
+    "git_tree_entry_literal_occurrences": 1,
+    "sweep_denominator": "every tracked file under .syzygy/ and openspec/",
+    "identity_scheme": "repository-id-plus-revision-plus-repository-relative-path-plus-object-id",
+    "read_never_edited": true
+   }
+  },
+  "egress_surface": {
+   "predicate": "the literals 'fetch(', 'node:http', 'node:https', 'undici', 'axios', 'XMLHttpRequest' and 'https://'",
+   "denominator": "the 20 files of the generation surface",
+   "network_primitives": 0,
+   "https_literal_hits": 3,
+   "https_literal_note": "all three are escaping fixtures inside tests",
+   "second_method": "packages/polaris-generation-core/README.md lines 38-39, 'It has no default network client' (verification rule 2)"
+  },
+  "baseline_diffs": {
+   "f4589e2_to_a9f671e_over_the_m7_paths": {
+    "rows": 22,
+    "added": 20,
+    "modified": 2,
+    "modified_paths": [
+     "docs/polaris-generation/README.md",
+     "package.json"
+    ],
+    "routes_ts_in_any_row": false,
+    "paths": [
+     "packages/polaris-generation-core",
+     "docs/polaris-generation",
+     "apps/three-surface-poc/src/polaris-generation",
+     "package.json",
+     "apps/three-surface-poc/src/routes.ts"
+    ]
+   },
+   "1932f74_to_a9f671e_over_the_same": {
+    "rows": 0
+   }
+  },
+  "file_set_intersection": {
+   "predicate": "code spans in each sibling's packet file that begin apps/, packages/, scripts/, docs/polaris-generation/ or package.json AND resolve as a file (os.path.isfile) in this worktree, intersected with M7's 24-file candidate surface",
+   "m7_surface_size": 24,
+   "m7_surface": "everything under packages/polaris-generation-core/src and apps/three-surface-poc/src/polaris-generation, everything under docs/polaris-generation, plus apps/three-surface-poc/src/routes.ts, packages/polaris-generation-core/README.md and package.json",
+   "rows": [
+    {
+     "sibling": "M1 (lane A, on main)",
+     "head": "a9f671e",
+     "impl_spans": 3,
+     "resolving_files": 1,
+     "intersection": [
+      "apps/three-surface-poc/src/routes.ts"
+     ],
+     "note": "its own text says routes.ts is not touched (lines 143-144), so this is a citation, not a claim"
+    },
+    {
+     "sibling": "lane B, PR #35, P-68",
+     "head": "4090f98",
+     "impl_spans": 2,
+     "resolving_files": 0,
+     "intersection": [],
+     "second_predicate": "git diff --name-only a9f671e HEAD in its worktree names 3 implementation-plane files: scripts/check_governance.py and two scripts existing only on that branch",
+     "intersection_under_second_predicate": []
+    },
+    {
+     "sibling": "M2, PR #36, P-69",
+     "head": "f2f37dd",
+     "impl_spans": 19,
+     "resolving_files": 11,
+     "intersection": [
+      "apps/three-surface-poc/src/routes.ts"
+     ],
+     "note": "its Gate 3 puts routes.ts in slice 3's Lives-in column"
+    },
+    {
+     "sibling": "M3, PR #37, P-70",
+     "head": "6574600",
+     "impl_spans": 15,
+     "resolving_files": 13,
+     "intersection": []
+    },
+    {
+     "sibling": "M4, PR #38, P-71",
+     "head": "63b8e33",
+     "impl_spans": 31,
+     "resolving_files": 22,
+     "intersection": [
+      "apps/three-surface-poc/src/routes.ts"
+     ],
+     "note": "its Gate 3 puts routes.ts in slice 5's Lives-in column"
+    },
+    {
+     "sibling": "M5, PR #39, P-72",
+     "head": "ba9ca61",
+     "impl_spans": 11,
+     "resolving_files": 9,
+     "intersection": [
+      "apps/three-surface-poc/src/routes.ts"
+     ],
+     "note": "its Gate 3 puts routes.ts in slices 1 and 3's Lives-in columns; slice 3 adds a route and a ResponseLimitIdentity, as M7 slice 4 would"
+    },
+    {
+     "sibling": "M6, PR #40, P-73",
+     "head": "83c9f60",
+     "impl_spans": 26,
+     "resolving_files": 13,
+     "intersection": [
+      "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+      "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md",
+      "docs/polaris-generation/AUTHORING.md",
+      "docs/polaris-generation/README.md",
+      "docs/polaris-generation/example.json",
+      "package.json",
+      "packages/polaris-generation-core/README.md",
+      "packages/polaris-generation-core/src/index.ts",
+      "packages/polaris-generation-core/src/prompts.ts",
+      "packages/polaris-generation-core/src/provider-draft.test.ts",
+      "packages/polaris-generation-core/src/provider-draft.ts"
+     ],
+     "count": 11,
+     "floor_note": "11 is a floor. packages/polaris-generation-core/src/pipeline.ts is a twelfth shared file the predicate misses: M6 cites it 10 times as the bare span `pipeline.ts` and 0 times at its full path [both counted this session]"
+    }
+   ],
+   "shared_governance_file": {
+    "path": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+    "touched_by": [
+     "lane B (P-68)",
+     "M2 (P-69)",
+     "M3 (P-70)",
+     "M4 (P-71)",
+     "M5 (P-72)",
+     "M6 (P-73)"
+    ],
+    "touched_by_M7": false,
+    "predicate": "^| P- over each worktree's register",
+    "disclosure": "This packet writes exactly two files and no register row, by instruction: the row lands after review 1, batched. This worktree's register ends at P-53, as do M8's and M9's. The next free number at the time of writing is P-74; whoever files it should re-derive it, because M8 and M9 are being drafted in parallel and may file first."
+   },
+   "parallel_packets_unknown": {
+    "M8": "portability — the profile as a loaded, digest-bound registry input",
+    "M9": "one identity, one epistemic shape, one vocabulary across the surfaces",
+    "state": "both worktrees at a9f671e with no commits; content [Unknown] to this session; disjoint from M7 by design, with one named overlap — M8 carries L1-M5, the observer self-profile, which slice 3 should share rather than duplicate"
+   }
+  },
+  "rfc2_26_test": {
+   "clause_quoted_from": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md lines 196-221, heading at 194",
+   "denominator": 7,
+   "rows": [
+    {
+     "slice": 1,
+     "consequence_class": "claim and challenge rendering; Unknown-reason and rendering-tier presentation",
+     "requirement": "REQ-polaris-generation-003, base 98",
+     "scenarios": [
+      "Aligned human and machine views, base 105-109",
+      "Unsupported or surplus anchor, base 111-115"
+     ],
+     "limb1": "available"
+    },
+    {
+     "slice": 2,
+     "consequence_class": "none enumerated with confidence [Inferred]",
+     "requirement": "REQ-polaris-generation-006, overlay 180 / base 302",
+     "scenarios": [
+      "nearest: Source trade-off omitted entirely, overlay 199-203",
+      "nearest: Omitted material qualification, overlay 205-212",
+      "nearest anywhere: REQ-014 Shared model blind spot, overlay 409-414"
+     ],
+     "limb1": "requirement available, scenario partial",
+     "scenario_headings_read": "all five REQ-006 scenario headings, overlay 187, 193, 199, 205, 214; none states the envelope-contents case",
+     "repair_routes": [
+      "a scenario added through CC-REV-2",
+      "a reviewed N/A judgment homed in decisions/ and honored only through an effective owner act under RFC3-16(a) — probably reachable here [Inferred]"
+     ]
+    },
+    {
+     "slice": 3,
+     "consequence_class": "none enumerated",
+     "requirement": "REQ-polaris-generation-014, overlay 367 / base 755",
+     "scenarios": [
+      "Narrow evidence offered as completion, overlay 380-384",
+      "Unfamiliarity without project-specific patching, overlay 392-399"
+     ],
+     "limb1": "available; the first scenario bounds the slice's claim rather than authorizing it"
+    },
+    {
+     "slice": 4,
+     "consequence_class": "API answers over epistemic state; claim and challenge rendering",
+     "requirement": "REQ-polaris-generation-020, base 1083; REQ-polaris-generation-010, base 528",
+     "scenarios": [
+      "First request needs approval, base 1089-1093",
+      "Valid act, base 535-539",
+      "Invalid or partial act, base 541-545"
+     ],
+     "limb1": "available on both requirements"
+    },
+    {
+     "slice": 5,
+     "consequence_class": "none enumerated",
+     "requirement": null,
+     "scenarios": [],
+     "limb1": "n/a; argued from SEC-2 directly"
+    },
+    {
+     "slice": 6,
+     "consequence_class": "none enumerated",
+     "requirement": "REQ-polaris-generation-008, base 400",
+     "scenarios": [
+      "Resume valid work, base 407-411",
+      "Duplicate or ambiguous dispatch, base 413-417"
+     ],
+     "limb1": "available; the first scenario is the one the landed port contract cannot satisfy"
+    },
+    {
+     "slice": 7,
+     "consequence_class": "[Unknown] — not designed",
+     "requirement": "REQ-polaris-generation-009, overlay 243",
+     "scenarios": [
+      "Changed source, overlay 250-254"
+     ],
+     "limb1": "deferred, not run"
+    }
+   ]
+  }
+ },
+ "figures_that_differ_from_the_dossier": [
+  "L3-F7's 'the prompt is billed twice per call' — it is transmitted twice and billed once; the charge at pipeline.ts 177-179 is the envelope alone",
+  "L3-F7's 200-source cap framing — the cap binds the source population, not the body count. Butlers' 86 bodies fit it; its 278 sources do not",
+  "L3-F5's routes.ts:220 and routes.ts:21-22 anchors do not carry the claim — 220 is the Polaris human-surface registration and 21-22 are the presentation-path constants; the absence is a whole-file sweep",
+  "the dossier's slice 2, 'fidelity envelope built from the draft alone', contradicts REQ-006's two sentences requiring the reviewer to verify the inventory against the owning admitted sources; corrected to {sources, inventory, draft, acceptanceCriteria}",
+  "L3-M6's 'publish the resulting draft preview as the second project' — REQ-014's own 'Narrow evidence offered as completion' scenario marks synthetic provider runs unproven for exactly that obligation",
+  "a defect the dossier does not name: the inventory stage is already structurally independent (two envelope keys, neither a draft nor a plan), so slice 2 narrows four envelopes, not six, and the package already contains the pattern it needs to copy"
+ ],
+ "could_not_verify": [
+  "[Unknown] whether the sibling branches' actual diffs stay inside the paths their packets cite; five of the six have committed no implementation file at all",
+  "[Unknown] which arm the owner takes on P-72's Q1, on which slice 4's route depends entirely",
+  "[Unknown] M8's and M9's content, and whether either will claim a file in M7's 24",
+  "[Unknown] whether a real provider run over the self-corpus would reproduce the measured envelope sizes; no provider has ever been called and slice 3 does not call one"
+ ],
+ "governance_check": {
+  "command": "python3 scripts/check_governance.py",
+  "run": "in this worktree at the end of the session",
+  "last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted"
+ },
+ "packet_measured": {
+  "path": "docs/design/POLARIS-M7-GENERATION-LOOP-FUNNEL.md",
+  "bytes": 109383,
+  "sha256": "9465bf5934b91f5d12bd067fc55bbc26511610fb780b97b67dbe81dfb5f12d0f",
+  "lines_wc_l": 1312,
+  "lines_split_on_newline": 1313,
+  "non_fence_lines": 1276,
+  "odd_backtick_non_fence_lines": 0,
+  "over_width_predicate": "lines outside fenced code blocks whose first non-space character is not a pipe, a hash or a '>' and which exceed 78 columns",
+  "over_width_lines": [
+   205,
+   889
+  ],
+  "over_width_note": "each is a single unbreakable code span",
+  "distinct_code_spans": 264,
+  "slash_bearing_spans_not_resolving_as_a_file": 35,
+  "slash_bearing_spans_not_resolving_as_a_file_list": [
+   ".syzygy/",
+   ".syzygy/**",
+   ".syzygy/governance/contracts/candidates/policy-candidates/",
+   ".syzygy/governance/contracts/rfcs/",
+   ".syzygy/governance/decisions/",
+   ".syzygy/governance/doctrine/",
+   "/",
+   "/api/poc",
+   "/api/poc/briefing",
+   "/api/poc/polaris",
+   "/polaris/draft/<runId>",
+   "GET /polaris/draft/<runId>",
+   "agent/syzygy-dov.4",
+   "agent/syzygy-dov.5",
+   "apps/",
+   "apps/**",
+   "apps/three-surface-poc/src/polaris-generation",
+   "apps/three-surface-poc/src/polaris-generation/",
+   "decisions/",
+   "decisions/README.md",
+   "docs/**",
+   "docs/evidence/",
+   "docs/evidence/**",
+   "docs/evidence/*manifest*.json",
+   "docs/polaris-generation",
+   "docs/polaris-generation/",
+   "https://",
+   "openspec/",
+   "openspec/**",
+   "openspec/changes/polaris-manifesto-generation/",
+   "packages/",
+   "packages/**",
+   "packages/polaris-generation-core",
+   "packages/polaris-generation-core/src",
+   "scripts/"
+  ],
+  "slash_bearing_note": "every entry is a directory, a write-root glob, a route or URL literal, a quoted regex predicate, or the RFC2-26 quotation's own bare decisions/ — none is a file path this packet cites",
+  "measured": "after every other edit in this pass, so the figures are true of the bytes they describe",
+  "record_own_sha_absent": "this record cannot hash itself; the record's sha256 is reported in the drafter's handoff report"
+ }
+}
