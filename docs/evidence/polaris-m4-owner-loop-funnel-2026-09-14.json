@@ -1,0 +1,696 @@
+{
+  "generated": "2026-09-14",
+  "purpose": "Evidence computed this session for the M4 owner-loop funnel packet (bead syzygy-dov.4). Planning only; nothing here authorizes implementation.",
+  "syzygy_commit": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
+  "worktree_branch": "agent/syzygy-dov.4",
+  "captures": {
+    "lane_a_after": {
+      "provenance": "retained lane A 'after' captures; Butlers evaluation revision 2e3bac97790b4bd8906dcac63eadb5642a0bb1ac, committed 2026-09-13T10:31:11Z, captured 2026-09-13T13:33:24.295Z; observer 2ef68f5b28307003e8fc38668986765ab0f884b5",
+      "directory": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after",
+      "files": {
+        "polaris-tailnet.html": {
+          "bytes": 1484487,
+          "sha256": "e8a04b4631dedbda159dd162d25f4e8a7ed4f9f4059a37ca1bca87b717790111",
+          "decoded_characters": 1481819,
+          "sha256_verified_against_m2_evidence_record": true
+        },
+        "polaris-direct.html": {
+          "bytes": 1478637,
+          "sha256": "2fecdd01e1a2ff577567495796ea7e59ab89f1420be6033e23314d26442ea094"
+        },
+        "api-poc.json": {
+          "bytes": 5520314,
+          "sha256": "a89b0e059b5fdadc5f359c2bee58115cd50747399cfb00444703e0fafdfb466e"
+        },
+        "api-polaris.json": {
+          "bytes": 640592,
+          "sha256": "ab3b517be1e62a0a7f4cabe73d870f9aa6bea7d2bbbadf0d27a2f00c34eca22e"
+        }
+      }
+    },
+    "pre_lane_a": {
+      "provenance": "fresh private daemon at Syzygy f4589e26aed9886a5776e5ac7a1c4fad4627fd26 against Butlers 7c8743f63837d138503d3d823547353dc6fd972c, evaluation asOf 2026-09-13T02:03:33.040Z",
+      "directory": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/capture",
+      "validity_for_this_packet": "git diff --numstat f4589e2..a9f671e returns no rows for apps/three-surface-poc/src/routes.ts, apps/three-surface-poc/src/trajectory.ts or any file under packages/three-surface-poc-core/, so the home, Trajectory and Orrery renderers are byte-identical at both commits; only the observed Butlers revision differs",
+      "files": {
+        "home.html": {
+          "bytes": 38706,
+          "sha256": "c2fd6d1af7103e871c26dc65b76cc391fe2765a1c7391ac19ddf1656e57b5fca",
+          "decoded_characters": 38682
+        },
+        "trajectory.html": {
+          "bytes": 244524,
+          "sha256": "fd802531b199084e7145932715150f4977335e49ca6aa168d68d5227c9d6ddde",
+          "decoded_characters": 244506
+        },
+        "orrery.html": {
+          "bytes": 37048,
+          "sha256": "e3ae5b7901c599a04b685456e6070430edf72fcd025cd1f6afecf863153582fa"
+        },
+        "api-poc.json": {
+          "bytes": 5508208,
+          "sha256": "8b8d8a3078f085d4d53aa3bcad9d5a06b5b0c064bb8cdc7b3832913a81bc44d0"
+        }
+      }
+    }
+  },
+  "lane_a_churn_sweep": {
+    "method": "git diff --numstat f4589e2..a9f671e -- <path>, run in the worktree",
+    "rows_for_routes_ts": 0,
+    "rows_for_trajectory_ts": 0,
+    "rows_for_packages_three_surface_poc_core": 0,
+    "app_render_sources_changed": [
+      "apps/three-surface-poc/src/polaris.ts (+25/-6)",
+      "apps/three-surface-poc/src/polaris-narrative.ts"
+    ],
+    "denominator": "146 files changed across the whole f4589e2..a9f671e range"
+  },
+  "machine_resolution_routes": {
+    "method": "recursive walk of the parsed JSON collecting every object carrying a resolutionRoutes key, then a histogram of epistemic.label over that population; run identically on both machine captures",
+    "lane_a_after": {
+      "objects_carrying_resolutionRoutes": 1149,
+      "empty_array": 1137,
+      "non_empty_array": 12,
+      "empty_array_that_are_Unknown": 0,
+      "non_empty_array_that_are_Unknown": 12,
+      "label_histogram": {
+        "Observed": 1137,
+        "Unknown": 12
+      },
+      "unknown_primary_reasons": {
+        "excluded-content": 12
+      },
+      "distinct_non_empty_route_rows": [
+        {
+          "reason": "excluded-content",
+          "route": "Policy change by the owner, or accept the exclusion",
+          "occurrences": 12
+        }
+      ],
+      "parent_paths": {
+        "/projectShape/facts/[]/claim": 439,
+        "/projectShape/items/[]/claim": 415,
+        "/projectShape/sources/[]/claim": 278,
+        "/projectShape/projectAccount/[]/claim": 6,
+        "/projectShape/classes/<nine>/claim": 9,
+        "/projectShape/claim": 1,
+        "/proposedWork/currentAuthority/claim": 1
+      }
+    },
+    "pre_lane_a": {
+      "objects_carrying_resolutionRoutes": 1149,
+      "empty_array": 1137,
+      "non_empty_array": 12,
+      "empty_array_that_are_Unknown": 0,
+      "non_empty_array_that_are_Unknown": 12,
+      "note": "every figure equal to the lane A capture at a different Butlers revision, so these are facts about model construction, not observed content"
+    },
+    "code_basis": "packages/three-surface-poc-core/src/project-shape-model.ts lines 150-154: routesFor returns [] when the label is not Unknown, else one route per carried reason from UNKNOWN_REASON_ROUTES (lines 89-102)"
+  },
+  "relationships": {
+    "method": "direct read of the relationships array in both machine captures",
+    "count": 9,
+    "unknown": 5,
+    "unknown_ids": [
+      "relationship:intent-to-work",
+      "relationship:work-to-code",
+      "relationship:code-to-evidence",
+      "relationship:code-to-runtime",
+      "relationship:capability-to-unmapped-region"
+    ],
+    "carrying_resolutionRoutes_field": 0,
+    "identical_in_both_captures": true,
+    "reason_form": "a free-prose English sentence in PocEpistemic's Unknown arm, minted by unknown(reason: string) at packages/three-surface-poc-core/src/model.ts line 305; not a member of RFC2-24's closed twelve",
+    "conditional_vs_literal": {
+      "relationship:intent-to-work": "conditional on materialization.beadId, model.ts line 570",
+      "relationship:work-to-code": "unconditional unknown() literal, model.ts line 588",
+      "relationship:code-to-evidence": "unconditional unknown() literal, model.ts line 597",
+      "relationship:code-to-runtime": "unconditional unknown() literal, model.ts line 606",
+      "relationship:capability-to-unmapped-region": "unconditional unknown() literal, model.ts line 615"
+    },
+    "worker_change_wiring_sweep": {
+      "method": "grep -n for the identifiers workerChange, testArtifactVerification and WORKER_CHANGE over packages/three-surface-poc-core/src/model.ts",
+      "hits": [
+        30,
+        42,
+        124,
+        125,
+        418,
+        421,
+        426,
+        427,
+        430,
+        431,
+        433,
+        701,
+        702
+      ],
+      "hits_inside_the_relationships_array_lines_524_to_616": 0,
+      "conclusion": "no relationship reads workerChange or testArtifactVerification; the seam and its intent are deliberately distinct per the file's own comments at lines 25-42"
+    }
+  },
+  "unknown_disclosures_on_polaris": {
+    "capture": "lane A after, tailnet form",
+    "method": "for each element matching data-unknown-disclosure=\"...\", take the text from its opening tag to the first matching closing tag of the same tag name and test that inner text for data-unknown-reason=\" and for the literal 'Route:'",
+    "total": 22,
+    "with_closed_reason_and_route": 13,
+    "without_either": 9,
+    "without_either_ids": [
+      "work:whatsapp-single-event-normalization",
+      "evidence:focused-pytest",
+      "runtime:live-satisfaction",
+      "region:unmapped-code",
+      "relationship:intent-to-work",
+      "relationship:work-to-code",
+      "relationship:code-to-evidence",
+      "relationship:code-to-runtime",
+      "relationship:capability-to-unmapped-region"
+    ],
+    "offsets_and_depth": [
+      [
+        378599,
+        25.5,
+        "claim:class:roster-identity",
+        "excluded-content",
+        true
+      ],
+      [
+        836380,
+        56.4,
+        "capability:whatsapp-transport-identity/doctrine",
+        "missing-declaration",
+        true
+      ],
+      [
+        837314,
+        56.5,
+        "capability:whatsapp-transport-identity/non-goals",
+        "missing-declaration",
+        true
+      ],
+      [
+        844800,
+        57.0,
+        "work:whatsapp-single-event-normalization",
+        null,
+        false
+      ],
+      [
+        845421,
+        57.1,
+        "evidence:focused-pytest",
+        null,
+        false
+      ],
+      [
+        846047,
+        57.1,
+        "runtime:live-satisfaction",
+        null,
+        false
+      ],
+      [
+        846650,
+        57.1,
+        "region:unmapped-code",
+        null,
+        false
+      ],
+      [
+        850888,
+        57.4,
+        "relationship:intent-to-work",
+        null,
+        false
+      ],
+      [
+        851228,
+        57.4,
+        "relationship:work-to-code",
+        null,
+        false
+      ],
+      [
+        851572,
+        57.5,
+        "relationship:code-to-evidence",
+        null,
+        false
+      ],
+      [
+        851904,
+        57.5,
+        "relationship:code-to-runtime",
+        null,
+        false
+      ],
+      [
+        852226,
+        57.5,
+        "relationship:capability-to-unmapped-region",
+        null,
+        false
+      ],
+      [
+        853157,
+        57.6,
+        "claim:project-shape",
+        "excluded-content",
+        true
+      ],
+      [
+        903530,
+        61.0,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1418068,
+        95.7,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1425443,
+        96.2,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1432759,
+        96.7,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1436655,
+        97.0,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1443938,
+        97.4,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1449565,
+        97.8,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1455213,
+        98.2,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1462590,
+        98.7,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ]
+    ],
+    "offsets_note": "the nine source-claim rows name Butlers repository paths in the capture; they are recorded here by class, and the packet names them in prose without code spans",
+    "literal_Route_colon_occurrences_on_page": 18,
+    "data_unknown_reason_attribute_occurrences": 16,
+    "data_unknown_reason_values": {
+      "excluded-content": 14,
+      "missing-declaration": 2
+    },
+    "predicate_note": "the 18 vs 13 difference is the gaps-list row and the per-cause sentences, which carry a reason or a route outside a disclosure element"
+  },
+  "gaps_section_position": {
+    "capture": "lane A after, tailnet form",
+    "heading": "Unknown, by reason",
+    "position": "6th h3 of the 7th h2",
+    "h3_count_under_that_h2": 10,
+    "character_offset": 1474935,
+    "depth_percent": 99.5,
+    "denominator_characters": 1481819,
+    "data_polaris_gaps_attribute_occurrences": 1,
+    "data_polaris_gaps_value": "1",
+    "data_polaris_gap_rows": 1,
+    "gap_row_id": "polaris-gap-excluded-content",
+    "gap_row_claim_count_text": "12 claim(s)",
+    "h2_offsets": [
+      [
+        31170,
+        2.1,
+        "What Butlers is"
+      ],
+      [
+        48958,
+        3.3,
+        "Scope and principles"
+      ],
+      [
+        70792,
+        4.8,
+        "What V1 ships"
+      ],
+      [
+        127665,
+        8.6,
+        "How Butlers is built"
+      ],
+      [
+        282020,
+        19.0,
+        "Project catalog"
+      ],
+      [
+        811016,
+        54.7,
+        "One capability in depth"
+      ],
+      [
+        852703,
+        57.5,
+        "Evidence and gaps"
+      ]
+    ],
+    "capability_detail_span_characters": 41687,
+    "capability_detail_depth_percent": 2.8
+  },
+  "href_census": {
+    "method": "sweep of href=\"...\" attribute values, bucketed by prefix after stripping the query string",
+    "polaris_lane_a_tailnet": {
+      "total": 1089,
+      "fragments": 699,
+      "source_routes": 386,
+      "global_nav": 4,
+      "forms": 0,
+      "buttons": 1,
+      "details": 359
+    },
+    "home_pre_lane_a": {
+      "total": 40,
+      "fragments": 36,
+      "distinct_fragment_targets": 10,
+      "global_nav": 4,
+      "forms": 0,
+      "buttons": 0,
+      "inputs": 0
+    },
+    "trajectory_pre_lane_a": {
+      "total": 304,
+      "fragments": 300,
+      "distinct_fragment_targets": 300,
+      "global_nav": 4,
+      "forms": 1,
+      "buttons": 1
+    },
+    "orrery_pre_lane_a": {
+      "total": 23,
+      "fragments": 19,
+      "distinct_fragment_targets": 10,
+      "global_nav": 4,
+      "forms": 0,
+      "buttons": 0
+    },
+    "cross_surface_deep_links": 0,
+    "cross_surface_deep_link_predicate": "a non-fragment href on one surface whose path names a route other than the four global-nav routes and the exact-source route; counted over all four pages",
+    "buttons_note": "Polaris's single button is type=\"button\" (the expand-declaration toggle); the only type=\"submit\" button in the five captured pages is the materialize trigger on Trajectory",
+    "source_sample_page": {
+      "forms": 0,
+      "buttons": 0,
+      "capture": "source-sample-7478.html in the pursuit capture directory — the owner's loopback daemon at an older evaluation, the only exact-source capture retained"
+    }
+  },
+  "home_composition": {
+    "capture": "pre-lane-A",
+    "bytes": 38706,
+    "decoded_characters": 38682,
+    "h1_literal": "One capability. Three honest views.",
+    "h2_headings": [
+      "Polaris",
+      "Trajectory",
+      "Orrery",
+      "Exact entities",
+      "Exact relationships"
+    ],
+    "surface_grid_span_characters": 6438,
+    "surface_grid_span_percent": 16.6,
+    "exact_tables_span_characters": 24612,
+    "exact_tables_span_percent": 63.6,
+    "data_surface_entity_items": 17,
+    "data_entity_id": 9,
+    "data_relationship_id": 9,
+    "epistemic_unknown_occurrences": 18,
+    "tables": 2,
+    "renderer_model_field_reads": [
+      "model.surfaces (routes.ts:78)",
+      "model.project (87, 89)",
+      "model.entities (35, 89)",
+      "model.capabilityId (89)",
+      "model.evaluation (92)"
+    ],
+    "renderer_model_field_sweep_method": "grep -oE 'model\\.[a-zA-Z]+' over apps/three-surface-poc/src/routes.ts; the only other hit in the file is model.projectShape at line 127, outside renderPocPage",
+    "panel_link_form": "<a href=\"#<entity id>\"> — a fragment into the exact tables on the same page, never a link into the surface the panel names (routes.ts lines 34-55)"
+  },
+  "trajectory_composition": {
+    "capture": "pre-lane-A",
+    "bytes": 244524,
+    "decoded_characters": 244506,
+    "materialize_panel_offset": 242386,
+    "materialize_panel_depth_percent": 99.1,
+    "materialize_panel_characters": 2120,
+    "form": "<form method=\"POST\" action=\"/trajectory/materialize\">",
+    "button": "<button type=\"submit\" data-parity-field=\"materialize-trigger\">",
+    "h2_headings_with_offsets": [
+      [
+        9214,
+        "Backlog (125)"
+      ],
+      [
+        106158,
+        "In Progress (20)"
+      ],
+      [
+        122391,
+        "Blocked (101)"
+      ],
+      [
+        200626,
+        "Deferred (3)"
+      ],
+      [
+        203249,
+        "Pinned (0)"
+      ],
+      [
+        203412,
+        "Hooked (0)"
+      ],
+      [
+        203573,
+        "Done (50)"
+      ],
+      [
+        242489,
+        "Materialize this work item"
+      ]
+    ]
+  },
+  "return_path_state": {
+    "identical_in_both_machine_captures": true,
+    "materializedBeadId": null,
+    "workerChange": {
+      "kind": "unknown",
+      "reason": "no materialized work item to observe git activity against"
+    },
+    "testArtifactVerification": {
+      "kind": "unknown",
+      "reason": "no observed changed-or-merged commit exists to bind test evidence against"
+    },
+    "walkthroughJudgment_path": "walkthroughJudgment.evaluation.outcome",
+    "walkthroughJudgment_outcome": {
+      "kind": "absent",
+      "what": "no-run-record",
+      "detail": "walkthrough execution record missing",
+      "criterion": "unknown-never-met"
+    },
+    "dossier_path_correction": "the dossier cites walkthroughJudgment.outcome; the field is one level deeper, at walkthroughJudgment.evaluation.outcome, with the same four values"
+  },
+  "no_route_declared_copy": {
+    "declared_at": "apps/three-surface-poc/src/polaris-copy.ts line 193, id label.no-route, text 'No route declared'",
+    "used_at": [
+      "apps/three-surface-poc/src/polaris.ts line 466 (routeOf fallback)",
+      "apps/three-surface-poc/src/polaris.ts line 473 (reasonRouteHtml fallback)"
+    ],
+    "occurrences_of_the_literal_on_the_lane_a_capture": 0,
+    "oracle": "apps/three-surface-poc/src/polaris-copy.test.ts line 299 lists label.no-route in UNREACHED_IN_FIXTURES; the oracle asserts the row is NOT present and requires it to be dropped from the set the moment it becomes reachable",
+    "consequence": "the state L5-M4 proposes to mint as 'none-modelled' is already a declared, tested-unreachable copy row"
+  },
+  "source_citation_reverification": {
+    "method": "every dossier line citation re-read at a9f671e; the dossier's numbers were taken at f4589e2",
+    "unchanged": {
+      "packages/three-surface-poc-core/src/model.ts": {
+        "PocRelationship": "80-88",
+        "PocSurface": "90-96",
+        "unknown_helper": "305-307",
+        "workerChange": "418-423",
+        "testArtifactVerification": "431-437",
+        "carried_to_model": "701-702",
+        "WORKER_CHANGE_SEAM": "29-32 with comment 25-28",
+        "WORKER_CHANGE_INTENT_ID": "42 with comment 34-41"
+      },
+      "packages/three-surface-poc-core/src/project-shape-model.ts": {
+        "UNKNOWN_REASON_ROUTES": "89-102",
+        "ResolutionRoute": "115-118",
+        "resolutionRoutes_field": "128",
+        "routesFor": "150-154"
+      },
+      "apps/three-surface-poc/src/materialize-action.ts": {
+        "MATERIALIZE_HUMAN_PATH": "17",
+        "renderMaterializePanel": "55-81",
+        "form": "78"
+      },
+      "packages/three-surface-poc-core/src/materialization.ts": {
+        "MATERIALIZATION_EXTERNAL_REF": "9-10",
+        "MaterializationGoverningIntent.requirementId_literal_type": "15",
+        "buildMaterializationPacket": "43-65"
+      },
+      "packages/three-surface-poc-core/src/test-artifact-verification.ts": {
+        "TestArtifactRecord": "11-19",
+        "writeTestArtifactRecordFile": "73"
+      },
+      "apps/three-surface-poc/src/capture-test-artifact.ts": {
+        "SEC-3 comment": "3-7"
+      },
+      "apps/three-surface-poc/src/routes.ts": {
+        "surfacePanel": "34-55",
+        "HOME_STYLE": "57-76",
+        "renderPocPage": "77-96",
+        "h1_literal": "88",
+        "lede": "89",
+        "POC_MACHINE_PATH": "16"
+      },
+      "packages/three-surface-poc-core/src/owner-act-record.ts": {
+        "header_comment": "1-18",
+        "field_types": "20-45"
+      },
+      "apps/three-surface-poc/src/governance-inputs.ts": {
+        "PWB_AUTHORITY_ARTIFACTS": "36-41",
+        "PWB_ACT_RECORDS": "48-52"
+      }
+    },
+    "corrected": {
+      "packages/three-surface-poc-core/src/model.ts surfaces literal": {
+        "dossier": "710-756",
+        "actual": "710-749",
+        "file_length": 752,
+        "note": "the dossier's range overruns the file by four lines"
+      },
+      "packages/three-surface-poc-core/src/model.ts five Unknown relationships": {
+        "dossier": "563-598",
+        "actual": "562-581, 583-590, 592-599, 601-607, 609-616"
+      },
+      "apps/three-surface-poc/src/polaris.ts gapsList": {
+        "dossier": "916-931 (at f4589e2)",
+        "actual_at_a9f671e": "933-948, with gapReasonCounts at 922-931",
+        "note": "lane A moved the function +17 lines"
+      }
+    },
+    "derived_vs_handwritten_surfaces": "Orrery's entityIds and relationshipIds are derived (entities.map / relationships.map) at model.ts lines 745-746; Polaris's and Trajectory's are hand-written lists"
+  },
+  "specification_coverage_sweep": {
+    "method": "grep -c '^### Requirement' over both signed spec files; a case-insensitive whole-word search for 'home' in each; and a search for the backticked literal `surfaces` or the string model.surfaces in each",
+    "poc_requirements": 24,
+    "pwb_requirements": 17,
+    "requirements_governing_the_home_route": 0,
+    "requirements_governing_model_surfaces": 0,
+    "home_literal_hits_in_poc_spec": 0,
+    "home_literal_hits_that_are_requirements_about_the_root_route": 0,
+    "requirements_relied_on": [
+      "POC-REQ-020 (spec lines 377-416)",
+      "POC-REQ-060 (927-966)",
+      "POC-REQ-061 (966-1008)",
+      "PWB-REQ-004 (487-...)",
+      "PWB-REQ-010 (596-...)",
+      "PWB-REQ-011 (632-...)",
+      "PWB-REQ-020 (902-945)"
+    ],
+    "consequence": "slices 4 and 5 trace to the 2026-08-30 improvement-cycles direction's recorded-review-finding arm (findings L6-F1 and L6-F5), not to a requirement",
+    "home_literal_hits_in_pwb_spec": 6,
+    "home_hits_note": "all six PWB hits are the precedence table's Home column or the registry's governance-home field",
+    "surfaces_field_name_hits": 0
+  },
+  "authority_reads": {
+    "THREE-SURFACE-POC-MODE-DIRECTION.md": {
+      "required_demonstrations": "lines 18-22",
+      "in_force_invariants": "lines 26-32",
+      "prohibitions": "lines 34-40"
+    },
+    "THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md": {
+      "lifts": "the eight-item cap and the one-review budget for improvement-cycle items",
+      "trace_rule": "improvement-cycle work must trace to POC-REQ-001..061 or to a recorded review finding",
+      "unchanged": "the signed three-surface-poc-experience artifacts stay frozen at their act digests; spec changes route through CC-REV-2"
+    },
+    "PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md": {
+      "escalation_triggers": "lines 86-94",
+      "does_not_authorize": "lines 68-84, including 'No write, egress, execution, deployment, release, recovery, or mission effect on Butlers or on any other repository'"
+    },
+    "PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md": {
+      "date": "2026-09-05",
+      "kind": "plain owner direction, binds no digest, adds no acceptance-record row"
+    },
+    "registry_typedAuthority": {
+      "writeSurface": [],
+      "databaseAccess": [],
+      "networkAccess": [],
+      "executeObservedCode": false,
+      "workingTreeRead": false
+    },
+    "RFC2-24": {
+      "home": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md line 92",
+      "note": "its own table carries a Resolution route column whose twelve cells equal UNKNOWN_REASON_ROUTES word for word"
+    },
+    "vision_md": {
+      "VIS-1": 82,
+      "VIS-2": 96,
+      "VIS-4": 122,
+      "VIS-5": 141,
+      "not_a_documentation_portal": "lines 61-64, unnumbered adopted doctrine prose, carried by no VIS identifier and absent from DIRECTIVE-REGISTER.md",
+      "success_sentence": "lines 234-236",
+      "documentation_portal_phrase_sweep": {
+        "method": "grep -rnF 'documentation portal' over .syzygy/governance/",
+        "hits": 11,
+        "files": 8,
+        "definition": "vision.md:61",
+        "citers": 7
+      }
+    },
+    "v1_md": {
+      "drafting_is_V0_first_action": "lines 30-31",
+      "V0_agent_consumption_test": "lines 116-119"
+    }
+  },
+  "register_rows": {
+    "main_at_a9f671e_last_numbered_row": "P-53",
+    "main_last_note_referenced_by_sibling_packets": "P-67",
+    "P-68": "agent/syzygy-dov.17 only (lane B)",
+    "P-69": "agent/syzygy-dov.2 only (M2)",
+    "P-70": "agent/syzygy-dov.3 only (M3)",
+    "this_packet_would_queue_as": "P-71",
+    "method": "grep -nE '^\\| `?P-6[0-9]' over .syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md on main returns zero rows; the sibling packets' own statements were read read-only in their worktrees"
+  },
+  "unverified": [
+    "Whether a PocRelationship is an 'Unknown claim instance' in RFC2-24's sense: the clause says 'claim', the POC's relationships are typed PocRelationship and not ProjectShapeClaim, and no clause found in this session settles it. [Unknown]",
+    "Whether P-68, P-69 and P-70 remain at the numbers and branch heads their packets state: only the branches' own packet text was read, and both may have moved since. [Unknown]",
+    "The byte cost of slices 1, 3 and 5: a projection about unbuilt code, to be replaced by the before/after measurement Gate 6 requires. [Inferred]",
+    "Whether the owner reads a rendered resolution route as a 'disclosure Polaris presents' under PWB-REQ-020's enumerated population: this packet's reading is that it is, labelled Inferred in the packet. [Unknown]"
+  ]
+}
