@@ -588,5 +588,37 @@
     },
     "disposition_summary": "H1: Q3's sentence reworded limit-neutrally (population counts describe the whole evaluation) and the no-gate argument re-run over the human-HTML and /api/poc sinks the widened type also reaches; the briefing-scoped wording withdrawn in place. H2: kinds-versus-routes reading stated and labelled [Inferred] in Gate 2, Q2's fold-in sub-question tied to it, /api/poc/polaris named in Q1 as a second machine-JSON body. H3: Share denominator named (5,520,314) with the compact-ASCII alternatives. H4: both 707-713 sites corrected in place. H5: floors-and-unpublished-wrapper sentence carried into one_claim_briefing_examples.note. H6: five prose lines rewrapped, F20 row restated with predicate and count. H7: P-72 row gains the leaf denominator. H8: last-open-row versus highest-identifier stated in packet and record. H9: criterion 4 widened and the three vocabularies named.",
     "recommended_answers_changed": ["Q3 (decided in the packet, not an owner question): the field's sentence changes from briefing-scoped to limit-neutral; the outcome - one new field, no third population arm, no act - is unchanged. Q1, Q2, Q4 unchanged."]
+  },
+  "review4": {
+    "raw": "docs/reviews/R-POLARIS-M5-AGENT-BRIEFING-FUNNEL-4-RAW.md",
+    "bytes": 33284,
+    "sha256": "b59d4f3faff32b2030f273055d0b5bb1187dd2b84cf8bef11e31468a9436b538",
+    "verdict": "CONFIRM WITH EXCEPTIONS",
+    "counts": {"blocking": 0, "non_blocking": 2, "editorial": 3},
+    "reviewed_commit": "d41a9d2",
+    "reviewed_bytes": {
+      "packet": {"bytes": 114004, "sha256": "7e9ead37a7c91cdfe54762f985cc2990bf084901d124b3a302f421d93b6dad76"},
+      "record": {"bytes": 30020, "sha256": "40b3565eb788456c30ba4105f9094b53b5dac341345bd46293e2229d455a1fae"},
+      "register": {"bytes": 28955, "sha256": "af01ea97ab2b6f6d63f1f4b4ca65728b1885f0b7d1ac9b598386328a419cfa6e"}
+    },
+    "h_verification_by_review_4": "8 REPAIRED, 1 PARTIAL (H9, J1) over 9; no F or G finding regressed",
+    "repairs_applied_this_session": ["J1", "J2", "J3", "J4", "J5"],
+    "re_derived_before_applying": {
+      "J1": "'id list' occurs at exactly two packet lines (criterion 4 and the H9 row), both the claim itself; Gate 4 slice 2, its rule-6 mutant and Gate 6 item 3 each define a count check; the act's six bullets under 'What this does not authorize' read at lines 70-72, 73-74, 75, 76-79, 80-81, 82-84 - confirmed",
+      "J2": "P-72 row Q2 clause read: no kinds-versus-routes clause; packet Gate 2 and Q2 row carry it - confirmed",
+      "J3": "grep -F '707-713' on the packet: 2 (both review-3 disposition sentences); the en-dash form 707\u2013713: 1, in the line table's marked withdrawal - confirmed",
+      "J4": "row opened 'The retained lane A capture (docs/evidence/...json)'; the capture is api-poc.json in the session scratchpad, the cited path is this record - confirmed",
+      "J5": "G12 row read unmarked 'Confirmed: the 80-column prose line wrapped, the F20 row counts it' against the H6 row's account - confirmed"
+    },
+    "repairs": {
+      "J1": "Gate 4 slice 2 specifies the id-list comparison and enumerates the six proposed ids [Inferred] against the act's six bullets; the rule-6 mutant gains a same-count id swap; Gate 6 item 3 names the id list; criterion 4 and the H9 row carry the marker that the clause was claimed and unspecified until review 4",
+      "J2": "P-72 row Q2 sentence carries the kinds reading [Inferred], the satisfied-as-it-stands consequence and the discretionary-tightening framing",
+      "J3": "method paragraph and H4 row state the ASCII-hyphen predicate and the one en-dash site",
+      "J4": "row opens 'The M5 evidence record (...), computed from the retained lane A capture'",
+      "J5": "G12 row marked in place with the H6 account and dated"
+    },
+    "recommended_answers_changed": "none - Q1 and Q2 recommend what they recommended after review 1; Q2's ground in the register now matches the packet's",
+    "over_width_after_repair": {"predicate": "lines over 78 columns outside fenced code, excluding lines whose stripped form begins with | or #, over every line of the packet (the F20 row predicate)", "total": 6, "path_lines": [11, 561, 650, 677, 827, 1096], "prose_lines": []},
+    "uncovered_until": "a fifth independent fresh-context review; every edit recorded here post-dates review 4 (verification rule 10)"
   }
 }

@@ -314,9 +314,12 @@ pending at all.
    (`'undispatched'` / `'dispatched'`, closed by slice 1's type, two
    values, checked by the rule-6 mutant on its guard); the `mayNot` row
    `id` space (`no-write-to-observed-repository` and its five
-   siblings, closed by the six "does not authorize" bullets of the
-   authorization act, checked by the Gate 3 registration test — which
-   after this widening compares the id list, not only the row count);
+   siblings, enumerated in Gate 4 slice 2 after review 4, J1; closed
+   by the six "does not authorize" bullets of the authorization act,
+   checked by the Gate 3 registration test — which after this widening
+   compares the id list, not only the row count, as slice 2, its rule-6
+   mutant and Gate 6 item 3 now specify; until review 4 this clause
+   was claimed here and at the H9 row and specified nowhere);
    and the chain's `not-applicable` state (closed by slice 3's
    fact-of-render disclosure shape, one value, carrying no `reason`
    field so it never enters RFC2-24's population).
@@ -851,7 +854,22 @@ entry count — **six** — should be registered wherever
 function alongside `_act_subjects()`, or a dedicated fixture asserting
 the table's row count against a fresh read of the act file's bullet
 count under the "What this does not authorize" heading) so an
-amendment to the act cannot silently leave `mayNot` stale.
+amendment to the act cannot silently leave `mayNot` stale. **The check
+compares the id list, not only the count** (specified after review 4,
+J1 — until then criterion 4 and the H9 row claimed the comparison and
+no site defined it, so an amendment swapping one bullet for another
+at the same count would have passed). The six ids, one per bullet in
+the act's order, are `no-write-to-observed-repository`,
+`no-second-repository-or-wider-content-class`,
+`no-production-release-or-remote-access`,
+`no-edit-to-act-bound-artifact`,
+`no-doctrine-or-contract-change-or-syzygy-authored-code` and
+`no-independent-verification` [Inferred — proposed identifiers; the
+act's six bullets at lines 70–72, 73–74, 75, 76–79, 80–81 and 82–84
+are the closing source, read this session]. The fixture asserts that
+ordered list, id by id, against a fresh parse of the six bullets under
+the heading (first clause of each), so a swapped bullet fails it even
+when the count still reads six.
 
 **Render on both channels from one field**, per PWB-REQ-020 (Gate 2):
 `polaris.ts`'s existing authority-disclosure block gains a `mayNot`
@@ -867,7 +885,10 @@ force; assume the broadest prohibition until one exists" — never
 disappears, per the counterexample named in success criterion 3.
 
 **Rule-6 mutants.** Delete one row from the hand-typed table and
-confirm the row-count registration check fails; flip one authority
+confirm the registration check fails on the count; replace one row's
+`id` with a different spelling at the same count and confirm it fails
+on the id list (the second mutant added after review 4, J1; until then
+this paragraph named a row-count check only); flip one authority
 from `valid` to `invalid` and confirm the corresponding row's text
 changes and the array does not shrink; render the page and the machine
 answer from two different builds of the same evaluation and confirm
@@ -1282,7 +1303,8 @@ Acceptance, in the M1/M2/M4 shape:
    byte-identity-after-N-GETs counterexample (slice 1); the
    `mayNot`-hardens-on-withdrawal invariant (slice 2); the
    registration check tying the hand-typed table to the act's own
-   bullet count (slice 2); the briefing's derivability oracle, the
+   bullet count and, after review 4 (J1), its id list (slice 2); the
+   briefing's derivability oracle, the
    ceiling breach, the unresolvable-selector Unknown, and the
    not-applicable chain state (slice 3). Each mutant's `old`/`new`
    fragment and the commit it ran at are recorded, per the evidence
@@ -1500,7 +1522,7 @@ place and dated, never deleted.
 | G9 "7,396 beads presumably" matches neither capture and "presumably" is not a label | non-blocking | Re-derived: 7,481 `workItems.items`, 7,481 distinct ids. Stated as [Observed] with the withdrawn figure kept |
 | G10 `targetBeadPrefix` is not built at `materialize-action.ts` line 35 | editorial | Confirmed: set at `materialization.ts` line 58 from the constant at line 12. Corrected in the parity paragraph |
 | G11 "which only `trajectory.ts` line 187 calls" omits two call sites | editorial | Confirmed: `materialize-action.test.ts` lines 42 and 59. Qualified as the only caller outside tests, both test sites named |
-| G12 two residues of the F20 and capture-path dispositions | editorial | Confirmed: the 80-column prose line wrapped, the F20 row counts it, the capture path stated as relative to the session scratchpad |
+| G12 two residues of the F20 and capture-path dispositions | editorial | Confirmed: the 80-column prose line wrapped, the F20 row counts it, the capture path stated as relative to the session scratchpad (the first two clauses were superseded after review 3, H6: the wrap left a 50-column and a 102-column half and the F20 row's count was wrong for the population it named; both restated in the F20 and H6 rows, this row marked after review 4, J5) |
 
 Beyond the twelve findings, the P-72 row's Q1 recommendation now carries
 the lane-B queueing cost the packet's Q1 already stated, so the register
@@ -1534,7 +1556,10 @@ call sites read at `routes.ts` lines 151, 161 and 175 and the single
 sentence at spec lines 378–379 against its breach envelope at 381–384;
 the per-key shares recomputed at both denominators (5,520,314 and
 5,521,960); `707-713` swept over the evidence record (2 sites) and the
-packet (0); the ten one-claim components recomputed from the capture;
+packet (0 — under an ASCII-hyphen predicate, stated after review 4,
+J3; the en-dash form stands once in the packet, in the line table's
+marked withdrawal of the same value); the ten one-claim components
+recomputed from the capture;
 the over-width predicate run over every line of this file before and
 after the rewrap; main's register read by `git show` for its last open
 row and highest identifier; and the three new closed vocabularies
@@ -1549,12 +1574,12 @@ in place and dated, never deleted.
 | H1 Q3's "one new field" lands on the envelope every bounded sink serves, and the no-gate warrant never considers the two sinks PWB-REQ-006 governs | blocking | Re-derived and confirmed: `responseLimitFailure` is built once and `boundedResponse` serialises it for the human pages (line 151), `/api/poc` (161) and `/api/poc/polaris` (175) alike. Q3's sentence is now limit-neutral ("population counts describe the whole evaluation"), true on every sink; the briefing-scoped wording is withdrawn in place; the no-gate argument is re-run over the human-HTML and machine-JSON sinks the clause governs, with the owner's "only as closure" reading routed to the funnel before any sink's body changes; the slice-3 paragraph and the P-72 row follow; the union's pre-existing free-prose `reason` string noted as untouched |
 | H2 "a third final-output sink" counts routes where PWB-REQ-006 counts kinds | non-blocking | Re-derived and confirmed: three bounded routes already serve under two ceiling identities. Gate 2 now states the kinds-versus-routes reading, holds the kinds reading [Inferred], and says the fold-in sub-question in Q2 arises only on the route reading; Q2's row ties its fold-in to that; Q1's row names `/api/poc/polaris` as an existing second machine-JSON body under the same ceiling |
 | H3 the per-key table's stated method does not reproduce its Share column | non-blocking | Re-derived: 41.17% / 27.04% at 5,521,960, 41.18% / 27.05% at 5,520,314. Heading and prose now name the file's own bytes as the Share denominator and state the `ensure_ascii` default; both alternatives published |
-| H4 the evidence record still carries `707-713` twice | non-blocking | Confirmed (2 sites, 0 in the packet). Both corrected to 707–716 on their own lines with the withdrawn value marked and dated, in the record's existing shape |
+| H4 the evidence record still carries `707-713` twice | non-blocking | Confirmed (2 sites, 0 in the packet — 0 under an ASCII-hyphen predicate, which this row did not state until review 4, J3; the en-dash spelling stands once, in the line table's marked withdrawal). Both corrected to 707–716 on their own lines with the withdrawn value marked and dated, in the record's existing shape |
 | H5 the record's one-claim totals are unqualified at the measurement site | non-blocking | Confirmed: all ten components reproduce. The floors-and-unpublished-wrapper sentence is now in `one_claim_briefing_examples.note` itself, pointing at the component table |
 | H6 the F20/G12 disposition is false on the current bytes, and the G12 wrap made its line worse | editorial | Confirmed: eleven over-width lines at `09b5395`, five of them prose, four of those this session's own reflow residue. The five rewrapped without breaking a code span; the F20 row restated with its predicate and the post-rewrap count |
 | H7 the G2 disposition overstates the P-72 row | editorial | Confirmed: the row carried only the top-level denominator. "9 of its 11 leaves" added to the row; the G2 row says so |
 | H8 "main's register still ends at P-67" is true of identifiers, false of rows | editorial | Confirmed by `git show main:`: last open row P-53, highest identifier P-67. Both the summary and the record now say which is which |
-| H9 criterion 4 cannot see the three closed vocabularies the move mints | editorial | Confirmed. Criterion 4 widened to require every new closed vocabulary be enumerated with its closing source and a registration check; the three named (`dispatchState`, the `mayNot` row ids, the chain's `not-applicable` state), and the Gate 3 registration check now compares the id list, not only the row count |
+| H9 criterion 4 cannot see the three closed vocabularies the move mints | editorial | Confirmed. Criterion 4 widened to require every new closed vocabulary be enumerated with its closing source and a registration check; the three named (`dispatchState`, the `mayNot` row ids, the chain's `not-applicable` state), and the Gate 3 registration check now compares the id list, not only the row count (as written after review 3 this was claimed here and at criterion 4 and specified at no site — every defining site still asked for a count; the comparison and the six ids were specified in Gate 4 slice 2, its rule-6 mutant and Gate 6 item 3 after review 4, J1) |
 
 Recommended answers changed by this review: none of the two owner
 questions. Q1 and Q2 recommend what they recommended after review 1.
@@ -1562,3 +1587,48 @@ Q3 — decided in the packet, not an owner question — changes its
 sentence from briefing-scoped to limit-neutral; its outcome (one new
 field on the shared envelope, no third `population` arm, no act) is the
 same. Q4 is untouched.
+
+## Review 4 and repairs (2026-09-15)
+
+A fourth independent fresh-context review (read-only; same conditions
+as the first three) is retained verbatim at
+`docs/reviews/R-POLARIS-M5-AGENT-BRIEFING-FUNNEL-4-RAW.md` (33284 bytes,
+sha256
+`b59d4f3faff32b2030f273055d0b5bb1187dd2b84cf8bef11e31468a9436b538`,
+computed by `sha256sum` this session). It reviewed the packet at 114004
+bytes, sha256
+`7e9ead37a7c91cdfe54762f985cc2990bf084901d124b3a302f421d93b6dad76`, the
+evidence record at 30020 bytes, sha256
+`40b3565eb788456c30ba4105f9094b53b5dac341345bd46293e2229d455a1fae`, and
+the register at 28955 bytes, sha256
+`af01ea97ab2b6f6d63f1f4b4ca65728b1885f0b7d1ac9b598386328a419cfa6e`, all
+tracked at commit `d41a9d2`. Its verdict word, copied exactly:
+**CONFIRM WITH EXCEPTIONS** — no blocking, two non-blocking, three
+editorial. It verified H1–H9 against those bytes as eight repaired and
+one partial (H9, J1) over nine, and found no F1–F22 or G1–G12 finding
+regressed. Every finding was re-derived before being applied: `id list`
+swept over this file (two lines, both the claim itself) against the
+three sites that define the registration check, each of them a count;
+the act's six bullets read under their heading at lines 70–84; the
+P-72 row's Q2 sentence read against Gate 2's kinds-versus-routes
+paragraph; `707-713` swept in both spellings; the register's opening
+clause read against the record's own preamble; the G12 row read against
+the H6 row. Every edit below was made after that review, so by
+verification rule 10 the review binds the bytes it names and not
+these; the five repairs are uncovered until a fifth fresh-context
+review confirms them, and its raw would be a fifth `-RAW.md` file,
+never an overwrite. Superseded wording is marked in place and dated,
+never deleted.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| J1 the H9 repair is claimed in two places and specified in none | non-blocking | Confirmed: every defining site asked for a count. Gate 4 slice 2 now specifies the id-list comparison against a fresh parse of the six bullets and enumerates the six proposed ids [Inferred] in the act's order; the rule-6 mutant gains a same-count id swap; Gate 6 item 3 names the id list; criterion 4 and the H9 row carry the marker that the clause was claimed and unspecified until this review |
+| J2 the H2 repair landed in the packet and not in the P-72 row | non-blocking | Confirmed: the row's Q2 clause carried no kinds-versus-routes ground. It now states the kinds reading [Inferred], that on it the briefing already satisfies PWB-REQ-006 under `maxMachineResponseBytes`, and that the third ceiling is a discretionary tightening with the fold-in arising only on the route reading; the recommendation is unchanged |
+| J3 the "0 in the packet" figure for `707-713` holds only under an unstated ASCII-hyphen predicate | editorial | Confirmed: 2 hyphen sites (both in review-3 disposition sentences) and 1 en-dash site (the line table's marked withdrawal). The method paragraph and the H4 row state the predicate and the en-dash site |
+| J4 the P-72 row calls the evidence record the capture | editorial | Confirmed. The row opens "The M5 evidence record (…), computed from the retained lane A capture", with the capture's scratchpad location and the earlier wording noted |
+| J5 the G12 row asserts, unmarked, the repair H6 falsified | editorial | Confirmed. The G12 row is marked in place with the H6 account and dated |
+
+Recommended answers changed by this review: none. Q1 and Q2 recommend
+what they recommended after review 1; Q2's ground now reads the same in
+the register as in Gate 2. Over-width lines after these edits, under
+the F20 row's predicate: 6 lines over 78 columns (6 carrying a single code-span path, 0 prose) [Observed, measured after the edits].
