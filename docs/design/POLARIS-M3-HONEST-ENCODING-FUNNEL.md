@@ -22,9 +22,11 @@ Baseline: Syzygy `a9f671e` (main; the worktree branches from `a9f671e`, and
 the only commits on it are this packet's own artifacts, so every source
 citation below is at the baseline bytes; the only pre-existing working-tree
 change on main is a co-lead's in-flight `AGENTS.md`, unrelated) [Observed;
-corrected after review 3, finding H8 — the worktree is two commits ahead of
-`a9f671e` at `573abb0` then `b34fca7`, not at the same commit as stated
-before this repair]. The retained capture
+corrected after review 3, finding H8, which replaced an "at the same
+commit" claim with a two-commit enumeration, and generalised after review 4,
+finding J8, because that enumeration was itself one commit stale by the time
+it was reviewed — no count of the packet's own commits is stated; `git log
+--oneline a9f671e..HEAD` in the worktree lists them]. The retained capture
 this packet measures is the lane A *after* capture, tailnet host form, at
 Butlers evaluation revision 2e3bac97790b, committed 2026-09-13T10:31:11Z and
 captured 2026-09-13T13:33:24.295Z: 1,484,487 bytes, sha256
@@ -52,7 +54,7 @@ front of the owner.
 
 | # | Question | Recommended |
 |---|---|---|
-| Q1 | **Is Polaris's present rendering of epistemic state a non-conformance with POC-REQ-060, or does that requirement's "epistemic encoding" reach only the two declared badge spans?** On the retained capture Polaris renders 735 body epistemic encodings and **0** of them carry a declared encoding *class*; the two spans that do are both inside the page legend, at 99.96% and 99.97% depth. Split by treatment, because the single figure flattens two different defects [Observed, re-derived this session over the capture]: **713 of the 735 — the claim tuples — carry no declared class and no distinguishing treatment at all**, rendering Observed and Unknown in one colour (`var(--muted)`); the remaining **22 are `unknown-disclosure` blocks, which carry the declared Unknown *token* under an undeclared class** (`.unknown-disclosure { color: var(--unknown); border-left: 3px solid var(--unknown); … }`) — visually distinct already, but styled by hand rather than from the table, and carrying no legend entry. The requirement's Falsifier names "a surface styling epistemic state ad hoc" [Observed: quoted at Gate 2]. | **A non-conformance, disclosed and repaired by slices 1 and 2.** POC-REQ-060's Case fixes the population itself — "every epistemic encoding on all three surfaces — the denominator is that population" — and the checker carrying the identifier uses a denominator of 4. Verification rule 4 (read a check's output, not its exit code, and check its denominator against the whole population) is the project's own name for this defect. Rule it a breach to be repaired in the implementation, **not** a reading under which the page is already conformant; no spec text changes either way (Gate 5). The 713/22 split sharpens the finding rather than softening it: the 22 are the Falsifier's ad-hoc limb in its purest form — the declared token applied outside the declared table, with no legend row — and the 713 are the population that renders indistinguishably. |
+| Q1 | **Is Polaris's present rendering of epistemic state a non-conformance with POC-REQ-060, or does that requirement's "epistemic encoding" reach only the two declared badge spans?** On the retained capture Polaris renders 735 body epistemic encodings and **0** of them carry a declared encoding *class*; the two spans that do are both inside the page legend, at 99.96% and 99.97% depth. Split by treatment, because the single figure flattens two different defects [Observed, re-derived this session over the capture]: **713 of the 735 — the claim tuples — carry no declared class and no distinguishing treatment at all**, rendering Observed and Unknown in one colour (`var(--muted)`); the remaining **22 are `unknown-disclosure` blocks, which carry the declared Unknown *token* under an undeclared class** (`.unknown-disclosure { color: var(--unknown); border-left: 3px solid var(--unknown); … }`) — visually distinct already, but styled by hand rather than from the table, and carrying no legend entry. The requirement's Falsifier names "a surface styling epistemic state ad hoc" [Observed: quoted at Gate 2]. | **A non-conformance, disclosed and repaired by slices 1 and 2.** POC-REQ-060's Case fixes the population itself — "every epistemic encoding on all three surfaces — the denominator is that population" — and the checker carrying the identifier uses a denominator of 4, against 1,052 body encodings on the requirement's own three surfaces (735 of them on Polaris, 69.87%), or 1,087 over the four pages this packet sweeps (67.62%; the sweep adds Home deliberately because it imports the token set slices 5 and 6 change — the requirement's denominator is the three-surface one) [Observed]. Verification rule 4 (read a check's output, not its exit code, and check its denominator against the whole population) is the project's own name for this defect. Rule it a breach to be repaired in the implementation, **not** a reading under which the page is already conformant; no spec text changes either way (Gate 5). The 713/22 split sharpens the finding rather than softening it: the 22 are the Falsifier's ad-hoc limb in its purest form — the declared token applied outside the declared table, with no legend row — and the 713 are the population that renders indistinguishably. |
 | Q2 | **The renderer mints `unstated` into two closed-vocabulary fields, not one.** `apps/three-surface-poc/src/polaris.ts` lines 306–307 read `const tier = claim.epistemic.tier ?? 'unstated';` and `const freshness = claim.epistemic.freshness ?? 'unstated';`. On this capture the tier twin fires 11 times and the freshness twin fires 0 (all 713 tuples carry `fresh`) [Observed] — but the governing clauses differ, and the freshness one is stricter. RFC2-25 closes the tiers at six and supplies a *rendering* remedy for absence, inside the tuple ("an untier'd claim renders at its bare label"); RFC2-10 closes freshness at four, forbids the minting in terms ("no implementation may mint, spell, or force-fit a freshness value it does not carry"), and separately supplies a *disclosure* remedy of its own, outside the freshness slot ("a condition genuinely outside the four is disclosed as a fact of the render, never dressed as a freshness state" — quoted in full in Gate 2). Arm (a): out-of-vocabulary — drop the value and render the bare label. Arm (b): an explicit *absence* marker — the field is present and says no value applies — distinct from the closed set and never an extra row of any encoding table. Arm (c): amend PWB-REQ-007 to provide for it. | **Arm (b) for the tier field. For the freshness field, three lawful arms follow from RFC2-10's own text, and the owner should choose among them — none is unlawful.** For tier: (b) is what the page already does in substance (the glossary reads "unstated — no tier applies to an Unknown that has no evidence"), it keeps PWB-REQ-007's "carry the closed label, tier … that govern it" satisfied with a present field, and it keeps RFC2-25's six closed; (a) would drop a field PWB-REQ-007's Falsifier calls absent, and (c) is a spec amendment that collides with lane B head-on (Q7). The tier encoding table therefore gets **six** rows and one absence treatment, never seven. For freshness the tier reasoning does not carry: RFC2-10's prohibition is on minting, spelling or force-fitting *any* value the closed four do not carry, so a rendered `unstated` in `data-epistemic-freshness` is the forbidden act itself. Three lawful arms follow: **(b-i)** the renderer supplies one of the closed four (M2's Q7, recommending `stale` with the reason kept distinct); **(b-ii)** the claim is held Unknown and the tuple is not rendered as though it had a freshness state; or **(b-iii)** the condition is disclosed as a fact of the render, in a carrier that is not `data-epistemic-freshness` and is not dressed as a freshness state — RFC2-10's own remedy (Gate 2). There is a live, unresolved tension between (b-ii)/(b-iii) and PWB-REQ-007's Falsifier ("a tuple field is absent/out of vocabulary") and its SHALL ("carry the closed label, tier … that govern it", spec :443–446): does a freshness-governed field require a value in `data-epistemic-freshness` even when no freshness state genuinely governs the claim, or does RFC2-10's disclosure route discharge the obligation outside that slot? **This is the owner's question; this packet does not resolve it.** [Inferred] recommendation: **(b-iii)**, the arm RFC2-10's own text supplies for exactly this condition, keeping the freshness table at four rows and no absence row without contradicting the clause that closes it — but (b-i) is a live, lawful alternative (M2's Q7 already recommends it for the specific `no-bound-declared` case) and (b-ii) remains available if the owner reads PWB-REQ-007's SHALL as tolerating an unpopulated field under a disclosed condition. Either way the freshness table gets **four** rows and no absence row, and slice 5 must assert over the *renderer*, not over the table. The mint fires 0 times today and is one branch away from firing on every unbounded class (Gate 2). **M2's Q3, Q5 and Q7 rest on this same RFC2-10 sentence** (quoted there against its own Q7), so P-69 and P-70 must be read together (collision section). |
 | Q3 | **Does the per-claim encoding ride an attribute lane B may hoist away, or a carrier lane B may not touch?** Lane B's container-mode estimate hoists `data-epistemic-label` off **409 of 713** tuples [Observed: `hoistedPerField` in the lane B estimate record on `origin/agent/syzygy-dov.17`]. A CSS rule or a sweep keyed on that attribute at the tuple would then see a population of 304 and fail nothing. Arm (a): the encoding inherits through the scope, with a descendant rule, so lane B keeps the hoist. Arm (b): the label becomes a non-hoistable per-claim carrier, costing lane B at least 409 × 32 = **13,088** attribute bytes of its 188,902-byte estimate. | **Arm (a), inheritance — designed in now, not retrofitted.** It preserves the saving already in front of the owner as P-68, and lane B's own amended text supplies the inheritance rule the CSS and the sweep would both read ("a claim's value for a field it does not carry itself is the value of the nearest enclosing scope that carries the field"). The cost is a discipline: **every sweep M3 writes must expand scopes before counting**, and slice 2's denominator must be asserted equal to the tuple count, so a silent drop to 304 fails loudly. Arm (b) is available and honest but spends a ruling the owner has not yet made. |
 | Q4 | **Does the opening band render a real Unknown in place?** No rendered Unknown of any kind appears in the first reading: over the four opening groups (document start to the first catalog group, 19.03% of the page) there are 126 claim tuples, **all Observed**, and **0** Unknown-disclosure blocks; the first rendered Unknown is at 25.55% depth and the whole-shape Unknown — the claim that Butlers' shape is not fully known — is at 57.72% [Observed]. | **Yes: surface the whole-shape Unknown and the one class-level Unknown in the opening band, in place, with their routes.** Nothing is fabricated — both claims already exist on the page and are merely late. CC-VIZ-3 forbids a "clean" default view that presents a fully-green project over a half-observed one; by analogy — its own subject there is a superseded observation record, not an Unknown — `trust-and-evidence.md`:101 puts staleness "on the primary surface, not buried in drill-down" (review 2, G8). The alternative the owner may prefer — leave the opening band positive and let the catalogs carry it — is coherent but makes the page's own first impression the least honest part of it. |
@@ -95,7 +97,9 @@ Meanwhile the checker that carries the POC-REQ-060 identifier sets
 denominator of 4 pages and a population of 1,085. Re-derived 2026-09-14 on
 the retained lane A capture: **702 Observed and 11 Unknown, 713 tuples, one
 colour treatment, denominator still 4**, and the cross-surface body
-population is **1,087** under a stated predicate. The kind is unchanged; the
+population is **1,052** over POC-REQ-060's three surfaces and **1,087**
+over the four pages this packet sweeps, under a stated predicate (review 4,
+J4). The kind is unchanged; the
 counts moved because lane A changed what Polaris renders. The three
 non-Polaris figures come from the 2026-09-13 fresh captures at `f4589e2`,
 which is pre-lane-A; `git diff f4589e2..a9f671e` over `apps` and `packages`
@@ -186,11 +190,18 @@ the page legend; a `<span class="claim-tuple">` span; an element with
 | Polaris | **735** (713 tuples + 22 Unknown disclosures) | **0** (of the 735: 713 carry no declared class *and* no distinguishing treatment; the 22 carry the declared Unknown token under an undeclared class) |
 | **Total** | **1,087** | **352** |
 
-So **67.6% of the POC's rendered epistemic encodings carry no declared
-encoding, and all of them are on Polaris** [Observed]. The other three
-surfaces use the declared table for every body encoding they render; this is
-a Polaris defect, not a POC-wide one, which is why the checker's per-page
-predicate hides it. The dossier's 1,085 was the same shape measured over the
+Two denominators, stated because they answer different questions
+[Observed, both re-derived this session from the table above]. POC-REQ-060's
+Case names "all three surfaces" — Polaris, Trajectory and Orrery — so the
+requirement's own population is **1,052** (735 + 299 + 18), and **69.87%**
+of it carries no declared encoding. The sweep this packet runs covers Home as
+well, deliberately: Home imports the same design-token set slices 5 and 6
+change, so a token regression there is in scope even though the requirement
+does not count it. Over that four-page population of **1,087** the share is
+**67.62%**. Either way every undeclared encoding is on Polaris; Home,
+Trajectory and Orrery use the declared table for every body encoding they
+render; this is a Polaris defect, not a POC-wide one, which is why the
+checker's per-page predicate hides it. The dossier's 1,085 was the same shape measured over the
 pre-lane-A captures and is not corrected by this figure, only superseded for
 this capture population.
 
@@ -772,12 +783,14 @@ an amendment to the signed PWB specification; a change to security, privacy,
 or retention posture beyond the approved secret-classification policy; a
 change to the constraints or envelope the registry entry declares; any
 observation outside the consented content class or repository; or any scope
-beyond the signed change." **No slice crosses any of the six** [Observed: no
-doctrine or contract text is edited; no spec text is edited; no secret,
-privacy or retention behaviour changes — slice 4's fixture is synthetic text
-in the app's own test module; the registry entry is untouched; no observation
-is added, and slice 4 removes the need for one; and every slice implements
-behaviour the signed change already requires].
+beyond the signed change." **No slice crosses any of the six** [Observed for five of the
+six: no doctrine or contract text is edited; no spec text is edited; no
+secret, privacy or retention behaviour changes — slice 4's fixture is
+synthetic text in the app's own test module; the registry entry is untouched;
+no observation is added, and slice 4 removes the need for one. Inferred for
+the scope limb: that every slice implements behaviour the signed change
+already requires is a reading of that change's own requirement text, argued
+at Gate 5, not a textual absence — split after review 4, finding J9].
 
 P-52 is not touched: all six slices run under `syzygy-dov.3`, the pursuit
 bead, so no ninth POC item is filed — the route the M1 ruling took for
@@ -848,8 +861,8 @@ matches nothing fails rather than passes.
 
 **Denominators reported.** Per page and in total, in the shape the
 PWB-REQ-020 parity sweep already uses. The measured baseline is in the
-evidence record beside this packet: 1,087 body encodings over four pages, 352
-carrying a declared class. After slice 1 the second figure should equal the
+evidence record beside this packet: 1,087 body encodings over four pages
+(1,052 over POC-REQ-060's own three surfaces), 352 carrying a declared class. After slice 1 the second figure should equal the
 first.
 
 **Why the population predicate must be declared, not inferred.** The three
@@ -1572,11 +1585,11 @@ narration. All eleven findings confirmed.
 
 | H | Severity | Verdict | Evidence |
 |---|---|---|---|
-| H1 | blocking | **CONFIRMED — REPAIRED** | The evidence record's `vocabulary_versus_rendered.freshness_mint_hazard` field (json :282) still asserted "supplies no absence marker" and "arm (b) of Q2 is not available for freshness" after review 2's repair pass withdrew the same wording from the packet's four sites and the register row. Re-derived: the field is rewritten to state RFC2-10's remedy at lines 220–222 and the three lawful arms; `closed_freshness_vocabulary_authority` is extended through the remedy sentence with the elision marked; the two disposition rows that claimed the withdrawal was complete (packet, review-2 section; record `review2.repairs.G1`) are corrected to name the record as a fifth site. Swept the packet, record and register for `supplies no`, `no absence`, `not lawfully available`, `unlawful`, `no remedy` and `supplies none`: 25 literal occurrences over 2,482 lines across the three files; of those, only the one field above was a live, non-historical false assertion, one more pair (the two disposition rows) wrongly claimed completeness, and `review1.recommended_answers_changed.Q2` (H2) lacked an in-place marker — every other occurrence is either current lawful-arms language, an existing in-place withdrawal marker, or a review-history quote already framed as superseded |
+| H1 | blocking | **CONFIRMED — PARTIAL at `f35a25f`, completed after review 4 (J1, J3, J7)** | The evidence record's `vocabulary_versus_rendered.freshness_mint_hazard` field (json :282) still asserted "supplies no absence marker" and "arm (b) of Q2 is not available for freshness" after review 2's repair pass withdrew the same wording from the packet's four sites and the register row. Re-derived: the field was rewritten to state RFC2-10's remedy at lines 220–223 and three arms — but the three it enumerated did not match the packet's and register's (b-i)/(b-ii)/(b-iii) (review 4, J3; now the packet's wording verbatim, the mismatched text kept and marked); this row's earlier claim that `closed_freshness_vocabulary_authority` "is extended through the remedy sentence with the elision marked" was **false** — the field still ended at line 214 with no marker (review 4, J1; now extended through line 223); and of the two disposition rows that claimed the withdrawal was complete, only the packet's review-2 G1 row was corrected — the record's `review2.repairs.G1` still claimed "withdrawn at all four packet sites and the register row" with no fifth site (review 4, J1; now corrected). Swept the packet, record and register for `supplies no`, `no absence`, `not lawfully available`, `unlawful`, `no remedy` and `supplies none`: 25 literal occurrences over 2,482 lines across the three files — a figure taken on the working tree during the review-3 repair, between `b34fca7` and `f35a25f`, so reproducible from no commit (review 4, J7; re-derived at `f35a25f`: 41 over 2,697 lines with the same six literals, the growth being review-history text quoting the withdrawn wording); of those, only the one field above was a live, non-historical false assertion, one more pair (the two disposition rows) wrongly claimed completeness, and `review1.recommended_answers_changed.Q2` (H2) lacked an in-place marker — every other occurrence is either current lawful-arms language, an existing in-place withdrawal marker, or a review-history quote already framed as superseded |
 | H2 | non-blocking | **CONFIRMED — REPAIRED** | The evidence record's `review1.recommended_answers_changed.Q2` field carried the withdrawn "not lawfully available for the freshness field" wording with no marker, unlike the packet's own parallel passage (:1393 area), which marks it in place. Appended the same in-place marker to the JSON field, without deleting the superseded wording |
 | H3 | non-blocking | **CONFIRMED — REPAIRED** | The packet states three times that P-69 and P-70 must be ruled together; the P-70 row and note carried none of it — swept for "together", "ruled together" and "read together": 0 hits in both, confirmed this session. Added one clause to the P-70 row. Collision item 3's "the two moves are complementary" read, in context, as though M2's `stale` and this packet's (b-iii) recommendations were reconciled; they are mutually exclusive for the same claims. Restated in place, without smoothing: both recommendations stand as the owner's choice, not as a reconciled pair |
 | H4 | non-blocking | **CONFIRMED — REPAIRED** | M2's head was named as `da1497b`, a fourth stale reading; `git -C .../scratchpad/m2wt log --oneline -1` this session returns `f2f37dd` (M2 funnel review 6, CONFIRM WITH EXCEPTIONS), one commit past `da1497b`. The collision section now cites M2 by register row and the two shared files as its rule, with `f2f37dd` named once, dated, as the one exception, and the substance (six slices, slice 6's two untouched files, Q5's ruling) re-confirmed at that head this session |
-| H5 | non-blocking | **CONFIRMED — REPAIRED** | Review 2's own F1–F14 table (`...-2-RAW.md`:461–474) counts to 10 REPAIRED / 4 PARTIAL by row (verified this session, denominator 14); its totals line (:476) says "9 REPAIRED, 5 PARTIAL" and its summary (:546–547) says "eleven ... repaired cleanly" — three disagreeing figures in one raw. The packet and record had copied the totals line. Both now state 10/4, computed from the table, with the raw's internal disagreement noted |
+| H5 | non-blocking | **CONFIRMED — PARTIAL at `f35a25f`, completed after review 4 (J2)** | Review 2's own F1–F14 table (`...-2-RAW.md`:461–474) counts to 10 REPAIRED / 4 PARTIAL by row (verified this session, denominator 14); its totals line (:476) says "9 REPAIRED, 5 PARTIAL" and its summary (:546–547) says "eleven ... repaired cleanly" — three disagreeing figures in one raw. The packet and record had copied the totals line. The packet's review-2 section now states 10/4, computed from the table, with the raw's internal disagreement noted; the record's `review2.f_verification_against_review_1` still read `"REPAIRED": 9` at `f35a25f`, and its `review3.repairs.H5` claimed "stated in both places" — both corrected after review 4, finding J2, with the denominator 14 stated in the record |
 | H6 | non-blocking | **CONFIRMED — REPAIRED** | Re-derived from the retained `api-poc.json`: all 11 of 713 human-side Unknown tuples match a machine object whose `epistemic` carries no `tier` key at all (`['freshness','label','reasons']` only), confirming Q2's tier-limb justification (PWB-REQ-007's "carry the closed label, tier … that govern it") holds on the human channel only. Added to Gate 2's PWB-REQ-020 paragraph as a disclosure, not a resolution |
 | H7 | non-blocking | **CONFIRMED — REPAIRED** | Re-derived on the retained capture: `class="proposal-label"` renders once, at 56.29% depth, styled `color: var(--unknown)` — exactly the negative sweep's own falsifier and exactly what slice 6 exists to repair, so slice 2 would land red against an element the packet defers to slice 6. Named in slice 2 with the count and depth; this packet's stated choice is to pull `.proposal-label`'s one rule into slice 6's `--proposed` token now, alongside slices 1–4, rather than carry a declared exception — the alternative is named as lawful too |
 | H8 | editorial | **CONFIRMED — REPAIRED** | The baseline sentence claimed the worktree was "at the same commit" as `a9f671e`; it is two commits ahead (`573abb0`, then `b34fca7`). Corrected to state the worktree branches from `a9f671e` with only this packet's own artifacts on top |
@@ -1600,13 +1613,69 @@ current bytes are uncovered until a fourth independent fresh-context review
 confirms them; its raw will be retained as a fourth `-RAW.md` file, never
 an overwrite of the first three.
 
+## Review 4 and repairs (2026-09-15)
+
+A fourth independent fresh-context review of this packet — of the packet,
+its evidence record and the P-70 note and row — is retained verbatim at
+`docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-4-RAW.md` (40,037 bytes,
+sha256
+`2c3a91917d957ad58a16b5c2cddbcc5326c412e4c35b89531c317c41b6a4d947`; both
+figures computed this session with `wc -c` and `sha256sum`). It reviewed
+the packet (129,183 bytes), evidence record (42,787 bytes) and register
+(32,136 bytes) at commit `f35a25f`. Its verdict word, copied exactly:
+**REVISE**. Findings by severity as the raw states them: three blocking
+(J1–J3); three non-blocking (J4–J6); three editorial (J7–J9).
+
+Every finding was re-derived against source this session before being
+applied — the record's fields at their cited lines, the RFC2-10 clause
+text at `snapshot-and-evaluation-core.md` lines 209–223, review 2's own
+F1–F14 table (`...-2-RAW.md`:461–474) recounted by row, the cross-surface
+table above re-summed both ways, the retained `api-poc.json` machine
+answer re-walked for objects lacking a `tier` key, the three files' line
+counts at `b34fca7` and `f35a25f`, and the worktree's own commit list —
+never taken on the raw's word alone. All nine findings confirmed. The
+common shape of the three blocking findings is one the review-3 repair
+pass owns: it reported three record repairs as done that were done in the
+packet only, or done differently in the record, and review 3's own
+disposition table recorded them as REPAIRED on the strength of that
+report. The H1 and H5 rows above are now restated to what was actually
+done and marked PARTIAL at `f35a25f`.
+
+| J | Severity | Verdict | Evidence |
+|---|---|---|---|
+| J1 | blocking | **CONFIRMED — REPAIRED** | The record's `closed_freshness_vocabulary_authority` (json :279) still ended at `snapshot-and-evaluation-core.md` line 214 ("it does not carry.") with no elision marker, while the H1 row above said it had been "extended through the remedy sentence with the elision marked", and the record's `review2.repairs.G1` (json :741) still claimed the withdrawal complete at "all four packet sites and the register row" with no fifth site. Both corrected: the quote now runs verbatim from line 209 to the clause's end at 223; G1 names the record as the fifth site the review-2 pass missed; the H1 row states the three things that were and were not done, and its verdict is PARTIAL at `f35a25f` |
+| J2 | blocking | **CONFIRMED — REPAIRED** | Recounted review 2's F1–F14 table by its fifth column: REPAIRED = F1, F2, F3, F5, F8, F9, F10, F11, F13, F14 (10); PARTIAL = F4, F6, F7, F12 (4); denominator 14. The record's `review2.f_verification_against_review_1` (json :730) still read `"REPAIRED": 9` and its `review3.repairs.H5` (json :808) said 10/4 was "stated in both places". Corrected to 10 with the denominator and the raw's disagreeing totals noted in the record; H5's disposition and the H5 row above restated; H5 marked PARTIAL at `f35a25f` |
+| J3 | blocking | **CONFIRMED — REPAIRED** | The record's `freshness_mint_hazard` (json :282) enumerated three freshness arms — "render only the four declared states and no absence", "disclose … beside the tuple", "the disclosure route with the absence named in the legend" — that matched neither Q2's nor the register's (b-i) renderer supplies one of the closed four / (b-ii) held Unknown and not rendered as though it had a freshness state / (b-iii) disclosed as a fact of the render outside the `data-epistemic-freshness` slot. The record now carries the packet's wording verbatim, with the mismatched enumeration quoted and marked withdrawn in the same field |
+| J4 | non-blocking | **CONFIRMED — REPAIRED** | POC-REQ-060's Case counts "all three surfaces"; Home is not one of them. The population offered as the requirement's was the four-page 1,087. Re-summed: three-surface 1,052 (735 + 299 + 18), Polaris share 69.87%; four-page 1,087, 67.62%. Both now stated, with the reason the sweep is deliberately wider (Home imports the token set slices 5 and 6 change), in the population prose, Q1, the funnel summary, the denominators paragraph, the register row and the record's `cross_surface_population`; "the other three surfaces" is replaced by the three pages' names |
+| J5 | non-blocking | **CONFIRMED — REPAIRED** | Gate 2's H6 disclosure (the tier field has no machine-channel counterpart for the 11 Unknown tuples) reached the packet and not the P-70 row. Re-derived: 12 of 1,149 machine objects carry an `epistemic` without a `tier` key, all labelled Unknown; each of the 11 human-side Unknown tuples matches one. One clause added to the row's Q2 limb naming the PWB-REQ-020 parity question arm (b) carries, disclosed and not resolved |
+| J6 | non-blocking | **CONFIRMED — REPAIRED** | The handoff conditioned the immediate run of slices 1, 2 and 4 on Q1, Q3 and Q4, while slice 2 as sequenced pulls one rule of slice 6's `--proposed` token forward — a Q6 dependency. Q6 added to the condition, with the dated-exception alternative named for the case where Q6 is answered otherwise |
+| J7 | editorial | **CONFIRMED — REPAIRED** | The H1 row's sweep figure (25 over 2,482 lines) was taken on the working tree during the review-3 repair; the three files sum to 2,479 lines at `b34fca7` and 2,697 at `f35a25f`, so the figure is reproducible from no commit. Date-stamped in place, with the `f35a25f` re-derivation (41 occurrences, same six literals) beside it |
+| J8 | editorial | **CONFIRMED — REPAIRED** | The H8 correction enumerated two commits above `a9f671e`; there were three at `f35a25f` and one more after this repair. The bracket now states that the worktree carries only this packet's own commits and points at `git log` instead of counting them |
+| J9 | editorial | **CONFIRMED — REPAIRED** | Gate 3's six-limb `[Observed]` bracket ended with the scope limb ("every slice implements behaviour the signed change already requires"), which Gate 5 argues and the packet labels `[Inferred]` elsewhere. Split: Observed for the five textual absences, Inferred for the scope limb with the pointer to Gate 5 |
+
+**No recommended answer changed.** All seven questions' recommendations
+are word for word what they were after review 2's repairs; this pass
+corrects the evidence record, two disposition rows that overstated the
+review-3 repair, the population framing and the register's Q1 and Q2
+limbs. Q1 now carries the requirement's own three-surface denominator
+beside the four-page one, and Q2's register limb now carries the
+machine-channel tier disclosure the packet already made — neither moves a
+recommendation.
+
+**Every repair above post-dates review 4.** By verification rule 10,
+review 4 binds the 129,183-byte packet, 42,787-byte evidence record and
+32,136-byte register it read at `f35a25f` — and not the current bytes.
+The current bytes are uncovered until a fifth independent fresh-context
+review confirms them; its raw will be retained as a fifth `-RAW.md` file,
+never an overwrite of the first four.
+
 ## Funnel summary
 
 ```
 ## Feature Request: M3 - Honest encoding at the gate: POC-REQ-060 on Polaris and a real sweep
 Size: medium (slices 1-4) / medium-large (slices 5-6)
 Baseline: Syzygy a9f671e; capture = lane A after/tailnet, 1,484,487 bytes, Butlers 2e3bac97790b
-- G1 Motif: 735 of Polaris's body epistemic encodings carry no declared class - 713 of them (the claim tuples) with no distinguishing treatment at all, one grey over Observed and Unknown alike, and 22 (the Unknown-disclosure blocks) carrying the declared Unknown token under an undeclared, unlegended class - while the checker carrying the identifier uses a denominator of 4 pages against a 1,087-member population [Observed: three tuple-count methods agreeing; a full CSS-rule parse; a four-page sweep with a stated predicate]
+- G1 Motif: 735 of Polaris's body epistemic encodings carry no declared class - 713 of them (the claim tuples) with no distinguishing treatment at all, one grey over Observed and Unknown alike, and 22 (the Unknown-disclosure blocks) carrying the declared Unknown token under an undeclared, unlegended class - while the checker carrying the identifier uses a denominator of 4 pages against a 1,052-member population on POC-REQ-060's three surfaces (1,087 over the four pages this packet sweeps) [Observed: three tuple-count methods agreeing; a full CSS-rule parse; a four-page sweep with a stated predicate]
 - G2 Doctrine: aligned - VIS-2, VIS-7, POC-REQ-060 (Case, Observable, Falsifier, Scenario), POC-REQ-061, PWB-REQ-007, PWB-REQ-016, RFC2-25, RFC7-34, CC-VIZ-1, CC-VIZ-3; RFC 0009 applies_to is [orrery, machine-clients] and is used as a voluntary standard, not a binding clause
 - G3 Topology: apps/three-surface-poc only; no boundary crossed, no core change, no governed artifact, no spec text; every slice rides the 2026-09-05 implementation-authorization continuation and crosses none of the six escalation triggers
 - G4 Design: the declared table generates CSS attribute selectors (hundreds of bytes, not 16,366) in both tuple and scope-inherited forms; a population sweep with a reported denominator; two existing Unknowns rendered in the opening band; a fixture forcing the item-level Unknown and a third tier value; tier/freshness/challenge encoding tables generating the glossary, with the freshness closure asserted over served output so the renderer's second `unstated` mint fails loudly; a render-disclosure family (no vocabulary gains a member) with a token at a measured distance over a named population
@@ -1620,7 +1689,11 @@ Recommended handoff: Q1 "a non-conformance" and Q3 "inheritance" -> run slices 1
 
 ## Recommended handoff
 
-**If Q1, Q3 and Q4 are answered as recommended:** file no new bead. Run
+**If Q1, Q3, Q4 and Q6 are answered as recommended:** file no new bead.
+(Q6 is on the list because slice 2 as sequenced pulls one rule of slice 6's
+`--proposed` token forward; if Q6 is answered otherwise, run slice 2 with
+the dated exception named in its own section instead, and it lands red until
+slice 6 — review 4, finding J6.) Run
 slices 1, 2 and 4 under `syzygy-dov.3` immediately — they are self-contained,
 they touch no governed artifact and none of M2's files, and slice 2 alone
 turns POC-REQ-060's own falsifier from invisible into failing. Slice 2's own
