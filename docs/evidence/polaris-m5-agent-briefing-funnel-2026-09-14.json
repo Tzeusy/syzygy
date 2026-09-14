@@ -108,7 +108,7 @@
         "evaluation",
         "project",
         "observerRevision",
-        "identity.scope",
+        "scope (projectShape.identity.scope; the dossier spells the key `scope`)",
         "authority",
         "entities",
         "relationships",
@@ -120,40 +120,67 @@
         "walkthroughJudgment",
         "materializedBeadId"
       ],
-      "bytes_as_one_compact_object": 18719,
+      "bytes_as_one_compact_object": 18710,
       "bytes_sum_of_parts_separately": 18489,
-      "share_percent_of_whole": 0.3391,
+      "share_percent_of_whole": 0.3389,
       "dossier_pre_lane_a_figure": {
         "bytes": 18710,
         "share_percent": 0.34,
         "denominator_bytes": 5508208
-      }
+      },
+      "key_spelling_note": "Recomputed after review 1 (F8): the same 14 values keyed `scope` (the dossier's spelling) encode to 18,710 bytes, exactly the dossier's figure; keyed `identity.scope` (the first draft's spelling) to 18,719. The 9-byte difference the first draft reported as a cross-capture measurement was key spelling. Byte figures are not compared across captures; shares are.",
+      "bytes_keyed_identity_dot_scope": 18719
     },
     "minimal_plus_classes_and_claim": {
-      "bytes_as_one_compact_object": 148815,
-      "share_percent_of_whole": 2.6958,
+      "bytes_as_one_compact_object": 148780,
+      "share_percent_of_whole": 2.6951,
       "dossier_pre_lane_a_figure": {
         "bytes": 148785,
         "share_percent": 2.7,
         "denominator_bytes": 5508208
-      }
+      },
+      "bytes_keyed_identity_dot_scope": 148789,
+      "note": "Recomputed after review 1 (F8) by the same method as the 14-field set (json.dumps, separators (',',':'), ensure_ascii False, projectShape.classes and projectShape.claim added to the short-key object): 148,780 bytes. The first draft's 148,815 could not be reproduced by this method and is withdrawn; the share (2.695%) is unchanged to three places."
     },
-    "one_claim_briefing_example": {
-      "subject": "claim:baseline-spec:switchboard-identity",
-      "note": "New measurement this session, not in the dossier. mayNot omitted (field does not yet exist); estimated to add a few hundred bytes for ~5 rows.",
-      "bytes_as_one_compact_object": 2804,
-      "share_percent_of_whole": 0.0508,
-      "fields": [
-        "subject",
-        "evaluation",
-        "consentScope",
-        "authority",
-        "claim",
-        "chain",
-        "unknownsTouchingSubject",
-        "exclusionsTouchingSubject",
-        "exactSourceRoutes"
-      ]
+    "one_claim_briefing_examples": {
+      "note": "Two compositions, replacing the first draft's single 2,804-byte figure for a selector spelled `claim:baseline-spec:switchboard-identity` (0 of 415 item ids match that spelling; withdrawn after review 1, F2/F7/F9). Each is json.dumps compact, ensure_ascii False, over exact field paths from this capture. mayNot omitted (field does not yet exist). exactSourceRoutes holds one entry with a 27-byte placeholder href, so each figure is a floor. Denominator 5,520,314 bytes.",
+      "composition_fields": {
+        "subject": "the selector string",
+        "evaluation": "top-level `evaluation`",
+        "consentScope": "`projectShape.identity.scope`",
+        "authority": "`projectShape.authority`",
+        "claim": "the `projectShape.items` record whose `claim.claimId` equals the selector",
+        "chain": "applicable: the joined entity record plus every `relationships` record whose from/to names it; not applicable: a fact-of-render disclosure object with no `reason` field",
+        "unknownsTouchingSubject": "[] on both subjects",
+        "exclusionsTouchingSubject": "[] on both subjects",
+        "exactSourceRoutes": "one entry, placeholder href"
+      },
+      "applicable_chain": {
+        "subject": "claim:item:baseline-spec:switchboard-identity",
+        "joined_by": "proposedWork.currentAuthority.claim.claimId (equal to the subject) and MaterializationGoverningIntent.requirementId via entity intent:req-switchboard-identity-001",
+        "chain_records": [
+          "entity intent:req-switchboard-identity-001 (1,075 bytes)",
+          "relationship:capability-to-intent (Observed, 844 bytes)",
+          "relationship:intent-to-work (Unknown, 326 bytes)"
+        ],
+        "item_record_bytes": 661,
+        "bytes_without_source": 5449,
+        "share_percent_without_source": 0.0987,
+        "matching_source_record_bytes": 1627,
+        "bytes_with_source": 7076,
+        "share_percent_with_source": 0.1282
+      },
+      "chain_not_applicable": {
+        "subject": "claim:item:topology-component:1:Spawner",
+        "item_record_bytes": 812,
+        "state": "modeled",
+        "bytes_without_source": 3347,
+        "share_percent_without_source": 0.0606,
+        "matching_source_record_bytes": 1803,
+        "bytes_with_source": 5150,
+        "share_percent_with_source": 0.0933
+      },
+      "ceiling_headroom": "20,480 / 7,076 = 2.89 over the larger composition"
     }
   },
   "literal_substring_counts": {
@@ -235,9 +262,13 @@
   },
   "subject_naming_finding": {
     "proposedWork_changeId_this_evaluation": "repair-whatsapp-identity-reconciliation",
+    "proposedWork_specKey_this_evaluation": "switchboard-identity",
+    "proposedWork_currentAuthority_claimId_this_evaluation": "claim:item:baseline-spec:switchboard-identity",
     "materialization_external_ref_constant": "syzygy-poc:work:whatsapp-single-event-normalization",
     "worker_change_intent_id_constant": "REQ-connector-base-spec-001",
-    "note": "Three distinct subjects live inside one evaluation: the dynamically observed proposedWork.changeId, the fixed MaterializationPacket subject, and the fixed worker-change badge intent. Not the same claim; a naive briefing must not conflate them."
+    "materialization_governing_intent_requirement_id_constant": "REQ-switchboard-identity-001",
+    "note": "Four fixed-or-observed work literals live inside one evaluation (the first draft said three and omitted MaterializationGoverningIntent.requirementId; corrected after review 1, F2). switchboard-identity is the join point of the first and fourth: its item claim is proposedWork's currentAuthority and the intent entity intent:req-switchboard-identity-001 links to it through relationship:capability-to-intent and relationship:intent-to-work. A naive briefing must not conflate the four; a briefing for the joined subject has an applicable chain, one for a subject none of the four touch (e.g. claim:item:topology-component:1:Spawner) does not.",
+    "item_claim_id_form": "all 415 projectShape.items claim ids are `claim:item:<class>:<key>`; `item` is the only second segment present [swept this session, 415 of 415]"
   },
   "route_table_reverified_at_a9f671e": [
     {
@@ -263,7 +294,7 @@
     }
   ],
   "line_numbers_reverified_at_a9f671e": {
-    "note": "git diff --stat f4589e2..a9f671e over these 9 files returns no rows; every line number below held at both commits. The dossier's own citations were already imprecise at f4589e2.",
+    "note": "git diff --stat f4589e2..a9f671e over these 9 files returns no rows; every line number below held at both commits. The dossier's own citations were already imprecise at f4589e2. After review 1 (F5, F22) every row was re-derived by grep over declaration and closing-brace lines; four first-draft rows were wrong and are corrected below with the withdrawn value kept.",
     "files_confirmed_unchanged_f4589e2_to_a9f671e": [
       "apps/three-surface-poc/src/routes.ts",
       "apps/three-surface-poc/src/browser-origin.ts",
@@ -303,12 +334,66 @@
         "actual": "17",
         "dossier": "17",
         "match": true
+      },
+      "browser-origin.ts browserRequestAllowed": {
+        "actual": "26-38",
+        "dossier": "not cited by line",
+        "first_draft": "24-38",
+        "note": "doc comment starts at 24; declaration at 26; file ends 38"
+      },
+      "materialization.ts MaterializationPacket": {
+        "actual": "20-30",
+        "dossier": "not cited by line",
+        "first_draft": "24-29",
+        "note": "nine fields"
+      },
+      "materialization.ts MaterializationGoverningIntent": {
+        "actual": "14-18",
+        "dossier": "not cited by line",
+        "note": "requirementId literal at 15"
+      },
+      "materialization.ts buildMaterializationPacket": {
+        "actual": "43-65",
+        "dossier": "not cited by line",
+        "first_draft": "41-64"
+      },
+      "materialization.ts MaterializationRecord": {
+        "actual": "67-78",
+        "dossier": "not cited by line",
+        "first_draft": "67-76",
+        "note": "createdAt at 71"
+      },
+      "materialize-action.ts buildTrajectoryMaterializationPacket": {
+        "actual": "31-37",
+        "dossier": "not cited by line",
+        "first_draft": "30-34"
+      },
+      "routes.ts ResponseLimitIdentity": {
+        "actual": "111",
+        "dossier": "not cited by line"
+      },
+      "routes.ts ResponseLimitFailure": {
+        "actual": "113-124",
+        "dossier": "not cited by line",
+        "first_draft": "113-121",
+        "note": "population at 120-122"
+      },
+      "routes.ts boundedResponse": {
+        "actual": "137-142",
+        "dossier": "not cited by line",
+        "first_draft": "111-121",
+        "note": "the first draft cited the type range for the function"
+      },
+      "polaris.ts authorityLine": {
+        "actual": "707-713",
+        "dossier": "not cited by line",
+        "note": "slice 2's edit site; outside all five polaris.ts regions the M3 packet cites"
       }
     }
   },
   "pending_register_state": {
     "main_at_a9f671e_last_row": "P-67",
-    "note": "P-68 (lane B), P-69 (M2), P-70 (M3), P-71 (M4) each exist only on their own branch, per the M4 packet's own baseline check. This packet's questions would queue as P-72; the register itself is not edited by this packet, per its write-boundary limit to two files."
+    "note": "P-68 (lane B), P-69 (M2), P-70 (M3), P-71 (M4) each exist only on their own branch, per the M4 packet's own baseline check. After review 1 this branch adds P-72 (two owner questions, Q1 and Q2; Q3 and Q4 decided in the packet) to its own copy of the register: 22 open rows and 5 acceptance-act rows, 27 in all, counted from main's 21/5/26 at a9f671e."
   },
   "pwb_resource_limits_this_worktree": {
     "maxHumanResponseBytes": 2097152,
@@ -316,9 +401,70 @@
     "source": "packages/three-surface-poc-core/src/project-shape-observation.ts lines 81-82"
   },
   "not_verifiable_this_session": [
-    "Whether Q1's PWB-delta or POC-delta arm is the one the owner will choose; both are lawful on this packet's own reading.",
-    "The exact byte cost of authority.mayNot once built (estimated at a few hundred bytes for ~5 rows; not yet implemented, so not measured).",
-    "Whether M3's polaris.ts edits (register row P-70) land in a region that would textually conflict with slice 2's authority-disclosure block edit; only M3's own Gate 3 table was read, not its full diff, since M3 was outside this packet's assigned reading list.",
+    "Which Q1 arm the owner will choose (PWB delta, POC reader-note delta, or the existing-route arm named after review 1, F17); all three are lawful on this packet's own reading.",
+    "The exact byte cost of authority.mayNot once built (estimated at a few hundred bytes for six table rows plus three authority rows; not yet implemented, so not measured).",
+    "Whether M3's committed polaris.ts diff stays inside the five regions its packet cites (306-307, 346-361, 506-510, 1307, 1328-1329); slice 2's edit site authorityLine 707-713 is outside all five, but only M3's own Gate 3 table and cited lines were read, not a full diff.",
     "The registry entry's exact digest as currently recorded in decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md was not quoted anywhere in this packet, per AGENTS.md's guardrail against quoting a truncated signed digest outside ACT_DIGEST_COPY_FILES; its value was not independently re-derived this session."
-  ]
+  ],
+  "review1": {
+    "raw": "docs/reviews/R-POLARIS-M5-AGENT-BRIEFING-FUNNEL-RAW.md",
+    "bytes": 34023,
+    "sha256": "73b1596137fe2e02f5d6af781e896b33296d8871059715f582cafcb7f14b3aed",
+    "verdict": "REVISE - six blocking, twelve non-blocking, four editorial",
+    "reviewed_commit": "1afa3d0",
+    "repairs_applied_this_session": true,
+    "disposition_summary": {
+      "F1": "re-derived and confirmed: forbidden is 3 on both captures (bytes.count and str.count agree); all four forbidden/prohibit hits are Butlers bead titles",
+      "F2": "re-derived and confirmed: switchboard-identity is joined by proposedWork.currentAuthority and the intent entity; a fourth literal (MaterializationGoverningIntent.requirementId) was missing",
+      "F3": "re-derived and confirmed against RFC2-24 lines 44-50 and 119-131 (no-such-claim occurs 0 times) and PWB-REQ-007 lines 447-448",
+      "F4": "re-derived and confirmed: seven fields, two response ceilings",
+      "F5": "re-derived and confirmed by grep; four rows corrected",
+      "F6": "re-derived and confirmed: 7 of 9 packet fields and 1 of 2 state fields render; targetBeadPrefix, governingIntent.designPath and at do not",
+      "F7": "re-derived; the figure is method-dependent (reviewer 3,198; this session 5,449 / 7,076 with exact field paths); the first-draft 2,804/2,829 figure and \"sevenfold\" withdrawn",
+      "F8": "re-derived and confirmed: 18,710 short-key vs 18,719 long-key on this capture",
+      "F9": "re-derived and confirmed: the selector spelling matched 0 of 415 ids",
+      "F10": "re-derived and confirmed: 661 bytes",
+      "F11": "confirmed; PWB-REQ-006 read into Gate 2 and Q2",
+      "F12": "confirmed; the closed-type widening is stated and the asymmetry with Q3 defended",
+      "F13": "confirmed; the minting question is answered on PWB-REQ-005 grounds, labelled Inferred, with the recorded-finding fallback",
+      "F14": "re-derived and confirmed: six bullets at act lines 70-84",
+      "F15": "re-derived and confirmed: M4 slice 8 (materialization.ts 9-65), slice 4 (model.ts 710-750, adjacent to 707) and slice 5 (routes.ts 34-96) added with denominators",
+      "F16": "accepted: Q3 and Q4 decided in the packet with reasoning shown; Q1 and Q2 remain",
+      "F17": "accepted: the existing-route arm named in Q1 with the reason it is not recommended, labelled Inferred",
+      "F18": "accepted: the four entries carried into the packet as [Unknown]",
+      "F19": "confirmed; ten code spans rejoined",
+      "F20": "confirmed; line 795 reflowed",
+      "F21": "confirmed; \"quoted in relevant part\"",
+      "F22": "confirmed; 113-124, 67-78, and the POC spec file named at each line-26 cite"
+    },
+    "re_derived_before_applying": {
+      "forbidden_prohibit_mayNot_this_capture": {
+        "forbidden": 3,
+        "prohibit": 1,
+        "mayNot": 0,
+        "method": "bytes.count over the raw file and str.count over the decoded text, agreeing; every hit inside a workItems title"
+      },
+      "item_claim_ids_by_class": {
+        "baseline-spec": 192,
+        "topology-component": 87,
+        "catalog-entry": 65,
+        "design-contract": 32,
+        "success-criterion": 13,
+        "craft-policy": 7,
+        "principle": 7,
+        "project-account-section": 6,
+        "roster-identity": 6,
+        "total": 415
+      },
+      "no_such_claim_occurrences_in_rendering_vocabularies_md": 0,
+      "act_not_authorize_bullets": "6, lines 70-72, 73-74, 75, 76-79, 80-81, 82-84",
+      "rendered_packet_fields": "7 of 9 (data-parity-field materialize-* at materialize-action.ts 69-75); targetBeadPrefix and governingIntent.designPath built at line 35 and rendered nowhere in trajectory.ts or materialize-action.ts"
+    },
+    "recommended_answers_changed": [
+      "Q1: a third lawful arm (serve on the existing route) named and not recommended",
+      "Q2: now also asks whether a third ceiling amends PWB-REQ-006 and folds into Q1's delta; the closed-type widening stated",
+      "Q3: withdrawn as an owner question; decided in the packet (reuse ResponseLimitFailure unchanged, one sentence added)",
+      "Q4: withdrawn as an owner question; decided in the packet (no ordering enforced)"
+    ]
+  }
 }
