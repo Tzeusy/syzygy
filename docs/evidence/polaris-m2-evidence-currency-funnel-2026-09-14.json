@@ -160,7 +160,9 @@
   "dates_in_rendered_text": {
     "method": "regex YYYY-MM-DD over text nodes (between > and <) of the retained tailnet capture, offset over total bytes",
     "hits": 8,
-    "above_58_percent": [
+    "first_evaluation_instant_offset": 859145,
+    "first_evaluation_instant_percent": 57.98,
+    "before_first_evaluation_instant": [
       {
         "offset": 840110,
         "percent": 56.69,
@@ -171,23 +173,24 @@
         "percent": 56.78,
         "text": "the same filename, second citation"
       }
-    ],
-    "first_evaluation_instant_offset": 859145,
-    "first_evaluation_instant_percent": 57.98
+    ]
   },
-  "pwb_req_020_precedent": {
+  "review3": {
+    "raw": "docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-3-RAW.md",
+    "bytes": 30943,
+    "sha256": "930c4e361a05c677b428afaf4d743af22197984b34623fb49e17fc966d4024ed",
+    "verdict": "REVISE",
+    "reviewed_commit": "e0ecdc8",
+    "repairs": "H1-H10 all accepted and repaired after the review; the review-2 G5 repair withdrawn as false"
+  },
+  "project_account_section_items": {
     "api_poc_items": 415,
-    "rendered_rows": 409,
-    "unrendered_machine_items": [
-      "claim:item:project-account-section:architecture",
-      "claim:item:project-account-section:promises",
-      "claim:item:project-account-section:purpose",
-      "claim:item:project-account-section:refusals",
-      "claim:item:project-account-section:v1-scope",
-      "claim:item:project-account-section:v1-success"
-    ],
-    "each_key_string_count_in_served_bytes": 0,
-    "api_poc_polaris_project_account_section_items": 0,
-    "note": "/api/poc carries six items Polaris never renders; /api/poc/polaris carries none; the parity sweep passes. Re-derived 2026-09-14 after review 2 finding G5."
+    "rendered_item_rows": 409,
+    "items_of_class": 6,
+    "rendered_as": "six sections, data-polaris-section=\"claim:project-account:<key>\", one per key (6 occurrences)",
+    "string_claim_item_project_account_section_key_count_in_served_bytes": 0,
+    "statements_and_anchors_identical_to_projectAccount_entries": "6 of 6 (review 3)",
+    "sweep_omission": "apps/three-surface-poc/src/polaris-parity-sweep.test.ts lines 202-209, by stated reason",
+    "note": "Re-derived 2026-09-14 after review 3 finding H1. The earlier pwb_req_020_precedent block, which read these as unrendered machine-only facts, was wrong and is withdrawn."
   }
 }

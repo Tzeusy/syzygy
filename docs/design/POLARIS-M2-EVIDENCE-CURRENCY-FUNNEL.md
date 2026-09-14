@@ -70,7 +70,7 @@ them [Observed: three independent sweeps of the capture, agreeing; see
 "Measurements" below]. Eleven of those 713 are `Unknown` claims at tier
 `unstated` — claims no evidence reached — and they too are described to the
 reader as "captured at this evaluation" [Observed]. Meanwhile
-`packages/cap1-core/src/staleness.ts` lines 87–155 already contains
+`packages/cap1-core/src/staleness.ts` lines 87–157 already contains
 `assessCurrency`, a complete fail-closed currency judge, and nothing outside
 `packages/cap1-core` and `packages/cap1-conformance` refers to it
 [Observed: 0 references, two methods].
@@ -95,7 +95,7 @@ blob body was read]:
 | Sources whose blob changed between the pinned revision and head | 15 | 278 |
 | Sources removed | 0 | 278 |
 | Machine items citing a since-changed source (anchor method / string method, agreeing) | 9 | 415 |
-| Rendered item rows citing a since-changed source (rows matched to items by class and key; 0 unmatched; the 415 − 409 difference is six `project-account-section` items `/api/poc` carries and the page does not render, see slice 3) | 9 | 409 |
+| Rendered item rows citing a since-changed source (rows matched to items by class and key; 0 unmatched; the 415 − 409 difference is the six `project-account-section` items, rendered once each as the account's own section rather than as item rows, see slice 3) | 9 | 409 |
 | Of those, rendering `fresh` | 9 | 9 |
 
 The number is smaller than the dossier's because the lane A capture is
@@ -132,7 +132,7 @@ instant of the evaluation until 58.0% of the way down.
 5. A reviewed reading selection whose pinned digest no longer matches
    renders the full declaration *and* a sentence saying the selection was
    withdrawn and why; a test asserts both halves, and a fixture with a
-   matching digest renders neither.
+   matching digest renders the condensed form and no withdrawal sentence.
 
 **Motif.** *A field whose domain is one value carries no status, and a legend
 that names states the pipeline cannot produce is an unfaithful encoding.*
@@ -382,7 +382,7 @@ content class, and the signed PWB specification text.
 | Slice | Owner act needed | Named act |
 |---|---|---|
 | 1 Legend | **No** | rides `decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` (2026-09-05); no escalation trigger is crossed — no spec amendment, no security/privacy/retention change, no registry-envelope change |
-| 2 Horizon | **No**, on the recommended design | same continuation. The live head resolution is a `git-revision` input, an input class the registry entry already declares. The implementation-authorization act's escalation trigger (`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md`, "Escalation triggers") is scoped to the content class and the repository ("any observation outside the consented content class or repository"); the consent act contributes the scope sentence naming "the Butlers revision the POC observes" and has no trigger section of its own (review 2 finding G6); the probe reads a ref of the already-consented repository, not a Git object of the source population at any revision, so no body read is added and the trigger is not crossed [Inferred: the design reads `rev-parse HEAD` only, exactly as `git-observation.ts` already does at lines 61 and 80–81; restated after review 1 finding F6] |
+| 2 Horizon | **No**, on the recommended design | same continuation. The live head resolution is a `git-revision` input, an input class the registry entry already declares. The implementation-authorization act's escalation trigger (`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md`, "Escalation triggers") is scoped to the content class and the repository ("any observation outside the consented content class or repository"); the consent act contributes the scope sentence naming "the Butlers revision the POC observes" and has no trigger section of its own (review 2 finding G6); the probe reads a ref of the already-consented repository, not a Git object of the source population at any revision, so no body read is added and the observation trigger is not crossed; the same section's envelope trigger ("a change to the constraints or envelope the registry entry declares") is not crossed either, because the head resolution is a `git-revision` read charged to no source-body limit and changes no declared `resourceLimits` value [Inferred: the design reads `rev-parse HEAD` only, exactly as `git-observation.ts` already does at line 61 and `main.ts` at lines 80–81; restated after review 1 finding F6 and review 3 findings H6 and H8] |
 | 3 `evidence` block | **No** | same continuation; the machine payload's field set is not an act-bound artifact |
 | 4 `asOf` immutability test | **No** | same continuation; it adds a test and removes a clock read |
 | 6 Lapsed-selection announcement | **No** | same continuation; it adds one rendered sentence and one field on a render-time type, reads nothing new |
@@ -480,10 +480,14 @@ re-labels a claim — `architecture.md`:227 permits exactly that direction.
 revision and its committer instant, the observation instant, the probe's
 identity, instant, changed-source count and added-source count, and the
 declared currency bounds once slice 5 lands (empty until then, which is
-itself the honest answer). It is served on `/api/poc` and on
-`/api/poc/polaris`. Every human-rendered horizon fact appears here with the
-same claim id, which is what PWB-REQ-020 requires. PWB-REQ-020 does not
-permit the machine channel to carry more *facts* than the page: its
+itself the honest answer). It is served on `/api/poc`, the parity channel,
+and mirrored on `/api/poc/polaris`, which is the authenticated envelope of
+the presentation artifact, "not `/api/poc`" and "never … part of it"
+(`apps/three-surface-poc/src/polaris-narrative.ts` lines 193–198), so the
+mirror is a convenience for readers of that envelope and not a second
+parity channel. Every human-rendered horizon fact appears on `/api/poc`
+with the same claim id, which is what PWB-REQ-020 requires. PWB-REQ-020
+does not permit the machine channel to carry more *facts* than the page: its
 Observable reads "both populations contain equivalent multisets", its
 Scenario "the complete human fact multiset equals the machine fact
 multiset", and its Falsifier ends "or associated with a different
@@ -498,25 +502,28 @@ that population in both channels with the same claim id and the same
 evaluation. The `evidence` block's remaining fields (the declared bounds,
 the pinned and current digests) are inputs and identities of the
 evaluation, not facts Polaris presents about the project shape; they sit
-outside the enumerated population, so the multisets stay equal. The
-retained capture already holds the precedent for this Polaris-scoped
-reading: `/api/poc` carries six `project-account-section` items
-(`architecture`, `promises`, `purpose`, `refusals`, `v1-scope`,
-`v1-success`) that the page renders nowhere — 415 machine items against 409
-rendered rows, each of the six key strings occurring 0 times in the served
-bytes — while `/api/poc/polaris` carries none of them, and the parity sweep
-passes [Observed: both channels of the retained lane A capture, re-derived
-2026-09-14 after review 2 finding G5]. So the implementation, its sweep and
-PWB-REQ-020's Case ("every project-shape parity marker on Polaris and every
-corresponding machine-answer fact") already agree that the population is
-what Polaris presents, and `/api/poc` may carry more. The `evidence` block
-follows that precedent and acquires no spec delta [Inferred: the reading;
-disclosed for the owner because the other reading — that the six items are
-a live PWB-REQ-020 breach today — would be a finding against the existing
-implementation, not against slice 3, and this packet does not make it].
-The existing parity sweep already checks per tuple against the machine
-claim by id and both id sets, so any horizon fact rendered on one side only
-fails it.
+outside the enumerated population, so the multisets stay equal [Inferred:
+this is the reading of the enumeration this packet relies on; if the owner
+or a reviewer reads declared bounds as a "disclosure" in PWB-REQ-020's
+sense, slice 3 acquires a PWB-REQ-020 spec delta and joins Q6's collision,
+and the page must then render the bounds too]. One precedent the capture
+does *not* offer, stated so no reader reaches for it: the 415 machine items
+against 409 rendered item rows are not six facts absent from the page. The
+six `project-account-section` items are each rendered once as the
+account's own section (`data-polaris-section="claim:project-account:<key>"`
+occurs 6 times, one per key; the string
+`claim:item:project-account-section:<key>` occurs 0 times for each of the
+six), their statements and anchors byte-identical to the six
+`projectAccount` entries the page renders, and the parity sweep omits them
+from the item-row family for exactly that stated reason
+(`apps/three-surface-poc/src/polaris-parity-sweep.test.ts` lines 202–209:
+"presented once, as the account's own section claims, never as an item
+table") [Observed: both channels of the retained lane A capture and the
+test source, re-derived 2026-09-14 after review 3 finding H1; an earlier
+draft read the gap as machine-only facts and was wrong]. Every fact is in
+both channels; the gap is one of rendering form. The existing parity sweep
+already checks per tuple against the machine claim by id and both id sets,
+so any horizon fact rendered on one side only fails it.
 
 ### Slice 4 — `asOf` immutability (medium; no act)
 
@@ -532,7 +539,7 @@ injected instants, assert the two rendered pages are byte-identical and
 `asOf` is unchanged; then re-observe and assert `asOf` moved and the
 evaluation identity changed with it.
 
-### Slice 6 — A lapsed reviewed selection announces itself (small; no act)
+### Slice 6 — A lapsed reviewed selection announces itself (medium; no act)
 
 The dossier's L4-M5, which an earlier draft carried only as scenario S9 and
 a Gate 6 mutation target without a slice (review 2 finding G3).
@@ -580,7 +587,7 @@ class, the evidence record, the declared bounds and the evaluation's `asOf`.
 `assessCurrency` has five return paths over three `state` values
 (`no-bound-declared`; `stale` with basis `unreadable-instant`,
 `future-dated-instant` or `age-exceeds-bound`; `current`) [Observed:
-`packages/cap1-core/src/staleness.ts` lines 87–155]. Four map straight onto
+`packages/cap1-core/src/staleness.ts` lines 87–157]. Four map straight onto
 the tuple: `current` → `fresh`; the three `stale` returns → Unknown with
 `stale-beyond-currency-bound` and freshness `stale`, the future-dated and
 unreadable bases failing closed, which is the polarity AGENTS.md records as
@@ -907,6 +914,34 @@ third `-RAW.md` file, confirms them.
 
 None of the seven recommended answers changed; the dossier's L4-M5 is now
 slice 6.
+
+### Review 3 and repairs (2026-09-14)
+
+A third independent fresh-context review, of the packet at commit
+`e0ecdc8`, is retained verbatim at
+`docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-3-RAW.md` (30943 bytes,
+sha256 `930c4e361a05c677b428afaf4d743af22197984b34623fb49e17fc966d4024ed`). Its verdict word, copied exactly: **REVISE** — one
+blocking, five non-blocking, four editorial. It verified G1–G4 and G6–G14
+repaired and F4, F5, F6 complete, and found G5 **not repaired**: the
+review 2 repair had read the six `project-account-section` machine items
+as facts the page never renders, and they are rendered, once each, as the
+account's own sections. Every edit below post-dates review 3; the current
+bytes are uncovered until a fourth review confirms them.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| H1 the PWB-REQ-020 "precedent" was false | blocking | Accepted and repaired: the paragraph now states what the capture and the sweep's own comment show — every fact in both channels, the gap one of rendering form — and slice 3 rests on the enumerated-population reading alone, labeled Inferred, with review 1's contingency restored; the table note, Gate 5 and the evidence record corrected; `/api/poc/polaris` described as the presentation envelope before a field is proposed for it |
+| H2 predicate-less "0 times" | non-blocking | Accepted and repaired: the counted string named, in the packet and the evidence record |
+| H3 P-69 row's Q3 clause cited VIS-7 | non-blocking | Accepted and repaired: the register clause now names RFC2-10's evaluation scoping and says the identity test is not the ground |
+| H4 P-69 row silent on Q5's two lawful arms | non-blocking | Accepted and repaired: the register clause now says both arms are lawful and why marking is recommended |
+| H5 success criterion 5 contradicted slice 6's test | non-blocking | Accepted and repaired: "renders the condensed form and no withdrawal sentence" |
+| H6 envelope trigger unaddressed | non-blocking | Accepted and repaired: one clause in the slice 2 act row |
+| H7 slice 6 size | editorial | Accepted and repaired: medium, in all three places |
+| H8 citation crossed two files | editorial | Accepted and repaired |
+| H9 `assessCurrency` span | editorial | Accepted and repaired: 87–157 |
+| H10 evidence key inverted | editorial | Accepted and repaired: renamed `before_first_evaluation_instant` |
+
+None of the seven recommended answers changed.
 
 ## Funnel summary
 
