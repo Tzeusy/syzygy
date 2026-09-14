@@ -24,8 +24,8 @@ deferred and not designed here.
 
 Baseline: Syzygy `a9f671e` (main) [Observed].
 `git diff --stat f4589e2..a9f671e -- apps packages` touches 31 files,
-all under `apps/three-surface-poc/src/polaris.ts`, `polaris-narrative.ts`, their
-tests, and a new `packages/polaris-generation-core/` package — none of
+all under `apps/three-surface-poc/src/polaris.ts`,
+`polaris-narrative.ts`, their tests, and a new `packages/polaris-generation-core/` package — none of
 the files this packet cites
 (`apps/three-surface-poc/src/routes.ts`, `browser-origin.ts`,
 `materialize-action.ts`,
@@ -52,22 +52,36 @@ file and the sibling packets' cross-references still resolve.
 
 | # | Question | Recommended |
 |---|---|---|
-| Q1 | **Does `GET /api/poc/briefing`, a new machine-credentialed route, need a spec delta before it may be built, and if so to which spec?** The three-surface-poc-experience spec's own reader note is definitional: "the 'machine answer' is the authenticated `GET /api/poc` response" (`openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` line 26, singular, definite article, under the heading "Reader notes, binding on how this file is read") [Observed]. A precedent already exists that was never spec'd this way: `POLARIS_PRESENTATION_PATH` (`/api/poc/polaris`) is a second `machine-credentialed` route, justified only by a code comment citing PWB-REQ-014/020, named by no POC-REQ or PWB-REQ heading — the literal `api/poc/polaris` occurs 0 times across every tracked file under `openspec/` and `.syzygy/`, over 17 PWB and 24 POC `### Requirement:` headings [Observed, swept this session]. | **Yes, a delta is needed, and it should cover both routes at once.** Draft a small PWB semantic delta (in the 2026-09-05 amendment shape) that names a closed category — "derived read-only machine view": composed only of fields already reachable from `/api/poc` at the same evaluation, independently oracle-verified as derivable, served under its own declared, digest-bound response ceiling — and place both `/api/poc/polaris` (retroactively) and `/api/poc/briefing` (prospectively) under it. This closes the same gap for two routes in one package instead of drafting a narrower POC-spec reader-note widening now and a PWB delta later when the next such route appears. **Two other lawful arms.** (b) A POC-only reader-note widening is smaller, touches no digest-bound PWB text, does not queue behind lane B's open PWB package (Collision), and unblocks sooner; it would need no owner act under the same continuation slices 1–2 ride, only a spec-authoring cycle. (c) **Serve the briefing on the route that already exists** — `GET /api/poc` with a selector query parameter — which mints no route, raises no reader-note question, needs no new `ResponseLimitIdentity`, and so moots Q1 and Q2 together (named after review 1, F17). Not recommended [Inferred]: a parameterised `/api/poc` makes the one route the reader note *defines* as "the machine answer" serve two different bodies, so PWB-REQ-020's parity oracle would have to be told which form is the reference; and the briefing would sit under the 8,388,608-byte `maxMachineResponseBytes` with no ceiling of its own, which is exactly Q2's default arm with its defect — the owner is entitled to weigh that against amending a signed spec. **Default if unanswered: slice 3 does not ship.** Slices 1 and 2 are unaffected and may proceed regardless of how Q1 is ruled. |
+| Q1 | **Does `GET /api/poc/briefing`, a new machine-credentialed route, need a spec delta before it may be built, and if so to which spec?** The three-surface-poc-experience spec's own reader note is definitional: "the 'machine answer' is the authenticated `GET /api/poc` response" (`openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` line 26, singular, definite article, under the heading "Reader notes, binding on how this file is read") [Observed]. A precedent already exists that was never spec'd this way: `POLARIS_PRESENTATION_PATH` (`/api/poc/polaris`) is a second `machine-credentialed` route, justified only by a code comment citing PWB-REQ-014/020, named by no POC-REQ or PWB-REQ heading — the literal `api/poc/polaris` occurs 0 times in either signed specification, over 17 PWB and 24 POC `### Requirement:` headings; across the 619 tracked files under `openspec/` and `.syzygy/` its only occurrence is this packet's own P-72 register row [Observed, swept this session; the earlier "0 times across every tracked file under `openspec/` and `.syzygy/`" was falsified by the row this branch added — review 2, G3]. | **Yes, a delta is needed, and it should cover both routes at once.** Draft a small PWB semantic delta (in the 2026-09-05 amendment shape) that names a closed category — "derived read-only machine view": composed only of fields already reachable from `/api/poc` at the same evaluation, independently oracle-verified as derivable, served under its own declared, digest-bound response ceiling — and place both `/api/poc/polaris` (retroactively) and `/api/poc/briefing` (prospectively) under it. This closes the same gap for two routes in one package instead of drafting a narrower POC-spec reader-note widening now and a PWB delta later when the next such route appears. **Two other lawful arms.** (b) A POC-only reader-note widening is smaller, touches no digest-bound PWB text, does not queue behind lane B's open PWB package (Collision), and unblocks sooner; it would need no owner act under the same continuation slices 1–2 ride, only a spec-authoring cycle. (c) **Serve the briefing on the route that already exists** — `GET /api/poc` with a selector query parameter — which mints no route, raises no reader-note question, needs no new `ResponseLimitIdentity`, and so moots Q1 and Q2 together (named after review 1, F17). Not recommended [Inferred]: a parameterised `/api/poc` makes the one route the reader note *defines* as "the machine answer" serve two different bodies, so PWB-REQ-020's parity oracle would have to be told which form is the reference; and the briefing would sit under the 8,388,608-byte `maxMachineResponseBytes` with no ceiling of its own, which is exactly Q2's default arm with its defect — the owner is entitled to weigh that against amending a signed spec. **Default if unanswered: slice 3 does not ship.** Slices 1 and 2 are unaffected and may proceed regardless of how Q1 is ruled. |
 | Q2 | **If Q1 authorizes slice 3, how is its response ceiling declared, and does a third ceiling amend PWB-REQ-006?** `PwbResourceLimits` (`packages/three-surface-poc-core/src/project-shape-observation.ts` lines 65–73) is the registry's seven-field resource envelope, of which exactly two are response ceilings — `maxHumanResponseBytes` (2,097,152) and `maxMachineResponseBytes` (8,388,608), lines 81–82 — all seven digest-bound inside the registry entry that `PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md` adopted [Observed; the first draft said "exactly two fields", withdrawn after review 1, F4]. PWB-REQ-006 (Gate 2) says the registry declares "one evaluation-wide resource envelope" and that "final encoded human HTML and machine JSON SHALL each have an explicit byte ceiling", with a Case over "both final-output sinks". Reusing `maxMachineResponseBytes` as the briefing's hard bound would let a briefing grow to 8 MiB with nothing to stop it — the exact defect this move exists to fix. | **Mint `maxBriefingResponseBytes` in the registry entry, adopted by a superseding act in the 2026-09-05 shape (the same mechanism M2's Q2 already recommends for a currency bound), and rule at the same time whether the third ceiling also stales PWB-REQ-006's two-sink wording.** Two things are stated plainly that the first draft did not (review 1, F11, F12): first, this is **new code and a closed-type widening** — `ResponseLimitIdentity` (`routes.ts` line 111) is a closed union of two string literals and `PwbResourceLimits` a seven-field interface, and both grow by one; `boundedResponse` (`routes.ts` lines 137–142) is generic over the identity it is passed, so the enforcement path is reused, but the type is not untouched. The packet defends the widening because it happens **under an owner act over the registry entry** (escalation trigger, act line 92) — whereas Q3's `population` widening, declined below, would happen on the implementation's own authority with no act to warrant it; that is the asymmetry, and it is deliberate. Second, a third declared ceiling plausibly amends PWB-REQ-006's "each" over two sinks, in which case the registry delta **folds into Q1's PWB delta** as one package rather than a separate second act — a different cost from the two-step act the handoff describes, and the owner's call [Inferred]. Counter-argument: it is a second owner step queued behind Q1's spec delta, and until it lands slice 3 cannot ship at all. **Default if unanswered: slice 3 reuses `maxMachineResponseBytes` as its hard bound, with the ~20 KB figure enforced only by a test assertion** — a bound that could silently widen release by release with no registry gate to catch it, disclosed as such. |
 
 ### Decided in this packet, not put to the owner (Q3, Q4)
 
 **Q3 — the breach body's `population` on a briefing-ceiling breach.**
-Decided: reuse `ResponseLimitFailure` (`routes.ts` lines 113–124,
-`population` at 120–122 — a closed two-arm union scoped to the whole
-project shape) **unchanged**, and add one sentence to the body:
-"population describes the whole evaluation, not this briefing's
-subject." No third `population` arm is minted. Why this is not an
-owner gate: the type is an implementation type in
-`apps/three-surface-poc/src/routes.ts` bound by no act; PWB-REQ-006
-asks the breach envelope for "population counts" and says nothing
-about their scope; and both arms leave the type unchanged, so there is
-no trade-off for the owner to hold. Why the sentence is worth having:
+Decided: keep `ResponseLimitFailure`'s `population` union
+(`routes.ts` lines 113–124, `population` at 120–122 — a closed two-arm
+union scoped to the whole project shape) as it is, and add **one new
+field** to that interface carrying the sentence "population describes
+the whole evaluation, not this briefing's subject" — the breach body is
+`JSON.stringify` of exactly that interface (`routes.ts` line 141), so a
+sentence cannot reach the body without widening the type. No third
+`population` arm is minted. Why this is not an owner gate: the type is
+an implementation type in `apps/three-surface-poc/src/routes.ts` bound
+by no act, so widening it by a field is engineering judgment; PWB-REQ-006
+asks the breach envelope for "population counts" and says nothing about
+their scope; and its "SHALL return **only** a bounded typed failure
+envelope carrying evaluation identity, limit identity, declared value,
+observed value and population counts" (spec lines 381–384) is read here
+as an enumeration the envelope must at least carry, not a closure of its
+field set [Inferred]: the clause's own contrast is with truncation and a
+success-shaped model, its Falsifier fires on "an oversized or truncated
+success response", and neither its Observable nor the resource-breach
+scenario constrains the field set — if the owner reads "only" as a
+closure, this becomes a spec question and re-enters the funnel. (The
+first repair said "reuse ... **unchanged**, and add one sentence to the
+body" and "both arms leave the type unchanged"; both withdrawn after
+review 2, G6 — the sentence is a type widening, and the alternative arm
+widens the union.) Why the sentence is worth having:
 a response-ceiling breach serves nothing and logs nothing — no ledger,
 stderr line or status record sees it, and the 503 body of the
 breaching request is the only trace (AGENTS.md records this) — so the
@@ -122,7 +136,9 @@ packet's own table before use):
 
 1. **The orientation an agent needs is 0.339% of the payload; two
    task-irrelevant blocks are 68.2%.** `workItems` (2,273,467 bytes,
-   7,396 beads presumably, 41.18%) and `codeStructure` (1,493,219
+   7,481 work items with 7,481 distinct ids [Observed, counted this
+   session; the first draft's "7,396 beads presumably" matched neither
+   capture and hedged inside an Observed claim — review 2, G9], 41.18%) and `codeStructure` (1,493,219
    bytes, 27.05%) together are 68.2% of the body; the same minimal
    orientation set the dossier named — `evaluation`, `project`,
    `observerRevision`, `projectShape.identity.scope`,
@@ -163,7 +179,9 @@ packet's own table before use):
    pre-lane-A count]. `buildTrajectoryMaterializationPacket`
    (`materialize-action.ts` lines 31–37) is computed only inside
    `renderMaterializePanel` (lines 55–82), which only `trajectory.ts`
-   line 187 calls — the packet is rendered exactly once, as HTML
+   line 187 calls outside tests (`materialize-action.test.ts` lines 42
+   and 59 are the other two callers) — the packet is rendered exactly
+   once, as HTML
    `<dd>` elements on the Trajectory page, and reaches `/api/poc`
    nowhere.
 4. **The machine payload names zero prohibitions of Syzygy's own
@@ -241,12 +259,17 @@ pending at all.
    `materialization.ts` lines 20–30) beside `proposedWork`, with a
    `dispatchState` discriminant (`'undispatched'` or
    `{'dispatched', beadId, at}`). A parity test asserts, by value after
-   HTML-unescaping, the **seven** packet fields the Trajectory panel
-   renders (`materialize-action.ts` lines 69–75) and the bead id in the
-   status line (lines 61–62); it records the **two** packet fields the
-   panel never renders (`targetBeadPrefix`, `governingIntent.designPath`)
-   and the state's `at` as machine-only, with both denominators (7 of 9
-   packet fields; 1 of 2 state fields). A test issuing N machine `GET`
+   HTML-unescaping, the **eight** of the packet's nine top-level fields
+   the Trajectory panel renders across its seven `<dd>` cells
+   (`materialize-action.ts` lines 69–75; line 74 carries `issueType` and
+   `priority` in one cell, so the test maps that cell to two fields) and
+   the bead id in the status line (lines 61–62); it records
+   `targetBeadPrefix` (the one top-level field with no counterpart),
+   `governingIntent.designPath` (a leaf: 9 of the packet's 11 leaves
+   render) and the state's `at` as machine-only, with both denominators
+   (8 of 9 top-level fields, 9 of 11 leaves; 1 of 2 state fields).
+   (The first repair said "7 of 9 packet fields", counting cells on one
+   side and fields on the other; corrected after review 2, F6/G2.) A test issuing N machine `GET`
    requests against a fixture state directory asserts the directory's
    bytes are unchanged after the Nth. (The first draft said
    "byte-identical" over "the packet's seven fields"; withdrawn after
@@ -291,7 +314,8 @@ All computed this session from `api-poc.json`
 `a89b0e059b5fdadc5f359c2bee58115cd50747399cfb00444703e0fafdfb466e`;
 Butlers evaluation revision `2e3bac97790b`, the retained lane A "after"
 capture at
-`scratchpad/m1/measure/after/`) unless marked otherwise. sha256
+`scratchpad/m1/measure/after/`, a path relative to this session's
+scratchpad directory, not to the repository) unless marked otherwise. sha256
 verified against the M4 packet's own table before use, and against the
 M2 evidence file's `polaris-tailnet.html` hash, both matching
 [Observed].
@@ -346,7 +370,20 @@ cross-capture byte difference at that scale is key spelling, not a
 measurement (review 1, F8). The one-claim figures are new
 measurements, not in the dossier, composed from exact field paths
 (evidence file, `agent_briefing_sets.one_claim_briefing_examples`);
-the route href is a 27-byte placeholder, so each is a floor. They are
+the route href is a 27-byte placeholder, so each is a floor. **Every
+component reproduces to the byte; the totals do not** [Observed,
+review 2 (G5) and re-derived this session]: `evaluation` 595,
+`projectShape.identity.scope` 109, `projectShape.authority` 1,369, the
+two item records 661 and 812, the three chain records 1,075 / 844 /
+326, the two source records 1,627 and 1,803 — and the with-source
+deltas (7,076 − 5,449 and 5,150 − 3,347) are exactly those source
+records. What the totals add on top of the components is the composed
+object's own wrapper (nine key names, the not-applicable disclosure's
+wording, the route entry's fields beyond its placeholder href), which
+this packet did not publish and which the evidence file now records as
+unpublished; until slice 3 fixes that wrapper in code, treat the two
+totals as this session's floors and the component table as the
+re-derivable part. They are
 the shape slice 3's oracle must hold to. The recommended 20 KB ceiling
 (Q2) is 2.9× the larger composition (20,480 / 7,076) — headroom, not a
 tight budget. (The first draft published one figure, 2,829 bytes, for a
@@ -411,7 +448,7 @@ the four rows the first draft got wrong are marked.
 | `routes.ts` `ResponseLimitIdentity` | 111 | not cited by line | a closed union of two string literals |
 | `routes.ts` `ResponseLimitFailure` | 113–124 (`population` at 120–122) | not cited by line | first draft said 113–121; corrected after review 1 (F22) |
 | `routes.ts` `boundedResponse` | 137–142 | not cited by line | first draft said 111–121, which is the type above, not the function; corrected after review 1 (F5) |
-| `polaris.ts` `authorityLine` (slice 2's edit site) | 707–713 | not cited by line | outside every region M3 cites (Collision) |
+| `polaris.ts` `authorityLine` (slice 2's edit site) | 707–716 (the table's first value, 707–713, ended on a `.map(` continuation; corrected after review 2, G4) | not cited by line | outside every region M3 cites (Collision) |
 | `model.ts` `PocEpistemic` | 44–46 | not cited by line | — |
 | `model.ts` `PocModel` interface | 98–155 | not cited by line | — |
 | `body-read-authority.ts` `BodyReadAuthorityEvaluation` | 315–324 | not cited by line | — |
@@ -626,7 +663,7 @@ artifact.
 
 | Slice | Owner act needed | Named act, and the trigger test |
 |---|---|---|
-| 1 Dispatch packet | **No** | Rides `PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` (2026-09-05). No escalation trigger of `PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` (lines 86–94) is crossed: the packet is already computed from `model.project.root` and fixed artifact paths, with zero new observation; no PWB spec amendment (PWB-REQ-013 already types this exact artifact); no registry-envelope change (`maxMachineResponseBytes`, 8,388,608 bytes, comfortably covers a ~2.3 KB packet addition — see Gate 1's per-key table); no route added |
+| 1 Dispatch packet | **No** | Rides `PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` (2026-09-05). No escalation trigger of `PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` (lines 86–94) is crossed: the packet is already computed from `model.project.root` and fixed artifact paths, with zero new observation; no PWB spec amendment (no requirement in either signed spec names the packet — `materializ` 0 times in both, swept this session — so the minting question is answered at Gate 5 on the bound-by-no-act ground [Inferred]; the first draft's "PWB-REQ-013 already types this exact artifact" is withdrawn after review 2, G1); no registry-envelope change (`maxMachineResponseBytes`, 8,388,608 bytes, comfortably covers a ~2.3 KB packet addition — see Gate 1's per-key table); no route added |
 | 2 `mayNot` | **No**, with one implementation note | Same continuation. The three `AuthorityState`s are already daemon-computed; no new observation. The fourth source — the implementation-authorization act's own prose bullets, which the daemon does not parse at runtime — is proposed as a hand-typed, closed table, in the shape of `UNKNOWN_REASON_ROUTES` (`project-shape-model.ts` lines 89–102). Per AGENTS.md's own governance-recorder ritual ("register a new act phrase... before the packet exists, or CG-7d cannot see them go stale"), this table's entries should be registered the same way so an amendment to that act is caught, not silently stale — a Gate 6 engineering-bar item, not an escalation trigger |
 | 3 Briefing route | **Yes, per Q1; and per Q2 if the ceiling is minted** | No act found that authorizes a new machine-credentialed route as read; the escalation triggers are "any scope beyond the signed change" (`PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` lines 93–94) and, for Q2, "a change to the constraints or envelope the registry entry declares" (line 92), together with the act's own bullet "No edit to any act-bound artifact... Spec changes route through CC-REV-2's amendment path and a new owner act" (lines 76–79) and this packet's reading of the POC spec's reader note (Gate 5). On Q1's existing-route arm no trigger is crossed and no act is needed |
 | 4 (deferred) | not evaluated | not evaluated |
@@ -680,11 +717,15 @@ description, labels, type/priority, external ref — already rendered
 today, `materialize-action.ts` lines 69–75) plus the
 `materialize-status`/`materialize-trigger` pair against
 `model.dispatch.packet` and `.state` by field, **by value after
-HTML-unescaping, never by bytes**, reporting both denominators: 7 of
-the packet's 9 fields have a panel counterpart (`targetBeadPrefix`,
-`materialization.ts` line 12, and `governingIntent.designPath`, line
-17, are built at `materialize-action.ts` line 35 and rendered nowhere
-[Observed, grep over `trajectory.ts` and `materialize-action.ts`]),
+HTML-unescaping, never by bytes**, reporting both denominators: 8 of
+the packet's 9 top-level fields have a panel counterpart — seven `<dd>`
+cells, one of which (line 74) carries `issueType` and `priority`
+together — and 9 of its 11 leaves do (`targetBeadPrefix`, set at
+`materialization.ts` line 58 from the constant at line 12, and
+`governingIntent.designPath`, built at `materialize-action.ts` line 35,
+are rendered nowhere [Observed, grep over `apps/three-surface-poc/src/`;
+"7 of 9" and "both built at line 35" corrected after review 2, G2 and
+G10]),
 and 1 of the state's 2 fields does (the bead id at lines 61–62; `at`
 has no panel counterpart). The test asserts the machine-only remainder
 explicitly so the asymmetry is a recorded denominator, not a silent
@@ -808,12 +849,20 @@ composes, for the named claim:
 
 An unresolvable selector (a `claimId` absent from every population)
 is **not an Unknown claim and carries no `reason` slot**. RFC2-24
-closes the Unknown-reason vocabulary at twelve values
-(`.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md`
-lines 44–50, quoted): "no implementation may mint, spell, or force-fit
-a value the list does not carry... A condition genuinely outside the
-twelve is disclosed as a **fact of the render**, never dressed as a
-reason." A selector that names nothing is exactly such a condition —
+closes the Unknown-reason vocabulary at twelve values. The defined
+clause (`.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md`
+line 92, its table at 119–131; located through `DIRECTIVE-REGISTER.md`)
+reads: "Every Unknown claim instance carries exactly one primary reason
+from this list … the list changes only by amendment to this RFC" and,
+of any value outside it, "no implementation may mint, spell, or
+force-fit a secondary value the list does not carry … A condition
+genuinely not among the twelve is disclosed as a **fact of the
+render** — named, expandable, routed to its resolving action — never
+dressed as a reason; the honest move is to amend this list, never to
+annotate outside it." (The module's opening summary at lines 44–50
+restates the same rule; the first repair quoted the summary as the
+clause — re-anchored after review 2, G7, rule 8.) A selector that names
+nothing is exactly such a condition —
 there is no claim whose epistemic state could carry a reason — so the
 route answers with a typed not-found disclosure: `served: 'nothing'`,
 the raw selector echoed verbatim, the population it was resolved
@@ -843,10 +892,11 @@ in the M1/M2 shape.
 
 **Breach body (Q3, decided in this packet).** On a briefing-ceiling
 breach the existing `ResponseLimitFailure` shape (`routes.ts` lines
-113–124; `population` at 120–122) is reused unchanged and one
-sentence is added to the body: "population describes the whole
-evaluation, not this briefing's subject." No third `population` arm is
-minted. The reasons are in "Decided in this packet" below the owner
+113–124; `population` at 120–122) keeps its `population` union and gains one
+field carrying the sentence "population describes the whole
+evaluation, not this briefing's subject" — a widening of an
+implementation type bound by no act, not a reuse "unchanged" (corrected
+after review 2, G6). No third `population` arm is minted. The reasons are in "Decided in this packet" below the owner
 questions.
 
 **Oracle.** Every field the briefing renders must be independently
@@ -893,12 +943,30 @@ records them as machine-only; see success criterion 2).
 
 ## Gate 5 — Specification
 
-**Slices 1 and 2: no spec delta.** PWB-REQ-013 already types the
-dispatch packet's subject matter as "described here as a distinct
-machine type"; serving it as a sibling field on the existing `/api/poc`
-adds no new route, no new credential class, and no new project fact
-(PWB-REQ-004's closed population is untouched — the packet is not a
-project-shape claim). For `mayNot` the question that actually decides
+**Slices 1 and 2: no spec delta.** For the dispatch packet the
+question is the same minting question asked for `mayNot` below: **may
+the implementation add a machine field no requirement names?** No
+requirement in either signed specification reaches the materialization
+packet: the literal `materializ` occurs 0 times in the digest-bound PWB
+spec and 0 times in the signed POC spec [Observed, swept this session
+over both files, 17 PWB and 24 POC `### Requirement:` headings], so
+there is nothing to amend. This packet's answer [Inferred]: yes — the
+model's payload field set is bound by no act (Gate 3), serving the
+packet as a sibling field on the existing `/api/poc` adds no new route,
+no new credential class, and no new project fact (PWB-REQ-004's closed
+population is untouched — the packet is not a project-shape claim), and
+the field is a new carrier for a value the Trajectory page already
+renders, so PWB-REQ-020's parity reading in Gate 2 is the only clause it
+touches. Slice 1 is therefore the cleaner instance of the minting
+question, not an exempt one. (An earlier text of this paragraph opened
+"PWB-REQ-013 already types the dispatch packet's subject matter as
+'described here as a distinct machine type'" — a false attribution: the
+quoted words are the file header comment of
+`packages/three-surface-poc-core/src/proposed-work.ts` lines 11–12, and
+PWB-REQ-013's own clause (spec lines 723–740) is a presentation
+prohibition that never names the packet. Withdrawn after review 2,
+finding G1; Gate 2's PWB-REQ-013 paragraph, which cites the header
+comment as a header comment, stands.) For `mayNot` the question that actually decides
 whether an act is needed is not parity but minting: **may the
 implementation add a disclosure no requirement names?** This packet's
 answer [Inferred]: yes, on two grounds — PWB-REQ-005 already requires
@@ -976,8 +1044,9 @@ bytes are unchanged.
 
 **S4 — The dispatch packet cannot diverge across channels.** WHEN the
 Trajectory panel and `/api/poc`'s `dispatch.packet` are read from one
-evaluation, THEN each of the 7 packet fields the panel renders (of 9)
-and the 1 state field it renders (of 2) matches by value after
+evaluation, THEN each of the 8 top-level packet fields the panel renders
+(of 9; 9 of 11 leaves) and the 1 state field it renders (of 2) matches by
+value after
 HTML-unescaping, AND the test asserts both denominators and names the
 three machine-only values.
 
@@ -999,12 +1068,14 @@ relationships' tuples verbatim.
 ## Collision and sequencing
 
 Denominators, stated after review 1 (F15): every slice row of each
-sibling's own Gate 3 table was read — M2's 6 slices, M3's 4 slices
+sibling's own Gate 3 table was read — M2's 6 slices, M3's 6 slices (its
+Gate 3 table at `f35a25f`, read read-only on 2026-09-15; the first repair
+wrote "4", corrected after review 2, G8)
 plus the five `polaris.ts` regions its packet cites (306–307, 346–361,
 506–510, 1307, 1328–1329), M4's 8 slices, and lane B's package —
 against M5's three edit regions (`model.ts` interface line ~140 and
 `buildModel`'s return at line 707, `polaris.ts` `authorityLine` at
-707–713, and a new route inside `routes.ts`'s 225–238 block plus a new
+707–716, and a new route inside `routes.ts`'s 225–238 block plus a new
 module). The M4 and M2 worktrees were read read-only at their register
 rows' heads on 2026-09-14.
 
@@ -1030,7 +1101,7 @@ touch `polaris-copy.ts`, `design-tokens.ts`, two test files, a fixture
 and `polaris.ts` in the five regions above (`claimStatesBlock` at
 346–361, the opening band, the CSS block near 1307, and the tier
 lines at 306–307 and 1328–1329). M5 slice 2 edits `authorityLine`
-(`polaris.ts` lines 707–713) to add `mayNot` — a different function,
+(`polaris.ts` lines 707–716) to add `mayNot` — a different function,
 outside all five regions [Observed, this worktree], and a different
 concept (prohibitions, not epistemic-state encoding). Whether M3's
 actual diff, once committed, stays inside the regions its packet
@@ -1183,14 +1254,15 @@ Baseline: Syzygy a9f671e; capture = lane A after, api-poc.json 5,520,314 bytes
 - G3 Topology: apps/three-surface-poc + packages/three-surface-poc-core;
   no new boundary; slice 3's registry/spec touch is contingent on Q1/Q2
 - G4 Design: dispatch packet as proposedWork's sibling with a
-  dispatch-state discriminant (7 of 9 fields have a panel counterpart,
-  recorded as such); authority.mayNot from the three parsed
+  dispatch-state discriminant (8 of 9 top-level fields, 9 of 11 leaves,
+  have a panel counterpart, recorded as such - "7 of 9" corrected after
+  review 2, G2); authority.mayNot from the three parsed
   authorities plus a registration-guarded six-row hand-typed table; a
   briefing route whose every field is oracle-derivable from /api/poc,
   RFC8-21 chain rendered verbatim where the four work literals join
   the subject and not-applicable where they do not; an unresolvable
   selector is a fact-of-render disclosure, never an Unknown reason
-- G5 Spec: slices 1-2 no delta (PWB-REQ-013/020 already reach them);
+- G5 Spec: slices 1-2 no delta (no requirement names the packet - materializ 0 times in both signed specs - and mayNot rides PWB-REQ-005's "every ... rendering" ground, both [Inferred]; the earlier "PWB-REQ-013/020 already reach them" withdrawn after review 2, G1);
   slice 3 needs one, per this move's own rule that a new route in a
   signed spec is a spec delta through CC-REV-2 - an owner question (Q1),
   never a plan step
@@ -1290,10 +1362,10 @@ second `-RAW.md` file, never an overwrite.
 |---|---|---|
 | F1 `forbidden` is 3 on this capture, not 0 | blocking | Re-derived and confirmed (3 and 3, `bytes.count` and `str.count` agreeing; all hits Butlers bead titles). Gate 1 item 4, the literal table and the summary restated: zero prohibitions of Syzygy's own authority, with the withdrawn sentence kept |
 | F2 the worked example's chain is applicable, and the subject count is four, not three | blocking | Re-derived and confirmed (`currentAuthority.claim.claimId` equals the subject; `intent:req-switchboard-identity-001` and two relationships join it; `MaterializationGoverningIntent.requirementId` was the missing fourth). Subject-naming finding rewritten as four literals with `switchboard-identity` the join point; `claim:item:topology-component:1:Spawner` is the not-applicable illustration; slice 3, RFC8-21 reading, S6 and the summary follow |
-| F3 S2 mints an Unknown reason outside RFC2-24's closed twelve | blocking | Re-derived and confirmed (`no-such-claim` occurs 0 times in `rendering-vocabularies.md`; lines 44–50 quoted). Slice 3's unresolvable-selector design, success criterion 1 and S2 restated as a typed not-found disclosure with no `reason` slot; PWB-REQ-007 lines 447–448 quoted |
+| F3 S2 mints an Unknown reason outside RFC2-24's closed twelve | blocking | Re-derived and confirmed (`no-such-claim` occurs 0 times in `rendering-vocabularies.md`; lines 44–50 quoted — the module summary, re-anchored to the defined clause at line 92 after review 2, G7). Slice 3's unresolvable-selector design, success criterion 1 and S2 restated as a typed not-found disclosure with no `reason` slot; PWB-REQ-007 lines 447–448 quoted |
 | F4 `PwbResourceLimits` has seven fields, not two | blocking | Re-derived and confirmed. Q2 and the line-number table say "seven fields, of which exactly two are response ceilings" |
 | F5 the line-number re-verification table is itself unreliable | blocking | Re-derived by `grep -n` over every row; four rows were wrong (`MaterializationPacket` 20–30, `buildMaterializationPacket` 43–65, `buildTrajectoryMaterializationPacket` 31–37, `boundedResponse` 137–142 — the first draft cited the type's range for the function). Corrected in the table and at each in-text cite, withdrawn values kept in the table |
-| F6 the dispatch packet has nine fields, the page renders seven, so "byte-identical" parity is unachievable | blocking | Re-derived and confirmed (7 of 9 packet fields and 1 of 2 state fields have a panel counterpart; `targetBeadPrefix`, `governingIntent.designPath` and `at` do not). Success criterion 2, slice 1's parity test, S4, the design bar and Gate 2's PWB-REQ-020 reading restated: by value after unescaping, both denominators, the machine-only remainder recorded; why the Falsifier does not reach the packet stated and labelled [Inferred] |
+| F6 the dispatch packet has nine fields, the page renders seven, so "byte-identical" parity is unachievable | blocking | Re-derived and confirmed (the remainder — `targetBeadPrefix`, `governingIntent.designPath` and `at` — is right; the denominator this row first gave, "7 of 9 packet fields", counted cells against fields and is corrected after review 2, G2, to 8 of 9 top-level fields / 9 of 11 leaves; 1 of 2 state fields). Success criterion 2, slice 1's parity test, S4, the design bar and Gate 2's PWB-REQ-020 reading restated: by value after unescaping, both denominators, the machine-only remainder recorded; why the Falsifier does not reach the packet stated and labelled [Inferred] |
 | F7 the one-claim figure is not re-derivable and the two artifacts disagree | non-blocking | Re-derived; method-dependent (see the paragraph above). Two compositions published with exact field paths: 5,449 / 7,076 bytes (applicable chain) and 3,347 / 5,150 bytes (not applicable); "sevenfold" withdrawn; headroom stated as 20,480 / 7,076 |
 | F8 the cross-capture comparison is a key-naming artifact | non-blocking | Re-derived and confirmed (18,710 with the dossier's `scope` key, 18,719 with `identity.scope`, on this capture). Table and Gate 1 item 1 now compare shares only and say so; the classes-plus-claim set recomputed the same way (148,780) |
 | F9 the worked-example selector matches no claim in the population | non-blocking | Re-derived and confirmed (0 of 415; every id is `claim:item:<class>:<key>`). Spelled correctly everywhere; slice 3's selector paragraph states the id form with its denominator |
@@ -1302,12 +1374,12 @@ second `-RAW.md` file, never an overwrite.
 | F12 Q2's "without new code" is false, and the restraint is applied asymmetrically | non-blocking | Confirmed (`ResponseLimitIdentity` is a closed two-literal union at `routes.ts` 111). Q2 states the closed-type widening plainly and defends the asymmetry: Q2 widens under an owner act, Q3 declines to widen on the implementation's own authority |
 | F13 Gate 5's warrant for slice 2 is circular, and the reading is unlabelled | non-blocking | Confirmed. Gate 5 now answers the minting question on PWB-REQ-005's "every human and machine rendering of the authorization basis" ground, labelled [Inferred], with the recorded-finding fallback naming L5-F9; Gate 2's PWB-REQ-020 scope reading labelled [Inferred] |
 | F14 slice 2's enumeration of the act's prohibitions is three bullets short | non-blocking | Re-derived and confirmed (six bullets, lines 70–84). All six enumerated with their lines; the table is "exactly six rows" and the registration fixture asserts six |
-| F15 the collision analysis reads 2 of 8 M4 slices and 1 of 6 M2 slices | non-blocking | Re-derived and confirmed. Denominators stated (8 of 8, 6 of 6, 4 of 4 with M3's five `polaris.ts` regions); M4 slice 8 (`materialization.ts` 9–65), slice 4 (`model.ts` 710–750, adjacent to 707) and slice 5 (`routes.ts` 34–96) added; M3's committed diff marked [Unknown] |
+| F15 the collision analysis reads 2 of 8 M4 slices and 1 of 6 M2 slices | non-blocking | Re-derived and confirmed. Denominators stated (8 of 8, 6 of 6, and M3's six slices — first written "4 of 4", corrected after review 2, G8 — with its five `polaris.ts` regions); M4 slice 8 (`materialization.ts` 9–65), slice 4 (`model.ts` 710–750, adjacent to 707) and slice 5 (`routes.ts` 34–96) added; M3's committed diff marked [Unknown] |
 | F16 Q3 and Q4 are not genuine hard human gates | non-blocking | Accepted. Both decided in the packet under "Decided in this packet, not put to the owner", reasoning shown, numbers kept; the owner table is Q1 and Q2; summary, order, handoff and the P-72 row follow |
 | F17 a lawful, cheaper arm for Q1 is never named | non-blocking | Accepted. The existing-route arm (`GET /api/poc` with a selector) named in Q1 with why it is not recommended, labelled [Inferred]; the order and register follow |
 | F18 zero [Unknown] labels in the document the owner reads | non-blocking | Accepted. The evidence file's four `not_verifiable_this_session` entries carried into Collision and sequencing as four [Unknown] bullets |
 | F19 ten code spans are broken across a line break | editorial | Confirmed; all ten rejoined or rephrased so no span crosses a line |
-| F20 nine over-width lines outside tables and fences | editorial | Confirmed; line 795 reflowed, and the 79-column baseline line with it; the remaining over-width lines are single unbreakable paths or headings, as the review allows |
+| F20 nine over-width lines outside tables and fences | editorial | Confirmed; line 795 reflowed, and the 79-column baseline line with it; nine of the remaining ten over-width lines are single unbreakable paths or headings, as the review allows; the tenth, ordinary prose at 80 columns, was found by review 2 (G12) and wrapped |
 | F21 PWB-REQ-020 is introduced as "quoted in full" and is not | editorial | Confirmed; "quoted in relevant part", naming which bullets are omitted |
 | F22 four remaining citation imprecisions | editorial | Confirmed; `ResponseLimitFailure` 113–124 with `population` at 120–122, `MaterializationRecord` 67–78 with `createdAt` at 71, and the POC spec file named at each line-26 cite |
 
@@ -1316,3 +1388,60 @@ owner questions and decided above; Q1 gains a third lawful arm, named
 and not recommended; Q2 gains the PWB-REQ-006 fold-in question and
 states the closed-type widening it had denied. Q1's and Q2's
 recommendations themselves are unchanged.
+
+## Review 2 and repairs (2026-09-15)
+
+A second independent fresh-context review (read-only; same conditions as
+the first) is retained verbatim at
+`docs/reviews/R-POLARIS-M5-AGENT-BRIEFING-FUNNEL-2-RAW.md` (41872 bytes,
+sha256
+`861cece7952ee7c7a943abfa104a6ae24ba69a96714ea000b342f262b932d6a4`,
+computed by `sha256sum` this session). It reviewed the packet at 90597
+bytes, sha256
+`6d248dea1d428c72078622a1e369aad7f051a215dd2e3aeb4cef57e97b83ffa6`, the
+evidence record at 21576 bytes, sha256
+`e8503cf8ab1072c86f82405bd1aeb7e87d4be04a5aded96ecb80bc0727ef2410`, and
+the register at 27485 bytes, sha256
+`c4552371e4305b6d754788d1375d30ab2e09a7b5672ffe90582405afcb157619`, all
+tracked at commit `bf3999d`. Its verdict word, copied exactly:
+**REVISE** — one blocking, eight non-blocking, three editorial. Every
+finding was re-derived against source, the two signed specifications and
+the retained capture before being applied: `materializ` swept over both
+signed spec files (0 and 0); the seven `<dd>` cells against the nine
+top-level fields and eleven leaves of `MaterializationPacket`;
+`api/poc/polaris` over the 619 tracked files under `openspec/` and
+`.syzygy/`; `authorityLine` by `grep -n` and by reading to its closing
+brace; the nine one-claim components by exact path on the capture;
+`ResponseLimitFailure`'s use at `routes.ts` line 141; RFC2-24's defined
+clause through `DIRECTIVE-REGISTER.md`; M3's Gate 3 table at `f35a25f`;
+the `workItems.items` count and its distinct ids; the `targetBeadPrefix`
+assignment; the three `renderMaterializePanel` call sites; and the one
+80-column prose line. Every edit below was made after that review, so by
+verification rule 10 the review binds the bytes it names and not these;
+a third fresh-context review follows, and its raw will be a third
+`-RAW.md` file, never an overwrite. Superseded wording is marked in
+place and dated, never deleted.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| G1 PWB-REQ-013 does not type the dispatch packet, yet Gate 5 cites it as the warrant for slice 1's "no delta" | blocking | Re-derived and confirmed: PWB-REQ-013 (spec lines 723–740) is a presentation prohibition; the quoted words are the header comment of `packages/three-surface-poc-core/src/proposed-work.ts` lines 11–12; `materializ` occurs 0 times in both signed specs. Gate 5 now answers slice 1 as the same minting question it answers for `mayNot`, on the bound-by-no-act ground, labelled [Inferred]; the false attribution kept in a marked parenthetical; the slice-1 act row and the summary follow. Gate 2's PWB-REQ-013 paragraph, which already cited the comment as a comment, stands |
+| G2 "7 of 9 packet fields" is the wrong denominator | non-blocking | Re-derived and confirmed: seven cells, one of which (line 74) renders `issueType` and `priority` together; 8 of 9 top-level fields and 9 of 11 leaves have a counterpart. Success criterion 2, the parity test, S4, the summary, the F6 row and the P-72 row restated with both denominators; the evidence record's review-1 figure marked superseded on its line |
+| G3 Q1's `api/poc/polaris` absence claim is falsified by the packet's own register row | non-blocking | Re-derived and confirmed: 0 in either signed spec; exactly 1 over the 619 tracked files under `openspec/` and `.syzygy/`, the P-72 row. The claim is now stated over the specs, with the register-row occurrence enumerated |
+| G4 the `authorityLine` row of the line table is still wrong | non-blocking | Re-derived: the function closes at line 716 (713 ends on a `.map(` continuation). Table row and both in-text cites corrected, the withdrawn value kept in the table |
+| G5 the two one-claim totals are not reproducible from the published field paths | non-blocking | Re-derived: every component reproduces (595, 109, 1,369, 661, 812, 1,075, 844, 326, 1,627, 1,803), the with-source deltas are exactly the source records, and the composed wrapper is unpublished. The totals are now stated as this session's floors with the component table as the re-derivable part; the record carries the components and the unpublished-wrapper disclosure |
+| G6 Q3's "the type is unchanged" contradicts its own proposal, and PWB-REQ-006's "only" is never read | non-blocking | Confirmed: the breach body is `JSON.stringify` of `ResponseLimitFailure` (`routes.ts` line 141), so the sentence is a new field. Q3 restated as a one-field widening of an unbound implementation type; PWB-REQ-006 lines 381–384 quoted and its "only" read as a minimum, labelled [Inferred], with the owner's contrary reading routed back to the funnel; the register's Q3 parenthetical follows |
+| G7 RFC2-24 quoted from the module summary, not the defined clause | non-blocking | Confirmed (rule 8): re-anchored to `rendering-vocabularies.md` line 92 (table 119–131), located through `DIRECTIVE-REGISTER.md`; the summary quotation marked as such |
+| G8 the Collision denominator undercounts M3 by two slices | non-blocking | Re-derived: M3's Gate 3 table at `f35a25f` has six slices. "4" corrected in Collision and the F15 row, marked |
+| G9 "7,396 beads presumably" matches neither capture and "presumably" is not a label | non-blocking | Re-derived: 7,481 `workItems.items`, 7,481 distinct ids. Stated as [Observed] with the withdrawn figure kept |
+| G10 `targetBeadPrefix` is not built at `materialize-action.ts` line 35 | editorial | Confirmed: set at `materialization.ts` line 58 from the constant at line 12. Corrected in the parity paragraph |
+| G11 "which only `trajectory.ts` line 187 calls" omits two call sites | editorial | Confirmed: `materialize-action.test.ts` lines 42 and 59. Qualified as the only caller outside tests, both test sites named |
+| G12 two residues of the F20 and capture-path dispositions | editorial | Confirmed: the 80-column prose line wrapped, the F20 row counts it, the capture path stated as relative to the session scratchpad |
+
+Beyond the twelve findings, the P-72 row's Q1 recommendation now carries
+the lane-B queueing cost the packet's Q1 already stated, so the register
+and the packet say the same thing clause by clause.
+
+Recommended answers changed by this review: none. Q1 and Q2 recommend
+what they recommended after review 1; Q3's decision is restated as the
+type widening it always was, on grounds now quoted, and its outcome (no
+third `population` arm, one sentence reaching the body) is the same.

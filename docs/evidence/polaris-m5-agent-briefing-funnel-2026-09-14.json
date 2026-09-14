@@ -458,13 +458,107 @@
       },
       "no_such_claim_occurrences_in_rendering_vocabularies_md": 0,
       "act_not_authorize_bullets": "6, lines 70-72, 73-74, 75, 76-79, 80-81, 82-84",
-      "rendered_packet_fields": "7 of 9 (data-parity-field materialize-* at materialize-action.ts 69-75); targetBeadPrefix and governingIntent.designPath built at line 35 and rendered nowhere in trajectory.ts or materialize-action.ts"
+      "rendered_packet_fields": "7 of 9 (data-parity-field materialize-* at materialize-action.ts 69-75); targetBeadPrefix and governingIntent.designPath built at line 35 and rendered nowhere in trajectory.ts or materialize-action.ts [superseded 2026-09-15 after review 2, G2 and G10: seven cells render 8 of 9 top-level fields and 9 of 11 leaves; targetBeadPrefix is set at materialization.ts line 58, not built at line 35]"
     },
     "recommended_answers_changed": [
       "Q1: a third lawful arm (serve on the existing route) named and not recommended",
       "Q2: now also asks whether a third ceiling amends PWB-REQ-006 and folds into Q1's delta; the closed-type widening stated",
-      "Q3: withdrawn as an owner question; decided in the packet (reuse ResponseLimitFailure unchanged, one sentence added)",
+      "Q3: withdrawn as an owner question; decided in the packet (reuse ResponseLimitFailure unchanged, one sentence added) [superseded 2026-09-15 after review 2, G6: the sentence is one new field on ResponseLimitFailure, a widening of an unbound implementation type]",
       "Q4: withdrawn as an owner question; decided in the packet (no ordering enforced)"
     ]
+  },
+  "review2": {
+    "raw": "docs/reviews/R-POLARIS-M5-AGENT-BRIEFING-FUNNEL-2-RAW.md",
+    "bytes": 41872,
+    "sha256": "861cece7952ee7c7a943abfa104a6ae24ba69a96714ea000b342f262b932d6a4",
+    "verdict": "REVISE - one blocking, eight non-blocking, three editorial",
+    "reviewed_commit": "bf3999d",
+    "reviewed_bytes": {
+      "packet": {
+        "bytes": 90597,
+        "sha256": "6d248dea1d428c72078622a1e369aad7f051a215dd2e3aeb4cef57e97b83ffa6"
+      },
+      "record": {
+        "bytes": 21576,
+        "sha256": "e8503cf8ab1072c86f82405bd1aeb7e87d4be04a5aded96ecb80bc0727ef2410"
+      },
+      "register": {
+        "bytes": 27485,
+        "sha256": "c4552371e4305b6d754788d1375d30ab2e09a7b5672ffe90582405afcb157619"
+      }
+    },
+    "repairs_applied_this_session": true,
+    "disposition_summary": {
+      "G1": "repaired - Gate 5 slice-1 warrant restated on the bound-by-no-act ground [Inferred]; PWB-REQ-013 attribution withdrawn in place",
+      "G2": "repaired - 8 of 9 top-level fields, 9 of 11 leaves",
+      "G3": "repaired - absence claim scoped to the two signed specs; the one register-row occurrence enumerated",
+      "G4": "repaired - authorityLine 707-716",
+      "G5": "repaired - totals stated as floors; components published and re-derivable",
+      "G6": "repaired - Q3 is a one-field widening; PWB-REQ-006 381-384 quoted, 'only' read as a minimum [Inferred]",
+      "G7": "repaired - RFC2-24 anchored at rendering-vocabularies.md line 92",
+      "G8": "repaired - M3 has six slices",
+      "G9": "repaired - 7,481 work items, 7,481 distinct ids [Observed]",
+      "G10": "repaired - targetBeadPrefix set at materialization.ts line 58",
+      "G11": "repaired - three call sites named",
+      "G12": "repaired - 80-column line wrapped; capture path relative to the scratchpad",
+      "register-Q1": "repaired - lane-B queueing cost added to the P-72 recommendation"
+    },
+    "re_derived_before_applying": {
+      "materializ_occurrences_in_signed_specs": {
+        "pwb": 0,
+        "poc": 0,
+        "method": "grep -c over the digest-bound PWB spec and the signed POC spec this session"
+      },
+      "materialize_panel_cells": {
+        "dd_cells": 7,
+        "cell_line_74_fields": [
+          "issueType",
+          "priority"
+        ],
+        "top_level_fields": 9,
+        "top_level_with_counterpart": 8,
+        "leaves": 11,
+        "leaves_with_counterpart": 9,
+        "machine_only": [
+          "targetBeadPrefix",
+          "governingIntent.designPath",
+          "state.at"
+        ]
+      },
+      "api_poc_polaris_occurrences": {
+        "signed_specs": 0,
+        "tracked_files_under_openspec_and_syzygy": 619,
+        "occurrences": 1,
+        "where": "the P-72 register row on this branch"
+      },
+      "authorityLine_lines": "707-716",
+      "one_claim_components_bytes": {
+        "evaluation": 595,
+        "projectShape.identity.scope": 109,
+        "projectShape.authority": 1369,
+        "item_switchboard_identity": 661,
+        "item_Spawner": 812,
+        "entity_intent_req_switchboard_identity_001": 1075,
+        "relationship_1": 844,
+        "relationship_4": 326,
+        "source_switchboard_identity": 1627,
+        "source_Spawner": 1803,
+        "totals_status": "floors from this session; the composed wrapper (key names, disclosure wording, route entry fields beyond the placeholder href) is unpublished, so 5449/7076 and 3347/5150 are not re-derivable from the paths alone; the with-source deltas equal the source records exactly"
+      },
+      "response_limit_failure_serialisation": "routes.ts line 141 JSON.stringify(responseLimitFailure(...)); a body sentence is a type field",
+      "rfc2_24_defined_clause": "rendering-vocabularies.md line 92 (table 119-131); lines 44-50 are the module summary",
+      "m3_gate3_slices_at_f35a25f": 6,
+      "workItems_items": {
+        "count": 7481,
+        "distinct_ids": 7481
+      },
+      "targetBeadPrefix_assignment": "materialization.ts line 58 from the constant at line 12",
+      "renderMaterializePanel_call_sites": [
+        "trajectory.ts:187",
+        "materialize-action.test.ts:42",
+        "materialize-action.test.ts:59"
+      ]
+    },
+    "recommended_answers_changed": []
   }
 }
