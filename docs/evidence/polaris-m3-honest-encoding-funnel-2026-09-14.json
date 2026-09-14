@@ -166,12 +166,12 @@
     "sentence_no_member_unknown_occurrences_page": 8,
     "first_rendered_unknown_of_any_kind": {
       "kind": "unknown-disclosure",
-      "offset_chars": 378604,
+      "offset_chars": 378599, "offset_anchor": "character index of the element's opening <; the earlier value 378604 was the index of its class attribute (one convention adopted after review 6, L6)",
       "depth_percent": 25.55
     },
     "first_unknown_tuple": {
       "claim_id": "claim:class:roster-identity",
-      "offset_chars": 380767,
+      "offset_chars": 380767, "offset_anchor": "character index of the element's opening < (its class attribute begins at 380773)",
       "depth_percent": 25.7
     },
     "whole_shape_unknown_tuple_depth_percent": 57.72,
@@ -279,7 +279,7 @@
     "closed_freshness_vocabulary_authority": "RFC2-10, .syzygy/governance/contracts/rfcs/RFC-0002/snapshot-and-evaluation-core.md lines 209-223, quoted from \"Four values, closed.\" to the clause's end: \"Four values, closed. The list changes only by amendment to this RFC; no implementation may mint, spell, or force-fit a freshness value it does not carry. The closure is required for the same reason RFC2-24's is: a machine answer carries the freshness state verbatim (RFC6-14), aggregates count per freshness value (RFC6-17), and a disagreement between two renderings over one declared scope is release-blocking (RFC6-22/23) - a value existing in no vocabulary can be neither carried verbatim nor checked for parity, and leaving it unstated is how the value gets chosen by whoever implements the render first. A condition genuinely outside the four is disclosed as a fact of the render, never dressed as a freshness state. Freshness is orthogonal to the three labels and the tier registry; it never substitutes for either.\" (extended after review 4, finding J1: until then this field stopped at line 214 with no elision marker, while the review-3 disposition said it had been extended)",
     "unstated_rendered_count_tier": 11,
     "unstated_rendered_count_freshness": 0,
-    "freshness_mint_hazard": "the freshness twin fires 0 times on this capture because all 713 tuples carry \"fresh\"; assessCurrency no-bound-declared arm (packages/cap1-core/src/staleness.ts lines 98-104) returns no freshness field, so wiring it - M2 slice 5 - makes line 307 mint a fifth freshness value on every class with no declared bound. RFC2-10 forbids the mint in terms at lines 212-214 (\"no implementation may mint, spell, or force-fit a freshness value it does not carry\"; an earlier text of this field pointed at line 219, which carries the parity rationale and not the prohibition - corrected after review 5, K3) and, at lines 220-222, supplies the remedy the packet first said it lacked: a condition genuinely outside the four freshness states is disclosed as a fact of the render, never dressed as a freshness state, and line 223 adds that freshness never substitutes for the labels or the tier registry. So arm (b) of Q2 has three lawful readings for the freshness field, stated here in the packet's own words, which the P-70 row paraphrases clause for clause (an earlier text of this field said \"the packet's and register's own words\" - corrected after review 5, K6): (b-i) the renderer supplies one of the closed four (M2's Q7, recommending stale with the reason kept distinct); (b-ii) the claim is held Unknown and the tuple is not rendered as though it had a freshness state; or (b-iii) the condition is disclosed as a fact of the render, in a carrier that is not data-epistemic-freshness and is not dressed as a freshness state - the packet's recommendation - and none of them mints a fifth value. An earlier text of this sentence, written in the review-3 repair, enumerated \"(b-i) render only the four declared states and no absence, (b-ii) disclose the no-bound-declared condition as a fact of the render beside the tuple, (b-iii) the disclosure route with the absence named in the legend\" - three arms that matched neither the packet nor the register; withdrawn after review 4 (finding J3) and kept here marked. An earlier text of this field read \"supplies no absence marker, so arm (b) of Q2 is not available for freshness\"; that wording was withdrawn after review 2 (finding G1) at the packet's four sites and the register, missed here, and corrected after review 3 (finding H1)",
+    "freshness_mint_hazard": "the freshness twin fires 0 times on this capture because all 713 tuples carry \"fresh\"; assessCurrency no-bound-declared arm (packages/cap1-core/src/staleness.ts lines 98-104) returns no freshness field, so wiring it - M2 slice 5 - makes line 307 mint a fifth freshness value on every class with no declared bound. RFC2-10 forbids the mint in terms at lines 212-214 (\"no implementation may mint, spell, or force-fit a freshness value it does not carry\"; an earlier text of this field pointed at line 219, which carries the parity rationale and not the prohibition - corrected after review 5, K3) and, at lines 220-222, supplies the remedy the packet first said it lacked: a condition genuinely outside the four freshness states is disclosed as a fact of the render, never dressed as a freshness state, and lines 222-223 add (the single line 223 named here until review 6, L5) that freshness never substitutes for the labels or the tier registry. So arm (b) of Q2 has three lawful readings for the freshness field, stated here in the packet's own words, which the P-70 row paraphrases clause for clause (an earlier text of this field said \"the packet's and register's own words\" - corrected after review 5, K6): (b-i) the renderer supplies one of the closed four (M2's Q7, recommending stale with the reason kept distinct); (b-ii) the claim is held Unknown and the tuple is not rendered as though it had a freshness state; or (b-iii) the condition is disclosed as a fact of the render, in a carrier that is not data-epistemic-freshness and is not dressed as a freshness state - the packet's recommendation - and none of them mints a fifth value. An earlier text of this sentence, written in the review-3 repair, enumerated \"(b-i) render only the four declared states and no absence, (b-ii) disclose the no-bound-declared condition as a fact of the render beside the tuple, (b-iii) the disclosure route with the absence named in the legend\" - three arms that matched neither the packet nor the register; withdrawn after review 4 (finding J3) and kept here marked. An earlier text of this field read \"supplies no absence marker, so arm (b) of Q2 is not available for freshness\"; that wording was withdrawn after review 2 (finding G1) at the packet's four sites and the register, missed here, and corrected after review 3 (finding H1)",
     "sibling_surface_states_rendered": {
       "rfc2_25_closed_three": [
         "dismissed-by-decision",
@@ -539,8 +539,8 @@
   },
   "m2_collision": {
     "branch": "origin/agent/syzygy-dov.2",
-    "head": "da1497b",
-    "head_note": "re-derived this repair pass (review 2, G4); da1497b is 'M2 funnel review 5 retained and K1-K9 repaired', 2026-09-14 - reviews 4 and 5 landed since review 2 read M2 at 1befd6f, repairing findings J1-J8 and K1-K9",
+    "head": "f2f37dd", "head_re_derived_after_review_3_at_f2f37dd": true, "head_re_confirmed_after_review_6": "f2f37dd, read read-only 2026-09-15",
+    "head_note": "head field was set to da1497b at the review-2 repair pass (G4) and moved to f2f37dd after review 3 (H4) in the packet but not here until review 6 (L2); da1497b is 'M2 funnel review 5 retained and K1-K9 repaired', 2026-09-14 - reviews 4 and 5 landed since review 2 read M2 at 1befd6f, repairing findings J1-J8 and K1-K9",
     "shared_files": [
       "apps/three-surface-poc/src/polaris-copy.ts (freshness sentences, lines 46-49)",
       "apps/three-surface-poc/src/polaris.ts claimStatesBlock (lines 346-361; the freshness group is line 357)"
@@ -559,8 +559,8 @@
     "head_re_derived_after_review_2_at_1befd6f": true,
     "slice_count": 6,
     "m2_slice_6": "A lapsed reviewed selection announces itself: apps/three-surface-poc/src/polaris-reading.ts line 44 and apps/three-surface-poc/src/polaris.ts lines 506-510 - neither touched by any M3 slice",
-    "shared_surface_unchanged_at_da1497b": true,
-    "structural_collision_confirmed_by": "M2's own Gate 3 row and Q5 text, read this session at da1497b",
+    "shared_surface_unchanged_at_f2f37dd": true, "shared_surface_unchanged_at_da1497b_superseded_key": true,
+    "structural_collision_confirmed_by": "M2's own Gate 3 row and Q5 text, read read-only at da1497b on 2026-09-14 (review-2 repair pass) and re-read at f2f37dd after review 3 (H4) the same day; head confirmed still f2f37dd on 2026-09-15 after review 6 (L2)",
     "m3_slice_5_line_range_correction": "review 1 finding F8: claimStatesBlock spans 346-361, not 346-353; the freshness group - the exact overlap - is line 357",
     "cross_packet_note_review_2_G1": "M2's Q3, Q5 and Q7 rest on the same RFC2-10 sentence this packet's Q2 relies on ('a condition genuinely outside the four is disclosed as a fact of the render, never dressed as a freshness state'); M2's own Q7 already questions its stale recommendation against that sentence. P-69 and P-70 must be ruled together"
   },
@@ -658,10 +658,10 @@
       "F1": "accepted and repaired - both warrants blocks quoted verbatim at 955-964 and 999-1008; the false claim withdrawn",
       "F2": "accepted, repaired and extended - population named (10 declared colour tokens, 9 distinct, 36 pairs), full matrix recomputed and recorded, 7 pairs below 26.74 not 5 (review 1 omitted --line|--void at 23.27), bar restated over the 5 foreground tokens; both JSON fields replaced with predicated ones",
       "F3": "accepted and repaired - sibling-state framing dropped, RFC2-25 three-member list quoted at line 169, family renamed render disclosures, invented quotation withdrawn, contradiction returned to the tier table and slice 4; Q6 reframed so no arm mints anything",
-      "F4": "accepted and repaired - RFC2-10 quoted at line 209, lines 306-307 shown together, Q2 scope extended to freshness with arm (b) ruled unavailable there, slice 5 closure moved to served output, mutant (e) added, S9 extended, M2 slice-5 interaction named in the collision section",
+      "F4": "accepted and repaired - RFC2-10 quoted at line 209, lines 306-307 shown together, Q2 scope extended to freshness with arm (b) ruled unavailable there [superseded 2026-09-15: that freshness wording was withdrawn after review 2 (G1) - RFC2-10 supplies a disclosure remedy at 220-222 and arm (b) is not called unlawful for freshness; Q2 states three arms; this entry stood unmarked until review 6, L1], slice 5 closure moved to served output, mutant (e) added, S9 extended, M2 slice-5 interaction named in the collision section",
       "F5": "accepted and repaired - 713/22 split stated in Q1, the Motif, the cross-surface table, the funnel summary and the Q1-other-way paragraph",
       "F6": "accepted and repaired - walkthrough-preflight.ts added to the Gate 3 row, its claimStrength requirements stated in slice 5, added to Gate 6 item 6, mutant (f) added",
-      "F7": "accepted and repaired, re-derived past the review - M2 head is 68123fc with six slices; slice 6 two files named and shown untouched by M3; shared surface unchanged",
+      "F7": "accepted and repaired, re-derived past the review - M2 head was 68123fc at review 2 [superseded: 1befd6f after review 2, da1497b at the review-2 repair pass, f2f37dd after review 3 (H4), confirmed unchanged after review 6 (L2)] with six slices; slice 6 two files named and shown untouched by M3; shared surface unchanged",
       "F8": "accepted and repaired - 346-361 with line 357 named, in all three places",
       "F9": "accepted and repaired - RFC2-10 is the authority; staleness.ts line 18 kept as the implementation echo",
       "F10": "accepted and repaired - unavailable-notice 0 and proposal 0 disclosed; live reuse stated as 22 blocks and 1 label",
@@ -911,8 +911,48 @@
     "sweep_after_repair": {
       "predicate": "grep -F for the six literals the H1 row names, over the packet, this record and the register",
       "denominator": "3 files, 2,932 lines by wc -l (2,935 counting each file's trailing line)",
-      "result": "42 occurrences at the bytes this block describes, every one inside review-history or lawful-arms text; 0 stand as a live claim that any arm is unavailable"
+      "result": "42 occurrences at the bytes this block describes, every one inside review-history or lawful-arms text; 0 stand as a live claim that any arm is unavailable [superseded 2026-09-15 after review 6, L1: inside-a-review-history-section and framed-as-superseded are different tests; under the four-box rule in review6.sweep_after_repair, 2 of the 42 (packet F4 row, record review1.dispositions.F4) stated the withdrawn proposition unmarked]"
     },
     "uncovered_until": "a sixth independent fresh-context review; every edit recorded here post-dates review 5 (verification rule 10)"
+  },
+  "review6": {
+    "raw": {
+      "path": "docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-6-RAW.md",
+      "bytes": 39570,
+      "sha256": "384f398c3041dc9e59031c84976e61419cedc904c193f3c249af865eebe48ead",
+      "method": "wc -c and sha256sum computed this session over the retained file"
+    },
+    "reviewed_commit": "9cb4d65",
+    "reviewed_bytes": {
+      "packet": {"bytes": 144850, "sha256": "11766f08d8f227422021c2de7475f7ef20d50a8e2fd83f741f5506b94e310a45"},
+      "record": {"bytes": 55345, "sha256": "4c61e5ccc8f51fb03a814914b918069a67806e71b1ab1a5a1872e0e51a4068ee"},
+      "register": {"bytes": 35006, "sha256": "be27c3bb880f6d8c08ed3015f0c708ef8419e481447edea30be2f42a3953d852"}
+    },
+    "verdict_word_copied_exactly": "REVISE",
+    "findings": {"blocking": ["L1"], "non_blocking": ["L2", "L3", "L4"], "editorial": ["L5", "L6"], "denominator": 6},
+    "k_verification_by_review_6": "6 REPAIRED, 0 PARTIAL, 0 NOT REPAIRED over 6",
+    "re_derived_before_applying": {
+      "L1": "packet :1461 (F4 row) and record review1.dispositions.F4 read: both state 'arm (b) ... not lawfully available / ruled unavailable' for freshness in the present tense with no marker, while :1476 twelve lines below carries one - confirmed; the six-literal sweep re-run at 9cb4d65: 42 over 2,932 / 2,935, each hit classified by hand",
+      "L2": "record :542 head da1497b, :543 head_note 'this repair pass', :562 shared_surface_unchanged_at_da1497b, :563 'read this session at da1497b' against packet :1259-1267 naming f2f37dd; M2 worktree HEAD read read-only: f2f37dd - confirmed",
+      "L3": "packet :63 'five reviews retained' against the M2 worktree's docs/reviews listing: 6 files matching R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL*-RAW.md - confirmed",
+      "L4": "J6 row read bare 'CONFIRMED - REPAIRED'; review-5 raw :348 gives 7 REPAIRED / 1 PARTIAL (J6) / 1 NOT REPAIRED (J7) over 9; the review-5 section carried no counts - confirmed",
+      "L5": "record :282 'line 223 adds' against snapshot-and-evaluation-core.md 222-223 (sentence begins on 222) - confirmed",
+      "L6": "polaris-tailnet.html (1,481,819 chars): class=\"unknown-disclosure\" attribute at 378,604, its element's < at 378,599; first claim-tuple span's < at 380,767, its class attribute at 380,773 - two anchors in adjacent fields, confirmed"
+    },
+    "repairs": {
+      "L1": "packet F4 row and record review1.dispositions.F4 marked in place; G1 row now counts seven sites; H1 row's three-way classification restated with a fourth box; review5.sweep_after_repair.result marked superseded on its line; the review-5 section's sweep sentence qualified",
+      "L2": "m2_collision.head f2f37dd with the ladder extended on the same line; head_note past tense; shared_surface_unchanged re-keyed to f2f37dd; structural_collision_confirmed_by dated to both reads; review1.dispositions.F7 carries the H4 marker",
+      "L3": "Q7's parenthetical reads six reviews retained, M2 at f2f37dd, the earlier five kept and marked",
+      "L4": "J6 row reads PARTIAL at 76e897f, completed after review 5 (K2); the review-5 section states 7 / 1 / 1 over 9",
+      "L5": "freshness_mint_hazard reads lines 222-223 with the earlier single line kept",
+      "L6": "one anchor adopted (the element's opening <): first_rendered_unknown_of_any_kind.offset_chars 378,599 with the earlier 378,604 kept on its line; first_unknown_tuple states the same anchor; depth percentages unchanged at two decimals"
+    },
+    "recommended_answers_changed": "none - all seven recommendations word for word as after review 2; Q7's parenthetical count corrected without moving its premise or its answer",
+    "sweep_after_repair": {
+      "predicate": "Python str.count of the six literals the H1 row names, over the packet, this record and the register, every hit then sorted into exactly one of four boxes: (1) current lawful-arms language, (2) an in-place withdrawal marker, (3) review-history text framed as superseded, (4) review-history text stating the withdrawn proposition in the present tense with no marker",
+      "denominator": "3 files, 3,051 lines by wc -l (3,054 counting each file's trailing line)",
+      "result": "45 occurrences at the bytes this block describes; box (4) holds 0 and boxes (1)/(2)/(3) hold 6/13/26 after the two L1 sites were marked (they now sit in box 2); 0 stand as a live claim that any arm is unavailable"
+    },
+    "uncovered_until": "a seventh independent fresh-context review; every edit recorded here post-dates review 6 (verification rule 10)"
   }
 }
