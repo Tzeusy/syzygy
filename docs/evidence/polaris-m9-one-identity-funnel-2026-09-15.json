@@ -1,0 +1,672 @@
+{
+ "kind": "feature-request-funnel-evidence",
+ "version": 1,
+ "packet": "docs/design/POLARIS-M9-ONE-IDENTITY-FUNNEL.md",
+ "move": "M9",
+ "bead": "syzygy-dov.9",
+ "date": "2026-09-15",
+ "commit": "a9f671e",
+ "branch": "agent/syzygy-dov.9",
+ "status": "candidate; binds nothing; planning only; no independent review yet",
+ "independent_review": {
+  "count": 0,
+  "note": "This packet has had no independent review. Verification rule 10: any later edit retires a review bound to these bytes; when a review lands, its repairs are uncovered until a second fresh-context review confirms them, and each raw is its own -RAW.md file, never an overwrite."
+ },
+ "digest_policy_note": "No act argument, manifest digest or signed digest is reproduced in the packet or in this record. Records consulted for digest comparison are cited by path only, per CG-7e and CG-15.",
+ "captures_used": {
+  "four_page_capture": {
+   "dir": "scratchpad/capture/ (retained, read-only)",
+   "files": [
+    "home.html",
+    "polaris-7478.html",
+    "trajectory-7478.html",
+    "orrery-7478.html",
+    "api-poc.json"
+   ],
+   "provenance": "[Observed] owner's loopback daemon, evaluation Butlers 66ed58f / observer a121591, as-of 2026-09-10"
+  },
+  "lane_a_after_capture": {
+   "dir": "scratchpad/m1/measure/after/ (retained, read-only)",
+   "files": [
+    "polaris-direct.html",
+    "polaris-tailnet.html",
+    "api-poc.json"
+   ],
+   "provenance": "[Observed] private daemon on lane A's post-trim tree; observed Butlers revision 2e3bac97790b4bd8906dcac63eadb5642a0bb1ac; walkthrough surface version polaris@baee0208e8c0; from scratchpad/m1/measure/after/daemon.log"
+  }
+ },
+ "measurements": {
+  "M1_href_census": {
+   "predicate": "every occurrence of href=\"...\" in the served HTML; class by leading form: '#' fragment; '/polaris/source' source route; exactly one of '/', '/polaris', '/trajectory', '/orrery' surface root; regex ^/(polaris|trajectory|orrery)# claim-level cross-surface",
+   "denominator": "the four 2026-09-10 captures",
+   "result": {
+    "home": {
+     "total": 40,
+     "fragment": 36,
+     "surface_root": 4,
+     "cross_surface_claim": 0
+    },
+    "polaris": {
+     "total": 1061,
+     "fragment": 685,
+     "source_route": 372,
+     "surface_root": 4,
+     "cross_surface_claim": 0
+    },
+    "trajectory": {
+     "total": 315,
+     "fragment": 311,
+     "surface_root": 4,
+     "cross_surface_claim": 0
+    },
+    "orrery": {
+     "total": 23,
+     "fragment": 19,
+     "surface_root": 4,
+     "cross_surface_claim": 0
+    },
+    "total_hrefs": 1439,
+    "total_cross_surface_claim": 0
+   },
+   "second_method": "site-nav block count per page = 1 and hrefs inside it = 4 on all four pages, matching the 16 surface-root hrefs exactly; renderer confirms at apps/three-surface-poc/src/page-shell.ts line 23",
+   "post_lane_a_polaris": {
+    "total": 1089,
+    "cross_surface_claim": 0
+   },
+   "dossier_figure": "0 of 1,439 at claim level",
+   "agrees": true
+  },
+  "M2_data_claim_id": {
+   "predicate": "occurrences of data-claim-id=\"...\"; 'names an entity id' = value equals one of the nine ids of model.entities",
+   "result": {
+    "polaris_2026_09_10": {
+     "occurrences": 699,
+     "distinct": 689,
+     "naming_an_entity_id": 0
+    },
+    "polaris_post_lane_a": {
+     "occurrences": 713,
+     "distinct": 703,
+     "naming_an_entity_id": 0
+    },
+    "home": 0,
+    "trajectory": 0,
+    "orrery": 0
+   },
+   "namespace": "all values lie in the 'claim:' namespace of the project-shape plane",
+   "dossier_figure": "699 / 0 / 0 / 0",
+   "differs": "confirmed for the 2026-09-10 capture; 713 on the post-lane-A capture at this baseline's renderer; and 0 of the 699/713 names a POC entity or relationship, so the attribute is absent from the entity graph on all FOUR pages, not three",
+   "note": "occurrences exceed distinct by exactly 10 on both captures, which is the PWB-REQ-020 per-tuple repetition; tuples === distinct ids is a false invariant and is not asserted"
+  },
+  "M3_identity_attribute_census": {
+   "predicate": "any attribute (id or data-*) whose value is exactly one of the nine model.entities ids",
+   "denominator": "the nine entity ids, over the four 2026-09-10 captures",
+   "result": {
+    "home": [
+     "id",
+     "data-entity-id",
+     "data-surface-entity"
+    ],
+    "polaris": [
+     "data-polaris-section",
+     "data-claim-provenance",
+     "data-unknown-disclosure",
+     "data-argument-ref",
+     "data-capability-deep-dive",
+     "data-depth-dive",
+     "data-depth-source",
+     "data-proposal-capability"
+    ],
+    "orrery": [
+     "id",
+     "data-entity-id"
+    ],
+    "trajectory": []
+   },
+   "distinct_names_union": 10,
+   "max_pages_any_name_appears_on": 2,
+   "note": "Polaris mints no id and no data-entity-id for any of the nine; Trajectory names none of the nine in any attribute"
+  },
+  "M4_state_vocabulary": {
+   "predicate": "case-insensitive literal sweep over the four 2026-09-10 captures",
+   "result": {
+    "desired": {
+     "home": 1,
+     "polaris": 0,
+     "trajectory": 0,
+     "orrery": 0
+    },
+    "execution state": {
+     "home": 0,
+     "polaris": 0,
+     "trajectory": 0,
+     "orrery": 0
+    },
+    "observed state": {
+     "home": 1,
+     "polaris": 0,
+     "trajectory": 0,
+     "orrery": 0
+    },
+    "three-state or three state": {
+     "home": 0,
+     "polaris": 0,
+     "trajectory": 0,
+     "orrery": 0
+    }
+   },
+   "sole_occurrence": "both home hits are the one sentence emitted at apps/three-surface-poc/src/routes.ts line 80",
+   "dossier_figure": "'desired' occurs once across four pages",
+   "agrees": true
+  },
+  "M5_epistemic_shapes": {
+   "predicate": "walk every object in the retained api-poc.json carrying a 'label' whose value is one of Observed/Inferred/Unknown; group by sorted key signature",
+   "denominator": 1167,
+   "signatures": {
+    "{freshness,label,tier}": 1137,
+    "{freshness,label,reasons}": 12,
+    "{basis,label}": 9,
+    "{label,reason}": 9
+   },
+   "labels": {
+    "Observed": 1146,
+    "Inferred": 0,
+    "Unknown": 21
+   },
+   "tiers": {
+    "report-fact": 1137,
+    "other_five_of_six": 0
+   },
+   "unknown_primary_reasons": {
+    "excluded-content": 12,
+    "other_eleven_of_twelve": 0
+   },
+   "freshness": {
+    "fresh": 1149,
+    "other_three_of_four": 0
+   },
+   "challenge": {
+    "unchallenged": 1149
+   },
+   "declared_types": 2,
+   "declared_arms": 5,
+   "emitted_signatures": 4,
+   "types_quoted": {
+    "PocEpistemic": "packages/three-surface-poc-core/src/model.ts lines 44-46: | { readonly label: 'Observed'; readonly basis: string } | { readonly label: 'Unknown'; readonly reason: string }",
+    "EpistemicState": "packages/cap1-core/src/epistemic.ts lines 50-67: three arms - {label: OBSERVED|INFERRED, tier?, freshness?}, {label: UNKNOWN, reasons, tier?, freshness?}, {label: UNKNOWN, basis:'deferred', tier?, freshness?}",
+    "ProjectShapeClaim": "packages/three-surface-poc-core/src/project-shape-model.ts lines 120-131: claimId, evaluationId, epistemic (EpistemicState), resolutionRoutes, challenge, support"
+   },
+   "dossier_figure": "three epistemic record shapes in one payload; 30 of 1,167 carry no tier",
+   "differs": "the 30 is exact; 'three shapes' is not reproducible under any of the three predicates (2 declared types / 5 declared arms / 4 emitted signatures). Composition of the 30: 18 are the nine entities and nine relationships; 12 are Unknown project-shape claims whose tier is optional in the type (project-shape-model.ts line 188). Also: EpistemicState ALREADY carries an Inferred arm (epistemic.ts line 52) - what is missing is a constructor and PocEpistemic's own arm."
+  },
+  "M6_inferred_sweep": {
+   "predicate": "whole-word 'Inferred' over .ts files, split test / non-test",
+   "denominators": {
+    "packages/three-surface-poc-core/src": 27,
+    "apps/three-surface-poc/src": 45,
+    "packages/cap1-core/src": 21
+   },
+   "non_test_hits": {
+    "packages/three-surface-poc-core/src": 0,
+    "apps/three-surface-poc/src": 2,
+    "packages/cap1-core/src": 2
+   },
+   "sites": [
+    "apps/three-surface-poc/src/polaris-copy.ts:35",
+    "apps/three-surface-poc/src/polaris-copy.ts:41",
+    "packages/cap1-core/src/vocabulary.ts:65",
+    "packages/cap1-core/src/epistemic.ts:36"
+   ],
+   "production_constructors": [
+    "packages/three-surface-poc-core/src/project-shape-model.ts:184 observedClaim",
+    "packages/three-surface-poc-core/src/project-shape-model.ts:188 unknownClaim"
+   ],
+   "dossier_figure": "vocabulary.ts lines 64-65",
+   "differs": "EPISTEMIC_LABELS is declared at line 65; 63-64 carry its comment"
+  },
+  "M7_edge_kinds_vs_RFC1_25": {
+   "clause_locator": "DIRECTIVE-REGISTER.md line 226 -> .syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md line 463",
+   "clause_first_sentence": "RFC1-25. The V0 relation vocabulary is closed at the following set.",
+   "table_predicate": "data rows of the table whose header is at line 494; backticked tokens in the first column",
+   "table_data_rows": 26,
+   "table_relation_tokens": 30,
+   "tokens": [
+    "contains",
+    "part_of",
+    "declares",
+    "refines",
+    "governs",
+    "motivates",
+    "implements",
+    "structurally_related",
+    "calls",
+    "exposes",
+    "accesses(mode)",
+    "realizes",
+    "covers",
+    "verifies",
+    "depends_on",
+    "declared-dependency",
+    "placed_in",
+    "proposes_change_to",
+    "materializes",
+    "addresses",
+    "supports",
+    "challenges",
+    "dismisses",
+    "adjudicates",
+    "cites",
+    "scoped_to",
+    "produced_by",
+    "identified_in",
+    "supersedes",
+    "succeeds"
+   ],
+   "poc_kinds": {
+    "contains": 1,
+    "governed-by": 1,
+    "mapped-to": 2,
+    "materializes-as": 1,
+    "changes": 1,
+    "verified-by": 1,
+    "satisfies-at-runtime": 1,
+    "coverage-unknown": 1
+   },
+   "poc_kind_count": 8,
+   "intersection": [
+    "contains"
+   ],
+   "intersection_size": 1,
+   "kind_type": "PocRelationship.kind is declared `string` (model.ts line 82), not a union",
+   "dossier_figure": "25-row table; 1 of 8 matches",
+   "differs": "the table has 26 data rows, not 25, and the dossier's enumeration omits `succeeds` (line 521). The 1-of-8 intersection is unchanged."
+  },
+  "M8_deferral_status": {
+   "claim_tested": "the dossier's 'the cross-surface identity system is a declared deferral in the POC spec'",
+   "located_at": {
+    "RFC6-1": "openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md:358",
+    "RFC6-3": "openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md:360",
+    "RFC6-12": "openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md:369"
+   },
+   "dossier_cited": "358-360, 371",
+   "differs": "371 is RFC6-24, not RFC6-12; RFC6-12 is at 369",
+   "quoted_deferral_verbatim": "RFC6-1 | RFC1-qualified selection-reference identity scheme (entity kind + durable identity + evaluation/scenario qualifiers); POC builds no cross-surface selection/identity system",
+   "section": "Part B2 - clauses believed not applicable (author's reading, non-binding) (heading at line 232)",
+   "part_b2_preamble_verbatim": "A belief is not a reviewed N/A; until the owner records N/A judgments in decisions/, these clauses' consequences also render Unknown pending owner-reviewed N/A. The per-clause readings are listed so the owner can review or contest each one directly. (lines 238-241)",
+   "act_sentence_verbatim": "This act mints no per-clause N/A judgment; every uncovered consequence continues to render \"Unknown pending owner-reviewed N/A\" exactly as the matrix states. (.syzygy/governance/decisions/THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md lines 32-34)",
+   "verdict": "[Observed] It is not a binding deferral. It is an author's non-binding belief; the consequence renders Unknown pending owner-reviewed N/A, never covered and never deferred. There is no owner deferral to reopen."
+  },
+  "M9_coverage_matrix_closure_row": {
+   "row": "openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md:89",
+   "verbatim": "| RFC1-26 | Relations outside the closed table don't exist; no prose-widening | covered | POC-REQ-052 |",
+   "sibling_row": "line 87 maps RFC1-25 to 'Only relations the model actually holds are rendered; no fabricated adjacency' -> POC-REQ-050, POC-REQ-052",
+   "poc_req_052_text_line": 855,
+   "finding": "[Observed] POC-REQ-052's own text is scoped to Orrery and forbids rendering a relationship the shared model does not hold - anti-fabrication. It does not constrain the NAME a held relationship is rendered under. The dossier reports the closure as unrecorded; it is recorded, at line 89, against a requirement whose text does not carry it.",
+   "constraint": "CONTRACT-COVERAGE.md is a signed artifact of THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md; the row may not be corrected at the site."
+  },
+  "M10_spec_population": {
+   "file": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+   "predicates": {
+    "requirements": "^### Requirement:",
+    "scenarios": "^#### Scenario:"
+   },
+   "requirements": 24,
+   "scenarios": 24,
+   "requirement_ids": [
+    "POC-REQ-001",
+    "POC-REQ-002",
+    "POC-REQ-003",
+    "POC-REQ-004",
+    "POC-REQ-010",
+    "POC-REQ-011",
+    "POC-REQ-012",
+    "POC-REQ-013",
+    "POC-REQ-020",
+    "POC-REQ-021",
+    "POC-REQ-022",
+    "POC-REQ-030",
+    "POC-REQ-031",
+    "POC-REQ-032",
+    "POC-REQ-040",
+    "POC-REQ-041",
+    "POC-REQ-042",
+    "POC-REQ-043",
+    "POC-REQ-050",
+    "POC-REQ-051",
+    "POC-REQ-052",
+    "POC-REQ-053",
+    "POC-REQ-060",
+    "POC-REQ-061"
+   ],
+   "sweep_result": "[Observed] no requirement names a cross-surface link, a shared cross-surface identity, a relation-name vocabulary, or the label Inferred; POC-REQ-060 (line 927) is the only cross-surface requirement and governs ENCODING of Observed and Unknown, not record shape and not three labels"
+  },
+  "M11_response_ceiling": {
+   "declared": {
+    "maxHumanResponseBytes": 2097152,
+    "maxMachineResponseBytes": 8388608,
+    "source": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json lines 270-271"
+   },
+   "observed": {
+    "polaris_direct_post_lane_a": 1478637,
+    "polaris_tailnet_post_lane_a": 1484487,
+    "trajectory_2026_09_10": 254168,
+    "orrery_2026_09_10": 37048,
+    "home_2026_09_10": 38706,
+    "api_poc_post_lane_a": 5520314
+   },
+   "headroom": {
+    "polaris_direct": 618515,
+    "polaris_tailnet": 612665,
+    "api_poc": 2868294
+   },
+   "claim_tuple_spans_post_lane_a": {
+    "count": 713,
+    "total_bytes": 418122,
+    "mean_bytes": 586.4,
+    "min": 559,
+    "max": 661,
+    "share_of_page": "28.3%"
+   },
+   "ribbon_break_even_bytes_per_item": 1490,
+   "population_items": 415,
+   "tuple_bearing_ribbon_cost_per_item": 1758,
+   "tuple_bearing_ribbon_total": 729570,
+   "verdict": "[Observed] a ribbon reusing the existing tuple markup three times per item does not fit; a minimal three-anchor ribbon at ~300 bytes per item (~124,500) does",
+   "breach_semantics": "apps/three-surface-poc/src/routes.ts lines 137-141: a breach answers HTTP 503 with served:'nothing' and readiness false; nothing is truncated and no ledger sees it"
+  },
+  "M12_reality_band": {
+   "predicate": "the <section class=\"band\" ... data-band=\"reality\"> element through its depth-matched closing tag",
+   "identical_on_both_captures": true,
+   "band_bytes": 14820,
+   "parts": {
+    "headings_11": 2130,
+    "entity_detail_spans_9": 905,
+    "provenance_citation_spans_9": 4309,
+    "relationship_list": 5077
+   },
+   "dossier_figure": "14,804 bytes; ~12 KB recovered, 2.8% of the P-63 trim",
+   "differs": "the band is 14,820 bytes. Recoverable: 5,214 (details + citations) or 10,291 (also moving the relationship list), which is 1.2% and 2.4% of the P-63 trim's 434,960 bytes. Nine added claim tuples at the measured mean cost 5,278, so the net is between -64 and +5,013 bytes."
+  },
+  "M13_line_numbers_reverified": {
+   "polaris.ts 256-295": "codeStructureSection 255-274, workItemsSection 276-295 - exact enough",
+   "polaris.ts 1156-1171": "STALE - realityBand begins at 1173; 1156-1171 is argumentBand's tail and contractBand",
+   "model.ts 43-45": "OFF BY ONE - PocEpistemic at 44-46",
+   "vocabulary.ts 64-65": "OFF BY ONE - EPISTEMIC_LABELS at 65",
+   "trajectory.ts 137-192": "exact - renderTrajectoryPage opens at 136, eyebrow at 192",
+   "orrery.ts 157": "exact - the eyebrow",
+   "polaris-copy.ts 35, 41": "exact",
+   "RFC-0001 line 463": "exact",
+   "CONTRACT-COVERAGE.md 358-360, 371": "371 is RFC6-24; RFC6-12 is at 369"
+  },
+  "M14_existing_sweep_blindness": {
+   "site": "apps/three-surface-poc/src/polaris-reachability.test.ts line 101 (internalHrefs), used by the case at line 189",
+   "predicate_in_code": "/\\shref=\"#([^\"]+)\"/g",
+   "finding": "[Observed] the population is fragment links only; a cross-surface href of the form /orrery#<id> is invisible to the dangling-link sweep. Slice 1 cannot land its links without extending it."
+  },
+  "M15_id_uniqueness_and_the_discarded_finding": {
+   "discarded_predicate": "\\bid=\"([^\"]+)\"",
+   "discarded_result": "reported 18 duplicated ids on Orrery and 21 on home, with 9 non-unique fragment targets on each - FALSE",
+   "cause": "\\b before id=\" matches inside data-entity-id=\" and data-relationship-id=\" because '-' to 'i' is a word boundary (verification rule 1)",
+   "corrected_predicate": "\\sid=\"([^\"]+)\"",
+   "corrected_result": {
+    "polaris_post_lane_a": {
+     "ids": 350,
+     "distinct": 350,
+     "fragment_hrefs": 699,
+     "targets_not_exactly_one": 0
+    },
+    "polaris_2026_09_10": {
+     "ids": 344,
+     "distinct": 344,
+     "fragment_hrefs": 685,
+     "targets_not_exactly_one": 0
+    },
+    "trajectory": {
+     "ids": 311,
+     "distinct": 311,
+     "fragment_hrefs": 311,
+     "targets_not_exactly_one": 0
+    },
+    "home": {
+     "ids": 24,
+     "distinct": 24,
+     "fragment_hrefs": 36,
+     "targets_not_exactly_one": 0
+    },
+    "orrery": {
+     "ids": 23,
+     "distinct": 23,
+     "fragment_hrefs": 19,
+     "targets_not_exactly_one": 0
+    }
+   },
+   "note": "no claim in the packet rests on the discarded figure; it is recorded in the packet rather than deleted"
+  },
+  "M16_file_set_intersection": {
+   "m9_surface": [
+    "apps/three-surface-poc/src/polaris.ts",
+    "apps/three-surface-poc/src/trajectory.ts",
+    "apps/three-surface-poc/src/orrery.ts",
+    "apps/three-surface-poc/src/routes.ts",
+    "apps/three-surface-poc/src/page-shell.ts",
+    "apps/three-surface-poc/src/polaris-copy.ts",
+    "apps/three-surface-poc/src/materialize-action.ts",
+    "packages/three-surface-poc-core/src/model.ts",
+    "packages/three-surface-poc-core/src/project-shape-model.ts",
+    "packages/cap1-core/src/epistemic.ts"
+   ],
+   "m9_surface_size": 10,
+   "predicate_A": "every code span in the sibling packet naming an implementation-plane path (apps/, packages/, scripts/, docs/polaris-generation/, or package.json) that resolves to a file in that sibling's own worktree; fenced blocks stripped",
+   "predicate_B": "predicate A restricted to the sibling's 'Gate 3 - Topology' section",
+   "siblings": {
+    "M1 (lane A, on main)": {
+     "head": "a9f671e",
+     "A_spans": 1,
+     "A_intersection": 1,
+     "B_spans": 0,
+     "B_intersection": 0
+    },
+    "M2 PR #36 P-69": {
+     "head": "f2f37dd",
+     "A_spans": 11,
+     "A_intersection": 4,
+     "B_spans": 7,
+     "B_intersection": 4,
+     "B_intersecting_files": [
+      "apps/three-surface-poc/src/polaris-copy.ts",
+      "apps/three-surface-poc/src/routes.ts",
+      "packages/three-surface-poc-core/src/model.ts",
+      "packages/three-surface-poc-core/src/project-shape-model.ts"
+     ]
+    },
+    "M3 PR #37 P-70": {
+     "head": "6574600",
+     "A_spans": 13,
+     "A_intersection": 4,
+     "B_spans": 9,
+     "B_intersection": 2,
+     "B_intersecting_files": [
+      "apps/three-surface-poc/src/polaris-copy.ts",
+      "apps/three-surface-poc/src/polaris.ts"
+     ]
+    },
+    "M4 PR #38 P-71": {
+     "head": "63b8e33",
+     "A_spans": 22,
+     "A_intersection": 8,
+     "B_spans": 13,
+     "B_intersection": 7,
+     "B_intersecting_files": [
+      "apps/three-surface-poc/src/orrery.ts",
+      "apps/three-surface-poc/src/polaris-copy.ts",
+      "apps/three-surface-poc/src/polaris.ts",
+      "apps/three-surface-poc/src/routes.ts",
+      "apps/three-surface-poc/src/trajectory.ts",
+      "packages/three-surface-poc-core/src/model.ts",
+      "packages/three-surface-poc-core/src/project-shape-model.ts"
+     ]
+    },
+    "M5 PR #39 P-72": {
+     "head": "ba9ca61",
+     "A_spans": 9,
+     "A_intersection": 3,
+     "B_spans": 5,
+     "B_intersection": 3,
+     "B_intersecting_files": [
+      "apps/three-surface-poc/src/polaris.ts",
+      "apps/three-surface-poc/src/routes.ts",
+      "packages/three-surface-poc-core/src/model.ts"
+     ]
+    },
+    "M6 PR #40 P-73": {
+     "head": "83c9f60",
+     "A_spans": 13,
+     "A_intersection": 0,
+     "B_spans": 9,
+     "B_intersection": 0
+    },
+    "lane B PR #35 P-68": {
+     "head": "4090f98",
+     "A_spans": 1,
+     "A_intersection": 0,
+     "B_intersection": 0,
+     "note": "lane B's subject is the PWB scoped-attributes amendment package, not a docs/design packet; its spans were taken from its SEMANTIC-DELTA.md and manifest"
+    }
+   },
+   "m2_polaris_ts_occurrences_in_whole_packet": 0,
+   "prompt_claim_tested": "M2, M3 and M4 each touch apps/three-surface-poc/src/polaris.ts and the legend",
+   "prompt_claim_result": "[Observed] true of the legend (apps/three-surface-poc/src/polaris-copy.ts) for all three; true of polaris.ts for M3 and M4 only - M2 names polaris.ts 0 times anywhere in its packet",
+   "lane_b_manifest_collision": "[Observed] lane B's PWB behavior amendment manifest carries all eleven signed PWB artifacts including specs/polaris-project-wide-butlers-model/spec.md, and declares that all rows take effect together or none do. On Q1's second arm M9's delta would propose different bytes for the same file. On Q1's recommended arm the intersection is zero: none of the six signed three-surface artifacts appears in lane B's manifest."
+  },
+  "M17_pending_owner_decision_rows": {
+   "predicate": "^\\| P- over each worktree's .syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+   "rows": {
+    "laneb": "P-68",
+    "m2wt": "P-69",
+    "m3wt": "P-70",
+    "m4wt": "P-71",
+    "m5wt": "P-72",
+    "m6wt": "P-73",
+    "m9wt": "none beyond P-53"
+   },
+   "note": "this packet writes no register row; M9's six questions would register as P-74 after review 1, batched"
+  }
+ },
+ "owner_questions": [
+  {
+   "id": "Q1",
+   "gist": "Is the spec delta one CC-REV-2 package against the three-surface specification alone, or one spanning it and the PWB specification together?",
+   "recommended": "three-surface only, sequenced after lane B's PWB manifest is disposed of",
+   "arms": 2,
+   "default_if_unanswered": "no delta is drafted; slices 3-8 hold"
+  },
+  {
+   "id": "Q2",
+   "gist": "Does PWB-REQ-007's 'every project entity and project-fact claim' reach the POC's nine entities and nine relationships, or only the project-shape plane?",
+   "recommended": "only the project-shape plane",
+   "arms": 2,
+   "default_if_unanswered": "slice 4 holds"
+  },
+  {
+   "id": "Q3",
+   "gist": "Are the POC's eight relation kinds inside RFC1-26's closure, and is CONTRACT-COVERAGE.md line 89 a defect of the matrix or a satisfaction of the clause?",
+   "recommended": "outside the closed table; the row does not carry the closure consequence; repair by a new requirement plus disclosure, never by editing the signed row",
+   "arms": 2,
+   "default_if_unanswered": "slice 8 lands neither the renames nor the flag"
+  },
+  {
+   "id": "Q4",
+   "gist": "Should the POC be able to construct Inferred at all, or is the arm typed-but-unreachable by design?",
+   "recommended": "add the arm as a typed landing zone with no production constructor",
+   "arms": 2,
+   "default_if_unanswered": "the shape unifies without the Inferred arm"
+  },
+  {
+   "id": "Q5",
+   "gist": "Which byte-adding slices may draw on the 618,515-byte headroom, and in what order, given that a ceiling breach serves nothing?",
+   "recommended": "slice 1, slice 2, slice 6a, slice 4, then slice 5 at one-capability scale only",
+   "arms": 2,
+   "default_if_unanswered": "slices 1, 2 and 8 proceed; every byte-adding slice holds"
+  },
+  {
+   "id": "Q6",
+   "gist": "Do slices 1 and 2 need an owner direction naming them, given that no POC-REQ names either consequence?",
+   "recommended": "no - they trace to recorded review findings, the improvement-cycles direction's own second limb",
+   "arms": 2,
+   "default_if_unanswered": "slices 1 and 2 are filed but not landed"
+  }
+ ],
+ "dossier_prerequisite_line": {
+  "text": "None for links and naming; spec amendment for the shared identity and the ribbon (the cross-surface identity system is a declared deferral in the POC spec).",
+  "survives": "partly",
+  "detail": [
+   "'None for links and naming' SURVIVES, subject to Q6.",
+   "'Spec amendment for the shared identity and the ribbon' SURVIVES and WIDENS: the epistemic tuple and the relation names need the same delta.",
+   "'The cross-surface identity system is a declared deferral in the POC spec' DOES NOT SURVIVE as written: it is an author's non-binding Part B2 belief and the sign-off act mints no N/A, so the consequence renders Unknown pending owner-reviewed N/A. There is no owner deferral to reopen - which makes the amendment easier to justify, not harder."
+  ]
+ },
+ "figures_that_differ_from_the_dossier": [
+  "RFC1-25's table has 26 data rows, not 25, and the dossier's enumeration omits `succeeds` (line 521). The 1-of-8 intersection is unchanged.",
+  "'Three epistemic record shapes' is not reproducible: 2 declared TypeScript types, 5 declared arms, 4 emitted key-signatures. The 30-without-tier figure is exact, but 18 of the 30 are entities and relationships and 12 are Unknown project-shape claims whose tier is type-optional.",
+  "EpistemicState already carries an Inferred arm (packages/cap1-core/src/epistemic.ts line 52); what is missing is a constructor and PocEpistemic's own arm.",
+  "data-claim-id is 713 on the post-lane-A Polaris capture, not 699; and 0 of the 699/713 values names a POC entity or relationship, so the attribute is absent from the entity graph on all four pages, not three.",
+  "The cross-surface identity 'deferral' is a Part B2 author's belief, non-binding, rendering Unknown pending owner-reviewed N/A - not a declared deferral.",
+  "The closure consequence IS recorded in the coverage matrix, at line 89 under RFC1-26 mapped to POC-REQ-052, whose text does not carry it; the dossier reports it as unrecorded.",
+  "CONTRACT-COVERAGE.md line 371 is RFC6-24; RFC6-12 is at line 369.",
+  "The Polaris reality band is 14,820 bytes, not 14,804; recoverable bytes are 5,214-10,291, not ~12 KB, and nine added claim tuples cost 5,278, so the net is between -64 and +5,013.",
+  "polaris.ts lines 1156-1171 no longer name the reality band; realityBand begins at 1173 after the lane-A trim. model.ts 43-45 and vocabulary.ts 64-65 are each off by one.",
+  "M2 (P-69) names apps/three-surface-poc/src/polaris.ts 0 times in its whole packet; the shared file with M2 is the legend, apps/three-surface-poc/src/polaris-copy.ts.",
+  "M9's sibling intersections are NOT zero, unlike M6's: under the Gate-3 predicate M4 shares 7 of M9's 10 files, M2 shares 4, M5 shares 3, M3 shares 2."
+ ],
+ "not_verifiable_this_session": [
+  "[Unknown] Whether the sibling branches' actual diffs stay inside the paths their Gate 3 sections name, until they land.",
+  "[Unknown] Which arm the owner takes on Q1, and therefore whether lane B's PWB manifest and M9's delta are compatible.",
+  "[Unknown] Whether the P-60/P-61 Butlers repairs land before or after any byte-adding M9 slice, and therefore what headroom is actually available at the time.",
+  "[Unknown] The content of the two other P2 packets drafted in parallel; this session read neither and they are disjoint from M9 by the orchestrator's assignment, not by measurement.",
+  "[Unknown] Whether a fresh /polaris measurement at today's Butlers head would still fit the ceiling; this packet measured the retained lane-A capture and ran no daemon."
+ ],
+ "conventions_checked": {
+  "non_fence_lines": 1206,
+  "odd_backtick_lines": 0,
+  "over_78_column_lines_outside_tables_quotes_headings_fences": 2,
+  "over_78_note": "each is a single unbreakable code-span path",
+  "distinct_code_spans": 233,
+  "slash_bearing_code_spans": 58,
+  "non_resolving_slash_bearing_spans": 19,
+  "non_resolving_enumerated": [
+   ".syzygy/**",
+   "openspec/**",
+   "apps/**",
+   "packages/**",
+   "proposed/*.patch",
+   "/polaris",
+   "/trajectory",
+   "/orrery",
+   "/api/poc",
+   "/polaris/source",
+   "/orrery#<entityId>",
+   "/polaris#polaris-deep-dive-<capabilitySlug>",
+   "/orrery#capability:whatsapp-transport-identity",
+   "/\\shref=\"#([^\"]+)\"/g",
+   "^/(polaris|trajectory|orrery)#",
+   "^/(polaris|trajectory|orrery)(#|$)",
+   "agent/syzygy-dov.9",
+   "decisions/",
+   "specs/polaris-project-wide-butlers-model/spec.md"
+  ],
+  "backticked_observed_repository_paths": 0,
+  "reproduced_act_arguments_or_digests": 0
+ },
+ "governance_check": {
+  "command": "python3 scripts/check_governance.py",
+  "last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+  "note": "Read the output's last line, not the exit code (verification rule 4). The 20 WARN are the pre-existing advisory downgrades present at a9f671e before this packet was written; the baseline at a9f671e was 32 OK, 20 WARN, 0 FAIL over 52 checks."
+ },
+ "file_bytes": {
+  "docs/design/POLARIS-M9-ONE-IDENTITY-FUNNEL.md": 93626
+ },
+ "file_digests_sha256": {
+  "docs/design/POLARIS-M9-ONE-IDENTITY-FUNNEL.md": "ae0ec92c4c7f858e85160704b799c21c39b34e86cb9fe7d2b685169e21c09e26"
+ },
+ "file_digests_note": "This record cannot carry its own digest; the evidence file's byte count and sha256 are reported with the packet in the drafter's report. These are this packet's OWN bytes, not an act argument or a manifest row - CG-15 governs quoting a truncated signed digest, which none of these is."
+}
