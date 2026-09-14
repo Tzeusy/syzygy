@@ -684,11 +684,14 @@
     "note": "L6-F5, the finding Q6 rests on, cites 699 (the pre-lane-A figure); the current lane A capture reads 713. Both are recorded here per review 1, N9, which found the packet's own '713 claim tuples' text had no evidence-file entry."
   },
   "cross_surface_unknown_disclosure_populations": {
-    "method": "grep -o for data-unknown-disclosure=\" and epistemic-unknown on the retained pre-lane-A captures for trajectory.html and orrery.html, and the lane A tailnet capture for Polaris; added per review 1, F5",
-    "polaris_lane_a_tailnet": { "data_unknown_disclosure": 22, "epistemic_unknown": null },
-    "trajectory_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown": 301 },
-    "orrery_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown": 11 },
-    "home_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown": 18 },
+    "method": "counts of the literal string data-unknown-disclosure and the literal string epistemic-unknown over the whole served page, on the retained pre-lane-A captures for trajectory.html, orrery.html and home.html and the lane A captures for Polaris; added per review 1, F5. Re-partitioned 2026-09-15 per review 2, G3: each epistemic-unknown occurrence is assigned to its enclosing tag, giving one .epistemic-unknown stylesheet rule inside <style>, one legend key item (span class=\"epistemic epistemic-unknown\">? Unknown</span>), and the remainder claim-carrying spans. The partition accounts for every occurrence on every page (raw = style + legend + claim spans), so epistemic_unknown_rendered = epistemic_unknown_raw - 2 on all four pages.",
+    "polaris_lane_a_tailnet": { "data_unknown_disclosure": 22, "epistemic_unknown_raw": 2, "epistemic_unknown_style_rule": 1, "epistemic_unknown_legend_item": 1, "epistemic_unknown_rendered": 0 },
+    "polaris_lane_a_direct": { "data_unknown_disclosure": 22, "epistemic_unknown_raw": 2, "epistemic_unknown_style_rule": 1, "epistemic_unknown_legend_item": 1, "epistemic_unknown_rendered": 0 },
+    "trajectory_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown_raw": 301, "epistemic_unknown_style_rule": 1, "epistemic_unknown_legend_item": 1, "epistemic_unknown_rendered": 299 },
+    "orrery_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown_raw": 11, "epistemic_unknown_style_rule": 1, "epistemic_unknown_legend_item": 1, "epistemic_unknown_rendered": 9 },
+    "home_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown_raw": 18, "epistemic_unknown_style_rule": 1, "epistemic_unknown_legend_item": 1, "epistemic_unknown_rendered": 16 },
+    "superseded_2026_09_15_review_2_G3": "This block previously recorded polaris_lane_a_tailnet.epistemic_unknown as null while the packet asserted in prose that the class occurred on Polaris 'including Polaris's own 22 disclosures'. Measured: Polaris carries 2 occurrences, the stylesheet rule and the legend item; an element-inner sweep of all 22 data-unknown-disclosure elements (offsets 378631 through 1462622) finds 0. The prose clause was false and is superseded in place in the packet.",
+    "largest_of_three_recheck": "Still holds on the corrected figures: the third encoding (bare epistemic-unknown claim span, no disclosure wrapper, reason or route) is 299 on Trajectory plus 9 on Orrery = 308 across the two surfaces, against Polaris's 13 routed disclosures and 9 bare-prose ones. Home's 16 is outside POC-REQ-060's three-surface population.",
     "conclusion": "Trajectory and Orrery render every Unknown through the bare epistemic-unknown class with no disclosure wrapper, reason or route; POC-REQ-060's sweep as originally specified has denominator 0 on both and passes vacuously there"
   },
   "register_rows": {
@@ -724,6 +727,7 @@
     "re_derived_before_applying": {
       "F1_rfc2_24_vs_UNKNOWN_REASON_ROUTES_match_count": "5 of 12 identical, 7 of 12 differ; extracted from rendering-vocabularies.md lines 92-130 and project-shape-model.ts lines 89-102 at a9f671e, compared key by key this session",
       "three_surface_disclosure_counts": {
+        "note_2026_09_15": "These epistemic_unknown figures are RAW whole-page occurrence counts, recorded as review 1's repair measured them. Review 2's G3 partitioned them: each includes one .epistemic-unknown stylesheet rule and one legend key item, so the rendered claim encodings are 299 and 9. See cross_surface_unknown_disclosure_populations above for the partition. Left unedited here because this block records what that session measured.",
         "polaris_lane_a_tailnet": { "data_unknown_disclosure": 22 },
         "trajectory_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown": 301 },
         "orrery_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown": 11 }
@@ -749,6 +753,45 @@
       "Q6": "recommendation unchanged (true by construction) but its supporting claim corrected (five reads, not the home page's only input)",
       "Q7": "widened from a sequencing-only question to also carry the corrected file-intersection set, the M3/M4 slice-3 reconciliation, and the slices 4-5 authorization-arm reading formerly mis-attributed to Q5"
     }
+  },
+  "review2": {
+    "raw": "docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-2-RAW.md",
+    "bytes": 39050,
+    "sha256": "a7b3782882e41cf954e1dda326f502e20eceea4acd05732625de9f9ee2654649",
+    "verdict": "REVISE - four blocking, five non-blocking, two editorial",
+    "reviewed_commit": "6218726",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md": { "bytes": 116002, "sha256": "95e72b30a7d496e963ae6a244dd421bd720d317fae126a3c027b07e0a4ee3d5b" },
+      "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json": { "bytes": 31201, "sha256": "54b22be504c58483a9d52bab26e4e89f62766eccc167bbc9eb8a8a10009e8f23" },
+      ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": { "bytes": 29879, "sha256": "7ff5bc37abe5f152bb9d02d6b891bcb24e8db47b141804485ada6e8106b87e97" }
+    },
+    "repairs_applied_this_session": true,
+    "disposition_summary": {
+      "G1": "re-derived and confirmed; shared set with M2 is five files, both denominators published (M2 9, M4 13)",
+      "G2": "re-derived and confirmed; M2 slice 2 also renders into the opening band, so the reconciliation is three-way and the recommendation changed",
+      "G3": "re-derived and confirmed; raw/rendered split published, polaris null replaced with 2, 'largest of the three' re-checked and still holds",
+      "G4": "re-derived and confirmed; Q6 preamble rewritten to an engineering choice, minting clause returned to Q2",
+      "G5": "re-derived and confirmed; body section lines 44-52, source order restored, tasks-range clause kept",
+      "G6": "re-derived and confirmed; UNKNOWN_REASON_ROUTES is at project-shape-model.ts 88-102 and neither M2 slice 5 (162-193) nor M4 slice 2 (115-118, 150-154) edits it; register sentence corrected to the shared file and the shared claim() construction site at line 176",
+      "G7": "re-derived and confirmed, and now doubly stale: the M3 worktree has moved twice past b34fca7, which remains an ancestor; head mentions removed from the Collision section",
+      "G8": "re-derived and confirmed; VIS-5 requires the effect to run through a typed adapter and names no number of adapters",
+      "G9": "re-derived and confirmed; M3 names polaris.ts in slices 1, 3, 5, 6 and M2 in slices 1, 2, 6 with slice 2's region located",
+      "G10": "re-derived and confirmed; routes.ts carries 13 'model.' occurrences over nine lines, line 89 carries four, and five (not four) lie outside renderPocPage",
+      "G11": "re-derived and confirmed; 22/0/0 is not two orders of magnitude"
+    },
+    "re_derived_before_applying": {
+      "G1_shared_file_intersection": "By hand from both Gate 3 'Lives in' columns this session: M2 names 9 distinct files, M4 names 13, intersection 5 (model.ts, routes.ts, polaris.ts, project-shape-model.ts, polaris-copy.ts). M4 slice 3's own Gate 3 row names polaris-copy.ts, which the packet had listed as untouched.",
+      "G2_third_band_writer": "M2's Gate 3 slice-2 row names 'polaris.ts (the opening band)'; its slice-2 design body opens 'Rendered in the opening band, before the first catalog section:'; three further mentions treat it as slice 2's band.",
+      "G3_epistemic_unknown_partition": "Per page, every occurrence assigned to its enclosing tag: Trajectory 1 style + 1 legend + 299 spans carrying data-parity-field=\"work-item-verification\"; Orrery 1 + 1 + 9 spans carrying data-parity-field=\"epistemic-label\"; home 1 + 1 + 9 epistemic-label spans + 7 bare Unknown spans = 16 rendered; Polaris 1 + 1 + 0.",
+      "G4_no_requirement_governs_model_surfaces": "Gate 0, Gate 3's slice-4 row and Gate 5 all state it; Gate 5's three sweeps (24 POC requirements, 17 PWB requirements, 0 whole-word home in the POC spec, 6 in the PWB spec, 0 backticked surfaces or model.surfaces in either) were re-run by the reviewer and are unchanged here.",
+      "G6_reason_route_table_location": "UNKNOWN_REASON_ROUTES declared at project-shape-model.ts line 89 and closing at 102; M2 slice 5's cited 162-193 spans FRESH/REPORT_FACT/SUSPENDED (167-169) and claim/observedClaim/unknownClaim (171-195); claim() line 176 is resolutionRoutes: routesFor(epistemic).",
+      "G10_routes_ts_model_hits": "awk count of the literal 'model.' per line at 6218726: 35:1, 78:1, 87:1, 89:4, 92:2, 127:1, 133:1, 171:1, 172:1 = 13; renderPocPage spans lines 77-96."
+    },
+    "recommended_answers_changed": {
+      "Q7": "the opening-band reconciliation changed from two-way (M3 slice 3 lands first, M4 slice 3 extends it) to three-way: M2 slice 2 also renders into that band, so the first of the three to land builds the container and owns its single ordering oracle and the other two add payload blocks with their own payload oracles; the block order within the band is the owner's. Q7 also now states the M2 shared set as five files and names the polaris-copy.ts declared-copy array as a merge-conflict site.",
+      "Q1_Q2_Q3_Q4_Q5_Q6": "unchanged in recommendation; Q1's and Q6's supporting figures and framing were corrected (G3, G4, G10) without changing which arm is recommended."
+    },
+    "rule_10": "This review binds the bytes it names (packet 116002 / evidence 31201 / register 29879 at 6218726) and not the repaired bytes; the repairs above are uncovered until a third review confirms them."
   },
   "unverified": [
     "Whether a PocRelationship is an 'Unknown claim instance' in RFC2-24's sense: the clause says 'claim', the POC's relationships are typed PocRelationship and not ProjectShapeClaim, and no clause found in this session settles it. [Unknown]",
