@@ -660,7 +660,7 @@ the signed POC specification text.
 |---|---|---|
 | 1 Routes on every Unknown | **No** | Rides `.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` (2026-09-05). No escalation trigger of `PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` ("Escalation triggers", lines 86–94) is crossed: no doctrine or contract change, no PWB spec amendment, no security/privacy/retention change, no registry-envelope change, no observation at all — the slice reads nothing new and renders a value the model already holds. It traces to POC-REQ-060 under the 2026-08-30 direction's trace rule |
 | 2 Machine route form | **No** | Same continuation. It adds fields to a payload no act binds. If a reviewer reads a route as a "disclosure Polaris presents" under PWB-REQ-020 — this packet's own reading is that it is, see Gate 5 — the slice must render it in both channels, which it does; that is conformance, not amendment |
-| 3 Opening band | **No act found for the continuation itself; an RFC2-26 gate is open — see Q7** (widened 2026-09-15, review 5, K2; the cell read "**No**") | Same continuation. PWB-REQ-010's opening order is preserved by placing the band after the project account and before the first catalog, and the existing outline oracle asserts it — but **preserving a requirement is not mapping to one**. The band's own observable consequence is an aggregate of Unknown-reason counts, inside two of RFC2-26's enumerated classes, and no approved scenario in either signed spec reaches it; see Gate 5's RFC2-26 test for the four requirements checked and why each falls short |
+| 3 Opening band | **No act found for the continuation itself; an RFC2-26 gate is open — see Q7** (widened 2026-09-15, review 5, K2; the cell read "**No**") | Same continuation. PWB-REQ-010's opening order is preserved by placing the band after the project account and before the first catalog, and the existing outline oracle asserts it — but **preserving a requirement is not mapping to one**. The band's own observable consequence is an aggregate of Unknown-reason counts, inside two of RFC2-26's enumerated classes, and no approved scenario in either signed spec reaches it; see Gate 5's RFC2-26 test for the five requirements read, four of them as candidate mappings, and why each falls short (corrected 2026-09-15, review 6, L5, which superseded "the four requirements checked": the cell and the evidence record both name five — PWB-REQ-010, PWB-REQ-011, PWB-REQ-007, POC-REQ-032 and PWB-REQ-012, the last a constraint the band must satisfy rather than a candidate mapping) |
 | 4 `model.surfaces` | **No act found for the continuation itself; an RFC2-26 gate is open — see Q7** (widened 2026-09-15, review 4, J2; the cell read "**No**") | Same continuation. **No requirement governs this field** (Gate 5), so it traces to the recorded-finding arm of the 2026-08-30 direction, naming L6-F5. **That arm alone does not clear RFC2-26**, which makes the absence of a requirement a bar rather than a freedom and which neither limb of this slice satisfies as designed; the clause is put to the owner at Q7 and quoted at Gate 5. **This reading is this packet's own [Inferred] argument, not something any question puts to the owner as drafted; Q7 now carries it explicitly** (corrected per review 1, F6) |
 | 5 Home as day-opening | **No act found for the continuation itself; an RFC2-26 gate is open — see Q7** (widened 2026-09-15, review 4, J2; the cell read "**No**") | Same continuation, on the same recorded-finding arm naming L6-F1. **Q7, not Q5, carries this reading** (corrected per review 1, F6 — Q5 asks only about slice 6's run). **The same RFC2-26 gate applies**, and more squarely: four of this slice's answers fall inside the clause's own enumerated consequence classes. Quoted and worked through at Gate 5 |
 | 6 Run the return path once | **Contested — see Q5** | `.syzygy/governance/decisions/THREE-SURFACE-POC-MODE-DIRECTION.md` lines 18–22 name the demonstration; the same file's invariant list (lines 26–32) keeps dispatch human-triggered; `THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md` lifts the item and review caps for cycle work. The run adds no mechanism and reads no new source, but it writes to the observed repository's Beads database via `bd -C <observed root> create` — **not** merely "through the adapter the 2026-09-02 act's own prohibition list already contemplates," which reads as a general prohibition on exactly that write (corrected per review 1, F4). Q5 puts both readings to the owner rather than assuming either |
@@ -817,7 +817,12 @@ every run." Slice 2 adds a new disclosure marker class and therefore inherits
 that clause directly; Gate 6 item 3 (rule-6 mutants per guard branch) and
 item 4 (both denominators) are how it is discharged.
 
-### Slice 3 — The opening band (medium; no act)
+### Slice 3 — The opening band (medium; act — see Gate 3 and Q7)
+
+*Heading corrected 2026-09-15 (review 6, L3), superseding "(medium; no
+act)": Gate 3's row 3 records an open RFC2-26 gate for this slice, and one
+of the three routes for clearing it is a reviewed N/A judgment honored by an
+effective owner act.*
 
 A band placed after the project account and before the first catalog
 section, rendering the same `gapReasonCounts` projection the gaps section
@@ -847,7 +852,12 @@ first reading is left with a true coarser account, and a count of Unknowns
 by reason is coarser and true. The existing outline oracle asserts the
 heading order is unchanged.
 
-### Slice 4 — `model.surfaces` true by construction (medium; no act)
+### Slice 4 — `model.surfaces` true by construction (medium; act — see Gate 3 and Q7)
+
+*Heading corrected 2026-09-15 (review 6, L3), superseding "(medium; no
+act)": Gate 3's row 4 records an open RFC2-26 gate for this slice, and one
+of the three routes for clearing it is a reviewed N/A judgment honored by an
+effective owner act.*
 
 `PocSurface` gains a `renders` block: the route, the question, the state
 (`desired | execution | observed`), the content root the surface projects,
@@ -863,7 +873,12 @@ population, reporting both denominators.
 Keep both shapes for one commit, old derived from new, then delete the
 hand-written lists once no renderer reads them.
 
-### Slice 5 — Home as the day-opening (medium; no act)
+### Slice 5 — Home as the day-opening (medium; act — see Gate 3 and Q7)
+
+*Heading corrected 2026-09-15 (review 6, L3), superseding "(medium; no
+act)": Gate 3's row 5 records an open RFC2-26 gate for this slice, and one
+of the three routes for clearing it is a reviewed N/A judgment honored by an
+effective owner act.*
 
 `renderPocPage` (`apps/three-surface-poc/src/routes.ts` lines 77–96) stops
 being an index of the three surfaces. It answers four questions, each row a
@@ -1016,7 +1031,12 @@ match it by coincidence — the recorded `None` failure.
 ## Gate 5 — Specification
 
 **Slices 1, 2, 3 and 6: no spec delta. Each is conformance with text that
-already binds.**
+already binds — except that for slice 3 no spec delta is not the same as a
+mapping: preserving PWB-REQ-010 and PWB-REQ-011 is not mapping to them, and
+the band's own consequence maps to no approved requirement-and-scenario
+pair; see the RFC2-26 test below.** **Qualified 2026-09-15 (review 6, L2):**
+this lead sentence ended at "text that already binds", which is the exact
+inference the same gate's RFC2-26 test withdraws for slice 3.
 
 Slice 1 is POC-REQ-060 conformance. The requirement is quoted verbatim from
 `openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md`
@@ -1109,8 +1129,14 @@ channels under the same id and the same evaluation — which is what slice 2
 builds, so the invariant is satisfied rather than amended [Inferred: the
 reading of "disclosure" this packet relies on].
 
-Slice 3 is PWB-REQ-010 and PWB-REQ-011 conformance and adds no claim; slice
-6 adds no code at all.
+Slice 3 preserves PWB-REQ-010 and PWB-REQ-011 and adds no claim of its own,
+but **preserving a requirement is not mapping to one**: the band's
+consequence, an aggregate of Unknown-reason counts, reaches no approved
+scenario in either signed spec, so slice 3 carries an open RFC2-26 gate —
+see the RFC2-26 test below and Gate 3's row 3. Slice
+6 adds no code at all. **Qualified 2026-09-15 (review 6, L2):** this read
+"Slice 3 is PWB-REQ-010 and PWB-REQ-011 conformance and adds no claim; slice
+6 adds no code at all."
 
 **PWB-REQ-004 is not entered by any slice.** Its closed population is quoted
 verbatim from lines 491–498 of the same file (range corrected per review 3,
@@ -1278,7 +1304,7 @@ maps to, every citation read at source in the two signed specs this session:
 |---|---|---|---|
 | 1 Routes on every Unknown | "Unknown-reason and rendering-tier presentation"; "claim and challenge rendering" | (a) *the same encoding on all three surfaces* — **POC-REQ-060**, `openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` line 927, scenario **"Unknown looks the same everywhere"** at line 948, quoted verbatim: "**WHEN** the same Unknown relationship appears on Polaris, Trajectory, and Orrery / **THEN** all three render it with the declared Unknown encoding from the shared token set". (b) *a closed reason and its route on each Unknown* — **PWB-REQ-007**, `openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md` line 439, whose requirement text reads "Unknown reasons SHALL use RFC2-24 values verbatim and expose their resolution routes", scenario **"Missing current evidence remains explicit Unknown"** at line 470, quoted verbatim: "**WHEN** a declared project fact lacks evidence under its current currency bound / **THEN** its claim renders Unknown with the exact primary reason and route / **AND** its tier, freshness and evaluation identity remain visible" | **Available** for (a), exactly. **Available for (b) only on a reading** [Inferred]: PWB-REQ-007 quantifies over "every project entity and project-fact claim", and five of slice 1's nine unrouted Unknowns are relationship claims of the POC identity graph rather than project-shape facts. Whether that population reaches them is the owner's to read; no other requirement carrying a scenario was found for a reason-and-route on a relationship Unknown — POC-REQ-052's scenario (POC spec line 872) is about proximity-invented edges and POC-REQ-053's about entity routes to exact sources |
 | 2 The machine form of a route | "API answers over epistemic state" | *a rendered route recoverable in the machine answer at the same evaluation* — **POC-REQ-020**, POC spec line 377, scenario **"Surface and machine answer agree"** at line 400 ("**WHEN** a surface renders N marked facts at evaluation E / **THEN** all N appear with equal values in `GET /api/poc` for E, and the check reports N as its denominator"); and **PWB-REQ-020**, PWB spec line 902, scenario **"Complete model has wire parity"** at line 928 | **Available**, on both — subject to this packet's own already disclosed [Inferred] reading that a rendered route is "a disclosure Polaris presents" under PWB-REQ-020. The slice's other half, narrowing the type-level prohibition to an Unknown carrying `reasons`, changes no rendered sentence (`prose` carries today's string verbatim), adds no machine field and leaves `label.deferred`/`label.no-route` where they are, so it enumerates no observable consequence of its own and needs neither limb [Observed, from slice 2's own design above] |
-| 3 The opening band | "Unknown-reason … presentation"; "reconciliation-chain and gap surfaces" | **None found.** PWB-REQ-010 (PWB spec line 596) and PWB-REQ-011 (line 632) are the two this gate cites, and the band preserves both — but their scenarios ("WhatsApp is a drill-down, not the project account" at line 615; "Capability reaches exact requirements" at line 651; "Consented baseline requirement renders verbatim" at line 657) govern opening order and progressive depth, not a gap-reason aggregate. PWB-REQ-007's requirement text does reach aggregates ("Aggregates SHALL disclose label, tier, freshness and separate primary/secondary reason counts without a headline status") but its one scenario (line 470) is the per-claim case — and the clause's own second paragraph, now quoted above, says a clause with several observable consequences and one mapped requirement is not covered. POC-REQ-032 (POC spec line 574), scenario "Unknown disclosed in the narrative" at line 599, requires the Unknown disclosed **in place** in the narrative flow, which an opening aggregate is not. PWB-REQ-012's scenario at line 705 permits "gaps" as a heading concept — a constraint the band must satisfy, never a mapping | **Unavailable.** Limb 2 is unavailable as designed for the same reason as slices 4 and 5: the slice is specified with its own oracle ("the band's total equals the gaps section's total") and a counterexample fixture, so it is not "purely structural with no independently testable behavior". Slice 3 therefore carries the same open RFC2-26 gate, and Gate 3's row 3 and Q7 are widened to say so |
+| 3 The opening band | "Unknown-reason … presentation"; "reconciliation-chain and gap surfaces" | **None found.** PWB-REQ-010 (PWB spec line 596) and PWB-REQ-011 (line 632) are the two this gate cites, and the band preserves both — but their scenarios ("WhatsApp is a drill-down, not the project account" at line 615; "Capability reaches exact requirements" at line 651; "Consented baseline requirement renders verbatim" at line 657) govern opening order and progressive depth, not a gap-reason aggregate. PWB-REQ-007's requirement text does reach aggregates ("Aggregates SHALL disclose label, tier, freshness and separate primary/secondary reason counts without a headline status") but its one scenario (line 470) is the per-claim case — and the clause's own second paragraph, now quoted above, says a clause with several observable consequences and one mapped requirement is not covered. POC-REQ-032 (POC spec line 574), scenario "Unknown disclosed in the narrative" at line 599, requires the Unknown disclosed **in place** in the narrative flow, which an opening aggregate is not. PWB-REQ-012's scenario at line 705 permits "gaps" as a heading concept — a constraint the band must satisfy, never a mapping. [Absence predicate and denominator, added 2026-09-15, review 6, L4: `^### Requirement:` and `^#### Scenario:` at line start; denominator both signed spec files whole — **41** approved requirements and **55** scenarios (POC spec 24 and 24, PWB spec 17 and 31). Every one of the 55 scenario headings was read this session and then the bodies of every candidate; none states an aggregate of Unknown-reason counts in the opening. The five requirements named above are the candidates, and each is exact at source: PWB-REQ-010 (596) one scenario at 615; PWB-REQ-011 (632) two at 651 and 657; PWB-REQ-007 (439) one at 470; POC-REQ-032 (574) one at 599; PWB-REQ-012 (679) one at 705] | **Unavailable.** Limb 2 is unavailable as designed for the same reason as slices 4 and 5: the slice is specified with its own oracle ("the band's total equals the gaps section's total") and a counterexample fixture, so it is not "purely structural with no independently testable behavior". Slice 3 therefore carries the same open RFC2-26 gate, and Gate 3's row 3 and Q7 are widened to say so |
 | 4 `model.surfaces` true by construction | "API answers over epistemic state" | **None** — the three sweeps above find no requirement naming the field | **Unavailable**, both limbs; unchanged from the bullet above |
 | 5 Home as the day-opening | evaluation and snapshot display; Unknown-reason and gap surface; materialize status; reconciliation-chain surface — four of the clause's own classes | **None** — the three sweeps above find no requirement reaching the home route | **Unavailable**, both limbs; unchanged from the bullet above |
 | 6 Run the return path once | **None.** RFC2-26 bars scheduling *implementation work* from this RFC; this slice builds nothing ("This slice builds nothing", Gate 4) and renders no new consequence — the one edge it moves is rendered by code already built, under requirements that already bind | n/a | n/a. Slice 6's gate is Q5's authorization limb, which this test neither widens nor narrows |
@@ -1288,8 +1314,13 @@ maps to, every citation read at source in the two signed specs this session:
 **What the extended test changes, and what it does not.** It changes one
 thing: **slice 3 joins slices 4 and 5 under the open RFC2-26 gate**, which is
 a changed recommended answer and is disclosed in Q7, in Gate 3's row 3, in
-the funnel summary, in the recommended handoff, in the evidence record, in
-the register note and P-71 row, and in the pull request. It changes nothing
+the funnel summary's G5, Acts, Open-questions and Recommended-handoff lines,
+in the prose handoff's Q7, Q4 and Q6 paragraphs, in the Collision section, in
+the evidence record, in the register note and P-71 row, and in the pull
+request (narrowed 2026-09-15, review 6, L1, which superseded "in the
+recommended handoff": at review 5's commit only the funnel summary's
+Recommended-handoff line and the prose handoff's Q6 paragraph carried it).
+It changes nothing
 for slices 1, 2, 6, 7 and 8. **This packet still calls no slice unlawful**:
 it names, per slice, the clause's consequence class and whether an approved
 requirement-and-scenario pair was found, and puts the ruling to the owner.
@@ -1541,7 +1572,12 @@ none of the three keeps an independent claim on "first". The block order
 inside the band is the owner's to set: if the owner rules that a currency
 disclosure and an Unknown band are separate regions, each region still needs
 a stated position relative to the others rather than three separate
-first-position assertions. This packet no longer recommends an unconditional
+first-position assertions. **None of that schedules M4 slice 3: it is not
+built before Q7's RFC2-26 ruling either**, whichever of the three ends up
+owning the container (added 2026-09-15, review 6, L1 — this section carried
+the reconciliation rule with no RFC2-26 gate, review 5's K2 having reached
+Q7, Gate 3, Gate 5, the sequencing order and the funnel summary but not
+here). This packet no longer recommends an unconditional
 M3-slice-3-first order for the band, and says so in the handoff; its
 recommendation that **M3 slice 5 land before M4 slice 1** is a different
 finding and is unchanged.
@@ -1703,7 +1739,7 @@ will be a second `-RAW.md` file, never an overwrite.
 | F18 (N12) "three paragraphs on" is the next paragraph, and the RFC2-24 quote elides a continuation without an ellipsis | non-blocking | Re-derived and confirmed (the "fact of the render" sentence is in the paragraph starting at line 98, immediately after 92–96): corrected to "the next paragraph"; an ellipsis and the elided fragment added |
 | F19 (N13) v1.md's artifact phrase spans lines 119–120, not 116–119 | non-blocking | Re-derived and confirmed: corrected in slice 6's design text and the recommended handoff, in both places |
 | F20 (N14) the capture provenance table leaves Orrery's byte size blank | non-blocking | Re-derived and confirmed (37,048 bytes, matching the evidence JSON and `wc -c`): filled in |
-| F21 five lines exceed 78 columns; the H1 is the one line a repair could shorten | editorial | Re-derived and confirmed: no repair applied to the H1, for consistency with the M2 and M3 sibling packets' own H1s (99 and comparable characters), also left unshortened; the path-span lines remain unfixable by AGENTS.md's own rule against reflowing a code span. **Superseded 2026-09-15 (review 3, H5):** this disposition said "five lines" and "the four path-span lines", figures read from review 1 rather than re-derived as the packet grew. Re-derived over the current bytes after every review-3 edit [predicate: lines that are outside fenced code blocks and are not table rows — a table row being a line whose first non-space character is a pipe — and whose length exceeds 78 characters; denominator: 1,657 lines, the whole file]: **7** — line 1, the H1, at 126 characters and disclosed here, plus six path-span lines at 10, 493, 568, 764, 975 and 1023. **Re-derived 2026-09-15 (review 4), last in that pass and after every other edit in it, over the grown file** [same predicate; denominator: **1,879** lines, the whole file]: still **7**, and the same seven lines — line 1, the H1, at 126 characters, plus the six path-span lines, which the review-4 edits moved to **10, 529, 604, 800, 1011 and 1059**. The count held only because every prose line this pass first wrote above 78 columns was reflowed before the figure was taken, iteratively until the sweep reported these seven; the reflows changed no word, figure or code span, and none broke a code span [Observed: no non-fence line in the file carries an odd backtick count]. The review-3 line numbers above are kept as that pass recorded them. **Re-derived 2026-09-15 (review 5), last in that pass and after every other edit in it, over the grown file** [same predicate; denominator: **2,064** lines, the whole file]: still **7**, and the same seven lines — line 1, the H1, at 126 characters, plus the six path-span lines, which the review-5 edits moved to **10, 540, 615, 811, 1022 and 1074**. The count held again only because every prose line this pass first wrote above 78 columns was reflowed before the figure was taken, iteratively until the sweep reported these seven; the reflows changed no word, figure or code span, and none broke a code span [Observed: no non-fence line in the file carries an odd backtick count] |
+| F21 five lines exceed 78 columns; the H1 is the one line a repair could shorten | editorial | Re-derived and confirmed: no repair applied to the H1, for consistency with the M2 and M3 sibling packets' own H1s (99 and comparable characters), also left unshortened; the path-span lines remain unfixable by AGENTS.md's own rule against reflowing a code span. **Superseded 2026-09-15 (review 3, H5):** this disposition said "five lines" and "the four path-span lines", figures read from review 1 rather than re-derived as the packet grew. Re-derived over the current bytes after every review-3 edit [predicate: lines that are outside fenced code blocks and are not table rows — a table row being a line whose first non-space character is a pipe — and whose length exceeds 78 characters; denominator: 1,657 lines, the whole file]: **7** — line 1, the H1, at 126 characters and disclosed here, plus six path-span lines at 10, 493, 568, 764, 975 and 1023. **Re-derived 2026-09-15 (review 4), last in that pass and after every other edit in it, over the grown file** [same predicate; denominator: **1,879** lines, the whole file]: still **7**, and the same seven lines — line 1, the H1, at 126 characters, plus the six path-span lines, which the review-4 edits moved to **10, 529, 604, 800, 1011 and 1059**. The count held only because every prose line this pass first wrote above 78 columns was reflowed before the figure was taken, iteratively until the sweep reported these seven; the reflows changed no word, figure or code span, and none broke a code span [Observed: no non-fence line in the file carries an odd backtick count]. The review-3 line numbers above are kept as that pass recorded them. **Re-derived 2026-09-15 (review 5), last in that pass and after every other edit in it, over the grown file** [same predicate; denominator: **2,064** lines, the whole file]: still **7**, and the same seven lines — line 1, the H1, at 126 characters, plus the six path-span lines, which the review-5 edits moved to **10, 540, 615, 811, 1022 and 1074**. The count held again only because every prose line this pass first wrote above 78 columns was reflowed before the figure was taken, iteratively until the sweep reported these seven; the reflows changed no word, figure or code span, and none broke a code span [Observed: no non-fence line in the file carries an odd backtick count]. **Re-derived 2026-09-15 (review 6), last in that pass and after every other edit in it, over the grown file** [same predicate; denominator: **2,197** lines, the whole file]: **8**, and the count moved for the first time since review 3. Seven are the seven carried forward — line 1, the H1, at 126 characters, plus the six path-span lines, which the review-6 edits moved to **10, 540, 615, 811, 1042 and 1094**. The eighth is **855**, the Gate 4 heading for slice 4, at 85 characters: review 6's L3 replaced "(medium; no act)" with "(medium; act — see Gate 3 and Q7)" on a heading that already carried the `model.surfaces` code span, and a heading can be neither wrapped nor reflowed without breaking that span. The slice-3 and slice-5 headings took the same correction and stayed under the bar. Every prose line this pass first wrote above 78 columns was reflowed before the figure was taken, iteratively until the sweep reported these eight; the reflows changed no word, figure or code span [Observed: no non-fence line in the file carries an odd backtick count] |
 | F22 the nine source-claim rows name Butlers paths in plain prose while the evidence JSON genericizes the same rows | editorial | Re-derived and confirmed: one clarifying sentence added after the disclosure table |
 
 **Recommended answers changed (stated plainly, none hidden).**
@@ -1955,7 +1991,7 @@ F1–F22, G1–G11 and H1–H9.
 | Finding | Severity | Re-derivation | Disposition |
 |---|---|---|---|
 | K1 the J2 repair never reaches the funnel summary, the sequencing order, Q7's own bolded recommendation or the handoff | blocking | **CONFIRMED.** All seven named sites read this session at `e134a12`, and each carries the pre-review-4 answer: the funnel summary's Acts line ("Acts: slices 1-5 and 7 none (the 2026-09-05 continuation)"), its G5 line ("slices 4-5 trace to recorded findings L6-F1/L6-F5, a reading Q7 now puts to the owner explicitly"), its Open-questions line, its G6 Bar line ("this is review 2, pending, after review 1's repair" — four raws were retained and the pass under way was the fifth), Q7's own bolded recommendation ("slices 4–6 as sequenced", in the same sentence that gates slice 6 on Q5 and slice 7 on Q3), the sequencing order's slice-4/5 step ("Then slice 4, then slice 5 … should be built last", no gate) and the handoff's Q6 paragraph ("Build them in that order"). **Swept for any other live site still stating the pre-review-4 limb** [predicate: the literal strings `as sequenced`, `slices 1-5 and 7 none`, `trace to recorded findings`, `2026-09-05 continuation`, `recorded-finding` and `this is review 2`; denominator: the whole packet, the whole evidence record and the whole register, every line of each]: **one further live site the finding does not name** — the funnel summary's own Recommended-handoff line, "then M4 slices 4, 5 in order", equally ungated — and **no others**. Every remaining `recorded-finding` occurrence (Gate 3 rows 4 and 5, Gate 5, Q7's body) already carries the RFC2-26 bar; the register's one "as sequenced" sits inside the P-71 row's Q7 text and is repaired with it; the occurrences in the review-1 and review-2 sections are that pass's own record and are left as written | Applied at all eight sites, each with its superseded wording quoted and dated in place. The G6 Bar line is restated to the true position: five raws retained, this pass following review 5 and itself pending a sixth |
-| K2 the RFC2-26 quotation stops unmarked halfway through the clause, and the test is run over two of eight slices with no denominator | blocking | **CONFIRMED**, both halves, at source. `DIRECTIVE-REGISTER.md` line 260 defines `RFC2-26` at `.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md` line 196. Read there this session: the `###` heading "Authority boundary at the OpenSpec seam (binding phase rule)" is line 194, the clause runs **196 through 221** in two paragraphs — 196–210, a blank 211, 212–221 — and the next `##` heading is line 223. The packet's blockquote reproduced 196–210 and stopped with no ellipsis and no mention. The subsection's test named slices 4 and 5 only and stated no denominator anywhere | Applied. The blockquote is extended to line 221, its words verbatim from source and rewrapped only to fit this packet's column bar; the introduction's line figure is restated with "196–210" quoted and dated; and the clause's own scope sentence is named beside the narrow-scope reading it had been sitting opposite. The test now states its denominator — the **eight** slice rows of Gate 3's "The authorizing act, per slice" table, that table's ninth row proposing no slice — and is run over all eight. **Result:** slices 1 and 2 map to named approved requirement-**and**-scenario pairs; **slice 3 does not**; slices 4 and 5 remain unmapped on both limbs; slice 6 schedules no implementation work; slices 7 and 8 are gated by act rather than by this clause, and slice 8's consequences are not enumerated at all [Unknown]. Slice 3's Gate 3 row is widened from "**No**" with the superseded cell kept, and **Q7's ruling now covers slices 3, 4 and 5** — a changed recommended answer, disclosed in Q7, Gate 3, Gate 5, the funnel summary, the recommended handoff, the evidence record, the register note and P-71 row, and the pull request |
+| K2 the RFC2-26 quotation stops unmarked halfway through the clause, and the test is run over two of eight slices with no denominator | blocking | **CONFIRMED**, both halves, at source. `DIRECTIVE-REGISTER.md` line 260 defines `RFC2-26` at `.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md` line 196. Read there this session: the `###` heading "Authority boundary at the OpenSpec seam (binding phase rule)" is line 194, the clause runs **196 through 221** in two paragraphs — 196–210, a blank 211, 212–221 — and the next `##` heading is line 223. The packet's blockquote reproduced 196–210 and stopped with no ellipsis and no mention. The subsection's test named slices 4 and 5 only and stated no denominator anywhere | Applied. The blockquote is extended to line 221, its words verbatim from source and rewrapped only to fit this packet's column bar; the introduction's line figure is restated with "196–210" quoted and dated; and the clause's own scope sentence is named beside the narrow-scope reading it had been sitting opposite. The test now states its denominator — the **eight** slice rows of Gate 3's "The authorizing act, per slice" table, that table's ninth row proposing no slice — and is run over all eight. **Result:** slices 1 and 2 map to named approved requirement-**and**-scenario pairs; **slice 3 does not**; slices 4 and 5 remain unmapped on both limbs; slice 6 schedules no implementation work; slices 7 and 8 are gated by act rather than by this clause, and slice 8's consequences are not enumerated at all [Unknown]. Slice 3's Gate 3 row is widened from "**No**" with the superseded cell kept, and **Q7's ruling now covers slices 3, 4 and 5** — a changed recommended answer, disclosed in Q7, Gate 3, Gate 5, the funnel summary's G5, Acts, Open-questions and Recommended-handoff lines, the prose handoff's Q6 paragraph, the evidence record, the register note and P-71 row, and the pull request (narrowed 2026-09-15, review 6, L1, which superseded "the funnel summary, the recommended handoff": at review 5's own commit the prose handoff's Q7 and Q4 paragraphs and the Collision section's reconciliation rule carried no gate, and they are repaired in this pass, not that one) |
 | K3 Q6's preamble routes "either arm" to Q7 while only the derive arm is analysed | non-blocking | **CONFIRMED.** The preamble closes "whether either may be *scheduled* is the RFC2-26 question Q7 now puts to the owner", and the subsection's limb bullets cover slice 4 (the derive arm) and slice 5 only. The deletion arm appears in no limb analysis anywhere in the packet | Applied. One sentence scopes the test to the derive arm and states deletion's own limbs [Inferred]: deleting the field removes the three surface panels it feeds and adds no new behavior, so limb 2's "purely structural with no independently testable behavior" is plausibly reachable for deletion in a way it is not for slice 4 — but limb 2 still needs a reviewed N/A judgment homed in `.syzygy/governance/decisions/` and honored by an effective owner act, so deletion is not free of the clause either |
 | K4 the review-4 disposition enumerates what the packet "now carries" using the reviewed commit's line anchors | editorial | **CONFIRMED.** J1's disposition names "Q1 at `:91`, slice 1's Tests at `:698-719`, Gate 5 at `:1009-1018`" in the present tense; those are `181797a`'s anchors and none resolves in the current bytes, where line 91 is mid-sentence in the Q6/Q7 preamble. No sentence in the packet stated the convention | Applied. A convention sentence is added above the review-1 section: a `:NNN` anchor inside a review section is a line number at that review's own reviewed commit, never in the current bytes. J1's three present-tense anchors are replaced by section and heading names, with the superseded anchors quoted. The past-tense anchors in J2, J3, J4 and J9 and in the record's `review2.disposition_summary.G6` are left as those passes wrote them, which the convention now explains |
 | K5 Gate 5's `home` sweep publishes a closed partition two of its six hits do not fit | editorial | **CONFIRMED**, value for value. Re-run this session [predicate: `(?i)\bhome\b`; denominator: each whole spec file]: **0** in the POC spec and **6** in the PWB spec, exactly as published. Enumerated, the six are PWB spec lines 247, 277, 510, 511, 518 and 523. Lines 511 ("every layer/home is unique") and 523 ("the lowest-numbered expanded home with at least one admitted source") are layer-home rule prose and fit neither published category | Applied. The partition is restated as three categories over all six — the registry's governance-home field (247, 277), the precedence table's `Home` column and its semantic text (510, 518), and the layer-home rules that table governs (511, 523) — with the superseded two-way partition quoted and dated. The load-bearing conclusion is unchanged: none of the six is the `/` route |
@@ -1984,6 +2020,91 @@ section and above was made after it, so the repaired bytes are **uncovered
 until a sixth review confirms them**; that raw will be a sixth `-RAW.md` file,
 never an overwrite of any retained one.
 
+## Review 6 and repairs (2026-09-15)
+
+A sixth independent fresh-context review of the five-times-repaired packet
+(read-only; only the artifact, its governing references and the acceptance
+criteria) is retained verbatim at
+`docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-6-RAW.md` (26182 bytes, sha256
+`4d2035caa450bf5cdcfb220c2b0d3891459a3a05edc28c467eb01c75982f6abd`, computed
+by `wc -c` and `sha256sum` this session, never transcribed). It reviewed
+commit
+`1dd5639`, at which the three artifacts hashed as follows — recomputed
+this session with `git show 1dd5639:<path> | sha256sum`:
+
+| File reviewed | Bytes | sha256 |
+|---|---|---|
+| `docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md` | 220411 | `ef4528a37399f15107e45ffa9589596250ce46ac382f500760a32e1a7cbc41fb` |
+| `docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json` | 71802 | `cbbdeca05ce1a01419522ceb9aa9b85a1f2218a5320e45aad542282795666e5e` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 44722 | `5a3131af1a79d4e8cc7fc3791056a11c2ac9b64ac8453f3fd8ea3b51466cc11a` |
+
+Its verdict word, copied exactly: **REVISE**. Its counts, as the raw states
+them: **blocking 1, non-blocking 3, editorial 2 — six findings, L1–L6**.
+Every finding was re-derived this session against source — the two signed
+specs, the register row and the packet's own bytes — before being applied;
+none was applied on the review's say-so, and one, the register note's
+eight-site list, was checked and found **true of the bytes**, so nothing was
+changed there. Superseded wording is quoted and dated in place rather than
+deleted.
+
+**Its verification of the review-5 repairs, carried here as it states them:
+6 REPAIRED and 1 PARTIAL over 7.** REPAIRED — K2, K3, K4, K5, K6 and K7.
+PARTIAL — K1: all eight sites the finding named carry the gate with the
+superseded wording quoted and dated, and the six-literal sweep re-run over
+all three whole files reproduces the packet's published result exactly — but
+the review-5 change that repair was carrying never reached the prose
+`## Recommended handoff`, where two paragraphs schedule slice 3, and two
+live disclosure sentences said it had. That is L1. The raw also records no
+regression across F1–F22, G1–G11, H1–H9 and J1–J9, and re-derives every
+published byte count, digest, census and offset partition value for value.
+
+| Finding | Severity | Re-derivation | Disposition |
+|---|---|---|---|
+| L1 the review-5 slice-3 gate never reaches the prose `## Recommended handoff` | blocking | **CONFIRMED** at source. The handoff's Q7 paragraph ("the first of M2 slice 2, M3 slice 3 and M4 slice 3 to land builds the band container and its single ordering oracle") and its Q4 paragraph ("slice 3's band lists every reason present … and its total is asserted equal to the gaps section's on every fixture") carried no RFC2-26 gate, while the Q6 paragraph two paragraphs later ended "**Neither is built before Q7's RFC2-26 ruling**" with its own superseded wording quoted and dated. The two disclosure sentences the finding names — the K2 disposition row and Gate 5's "What the extended test changes" paragraph — both claimed the change reached "the recommended handoff", true of the funnel summary's code-block line and false of the section a reader reaches by that name. **The register note's site list, also named, is NOT a false claim**: it enumerates the eight sites K1 repaired and says "the recommended handoff's Q6 paragraph", which is exactly the part of that section review 5 touched; it is left as that pass wrote it | Applied at three scheduling sites and two disclosure sentences. The Q7 and Q4 handoff paragraphs now carry the gate in the shape the Q6 paragraph uses, with the added wording dated and the superseded paragraph ends described. A third live site the finding does not name — the Collision section's revised reconciliation rule, which likewise says whichever of the three lands first builds the container — was found by the sweep below and carries the gate too. The two disclosure sentences are narrowed to name the funnel summary's four lines and the prose handoff's paragraphs individually, superseded wording quoted and dated |
+| L2 Gate 5's lead sentence and its one-line slice-3 treatment present slice 3 as covered conformance | non-blocking | **CONFIRMED.** Gate 5 opened "**Slices 1, 2, 3 and 6: no spec delta. Each is conformance with text that already binds.**" and treated slice 3 in one sentence, "Slice 3 is PWB-REQ-010 and PWB-REQ-011 conformance and adds no claim" — while the same gate's RFC2-26 table, ninety-odd lines later, finds slice 3's own consequence maps to no approved requirement-and-scenario pair, and Gate 3's row 3 states the distinction in this packet's own words, "**preserving a requirement is not mapping to one**" | Applied at both sentences. "No spec delta" stands; the inference the RFC2-26 test withdraws is qualified at the sentence rather than left to a later subsection, with both superseded sentences quoted and dated |
+| L3 Gate 4's headings for slices 3, 4 and 5 still read "no act" | non-blocking | **CONFIRMED.** The three design headings read "(medium; no act)" while Gate 3's rows for the same three now read "**No act found for the continuation itself; an RFC2-26 gate is open — see Q7**", and one of the three routes the packet offers for clearing that gate is a reviewed N/A judgment honored by an effective owner act. **Checked before editing** [predicate: the literal `](#`; denominator: the whole packet and the whole register]: **0** occurrences in either file, so no anchor or href targets these headings and changing them breaks no link | Applied. The three headings read "(medium; act — see Gate 3 and Q7)", each with a one-line dated note beneath quoting the superseded parenthetical. The slice-4 heading is 85 characters and is the one line this pass added above the 78-column bar; it carries a code span and cannot be reflowed, and it is enumerated in the F21 disposition |
+| L4 the slice-3 "None found" cell states no denominator for its population | non-blocking | **CONFIRMED**, and the conclusion re-derived here rather than accepted [predicate: `^### Requirement:` and `^#### Scenario:` at line start; denominator: both signed spec files whole]. POC spec **24** requirements and **24** scenarios; PWB spec **17** and **31** — **41** and **55** in all. Every one of the 55 scenario headings was read this session, then the bodies of every candidate; none states an aggregate of Unknown-reason counts in the opening. Each of the cell's five figures is exact at source: PWB-REQ-010 at 596 with one scenario at 615; PWB-REQ-011 at 632 with two at 651 and 657; PWB-REQ-007 at 439 with one at 470; POC-REQ-032 at 574 with one at 599; PWB-REQ-012 at 679 with one at 705 | Applied. One bracket in the cell carries the predicate, the 41/55 denominator, the fact that every scenario heading was read, and the five candidates with their line numbers. Mirrored in the evidence record's new `review6` block; review 5's own `K2_all_slice_test` values are left untouched, since they are that review's record |
+| L5 Gate 3's row 3 sends the reader to "the four requirements checked"; the cell discusses five | editorial | **CONFIRMED.** Gate 5's slice-3 cell names PWB-REQ-010, PWB-REQ-011, PWB-REQ-007, POC-REQ-032 and PWB-REQ-012, and the evidence record's `slice_3` field enumerates the same five. Four is defensible only on the reading that PWB-REQ-012 is a constraint rather than a candidate mapping, which the cell states but the cross-reference did not | Applied. The cross-reference reads "the five requirements read, four of them as candidate mappings", names the five and says which is the constraint, with the superseded "four" quoted and dated |
+| L6 the P-71 row's Q5 question drops the packet's first clause | editorial | **CONFIRMED.** The packet's Q5 asks three things, beginning "is it authorized"; the register row asked two, dropping whether the *run* is authorized as distinct from the write — the clause Reading A and Reading B actually differ about, present in the row's recommendation body but not in its question line | Applied. The row's Q5 question carries all three clauses in the packet's order, with the superseded two-clause question quoted and dated, and the change is named in the register note's review-6 paragraph |
+
+**Recommended answers changed after review 6: none.** L1 is blocking, but it
+changes no arm and no recommendation: it carries an **existing** answer —
+slice 3 under the same open RFC2-26 gate as slices 4 and 5, decided after
+review 5's K2 — into three live sites that answer had not reached, and
+narrows two sentences that had claimed it already reached them. L2 through
+L6 qualify, route, measure or correct a count; none moves a recommended
+answer either. **Q1 through Q7 keep the recommendations they carried into
+this review.**
+
+**The slice-3 scheduling sweep L1 asked for, which no string sweep could do.**
+An omission carries no literal, so every site that schedules or builds slice
+3 was enumerated by hand and classified [predicate: lines matching
+`(?i)slice 3\b` or the literal `M4 slice 3`; denominator: every line of the
+packet, the evidence record and the register at `1dd5639` — 2,064 + 1,083 +
+321 = **3,468** lines; **60** lines match, 51 in the packet, 6 in the record
+and 3 in the register]. All 60 were read and classified, and the three
+buckets close: **10** lines carry a live instruction that schedules or
+builds M4 slice 3, over **7** distinct sites — Q7's bolded recommendation
+(`:119`), the sequencing order's step (3) (`:1566-1571`), the funnel
+summary's Recommended-handoff line (`:2002`), the prose handoff's Q7
+(`:2019`) and Q4 (`:2024`) paragraphs, the Collision section's revised
+reconciliation rule (`:1534-1535`), and the P-71 row's Q7 recommendation.
+**Four of the seven already carried the RFC2-26 gate** — the three review 5
+reached and the register row; **three did not** — the two handoff paragraphs
+L1 names and the Collision rule it does not — and all three are repaired in
+this pass. **23** lines are historical: a superseded sentence quoted and
+dated in place, or a review section's own record of what an earlier pass
+found. **27** state what the band is, which file it touches, or that its
+gate is open, and schedule nothing. 10 + 23 + 27 = 60. No live scheduling
+site is left ungated [Observed, this session; anchors are line numbers at
+`1dd5639`, per the convention above].
+
+By verification rule 10, review 6 binds the bytes it names — the three
+digests in the table above, at commit `1dd5639` — and not these. Every edit
+in this section and above was made after it, so the repaired bytes are
+**uncovered until a seventh review confirms them**; that raw will be a
+seventh `-RAW.md` file, never an overwrite of any retained one.
+
 ## Funnel summary
 
 ```
@@ -1995,7 +2116,7 @@ Baseline: Syzygy a9f671e; capture = lane A after/tailnet, 1,484,487 bytes, Butle
 - G3 Topology: apps/three-surface-poc + packages/three-surface-poc-core; no new boundary; no governed artifact touched by slices 1-5 or 7; slice 6 already writes into the observed repository's Beads database today and whether that write is authorized is Q5's question; slice 7's output is the only *new* write and it is gated
 - G4 Design: closed reason + route (UNKNOWN_REASON_ROUTES's own wording, not RFC2-24's prose) on all nine unrouted Polaris Unknowns, extended to Trajectory/Orrery's marker; the materialize link on the one edge that has one; a machine route form with actor/verb/target, narrowing the empty-array prohibition to Unknown-with-reasons so the modelled `basis: 'deferred'` arm stays representable; one opening band across M2 slice 2, M3 slice 3 and M4 slice 3 - one container, one ordering oracle, three payload blocks (revised per review 2, G2); model.surfaces derived; home rewritten as their composition; the return path run once, conditional on Q5; a pure act drafter
 - G5 Spec: no delta - POC-REQ-060 already requires slice 1 (over all three surfaces), PWB-REQ-020 already requires slice 2's parity; PWB-REQ-004 untouched; and NO requirement governs the home route or model.surfaces, so slices 4-5 trace to recorded findings L6-F1/L6-F5 - a reading Q7 puts to the owner, and one that does not by itself clear RFC2-26, which turns that silence into a bar until every observable consequence maps to an approved OpenSpec requirement AND scenario or carries a reviewed N/A judgment honored by an effective owner act. Run over all eight Gate 3 slice rows (review 5, K2; denominator 8): slices 1 and 2 map to named requirement-and-scenario pairs, slice 3 does NOT - no approved scenario reaches its gap-reason band - so slice 3 now carries the same open gate as slices 4 and 5; slice 6 schedules no implementation work; slices 7 and 8 are gated by act, not by this clause (superseded 2026-09-15, review 5, K1/K2: this line read "so slices 4-5 trace to recorded findings L6-F1/L6-F5, a reading Q7 now puts to the owner explicitly")
-- G6 Bar: retained before/after measurement per surface, rule-6 mutants per guard branch, both parity sweeps with both denominators, independent review (five raws are retained under docs/reviews/; this pass follows review 5, verdict copied exactly REVISE, and is itself pending a sixth - restated 2026-09-15, review 5, K1, which superseded "this is review 2, pending, after review 1's repair", a line frozen at the second pass while its neighbours were carried forward)
+- G6 Bar: retained before/after measurement per surface, rule-6 mutants per guard branch, both parity sweeps with both denominators, independent review (six raws are retained under docs/reviews/; this pass follows review 6, verdict copied exactly REVISE, and is itself pending a seventh - restated 2026-09-15, review 6, which superseded "five raws are retained under docs/reviews/; this pass follows review 5 ... and is itself pending a sixth", itself a review-5 restatement of "this is review 2, pending, after review 1's repair", a line frozen at the second pass while its neighbours were carried forward)
 Acts: no act found beyond the 2026-09-05 continuation for any of slices 1-5 or 7, and slices 3, 4 and 5 additionally carry an OPEN RFC2-26 gate - see Q7 and Gate 5's RFC2-26 test (widened 2026-09-15, review 5, K1/K2; this read "Acts: slices 1-5 and 7 none (the 2026-09-05 continuation)", the exact formulation review 4 had already widened at Gate 3 rows 4 and 5); slice 6 contested between the 2026-08-29 direction (authorized) and the 2026-09-02 act's write prohibition (breach) - see Q5; slice 7 one narrow act on arm (a), none on arm (b); slice 8 two acts, deferred; a poller: none found and none sought
 Open questions: Q1-Q7 above (Q5 widened to cover slice 6's write; Q7 widened to cover the M2/M3 file collisions, the slices 4-5 authorization reading and, after review 5's all-eight-slice RFC2-26 test (K2), the RFC2-26 gate over slices 3, 4 and 5 - superseded 2026-09-15: this read "Q7 widened to cover the M2/M3 file collisions and the slices 4-5 authorization reading"); queued as P-71 (P-68 lane B, P-69 M2, P-70 M3, each on its own branch)
 Sign-off: pending - the owner's
@@ -2019,14 +2140,26 @@ from a two-way M3/M4 reconciliation to a three-way one):** the first of M2
 slice 2, M3 slice 3 and M4 slice 3 to land builds the band container and its
 single ordering oracle; the other two add payload blocks inside it, each with
 its own payload oracle. One band, one ordering oracle, three payloads — never
-three bands and never three claims on "first".
+three bands and never three claims on "first". **M4 slice 3 is not built
+before both that reconciliation and Q7's RFC2-26 ruling** — the
+reconciliation settles who owns the container, not whether M4's payload
+block may be scheduled. **Added 2026-09-15 (review 6, L1):** this paragraph
+ended at the three-payloads sentence, a scheduling instruction under which
+M4 slice 3 could be the first of the three to land, carrying none of the
+RFC2-26 gate review 5 (K2) had already added to Q7, Gate 3, Gate 5, the
+sequencing order and the funnel summary.
 
 **If Q4 is answered as recommended:** slice 3's band lists every reason
 present, ordered by the existing `foremost` array, and its total is asserted
 equal to the gaps section's on every fixture. If the owner prefers the
 four-reason filter, the slice adds one closed constant and one counterexample
 fixture, and the packet's warning stands: today's evaluation cannot exercise
-the filter's negative case.
+the filter's negative case. **Either way the slice is not built before
+Q7's RFC2-26 ruling** — Q4 settles what the band lists, not whether the band
+may be scheduled. **Added 2026-09-15 (review 6, L1):** this paragraph ended
+at the filter's negative case, an ungated build instruction for the one
+slice review 5 (K2) had just put under the same open gate as slices 4
+and 5.
 
 **If Q5 is answered as recommended (both the expectation and the
 authorization-reading limbs):** run slice 6 early and independently of

@@ -1079,5 +1079,112 @@
       "Q1_through_Q6": "unchanged. K1 carried review 4's Q7 change into the eight operative texts that had not received it; K3 through K7 moved no arm."
     },
     "rule_10": "This review binds the bytes it names (packet 190003 / evidence 60920 / register 40852 at e134a12) and not the repaired bytes; every review-5 repair is uncovered until a sixth review confirms them. That raw will be a sixth -RAW.md file, never an overwrite of any retained one."
+  },
+  "review6": {
+    "raw": "docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-6-RAW.md",
+    "bytes": 26182,
+    "sha256": "4d2035caa450bf5cdcfb220c2b0d3891459a3a05edc28c467eb01c75982f6abd",
+    "verdict": "REVISE - one blocking, three non-blocking, two editorial",
+    "reviewed_commit": "1dd5639",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md": {
+        "bytes": 220411,
+        "sha256": "ef4528a37399f15107e45ffa9589596250ce46ac382f500760a32e1a7cbc41fb"
+      },
+      "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json": {
+        "bytes": 71802,
+        "sha256": "cbbdeca05ce1a01419522ceb9aa9b85a1f2218a5320e45aad542282795666e5e"
+      },
+      ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+        "bytes": 44722,
+        "sha256": "5a3131af1a79d4e8cc7fc3791056a11c2ac9b64ac8453f3fd8ea3b51466cc11a"
+      }
+    },
+    "repairs_applied_this_session": true,
+    "k1_k7_verification_as_review6_states_it": {
+      "REPAIRED": [
+        "K2",
+        "K3",
+        "K4",
+        "K5",
+        "K6",
+        "K7"
+      ],
+      "PARTIAL": [
+        "K1"
+      ],
+      "denominator": 7,
+      "regressions_found_in_F1_F22_G1_G11_H1_H9_J1_J9": "none"
+    },
+    "disposition_summary": {
+      "L1": "CONFIRMED and applied (blocking). The prose Recommended handoff's Q7 paragraph (the first of the three to land builds the band container) and its Q4 paragraph (slice 3's band lists every reason present) carried no RFC2-26 gate, while the Q6 paragraph two paragraphs later did. A third live scheduling site the finding does not name, the Collision section's revised reconciliation rule, was found by this pass's own site sweep and was equally ungated. All three now carry the gate in the Q6 paragraph's shape, superseded wording quoted and dated. The two disclosure sentences that claimed the change reached 'the recommended handoff' - the K2 disposition row and Gate 5's 'What the extended test changes' paragraph - are narrowed to name the funnel summary's four lines and the prose handoff's paragraphs individually. The register note's eight-site list, also named by the finding, was checked and is TRUE of the bytes (it says 'the recommended handoff's Q6 paragraph'), so it is left as review 5 wrote it.",
+      "L2": "CONFIRMED and applied (non-blocking). Gate 5's lead sentence ('Slices 1, 2, 3 and 6: no spec delta. Each is conformance with text that already binds.') and its one-line slice-3 treatment ('Slice 3 is PWB-REQ-010 and PWB-REQ-011 conformance and adds no claim') presented slice 3 as covered conformance in the same gate whose RFC2-26 test finds no approved requirement-and-scenario pair for it. Both are qualified at the sentence - no spec delta stands, but preserving PWB-REQ-010/011 is not mapping to them - with the superseded wording quoted and dated.",
+      "L3": "CONFIRMED and applied (non-blocking). Gate 4's headings for slices 3, 4 and 5 read '(medium; no act)' while Gate 3's rows for the same three record an open RFC2-26 gate whose clearing routes include an effective owner act. Checked first [predicate: the literal ](# ; denominator: the whole packet and the whole register]: 0 anchor links in either file, so no href targets these headings. The three now read '(medium; act - see Gate 3 and Q7)', each with a one-line dated note quoting the superseded parenthetical. The slice-4 heading is 85 characters, carries a code span and cannot be reflowed; it is the one line this pass added above the 78-column bar and is enumerated in the F21 disposition.",
+      "L4": "CONFIRMED and applied (non-blocking). The slice-3 'None found' cell stated no denominator for the population its absence claim ranges over. Re-derived this session [predicate: ^### Requirement: and ^#### Scenario: at line start; denominator: both signed spec files whole]: POC spec 24 requirements and 24 scenarios, PWB spec 17 and 31, so 41 and 55 in all. Every one of the 55 scenario headings was read, then the bodies of every candidate; none states an aggregate of Unknown-reason counts in the opening. One bracket in the cell now carries the predicate, the 41/55 denominator and the five candidates by line. Review 5's own K2_all_slice_test values are untouched; the mirror lives here.",
+      "L5": "CONFIRMED and applied (editorial). Gate 3's row 3 sent the reader to 'the four requirements checked' while Gate 5's cell and this record's slice_3 field both name five. The cross-reference now reads 'the five requirements read, four of them as candidate mappings', names the five and identifies PWB-REQ-012 as the constraint rather than a mapping, with the superseded 'four' quoted and dated.",
+      "L6": "CONFIRMED and applied (editorial). The P-71 row's Q5 question asked two things where the packet's Q5 asks three, dropping 'is it authorized' for the run itself - the clause Reading A and Reading B differ about. Restored in the packet's clause order with the superseded question quoted and dated, and named in the register note's review-6 paragraph."
+    },
+    "re_derived_before_applying": {
+      "L4_signed_spec_population": {
+        "predicate": "^### Requirement: and ^#### Scenario: at line start",
+        "denominator": "both signed spec files whole",
+        "poc_requirements": 24,
+        "poc_scenarios": 24,
+        "pwb_requirements": 17,
+        "pwb_scenarios": 31,
+        "total_requirements": 41,
+        "total_scenarios": 55,
+        "every_scenario_heading_read": true,
+        "candidates_exact_at_source": {
+          "PWB-REQ-010": {"requirement_line": 596, "scenarios": [615]},
+          "PWB-REQ-011": {"requirement_line": 632, "scenarios": [651, 657]},
+          "PWB-REQ-007": {"requirement_line": 439, "scenarios": [470]},
+          "POC-REQ-032": {"requirement_line": 574, "scenarios": [599]},
+          "PWB-REQ-012": {"requirement_line": 679, "scenarios": [705]}
+        },
+        "conclusion": "slice 3's limb 1 is genuinely unavailable; the recommended answer stands"
+      },
+      "L1_slice_3_site_sweep": {
+        "predicate": "lines matching (?i)slice 3\\b or the literal 'M4 slice 3'",
+        "denominator_lines": 3468,
+        "denominator_source": "packet 2064 + evidence record 1083 + register 321, at 1dd5639",
+        "matching_lines": 60,
+        "matching_lines_by_file": {"packet": 51, "record": 6, "register": 3},
+        "live_scheduling_or_building_lines": 10,
+        "live_scheduling_or_building_sites": 7,
+        "live_sites_gated_before_this_pass": 4,
+        "live_sites_repaired_this_pass": 3,
+        "live_sites": [
+          "packet Q7's bolded recommendation - gated (review 5)",
+          "packet sequencing order step (3) - gated (review 5)",
+          "packet funnel summary Recommended-handoff line - gated (review 5)",
+          "packet prose handoff Q7 paragraph - UNGATED, repaired here",
+          "packet prose handoff Q4 paragraph - UNGATED, repaired here",
+          "packet Collision section revised reconciliation rule - UNGATED, repaired here",
+          "register P-71 row Q7 recommendation - gated (review 5)"
+        ],
+        "historical_or_dated_lines": 23,
+        "design_or_gate_statement_lines": 27,
+        "buckets_close": "10 + 23 + 27 = 60",
+        "F21_over_78_recount_review6": {
+          "predicate": "lines outside fenced blocks whose first non-space character is not a pipe and whose length exceeds 78",
+          "denominator": 2197,
+          "count": 8,
+          "lines": [1, 10, 540, 615, 811, 855, 1042, 1094],
+          "new_line": "855, the Gate 4 heading for slice 4 at 85 characters, lengthened by L3 and unreflowable because it carries a code span"
+        },
+        "note": "an omission carries no literal, so this sweep enumerates and classifies by hand rather than matching a string"
+      },
+      "L3_anchor_check": {
+        "predicate": "the literal ](#",
+        "denominator": "the whole packet and the whole register",
+        "hits": 0,
+        "consequence": "no anchor or href targets the three Gate 4 headings; changing them breaks no link"
+      }
+    },
+    "recommended_answers_changed": {
+      "none": "No recommended answer changed after review 6. L1 is blocking but carries an EXISTING answer - slice 3 under the same open RFC2-26 gate as slices 4 and 5, decided after review 5's K2 - into three live sites it had not reached, and narrows two sentences that claimed it already had. L2 through L6 qualify, route, measure or correct a count. Q1 through Q7 keep the recommendations they carried into this review."
+    },
+    "rule_10": "This review binds the bytes it names (packet 220411 / evidence 71802 / register 44722 at 1dd5639) and not the repaired bytes; every review-6 repair is uncovered until a seventh review confirms them. That raw will be a seventh -RAW.md file, never an overwrite of a retained one."
   }
 }
