@@ -495,7 +495,8 @@
         "--line|--void = 23.27"
       ],
       "predicate": "all 36 pairs over the 9 distinct declared colour values",
-      "correction": "review 1 finding F2 was right that the earlier \"smallest between any two named tokens: 7.85\" and \"every other pair >= 26.7\" were false universals with no stated predicate; 7.85 is the THIRD smallest over the declared set. Review 1 own enumeration listed six sub-threshold pairs and said \"five pairs sit below 26.74\"; it omitted --line|--void at 23.27. Re-derived here over all 36 pairs the count is 7."
+      "correction": "review 1 finding F2 was right that the earlier \"smallest between any two named tokens: 7.85\" and \"every other pair >= 26.7\" were false universals with no stated predicate; 7.85 is the THIRD smallest over the declared set. Review 1 own enumeration listed six sub-threshold pairs and said \"five pairs sit below 26.74\"; it omitted --line|--void at 23.27. Re-derived here over all 36 pairs the count is 7.",
+      "floor_precision_note": "review 2 finding G7: '26.74' is the --ink|--muted pair rounded to two decimals; computed to more precision it is 26.7371, so 'below 26.74' is 0.0029 off the pair's own value. The predicate is the pair itself, not the rounded literal; the count of 7 pairs strictly below it is unaffected, and the slice-6 bar (>= 26.7) is unaffected since 26.7371 >= 26.7."
     },
     "rules_using_var_unknown_rendered_counts": {
       "predicate": "literal str.count of the class attribute over the 1,481,819-character capture",
@@ -538,12 +539,13 @@
   },
   "m2_collision": {
     "branch": "origin/agent/syzygy-dov.2",
-    "head": "68123fc",
+    "head": "da1497b",
+    "head_note": "re-derived this repair pass (review 2, G4); da1497b is 'M2 funnel review 5 retained and K1-K9 repaired', 2026-09-14 - reviews 4 and 5 landed since review 2 read M2 at 1befd6f, repairing findings J1-J8 and K1-K9",
     "shared_files": [
       "apps/three-surface-poc/src/polaris-copy.ts (freshness sentences, lines 46-49)",
       "apps/three-surface-poc/src/polaris.ts claimStatesBlock (lines 346-361; the freshness group is line 357)"
     ],
-    "m2_slice_1": "marks the three unreachable freshness sentences in place with a copy-oracle",
+    "m2_slice_1": "marks the three unreachable freshness sentences in place with a copy-oracle, carrying the reason it is unreachable and, where one exists, the route (M2's superseded marker has a reason and no route, by design; M2's J4 repair weakened both the requirement and the register description to this wording - review 2, G4)",
     "m3_slice_5": "generates the same glossary from encoding tables",
     "register_rows": {
       "main_last_note": "P-67",
@@ -553,10 +555,14 @@
     },
     "head_at_packet_first_draft": "ec30494",
     "head_at_review_1": "e0ecdc8",
+    "head_at_review_2": "68123fc",
+    "head_re_derived_after_review_2_at_1befd6f": true,
     "slice_count": 6,
     "m2_slice_6": "A lapsed reviewed selection announces itself: apps/three-surface-poc/src/polaris-reading.ts line 44 and apps/three-surface-poc/src/polaris.ts lines 506-510 - neither touched by any M3 slice",
-    "shared_surface_unchanged_at_68123fc": true,
-    "m3_slice_5_line_range_correction": "review 1 finding F8: claimStatesBlock spans 346-361, not 346-353; the freshness group - the exact overlap - is line 357"
+    "shared_surface_unchanged_at_da1497b": true,
+    "structural_collision_confirmed_by": "M2's own Gate 3 row and Q5 text, read this session at da1497b",
+    "m3_slice_5_line_range_correction": "review 1 finding F8: claimStatesBlock spans 346-361, not 346-353; the freshness group - the exact overlap - is line 357",
+    "cross_packet_note_review_2_G1": "M2's Q3, Q5 and Q7 rest on the same RFC2-10 sentence this packet's Q2 relies on ('a condition genuinely outside the four is disclosed as a fact of the render, never dressed as a freshness state'); M2's own Q7 already questions its stale recommendation against that sentence. P-69 and P-70 must be ruled together"
   },
   "governance_check": {
     "command": "python3 scripts/check_governance.py",
@@ -676,5 +682,63 @@
       "Q7"
     ],
     "coverage": "every repair post-dates the review, so by verification rule 10 the review binds the 71,765-byte packet and 16,677-byte evidence record whose digests it names, not the current bytes; the current bytes are uncovered until a second independent fresh-context review, retained as a second -RAW.md file, confirms them"
+  },
+  "review2": {
+    "raw": {
+      "path": "docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-2-RAW.md",
+      "bytes": 48381,
+      "sha256": "a04b20517539e971c1e192015329dd39a2e2f536b52c06fffdce473177397012",
+      "method": "wc -c and sha256sum, computed this session; matches the raw's own header table exactly"
+    },
+    "reviewed_commit": "573abb0",
+    "reviewed_subject_as_the_raw_records_it": {
+      "packet": {
+        "path": "docs/design/POLARIS-M3-HONEST-ENCODING-FUNNEL.md",
+        "bytes": 102085,
+        "sha256": "bf526da8be926fdae5c58a525d1769b7fcf2d527920df45a6777f7caf6f560cf"
+      },
+      "evidence": {
+        "path": "docs/evidence/polaris-m3-honest-encoding-funnel-2026-09-14.json",
+        "bytes": 30747,
+        "sha256": "5370f6cd2af1ff6c00f0625616e5b9c356bebf3a113175a74c8cd8e83d2ea6f5"
+      },
+      "register": {
+        "path": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+        "bytes": 29780,
+        "sha256": "cac255f552e198d318146c402d67e7118cdb1c5a2188cabdfd85dcff987d37e7"
+      }
+    },
+    "verdict_word_copied_exactly": "REVISE - one blocking, five non-blocking, three editorial",
+    "findings": {
+      "blocking": ["G1"],
+      "non_blocking": ["G2", "G3", "G4", "G5", "G6"],
+      "editorial": ["G7", "G8", "G9"]
+    },
+    "f_verification_against_review_1": {
+      "REPAIRED": 9,
+      "PARTIAL": ["F4", "F6", "F7", "F12"],
+      "NOT_REPAIRED": 0
+    },
+    "repairs": {
+      "G1": "Gate 2 RFC2-10 quote extended verbatim through the clause's remedy sentence; 'supplies no absence marker at all' withdrawn at all four packet sites and the register row; Q2 freshness limb restated with three lawful arms (b-i/b-ii/b-iii), the PWB-REQ-007 tension put to the owner unresolved, (b-iii) recommended [Inferred] without calling any arm unlawful; cross-packet link to M2's Q3/Q5/Q7 stated in Q2, Q7 and the collision section",
+      "G2": "unstated - guard moved from walkthrough-preflight.ts to polaris-first-reading.test.ts line 88 in the slice-5 readiness paragraph; preflight's three true examples (lede id, strengthen sentence, aria-describedby) kept",
+      "G3": "added bold dropped from the RFC7-34 quote at Gate 2; F12 disposition row corrected",
+      "G4": "M2 head re-derived to da1497b (reviews 4-5, J1-J8, K1-K9 repaired), named once in the collision section, cited elsewhere by register row P-69 and the two shared files; marker wording weakened to 'the reason and, where one exists, the route' in slice 5 and collision item 1; structural collision and sequence confirmed unchanged via M2's own Gate 3 row and Q5 text at da1497b",
+      "G5": "register P-70 Q4 depth corrected to 57.72% and 25.70%",
+      "G6": "RFC2-26 quoted at Gate 2 (rendering-vocabularies.md:196); POC-REQ-061 named in Gate 5 as the mapping requirement for slices 5-6",
+      "G7": "'below 26.74' restated as 'below the --ink <-> --muted floor (26.74 to two decimals, 26.7371 computed)' at all three packet sites; evidence record gains floor_precision_note",
+      "G8": "trust-and-evidence.md:101 anchored and marked cited by analogy, with its actual subject (a superseded observation record) stated",
+      "G9": "register P-70 Q3 cost restated as 'at least 13,088 attribute bytes plus an unseparated text component'"
+    },
+    "re_derived_before_applying": {
+      "RFC2-10_line_span": "snapshot-and-evaluation-core.md lines 209-223; the remedy sentence ('a condition genuinely outside the four is disclosed as a fact of the render, never dressed as a freshness state') is at lines 220-222, read and confirmed verbatim this session before any repair was applied",
+      "RFC7-34_line_span": "rendering-and-surface.md lines 241-243, confirmed only 'without colour, position, or layout' is bold in source",
+      "unstated_guard_line": "apps/three-surface-poc/src/polaris-first-reading.test.ts line 88, confirmed to hard-code 'unstated \\u2014' in its required-terms list",
+      "RFC2-26_line": "rendering-vocabularies.md line 196, confirmed",
+      "m2_head_confirmed": "da1497b, confirmed via git log in the M2 worktree; M2's Gate 3 row and Q5 text re-read at that head",
+      "deltaE76_ink_muted_precise": 26.7371,
+      "trust_and_evidence_line": "trust-and-evidence.md line 101, confirmed"
+    },
+    "coverage": "every repair above post-dates review 2, so by verification rule 10 review 2 binds the 102,085-byte packet and 30,747-byte evidence record it read at 573abb0, not the current bytes; the current bytes are uncovered until a third independent fresh-context review, retained as a third -RAW.md file, confirms them"
   }
 }

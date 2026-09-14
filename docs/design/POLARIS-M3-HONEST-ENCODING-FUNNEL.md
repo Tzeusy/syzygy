@@ -49,12 +49,12 @@ front of the owner.
 | # | Question | Recommended |
 |---|---|---|
 | Q1 | **Is Polaris's present rendering of epistemic state a non-conformance with POC-REQ-060, or does that requirement's "epistemic encoding" reach only the two declared badge spans?** On the retained capture Polaris renders 735 body epistemic encodings and **0** of them carry a declared encoding *class*; the two spans that do are both inside the page legend, at 99.96% and 99.97% depth. Split by treatment, because the single figure flattens two different defects [Observed, re-derived this session over the capture]: **713 of the 735 — the claim tuples — carry no declared class and no distinguishing treatment at all**, rendering Observed and Unknown in one colour (`var(--muted)`); the remaining **22 are `unknown-disclosure` blocks, which carry the declared Unknown *token* under an undeclared class** (`.unknown-disclosure { color: var(--unknown); border-left: 3px solid var(--unknown); … }`) — visually distinct already, but styled by hand rather than from the table, and carrying no legend entry. The requirement's Falsifier names "a surface styling epistemic state ad hoc" [Observed: quoted at Gate 2]. | **A non-conformance, disclosed and repaired by slices 1 and 2.** POC-REQ-060's Case fixes the population itself — "every epistemic encoding on all three surfaces — the denominator is that population" — and the checker carrying the identifier uses a denominator of 4. Verification rule 4 (read a check's output, not its exit code, and check its denominator against the whole population) is the project's own name for this defect. Rule it a breach to be repaired in the implementation, **not** a reading under which the page is already conformant; no spec text changes either way (Gate 5). The 713/22 split sharpens the finding rather than softening it: the 22 are the Falsifier's ad-hoc limb in its purest form — the declared token applied outside the declared table, with no legend row — and the 713 are the population that renders indistinguishably. |
-| Q2 | **The renderer mints `unstated` into two closed-vocabulary fields, not one.** `apps/three-surface-poc/src/polaris.ts` lines 306–307 read `const tier = claim.epistemic.tier ?? 'unstated';` and `const freshness = claim.epistemic.freshness ?? 'unstated';`. On this capture the tier twin fires 11 times and the freshness twin fires 0 (all 713 tuples carry `fresh`) [Observed] — but the governing clauses differ, and the freshness one is stricter. RFC2-25 closes the tiers at six and supplies a remedy for absence ("an untier'd claim renders at its bare label"); RFC2-10 closes freshness at four and forbids the minting in terms ("no implementation may mint, spell, or force-fit a freshness value it does not carry"), supplying no absence marker at all. Arm (a): out-of-vocabulary — drop the value and render the bare label. Arm (b): an explicit *absence* marker — the field is present and says no value applies — distinct from the closed set and never an extra row of any encoding table. Arm (c): amend PWB-REQ-007 to provide for it. | **Arm (b) for the tier field; arm (b) is not lawfully available for the freshness field, and the owner should see why.** For tier: (b) is what the page already does in substance (the glossary reads "unstated — no tier applies to an Unknown that has no evidence"), it keeps PWB-REQ-007's "carry the closed label, tier … that govern it" satisfied with a present field, and it keeps RFC2-25's six closed; (a) would drop a field PWB-REQ-007's Falsifier calls absent, and (c) is a spec amendment that collides with lane B head-on (Q7). The tier encoding table therefore gets **six** rows and one absence treatment, never seven. For freshness the same reasoning does not carry: RFC2-10's prohibition is on minting, spelling or force-fitting *any* value the closed four do not carry, so a rendered `unstated` in `data-epistemic-freshness` is the forbidden act itself rather than an absence marker outside the vocabulary. The lawful arms there are: **(b-i)** the renderer must supply one of the closed four (which is M2's Q7, recommending `stale` with the reason kept distinct), or **(b-ii)** the claim is held Unknown and the tuple is not rendered as though it had a freshness state — and PWB-REQ-007's Falsifier ("a tuple field is absent/out of vocabulary") forbids simply omitting the field. Either way the freshness table gets **four** rows and no absence row, and slice 5 must assert over the *renderer*, not over the table. The mint fires 0 times today and is one branch away from firing on every unbounded class (Gate 2). |
+| Q2 | **The renderer mints `unstated` into two closed-vocabulary fields, not one.** `apps/three-surface-poc/src/polaris.ts` lines 306–307 read `const tier = claim.epistemic.tier ?? 'unstated';` and `const freshness = claim.epistemic.freshness ?? 'unstated';`. On this capture the tier twin fires 11 times and the freshness twin fires 0 (all 713 tuples carry `fresh`) [Observed] — but the governing clauses differ, and the freshness one is stricter. RFC2-25 closes the tiers at six and supplies a *rendering* remedy for absence, inside the tuple ("an untier'd claim renders at its bare label"); RFC2-10 closes freshness at four, forbids the minting in terms ("no implementation may mint, spell, or force-fit a freshness value it does not carry"), and separately supplies a *disclosure* remedy of its own, outside the freshness slot ("a condition genuinely outside the four is disclosed as a fact of the render, never dressed as a freshness state" — quoted in full in Gate 2). Arm (a): out-of-vocabulary — drop the value and render the bare label. Arm (b): an explicit *absence* marker — the field is present and says no value applies — distinct from the closed set and never an extra row of any encoding table. Arm (c): amend PWB-REQ-007 to provide for it. | **Arm (b) for the tier field. For the freshness field, three lawful arms follow from RFC2-10's own text, and the owner should choose among them — none is unlawful.** For tier: (b) is what the page already does in substance (the glossary reads "unstated — no tier applies to an Unknown that has no evidence"), it keeps PWB-REQ-007's "carry the closed label, tier … that govern it" satisfied with a present field, and it keeps RFC2-25's six closed; (a) would drop a field PWB-REQ-007's Falsifier calls absent, and (c) is a spec amendment that collides with lane B head-on (Q7). The tier encoding table therefore gets **six** rows and one absence treatment, never seven. For freshness the tier reasoning does not carry: RFC2-10's prohibition is on minting, spelling or force-fitting *any* value the closed four do not carry, so a rendered `unstated` in `data-epistemic-freshness` is the forbidden act itself. Three lawful arms follow: **(b-i)** the renderer supplies one of the closed four (M2's Q7, recommending `stale` with the reason kept distinct); **(b-ii)** the claim is held Unknown and the tuple is not rendered as though it had a freshness state; or **(b-iii)** the condition is disclosed as a fact of the render, in a carrier that is not `data-epistemic-freshness` and is not dressed as a freshness state — RFC2-10's own remedy (Gate 2). There is a live, unresolved tension between (b-ii)/(b-iii) and PWB-REQ-007's Falsifier ("a tuple field is absent/out of vocabulary") and its SHALL ("carry the closed label, tier … that govern it", spec :443–446): does a freshness-governed field require a value in `data-epistemic-freshness` even when no freshness state genuinely governs the claim, or does RFC2-10's disclosure route discharge the obligation outside that slot? **This is the owner's question; this packet does not resolve it.** [Inferred] recommendation: **(b-iii)**, the arm RFC2-10's own text supplies for exactly this condition, keeping the freshness table at four rows and no absence row without contradicting the clause that closes it — but (b-i) is a live, lawful alternative (M2's Q7 already recommends it for the specific `no-bound-declared` case) and (b-ii) remains available if the owner reads PWB-REQ-007's SHALL as tolerating an unpopulated field under a disclosed condition. Either way the freshness table gets **four** rows and no absence row, and slice 5 must assert over the *renderer*, not over the table. The mint fires 0 times today and is one branch away from firing on every unbounded class (Gate 2). **M2's Q3, Q5 and Q7 rest on this same RFC2-10 sentence** (quoted there against its own Q7), so P-69 and P-70 must be read together (collision section). |
 | Q3 | **Does the per-claim encoding ride an attribute lane B may hoist away, or a carrier lane B may not touch?** Lane B's container-mode estimate hoists `data-epistemic-label` off **409 of 713** tuples [Observed: `hoistedPerField` in the lane B estimate record on `origin/agent/syzygy-dov.17`]. A CSS rule or a sweep keyed on that attribute at the tuple would then see a population of 304 and fail nothing. Arm (a): the encoding inherits through the scope, with a descendant rule, so lane B keeps the hoist. Arm (b): the label becomes a non-hoistable per-claim carrier, costing lane B at least 409 × 32 = **13,088** attribute bytes of its 188,902-byte estimate. | **Arm (a), inheritance — designed in now, not retrofitted.** It preserves the saving already in front of the owner as P-68, and lane B's own amended text supplies the inheritance rule the CSS and the sweep would both read ("a claim's value for a field it does not carry itself is the value of the nearest enclosing scope that carries the field"). The cost is a discipline: **every sweep M3 writes must expand scopes before counting**, and slice 2's denominator must be asserted equal to the tuple count, so a silent drop to 304 fails loudly. Arm (b) is available and honest but spends a ruling the owner has not yet made. |
-| Q4 | **Does the opening band render a real Unknown in place?** No rendered Unknown of any kind appears in the first reading: over the four opening groups (document start to the first catalog group, 19.03% of the page) there are 126 claim tuples, **all Observed**, and **0** Unknown-disclosure blocks; the first rendered Unknown is at 25.55% depth and the whole-shape Unknown — the claim that Butlers' shape is not fully known — is at 57.72% [Observed]. | **Yes: surface the whole-shape Unknown and the one class-level Unknown in the opening band, in place, with their routes.** Nothing is fabricated — both claims already exist on the page and are merely late. CC-VIZ-3 forbids a "clean" default view that presents a fully-green project over a half-observed one, and `trust-and-evidence.md` puts staleness "on the primary surface, not buried in drill-down". The alternative the owner may prefer — leave the opening band positive and let the catalogs carry it — is coherent but makes the page's own first impression the least honest part of it. |
+| Q4 | **Does the opening band render a real Unknown in place?** No rendered Unknown of any kind appears in the first reading: over the four opening groups (document start to the first catalog group, 19.03% of the page) there are 126 claim tuples, **all Observed**, and **0** Unknown-disclosure blocks; the first rendered Unknown is at 25.55% depth and the whole-shape Unknown — the claim that Butlers' shape is not fully known — is at 57.72% [Observed]. | **Yes: surface the whole-shape Unknown and the one class-level Unknown in the opening band, in place, with their routes.** Nothing is fabricated — both claims already exist on the page and are merely late. CC-VIZ-3 forbids a "clean" default view that presents a fully-green project over a half-observed one; by analogy — its own subject there is a superseded observation record, not an Unknown — `trust-and-evidence.md`:101 puts staleness "on the primary surface, not buried in drill-down" (review 2, G8). The alternative the owner may prefer — leave the opening band positive and let the catalogs carry it — is coherent but makes the page's own first impression the least honest part of it. |
 | Q5 | **Does the declared encoding table extend from the two epistemic labels to tier, freshness and challenge?** Twelve tier/freshness/challenge states are defined in prose in one collapsed disclosure and **none** has a colour, badge or icon; the glossary carries 15 state sentences and **9** of them describe values no tuple on this capture carries [Observed]. | **Yes — extend it, and generate the glossary from it.** CC-VIZ-1 requires every visual encoding to declare "a legend stating exactly what it means", and generating both directions from one table is the only way a legend entry and a live encoding cannot drift (which is POC-REQ-061's falsifier, "a legend entry matching no rendered encoding", and its mirror). Three constraints ride on the answer: the tier table gets six rows plus Q2's absence treatment; the freshness table gets the four RFC2-10 closes it at, with **no** absence row and a guard that fails if the renderer emits a fifth value (Q2's freshness limb — the closure must be asserted over the rendered output, not over the table, or it cannot see line 307); and unreachable values are **marked in place, never deleted** — which is M2's ruling shape, so slice 5 must rebase onto M2's markers rather than replace them (Q7). |
-| Q6 | **Does the page's proposal disclosure get a token of its own, out of the Unknown token's way?** On the retained capture the sentence "Proposed change — not current authority." renders **once**, at 56.29% depth, in `var(--unknown)` — the token the page's own legend declares to mean "? Unknown … No verifying evidence exists yet" [Observed]. Five CSS rules use that one token for four declared meanings, of which two render zero times here (`class="unavailable-notice"` 0, `class="proposal"` 0); the live reuse is 22 `unknown-disclosure` blocks and 1 proposal label beside the legend's 2 declared Unknown badges [Observed: literal counts this session]. **What this question does not ask.** It adds no member to any closed vocabulary. RFC2-25 closes the epistemic labels at three, the rendering tiers at six, and the sibling surface states at three: "*Deliberately outside the registry — **three** sibling surface states, closed:* `dismissed-by-decision`, `unadopted-draft` and `editorial-draft`" (`.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md`:169, quoted verbatim with the source's own emphasis). The capture renders **0** occurrences of each of those three, and 0 of `challenge-pending` [Observed: literal counts, denominator the whole 1,481,819-character page]. The proposal treatment is **not** one of them and is not proposed as a fourth: it is a render disclosure of narrative provenance. An earlier draft of this packet framed Q6 and slice 6 as a sibling-state family and attributed to RFC2-25 a phrase it does not contain; review 1 (F3) was right that as written it pointed an implementer at a closed three-member vocabulary. | **Yes — a `--proposed` token, declared as a render-disclosure encoding, at a stated perceptual distance.** VIS-7's "every encoding means what its legend says" is falsified today by one sentence a reader can point at, and RFC7-34 is its Polaris-binding form. The new family is a **fourth declared encoding table** — render disclosures — and mints nothing: no fourth epistemic label (RFC2-25: "a tier never becomes a fourth epistemic label"), no seventh tier, no fourth sibling surface state. Contradiction is **not** in this family: a contradicted item renders tier `suspended`, one of RFC2-25's six, and slice 4's fixture is what makes it render — that belongs to slice 4 and the tier table, not here. The measurable bar slice 6 must clear, with its population named: over the five tokens carrying foreground meaning, `--amber` ↔ `--unknown` at ΔE76 **7.85** is the smallest pair and `--muted` ↔ `--ink` at **26.74** the next, so a new foreground token must sit ≥ 26.7 from `--unknown` and meet POC-REQ-061's AA contrast on both page grounds. That floor holds over the foreground population only: over the full declared set of nine distinct colours the smallest pair is 3.98 and seven pairs sit below 26.74, because the ground tokens are adjacent by design (Measurements). Alternative arm: keep one token and legend the reuse explicitly — lawful under CC-VIZ-1, but it asks the reader to hold four meanings for one colour. |
-| Q7 | **Sequencing against M2 (register row P-69) and lane B (P-68).** M3 slice 5 generates the freshness glossary that M2 slice 1 marks by hand; both edit `apps/three-surface-poc/src/polaris-copy.ts` freshness sentences and the block at `apps/three-surface-poc/src/polaris.ts` lines 346–361 (`claimStatesBlock`), whose freshness group — the exact collision — is line 357. | **M2 first, then M3 slices 1–4 in parallel with P-68, then M3 slices 5–6.** M2's packet is further along (reviewed once, P-69 queued) and its markers are the *content* slice 5's table must carry; reversing the order means M3 generates a glossary M2 then hand-edits, and the copy oracle is written twice. Slices 1–4 touch none of those bytes and may run at any time. **No M3 slice opens a PWB specification package until P-68 is ruled** — and on the recommended answers none needs one at all. |
+| Q6 | **Does the page's proposal disclosure get a token of its own, out of the Unknown token's way?** On the retained capture the sentence "Proposed change — not current authority." renders **once**, at 56.29% depth, in `var(--unknown)` — the token the page's own legend declares to mean "? Unknown … No verifying evidence exists yet" [Observed]. Five CSS rules use that one token for four declared meanings, of which two render zero times here (`class="unavailable-notice"` 0, `class="proposal"` 0); the live reuse is 22 `unknown-disclosure` blocks and 1 proposal label beside the legend's 2 declared Unknown badges [Observed: literal counts this session]. **What this question does not ask.** It adds no member to any closed vocabulary. RFC2-25 closes the epistemic labels at three, the rendering tiers at six, and the sibling surface states at three: "*Deliberately outside the registry — **three** sibling surface states, closed:* `dismissed-by-decision`, `unadopted-draft` and `editorial-draft`" (`.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md`:169, quoted verbatim with the source's own emphasis). The capture renders **0** occurrences of each of those three, and 0 of `challenge-pending` [Observed: literal counts, denominator the whole 1,481,819-character page]. The proposal treatment is **not** one of them and is not proposed as a fourth: it is a render disclosure of narrative provenance. An earlier draft of this packet framed Q6 and slice 6 as a sibling-state family and attributed to RFC2-25 a phrase it does not contain; review 1 (F3) was right that as written it pointed an implementer at a closed three-member vocabulary. | **Yes — a `--proposed` token, declared as a render-disclosure encoding, at a stated perceptual distance.** VIS-7's "every encoding means what its legend says" is falsified today by one sentence a reader can point at, and RFC7-34 is its Polaris-binding form. The new family is a **fourth declared encoding table** — render disclosures — and mints nothing: no fourth epistemic label (RFC2-25: "a tier never becomes a fourth epistemic label"), no seventh tier, no fourth sibling surface state. Contradiction is **not** in this family: a contradicted item renders tier `suspended`, one of RFC2-25's six, and slice 4's fixture is what makes it render — that belongs to slice 4 and the tier table, not here. The measurable bar slice 6 must clear, with its population named: over the five tokens carrying foreground meaning, `--amber` ↔ `--unknown` at ΔE76 **7.85** is the smallest pair and `--muted` ↔ `--ink` at **26.74** the next, so a new foreground token must sit ≥ 26.7 from `--unknown` and meet POC-REQ-061's AA contrast on both page grounds. That floor holds over the foreground population only: over the full declared set of nine distinct colours the smallest pair is 3.98 and seven pairs sit below the `--ink`↔`--muted` floor (26.74 to two decimals, 26.7371 computed), because the ground tokens are adjacent by design (Measurements). Alternative arm: keep one token and legend the reuse explicitly — lawful under CC-VIZ-1, but it asks the reader to hold four meanings for one colour. |
+| Q7 | **Sequencing against M2 (register row P-69) and lane B (P-68).** M3 slice 5 generates the freshness glossary that M2 slice 1 marks by hand; both edit `apps/three-surface-poc/src/polaris-copy.ts` freshness sentences and the block at `apps/three-surface-poc/src/polaris.ts` lines 346–361 (`claimStatesBlock`), whose freshness group — the exact collision — is line 357. | **M2 first, then M3 slices 1–4 in parallel with P-68, then M3 slices 5–6.** M2's packet is further along (five reviews retained, P-69 queued) and its markers are the *content* slice 5's table must carry; reversing the order means M3 generates a glossary M2 then hand-edits, and the copy oracle is written twice. Slices 1–4 touch none of those bytes and may run at any time. **No M3 slice opens a PWB specification package until P-68 is ruled** — and on the recommended answers none needs one at all. M2's Q3, Q5 and Q7 and this packet's Q2 all turn on the same RFC2-10 sentence (Gate 2; collision section), so P-69 and P-70 should be ruled together, not independently. |
 
 ## Gate 0 — Baseline
 
@@ -274,7 +274,8 @@ capture carries, and **none** of the fifteen has a visual treatment
 `data-epistemic-tier` (fires 11 times on this capture) and into
 `data-epistemic-freshness` (fires 0 times here, because all 713 tuples carry
 `fresh`). Both are Q2; the freshness twin is governed by RFC2-10, which is
-stricter than RFC2-25 and supplies no absence remedy (Gate 2).
+stricter than RFC2-25 and supplies its remedy as a disclosure outside the
+freshness slot rather than a value inside it (Gate 2).
 The page's own completeness check,
 `apps/three-surface-poc/src/polaris-first-reading.test.ts` lines 96–99,
 asserts that every rendered tier, freshness, challenge and label value has a
@@ -312,7 +313,8 @@ that 7.85 is "the smallest distance between any two named tokens" and that
 "every other pair of named tokens is ≥ 26.7". Both were universals over an
 unstated population, and both are **false over the full declared set** (review
 1, F2; verification rules 2 and 9). Recomputed this session over all 36 pairs,
-seven sit below 26.74 and 7.85 is the **third**-smallest:
+seven sit below the `--ink` ↔ `--muted` floor (26.74 to two decimals, 26.7371
+computed — review 2, G7) and 7.85 is the **third**-smallest:
 
 | Rank | Pair | ΔE76 |
 |---|---|---|
@@ -525,15 +527,43 @@ line 153 of
 The last clause is arm (a) of Q2 for the *tier* field, and the reason arm (c)
 is expensive.
 
+**RFC2-26 — This contract schedules nothing**, at line 196 of the same file
+(review 2, G6):
+
+> This contract schedules nothing: **it is not a specification of record
+> from which implementation work may be scheduled**. No implementation work
+> for user-observable consequences of this contract — evaluation and
+> snapshot displays, claim and challenge rendering, Unknown-reason and
+> rendering-tier presentation, reconciliation-chain and gap surfaces, API
+> answers over epistemic state — may be scheduled solely from this RFC.
+> Before implementation, every observable consequence either maps to an
+> approved OpenSpec requirement and scenario in the governance root's
+> `openspec/**` plane, or carries a reviewed N/A judgment proving it purely
+> structural with no independently testable behavior.
+
+Slices 5 and 6 are "rendering-tier presentation" and "Unknown-reason …
+presentation" in that list. Gate 5 names POC-REQ-061 as the approved
+OpenSpec requirement their observable consequences map to, discharging this
+clause's obligation explicitly rather than by implication.
+
 **RFC2-10 — Identity-bearing freshness**, at line 209 of
 `.syzygy/governance/contracts/rfcs/RFC-0002/snapshot-and-evaluation-core.md`:
 
-> **RFC2-10 — Identity-bearing freshness.** Logical freshness state — `fresh`,
-> `stale`, `broken`, `superseded` — changes status and therefore participates
-> in the VIS-7 identity test: two runs of one evaluation must agree on every
-> freshness state. [Observed — architecture.md.] **Four values, closed.** The
-> list changes only by amendment to this RFC; no implementation may mint,
-> spell, or force-fit a freshness value it does not carry.
+> **RFC2-10 — Identity-bearing freshness.** Logical freshness state —
+> `fresh`, `stale`, `broken`, `superseded` — changes status and therefore
+> participates in the VIS-7 identity test: two runs of one evaluation must
+> agree on every freshness state. [Observed — architecture.md.] **Four
+> values, closed.** The list changes only by amendment to this RFC; no
+> implementation may mint, spell, or force-fit a freshness value it does
+> not carry. The closure is required for the same reason RFC2-24's is: a
+> machine answer carries the freshness state verbatim (RFC6-14), aggregates
+> count per freshness value (RFC6-17), and a disagreement between two
+> renderings over one declared scope is release-blocking (RFC6-22/23) — a
+> value existing in no vocabulary can be neither carried verbatim nor
+> checked for parity, and leaving it unstated is how the value gets chosen
+> by whoever implements the render first. A condition genuinely outside the
+> four is disclosed as a fact of the render, never dressed as a freshness
+> state.
 
 This is the clause the freshness family is closed by, and this packet's first
 draft never cited it (review 1, F9): it anchored the closure to
@@ -542,12 +572,20 @@ not an authority — a citation, not a reliance (verification rules 5 and 8).
 The constant is retained below only as the implementation's echo, labelled as
 such.
 
-RFC2-10 is also **stricter than RFC2-25**, and that asymmetry is the whole of
-review 1's F4. RFC2-25 forbids a new *tier* and supplies a remedy for absence
-("an untier'd claim renders at its bare label"). RFC2-10 forbids the *minting*
-in terms — "no implementation may mint, spell, or force-fit a freshness value
-it does not carry" — and supplies no absence marker at all. The renderer mints
-`unstated` into both fields, on consecutive lines
+RFC2-10 is also **stricter than RFC2-25**, though the shapes of their
+remedies differ rather than one simply having none. RFC2-25 forbids a new
+*tier* and supplies a *rendering* remedy for absence, inside the tuple ("an
+untier'd claim renders at its bare label"). RFC2-10 forbids the *minting* in
+terms — "no implementation may mint, spell, or force-fit a freshness value
+it does not carry" — and supplies its own remedy as a *disclosure*, outside
+the freshness slot: "a condition genuinely outside the four is disclosed as
+a fact of the render, never dressed as a freshness state" (quoted in full
+above). Review 1's F4 named the asymmetry; review 2 (G1) found this packet's
+own account of it — "supplies no absence marker at all" — false against the
+clause's own text, which the packet had quoted only as far as its minting
+prohibition and not to its remedy. Q2 below states the corrected asymmetry
+and puts RFC2-10's disclosure route to the owner as a named arm. The
+renderer mints `unstated` into both fields, on consecutive lines
 (`apps/three-surface-poc/src/polaris.ts`):
 
 ```
@@ -562,7 +600,7 @@ rather than theoretical, and it is one branch away: M2's Q7 records that
 all, and M2 slice 5 routes freshness through that engine, so on the day it
 lands line 307 mints a fifth freshness value on every class with no declared
 bound [Observed: M2's packet and evidence record on branch
-`agent/syzygy-dov.2`, read this session at head `68123fc`; the arm is at
+`agent/syzygy-dov.2` (register row P-69), read this session; the arm is at
 `packages/cap1-core/src/staleness.ts` lines 98–104 in this worktree]. Q2 below
 therefore covers both fields, and slice 5's freshness table has to catch the
 mint rather than assert over the declared table alone.
@@ -572,8 +610,8 @@ mint rather than assert over the declared table alone.
 module whose front matter reads `applies_to: [polaris]`):
 
 > Every such distinction is recoverable **without colour, position, or
-> layout** — by label, text, or structure; **visual encodings are legended
-> and mean exactly what the legend says (VIS-7)**; every curated diagram has
+> layout** — by label, text, or structure; visual encodings are legended
+> and mean exactly what the legend says (VIS-7); every curated diagram has
 > a text equivalent … an epistemic state a reader cannot perceive is
 > comprehensible fiction for that reader.
 
@@ -913,17 +951,26 @@ freshness and challenge value of every presented claim; the
 `states.strengthen` text present; and
 `aria-describedby="polaris-claim-states-lede"` on every claim tuple. A
 generated glossary that drops the lede id, the strengthen sentence, or the
-`unstated —` sentence — which Q2 arm (b) makes tempting to delete — breaks
-readiness without breaking any test slice 5 writes. The file is unchanged by
-this slice and binding on it; it is in the Gate 3 row and in Gate 6's re-run
-list.
+`aria-describedby` binding breaks readiness without breaking any test slice
+5 writes. Dropping the `unstated —` sentence, which Q2 arm (b) makes
+tempting to delete, does **not** break this preflight (review 2, G2): its
+required-term set is built from `claim.epistemic.tier`/`.freshness` on the
+*model*, never from the render, and `unstated` is never a model value, so
+the term never enters it. The guard that actually holds the `unstated —`
+sentence is `apps/three-surface-poc/src/polaris-first-reading.test.ts` line
+88, which hard-codes it in its own list of required terms; slice 5 must keep
+that guard rather than rely on the preflight for it. The preflight file is
+unchanged by this slice and binding on it; it is in the Gate 3 row and in
+Gate 6's re-run list.
 
 **M2's constraint.** M2 slice 1 marks the three unreachable freshness
-sentences in place with the reason and the route, under a copy oracle. Slice 5
-must carry those markers into the generated table as a per-row *reachability*
-field, not delete them; the copy oracle M2 writes becomes an assertion over
-the generated output. If M3 lands first, M2's hand edit lands on generated
-copy and is lost. This is the whole of Q7's first half.
+sentences in place with the reason it is unreachable and, where one exists,
+the route (M2's `superseded` marker has a reason and no route, by design —
+review 2, G4), under a copy oracle. Slice 5 must carry those markers into
+the generated table as a per-row *reachability* field, not delete them; the
+copy oracle M2 writes becomes an assertion over the generated output. If M3
+lands first, M2's hand edit lands on generated copy and is lost. This is the
+whole of Q7's first half.
 
 **The textual sweep becomes a visual one.**
 `apps/three-surface-poc/src/polaris-first-reading.test.ts` lines 96–99 already
@@ -984,10 +1031,12 @@ but over a stated population: the five tokens that carry foreground meaning
 (`--cyan`, `--amber`, `--unknown`, `--muted`, `--ink`), where `--amber` ↔
 `--unknown` at 7.85 is the smallest of ten pairs and `--muted` ↔ `--ink` at
 26.74 is the next. It is **not** a floor over the whole declared token set:
-seven of the 36 pairs over the nine distinct declared colours sit below 26.74,
-because ground tokens are adjacent on purpose (Measurements; the full matrix
-is in the evidence file). Both numbers are computed by the test from the token
-values, with the formula and the colour space stated, and recorded in the
+seven of the 36 pairs over the nine distinct declared colours sit below the
+`--ink` ↔ `--muted` floor (26.74 to two decimals, 26.7371 computed — review
+2, G7), because ground tokens are adjacent on purpose (Measurements; the
+full matrix is in the evidence file). Both numbers are computed by the test
+from the token values, with the formula and the colour space stated, and
+recorded in the
 evidence file. The existing foreground near-collision — `--amber` and
 `--unknown` at 7.85 — is either repaired in the same pass or recorded as a
 known reuse with its legend row, because `--amber` carries the notice
@@ -1048,7 +1097,11 @@ field rather than of an epistemic label, so the new families sit alongside
 the requirement rather than inside it [Inferred: this is the reading this
 packet relies on]. They are governed instead by CC-VIZ-1 (every visual
 encoding declares its legend), POC-REQ-061's legend-to-encoding falsifier and
-VIS-7. **If the owner or a reviewer reads POC-REQ-060's "one declared set of
+VIS-7. POC-REQ-061 is also the approved OpenSpec requirement RFC2-26 requires
+an observable consequence of that contract to map to before implementation
+(Gate 2); its legend-to-encoding falsifier is exactly that mapping for
+slices 5 and 6, so RFC2-26's scheduling bar is discharged, not left open.
+**If the owner or a reviewer reads POC-REQ-060's "one declared set of
 design tokens" as closing the token set at its current members**, slices 5
 and 6 acquire a POC spec delta, join Q7's collision, and must queue behind
 P-68 — which is the condition under which Q5 and Q6 change answer.
@@ -1131,32 +1184,38 @@ freshness *values* themselves, which are M2's subject.
 
 ## Collision and sequencing
 
-**With M2 (`syzygy-dov.2`, register row P-69, branch head `68123fc`).** This
-packet's first draft recorded M2's head as `ec30494` and described M2 as five
-slices. It was correct when written — `e0ecdc8` landed 73 seconds after this
-packet's mtime — and is stale twice over now (review 1, F7, itself caught M2
-at `e0ecdc8`). Re-read this session: M2 is at **`68123fc`** ("review 3
-(REVISE) retained; false PWB-REQ-020 precedent withdrawn", 2026-09-14
-08:23:43 +0800) and has **six** slices [Observed: the branch read read-only at
-that head].
+**With M2 (register row P-69; overlap confined to the two files listed
+below).** This packet's first draft recorded M2's head as `ec30494`, then
+`e0ecdc8` (review 1, F7), then `68123fc` (review 2, G4) — three consecutive
+readings, each correct when written and stale by the next one, which is the
+cost of citing a branch by head rather than by register row. Re-read this
+session at **`da1497b`** (2026-09-14: "M2 funnel review 5 retained and
+K1–K9 repaired"; reviews 4 and 5 landed since review 2 read `1befd6f`,
+repairing findings J1–J8 and K1–K9), M2 still has **six** slices [Observed:
+the branch read read-only at that head]. This is the only place this packet
+names M2's head hash; elsewhere it cites P-69 and the two files below.
 
-M2's slice 6 ("A lapsed reviewed selection announces itself", the dossier's
-L4-M5) touches `apps/three-surface-poc/src/polaris-reading.ts` line 44 and
+M2's slice 6 ("A lapsed reviewed selection announces itself") touches
+`apps/three-surface-poc/src/polaris-reading.ts` line 44 and
 `apps/three-surface-poc/src/polaris.ts` lines 506–510 — **neither of which any
 M3 slice touches** — and M2's slice 1 wording and its Q5 "mark, do not delete"
-ruling are unchanged at `68123fc`. So the shared surface is unchanged and M3's
-collision conclusion and recommended sequence survive; only the head hash and
-the slice count moved. M2's review 3 withdrew a PWB-REQ-020 precedent its own
-review-2 repair had asserted; this packet never relied on that precedent — its
-PWB-REQ-020 reading is its own, stated at Gate 2 and labelled Inferred.
+ruling are confirmed unchanged at `da1497b` (M2's own Gate 3 row and Q5 text
+read this session). So the shared surface is unchanged and M3's collision
+conclusion and recommended sequence survive; only the head hash moved. M2's
+review 3 withdrew a PWB-REQ-020 precedent its own review-2 repair had
+asserted; this packet never relied on that precedent — its PWB-REQ-020
+reading is its own, stated at Gate 2 and labelled Inferred.
 
 The overlap is exact and small, and it is in two files [Observed: both read
 this session on both branches]:
 
 1. `apps/three-surface-poc/src/polaris-copy.ts` lines 46–49, the four
    freshness sentences. M2 slice 1 edits each unreachable one to carry the
-   reason it is unreachable and the route that would make it reachable. M3
-   slice 5 generates those same sentences from a freshness encoding table.
+   reason it is unreachable and, where one exists, the route that would
+   make it reachable (M2's `superseded` marker has a reason and no route,
+   by design; M2's copy oracle enforces the marker, not the route —
+   review 2, G4). M3 slice 5 generates those same sentences from a
+   freshness encoding table.
 2. `apps/three-surface-poc/src/polaris.ts` lines 346–361, `claimStatesBlock`,
    which renders them — and specifically **line 357**, the freshness group,
    which is where the two changes meet. An earlier draft cited 346–353 in
@@ -1175,12 +1234,22 @@ this session on both branches]:
    two moves are complementary: M2 decides the *value*, M3 guards the
    *vocabulary*.
 
-**M2 lands first.** Its markers are content — a reason and a route per
-unreachable value — that slice 5's table must carry as a per-row field. In
-that order M3 inherits a tested invariant and converts M2's copy oracle into
-an oracle over generated output. In the other order M2's hand edit lands on
-generated copy and the next regeneration erases it. M3 slices 1–4 touch
-neither file and may run at any time, including now, in parallel with M2.
+**Cross-packet note (review 2, G1).** M2's Q3, Q5 and Q7 all rest on the
+same RFC2-10 sentence this packet's Q2 relies on — "a condition genuinely
+outside the four is disclosed as a fact of the render, never dressed as a
+freshness state" — and M2's own Q7 text already questions its own `stale`
+recommendation against that sentence ("`stale` here is a candidate for
+exactly that dressing"). P-69 and P-70 must therefore be ruled together: the
+owner is reading one accepted clause across two packets, not answering two
+independent questions.
+
+**M2 lands first.** Its markers are content — a reason and, where one
+exists, a route per unreachable value — that slice 5's table must carry as a
+per-row field. In that order M3 inherits a tested invariant and converts
+M2's copy oracle into an oracle over generated output. In the other order
+M2's hand edit lands on generated copy and the next regeneration erases it.
+M3 slices 1–4 touch neither file and may run at any time, including now, in
+parallel with M2.
 
 **With lane B (`syzygy-dov.17`, register row P-68, branch head `4090f98`).**
 Lane B's semantic delta lets a tuple field "whose value is the same for every
@@ -1310,12 +1379,12 @@ over those figures.
 | F4 closed-vocabulary guard one line short of RFC2-10 | blocking | Accepted and repaired: RFC2-10 is quoted verbatim at `snapshot-and-evaluation-core.md`:209 in Gate 2, lines 306–307 are shown together, and Q2's scope now covers both fields. The asymmetry is stated: RFC2-25 supplies an absence remedy, RFC2-10 forbids the minting in terms and supplies none, so arm (b) governs tier and is **not** lawfully available for freshness — the owner is shown the two arms that are (the renderer supplies one of the closed four, per M2's Q7; or the claim is held Unknown), and that PWB-REQ-007's Falsifier forbids simply omitting the field. Slice 5's freshness closure moves from the declared table to **served output** with the tuple count as denominator, mutant (e) forces `claim.epistemic.freshness` undefined, S9 gains the same limb, and the M2 slice-5 interaction is item 3 of the collision section |
 | F5 the "735 … 0" headline flattens two defects | non-blocking | Accepted and repaired: Q1, the Motif, the cross-surface table, the funnel summary and the Q1-other-way paragraph now split 713 (no declared class **and** no distinguishing treatment) from 22 (the declared Unknown token under an undeclared, unlegended class), with the served rule quoted. Q1's recommendation is unchanged and the split is stated to sharpen it |
 | F6 `walkthrough-preflight.ts` never named | non-blocking | Accepted and repaired: the file is added to slice 5's Gate 3 row as an unchanged-but-binding input, its `claimStrength` requirements (lines 203–226) are stated in the slice, Gate 6 item 6 re-runs it after slices 3 and 5, and mutant (f) removes the strengthen sentence and confirms readiness fails |
-| F7 M2 head stale | non-blocking | Accepted and repaired, and re-derived past the review: M2 is at **`68123fc`**, not `e0ecdc8`, with six slices. Slice 6's two files (`polaris-reading.ts` line 44, `polaris.ts` lines 506–510) are named and stated to be untouched by any M3 slice; M2's slice 1 wording and Q5 ruling are confirmed unchanged; the shared surface is unchanged and M3's conclusion and sequence survive. M2's review 3 withdrawal of a PWB-REQ-020 precedent is noted as one this packet never relied on |
+| F7 M2 head stale | non-blocking | Accepted and repaired at the time, and re-derived past the review twice since: M2 was `68123fc` when review 1 was answered, then review 2 (G4) found it stale a third time at `1befd6f`; re-derived again this repair pass at **`da1497b`** (reviews 4 and 5 retained, findings J1–J8 and K1–K9 repaired), still with six slices. Slice 6's two files (`polaris-reading.ts` line 44, `polaris.ts` lines 506–510) are untouched by any M3 slice at every head checked; M2's slice 1 wording and Q5 ruling are confirmed unchanged; the shared surface is unchanged and M3's conclusion and sequence survive. M2's review 3 withdrawal of a PWB-REQ-020 precedent is noted as one this packet never relied on. Per review 2's own note on this class, the collision section now cites M2 by register row (P-69) and the two shared files rather than repeating the head hash |
 | F8 cited line range excludes the whole overlap | non-blocking | Accepted and repaired in all three places (Q7, the Gate 3 slice-5 row, collision item 2): 346–361, with line 357 named as the freshness group where the two changes meet |
 | F9 freshness closure anchored to a source constant | non-blocking | Accepted and repaired: RFC2-10 is quoted in Gate 2 and named as the authority in the vocabulary table and in slice 5; `staleness.ts` line 18 is retained and labelled the implementation's echo |
 | F10 "five rules, four meanings" omits that two never render | non-blocking | Accepted and repaired: the Measurements paragraph and Q6 now state that `class="unavailable-notice"` and `class="proposal"` each render 0 times on this capture and that the live reuse is 22 disclosure blocks and 1 proposal label beside the legend's 2 badges, all re-derived this session |
 | F11 `cross-cutting.test.ts` characterised imprecisely | editorial | Accepted and repaired: restated in the review's terms — it iterates pages **and** the declared table's two entries, asserts every rendered `epistemic-*` class name is in the table, and its denominator is `pages(model)` over the declared table, never the rendered population |
-| F12 emphasis added inside verbatim quotes of bound text | editorial | Accepted and repaired: the added bold is removed from all five quotes (PWB-REQ-007 ×2, PWB-REQ-016 ×2, VIS-7, CC-VIZ-1, POC-REQ-061). RFC2-25's and RFC7-34's bolding matched the source and is untouched; the new RFC2-10 and RFC2-25 quotes carry the source's own emphasis only |
+| F12 emphasis added inside verbatim quotes of bound text | editorial | Accepted and repaired: the added bold is removed from all five quotes (PWB-REQ-007 ×2, PWB-REQ-016 ×2, VIS-7, CC-VIZ-1, POC-REQ-061), and, after review 2 (G3), from the RFC7-34 quote as well. RFC2-25's bolding matched the source and was already untouched; RFC7-34's did not until this repair — review 1 asserted it matched and was wrong. The new RFC2-10 and RFC2-25 quotes carry the source's own emphasis only |
 | F13 evidence JSON `colour_method` names the wrong line range | editorial | Accepted and repaired: 46–55 in the evidence record, matching the measured population |
 | F14 slice 5 cites `polaris-copy.ts` 38–51 | editorial | Accepted and repaired: 34–51 in the slice and in the Gate 3 row, with the composition stated (3 label, 7 tier, 4 freshness, 1 challenge, three group labels interleaved) |
 
@@ -1324,13 +1393,15 @@ Q5 and Q7 keep their recommendations word for word, with scope and citations
 sharpened. Q2's recommendation was "**Arm (b).**" and is now "**Arm (b) for
 the tier field; arm (b) is not lawfully available for the freshness field, and
 the owner should see why**" — the tier ruling is unchanged; the freshness half
-is new and is the substance of F4. Q6's recommendation was "**Yes, with a
+is new and is the substance of F4 (that freshness wording was itself
+withdrawn after review 2, finding G1; see the review-2 section). Q6's recommendation was "**Yes, with a
 `--proposed` token at a stated perceptual distance**" and is now "**Yes — a
 `--proposed` token, declared as a render-disclosure encoding, at a stated
 perceptual distance**" — the answer is the same and its framing no longer
 routes an implementer into a closed vocabulary (F3), and its measurable bar
 now names the population it holds over (F2). Q5's recommendation is unchanged
-but now carries three constraints rather than two.
+but now carries three constraints rather than two. (Q2's freshness
+recommendation changes again after review 2 — see below.)
 
 **Every repair above post-dates the review.** By verification rule 10 the
 review binds the bytes it names — the 71,765-byte packet and the 16,677-byte
@@ -1338,6 +1409,64 @@ evidence record whose digests it records — and not these. The current bytes
 are uncovered until a second independent fresh-context review confirms them;
 its raw will be retained as a second `-RAW.md` file, never an overwrite of the
 first.
+
+## Review 2 and repairs (2026-09-14)
+
+A second independent fresh-context review of this packet — of the packet,
+its evidence record and the P-70 note and row — is retained verbatim at
+`docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-2-RAW.md` (48,381 bytes,
+sha256 `a04b20517539e971c1e192015329dd39a2e2f536b52c06fffdce473177397012`;
+both figures computed this session with `wc -c` and `sha256sum`, matching
+the raw's own header exactly). It reviewed the packet, the evidence record
+and the register at commit `573abb0` — the four files review 1 also named,
+all tracked at that commit. Its verdict word, copied exactly: **REVISE —
+one blocking, five non-blocking, three editorial**. Findings by severity as
+the raw states them: 1 blocking (G1), 5 non-blocking (G2–G6), 3 editorial
+(G7–G9).
+
+The review re-derived every load-bearing figure in the packet a second time
+— all 36 ΔE76 pairs, the three-method tuple count, the 1,087-member
+cross-surface population, the 409/409 by-id item sweep, the lane B hoist
+figures, the byte arithmetic and the governance battery — and found them
+exact. It also verified all fourteen review-1 findings against the current
+bytes: **9 REPAIRED, 5 PARTIAL** (F4, F6, F7, F12 partial; **0 NOT
+REPAIRED**), the partials being exactly the sites this repair pass closes.
+
+| Finding | Disposition |
+|---|---|
+| G1 blocking — RFC2-10 supplies the absence route the packet said it lacked, foreclosing a lawful third arm on Q2's freshness limb | Accepted and repaired: the Gate 2 quote is extended through the clause's remedy sentence (`snapshot-and-evaluation-core.md`:220–222, verbatim, no added emphasis); "supplies no absence marker at all" is withdrawn from all four packet sites and the register row; the asymmetry is restated as a rendering remedy (RFC2-25) against a disclosure remedy outside the slot (RFC2-10); Q2's freshness limb now states three lawful arms (b-i/b-ii/b-iii), puts the PWB-REQ-007 tension to the owner unresolved, and recommends (b-iii) labelled `[Inferred]` without calling (b-i) or (b-ii) unlawful; the cross-packet link to M2's Q3/Q5/Q7 is stated in Q2, Q7 and the collision section |
+| G2 non-blocking — the preflight does not require the `unstated —` sentence; an existing test does | Accepted and repaired: slice 5's readiness paragraph now names `aria-describedby` as the preflight's third true example and states that `walkthrough-preflight.ts` builds its required-term set from the model, never the render, so `unstated` never enters it; the guard is restated as `polaris-first-reading.test.ts` line 88 |
+| G3 non-blocking — F12 was not fully repaired: added bold survives in the RFC7-34 quote, and the disposition row asserted otherwise | Accepted and repaired: the second bold span is dropped from the RFC7-34 quote at Gate 2, matching `rendering-and-surface.md`:241–243 verbatim; the F12 disposition row is corrected to say RFC7-34's bolding did not match until this repair |
+| G4 non-blocking — the M2 head is stale a third time, and one thing M3 relies on changed (M2's marker wording) | Accepted and repaired: the collision section now names M2's head once, as `da1497b` (2026-09-14, reviews 4 and 5 retained, J1–J8 and K1–K9 repaired), and cites M2 elsewhere by register row (P-69) and the two shared files; the structural collision and sequence are confirmed unchanged by reading M2's own Gate 3 row and Q5 text at `da1497b`; the marker description in slice 5 and collision item 1 is weakened to "the reason and, where one exists, the route" |
+| G5 non-blocking — the P-70 register row states a depth (25.55%) that belongs to a different object than the one it names | Accepted and repaired in the register: the row now reads "57.72% and 25.70%" |
+| G6 non-blocking — RFC2-26 is never cited, though it is the clause Gate 5 discharges for slices 5–6 | Accepted and repaired: RFC2-26 is quoted at Gate 2 (`rendering-vocabularies.md`:196), and Gate 5's slices-5/6 paragraph names POC-REQ-061 as the mapping requirement that discharges it |
+| G7 editorial — "below 26.74" is 0.0029 off the pair's own computed value (26.7371) | Accepted and repaired: all three packet sites now read "below the `--ink` ↔ `--muted` floor (26.74 to two decimals, 26.7371 computed)"; the evidence record gains a precision note beside the existing `pairs_below_26_74` fields |
+| G8 editorial — a doctrine quote with no anchor, applied to a different subject by analogy | Accepted and repaired: `trust-and-evidence.md`:101 is anchored and the citation is marked "by analogy" with its actual subject (a superseded observation record) stated |
+| G9 editorial — the register softens a lower-bound cost into an approximate one | Accepted and repaired in the register: Q3's arm (b) now reads "at least 13,088 attribute bytes plus an unseparated text component" |
+
+**F-partial note.** Review 2 confirmed F4, F6, F7 and F12 as PARTIAL against
+the bytes it read (the mechanical repairs held; each had one remaining
+defect — respectively G1, G2, G4 and G3). This repair pass closes all four
+partials at their named sites; it does not re-litigate the REPAIRED findings
+above it.
+
+**Q2's freshness recommendation changed, plainly.** Before this repair the
+recommendation read "arm (b) is not lawfully available for the freshness
+field, and the owner should see why" — foreclosing a third arm on a
+truncated quote (G1). It now reads (Q2's Recommended column, in full): "Arm
+(b) for the tier field. For the freshness field, three lawful arms follow
+from RFC2-10's own text, and the owner should choose among them — none is
+unlawful," recommending **(b-iii)** — RFC2-10's own render-fact disclosure,
+outside the `data-epistemic-freshness` slot — while naming (b-i) and (b-ii)
+as live, lawful alternatives. The earlier "not lawfully available" is
+withdrawn, not merely reworded: a third arm exists now that did not before
+this repair.
+
+**Every repair above post-dates review 2.** By verification rule 10, review
+2 binds the 102,085-byte packet and 30,747-byte evidence record it read at
+`573abb0` — and not the current bytes. The current bytes are uncovered
+until a third independent fresh-context review confirms them; its raw will
+be retained as a third `-RAW.md` file, never an overwrite of the first two.
 
 ## Funnel summary
 
