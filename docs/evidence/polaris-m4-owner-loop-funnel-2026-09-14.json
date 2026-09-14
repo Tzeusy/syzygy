@@ -902,5 +902,182 @@
         "Q1_through_Q5": "unchanged. Q1's acceptance text was widened by J1 without moving its arm, which turns on the zero-denominator fact the fourth family neither creates nor removes."
       },
       "rule_10": "This review binds the bytes it names (packet 162860 / evidence 49243 / register 35850 at 181797a) and not the repaired bytes; every review-4 repair is uncovered until a fifth review confirms them. That raw will be a fifth -RAW.md file, never an overwrite of any retained one."
+  },
+  "review5": {
+    "raw": "docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-5-RAW.md",
+    "bytes": 31406,
+    "sha256": "14f49e290bc55424690e9717830d9bbd5ea9bf4befa13659a7552199f8a6a43e",
+    "verdict": "REVISE - two blocking, one non-blocking, four editorial",
+    "reviewed_commit": "e134a12",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md": {
+        "bytes": 190003,
+        "sha256": "403def26d19e348e5b29f8874ef49f636d26de7de80fa0c05aaca7ab00362bad"
+      },
+      "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json": {
+        "bytes": 60920,
+        "sha256": "30b2b2cd27b8646eb5732d6007e4c78d9cad57330ef663e45a7b84c9fa21fbe7"
+      },
+      ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+        "bytes": 40852,
+        "sha256": "751d3edbed9573c5f5d43bb1d2a38ad4aa8bf53ed01c8d9139003cecf41f45f3"
+      }
+    },
+    "repairs_applied_this_session": true,
+    "j1_j9_verification_as_review5_states_it": {
+      "REPAIRED": [
+        "J1",
+        "J3",
+        "J4",
+        "J5",
+        "J6",
+        "J7",
+        "J8",
+        "J9"
+      ],
+      "PARTIAL": [
+        "J2"
+      ],
+      "denominator": 9,
+      "partials_from_review4_now_complete": "H1, H4 and H6, and G7",
+      "regressions_found_in_F1_F22_G1_G11_H1_H9": "none"
+    },
+    "disposition_summary": {
+      "K1": "CONFIRMED and applied (blocking). Seven named sites plus one the finding did not name still carried the pre-review-4 Q7 answer: the funnel summary's Acts, G5, Open-questions and G6 Bar lines, its Recommended-handoff line, Q7's own bolded recommendation, the sequencing order's slice-4/5 step and the recommended handoff's Q6 paragraph. Swept for others [predicate: the literals 'as sequenced', 'slices 1-5 and 7 none', 'trace to recorded findings', '2026-09-05 continuation', 'recorded-finding', 'this is review 2'; denominator: the whole packet, record and register]: no further live site. All eight repaired, superseded wording quoted and dated in place; the Bar line restated to five retained raws, this pass after review 5.",
+      "K2": "CONFIRMED and applied (blocking). DIRECTIVE-REGISTER.md line 260 defines RFC2-26 at rendering-vocabularies.md line 196; read at source, the ### heading is 194, the clause runs 196-221 in two paragraphs (196-210, blank 211, 212-221) and the next ## heading is 223. The packet quoted 196-210 and stopped unmarked, and ran the test over two of eight slices with no denominator. Blockquote extended to 221 verbatim (rewrapped only for the column bar); the line figure restated with 196-210 quoted and dated; denominator stated as the eight slice rows of Gate 3's authorizing-act table; the test run over all eight.",
+      "K3": "CONFIRMED and applied (non-blocking). Q6's preamble routes 'either arm' to Q7 while the subsection's limb bullets cover only slice 4 (the derive arm) and slice 5. One sentence added scoping the test to the derive arm and stating deletion's own limbs [Inferred]: limb 2 is plausibly reachable for deletion, which removes behavior rather than adding testable behavior, but still needs the reviewed N/A judgment and the effective owner act.",
+      "K4": "CONFIRMED and applied (editorial). J1's disposition named 'Q1 at :91, slice 1's Tests at :698-719, Gate 5 at :1009-1018' in the present tense; those are 181797a's anchors and none resolves in the current bytes. A convention sentence is added above the review-1 section and the three present-tense anchors are replaced by section and heading names, the superseded anchors quoted.",
+      "K5": "CONFIRMED and applied (editorial). Re-run this session [predicate (?i)\\bhome\\b; denominator each whole spec file]: 0 in the POC spec, 6 in the PWB spec, at lines 247, 277, 510, 511, 518 and 523. 511 and 523 are layer-home rule prose and fit neither published category. Partition restated as three categories over all six, the two-way partition quoted and dated; conclusion unchanged.",
+      "K6": "CONFIRMED and applied (editorial). POC-REQ-060 heading 927, Group/Form 929, quoted text begins 931, falsifier ends 946; PWB-REQ-020 heading 902, Group/Form 904, quoted text begins 906, falsifier ends 926; PWB-REQ-004 quoted text 491-498, exact. One convention stated and named at all three sites.",
+      "K7": "CONFIRMED and applied (editorial). 2 occurrences of the seven-character short M3 head over 1 packet line, 1 in this record, 0 in the register. The second was a present-tense claim about the sibling worktree; restated as what review 2 found, superseded text quoted and dated. Re-counted after the edit: 1 in the packet, 1 in this record, 0 in the register."
+    },
+    "re_derived_before_applying": {
+      "K2_clause_extent": {
+        "defined_at": "DIRECTIVE-REGISTER.md:260 -> rendering-vocabularies.md:196",
+        "heading_line": 194,
+        "clause_lines": "196-221",
+        "paragraphs": [
+          "196-210",
+          "212-221"
+        ],
+        "next_heading_line": 223,
+        "packet_had_quoted": "196-210, unmarked"
+      },
+      "K2_all_slice_test": {
+        "denominator": 8,
+        "denominator_source": "Gate 3 'The authorizing act, per slice' rows 1-8; the ninth row proposes no slice",
+        "slice_1": {
+          "class": "Unknown-reason and rendering-tier presentation; claim and challenge rendering",
+          "requirement_and_scenario": [
+            "POC-REQ-060 (POC spec:927), scenario 'Unknown looks the same everywhere' (POC spec:948)",
+            "PWB-REQ-007 (PWB spec:439), scenario 'Missing current evidence remains explicit Unknown' (PWB spec:470)"
+          ],
+          "limb_1": "available for the encoding-identity consequence exactly; available for the reason-and-route consequence only on a reading of PWB-REQ-007's quantification over 'every project entity and project-fact claim' [Inferred]"
+        },
+        "slice_2": {
+          "class": "API answers over epistemic state",
+          "requirement_and_scenario": [
+            "POC-REQ-020 (POC spec:377), scenario 'Surface and machine answer agree' (POC spec:400)",
+            "PWB-REQ-020 (PWB spec:902), scenario 'Complete model has wire parity' (PWB spec:928)"
+          ],
+          "limb_1": "available; the type-level narrowing enumerates no observable consequence of its own"
+        },
+        "slice_3": {
+          "class": "Unknown-reason presentation; reconciliation-chain and gap surfaces",
+          "requirement_and_scenario": "NONE FOUND. PWB-REQ-010 (596) and PWB-REQ-011 (632) scenarios (615, 651, 657) govern opening order and progressive depth; PWB-REQ-007's aggregate sentence has no aggregate scenario (its one scenario, 470, is the per-claim case); POC-REQ-032 (574) scenario (599) requires in-place disclosure; PWB-REQ-012's scenario (705) permits 'gaps' as a heading concept, a constraint not a mapping",
+          "limb_1": "unavailable",
+          "limb_2": "unavailable as designed - the slice carries its own oracle and counterexample fixture"
+        },
+        "slice_4": {
+          "class": "API answers over epistemic state",
+          "limb_1": "unavailable",
+          "limb_2": "unavailable as designed"
+        },
+        "slice_5": {
+          "class": "evaluation and snapshot display; Unknown-reason and gap surface; materialize status; reconciliation-chain surface",
+          "limb_1": "unavailable",
+          "limb_2": "unavailable as designed"
+        },
+        "slice_6": {
+          "class": "none - the slice schedules no implementation work and builds nothing",
+          "gate": "Q5's authorization limb, unchanged"
+        },
+        "slice_7": {
+          "class": "none identified - the output is a governance artifact, not a rendering of epistemic state",
+          "gate": "Q3's act question, unchanged"
+        },
+        "slice_8": {
+          "class": "[Unknown] - not designed in this packet, consequences not enumerated",
+          "gate": "its own acts, unchanged"
+        }
+      },
+      "K5_home_sweep": {
+        "predicate": "(?i)\\bhome\\b",
+        "poc_spec_hits": 0,
+        "pwb_spec_hits": 6,
+        "pwb_spec_lines": [
+          247,
+          277,
+          510,
+          511,
+          518,
+          523
+        ],
+        "partition": {
+          "registry governance-home field": [
+            247,
+            277
+          ],
+          "precedence table Home column and its semantic text": [
+            510,
+            518
+          ],
+          "layer-home rules the table governs": [
+            511,
+            523
+          ]
+        },
+        "none_is_the_root_route": true
+      },
+      "K6_citation_spans": {
+        "POC-REQ-060": {
+          "requirement": "927-946",
+          "quoted_text_begins": 931
+        },
+        "PWB-REQ-020": {
+          "requirement": "902-926",
+          "quoted_text_begins": 906
+        },
+        "PWB-REQ-004": {
+          "requirement": "487-498",
+          "quoted_text": "491-498",
+          "exact": true
+        }
+      },
+      "K7_head_literal_counts_after_repair": {
+        "packet": 1,
+        "record": 1,
+        "register": 0
+      },
+      "F21_over_78_recount": {
+        "predicate": "lines outside fenced blocks whose first non-space character is not a pipe and whose length exceeds 78",
+        "denominator": 2064,
+        "count": 7,
+        "lines": [
+          1,
+          10,
+          540,
+          615,
+          811,
+          1022,
+          1074
+        ]
+      }
+    },
+    "recommended_answers_changed": {
+      "Q7": "CHANGED, for the second consecutive review. Review 4 widened the slices-4-and-5 limb to carry RFC2-26. Review 5 (K2) required the clause quoted whole and run with a stated denominator; run over all eight Gate 3 slice rows it puts slice 3 under the same open gate, because no approved scenario in either signed spec reaches an aggregate of Unknown-reason counts in the opening. The recommendation now reads: slices 1-2 after M3 slice 5; slice 3 only after the three-way opening-band reconciliation AND the RFC2-26 ruling this question asks for; slices 4 and 5 gated on that same RFC2-26 ruling; slice 6 as sequenced, conditional on Q5's authorization limb; slice 7 waits on Q3; slice 8 deferred behind its own acts. It superseded 'Slices 1-2 after M3 slice 5; slice 3 only after the three-way opening-band reconciliation (below, revised per review 2, G2); slices 4-6 as sequenced; slice 7 waits on Q3; slice 8 is deferred behind its own acts.'",
+      "Q1_through_Q6": "unchanged. K1 carried review 4's Q7 change into the eight operative texts that had not received it; K3 through K7 moved no arm."
+    },
+    "rule_10": "This review binds the bytes it names (packet 190003 / evidence 60920 / register 40852 at e134a12) and not the repaired bytes; every review-5 repair is uncovered until a sixth review confirms them. That raw will be a sixth -RAW.md file, never an overwrite of any retained one."
   }
 }
