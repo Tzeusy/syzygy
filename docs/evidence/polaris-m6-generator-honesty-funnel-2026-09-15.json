@@ -5,7 +5,7 @@
   "move": "M6",
   "date": "2026-09-15",
   "packet": "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md",
-  "status": "candidate; binds nothing; planning only; no independent review yet",
+  "status": "candidate; binds nothing; planning only; one independent review (REVISE) applied 2026-09-15, uncovered until a second review confirms the repairs",
   "commit": {
     "baseline": "a9f671e",
     "note": "Every measurement below was taken in a worktree at a9f671e this session.",
@@ -71,7 +71,7 @@
             "garden.json",
             "report.json"
           ],
-          "output_bytes_total": 41940
+          "output_bytes_total": 87940
         },
         {
           "run": 2,
@@ -109,7 +109,7 @@
       ],
       "claim_label": "Observed",
       "predicate": "a sentence in packages/polaris-generation-core/src/prompts.ts that directs the model to express missing, unsupported or changed material using a named schema ('the supplied schema', \"the schema's\", 'the trusted schema')",
-      "denominator": "the whole file: 30 lines, 7517 bytes",
+      "denominator": "the whole file: 30 lines (split-on-newline; 29 by wc -l), 7517 bytes",
       "count": 5,
       "occurrences": [
         {
@@ -402,7 +402,7 @@
         "parseBoundedJson",
         "stageSchema"
       ],
-      "export_sweep_method": "literal sweep for lines beginning 'export' followed by function / async function / const / interface / type, over the four non-test sources",
+      "export_sweep_method": "literal sweep for lines beginning 'export' followed by function / async function / const / interface / type, over the six non-test sources: canonical-json.ts, index.ts, parse-json.ts, pipeline.ts, prompts.ts, provider-draft.ts [corrected 2026-09-15 after review 1, F3; the first draft said 'the four non-test sources', and its 'other four exports' enumeration omitted CANONICAL_JSON_ENCODING, CanonicalJsonError, BoundedJsonError, promptForStage and runGenerationPipeline - index.ts lines 1-14 re-export eleven runtime values and thirteen types]",
       "absence_claim": {
         "statement": "no validator in the package compares a stage's output to its input",
         "predicate": "occurrences of the literal 'context.draft' and of the literal 'priorDraft' in provider-draft.ts",
@@ -430,7 +430,7 @@
       "promises": [
         {
           "quote": "For each visual supply its reader question, named nodes, typed edges, edge meaning, source support, necessary qualifications, text equivalent and proposed placement.",
-          "at": "docs/polaris-generation/AUTHORING.md lines 45-46",
+          "at": "docs/polaris-generation/AUTHORING.md lines 45-47 [corrected 2026-09-15 after review 1, F5: the sentence's last word, 'placement', is on line 47; this field read 'lines 45-46']",
           "promised_fields": 8,
           "schema_fields_present": 2,
           "present": [
@@ -458,7 +458,7 @@
           "quote": "add a glossary when it helps further reading",
           "at": "docs/polaris-generation/AUTHORING.md line 26",
           "schema_field": null,
-          "sweep": "the literal 'glossar' (case-insensitive) occurs 0 times in provider-draft.ts and pipeline.ts, and once in prompts.ts line 13 as prose; denominator: the four non-test sources"
+          "sweep": "the literal 'glossar' (case-insensitive, Python re) occurs 0 times in provider-draft.ts and 0 times in pipeline.ts, and TWICE in prompts.ts - line 13 ('Use contents, glossary and comparison tables only when they help') and line 20, in the fidelity prompt ('every generated claim-bearing block, table cell, glossary explanation, deep dive and factual diagram element/edge must have actual support'); denominator: the six non-test sources [corrected 2026-09-15 after review 1, F6, which found the first draft saying 'once ... line 13' over a four-file denominator]"
         },
         {
           "quote": "Glossary entries are shared by inline definitions and glossary routes",
@@ -477,9 +477,9 @@
         }
       ],
       "line_corrections_to_the_finding": {
-        "AUTHORING.md diagram promise": "S9-F3 cited 45-49; the sentence ends at 46",
-        "AUTHORING.md deep-dive trade-off": "S9-F3 cited 60-63; the clause is on 62",
-        "ARTIFACTS-AND-TOOLS.md glossary": "S9-F3 cited 40-41; the sentence begins at 40"
+        "AUTHORING.md diagram promise": "S9-F3 cited 45-49; the sentence spans 45-47 [corrected 2026-09-15 after review 1, F5; this field read 'the sentence ends at 46', which was wrong in the other direction - S9-F3's range was closer than the first draft's correction]",
+        "AUTHORING.md deep-dive trade-off": "S9-F3 cited 60-63; the clause spans 62-63 [span widened 2026-09-15 after review 1, F5; this field read 'the clause is on 62']",
+        "ARTIFACTS-AND-TOOLS.md glossary": "S9-F3 cited 40-41; the sentence spans 40-41, so the finding's range was exact [corrected 2026-09-15 after review 1, F5; this field read 'the sentence begins at 40']"
       }
     },
     "M6_no_egress_boundary_across_the_kit": {
@@ -882,6 +882,7 @@
     "S9-F4 tags SEC-1 (endpoint authentication); the governing doctrine for the no-egress boundary is SEC-2.",
     "M6's Slices list has five entries where its What bullet names six moves; S9-M3 (the diagram/deep-dive/glossary gap) appears in the What and in evidence_findings and in no slice. It is carried in the packet as a deferred slice 6 with its mapping recorded.",
     "S9-F3's line ranges are slightly long in three places: AUTHORING.md 45-49 (the sentence ends at 46), 60-63 (the clause is on 62), ARTIFACTS-AND-TOOLS.md 40-41 (begins at 40).",
+    "[Corrected entry, appended 2026-09-15 after review 1, F5; the entry above is retained unedited.] S9-F3's line ranges, re-read at source: AUTHORING.md 45-49 is long, the sentence spans 45-47, not 45-46; 60-63 is long, the clause spans 62-63; ARTIFACTS-AND-TOOLS.md 40-41 is exact, the sentence spans both lines.",
     "A defect the dossier does not name: package.json line 15's build:poc tsc -b list omits packages/polaris-generation-core, which builds only transitively."
   ],
   "not_verifiable_this_session": [
@@ -891,11 +892,11 @@
     "Whether an account of what an editor changed counts as an 'API answer over epistemic state' under RFC2-26's consequence list; this packet states the reading and does not resolve it."
   ],
   "conventions_checked": {
-    "packet_non_fence_lines": 1073,
+    "packet_non_fence_lines": 1299,
     "wrapped_code_spans": 0,
     "lines_over_78_outside_fences_tables_headings": 2,
-    "lines_over_78_note": "each is a single unbreakable code-span path",
-    "distinct_code_spans": 261,
+    "lines_over_78_note": "each is a single unbreakable code-span path; re-measured 2026-09-15 after the review-1 repairs, and the first draft's figures over the bytes review 1 was bound to were 1073 non-fence lines, 261 distinct code spans and over-width lines at 657 and 787",
+    "distinct_code_spans": 295,
     "code_spans_with_slash_that_do_not_resolve": 10,
     "code_spans_with_slash_exceptions": [
       ".syzygy/**",
@@ -913,13 +914,13 @@
     "act_arguments_or_signed_digests_reproduced": 0,
     "cg_1b_note": "The path of this packet's first review is named without a code span, because CG-1b requires every code-span path to resolve and it does not exist yet. An earlier draft backticked it and CG-1b failed on exactly that reference.",
     "lines_over_78_at": [
-      657,
-      787
+      760,
+      890
     ]
   },
   "independent_review": {
-    "count": 0,
-    "note": "This packet has had no independent review. It is a first draft and should be reviewed in fresh context; the raw belongs at docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-RAW.md. Verification rule 10: any later edit retires a review bound to these bytes."
+    "count": 1,
+    "note": "One independent fresh-context review, retained verbatim at docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-RAW.md; verdict REVISE. Its thirteen findings were re-derived against source and applied 2026-09-15; see review1 below. Verification rule 10: the review binds the bytes it names, not these, and the repairs are uncovered until a second review confirms them. [This field read count 0 and 'This packet has had no independent review' until 2026-09-15.]"
   },
   "packet_measured": {
     "path": "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md",
@@ -934,5 +935,69 @@
     "baseline_before_these_files": "32 OK, 20 WARN, 0 FAIL (52 checks)",
     "last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
     "note": "An earlier draft failed CG-1b on one code-span path (the not-yet-written first review) and was repaired by naming it without a code span."
+  },
+  "review1": {
+    "raw": "docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-RAW.md",
+    "bytes": 35780,
+    "sha256": "c6e307a55e9215a2d9d884936cb295cef7b6ae1a8fff6a01c60905de78bb581b",
+    "verdict": "REVISE - one blocking, eleven non-blocking, one editorial",
+    "reviewed_commit": "91b1343",
+    "reviewed_packet_bytes": 86188,
+    "reviewed_record_bytes": 42882,
+    "repairs_applied_this_session": true,
+    "uncovered_until_second_review": true,
+    "re_derived_before_applying": {
+      "understanding_act_limiting_sentence": "POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md lines 39-41, read and quoted from the file this session, not transcribed from the review",
+      "spec_sentence_sweeps_python_re": {
+        "slice4_traceability_clause": "1 in the overlay (line 180), 0 in the predecessor",
+        "slice6_glossary_clause": "1 in the overlay (line 78), 0 in the predecessor",
+        "REQ_004_disposition_sentence": "present at predecessor line 186",
+        "REQ_006_coverage_sentence": "present at predecessor line 302",
+        "REQ_019_disposition_sentence": "present at predecessor line 1015",
+        "denominator": "the two specification files, whitespace-normalised"
+      },
+      "demo_rerun": "two runs into separate scratch directories: 7 files and 87940 bytes both times; run 2's counterexample re-executed (symlink aside, both dist trees removed) giving exit 2 and 42 error TS lines = 5 TS2307 + 32 TS7006 + 4 TS2339 + 1 TS7053 across 6 files, then symlink restored and exit 0, short git status clean",
+      "package_surface": "index.ts lines 1-14 re-export eleven runtime values and thirteen types; src/ holds six non-test sources",
+      "baseline_diff": "git diff --name-status f4589e2 a9f671e over the four paths: 20 A, 2 M (docs/polaris-generation/README.md and package.json); example.json, AUTHORING.md and ARTIFACTS-AND-TOOLS.md existed at f4589e2 with the same blob; git diff --name-only 1932f74..a9f671e over openspec and .syzygy: 3 rows, all under governance decisions, no specification file",
+      "kit_line_spans": "AUTHORING.md 26-27, 45-47, 62-63, 101-102; ARTIFACTS-AND-TOOLS.md 40-41 and 42-43; core README sentence at line 52, command at 55",
+      "glossar_sweep": "0 in provider-draft.ts, 0 in pipeline.ts, 2 in prompts.ts (lines 13 and 20); denominator the six non-test sources",
+      "rfc2_26": "lines 194-221 read; the scope sentence spans 219-220 and line 221 carries the shape-parallel list; the reviewed N/A-judgment route is named in the clause itself",
+      "synthetic_verification_record": "docs/evidence/polaris-pipeline-synthetic-verification-2026-09-13.json lists 17 source digests; the digests recorded for provider-draft.ts and draft-preview.ts equal those files' current bytes (compared, neither value reproduced here)",
+      "sibling_state": "five sibling registers carry exactly one row each (P-68, P-69, P-70, P-71, P-72) and M6's carried none; sibling heads f2f37dd, 6574600, 63b8e33, ba9ca61, 4090f98 are the heads review 1 read, so no branch advanced; the first-draft intersection counts reproduce under os.path.exists and the reviewer's under os.path.isfile, and the intersection is 0 under both",
+      "genuine_gates": "'six questions' occurs once in the packet (the section heading) and 'six gates' zero times, so the packet stated no six-gate count; it named Q1 and Q3 as the genuine gates and now names Q1, Q3 and Q6"
+    },
+    "dispositions": {
+      "F1": "CONFIRMED, blocking; repairs (a)-(d) applied; Q6's recommendation changed",
+      "F2": "CONFIRMED; 87940 bytes, deterministic over two runs",
+      "F3": "CONFIRMED; eleven runtime exports, six non-test sources",
+      "F4": "CONFIRMED; 20 A / 2 M, three unchanged files named, spec sweep added",
+      "F5": "CONFIRMED; README sentence at 52, diagram sentence at 45-47, every span widened",
+      "F6": "CONFIRMED; glossar occurs twice in prompts.ts, lines 13 and 20",
+      "F7": "CONFIRMED both parts; scope sentence 219-220, N/A-judgment arm added",
+      "F8": "PARTLY CONFIRMED; Q5 reclassified as a delegable cost trade-off and kept in the batch; the packet stated no six-gate count, so nothing there needed correcting beyond adding Q6 to the genuine-gates sentence",
+      "F9": "CONFIRMED; the deferred REQ-006 conformance named in the Q3 cell",
+      "F10": "CONFIRMED; the verification record named in Gate 3 with the re-run obligation, and Gate 6 item 8 narrowed to act-bound bytes",
+      "F11": "(a) CONFIRMED, five siblings; (b) PARTLY CONFIRMED - the counts differ by predicate, not by branch drift; both predicates published with each sibling head",
+      "F12": "CONFIRMED all four; six figures, banner reworded, run-2 breakdown re-measured, line-count convention stated once",
+      "F13": "CONFIRMED; the forcing step labelled Inferred in Q1 and in the handoff"
+    },
+    "recommended_answers_changed": [
+      "Q6: from 'the existing implementation-authorization act covers all five; no new act is needed' to 'it covers slices 1, 2, 3 and 5 on either reading; slice 4 should be ruled explicitly before it lands'. RFC2-26 still gates none. The default if unanswered is unchanged and already held slice 4.",
+      "Q1, Q2, Q3, Q4, Q5: unchanged. Q1 and Q3 gained disclosures, Q5 was reclassified as a delegable cost trade-off, and none of that moved what they advise."
+    ],
+    "packet_after_repairs": {
+      "bytes": 116325,
+      "sha256": "da54c37407644627352e835dcf15bf182da40ba723ea9a673efcd5ff329075aa",
+      "note": "measured after every repair; verification rule 10 binds review 1 to the 86188 bytes it named, not to these"
+    },
+    "conventions_remeasured_after_repairs": {
+      "non_fence_lines": 1299,
+      "wrapped_code_spans": 0,
+      "distinct_code_spans": 295,
+      "lines_over_78_outside_fences_and_tables": 6,
+      "lines_over_78_outside_fences_tables_and_headings": 2,
+      "note": "the packet's own predicate excludes headings and gives 2, both single unbreakable code-span paths; the review prompt's predicate keeps headings and gives 6. The first draft's figures, over the bytes review 1 was bound to, were 1073 non-fence lines and 261 distinct code spans."
+    },
+    "register_row": "P-73 added to .syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md on branch agent/syzygy-dov.6; 22 open rows and 5 acceptance-act rows, 27 in all, counted from main's 21/5/26 at a9f671e with the predicate '^| P-' partitioned by section"
   }
 }
