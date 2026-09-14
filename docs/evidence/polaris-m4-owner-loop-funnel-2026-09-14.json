@@ -457,7 +457,7 @@
       "model.capabilityId (89)",
       "model.evaluation (92)"
     ],
-    "renderer_model_field_sweep_method": "grep -oE 'model\\.[a-zA-Z]+' over apps/three-surface-poc/src/routes.ts; the only other hit in the file is model.projectShape at line 127, outside renderPocPage",
+    "renderer_model_field_sweep_method": "grep -oE 'model\\.[a-zA-Z]+' over apps/three-surface-poc/src/routes.ts; hits at lines 35, 78, 87, 89 (x2), 92 (x2), 127, 133, 171, 172 - four hits outside renderPocPage (35, 127, 133, 171-172), not the one (127) originally recorded here (corrected per review 1, N5)",
     "panel_link_form": "<a href=\"#<entity id>\"> — a fragment into the exact tables on the same page, never a link into the surface the panel names (routes.ts lines 34-55)"
   },
   "trajectory_composition": {
@@ -544,8 +544,8 @@
         "workerChange": "418-423",
         "testArtifactVerification": "431-437",
         "carried_to_model": "701-702",
-        "WORKER_CHANGE_SEAM": "29-32 with comment 25-28",
-        "WORKER_CHANGE_INTENT_ID": "42 with comment 34-41"
+        "WORKER_CHANGE_SEAM": "30-33 with comment 26-29 (corrected per review 1, N2)",
+        "WORKER_CHANGE_INTENT_ID": "42 with comment 35-41 (corrected per review 1, N2)"
       },
       "packages/three-surface-poc-core/src/project-shape-model.ts": {
         "UNKNOWN_REASON_ROUTES": "89-102",
@@ -604,7 +604,7 @@
         "note": "lane A moved the function +17 lines"
       }
     },
-    "derived_vs_handwritten_surfaces": "Orrery's entityIds and relationshipIds are derived (entities.map / relationships.map) at model.ts lines 745-746; Polaris's and Trajectory's are hand-written lists"
+    "derived_vs_handwritten_surfaces": "Orrery's entityIds and relationshipIds are derived (entities.map / relationships.map) at model.ts lines 747-748 (corrected per review 1, N1 - not 745-746, which are the title/question strings); Polaris's and Trajectory's are hand-written lists"
   },
   "specification_coverage_sweep": {
     "method": "grep -c '^### Requirement' over both signed spec files; a case-insensitive whole-word search for 'home' in each; and a search for the backticked literal `surfaces` or the string model.surfaces in each",
@@ -678,6 +678,19 @@
       "V0_agent_consumption_test": "lines 116-119"
     }
   },
+  "claim_tuple_census": {
+    "data_claim_id_occurrences_lane_a_tailnet": 713,
+    "data_claim_id_occurrences_pre_lane_a": 699,
+    "note": "L6-F5, the finding Q6 rests on, cites 699 (the pre-lane-A figure); the current lane A capture reads 713. Both are recorded here per review 1, N9, which found the packet's own '713 claim tuples' text had no evidence-file entry."
+  },
+  "cross_surface_unknown_disclosure_populations": {
+    "method": "grep -o for data-unknown-disclosure=\" and epistemic-unknown on the retained pre-lane-A captures for trajectory.html and orrery.html, and the lane A tailnet capture for Polaris; added per review 1, F5",
+    "polaris_lane_a_tailnet": { "data_unknown_disclosure": 22, "epistemic_unknown": null },
+    "trajectory_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown": 301 },
+    "orrery_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown": 11 },
+    "home_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown": 18 },
+    "conclusion": "Trajectory and Orrery render every Unknown through the bare epistemic-unknown class with no disclosure wrapper, reason or route; POC-REQ-060's sweep as originally specified has denominator 0 on both and passes vacuously there"
+  },
   "register_rows": {
     "main_at_a9f671e_last_numbered_row": "P-53",
     "main_last_note_referenced_by_sibling_packets": "P-67",
@@ -686,6 +699,56 @@
     "P-70": "agent/syzygy-dov.3 only (M3)",
     "this_packet_would_queue_as": "P-71",
     "method": "grep -nE '^\\| `?P-6[0-9]' over .syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md on main returns zero rows; the sibling packets' own statements were read read-only in their worktrees"
+  },
+  "review1": {
+    "raw": "docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-RAW.md",
+    "bytes": 47636,
+    "sha256": "6983034196c706c213e2a939e0ca7dfe4c3f75f958378403fbd115112c2966ec",
+    "verdict": "REVISE - six blocking, fourteen non-blocking, two editorial",
+    "reviewed_commit": "61bd43b",
+    "repairs_applied_this_session": true,
+    "disposition_summary": {
+      "F1": "re-derived and confirmed", "F2": "re-derived and confirmed",
+      "F3": "re-derived and confirmed", "F4": "re-derived and confirmed",
+      "F5": "re-derived and confirmed", "F6": "re-derived and confirmed",
+      "N1": "re-derived and confirmed", "N2": "re-derived and confirmed",
+      "N3": "re-derived and confirmed", "N4": "re-derived and confirmed",
+      "N5": "re-derived and confirmed", "N6": "re-derived and confirmed",
+      "N7": "re-derived and confirmed", "N8": "re-derived and confirmed",
+      "N9": "re-derived and confirmed", "N10": "re-derived and confirmed",
+      "N11": "re-derived and confirmed", "N12": "re-derived and confirmed",
+      "N13": "re-derived and confirmed", "N14": "re-derived and confirmed",
+      "E1": "re-derived and confirmed, no repair applied to the H1 (consistency with M2/M3 sibling packet headings, also over 78 columns)",
+      "E2": "re-derived and confirmed"
+    },
+    "re_derived_before_applying": {
+      "F1_rfc2_24_vs_UNKNOWN_REASON_ROUTES_match_count": "5 of 12 identical, 7 of 12 differ; extracted from rendering-vocabularies.md lines 92-130 and project-shape-model.ts lines 89-102 at a9f671e, compared key by key this session",
+      "three_surface_disclosure_counts": {
+        "polaris_lane_a_tailnet": { "data_unknown_disclosure": 22 },
+        "trajectory_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown": 301 },
+        "orrery_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown": 11 }
+      },
+      "EpistemicState_arms": [
+        "{ label: Observed | Inferred, tier?, freshness? }",
+        "{ label: Unknown, reasons: UnknownReasonSet, tier?, freshness? }",
+        "{ label: Unknown, basis: 'deferred', tier?, freshness? } -- packages/cap1-core/src/epistemic.ts:50-67, no reasons field"
+      ],
+      "routesFor_branches": "packages/three-surface-poc-core/src/project-shape-model.ts:151 -- if (state.label !== 'Unknown' || !('reasons' in state)) return []; -- two return-[] branches, not one",
+      "file_intersections": {
+        "M4_and_M2_shared_files": ["packages/three-surface-poc-core/src/model.ts", "apps/three-surface-poc/src/routes.ts", "apps/three-surface-poc/src/polaris.ts", "packages/three-surface-poc-core/src/project-shape-model.ts"],
+        "M4_and_M3_shared_files": ["apps/three-surface-poc/src/polaris-copy.ts", "apps/three-surface-poc/src/polaris.ts"],
+        "M3_slice_3_and_M4_slice_3_duplicate": "both are opening-band designs inside apps/three-surface-poc/src/polaris.ts, read from the m3wt worktree on 2026-09-14 at committed head b34fca7 with a review-3 repair uncommitted (read read-only; cite by register row P-70, never by head) and this packet's own Gate 4/Gate 3 text"
+      },
+      "PWB_act_lines_70_72": "No write, egress, execution, deployment, release, recovery, or mission effect on Butlers or on any other repository. The observer registry entry the owner adopted declares an empty write surface; that remains the bound.",
+      "materialize_action_write_target": "apps/three-surface-poc/src/materialize-action.ts:33 targetRepoRoot: model.project.root; packages/three-surface-poc-core/src/materialization.ts:12 MATERIALIZATION_TARGET_BEAD_PREFIX='bu'; materialization.ts:186-208 defaultRunCreate execFileSync('bd', ['-C', repoRoot, 'create', ...])"
+    },
+    "recommended_answers_changed": {
+      "Q1": "scope widened from Polaris-only to all three surfaces; remedy note added about the marker gap",
+      "Q2": "changed from 'do not mint none-modelled' (contract-determined, one lawful arm) to 'do not mint none-modelled; name and route the existing basis:deferred arm instead' (genuine choice, two legal states correctly attributed)",
+      "Q5": "unchanged for the expectation limb; a new authorization limb added (contested, two readings quoted, recommended answer labelled [Inferred] with a stated counter-argument) that did not exist in the draft",
+      "Q6": "recommendation unchanged (true by construction) but its supporting claim corrected (five reads, not the home page's only input)",
+      "Q7": "widened from a sequencing-only question to also carry the corrected file-intersection set, the M3/M4 slice-3 reconciliation, and the slices 4-5 authorization-arm reading formerly mis-attributed to Q5"
+    }
   },
   "unverified": [
     "Whether a PocRelationship is an 'Unknown claim instance' in RFC2-24's sense: the clause says 'claim', the POC's relationships are typed PocRelationship and not ProjectShapeClaim, and no clause found in this session settles it. [Unknown]",
