@@ -148,5 +148,46 @@
     "reviewed_evidence_bytes": 3896,
     "reviewed_evidence_sha256": "98acc654eba4ae11b5e63afe09143e57397580ee1c9e9259064f9944af66f502",
     "repairs": "F1-F20 all accepted and repaired in the packet after the review; Q7 added"
+  },
+  "review2": {
+    "raw": "docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-2-RAW.md",
+    "bytes": 35095,
+    "sha256": "545c39259e370a5019ec40c6de210fcd00ce4bb5dedd09cb60f2350bc6367a22",
+    "verdict": "REVISE",
+    "reviewed_commit": "ec30494",
+    "repairs": "G1-G14 all accepted and repaired after the review; slice 6 (L4-M5) added"
+  },
+  "dates_in_rendered_text": {
+    "method": "regex YYYY-MM-DD over text nodes (between > and <) of the retained tailnet capture, offset over total bytes",
+    "hits": 8,
+    "above_58_percent": [
+      {
+        "offset": 840110,
+        "percent": 56.69,
+        "text": "a cited source filename dated 2026-08-24"
+      },
+      {
+        "offset": 841381,
+        "percent": 56.78,
+        "text": "the same filename, second citation"
+      }
+    ],
+    "first_evaluation_instant_offset": 859145,
+    "first_evaluation_instant_percent": 57.98
+  },
+  "pwb_req_020_precedent": {
+    "api_poc_items": 415,
+    "rendered_rows": 409,
+    "unrendered_machine_items": [
+      "claim:item:project-account-section:architecture",
+      "claim:item:project-account-section:promises",
+      "claim:item:project-account-section:purpose",
+      "claim:item:project-account-section:refusals",
+      "claim:item:project-account-section:v1-scope",
+      "claim:item:project-account-section:v1-success"
+    ],
+    "each_key_string_count_in_served_bytes": 0,
+    "api_poc_polaris_project_account_section_items": 0,
+    "note": "/api/poc carries six items Polaris never renders; /api/poc/polaris carries none; the parity sweep passes. Re-derived 2026-09-14 after review 2 finding G5."
   }
 }

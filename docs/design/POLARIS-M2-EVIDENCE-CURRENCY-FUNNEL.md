@@ -12,7 +12,7 @@
 
 Date: 2026-09-14. Author: a funnel session (Claude), for the owner.
 
-Size: **medium** for slices 1–4 (app and core renderer plus one
+Size: **medium** for slices 1–4 and 6 (app and core renderer plus one
 machine-payload field; observable behavior changes; no governed artifact
 touched); **large** for slice 5 (it declares a currency bound, which RFC2-9
 makes an authorization-bearing governance artifact, so it needs an owner act
@@ -33,11 +33,12 @@ Batched, each with the recommended answer first. Everything below is the
 evidence behind them. Q1, Q2, Q6 and Q7 are owner gates in the strict sense:
 Q1 decides whether today's rendering is conformant or in breach, Q2 decides
 which act is needed, Q6 orders this move against a queued owner decision,
-and Q7 is a vocabulary choice RFC2-10 says no implementer may make. Q3, Q4
-and Q5 are contract-determined on this packet's own reasoning — each has
-one lawful arm and one arm that is unlawful or unauthorized — and are put to
+and Q7 is a vocabulary choice RFC2-10 says no implementer may make. Q3 and
+Q4 are contract-determined on this packet's own reasoning — each has one
+lawful arm and one arm that is unlawful or unauthorized — and are put to
 the owner for confirmation and disclosure, not as free choices (review 1,
-per-question table).
+per-question table). Q5 is a real choice between two lawful arms; the
+packet recommends one and says why (review 2 finding G9).
 
 | # | Question | Recommended |
 |---|---|---|
@@ -45,9 +46,9 @@ per-question table).
 | Q2 | **Where does the currency-bound declaration live, and under which act?** Arm (a): amend the adapter-registry entry `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` with a `currencyBounds` block beside `resourceLimits`, adopted by a fresh `adopt-registry-entry` act plus an implementation-authorization continuation. Arm (b): a separate bound-declaration artifact with a new act type, phrase and recorder. | **Arm (a).** It reuses an act phrase, a recorder, a `--check` and a precedent that all already exist (`decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md`, 2026-09-05), and the entry is already a snapshot input whose digest the daemon already binds. Arm (b) costs a new `_act_subjects()` registration, a new recorder and a new review, and buys separation the POC does not need yet. Two owner steps, both templated: the registry act, then the continuation in the shape of `decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md`. |
 | Q3 | **Is the evidence horizon a second identified evaluation, or may it be folded into the pinned evaluation's freshness field (for example by rendering changed sources as `broken`)?** Disclosed for confirmation: on this packet's reasoning the folding arm is unlawful, not merely worse. | **A second identified evaluation, never a freshness value.** The ground is RFC2-10's evaluation scoping, not render-time drift: the probe is computed once at build, so folding would not make two reads disagree, but a changed source is a fact of a *different* evaluation, and RFC2-10 binds a claim's freshness to the evaluation that produced it, so a value sourced from a second evaluation would be a freshness state no run of the first could reproduce. The legend's own `broken` sentence ("its source changed since capture") describes exactly the probe's condition, which is why slice 1's `broken` marker must say the horizon is not its route (review 1 findings F3 and F4). Render the horizon as its own disclosed claim — a currency probe with its own identity, its own instant and its own tuple — and keep the pinned evaluation's 713 tuples byte-identical. |
 | Q4 | **How is re-observation triggered?** Arm (a): an explicit operator route in the shape of the existing materialize route. Arm (b): a timer, poll or file watcher inside the daemon. Disclosed for confirmation: arm (b) is unauthorized today and would need its own act. | **Arm (a), no timer.** **No act found that authorizes a background poller**; it is new daemon behaviour and the 2026-09-02 authorization's "any scope beyond the signed change" trigger is the hook, so arm (b) is not available without a further owner act. The operator route needs none: it changes no consent, policy, registry or spec subject and rides the 2026-09-05 implementation-authorization continuation. Design argument: a human-triggered re-evaluation keeps re-observation an operator fact, not a background one, and every new `asOf` then has a new observation behind it (the inverse of L4-F4, where `asOf` moved with no observation). An earlier draft leaned on AGENTS.md's "no unattended agent coordination"; a single daemon's timer is not agent coordination, and that sentence is withdrawn (review 1 finding F5). |
-| Q5 | **The legend promises three states the pipeline cannot produce. Delete them, or mark them?** Disclosed for confirmation: deleting would hide RFC2-10's closed vocabulary; the packet sees one lawful arm. | **Mark, do not delete.** RFC2-10 closes the freshness vocabulary at four values and requires a condition outside the four to be "disclosed as a fact of the render"; deleting three entries would hide the closed vocabulary and make the page's own glossary incomplete against the contract. Mark each unreachable entry in place with the reason it is unreachable (no currency bound is declared; supersession is not modelled) and a route, guarded by a copy-oracle test. The walkthrough preflight permits this: it requires the glossary to explain every **rendered** term, not every vocabulary member. |
-| Q6 | **Sequencing against the lane B package, and the honest target.** The scoped-attributes semantic delta (`syzygy-dov.17`, owner decision P-68) rewrites the same clause region of PWB-REQ-007 that M2's currency work reads. | **No M2 spec package is opened until P-68 is ruled.** Slices 1–4 touch no governed artifact and may run now; slice 5's registry act touches the registry entry, not the spec, so it also does not collide — but any *later* PWB spec text M2 wants must wait for P-68 and then rebase onto the amended bytes. Honest target: `data-epistemic-freshness` takes at least two distinct values over the rendered population at one evaluation, every legend sentence is either reachable or marked unreachable with its reason, and the page's first human-visible instant moves from 58.0% depth into the opening band. |
-| Q7 | **What freshness value does a claim of a class with no declared currency bound render?** `assessCurrency`'s `no-bound-declared` arm returns `label: 'Unknown'` and reason `no-currency-bound-declared` but no `freshness` field [Observed: `packages/cap1-core/src/staleness.ts` lines 97–103]; PWB-REQ-007 requires freshness on every tuple; RFC2-10 closes the vocabulary at four and says "no implementation may mint, spell, or force-fit a freshness value it does not carry", so the choice may not be made by whoever implements the render first. Every class is in this arm until its bound is acted, so it is the arm reached first. | **`stale`, with primary reason `no-currency-bound-declared` kept distinct.** CAP1-REQ-062's invariant treats an unbounded class exactly as out-of-bound evidence ("SHALL NOT support a current or favourable answer"), `fresh` is the defect M2 removes, a fifth value is forbidden, and omission is forbidden; `stale` is the one closed value whose legend sentence a reader can reconcile with "no bound is declared" once the reason sits beside it [Inferred]. Alternative the owner may prefer: amend the engine's `no-bound-declared` return to carry an explicit freshness, which is a Capability 1 conformance change (CAP1-REQ-062) and needs its own CC-REV-2 route. Until Q7 is ruled, slice 5 cannot render any undeclared class. |
+| Q5 | **The legend promises three states the pipeline cannot produce. Delete them, or mark them?** Both arms are lawful: no clause requires a rendered glossary to carry vocabulary members no claim uses, and the walkthrough preflight requires only presented terms to be explained. | **Mark, do not delete.** RFC2-10 closes the freshness vocabulary at four values and requires a condition outside the four to be "disclosed as a fact of the render". Marking keeps the closed vocabulary visible to the reader and lets one copy oracle carry the legend through slice 5 without a second edit; deleting would make the page silent about three states the contract still defines, which is worse, not unlawful (review 2 finding G9). Mark each unreachable entry in place with the reason it is unreachable (no currency bound is declared; supersession is not modelled) and a route, guarded by a copy-oracle test. The walkthrough preflight permits this: it requires the glossary to explain every **rendered** term, not every vocabulary member. |
+| Q6 | **Sequencing against the lane B package, and the honest target.** The scoped-attributes semantic delta (`syzygy-dov.17`, owner decision P-68) rewrites the same clause region of PWB-REQ-007 that M2's currency work reads. | **No M2 spec package is opened until P-68 is ruled.** Slices 1–4 and 6 touch no governed artifact and may run now; slice 5's registry act touches the registry entry, not the spec, so it also does not collide — but any *later* PWB spec text M2 wants must wait for P-68 and then rebase onto the amended bytes. Honest target: `data-epistemic-freshness` takes at least two distinct values over the rendered population at one evaluation, every legend sentence is either reachable or marked unreachable with its reason, and the page's first human-visible instant moves from 58.0% depth into the opening band. |
+| Q7 | **What freshness value does a claim of a class with no declared currency bound render?** `assessCurrency`'s `no-bound-declared` arm returns `label: 'Unknown'` and reason `no-currency-bound-declared` but no `freshness` field [Observed: `packages/cap1-core/src/staleness.ts` lines 98–104]; PWB-REQ-007 requires freshness on every tuple; RFC2-10 closes the vocabulary at four and says "no implementation may mint, spell, or force-fit a freshness value it does not carry", so the choice may not be made by whoever implements the render first. Every class is in this arm until its bound is acted, so it is the arm reached first. | **`stale`, with primary reason `no-currency-bound-declared` kept distinct.** CAP1-REQ-062 puts an unbounded class under the same invariant as out-of-bound evidence ("SHALL NOT support a current or favourable answer") — both render Unknown, with distinct reasons — and assigns neither a freshness value; `fresh` is the defect M2 removes, a fifth value is forbidden, and omission is forbidden; `stale` is the one closed value whose legend sentence a reader can reconcile with "no bound is declared" once the reason sits beside it [Inferred]. Alternative the owner may prefer: amend the engine's `no-bound-declared` return to carry an explicit freshness, which is a Capability 1 conformance change (CAP1-REQ-062) and needs its own CC-REV-2 route. Until Q7 is ruled, slice 5 cannot render any undeclared class. |
 
 ## Gate 0 — Baseline
 
@@ -94,7 +95,7 @@ blob body was read]:
 | Sources whose blob changed between the pinned revision and head | 15 | 278 |
 | Sources removed | 0 | 278 |
 | Machine items citing a since-changed source (anchor method / string method, agreeing) | 9 | 415 |
-| Rendered item rows citing a since-changed source (rows matched to items by class and key; 0 unmatched) | 9 | 409 |
+| Rendered item rows citing a since-changed source (rows matched to items by class and key; 0 unmatched; the 415 − 409 difference is six `project-account-section` items `/api/poc` carries and the page does not render, see slice 3) | 9 | 409 |
 | Of those, rendering `fresh` | 9 | 9 |
 
 The number is smaller than the dossier's because the lane A capture is
@@ -109,7 +110,7 @@ fact how strongly Polaris claims to know it and what would make that claim
 stronger" — a question whose freshness half currently has one possible
 answer; every agent that reads a Polaris tuple as evidence of currency; and
 the next reader who opens the page days after the daemon started and meets no
-date at all until 58.0% of the way down.
+instant of the evaluation until 58.0% of the way down.
 
 **Success, falsifiable.**
 
@@ -128,6 +129,10 @@ date at all until 58.0% of the way down.
    catalog section, and the page states how many sources have moved since the
    evaluation it renders — as a separately identified fact, not as a
    freshness value.
+5. A reviewed reading selection whose pinned digest no longer matches
+   renders the full declaration *and* a sentence saying the selection was
+   withdrawn and why; a test asserts both halves, and a fixture with a
+   matching digest renders neither.
 
 **Motif.** *A field whose domain is one value carries no status, and a legend
 that names states the pipeline cannot produce is an unfaithful encoding.*
@@ -142,10 +147,14 @@ measurement record `docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.j
 the M1 ruling's Q3 row and the 2 MiB ceiling, computed 2026-09-14]: the
 page at the retained capture is 1,484,487 bytes through the tailnet mount
 and 1,478,637 direct, which is 84,487 and 78,637 bytes **over** the M1
-ruling's 1,400,000-byte working target and 612,665 / 618,515 bytes under
-the 2,097,152-byte response ceiling; of that ceiling headroom, 418,000 to
-443,000 bytes are reserved for the pending Butlers P-60/P-61 repairs. The
-horizon band and the marked legend add bytes measured in hundreds. M2
+ruling's working target — its words are "1.4 MB"; the lane A record's
+`q3Target.bytes` fixes it at 1,400,000, and that decimal figure is used
+here — and 612,665 / 618,515 bytes under the 2,097,152-byte response
+ceiling (2 MiB; the project writes it "2 MB"); of that ceiling headroom the
+418–443 KB the M1 ruling reserves for the pending Butlers P-60/P-61 repairs
+are read as 418,000 to 443,000 bytes on the same decimal convention. The
+horizon band and the marked legend add bytes measured in hundreds
+[Inferred: a projection about unbuilt code]. M2
 neither closes nor materially widens the target gap, which is lane B's
 subject (P-68). An earlier draft of this paragraph quoted "~479 KB of
 headroom", a pre-lane-A figure under the ceiling, not the target; review 1
@@ -181,8 +190,12 @@ revision/committed/captured `<small>` line at characters 859,145 and
 859,189, and one at 860,858 in the authority-disclosure paragraph just
 below it, a separate `<p><small>`), 99.7% (the walkthrough-judgment block,
 two) and 100.0% (the footer) [Observed: re-derived 2026-09-14 after review
-1 finding F14; an earlier draft put all three on one line]. Nothing above
-58% of the page carries a date [Observed]. This is L4-F3 re-measured on the *post-lane-A* page: the trim
+1 finding F14; an earlier draft put all three on one line]. No instant of this
+evaluation appears in rendered text above 58% of the page [Observed: ISO
+instants in text nodes, two methods; two `YYYY-MM-DD` strings occur earlier,
+at 56.7% and 56.8%, both inside one cited source filename, and an earlier
+draft's "no date at all" overstated this — review 2 finding G4]. This is
+L4-F3 re-measured on the *post-lane-A* page: the trim
 removed 625 KB of narrative JSON from the front of the document and the first
 instant still does not appear until well past the halfway mark, so the
 finding is a layout fact, not a byte-count artifact.
@@ -347,11 +360,12 @@ warrant, but it is also why the owner is asked before, not after.
 | 2 Evidence horizon | `apps/three-surface-poc/src/git-observation.ts` (a second head resolution), `main.ts` (a new operator route beside `materializeRoutes`), `packages/three-surface-poc-core/src/model.ts` (a `currencyProbe` block on the model), `polaris.ts` (the opening band) | none |
 | 3 `evidence` block on the machine payload | `packages/three-surface-poc-core/src/model.ts`, `apps/three-surface-poc/src/routes.ts` (`/api/poc`, `/api/poc/polaris`) | none |
 | 4 `asOf` immutability | `apps/three-surface-poc/src/main.ts` lines 113–134 plus one test | none |
+| 6 Lapsed-selection announcement | `apps/three-surface-poc/src/polaris-reading.ts` (line 44, the digest mismatch return), `polaris.ts` lines 506–510 (the reading block), plus one test | none |
 | 5 Currency bound + `assessCurrency` | `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`; `packages/three-surface-poc-core/src/project-shape-model.ts` lines 162–193, importing `assessCurrency` from `packages/cap1-core` | **the adapter-registry entry** — digest-bound by `decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md` |
 
 Boundaries crossed: none new. The `three-surface-poc-core → cap1-core` edge
-already carries the freshness vocabulary (`project-shape-model.ts` line 20
-imports `FRESHNESS_STATES` and `FreshnessState` from `@syzygy/cap1-core`);
+already carries the freshness vocabulary (`project-shape-model.ts` lines
+19–27 import `FRESHNESS_STATES` and `FreshnessState` from `@syzygy/cap1-core`);
 slice 5 adds the judge that owns it to the same import. That is a
 narrowing, not a widening — it replaces a private constant with the package
 that already owns the vocabulary [Observed: the import line; corrected
@@ -368,9 +382,10 @@ content class, and the signed PWB specification text.
 | Slice | Owner act needed | Named act |
 |---|---|---|
 | 1 Legend | **No** | rides `decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` (2026-09-05); no escalation trigger is crossed — no spec amendment, no security/privacy/retention change, no registry-envelope change |
-| 2 Horizon | **No**, on the recommended design | same continuation. The live head resolution is a `git-revision` input, an input class the registry entry already declares. The consent act's escalation trigger is scoped to the content class and the repository ("any observation outside the consented content class or repository"); its scope sentence names "the Butlers revision the POC observes", and the probe reads a ref of the already-consented repository, not a Git object of the source population at any revision, so no body read is added and the trigger is not crossed [Inferred: the design reads `rev-parse HEAD` only, exactly as `git-observation.ts` already does at lines 61 and 80–81; restated after review 1 finding F6] |
+| 2 Horizon | **No**, on the recommended design | same continuation. The live head resolution is a `git-revision` input, an input class the registry entry already declares. The implementation-authorization act's escalation trigger (`decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md`, "Escalation triggers") is scoped to the content class and the repository ("any observation outside the consented content class or repository"); the consent act contributes the scope sentence naming "the Butlers revision the POC observes" and has no trigger section of its own (review 2 finding G6); the probe reads a ref of the already-consented repository, not a Git object of the source population at any revision, so no body read is added and the trigger is not crossed [Inferred: the design reads `rev-parse HEAD` only, exactly as `git-observation.ts` already does at lines 61 and 80–81; restated after review 1 finding F6] |
 | 3 `evidence` block | **No** | same continuation; the machine payload's field set is not an act-bound artifact |
 | 4 `asOf` immutability test | **No** | same continuation; it adds a test and removes a clock read |
+| 6 Lapsed-selection announcement | **No** | same continuation; it adds one rendered sentence and one field on a render-time type, reads nothing new |
 | 4b A timer or watcher, had one been proposed | **None found** | and none is recommended — see Q4 |
 | 5 Currency bound | **Yes — two owner steps** | (i) a fresh `adopt-registry-entry` act over the amended entry's new digest, superseding `decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md` for that role only; (ii) a plain owner direction continuing implementation authorization across the registry escalation trigger, in the shape of the 2026-09-05 continuation. RFC2-9 is the warrant for (i); the 2026-09-02 authorization's own trigger list ("a change to the constraints or envelope the registry entry declares") is the warrant for (ii) |
 
@@ -386,8 +401,11 @@ ruling took for `syzygy-dov.1`.
 in its own rendered sentence, the reason and the route:
 
 - `stale` — older than the declared currency bound. *Not reachable at this
-  evaluation: no claim class has declared a currency bound. Route: the
-  registry currency-bound declaration and its owner act.*
+  evaluation: no claim's freshness is judged against a currency bound — the
+  model assigns a constant. Route: declare the bound in the registry, act on
+  it, and route freshness through `assessCurrency` (slice 5).* (Worded so
+  the reason stays true until slice 5 lands and false exactly when it does;
+  review 2 finding G8.)
 - `broken` — its source changed since capture. *Not reachable by design
   under the current evaluation model: this evaluation observes one pinned
   revision and carries no claim from an earlier one, so no claim of this
@@ -443,11 +461,14 @@ the *pinned* evaluation still return byte-identical tuples because the probe's
 result is computed once, at build, and carried on the model — never read at
 render.
 
-**Why the probe cannot be folded into freshness.** If a changed source set a
-claim's freshness to `broken`, then the page served at 10:00 and the page
-served at 14:00 for one identified evaluation would disagree on a
-status-bearing field. RFC2-10 makes that disagreement release-blocking and
-VIS-7 names it as a violation. Hence Q3.
+**Why the probe cannot be folded into freshness.** A changed source is a
+fact of a *different* evaluation — the probe's — and RFC2-10 binds a claim's
+freshness to the evaluation that produced the claim, so a `broken` sourced
+from the probe would be a freshness state no run of the pinned evaluation
+could reproduce. That is Q3's ground. The render-time argument (two reads
+at 10:00 and 14:00 disagreeing) does *not* decide it, because the probe is
+computed once at build, as the paragraph above says; it is kept here only
+to say so (review 1 finding F4, review 2 finding G7).
 
 **Degradation, not improvement.** The probe may only make the reader trust
 the page *less*. It never clears an Unknown, never raises a tier, and never
@@ -477,13 +498,25 @@ that population in both channels with the same claim id and the same
 evaluation. The `evidence` block's remaining fields (the declared bounds,
 the pinned and current digests) are inputs and identities of the
 evaluation, not facts Polaris presents about the project shape; they sit
-outside the enumerated population, so the multisets stay equal [Inferred:
-this is the reading of the enumeration this packet relies on; if the owner
-or a reviewer reads declared bounds as a "disclosure" in PWB-REQ-020's
-sense, slice 3 acquires a PWB-REQ-020 spec delta and joins Q6's collision,
-and the page must then render the bounds too]. The existing parity sweep
-already checks per tuple against the machine claim by id and both id sets,
-so any horizon fact rendered on one side only fails it.
+outside the enumerated population, so the multisets stay equal. The
+retained capture already holds the precedent for this Polaris-scoped
+reading: `/api/poc` carries six `project-account-section` items
+(`architecture`, `promises`, `purpose`, `refusals`, `v1-scope`,
+`v1-success`) that the page renders nowhere — 415 machine items against 409
+rendered rows, each of the six key strings occurring 0 times in the served
+bytes — while `/api/poc/polaris` carries none of them, and the parity sweep
+passes [Observed: both channels of the retained lane A capture, re-derived
+2026-09-14 after review 2 finding G5]. So the implementation, its sweep and
+PWB-REQ-020's Case ("every project-shape parity marker on Polaris and every
+corresponding machine-answer fact") already agree that the population is
+what Polaris presents, and `/api/poc` may carry more. The `evidence` block
+follows that precedent and acquires no spec delta [Inferred: the reading;
+disclosed for the owner because the other reading — that the six items are
+a live PWB-REQ-020 breach today — would be a finding against the existing
+implementation, not against slice 3, and this packet does not make it].
+The existing parity sweep already checks per tuple against the machine
+claim by id and both id sets, so any horizon fact rendered on one side only
+fails it.
 
 ### Slice 4 — `asOf` immutability (medium; no act)
 
@@ -498,6 +531,33 @@ new identified evaluation" turned into a mechanism.
 injected instants, assert the two rendered pages are byte-identical and
 `asOf` is unchanged; then re-observe and assert `asOf` moved and the
 evaluation identity changed with it.
+
+### Slice 6 — A lapsed reviewed selection announces itself (small; no act)
+
+The dossier's L4-M5, which an earlier draft carried only as scenario S9 and
+a Gate 6 mutation target without a slice (review 2 finding G3).
+`applyReadingPlan` (`apps/three-surface-poc/src/polaris-reading.ts` line 44)
+returns the full declaration with `condensed: false` whenever the pinned
+statement digest no longer matches the observed bytes or the plan has no
+passages, and the return carries no reason; the renderer at `polaris.ts`
+lines 506–510 then shows neither the "selected passages" label nor the
+"full account" disclosure, so the page is byte-for-byte what it would be
+had no selection ever been offered [Observed, both files at `a9f671e`].
+The slice adds one field to the `ProjectReading` type — the reason the
+selection was not applied (`digest-mismatch` or `no-passages`) — and one
+rendered sentence beside the full declaration: that a reviewed selection
+existed, was withdrawn because the declaration's bytes changed, and returns
+when a re-review against the new bytes is recorded. It is a disclosure of
+a render fact (RFC2-10's phrase), not a freshness value, and it reads
+nothing new: the digest comparison already runs. No act: no governed
+artifact, no consent surface, no spec text.
+
+**Test.** Build with a plan whose `statementSha256` is deliberately wrong
+for the fixture text; assert the full declaration renders *and* the
+withdrawal sentence renders with its reason; then correct the digest and
+assert the sentence is absent and the condensed form returns. Rule-6
+mutant: drop the reason from the return and confirm the first assertion
+fails.
 
 ### Slice 5 — The currency bound and `assessCurrency` (large; owner act)
 
@@ -529,7 +589,7 @@ the project's rule.
 **The fifth arm is a gap, and it is the arm every class reaches first.**
 The `no-bound-declared` return carries `label: 'Unknown'` and reason
 `no-currency-bound-declared` but **no `freshness` field at all** [Observed:
-lines 97–103], while PWB-REQ-007 requires the complete tuple including
+lines 98–104], while PWB-REQ-007 requires the complete tuple including
 freshness on every claim and RFC2-10 says "no implementation may mint,
 spell, or force-fit a freshness value it does not carry". A claim of an
 undeclared class therefore cannot render `fresh` (the defect M2 removes),
@@ -537,9 +597,10 @@ cannot omit freshness (PWB-REQ-007), cannot take a fifth value (RFC2-10),
 and the engine deliberately declines to say `stale`. RFC2-10's own words
 make this an owner choice, not a render-time one; it is Q7 in the batch.
 Recommended: `stale`, with the primary reason `no-currency-bound-declared`
-kept distinct — CAP1-REQ-062's invariant treats an unbounded class exactly
-as it treats out-of-bound evidence ("SHALL NOT support a current or
-favourable answer"), and `stale` is the one closed-vocabulary value whose
+kept distinct — CAP1-REQ-062 puts an unbounded class under the same
+invariant as out-of-bound evidence ("SHALL NOT support a current or
+favourable answer"), both rendering Unknown with distinct reasons and
+neither assigned a freshness value, and `stale` is the one closed-vocabulary value whose
 legend sentence ("older than the declared currency bound") a reader can
 reconcile with "no bound is declared" once the reason is beside it
 [Inferred]. Until Q7 is ruled, slice 5 is not implementable for any class
@@ -565,7 +626,8 @@ still explaining every rendered tuple term.
 
 ## Gate 5 — Specification
 
-**Slices 1–4: no spec delta.** Each is conformance with text that already
+**Slices 1–4 and 6: no spec delta.** Each is conformance with text that
+already
 binds. Slice 1 makes the rendered legend match what the evaluation produces,
 which VIS-7 already requires. Slice 2 adds a disclosed fact of the render,
 which RFC2-10 already names as the lawful home for a condition outside the
@@ -577,7 +639,7 @@ already forbids.
 
 **Slice 5: no spec delta either — and this is the packet's most useful
 finding.** PWB-REQ-007 already carries the scenario slice 5 implements, at
-line 472 of
+lines 470–474 (heading at 470, WHEN bullet at 472) of
 `openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md`:
 
 > #### Scenario: Missing current evidence remains explicit Unknown
@@ -708,7 +770,8 @@ edits the PWB specification at exactly the clause region M2 reads:
    the manifest binding post-apply bytes, not a stated rule; no clause says
    it, and AGENTS.md's "one coherent category overlapping no other change"
    is about OpenSpec changes, not packages in flight].
-2. **Run M2 slices 1–4 now, in parallel with P-68.** They touch no governed
+2. **Run M2 slices 1–4 and 6 now, in parallel with P-68.** They touch no
+   governed
    artifact, no spec text and no manifest, so they cannot collide. They can
    land while P-68 waits.
 3. **Slice 5's act is a registry act, not a spec act.** It amends the adapter
@@ -716,7 +779,9 @@ edits the PWB specification at exactly the clause region M2 reads:
    and performed independently of P-68. Keep it that way: if slice 5 starts
    to want spec text, stop and re-enter this funnel.
 4. **Re-measure lane B after slice 5, before its act.** Lane B's headline
-   saving (currently recorded as 188,902 bytes tailnet) assumes a uniform
+   saving (currently recorded as 188,902 bytes tailnet, in the lane B
+   package on `agent/syzygy-dov.17` only [Observed there, not on this
+   branch]) assumes a uniform
    freshness field. If slice 5 lands first, that number must be recomputed,
    and if the act is performed first, the implementation must not hoist
    `freshness` onto a scope until slice 5's per-class values are known. The
@@ -809,28 +874,62 @@ and its raw will be a second `-RAW.md` file, never an overwrite.
 
 None of the seven recommended answers changed; Q7 is new.
 
+### Review 2 and repairs (2026-09-14)
+
+A second independent fresh-context review of the repaired packet at commit
+`ec30494` is retained verbatim at
+`docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-2-RAW.md` (35095 bytes,
+sha256 `545c39259e370a5019ec40c6de210fcd00ce4bb5dedd09cb60f2350bc6367a22`). Its verdict word,
+copied exactly: **REVISE** — three blocking, six non-blocking, five
+editorial. It verified review 1's twenty repairs: sixteen repaired, three
+partial (F4, F5, F6 — each completed below), one repaired as stated but not
+re-derivable on this branch (F13; the lane B package lives on
+`agent/syzygy-dov.17`). Every edit below post-dates review 2, so the
+current bytes are again uncovered until a third review, retained as a
+third `-RAW.md` file, confirms them.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| G1 P-69 row kept the withdrawn Q4 warrant | blocking | Accepted and repaired: the clause deleted from the register row |
+| G2 P-69 row misnamed the no-act slices | blocking | Accepted and repaired: the row now names slices 1–4 and 6 as the packet has them, including slice 3 |
+| G3 S9 had no slice | blocking | Accepted and repaired: slice 6 added with a topology row, an act row, a design sketch, a success criterion and summary lines; Gate 6 item 4 now has a slice to bind to |
+| G4 "no date above 58%" false under its own words | non-blocking | Accepted and repaired: restated as no instant of the evaluation, predicate named, the two earlier `YYYY-MM-DD` strings disclosed |
+| G5 PWB-REQ-020 reading contradicted by the capture | non-blocking | Accepted and repaired: the six unrendered `project-account-section` items stated as the precedent for the Polaris-scoped population; the contingency dropped and the alternative reading disclosed as a possible finding against the existing implementation |
+| G6 trigger attributed to the consent act | non-blocking | Accepted and repaired: attributed to the implementation-authorization act by path and section |
+| G7 slice 2 still argued render-time drift | non-blocking | Accepted and repaired: the paragraph now carries Q3's ground and keeps the drift argument only as the non-ground |
+| G8 `stale` marker's reason self-falsifying under Q7 | non-blocking | Accepted and repaired: reworded to the constant-assignment reason with slice 5 as the route |
+| G9 Q5's losing arm called unlawful | non-blocking | Accepted and repaired: Q5 moved out of the one-lawful-arm sentence; both arms stated lawful; recommendation kept with its reasons |
+| G10 CAP1-REQ-062 "exactly" | editorial | Accepted and repaired in both places |
+| G11 unit convention | editorial | Accepted and repaired: the byte figure's source named, decimal convention stated |
+| G12 two unlabeled estimates | editorial | Accepted and repaired: labeled Inferred; the lane B figure's location stated |
+| G13 three offsets | editorial | Accepted and repaired: 470–474, 19–27, 98–104 |
+| G14 "two constants" | editorial | Accepted and repaired in the register row |
+
+None of the seven recommended answers changed; the dossier's L4-M5 is now
+slice 6.
+
 ## Funnel summary
 
 ```
 ## Feature Request: M2 — Evidence currency: the horizon, assessCurrency, a true legend
-Size: medium (slices 1-4) / large (slice 5)
+Size: medium (slices 1-4, 6) / large (slice 5)
 Baseline: Syzygy a9f671e; capture = lane A after/tailnet, 1,484,487 bytes, Butlers 2e3bac97790b
 - G1 Motif: one freshness value rendered 713/713 while the legend promises four; a complete currency engine sits unwired [Observed: three sweeps of the capture; two code sweeps]
 - G2 Doctrine: aligned - VIS-2 (currency bound; no clock-driven status), VIS-7 (every encoding means what its legend says; the identity test), CAP1-REQ-062 (the engine's own requirement), RFC2-9, RFC2-10, architecture.md 221-236
 - G3 Topology: apps/three-surface-poc + packages/three-surface-poc-core; no new boundary (the existing cap1-core import edge gains assessCurrency); the adapter-registry entry only in slice 5, by a superseding act; no spec text
-- G4 Design: legend markers; a currency probe as a second identified evaluation; an evidence block on the machine payload; asOf bound to an observation; the bound declared in the registry and judged by assessCurrency
+- G4 Design: legend markers; a currency probe as a second identified evaluation; an evidence block on the machine payload; asOf bound to an observation; the bound declared in the registry and judged by assessCurrency; a withdrawn reading selection announced with its reason
 - G5 Spec: no delta - PWB-REQ-007's own currency scenario already requires slice 5's behavior; nine WHEN/THEN scenarios for the beads' acceptance contract; out of scope: spec amendment, doctrine, catalog routes, timers, resourceLimits values
 - G6 Bar: retained before/after measurement, determinism proven twice, rule-6 mutants per guard branch, independent review, a registry-delta review before the act
-Acts: slices 1-4 none (the 2026-09-05 implementation-authorization continuation); slice 5 two - adopt-registry-entry over the amended entry, then a continuation across the registry escalation trigger; a timer: none found and none sought
+Acts: slices 1-4 and 6 none (the 2026-09-05 implementation-authorization continuation); slice 5 two - adopt-registry-entry over the amended entry, then a continuation across the registry escalation trigger; a timer: none found and none sought
 Open questions: Q1-Q7 above; queued as P-69 (P-68 is the lane B decision, on its own branch)
 Sign-off: pending - the owner's
-Recommended handoff: Q1 "a bound is required" and Q5 "mark, do not delete" -> run slices 1, 3 and 4 now under syzygy-dov.2, plus slice 2 on Q3's second-evaluation design and Q4's operator route; hold slice 5 until Q1 and Q2 are ruled, then draft the registry delta with its own review and put the two-step act to the owner; open no PWB spec package until P-68 is ruled
+Recommended handoff: Q1 "a bound is required" and Q5 "mark, do not delete" -> run slices 1, 3, 4 and 6 now under syzygy-dov.2, plus slice 2 on Q3's second-evaluation design and Q4's operator route; hold slice 5 until Q1 and Q2 are ruled, then draft the registry delta with its own review and put the two-step act to the owner; open no PWB spec package until P-68 is ruled
 ```
 
 ## Recommended handoff
 
 **If Q1, Q3, Q4 and Q5 are answered as recommended:** file no new bead. Run
-slices 1, 3 and 4 under `syzygy-dov.2` immediately — they are self-contained,
+slices 1, 3, 4 and 6 under `syzygy-dov.2` immediately — they are self-contained,
 they touch no governed artifact, and slice 1 alone closes the VIS-7 legend
 breach that S5-F1 and L4-F2 named. Run slice 2 next, on the currency-probe
 design, with the operator route and no timer.
