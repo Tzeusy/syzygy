@@ -471,8 +471,9 @@ before slice 5 and after it. It is not a project-shape claim, so
 PWB-REQ-007's complete-tuple requirement does not reach it, and RFC2-10's
 disclosure route is exactly what it is: a fact of the render. Its bracket
 therefore has no freshness slot, `data-epistemic-freshness` is never set on
-it (S3 already requires that no freshness value on the page derive from
-it), and slice 5's `currencyBounds` array carries no row for it, stated
+it (S3 requires both that the probe's own claim carry no
+`data-epistemic-freshness` attribute and that no freshness value on the
+page derive from it), and slice 5's `currencyBounds` array carries no row for it, stated
 there so no implementer adds one. Rendering the probe `fresh` would
 reintroduce, on the page's most prominent new claim, the unearned value M2
 exists to remove (review 4 finding J2; an earlier draft's rendering did
@@ -530,7 +531,7 @@ PWB-REQ-020 enumerates is "every project-shape identity, statement, source
 anchor, coverage state, denominator, contradiction, body-read authority
 state and walkthrough-judgment state or disclosure Polaris presents". Every
 horizon *fact* the page renders (the probe claim, its instant, its
-counts) is a project-shape statement and disclosure and therefore enters
+counts) is a disclosure Polaris presents and therefore enters
 that population in both channels with the same claim id and the same
 evaluation. The `evidence` block's remaining fields (the declared bounds,
 the pinned and current digests) are inputs and identities of the
@@ -555,15 +556,23 @@ table") [Observed: both channels of the retained lane A capture and the
 test source, re-derived 2026-09-14 after review 3 finding H1; an earlier
 draft read the gap as machine-only facts and was wrong]. Every one of the
 six statements and anchor sets is in both channels under the account's own
-claim id; what the machine carries and the page does not is six *claim
+claim id; what the machine's item population carries and the page's item
+rows do not is six *claim
 identities* — the machine `facts` population holds both
 `item:project-account-section:<key>` and `project-account:<key>` for each
 of the six keys, twelve keys among 439, and PWB-REQ-004 names the two forms
-as separate members of its closed population — which PWB-REQ-020's
-one-directional human-to-machine invariant permits and the parity sweep
-omits by name (review 4 finding J6; "every fact is in both channels" was
-false at the spec's own fact granularity). The existing parity sweep
-already checks per tuple against the machine claim by id and both id sets,
+as separate members of its closed population — which the parity sweep
+omits by its stated reason
+(`apps/three-surface-poc/src/polaris-parity-sweep.test.ts` lines 202–209)
+[Observed]. Whether PWB-REQ-020's equal-multiset Observable permits a
+machine-only claim identity at all is the *same* open reading this slice
+already discloses above, and it is not settled here [Inferred]; if it does
+not, the six are a finding against the current implementation, never a
+precedent M2 may rely on. (Review 4 finding J6 recorded that "every fact is
+in both channels" was false at the spec's own fact granularity; review 5
+finding K1 found that the J6 wording had then dressed the open question as
+permission, contradicting the clause as quoted above.) The existing parity
+sweep already checks per tuple against the machine claim by id and both id sets,
 so any horizon fact rendered on one side only fails it.
 
 ### Slice 4 — `asOf` immutability (medium; no act)
@@ -587,7 +596,7 @@ a Gate 6 mutation target without a slice (review 2 finding G3).
 `applyReadingPlan` (`apps/three-surface-poc/src/polaris-reading.ts` line 44)
 returns the full declaration with `condensed: false` at thirteen guard
 returns — the pinned-digest mismatch and the empty-passage list at line 44,
-and eleven structural guards on passages, figures and chapters at lines 48,
+and twelve structural guards on passages, figures and chapters at lines 48,
 49, 50, 51, 53, 61, 64, 72, 79, 88, 99 and 103 — and none of them carries a
 reason (review 4 finding J5; "whenever … digest … or … no passages" was two
 of thirteen); the renderer at `polaris.ts`
@@ -596,7 +605,7 @@ lines 506–510 then shows neither the "selected passages" label nor the
 had no selection ever been offered [Observed, both files at `a9f671e`].
 The slice adds one field to the `ProjectReading` type — the reason the
 selection was not applied (`digest-mismatch`, `no-passages` or
-`plan-malformed`, the last covering the eleven structural guards so that no
+`plan-malformed`, the last covering the twelve structural guards so that no
 full-declaration return stays silent) — and one rendered sentence beside
 the full declaration: that a reviewed selection existed, was withdrawn (for
 `digest-mismatch`: because the declaration's bytes changed, returning when
@@ -606,12 +615,19 @@ disclosure of a render fact (RFC2-10's phrase), not a freshness value, and
 it reads nothing new: the digest comparison already runs. No act: no governed
 artifact, no consent surface, no spec text.
 
-**Test.** Build with a plan whose `statementSha256` is deliberately wrong
-for the fixture text; assert the full declaration renders *and* the
-withdrawal sentence renders with its reason; then correct the digest and
-assert the sentence is absent and the condensed form returns. Rule-6
-mutant: drop the reason from the return and confirm the first assertion
-fails.
+**Test.** Three cases, one per reason. Build with a plan whose
+`statementSha256` is deliberately wrong for the fixture text; assert the
+full declaration renders *and* the withdrawal sentence renders with reason
+`digest-mismatch`; then correct the digest and assert the sentence is absent
+and the condensed form returns. Build with a matching digest and an empty
+`passages` list; assert the sentence renders with reason `no-passages`.
+Build with a matching digest and a passage whose `end` precedes its
+`start` (one of the twelve structural guards); assert the sentence renders
+with reason `plan-malformed`. Rule-6 mutants: drop the reason from each of
+the three returns in turn and confirm the matching assertion fails. Note
+for the implementer: line 44 is today one `return full` covering both the
+digest mismatch and the empty passage list, so emitting the two as distinct
+reasons requires splitting that return into two.
 
 ### Slice 5 — The currency bound and `assessCurrency` (large; owner act)
 
@@ -655,8 +671,8 @@ make this an owner choice, not a render-time one; it is Q7 in the batch.
 Recommended: `stale`, with the primary reason `no-currency-bound-declared`
 kept distinct — CAP1-REQ-062 puts an unbounded class under the same
 invariant as out-of-bound evidence ("SHALL NOT support a current or
-favourable answer"), both rendering Unknown with distinct reasons and
-neither assigned a freshness value, and `stale` is the one closed-vocabulary value whose
+favourable answer"), both rendering Unknown with distinct reasons,
+CAP1-REQ-062 assigning neither a freshness value, and `stale` is the one closed-vocabulary value whose
 legend sentence ("older than the declared currency bound") a reader can
 reconcile with "no bound is declared" once the reason is beside it
 [Inferred]. The strongest counter-argument is RFC2-10's own sentence,
@@ -752,7 +768,8 @@ edit, AND the same oracle enforces it.
 **S3 — The horizon is a separate identified evaluation.**
 WHEN the page renders an evidence horizon, THEN the count of changed sources
 carries its own evaluation identity and instant, distinct from the pinned
-evaluation's, AND no `data-epistemic-freshness` value anywhere on the page is
+evaluation's, AND the probe's own claim carries no `data-epistemic-freshness`
+attribute, AND no `data-epistemic-freshness` value anywhere on the page is
 derived from it.
 
 **S4 — One evaluation, two reads, identical bytes.**
@@ -897,8 +914,10 @@ Acceptance, reusing the M1 and P-63 shape:
    `assessCurrency`'s five arms as reached through the PWB model; the
    copy-oracle's two directions (an unreachable value without a marker, a
    rendered value with one); the probe's evaluation-identity separation (make
-   the probe write the pinned evaluation's id and confirm S3 fails); and the
-   reading-plan announcement. Each mutant's `old`/`new` fragment and the
+   the probe write the pinned evaluation's id and confirm S3 fails); the
+   probe's no-freshness invariant (set `data-epistemic-freshness` on the
+   probe's bracket and confirm S3's no-attribute conjunct fails); and the
+   reading-plan announcement, one mutant per reason value. Each mutant's `old`/`new` fragment and the
    commit it ran at are recorded, per the evidence rule.
 5. **Preflight populations, PWB-REQ-020 parity with both denominators**,
    keyboard, no-JS and browser tests, the app suite twice and the full suite
@@ -1036,10 +1055,41 @@ confirms them.
 | J2 the probe's own claim rendered `fresh` with no declared bound | non-blocking | Accepted and repaired: the probe carries no freshness value before or after slice 5, its bracket has no freshness slot, and slice 5's `currencyBounds` sketch says it has no row |
 | J3 Q7 never weighed against RFC2-10's "never dressed as a freshness state" | non-blocking | Accepted and repaired: the sentence quoted against the recommendation in Q7 and in slice 5, with why `stale` plus a distinct reason is still preferred and why the engine amendment does not escape it; the recommendation unchanged, the owner rules with both in view |
 | J4 criterion 2 and S1 required a route the `superseded` marker lacks | non-blocking | Accepted and repaired: both weakened to "and, where one exists, the route"; the oracle stated to enforce the marker, not the route |
-| J5 "whenever" overstated `applyReadingPlan`'s reasons | non-blocking | Accepted and repaired: thirteen guard returns named by line; a third reason value `plan-malformed` covers the eleven structural guards so no full-declaration return stays silent; S9 restated |
+| J5 "whenever" overstated `applyReadingPlan`'s reasons | non-blocking | Accepted and repaired: thirteen guard returns named by line; a third reason value `plan-malformed` covers the twelve structural guards so no full-declaration return stays silent; S9 restated (the row first said "eleven", copied from J5 — review 5 finding K3) |
 | J6 "every fact is in both channels" false at fact granularity | non-blocking | Accepted and repaired: statements and anchor sets shared, six claim identities machine-only, the twelve keys named, PWB-REQ-020's direction and the sweep's omission stated |
 | J7 the H9 repair made a true span false | editorial | Accepted and repaired: "87–155" restored in both places; the review-3 disposition row now says H9 was not a defect |
 | J8 the P-69 row mischaracterized review 2's blocking findings | editorial | Accepted and repaired: "two register/packet mismatches and a scenario with no slice" |
+
+None of the seven recommended answers changed.
+
+### Review 5 and repairs (2026-09-14)
+
+A fifth independent fresh-context review, of the packet at commit
+`1befd6f`, is retained verbatim at
+`docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-5-RAW.md` (27581 bytes,
+sha256 `205bd6634870a215c83c8bdf11f75b5a037445cec9a2b979aafafa0b8963cc9a`). Its verdict word, copied exactly: **REVISE** — one
+blocking, six non-blocking, two editorial. It verified J1–J8 against the
+current bytes and found the J6 repair (K1) and the J5 count (K3) wrong as
+applied. Every finding below was re-derived before it was applied: the
+thirteen `return full` lines (one at line 44, twelve structural), the
+Observable, Scenario and Falsifier of PWB-REQ-020 in the digest-bound spec
+(lines 902–930), S3's "derived from" wording, and the three `stale` returns
+in `packages/cap1-core/src/staleness.ts` (at lines 117, 132 and 142 at
+`a9f671e`; the review cites 121, 133 and 143, and the point stands). Every
+edit below post-dates review 5; the current bytes are uncovered until a
+sixth review confirms them.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| K1 the J6 repair said PWB-REQ-020's "one-directional human-to-machine invariant permits" the six machine-only identities, contradicting the slice's own verbatim quotation of the clause's equal-multiset limbs (review 1 F2 regressed, unlabeled) | blocking | Accepted and repaired: the clause deleted; the sweep's omission stated as Observed with the test lines; whether the equal-multiset Observable permits a machine-only identity restated as the same open reading slice 3 discloses, labeled Inferred, with the six a possible finding against the current implementation and never a precedent; no recommended answer changed |
+| K2 slice 3 still called the probe claim "a project-shape statement", the pre-J1 framing | non-blocking | Accepted and repaired: "a disclosure Polaris presents" |
+| K3 "eleven structural guards" where the sentence lists twelve lines and the file holds thirteen returns | non-blocking | Accepted and repaired: "twelve" at both sites and in the J5 disposition row; the miscount was copied from review 4's J5 text — a review can be wrong |
+| K4 slice 2 said S3 "already requires" no freshness on the probe, but S3 forbids derivation, not presence | non-blocking | Accepted and repaired: S3 gains the conjunct "the probe's own claim carries no `data-epistemic-freshness` attribute"; "already" dropped |
+| K5 Gate 6 named no mutant for the probe's no-freshness invariant | non-blocking | Accepted and repaired: the mutant added to Gate 6 item 4 against the new S3 conjunct |
+| K6 slice 6's test exercised only `digest-mismatch`; the line-44 return covers two conditions and must split | non-blocking | Accepted and repaired: three cases, one per reason, three mutants, and the split noted for the implementer |
+| K7 the P-69 row's Q7 clause carried the recommendation without RFC2-10's counter-argument | non-blocking | Accepted and repaired in the register row |
+| K8 "neither assigned a freshness value" had no agent and read false against the three `stale` returns | editorial | Accepted and repaired: "CAP1-REQ-062 assigning neither" |
+| K9 "what the machine carries and the page does not" stated the six-identity gap without its population (22 of 439 machine keys are absent as literal strings; sixteen are carried under class and catalog identities) | editorial | Accepted and repaired: scoped to the item population and the page's item rows |
 
 None of the seven recommended answers changed.
 

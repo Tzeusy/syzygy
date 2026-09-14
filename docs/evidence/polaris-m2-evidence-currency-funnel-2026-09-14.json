@@ -29,10 +29,10 @@
     "note": "11 Unknown claims with tier 'unstated' nevertheless render freshness 'fresh' ('captured at this evaluation') though no evidence reached them."
   },
   "legend_sentences_rendered_once_each": {
-    "fresh — captured at this evaluation.": 1,
-    "stale — older than the declared currency bound.": 1,
-    "broken — its source changed since capture.": 1,
-    "superseded — a later evaluation replaced it.": 1
+    "fresh \u2014 captured at this evaluation.": 1,
+    "stale \u2014 older than the declared currency bound.": 1,
+    "broken \u2014 its source changed since capture.": 1,
+    "superseded \u2014 a later evaluation replaced it.": 1
   },
   "legend_states_unreachable": [
     "stale",
@@ -220,6 +220,47 @@
       "project_account_fact_keys": 13,
       "project_account_fact_keys_note": "six item:project-account-section:<key>, six project-account:<key>, one count:project-account-section; keys re-derived from projectShape.facts[].fact.fact in the retained api-poc.json",
       "assessCurrency_span": "87-155"
+    }
+  },
+  "review5": {
+    "raw": "docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-5-RAW.md",
+    "bytes": 27581,
+    "sha256": "205bd6634870a215c83c8bdf11f75b5a037445cec9a2b979aafafa0b8963cc9a",
+    "verdict": "REVISE",
+    "reviewed_commit": "1befd6f",
+    "repairs": "K1-K9 all accepted and repaired after the review; the J6 wording withdrawn (PWB-REQ-020's equal-multiset limbs govern the open reading), the J5 count corrected to twelve structural guards",
+    "re_derived_before_applying": {
+      "applyReadingPlan_return_full_lines": [
+        44,
+        48,
+        49,
+        50,
+        51,
+        53,
+        61,
+        64,
+        72,
+        79,
+        88,
+        99,
+        103
+      ],
+      "structural_guards": 12,
+      "pwb_req_020_bidirectional_limbs": [
+        "Observable: both populations contain equivalent multisets",
+        "Scenario: the complete human fact multiset equals the machine fact multiset",
+        "Falsifier: ... in either channel"
+      ],
+      "staleness_stale_return_lines": [
+        117,
+        132,
+        142
+      ],
+      "staleness_stale_return_lines_cited_by_review": [
+        121,
+        133,
+        143
+      ]
     }
   }
 }
