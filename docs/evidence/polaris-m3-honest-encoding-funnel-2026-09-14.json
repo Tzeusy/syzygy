@@ -1,0 +1,680 @@
+{
+  "generated": "2026-09-14",
+  "purpose": "Evidence computed this session for the M3 honest-encoding funnel packet (bead syzygy-dov.3). Planning only; nothing here authorizes implementation.",
+  "syzygy_commit": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
+  "worktree_branch": "agent/syzygy-dov.3",
+  "capture": {
+    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-tailnet.html",
+    "bytes": 1484487,
+    "sha256": "e8a04b4631dedbda159dd162d25f4e8a7ed4f9f4059a37ca1bca87b717790111",
+    "decoded_characters": 1481819,
+    "sha256_verified_this_session": true,
+    "recorded_in": "docs/evidence/polaris-m2-evidence-currency-funnel-2026-09-14.json (identical bytes and digest)",
+    "provenance": "retained lane A 'after' capture, tailnet host form, Butlers evaluation revision 2e3bac97790b (committed 2026-09-13T10:31:11Z), captured 2026-09-13T13:33:24.295Z"
+  },
+  "tuple_population": {
+    "method_1_regex_span_open": 713,
+    "method_2_literal_split": 713,
+    "method_3_class_literal": 713,
+    "methods_agree": true,
+    "distinct_claim_ids": 703,
+    "claim_ids_rendered_more_than_once": 10,
+    "note": "713 rendered tuples over 703 distinct claim ids; parity is per tuple, never per id"
+  },
+  "epistemic_states_rendered": {
+    "label": {
+      "Observed": 702,
+      "Unknown": 11
+    },
+    "tier": {
+      "report-fact": 702,
+      "unstated": 11
+    },
+    "freshness": {
+      "fresh": 713
+    },
+    "challenge": {
+      "unchallenged": 713
+    },
+    "tuple_shapes": {
+      "Observed | report-fact | fresh | unchallenged": 702,
+      "Unknown | unstated | fresh | unchallenged": 11
+    },
+    "attribute_method_cross_check": {
+      "data-epistemic-label": {
+        "Observed": 702,
+        "Unknown": 11
+      },
+      "data-epistemic-tier": {
+        "report-fact": 702,
+        "unstated": 11
+      }
+    }
+  },
+  "visual_treatments": {
+    "css_style_blocks": 1,
+    "css_rules_whose_selector_names_claim_tuple": [
+      {
+        "selector": ".claim-tuple",
+        "declarations": "font-family: var(--font-mono); font-size: .78rem; color: var(--muted); letter-spacing: .04em;"
+      },
+      {
+        "selector": ".claim-tuple",
+        "declarations": "letter-spacing: 0; font-size: .72rem;"
+      }
+    ],
+    "distinct_colour_treatments_over_713_tuples": 1,
+    "selector_probe_counts": {
+      "claim-tuple[": 0,
+      "[data-epistemic-label": 0,
+      "[data-epistemic-tier": 0,
+      "[data-epistemic-freshness": 0,
+      "[data-challenge-state": 0
+    },
+    "method": "every CSS rule in the one served <style> block parsed by a non-nesting selector{declarations} regex; the probe counts are literal substring counts over the same block"
+  },
+  "declared_encoding_use": {
+    "declared_table": "apps/three-surface-poc/src/design-tokens.ts lines 16-29 (EPISTEMIC_ENCODING: Observed/epistemic-observed/'\\u25cf', Unknown/epistemic-unknown/'?')",
+    "polaris_declared_badge_spans_total": 2,
+    "polaris_declared_badge_spans_in_legend": 2,
+    "polaris_declared_badge_spans_in_body": 0,
+    "legend_offset_chars": 1481009,
+    "legend_depth_percent": 99.95
+  },
+  "cross_surface_population": {
+    "pages": {
+      "home": {
+        "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/capture/home.html",
+        "bytes": 38706,
+        "sha256": "c2fd6d1af7103e871c26dc65b76cc391fe2765a1c7391ac19ddf1656e57b5fca",
+        "declared_badges_total": 37,
+        "declared_badges_in_legend": 2,
+        "declared_badges_in_body": 35,
+        "claim_tuple_spans": 0,
+        "unknown_disclosure_blocks": 0,
+        "body_epistemic_encodings": 35,
+        "body_encodings_carrying_a_declared_class": 35
+      },
+      "trajectory": {
+        "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/capture/trajectory.html",
+        "bytes": 244524,
+        "sha256": "fd802531b199084e7145932715150f4977335e49ca6aa168d68d5227c9d6ddde",
+        "declared_badges_total": 301,
+        "declared_badges_in_legend": 2,
+        "declared_badges_in_body": 299,
+        "claim_tuple_spans": 0,
+        "unknown_disclosure_blocks": 0,
+        "body_epistemic_encodings": 299,
+        "body_encodings_carrying_a_declared_class": 299
+      },
+      "orrery": {
+        "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/capture/orrery.html",
+        "bytes": 37048,
+        "sha256": "e3ae5b7901c599a04b685456e6070430edf72fcd025cd1f6afecf863153582fa",
+        "declared_badges_total": 20,
+        "declared_badges_in_legend": 2,
+        "declared_badges_in_body": 18,
+        "claim_tuple_spans": 0,
+        "unknown_disclosure_blocks": 0,
+        "body_epistemic_encodings": 18,
+        "body_encodings_carrying_a_declared_class": 18
+      },
+      "polaris": {
+        "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-tailnet.html",
+        "bytes": 1484487,
+        "sha256": "e8a04b4631dedbda159dd162d25f4e8a7ed4f9f4059a37ca1bca87b717790111",
+        "declared_badges_total": 2,
+        "declared_badges_in_legend": 2,
+        "declared_badges_in_body": 0,
+        "claim_tuple_spans": 713,
+        "unknown_disclosure_blocks": 22,
+        "body_epistemic_encodings": 735,
+        "body_encodings_carrying_a_declared_class": 0,
+        "body_encodings_with_no_declared_class_and_no_distinguishing_treatment": 713,
+        "body_encodings_carrying_the_declared_unknown_token_under_an_undeclared_class": 22,
+        "split_note": "review 1 finding F5: of the 735, the 713 claim tuples carry no declared class and no distinguishing treatment (one colour, var(--muted), over Observed and Unknown alike); the 22 unknown-disclosure blocks carry the declared Unknown token under an undeclared, unlegended class - ad hoc styling in POC-REQ-060 falsifier sense, but not invisible"
+      }
+    },
+    "body_epistemic_encodings_total": 1087,
+    "body_encodings_carrying_a_declared_class_total": 352,
+    "predicate": "a body epistemic encoding is one of: a <span class='epistemic epistemic-*'> badge outside the page legend; a <span class='claim-tuple'> span; a class='unknown-disclosure' element",
+    "caveat": "home, trajectory and orrery are the 2026-09-13 fresh captures at Syzygy f4589e2 / Butlers 7c8743f63, i.e. pre-lane-A; git diff f4589e2..a9f671e over apps/ and packages/ changes no home, trajectory, orrery, page-shell or design-tokens source, so the renderer for those three surfaces is unchanged at a9f671e; their model data is one Butlers revision older",
+    "dossier_figure_for_comparison": "L6-F3 reported 1,085 body encodings (home 35, polaris 721, trajectory 310, orrery 19) over the pre-lane-A 7478 captures; this session's 1,087 is a different capture population, not a correction"
+  },
+  "checker_denominator": {
+    "file": "apps/three-surface-poc/src/surface-routes.test.ts",
+    "lines": "64-101",
+    "denominator_expression": "pages.length",
+    "denominator_value": 4,
+    "population_per_POC-REQ-060_case": "every epistemic encoding on all three surfaces",
+    "measured_population_this_session": 1087,
+    "predicate_the_checker_uses": "String.includes of 'class=\"epistemic epistemic-observed\"' / '...unknown\"', which the page legend alone satisfies",
+    "second_checker": "apps/three-surface-poc/src/cross-cutting.test.ts lines 47-64: it iterates pages AND the declared table's two entries, asserting both badge spans and both descriptions per page, and asserts every rendered epistemic-* class name it finds is in the table. Its denominator is pages(model) and it enumerates the DECLARED TABLE, never the rendered encoding population - the only rendered markup it looks at is what <span class=\"epistemic (epistemic-\\w+)\"> matches, which is the legend's own (review 1 finding F11)"
+  },
+  "first_reading": {
+    "predicate": "document start to the first occurrence of data-polaris-group=\"catalog\" (the four opening groups: overview, boundaries, v1, architecture)",
+    "boundary_offset_chars": 281986,
+    "boundary_depth_percent": 19.03,
+    "tuples_in_region": 126,
+    "tuple_labels_in_region": {
+      "Observed": 126
+    },
+    "unknown_disclosure_blocks_in_region": 0,
+    "rendered_unknown_states_in_region": 0,
+    "word_Unknown_in_region_visible_text": 14,
+    "word_Unknown_occurrences_are": "navigation label, glossary definitions, the sentence 'No member claim carries an Unknown reason.' and '0 Unknown' coverage counts - no rendered Unknown state",
+    "sentence_no_member_unknown_occurrences_page": 8,
+    "first_rendered_unknown_of_any_kind": {
+      "kind": "unknown-disclosure",
+      "offset_chars": 378604,
+      "depth_percent": 25.55
+    },
+    "first_unknown_tuple": {
+      "claim_id": "claim:class:roster-identity",
+      "offset_chars": 380767,
+      "depth_percent": 25.7
+    },
+    "whole_shape_unknown_tuple_depth_percent": 57.72,
+    "unknown_tuple_offsets_percent": [
+      25.7,
+      57.72,
+      61.03,
+      95.75,
+      96.25,
+      96.74,
+      97.0,
+      97.49,
+      97.88,
+      98.26,
+      98.75
+    ],
+    "unknown_disclosure_offsets_percent": [
+      25.55,
+      56.44,
+      56.51,
+      57.01,
+      57.05,
+      57.1,
+      57.14,
+      57.42,
+      57.45,
+      57.47,
+      57.49,
+      57.51,
+      57.58,
+      60.97,
+      95.7,
+      96.2,
+      96.69,
+      96.95,
+      97.44,
+      97.82,
+      98.2,
+      98.7
+    ]
+  },
+  "item_and_source_rows": {
+    "data_polaris_item_attribute_occurrences": 409,
+    "data_polaris_item_substring_occurrences": 417,
+    "data_polaris_items_attribute_occurrences": 8,
+    "item_rows_by_id_matched_to_a_tuple": 409,
+    "item_row_tuple_labels": {
+      "Observed": 409
+    },
+    "source_rows": 278,
+    "source_row_tuple_labels": {
+      "Observed": 269,
+      "Unknown": 9
+    },
+    "method": "rows matched to tuples by claim id, never by enclosing-element regex: one item row contains a nested </li> from its markdown prose and defeats a non-greedy row matcher (verified this session)",
+    "unknown_claim_ids": [
+      "claim:class:roster-identity",
+      "claim:project-shape",
+      "claim:source:about/lay-and-land/frontend.md",
+      "claim:source:roster/chronicler/butler.toml",
+      "claim:source:roster/education/butler.toml",
+      "claim:source:roster/general/butler.toml",
+      "claim:source:roster/health/butler.toml",
+      "claim:source:roster/lifestyle/butler.toml",
+      "claim:source:roster/qa/MANIFESTO.md",
+      "claim:source:roster/relationship/butler.toml",
+      "claim:source:roster/travel/butler.toml"
+    ]
+  },
+  "vocabulary_versus_rendered": {
+    "closed_tier_vocabulary": [
+      "gate-backed",
+      "report-fact",
+      "asserted-by-worker",
+      "reduced-fidelity",
+      "declared-only",
+      "suspended"
+    ],
+    "closed_tier_vocabulary_source": "packages/cap1-core/src/epistemic.ts lines 23-30 (RENDERING_TIERS, six values); RFC2-25 'Six tiers, closed'",
+    "tier_values_rendered": [
+      "report-fact",
+      "unstated"
+    ],
+    "unstated_is_in_closed_tier_vocabulary": false,
+    "unstated_rendered_count": 11,
+    "unstated_origin": "apps/three-surface-poc/src/polaris.ts lines 306-307: the renderer mints \"unstated\" into TWO closed-vocabulary fields - line 306 claim.epistemic.tier ?? 'unstated' and line 307 claim.epistemic.freshness ?? 'unstated' (review 1 finding F4)",
+    "closed_freshness_vocabulary": [
+      "fresh",
+      "stale",
+      "broken",
+      "superseded"
+    ],
+    "closed_freshness_vocabulary_source": "packages/cap1-core/src/staleness.ts line 18 (FRESHNESS_STATES) - the implementation echo of RFC2-10, not the authority (review 1 finding F9)",
+    "freshness_values_rendered": [
+      "fresh"
+    ],
+    "challenge_values_rendered": [
+      "unchallenged"
+    ],
+    "glossary_state_sentences": 15,
+    "glossary_state_sentences_source": "apps/three-surface-poc/src/polaris-copy.ts lines 34-51 (3 label, 7 tier incl. unstated, 4 freshness, 1 challenge)",
+    "glossary_sentences_whose_value_no_tuple_carries": 9,
+    "glossary_sentences_with_a_visual_encoding": 0,
+    "textual_completeness_sweep": "apps/three-surface-poc/src/polaris-first-reading.test.ts lines 96-99 checks every used tier/freshness/challenge/label value has a '<term> \\u2014' sentence; there is no visual counterpart",
+    "closed_freshness_vocabulary_authority": "RFC2-10, .syzygy/governance/contracts/rfcs/RFC-0002/snapshot-and-evaluation-core.md line 209: \"Four values, closed. The list changes only by amendment to this RFC; no implementation may mint, spell, or force-fit a freshness value it does not carry.\"",
+    "unstated_rendered_count_tier": 11,
+    "unstated_rendered_count_freshness": 0,
+    "freshness_mint_hazard": "the freshness twin fires 0 times on this capture because all 713 tuples carry \"fresh\"; assessCurrency no-bound-declared arm (packages/cap1-core/src/staleness.ts lines 98-104) returns no freshness field, so wiring it - M2 slice 5 - makes line 307 mint a fifth freshness value on every class with no declared bound. RFC2-10 forbids the mint in terms and supplies no absence marker, so arm (b) of Q2 is not available for freshness",
+    "sibling_surface_states_rendered": {
+      "rfc2_25_closed_three": [
+        "dismissed-by-decision",
+        "unadopted-draft",
+        "editorial-draft"
+      ],
+      "rfc2_25_location": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md line 169",
+      "occurrences_on_capture": {
+        "dismissed-by-decision": 0,
+        "unadopted-draft": 0,
+        "editorial-draft": 0,
+        "challenge-pending": 0
+      },
+      "denominator": "the whole 1,481,819-character capture, literal str.count",
+      "note": "the page renders no sibling surface state; the proposal treatment is not one of them. Review 1 finding F3: slice 6 is reframed as a render-disclosure family and adds no member to any closed vocabulary"
+    }
+  },
+  "token_reuse": {
+    "rules_using_var_unknown": [
+      {
+        "selector": ".epistemic-unknown",
+        "declarations": "color: var(--unknown); background: #3d2f1322;"
+      },
+      {
+        "selector": ".unavailable-notice",
+        "declarations": "color: var(--unknown); border: 1px dashed var(--unknown); padding: .75rem 1rem;"
+      },
+      {
+        "selector": ".unknown-disclosure",
+        "declarations": "color: var(--unknown); border-left: 3px solid var(--unknown); padding-left: .9rem;"
+      },
+      {
+        "selector": ".proposal",
+        "declarations": "border-left: 4px solid var(--unknown); padding-left: 1rem;"
+      },
+      {
+        "selector": ".proposal-label",
+        "declarations": "font-family: var(--font-mono); font-size: .85rem; letter-spacing: .04em; text-transform: uppercase; color: var(--unknown);"
+      }
+    ],
+    "rules_using_var_cyan_count": 17,
+    "rules_using_var_cyan_that_are_the_declared_observed_encoding": 1,
+    "amber_and_focus_are_the_same_value": true,
+    "proposal_label_rendered_count": 1,
+    "proposal_label_offset_chars": 834155,
+    "proposal_label_depth_percent": 56.29,
+    "proposal_label_text": "Proposed change \\u2014 not current authority.",
+    "proposal_container_class_rendered_count": 0,
+    "unavailable_notice_rendered_count": 0,
+    "colour_pairs": {
+      "cyan|amber": {
+        "contrast_ratio": 1.148,
+        "deltaE76": 71.97
+      },
+      "cyan|unknown": {
+        "contrast_ratio": 1.035,
+        "deltaE76": 64.85
+      },
+      "cyan|muted": {
+        "contrast_ratio": 1.71,
+        "deltaE76": 32.0
+      },
+      "cyan|ink": {
+        "contrast_ratio": 1.256,
+        "deltaE76": 31.78
+      },
+      "amber|unknown": {
+        "contrast_ratio": 1.109,
+        "deltaE76": 7.85
+      },
+      "amber|muted": {
+        "contrast_ratio": 1.489,
+        "deltaE76": 61.74
+      },
+      "amber|ink": {
+        "contrast_ratio": 1.443,
+        "deltaE76": 57.82
+      },
+      "unknown|muted": {
+        "contrast_ratio": 1.651,
+        "deltaE76": 56.47
+      },
+      "unknown|ink": {
+        "contrast_ratio": 1.301,
+        "deltaE76": 51.0
+      },
+      "muted|ink": {
+        "contrast_ratio": 2.148,
+        "deltaE76": 26.74
+      }
+    },
+    "colour_method": "WCAG 2.x relative-luminance contrast ratio and CIE76 deltaE over CIE Lab (D65, sRGB), both computed this session from the token hex values at apps/three-surface-poc/src/design-tokens.ts lines 46-55 (review 1 finding F13: the earlier 'lines 51-55' excluded --ink at 46 and --muted at 47, which are in the measured pairs, and included --line at 51, which is not a foreground token)",
+    "declared_colour_token_set": {
+      "source": "apps/three-surface-poc/src/design-tokens.ts DESIGN_TOKENS_CSS, lines 46-55",
+      "tokens": {
+        "--ink": "#dfe9e7",
+        "--muted": "#8ca3a4",
+        "--void": "#071012",
+        "--panel": "#0c181b",
+        "--panel-raised": "#102126",
+        "--line": "#294248",
+        "--cyan": "#78e1d1",
+        "--amber": "#f1b85b",
+        "--unknown": "#f3c56f",
+        "--focus": "#f1b85b"
+      },
+      "declared_colour_tokens": 10,
+      "distinct_colour_values": 9,
+      "note": "--focus duplicates --amber exactly; counting --focus as a named token in its own right the smallest deltaE76 in the declared set is 0.00",
+      "foreground_tokens": [
+        "--amber",
+        "--cyan",
+        "--ink",
+        "--muted",
+        "--unknown"
+      ],
+      "ground_tokens": [
+        "--line",
+        "--panel",
+        "--panel-raised",
+        "--void"
+      ],
+      "ground_exclusion_reason": "ground tokens are deliberately adjacent - near-identity is their purpose - so a perceptual floor over them would forbid the page own surfaces; the slice 6 bar is over foreground tokens only"
+    },
+    "deltaE76_all_distinct_pairs": {
+      "denominator": 36,
+      "pairs": {
+        "--panel|--void": 3.98,
+        "--panel|--panel-raised": 4.82,
+        "--amber|--unknown": 7.85,
+        "--panel-raised|--void": 8.78,
+        "--line|--panel-raised": 14.96,
+        "--line|--panel": 19.56,
+        "--line|--void": 23.27,
+        "--ink|--muted": 26.74,
+        "--cyan|--ink": 31.78,
+        "--cyan|--muted": 32.0,
+        "--line|--muted": 39.21,
+        "--ink|--unknown": 50.99,
+        "--muted|--panel-raised": 53.89,
+        "--muted|--unknown": 56.47,
+        "--amber|--ink": 57.82,
+        "--muted|--panel": 58.13,
+        "--muted|--void": 61.43,
+        "--amber|--muted": 61.73,
+        "--cyan|--line": 62.97,
+        "--cyan|--unknown": 64.85,
+        "--ink|--line": 65.75,
+        "--amber|--cyan": 71.97,
+        "--cyan|--panel-raised": 77.35,
+        "--line|--unknown": 79.89,
+        "--ink|--panel-raised": 80.23,
+        "--cyan|--panel": 81.74,
+        "--amber|--line": 82.23,
+        "--ink|--panel": 84.32,
+        "--cyan|--void": 85.26,
+        "--ink|--void": 87.45,
+        "--panel-raised|--unknown": 89.75,
+        "--amber|--panel-raised": 91.07,
+        "--panel|--unknown": 91.86,
+        "--amber|--panel": 92.81,
+        "--unknown|--void": 93.32,
+        "--amber|--void": 93.96
+      }
+    },
+    "deltaE76_foreground_pairs": {
+      "denominator": 10,
+      "pairs": {
+        "--amber|--unknown": 7.85,
+        "--ink|--muted": 26.74,
+        "--cyan|--ink": 31.78,
+        "--cyan|--muted": 32.0,
+        "--ink|--unknown": 50.99,
+        "--muted|--unknown": 56.47,
+        "--amber|--ink": 57.82,
+        "--amber|--muted": 61.73,
+        "--cyan|--unknown": 64.85,
+        "--amber|--cyan": 71.97
+      }
+    },
+    "deltaE76_ground_pairs": {
+      "denominator": 6,
+      "pairs": {
+        "--panel|--void": 3.98,
+        "--panel|--panel-raised": 4.82,
+        "--panel-raised|--void": 8.78,
+        "--line|--panel-raised": 14.96,
+        "--line|--panel": 19.56,
+        "--line|--void": 23.27
+      }
+    },
+    "smallest_deltaE76_over_the_five_foreground_tokens": {
+      "pair": "--amber|--unknown",
+      "value": 7.85,
+      "predicate": "smallest of the 10 pairs over {--cyan, --amber, --unknown, --muted, --ink}; ground tokens excluded and the exclusion stated"
+    },
+    "next_smallest_deltaE76_over_the_five_foreground_tokens": {
+      "pair": "--muted|--ink",
+      "value": 26.74,
+      "predicate": "second smallest of the same 10 pairs; this is the slice 6 floor and it holds over this population only"
+    },
+    "smallest_deltaE76_over_the_nine_distinct_declared_colours": {
+      "pair": "--panel|--void",
+      "value": 3.98,
+      "pairs_below_26_74": 7,
+      "pairs_below_26_74_enumerated": [
+        "--panel|--void = 3.98",
+        "--panel|--panel-raised = 4.82",
+        "--amber|--unknown = 7.85",
+        "--panel-raised|--void = 8.78",
+        "--line|--panel-raised = 14.96",
+        "--line|--panel = 19.56",
+        "--line|--void = 23.27"
+      ],
+      "predicate": "all 36 pairs over the 9 distinct declared colour values",
+      "correction": "review 1 finding F2 was right that the earlier \"smallest between any two named tokens: 7.85\" and \"every other pair >= 26.7\" were false universals with no stated predicate; 7.85 is the THIRD smallest over the declared set. Review 1 own enumeration listed six sub-threshold pairs and said \"five pairs sit below 26.74\"; it omitted --line|--void at 23.27. Re-derived here over all 36 pairs the count is 7."
+    },
+    "rules_using_var_unknown_rendered_counts": {
+      "predicate": "literal str.count of the class attribute over the 1,481,819-character capture",
+      "class=\"epistemic epistemic-unknown\"": 2,
+      "class=\"unavailable-notice\"": 0,
+      "class=\"unknown-disclosure\"": 22,
+      "class=\"proposal\"": 0,
+      "class=\"proposal-label\"": 1,
+      "note": "five rules, four declared meanings, two of which render zero times; the live reuse beside the 2 legend badges is 22 disclosure blocks and 1 proposal label (review 1 finding F10)"
+    }
+  },
+  "byte_arithmetic": {
+    "page_tailnet_bytes": 1484487,
+    "m1_ruled_working_target_bytes": 1400000,
+    "bytes_over_target": 84487,
+    "response_ceiling_bytes": 2097152,
+    "bytes_under_ceiling": 612665,
+    "butlers_p60_p61_reservation_bytes": "418000-443000",
+    "slice1_design_a_attribute_and_symbol_cost_bytes": 16366,
+    "slice1_design_a_method": "702 x len(' epistemic-observed') + 11 x len(' epistemic-unknown') + 702 x len('\\u25cf ' utf-8) + 11 x len('? ')",
+    "slice1_design_b_cost_bytes_order": "~300 (two CSS attribute-selector rules plus two ::before rules; no per-tuple bytes)",
+    "lane_b_estimated_saving_bytes_tailnet": 188902
+  },
+  "lane_b_collision": {
+    "branch": "origin/agent/syzygy-dov.17",
+    "head": "4090f98",
+    "estimate_record": "docs/evidence/pwb-laneb-strict-scope-estimate-2026-09-14.json on that branch",
+    "container_mode_hoistedPerField": {
+      "data-epistemic-label": 409,
+      "data-epistemic-tier": 409,
+      "data-epistemic-primary-reason": 409,
+      "data-epistemic-secondary-reasons": 713,
+      "data-epistemic-freshness": 713,
+      "data-challenge-state": 713,
+      "data-evaluation-id": 713
+    },
+    "consequence": "409 of 713 tuples would carry no data-epistemic-label attribute of their own, so any CSS or sweep keyed on that attribute at the tuple silently drops to a denominator of 304",
+    "package_absent_from_main": true,
+    "package_file_count_on_branch": 9
+  },
+  "m2_collision": {
+    "branch": "origin/agent/syzygy-dov.2",
+    "head": "68123fc",
+    "shared_files": [
+      "apps/three-surface-poc/src/polaris-copy.ts (freshness sentences, lines 46-49)",
+      "apps/three-surface-poc/src/polaris.ts claimStatesBlock (lines 346-361; the freshness group is line 357)"
+    ],
+    "m2_slice_1": "marks the three unreachable freshness sentences in place with a copy-oracle",
+    "m3_slice_5": "generates the same glossary from encoding tables",
+    "register_rows": {
+      "main_last_note": "P-67",
+      "P-68": "origin/agent/syzygy-dov.17 only",
+      "P-69": "origin/agent/syzygy-dov.2 only",
+      "this_packet_would_queue_as": "P-70"
+    },
+    "head_at_packet_first_draft": "ec30494",
+    "head_at_review_1": "e0ecdc8",
+    "slice_count": 6,
+    "m2_slice_6": "A lapsed reviewed selection announces itself: apps/three-surface-poc/src/polaris-reading.ts line 44 and apps/three-surface-poc/src/polaris.ts lines 506-510 - neither touched by any M3 slice",
+    "shared_surface_unchanged_at_68123fc": true,
+    "m3_slice_5_line_range_correction": "review 1 finding F8: claimStatesBlock spans 346-361, not 346-353; the freshness group - the exact overlap - is line 357"
+  },
+  "governance_check": {
+    "command": "python3 scripts/check_governance.py",
+    "baseline_last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) - counts derived, not asserted"
+  },
+  "sweep_methods": {
+    "rule_1": "every load-bearing sweep in this record is Python re or a literal str.count, never shell grep",
+    "rule_2": "no zero/all/100% claim without the exact sweep this session; each count above was taken by at least two predicates where the packet states two",
+    "rule_4": "each count is reported with the denominator it was taken over",
+    "rule_9": "absence claims (zero attribute-keyed CSS selectors; zero declared badges in the Polaris body; zero rendered Unknown in the first reading) each name their population above"
+  },
+  "warrants_blocks": {
+    "file": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+    "POC-REQ-060": {
+      "heading_line": 927,
+      "warrants_block_lines": "955-964",
+      "contracts": [
+        "RFC6-18",
+        "RFC6-22",
+        "RFC8-31"
+      ],
+      "rfc_0009_clauses": []
+    },
+    "POC-REQ-061": {
+      "heading_line": 966,
+      "warrants_block_lines": "999-1008",
+      "contracts": [
+        "RFC7-34",
+        "RFC8-31",
+        "RFC9-48"
+      ],
+      "rfc_0009_clauses": [
+        "RFC9-48"
+      ]
+    },
+    "block_at_line_920": {
+      "contracts": [
+        "RFC1-26",
+        "RFC6-20",
+        "RFC9-3",
+        "RFC9-46",
+        "RFC9-48"
+      ],
+      "belongs_to": "the preceding (Orrery) requirement, whose scenario ends at line 914"
+    },
+    "correction": "review 1 finding F1: the packet first draft claimed POC-REQ-060 and POC-REQ-061 name RFC9-3, RFC9-46 and RFC9-48 among their own warrants. False. POC-REQ-060 names no RFC 0009 clause; POC-REQ-061 names RFC9-48 only"
+  },
+  "review1": {
+    "raw": {
+      "path": "docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-RAW.md",
+      "bytes": 31503,
+      "sha256": "1eca5fbac6fe95266ac4968f5b55ebf89e6e63544441383c545fb89b9140bc1f",
+      "method": "wc -c and sha256sum, computed this session"
+    },
+    "reviewed_subject_as_the_raw_records_it": {
+      "packet": {
+        "path": "docs/design/POLARIS-M3-HONEST-ENCODING-FUNNEL.md",
+        "bytes": 71765,
+        "sha256": "a5e4cc4f6aaf40031131dda2c8366e931f5bea7a8a2b9a45e2ec5da41d2a6383"
+      },
+      "evidence": {
+        "path": "docs/evidence/polaris-m3-honest-encoding-funnel-2026-09-14.json",
+        "bytes": 16677,
+        "sha256": "886cf48ef0e11c7ed72033b8334b1f61fd8db71cd3af5c5a3e97e2aeff9fb7ea"
+      },
+      "commit": "a9f671e",
+      "files_untracked": true
+    },
+    "verdict_word_copied_exactly": "REVISE",
+    "findings": {
+      "blocking": [
+        "F1",
+        "F2",
+        "F3",
+        "F4"
+      ],
+      "non_blocking": [
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9",
+        "F10"
+      ],
+      "editorial": [
+        "F11",
+        "F12",
+        "F13",
+        "F14"
+      ]
+    },
+    "dispositions": {
+      "F1": "accepted and repaired - both warrants blocks quoted verbatim at 955-964 and 999-1008; the false claim withdrawn",
+      "F2": "accepted, repaired and extended - population named (10 declared colour tokens, 9 distinct, 36 pairs), full matrix recomputed and recorded, 7 pairs below 26.74 not 5 (review 1 omitted --line|--void at 23.27), bar restated over the 5 foreground tokens; both JSON fields replaced with predicated ones",
+      "F3": "accepted and repaired - sibling-state framing dropped, RFC2-25 three-member list quoted at line 169, family renamed render disclosures, invented quotation withdrawn, contradiction returned to the tier table and slice 4; Q6 reframed so no arm mints anything",
+      "F4": "accepted and repaired - RFC2-10 quoted at line 209, lines 306-307 shown together, Q2 scope extended to freshness with arm (b) ruled unavailable there, slice 5 closure moved to served output, mutant (e) added, S9 extended, M2 slice-5 interaction named in the collision section",
+      "F5": "accepted and repaired - 713/22 split stated in Q1, the Motif, the cross-surface table, the funnel summary and the Q1-other-way paragraph",
+      "F6": "accepted and repaired - walkthrough-preflight.ts added to the Gate 3 row, its claimStrength requirements stated in slice 5, added to Gate 6 item 6, mutant (f) added",
+      "F7": "accepted and repaired, re-derived past the review - M2 head is 68123fc with six slices; slice 6 two files named and shown untouched by M3; shared surface unchanged",
+      "F8": "accepted and repaired - 346-361 with line 357 named, in all three places",
+      "F9": "accepted and repaired - RFC2-10 is the authority; staleness.ts line 18 kept as the implementation echo",
+      "F10": "accepted and repaired - unavailable-notice 0 and proposal 0 disclosed; live reuse stated as 22 blocks and 1 label",
+      "F11": "accepted and repaired - restated in the review own terms",
+      "F12": "accepted and repaired - added bold removed from all five quotes of bound text",
+      "F13": "accepted and repaired - lines 46-55",
+      "F14": "accepted and repaired - lines 34-51 in the slice and the Gate 3 row"
+    },
+    "recommended_answers_changed": {
+      "Q2": "was \"Arm (b).\"; now \"Arm (b) for the tier field; arm (b) is not lawfully available for the freshness field, and the owner should see why\" - the tier ruling unchanged, the freshness half new (F4)",
+      "Q6": "was \"Yes, with a --proposed token at a stated perceptual distance\"; now \"Yes - a --proposed token, declared as a render-disclosure encoding, at a stated perceptual distance\" - same answer, framing no longer routes an implementer into a closed vocabulary (F3), bar now names its population (F2)"
+    },
+    "recommended_answers_unchanged": [
+      "Q1",
+      "Q3",
+      "Q4",
+      "Q5",
+      "Q7"
+    ],
+    "coverage": "every repair post-dates the review, so by verification rule 10 the review binds the 71,765-byte packet and 16,677-byte evidence record whose digests it names, not the current bytes; the current bytes are uncovered until a second independent fresh-context review, retained as a second -RAW.md file, confirms them"
+  }
+}
