@@ -459,8 +459,11 @@ and is emitted by no extractor, and the probe mints nothing inside that
 population — it is a claim *about* the pinned evaluation, carrying its own
 claim id, tier, challenge state and evaluation identity, and it enters
 PWB-REQ-020's parity population as a "disclosure Polaris presents", so
-parity applies to it like any other (review 4 finding J1; an earlier draft
-called the count "a project fact", which would have put slice 2 on the
+parity applies to it like any other [Inferred: the clause's Case attaches
+"disclosure" to the PWB-REQ-022 judgment state, so on the narrower reading
+the probe's facts fall outside the enumerated population entirely; slice 2
+renders them in both channels either way] (review 4 finding J1; an earlier
+draft called the count "a project fact", which would have put slice 2 on the
 wrong side of PWB-REQ-004). If the owner or a reviewer reads the count as a
 project fact after all, slice 2 acquires a PWB-REQ-004 spec delta, its act
 row flips to yes, and it joins Q6's collision — the same contingency slice 3
@@ -533,7 +536,11 @@ state and walkthrough-judgment state or disclosure Polaris presents". Every
 horizon *fact* the page renders (the probe claim, its instant, its
 counts) is a disclosure Polaris presents and therefore enters
 that population in both channels with the same claim id and the same
-evaluation. The `evidence` block's remaining fields (the declared bounds,
+evaluation identity in both channels [Inferred: on the narrower reading,
+under which PWB-REQ-020's "disclosure" is the PWB-REQ-022 judgment
+disclosure and the head of the enumeration is "project-shape", the probe's
+facts sit outside the population and this slice's equal-multiset argument
+only gets easier; it holds under both readings]. The `evidence` block's remaining fields (the declared bounds,
 the pinned and current digests) are inputs and identities of the
 evaluation, not facts Polaris presents about the project shape; they sit
 outside the enumerated population, so the multisets stay equal [Inferred:
@@ -572,8 +579,8 @@ precedent M2 may rely on. (Review 4 finding J6 recorded that "every fact is
 in both channels" was false at the spec's own fact granularity; review 5
 finding K1 found that the J6 wording had then dressed the open question as
 permission, contradicting the clause as quoted above.) The existing parity
-sweep already checks per tuple against the machine claim by id and both id sets,
-so any horizon fact rendered on one side only fails it.
+sweep already checks per tuple against the machine claim by id and both id
+sets, so any horizon fact rendered on one side only fails it.
 
 ### Slice 4 — `asOf` immutability (medium; no act)
 
@@ -591,8 +598,11 @@ evaluation identity changed with it.
 
 ### Slice 6 — A lapsed reviewed selection announces itself (medium; no act)
 
-The dossier's L4-M5, which an earlier draft carried only as scenario S9 and
-a Gate 6 mutation target without a slice (review 2 finding G3).
+The dossier's L4-M5, narrowed to a reason value and a route; the plan id
+and the expected and actual digests L4-M5 named are not carried, because
+the two non-digest reasons have no digests to show. An earlier draft
+carried it only as scenario S9 and a Gate 6 mutation target without a slice
+(review 2 finding G3).
 `applyReadingPlan` (`apps/three-surface-poc/src/polaris-reading.ts` line 44)
 returns the full declaration with `condensed: false` at thirteen guard
 returns — the pinned-digest mismatch and the empty-passage list at line 44,
@@ -1056,7 +1066,7 @@ confirms them.
 | J3 Q7 never weighed against RFC2-10's "never dressed as a freshness state" | non-blocking | Accepted and repaired: the sentence quoted against the recommendation in Q7 and in slice 5, with why `stale` plus a distinct reason is still preferred and why the engine amendment does not escape it; the recommendation unchanged, the owner rules with both in view |
 | J4 criterion 2 and S1 required a route the `superseded` marker lacks | non-blocking | Accepted and repaired: both weakened to "and, where one exists, the route"; the oracle stated to enforce the marker, not the route |
 | J5 "whenever" overstated `applyReadingPlan`'s reasons | non-blocking | Accepted and repaired: thirteen guard returns named by line; a third reason value `plan-malformed` covers the twelve structural guards so no full-declaration return stays silent; S9 restated (the row first said "eleven", copied from J5 — review 5 finding K3) |
-| J6 "every fact is in both channels" false at fact granularity | non-blocking | Accepted and repaired: statements and anchor sets shared, six claim identities machine-only, the twelve keys named, PWB-REQ-020's direction and the sweep's omission stated |
+| J6 "every fact is in both channels" false at fact granularity | non-blocking | Accepted and repaired: statements and anchor sets shared, six claim identities machine-only, the twelve keys named, PWB-REQ-020's direction and the sweep's omission stated (the direction clause was withdrawn after review 5 finding K1) |
 | J7 the H9 repair made a true span false | editorial | Accepted and repaired: "87–155" restored in both places; the review-3 disposition row now says H9 was not a defect |
 | J8 the P-69 row mischaracterized review 2's blocking findings | editorial | Accepted and repaired: "two register/packet mismatches and a scenario with no slice" |
 
@@ -1092,6 +1102,34 @@ sixth review confirms them.
 | K9 "what the machine carries and the page does not" stated the six-identity gap without its population (22 of 439 machine keys are absent as literal strings; sixteen are carried under class and catalog identities) | editorial | Accepted and repaired: scoped to the item population and the page's item rows |
 
 None of the seven recommended answers changed.
+
+### Review 6 and the exceptions (2026-09-14)
+
+A sixth independent fresh-context review, of the packet at commit
+`da1497b`, is retained verbatim at
+`docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-6-RAW.md` (26462 bytes,
+sha256 `2b1fffd8a916cb8c3c56b7753429ea7f655362589b81e4c5191e403a781d45ba`). Its verdict word, copied exactly: **CONFIRM WITH
+EXCEPTIONS** — no blocking, two non-blocking, two editorial. It verified
+K1–K9 repaired against the current bytes (counting the thirteen `return
+full` lines and reading PWB-REQ-020 in full itself), found every
+recommendation, ground, alternative and hold matching clause by clause
+between the packet and the P-69 row, and found no regression in F, G, H or
+J. The four exceptions were re-derived (PWB-REQ-020's Case at spec line
+914 pairs "disclosure" with the PWB-REQ-022 judgment state; the L4-M5 record
+in `docs/pursuits/2026-09-13-vision-pursuit-data.json` names the plan id and
+both digests) and applied below. Every edit below post-dates review 6 and is
+uncovered by it; the confirmation stands for the bytes at `da1497b`, and the
+exceptions are wording and labeling, no figure and no recommended answer.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| L1 PWB-REQ-020's "disclosure" read as a free-standing category, unlabeled, at two sites | non-blocking | Accepted and applied: both sentences labeled Inferred with the narrower reading (disclosure scoped to the PWB-REQ-022 judgment state) stated; slice 3's argument holds under both |
+| L2 the J6 disposition row still recorded the withdrawn direction clause without a mark | non-blocking | Accepted and applied: marked in place in the J5 row's shape |
+| L3 "the same evaluation" ambiguous against the probe's second-evaluation design | editorial | Accepted and applied: "the same evaluation identity in both channels" |
+| L4 slice 6 narrowed dossier move L4-M5 without saying so | editorial | Accepted and applied: the narrowing and its reason stated at the slice's opening |
+
+None of the seven recommended answers changed. The packet is at the owner
+gate as P-69.
 
 ## Funnel summary
 

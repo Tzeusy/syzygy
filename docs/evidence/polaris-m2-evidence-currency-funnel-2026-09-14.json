@@ -262,5 +262,22 @@
         143
       ]
     }
+  },
+  "review6": {
+    "raw": "docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-6-RAW.md",
+    "bytes": 26462,
+    "sha256": "2b1fffd8a916cb8c3c56b7753429ea7f655362589b81e4c5191e403a781d45ba",
+    "verdict": "CONFIRM WITH EXCEPTIONS",
+    "reviewed_commit": "da1497b",
+    "exceptions": "L1-L4 (two non-blocking, two editorial) applied after the review; wording and labels only; no figure and no recommended answer changed",
+    "re_derived_before_applying": {
+      "pwb_req_020_case_line": 914,
+      "pwb_req_020_case_text": "PWB-REQ-005 authority state and PWB-REQ-022 judgment state and disclosure",
+      "l4_m5_record_names": [
+        "plan id",
+        "expected and actual digests",
+        "route"
+      ]
+    }
   }
 }
