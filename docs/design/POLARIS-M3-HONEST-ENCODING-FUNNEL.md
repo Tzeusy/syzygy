@@ -1472,11 +1472,11 @@ over those figures.
 
 **Two recommended answers changed their wording; five did not.** Q1, Q3, Q4,
 Q5 and Q7 keep their recommendations word for word, with scope and citations
-sharpened. Q2's recommendation was "**Arm (b).**" and is now "**Arm (b) for
+sharpened. Q2's recommendation was "**Arm (b).**" and was then "**Arm (b) for
 the tier field; arm (b) is not lawfully available for the freshness field, and
 the owner should see why**" — the tier ruling is unchanged; the freshness half
 is new and is the substance of F4 (that freshness wording was itself
-withdrawn after review 2, finding G1; see the review-2 section). Q6's recommendation was "**Yes, with a
+withdrawn after review 2, finding G1; see the review-2 section; "was then" read "is now" until review 7, M2). Q6's recommendation was "**Yes, with a
 `--proposed` token at a stated perceptual distance**" and is now "**Yes — a
 `--proposed` token, declared as a render-disclosure encoding, at a stated
 perceptual distance**" — the answer is the same and its framing no longer
@@ -1801,6 +1801,72 @@ review 6 binds the 144,850-byte packet, 55,345-byte evidence record and
 The current bytes are uncovered until a seventh independent fresh-context
 review confirms them; its raw will be retained as a seventh `-RAW.md`
 file, never an overwrite of the first six.
+
+## Review 7 and repairs (2026-09-15)
+
+A seventh independent fresh-context review — of the packet, its evidence
+record and the P-70 note and row — is retained verbatim at
+`docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-7-RAW.md` (29,279 bytes,
+sha256
+`b6c2a69c57e8aa7d4e17bf70184c9d31e73a9e7160107a155421b16c7ca421ef`; both
+figures computed this session with `wc -c` and `sha256sum`). It reviewed
+the packet (152,072 bytes, sha256
+`0dc635903b94382d4f3167af3c1f957913a54712cb7f9a3e46bcbb00a8dcde31`),
+evidence record (61,335 bytes, sha256
+`6599db53eeb3fa7a62ab570f09b503a890dd3263292a6201c03e00755ce0e366`) and
+register (35,994 bytes, sha256
+`44ac06919896b79028a60ce9839dc6bccdf67358a6f76c56e2875096717e7493`) at
+commit `cfcb745`. Its verdict word, copied exactly: **CONFIRM WITH
+EXCEPTIONS**. Findings by severity as the raw states them: no blocking;
+no non-blocking; two editorial (M1–M2). It verified L1–L6 against the
+current bytes as 6 REPAIRED over a denominator of 6, re-derived the
+six-literal sweep blind — 45 hits over 3,051 lines by `wc -l` (3,054
+counting each file's trailing line), sorted 6 / 13 / 26 / 0 — matching
+the review-6 section's published sort exactly, spot-checked F through K
+and every cited line number, and read Q1–Q7 against the P-70 row clause
+by clause; nothing previously accepted regressed, and no recommendation
+is touched by either finding.
+
+Both findings were re-derived this session before being applied. M1: the
+record carries four character offsets; after review 6's L6 repair, the two
+`first_reading` offsets anchor on the element's opening `<` and say so,
+while `token_reuse.proposal_label_offset_chars` still held the index of
+the `class="proposal-label"` attribute (834,155) with no anchor field, the
+element's `<` being at 834,152 on the retained capture — and the L6 repair
+sentence in the record read as if the convention were record-wide. Both
+values give 56.29% at two decimals. M2: the four-box sort rule the
+record's `review6.sweep_after_repair` states did not say whether "no
+marker" is judged over a line, a sentence or a section; the one hit whose
+box turns on that choice is the review-1 section's Q2 wording quote, whose
+marker sits in the same sentence three wrapped lines below the hit; and
+that sentence said "and is now" of a recommendation the packet withdrew
+after review 2.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| M1 | editorial | **CONFIRMED — REPAIRED.** `proposal_label_offset_chars` reads 834,152 with the earlier 834,155 kept on its line in a `proposal_label_offset_anchor` field naming the convention; `review6.repairs.L6` is scoped on its line to the two `first_reading` fields and says the token-reuse offset joined the convention after review 7; `proposal_label_depth_percent` is unchanged at 56.29 |
+| M2 | editorial | **CONFIRMED — REPAIRED.** `review6.sweep_after_repair.predicate` now states the unit: a marker counts anywhere in the same sentence as the hit, hard wrap disregarded, so a sentence is sorted, never a line; the review-1 section's Q2 sentence reads "and was then" with the earlier "is now" kept in the same sentence's marker |
+
+No recommended answer changed: all seven recommendations stand word for
+word as after review 2. The sweep the H1 row names, re-run over the three
+files at the bytes this section describes and every hit sorted by the
+four-box rule as now stated, on the sentence unit: 45 occurrences
+over 3,151 lines by `wc -l` (3,154 counting each file's trailing
+line) — the hit set is line for line the one review 7 enumerated, so
+box (1) current lawful-arms language holds 6, box (2) in-place
+withdrawal markers 13, box (3) review-history text framed as
+superseded, the sweep's own literal lists included, 26, and box (4)
+holds 0; the text added in this pass contains none of the six
+literals, so the count is unchanged and only the denominator grew.
+
+**Both repairs above post-date review 7.** By verification rule 10,
+review 7 binds the 152,072-byte packet, 61,335-byte evidence record and
+35,994-byte register it read at `cfcb745` — and not the current bytes.
+The packet stands at the owner gate on review 7's CONFIRM WITH EXCEPTIONS
+with its two exceptions applied; those two editorial repairs are uncovered
+until an eighth independent fresh-context review confirms them, and its
+raw would be retained as an eighth `-RAW.md` file, never an overwrite of
+the first seven.
 
 ## Funnel summary
 

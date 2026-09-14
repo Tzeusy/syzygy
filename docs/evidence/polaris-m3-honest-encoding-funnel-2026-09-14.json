@@ -324,7 +324,7 @@
     "rules_using_var_cyan_that_are_the_declared_observed_encoding": 1,
     "amber_and_focus_are_the_same_value": true,
     "proposal_label_rendered_count": 1,
-    "proposal_label_offset_chars": 834155,
+    "proposal_label_offset_chars": 834152, "proposal_label_offset_anchor": "character index of the element's opening <; the earlier value 834155 was the index of its class attribute, the anchor the two first_reading fields left after review 6 (brought to the L6 convention after review 7, M1; the depth percentage is 56.29 under either anchor)",
     "proposal_label_depth_percent": 56.29,
     "proposal_label_text": "Proposed change \\u2014 not current authority.",
     "proposal_container_class_rendered_count": 0,
@@ -945,14 +945,48 @@
       "L3": "Q7's parenthetical reads six reviews retained, M2 at f2f37dd, the earlier five kept and marked",
       "L4": "J6 row reads PARTIAL at 76e897f, completed after review 5 (K2); the review-5 section states 7 / 1 / 1 over 9",
       "L5": "freshness_mint_hazard reads lines 222-223 with the earlier single line kept",
-      "L6": "one anchor adopted (the element's opening <): first_rendered_unknown_of_any_kind.offset_chars 378,599 with the earlier 378,604 kept on its line; first_unknown_tuple states the same anchor; depth percentages unchanged at two decimals"
+      "L6": "one anchor adopted (the element's opening <): first_rendered_unknown_of_any_kind.offset_chars 378,599 with the earlier 378,604 kept on its line; first_unknown_tuple states the same anchor; depth percentages unchanged at two decimals (this sentence names the two first_reading fields only; the token_reuse.proposal_label_offset_chars field stayed on the class-attribute anchor until review 7, M1, and now carries its own offset_anchor)"
     },
     "recommended_answers_changed": "none - all seven recommendations word for word as after review 2; Q7's parenthetical count corrected without moving its premise or its answer",
     "sweep_after_repair": {
-      "predicate": "Python str.count of the six literals the H1 row names, over the packet, this record and the register, every hit then sorted into exactly one of four boxes: (1) current lawful-arms language, (2) an in-place withdrawal marker, (3) review-history text framed as superseded, (4) review-history text stating the withdrawn proposition in the present tense with no marker",
+      "predicate": "Python str.count of the six literals the H1 row names, over the packet, this record and the register, every hit then sorted into exactly one of four boxes: (1) current lawful-arms language, (2) an in-place withdrawal marker, (3) review-history text framed as superseded, (4) review-history text stating the withdrawn proposition in the present tense with no marker; a marker counts when it sits anywhere in the same sentence as the hit, hard wrap disregarded, so a sentence is the unit sorted, never a line (unit stated after review 7, M2; the sort published here was made on that unit)",
       "denominator": "3 files, 3,051 lines by wc -l (3,054 counting each file's trailing line)",
       "result": "45 occurrences at the bytes this block describes; box (4) holds 0 and boxes (1)/(2)/(3) hold 6/13/26 after the two L1 sites were marked (they now sit in box 2); 0 stand as a live claim that any arm is unavailable"
     },
     "uncovered_until": "a seventh independent fresh-context review; every edit recorded here post-dates review 6 (verification rule 10)"
+  },
+  "review7": {
+    "raw": {
+      "path": "docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-7-RAW.md",
+      "bytes": 29279,
+      "sha256": "b6c2a69c57e8aa7d4e17bf70184c9d31e73a9e7160107a155421b16c7ca421ef",
+      "method": "wc -c and sha256sum computed this session over the retained file"
+    },
+    "reviewed_commit": "cfcb745",
+    "reviewed_bytes": {
+      "packet": {"bytes": 152072, "sha256": "0dc635903b94382d4f3167af3c1f957913a54712cb7f9a3e46bcbb00a8dcde31"},
+      "record": {"bytes": 61335, "sha256": "6599db53eeb3fa7a62ab570f09b503a890dd3263292a6201c03e00755ce0e366"},
+      "register": {"bytes": 35994, "sha256": "44ac06919896b79028a60ce9839dc6bccdf67358a6f76c56e2875096717e7493"}
+    },
+    "verdict_word_copied_exactly": "CONFIRM WITH EXCEPTIONS",
+    "findings": {"blocking": [], "non_blocking": [], "editorial": ["M1", "M2"], "denominator": 2},
+    "l_verification_by_review_7": "6 REPAIRED, 0 PARTIAL, 0 NOT REPAIRED over 6",
+    "sweep_re_derived_by_review_7": "45 over 3,051 / 3,054 at cfcb745, sorted blind 6/13/26/0 - identical to review6.sweep_after_repair",
+    "re_derived_before_applying": {
+      "M1": "polaris-tailnet.html (1,481,819 chars): class=\"proposal-label\" attribute at 834,155, its element's < at 834,152, 56.29% either way; :327 carried the attribute index with no anchor field while :169 and :174 carry the element anchor with offset_anchor fields, and review6.repairs.L6 read as record-wide - confirmed",
+      "M2": "review6.sweep_after_repair.predicate read without a unit; packet :1476 hit with its marker on :1478-1479 of the same sentence; :1475 read 'and is now' of the Q2 wording withdrawn after review 2 (G1) - confirmed"
+    },
+    "repairs": {
+      "M1": "proposal_label_offset_chars 834,152 with the earlier 834,155 kept on its line in proposal_label_offset_anchor; review6.repairs.L6 scoped on its line to the two first_reading fields; depth percent unchanged at 56.29",
+      "M2": "review6.sweep_after_repair.predicate states the sentence unit on its line; packet :1475 reads 'and was then' with the earlier 'is now' kept in the marker on :1479"
+    },
+    "recommended_answers_changed": "none - all seven recommendations word for word as after review 2",
+    "sweep_after_repair": {
+      "predicate": "the review6.sweep_after_repair predicate as now stated, sentence unit; the hit set compared line for line against review 7's enumeration",
+      "denominator": "3 files, 3,151 lines by wc -l (3,154 counting each file's trailing line)",
+      "result": "45 occurrences at the bytes this block describes, the same hit set review 7 enumerated; boxes (1)/(2)/(3)/(4) hold 6/13/26/0; the text added after review 7 contains none of the six literals"
+    },
+    "gate": "at the owner gate on review 7's CONFIRM WITH EXCEPTIONS with both exceptions applied",
+    "uncovered_until": "an eighth independent fresh-context review, for the two editorial repairs recorded here; both post-date review 7 (verification rule 10)"
   }
 }
