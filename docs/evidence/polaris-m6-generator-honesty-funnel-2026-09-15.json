@@ -5,7 +5,7 @@
   "move": "M6",
   "date": "2026-09-15",
   "packet": "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md",
-  "status": "candidate; binds nothing; planning only; one independent review (REVISE) applied 2026-09-15, uncovered until a second review confirms the repairs",
+  "status": "candidate; binds nothing; planning only; two independent reviews applied 2026-09-15 - review 1 (REVISE) and review 2 (CONFIRM WITH EXCEPTIONS), which verified the review-1 repairs 9 REPAIRED, 4 PARTIAL and 0 NOT REPAIRED over 13; at the owner gate, with review 2's twelve exception repairs uncovered until a third review confirms them [this field read 'one independent review (REVISE) applied 2026-09-15, uncovered until a second review confirms the repairs' until 2026-09-15, review 2]",
   "commit": {
     "baseline": "a9f671e",
     "note": "Every measurement below was taken in a worktree at a9f671e this session.",
@@ -18,7 +18,7 @@
     "dossier_syzygy_audited_at": "f4589e2",
     "dossier_audit_commit_discrepancy": {
       "claim_label": "Observed",
-      "finding": "At f4589e2 the entire packages/polaris-generation-core package did not exist. git diff --numstat f4589e2 a9f671e over the four M6 paths shows 22 files added with 0 deletions, including every file L3 and S9 cite. S9-F1's own evidence names the tree it read as main @ 1932f74, and f4589e2 is an ancestor of 1932f74 (git merge-base --is-ancestor returns true).",
+      "finding": "At f4589e2 the entire packages/polaris-generation-core package did not exist. git diff --numstat f4589e2 a9f671e over the four M6 paths shows 22 files added with 0 deletions, including every file L3 and S9 cite. [Superseded 2026-09-15 after review 2, G4: that count sentence is false and was corrected in the packet after review 1, F4. git diff --name-status f4589e2 a9f671e over the four paths gives 20 A and 2 M, the two M rows being the kit README and package.json, and three cited files are blob-identical at f4589e2 and appear in no row; see review1.re_derived_before_applying.baseline_diff. The superseded sentence is retained here unedited.] S9-F1's own evidence names the tree it read as main @ 1932f74, and f4589e2 is an ancestor of 1932f74 (git merge-base --is-ancestor returns true).",
       "consequence": "The dossier's syzygy_audited_at value does not hold for surfaces L3 and S9; the correct audit base for those two is 1932f74. No line citation is affected, because the surface is byte-identical across 1932f74..a9f671e."
     }
   },
@@ -99,7 +99,7 @@
       ],
       "counterexample_direction": "both; the failure appears when the workspace symlink is absent and disappears when it is restored (verification rule 6)",
       "what_the_readme_omits": "any setup step. Literal 'npm ci' occurs 0 times in packages/polaris-generation-core/README.md and 0 times in the four kit files. Denominator: 5 files.",
-      "additional_defect_not_in_dossier": "package.json line 15's build:poc tsc -b list names four projects and does not name packages/polaris-generation-core; the package builds only transitively through apps/three-surface-poc's project reference.",
+      "additional_defect_not_in_dossier": "package.json line 15's build:poc tsc -b list names four projects and does not name packages/polaris-generation-core; the package builds only transitively through apps/three-surface-poc's project reference. [Qualified 2026-09-15 after review 2, G7: it is the build:poc CHAIN that builds the package only transitively, not the repository at large. package.json line 14 (build) and line 22 (typecheck) each name packages/polaris-generation-core explicitly. The superseded sentence is retained unedited.]",
       "dossier_figure_that_differs": "The dossier says the demo 'fails with TS2307 from a fresh checkout'. At a9f671e after npm ci it succeeds (exit 0). The break is conditional on install state, not on a fresh checkout. The finding's own evidence already names that cause."
     },
     "M2a_prompt_instruction_sweep": {
@@ -402,6 +402,7 @@
         "parseBoundedJson",
         "stageSchema"
       ],
+      "other_exports_superseded_2026_09_15": "The array above is the first draft's four and is false; it is retained unedited and marked here after review 2, G4. index.ts lines 1-14 re-export ELEVEN runtime values beside thirteen type-only exports: CANONICAL_JSON_ENCODING, CanonicalJsonError, digestCanonicalJson, encodeCanonicalJson, parseBoundedJson, BoundedJsonError, promptForStage, runGenerationPipeline, stageSchema, validateStage, reviewVerdict. The adjacent export_sweep_method string has said eleven since review 1, F3; the array had not been marked.",
       "export_sweep_method": "literal sweep for lines beginning 'export' followed by function / async function / const / interface / type, over the six non-test sources: canonical-json.ts, index.ts, parse-json.ts, pipeline.ts, prompts.ts, provider-draft.ts [corrected 2026-09-15 after review 1, F3; the first draft said 'the four non-test sources', and its 'other four exports' enumeration omitted CANONICAL_JSON_ENCODING, CanonicalJsonError, BoundedJsonError, promptForStage and runGenerationPipeline - index.ts lines 1-14 re-export eleven runtime values and thirteen types]",
       "absence_claim": {
         "statement": "no validator in the package compares a stage's output to its input",
@@ -449,30 +450,30 @@
         },
         {
           "quote": "one meaningful trade-off, and links back to the parent and to its evidence",
-          "at": "docs/polaris-generation/AUTHORING.md line 62",
+          "at": "docs/polaris-generation/AUTHORING.md lines 62-63 [corrected 2026-09-15 after review 2, G4: this field read 'line 62'; the clause begins on 62 and ends on 63, as the packet has said since review 1, F5]",
           "promised_fields": 3,
           "schema_fields_present": 0,
           "schema_at": "provider-draft.ts line 28 (deepDives: id, title, sectionId, paragraphs)"
         },
         {
           "quote": "add a glossary when it helps further reading",
-          "at": "docs/polaris-generation/AUTHORING.md line 26",
+          "at": "docs/polaris-generation/AUTHORING.md lines 26-27 [corrected 2026-09-15 after review 2, G4: this field read 'line 26'; the clause ends on 27, as the packet has said since review 1, F5]",
           "schema_field": null,
           "sweep": "the literal 'glossar' (case-insensitive, Python re) occurs 0 times in provider-draft.ts and 0 times in pipeline.ts, and TWICE in prompts.ts - line 13 ('Use contents, glossary and comparison tables only when they help') and line 20, in the fidelity prompt ('every generated claim-bearing block, table cell, glossary explanation, deep dive and factual diagram element/edge must have actual support'); denominator: the six non-test sources [corrected 2026-09-15 after review 1, F6, which found the first draft saying 'once ... line 13' over a four-file denominator]"
         },
         {
           "quote": "Glossary entries are shared by inline definitions and glossary routes",
-          "at": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md line 40",
+          "at": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md lines 40-41 [corrected 2026-09-15 after review 2, G4: this field read 'line 40'; the sentence spans both lines, so review 1's F5 found the dossier range exact here]",
           "schema_field": null
         },
         {
           "quote": "Every requested asset has a produced, unnecessary-with-reason or unresolved disposition",
-          "at": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md line 43",
+          "at": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md lines 42-43 [corrected 2026-09-15 after review 2, G4: this field read 'line 43'; the sentence begins on 42, as the packet has said since review 1, F5]",
           "schema_field": null
         },
         {
           "quote": "Give every requested asset a planned, unnecessary-with-reason or unresolved disposition.",
-          "at": "docs/polaris-generation/AUTHORING.md line 102, inside a copy-pasteable Plan prompt block",
+          "at": "docs/polaris-generation/AUTHORING.md lines 101-102, inside a copy-pasteable Plan prompt block [corrected 2026-09-15 after review 2, G4: this field read 'line 102'; the sentence begins on 101, as the packet has said since review 1, F5]",
           "schema_field": null
         }
       ],
@@ -560,7 +561,8 @@
     },
     "M9_file_set_intersection": {
       "claim_label": "Observed",
-      "method": "extract every code span from each sibling packet; keep those that are implementation-plane paths (apps/, packages/, scripts/, docs/polaris-generation/, or package.json) AND resolve as a real file in this worktree; intersect with M6's 23-file candidate surface",
+      "method": "extract every code span from each sibling packet; keep those that are implementation-plane paths (apps/, packages/, scripts/, docs/polaris-generation/, or package.json) AND resolve as a real file in this worktree; intersect with M6's 23-file candidate surface [Superseded 2026-09-15 after review 2, G4: this names one predicate where the packet publishes two. The counts below are os.path.exists; the packet's table also publishes os.path.isfile (M1 1, M2 11, M3 13, M4 22, M5 9), and both were run against the sibling heads f2f37dd, 6574600, 63b8e33, ba9ca61 and 4090f98. The superseded single-predicate wording is retained unedited.]",
+      "method_note_review2_G4": "Per-sibling counts below are the os.path.exists figures taken in THIS worktree and were not labelled by predicate or by sibling commit; the sibling heads are recorded in the packet table. For laneB the figures published here and in the packet reproduce in neither worktree - see laneB_recount_review2_G3 below.",
       "m6_surface_count": 23,
       "m6_surface": [
         "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts",
@@ -610,6 +612,7 @@
         },
         "laneB (PR #35, P-68)": {
           "their_resolving_impl_paths": 3,
+          "their_resolving_impl_paths_superseded_2026_09_15": "The 3 above reproduces in neither worktree and is retained unedited, marked after review 2, G3/G4. Recomputed this session over the three paths listed below: in this worktree at e318cbd, 1 under os.path.exists and 1 under os.path.isfile (only scripts/check_governance.py is present); in the lane-B worktree at 4090f98, 3 and 3. The other two paths exist only on lane B's branch and are directories nowhere. The intersection is 0 under both predicates in both worktrees, unchanged.",
           "intersection": 0,
           "paths": [
             "scripts/build_pwb_scoped_attributes_amendment.py",
@@ -639,10 +642,12 @@
           "M3",
           "M4",
           "M5",
-          "laneB"
+          "laneB",
+          "M6"
         ],
-        "touched_by_M6": false,
-        "disclosure": "This packet writes exactly two files and no register row, so its six owner questions are unregistered as of this commit. Whoever lands this packet should file them."
+        "touched_by_M6": true,
+        "touched_by_M6_superseded_2026_09_15": "This field read false until 2026-09-15; corrected after review 2, G2. M6 writes this register: P-73 was added at e318cbd and git diff --name-only a9f671e e318cbd names this path.",
+        "disclosure": "This packet writes exactly two files and no register row, so its six owner questions are unregistered as of this commit. Whoever lands this packet should file them. [Superseded 2026-09-15 after review 2, G2: both sentences were true of the first draft and are false at e318cbd. P-73 is filed at e318cbd on branch agent/syzygy-dov.6 and this register is one of the four files the branch changes; do not file the questions a second time. The superseded sentences are retained above, unedited.]"
       },
       "sequencing_risk": "laneB edits scripts/check_governance.py, which this packet's two files must pass. Land laneB first, then re-run the check before merging this packet."
     },
@@ -785,12 +790,12 @@
           },
           {
             "literal": "planned, unnecessary-with-reason or unresolved",
-            "at": "docs/polaris-generation/AUTHORING.md line 102",
+            "at": "docs/polaris-generation/AUTHORING.md lines 101-102 [corrected 2026-09-15 in the review-2 pass; this field read 'line 102' and the sentence begins on 101. Not named by G4, which enumerated promises[1..5]; corrected here because it is the same defect in the same file]",
             "bound": false
           },
           {
             "literal": "produced, unnecessary-with-reason or unresolved",
-            "at": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md line 43",
+            "at": "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md lines 42-43 [corrected 2026-09-15 in the review-2 pass; this field read 'line 43' and the sentence begins on 42. Not named by G4, which enumerated promises[1..5]; corrected here because it is the same defect in the same file]",
             "bound": false
           }
         ],
@@ -883,7 +888,7 @@
     "M6's Slices list has five entries where its What bullet names six moves; S9-M3 (the diagram/deep-dive/glossary gap) appears in the What and in evidence_findings and in no slice. It is carried in the packet as a deferred slice 6 with its mapping recorded.",
     "S9-F3's line ranges are slightly long in three places: AUTHORING.md 45-49 (the sentence ends at 46), 60-63 (the clause is on 62), ARTIFACTS-AND-TOOLS.md 40-41 (begins at 40).",
     "[Corrected entry, appended 2026-09-15 after review 1, F5; the entry above is retained unedited.] S9-F3's line ranges, re-read at source: AUTHORING.md 45-49 is long, the sentence spans 45-47, not 45-46; 60-63 is long, the clause spans 62-63; ARTIFACTS-AND-TOOLS.md 40-41 is exact, the sentence spans both lines.",
-    "A defect the dossier does not name: package.json line 15's build:poc tsc -b list omits packages/polaris-generation-core, which builds only transitively."
+    "A defect the dossier does not name: package.json line 15's build:poc tsc -b list omits packages/polaris-generation-core, which builds only transitively. [Qualified 2026-09-15 after review 2, G7: only transitively IN THE build:poc CHAIN; package.json lines 14 (build) and 22 (typecheck) name the package explicitly. The superseded sentence is retained unedited.]"
   ],
   "not_verifiable_this_session": [
     "Whether the sibling branches' actual diffs stay inside the paths their packets cite, until they land.",
@@ -912,22 +917,30 @@
     ],
     "observed_repository_paths_backticked": 0,
     "act_arguments_or_signed_digests_reproduced": 0,
-    "cg_1b_note": "The path of this packet's first review is named without a code span, because CG-1b requires every code-span path to resolve and it does not exist yet. An earlier draft backticked it and CG-1b failed on exactly that reference.",
+    "cg_1b_note": "The path of this packet's first review is named without a code span, because CG-1b requires every code-span path to resolve and it does not exist yet. An earlier draft backticked it and CG-1b failed on exactly that reference. [Superseded 2026-09-15 after review 2, G4: the raw exists and is tracked, the packet backticks it, the code span resolves and CG-1b passes. Review 2's own raw is retained beside it. The superseded sentences are kept unedited.]",
     "lines_over_78_at": [
       760,
       890
     ]
   },
   "independent_review": {
-    "count": 1,
-    "note": "One independent fresh-context review, retained verbatim at docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-RAW.md; verdict REVISE. Its thirteen findings were re-derived against source and applied 2026-09-15; see review1 below. Verification rule 10: the review binds the bytes it names, not these, and the repairs are uncovered until a second review confirms them. [This field read count 0 and 'This packet has had no independent review' until 2026-09-15.]"
+    "count": 2,
+    "note": "Two independent fresh-context reviews, retained verbatim at docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-RAW.md (verdict REVISE) and docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-2-RAW.md (verdict CONFIRM WITH EXCEPTIONS). Review 1's thirteen findings were re-derived against source and applied 2026-09-15; see review1 below. Review 2 verified those repairs 9 REPAIRED, 4 PARTIAL and 0 NOT REPAIRED over 13 and raised twelve exceptions, all re-derived and applied 2026-09-15; see review2 below. Verification rule 10: each review binds the bytes it names, not these, and review 2's exception repairs are uncovered until a third review confirms them. [This field read count 1 and 'the repairs are uncovered until a second review confirms them' until 2026-09-15, review 2; and count 0 and 'This packet has had no independent review' before that.]"
   },
   "packet_measured": {
     "path": "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md",
     "bytes": 86188,
     "sha256": "5ff5520f5d4c3e709512c65bf81ca65ce4ac289c223d06a31f341999a418883d",
     "total_lines": 1122,
-    "note": "measured this session after the last edit to the packet; verification rule 10 binds a review to exactly these bytes"
+    "note": "measured this session after the last edit to the packet; verification rule 10 binds a review to exactly these bytes [Superseded 2026-09-15 after review 2, G4: these three values are the FIRST DRAFT's, at 91b1343, and were never re-measured after the review-1 repairs. They are retained unedited. The post-review-1 values are under review1.packet_after_repairs; the post-review-2 values are under packet_measured_after_review2 below, computed last.]"
+  },
+  "packet_measured_after_review2": {
+    "path": "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md",
+    "bytes": 137166,
+    "sha256": "f2ffc748af416958f9935530a3832ad58643caae9dce79a83558ea4a9fdc877b",
+    "total_lines": 1521,
+    "line_count_convention": "split-on-newline, the convention stated once in the packet; wc -l returns one fewer",
+    "note": "computed LAST, after every other edit of this pass, so it names the bytes that carry it. Verification rule 10: a review is bound to exactly these bytes and any later edit retires it."
   },
   "governance_check": {
     "command": "python3 scripts/check_governance.py",
@@ -999,5 +1012,108 @@
       "note": "the packet's own predicate excludes headings and gives 2, both single unbreakable code-span paths; the review prompt's predicate keeps headings and gives 6. The first draft's figures, over the bytes review 1 was bound to, were 1073 non-fence lines and 261 distinct code spans."
     },
     "register_row": "P-73 added to .syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md on branch agent/syzygy-dov.6; 22 open rows and 5 acceptance-act rows, 27 in all, counted from main's 21/5/26 at a9f671e with the predicate '^| P-' partitioned by section"
+  },
+  "review2": {
+    "raw": "docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-2-RAW.md",
+    "bytes": 35804,
+    "sha256": "6107894098ddbdc59a7b059c94c4ec0d7a617b6e53c75c6c2ff6607c0fd8d2b0",
+    "verdict": "CONFIRM WITH EXCEPTIONS - no blocking, seven non-blocking, five editorial",
+    "reviewed_commit": "e318cbd",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md": {
+        "bytes": 116325,
+        "sha256": "da54c37407644627352e835dcf15bf182da40ba723ea9a673efcd5ff329075aa"
+      },
+      "docs/evidence/polaris-m6-generator-honesty-funnel-2026-09-15.json": {
+        "bytes": 51469,
+        "sha256": "a90840448f34c85102e13cd89c1cadc311c91c66eaf8c3fb20efa5221aa4149c"
+      },
+      ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+        "bytes": 30541,
+        "sha256": "52ba85289540edefa5f83d8b74be35fd6bc11f34f13b0e5ab7fae2a1a876b826"
+      }
+    },
+    "repairs_applied_this_session": true,
+    "f1_f13_verification_as_review2_states_it": {
+      "REPAIRED": ["F1", "F2", "F6", "F7", "F8", "F9", "F10", "F12", "F13"],
+      "PARTIAL": ["F3", "F4", "F5", "F11"],
+      "NOT_REPAIRED": [],
+      "denominator": 13,
+      "note": "9 REPAIRED, 4 PARTIAL, 0 NOT REPAIRED. F12 is REPAIRED in (b), (c) and (d) and partial in (a), which review 2 raises as G1. Every partial is a residue in this evidence record or one named instance of F5, never a failure of the packet's argument; the blocking F1 is fully discharged and was independently re-derived by review 2's own sweep of both specification files."
+    },
+    "disposition_summary": {
+      "G1": "CONFIRMED and applied (non-blocking). The figures_that_differ_from_the_dossier array carries 7 entries and the packet's reconciliation list 6, counted this session. The array's entries at index 4 and 5 are both S9-F3's line ranges - the stale first-draft entry and the corrected entry appended after review 1, F5 - and the packet's item (5) is the corrected one. The sentence now says seven against six, names the appended corrected entry and states the collapse explicitly; the superseded 'Six figures ... in the same order' wording is quoted and dated in place.",
+      "G2": "CONFIRMED and applied (non-blocking). At e318cbd this record's measurements.M9_file_set_intersection.shared_governance_file carried touched_by_M6 false, a five-member touched_by and a disclosure telling a reader the six questions were unregistered and should be filed; git diff --name-only a9f671e e318cbd returns four paths, one of them this register. Applied here by same-line edits: touched_by_M6 is true, touched_by gains M6, and the disclosure keeps its text with a dated superseded clause appended inside the same string naming P-73 as filed at e318cbd. Nothing deleted.",
+      "G3": "CONFIRMED and applied (non-blocking). The three lane-B implementation-plane code spans this record names resolve 1 and 1 under os.path.exists and os.path.isfile in the M6 worktree at e318cbd (only scripts/check_governance.py is present) and 3 and 3 in the lane-B worktree at 4090f98; the published 3 / 1 reproduces in neither. Intersection with M6's 23-file surface is 0 under both predicates in both worktrees - four resolutions and four intersections computed this session. The packet's row now publishes both worktrees' figures and says which worktree each was taken in, a new dated paragraph recomputes the row and names branch content rather than the predicate as the cause, and the directory-span sentence is narrowed to the five rows it holds for. The load-bearing zero is unchanged.",
+      "G4": "CONFIRMED at all seven sites and applied (non-blocking). Each read at e318cbd this session: the F4 sentence at record line 21, other_exports at 399, promises[1..5].at at 452/459/465/470/475, M9's method at 563 and its per-sibling counts at 592-612, cg_1b_note at 915 and packet_measured at 925-930. Marked in place by same-line edits inside the existing strings, and by sibling keys for the two non-string values; every existing line is kept. packet_measured's numbers are not overwritten - they are marked, and packet_measured_after_review2 carries bytes, sha256 and the split-on-newline line count computed LAST, after every other edit of this pass.",
+      "G5": "CONFIRMED and applied (non-blocking). The kit README's product promise begins on line 69 and ends on 70; RFC2-24's clause runs 92-93, line 92 ending at 'carries'. Both packet citations widened to their true spans with the superseded single-line citation quoted and dated. The first is the instance review 1's F5 named explicitly and left unwidened.",
+      "G6": "CONFIRMED and applied (non-blocking). Swept this session over both versions: at 91b1343 'six questions' returns 1 and 'six gates' 0; over the current bytes both return more, every extra hit lying inside the reporting sentences. The cell now attributes 1 and 0 to the first draft by commit and publishes the current figures beside them. Self-reference was handled mechanically: both figures were written as placeholder tokens and resolved by a final pass after every other edit in this pass, so the published numbers are true of the bytes carrying them.",
+      "G7": "CONFIRMED IN SUBSTANCE, with one line number of the finding's own corrected, and applied (non-blocking). package.json line 14 (build) and line 22 (typecheck) each name packages/polaris-generation-core explicitly; G7 cites typecheck at line 21, which is poc:pwb-mutation-sweep. What rests solely on apps/three-surface-poc/tsconfig.json's project reference is the build:poc chain. Applied at the Gate 1 paragraph, Q5's cell and Gate 4's references sentence, each narrowed to the build:poc chain with the superseded wider wording quoted and dated, and line 22 used throughout; mirrored at this record's two 'builds only transitively' sites. The register's Q5 clause does not carry the over-wide claim and needed no mirror, swept this session. Q5's third limb and its recommendation are unchanged.",
+      "G8": "CONFIRMED at both sites and applied (editorial). The act's line 39 opens 'Revocation relationship: none.' and the packet quoted from 'Existing implementation', naming a span wider than the text given. Both sites now quote the whole span from line 39's first sentence rather than narrowing the citation, so the revocation sentence the packet elsewhere names is inside the quotation.",
+      "G9": "CONFIRMED and applied (editorial). security.md lines 25-37 bold only 'Model providers are such services.'; the packet also bolded 'including prompts'. The words are otherwise verbatim. The added emphasis is dropped rather than labelled, and the removal is recorded in place with its date, because a quotation a reader cannot distinguish from its source is the defect.",
+      "G10": "CONFIRMED and applied (editorial). The intersection table's M1 row named 91b1343 as 'this worktree', which is at e318cbd. git diff --name-only 91b1343 e318cbd over docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md is empty, so the M1 packet is byte-identical at both and no measured figure moves. The row now names e318cbd and states the byte-identity at 91b1343, where the figures were taken.",
+      "G11": "CONFIRMED and applied (editorial). At e318cbd the branch carries four committed files and git status --short in the worktree is empty. Gate 6 item 7 now states both, with the superseded 'clean of everything but this packet's two files' sentence quoted and dated in place.",
+      "G12": "CONFIRMED and applied (editorial). Gate 0's 'so those slices are covered on either reading of that sentence' is a reading of what the implementation act authorizes, which Q6 declines to settle and labels Inferred in both arms; the Observed half now carries its label and the consequence carries Inferred with a pointer to Q6."
+    },
+    "re_derived_before_applying": {
+      "G1_array_versus_list": {
+        "record_array_entries": 7,
+        "packet_list_items": 6,
+        "collapsed_pair": "array indices 4 and 5, the stale and the corrected S9-F3 line-range entries",
+        "method": "counted this session from this file and from the packet"
+      },
+      "G2_register_touched": {
+        "git_diff_name_only_a9f671e_e318cbd": [
+          ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+          "docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md",
+          "docs/evidence/polaris-m6-generator-honesty-funnel-2026-09-15.json",
+          "docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-RAW.md"
+        ],
+        "p_73_filed_at": "e318cbd"
+      },
+      "laneB_recount_review2_G3": {
+        "paths": [
+          "scripts/build_pwb_scoped_attributes_amendment.py",
+          "scripts/check_governance.py",
+          "scripts/estimate_pwb_scoped_attributes_saving.py"
+        ],
+        "m6_worktree_at_e318cbd": {"os_path_exists": 1, "os_path_isfile": 1, "intersection": 0},
+        "laneB_worktree_at_4090f98": {"os_path_exists": 3, "os_path_isfile": 3, "intersection": 0},
+        "published_row_superseded": "3 under os.path.exists and 1 under os.path.isfile, reproducible in neither worktree",
+        "cause": "branch content, not the predicate: two of the three paths exist only on lane B's branch and are directories nowhere",
+        "denominator": "the three named paths against the 23-file M6 surface published above"
+      },
+      "G5_line_spans": {
+        "docs/polaris-generation/README.md": "product promise 69-70; the sentence begins on 69 at 'Missing evidence is'",
+        ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md": "RFC2-24 clause 92-93; line 92 ends at 'carries'"
+      },
+      "G6_self_referential_sweep": {
+        "predicate": "grep -o -F over the whole packet, literals 'six questions' and 'six gates'",
+        "at_91b1343": {"six_questions": 1, "six_gates": 0},
+        "at_this_commit": {"six_questions": 6, "six_gates": 3},
+        "self_reference_handling": "both current figures were written as placeholder tokens and resolved by a final pass after every other edit of this pass, including the review-2 section, so they are true of the bytes that carry them"
+      },
+      "G7_package_json": {
+        "line_14_build": "names packages/polaris-generation-core explicitly",
+        "line_15_build_poc": "four projects, does not name packages/polaris-generation-core",
+        "line_22_typecheck": "names packages/polaris-generation-core explicitly",
+        "finding_line_number_corrected": "G7 cites typecheck at line 21; line 21 is poc:pwb-mutation-sweep. package.json is 31 lines by wc -l, read at source this session.",
+        "register_q5_clause": "swept this session; it does not carry the over-wide claim, so no mirror was needed"
+      },
+      "G10_m1_packet_bytes": "git diff --name-only 91b1343 e318cbd -- docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md is empty",
+      "G11_worktree_state": "at e318cbd, four committed files on the branch and git status --short empty",
+      "register_recount_reverified": {
+        "predicate": "^| P- partitioned by the ## section each row falls under",
+        "at_e318cbd": {"open": 22, "acceptance_act": 5, "total": 27},
+        "at_a9f671e": {"open": 21, "acceptance_act": 5, "total": 26},
+        "note": "re-verified this session and unchanged by this pass, which adds no row"
+      }
+    },
+    "recommended_answers_changed": {
+      "none": "No recommended answer changed after review 2. Its own six-question table answers 'Recommendation follows?' Yes for all six post-repair recommendations, Q5 as 'Yes, on the merits'. G1, G3, G4, G10 and G11 date or recompute a figure rather than move one; G5 and G8 widen a citation to its true span; G6 re-derives a self-referential count; G9 removes added emphasis; G12 adds a label Q6 already carries; G7 narrows a defect's scope without touching the limb Q5 recommends. Q1 through Q6 keep the recommendations they carried into this review, word for word."
+    },
+    "rule_10": "Review 2 binds the three digests recorded above at commit e318cbd, not these bytes. Every edit of this pass was made after it.",
+    "gate": "at the owner gate on review 2's CONFIRM WITH EXCEPTIONS with all twelve exceptions applied - no blocking finding, no recommended answer moved, and the review-1 repairs verified 9 REPAIRED, 4 PARTIAL and 0 NOT REPAIRED over 13; P-73 is ready to be ruled",
+    "uncovered_until": "a third independent fresh-context review, for the twelve exception repairs recorded here; all twelve post-date review 2 (verification rule 10). Its raw would be a third -RAW.md file, never an overwrite of either retained one."
   }
 }

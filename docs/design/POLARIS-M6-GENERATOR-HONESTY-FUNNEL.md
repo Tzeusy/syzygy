@@ -31,8 +31,8 @@ are downstream of it; Q6 is the only one that could stop every slice.
 | Q2 | **Does the `support` discriminant — replacing every `sourceIds: string[]` with a tagged union of quoted / synthesis / inference / unresolved — go in with slice 2, or is it deferred?** This is L3-M1's other half and the largest schema change M6 could carry. Today `references()` (`packages/polaris-generation-core/src/provider-draft.ts` lines 90–98) checks only that a cited source id *exists*; nothing in the package compares a claim's text to the source text it cites [Observed, read at source this session]. The effective REQ-polaris-generation-002 requires that "Source-supported inference SHALL expose its admitted premises and inferred status" (overlay line 9; predecessor at base line 52), and base REQ-polaris-generation-003 requires the bundle to "distinguish source claims, supported inference and non-normative framing and preserve captured epistemic states" (base line 98). | **Defer it to its own funnel; do not fold it into slice 2.** Slice 2 as designed adds an *asset-level* disposition, which the bound text names field-for-field. The support discriminant additionally proposes a *mechanical entailment check* — a quoted span must be a substring of the named source — which is new machinery, changes every claim-bearing node's shape at once, and would make slice 2 unreviewable as one change. **Counter-argument, and it is strong:** without it, a paragraph's citation still means only "a source with this id exists", so slice 2 closes the asset-level hole and leaves the claim-level one open, and the owner may reasonably want both closed in one pass rather than shipping a half-honest schema twice. **Second lawful arm:** take it now as slice 2b, accepting a larger single change. **Default if unanswered: deferred**, and this packet records the claim-level hole as open. |
 | Q3 | **Should the fidelity verdict become fail-closed over coverage rows, so that silence blocks readiness instead of passing it?** Today `reviewVerdict` (`packages/polaris-generation-core/src/provider-draft.ts` lines 148–152) blocks only when some finding carries `severity: 'blocking'`, and `findings` has `minItems` 0 (line 31) — so a review that enumerates every id and says nothing passes. The effective REQ-polaris-generation-006 requires the review to "record both inventory-to-draft coverage and draft-to-source support, including justified omissions; unresolved material omissions SHALL prevent readiness" (overlay line 180). | **Yes — make readiness require a positive disposition on every row of a denominator the model cannot narrow.** This is the one polarity change in M6: VIS-2's "no evidence means Unknown, not success" applied at the gate the product's honesty rests on. The existing set-equality checks (`same()` at lines 127–128) already force the whole denominator; the change is to carry a verdict on each row and to block on any row that is not positively cleared, and on any missing row. **Counter-argument:** it will make runs fail that pass today, including the shipped synthetic demo, and a run that cannot reach ready is a worse demo even when it is a more honest one. **Second lawful arm:** add the rows without changing the verdict polarity, so the coverage table is *visible* but not *binding* — honest to read, unchanged in effect. That arm defers conformance with the quoted sentence of the effective REQ-polaris-generation-006: today an unresolved material omission the model declines to report as `blocking` does not prevent readiness, so "unresolved material omissions SHALL prevent readiness" stays unimplemented. Deferring it is lawful while Phase A is unfinished — all 24 `tasks.md` boxes are unchecked — but it is a trade-off, and the implementing bead should record it rather than let the arm read as neutral [added 2026-09-15 after review 1, F9; Observed for the quotation, Inferred for the conformance consequence]. **Default if unanswered: rows are added, polarity is not changed** (the second arm), and the packet records that readiness still passes on silence. |
 | Q4 | **`docs/polaris-generation/example.json` fails the landed validator 19 times out of 19 attempts. Is it regenerated from a real validation, or re-labelled?** [Observed, run this session: every combination of the six landed stages against the file's `illustrativeOutput`, `illustrativeLaterDraft` and the whole file throws `invalid-fields`; `stageSchema('understand')` throws `invalid-stage`.] The file is not a stage payload and does not claim to be: its own `exampleKind` is `synthetic-documentation-handoff`, its `schemaStatus` is `candidate-not-registered`, its `stageId` is `understand` — a stage the landed pipeline does not have — and the kit calls it "one small handoff… neither a complete manifesto nor a successful generator run" (`docs/polaris-generation/README.md` lines 41–42). | **Regenerate it from a real `validateStage` call and keep a second, clearly separated illustrative block for the not-yet-implemented understanding stage.** An operator told the example is ground truth will write to it; today what they write is rejected with `invalid-fields` and no explanation. **The counter-argument is that the dossier's framing is unfair and this packet agrees in part:** "example.json fails the landed validator" is true and was measured, but the file never asserted validator-conformance, so the defect is that the kit routes operators to it (`README.md` line 41, "Inspect the synthetic example") without saying which half is executable. **Second lawful arm:** leave the bytes and add one sentence naming the two halves — cheapest, and it fixes the routing without fixing the example. **Default if unanswered: the second arm** (one sentence), because it is reversible and needs no schema decision. |
-| Q5 | **The onramp: an install line only, or an install line plus a fresh-install assertion in the battery — and is `packages/polaris-generation-core` added to `build:poc`'s explicit project list?** Measured this session at `a9f671e` in a worktree where `npm ci` had been run: the README's exact command chain **succeeds**, exit 0. With the workspace symlink `node_modules/@syzygy/polaris-generation-core` moved aside, the same chain fails with 42 TypeScript errors, 5 of them `TS2307: Cannot find module '@syzygy/polaris-generation-core'`, across 6 files; restoring the symlink restores exit 0 [Observed, both directions run this session]. `build:poc` (`package.json` line 15) names four projects and **not** `packages/polaris-generation-core`; the package builds only transitively through `apps/three-surface-poc`'s project reference. | **Install line plus a battery assertion, and add the package to `build:poc`'s explicit list.** The install line alone documents the workaround; the assertion is what stops the class recurring, and `poc:fresh-checkout-demo` already exists as the shape to extend. Adding the package to the explicit list costs nothing and removes a silent dependence on one tsconfig reference. **Counter-argument:** a fresh-install assertion means an `npm ci` in the battery, which is the slowest thing the battery could do, and the failure it catches is a developer-machine failure rather than a product one. **This is a cost trade-off the owner may delegate, not a gate** [Inferred — a judgment about question classification, not about lawfulness; added 2026-09-15 after review 1, F8]: slice 1 needs no act, crosses no act trigger, touches no bound byte and enumerates no RFC-0002 consequence (Gate 3's act table and Gate 5's RFC2-26 row below), and of its three limbs only the battery assertion carries a real trade-off — an `npm ci` in the battery — which is a cost judgment a delegate can make. The `build:poc` limb is stated here as a decision rather than a question: the package is added to the explicit project list, because the cost is one list entry and the alternative is a silent dependence on one tsconfig reference. It stays in this batch so the owner can take it back if the battery cost is theirs to rule. **Second arm:** install line only — one line, zero cost, no recurrence guard. **Default if unanswered: the install line lands and the assertion does not.** |
-| Q6 | **Which act covers these five slices, and does RFC2-26 gate any of them?** `POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md` line 42 reads, verbatim: "Authorize the full EXECUTION-PHASES.md implementation goal, including protected effect host, complete owner experience, two-project and changed-source proof obligations. Phase A alone is not completion. Real-project reads, provider egress and destination writes remain separately admitted; no effect, production release, broad remote access or observed-project code execution is authorized by this act." All five slices sit inside Phase A, whose scope is "the source/draft contracts, immutable identities and support, bounded pure stage controller, dependency invalidation, trusted rendering and fixture adapters" and whose named requirement set is "001-012, 014-019 and 025" (`openspec/changes/polaris-manifesto-generation/EXECUTION-PHASES.md` lines 10–11 and 18). None reads a real source, calls a provider or writes outside Syzygy. **But the act that amended the requirements slices 2, 3 and 4 name disclaims any implementation extension.** `POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md` lines 39–41 read, verbatim: "Existing implementation and applicability acts retain their own exact scopes. This act grants no implementation extension, source/provider/content permission, write consent, deployment or release." That sentence is load-bearing for slice 4 and only for slice 4: slice 4's single named clause, "The original finding, repair, dispositions and input/output identities SHALL remain traceable", occurs **1** time in the overlay (line 180) and **0** times in the predecessor, whereas every clause slices 2, 3 and 5 rest on is predecessor text carried through unchanged — REQ-004's disposition sentence at base line 186, REQ-006's coverage-and-readiness sentence at base line 302, REQ-019's disposition sentence at base line 1015 [Observed; each exact sentence swept over both specification files with Python `re` this session, denominator the two files]. The deferred slice 6's glossary clause, "Glossaries SHALL explain concepts where needed for comprehension" (overlay line 78), is overlay-only by the same sweep. | **The existing implementation-authorization act covers slices 1, 2, 3 and 5 on either reading of that sentence; slice 4 should be ruled explicitly before it lands; RFC2-26 gates none of them.** [Recommendation changed 2026-09-15 after review 1, F1. Superseded wording: "The existing implementation-authorization act covers all five; no new act is needed, and RFC2-26 gates none of them." It was drawn without the limiting sentence above, which sits seven lines below the Scope paragraph Gate 0 already quotes from the same file.] **The two readings, neither chosen here.** (i) The implementation act authorizes requirements by *identity* — "001-012, 014-019 and 025" — so an amended REQ-006 is still REQ-006 and slice 4 rides the existing act [Inferred]. (ii) "This act grants no implementation extension" means work scheduled solely from clauses the amendment added is not thereby authorized, in which case slice 4 needs a fresh owner direction naming it, or a CC-REV-2 scenario if the owner also reads RFC2-26's bar strictly; deferred slice 6 stands in the same place [Inferred]. RFC2-26 bars scheduling implementation work for user-observable consequences **of RFC-0002** from that RFC alone; these slices are scheduled from an adopted OpenSpec specification with 31 effective requirements and 177 scenarios, and Gate 5 below runs the requirement-and-scenario test over all five slices and the deferred sixth, with its denominator stated. **Counter-argument:** slice 3 changes when a run reaches ready, which is a readiness state the owner will see, and slice 2's dispositions are rendered by `draft-preview.ts`; an owner who reads RFC2-26's consequence list broadly ("Unknown-reason and rendering-tier presentation") may want those two ruled explicitly rather than inherited. **Second lawful arm:** rule slices 2 and 3 under a fresh direction naming them — and note that on reading (ii) slice 4 is the **most** gated of the three schema slices, not the least, because its requirement clause is named *only* in the effective text and not in the authorized predecessor [corrected 2026-09-15 after review 1, F1; the first draft's handoff called slice 4 "the least gated of the three schema slices"]. **Default if unanswered: slices 1 and 5 proceed** (documentation and build plumbing, no observable consequence enumerated); slices 2, 3 and 4 hold. |
+| Q5 | **The onramp: an install line only, or an install line plus a fresh-install assertion in the battery — and is `packages/polaris-generation-core` added to `build:poc`'s explicit project list?** Measured this session at `a9f671e` in a worktree where `npm ci` had been run: the README's exact command chain **succeeds**, exit 0. With the workspace symlink `node_modules/@syzygy/polaris-generation-core` moved aside, the same chain fails with 42 TypeScript errors, 5 of them `TS2307: Cannot find module '@syzygy/polaris-generation-core'`, across 6 files; restoring the symlink restores exit 0 [Observed, both directions run this session]. `build:poc` (`package.json` line 15) names four projects and **not** `packages/polaris-generation-core`; the `build:poc` chain builds it only transitively, through `apps/three-surface-poc`'s project reference. `package.json` line 14 (`build`) and line 22 (`typecheck`) do each name the package explicitly, so what the missing entry exposes is the `build:poc` chain and not the package at large [qualified 2026-09-15 after review 2, G7; this read "the package builds only transitively through `apps/three-surface-poc`'s project reference"]. | **Install line plus a battery assertion, and add the package to `build:poc`'s explicit list.** The install line alone documents the workaround; the assertion is what stops the class recurring, and `poc:fresh-checkout-demo` already exists as the shape to extend. Adding the package to the explicit list costs nothing and removes a silent dependence on one tsconfig reference. **Counter-argument:** a fresh-install assertion means an `npm ci` in the battery, which is the slowest thing the battery could do, and the failure it catches is a developer-machine failure rather than a product one. **This is a cost trade-off the owner may delegate, not a gate** [Inferred — a judgment about question classification, not about lawfulness; added 2026-09-15 after review 1, F8]: slice 1 needs no act, crosses no act trigger, touches no bound byte and enumerates no RFC-0002 consequence (Gate 3's act table and Gate 5's RFC2-26 row below), and of its three limbs only the battery assertion carries a real trade-off — an `npm ci` in the battery — which is a cost judgment a delegate can make. The `build:poc` limb is stated here as a decision rather than a question: the package is added to the explicit project list, because the cost is one list entry and the alternative is a silent dependence on one tsconfig reference. It stays in this batch so the owner can take it back if the battery cost is theirs to rule. **Second arm:** install line only — one line, zero cost, no recurrence guard. **Default if unanswered: the install line lands and the assertion does not.** |
+| Q6 | **Which act covers these five slices, and does RFC2-26 gate any of them?** `POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md` line 42 reads, verbatim: "Authorize the full EXECUTION-PHASES.md implementation goal, including protected effect host, complete owner experience, two-project and changed-source proof obligations. Phase A alone is not completion. Real-project reads, provider egress and destination writes remain separately admitted; no effect, production release, broad remote access or observed-project code execution is authorized by this act." All five slices sit inside Phase A, whose scope is "the source/draft contracts, immutable identities and support, bounded pure stage controller, dependency invalidation, trusted rendering and fixture adapters" and whose named requirement set is "001-012, 014-019 and 025" (`openspec/changes/polaris-manifesto-generation/EXECUTION-PHASES.md` lines 10–11 and 18). None reads a real source, calls a provider or writes outside Syzygy. **But the act that amended the requirements slices 2, 3 and 4 name disclaims any implementation extension.** `POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md` lines 39–41 read, verbatim: "Revocation relationship: none. Existing implementation and applicability acts retain their own exact scopes. This act grants no implementation extension, source/provider/content permission, write consent, deployment or release." [The quotation now opens at line 39's first sentence, 2026-09-15 after review 2, G8, which found the span named wider than the text given at this site and at Gate 0.] That sentence is load-bearing for slice 4 and only for slice 4: slice 4's single named clause, "The original finding, repair, dispositions and input/output identities SHALL remain traceable", occurs **1** time in the overlay (line 180) and **0** times in the predecessor, whereas every clause slices 2, 3 and 5 rest on is predecessor text carried through unchanged — REQ-004's disposition sentence at base line 186, REQ-006's coverage-and-readiness sentence at base line 302, REQ-019's disposition sentence at base line 1015 [Observed; each exact sentence swept over both specification files with Python `re` this session, denominator the two files]. The deferred slice 6's glossary clause, "Glossaries SHALL explain concepts where needed for comprehension" (overlay line 78), is overlay-only by the same sweep. | **The existing implementation-authorization act covers slices 1, 2, 3 and 5 on either reading of that sentence; slice 4 should be ruled explicitly before it lands; RFC2-26 gates none of them.** [Recommendation changed 2026-09-15 after review 1, F1. Superseded wording: "The existing implementation-authorization act covers all five; no new act is needed, and RFC2-26 gates none of them." It was drawn without the limiting sentence above, which sits seven lines below the Scope paragraph Gate 0 already quotes from the same file.] **The two readings, neither chosen here.** (i) The implementation act authorizes requirements by *identity* — "001-012, 014-019 and 025" — so an amended REQ-006 is still REQ-006 and slice 4 rides the existing act [Inferred]. (ii) "This act grants no implementation extension" means work scheduled solely from clauses the amendment added is not thereby authorized, in which case slice 4 needs a fresh owner direction naming it, or a CC-REV-2 scenario if the owner also reads RFC2-26's bar strictly; deferred slice 6 stands in the same place [Inferred]. RFC2-26 bars scheduling implementation work for user-observable consequences **of RFC-0002** from that RFC alone; these slices are scheduled from an adopted OpenSpec specification with 31 effective requirements and 177 scenarios, and Gate 5 below runs the requirement-and-scenario test over all five slices and the deferred sixth, with its denominator stated. **Counter-argument:** slice 3 changes when a run reaches ready, which is a readiness state the owner will see, and slice 2's dispositions are rendered by `draft-preview.ts`; an owner who reads RFC2-26's consequence list broadly ("Unknown-reason and rendering-tier presentation") may want those two ruled explicitly rather than inherited. **Second lawful arm:** rule slices 2 and 3 under a fresh direction naming them — and note that on reading (ii) slice 4 is the **most** gated of the three schema slices, not the least, because its requirement clause is named *only* in the effective text and not in the authorized predecessor [corrected 2026-09-15 after review 1, F1; the first draft's handoff called slice 4 "the least gated of the three schema slices"]. **Default if unanswered: slices 1 and 5 proceed** (documentation and build plumbing, no observable consequence enumerated); slices 2, 3 and 4 hold. |
 
 ### Decided in this packet, not put to the owner
 
@@ -99,12 +99,22 @@ predecessor.
 
 **What the understanding act does not grant.** The same act's revocation
 paragraph, lines 39–41 — seven lines below the Scope paragraph quoted just
-above, which ends at line 32 — reads, verbatim: "Existing implementation and
-applicability acts retain their own exact scopes. This act grants no
-implementation extension, source/provider/content permission, write consent,
-deployment or release." Every clause this packet's slices 2, 3 and 5 rest on
-is predecessor text carried through the amendment unchanged, so those slices
-are covered on either reading of that sentence; slice 4's named clause and
+above, which ends at line 32 — reads, verbatim: "Revocation relationship:
+none. Existing implementation and applicability acts retain their own exact
+scopes. This act grants no implementation extension,
+source/provider/content permission, write consent, deployment or release."
+[The quotation now opens at line 39's first sentence, 2026-09-15 after
+review 2, G8, which found the span named wider than the text given: the
+quotation began at "Existing implementation" while line 39 opens
+"Revocation relationship: none."] Every clause this packet's slices 2, 3 and 5
+rest on is predecessor text carried through the amendment unchanged [Observed,
+each exact sentence swept over both specification files this session], so
+those slices are covered on either reading of that sentence [Inferred — a
+reading
+of what the implementation act authorizes, which is the question Q6 puts to
+the owner and labels [Inferred] in both arms; label added 2026-09-15 after
+review 2, G12, which found this consequence standing unlabelled here while
+Q6 labels it]; slice 4's named clause and
 deferred slice 6's glossary clause are overlay-only, which is Q6's added arm.
 The per-slice column of Gate 3's act table records which is which [added
 2026-09-15 after review 1, F1].
@@ -130,8 +140,12 @@ adoption" over bytes an act bound.
 ## Gate 1 — Motif
 
 **The kit's flagship honesty claim does not exist in the code the kit points
-to.** `docs/polaris-generation/README.md` line 70 states the product
-promise — "Missing evidence is Unknown; unsupported assets are unresolved
+to.** `docs/polaris-generation/README.md` lines 69–70 state the product
+promise — the sentence begins on 69 at "Missing evidence is" and ends on 70
+(corrected 2026-09-15 after review 2, G5; this read "line 70", the
+wrapped-citation class review 1's F5 named and this instance was the one
+F5 left unwidened) — "Missing evidence is Unknown; unsupported assets are
+unresolved
 with a reason" — and `packages/polaris-generation-core/src/prompts.ts` line 6
 instructs every one of the six stages to "Follow the supplied schema's
 unresolved/failure representation when support or capability is missing".
@@ -239,10 +253,20 @@ setup step*. The literal `npm ci` occurs 0 times in the core README and
 
 **One further defect this session found and the dossier did not.**
 `build:poc` (`package.json` line 15) is `tsc -b --force` over four projects,
-and `packages/polaris-generation-core` is **not one of them**. The package is
-built only because `apps/three-surface-poc/tsconfig.json` declares a project
-reference to it. That is a single point of silent failure for the same class
-of break, and Q5's third limb proposes adding it to the explicit list.
+and `packages/polaris-generation-core` is **not one of them**. What depends
+solely on `apps/three-surface-poc/tsconfig.json`'s project reference is the
+`build:poc` chain — the chain the demo and every `poc:*` script run — and
+not the package as such: `package.json` line 14 (`build`) and line 22
+(`typecheck`) each name `packages/polaris-generation-core` explicitly
+[Observed, `package.json` read at source this session; the file is 31 lines
+by `wc -l`]. That is a single point of silent failure for the same class of
+break in the one chain the onramp exercises, and Q5's third limb proposes
+adding it to the explicit list. [Qualified 2026-09-15 after review 2, G7.
+Superseded wording: "The package is built only because
+`apps/three-surface-poc/tsconfig.json` declares a project reference to it."
+G7 cited `typecheck` at line 21; read at source it is line **22**, and that
+one line number is the single respect in which G7 is not confirmed as
+written.]
 
 ### Schema field census, computed from the built schema objects
 
@@ -482,10 +506,21 @@ governed trees].
 | `AUTHORING.md` deep-dive trade-off | 62–63 | 60–63 | the clause begins on 62 and ends on 63 (span widened 2026-09-15 after review 1, F5; this row read "62 \| 60–63 \| the clause is on 62") |
 | `ARTIFACTS-AND-TOOLS.md` glossary sentence | 40–41 | 40–41 | the sentence spans both lines, so the finding's range was exact (corrected 2026-09-15 after review 1, F5; this row read "40 \| 40–41 \| begins at 40") |
 
-**Six figures that differ from the dossier**, collected — the same six the
-companion record's `figures_that_differ_from_the_dossier` array carries, in
-the same order [reconciled 2026-09-15 after review 1, F12(a), which found
-this list saying "Four figures" against the record's six]: (1) the demo
+**Seven entries in the record, six figures here**, collected. The companion
+record's `figures_that_differ_from_the_dossier` array carries **seven**
+entries and this list carries **six**, in the record's order [Observed,
+both counted this session: 7 array entries against 6 numbered items]. The
+record's fifth and sixth entries are both S9-F3's line ranges — the stale
+first-draft entry and the corrected entry appended beside it after review 1
+(F5), the stale one retained unedited because supersession marks and never
+deletes — and this list collapses that pair into item (5), which states the
+corrected ranges. [Restated 2026-09-15 after review 2, G1, which found this
+sentence asserting identity with an array it no longer matched. Superseded
+wording: "**Six figures that differ from the dossier**, collected — the same
+six the companion record's `figures_that_differ_from_the_dossier` array
+carries, in the same order". That wording was itself reconciled 2026-09-15
+after review 1, F12(a), which found this list saying "Four figures" against
+the record's six.]: (1) the demo
 command succeeds at `a9f671e` after `npm ci`, where the dossier says it
 "fails with TS2307 from a fresh checkout"; (2) `syzygy_audited_at` is
 `f4589e2`, where the audited tree for L3 and S9 was `1932f74`; (3) S9-F4's
@@ -542,21 +577,28 @@ and no slice edits a bound byte.
 explicit, scoped consent.** `.syzygy/governance/doctrine/security.md` lines
 25–37, quoted at the load-bearing sentence: "Governed-project content —
 source structure, specs, work history, and anything derived from them,
-**including prompts** — is never transmitted to a store or service the owner
+including prompts — is never transmitted to a store or service the owner
 does not control without explicit, recorded, per-project consent. **Model
-providers are such services.**" Slice 5 restates that boundary at the two
-places an operator holds a prompt in their hand. No slice in M6 sends
-anything anywhere: the demo's adapters are scripted and synthetic, and
-`packages/polaris-generation-core/README.md` lines 38–39 record that the
+providers are such services.**" [Emphasis corrected 2026-09-15 after review
+2, G9: this packet had bolded "including prompts", which the source does
+not; the source bolds "Model providers are such services." alone, and that
+bold is the clause's own. The added emphasis is removed rather than kept
+and labelled, because a quotation a reader cannot tell from its source is
+the defect. The words were and remain verbatim.] Slice 5 restates that
+boundary at the two places an operator holds a prompt in their hand. No slice
+in M6 sends anything anywhere: the demo's adapters are scripted and synthetic,
+and `packages/polaris-generation-core/README.md` lines 38–39 record that the
 controller "has no default network client."
 
 **RFC2-24's closed twelve.** If slice 2's `unresolved` disposition ever
 surfaces as an Unknown on a rendered page, its reason must be one of
 RFC2-24's twelve values verbatim
 (`.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md`
-line 92: "Every Unknown claim instance carries exactly one primary reason
-from this list"). Slice 2 as designed keeps the disposition inside the
-provider interchange and does not render it on Polaris, so the constraint is
+lines 92–93: "Every Unknown claim instance carries exactly one primary reason
+from this list"; line 92 ends at "carries" — corrected 2026-09-15 after review
+2, G5, which found this citing "line 92" alone). Slice 2 as designed keeps the
+disposition inside the provider interchange and does not render it on Polaris,
+so the constraint is
 recorded as a boundary the slice must not cross rather than as a requirement
 it must satisfy.
 
@@ -634,8 +676,10 @@ command.
 **The explicit project list.** `package.json` line 15's `build:poc` gains
 `packages/polaris-generation-core` in its `tsc -b --force` list. This changes
 no build output today — the package is already built transitively — and
-removes the dependence on a single `references` entry in
-`apps/three-surface-poc/tsconfig.json`.
+removes the `build:poc` chain's dependence on a single `references` entry in
+`apps/three-surface-poc/tsconfig.json` [narrowed 2026-09-15 after review 2,
+G7; this read "removes the dependence on a single `references` entry", which
+reads wider than it is — `build` and `typecheck` name the package already].
 
 **Test.** A battery assertion in the shape of `poc:fresh-checkout-demo`,
 which already exists and already exits by a verdict over recorded invariants:
@@ -1060,19 +1104,45 @@ because they disagree on the left-hand column and agree on the right
 under the stricter one and got different figures]. **Spans that resolve to
 anything** (`os.path.exists` — a file or a directory) gives the first-draft
 counts; **spans that resolve to a file** (`os.path.isfile`) gives the second.
-The difference is entirely directory spans: M2 names six, M4 four, M3 two,
-M5 two, M1 and lane B two each. Every sibling head below is the head this
-session read, and none had advanced since review 1 read them, so the
-divergence is the predicate and not branch drift.
+For the five packets whose spans name this repository's own tree the
+difference is directory spans: M2 names six, M4 four, M3 two, M5 two and M1
+two. **Lane B is not that case** and its row is recomputed below. Every
+sibling head named in the table is the head this session read, and none had
+advanced since review 1 read them, so for those five the divergence is the
+predicate and not branch drift. [Corrected 2026-09-15 after review 2, G3,
+which found the lane-B half of this explanation false. Superseded wording:
+"The difference is entirely directory spans: M2 names six, M4 four, M3 two,
+M5 two, M1 and lane B two each."]
 
 | Sibling | Head read this session | Resolving spans (any path) | Resolving spans (files only) | Intersection with M6's 23 |
 |---|---|---:|---:|---:|
-| M1 (lane A, on main) | `91b1343` (this worktree) | 3 | 1 | **0** |
+| M1 (lane A, on main) | `e318cbd` (this worktree; the M1 packet is byte-identical at its parent `91b1343`, where this row's figures were taken — `git diff --name-only 91b1343 e318cbd` over that path is empty, verified this session per review 2, G10) | 3 | 1 | **0** |
 | M2, PR #36, P-69 | `f2f37dd` | 17 | 11 | **0** |
 | M3, PR #37, P-70 | `6574600` | 15 | 13 | **0** |
 | M4, PR #38, P-71 | `63b8e33` | 26 | 22 | **0** |
 | M5, PR #39, P-72 | `ba9ca61` | 11 | 9 | **0** |
-| lane B, PR #35, P-68 | `4090f98` | 3 | 1 | **0** |
+| lane B, PR #35, P-68 | `4090f98` | 3 in the lane-B worktree, 1 here | 3 in the lane-B worktree, 1 here | **0** |
+
+**The lane-B row, recomputed (review 2, G3).** The companion record names
+three implementation-plane code spans for lane B. One is
+`scripts/check_governance.py`; the other two are
+scripts/build_pwb_scoped_attributes_amendment.py and
+scripts/estimate_pwb_scoped_attributes_saving.py, named here without code
+spans because they do not resolve in this worktree and CG-1b requires every
+code-span path to resolve. Resolved this session under both predicates in
+**both** worktrees: in this worktree at `e318cbd`, **1** under
+`os.path.exists` and **1** under `os.path.isfile` — only
+`scripts/check_governance.py` is present here; in the lane-B worktree at
+`4090f98`, **3** and **3**. The gap for this row is therefore branch
+content, not the predicate: two of the three paths exist only on lane B's
+branch, and neither is a directory anywhere. **The intersection with M6's
+23-file surface is 0 under both predicates in both worktrees** [Observed,
+all four resolutions and all four intersections computed this session;
+denominator the three named paths against the 23-file surface the record
+publishes]. The superseded row read "| lane B, PR #35, P-68 | `4090f98` | 3
+| 1 | **0** |", figures reproducible in neither worktree; the load-bearing
+figure, the zero, is unchanged. The five other rows are unaffected and are
+not restated.
 
 **Two near-misses, named rather than hidden.** M4 cites
 `apps/three-surface-poc/src/polaris-generation/` and M5 cites
@@ -1137,8 +1207,14 @@ or something else; all three bound spellings are in force simultaneously.
    distinctive full clause, because a short literal is reached by coincidence.
 7. **`npm run poc:generator-demo` writes only under the scratch directory**
    in every run this session, never the README's own suggested output path
-   under the system temporary directory. In the worktree, `git status` with
-   `--short` is clean of everything but this packet's two files.
+   under the system temporary directory. At `e318cbd` the branch carries
+   **four** committed files — this packet, its evidence record, review 1's
+   raw and the register — and `git status --short` in the worktree is
+   **empty** [Observed this session; `git diff --name-only a9f671e e318cbd`
+   names those four and nothing else]. [Superseded 2026-09-15 after review
+   2, G11: this read "In the worktree, `git status` with `--short` is clean
+   of everything but this packet's two files", true when written at the
+   first draft and stale from the review-1 repair commit onward.]
 8. **No act-bound byte is proposed for edit.** Every file in Gate 0's
    package-contracts row is a row of the adopted offer's 21-file set, and no
    slice touches one; all nine slice-touched paths were swept against the
@@ -1156,23 +1232,34 @@ or something else; all three bound spellings are in force simultaneously.
    below. [Superseded 2026-09-15: this item read "This packet has had none.
    It is a first draft…", and named the raw without a code span because the
    file did not exist; it exists now and is backticked.] Verification
-   rule 10: those repairs are uncovered until a second fresh-context review
-   confirms them, and its raw would be a second `-RAW.md` file, never an
-   overwrite of this one.
+   rule 10: those repairs were uncovered until a second fresh-context review
+   confirmed them — which has since happened; review 2 is retained at
+   `docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-2-RAW.md`, a second
+   `-RAW.md` file and not an overwrite of the first, and verified them 9
+   REPAIRED, 4 PARTIAL and 0 NOT REPAIRED over 13 (re-tensed 2026-09-15 per
+   review 2). Its own twelve exception repairs are in turn uncovered until a
+   third review confirms them; that raw would be a third `-RAW.md` file.
 10. **Rule 10 applies to this file.** Any later edit retires a review bound
     to these bytes; superseded wording is marked and dated in place, never
     deleted.
 11. **Conventions this packet was checked against, this session.** Every
     non-fence line has an even backtick count, so no code span is broken
-    across a line break (0 of 1,299 non-fence lines). Two
+    across a line break (0 of **1,472** non-fence lines). Two
     lines exceed 78 columns outside fences, tables and headings, and each is
-    a single unbreakable code-span path. Of 295 distinct code spans,
-    10 contain a `/` and do not
+    a single unbreakable code-span path. Of **328** distinct code spans,
+    **11** contain a `/` and do not
     resolve as a path in this worktree; each is enumerated and is not a
     path: five write-root globs (`.syzygy/**`, `openspec/**`, `apps/**`,
     `packages/**`, `docs/**`), two TypeScript error-message literals, the
     RFC2-26 quotation's own bare `decisions/`, two build-output references
-    under the generation package (`dist/` and `dist/provider-draft.js`). The
+    under the generation package (`dist/` and `dist/provider-draft.js`), and
+    the `git diff` command the M1 intersection row cites, which is a command
+    and not a path. [Re-derived 2026-09-15 in the review-2 repair pass, over
+    the bytes these figures now sit in rather than the bytes review 2 read;
+    the superseded figures, true at `e318cbd`, were 0 of 1,299 non-fence
+    lines, 295 distinct code spans and 10 non-resolving slash-bearing spans.
+    The two over-width lines moved from 760 and 890 to 804 and 934 and are
+    the same two code-span paths.] The
     path of this packet's first review is now a resolving code span, because
     the raw exists in this worktree [superseded 2026-09-15: this sentence read
     "The not-yet-written path of this packet's first review is deliberately
@@ -1221,8 +1308,11 @@ the five sibling registers and the sibling worktree heads were read; and run
 2's counterexample was re-executed with the workspace symlink moved aside and
 restored afterwards (exit 2 then exit 0, short `git status` clean). Every edit
 below was made after that review, so by verification rule 10 the review binds
-the bytes it names and not these; **these repairs are uncovered until a second
-fresh-context review confirms them**, and its raw would be a second `-RAW.md`
+the bytes it names and not these; **these repairs were uncovered until a
+second fresh-context review confirmed them — which has since happened; see
+"Review 2 and repairs (2026-09-15)" below** (re-tensed 2026-09-15 per review
+2, which superseded "these repairs are uncovered until a second fresh-context
+review confirms them"), and its raw would be a second `-RAW.md`
 file, never an overwrite. Superseded wording is marked in place and dated,
 never deleted.
 
@@ -1235,7 +1325,7 @@ never deleted.
 | F5 line citations name the distinctive half of a wrapped quotation, not its span; two are wrong | non-blocking | **CONFIRMED**, and one of the two corrections was wrong in the packet's own favour: the diagram sentence ends on line **47**, so S9-F3's 45-49 was closer than the first draft's 45-46. README sentence corrected to line 52; every other cited span widened to its true range (AUTHORING 26-27, 62-63, 101-102; ARTIFACTS-AND-TOOLS 40-41 exact, 42-43) in the packet, the table and the record |
 | F6 the `glossar` count in `prompts.ts` is 2, not 1 | non-blocking | **CONFIRMED.** Lines 13 and 20, the second inside the fidelity prompt; 0 in `provider-draft.ts` and 0 in `pipeline.ts`; denominator six non-test sources. Corrected in the packet row and the record |
 | F7 the RFC2-26 scope-sentence citation is off, and the slice-4 row names only one repair route | non-blocking | **CONFIRMED**, both parts. The scope sentence spans lines 219-220; line 221 carries the shape-parallel list. The reviewed N/A-judgment arm (RFC3-15 home, honored only through an effective owner act under RFC3-16(a)) is added to the slice-4 row with this packet's view that it is probably not reachable, because a change account is independently testable [Inferred] |
-| F8 Q5 is ordinary engineering presented in the owner-gate table | non-blocking | **PARTLY CONFIRMED.** The classification point holds and is applied: the Q5 cell now says it is a cost trade-off the owner may delegate, keeps the `build:poc` limb as a stated decision, and stays in the batch. But the packet never stated a six-gate count — the one occurrence of "six questions" is the section heading (sweep for "six questions" and "six gates" over this file: 1 hit and 0), and the packet already named Q1 and Q3 as the genuine gates; that sentence now names Q1, Q3 and Q6, with the first draft's wording kept |
+| F8 Q5 is ordinary engineering presented in the owner-gate table | non-blocking | **PARTLY CONFIRMED.** The classification point holds and is applied: the Q5 cell now says it is a cost trade-off the owner may delegate, keeps the `build:poc` limb as a stated decision, and stays in the batch. But the packet never stated a six-gate count. Swept over the **first draft**, at `91b1343`: "six questions" returns **1** hit, the section heading, and "six gates" returns **0** [Observed, `git show 91b1343:<path>` piped to `grep -o -F` this session; denominator the whole file at that commit]. Over the **current** bytes the same two predicates return **6** and **3**, and every hit beyond the section heading lies inside this disposition cell or the review-2 section below — written by sentences that report this sweep or that name review 2's own findings, never by a claim about gates. The figure is self-referential, so it is published for both commits rather than carried forward, and the current figures were resolved after every other edit in this pass so that they are true of the bytes carrying them [re-derived 2026-09-15 after review 2, G6, which found this cell reporting the first draft's figure in the present tense about the file it sits in. Superseded wording: "the one occurrence of 'six questions' is the section heading (sweep for 'six questions' and 'six gates' over this file: 1 hit and 0)"]. The packet already named Q1 and Q3 as the genuine gates; that sentence now names Q1, Q3 and Q6, with the first draft's wording kept |
 | F9 Q3's second arm defers conformance with REQ-006's readiness sentence, unstated | non-blocking | **CONFIRMED.** One sentence added to the Q3 cell naming the deferred conformance, its lawfulness while Phase A is unfinished, and the bead's obligation to record it |
 | F10 landing slices 2-4 retires the synthetic-verification record's binding, unrecorded | non-blocking | **CONFIRMED.** The record lists 17 source digests over this surface, and the digests it carries for `provider-draft.ts` and `draft-preview.ts` equal those files' current bytes [Observed, compared; neither value reproduced — the record is cited by path]. Gate 3 now names it and records the re-run obligation for slices 2, 3 and 4; Gate 6 item 8's heading is narrowed to act-bound bytes |
 | F11 "four sibling packets" is five, and the intersection table's counts cannot be re-derived | non-blocking | **CONFIRMED (a); PARTLY CONFIRMED (b), with a different cause.** Five registers each carry exactly one row (P-68, P-69, P-70, P-71, P-72) and M6's carried none. On (b): the sibling heads read this session are the same heads review 1 read (`f2f37dd`, `6574600`, `63b8e33`, `ba9ca61`, `4090f98`), so the branches did **not** advance; the first-draft counts reproduce exactly under `os.path.exists` (17, 15, 26, 11, 3) and the reviewer's under `os.path.isfile` (11, 13, 22, 9, 1), and the difference is directory spans. The table now names each head and publishes both predicates; the intersection is **0** under both |
@@ -1260,6 +1350,89 @@ fenced code blocks whose first non-space character is not a pipe, longer
 than 78 columns", denominator every line of this file: **6**
 [Observed, measured after all of the edits above].
 
+## Review 2 and repairs (2026-09-15)
+
+A second independent fresh-context review of the once-repaired packet
+(read-only; only the artifact, its governing references and the acceptance
+criteria) is retained verbatim at
+`docs/reviews/R-POLARIS-M6-GENERATOR-HONESTY-FUNNEL-2-RAW.md` (35804 bytes,
+sha256 `6107894098ddbdc59a7b059c94c4ec0d7a617b6e53c75c6c2ff6607c0fd8d2b0`,
+computed by `wc -c` and `sha256sum` this session, never transcribed). It
+reviewed commit `e318cbd`, at which the three artifacts hashed as follows —
+recomputed this session with `git show e318cbd:<path>` piped to `wc -c` and
+`sha256sum`:
+
+| File reviewed | Bytes | sha256 |
+|---|---:|---|
+| `docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md` | 116325 | `da54c37407644627352e835dcf15bf182da40ba723ea9a673efcd5ff329075aa` |
+| `docs/evidence/polaris-m6-generator-honesty-funnel-2026-09-15.json` | 51469 | `a90840448f34c85102e13cd89c1cadc311c91c66eaf8c3fb20efa5221aa4149c` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 30541 | `52ba85289540edefa5f83d8b74be35fd6bc11f34f13b0e5ab7fae2a1a876b826` |
+
+Its verdict word, copied exactly: **CONFIRM WITH EXCEPTIONS**. Its counts, as
+the raw states them: **0 blocking, 7 non-blocking, 5 editorial** — twelve
+findings, G1–G12. It is the first of the two retained raws to close with no
+blocking finding [Observed; denominator the two `…M6…-RAW.md` files under
+`docs/reviews/`, whose blocking counts in order are 1 and 0].
+
+**Its verification of the review-1 repairs, carried here as it states them:
+9 REPAIRED, 4 PARTIAL and 0 NOT REPAIRED over 13.** F1, F2, F6, F7, F8, F9,
+F10, F12(b)–(d) and F13 REPAIRED; F3, F4, F5 and F11 PARTIAL, with F12(a)
+partial inside an otherwise-repaired F12. The review records that every
+partial is a residue in the companion evidence record or one named instance
+of F5, never a failure of the packet's argument, and that the blocking
+finding F1 is fully discharged and independently re-derived — it swept both
+specification files itself and confirms the per-slice predecessor/overlay-only
+column in every row.
+
+Every exception was re-derived this session against source before being
+applied; none was applied on the review's say-so. Twelve of twelve were
+confirmed in substance. One — **G7** — carries a wrong line number of its
+own (`typecheck` is `package.json` line **22**, not the line 21 the finding
+names); the defect it reports is real and is applied, and the line number is
+corrected rather than copied. Superseded wording is marked in place and
+dated, never deleted.
+
+| Finding | Severity | Re-derivation | Disposition |
+|---|---|---|---|
+| G1 the "Six figures" sentence asserts identity with a record array that now carries seven | non-blocking | **CONFIRMED.** Counted this session: the record's `figures_that_differ_from_the_dossier` array holds **7** entries and the packet's list **6**. The record's entries 5 and 6 (zero-indexed 4 and 5) are both S9-F3's line ranges — the stale first-draft entry and the corrected entry review 1's F5 appended beside it — and the packet's item (5) is the corrected one | Applied at the reconciliation sentence. It now says seven against six, names the appended corrected entry as the cause, and states the collapse explicitly; the superseded "Six figures … in the same order" wording is quoted and dated in place |
+| G2 the record still tells a reader the six questions are unregistered and should be filed | non-blocking | **CONFIRMED.** At `e318cbd` the record's `measurements.M9_file_set_intersection.shared_governance_file` carries `"touched_by_M6": false`, a `touched_by` array of five, and the disclosure "This packet writes exactly two files and no register row … Whoever lands this packet should file them." `git diff --name-only a9f671e e318cbd` returns four paths, one of them the register [Observed, run this session]. A reader acting on the record alone would file P-73 twice | Applied in the record by same-line edits: `touched_by_M6` is now `true`, `touched_by` gains `M6`, and the disclosure sentence keeps its text with a dated `[Superseded 2026-09-15 …]` clause appended inside the same string naming P-73 as filed at `e318cbd`. Nothing is deleted |
+| G3 the lane-B intersection row's counts reproduce in neither worktree, and the directory-span explanation is false for it | non-blocking | **CONFIRMED**, and recomputed in both worktrees. The three implementation-plane code spans the record names for lane B resolve, under `os.path.exists` and `os.path.isfile` alike, **1 and 1** in this worktree at `e318cbd` (only `scripts/check_governance.py` is present) and **3 and 3** in the lane-B worktree at `4090f98`. The published 3 / 1 is reproducible in neither. **Intersection with M6's 23-file surface is 0 under both predicates in both worktrees** [Observed, four resolutions and four intersections computed this session] | Applied. The row now publishes both worktrees' figures in both count columns and says which worktree each was taken in; a new dated paragraph below the table recomputes it, names the two paths that exist only on lane B's branch, and states that the gap is branch content and not the predicate. The superseded row is quoted. The directory-span sentence above the table is narrowed to the five rows it holds for, with its superseded wording quoted and dated. The load-bearing zero is unchanged |
+| G4 seven record fields carry review-1's superseded values unmarked | non-blocking | **CONFIRMED at all seven**, each read at `e318cbd` this session: the F4 sentence (record line 21), `other_exports` (399), `promises[1..5].at` (452, 459, 465, 470, 475), M9's `method` (563) and its per-sibling counts (592–612), `cg_1b_note` (915) and `packet_measured` (925–930). Each states a fact the packet has since corrected, and in four cases a sibling key in the same object carries the correction, so the record contains both statements and marks neither | Applied in the record, by same-line edits inside the existing strings and by sibling keys for the two non-string values, with every existing line kept in place. `packet_measured`'s numbers are **not** overwritten: they are marked in place, and a new `packet_measured_after_review2` object records the bytes, sha256 and split-on-newline line count computed **last**, after every other edit in this pass |
+| G5 two wrapped citations name the distinctive half, not the span — one of them the instance F5 named | non-blocking | **CONFIRMED**, both read at source. The kit README's product promise begins on line **69** ("Stop before a provider call without its required admission. Missing evidence is") and ends on 70; RFC2-24's clause runs 92–93, line 92 ending at "carries" | Applied at both sites: lines 69–70 and lines 92–93, each with the superseded single-line citation quoted and dated |
+| G6 the F8 cell's own sweep figure is falsified by the sentence that reports it | non-blocking | **CONFIRMED.** Swept this session over both versions: at `91b1343` "six questions" returns **1** and "six gates" **0**, exactly as the cell says; over the current bytes they return more, every extra hit being inside the reporting sentences themselves | Applied. The cell now attributes 1 and 0 to the first draft by commit, publishes the current figures beside them, and states that the figure is self-referential. Self-reference was handled mechanically: both figures were written as placeholder tokens and resolved by a final pass after every other edit in this pass, including this section, so the published numbers are true of the bytes that carry them |
+| G7 "built only because" overstates — `build` and `typecheck` name the package directly | non-blocking | **CONFIRMED in substance, with one line number of the finding's own corrected.** `package.json` line 14 (`build`) and line **22** (`typecheck`) each name `packages/polaris-generation-core` explicitly; G7 cites `typecheck` at line 21, which is `poc:pwb-mutation-sweep` [Observed, `package.json` read at source, 31 lines by `wc -l`]. What rests solely on the tsconfig reference is the `build:poc` chain | Applied at all three sites — the Gate 1 paragraph, Q5's cell and Gate 4's `references` sentence — each narrowed to the `build:poc` chain with the superseded wider wording quoted and dated, and the corrected line 22 used throughout. The register's Q5 clause does not carry the over-wide claim and needs no mirror [Observed, swept this session]. The defect Q5's third limb addresses is unchanged, and so is its recommendation |
+| G8 the act quotation names lines 39–41 but begins at line 39's second sentence | editorial | **CONFIRMED** at both sites. Act line 39 opens "Revocation relationship: none."; the packet quoted from "Existing implementation" | Applied at both sites, taking the quote-the-whole-span arm rather than narrowing the citation, so the revocation sentence the packet elsewhere names is now in the quotation itself |
+| G9 the SEC-2 quotation adds bold the clause does not carry | editorial | **CONFIRMED.** `.syzygy/governance/doctrine/security.md` lines 25–37 bold only "Model providers are such services."; the packet also bolded "including prompts". The words are otherwise verbatim | Applied: the added emphasis is removed and the removal is recorded in place with its date. The drop arm was taken over the label arm because a quotation a reader cannot distinguish from its source is the defect |
+| G10 the M1 row names `91b1343` as "this worktree", which is at `e318cbd` | editorial | **CONFIRMED**, and the bytes checked: `git diff --name-only 91b1343 e318cbd -- docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md` is empty, so the M1 packet is byte-identical at both and no measured figure moves | Applied: the row names `e318cbd` and states that the M1 packet is byte-identical at its parent `91b1343`, where the figures were taken, with the emptiness of that diff cited |
+| G11 Gate 6 item 7's clean-tree sentence is stale and unmarked | editorial | **CONFIRMED.** At `e318cbd` the branch carries four committed files and `git status --short` in the worktree is empty [Observed, run this session; the only entry at the time of writing is this review's own untracked raw, committed with this pass] | Applied in place: the item now states the four committed files and the empty short status, with the superseded sentence quoted and dated |
+| G12 Gate 0's "covered on either reading" consequence stands unlabelled | editorial | **CONFIRMED.** The first half is Observed and re-verified by this session's sweep of both specification files; the second half is a reading of the implementation act's reach, which Q6 declines to settle and labels `[Inferred]` in both arms | Applied: the Observed half carries its label and the consequence carries `[Inferred]` with a pointer to Q6, so the two sites agree |
+
+**Recommended answers changed after review 2: none, stated explicitly.**
+Review 2's own six-question table answers "Recommendation follows?" **Yes**
+for all six post-repair recommendations — Q1, Q2, Q3, Q4, Q5 ("Yes, on the
+merits") and Q6 [Observed, read from the retained raw]. All twelve exceptions
+are presentational or evidentiary: G1, G3, G4, G10 and G11 date or recompute
+a figure rather than move one; G5 and G8 widen a citation to its true span;
+G6 re-derives a self-referential count; G9 removes added emphasis; G12 adds a
+label Q6 already carries; and G7 narrows a defect's scope without touching
+the limb Q5 recommends. **Q1 through Q6 keep the recommendations they carried
+into this review, word for word.**
+
+By verification rule 10, review 2 binds the bytes it names — the three
+digests in the table above, at commit `e318cbd` — and not these. Every edit
+in this section and above was made after it, so the twelve exception repairs
+are **uncovered until a third review confirms them**; that raw will be a
+third `-RAW.md` file, never an overwrite of either retained one. Subject to
+that, and on review 2's confirmation of the `e318cbd` bytes — CONFIRM WITH
+EXCEPTIONS, no blocking finding, no recommended answer moved and the review-1
+repairs verified 9 REPAIRED, 4 PARTIAL and 0 NOT REPAIRED over 13 — **this
+packet stands at the owner gate**: P-73 is ready to be ruled.
+
+Over-width lines after these edits, under the predicate "lines outside fenced
+code blocks whose first non-space character is not a pipe, longer than 78
+columns", denominator every line of this file: **9** [Observed,
+measured after all of the edits above].
+
 ## Funnel summary
 
 ```
@@ -1271,7 +1444,7 @@ Baseline: Syzygy a9f671e; M6 surface byte-identical to 1932f74; the dossier's sy
 - G3 Topology: packages/polaris-generation-core + apps/three-surface-poc/src/polaris-generation + docs/polaris-generation + package.json; no boundary crossed; no governed artifact touched; every slice filed against an unchecked tasks.md task (24 boxes, 24 unchecked, counted this session)
 - G4 Design: a three-value asset disposition read field-for-field out of SCHEMA-CONTRACT.md lines 33-39; fidelity coverage as rows carrying verdicts with the existing set-equality denominator preserved; edit and repair split out of the shared draft schema with total prior-block coverage; an install line plus a battery assertion that reads the command out of the README; the egress sentence restated at the two acting points
 - G5 Spec: no delta needed for the disposition field on the recommended arm - three bound artifacts already name it - but the three bound artifacts spell the enum three different ways and none may be edited to agree, which is Q1. RFC2-26 run over all six slice rows (denominator 6): slices 2 and 3 map to named requirement-and-scenario pairs; slice 4's requirement is named and no scenario states its case; slices 1 and 5 enumerate no RFC-0002 consequence; slice 6 deferred and not run
-- G6 Bar: computed census plus corroborating literal sweep for the load-bearing zero; the demo failure established by counterexample in both directions; rule-6 mutants per slice; no act-bound byte proposed for edit, with the synthetic-verification record's re-run obligation recorded for slices 2-4; review 1 (verdict copied exactly: REVISE - one blocking, eleven non-blocking, one editorial) applied in full, and those repairs are uncovered until a second review confirms them [this line read "NO independent review yet - this is a first draft" until 2026-09-15]
+- G6 Bar: computed census plus corroborating literal sweep for the load-bearing zero; the demo failure established by counterexample in both directions; rule-6 mutants per slice; no act-bound byte proposed for edit, with the synthetic-verification record's re-run obligation recorded for slices 2-4; two raws are retained under docs/reviews/ - review 1 (verdict copied exactly: REVISE - one blocking, eleven non-blocking, one editorial) applied in full, and review 2 (verdict copied exactly: CONFIRM WITH EXCEPTIONS - no blocking, seven non-blocking, five editorial) confirming those review-1 repairs as 9 REPAIRED, 4 PARTIAL and 0 NOT REPAIRED over 13 and applied in full here, whose twelve exception repairs are uncovered until a third review confirms them [restated 2026-09-15, review 2, which superseded "review 1 ... applied in full, and those repairs are uncovered until a second review confirms them"; this line read "NO independent review yet - this is a first draft" until 2026-09-15]
 Acts: slices 1, 2, 3 and 5 ride POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md (2026-09-12), whose grant is quoted in Q6 and covers the full EXECUTION-PHASES.md goal; all five sit in Phase A; slice 4 and deferred slice 6 rest on clauses the understanding amendment added, and the act adopting them grants no implementation extension, so slice 4 should be ruled explicitly - Q6 states both readings [changed 2026-09-15 after review 1, F1; this line read "all five slices ride ... no new act needed on the recommended arms"]; Q1's second arm would need CC-REV-2 and a new act
 Open questions: Q1-Q6 above, registered as P-73 in PENDING-OWNER-DECISIONS.md on this branch [registered 2026-09-15 after review 1, F11; this line read "NOT registered ... this packet writes two files and no register row, unlike its four siblings" - and the sibling count was five, not four]; the five siblings' rows are P-68 lane B, P-69 M2, P-70 M3, P-71 M4, P-72 M5, each only on its own branch
 Sign-off: pending - the owner's
