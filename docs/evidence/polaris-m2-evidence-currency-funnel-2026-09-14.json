@@ -1,0 +1,152 @@
+{
+  "generated": "2026-09-14",
+  "purpose": "Evidence computed this session for the M2 evidence-currency funnel packet (bead syzygy-dov.2).",
+  "syzygy_commit": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
+  "capture": {
+    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-tailnet.html",
+    "bytes": 1484487,
+    "sha256": "e8a04b4631dedbda159dd162d25f4e8a7ed4f9f4059a37ca1bca87b717790111",
+    "decoded_characters": 1481819,
+    "provenance": "retained lane A 'after' capture, tailnet host form, Butlers evaluation revision 2e3bac97790b (committed 2026-09-13T10:31:11Z), captured 2026-09-13T13:33:24.295Z"
+  },
+  "freshness_rendering": {
+    "denominator_claim_tuple_spans": 713,
+    "method_1_regex_attribute_scan": {
+      "fresh": 713
+    },
+    "method_2_literal_split": {
+      "fresh": 713
+    },
+    "method_3_per_tuple_span_parse": {
+      "fresh": 713
+    },
+    "methods_agree": true,
+    "distinct_freshness_values_rendered": 1,
+    "tuple_shape_counts": {
+      "Observed | report-fact | fresh | unchallenged": 702,
+      "Unknown | unstated | fresh | unchallenged": 11
+    },
+    "note": "11 Unknown claims with tier 'unstated' nevertheless render freshness 'fresh' ('captured at this evaluation') though no evidence reached them."
+  },
+  "legend_sentences_rendered_once_each": {
+    "fresh — captured at this evaluation.": 1,
+    "stale — older than the declared currency bound.": 1,
+    "broken — its source changed since capture.": 1,
+    "superseded — a later evaluation replaced it.": 1
+  },
+  "legend_states_unreachable": [
+    "stale",
+    "broken",
+    "superseded"
+  ],
+  "evaluation_identity": {
+    "distinct": 1,
+    "value": "evaluation:pwb-body-read:2026-09-13T13:33:24.295Z",
+    "occurrences": 713
+  },
+  "time_visibility": {
+    "iso_instant_occurrences_total": 719,
+    "inside_data_evaluation_id_attribute": 713,
+    "human_visible_text_node_instants_method_1": 6,
+    "human_visible_text_node_instants_method_2_tag_strip": 6,
+    "first_human_visible_instant_offset_chars": 859145,
+    "first_human_visible_instant_depth_percent": 58.0,
+    "human_visible_instant_offsets": [
+      859145,
+      859189,
+      860858,
+      1477549,
+      1477638,
+      1481753
+    ],
+    "human_visible_instant_grouping": "two on the revision/committed/captured <small> line (859145, 859189); one in the authority-disclosure <p><small> just below (860858); two in the walkthrough-judgment block; one in the footer"
+  },
+  "items": {
+    "data_polaris_item_attribute_occurrences": 409,
+    "predicate": "count of the attribute data-polaris-item=\"",
+    "substring_data_polaris_item_occurrences": 417,
+    "of_which_data_polaris_items_attribute": 8
+  },
+  "reading_plans": {
+    "plans_defined": 2,
+    "plan_file": "apps/three-surface-poc/src/polaris-reading-plan.ts",
+    "condensed_renderings_in_capture": 1,
+    "note": "One of two reviewed reading plans produced a condensed rendering; the capture states nothing about the other, which is L4-F5's silence."
+  },
+  "code_sweeps": {
+    "assessCurrency_references_outside_cap1_core_and_conformance": 0,
+    "assessCurrency_files": [
+      "packages/cap1-core/src/staleness.ts",
+      "packages/cap1-conformance/src/req-042.conformance.test.ts",
+      "packages/cap1-conformance/src/req-062.conformance.test.ts"
+    ],
+    "freshness_value_producers_non_test_poc_sources": {
+      "FRESH": [
+        "packages/three-surface-poc-core/src/project-shape-model.ts:185",
+        "packages/three-surface-poc-core/src/project-shape-model.ts:193"
+      ],
+      "shape": [
+        "apps/three-surface-poc/src/fresh-checkout-demo-main.ts:286"
+      ]
+    },
+    "FRESHNESS_STATES_index_reads_outside_cap1_core": [
+      "packages/three-surface-poc-core/src/project-shape-model.ts:167 (index 0 only)"
+    ],
+    "assessCurrency_files_note": "three source files; a built declaration file mirrors staleness.ts when a dist/ tree is present (none in the reviewed worktree)"
+  },
+  "scoped_attributes_package_on_main": {
+    "present_at_this_commit": false,
+    "methods": [
+      "git ls-files | grep -i scoped-attributes -> 0 rows",
+      "find over the worktree (excluding .worktrees and node_modules) -> 0 paths"
+    ],
+    "location": "agent/syzygy-dov.17 branch only; 9 files under .syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/"
+  },
+  "l4_f1_remeasured_2026_09_14": {
+    "pinned_revision": "2e3bac97790b4bd8906dcac63eadb5642a0bb1ac",
+    "butlers_head_at_measurement": "2ef3858818fac3cb87b67009ba3884f46380359f",
+    "butlers_head_committed": "2026-09-13T20:18:28Z",
+    "methods": [
+      "machine capture anchor.objectId vs git ls-tree -r of head",
+      "git diff --name-status pinned..head restricted to the source population",
+      "self-check: anchor.objectId vs ls-tree of pinned revision, 0 mismatches of 278"
+    ],
+    "sources_changed": 15,
+    "sources_removed": 0,
+    "sources_denominator": 278,
+    "machine_items_citing_changed_source": 9,
+    "machine_items_denominator": 415,
+    "rendered_rows_citing_changed_source": 9,
+    "rendered_rows_denominator": 409,
+    "rendered_rows_unmatched_to_items": 0,
+    "changed_sources": [
+      "about/legends-and-lore/rfcs/0001-daemon-lifecycle-and-triggers.md",
+      "about/legends-and-lore/rfcs/0002-mcp-tool-surface-and-modules.md",
+      "about/legends-and-lore/rfcs/0004-identity-and-contact-resolution.md",
+      "about/legends-and-lore/rfcs/0017-owner-routing-safety-incident-reconciliation.md",
+      "about/legends-and-lore/rfcs/0023-durable-approval-delivery-intent-recovery.md",
+      "openspec/specs/butler-relationship/spec.md",
+      "openspec/specs/butler-switchboard/spec.md",
+      "openspec/specs/core-daemon/spec.md",
+      "openspec/specs/core-notify/spec.md",
+      "openspec/specs/dashboard-approvals/spec.md",
+      "openspec/specs/module-approvals/spec.md",
+      "openspec/specs/runtime-config-api/spec.md",
+      "openspec/specs/runtime-config-dashboard-ui/spec.md",
+      "openspec/specs/runtime-config-table/spec.md",
+      "roster/relationship/butler.toml"
+    ],
+    "note": "Git tree metadata only (paths and object ids) of the consented repository; no blob body read. Dossier L4-F1 measured 71/271 sources and 135/402 rows at the pre-lane-A capture against head 7c8743f63."
+  },
+  "review1": {
+    "raw": "docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-RAW.md",
+    "bytes": 39904,
+    "sha256": "ff8c8f836e4488de939ae26d5e0a61c12d110c35a5438dd8aab3d5ff4be882bc",
+    "verdict": "REVISE",
+    "reviewed_packet_bytes": 47846,
+    "reviewed_packet_sha256": "8f57109243f4c26c7b7da268a0050cd61f8ed9a7f71b4416b80ef83d1e721f7b",
+    "reviewed_evidence_bytes": 3896,
+    "reviewed_evidence_sha256": "98acc654eba4ae11b5e63afe09143e57397580ee1c9e9259064f9944af66f502",
+    "repairs": "F1-F20 all accepted and repaired in the packet after the review; Q7 added"
+  }
+}
