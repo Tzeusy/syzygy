@@ -1,0 +1,283 @@
+{
+  "generated": "2026-09-14",
+  "purpose": "Evidence computed this session for the M2 evidence-currency funnel packet (bead syzygy-dov.2).",
+  "syzygy_commit": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
+  "capture": {
+    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-tailnet.html",
+    "bytes": 1484487,
+    "sha256": "e8a04b4631dedbda159dd162d25f4e8a7ed4f9f4059a37ca1bca87b717790111",
+    "decoded_characters": 1481819,
+    "provenance": "retained lane A 'after' capture, tailnet host form, Butlers evaluation revision 2e3bac97790b (committed 2026-09-13T10:31:11Z), captured 2026-09-13T13:33:24.295Z"
+  },
+  "freshness_rendering": {
+    "denominator_claim_tuple_spans": 713,
+    "method_1_regex_attribute_scan": {
+      "fresh": 713
+    },
+    "method_2_literal_split": {
+      "fresh": 713
+    },
+    "method_3_per_tuple_span_parse": {
+      "fresh": 713
+    },
+    "methods_agree": true,
+    "distinct_freshness_values_rendered": 1,
+    "tuple_shape_counts": {
+      "Observed | report-fact | fresh | unchallenged": 702,
+      "Unknown | unstated | fresh | unchallenged": 11
+    },
+    "note": "11 Unknown claims with tier 'unstated' nevertheless render freshness 'fresh' ('captured at this evaluation') though no evidence reached them."
+  },
+  "legend_sentences_rendered_once_each": {
+    "fresh \u2014 captured at this evaluation.": 1,
+    "stale \u2014 older than the declared currency bound.": 1,
+    "broken \u2014 its source changed since capture.": 1,
+    "superseded \u2014 a later evaluation replaced it.": 1
+  },
+  "legend_states_unreachable": [
+    "stale",
+    "broken",
+    "superseded"
+  ],
+  "evaluation_identity": {
+    "distinct": 1,
+    "value": "evaluation:pwb-body-read:2026-09-13T13:33:24.295Z",
+    "occurrences": 713
+  },
+  "time_visibility": {
+    "iso_instant_occurrences_total": 719,
+    "inside_data_evaluation_id_attribute": 713,
+    "human_visible_text_node_instants_method_1": 6,
+    "human_visible_text_node_instants_method_2_tag_strip": 6,
+    "first_human_visible_instant_offset_chars": 859145,
+    "first_human_visible_instant_depth_percent": 58.0,
+    "human_visible_instant_offsets": [
+      859145,
+      859189,
+      860858,
+      1477549,
+      1477638,
+      1481753
+    ],
+    "human_visible_instant_grouping": "two on the revision/committed/captured <small> line (859145, 859189); one in the authority-disclosure <p><small> just below (860858); two in the walkthrough-judgment block; one in the footer"
+  },
+  "items": {
+    "data_polaris_item_attribute_occurrences": 409,
+    "predicate": "count of the attribute data-polaris-item=\"",
+    "substring_data_polaris_item_occurrences": 417,
+    "of_which_data_polaris_items_attribute": 8
+  },
+  "reading_plans": {
+    "plans_defined": 2,
+    "plan_file": "apps/three-surface-poc/src/polaris-reading-plan.ts",
+    "condensed_renderings_in_capture": 1,
+    "note": "One of two reviewed reading plans produced a condensed rendering; the capture states nothing about the other, which is L4-F5's silence."
+  },
+  "code_sweeps": {
+    "assessCurrency_references_outside_cap1_core_and_conformance": 0,
+    "assessCurrency_files": [
+      "packages/cap1-core/src/staleness.ts",
+      "packages/cap1-conformance/src/req-042.conformance.test.ts",
+      "packages/cap1-conformance/src/req-062.conformance.test.ts"
+    ],
+    "freshness_value_producers_non_test_poc_sources": {
+      "FRESH": [
+        "packages/three-surface-poc-core/src/project-shape-model.ts:185",
+        "packages/three-surface-poc-core/src/project-shape-model.ts:193"
+      ],
+      "shape": [
+        "apps/three-surface-poc/src/fresh-checkout-demo-main.ts:286"
+      ]
+    },
+    "FRESHNESS_STATES_index_reads_outside_cap1_core": [
+      "packages/three-surface-poc-core/src/project-shape-model.ts:167 (index 0 only)"
+    ],
+    "assessCurrency_files_note": "three source files; a built declaration file mirrors staleness.ts when a dist/ tree is present (none in the reviewed worktree)"
+  },
+  "scoped_attributes_package_on_main": {
+    "present_at_this_commit": false,
+    "methods": [
+      "git ls-files | grep -i scoped-attributes -> 0 rows",
+      "find over the worktree (excluding .worktrees and node_modules) -> 0 paths"
+    ],
+    "location": "agent/syzygy-dov.17 branch only; 9 files under .syzygy/governance/contracts/candidates/pwb-scoped-attributes-amendment/"
+  },
+  "l4_f1_remeasured_2026_09_14": {
+    "pinned_revision": "2e3bac97790b4bd8906dcac63eadb5642a0bb1ac",
+    "butlers_head_at_measurement": "2ef3858818fac3cb87b67009ba3884f46380359f",
+    "butlers_head_committed": "2026-09-13T20:18:28Z",
+    "methods": [
+      "machine capture anchor.objectId vs git ls-tree -r of head",
+      "git diff --name-status pinned..head restricted to the source population",
+      "self-check: anchor.objectId vs ls-tree of pinned revision, 0 mismatches of 278"
+    ],
+    "sources_changed": 15,
+    "sources_removed": 0,
+    "sources_denominator": 278,
+    "machine_items_citing_changed_source": 9,
+    "machine_items_denominator": 415,
+    "rendered_rows_citing_changed_source": 9,
+    "rendered_rows_denominator": 409,
+    "rendered_rows_unmatched_to_items": 0,
+    "changed_sources": [
+      "about/legends-and-lore/rfcs/0001-daemon-lifecycle-and-triggers.md",
+      "about/legends-and-lore/rfcs/0002-mcp-tool-surface-and-modules.md",
+      "about/legends-and-lore/rfcs/0004-identity-and-contact-resolution.md",
+      "about/legends-and-lore/rfcs/0017-owner-routing-safety-incident-reconciliation.md",
+      "about/legends-and-lore/rfcs/0023-durable-approval-delivery-intent-recovery.md",
+      "openspec/specs/butler-relationship/spec.md",
+      "openspec/specs/butler-switchboard/spec.md",
+      "openspec/specs/core-daemon/spec.md",
+      "openspec/specs/core-notify/spec.md",
+      "openspec/specs/dashboard-approvals/spec.md",
+      "openspec/specs/module-approvals/spec.md",
+      "openspec/specs/runtime-config-api/spec.md",
+      "openspec/specs/runtime-config-dashboard-ui/spec.md",
+      "openspec/specs/runtime-config-table/spec.md",
+      "roster/relationship/butler.toml"
+    ],
+    "note": "Git tree metadata only (paths and object ids) of the consented repository; no blob body read. Dossier L4-F1 measured 71/271 sources and 135/402 rows at the pre-lane-A capture against head 7c8743f63."
+  },
+  "review1": {
+    "raw": "docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-RAW.md",
+    "bytes": 39904,
+    "sha256": "ff8c8f836e4488de939ae26d5e0a61c12d110c35a5438dd8aab3d5ff4be882bc",
+    "verdict": "REVISE",
+    "reviewed_packet_bytes": 47846,
+    "reviewed_packet_sha256": "8f57109243f4c26c7b7da268a0050cd61f8ed9a7f71b4416b80ef83d1e721f7b",
+    "reviewed_evidence_bytes": 3896,
+    "reviewed_evidence_sha256": "98acc654eba4ae11b5e63afe09143e57397580ee1c9e9259064f9944af66f502",
+    "repairs": "F1-F20 all accepted and repaired in the packet after the review; Q7 added"
+  },
+  "review2": {
+    "raw": "docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-2-RAW.md",
+    "bytes": 35095,
+    "sha256": "545c39259e370a5019ec40c6de210fcd00ce4bb5dedd09cb60f2350bc6367a22",
+    "verdict": "REVISE",
+    "reviewed_commit": "ec30494",
+    "repairs": "G1-G14 all accepted and repaired after the review; slice 6 (L4-M5) added"
+  },
+  "dates_in_rendered_text": {
+    "method": "regex YYYY-MM-DD over text nodes (between > and <) of the retained tailnet capture, offset over total bytes",
+    "hits": 8,
+    "first_evaluation_instant_offset": 859145,
+    "first_evaluation_instant_percent": 57.98,
+    "before_first_evaluation_instant": [
+      {
+        "offset": 840110,
+        "percent": 56.69,
+        "text": "a cited source filename dated 2026-08-24"
+      },
+      {
+        "offset": 841381,
+        "percent": 56.78,
+        "text": "the same filename, second citation"
+      }
+    ]
+  },
+  "review3": {
+    "raw": "docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-3-RAW.md",
+    "bytes": 30943,
+    "sha256": "930c4e361a05c677b428afaf4d743af22197984b34623fb49e17fc966d4024ed",
+    "verdict": "REVISE",
+    "reviewed_commit": "e0ecdc8",
+    "repairs": "H1-H10 all accepted and repaired after the review; the review-2 G5 repair withdrawn as false"
+  },
+  "project_account_section_items": {
+    "api_poc_items": 415,
+    "rendered_item_rows": 409,
+    "items_of_class": 6,
+    "rendered_as": "six sections, data-polaris-section=\"claim:project-account:<key>\", one per key (6 occurrences)",
+    "string_claim_item_project_account_section_key_count_in_served_bytes": 0,
+    "statements_and_anchors_identical_to_projectAccount_entries": "6 of 6 (review 3)",
+    "sweep_omission": "apps/three-surface-poc/src/polaris-parity-sweep.test.ts lines 202-209, by stated reason",
+    "note": "Re-derived 2026-09-14 after review 3 finding H1. The earlier pwb_req_020_precedent block, which read these as unrendered machine-only facts, was wrong and is withdrawn."
+  },
+  "review4": {
+    "raw": "docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-4-RAW.md",
+    "bytes": 33108,
+    "sha256": "804b11f8284942bca33d2eaa91822ba72f0f91c634be482f62a17c4b3eabef8f",
+    "verdict": "REVISE",
+    "reviewed_commit": "68123fc",
+    "repairs": "J1-J8 all accepted and repaired after the review; the review-3 H9 repair reverted (87-155 was correct)",
+    "re_derived_before_applying": {
+      "applyReadingPlan_return_full_lines": [
+        44,
+        48,
+        49,
+        50,
+        51,
+        53,
+        61,
+        64,
+        72,
+        79,
+        88,
+        99,
+        103
+      ],
+      "machine_facts_total": 439,
+      "project_account_fact_keys": 13,
+      "project_account_fact_keys_note": "six item:project-account-section:<key>, six project-account:<key>, one count:project-account-section; keys re-derived from projectShape.facts[].fact.fact in the retained api-poc.json",
+      "assessCurrency_span": "87-155"
+    }
+  },
+  "review5": {
+    "raw": "docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-5-RAW.md",
+    "bytes": 27581,
+    "sha256": "205bd6634870a215c83c8bdf11f75b5a037445cec9a2b979aafafa0b8963cc9a",
+    "verdict": "REVISE",
+    "reviewed_commit": "1befd6f",
+    "repairs": "K1-K9 all accepted and repaired after the review; the J6 wording withdrawn (PWB-REQ-020's equal-multiset limbs govern the open reading), the J5 count corrected to twelve structural guards",
+    "re_derived_before_applying": {
+      "applyReadingPlan_return_full_lines": [
+        44,
+        48,
+        49,
+        50,
+        51,
+        53,
+        61,
+        64,
+        72,
+        79,
+        88,
+        99,
+        103
+      ],
+      "structural_guards": 12,
+      "pwb_req_020_bidirectional_limbs": [
+        "Observable: both populations contain equivalent multisets",
+        "Scenario: the complete human fact multiset equals the machine fact multiset",
+        "Falsifier: ... in either channel"
+      ],
+      "staleness_stale_return_lines": [
+        117,
+        132,
+        142
+      ],
+      "staleness_stale_return_lines_cited_by_review": [
+        121,
+        133,
+        143
+      ]
+    }
+  },
+  "review6": {
+    "raw": "docs/reviews/R-POLARIS-M2-EVIDENCE-CURRENCY-FUNNEL-6-RAW.md",
+    "bytes": 26462,
+    "sha256": "2b1fffd8a916cb8c3c56b7753429ea7f655362589b81e4c5191e403a781d45ba",
+    "verdict": "CONFIRM WITH EXCEPTIONS",
+    "reviewed_commit": "da1497b",
+    "exceptions": "L1-L4 (two non-blocking, two editorial) applied after the review; wording and labels only; no figure and no recommended answer changed",
+    "re_derived_before_applying": {
+      "pwb_req_020_case_line": 914,
+      "pwb_req_020_case_text": "PWB-REQ-005 authority state and PWB-REQ-022 judgment state and disclosure",
+      "l4_m5_record_names": [
+        "plan id",
+        "expected and actual digests",
+        "route"
+      ]
+    }
+  }
+}
