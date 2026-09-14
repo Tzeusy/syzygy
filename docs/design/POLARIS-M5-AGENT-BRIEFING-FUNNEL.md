@@ -25,8 +25,9 @@ deferred and not designed here.
 Baseline: Syzygy `a9f671e` (main) [Observed].
 `git diff --stat f4589e2..a9f671e -- apps packages` touches 31 files,
 all under `apps/three-surface-poc/src/polaris.ts`,
-`polaris-narrative.ts`, their tests, and a new `packages/polaris-generation-core/` package — none of
-the files this packet cites
+`polaris-narrative.ts`, their tests, and a new
+`packages/polaris-generation-core/` package — none of the files this
+packet cites
 (`apps/three-surface-poc/src/routes.ts`, `browser-origin.ts`,
 `materialize-action.ts`,
 `packages/three-surface-poc-core/src/model.ts`, `proposed-work.ts`,
@@ -52,8 +53,8 @@ file and the sibling packets' cross-references still resolve.
 
 | # | Question | Recommended |
 |---|---|---|
-| Q1 | **Does `GET /api/poc/briefing`, a new machine-credentialed route, need a spec delta before it may be built, and if so to which spec?** The three-surface-poc-experience spec's own reader note is definitional: "the 'machine answer' is the authenticated `GET /api/poc` response" (`openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` line 26, singular, definite article, under the heading "Reader notes, binding on how this file is read") [Observed]. A precedent already exists that was never spec'd this way: `POLARIS_PRESENTATION_PATH` (`/api/poc/polaris`) is a second `machine-credentialed` route, justified only by a code comment citing PWB-REQ-014/020, named by no POC-REQ or PWB-REQ heading — the literal `api/poc/polaris` occurs 0 times in either signed specification, over 17 PWB and 24 POC `### Requirement:` headings; across the 619 tracked files under `openspec/` and `.syzygy/` its only occurrence is this packet's own P-72 register row [Observed, swept this session; the earlier "0 times across every tracked file under `openspec/` and `.syzygy/`" was falsified by the row this branch added — review 2, G3]. | **Yes, a delta is needed, and it should cover both routes at once.** Draft a small PWB semantic delta (in the 2026-09-05 amendment shape) that names a closed category — "derived read-only machine view": composed only of fields already reachable from `/api/poc` at the same evaluation, independently oracle-verified as derivable, served under its own declared, digest-bound response ceiling — and place both `/api/poc/polaris` (retroactively) and `/api/poc/briefing` (prospectively) under it. This closes the same gap for two routes in one package instead of drafting a narrower POC-spec reader-note widening now and a PWB delta later when the next such route appears. **Two other lawful arms.** (b) A POC-only reader-note widening is smaller, touches no digest-bound PWB text, does not queue behind lane B's open PWB package (Collision), and unblocks sooner; it would need no owner act under the same continuation slices 1–2 ride, only a spec-authoring cycle. (c) **Serve the briefing on the route that already exists** — `GET /api/poc` with a selector query parameter — which mints no route, raises no reader-note question, needs no new `ResponseLimitIdentity`, and so moots Q1 and Q2 together (named after review 1, F17). Not recommended [Inferred]: a parameterised `/api/poc` makes the one route the reader note *defines* as "the machine answer" serve two different bodies, so PWB-REQ-020's parity oracle would have to be told which form is the reference; and the briefing would sit under the 8,388,608-byte `maxMachineResponseBytes` with no ceiling of its own, which is exactly Q2's default arm with its defect — the owner is entitled to weigh that against amending a signed spec. **Default if unanswered: slice 3 does not ship.** Slices 1 and 2 are unaffected and may proceed regardless of how Q1 is ruled. |
-| Q2 | **If Q1 authorizes slice 3, how is its response ceiling declared, and does a third ceiling amend PWB-REQ-006?** `PwbResourceLimits` (`packages/three-surface-poc-core/src/project-shape-observation.ts` lines 65–73) is the registry's seven-field resource envelope, of which exactly two are response ceilings — `maxHumanResponseBytes` (2,097,152) and `maxMachineResponseBytes` (8,388,608), lines 81–82 — all seven digest-bound inside the registry entry that `PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md` adopted [Observed; the first draft said "exactly two fields", withdrawn after review 1, F4]. PWB-REQ-006 (Gate 2) says the registry declares "one evaluation-wide resource envelope" and that "final encoded human HTML and machine JSON SHALL each have an explicit byte ceiling", with a Case over "both final-output sinks". Reusing `maxMachineResponseBytes` as the briefing's hard bound would let a briefing grow to 8 MiB with nothing to stop it — the exact defect this move exists to fix. | **Mint `maxBriefingResponseBytes` in the registry entry, adopted by a superseding act in the 2026-09-05 shape (the same mechanism M2's Q2 already recommends for a currency bound), and rule at the same time whether the third ceiling also stales PWB-REQ-006's two-sink wording.** Two things are stated plainly that the first draft did not (review 1, F11, F12): first, this is **new code and a closed-type widening** — `ResponseLimitIdentity` (`routes.ts` line 111) is a closed union of two string literals and `PwbResourceLimits` a seven-field interface, and both grow by one; `boundedResponse` (`routes.ts` lines 137–142) is generic over the identity it is passed, so the enforcement path is reused, but the type is not untouched. The packet defends the widening because it happens **under an owner act over the registry entry** (escalation trigger, act line 92) — whereas Q3's `population` widening, declined below, would happen on the implementation's own authority with no act to warrant it; that is the asymmetry, and it is deliberate. Second, a third declared ceiling plausibly amends PWB-REQ-006's "each" over two sinks, in which case the registry delta **folds into Q1's PWB delta** as one package rather than a separate second act — a different cost from the two-step act the handoff describes, and the owner's call [Inferred]. Counter-argument: it is a second owner step queued behind Q1's spec delta, and until it lands slice 3 cannot ship at all. **Default if unanswered: slice 3 reuses `maxMachineResponseBytes` as its hard bound, with the ~20 KB figure enforced only by a test assertion** — a bound that could silently widen release by release with no registry gate to catch it, disclosed as such. |
+| Q1 | **Does `GET /api/poc/briefing`, a new machine-credentialed route, need a spec delta before it may be built, and if so to which spec?** The three-surface-poc-experience spec's own reader note is definitional: "the 'machine answer' is the authenticated `GET /api/poc` response" (`openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` line 26, singular, definite article, under the heading "Reader notes, binding on how this file is read") [Observed]. A precedent already exists that was never spec'd this way: `POLARIS_PRESENTATION_PATH` (`/api/poc/polaris`) is a second `machine-credentialed` route — and already a second machine-JSON body under the same `maxMachineResponseBytes` ceiling (`routes.ts` lines 161 and 175; review 3, H2) — justified only by a code comment citing PWB-REQ-014/020, named by no POC-REQ or PWB-REQ heading — the literal `api/poc/polaris` occurs 0 times in either signed specification, over 17 PWB and 24 POC `### Requirement:` headings; across the 619 tracked files under `openspec/` and `.syzygy/` its only occurrence is this packet's own P-72 register row [Observed, swept this session; the earlier "0 times across every tracked file under `openspec/` and `.syzygy/`" was falsified by the row this branch added — review 2, G3]. | **Yes, a delta is needed, and it should cover both routes at once.** Draft a small PWB semantic delta (in the 2026-09-05 amendment shape) that names a closed category — "derived read-only machine view": composed only of fields already reachable from `/api/poc` at the same evaluation, independently oracle-verified as derivable, served under its own declared, digest-bound response ceiling — and place both `/api/poc/polaris` (retroactively) and `/api/poc/briefing` (prospectively) under it. This closes the same gap for two routes in one package instead of drafting a narrower POC-spec reader-note widening now and a PWB delta later when the next such route appears. **Two other lawful arms.** (b) A POC-only reader-note widening is smaller, touches no digest-bound PWB text, does not queue behind lane B's open PWB package (Collision), and unblocks sooner; it would need no owner act under the same continuation slices 1–2 ride, only a spec-authoring cycle. (c) **Serve the briefing on the route that already exists** — `GET /api/poc` with a selector query parameter — which mints no route, raises no reader-note question, needs no new `ResponseLimitIdentity`, and so moots Q1 and Q2 together (named after review 1, F17). Not recommended [Inferred]: a parameterised `/api/poc` makes the one route the reader note *defines* as "the machine answer" serve two different bodies, so PWB-REQ-020's parity oracle would have to be told which form is the reference; and the briefing would sit under the 8,388,608-byte `maxMachineResponseBytes` with no ceiling of its own, which is exactly Q2's default arm with its defect — the owner is entitled to weigh that against amending a signed spec. **Default if unanswered: slice 3 does not ship.** Slices 1 and 2 are unaffected and may proceed regardless of how Q1 is ruled. |
+| Q2 | **If Q1 authorizes slice 3, how is its response ceiling declared, and does a third ceiling amend PWB-REQ-006?** `PwbResourceLimits` (`packages/three-surface-poc-core/src/project-shape-observation.ts` lines 65–73) is the registry's seven-field resource envelope, of which exactly two are response ceilings — `maxHumanResponseBytes` (2,097,152) and `maxMachineResponseBytes` (8,388,608), lines 81–82 — all seven digest-bound inside the registry entry that `PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md` adopted [Observed; the first draft said "exactly two fields", withdrawn after review 1, F4]. PWB-REQ-006 (Gate 2) says the registry declares "one evaluation-wide resource envelope" and that "final encoded human HTML and machine JSON SHALL each have an explicit byte ceiling", with a Case over "both final-output sinks". Reusing `maxMachineResponseBytes` as the briefing's hard bound would let a briefing grow to 8 MiB with nothing to stop it — the exact defect this move exists to fix. | **Mint `maxBriefingResponseBytes` in the registry entry, adopted by a superseding act in the 2026-09-05 shape (the same mechanism M2's Q2 already recommends for a currency bound), and rule at the same time whether the third ceiling also stales PWB-REQ-006's two-sink wording.** Two things are stated plainly that the first draft did not (review 1, F11, F12): first, this is **new code and a closed-type widening** — `ResponseLimitIdentity` (`routes.ts` line 111) is a closed union of two string literals and `PwbResourceLimits` a seven-field interface, and both grow by one; `boundedResponse` (`routes.ts` lines 137–142) is generic over the identity it is passed, so the enforcement path is reused, but the type is not untouched. The packet defends the widening because it happens **under an owner act over the registry entry** (escalation trigger, act line 92) — whereas Q3's `population` widening, declined below, would happen on the implementation's own authority with no act to warrant it; that is the asymmetry, and it is deliberate. Second, a third declared ceiling plausibly amends PWB-REQ-006's "each" over two sinks, in which case the registry delta **folds into Q1's PWB delta** as one package rather than a separate second act — a different cost from the two-step act the handoff describes, and the owner's call [Inferred]. This fold-in sub-question turns on whether the clause's two sinks are kinds or routes (Gate 2, after review 3, H2): on the kinds reading this packet holds [Inferred], the briefing is a third machine-JSON body under the existing `maxMachineResponseBytes` kind, the third ceiling is a tightening the clause never counts, and the fold-in dissolves; on the routes reading it is live, and `/api/poc/polaris` already stretches the clause today. Counter-argument: it is a second owner step queued behind Q1's spec delta, and until it lands slice 3 cannot ship at all. **Default if unanswered: slice 3 reuses `maxMachineResponseBytes` as its hard bound, with the ~20 KB figure enforced only by a test assertion** — a bound that could silently widen release by release with no registry gate to catch it, disclosed as such. |
 
 ### Decided in this packet, not put to the owner (Q3, Q4)
 
@@ -61,27 +62,49 @@ file and the sibling packets' cross-references still resolve.
 Decided: keep `ResponseLimitFailure`'s `population` union
 (`routes.ts` lines 113–124, `population` at 120–122 — a closed two-arm
 union scoped to the whole project shape) as it is, and add **one new
-field** to that interface carrying the sentence "population describes
-the whole evaluation, not this briefing's subject" — the breach body is
+field** to that interface carrying a **limit-neutral** sentence,
+"population counts describe the whole evaluation" — the breach body is
 `JSON.stringify` of exactly that interface (`routes.ts` line 141), so a
 sentence cannot reach the body without widening the type. No third
-`population` arm is minted. Why this is not an owner gate: the type is
-an implementation type in `apps/three-surface-poc/src/routes.ts` bound
-by no act, so widening it by a field is engineering judgment; PWB-REQ-006
-asks the breach envelope for "population counts" and says nothing about
-their scope; and its "SHALL return **only** a bounded typed failure
-envelope carrying evaluation identity, limit identity, declared value,
-observed value and population counts" (spec lines 381–384) is read here
-as an enumeration the envelope must at least carry, not a closure of its
-field set [Inferred]: the clause's own contrast is with truncation and a
+`population` arm is minted. **The widened type is shared, not the
+briefing's** [Observed, re-derived after review 3, H1]:
+`responseLimitFailure` is built once (`routes.ts` lines 132–134) and
+`boundedResponse` (lines 137–142) serialises it for whichever
+`ResponseLimitIdentity` it is passed, so today the same envelope is
+served on all three bounded sinks — `html()` at line 151
+(`maxHumanResponseBytes`, the three pages), `machineHandle` at line 161
+and `presentationHandle` at line 175 (both `maxMachineResponseBytes`,
+`/api/poc` and `/api/poc/polaris`) — and a required field reaches every
+one of them. That is why the sentence is limit-neutral: it is true on a
+page breach, an `/api/poc` breach and a briefing breach alike, and no
+sink states a subject it does not have. (The review-2 wording, "population
+describes the whole evaluation, not this briefing's subject", is
+withdrawn after review 3, H1: served on a human-HTML breach it would
+assert a briefing and a subject the response never had.) Why this is
+not an owner gate, re-run over the two sinks PWB-REQ-006 governs: the
+type is an implementation type in `apps/three-surface-poc/src/routes.ts`
+bound by no act, so widening it by a field is engineering judgment; the
+bodies it produces on the human-HTML and machine-JSON sinks are the
+breach envelope PWB-REQ-006 enumerates, and that clause asks for
+"population counts" and says nothing about their scope; and its "SHALL
+return **only** a bounded typed failure envelope carrying evaluation
+identity, limit identity, declared value, observed value and population
+counts" (spec lines 381–384) is read here, on all three sinks, as an
+enumeration the envelope must at least carry, not a closure of its field
+set [Inferred]: the clause's own contrast is with truncation and a
 success-shaped model, its Falsifier fires on "an oversized or truncated
 success response", and neither its Observable nor the resource-breach
 scenario constrains the field set — if the owner reads "only" as a
-closure, this becomes a spec question and re-enters the funnel. (The
-first repair said "reuse ... **unchanged**, and add one sentence to the
-body" and "both arms leave the type unchanged"; both withdrawn after
-review 2, G6 — the sentence is a type widening, and the alternative arm
-widens the union.) Why the sentence is worth having:
+closure, the two existing sinks are the ones it closes, this becomes a
+spec question, and it re-enters the funnel before any sink's body
+changes. (The first repair said "reuse ... **unchanged**, and add one
+sentence to the body" and "both arms leave the type unchanged"; both
+withdrawn after review 2, G6 — the sentence is a type widening, and the
+alternative arm widens the union.) One adjacent fact the review named:
+the union's `unknown` arm already carries a free-prose `reason: string`
+(`routes.ts` line 128, set to the project-shape kind); it is
+pre-existing, is not an Unknown *claim* reason under RFC2-24, and this
+decision does not touch it. Why the sentence is worth having:
 a response-ceiling breach serves nothing and logs nothing — no ledger,
 stderr line or status record sees it, and the 503 body of the
 breaching request is the only trace (AGENTS.md records this) — so the
@@ -138,8 +161,9 @@ packet's own table before use):
    task-irrelevant blocks are 68.2%.** `workItems` (2,273,467 bytes,
    7,481 work items with 7,481 distinct ids [Observed, counted this
    session; the first draft's "7,396 beads presumably" matched neither
-   capture and hedged inside an Observed claim — review 2, G9], 41.18%) and `codeStructure` (1,493,219
-   bytes, 27.05%) together are 68.2% of the body; the same minimal
+   capture and hedged inside an Observed claim — review 2, G9], 41.18%)
+   and `codeStructure` (1,493,219 bytes, 27.05%) together are 68.2% of
+   the body; the same minimal
    orientation set the dossier named — `evaluation`, `project`,
    `observerRevision`, `projectShape.identity.scope`,
    `projectShape.authority`, `entities`, `relationships`,
@@ -269,9 +293,10 @@ pending at all.
    render) and the state's `at` as machine-only, with both denominators
    (8 of 9 top-level fields, 9 of 11 leaves; 1 of 2 state fields).
    (The first repair said "7 of 9 packet fields", counting cells on one
-   side and fields on the other; corrected after review 2, F6/G2.) A test issuing N machine `GET`
-   requests against a fixture state directory asserts the directory's
-   bytes are unchanged after the Nth. (The first draft said
+   side and fields on the other; corrected after review 2, F6/G2.) A
+   test issuing N machine `GET` requests against a fixture state
+   directory asserts the directory's bytes are unchanged after the Nth.
+   (The first draft said
    "byte-identical" over "the packet's seven fields"; withdrawn after
    review 1, F6.)
 3. `authority.mayNot` (nested under `projectShape.authority`) is a
@@ -282,7 +307,19 @@ pending at all.
    fail-closed polarity AGENTS.md records as the project's rule.
 4. Zero new epistemic or closed-vocabulary values exist anywhere in
    the implementation that RFC2-10, RFC2-24, RFC2-25 or PWB-REQ-004's
-   closed population do not already carry.
+   closed population do not already carry, **and** every closed
+   vocabulary this move introduces is enumerated with the source that
+   closes it and a registration check (widened after review 3, H9).
+   There are three: the `dispatchState` discriminant
+   (`'undispatched'` / `'dispatched'`, closed by slice 1's type, two
+   values, checked by the rule-6 mutant on its guard); the `mayNot` row
+   `id` space (`no-write-to-observed-repository` and its five
+   siblings, closed by the six "does not authorize" bullets of the
+   authorization act, checked by the Gate 3 registration test — which
+   after this widening compares the id list, not only the row count);
+   and the chain's `not-applicable` state (closed by slice 3's
+   fact-of-render disclosure shape, one value, carrying no `reason`
+   field so it never enters RFC2-24's population).
 
 **Motif.** *A consumer doctrine names first-class gets a channel with
 its own scope, not the whole truth store metered by nothing.* This
@@ -320,7 +357,7 @@ verified against the M4 packet's own table before use, and against the
 M2 evidence file's `polaris-tailnet.html` hash, both matching
 [Observed].
 
-### Bytes per top-level key (compact re-serialization, method: `json.dumps(v, separators=(",", ":"))` per key, summed against the whole file's own compact size)
+### Bytes per top-level key (compact re-serialization, method: `json.dumps(v, separators=(",", ":"))` per key with `ensure_ascii` at its default; Share against the file's own 5,520,314 bytes)
 
 | Key | Bytes | Share |
 |---|---:|---:|
@@ -347,7 +384,14 @@ M2 evidence file's `polaris-tailnet.html` hash, both matching
 Sum of per-key compact sizes, 5,521,648 bytes, against the whole file's
 own compact serialization, 5,521,960 bytes — the 312-byte gap is
 key-name and separator overhead double-counted across the per-key
-sweep, immaterial to the shares above.
+sweep, immaterial to the shares above. The Share column divides by the
+file's byte length, 5,520,314, not by the 5,521,960 compact figure
+(the two differ because `ensure_ascii` escapes the non-ASCII bytes the
+served file carries as UTF-8); against 5,521,960 the two largest rows
+read 41.17% and 27.04%. The heading's earlier "summed against the whole
+file's own compact size" named the wrong denominator for that column
+(review 3, H3; the 68.2% and 0.339% figures are unchanged to their
+published precision under either).
 
 ### The briefing an agent needs, two denominators
 
@@ -533,10 +577,27 @@ envelope carrying evaluation identity, limit identity, declared value,
 observed value and population counts; it SHALL NOT truncate or emit a
 success-shaped model." Its Case sweeps "both final-output sinks". This
 is the requirement Q2 and the breach-body decision (Q3) both land
-inside: slice 3 adds a third final-output sink, Q2 proposes a third
+inside: slice 3 adds a third bounded route, Q2 proposes a third
 declared ceiling for it, and the breach body's `population` is the
-"population counts" this clause names. It was not cited in the first
-draft (review 1, F11); reading it changes Q2's shape — see that row.
+"population counts" this clause names. **Kinds or routes** (added
+after review 3, H2): the clause's two sinks are two *kinds* of encoded
+output — "human HTML and machine JSON SHALL each have an explicit byte
+ceiling" (spec lines 378–379) — not two routes; the implementation
+already serves three bounded routes under those two ceiling identities
+(`routes.ts` lines 151, 161, 175), so `/api/poc/briefing` would be a
+fourth route and a third machine-JSON body, not a third kind
+[Observed]. This packet reads the clause as counting kinds [Inferred].
+On that reading the briefing satisfies PWB-REQ-006 under
+`maxMachineResponseBytes` as it stands, and minting
+`maxBriefingResponseBytes` is a discretionary tightening — the 8 MiB
+argument in Q2 is unchanged, but Q2's fold-in sub-question ("does a
+third ceiling stale the clause's 'each'?") only arises on the *route*
+reading, which is the reading the first two drafts asserted without a
+label. The route reading, if the owner holds it, means the clause is
+already stretched today by `/api/poc/polaris` and gives Q1's
+retroactive-coverage recommendation a second argument. It was not
+cited in the first draft (review 1, F11); reading it changes Q2's
+shape — see that row.
 
 **PWB-REQ-013 — Proposed work stays subordinate to current project
 truth** (cited by its own file header comment,
@@ -892,12 +953,15 @@ in the M1/M2 shape.
 
 **Breach body (Q3, decided in this packet).** On a briefing-ceiling
 breach the existing `ResponseLimitFailure` shape (`routes.ts` lines
-113–124; `population` at 120–122) keeps its `population` union and gains one
-field carrying the sentence "population describes the whole
-evaluation, not this briefing's subject" — a widening of an
-implementation type bound by no act, not a reuse "unchanged" (corrected
-after review 2, G6). No third `population` arm is minted. The reasons are in "Decided in this packet" below the owner
-questions.
+113–124; `population` at 120–122) keeps its `population` union and
+gains one field carrying the limit-neutral sentence "population counts
+describe the whole evaluation" — a widening of an implementation type
+bound by no act, not a reuse "unchanged" (corrected after review 2,
+G6), and a widening of the envelope every bounded sink serves, not of a
+briefing-only type (corrected after review 3, H1; the earlier
+"…not this briefing's subject" wording is withdrawn there). No third
+`population` arm is minted. The reasons are in "Decided in this packet"
+below the owner questions.
 
 **Oracle.** Every field the briefing renders must be independently
 derivable from `/api/poc`'s own bytes at the same evaluation — a test
@@ -966,8 +1030,8 @@ quoted words are the file header comment of
 PWB-REQ-013's own clause (spec lines 723–740) is a presentation
 prohibition that never names the packet. Withdrawn after review 2,
 finding G1; Gate 2's PWB-REQ-013 paragraph, which cites the header
-comment as a header comment, stands.) For `mayNot` the question that actually decides
-whether an act is needed is not parity but minting: **may the
+comment as a header comment, stands.) For `mayNot` the question that
+actually decides whether an act is needed is not parity but minting: **may the
 implementation add a disclosure no requirement names?** This packet's
 answer [Inferred]: yes, on two grounds — PWB-REQ-005 already requires
 "every human and machine rendering of the authorization basis" to
@@ -1273,9 +1337,10 @@ Acts: slices 1-2 none (the 2026-09-05 continuation); slice 3 one on Q1
   (spec delta) and possibly a second on Q2 (registry ceiling); slice 4
   not evaluated
 Open questions: Q1-Q2 above, queued as P-72 on this branch (P-68 lane
-  B, P-69 M2, P-70 M3, P-71 M4, each on its own branch; main's register
-  still ends at P-67); Q3 and Q4 decided in the packet, not put to the
-  owner
+  B, P-69 M2, P-70 M3, P-71 M4, each on its own branch; main's
+  register's highest allocated identifier is P-67, its last open row
+  P-53 - P-54..P-67 are ruled and recorded in its update notes); Q3 and
+  Q4 decided in the packet, not put to the owner
 Sign-off: pending - the owner's
 Recommended handoff: land slices 1 and 2 now under syzygy-dov.5; rule
   Q1 (recommended: a PWB delta covering /api/poc/polaris and
@@ -1379,7 +1444,7 @@ second `-RAW.md` file, never an overwrite.
 | F17 a lawful, cheaper arm for Q1 is never named | non-blocking | Accepted. The existing-route arm (`GET /api/poc` with a selector) named in Q1 with why it is not recommended, labelled [Inferred]; the order and register follow |
 | F18 zero [Unknown] labels in the document the owner reads | non-blocking | Accepted. The evidence file's four `not_verifiable_this_session` entries carried into Collision and sequencing as four [Unknown] bullets |
 | F19 ten code spans are broken across a line break | editorial | Confirmed; all ten rejoined or rephrased so no span crosses a line |
-| F20 nine over-width lines outside tables and fences | editorial | Confirmed; line 795 reflowed, and the 79-column baseline line with it; nine of the remaining ten over-width lines are single unbreakable paths or headings, as the review allows; the tenth, ordinary prose at 80 columns, was found by review 2 (G12) and wrapped |
+| F20 nine over-width lines outside tables and fences | editorial | Confirmed; line 795 reflowed, and the 79-column baseline line with it. Predicate (stated after review 3, H6): lines over 78 columns outside fenced code, excluding lines whose stripped form begins with `\|` or `#`, over every line of this file. Under it the file at `09b5395` had eleven such lines — six single unbreakable paths and five ordinary prose lines, four of them residue of this session's own review-2 reflows — and after the review-3 rewrap it has six (6 lines), every one a single unbreakable code-span path [Observed, measured after the rewrap]. (The earlier row said "nine of the remaining ten … the tenth … wrapped"; withdrawn after review 3, H6 — the G12 wrap had split the line into a 50-column and a 102-column half.) |
 | F21 PWB-REQ-020 is introduced as "quoted in full" and is not | editorial | Confirmed; "quoted in relevant part", naming which bullets are omitted |
 | F22 four remaining citation imprecisions | editorial | Confirmed; `ResponseLimitFailure` 113–124 with `population` at 120–122, `MaterializationRecord` 67–78 with `createdAt` at 71, and the POC spec file named at each line-26 cite |
 
@@ -1425,7 +1490,7 @@ place and dated, never deleted.
 | Finding | Severity | Disposition |
 |---|---|---|
 | G1 PWB-REQ-013 does not type the dispatch packet, yet Gate 5 cites it as the warrant for slice 1's "no delta" | blocking | Re-derived and confirmed: PWB-REQ-013 (spec lines 723–740) is a presentation prohibition; the quoted words are the header comment of `packages/three-surface-poc-core/src/proposed-work.ts` lines 11–12; `materializ` occurs 0 times in both signed specs. Gate 5 now answers slice 1 as the same minting question it answers for `mayNot`, on the bound-by-no-act ground, labelled [Inferred]; the false attribution kept in a marked parenthetical; the slice-1 act row and the summary follow. Gate 2's PWB-REQ-013 paragraph, which already cited the comment as a comment, stands |
-| G2 "7 of 9 packet fields" is the wrong denominator | non-blocking | Re-derived and confirmed: seven cells, one of which (line 74) renders `issueType` and `priority` together; 8 of 9 top-level fields and 9 of 11 leaves have a counterpart. Success criterion 2, the parity test, S4, the summary, the F6 row and the P-72 row restated with both denominators; the evidence record's review-1 figure marked superseded on its line |
+| G2 "7 of 9 packet fields" is the wrong denominator | non-blocking | Re-derived and confirmed: seven cells, one of which (line 74) renders `issueType` and `priority` together; 8 of 9 top-level fields and 9 of 11 leaves have a counterpart. Success criterion 2, the parity test, S4, the summary, the F6 row and the P-72 row restated with both denominators (the P-72 row carried only the top-level denominator until review 3, H7, when "9 of its 11 leaves" was added to it); the evidence record's review-1 figure marked superseded on its line |
 | G3 Q1's `api/poc/polaris` absence claim is falsified by the packet's own register row | non-blocking | Re-derived and confirmed: 0 in either signed spec; exactly 1 over the 619 tracked files under `openspec/` and `.syzygy/`, the P-72 row. The claim is now stated over the specs, with the register-row occurrence enumerated |
 | G4 the `authorityLine` row of the line table is still wrong | non-blocking | Re-derived: the function closes at line 716 (713 ends on a `.map(` continuation). Table row and both in-text cites corrected, the withdrawn value kept in the table |
 | G5 the two one-claim totals are not reproducible from the published field paths | non-blocking | Re-derived: every component reproduces (595, 109, 1,369, 661, 812, 1,075, 844, 326, 1,627, 1,803), the with-source deltas are exactly the source records, and the composed wrapper is unpublished. The totals are now stated as this session's floors with the component table as the re-derivable part; the record carries the components and the unpublished-wrapper disclosure |
@@ -1445,3 +1510,55 @@ Recommended answers changed by this review: none. Q1 and Q2 recommend
 what they recommended after review 1; Q3's decision is restated as the
 type widening it always was, on grounds now quoted, and its outcome (no
 third `population` arm, one sentence reaching the body) is the same.
+
+## Review 3 and repairs (2026-09-15)
+
+A third independent fresh-context review (read-only; same conditions as
+the first two) is retained verbatim at
+`docs/reviews/R-POLARIS-M5-AGENT-BRIEFING-FUNNEL-3-RAW.md` (36179 bytes,
+sha256
+`f8adfc2b8846686ed69d7f41b0d2bed334b8c95346409e6cda9fa2a8672fecd6`,
+computed by `sha256sum` this session). It reviewed the packet at 103078
+bytes, sha256
+`2ec2413af47f2c208c131dbfb9173aa16c8a3328ed70d66501031e914756cab1`, the
+evidence record at 26130 bytes, sha256
+`283b23576fdd696dd8d5efa2bd89d5dae9c99750b78655eb920e94e144c499e6`, and
+the register at 28297 bytes, sha256
+`101f2b19fc696e97fc4b0174c3fb1a849fbba43751b76f99f2b5baebd0d15a4b`, all
+tracked at commit `09b5395`. Its verdict word, copied exactly:
+**REVISE** — one blocking, four non-blocking, four editorial. Every
+finding was re-derived against source, the signed PWB specification and
+the retained capture before being applied: `boundedResponse`'s three
+call sites read at `routes.ts` lines 151, 161 and 175 and the single
+`responseLimitFailure` construction at 132–134; PWB-REQ-006's "each"
+sentence at spec lines 378–379 against its breach envelope at 381–384;
+the per-key shares recomputed at both denominators (5,520,314 and
+5,521,960); `707-713` swept over the evidence record (2 sites) and the
+packet (0); the ten one-claim components recomputed from the capture;
+the over-width predicate run over every line of this file before and
+after the rewrap; main's register read by `git show` for its last open
+row and highest identifier; and the three new closed vocabularies
+enumerated from Gate 4. Every edit below was made after that review,
+so by verification rule 10 the review binds the bytes it names and not
+these; a fourth fresh-context review follows, and its raw will be a
+fourth `-RAW.md` file, never an overwrite. Superseded wording is marked
+in place and dated, never deleted.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| H1 Q3's "one new field" lands on the envelope every bounded sink serves, and the no-gate warrant never considers the two sinks PWB-REQ-006 governs | blocking | Re-derived and confirmed: `responseLimitFailure` is built once and `boundedResponse` serialises it for the human pages (line 151), `/api/poc` (161) and `/api/poc/polaris` (175) alike. Q3's sentence is now limit-neutral ("population counts describe the whole evaluation"), true on every sink; the briefing-scoped wording is withdrawn in place; the no-gate argument is re-run over the human-HTML and machine-JSON sinks the clause governs, with the owner's "only as closure" reading routed to the funnel before any sink's body changes; the slice-3 paragraph and the P-72 row follow; the union's pre-existing free-prose `reason` string noted as untouched |
+| H2 "a third final-output sink" counts routes where PWB-REQ-006 counts kinds | non-blocking | Re-derived and confirmed: three bounded routes already serve under two ceiling identities. Gate 2 now states the kinds-versus-routes reading, holds the kinds reading [Inferred], and says the fold-in sub-question in Q2 arises only on the route reading; Q2's row ties its fold-in to that; Q1's row names `/api/poc/polaris` as an existing second machine-JSON body under the same ceiling |
+| H3 the per-key table's stated method does not reproduce its Share column | non-blocking | Re-derived: 41.17% / 27.04% at 5,521,960, 41.18% / 27.05% at 5,520,314. Heading and prose now name the file's own bytes as the Share denominator and state the `ensure_ascii` default; both alternatives published |
+| H4 the evidence record still carries `707-713` twice | non-blocking | Confirmed (2 sites, 0 in the packet). Both corrected to 707–716 on their own lines with the withdrawn value marked and dated, in the record's existing shape |
+| H5 the record's one-claim totals are unqualified at the measurement site | non-blocking | Confirmed: all ten components reproduce. The floors-and-unpublished-wrapper sentence is now in `one_claim_briefing_examples.note` itself, pointing at the component table |
+| H6 the F20/G12 disposition is false on the current bytes, and the G12 wrap made its line worse | editorial | Confirmed: eleven over-width lines at `09b5395`, five of them prose, four of those this session's own reflow residue. The five rewrapped without breaking a code span; the F20 row restated with its predicate and the post-rewrap count |
+| H7 the G2 disposition overstates the P-72 row | editorial | Confirmed: the row carried only the top-level denominator. "9 of its 11 leaves" added to the row; the G2 row says so |
+| H8 "main's register still ends at P-67" is true of identifiers, false of rows | editorial | Confirmed by `git show main:`: last open row P-53, highest identifier P-67. Both the summary and the record now say which is which |
+| H9 criterion 4 cannot see the three closed vocabularies the move mints | editorial | Confirmed. Criterion 4 widened to require every new closed vocabulary be enumerated with its closing source and a registration check; the three named (`dispatchState`, the `mayNot` row ids, the chain's `not-applicable` state), and the Gate 3 registration check now compares the id list, not only the row count |
+
+Recommended answers changed by this review: none of the two owner
+questions. Q1 and Q2 recommend what they recommended after review 1.
+Q3 — decided in the packet, not an owner question — changes its
+sentence from briefing-scoped to limit-neutral; its outcome (one new
+field on the shared envelope, no third `population` arm, no act) is the
+same. Q4 is untouched.

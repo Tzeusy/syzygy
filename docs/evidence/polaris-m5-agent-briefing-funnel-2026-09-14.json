@@ -143,7 +143,7 @@
       "note": "Recomputed after review 1 (F8) by the same method as the 14-field set (json.dumps, separators (',',':'), ensure_ascii False, projectShape.classes and projectShape.claim added to the short-key object): 148,780 bytes. The first draft's 148,815 could not be reproduced by this method and is withdrawn; the share (2.695%) is unchanged to three places."
     },
     "one_claim_briefing_examples": {
-      "note": "Two compositions, replacing the first draft's single 2,804-byte figure for a selector spelled `claim:baseline-spec:switchboard-identity` (0 of 415 item ids match that spelling; withdrawn after review 1, F2/F7/F9). Each is json.dumps compact, ensure_ascii False, over exact field paths from this capture. mayNot omitted (field does not yet exist). exactSourceRoutes holds one entry with a 27-byte placeholder href, so each figure is a floor. Denominator 5,520,314 bytes.",
+      "note": "Two compositions, replacing the first draft's single 2,804-byte figure for a selector spelled `claim:baseline-spec:switchboard-identity` (0 of 415 item ids match that spelling; withdrawn after review 1, F2/F7/F9). Each is json.dumps compact, ensure_ascii False, over exact field paths from this capture. mayNot omitted (field does not yet exist). exactSourceRoutes holds one entry with a 27-byte placeholder href, so each figure is a floor. Denominator 5,520,314 bytes. Floors for a second reason (after review 2, G5, and review 3, H5): every component reproduces to the byte from the capture by the field paths in review2.re_derived_before_applying.one_claim_components_bytes, but the composed wrapper (439 and 462 bytes respectively) is unpublished, so bytes_without_source and bytes_with_source are this session's floors, not values re-derivable from composition_fields alone.",
       "composition_fields": {
         "subject": "the selector string",
         "evaluation": "top-level `evaluation`",
@@ -385,14 +385,14 @@
         "note": "the first draft cited the type range for the function"
       },
       "polaris.ts authorityLine": {
-        "actual": "707-713",
+        "actual": "707-716 [superseded 2026-09-15 after review 2 (G4) and review 3 (H4): the earlier value 707-713 stopped on a .map( continuation; the function closes at 716]",
         "dossier": "not cited by line",
         "note": "slice 2's edit site; outside all five polaris.ts regions the M3 packet cites"
       }
     }
   },
   "pending_register_state": {
-    "main_at_a9f671e_last_row": "P-67",
+    "main_at_a9f671e_last_row": "P-53 (last open row; P-67 is the highest allocated identifier, P-54..P-67 being ruled and recorded in the update notes) [superseded 2026-09-15 after review 3 (H8): earlier value P-67, true of identifiers and not of rows]",
     "note": "P-68 (lane B), P-69 (M2), P-70 (M3), P-71 (M4) each exist only on their own branch, per the M4 packet's own baseline check. After review 1 this branch adds P-72 (two owner questions, Q1 and Q2; Q3 and Q4 decided in the packet) to its own copy of the register: 22 open rows and 5 acceptance-act rows, 27 in all, counted from main's 21/5/26 at a9f671e."
   },
   "pwb_resource_limits_this_worktree": {
@@ -403,7 +403,7 @@
   "not_verifiable_this_session": [
     "Which Q1 arm the owner will choose (PWB delta, POC reader-note delta, or the existing-route arm named after review 1, F17); all three are lawful on this packet's own reading.",
     "The exact byte cost of authority.mayNot once built (estimated at a few hundred bytes for six table rows plus three authority rows; not yet implemented, so not measured).",
-    "Whether M3's committed polaris.ts diff stays inside the five regions its packet cites (306-307, 346-361, 506-510, 1307, 1328-1329); slice 2's edit site authorityLine 707-713 is outside all five, but only M3's own Gate 3 table and cited lines were read, not a full diff.",
+    "Whether M3's committed polaris.ts diff stays inside the five regions its packet cites (306-307, 346-361, 506-510, 1307, 1328-1329); slice 2's edit site authorityLine 707-716 [superseded 2026-09-15 after review 3 (H4): earlier 707-713] is outside all five, but only M3's own Gate 3 table and cited lines were read, not a full diff.",
     "The registry entry's exact digest as currently recorded in decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md was not quoted anywhere in this packet, per AGENTS.md's guardrail against quoting a truncated signed digest outside ACT_DIGEST_COPY_FILES; its value was not independently re-derived this session."
   ],
   "review1": {
@@ -560,5 +560,33 @@
       ]
     },
     "recommended_answers_changed": []
+  },
+  "review3": {
+    "raw": "docs/reviews/R-POLARIS-M5-AGENT-BRIEFING-FUNNEL-3-RAW.md",
+    "bytes": 36179,
+    "sha256": "f8adfc2b8846686ed69d7f41b0d2bed334b8c95346409e6cda9fa2a8672fecd6",
+    "verdict": "REVISE",
+    "counts": {"blocking": 1, "non_blocking": 4, "editorial": 4},
+    "reviewed_commit": "09b5395",
+    "reviewed_bytes": {
+      "packet": {"bytes": 103078, "sha256": "2ec2413af47f2c208c131dbfb9173aa16c8a3328ed70d66501031e914756cab1"},
+      "record": {"bytes": 26130, "sha256": "283b23576fdd696dd8d5efa2bd89d5dae9c99750b78655eb920e94e144c499e6"},
+      "register": {"bytes": 28297, "sha256": "101f2b19fc696e97fc4b0174c3fb1a849fbba43751b76f99f2b5baebd0d15a4b"}
+    },
+    "repairs_applied_this_session": ["H1", "H2", "H3", "H4", "H5", "H6", "H7", "H8", "H9"],
+    "re_derived_before_applying": {
+      "boundedResponse_call_sites": ["routes.ts:151 html() maxHumanResponseBytes", "routes.ts:161 machineHandle maxMachineResponseBytes", "routes.ts:175 presentationHandle maxMachineResponseBytes"],
+      "responseLimitFailure_built_once": "routes.ts:132-134, serialised at 141 for whichever ResponseLimitIdentity boundedResponse is passed",
+      "pwb_req_006_kinds_sentence": "spec lines 378-379: human HTML and machine JSON SHALL each have an explicit byte ceiling",
+      "share_denominators": {"file_bytes": 5520314, "compact_ascii": 5521960, "workItems_share_at_each": [41.18, 41.17], "codeStructure_share_at_each": [27.05, 27.04]},
+      "authorityLine_range": "707-716",
+      "one_claim_components_reproduce": true,
+      "over_width_prose_lines_at_09b5395": [28, 141, 272, 899, 969],
+      "over_width_path_lines_at_09b5395": [11, 514, 586, 613, 763, 1011],
+      "main_register": {"last_open_row": "P-53", "highest_identifier": "P-67"},
+      "new_closed_vocabularies": ["dispatchState (2 values)", "mayNot row id (6 values)", "chain not-applicable (1 value)"]
+    },
+    "disposition_summary": "H1: Q3's sentence reworded limit-neutrally (population counts describe the whole evaluation) and the no-gate argument re-run over the human-HTML and /api/poc sinks the widened type also reaches; the briefing-scoped wording withdrawn in place. H2: kinds-versus-routes reading stated and labelled [Inferred] in Gate 2, Q2's fold-in sub-question tied to it, /api/poc/polaris named in Q1 as a second machine-JSON body. H3: Share denominator named (5,520,314) with the compact-ASCII alternatives. H4: both 707-713 sites corrected in place. H5: floors-and-unpublished-wrapper sentence carried into one_claim_briefing_examples.note. H6: five prose lines rewrapped, F20 row restated with predicate and count. H7: P-72 row gains the leaf denominator. H8: last-open-row versus highest-identifier stated in packet and record. H9: criterion 4 widened and the three vocabularies named.",
+    "recommended_answers_changed": ["Q3 (decided in the packet, not an owner question): the field's sentence changes from briefing-scoped to limit-neutral; the outcome - one new field, no third population arm, no act - is unchanged. Q1, Q2, Q4 unchanged."]
   }
 }
