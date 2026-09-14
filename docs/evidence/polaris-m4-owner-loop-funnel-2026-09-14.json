@@ -1,0 +1,1285 @@
+{
+  "generated": "2026-09-14",
+  "purpose": "Evidence computed this session for the M4 owner-loop funnel packet (bead syzygy-dov.4). Planning only; nothing here authorizes implementation.",
+  "syzygy_commit": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
+  "worktree_branch": "agent/syzygy-dov.4",
+  "captures": {
+    "lane_a_after": {
+      "provenance": "retained lane A 'after' captures; Butlers evaluation revision 2e3bac97790b4bd8906dcac63eadb5642a0bb1ac, committed 2026-09-13T10:31:11Z, captured 2026-09-13T13:33:24.295Z; observer 2ef68f5b28307003e8fc38668986765ab0f884b5",
+      "directory": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after",
+      "files": {
+        "polaris-tailnet.html": {
+          "bytes": 1484487,
+          "sha256": "e8a04b4631dedbda159dd162d25f4e8a7ed4f9f4059a37ca1bca87b717790111",
+          "decoded_characters": 1481819,
+          "sha256_verified_against_m2_evidence_record": true
+        },
+        "polaris-direct.html": {
+          "bytes": 1478637,
+          "sha256": "2fecdd01e1a2ff577567495796ea7e59ab89f1420be6033e23314d26442ea094"
+        },
+        "api-poc.json": {
+          "bytes": 5520314,
+          "sha256": "a89b0e059b5fdadc5f359c2bee58115cd50747399cfb00444703e0fafdfb466e"
+        },
+        "api-polaris.json": {
+          "bytes": 640592,
+          "sha256": "ab3b517be1e62a0a7f4cabe73d870f9aa6bea7d2bbbadf0d27a2f00c34eca22e"
+        }
+      }
+    },
+    "pre_lane_a": {
+      "provenance": "fresh private daemon at Syzygy f4589e26aed9886a5776e5ac7a1c4fad4627fd26 against Butlers 7c8743f63837d138503d3d823547353dc6fd972c, evaluation asOf 2026-09-13T02:03:33.040Z",
+      "directory": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/capture",
+      "validity_for_this_packet": "git diff --numstat f4589e2..a9f671e returns no rows for apps/three-surface-poc/src/routes.ts, apps/three-surface-poc/src/trajectory.ts or any file under packages/three-surface-poc-core/, so the home, Trajectory and Orrery renderers are byte-identical at both commits; only the observed Butlers revision differs",
+      "files": {
+        "home.html": {
+          "bytes": 38706,
+          "sha256": "c2fd6d1af7103e871c26dc65b76cc391fe2765a1c7391ac19ddf1656e57b5fca",
+          "decoded_characters": 38682
+        },
+        "trajectory.html": {
+          "bytes": 244524,
+          "sha256": "fd802531b199084e7145932715150f4977335e49ca6aa168d68d5227c9d6ddde",
+          "decoded_characters": 244506
+        },
+        "orrery.html": {
+          "bytes": 37048,
+          "sha256": "e3ae5b7901c599a04b685456e6070430edf72fcd025cd1f6afecf863153582fa"
+        },
+        "api-poc.json": {
+          "bytes": 5508208,
+          "sha256": "8b8d8a3078f085d4d53aa3bcad9d5a06b5b0c064bb8cdc7b3832913a81bc44d0"
+        }
+      }
+    }
+  },
+  "lane_a_churn_sweep": {
+    "method": "git diff --numstat f4589e2..a9f671e -- <path>, run in the worktree",
+    "rows_for_routes_ts": 0,
+    "rows_for_trajectory_ts": 0,
+    "rows_for_packages_three_surface_poc_core": 0,
+    "app_render_sources_changed": [
+      "apps/three-surface-poc/src/polaris.ts (+25/-6)",
+      "apps/three-surface-poc/src/polaris-narrative.ts"
+    ],
+    "denominator": "146 files changed across the whole f4589e2..a9f671e range"
+  },
+  "machine_resolution_routes": {
+    "method": "recursive walk of the parsed JSON collecting every object carrying a resolutionRoutes key, then a histogram of epistemic.label over that population; run identically on both machine captures",
+    "lane_a_after": {
+      "objects_carrying_resolutionRoutes": 1149,
+      "empty_array": 1137,
+      "non_empty_array": 12,
+      "empty_array_that_are_Unknown": 0,
+      "non_empty_array_that_are_Unknown": 12,
+      "label_histogram": {
+        "Observed": 1137,
+        "Unknown": 12
+      },
+      "unknown_primary_reasons": {
+        "excluded-content": 12
+      },
+      "distinct_non_empty_route_rows": [
+        {
+          "reason": "excluded-content",
+          "route": "Policy change by the owner, or accept the exclusion",
+          "occurrences": 12
+        }
+      ],
+      "parent_paths": {
+        "/projectShape/facts/[]/claim": 439,
+        "/projectShape/items/[]/claim": 415,
+        "/projectShape/sources/[]/claim": 278,
+        "/projectShape/projectAccount/[]/claim": 6,
+        "/projectShape/classes/<nine>/claim": 9,
+        "/projectShape/claim": 1,
+        "/proposedWork/currentAuthority/claim": 1
+      }
+    },
+    "pre_lane_a": {
+      "objects_carrying_resolutionRoutes": 1149,
+      "empty_array": 1137,
+      "non_empty_array": 12,
+      "empty_array_that_are_Unknown": 0,
+      "non_empty_array_that_are_Unknown": 12,
+      "note": "every figure equal to the lane A capture at a different Butlers revision, so these are facts about model construction, not observed content"
+    },
+    "code_basis": "packages/three-surface-poc-core/src/project-shape-model.ts lines 150-154: routesFor returns [] when the label is not Unknown, else one route per carried reason from UNKNOWN_REASON_ROUTES (lines 89-102)"
+  },
+  "relationships": {
+    "method": "direct read of the relationships array in both machine captures",
+    "count": 9,
+    "unknown": 5,
+    "unknown_ids": [
+      "relationship:intent-to-work",
+      "relationship:work-to-code",
+      "relationship:code-to-evidence",
+      "relationship:code-to-runtime",
+      "relationship:capability-to-unmapped-region"
+    ],
+    "carrying_resolutionRoutes_field": 0,
+    "identical_in_both_captures": true,
+    "reason_form": "a free-prose English sentence in PocEpistemic's Unknown arm, minted by unknown(reason: string) at packages/three-surface-poc-core/src/model.ts line 305; not a member of RFC2-24's closed twelve",
+    "conditional_vs_literal": {
+      "relationship:intent-to-work": "conditional on materialization.beadId, model.ts line 570",
+      "relationship:work-to-code": "unconditional unknown() literal, model.ts line 588",
+      "relationship:code-to-evidence": "unconditional unknown() literal, model.ts line 597",
+      "relationship:code-to-runtime": "unconditional unknown() literal, model.ts line 606",
+      "relationship:capability-to-unmapped-region": "unconditional unknown() literal, model.ts line 615"
+    },
+    "worker_change_wiring_sweep": {
+      "method": "grep -n for the identifiers workerChange, testArtifactVerification and WORKER_CHANGE over packages/three-surface-poc-core/src/model.ts",
+      "hits": [
+        30,
+        42,
+        124,
+        125,
+        418,
+        421,
+        426,
+        427,
+        430,
+        431,
+        433,
+        701,
+        702
+      ],
+      "hits_inside_the_relationships_array_lines_524_to_616": 0,
+      "conclusion": "no relationship reads workerChange or testArtifactVerification; the seam and its intent are deliberately distinct per the file's own comments at lines 25-42"
+    }
+  },
+  "unknown_disclosures_on_polaris": {
+    "capture": "lane A after, tailnet form",
+    "method": "for each element matching data-unknown-disclosure=\"...\", take the text from its opening tag to the first matching closing tag of the same tag name and test that inner text for data-unknown-reason=\" and for the literal 'Route:'",
+    "total": 22,
+    "with_closed_reason_and_route": 13,
+    "without_either": 9,
+    "without_either_ids": [
+      "work:whatsapp-single-event-normalization",
+      "evidence:focused-pytest",
+      "runtime:live-satisfaction",
+      "region:unmapped-code",
+      "relationship:intent-to-work",
+      "relationship:work-to-code",
+      "relationship:code-to-evidence",
+      "relationship:code-to-runtime",
+      "relationship:capability-to-unmapped-region"
+    ],
+    "offsets_and_depth": [
+      [
+        378599,
+        25.5,
+        "claim:class:roster-identity",
+        "excluded-content",
+        true
+      ],
+      [
+        836380,
+        56.4,
+        "capability:whatsapp-transport-identity/doctrine",
+        "missing-declaration",
+        true
+      ],
+      [
+        837314,
+        56.5,
+        "capability:whatsapp-transport-identity/non-goals",
+        "missing-declaration",
+        true
+      ],
+      [
+        844800,
+        57.0,
+        "work:whatsapp-single-event-normalization",
+        null,
+        false
+      ],
+      [
+        845421,
+        57.1,
+        "evidence:focused-pytest",
+        null,
+        false
+      ],
+      [
+        846047,
+        57.1,
+        "runtime:live-satisfaction",
+        null,
+        false
+      ],
+      [
+        846650,
+        57.1,
+        "region:unmapped-code",
+        null,
+        false
+      ],
+      [
+        850888,
+        57.4,
+        "relationship:intent-to-work",
+        null,
+        false
+      ],
+      [
+        851228,
+        57.4,
+        "relationship:work-to-code",
+        null,
+        false
+      ],
+      [
+        851572,
+        57.5,
+        "relationship:code-to-evidence",
+        null,
+        false
+      ],
+      [
+        851904,
+        57.5,
+        "relationship:code-to-runtime",
+        null,
+        false
+      ],
+      [
+        852226,
+        57.5,
+        "relationship:capability-to-unmapped-region",
+        null,
+        false
+      ],
+      [
+        853157,
+        57.6,
+        "claim:project-shape",
+        "excluded-content",
+        true
+      ],
+      [
+        903530,
+        61.0,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1418068,
+        95.7,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1425443,
+        96.2,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1432759,
+        96.7,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1436655,
+        97.0,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1443938,
+        97.4,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1449565,
+        97.8,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1455213,
+        98.2,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ],
+      [
+        1462590,
+        98.7,
+        "source claim, one excluded source",
+        "excluded-content",
+        true
+      ]
+    ],
+    "offsets_note": "the nine source-claim rows name Butlers repository paths in the capture; they are recorded here by class, and the packet names them in prose without code spans",
+    "literal_Route_colon_occurrences_on_page": 18,
+    "data_unknown_reason_attribute_occurrences": 16,
+    "data_unknown_reason_values": {
+      "excluded-content": 14,
+      "missing-declaration": 2
+    },
+    "predicate_note": "the 18 vs 13 difference is the gaps-list row and the per-cause sentences, which carry a reason or a route outside a disclosure element"
+  },
+  "gaps_section_position": {
+    "capture": "lane A after, tailnet form",
+    "heading": "Unknown, by reason",
+    "position": "6th h3 of the 7th h2",
+    "h3_count_under_that_h2": 10,
+    "character_offset": 1474935,
+    "depth_percent": 99.5,
+    "denominator_characters": 1481819,
+    "data_polaris_gaps_attribute_occurrences": 1,
+    "data_polaris_gaps_value": "1",
+    "data_polaris_gap_rows": 1,
+    "gap_row_id": "polaris-gap-excluded-content",
+    "gap_row_claim_count_text": "12 claim(s)",
+    "h2_offsets": [
+      [
+        31170,
+        2.1,
+        "What Butlers is"
+      ],
+      [
+        48958,
+        3.3,
+        "Scope and principles"
+      ],
+      [
+        70792,
+        4.8,
+        "What V1 ships"
+      ],
+      [
+        127665,
+        8.6,
+        "How Butlers is built"
+      ],
+      [
+        282020,
+        19.0,
+        "Project catalog"
+      ],
+      [
+        811016,
+        54.7,
+        "One capability in depth"
+      ],
+      [
+        852703,
+        57.5,
+        "Evidence and gaps"
+      ]
+    ],
+    "capability_detail_span_characters": 41687,
+    "capability_detail_depth_percent": 2.8
+  },
+  "href_census": {
+    "method": "sweep of href=\"...\" attribute values, bucketed by prefix after stripping the query string",
+    "polaris_lane_a_tailnet": {
+      "total": 1089,
+      "fragments": 699,
+      "source_routes": 386,
+      "global_nav": 4,
+      "forms": 0,
+      "buttons": 1,
+      "details": 359
+    },
+    "home_pre_lane_a": {
+      "total": 40,
+      "fragments": 36,
+      "distinct_fragment_targets": 10,
+      "global_nav": 4,
+      "forms": 0,
+      "buttons": 0,
+      "inputs": 0
+    },
+    "trajectory_pre_lane_a": {
+      "total": 304,
+      "fragments": 300,
+      "distinct_fragment_targets": 300,
+      "global_nav": 4,
+      "forms": 1,
+      "buttons": 1
+    },
+    "orrery_pre_lane_a": {
+      "total": 23,
+      "fragments": 19,
+      "distinct_fragment_targets": 10,
+      "global_nav": 4,
+      "forms": 0,
+      "buttons": 0
+    },
+    "cross_surface_deep_links": 0,
+    "cross_surface_deep_link_predicate": "a non-fragment href on one surface whose path names a route other than the four global-nav routes and the exact-source route; counted over all four pages",
+    "buttons_note": "Polaris's single button is type=\"button\" (the expand-declaration toggle); the only type=\"submit\" button in the five captured pages is the materialize trigger on Trajectory",
+    "source_sample_page": {
+      "forms": 0,
+      "buttons": 0,
+      "capture": "source-sample-7478.html in the pursuit capture directory — the owner's loopback daemon at an older evaluation, the only exact-source capture retained"
+    }
+  },
+  "home_composition": {
+    "capture": "pre-lane-A",
+    "bytes": 38706,
+    "decoded_characters": 38682,
+    "h1_literal": "One capability. Three honest views.",
+    "h2_headings": [
+      "Polaris",
+      "Trajectory",
+      "Orrery",
+      "Exact entities",
+      "Exact relationships"
+    ],
+    "surface_grid_span_characters": 6438,
+    "surface_grid_span_percent": 16.6,
+    "exact_tables_span_characters": 24612,
+    "exact_tables_span_percent": 63.6,
+    "data_surface_entity_items": 17,
+    "data_entity_id": 9,
+    "data_relationship_id": 9,
+    "epistemic_unknown_occurrences": 18,
+    "tables": 2,
+    "renderer_model_field_reads": [
+      "model.surfaces (routes.ts:78)",
+      "model.project (87, 89)",
+      "model.entities (35, 89)",
+      "model.capabilityId (89)",
+      "model.evaluation (92)"
+    ],
+    "renderer_model_field_sweep_method": "grep -oE 'model\\.[a-zA-Z]+' over apps/three-surface-poc/src/routes.ts; hits at lines 35, 78, 87, 89 (x2), 92 (x2), 127, 133, 171, 172 - four hits outside renderPocPage (35, 127, 133, 171-172), not the one (127) originally recorded here (corrected per review 1, N5)",
+    "panel_link_form": "<a href=\"#<entity id>\"> — a fragment into the exact tables on the same page, never a link into the surface the panel names (routes.ts lines 34-55)"
+  },
+  "trajectory_composition": {
+    "capture": "pre-lane-A",
+    "bytes": 244524,
+    "decoded_characters": 244506,
+    "materialize_panel_offset": 242386,
+    "materialize_panel_depth_percent": 99.1,
+    "materialize_panel_characters": 2120,
+    "form": "<form method=\"POST\" action=\"/trajectory/materialize\">",
+    "button": "<button type=\"submit\" data-parity-field=\"materialize-trigger\">",
+    "h2_headings_with_offsets": [
+      [
+        9214,
+        "Backlog (125)"
+      ],
+      [
+        106158,
+        "In Progress (20)"
+      ],
+      [
+        122391,
+        "Blocked (101)"
+      ],
+      [
+        200626,
+        "Deferred (3)"
+      ],
+      [
+        203249,
+        "Pinned (0)"
+      ],
+      [
+        203412,
+        "Hooked (0)"
+      ],
+      [
+        203573,
+        "Done (50)"
+      ],
+      [
+        242489,
+        "Materialize this work item"
+      ]
+    ]
+  },
+  "return_path_state": {
+    "identical_in_both_machine_captures": true,
+    "materializedBeadId": null,
+    "workerChange": {
+      "kind": "unknown",
+      "reason": "no materialized work item to observe git activity against"
+    },
+    "testArtifactVerification": {
+      "kind": "unknown",
+      "reason": "no observed changed-or-merged commit exists to bind test evidence against"
+    },
+    "walkthroughJudgment_path": "walkthroughJudgment.evaluation.outcome",
+    "walkthroughJudgment_outcome": {
+      "kind": "absent",
+      "what": "no-run-record",
+      "detail": "walkthrough execution record missing",
+      "criterion": "unknown-never-met"
+    },
+    "dossier_path_correction": "the dossier cites walkthroughJudgment.outcome; the field is one level deeper, at walkthroughJudgment.evaluation.outcome, with the same four values"
+  },
+  "no_route_declared_copy": {
+    "declared_at": "apps/three-surface-poc/src/polaris-copy.ts line 193, id label.no-route, text 'No route declared'",
+    "used_at": [
+      "apps/three-surface-poc/src/polaris.ts line 466 (routeOf fallback)",
+      "apps/three-surface-poc/src/polaris.ts line 473 (reasonRouteHtml fallback)"
+    ],
+    "occurrences_of_the_literal_on_the_lane_a_capture": 0,
+    "oracle": "apps/three-surface-poc/src/polaris-copy.test.ts line 299 lists label.no-route in UNREACHED_IN_FIXTURES; the oracle asserts the row is NOT present and requires it to be dropped from the set the moment it becomes reachable",
+    "consequence": "the state L5-M4 proposes to mint as 'none-modelled' is already a declared, tested-unreachable copy row"
+  },
+  "source_citation_reverification": {
+    "method": "every dossier line citation re-read at a9f671e; the dossier's numbers were taken at f4589e2",
+    "unchanged": {
+      "packages/three-surface-poc-core/src/model.ts": {
+        "PocRelationship": "80-88",
+        "PocSurface": "90-96",
+        "unknown_helper": "305-307",
+        "workerChange": "418-423",
+        "testArtifactVerification": "431-437",
+        "carried_to_model": "701-702",
+        "WORKER_CHANGE_SEAM": "30-33 with comment 26-29 (corrected per review 1, N2)",
+        "WORKER_CHANGE_INTENT_ID": "42 with comment 35-41 (corrected per review 1, N2)"
+      },
+      "packages/three-surface-poc-core/src/project-shape-model.ts": {
+        "UNKNOWN_REASON_ROUTES": "89-102",
+        "ResolutionRoute": "115-118",
+        "resolutionRoutes_field": "128",
+        "routesFor": "150-154"
+      },
+      "apps/three-surface-poc/src/materialize-action.ts": {
+        "MATERIALIZE_HUMAN_PATH": "17",
+        "renderMaterializePanel": "55-81",
+        "form": "78"
+      },
+      "packages/three-surface-poc-core/src/materialization.ts": {
+        "MATERIALIZATION_EXTERNAL_REF": "9-10",
+        "MaterializationGoverningIntent.requirementId_literal_type": "15",
+        "buildMaterializationPacket": "43-65"
+      },
+      "packages/three-surface-poc-core/src/test-artifact-verification.ts": {
+        "TestArtifactRecord": "11-19",
+        "writeTestArtifactRecordFile": "73"
+      },
+      "apps/three-surface-poc/src/capture-test-artifact.ts": {
+        "SEC-3 comment": "3-7"
+      },
+      "apps/three-surface-poc/src/routes.ts": {
+        "surfacePanel": "34-55",
+        "HOME_STYLE": "57-76",
+        "renderPocPage": "77-96",
+        "h1_literal": "88",
+        "lede": "89",
+        "POC_MACHINE_PATH": "16"
+      },
+      "packages/three-surface-poc-core/src/owner-act-record.ts": {
+        "header_comment": "1-18",
+        "field_types": "20-45"
+      },
+      "apps/three-surface-poc/src/governance-inputs.ts": {
+        "PWB_AUTHORITY_ARTIFACTS": "36-41",
+        "PWB_ACT_RECORDS": "48-52"
+      }
+    },
+    "corrected": {
+      "packages/three-surface-poc-core/src/model.ts surfaces literal": {
+        "dossier": "710-756",
+        "actual": "710-749",
+        "file_length": 752,
+        "note": "the dossier's range overruns the file by four lines"
+      },
+      "packages/three-surface-poc-core/src/model.ts five Unknown relationships": {
+        "dossier": "563-598",
+        "actual": "562-581, 583-590, 592-599, 601-607, 609-616"
+      },
+      "apps/three-surface-poc/src/polaris.ts gapsList": {
+        "dossier": "916-931 (at f4589e2)",
+        "actual_at_a9f671e": "933-948, with gapReasonCounts at 922-931",
+        "note": "lane A moved the function +17 lines"
+      }
+    },
+    "derived_vs_handwritten_surfaces": "Orrery's entityIds and relationshipIds are derived (entities.map / relationships.map) at model.ts lines 747-748 (corrected per review 1, N1 - not 745-746, which are the title/question strings); Polaris's and Trajectory's are hand-written lists"
+  },
+  "specification_coverage_sweep": {
+    "method": "grep -c '^### Requirement' over both signed spec files; a case-insensitive whole-word search for 'home' in each; and a search for the backticked literal `surfaces` or the string model.surfaces in each",
+    "poc_requirements": 24,
+    "pwb_requirements": 17,
+    "requirements_governing_the_home_route": 0,
+    "requirements_governing_model_surfaces": 0,
+    "home_literal_hits_in_poc_spec": 0,
+    "home_literal_hits_that_are_requirements_about_the_root_route": 0,
+    "requirements_relied_on": [
+      "POC-REQ-020 (spec lines 377-416)",
+      "POC-REQ-060 (927-966)",
+      "POC-REQ-061 (966-1008)",
+      "PWB-REQ-004 (487-...)",
+      "PWB-REQ-010 (596-...)",
+      "PWB-REQ-011 (632-...)",
+      "PWB-REQ-020 (902-945)"
+    ],
+    "consequence": "slices 4 and 5 trace to the 2026-08-30 improvement-cycles direction's recorded-review-finding arm (findings L6-F1 and L6-F5), not to a requirement",
+    "home_literal_hits_in_pwb_spec": 6,
+    "home_hits_note": "all six PWB hits are the precedence table's Home column or the registry's governance-home field",
+    "surfaces_field_name_hits": 0
+  },
+  "authority_reads": {
+    "THREE-SURFACE-POC-MODE-DIRECTION.md": {
+      "required_demonstrations": "lines 18-22",
+      "in_force_invariants": "lines 26-32",
+      "prohibitions": "lines 34-40"
+    },
+    "THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md": {
+      "lifts": "the eight-item cap and the one-review budget for improvement-cycle items",
+      "trace_rule": "improvement-cycle work must trace to POC-REQ-001..061 or to a recorded review finding",
+      "unchanged": "the signed three-surface-poc-experience artifacts stay frozen at their act digests; spec changes route through CC-REV-2"
+    },
+    "PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md": {
+      "escalation_triggers": "lines 86-94",
+      "does_not_authorize": "lines 68-84, including 'No write, egress, execution, deployment, release, recovery, or mission effect on Butlers or on any other repository'"
+    },
+    "PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md": {
+      "date": "2026-09-05",
+      "kind": "plain owner direction, binds no digest, adds no acceptance-record row"
+    },
+    "registry_typedAuthority": {
+      "writeSurface": [],
+      "databaseAccess": [],
+      "networkAccess": [],
+      "executeObservedCode": false,
+      "workingTreeRead": false
+    },
+    "RFC2-24": {
+      "home": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md line 92",
+      "note": "its own table carries a Resolution route column whose twelve cells equal UNKNOWN_REASON_ROUTES word for word"
+    },
+    "vision_md": {
+      "VIS-1": 82,
+      "VIS-2": 96,
+      "VIS-4": 122,
+      "VIS-5": 141,
+      "not_a_documentation_portal": "lines 61-64, unnumbered adopted doctrine prose, carried by no VIS identifier and absent from DIRECTIVE-REGISTER.md",
+      "success_sentence": "lines 234-236",
+      "documentation_portal_phrase_sweep": {
+        "method": "grep -rnF 'documentation portal' over .syzygy/governance/",
+        "hits": 11,
+        "files": 8,
+        "definition": "vision.md:61",
+        "citers": 7
+      }
+    },
+    "v1_md": {
+      "drafting_is_V0_first_action": "lines 30-31",
+      "V0_agent_consumption_test": "lines 116-119"
+    }
+  },
+  "claim_tuple_census": {
+    "data_claim_id_occurrences_lane_a_tailnet": 713,
+    "data_claim_id_occurrences_pre_lane_a": 699,
+    "note": "L6-F5, the finding Q6 rests on, cites 699 (the pre-lane-A figure); the current lane A capture reads 713. Both are recorded here per review 1, N9, which found the packet's own '713 claim tuples' text had no evidence-file entry."
+  },
+  "cross_surface_unknown_disclosure_populations": {
+    "method": "counts of the literal string data-unknown-disclosure and the literal string epistemic-unknown over the whole served page, on the retained pre-lane-A captures for trajectory.html, orrery.html and home.html and the lane A captures for Polaris; added per review 1, F5. Re-partitioned 2026-09-15 per review 2, G3: each epistemic-unknown occurrence is assigned to its enclosing tag, giving one .epistemic-unknown stylesheet rule inside <style>, one legend key item (span class=\"epistemic epistemic-unknown\">? Unknown</span>), and the remainder claim-carrying spans. The partition accounts for every occurrence on every page (raw = style + legend + claim spans), so epistemic_unknown_rendered = epistemic_unknown_raw - 2 on all four pages.",
+    "polaris_lane_a_tailnet": { "data_unknown_disclosure": 22, "epistemic_unknown_raw": 2, "epistemic_unknown_style_rule": 1, "epistemic_unknown_legend_item": 1, "epistemic_unknown_rendered": 0 },
+    "polaris_lane_a_direct": { "data_unknown_disclosure": 22, "epistemic_unknown_raw": 2, "epistemic_unknown_style_rule": 1, "epistemic_unknown_legend_item": 1, "epistemic_unknown_rendered": 0 },
+    "trajectory_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown_raw": 301, "epistemic_unknown_style_rule": 1, "epistemic_unknown_legend_item": 1, "epistemic_unknown_rendered": 299 },
+    "orrery_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown_raw": 11, "epistemic_unknown_style_rule": 1, "epistemic_unknown_legend_item": 1, "epistemic_unknown_rendered": 9 },
+    "home_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown_raw": 18, "epistemic_unknown_style_rule": 1, "epistemic_unknown_legend_item": 1, "epistemic_unknown_rendered": 16 },
+    "superseded_2026_09_15_review_2_G3": "This block previously recorded polaris_lane_a_tailnet.epistemic_unknown as null while the packet asserted in prose that the class occurred on Polaris 'including Polaris's own 22 disclosures'. Measured: Polaris carries 2 occurrences, the stylesheet rule and the legend item; an element-inner sweep of all 22 data-unknown-disclosure elements (offsets 378631 through 1462622) finds 0. The prose clause was false and is superseded in place in the packet.",
+    "largest_of_three_recheck": "SUPERSEDED 2026-09-15 per review 3, H2. This field read: 'Still holds on the corrected figures: the third encoding (bare epistemic-unknown claim span, no disclosure wrapper, reason or route) is 299 on Trajectory plus 9 on Orrery = 308 across the two surfaces, against Polaris's 13 routed disclosures and 9 bare-prose ones.' Ranking the encodings across marker families is the comparison the packet's own next sentence forbids, and the terms count different objects (epistemic-unknown spans against disclosure elements). Restated as measured: each surface's Unknowns are encoded by a marker the other two do not share; the per-family denominators are reported unranked. Home's 16 is outside POC-REQ-060's three-surface population.",
+    "conclusion": "Trajectory and Orrery emit 0 data-unknown-disclosure elements, so POC-REQ-060's sweep as originally specified has denominator 0 on both and passes vacuously there. CORRECTED 2026-09-15 per review 3, H1: this field read 'Trajectory and Orrery render every Unknown through the bare epistemic-unknown class with no disclosure wrapper, reason or route', which asserts one class literal exhausts those surfaces' rendered Unknown population. The predicate run counts occurrences of that literal only; a fourth family, provenance_none_census below, sits outside both censused families and reaches the same nine Orrery objects."
+  },
+  "register_rows": {
+    "main_at_a9f671e_last_numbered_row": "P-53",
+    "main_last_note_referenced_by_sibling_packets": "P-67",
+    "P-68": "agent/syzygy-dov.17 only (lane B)",
+    "P-69": "agent/syzygy-dov.2 only (M2)",
+    "P-70": "agent/syzygy-dov.3 only (M3)",
+    "this_packet_would_queue_as": "P-71",
+    "method": "grep -nE '^\\| `?P-6[0-9]' over .syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md on main returns zero rows; the sibling packets' own statements were read read-only in their worktrees"
+  },
+  "review1": {
+    "raw": "docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-RAW.md",
+    "bytes": 47636,
+    "sha256": "6983034196c706c213e2a939e0ca7dfe4c3f75f958378403fbd115112c2966ec",
+    "verdict": "REVISE - six blocking, fourteen non-blocking, two editorial",
+    "reviewed_commit": "61bd43b",
+    "repairs_applied_this_session": true,
+    "disposition_summary": {
+      "F1": "re-derived and confirmed", "F2": "re-derived and confirmed",
+      "F3": "re-derived and confirmed", "F4": "re-derived and confirmed",
+      "F5": "re-derived and confirmed", "F6": "re-derived and confirmed",
+      "N1": "re-derived and confirmed", "N2": "re-derived and confirmed",
+      "N3": "re-derived and confirmed", "N4": "re-derived and confirmed",
+      "N5": "re-derived and confirmed", "N6": "re-derived and confirmed",
+      "N7": "re-derived and confirmed", "N8": "re-derived and confirmed",
+      "N9": "re-derived and confirmed", "N10": "re-derived and confirmed",
+      "N11": "re-derived and confirmed", "N12": "re-derived and confirmed",
+      "N13": "re-derived and confirmed", "N14": "re-derived and confirmed",
+      "E1": "re-derived and confirmed, no repair applied to the H1 (consistency with M2/M3 sibling packet headings, also over 78 columns)",
+      "E2": "re-derived and confirmed"
+    },
+    "re_derived_before_applying": {
+      "F1_rfc2_24_vs_UNKNOWN_REASON_ROUTES_match_count": "5 of 12 identical, 7 of 12 differ; extracted from rendering-vocabularies.md lines 92-130 and project-shape-model.ts lines 89-102 at a9f671e, compared key by key this session",
+      "three_surface_disclosure_counts": {
+        "note_2026_09_15": "These epistemic_unknown figures are RAW whole-page occurrence counts, recorded as review 1's repair measured them. Review 2's G3 partitioned them: each includes one .epistemic-unknown stylesheet rule and one legend key item, so the rendered claim encodings are 299 and 9. See cross_surface_unknown_disclosure_populations above for the partition. Left unedited here because this block records what that session measured.",
+        "polaris_lane_a_tailnet": { "data_unknown_disclosure": 22 },
+        "trajectory_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown": 301 },
+        "orrery_pre_lane_a": { "data_unknown_disclosure": 0, "epistemic_unknown": 11 }
+      },
+      "EpistemicState_arms": [
+        "{ label: Observed | Inferred, tier?, freshness? }",
+        "{ label: Unknown, reasons: UnknownReasonSet, tier?, freshness? }",
+        "{ label: Unknown, basis: 'deferred', tier?, freshness? } -- packages/cap1-core/src/epistemic.ts:50-67, no reasons field"
+      ],
+      "routesFor_branches": "packages/three-surface-poc-core/src/project-shape-model.ts:151 -- if (state.label !== 'Unknown' || !('reasons' in state)) return []; -- two return-[] branches, not one",
+      "file_intersections": {
+        "note_2026_09_15": "SUPERSEDED FIELD BELOW. M4_and_M2_shared_files holds the four paths review 1 derived; review 2's G1 established the intersection is FIVE - the fifth is apps/three-surface-poc/src/polaris-copy.ts, named by M4 slice 3's own Gate 3 row, which the packet had listed as untouched by M4. The corrected field is review2.re_derived_before_applying.G1_shared_file_intersection, and the packet, the register row and the Collision section all carry five. Note added 2026-09-15 per review 4, J6; the historical array is kept unedited.",
+        "M4_and_M2_shared_files": ["packages/three-surface-poc-core/src/model.ts", "apps/three-surface-poc/src/routes.ts", "apps/three-surface-poc/src/polaris.ts", "packages/three-surface-poc-core/src/project-shape-model.ts"],
+        "M4_and_M3_shared_files": ["apps/three-surface-poc/src/polaris-copy.ts", "apps/three-surface-poc/src/polaris.ts"],
+        "M3_slice_3_and_M4_slice_3_duplicate": "both are opening-band designs inside apps/three-surface-poc/src/polaris.ts, read from the m3wt worktree on 2026-09-14 at committed head b34fca7 with a review-3 repair uncommitted (read read-only; cite by register row P-70, never by head) and this packet's own Gate 4/Gate 3 text"
+      },
+      "PWB_act_lines_70_72": "No write, egress, execution, deployment, release, recovery, or mission effect on Butlers or on any other repository. The observer registry entry the owner adopted declares an empty write surface; that remains the bound.",
+      "materialize_action_write_target": "apps/three-surface-poc/src/materialize-action.ts:33 targetRepoRoot: model.project.root; packages/three-surface-poc-core/src/materialization.ts:12 MATERIALIZATION_TARGET_BEAD_PREFIX='bu'; materialization.ts:186-208 defaultRunCreate execFileSync('bd', ['-C', repoRoot, 'create', ...])"
+    },
+    "recommended_answers_changed": {
+      "Q1": "scope widened from Polaris-only to all three surfaces; remedy note added about the marker gap",
+      "Q2": "changed from 'do not mint none-modelled' (contract-determined, one lawful arm) to 'do not mint none-modelled; name and route the existing basis:deferred arm instead' (genuine choice, two legal states correctly attributed)",
+      "Q5": "unchanged for the expectation limb; a new authorization limb added (contested, two readings quoted, recommended answer labelled [Inferred] with a stated counter-argument) that did not exist in the draft",
+      "Q6": "recommendation unchanged (true by construction) but its supporting claim corrected (five reads, not the home page's only input)",
+      "Q7": "widened from a sequencing-only question to also carry the corrected file-intersection set, the M3/M4 slice-3 reconciliation, and the slices 4-5 authorization-arm reading formerly mis-attributed to Q5"
+    }
+  },
+  "review2": {
+    "raw": "docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-2-RAW.md",
+    "bytes": 39050,
+    "sha256": "a7b3782882e41cf954e1dda326f502e20eceea4acd05732625de9f9ee2654649",
+    "verdict": "REVISE - four blocking, five non-blocking, two editorial",
+    "reviewed_commit": "6218726",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md": { "bytes": 116002, "sha256": "95e72b30a7d496e963ae6a244dd421bd720d317fae126a3c027b07e0a4ee3d5b" },
+      "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json": { "bytes": 31201, "sha256": "54b22be504c58483a9d52bab26e4e89f62766eccc167bbc9eb8a8a10009e8f23" },
+      ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": { "bytes": 29879, "sha256": "7ff5bc37abe5f152bb9d02d6b891bcb24e8db47b141804485ada6e8106b87e97" }
+    },
+    "repairs_applied_this_session": true,
+    "disposition_summary": {
+      "G1": "re-derived and confirmed; shared set with M2 is five files, both denominators published (M2 9, M4 13)",
+      "G2": "re-derived and confirmed; M2 slice 2 also renders into the opening band, so the reconciliation is three-way and the recommendation changed",
+      "G3": "re-derived and confirmed; raw/rendered split published, polaris null replaced with 2. The 'largest of the three' re-check recorded here is SUPERSEDED 2026-09-15 per review 3, H2 (a cross-family ranking the packet's own next sentence forbids), and the two-literal census itself is widened by review 3, H1 (fourth family, provenance-none)",
+      "G4": "re-derived and confirmed; Q6 preamble rewritten to an engineering choice, minting clause returned to Q2",
+      "G5": "re-derived and confirmed; body section lines 44-52, source order restored, tasks-range clause kept",
+      "G6": "re-derived and confirmed; UNKNOWN_REASON_ROUTES is at project-shape-model.ts 89-102 (corrected 2026-09-15 per review 4, J7, which superseded '88-102' in this field alone: line 88 is the third line of the preceding comment and line 89 opens 'export const UNKNOWN_REASON_ROUTES', closing '};' at 102, as the sibling field G6_reason_route_table_location, the packet at :264 and :402 and the register row all already said) and neither M2 slice 5 (162-193) nor M4 slice 2 (115-118, 150-154) edits it; register sentence corrected to the shared file and the shared claim() construction site at line 176",
+      "G7": "re-derived and confirmed, and now doubly stale: the M3 worktree has moved twice past that head, which remains an ancestor. CORRECTED 2026-09-15 per review 3, H3: this field read 'head mentions removed from the Collision section', which was false - the head stood in live Collision-section prose until the review-3 pass removed it. Head mentions were removed from Q7 only; the ones that remain (review-1 disposition row, review-2 G7 row, and this record's own review-1 block) are historical records of what each repair session read",
+      "G8": "re-derived and confirmed; VIS-5 requires the effect to run through a typed adapter and names no number of adapters",
+      "G9": "re-derived and confirmed; M3 names polaris.ts in slices 1, 3, 5, 6 and M2 in slices 1, 2, 6 with slice 2's region located",
+      "G10": "re-derived and confirmed; routes.ts carries 13 'model.' occurrences over nine lines, line 89 carries four, and five (not four) lie outside renderPocPage",
+      "G11": "re-derived and confirmed; 22/0/0 is not two orders of magnitude"
+    },
+    "re_derived_before_applying": {
+      "G1_shared_file_intersection": "By hand from both Gate 3 'Lives in' columns this session: M2 names 9 distinct files, M4 names 13, intersection 5 (model.ts, routes.ts, polaris.ts, project-shape-model.ts, polaris-copy.ts). M4 slice 3's own Gate 3 row names polaris-copy.ts, which the packet had listed as untouched.",
+      "G2_third_band_writer": "M2's Gate 3 slice-2 row names 'polaris.ts (the opening band)'; its slice-2 design body opens 'Rendered in the opening band, before the first catalog section:'; three further mentions treat it as slice 2's band.",
+      "G3_epistemic_unknown_partition": "Per page, every occurrence assigned to its enclosing tag: Trajectory 1 style + 1 legend + 299 spans carrying data-parity-field=\"work-item-verification\"; Orrery 1 + 1 + 9 spans carrying data-parity-field=\"epistemic-label\"; home 1 + 1 + 9 epistemic-label spans + 7 bare Unknown spans = 16 rendered; Polaris 1 + 1 + 0.",
+      "G4_no_requirement_governs_model_surfaces": "Gate 0, Gate 3's slice-4 row and Gate 5 all state it; Gate 5's three sweeps (24 POC requirements, 17 PWB requirements, 0 whole-word home in the POC spec, 6 in the PWB spec, 0 backticked surfaces or model.surfaces in either) were re-run by the reviewer and are unchanged here.",
+      "G6_reason_route_table_location": "UNKNOWN_REASON_ROUTES declared at project-shape-model.ts line 89 and closing at 102; M2 slice 5's cited 162-193 spans FRESH/REPORT_FACT/SUSPENDED (167-169) and claim/observedClaim/unknownClaim (171-195); claim() line 176 is resolutionRoutes: routesFor(epistemic).",
+      "G10_routes_ts_model_hits": "awk count of the literal 'model.' per line at 6218726: 35:1, 78:1, 87:1, 89:4, 92:2, 127:1, 133:1, 171:1, 172:1 = 13; renderPocPage spans lines 77-96."
+    },
+    "recommended_answers_changed": {
+      "Q7": "the opening-band reconciliation changed from two-way (M3 slice 3 lands first, M4 slice 3 extends it) to three-way: M2 slice 2 also renders into that band, so the first of the three to land builds the container and owns its single ordering oracle and the other two add payload blocks with their own payload oracles; the block order within the band is the owner's. Q7 also now states the M2 shared set as five files and names the polaris-copy.ts declared-copy array as the shared copy-oracle reconciliation site - RENAMED 2026-09-15 per review 3, H7 from 'a merge-conflict site', since the two edits sit 143 lines apart (M2 slice 1 at 45-49, M4 slice 3 beside 192-193) and do not textually conflict; the real coupling is the shared UNREACHED_IN_FIXTURES set, which carries the same sequencing conclusion.",
+      "Q1_Q2_Q3_Q4_Q5_Q6": "unchanged in recommendation; Q1's and Q6's supporting figures and framing were corrected (G3, G4, G10) without changing which arm is recommended."
+    },
+    "rule_10": "This review binds the bytes it names (packet 116002 / evidence 31201 / register 29879 at 6218726) and not the repaired bytes; the repairs above are uncovered until a third review confirms them."
+  },
+  "unverified": [
+    "Whether a PocRelationship is an 'Unknown claim instance' in RFC2-24's sense: the clause says 'claim', the POC's relationships are typed PocRelationship and not ProjectShapeClaim, and no clause found in this session settles it. [Unknown]",
+    "Whether P-68, P-69 and P-70 remain at the numbers and branch heads their packets state: only the branches' own packet text was read, and both may have moved since. [Unknown]",
+    "The byte cost of slices 1, 3 and 5: a projection about unbuilt code, to be replaced by the before/after measurement Gate 6 requires. [Inferred]",
+    "Whether the owner reads a rendered resolution route as a 'disclosure Polaris presents' under PWB-REQ-020's enumerated population: this packet's reading is that it is, labelled Inferred in the packet. [Unknown]"
+  ],
+  "provenance_none_census": {
+    "added": "2026-09-15, review 3, H1",
+    "method": "literal occurrences of the string provenance-none over the whole served page of each retained capture; each occurrence then assigned to its enclosing tag. The partition accounts for every occurrence on every page.",
+    "source": "apps/three-surface-poc/src/exact-tables.ts line 10 emits the span whenever an entity's or relationship's provenance array is empty; its only style rule is apps/three-surface-poc/src/routes.ts line 73, inside HOME_STYLE (declared line 57, passed as extraStyle at line 90 only, the home route). apps/three-surface-poc/src/design-tokens.ts line 25 declares className epistemic-unknown and names provenance-none nowhere.",
+    "polaris_lane_a_tailnet": { "total": 0, "style_rule": 0, "rendered_spans": 0 },
+    "polaris_lane_a_direct": { "total": 0, "style_rule": 0, "rendered_spans": 0 },
+    "trajectory_pre_lane_a": { "total": 0, "style_rule": 0, "rendered_spans": 0 },
+    "orrery_pre_lane_a": { "total": 9, "style_rule": 0, "rendered_spans": 9 },
+    "home_pre_lane_a": { "total": 10, "style_rule": 1, "rendered_spans": 9 },
+    "orrery_enclosing_tr_ids": [
+      "work:whatsapp-single-event-normalization",
+      "evidence:focused-pytest",
+      "runtime:live-satisfaction",
+      "region:unmapped-code",
+      "relationship:intent-to-work",
+      "relationship:work-to-code",
+      "relationship:code-to-evidence",
+      "relationship:code-to-runtime",
+      "relationship:capability-to-unmapped-region"
+    ],
+    "conclusion": "Exactly the nine objects Q1 is about - the four entity Unknowns and the five relationship Unknowns - are rendered a third time, by a marker in neither censused family. POC-REQ-060's falsifier is met on both limbs: a class outside the declared table styling epistemic state (routes.ts 73, home only), and the same class rendering with the declared Unknown colour on home and with no declared encoding on Orrery. The requirement text is at openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md lines 927-946; the falsifier's second limb is line 946."
+  },
+  "review3": {
+    "raw": "docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-3-RAW.md",
+    "bytes": 31656,
+    "sha256": "ebce963f86f302940cc78f98dbe91325ae5c7b0ffa88e423b1fe05669035ccfe",
+    "verdict": "REVISE - one blocking, three non-blocking, five editorial",
+    "reviewed_commit": "f911a45",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md": { "bytes": 139094, "sha256": "09116fcfc1fb21127670813196b297705b2a7862edb18dd4fb713391899f0750" },
+      "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json": { "bytes": 38933, "sha256": "d7a7aaffd5a1e5a8fd5dc8a3997c9f56e72b4b762bdec42f108886acb7d5b7ed" },
+      ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": { "bytes": 32781, "sha256": "38ee2b8e01a2fd483caad90e0a07867a779edf7db1cef5deb7e09065a1eb8f9c" }
+    },
+    "repairs_applied_this_session": true,
+    "disposition_summary": {
+      "H1": "CONFIRMED and applied (blocking). provenance-none counted on all five retained captures with the predicate and denominator stated; the nine Orrery enclosing tr ids enumerated; exact-tables.ts:10, design-tokens.ts:25, routes.ts:73 and HOME_STYLE's single use at routes.ts:90, and orrery.ts's import at line 4 with calls at 125 and 151, all read at source. Added as a fourth census family with per-surface denominators and the Orrery-versus-home style asymmetry; 'every Unknown' replaced at Q1 and in slice 1's Tests with the predicate actually run; Q1's recommendation and slice 1's Tests now require the shared marker to cover it, with a rule-6 mutant; Gate 3's slice-5 row records that exact-tables.ts and routes.ts 34-96 are where it lives.",
+      "H2": "CONFIRMED and applied (non-blocking). The 'largest of the three' ranking compares two families that count different objects and is withdrawn at Q1, in the review-2 G3 disposition and in this record; restated as 'each surface's Unknowns are encoded by a marker the other two do not share', reported per family and unranked.",
+      "H3": "CONFIRMED and applied (non-blocking). Short M3 head counted: 4 literal occurrences over 3 packet lines (Collision section live prose, review-1 disposition row, review-2 G7 row twice) plus 2 in this record's review-1 block. The Collision-section mention is removed; review 2's G7 disposition is restated to the true count and names the remainder as historical records; this record's G7 field is corrected.",
+      "H4": "CONFIRMED and applied (non-blocking). POC-REQ-060 read at spec lines 925-948 and PWB-REQ-020 at 900-927 and PWB-REQ-004 at 488-500. Both elisions marked with an ellipsis naming what was elided (POC Oracle 941-942 and Oracle independence 943-944; PWB Oracle 916-917, Oracle independence 918-919, Mutation proof 920-923) - CORRECTED 2026-09-15 per review 4, J3, which superseded 'Both elisions marked': the PWB-REQ-020 blockquote carried a SECOND elision, the Case (sweep) bullet at spec lines 912-914, dropped with no ellipsis and no mention under an introduction saying 'one elision marked', and it is the bullet the packet's slice-2 parity argument at :749-758 relies on. The bullet is now restored verbatim, so the blockquote carries one marked elision and no unmarked one; the POC range extended to 946 and the PWB-REQ-004 range corrected to 491-498; slice 2 now states that PWB-REQ-020's Mutation proof bullet is the source of its per-class injection obligation, quoted in full.",
+      "H5": "CONFIRMED and applied (editorial). Re-derived last, after every other review-3 edit, with the predicate and denominator stated in the F21 disposition itself.",
+      "H6": "CONFIRMED and applied (editorial). Both conventions re-derived on the lane A tailnet capture: the table's Offset column is the enclosing element's opening angle bracket, Q1's is the data-unknown-disclosure attribute position, and the delta is the enclosing element's own opening-tag length - 30 for the six <p class=\"unknown-disclosure\" disclosures, 31 for the five <li, 32 for the eleven <div, with 6+5+11=22 accounting for every element and both endpoints being <div>s, which is why both ends read 32 (re-derived 2026-09-15 per review 4, J4; predicate: for each of the 22 occurrences of the literal data-unknown-disclosure, the distance back to the nearest preceding opening angle bracket; denominator 22). SUPERSEDED: this field read 'delta 32 at both ends over all 22 elements' - exact for the two endpoints and false over the denominator it named. Stated above the table.",
+      "H7": "CONFIRMED and applied (editorial). M2 slice 1's cited region is polaris-copy.ts 45-49 and M4 slice 3 adds rows beside label.deferred / label.no-route at 192-193, 143 lines apart, so the two do not textually conflict; renamed to the shared copy-oracle reconciliation site in the packet, this record and the register. The sequencing conclusion is unchanged - the coupling is the shared UNREACHED_IN_FIXTURES set at polaris-copy.test.ts:296.",
+      "H8": "CONFIRMED and applied (editorial). Q6's row now opens 'Both arms are lawful; deletion has a cost the move does not name, stated here so the choice is made knowing it', with the superseded phrase quoted and dated.",
+      "H9": "CONFIRMED and applied (editorial). The conflict check, the boundaries-crossed sentence and the not-touched-by-any-slice sentence each carry an [Inferred] label naming the eight-slice denominator they were checked against."
+    },
+    "re_derived_before_applying": {
+      "H1_provenance_none_counts": "Polaris tailnet 0, Polaris direct 0, Trajectory 0, Orrery 9 rendered / 0 style, home 9 rendered / 1 style rule. See provenance_none_census above for the method and the nine enclosing tr ids.",
+      "H1_poc_req_060_falsifier": "spec.md lines 945-946: '- **Falsifier**: one surface encoding Unknown (or Observed) differently / from the declared table, or a surface styling epistemic state ad hoc.' Both limbs are met by the provenance-none rendering.",
+      "H3_head_occurrence_count": "4 literal occurrences over 3 lines of the packet and 2 in this record, counted this session with the whole file as denominator.",
+      "H4_pwb_req_020_mutation_proof": "spec lines 920-923, quoted in full under slice 2: per-class injection of missing, duplicated, changed, collapsed and wrong-evaluation markers, comparator fails before restoration, both channel denominators reported for every run.",
+      "H6_offset_delta": "Re-derived on the lane A tailnet capture: 22 data-unknown-disclosure attributes at offsets 378631..1462622; their enclosing elements' opening brackets at 378599..1462590; delta 32 at both ends - and, added 2026-09-15 per review 4, J4, the delta over all 22 is the enclosing element's own opening-tag length: 30 for the six <p, 31 for the five <li, 32 for the eleven <div, 6+5+11=22. Both endpoints are <div>s, which is why both ends read 32; this field's two-endpoint figures were and remain exact.",
+      "H7_copy_array_distance": "polaris-copy.ts: M2 slice 1's region 45-49; M4 slice 3's rows beside label.deferred (192) and label.no-route (193); 143 lines apart. UNREACHED_IN_FIXTURES is declared at polaris-copy.test.ts line 296."
+    },
+    "recommended_answers_changed": {
+      "none": "No recommended answer changed after review 3. Q1's remedy widened in scope - the re-specified shared marker must also cover the provenance-none rendering - but the recommended arm (a non-conformance, repaired by slice 1) turns on the zero-denominator fact, which the fourth family neither creates nor removes. Q2 through Q7 are untouched in recommendation."
+    },
+    "rule_10": "This review binds the bytes it names (packet 139094 / evidence 38933 / register 32781 at f911a45) and not the repaired bytes; every review-3 repair was uncovered until a fourth review confirmed them - which review 4 has now done, verifying them as 6 REPAIRED and 3 PARTIAL over 9; see the review4 block (re-tensed 2026-09-15 per review 4). That raw is a fourth -RAW.md file, never an overwrite of any retained one."
+  },
+  "review4": {
+      "raw": "docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-4-RAW.md",
+      "bytes": 37790,
+      "sha256": "5f3e9c458b9b2cc7d0372a7e22ef25e7cc0e72bd1fa1c3c003448acc7af17783",
+      "verdict": "REVISE - two blocking, three non-blocking, four editorial",
+      "reviewed_commit": "181797a",
+      "reviewed_files_at_that_commit": {
+        "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md": {"bytes": 162860, "sha256": "267278fae7af380383eeeec2adc73c44c025c3963f1829ee8d1fdf8aee567411"},
+        "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json": {"bytes": 49243, "sha256": "d2ebbeae3e3cdaf493ae95abbb902329b4b73d44b1f680e7a0e1401a6e842a61"},
+        ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {"bytes": 35850, "sha256": "a2f7d338a8728e859fb8e11728b885bbbf77d47a3414c24a7c76c217805d5916"}
+      },
+      "repairs_applied_this_session": true,
+      "h1_h9_verification_as_review4_states_it": {
+        "REPAIRED": ["H2", "H3", "H5", "H7", "H8", "H9"],
+        "PARTIAL": ["H1", "H4", "H6"],
+        "denominator": 9,
+        "g7_from_review3": "G7, PARTIAL at review 3, is recorded complete by review 4",
+        "regressions_found_in_F1_F22_and_G1_G11": "none"
+      },
+      "disposition_summary": {
+        "J1": "CONFIRMED and applied (blocking). Swept this session: the literal provenance-none occurs 20 times over 11 packet lines (91, 589, 698, 701, 712, 717, 1009, 1363, 1557, 1569, 1591) and none inside :117-185, :1104-1146 or :1375-1384; the raw writes that line set as 'eleven occurrences', which does not move the finding. Gate 1's Success 1 restated with the four per-surface denominators (data-unknown-disclosure 22/0/0; rendered epistemic-unknown 0/299/9; provenance-none 0/0/9 plus home 9 rendered and 1 style rule), superseded parenthetical quoted in place; new scenario S1b names the provenance-none rendering, its source site at exact-tables.ts line 10, its per-surface oracle and its rule-6 mutant; Gate 6 item 3 gains the re-emit mutant. S1 is deliberately left quantifying over 'an Unknown disclosure', a class this span cannot join without slice 1, which is why S1b sits beside it.",
+        "J2": "CONFIRMED and applied (blocking). RFC2-26 occurred 0 times in the packet before this repair. Quoted verbatim at rendering-vocabularies.md lines 196-210 in a new Gate 5 subsection, with each slice's limb stated: limb 1 (mapping to an approved requirement and scenario) unavailable on the three sweeps, limb 2 (reviewed N/A judgment, purely structural with no independently testable behavior) unavailable as designed since both slices carry their own oracles. The 'lawful today precisely because nothing specifies it' sentence withdrawn at Gate 5 and in the Q6 preamble, quoted and dated in place; Gate 3 rows 4 and 5 widened from 'No' to name the open gate. Q7's recommendation reworded - see recommended_answers_changed. The packet does not call slices 4 and 5 unlawful; it puts the clause to the owner.",
+        "J3": "CONFIRMED and applied (non-blocking). Source read at spec lines 896-932: Case (sweep) is 912-914, Observable 915, Oracle 916-917, Oracle independence 918-919, Mutation proof 920-923, Falsifier 924-926. The Case (sweep) bullet was absent from the blockquote with no ellipsis under an introduction saying 'one elision marked'. Restored verbatim (not merely marked) because :749-758 argues slice 2's parity obligation from its enumerated population; introduction restated; review3.disposition_summary.H4 corrected on its line.",
+        "J4": "CONFIRMED and applied (non-blocking). Re-derived on m1/measure/after/polaris-tailnet.html; predicate: for each of the 22 occurrences of the literal data-unknown-disclosure, the distance back to the nearest preceding opening angle bracket; denominator 22. Deltas: 30 for the 6 opening <p, 31 for the 5 opening <li, 32 for the 11 opening <div; 6+5+11=22. First and last are <div>s, so both endpoints read 32 and the four endpoint figures stand. Packet sentence at :279-283 and review3.disposition_summary.H6 both carry the partition, the universal superseded in place.",
+        "J5": "CONFIRMED and applied (non-blocking). The P-71 row's closed 'four encodings for one label' restored to 'at least four', matching the packet's Q1, with the closed figure quoted and dated and the reason stated: the census method is literal-matching per family and has no denominator over the count of families, and three consecutive reviews each found a family the previous census missed.",
+        "J6": "CONFIRMED and applied (editorial). review1.re_derived_before_applying.file_intersections.M4_and_M2_shared_files holds four paths; the corrected field is review2.re_derived_before_applying.G1_shared_file_intersection, which states five and names apps/three-surface-poc/src/polaris-copy.ts as the fifth. A note_2026_09_15 added inside file_intersections in the style of the sibling three_surface_disclosure_counts note; the historical array kept unedited.",
+        "J7": "CONFIRMED and applied (editorial). project-shape-model.ts line 88 is the third line of the preceding comment; line 89 opens export const UNKNOWN_REASON_ROUTES; the closing }; is line 102. review2.disposition_summary.G6 corrected on its line from 88-102 to 89-102, the earlier figure kept.",
+        "J8": "CONFIRMED and applied (editorial). Re-derived by the register's own stated method: acceptance-act section 5, launch-scope reading aid 0, open section 22 including the sub-lettered P-25(c), 27 in all - exactly the published figures. Only the as-of date was defective; re-dated to 2026-09-15 with the predicate and the 22 row ids stated inline and the earlier date quoted in place.",
+        "J9": "CONFIRMED and applied (editorial). Counted this session, predicate the seven-character short M3 head over the whole file: 3 occurrences over 2 packet lines (1436 x1, 1504 x2), 1 in this record, 0 in the register. The review-1 disposition mention at :1436 routed by register row P-70, keeping the fact of what that session read; 2 over 1 line remain. 'Not rewritable' and 'which may not be rewritten' both restated as preserved deliberately because each records what that session read - this packet is not digest-bound."
+      },
+      "re_derived_before_applying": {
+        "J1_provenance_none_packet_sweep": "20 occurrences over 11 lines (91, 589, 698, 701, 712, 717, 1009, 1363, 1557, 1569, 1591); 0 inside :117-185, :1104-1146 and :1375-1384. Per-surface censuses reproduced on the retained captures: Polaris 0 on both lane A forms, Trajectory 0, Orrery 9 rendered against 0 style occurrences, home 9 rendered plus 1 style rule.",
+        "J2_rfc2_26": "0 occurrences of the identifier RFC2-26 in the packet before repair, by a literal sweep over the whole file. Clause read verbatim at .syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md lines 196-210; the raw's quotation matches word for word, its ellipsis eliding 'in state (1) or state (2), with that state rendered'. The raw cites the range as 196-206; the clause's first paragraph closes at 210 and the packet quotes 196-210. RFC-0002's force re-checked at PROJECT-STATUS.md line 147 (Wave A ACCEPTED, act performed 2026-08-17).",
+        "J4_offset_delta_partition": {"p": {"count": 6, "delta": 30}, "li": {"count": 5, "delta": 31}, "div": {"count": 11, "delta": 32}, "denominator": 22, "endpoints_both_div": true},
+        "J7_unknown_reason_routes_location": "project-shape-model.ts line 88 is comment, line 89 opens the export, closing }; at line 102.",
+        "J8_register_recount": {"acceptance_act_rows": 5, "reading_aid_rows": 0, "open_rows": 22, "total": 27, "sub_lettered_counted": "P-25(c)"},
+        "J9_head_literal_counts": {"packet_occurrences": 3, "packet_lines": 2, "record": 1, "register": 0}
+      },
+      "recommended_answers_changed": {
+        "Q7": "CHANGED. The slices-4-and-5 limb read 'Recommended: rule the audit-finding reading acceptable for slices 4 and 5, on the basis stated, while naming it explicitly as the owner's call rather than assumed.' It now asks the owner to rule that reading AND the RFC2-26 test it does not by itself satisfy, naming three routes that could clear the clause: an OpenSpec amendment supplying limb 1; a re-scoping of each slice until limb 2's 'purely structural, no independently testable behavior' test fits; or a reviewed N/A judgment recorded in decisions/ and honored by an effective owner act. The superseded wording is quoted and dated in the packet, and the register note, the P-71 row's Q7 text and its sources cell carry the change.",
+        "Q6": "PREAMBLE REWORDED, arm unchanged. The preamble no longer calls both arms lawful on Gate 5's withdrawn sentence; it says neither arm is foreclosed by any requirement and routes the schedulability question to Q7's RFC2-26 test.",
+        "Q1_through_Q5": "unchanged. Q1's acceptance text was widened by J1 without moving its arm, which turns on the zero-denominator fact the fourth family neither creates nor removes."
+      },
+      "rule_10": "This review binds the bytes it names (packet 162860 / evidence 49243 / register 35850 at 181797a) and not the repaired bytes; every review-4 repair is uncovered until a fifth review confirms them. That raw will be a fifth -RAW.md file, never an overwrite of any retained one."
+  },
+  "review5": {
+    "raw": "docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-5-RAW.md",
+    "bytes": 31406,
+    "sha256": "14f49e290bc55424690e9717830d9bbd5ea9bf4befa13659a7552199f8a6a43e",
+    "verdict": "REVISE - two blocking, one non-blocking, four editorial",
+    "reviewed_commit": "e134a12",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md": {
+        "bytes": 190003,
+        "sha256": "403def26d19e348e5b29f8874ef49f636d26de7de80fa0c05aaca7ab00362bad"
+      },
+      "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json": {
+        "bytes": 60920,
+        "sha256": "30b2b2cd27b8646eb5732d6007e4c78d9cad57330ef663e45a7b84c9fa21fbe7"
+      },
+      ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+        "bytes": 40852,
+        "sha256": "751d3edbed9573c5f5d43bb1d2a38ad4aa8bf53ed01c8d9139003cecf41f45f3"
+      }
+    },
+    "repairs_applied_this_session": true,
+    "j1_j9_verification_as_review5_states_it": {
+      "REPAIRED": [
+        "J1",
+        "J3",
+        "J4",
+        "J5",
+        "J6",
+        "J7",
+        "J8",
+        "J9"
+      ],
+      "PARTIAL": [
+        "J2"
+      ],
+      "denominator": 9,
+      "partials_from_review4_now_complete": "H1, H4 and H6, and G7",
+      "regressions_found_in_F1_F22_G1_G11_H1_H9": "none"
+    },
+    "disposition_summary": {
+      "K1": "CONFIRMED and applied (blocking). Seven named sites plus one the finding did not name still carried the pre-review-4 Q7 answer: the funnel summary's Acts, G5, Open-questions and G6 Bar lines, its Recommended-handoff line, Q7's own bolded recommendation, the sequencing order's slice-4/5 step and the recommended handoff's Q6 paragraph. Swept for others [predicate: the literals 'as sequenced', 'slices 1-5 and 7 none', 'trace to recorded findings', '2026-09-05 continuation', 'recorded-finding', 'this is review 2'; denominator: the whole packet, record and register]: no further live site. All eight repaired, superseded wording quoted and dated in place; the Bar line restated to five retained raws, this pass after review 5.",
+      "K2": "CONFIRMED and applied (blocking). DIRECTIVE-REGISTER.md line 260 defines RFC2-26 at rendering-vocabularies.md line 196; read at source, the ### heading is 194, the clause runs 196-221 in two paragraphs (196-210, blank 211, 212-221) and the next ## heading is 223. The packet quoted 196-210 and stopped unmarked, and ran the test over two of eight slices with no denominator. Blockquote extended to 221 verbatim (rewrapped only for the column bar); the line figure restated with 196-210 quoted and dated; denominator stated as the eight slice rows of Gate 3's authorizing-act table; the test run over all eight.",
+      "K3": "CONFIRMED and applied (non-blocking). Q6's preamble routes 'either arm' to Q7 while the subsection's limb bullets cover only slice 4 (the derive arm) and slice 5. One sentence added scoping the test to the derive arm and stating deletion's own limbs [Inferred]: limb 2 is plausibly reachable for deletion, which removes behavior rather than adding testable behavior, but still needs the reviewed N/A judgment and the effective owner act.",
+      "K4": "CONFIRMED and applied (editorial). J1's disposition named 'Q1 at :91, slice 1's Tests at :698-719, Gate 5 at :1009-1018' in the present tense; those are 181797a's anchors and none resolves in the current bytes. A convention sentence is added above the review-1 section and the three present-tense anchors are replaced by section and heading names, the superseded anchors quoted.",
+      "K5": "CONFIRMED and applied (editorial). Re-run this session [predicate (?i)\\bhome\\b; denominator each whole spec file]: 0 in the POC spec, 6 in the PWB spec, at lines 247, 277, 510, 511, 518 and 523. 511 and 523 are layer-home rule prose and fit neither published category. Partition restated as three categories over all six, the two-way partition quoted and dated; conclusion unchanged.",
+      "K6": "CONFIRMED and applied (editorial). POC-REQ-060 heading 927, Group/Form 929, quoted text begins 931, falsifier ends 946; PWB-REQ-020 heading 902, Group/Form 904, quoted text begins 906, falsifier ends 926; PWB-REQ-004 quoted text 491-498, exact. One convention stated and named at all three sites.",
+      "K7": "CONFIRMED and applied (editorial). 2 occurrences of the seven-character short M3 head over 1 packet line, 1 in this record, 0 in the register. The second was a present-tense claim about the sibling worktree; restated as what review 2 found, superseded text quoted and dated. Re-counted after the edit: 1 in the packet, 1 in this record, 0 in the register."
+    },
+    "re_derived_before_applying": {
+      "K2_clause_extent": {
+        "defined_at": "DIRECTIVE-REGISTER.md:260 -> rendering-vocabularies.md:196",
+        "heading_line": 194,
+        "clause_lines": "196-221",
+        "paragraphs": [
+          "196-210",
+          "212-221"
+        ],
+        "next_heading_line": 223,
+        "packet_had_quoted": "196-210, unmarked"
+      },
+      "K2_all_slice_test": {
+        "denominator": 8,
+        "denominator_source": "Gate 3 'The authorizing act, per slice' rows 1-8; the ninth row proposes no slice",
+        "slice_1": {
+          "class": "Unknown-reason and rendering-tier presentation; claim and challenge rendering",
+          "requirement_and_scenario": [
+            "POC-REQ-060 (POC spec:927), scenario 'Unknown looks the same everywhere' (POC spec:948)",
+            "PWB-REQ-007 (PWB spec:439), scenario 'Missing current evidence remains explicit Unknown' (PWB spec:470)"
+          ],
+          "limb_1": "available for the encoding-identity consequence exactly; available for the reason-and-route consequence only on a reading of PWB-REQ-007's quantification over 'every project entity and project-fact claim' [Inferred]"
+        },
+        "slice_2": {
+          "class": "API answers over epistemic state",
+          "requirement_and_scenario": [
+            "POC-REQ-020 (POC spec:377), scenario 'Surface and machine answer agree' (POC spec:400)",
+            "PWB-REQ-020 (PWB spec:902), scenario 'Complete model has wire parity' (PWB spec:928)"
+          ],
+          "limb_1": "available; the type-level narrowing enumerates no observable consequence of its own"
+        },
+        "slice_3": {
+          "class": "Unknown-reason presentation; reconciliation-chain and gap surfaces",
+          "requirement_and_scenario": "NONE FOUND. PWB-REQ-010 (596) and PWB-REQ-011 (632) scenarios (615, 651, 657) govern opening order and progressive depth; PWB-REQ-007's aggregate sentence has no aggregate scenario (its one scenario, 470, is the per-claim case); POC-REQ-032 (574) scenario (599) requires in-place disclosure; PWB-REQ-012's scenario (705) permits 'gaps' as a heading concept, a constraint not a mapping",
+          "limb_1": "unavailable",
+          "limb_2": "unavailable as designed - the slice carries its own oracle and counterexample fixture"
+        },
+        "slice_4": {
+          "class": "API answers over epistemic state",
+          "limb_1": "unavailable",
+          "limb_2": "unavailable as designed"
+        },
+        "slice_5": {
+          "class": "evaluation and snapshot display; Unknown-reason and gap surface; materialize status; reconciliation-chain surface",
+          "limb_1": "unavailable",
+          "limb_2": "unavailable as designed"
+        },
+        "slice_6": {
+          "class": "none - the slice schedules no implementation work and builds nothing",
+          "gate": "Q5's authorization limb, unchanged"
+        },
+        "slice_7": {
+          "class": "none identified - the output is a governance artifact, not a rendering of epistemic state",
+          "gate": "Q3's act question, unchanged"
+        },
+        "slice_8": {
+          "class": "[Unknown] - not designed in this packet, consequences not enumerated",
+          "gate": "its own acts, unchanged"
+        }
+      },
+      "K5_home_sweep": {
+        "predicate": "(?i)\\bhome\\b",
+        "poc_spec_hits": 0,
+        "pwb_spec_hits": 6,
+        "pwb_spec_lines": [
+          247,
+          277,
+          510,
+          511,
+          518,
+          523
+        ],
+        "partition": {
+          "registry governance-home field": [
+            247,
+            277
+          ],
+          "precedence table Home column and its semantic text": [
+            510,
+            518
+          ],
+          "layer-home rules the table governs": [
+            511,
+            523
+          ]
+        },
+        "none_is_the_root_route": true
+      },
+      "K6_citation_spans": {
+        "POC-REQ-060": {
+          "requirement": "927-946",
+          "quoted_text_begins": 931
+        },
+        "PWB-REQ-020": {
+          "requirement": "902-926",
+          "quoted_text_begins": 906
+        },
+        "PWB-REQ-004": {
+          "requirement": "487-498",
+          "quoted_text": "491-498",
+          "exact": true
+        }
+      },
+      "K7_head_literal_counts_after_repair": {
+        "packet": 1,
+        "record": 1,
+        "register": 0
+      },
+      "F21_over_78_recount": {
+        "predicate": "lines outside fenced blocks whose first non-space character is not a pipe and whose length exceeds 78",
+        "denominator": 2064,
+        "count": 7,
+        "lines": [
+          1,
+          10,
+          540,
+          615,
+          811,
+          1022,
+          1074
+        ]
+      }
+    },
+    "recommended_answers_changed": {
+      "Q7": "CHANGED, for the second consecutive review. Review 4 widened the slices-4-and-5 limb to carry RFC2-26. Review 5 (K2) required the clause quoted whole and run with a stated denominator; run over all eight Gate 3 slice rows it puts slice 3 under the same open gate, because no approved scenario in either signed spec reaches an aggregate of Unknown-reason counts in the opening. The recommendation now reads: slices 1-2 after M3 slice 5; slice 3 only after the three-way opening-band reconciliation AND the RFC2-26 ruling this question asks for; slices 4 and 5 gated on that same RFC2-26 ruling; slice 6 as sequenced, conditional on Q5's authorization limb; slice 7 waits on Q3; slice 8 deferred behind its own acts. It superseded 'Slices 1-2 after M3 slice 5; slice 3 only after the three-way opening-band reconciliation (below, revised per review 2, G2); slices 4-6 as sequenced; slice 7 waits on Q3; slice 8 is deferred behind its own acts.'",
+      "Q1_through_Q6": "unchanged. K1 carried review 4's Q7 change into the eight operative texts that had not received it; K3 through K7 moved no arm."
+    },
+    "rule_10": "This review binds the bytes it names (packet 190003 / evidence 60920 / register 40852 at e134a12) and not the repaired bytes; every review-5 repair is uncovered until a sixth review confirms them. That raw will be a sixth -RAW.md file, never an overwrite of any retained one."
+  },
+  "review6": {
+    "raw": "docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-6-RAW.md",
+    "bytes": 26182,
+    "sha256": "4d2035caa450bf5cdcfb220c2b0d3891459a3a05edc28c467eb01c75982f6abd",
+    "verdict": "REVISE - one blocking, three non-blocking, two editorial",
+    "reviewed_commit": "1dd5639",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md": {
+        "bytes": 220411,
+        "sha256": "ef4528a37399f15107e45ffa9589596250ce46ac382f500760a32e1a7cbc41fb"
+      },
+      "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json": {
+        "bytes": 71802,
+        "sha256": "cbbdeca05ce1a01419522ceb9aa9b85a1f2218a5320e45aad542282795666e5e"
+      },
+      ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+        "bytes": 44722,
+        "sha256": "5a3131af1a79d4e8cc7fc3791056a11c2ac9b64ac8453f3fd8ea3b51466cc11a"
+      }
+    },
+    "repairs_applied_this_session": true,
+    "k1_k7_verification_as_review6_states_it": {
+      "REPAIRED": [
+        "K2",
+        "K3",
+        "K4",
+        "K5",
+        "K6",
+        "K7"
+      ],
+      "PARTIAL": [
+        "K1"
+      ],
+      "denominator": 7,
+      "regressions_found_in_F1_F22_G1_G11_H1_H9_J1_J9": "none"
+    },
+    "disposition_summary": {
+      "L1": "CONFIRMED and applied (blocking). The prose Recommended handoff's Q7 paragraph (the first of the three to land builds the band container) and its Q4 paragraph (slice 3's band lists every reason present) carried no RFC2-26 gate, while the Q6 paragraph two paragraphs later did. A third live scheduling site the finding does not name, the Collision section's revised reconciliation rule, was found by this pass's own site sweep and was equally ungated. All three now carry the gate in the Q6 paragraph's shape, superseded wording quoted and dated. The two disclosure sentences that claimed the change reached 'the recommended handoff' - the K2 disposition row and Gate 5's 'What the extended test changes' paragraph - are narrowed to name the funnel summary's four lines and the prose handoff's paragraphs individually. The register note's eight-site list, also named by the finding, was checked and is TRUE of the bytes (it says 'the recommended handoff's Q6 paragraph'), so it is left as review 5 wrote it.",
+      "L2": "CONFIRMED and applied (non-blocking). Gate 5's lead sentence ('Slices 1, 2, 3 and 6: no spec delta. Each is conformance with text that already binds.') and its one-line slice-3 treatment ('Slice 3 is PWB-REQ-010 and PWB-REQ-011 conformance and adds no claim') presented slice 3 as covered conformance in the same gate whose RFC2-26 test finds no approved requirement-and-scenario pair for it. Both are qualified at the sentence - no spec delta stands, but preserving PWB-REQ-010/011 is not mapping to them - with the superseded wording quoted and dated.",
+      "L3": "CONFIRMED and applied (non-blocking). Gate 4's headings for slices 3, 4 and 5 read '(medium; no act)' while Gate 3's rows for the same three record an open RFC2-26 gate whose clearing routes include an effective owner act. Checked first [predicate: the literal ](# ; denominator: the whole packet and the whole register]: 0 anchor links in either file, so no href targets these headings. The three now read '(medium; act - see Gate 3 and Q7)', each with a one-line dated note quoting the superseded parenthetical. The slice-4 heading is 85 characters, carries a code span and cannot be reflowed; it is the one line this pass added above the 78-column bar and is enumerated in the F21 disposition.",
+      "L4": "CONFIRMED and applied (non-blocking). The slice-3 'None found' cell stated no denominator for the population its absence claim ranges over. Re-derived this session [predicate: ^### Requirement: and ^#### Scenario: at line start; denominator: both signed spec files whole]: POC spec 24 requirements and 24 scenarios, PWB spec 17 and 31, so 41 and 55 in all. Every one of the 55 scenario headings was read, then the bodies of every candidate; none states an aggregate of Unknown-reason counts in the opening. One bracket in the cell now carries the predicate, the 41/55 denominator and the five candidates by line. Review 5's own K2_all_slice_test values are untouched; the mirror lives here.",
+      "L5": "CONFIRMED and applied (editorial). Gate 3's row 3 sent the reader to 'the four requirements checked' while Gate 5's cell and this record's slice_3 field both name five. The cross-reference now reads 'the five requirements read, four of them as candidate mappings', names the five and identifies PWB-REQ-012 as the constraint rather than a mapping, with the superseded 'four' quoted and dated.",
+      "L6": "CONFIRMED and applied (editorial). The P-71 row's Q5 question asked two things where the packet's Q5 asks three, dropping 'is it authorized' for the run itself - the clause Reading A and Reading B differ about. Restored in the packet's clause order with the superseded question quoted and dated, and named in the register note's review-6 paragraph."
+    },
+    "re_derived_before_applying": {
+      "L4_signed_spec_population": {
+        "predicate": "^### Requirement: and ^#### Scenario: at line start",
+        "denominator": "both signed spec files whole",
+        "poc_requirements": 24,
+        "poc_scenarios": 24,
+        "pwb_requirements": 17,
+        "pwb_scenarios": 31,
+        "total_requirements": 41,
+        "total_scenarios": 55,
+        "every_scenario_heading_read": true,
+        "candidates_exact_at_source": {
+          "PWB-REQ-010": {"requirement_line": 596, "scenarios": [615]},
+          "PWB-REQ-011": {"requirement_line": 632, "scenarios": [651, 657]},
+          "PWB-REQ-007": {"requirement_line": 439, "scenarios": [470]},
+          "POC-REQ-032": {"requirement_line": 574, "scenarios": [599]},
+          "PWB-REQ-012": {"requirement_line": 679, "scenarios": [705]}
+        },
+        "conclusion": "slice 3's limb 1 is genuinely unavailable; the recommended answer stands"
+      },
+      "L1_slice_3_site_sweep": {
+        "predicate": "lines matching (?i)slice 3\\b or the literal 'M4 slice 3'",
+        "denominator_lines": 3468,
+        "denominator_source": "packet 2064 + evidence record 1083 + register 321, at 1dd5639",
+        "matching_lines": 60,
+        "matching_lines_by_file": {"packet": 51, "record": 6, "register": 3},
+        "live_scheduling_or_building_lines": 10,
+        "live_scheduling_or_building_sites": 7,
+        "live_sites_gated_before_this_pass": 4,
+        "live_sites_repaired_this_pass": 3,
+        "live_sites": [
+          "packet Q7's bolded recommendation - gated (review 5)",
+          "packet sequencing order step (3) - gated (review 5)",
+          "packet funnel summary Recommended-handoff line - gated (review 5)",
+          "packet prose handoff Q7 paragraph - UNGATED, repaired here",
+          "packet prose handoff Q4 paragraph - UNGATED, repaired here",
+          "packet Collision section revised reconciliation rule - UNGATED, repaired here",
+          "register P-71 row Q7 recommendation - gated (review 5)"
+        ],
+        "historical_or_dated_lines": 23,
+        "design_or_gate_statement_lines": 27,
+        "buckets_close": "10 + 23 + 27 = 60",
+        "F21_over_78_recount_review6": {
+          "predicate": "lines outside fenced blocks whose first non-space character is not a pipe and whose length exceeds 78",
+          "denominator": 2197,
+          "count": 8,
+          "lines": [1, 10, 540, 615, 811, 855, 1042, 1094],
+          "new_line": "855, the Gate 4 heading for slice 4 at 85 characters, lengthened by L3 and unreflowable because it carries a code span"
+        },
+        "note": "an omission carries no literal, so this sweep enumerates and classifies by hand rather than matching a string"
+      },
+      "L3_anchor_check": {
+        "predicate": "the literal ](#",
+        "denominator": "the whole packet and the whole register",
+        "hits": 0,
+        "consequence": "no anchor or href targets the three Gate 4 headings; changing them breaks no link"
+      }
+    },
+    "recommended_answers_changed": {
+      "none": "No recommended answer changed after review 6. L1 is blocking but carries an EXISTING answer - slice 3 under the same open RFC2-26 gate as slices 4 and 5, decided after review 5's K2 - into three live sites it had not reached, and narrows two sentences that claimed it already had. L2 through L6 qualify, route, measure or correct a count. Q1 through Q7 keep the recommendations they carried into this review."
+    },
+    "rule_10": "This review binds the bytes it names (packet 220411 / evidence 71802 / register 44722 at 1dd5639) and not the repaired bytes; every review-6 repair is uncovered until a seventh review confirms them. That raw will be a seventh -RAW.md file, never an overwrite of a retained one."
+  },
+  "review7": {
+    "raw": "docs/reviews/R-POLARIS-M4-OWNER-LOOP-FUNNEL-7-RAW.md",
+    "bytes": 24884,
+    "sha256": "af47eef81c8d074319624bbfa38caad0ba03f9e63f5092b53b25dcf361318bdc",
+    "verdict": "CONFIRM WITH EXCEPTIONS - no blocking, one non-blocking, four editorial",
+    "reviewed_commit": "4b431fb",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M4-OWNER-LOOP-FUNNEL.md": {
+        "bytes": 236948,
+        "sha256": "dae20e6538d5cbf692165f91ffb348f976ef92eb60d405924310b4ad049bc30e"
+      },
+      "docs/evidence/polaris-m4-owner-loop-funnel-2026-09-14.json": {
+        "bytes": 80636,
+        "sha256": "4844e9a10d33425d00b6dc3a3269f42ee60a89a5124e6c152409f569ebee7011"
+      },
+      ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+        "bytes": 47510,
+        "sha256": "c272f73b6f4ebfcfe21b799ab5f904d02bba94a9580f824e762a59ffd68942af"
+      }
+    },
+    "repairs_applied_this_session": true,
+    "l1_l6_verification_as_review7_states_it": {
+      "REPAIRED": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        "L6"
+      ],
+      "PARTIAL": [],
+      "denominator": 6,
+      "regressions_found_in_F1_F22_G1_G11_H1_H9_J1_J9_K1_K7": "none",
+      "k1_partial_at_review_6": "now complete - the only respect in which it fell short was L1's three sites and two sentences, and all five are repaired"
+    },
+    "disposition_summary": {
+      "M1": "CONFIRMED and applied (editorial). The L3 cell publishes an anchor absence with its predicate and denominator and 0 occurrences in either file, marked 'Checked before editing'. Re-run this session at 4b431fb over both whole files with the same predicate by grep -F: 1 in the packet, 0 in the register, and the single packet hit is the L3 cell itself, the code span in which the predicate is written. At 1dd5639 the same predicate returns 0 in both. The published 0 stands unedited with its 'Checked before editing' framing; a dated clause beside it publishes the 1/0 figure at the reviewed commit, names the one hit, gives the 1dd5639 figure, and states that the conclusion about anchors and hrefs is unaffected because the hit is a predicate and not a link.",
+      "M2": "CONFIRMED and applied (non-blocking). PWB-REQ-002 is at PWB spec line 115, its scenario 'Declared shape reconciles' at 142, whose THEN/AND require that every category reports modeled, Unknown and contradicted counts summing to its denominator, and whose Observable is that per-category identities and reconciling counts are visible in the machine answer and reachable from Polaris - the one approved requirement-and-scenario pair in either signed spec requiring rendered aggregate counts, and the nearest candidate the slice-3 cell did not name. One sentence in the cell now names it as the sixth candidate read and why it does not map, on two independent grounds: it partitions extraction categories into the three coverage states where slice 3's band partitions RFC2-24 gap reasons (gapReasonCounts), a different projection over a different population; and its observable is satisfied today by the existing gaps section, which is reachable from Polaris and asserts no opening position. The closed 'five ... are the candidates' wording is kept and dated in place. Limb 1 remains unavailable; the conclusion and the recommended answer are unchanged. Mirrored here only - review 6's L4_signed_spec_population values are that review's own record and are untouched.",
+      "M3": "CONFIRMED and applied (editorial). The Q7 cell restated the reconciliation rule ('whichever of M2 slice 2, M3 slice 3 and M4 slice 3 lands first builds the band container and owns its single ordering oracle ... Reconcile explicitly before any of the three starts') with no RFC2-26 gate on the sentence, while the two sites review 6's L1 repaired each took one. The cell now carries the Collision section's clause word for word, dated. Editorial and not a repeat of L1 because the same cell opens with the gate in its bolded recommendation and closes with the K2 widening paragraph.",
+      "M4": "CONFIRMED for three of the four paragraphs named, NOT CONFIRMED for the fourth, and applied accordingly (editorial). Predicate: the literal 'uncovered'; denominator: the whole packet at 4b431fb - 5 hits, the review-2 through review-6 rule-10 paragraphs. The review-2, review-4 and review-5 paragraphs read 'uncovered until a third / fifth / sixth review confirms them' untensed. The review-3 paragraph was ALREADY re-tensed per review 4, so the finding's 'all four' is one too many; that one is recorded rather than applied and is left exactly as review 4 wrote it. Applied to the three that carry the defect plus review 6's own paragraph, which review 7's retention has now discharged and which the finding could not have named - four re-tensed in the register's shape, each naming the review section that discharged it, dated 2026-09-15 per review 7, M4.",
+      "M5": "CONFIRMED at both sites and applied (editorial). Gate 5's 'What the extended test changes' paragraph ended its disclosure list 'and in the pull request' (the phrase wrapped across two lines) and the K2 disposition row ended 'and the pull request'; every other item in both lists is a named site inside one of the three reviewed artifacts, while the last carried no identifier, no date and no epistemic label. The identifier-and-date arm was taken rather than dropping the clause, so the disclosure is not silently narrowed: both sites now read 'and in PR #38, body edited 2026-09-15 [Observed at that date; a PR body is editable later]', in the shape the sibling references already use, with the superseded bare wording quoted and dated at each."
+    },
+    "re_derived_before_applying": {
+      "M1_anchor_recheck": {
+        "predicate": "the L3 cell's own literal, by grep -F, over both whole files",
+        "at_4b431fb": {"packet": 1, "register": 0, "note": "the single packet hit is the L3 cell's own code span, the bytes in which the predicate is written"},
+        "at_1dd5639": {"packet": 0, "register": 0, "method": "git show 1dd5639:<path> | grep -c -F"},
+        "consequence": "the published 0 is true of the bytes it was taken at and not reproducible at the reviewed commit; the anchor-and-href conclusion is unaffected because the one hit is a predicate, not a link"
+      },
+      "M2_pwb_req_002_at_source": {
+        "requirement_line": 115,
+        "scenario": "Declared shape reconciles",
+        "scenario_line": 142,
+        "then_and": "THEN Polaris accounts for all D items exactly once / AND every category reports modeled, Unknown and contradicted counts that sum to its denominator",
+        "observable": "per-category identities and reconciling counts are visible in the machine answer and reachable from Polaris",
+        "slice_3_cell_named_five": true,
+        "slice_3_cell_closing_phrase": "The five requirements named above are the candidates",
+        "why_it_does_not_map": "it partitions extraction categories into the three coverage states, where slice 3's band partitions RFC2-24 gap reasons (gapReasonCounts) - a different projection over a different population; and its observable is satisfied today by the existing gaps section, reachable from Polaris and asserting no opening position, so it carries no opening-position claim for the band to conform to",
+        "candidates_read_total": 6,
+        "population_denominator": "41 approved requirements and 55 scenarios over both signed spec files whole, the review-6 L4 denominator",
+        "conclusion": "limb 1 remains unavailable; the conclusion and the recommended answer are unchanged"
+      },
+      "M3_q7_cell_gate": {
+        "ungated_sentence_present_in_q7_cell": true,
+        "sibling_sites_gated_by_review_6_L1": [
+          "Collision section - None of that schedules M4 slice 3: it is not built before Q7's RFC2-26 ruling either",
+          "prose handoff Q7 paragraph - M4 slice 3 is not built before both that reconciliation and Q7's RFC2-26 ruling"
+        ],
+        "why_editorial": "the same cell opens with the gate in its bolded recommendation and closes with the K2 widening paragraph, so the sentence is bracketed by the gate; L1's site had no gate anywhere in its section"
+      },
+      "M4_rule_10_tense_audit": {
+        "predicate": "the literal 'uncovered'",
+        "denominator": "the whole packet at 4b431fb",
+        "hits": 5,
+        "untensed_confirmed": ["review-2 paragraph", "review-4 paragraph", "review-5 paragraph"],
+        "already_re_tensed_not_confirmed": "the review-3 paragraph, re-tensed 2026-09-15 per review 4 - the finding's 'all four' is one too many",
+        "register_shape_confirmed_at": "its three parallel paragraphs, reading 'which has since happened; see the next paragraph (re-tensed 2026-09-15 per review N)'",
+        "applied_to": ["review-2 paragraph", "review-4 paragraph", "review-5 paragraph", "review-6 paragraph"],
+        "review_6_paragraph_rationale": "review 7's retention discharges it; the finding could not have named it"
+      },
+      "M5_pull_request_sites": {
+        "site_1": "Gate 5's 'What the extended test changes' paragraph, the phrase wrapped across two lines as 'and in the pull' / 'request'",
+        "site_2": "the K2 disposition row, reading 'and the pull request'",
+        "defect": "a present-tense claim about an artifact outside the three reviewed here, with no identifier, no date and no epistemic label, uncheckable by a read-only reviewer",
+        "arm_taken": "identifier and date rather than dropping the clause, so the disclosure is not silently narrowed",
+        "applied_wording": "and in PR #38, body edited 2026-09-15 [Observed at that date; a PR body is editable later]"
+      }
+    },
+    "recommended_answers_changed": {
+      "none": "No recommended answer changed after review 7. M1 and M4 date a claim about coverage rather than move one; M3 repeats a gate the same cell already states twice; M5 gives a disclosure site its identifier; M2 adds a sixth requirement to a read population while re-deriving - and leaving unchanged - the conclusion that slice 3's limb 1 is unavailable and that slice 3 stays under the open RFC2-26 gate. Q1 through Q7 keep the recommendations they carried into this review, word for word."
+    },
+    "rule_10": "This review binds the bytes it names (packet 236948 / evidence 80636 / register 47510 at 4b431fb) and not the repaired bytes; the five exception repairs are uncovered until an eighth review confirms them. That raw will be an eighth -RAW.md file, never an overwrite of a retained one.",
+    "gate": "at the owner gate on review 7's CONFIRM WITH EXCEPTIONS with all five exceptions applied - no blocking finding, no recommended answer moved, and the review-6 repairs verified 6 REPAIRED over 6; P-71 is ready to be ruled",
+    "uncovered_until": "an eighth independent fresh-context review, for the five exception repairs recorded here; all five post-date review 7 (verification rule 10)"
+  }
+}
