@@ -1585,7 +1585,7 @@ narration. All eleven findings confirmed.
 
 | H | Severity | Verdict | Evidence |
 |---|---|---|---|
-| H1 | blocking | **CONFIRMED — PARTIAL at `f35a25f`, completed after review 4 (J1, J3, J7)** | The evidence record's `vocabulary_versus_rendered.freshness_mint_hazard` field (json :282) still asserted "supplies no absence marker" and "arm (b) of Q2 is not available for freshness" after review 2's repair pass withdrew the same wording from the packet's four sites and the register row. Re-derived: the field was rewritten to state RFC2-10's remedy at lines 220–223 and three arms — but the three it enumerated did not match the packet's and register's (b-i)/(b-ii)/(b-iii) (review 4, J3; now the packet's wording verbatim, the mismatched text kept and marked); this row's earlier claim that `closed_freshness_vocabulary_authority` "is extended through the remedy sentence with the elision marked" was **false** — the field still ended at line 214 with no marker (review 4, J1; now extended through line 223); and of the two disposition rows that claimed the withdrawal was complete, only the packet's review-2 G1 row was corrected — the record's `review2.repairs.G1` still claimed "withdrawn at all four packet sites and the register row" with no fifth site (review 4, J1; now corrected). Swept the packet, record and register for `supplies no`, `no absence`, `not lawfully available`, `unlawful`, `no remedy` and `supplies none`: 25 literal occurrences over 2,482 lines across the three files — a figure taken on the working tree during the review-3 repair, between `b34fca7` and `f35a25f`, so reproducible from no commit (review 4, J7; re-derived at `f35a25f`: 41 over 2,697 lines with the same six literals, the growth being review-history text quoting the withdrawn wording); of those, only the one field above was a live, non-historical false assertion, one more pair (the two disposition rows) wrongly claimed completeness, and `review1.recommended_answers_changed.Q2` (H2) lacked an in-place marker — every other occurrence is either current lawful-arms language, an existing in-place withdrawal marker, or a review-history quote already framed as superseded |
+| H1 | blocking | **CONFIRMED — PARTIAL at `f35a25f`, completed after review 4 (J1, J3, J7)** | The evidence record's `vocabulary_versus_rendered.freshness_mint_hazard` field (json :282) still asserted "supplies no absence marker" and "arm (b) of Q2 is not available for freshness" after review 2's repair pass withdrew the same wording from the packet's four sites and the register row. Re-derived: the field was rewritten to state RFC2-10's remedy at lines 220–222 (this row first said 220–223, taking in the separate orthogonality sentence at 222–223 — one extent settled after review 5, K3) and three arms — but the three it enumerated did not match the packet's and register's (b-i)/(b-ii)/(b-iii) (review 4, J3; now the packet's wording verbatim, the mismatched text kept and marked); this row's earlier claim that `closed_freshness_vocabulary_authority` "is extended through the remedy sentence with the elision marked" was **false** — the field still ended at line 214 with no marker (review 4, J1; now extended through line 223); and of the two disposition rows that claimed the withdrawal was complete, only the packet's review-2 G1 row was corrected — the record's `review2.repairs.G1` still claimed "withdrawn at all four packet sites and the register row" with no fifth site (review 4, J1; now corrected). Swept the packet, record and register for `supplies no`, `no absence`, `not lawfully available`, `unlawful`, `no remedy` and `supplies none`: 25 literal occurrences over 2,482 lines across the three files as of `b34fca7`, the bytes review 3 read — 2,482 counting each file's trailing line, 2,479 by `wc -l` (the stamp review 4, J7, asked for; the review-4 repair wrote instead that the figure was "taken on the working tree … reproducible from no commit", which review 5, K1, showed false — the figure is exact at `b34fca7`, and only the line-count convention differed; re-derived at `f35a25f` under the same convention: 41 over 2,700 lines, 2,697 by `wc -l`, with the same six literals, the growth being review-history text quoting the withdrawn wording); of those, only the one field above was a live, non-historical false assertion, one more pair (the two disposition rows) wrongly claimed completeness, and `review1.recommended_answers_changed.Q2` (H2) lacked an in-place marker — every other occurrence is either current lawful-arms language, an existing in-place withdrawal marker, or a review-history quote already framed as superseded |
 | H2 | non-blocking | **CONFIRMED — REPAIRED** | The evidence record's `review1.recommended_answers_changed.Q2` field carried the withdrawn "not lawfully available for the freshness field" wording with no marker, unlike the packet's own parallel passage (:1393 area), which marks it in place. Appended the same in-place marker to the JSON field, without deleting the superseded wording |
 | H3 | non-blocking | **CONFIRMED — REPAIRED** | The packet states three times that P-69 and P-70 must be ruled together; the P-70 row and note carried none of it — swept for "together", "ruled together" and "read together": 0 hits in both, confirmed this session. Added one clause to the P-70 row. Collision item 3's "the two moves are complementary" read, in context, as though M2's `stale` and this packet's (b-iii) recommendations were reconciled; they are mutually exclusive for the same claims. Restated in place, without smoothing: both recommendations stand as the owner's choice, not as a reconciled pair |
 | H4 | non-blocking | **CONFIRMED — REPAIRED** | M2's head was named as `da1497b`, a fourth stale reading; `git -C .../scratchpad/m2wt log --oneline -1` this session returns `f2f37dd` (M2 funnel review 6, CONFIRM WITH EXCEPTIONS), one commit past `da1497b`. The collision section now cites M2 by register row and the two shared files as its rule, with `f2f37dd` named once, dated, as the one exception, and the substance (six slices, slice 6's two untouched files, Q5's ruling) re-confirmed at that head this session |
@@ -1633,7 +1633,8 @@ F1–F14 table (`...-2-RAW.md`:461–474) recounted by row, the cross-surface
 table above re-summed both ways, the retained `api-poc.json` machine
 answer re-walked for objects lacking a `tier` key, the three files' line
 counts at `b34fca7` and `f35a25f`, and the worktree's own commit list —
-never taken on the raw's word alone. All nine findings confirmed. The
+never taken on the raw's word alone. All nine findings confirmed (the
+J7 disposition this pass then wrote was itself wrong — review 5, K1). The
 common shape of the three blocking findings is one the review-3 repair
 pass owns: it reported three record repairs as done that were done in the
 packet only, or done differently in the record, and review 3's own
@@ -1649,7 +1650,7 @@ done and marked PARTIAL at `f35a25f`.
 | J4 | non-blocking | **CONFIRMED — REPAIRED** | POC-REQ-060's Case counts "all three surfaces"; Home is not one of them. The population offered as the requirement's was the four-page 1,087. Re-summed: three-surface 1,052 (735 + 299 + 18), Polaris share 69.87%; four-page 1,087, 67.62%. Both now stated, with the reason the sweep is deliberately wider (Home imports the token set slices 5 and 6 change), in the population prose, Q1, the funnel summary, the denominators paragraph, the register row and the record's `cross_surface_population`; "the other three surfaces" is replaced by the three pages' names |
 | J5 | non-blocking | **CONFIRMED — REPAIRED** | Gate 2's H6 disclosure (the tier field has no machine-channel counterpart for the 11 Unknown tuples) reached the packet and not the P-70 row. Re-derived: 12 of 1,149 machine objects carry an `epistemic` without a `tier` key, all labelled Unknown; each of the 11 human-side Unknown tuples matches one. One clause added to the row's Q2 limb naming the PWB-REQ-020 parity question arm (b) carries, disclosed and not resolved |
 | J6 | non-blocking | **CONFIRMED — REPAIRED** | The handoff conditioned the immediate run of slices 1, 2 and 4 on Q1, Q3 and Q4, while slice 2 as sequenced pulls one rule of slice 6's `--proposed` token forward — a Q6 dependency. Q6 added to the condition, with the dated-exception alternative named for the case where Q6 is answered otherwise |
-| J7 | editorial | **CONFIRMED — REPAIRED** | The H1 row's sweep figure (25 over 2,482 lines) was taken on the working tree during the review-3 repair; the three files sum to 2,479 lines at `b34fca7` and 2,697 at `f35a25f`, so the figure is reproducible from no commit. Date-stamped in place, with the `f35a25f` re-derivation (41 occurrences, same six literals) beside it |
+| J7 | editorial | **CONFIRMED — REPAIRED, and the repair corrected after review 5 (K1)** | This row first read: "The H1 row's sweep figure (25 over 2,482 lines) was taken on the working tree during the review-3 repair; the three files sum to 2,479 lines at `b34fca7` and 2,697 at `f35a25f`, so the figure is reproducible from no commit." That was false, and review 4's own J7 text had already said so (`…-4-RAW.md`:359–361: "at `b34fca7`, 25 occurrences over 2,482 lines — exact"). Re-derived after review 5: at `b34fca7` the six literals occur 25 times and the three files carry 2,479 lines by `wc -l`, 2,482 counting each file's trailing line — the same population under two conventions, and the figure matches that one commit exactly. The H1 row now carries the stamp J7 asked for, both conventions named, with the `f35a25f` pair (41 over 2,700, or 2,697 by `wc -l`) given like for like |
 | J8 | editorial | **CONFIRMED — REPAIRED** | The H8 correction enumerated two commits above `a9f671e`; there were three at `f35a25f` and one more after this repair. The bracket now states that the worktree carries only this packet's own commits and points at `git log` instead of counting them |
 | J9 | editorial | **CONFIRMED — REPAIRED** | Gate 3's six-limb `[Observed]` bracket ended with the scope limb ("every slice implements behaviour the signed change already requires"), which Gate 5 argues and the packet labels `[Inferred]` elsewhere. Split: Observed for the five textual absences, Inferred for the scope limb with the pointer to Gate 5 |
 
@@ -1669,6 +1670,65 @@ The current bytes are uncovered until a fifth independent fresh-context
 review confirms them; its raw will be retained as a fifth `-RAW.md` file,
 never an overwrite of the first four.
 
+## Review 5 and repairs (2026-09-15)
+
+A fifth independent fresh-context review — of the packet, its evidence
+record and the P-70 note and row — is retained verbatim at
+`docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-5-RAW.md` (36,904 bytes,
+sha256
+`cbc9deac4698656e9434694741fdf66e91c60c179cd3a6942c6036e9331146d7`; both
+figures computed this session with `wc -c` and `sha256sum`). It reviewed
+the packet (139,050 bytes, sha256
+`254f72e3308052944b7e19276d948d10c15132765ea4a2395c50a75705bcd45d`),
+evidence record (50,219 bytes, sha256
+`52e14c419ad62a6ad603067152af250de4a887ee297d0315eaa24fecedea2f45`) and
+register (33,783 bytes, sha256
+`1754fe069c7635a0ae35b3b958a24e33e54f98c29b5ed4283d135a34daa0ef31`) at
+commit `76e897f`. Its verdict word, copied exactly: **REVISE**. Findings
+by severity as the raw states them: one blocking (K1); three non-blocking
+(K2–K4); two editorial (K5–K6). It verified J1–J9 against the current
+bytes and spot-checked every earlier finding; nothing previously accepted
+regressed, and no recommendation is touched by any finding.
+
+Every finding was re-derived this session before being applied. K1: the
+six literals over the three files at `b34fca7` give 25 occurrences, and
+the files carry 2,479 lines by `wc -l`, 2,482 counting each file's
+trailing line — so the review-4 repair's "reproducible from no commit"
+was false, and review 4's own J7 text (`...-4-RAW.md`:359–361) had
+already said the figure was exact at `b34fca7`; the same pair at
+`f35a25f` is 41 over 2,697 / 2,700, and at `76e897f` 42 over 2,805 /
+2,808. K2: the funnel summary's handoff line named Q1 and Q3 only and
+"slices 1-4 now" against the handoff section's four answers and "1, 2
+and 4 now, slice 3 next". K3: `snapshot-and-evaluation-core.md` line 219
+carries the parity rationale; the prohibition sentence runs 212–214; the
+remedy sentence 220–222; the orthogonality sentence 222–223. K4:
+`review3.repairs.H1` carried no marker while its siblings did. K5: the
+note's stamp and its "every finding repaired" against the packet's own
+10 REPAIRED / 4 PARTIAL. K6: the record's arm text matches the packet
+character for character and the register's wording differs.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| K1 | blocking | **CONFIRMED — REPAIRED.** The H1 row now carries the stamp J7 asked for — 25 over 2,482 as of `b34fca7`, both conventions named — with the `f35a25f` pair given like for like; the J7 row quotes its own false text and restates it; the record's `review4.re_derived_before_applying.J7` and `review4.repairs.J7` are marked superseded on their lines; the review-4 section's "All nine findings confirmed" now notes that the J7 disposition it wrote was itself wrong |
+| K2 | non-blocking | **CONFIRMED — REPAIRED.** The summary block's handoff line names Q1, Q3, Q4 and Q6 and "slices 1, 2 and 4 now, slice 3 next", with its earlier text quoted in place |
+| K3 | non-blocking | **CONFIRMED — REPAIRED.** The record's `freshness_mint_hazard` anchors the prohibition at lines 212–214 (the reviewer wrote 213–214; the sentence's first word sits at the end of line 212) and quotes it; the remedy's extent is 220–222 at the G1 row, the H1 row and `review3.repairs.H1`, with 222–223 named separately as the orthogonality sentence |
+| K4 | non-blocking | **CONFIRMED — REPAIRED.** `review3.repairs.H1` carries the J3 marker its siblings carry |
+| K5 | editorial | **CONFIRMED — REPAIRED.** The P-70 note is stamped for both dates, its review-1 clause and the row's review-1 citation read "fourteen findings, ten repaired in that pass and four closed after review 2 (10 REPAIRED / 4 PARTIAL as review 2 verified)" |
+| K6 | editorial | **CONFIRMED — REPAIRED.** The record says the arms are in the packet's own words, which the P-70 row paraphrases clause for clause; `review4.repairs.J3` marked on its line |
+
+No recommended answer changed: all seven recommendations stand word for
+word as after review 2. The sweep the H1 row names, re-run over the three
+files at the bytes this section describes: 42 occurrences over
+2,932 lines by `wc -l` (2,935 counting each file's trailing
+line), every one inside review-history or lawful-arms text.
+
+**Every repair above post-dates review 5.** By verification rule 10,
+review 5 binds the 139,050-byte packet, 50,219-byte evidence record and
+33,783-byte register it read at `76e897f` — and not the current bytes.
+The current bytes are uncovered until a sixth independent fresh-context
+review confirms them; its raw will be retained as a sixth `-RAW.md` file,
+never an overwrite of the first five.
+
 ## Funnel summary
 
 ```
@@ -1684,7 +1744,7 @@ Baseline: Syzygy a9f671e; capture = lane A after/tailnet, 1,484,487 bytes, Butle
 Acts: none on any slice (the 2026-09-05 continuation); a spec amendment: none found and none sought
 Open questions: Q1-Q7 above; would queue as P-70 (P-68 is lane B, P-69 is M2, each on its own branch)
 Sign-off: pending - the owner's
-Recommended handoff: Q1 "a non-conformance" and Q3 "inheritance" -> run slices 1-4 now under syzygy-dov.3, in parallel with P-68 and M2; hold slices 5-6 until M2 slice 1 has landed so the generated glossary carries its markers; open no specification package at all
+Recommended handoff: Q1 "a non-conformance", Q3 "inheritance", Q4 "yes" and Q6 "a --proposed token" -> run slices 1, 2 and 4 now under syzygy-dov.3, in parallel with P-68 and M2, slice 3 next; hold slices 5-6 until M2 slice 1 has landed so the generated glossary carries its markers; open no specification package at all (this line first named Q1 and Q3 only and "slices 1-4 now"; brought level with the Recommended handoff section after review 5, K2)
 ```
 
 ## Recommended handoff
