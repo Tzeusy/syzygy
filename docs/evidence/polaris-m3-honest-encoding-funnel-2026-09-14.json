@@ -279,7 +279,7 @@
     "closed_freshness_vocabulary_authority": "RFC2-10, .syzygy/governance/contracts/rfcs/RFC-0002/snapshot-and-evaluation-core.md line 209: \"Four values, closed. The list changes only by amendment to this RFC; no implementation may mint, spell, or force-fit a freshness value it does not carry.\"",
     "unstated_rendered_count_tier": 11,
     "unstated_rendered_count_freshness": 0,
-    "freshness_mint_hazard": "the freshness twin fires 0 times on this capture because all 713 tuples carry \"fresh\"; assessCurrency no-bound-declared arm (packages/cap1-core/src/staleness.ts lines 98-104) returns no freshness field, so wiring it - M2 slice 5 - makes line 307 mint a fifth freshness value on every class with no declared bound. RFC2-10 forbids the mint in terms and supplies no absence marker, so arm (b) of Q2 is not available for freshness",
+    "freshness_mint_hazard": "the freshness twin fires 0 times on this capture because all 713 tuples carry \"fresh\"; assessCurrency no-bound-declared arm (packages/cap1-core/src/staleness.ts lines 98-104) returns no freshness field, so wiring it - M2 slice 5 - makes line 307 mint a fifth freshness value on every class with no declared bound. RFC2-10 forbids the mint in terms (line 219) and, at lines 220-222, supplies the remedy the packet first said it lacked: a condition genuinely outside the four freshness states is disclosed as a fact of the render, never dressed as a freshness state, and line 223 adds that freshness never substitutes for the labels or the tier registry. So arm (b) of Q2 has three lawful readings for the freshness field - (b-i) render only the four declared states and no absence, (b-ii) disclose the no-bound-declared condition as a fact of the render beside the tuple, (b-iii) the disclosure route with the absence named in the legend, the packet's recommendation - and none of them mints a fifth value. An earlier text of this field read \"supplies no absence marker, so arm (b) of Q2 is not available for freshness\"; that wording was withdrawn after review 2 (finding G1) at the packet's four sites and the register, missed here, and corrected after review 3 (finding H1)",
     "sibling_surface_states_rendered": {
       "rfc2_25_closed_three": [
         "dismissed-by-decision",
@@ -671,7 +671,7 @@
       "F14": "accepted and repaired - lines 34-51 in the slice and the Gate 3 row"
     },
     "recommended_answers_changed": {
-      "Q2": "was \"Arm (b).\"; now \"Arm (b) for the tier field; arm (b) is not lawfully available for the freshness field, and the owner should see why\" - the tier ruling unchanged, the freshness half new (F4)",
+      "Q2": "was \"Arm (b).\"; now \"Arm (b) for the tier field; arm (b) is not lawfully available for the freshness field, and the owner should see why\" - the tier ruling unchanged, the freshness half new (F4). That freshness wording was itself withdrawn after review 2 (finding G1): the recommendation now reads (b-iii) with (b-i) and (b-ii) named as live, lawful arms - see review2 and review3 below (marker appended after review 3, finding H2; the superseded text above is kept, not deleted)",
       "Q6": "was \"Yes, with a --proposed token at a stated perceptual distance\"; now \"Yes - a --proposed token, declared as a render-disclosure encoding, at a stated perceptual distance\" - same answer, framing no longer routes an implementer into a closed vocabulary (F3), bar now names its population (F2)"
     },
     "recommended_answers_unchanged": [
@@ -708,15 +708,33 @@
         "sha256": "cac255f552e198d318146c402d67e7118cdb1c5a2188cabdfd85dcff987d37e7"
       }
     },
-    "verdict_word_copied_exactly": "REVISE - one blocking, five non-blocking, three editorial",
+    "verdict_word_copied_exactly": "REVISE",
+    "verdict_word_copied_exactly_note": "the raw's exact verdict line (:567) is 'Verdict: REVISE'; the counts are a separate sentence at :564-566, not part of the verdict word (review 3, finding H9; the earlier field text ran the two together as though quoted verbatim)",
     "findings": {
-      "blocking": ["G1"],
-      "non_blocking": ["G2", "G3", "G4", "G5", "G6"],
-      "editorial": ["G7", "G8", "G9"]
+      "blocking": [
+        "G1"
+      ],
+      "non_blocking": [
+        "G2",
+        "G3",
+        "G4",
+        "G5",
+        "G6"
+      ],
+      "editorial": [
+        "G7",
+        "G8",
+        "G9"
+      ]
     },
     "f_verification_against_review_1": {
       "REPAIRED": 9,
-      "PARTIAL": ["F4", "F6", "F7", "F12"],
+      "PARTIAL": [
+        "F4",
+        "F6",
+        "F7",
+        "F12"
+      ],
       "NOT_REPAIRED": 0
     },
     "repairs": {
@@ -740,5 +758,67 @@
       "trust_and_evidence_line": "trust-and-evidence.md line 101, confirmed"
     },
     "coverage": "every repair above post-dates review 2, so by verification rule 10 review 2 binds the 102,085-byte packet and 30,747-byte evidence record it read at 573abb0, not the current bytes; the current bytes are uncovered until a third independent fresh-context review, retained as a third -RAW.md file, confirms them"
+  },
+  "review3": {
+    "raw": {
+      "path": "docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-3-RAW.md",
+      "bytes": 42726,
+      "sha256": "7154f1f3972cfc73619694d48851f4368a8eb7fdce77cadb81493290f82c5aa6",
+      "method": "wc -c and sha256sum equivalents computed this session over the retained file"
+    },
+    "reviewed_commit": "b34fca7",
+    "verdict_word_copied_exactly": "REVISE",
+    "findings": {
+      "blocking": [
+        "H1"
+      ],
+      "non_blocking": [
+        "H2",
+        "H3",
+        "H4",
+        "H5",
+        "H6",
+        "H7"
+      ],
+      "editorial": [
+        "H8",
+        "H9",
+        "H10",
+        "H11"
+      ]
+    },
+    "re_derived_before_applying": {
+      "H1": "json :282 grepped this session; the withdrawn 'supplies no absence marker ... not available for freshness' text was still present - confirmed",
+      "H2": "json :674 grepped this session; 'not lawfully available for the freshness field' carried no in-place marker - confirmed",
+      "H3": "P-70 note and row swept for 'together', 'ruled together', 'read together' before the repair: 0 hits in both - confirmed; M2's Q7 (stale with reason) and M3's Q2 (b-iii) are mutually exclusive recommendations for the same claims, not complementary",
+      "H4": "git log --oneline -1 in the M2 worktree this session returns f2f37dd, one past the da1497b the packet named - confirmed; sibling cited by row P-69 and the two shared files, one dated head line kept",
+      "H5": "review 2's F1-F14 table counted by row this session: 10 REPAIRED / 4 PARTIAL over 14 - confirmed",
+      "H6": "all 11 human-side Unknown tuples matched to api-poc.json objects whose epistemic keys are exactly ['freshness','label','reasons'], no tier key, denominator 713 - confirmed",
+      "H7": "class=\"proposal-label\" occurs once on the retained tailnet capture at 56.29% depth with color var(--unknown) - confirmed",
+      "H8": "worktree is two commits past a9f671e (573abb0, b34fca7), not at the same commit - confirmed",
+      "H9": "review 2 raw :567 reads exactly 'Verdict: REVISE'; the counts are a separate sentence at :564-566 - confirmed",
+      "H10": "the PWB-REQ-007 and PWB-REQ-020 block quotes elided bullets without a marker - confirmed",
+      "H11": "RFC2-10 runs through line 223; the Gate 2 quote stopped at line 222 while called 'quoted in full' - confirmed"
+    },
+    "repairs": {
+      "H1": "this record's vocabulary_versus_rendered.freshness_mint_hazard rewritten to RFC2-10's actual remedy (lines 220-223) and the three lawful arms, with the withdrawn wording quoted and marked in place",
+      "H2": "in-place withdrawal marker appended to review1.recommended_answers_changed.Q2; superseded wording kept",
+      "H3": "one 'rule P-69 and P-70 together' clause added to the P-70 row naming the two recommendations as mutually exclusive and the choice as the owner's; collision item 3 no longer calls them complementary",
+      "H4": "M2 cited by register row P-69 and the two shared files; one dated line names f2f37dd",
+      "H5": "10 REPAIRED / 4 PARTIAL stated in both places, with the raw's own disagreeing totals disclosed",
+      "H6": "Q2 states the machine-side absence of tier for the 11 Unknown claims with predicate and denominator; PWB-REQ-007's parity implication disclosed, not resolved",
+      "H7": ".proposal-label named as slice 2's one live positive; the handoff states slice 2's sweep is red until slice 6 lands or the two are resequenced",
+      "H8": "baseline sentence corrected",
+      "H9": "verdict word and counts split in the packet and in this record's review2 block",
+      "H10": "ellipses added between elided bullets",
+      "H11": "Gate 2 quote extended through line 223 and the orthogonality sentence weighed where the packet relies on it"
+    },
+    "recommended_answers_changed": "none - all seven recommendations word for word as after review 2; Q2 (b-iii) now additionally disclosed as mutually exclusive with M2's stale recommendation (H3)",
+    "sweep_after_repair": {
+      "predicate": "grep -F for 'no absence marker', 'not available for freshness', 'not lawfully available' over the packet, this record and the register",
+      "denominator": "3 files, every line",
+      "result": "remaining hits are all inside review-history text that quotes the withdrawn wording and marks it withdrawn in the same sentence or field; 0 hits stand as a live claim"
+    },
+    "uncovered_until": "a fourth independent fresh-context review; every edit recorded here post-dates review 3 (verification rule 10)"
   }
 }

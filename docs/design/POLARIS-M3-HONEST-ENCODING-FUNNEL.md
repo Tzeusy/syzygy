@@ -18,9 +18,13 @@ and one fixture; observable behavior changes; no governed artifact touched);
 CC-VIZ-1 makes legend-bearing, and they touch the shared token set every
 surface imports).
 
-Baseline: Syzygy `a9f671e` (main; the worktree is `agent/syzygy-dov.3` at the
-same commit, and the only pre-existing working-tree change on main is a
-co-lead's in-flight `AGENTS.md`, unrelated) [Observed]. The retained capture
+Baseline: Syzygy `a9f671e` (main; the worktree branches from `a9f671e`, and
+the only commits on it are this packet's own artifacts, so every source
+citation below is at the baseline bytes; the only pre-existing working-tree
+change on main is a co-lead's in-flight `AGENTS.md`, unrelated) [Observed;
+corrected after review 3, finding H8 — the worktree is two commits ahead of
+`a9f671e` at `573abb0` then `b34fca7`, not at the same commit as stated
+before this repair]. The retained capture
 this packet measures is the lane A *after* capture, tailnet host form, at
 Butlers evaluation revision 2e3bac97790b, committed 2026-09-13T10:31:11Z and
 captured 2026-09-13T13:33:24.295Z: 1,484,487 bytes, sha256
@@ -467,6 +471,7 @@ defined at line 439 of
 >   across two evaluations of the same semantic subjects, including
 >   fixtures for every admitted label, tier, reason, freshness, challenge and
 >   sibling state plus out-of-vocabulary and missing-currency cases.
+> …
 > - **Falsifier**: a positive claim lacks current support, a tuple field is
 >   absent/out of vocabulary, a reason has no route, Unknown is folded into
 >   a total, or an aggregate claims its own headline status.
@@ -481,6 +486,7 @@ the spec's own words.
 views**, at line 902 of the same file:
 
 > - **Observable**: both populations contain equivalent multisets.
+> …
 > - **Falsifier**: one fact, authority state, judgment state or disclosure is
 >   missing, duplicated, changed, collapsed or associated with a different
 >   evaluation in either channel.
@@ -497,6 +503,22 @@ carry the symbol into the machine answer too]. The project's own recorded
 lesson applies to slice 2's sweep regardless: **parity is per tuple, never
 per id** — 713 tuples over 703 distinct claim ids on this capture, so
 `tuples === distinct ids` is a false invariant.
+
+**The machine side of Q2's tier limb, disclosed here.** Matched by claim id
+against the retained machine answer (`api-poc.json`, 1,149 objects over
+1,148 distinct ids carrying both `claimId` and `epistemic`), all **11 of
+11** human-side Unknown tuples have an `epistemic` object with exactly
+`['freshness', 'label', 'reasons']` — no `tier` key at all — while the
+human page renders `data-epistemic-tier="unstated"` for every one of them
+[Observed, re-derived this session; review 3, finding H6]. Q2's arm (b) for
+tier is justified partly by PWB-REQ-007's tuple SHALL ("carry the closed
+label, tier … that govern it"), and that justification holds on the human
+channel only: the field the owner is asked to keep present in the render
+has no counterpart at all in the machine channel's own object. This is not
+resolved here — it is the same disclosure this section makes for slices 1
+and 5's styling change, extended to the tier field's absence, and it
+strengthens rather than weakens Q2: the divergence Q2 asks the owner to
+rule on is already live and previously unmeasured.
 
 **PWB-REQ-016 — Project comprehension works without vision or a pointing
 device**, at line 864:
@@ -563,7 +585,21 @@ clause's obligation explicitly rather than by implication.
 > checked for parity, and leaving it unstated is how the value gets chosen
 > by whoever implements the render first. A condition genuinely outside the
 > four is disclosed as a fact of the render, never dressed as a freshness
-> state.
+> state. Freshness is orthogonal to the three labels and the tier registry;
+> it never substitutes for either.
+
+The quote now runs the clause's full extent, lines 209–223 (the next clause,
+RFC2-11, begins after a blank line), so "quoted in full" below and in Q2 is
+now literally true; before this repair it stopped one sentence short, at
+"freshness state." (review 3, finding H11). The closing sentence matters for
+Q2's freshness limb: it is an argument against arm **(b-ii)** — holding the
+claim Unknown rather than disclosing the condition — because it says
+freshness is *orthogonal* to the labels and never substitutes for either,
+so a reader could take it to mean the Unknown label is not itself a
+freshness disclosure and cannot discharge RFC2-10's obligation on its own.
+It is not an argument against **(b-iii)**, which discloses the condition
+outside the freshness slot rather than through the label. Q2 states this
+weighing directly.
 
 This is the clause the freshness family is closed by, and this packet's first
 draft never cited it (review 1, F9): it anchored the closure to
@@ -834,6 +870,22 @@ unseeable). (b) Set the denominator to the page count → the equality
 assertion fails. (c) Remove one element family from the predicate → the
 independent count disagrees. (d) Add an epistemic-token colour to an element
 outside the families → the negative sweep fails.
+
+**The negative sweep has one known live positive on day one.**
+`class="proposal-label"` renders once, at 56.29% depth, and its served rule
+is `.proposal-label { …; color: var(--unknown); }` (`polaris.ts`:1329) —
+exactly what the negative sweep in the previous paragraph asserts against,
+and exactly what slice 6 exists to repair (review 3, finding H7). Run as
+sequenced, slice 2 is red the day it lands against an element the same
+packet defers to slice 6. Rather than declare a dated exception for it,
+this packet pulls slice 6's token change for that **one** rule forward into
+this slice: `.proposal-label` moves to the `--proposed` token now, before
+the rest of slice 6's encoding table exists. It touches neither of M2's two
+files and needs no act, so it can run with slices 1–4 while the rest of
+slice 6 still waits on nothing but its own measurable bar (Q6). This is
+this packet's stated choice, not the only lawful one — a declared, dated
+exception naming the element and the reason is the alternative, and would
+leave slice 2 red until slice 6 lands.
 
 ### Slice 3 — One real Unknown in the first reading (medium; no act)
 
@@ -1186,22 +1238,29 @@ freshness *values* themselves, which are M2's subject.
 
 **With M2 (register row P-69; overlap confined to the two files listed
 below).** This packet's first draft recorded M2's head as `ec30494`, then
-`e0ecdc8` (review 1, F7), then `68123fc` (review 2, G4) — three consecutive
-readings, each correct when written and stale by the next one, which is the
-cost of citing a branch by head rather than by register row. Re-read this
-session at **`da1497b`** (2026-09-14: "M2 funnel review 5 retained and
-K1–K9 repaired"; reviews 4 and 5 landed since review 2 read `1befd6f`,
-repairing findings J1–J8 and K1–K9), M2 still has **six** slices [Observed:
-the branch read read-only at that head]. This is the only place this packet
-names M2's head hash; elsewhere it cites P-69 and the two files below.
+`e0ecdc8` (review 1, F7), then `68123fc` (review 2, G4), then `da1497b`
+(this repair's own first draft) — four consecutive readings, each correct
+when written and stale by the next one, which is the cost of citing a
+branch by head rather than by register row (review 3, finding H4). This
+section stops doing it: M2 is cited below by register row (P-69) and the
+two shared files only. **One dated exception, for the record:** M2 is now
+`f2f37dd` ("M2 funnel review 6 CONFIRM WITH EXCEPTIONS retained; L1–L4
+applied"), one commit past `da1497b` [Observed: `git log --oneline
+da1497b..HEAD` in the M2 worktree, read this session, 2026-09-14]. M2 still
+has **six** slices at that head, slice 6's two files
+(`polaris-reading.ts` line 44, `polaris.ts` lines 506–510) are untouched by
+any M3 slice, and M2's slice 1 wording and its Q5 "mark, do not delete"
+ruling are confirmed unchanged [Observed: the branch read read-only at
+`f2f37dd` this session].
 
 M2's slice 6 ("A lapsed reviewed selection announces itself") touches
 `apps/three-surface-poc/src/polaris-reading.ts` line 44 and
 `apps/three-surface-poc/src/polaris.ts` lines 506–510 — **neither of which any
 M3 slice touches** — and M2's slice 1 wording and its Q5 "mark, do not delete"
-ruling are confirmed unchanged at `da1497b` (M2's own Gate 3 row and Q5 text
-read this session). So the shared surface is unchanged and M3's collision
-conclusion and recommended sequence survive; only the head hash moved. M2's
+ruling are confirmed unchanged at the current head (M2's own Gate 3 row and
+Q5 text read this session, at `f2f37dd`, per the one dated line above). So
+the shared surface is unchanged and M3's collision conclusion and
+recommended sequence survive; only the head hash moved, again. M2's
 review 3 withdrew a PWB-REQ-020 precedent its own review-2 repair had
 asserted; this packet never relied on that precedent — its PWB-REQ-020
 reading is its own, stated at Gate 2 and labelled Inferred.
@@ -1230,9 +1289,19 @@ this session on both branches]:
    `apps/three-surface-poc/src/polaris.ts` line 307 would mint `unstated`
    into `data-epistemic-freshness` on every
    unbounded class the moment that wiring lands. M3 slice 5's served-output
-   closure assertion is what makes that fail loudly instead of rendering. The
-   two moves are complementary: M2 decides the *value*, M3 guards the
-   *vocabulary*.
+   closure assertion is what makes that fail loudly instead of rendering.
+   **Slice 5's guard holds under either ruling, but the two packets'
+   recommendations are not complementary — they are mutually exclusive for
+   the same claims** (review 3, finding H3, folded in here rather than
+   filed separately, since the repair is one clause). If the owner grants
+   M2's Q7 as recommended, `claim.epistemic.freshness` is `'stale'` and
+   `polaris.ts` line 307 never fires, foreclosing this packet's (b-iii) for
+   those claims; if the owner grants this packet's Q2 as recommended, no
+   value enters `data-epistemic-freshness` for them and M2's `stale` is
+   contradicted. Granting both as recommended is not available. M2 decides
+   the *value*, M3 guards the *vocabulary* — that much is true of the guard
+   alone; the two recommendations stand as the owner's choice between them,
+   not as a reconciled pair.
 
 **Cross-packet note (review 2, G1).** M2's Q3, Q5 and Q7 all rest on the
 same RFC2-10 sentence this packet's Q2 relies on — "a condition genuinely
@@ -1419,22 +1488,31 @@ sha256 `a04b20517539e971c1e192015329dd39a2e2f536b52c06fffdce473177397012`;
 both figures computed this session with `wc -c` and `sha256sum`, matching
 the raw's own header exactly). It reviewed the packet, the evidence record
 and the register at commit `573abb0` — the four files review 1 also named,
-all tracked at that commit. Its verdict word, copied exactly: **REVISE —
-one blocking, five non-blocking, three editorial**. Findings by severity as
-the raw states them: 1 blocking (G1), 5 non-blocking (G2–G6), 3 editorial
-(G7–G9).
+all tracked at that commit. Its verdict word, copied exactly: **REVISE**.
+Findings by severity as the raw states them: 1 blocking (G1), 5
+non-blocking (G2–G6), 3 editorial (G7–G9) (review 3, finding H9: the
+earlier "REVISE — one blocking, five non-blocking, three editorial" read as
+a verbatim copy but was assembled from two places in the raw — the verdict
+line at :567 is exactly "Verdict: REVISE," with the counts stated
+separately at :564–566).
 
 The review re-derived every load-bearing figure in the packet a second time
 — all 36 ΔE76 pairs, the three-method tuple count, the 1,087-member
 cross-surface population, the 409/409 by-id item sweep, the lane B hoist
 figures, the byte arithmetic and the governance battery — and found them
 exact. It also verified all fourteen review-1 findings against the current
-bytes: **9 REPAIRED, 5 PARTIAL** (F4, F6, F7, F12 partial; **0 NOT
-REPAIRED**), the partials being exactly the sites this repair pass closes.
+bytes: **10 REPAIRED, 4 PARTIAL** (F4, F6, F7, F12 partial; **0 NOT
+REPAIRED**), computed from the raw's own F1–F14 table
+(`...-2-RAW.md`:461–474, one row per finding, denominator 14; review 3,
+finding H5) — the partials being exactly the sites this repair pass closes.
+The raw's own totals line (:476, "9 REPAIRED, 5 PARTIAL") and its summary
+sentence (:546–547, "eleven ... repaired cleanly") both disagree with the
+table and with each other; none of the raw's three figures agree, and this
+packet had transcribed the totals line instead of counting the table.
 
 | Finding | Disposition |
 |---|---|
-| G1 blocking — RFC2-10 supplies the absence route the packet said it lacked, foreclosing a lawful third arm on Q2's freshness limb | Accepted and repaired: the Gate 2 quote is extended through the clause's remedy sentence (`snapshot-and-evaluation-core.md`:220–222, verbatim, no added emphasis); "supplies no absence marker at all" is withdrawn from all four packet sites and the register row; the asymmetry is restated as a rendering remedy (RFC2-25) against a disclosure remedy outside the slot (RFC2-10); Q2's freshness limb now states three lawful arms (b-i/b-ii/b-iii), puts the PWB-REQ-007 tension to the owner unresolved, and recommends (b-iii) labelled `[Inferred]` without calling (b-i) or (b-ii) unlawful; the cross-packet link to M2's Q3/Q5/Q7 is stated in Q2, Q7 and the collision section |
+| G1 blocking — RFC2-10 supplies the absence route the packet said it lacked, foreclosing a lawful third arm on Q2's freshness limb | Accepted and repaired: the Gate 2 quote is extended through the clause's remedy sentence (`snapshot-and-evaluation-core.md`:220–222, verbatim, no added emphasis); "supplies no absence marker at all" is withdrawn from the packet's four prose sites and the register row — but **not** from the evidence record's own `vocabulary_versus_rendered.freshness_mint_hazard` field, a fifth site this repair pass missed and review 3 found still standing (finding H1; corrected in the review-3 section below); the asymmetry is restated as a rendering remedy (RFC2-25) against a disclosure remedy outside the slot (RFC2-10); Q2's freshness limb now states three lawful arms (b-i/b-ii/b-iii), puts the PWB-REQ-007 tension to the owner unresolved, and recommends (b-iii) labelled `[Inferred]` without calling (b-i) or (b-ii) unlawful; the cross-packet link to M2's Q3/Q5/Q7 is stated in Q2, Q7 and the collision section |
 | G2 non-blocking — the preflight does not require the `unstated —` sentence; an existing test does | Accepted and repaired: slice 5's readiness paragraph now names `aria-describedby` as the preflight's third true example and states that `walkthrough-preflight.ts` builds its required-term set from the model, never the render, so `unstated` never enters it; the guard is restated as `polaris-first-reading.test.ts` line 88 |
 | G3 non-blocking — F12 was not fully repaired: added bold survives in the RFC7-34 quote, and the disposition row asserted otherwise | Accepted and repaired: the second bold span is dropped from the RFC7-34 quote at Gate 2, matching `rendering-and-surface.md`:241–243 verbatim; the F12 disposition row is corrected to say RFC7-34's bolding did not match until this repair |
 | G4 non-blocking — the M2 head is stale a third time, and one thing M3 relies on changed (M2's marker wording) | Accepted and repaired: the collision section now names M2's head once, as `da1497b` (2026-09-14, reviews 4 and 5 retained, J1–J8 and K1–K9 repaired), and cites M2 elsewhere by register row (P-69) and the two shared files; the structural collision and sequence are confirmed unchanged by reading M2's own Gate 3 row and Q5 text at `da1497b`; the marker description in slice 5 and collision item 1 is weakened to "the reason and, where one exists, the route" |
@@ -1468,6 +1546,60 @@ this repair.
 until a third independent fresh-context review confirms them; its raw will
 be retained as a third `-RAW.md` file, never an overwrite of the first two.
 
+## Review 3 and repairs (2026-09-14)
+
+A third independent fresh-context review of this packet — of the packet,
+its evidence record and the P-70 note and row — is retained verbatim at
+`docs/reviews/R-POLARIS-M3-HONEST-ENCODING-FUNNEL-3-RAW.md` (42,726 bytes,
+sha256
+`7154f1f3972cfc73619694d48851f4368a8eb7fdce77cadb81493290f82c5aa6`; both
+figures computed this session with `wc -c` and `sha256sum`, matching the
+raw's own header table). It reviewed the packet, evidence record and
+register at commit `b34fca7`. Its verdict word, copied exactly: **REVISE**.
+Findings by severity as the raw states them: one blocking (H1); six
+non-blocking (H2–H7); four editorial (H8–H11).
+
+Every finding was re-derived against source this session before being
+applied, never taken on the raw's word alone — the sha256 above, the
+RFC2-10 clause text at `snapshot-and-evaluation-core.md` lines 209–223, the
+M2 worktree's head (`git log --oneline -1` and `da1497b..HEAD`), the
+`api-poc.json` machine answer (1,149 objects, 1,148 distinct ids), the
+retained capture's `.proposal-label` count and depth, review 2's own F1–F14
+table (`...-2-RAW.md`:461–474), and the literal search for
+"together"/"ruled together"/"read together" over the P-70 note and row
+were each independently run this session, not copied from the raw's
+narration. All eleven findings confirmed.
+
+| H | Severity | Verdict | Evidence |
+|---|---|---|---|
+| H1 | blocking | **CONFIRMED — REPAIRED** | The evidence record's `vocabulary_versus_rendered.freshness_mint_hazard` field (json :282) still asserted "supplies no absence marker" and "arm (b) of Q2 is not available for freshness" after review 2's repair pass withdrew the same wording from the packet's four sites and the register row. Re-derived: the field is rewritten to state RFC2-10's remedy at lines 220–222 and the three lawful arms; `closed_freshness_vocabulary_authority` is extended through the remedy sentence with the elision marked; the two disposition rows that claimed the withdrawal was complete (packet, review-2 section; record `review2.repairs.G1`) are corrected to name the record as a fifth site. Swept the packet, record and register for `supplies no`, `no absence`, `not lawfully available`, `unlawful`, `no remedy` and `supplies none`: 25 literal occurrences over 2,482 lines across the three files; of those, only the one field above was a live, non-historical false assertion, one more pair (the two disposition rows) wrongly claimed completeness, and `review1.recommended_answers_changed.Q2` (H2) lacked an in-place marker — every other occurrence is either current lawful-arms language, an existing in-place withdrawal marker, or a review-history quote already framed as superseded |
+| H2 | non-blocking | **CONFIRMED — REPAIRED** | The evidence record's `review1.recommended_answers_changed.Q2` field carried the withdrawn "not lawfully available for the freshness field" wording with no marker, unlike the packet's own parallel passage (:1393 area), which marks it in place. Appended the same in-place marker to the JSON field, without deleting the superseded wording |
+| H3 | non-blocking | **CONFIRMED — REPAIRED** | The packet states three times that P-69 and P-70 must be ruled together; the P-70 row and note carried none of it — swept for "together", "ruled together" and "read together": 0 hits in both, confirmed this session. Added one clause to the P-70 row. Collision item 3's "the two moves are complementary" read, in context, as though M2's `stale` and this packet's (b-iii) recommendations were reconciled; they are mutually exclusive for the same claims. Restated in place, without smoothing: both recommendations stand as the owner's choice, not as a reconciled pair |
+| H4 | non-blocking | **CONFIRMED — REPAIRED** | M2's head was named as `da1497b`, a fourth stale reading; `git -C .../scratchpad/m2wt log --oneline -1` this session returns `f2f37dd` (M2 funnel review 6, CONFIRM WITH EXCEPTIONS), one commit past `da1497b`. The collision section now cites M2 by register row and the two shared files as its rule, with `f2f37dd` named once, dated, as the one exception, and the substance (six slices, slice 6's two untouched files, Q5's ruling) re-confirmed at that head this session |
+| H5 | non-blocking | **CONFIRMED — REPAIRED** | Review 2's own F1–F14 table (`...-2-RAW.md`:461–474) counts to 10 REPAIRED / 4 PARTIAL by row (verified this session, denominator 14); its totals line (:476) says "9 REPAIRED, 5 PARTIAL" and its summary (:546–547) says "eleven ... repaired cleanly" — three disagreeing figures in one raw. The packet and record had copied the totals line. Both now state 10/4, computed from the table, with the raw's internal disagreement noted |
+| H6 | non-blocking | **CONFIRMED — REPAIRED** | Re-derived from the retained `api-poc.json`: all 11 of 713 human-side Unknown tuples match a machine object whose `epistemic` carries no `tier` key at all (`['freshness','label','reasons']` only), confirming Q2's tier-limb justification (PWB-REQ-007's "carry the closed label, tier … that govern it") holds on the human channel only. Added to Gate 2's PWB-REQ-020 paragraph as a disclosure, not a resolution |
+| H7 | non-blocking | **CONFIRMED — REPAIRED** | Re-derived on the retained capture: `class="proposal-label"` renders once, at 56.29% depth, styled `color: var(--unknown)` — exactly the negative sweep's own falsifier and exactly what slice 6 exists to repair, so slice 2 would land red against an element the packet defers to slice 6. Named in slice 2 with the count and depth; this packet's stated choice is to pull `.proposal-label`'s one rule into slice 6's `--proposed` token now, alongside slices 1–4, rather than carry a declared exception — the alternative is named as lawful too |
+| H8 | editorial | **CONFIRMED — REPAIRED** | The baseline sentence claimed the worktree was "at the same commit" as `a9f671e`; it is two commits ahead (`573abb0`, then `b34fca7`). Corrected to state the worktree branches from `a9f671e` with only this packet's own artifacts on top |
+| H9 | editorial | **CONFIRMED — REPAIRED** | Review 2's exact verdict line (`...-2-RAW.md`:567) is "Verdict: REVISE"; the severity counts are a separate sentence at :564–566. The packet and record had assembled "REVISE — one blocking, five non-blocking, three editorial" from both and labelled it a verbatim copy — that exact string occurs 0 times in the raw. Split into the bare verdict word plus the counts, matching how the review-1 section already does it |
+| H10 | editorial | **CONFIRMED — REPAIRED** | The PWB-REQ-007 and PWB-REQ-020 block quotes drop Observable, Oracle and Oracle-independence bullets between the retained ones with no marker, while the packet's other elisions are marked. Added `…` between the retained bullets in both quotes |
+| H11 | editorial | **CONFIRMED — REPAIRED** | The Gate 2 RFC2-10 quote stopped at "freshness state." (line 222), one sentence short of the clause's own end at line 223 ("Freshness is orthogonal to the three labels and the tier registry; it never substitutes for either."), while two sites called it "quoted in full". Extended the quote through line 223 — the clause's full extent, confirmed against source this session — so "quoted in full" is now accurate at both sites, and added a paragraph weighing the orthogonality sentence against Q2's arm (b-ii) |
+
+**No recommended answer changed.** All seven questions' recommendations are
+word for word what they were after review 2's repairs; this pass corrects
+the evidence record, the register and the collision framing, not the
+packet's substantive conclusions. Q2's freshness recommendation — (b-iii),
+with (b-i) and (b-ii) named as live and lawful — stands unchanged; it is
+now also disclosed as mutually exclusive with M2's `stale` recommendation
+for the same claims (H3), which is a sharpening of the owner's choice, not
+a change to either side of it.
+
+**Every repair above post-dates review 3.** By verification rule 10,
+review 3 binds the 115,201-byte packet, 36,743-byte evidence record and
+31,054-byte register it read at `b34fca7` — and not the current bytes. The
+current bytes are uncovered until a fourth independent fresh-context review
+confirms them; its raw will be retained as a fourth `-RAW.md` file, never
+an overwrite of the first three.
+
 ## Funnel summary
 
 ```
@@ -1491,8 +1623,11 @@ Recommended handoff: Q1 "a non-conformance" and Q3 "inheritance" -> run slices 1
 **If Q1, Q3 and Q4 are answered as recommended:** file no new bead. Run
 slices 1, 2 and 4 under `syzygy-dov.3` immediately — they are self-contained,
 they touch no governed artifact and none of M2's files, and slice 2 alone
-turns POC-REQ-060's own falsifier from invisible into failing. Run slice 3
-next, with the opening-band design and the position oracle.
+turns POC-REQ-060's own falsifier from invisible into failing. Slice 2's own
+negative sweep needs `.proposal-label`'s one rule moved to slice 6's
+`--proposed` token pulled forward with it (slice 2, "one known live
+positive"), or it lands red. Run slice 3 next, with the opening-band design
+and the position oracle.
 
 **If Q2 is answered as recommended:** slice 5's tier table has six rows and
 an absence treatment, and the closure assertion against the hard-coded six is
