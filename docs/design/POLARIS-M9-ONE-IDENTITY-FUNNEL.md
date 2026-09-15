@@ -7,9 +7,13 @@
 > `-harvest.json` twin. "The dossier" below always means the `.md`; a
 > figure quoted from the machine records is cited to them by name
 > [corrected 2026-09-15 per review 1, F6: four quotations were attributed
-> to the dossier and occur only in the two JSON records].
-> written in the shape of `docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md` and its
-> siblings. Planning only: nothing here authorizes implementation, and this
+> to the dossier and occur only in the two JSON records]. This packet is
+> written in the shape of `docs/design/POLARIS-M1-PAGE-SIZE-FUNNEL.md` and
+> its siblings [re-joined 2026-09-15 after review 2, G5, which found the F6
+> repair had left "written in the shape of" an orphaned lower-case clause
+> with no subject or verb before it].
+>
+> Planning only: nothing here authorizes implementation, and this
 > packet rules no slice authorized or unauthorized. Each owner question below
 > names the lawful arms the owner may take; naming an arm is not a ruling that
 > a slice is authorized. The owner disposes.
@@ -38,12 +42,12 @@ work here.
 
 | # | Question | Recommended |
 |---|---|---|
-| Q1 | **Is the spec delta for slices 3–8 one CC-REV-2 amendment package against the three-surface-poc-experience specification alone, or one package spanning that specification and the project-wide Polaris (PWB) specification together?** The two specifications are separately signed and separately digest-bound: `THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md` line 39 says of its six signed artifacts, verbatim, "An edit to any of these breaks this act's digests; changes route through CC-REV-2's amendment path"; `POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md` line 31 says of its eleven, "An edit to any listed artifact breaks this act's digest binding and must use the amendment path". Lane B's package already occupies the PWB side: its manifest names all eleven PWB artifacts and declares, verbatim, "All rows take effect together or none do" (the file PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt under `.syzygy/governance/contracts/candidates/`, in its lane-B package directory pwb-scoped-attributes-amendment; named without a code span because it exists only on lane B's branch and CG-1b requires every code-span path to resolve in this worktree, and read there read-only this session). Two unperformed manifests proposing different bytes for the same eleven files cannot both be adopted. | **One package against the three-surface-poc-experience specification only, sequenced to start after lane B's PWB manifest is disposed of.** Every consequence M9 renders is a three-surface consequence: the cross-surface link, the state label, the join key, the entity/relationship epistemic tuple, the relation vocabulary. None of them changes what a *project-shape* claim carries, which is the PWB plane. **The counter-argument, and it is real:** Q2's recommended answer says PWB-REQ-007 does not reach the POC's nine entities and nine relationships; if the owner reads it the other way, the unified tuple is an implementation of a PWB requirement and the delta belongs on the PWB side, where it would collide with lane B head-on. **Second lawful arm:** one package spanning both specifications, drafted only after lane B lands or is withdrawn. **Third lawful arm, for the structural slices only:** a reviewed N/A judgment package, which is RFC2-26's own second route and a materially cheaper owner act than a CC-REV-2 amendment. The clause reads, verbatim at `.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md` line 201: "Before implementation, every observable consequence either maps to an approved OpenSpec requirement and scenario in the governance root's `openspec/**` plane, or carries a reviewed N/A judgment proving it purely structural with no independently testable behavior"; its home and gate are at line 206: "A reviewed N/A judgment is a recorded owner judgment homed in `decisions/` (RFC3-15), and the judgment is honored only through an effective owner act under RFC3-16(a)". Reachability per slice, this packet's reading and not a ruling [Inferred]: **slice 6a reachable** — a data attribute carrying an id the page already renders elsewhere changes no rendered claim; **slice 8 arguable and put rather than assumed** — the kind strings *are* rendered in the exact tables (`exact-tables.ts` lines 28 and 41), so a rename is observable even though no truth moves; **slices 1, 2, 4a, 4b, 5, 6b and 7 not reachable** — each adds independently testable behaviour, which is what the clause's "purely structural" excludes [added 2026-09-15 per review 1, F14, which found this arm named only in a Gate 5 row]. **Default if unanswered: no delta is drafted**; slices 3–8 hold and slices 1 and 2 are unaffected. |
+| Q1 | **Is the spec delta for slices 3–8 one CC-REV-2 amendment package against the three-surface-poc-experience specification alone, or one package spanning that specification and the project-wide Polaris (PWB) specification together?** The two specifications are separately signed and separately digest-bound: `THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md` line 39 says of its six signed artifacts, verbatim, "An edit to any of these breaks this act's digests; changes route through CC-REV-2's amendment path"; `POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md` line 31 says of its eleven, "An edit to any listed artifact breaks this act's digest binding and must use the amendment path". Lane B's package already occupies the PWB side: its manifest names all eleven PWB artifacts and declares, verbatim, "All rows take effect together or none do" (the file PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt under `.syzygy/governance/contracts/candidates/`, in its lane-B package directory pwb-scoped-attributes-amendment; named without a code span because it exists only on lane B's branch and CG-1b requires every code-span path to resolve in this worktree, and read there read-only this session). Two unperformed manifests proposing different bytes for the same eleven files cannot both be adopted. | **One package against the three-surface-poc-experience specification only, sequenced to start after lane B's PWB manifest is disposed of.** Every consequence M9 renders is a three-surface consequence: the cross-surface link, the state label, the join key, the entity/relationship epistemic tuple, the relation vocabulary. None of them changes what a *project-shape* claim carries, which is the PWB plane. **The counter-argument, and it is real:** Q2's recommended answer says PWB-REQ-007 does not reach the POC's nine entities and nine relationships; if the owner reads it the other way, the unified tuple is an implementation of a PWB requirement and the delta belongs on the PWB side, where it would collide with lane B head-on. **Second lawful arm:** one package spanning both specifications, drafted only after lane B lands or is withdrawn. **Third lawful arm, for the structural slices only:** a reviewed N/A judgment package, which is RFC2-26's own second route and a materially cheaper owner act than a CC-REV-2 amendment. The clause reads, verbatim at `.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md` line 201: "Before implementation, every observable consequence either maps to an approved OpenSpec requirement and scenario in the governance root's `openspec/**` plane, or carries a reviewed N/A judgment proving it purely structural with no independently testable behavior"; its home and gate are at line 206: "A reviewed N/A judgment is a recorded owner judgment homed in `decisions/` (RFC3-15), and the judgment is honored only through an effective owner act under RFC3-16(a)…". The elision matters and the clause is quoted whole in Gate 5's blockquote below: it continues ", in state (1) or state (2), with that state rendered; absent or invalid acts map nothing and leave the consequence unmapped and Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2)." [Elision marked and the continuation given 2026-09-15 after review 2, G2, which found the quotation closed without an elision mark inside quotation marks; superseded wording ended the quotation at "under RFC3-16(a)". The dropped half is the cautionary half — what happens when the act is absent or invalid — and Q3's third arm, which reaches this clause by reference, is repaired by this edit.] Reachability per slice, this packet's reading and not a ruling [Inferred]: **slice 6a reachable** — a data attribute carrying an id the page already renders elsewhere changes no rendered claim; **slice 8 arguable and put rather than assumed** — the kind strings *are* rendered in the exact tables (`exact-tables.ts` lines 28 and 41), so a rename is observable even though no truth moves; **slices 1, 2, 4a, 4b, 5, 6b and 7 not reachable** — each adds independently testable behaviour, which is what the clause's "purely structural" excludes [added 2026-09-15 per review 1, F14, which found this arm named only in a Gate 5 row]. **Default if unanswered: no delta is drafted**; slices 3–8 hold and slices 1 and 2 are unaffected. |
 | Q2 | **Does PWB-REQ-007's "Every project entity and project-fact claim" reach the POC's nine `entities[]` and nine `relationships[]`, or only the project-shape plane?** The requirement text (`openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md` line 443) reads, verbatim: "Every project entity and project-fact claim SHALL have a stable semantic Claim identity plus an evaluation instance, be challengeable with resolvable support, and carry the closed label, tier, exactly one primary reason, zero or more closed secondary reasons, freshness, challenge state and evaluation identity that govern it." Measured this session over the retained machine capture: **1,167** epistemic-labelled objects, of which **1,137** carry a tier and **30** do not; of those 30, **18** are the nine entities and nine relationships (`{basis,label}` ×9, `{label,reason}` ×9) and **12** are Unknown project-shape claims whose absent tier is optional in the type [Observed; census and predicate in the evidence record]. | **Only the project-shape plane.** That specification's Purpose paragraph (line 5) defines its subject as "the full declared shape of the configured Butlers project", and its reader definitions (lines 15–26) close "declared item" at nine classes, none of which is a capability, intent, work item, code region, test definition, test evidence or runtime — the kinds the nine POC entities carry (`packages/three-surface-poc-core/src/model.ts` lines 64–73). So PWB-REQ-007 governs project-shape claims, and the POC entity graph is governed by the three-surface specification, which sets no tuple requirement on it [Inferred — a reading of the requirement's scope, which is what this question puts to the owner]. **The counter-argument is strong:** the nine entities are rendered on Polaris beside 713 claims that *do* carry the full tuple, in one page and one payload, and a reader cannot see which plane a claim belongs to; if PWB-REQ-007 does reach them, the served payload is in breach today and slice 4 is a repair owed rather than an enhancement offered. **Second lawful arm:** rule that it reaches them — which makes slice 4 conformance to an adopted requirement, moves the delta to the PWB side (Q1's second arm), and makes the current payload a disclosed breach that must be recorded. **Default if unanswered: slice 4 holds.** |
 | Q3 | **Are the POC's eight relation kinds inside RFC1-26's closure, and if so, is `CONTRACT-COVERAGE.md` line 89 a defect of the matrix or a satisfaction of the clause?** RFC1-26 reads, verbatim, at `.syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md` lines 636–642: "Every rendered internal edge must resolve to its identified target (trust floor); an edge the kernel cannot resolve is not emitted. Relations not in this table do not exist at V0; profiles may add relations under their governing RFCs but may not re-type these. **A relation may be added to this table only by amendment carrying an owner decision** (RFC1-25(a) records the two such amendments to date); no drafter, reviewer, adapter, or profile may widen the core vocabulary by prose." The POC emits eight kinds; **one**, `contains`, is in RFC1-25's table; seven are not [Observed, intersection computed this session]. `openspec/changes/three-surface-poc-experience/CONTRACT-COVERAGE.md` line 89 records the consequence "Relations outside the closed table don't exist; no prose-widening" as **covered** by POC-REQ-052 — a requirement whose own text (spec line 855) is scoped to Orrery and forbids rendering "an edge, adjacency, grouping, or emphasis encoding a relationship the shared model does not hold", which is anti-fabrication, not vocabulary closure. | **The seven are outside the closed table, and line 89's mapping does not carry the closure consequence — but the matrix row is act-bound and may not be edited, so the honest route is a new requirement in slice 3's delta plus an explicit disclosure, not a correction at the site.** RFC2-26's own second paragraph says "a complete-looking matrix over under-enumerated consequences is a defect of the matrix", so the clause anticipates exactly this shape. **The counter-argument:** the POC is a bounded non-release proof of concept that builds no kernel and claims no V0 graph; an owner may reasonably read RFC1-26's "rendered internal edge" as governing the kernel's project graph, not a POC's local rendering vocabulary, in which case nothing is out of vocabulary and slice 8 is cosmetic. **Second lawful arm:** rule the POC's kinds a surface-local vocabulary outside RFC1-26, and land slice 8 as a naming convenience with no contract claim. **Third lawful arm:** Q1's reviewed N/A judgment package under `decisions/`, which reaches slice 8 on the reading that a rename with no rendered-truth change is purely structural — arguable rather than clear, because the kinds are rendered (`exact-tables.ts` lines 28 and 41) [added 2026-09-15 per review 1, F14]. **Default if unanswered: slice 8 lands neither the renames nor the flag**, and the divergence stays recorded here. |
 | Q4 | **If and when an agent asserts something, may the POC construct `Inferred`?** [recast 2026-09-15 per review 1, F13; superseded wording: "Should the POC be able to construct `Inferred` at all?" — on the recommended arm this packet's own act table says no trigger is reached, so the genuine gate is the constructible limb, not the typing decision.] Doctrine reserves the label for agent output: `.syzygy/governance/doctrine/trust-and-evidence.md` line 16 says, verbatim, "An LLM assertion is **Inferred, never Observed**", and the shipped legend already says so in two sentences (`apps/three-surface-poc/src/polaris-copy.ts` lines 35 and 41). Measured this session: `Inferred` appears in **0 of 27** non-test modules under `packages/three-surface-poc-core/src` and in **1 of 45** under `apps/three-surface-poc/src`, that one being the legend file; the two production claim constructors are `observedClaim` and `unknownClaim` (`packages/three-surface-poc-core/src/project-shape-model.ts` lines 184 and 188). Note that the shared tuple type **already carries** an Inferred arm (`packages/cap1-core/src/epistemic.ts` line 52); what is missing is a constructor and, on the POC's own two-member union, the arm itself. | **Yes, but only as the typed landing zone with no production constructor until an agent actually asserts something.** VIS-2's bar is that absence of evidence renders Unknown; an Inferred arm that nothing can construct is honest, and an arm that a renderer can construct from a non-agent source is the failure VIS-2 names. Add the arm, add the exclusion battery, and leave the constructor to whatever first produces an agent assertion. **The counter-argument:** a typed-but-unreachable arm is dead code with a test suite, and the honest render of "no agent has asserted anything here" is already Unknown with a reason — so the arm buys a vocabulary completeness claim and no observable truth. **Second lawful arm:** leave `PocEpistemic` two-membered, unify only the shape, and record that 2 of 3 doctrine labels remain unreachable. **On the recommended arm no owner act is reached**: Gate 3's act table records that "A typed-but-unconstructible arm reaches no trigger", so the typed arm proceeds under the improvement-cycles direction's recorded-finding limb like slices 1, 2 and 7, and what is put to the owner here is the *constructible* limb — which is why Q4 stays in the batch as a question rather than being decided inside the implementation plane [added 2026-09-15 per review 1, F13]. **The recommended answer did not change.** **Default if unanswered: the shape unifies without the Inferred arm** (slice 4a only; slice 4b holds). |
 | Q5 | **Which of M9's byte-adding slices may draw on the page's measured headroom, and in what order, given that a ceiling breach serves nothing?** Measured this session on the retained lane-A capture at `a9f671e`: `/polaris` is **1,478,637** bytes direct and **1,484,487** through the tailnet mount, against a declared `maxHumanResponseBytes` of **2,097,152** (`.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` line 270) — **618,515** bytes of headroom direct, **612,665** through the mount. The page already spends **418,122** bytes, 28.3% of itself, on 713 claim-tuple spans averaging **586.4** bytes each. The break-even for a per-item ribbon over the 415 declared items is **1,490** bytes per item. A ribbon whose three slots reuse the existing tuple markup costs at least 1,758 bytes per item and **does not fit**; a minimal three-anchor ribbon at roughly 300 bytes per item costs about 124,500 and does. | **Spend the headroom in this order: slice 1 (about 2 KB), slice 2 (under 1 KB), slice 6's identity attributes (about 12 KB on Trajectory, under 1 KB on Orrery), slice 4's eighteen tuples (about 10.5 KB on Polaris), and slice 5's ribbon last and only at the one-capability scale (about 1 KB), never at catalog fan-out until measured again.** **The counter-argument:** that headroom is not free — `AGENTS.md` records the P-63 trim's remaining margin as earmarked for the P-60/P-61 Butlers repairs at 418–443 KB, and those repairs land on a real Butlers commit this packet cannot schedule; spending 25 KB here narrows a margin someone else is counting on. **Second lawful arm:** land only slices 1, 2 and 8 (no measurable byte growth beyond about 3 KB) until the Butlers repairs are on main and the page is re-measured. **Default if unanswered: slices 1, 2 and 8 proceed on their own gates; every byte-adding slice holds.** |
-| Q6 | **Do slices 1 and 2 need an owner direction naming them?** No requirement in the signed three-surface specification names either consequence: over its **24** requirements and **24** scenarios, swept this session, none requires a link from a claim on one surface to the same subject on another, and none requires a surface to name which of the three states it holds. The improvement-cycles direction says, verbatim (`.syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md` lines 55–56): "Improvement-cycle work must trace to POC-REQ-001..061 or to a recorded review finding." | **No — they trace to recorded review findings, which is the direction's own second limb.** The pursuit produced exactly what that direction defines a cycle's first step to be — "a review/audit of the runnable POC in fresh context producing evidence-cited findings" (line 34) — and L6-F2 and L6-F7 are those findings, each carrying capture-level evidence re-derived in this packet. **The counter-argument:** the direction's cycle structure also says a cycle's repairs are "derived only from recorded findings" and that "the agent reports each completed cycle to the owner before starting the next" (line 41) — the first quotation begins at line 36, not 41 [corrected 2026-09-15 per review 1, F15(2), which found two quotations sharing one cite]; if the owner reads the pursuit as a *new* cycle rather than a continuation, its report is owed before any repair lands. **Second lawful arm:** treat the pursuit as cycle *n*'s review, report it, and land slices 1 and 2 as cycle *n*'s repairs after that report. **Default if unanswered: slices 1 and 2 are filed but not landed**, because the report is cheap and the ordering is the owner's.  |
+| Q6 | **Do slices 1 and 2 need an owner direction naming them?** No requirement in the signed three-surface specification names either consequence: over its **24** requirements and **24** scenarios, swept this session, none requires a link from a claim on one surface to the same subject on another, and none requires a surface to name which of the three states it holds. The improvement-cycles direction says, verbatim (`.syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md` lines 55–56): "Improvement-cycle work must trace to POC-REQ-001..061 or to a recorded review finding." | **No — they trace to recorded review findings, which is the direction's own second limb.** The pursuit produced exactly what that direction defines a cycle's first step to be — "a review/audit of the runnable POC in fresh context producing evidence-cited findings" (line 34) — and L6-F2 and L6-F7 are those findings, each carrying capture-level evidence re-derived in this packet. **The counter-argument:** the direction's cycle structure also says a cycle's repairs are "derived only from recorded findings" and that "the agent reports each completed cycle to the owner before starting the next" (line 41) — the first quotation begins at line 36, not 41 [corrected 2026-09-15 per review 1, F15(2), which found two quotations sharing one cite]; if the owner reads the pursuit as a *new* cycle rather than a continuation, its report is owed before any repair lands. **Second lawful arm:** treat the pursuit as cycle *n*'s review, report it, and land slices 1 and 2 as cycle *n*'s repairs after that report. **Third lawful arm, and the cheapest affirmative route: the owner issues a direction naming slices 1 and 2.** A “yes” on this arm does not stop the two slices — it authorizes them directly, and it moots both readings the other arms turn on: the trace-to-findings reading of the improvement-cycles direction's second limb, and the question of whether the pursuit is a continuation or a new cycle owing a report. [Added 2026-09-15 after review 2, G4, which found the question's own affirmative limb unnamed and the owner therefore shown a binary with the cheapest affirmative route absent. Review 1 read Q6 as complete (“Yes. Two arms plus a default”); review 2 read the same arms as incomplete. Both readings are recorded in the review-2 section below and neither is ruled here. Adding the arm moves neither the recommended answer nor the default.] **Default if unanswered: slices 1 and 2 are filed but not landed**, because the report is cheap and the ordering is the owner's.  |
 
 ### Decided in this packet, not put to the owner
 
@@ -495,7 +499,18 @@ row came from which daemon].
 | `/api/poc` post-lane-A | lane-A private daemon | 5,520,314 | 8,388,608 | 2,868,294 |
 
 **The 618,515-byte headroom is one evaluation's figure, and the same page
-breached the ceiling on a different Butlers revision three days later.**
+breached the ceiling three days after that 2026-09-10 observation, on the
+revision the lane-A trim then superseded.** [Anchored 2026-09-15 after
+review 2, G7; superseded wording: "and the same page breached the ceiling on
+a different Butlers revision three days later." Relative to the lane-A
+evaluation that produced 618,515 the breach was about eleven hours *earlier*
+on the same calendar day: the breach body is as-of 2026-09-13T02:03:33.040Z,
+the lane-A capture as-of 2026-09-13T13:33:24.295Z, and the lane-A trim
+commit `2ef68f5` is dated 2026-09-13 21:29 +0800 [Observed, all four read
+this session]. Read naturally the superseded sentence suggested the page
+breached *after* the trim bought the headroom; the three-day interval is
+anchored on the 2026-09-10 observation in the row above, not on the lane-A
+one. Nothing downstream moves.]
 The two pre-lane-A rows are the whole argument for reading it that way: at
 Butlers `66ed58f` `/polaris` sat **7,127** bytes under the ceiling, and at
 Butlers `7c8743f` it served nothing at all — HTTP 503 with
@@ -530,13 +545,18 @@ Polaris captures, which agree to the byte].
 | 9 provenance citation spans | each `<span class="citation">` element, tags included | 4,309 (unchanged; the first draft already measured this one with tags) |
 | the relationship section | the whole `<section class="relationships">`, tags included — h3 189 + lede 243 + wrapper 171 + the list | **5,680** (5,077 for the inner `<ul>` alone — the first draft's figure) |
 
-**The machine records' 14,804 is 16 bytes low and their "~12 KB recovered,
-2.8% of the P-63 trim" overstates the saving**
-(`docs/pursuits/2026-09-13-vision-pursuit-data.json` and the
-`-harvest.json` twin carry both strings; neither occurs in the dossier
-`.md` [Observed, `grep -rn -F` over every tracked file under `docs/`,
-`.syzygy/` and `openspec/` this session — cite corrected 2026-09-15 per
-review 1, F6]). Under the one stated predicate, dropping the details and
+**The machine records' 14,804 is 16 bytes low, and their own sentence —
+verbatim, "this recovers ~12 KB, 2.8% of the P-63 trim" — overstates the
+saving**
+(`docs/pursuits/2026-09-13-vision-pursuit-data.json` line 4956 and the
+`-harvest.json` twin at line 4548 carry both strings; neither occurs in the
+dossier `.md` [Observed, `grep -rn -F` over every tracked file under
+`docs/`, `.syzygy/` and `openspec/` this session — cite corrected 2026-09-15
+per review 1, F6; quotation corrected 2026-09-15 after review 2, G6, which
+found it rendered inside quotation marks as "~12 KB recovered, 2.8% of the
+P-63 trim", the verb changed and the phrase reordered with no elision mark.
+The substance and the 16-byte arithmetic are unchanged]). Under the one
+stated predicate, dropping the details and
 citations recovers **5,843** bytes; also moving the relationship section to
 Orrery brings the total to **11,523**, which is 1.3% and 2.6% of the P-63
 trim's 434,960 bytes respectively [corrected 2026-09-15 per review 1, F8;
@@ -1168,8 +1188,17 @@ before extraction.
 | lane B, PR #35, P-68 | `4090f98` | 1 | 0 | n/a | **0** |
 
 **M9 is the collision-heavy packet, and pretending otherwise would be the
-useful lie.** M6's sibling intersections were zero across the board; M9's are
-not. Under predicate B:
+useful lie.** M6's sibling intersections were zero across the board: every
+row of the collision table in the M6 packet
+(docs/design/POLARIS-M6-GENERATOR-HONESTY-FUNNEL.md, named without a code
+span because it exists only on M6's branch and CG-1b requires every
+code-span path to resolve in this worktree), read read-only in `m6wt` at
+`83c9f60`, carries **0** in its intersection column — **six** rows, M1, M2,
+M3, M4, M5 and lane B [Observed, counted this session; denominator every
+sibling row of that table. Labelled and cited 2026-09-15 after review 2,
+G11, which found the claim unlabelled and uncited and named five rows; the
+table carries six, and the zero holds in all of them]. M9's are not. Under
+predicate B:
 
 - **M4 (P-71) shares eight of M9's eleven files**: `polaris.ts`,
   `routes.ts`, `trajectory.ts`, `orrery.ts`, `polaris-copy.ts`,
@@ -1237,7 +1266,17 @@ was right that a literal forecast was unsafe — M8 took P-74 at its own
 close-out, and M7's row will land after its own review. Recounted this
 session with the predicate `^| P-` over each worktree's register: `laneb`
 P-68, `m2wt` P-69, `m3wt` P-70, `m4wt` P-71, `m5wt` P-72, `m6wt` P-73,
-`m8wt` P-74, `m7wt` none beyond P-53].
+`m8wt` P-74, `m7wt` none beyond P-53 — **stale, corrected below**].
+**Recounted 2026-09-15 after review 2, G3**, naming the head each register
+was read at, as the collision tables above already do: `laneb` `4090f98`
+P-68, `m2wt` `f2f37dd` P-69, `m3wt` `6574600` P-70, `m4wt` `63b8e33` P-71,
+`m5wt` `ba9ca61` P-72, `m6wt` `83c9f60` P-73, `m8wt` `4b2e8cb` P-74, `m9wt`
+`3e764d8` P-75, and **`m7wt` `1803608` P-76** — M7's row landed at its own
+close-out, after the sentence above was written, and its register holds 27
+rows ending at P-76 [Observed, predicate `^| P-` over each of the nine
+registers this session; denominator all nine worktrees]. M9's own P-75 is
+unaffected: M7 took P-76, not P-75. A sibling row may land at any time, so
+this count is true of those nine heads and of no later ones.
 
 **The two other P2 packets drafted in parallel with this one — M7 and M8 —
 are not disjoint from M9, and M8 is the second-heaviest collision in this
@@ -1405,9 +1444,12 @@ session].
     without a code span because it exists only on lane B's branch. The
     retained capture files are named by bare filename, as the first draft
     names them, so no scratchpad path is written as a code span.
-12. **`scripts/check_governance.py` was run in this worktree** after both
-    files were written; its last line is recorded in the evidence record and
-    reported with this packet.
+12. **`scripts/check_governance.py` was run in this worktree** after all
+    three files were written [corrected 2026-09-15 after review 2, G10, from
+    "after both files were written"; this pass wrote three tracked files, the
+    packet, the evidence record and the P-75 register row, and the review-2
+    pass wrote those three and the retained review-2 raw]; its last line is
+    recorded in the evidence record and reported with this packet.
 
 ## Review 1 and repairs (2026-09-15)
 
@@ -1446,7 +1488,10 @@ listing and every one of the five miscited clauses were each re-run or re-read
 at source. Every edit in this pass was made after that review, so by
 verification rule 10 the review binds the bytes it names and not these:
 **these repairs are uncovered until a second fresh-context review confirms
-them**, and its raw would be a second `-RAW.md` file, never an overwrite.
+them**, and its raw would be a second `-RAW.md` file, never an overwrite
+(which has since happened — review 2, 2026-09-15, retained at
+`docs/reviews/R-POLARIS-M9-ONE-IDENTITY-FUNNEL-2-RAW.md`; re-tensed
+2026-09-15).
 Superseded wording is marked in place and dated, never deleted.
 
 | Finding | Severity | Disposition |
@@ -1466,7 +1511,7 @@ Superseded wording is marked in place and dated, never deleted.
 | F13 Q4's framing overstates the gate | non-blocking | **CONFIRMED.** Gate 3's act row already says "A typed-but-unconstructible arm reaches no trigger", so on the recommended arm Q4 is a typing decision inside the implementation plane. Q4 is recast as "If and when an agent asserts something, may the POC construct `Inferred`?", the recommended arm is stated to proceed under the improvement-cycles direction without a new act, and Q4 stays in the batch as a put question. **Q4's recommended answer did not change** — it is still "add the arm as a typed landing zone with no production constructor" |
 | F14 a lawful arm is named once and then dropped | non-blocking | **CONFIRMED.** RFC2-26's reviewed-N/A route is added as a third lawful arm of Q1, and of Q3 where it reaches slice 8, quoted at its own lines (the route at line 201, its home and gate at line 206) with per-slice reachability stated as this packet's reading and labelled [Inferred]: slice 6a reachable, slice 8 arguable and put rather than assumed, the other seven not reachable because each adds independently testable behaviour. **Q1's recommended answer did not change** — it is still one package against the three-surface specification alone; the arm is added to the arms the owner may take, which is what the question asks |
 | F15 five citation slips | non-blocking | **CONFIRMED**, all five, each checked at source this session. (1) `.syzygy/governance/doctrine/trust-and-evidence.md` line 16, now quoted verbatim in Q4. (2) Q6's two quotations split: line 41 for the report sentence, line 36 for "derived only from recorded findings". (3) The PWB implementation act's "and a new owner act" begins at line **79**; the sentence carrying it begins at 78. (4) RFC2-26's scope sentence begins at line **219**. (5) The "clause text is the authority" sentence is `CONTRACT-COVERAGE.md`'s own head banner at lines 7-8, not CC-SPEC-8's text — CC-SPEC-8 is at `SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md` line 229 per `DIRECTIVE-REGISTER.md` line 129 and carries the per-consequence row unit and the applicability test instead. Cited as the matrix's own banner |
-| F16 the P-number forecast overlooks two peers | non-blocking | **CONFIRMED**, and the assignment is now settled rather than forecast. Recounted this session with the predicate `^\| P-` over each worktree's register: `laneb` P-68, `m2wt` P-69, `m3wt` P-70, `m4wt` P-71, `m5wt` P-72, `m6wt` P-73, **`m8wt` P-74** (taken at its own review-1 close-out), `m7wt` none beyond P-53. **This packet registers as P-75**; both sentences are corrected and the superseded forecast kept and dated |
+| F16 the P-number forecast overlooks two peers | non-blocking | **CONFIRMED**, and the assignment is now settled rather than forecast. Recounted this session with the predicate `^\| P-` over each worktree's register: `laneb` P-68, `m2wt` P-69, `m3wt` P-70, `m4wt` P-71, `m5wt` P-72, `m6wt` P-73, **`m8wt` P-74** (taken at its own review-1 close-out), `m7wt` none beyond P-53 [that last clause is stale: recounted 2026-09-15 after review 2, G3, `m7wt` at `1803608` carries **P-76**. The heads for all nine registers are named above]. **This packet registers as P-75**; both sentences are corrected and the superseded forecast kept and dated |
 | F17 an unmarked elision in the home-page caveat | non-blocking | **CONFIRMED.** `apps/three-surface-poc/src/routes.ts` line 80 continues "Merge is not verification. Missing evidence is rendered Unknown." The line is now quoted whole |
 | F18 the collision section intersects files and never questions | non-blocking | **CONFIRMED.** A question-level collision table is added naming M3 Q1 (POC-REQ-060's reach), M2 Q1 and Q6 (PWB-REQ-007's currency limb and its sequencing against lane B), and M8 Q7 (shared-model ceremony), each read read-only in its own worktree at the head named, with the M9 question that presupposes it. None is re-asked and none is ruled here |
 | F19 two clause extents overrun by one line; the 1,206 denominator is convention-dependent | editorial | **CONFIRMED.** VIS-3 ends at line **120** and VIS-4 at **139**, both read at source; corrected. The line convention is now stated once (split on `\n`, trailing empty segment not counted, fence lines and fenced content excluded) and the non-fence denominator is re-derived for the current bytes rather than carried forward |
@@ -1486,19 +1531,129 @@ recommended before. No default-if-unanswered moved.
 `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` on this branch, in
 the same pass as these repairs — the sequence the sibling packets settled on.
 P-68 (lane B), P-69 (M2), P-70 (M3), P-71 (M4), P-72 (M5), P-73 (M6) and
-P-74 (M8) each live only on their own branch; M7 carries no row yet.
+P-74 (M8) each live only on their own branch, at the nine heads named in
+the review-2 section below. M7 carries no row yet — **false since M7's own
+close-out; corrected 2026-09-15 after review 2, G3: `m7wt` at `1803608`
+carries P-76, its register holding 27 rows ending there.** A sibling row may
+land at any time.
 
 **Conventions after these repairs**, re-derived over the final bytes this
 session, last of all: **8** lines exceed 78 columns outside fenced
 blocks and table rows (predicate: lines outside fenced blocks whose first
 non-space character is not a pipe, length > 78; denominator: all
 1,580 lines of this file); **0** non-fence lines carry an odd backtick
-count, over **1,552** non-fence lines. The eight are enumerated: this file's
+count, over **1,552** non-fence lines. [The two denominators are the
+review-1 bytes' and are true of commit `3e764d8`, not of these bytes:
+marked 2026-09-15 after review 2, whose own edits moved them. Over the
+current bytes the same predicates give **1,747** lines, **1,719**
+non-fence, **0** odd-backtick and the same **8** over 78 columns — the
+count is restated with its own denominator at the end of the review-2
+section below, computed last of all and iterated to a fixed point.] The
+eight are enumerated: this file's
 title line, the four `###` slice headings that name their size and act, and
 three single unbreakable code-span paths (RFC-0001's module, the
 specification-acceptance policy candidate, and the three-surface spec) — none
 is a prose line that could be rewrapped, and every prose line this pass wrote
 or touched is within the bar.
+
+## Review 2 and repairs (2026-09-15)
+
+A second independent fresh-context review of the once-repaired packet
+(read-only; only the artifact, its governing references and the acceptance
+criteria) is retained verbatim at
+`docs/reviews/R-POLARIS-M9-ONE-IDENTITY-FUNNEL-2-RAW.md` (43416 bytes,
+sha256 `5f4d0e3c8d414fd9a4a27990a06dfae9af9b8e62571458fe439877300c0cad00`,
+computed by `wc -c` and `sha256sum` this session, never transcribed). It
+reviewed commit `3e764d8`, at which the four files it names hashed as
+follows — recomputed this session with `git show 3e764d8:<path>` piped to
+`wc -c` and `sha256sum`:
+
+| File reviewed | Bytes | sha256 |
+|---|---:|---|
+| `docs/design/POLARIS-M9-ONE-IDENTITY-FUNNEL.md` | 132428 | `1b5e98a60623bee98a888a12e88fbe90e9241f158b36f6bca516ef9bd29de3b4` |
+| `docs/evidence/polaris-m9-one-identity-funnel-2026-09-15.json` | 48632 | `aa3e68a8370e0840097d4dcfc03fb1ca3616254a4ff9aec4611adf3845281d84` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 33712 | `3845d85c3ceec6f9f2a0c7877e06498169e256d93c897e02dc5cad9f67309333` |
+| `docs/reviews/R-POLARIS-M9-ONE-IDENTITY-FUNNEL-RAW.md` | 42309 | `fa280ab0544e8211ed9c8a38982ad073735590e3d61750398e65a795dd67b82e` |
+
+Its verdict word, copied exactly: **CONFIRM WITH EXCEPTIONS**. Its counts, as
+the raw states them: **0 blocking, 4 non-blocking, 7 editorial** — eleven
+findings, G1–G11, non-blocking G1–G4 and editorial G5–G11.
+
+**Its verification of the review-1 repairs, carried here as it states them:
+21 REPAIRED, 0 PARTIAL and 0 NOT REPAIRED over 21.** Every one of F1–F21 is
+verified REPAIRED, including both blocking findings; the review re-derived
+each repair against source rather than reading it from the packet, and swept
+all eleven stale phrases review 1 named, finding each only inside a dated,
+quotation-marked supersession note.
+
+Every exception was re-derived this session against source before being
+applied; none was applied on the review's say-so. **Eleven of eleven were
+confirmed**, two of them with a figure of the finding's own corrected rather
+than copied: **G9**'s upper-bound sum re-derives to 15,860 bytes, 15.5 KB
+rather than the 15.4 KB the finding states, and **G11** names five sibling
+rows in the M6 collision table where that table carries six. In both cases
+the defect reported is real and is applied. Two sites the finding text
+reaches turn out to need no repair and are recorded rather than edited: the
+P-75 row's rendering of the RFC2-26 clause (G2) is a paraphrase outside
+quotation marks, not a truncated quotation, and the evidence record's
+`governance_check` (G10) carries no "both files" sentence. Superseded
+wording is marked in place and dated, never deleted.
+
+| Finding | Severity | Re-derivation | Disposition |
+|---|---|---|---|
+| G1 three record keys still carry the first draft's packet bytes and digest, unmarked, under a live "OWN bytes" sentence | non-blocking | **CONFIRMED.** Read this session: `file_bytes` carries 93626 and `file_digests_sha256` the matching first-draft digest, and `file_digests_note` asserts of them, live and unqualified, "These are this packet's OWN bytes". The packet at `3e764d8` is **132428** bytes with the digest tabled above. The same record's `review1.reviewed_packet_bytes` and `reviewed_packet_sha256` carry exactly 93626 and that digest, correctly labelled as review 1's subject at `206d775` — so the record held both the right answer and an unmarked wrong one | Applied in the record by a same-line text append inside `file_digests_note` and by two sibling keys, `file_bytes_note_2026_09_15` and `file_digests_note_2026_09_15`, because the two values are objects and cannot take text. Nothing is deleted or overwritten. The note now says the figures are the first draft's (`206d775`) and that a record cannot carry the post-repair bytes of the packet it commits beside, and routes the reader to `review2.packet_measured_after_review2`, which is computed last |
+| G2 an unmarked elision inside quotation marks, in the clause Q1's new third arm rests on | non-blocking | **CONFIRMED.** Read at source, `.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md` lines 206–210: the sentence continues past "under RFC3-16(a)" with ", in state (1) or state (2), with that state rendered; absent or invalid acts map nothing and leave the consequence unmapped and Unknown, never covered (RFC3-16(a)'s effect rule; VIS-2)." The dropped half is the cautionary half. Gate 5's blockquote already carries the whole clause, compared word for word against the source with no difference | Applied at Q1: the quotation now closes with an elision mark, the continuation is given, and the reader is routed to Gate 5's blockquote. Q3's third arm reaches the clause by reference to Q1's and is repaired by the same edit. **No mirror was needed in the P-75 row**: swept this session for `honored only through` over the whole register, **1** hit, in the P-75 row, and it is a paraphrase outside quotation marks ("homed in `decisions/` and honored only through an effective owner act, which RFC2-26 names as its own second route") [Observed, `grep -F`; denominator the whole register file] |
+| G3 three sites claim, live and undated, that `m7wt` carries no register row | non-blocking | **CONFIRMED, and a fourth site found.** Recounted this session with the predicate `^| P-` over each of the nine registers, naming each head: `laneb` `4090f98` P-68, `m2wt` `f2f37dd` P-69, `m3wt` `6574600` P-70, `m4wt` `63b8e33` P-71, `m5wt` `ba9ca61` P-72, `m6wt` `83c9f60` P-73, `m8wt` `4b2e8cb` P-74, `m9wt` `3e764d8` P-75, `m7wt` `1803608` **P-76**, whose register holds 27 rows ending at P-76 [Observed; denominator all nine worktrees]. The stale sites are the packet's recount line, the packet's register paragraph, the register blockquote and the record's `review1.re_derived_before_applying.register_recount` — and, beyond the four the finding names, the packet's own F16 disposition row and the record's superseded `p_number_forecast` note, both of which repeat "`m7wt` none beyond P-53" | Applied at all six. Each stale sentence is marked in place and dated rather than rewritten, the nine heads are named at the recount so a reader can date it, and each site says that a sibling row may land at any time. M9's own assignment is unaffected and correct: M7 took P-76, not P-75 |
+| G4 Q6's own affirmative limb has no arm | non-blocking | **CONFIRMED.** Read at source: Q6 asks "Do slices 1 and 2 need an owner direction naming them?"; its recommended answer is no, and its only other arm treats the pursuit as a cycle owing a report and still lands the slices under the existing direction. No arm anywhere in the question, and none at lines 35–37 where Q6 is called "the only one that could stop slices 1 and 2", says the owner may issue a direction naming the two slices [Observed, read this session] | Applied as a third lawful arm of Q6, saying what it moots — the trace-to-findings reading and the continuation-versus-new-cycle question — and that it is the cheapest affirmative route: a "yes" on it authorizes the slices rather than stopping them. Mirrored in the P-75 row's Q6 clause. **The recommended answer and the default do not change.** Review 1 read Q6 as complete ("Yes. Two arms plus a default") and review 2 read the same arms as incomplete; both readings are recorded below for the owner and neither is ruled here |
+| G5 the F6 repair left an orphaned "written in the shape of" clause in the head banner | editorial | **CONFIRMED.** Line 11 of the packet at `3e764d8` began "written in the shape of" as a lower-case clause with no subject or verb before it, the preceding sentence having ended in a bracketed correction note and a full stop | Applied: re-joined as a full sentence, "This packet is written in the shape of …", with the repair dated at the site |
+| G6 a quotation inside quotation marks that is not verbatim | editorial | **CONFIRMED.** Read at source, `docs/pursuits/2026-09-13-vision-pursuit-data.json` line 4956 and the `-harvest.json` twin at line 4548 read "Be honest about the size: this recovers ~12 KB, 2.8% of the P-63 trim, so it is a coherence move that happens to help, not the ceiling answer." The packet rendered it as "~12 KB recovered, 2.8% of the P-63 trim" — verb changed, phrase reordered, no elision mark | Applied: the record's own words are quoted verbatim, the two line numbers are given, and the slip is dated. The substance and the 16-byte arithmetic are untouched |
+| G7 the headroom sentence names no anchor for its three-day interval | editorial | **CONFIRMED.** The breach body is as-of 2026-09-13T02:03:33.040Z, the lane-A capture as-of 2026-09-13T13:33:24.295Z, and `git log -1 --format=%ci 2ef68f5` returns 2026-09-13 21:29:51 +0800 [Observed, all read this session] — so relative to the lane-A evaluation that produced 618,515 the breach was about eleven hours *earlier* on the same calendar day, and the three-day interval holds only against the 2026-09-10 observation in the row above | Applied with the raw's suggested sentence: "breached the ceiling three days after that 2026-09-10 observation, on the revision the lane-A trim then superseded", with the superseded wording quoted and dated and the three timestamps given. Nothing downstream moves |
+| G8 the funnel summary cites the direction's second limb at line 56, where the quoted text begins at line 55 | editorial | **CONFIRMED.** Read at source, `.syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md` line 55 is "Improvement-cycle work must trace to POC-REQ-001..061 or to a recorded" and line 56 is "review finding." Under this packet's stated convention — the line on which the cited text begins — the citation is off by one, and Gate 3's act table already cites the same clause as lines 55-56 | Applied: "lines 55-56", with the correction dated at the site |
+| G9 an aggregate that does not follow from the packet's own stated upper bounds | editorial | **CONFIRMED, with the finding's own figure re-derived.** The packet's per-slice upper bounds are slice 1 "Under 2 KB", slice 2 "Roughly 500 bytes", slice 6a "about 12 KB" on Trajectory and "under 1 KB" on Orrery. Summed this session at 1 KB = 1,024 bytes they give **15,860** bytes — 15.5 KB, above 15 KB, where the finding states 15.4 KB; the central estimate gives **14,360** bytes, 14.4 KB at 1 KB = 1,000, matching the finding. The byte figures are the unambiguous form and the 0.1 KB gap is the KB convention | Applied at both sites: "about 15 KB", with the two sums published in bytes, the convention named and the superseded "under 15 KB" quoted and dated. Nothing downstream changes — either figure is under 3% of the measured headroom |
+| G10 Gate 6 bullet 12 says the governance check ran "after both files were written"; this pass wrote three | editorial | **CONFIRMED in the packet.** The review-1 pass wrote the packet, the evidence record and the P-75 register row, and the superseded forecast at the recount line is already marked; bullet 12's "both" was not updated with it. **The record's `governance_check` needs no repair**: read this session, it carries a command, a last line and a note about the 20 pre-existing WARN, and no "both files" sentence anywhere — swept `both files` over the record, **0** hits [Observed, `grep -F`; denominator the whole record file] | Applied in the packet: "after all three files were written", with the superseded wording quoted and dated and the three files named. The check's recorded last line is unchanged and re-run below |
+| G11 an unlabelled, uncited substantive claim about another packet's measurements | editorial | **CONFIRMED in substance, with the finding's row count corrected.** The collision table in the M6 packet, read read-only in `m6wt` at `83c9f60`, carries **0** in the intersection column of every sibling row — **six** rows (M1, M2, M3, M4, M5 and lane B), not the five the finding names [Observed, counted this session; denominator every sibling row of that table] | Applied: the claim is labelled [Observed], cited to the sibling packet and the head it was read at, and the denominator stated. The M6 packet is named without a code span because it exists only on M6's branch and CG-1b requires every code-span path to resolve here |
+
+**Recommended answers changed after review 2: none, stated explicitly.**
+Review 2's own six-question table answers "Recommendation follows?" **Yes**
+for all six post-repair recommendations — Q1, Q2, Q3, Q4, Q5 and Q6 ("Yes
+for the two arms it names") — and its only "All lawful arms named?" failure
+is Q6's missing third arm, G4, which adds an arm without moving the
+recommendation or the default [Observed, read from the retained raw]. All
+eleven exceptions are presentational or evidentiary: G1 and G3 date or
+re-derive a figure; G2, G6 and G8 repair a quotation or a citation; G5
+re-joins a sentence; G7 anchors an interval; G9 restates an aggregate in
+bytes; G10 corrects a count of files; G11 labels and cites a claim it
+confirms true; and G4 adds a lawful arm. **Q1 through Q6 keep the
+recommendations and the defaults they carried into this review, word for
+word**, and no default-if-unanswered moved.
+
+**The two readings of Q6's arms, recorded for the owner rather than
+resolved.** Review 1's six-question table answered "All lawful arms named?"
+for Q6 with "Yes. Two arms plus a default." Review 2 answered "No — the
+question's own affirmative limb, an owner direction naming slices 1 and 2,
+is not offered as an arm," and recorded the disagreement rather than
+resolving it, on the ground that the arm is lawful, that the owner may
+always issue a direction, and that naming it costs one sentence. This pass
+names the arm. Whether the owner regards Q6 as having been complete without
+it is the owner's to say; naming it changes nothing about what the packet
+recommends, and on that arm a "yes" authorizes slices 1 and 2 directly
+rather than stopping them.
+
+By verification rule 10, review 2 binds the bytes it names — the four
+digests in the table above, at commit `3e764d8` — and not these. Every edit
+in this section and above was made after it, so the eleven exception repairs
+are **uncovered until a third review confirms them**; that raw will be a
+third `-RAW.md` file, never an overwrite of either retained one. Subject to
+that, and on review 2's confirmation of the `3e764d8` bytes — CONFIRM WITH
+EXCEPTIONS, no blocking finding, no recommended answer moved and the
+review-1 repairs verified 21 REPAIRED, 0 PARTIAL and 0 NOT REPAIRED over
+21 — **this packet stands at the owner gate**: P-75 is ready to be ruled.
+
+Over-width lines after these edits, under the predicate "lines outside
+fenced code blocks whose first non-space character is not a pipe, longer
+than 78 columns", denominator every line of this file: **8**
+[Observed, measured after all of the edits above and iterated to a fixed
+point, so the figure is true of the bytes that carry it].
 
 ## Funnel summary
 
@@ -1511,11 +1666,11 @@ Baseline: Syzygy a9f671e; served figures from the retained four-page capture and
 - G3 Topology: apps/three-surface-poc/src + packages/three-surface-poc-core/src + packages/cap1-core/src; one slice (3) is an amendment package under contracts/candidates and edits no signed byte in place; four slices touch the POC shared model and therefore queue at work-in-progress one
 - G4 Design: five cross-surface links through the existing mount-prefix helper with a served-population oracle; a state field on PocSurface so no surface can omit its state; one CC-REV-2 package carrying the join key, the tuple and the relation vocabulary together so one key is built and not two; shape unification whose acceptance bar is byte-identical pages; a typed Inferred arm with three exclusion counterexamples; a three-slot ribbon rendered for one capability first; data-claim-id landed on the two surfaces that lack it; the observed band replaced by a link; RFC1-25 names with endpoint swaps and an explicit out-of-vocabulary flag
 - G5 Spec: on Q2's recommended arm no slice of M9 maps to an approved requirement-and-scenario pair that names its consequence (qualified 2026-09-15 per review 1, F12; superseded: "no slice of M9 maps to an approved requirement-and-scenario pair that squarely names its consequence" - on Q2's second arm slice 4a does map), over a denominator of 24 requirements and 24 scenarios. RFC2-26 run over all eight slice rows (denominator 8): slices 4b, 5, 6b and 8 have no requirement at all; slice 4a's nearest is POC-REQ-060 stretched beyond its text on one reading of Q2 and PWB-REQ-007 squarely on the other; slices 1, 2, 3, 6a and 7 enumerate either no RFC-0002 consequence or one this packet declines to rule. The cross-surface identity is NOT a binding deferral: RFC6-1/6-3/6-12 sit in CONTRACT-COVERAGE.md Part B2, "clauses believed not applicable (author's reading, non-binding)", and the sign-off act mints no per-clause N/A, so they render Unknown pending owner-reviewed N/A - there is nothing to reopen
-- G6 Bar: every count with predicate and denominator, each served figure named to the evaluation it came from; two methods for each load-bearing zero; one false finding caught by the second method and recorded rather than deleted; three rule-6 mutants per slice including one that proves the existing sweep blind; no act-bound byte proposed for edit; ONE independent review, verdict REVISE (2 blocking, 16 non-blocking, 3 editorial), all 21 findings re-derived before applying and dispositioned below - THESE REPAIRS ARE UNCOVERED UNTIL A SECOND REVIEW CONFIRMS THEM (superseded 2026-09-15: "NO independent review yet - this is a first draft")
-Acts: slices 1, 2 and 7 ride THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md's second limb ("or to a recorded review finding", line 56), subject to Q6; slice 3 needs a new owner act by construction, per both sign-off acts' amendment sentences; slices 5, 6b and 8 ride slice 3's act; slice 4's act depends on Q2's reading of PWB-REQ-007's scope; slice 4b needs an act if the Inferred arm becomes constructible
+- G6 Bar: every count with predicate and denominator, each served figure named to the evaluation it came from; two methods for each load-bearing zero; one false finding caught by the second method and recorded rather than deleted; three rule-6 mutants per slice including one that proves the existing sweep blind; no act-bound byte proposed for edit; TWO independent reviews are retained under docs/reviews/ - review 1 (verdict copied exactly: REVISE - 2 blocking, 16 non-blocking, 3 editorial, F1-F21), all 21 findings re-derived before applying and dispositioned below, and review 2 (verdict copied exactly: CONFIRM WITH EXCEPTIONS - 0 blocking, 4 non-blocking, 7 editorial, G1-G11), which verified those review-1 repairs as 21 REPAIRED, 0 PARTIAL and 0 NOT REPAIRED over 21, moved no recommended answer, and whose eleven exception repairs are themselves UNCOVERED UNTIL A THIRD REVIEW CONFIRMS THEM [restated 2026-09-15 after review 2, which superseded "ONE independent review, verdict REVISE (2 blocking, 16 non-blocking, 3 editorial), all 21 findings re-derived before applying and dispositioned below - THESE REPAIRS ARE UNCOVERED UNTIL A SECOND REVIEW CONFIRMS THEM"; this line read "NO independent review yet - this is a first draft" until 2026-09-15]
+Acts: slices 1, 2 and 7 ride THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md's second limb ("or to a recorded review finding", lines 55-56 - corrected 2026-09-15 after review 2, G8, from "line 56"; the quoted text begins on line 55 under this packet's stated convention, and Gate 3's act table already cites it as lines 55-56), subject to Q6; slice 3 needs a new owner act by construction, per both sign-off acts' amendment sentences; slices 5, 6b and 8 ride slice 3's act; slice 4's act depends on Q2's reading of PWB-REQ-007's scope; slice 4b needs an act if the Inferred arm becomes constructible
 Open questions: Q1-Q6 above, registered as P-75 in PENDING-OWNER-DECISIONS.md on this branch, batched with the review-1 repairs as the sibling packets' P-68 through P-74 rows were (assigned 2026-09-15; superseded: "NOT registered in PENDING-OWNER-DECISIONS.md - this packet writes two files and no register row; the row would be P-74 after review 1" - M8 took P-74 at its own close-out and M7's row lands after its own review)
 Sign-off: pending - the owner's
-Recommended handoff: land slice 1, then slice 2, then slice 6a - none needs a schema decision and together they cost under 15 KB; rule Q1 and draft slice 3; hold every other slice behind it
+Recommended handoff: land slice 1, then slice 2, then slice 6a - none needs a schema decision and together they cost about 15 KB (the packet's own stated upper bounds sum to 15,860 bytes and the central estimate is 14,360 bytes - corrected 2026-09-15 after review 2, G9, from "under 15 KB", which holds only on central values); rule Q1 and draft slice 3; hold every other slice behind it
 ```
 
 ## Recommended handoff
@@ -1526,8 +1681,20 @@ itself names as the prerequisite experiment for the ribbon — if the owner does
 not use these links, slice 5 is not worth its amendment — and it carries the
 only defect in this packet that is already a VIS-7 exposure waiting to happen:
 the sweep that would catch a broken cross-surface link cannot see one. Then
-slice 2, then slice 6a. Together they cost under 15 KB of a 618 KB headroom
-and change no truth.
+slice 2, then slice 6a. Together they cost **about 15 KB** of a 618 KB
+headroom and change no truth. The packet's own stated upper bounds — slice 1
+"Under 2 KB", slice 2 "Roughly 500 bytes", slice 6a "about 12 KB" on
+Trajectory and "under 1 KB" on Orrery — sum to **15,860** bytes, which is
+above 15 KB; the central estimate is **14,360** bytes (13 links at 60–75
+bytes plus the mount prefix ≈ 1,100, plus slice 2's 500, plus 310 cards at
+40 bytes = 12,400, plus nine Orrery rows ≈ 360) [Observed, summed this
+session; the bounds written in KB taken at 1 KB = 1,024 bytes. Corrected
+2026-09-15 after review 2, G9, which found the aggregate "under 15 KB" true
+only on central values and published the two sums as 15.4 KB and 14.4 KB;
+15,860 bytes is 15.5 KB at either KB convention and 14,360 bytes is 14.4 KB
+at 1 KB = 1,000, so the byte figures above are the unambiguous form and the
+0.1 KB difference is the convention]. Nothing downstream changes: either
+figure is under 3% of the measured headroom.
 
 **If Q6 is answered the other way** — that the pursuit is a new cycle whose
 report is owed first — then report the cycle and land the same three slices

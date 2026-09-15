@@ -7,10 +7,12 @@
  "date": "2026-09-15",
  "commit": "a9f671e",
  "branch": "agent/syzygy-dov.9",
- "status": "candidate; binds nothing; planning only; one independent review (verdict REVISE, 2 blocking / 16 non-blocking / 3 editorial) applied 2026-09-15; those repairs are uncovered until a second fresh-context review confirms them; registered as P-75 on agent/syzygy-dov.9",
+ "status": "candidate; binds nothing; planning only; one independent review (verdict REVISE, 2 blocking / 16 non-blocking / 3 editorial) applied 2026-09-15; those repairs are uncovered until a second fresh-context review confirms them; registered as P-75 on agent/syzygy-dov.9 [re-tensed 2026-09-15: review 2 has since happened - CONFIRM WITH EXCEPTIONS, 0 blocking, 4 non-blocking, 7 editorial, G1-G11, all eleven applied; it verified the review-1 repairs as 21 REPAIRED, 0 PARTIAL and 0 NOT REPAIRED over 21 and moved no recommended answer. The eleven exception repairs are now the uncovered ones, until a third review confirms them. See the review2 block. This row is at the owner gate.]",
  "independent_review": {
   "count": 1,
-  "note": "Review 1 landed 2026-09-15, verdict REVISE, retained verbatim at docs/reviews/R-POLARIS-M9-ONE-IDENTITY-FUNNEL-RAW.md; see the review1 block at the end of this record. Verification rule 10: review 1 binds the bytes it names (commit 206d775) and not these, so its repairs are uncovered until a second fresh-context review confirms them, and each raw is its own -RAW.md file, never an overwrite. Superseded 2026-09-15: count 0, \"This packet has had no independent review.\""
+  "count_2026_09_15": 2,
+  "count_note_2026_09_15": "count above is review 1 only and is kept unedited; after review 2 the count is 2. Both raws are retained under docs/reviews/ and neither overwrites the other.",
+  "note": "Review 1 landed 2026-09-15, verdict REVISE, retained verbatim at docs/reviews/R-POLARIS-M9-ONE-IDENTITY-FUNNEL-RAW.md; see the review1 block at the end of this record. Verification rule 10: review 1 binds the bytes it names (commit 206d775) and not these, so its repairs are uncovered until a second fresh-context review confirms them [re-tensed 2026-09-15: that review has since happened - review 2, retained at docs/reviews/R-POLARIS-M9-ONE-IDENTITY-FUNNEL-2-RAW.md, verdict CONFIRM WITH EXCEPTIONS; by the same rule 10 it binds the bytes it names, commit 3e764d8, and not these, so the eleven exception repairs applied after it are uncovered until a third review], and each raw is its own -RAW.md file, never an overwrite. Superseded 2026-09-15: count 0, \"This packet has had no independent review.\""
  },
  "digest_policy_note": "No act argument, manifest digest or signed digest is reproduced in the packet or in this record. Records consulted for digest comparison are cited by path only, per CG-7e and CG-15.",
  "captures_used": {
@@ -580,7 +582,20 @@
     "m6wt": "P-73",
     "m9wt": "none beyond P-53"
    },
-   "note": "SUPERSEDED 2026-09-15 per review 1 finding F16: \"this packet writes no register row; M9's six questions would register as P-74 after review 1, batched\". Recounted this session: laneb P-68, m2wt P-69, m3wt P-70, m4wt P-71, m5wt P-72, m6wt P-73, m8wt P-74 (taken at M8's own review-1 close-out), m7wt none beyond P-53. This packet registers as P-75, added on branch agent/syzygy-dov.9 in the same pass as the review-1 repairs."
+   "rows_2026_09_15": {
+    "note": "the rows object above is the first draft's, kept unedited: it is seven entries short of the nine registers and its last key is mislabelled m9wt for m7wt. Recounted this session under the same predicate, each register at its own head, per review 2, G3.",
+    "laneb 4090f98": "P-68",
+    "m2wt f2f37dd": "P-69",
+    "m3wt 6574600": "P-70",
+    "m4wt 63b8e33": "P-71",
+    "m5wt ba9ca61": "P-72",
+    "m6wt 83c9f60": "P-73",
+    "m8wt 4b2e8cb": "P-74",
+    "m9wt 3e764d8": "P-75",
+    "m7wt 1803608": "P-76, its register holding 27 rows ending there",
+    "denominator": "all nine worktrees; a sibling row may land at any time, so this is true of those nine heads and of no later ones"
+   },
+   "note": "SUPERSEDED 2026-09-15 per review 1 finding F16: \"this packet writes no register row; M9's six questions would register as P-74 after review 1, batched\". Recounted this session: laneb P-68, m2wt P-69, m3wt P-70, m4wt P-71, m5wt P-72, m6wt P-73, m8wt P-74 (taken at M8's own review-1 close-out), m7wt none beyond P-53. This packet registers as P-75, added on branch agent/syzygy-dov.9 in the same pass as the review-1 repairs. [Corrected 2026-09-15 after review 2, G3: the m7wt clause is stale - m7wt at 1803608 carries P-76, its register holding 27 rows ending there. The nine heads this recount was taken at are named in review2.re_derived_before_applying. register_recount_with_heads. M9 keeps P-75; a sibling row may land at any time.]"
   }
  },
  "owner_questions": [
@@ -703,7 +718,9 @@
  "file_digests_sha256": {
   "docs/design/POLARIS-M9-ONE-IDENTITY-FUNNEL.md": "ae0ec92c4c7f858e85160704b799c21c39b34e86cb9fe7d2b685169e21c09e26"
  },
- "file_digests_note": "This record cannot carry its own digest; the evidence file's byte count and sha256 are reported with the packet in the drafter's report. These are this packet's OWN bytes, not an act argument or a manifest row - CG-15 governs quoting a truncated signed digest, which none of these is."
+ "file_digests_note": "This record cannot carry its own digest; the evidence file's byte count and sha256 are reported with the packet in the drafter's report. These are this packet's OWN bytes, not an act argument or a manifest row - CG-15 governs quoting a truncated signed digest, which none of these is. [Superseded 2026-09-15 after review 2, G1: these are the first draft's (206d775) figures; the packet's current bytes cannot be carried by the record that is part of the same commit - see review2.packet_measured_after_review2. The same two values are recorded correctly, and labelled as review 1's subject, in review1. reviewed_packet_bytes and review1.reviewed_packet_sha256. Nothing here is deleted or overwritten.]",
+ "file_bytes_note_2026_09_15": "file_bytes above is the FIRST DRAFT's packet size at commit 206d775 (93626) and was never re-measured after the review-1 repairs. Kept unedited per review 2, G1. The post-review-1 size is review1.reviewed_packet_bytes; the post-review-2 size is review2.packet_measured_after_review2.bytes, computed last.",
+ "file_digests_note_2026_09_15": "file_digests_sha256 above is the FIRST DRAFT's packet digest at commit 206d775 and was never re-measured after the review-1 repairs. Kept unedited per review 2, G1. The post-review-1 digest is review1.reviewed_packet_sha256; the post-review-2 digest is review2.packet_measured_after_review2.sha256, computed last."
  ,
  "review1": {
   "raw": "docs/reviews/R-POLARIS-M9-ONE-IDENTITY-FUNNEL-RAW.md",
@@ -734,7 +751,7 @@
    "poc_req_053_oracle": "spec lines 903-904, quoted verbatim in the packet",
    "vis_extents": "VIS-3 ends at vision.md line 120, VIS-4 at line 139",
    "openspec_changes_dirs": "ls -d openspec/changes/*/ returns six; archive/ holds only README.md",
-   "register_recount": "predicate ^| P- over each worktree's register: laneb P-68, m2wt P-69, m3wt P-70, m4wt P-71, m5wt P-72, m6wt P-73, m8wt P-74, m7wt none beyond P-53; main at a9f671e carries 26 rows, 21 open and 5 acceptance-act, partitioned by the ## section each row falls under",
+   "register_recount": "predicate ^| P- over each worktree's register: laneb P-68, m2wt P-69, m3wt P-70, m4wt P-71, m5wt P-72, m6wt P-73, m8wt P-74, m7wt none beyond P-53; main at a9f671e carries 26 rows, 21 open and 5 acceptance-act, partitioned by the ## section each row falls under [the m7wt clause is stale and no head was named, which is why it could not be dated: corrected 2026-09-15 after review 2, G3 - m7wt at 1803608 carries P-76. The same recount with every head named is in review2.re_derived_before_applying.register_recount_with_heads. This value is review 1's and is otherwise unedited.]",
    "sibling_questions": "M3 Q1, M2 Q1, M2 Q6 and M8 Q7 read read-only in their own worktrees at 6574600, f2f37dd, f2f37dd and 4b2e8cb"
   },
   "dispositions": {
@@ -765,5 +782,91 @@
    "Q2, Q3, Q5 and Q6 unchanged. No default-if-unanswered moved."
   ],
   "register_row": "P-75, added on branch agent/syzygy-dov.9 in this pass"
+ },
+ "review2": {
+  "raw": "docs/reviews/R-POLARIS-M9-ONE-IDENTITY-FUNNEL-2-RAW.md",
+  "bytes": 43416,
+  "sha256": "5f4d0e3c8d414fd9a4a27990a06dfae9af9b8e62571458fe439877300c0cad00",
+  "verdict": "CONFIRM WITH EXCEPTIONS - 0 blocking, 4 non-blocking, 7 editorial, G1-G11",
+  "reviewed_commit": "3e764d8",
+  "reviewed_files_at_that_commit": {
+   "docs/design/POLARIS-M9-ONE-IDENTITY-FUNNEL.md": {
+    "bytes": 132428,
+    "sha256": "1b5e98a60623bee98a888a12e88fbe90e9241f158b36f6bca516ef9bd29de3b4"
+   },
+   "docs/evidence/polaris-m9-one-identity-funnel-2026-09-15.json": {
+    "bytes": 48632,
+    "sha256": "aa3e68a8370e0840097d4dcfc03fb1ca3616254a4ff9aec4611adf3845281d84"
+   },
+   ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+    "bytes": 33712,
+    "sha256": "3845d85c3ceec6f9f2a0c7877e06498169e256d93c897e02dc5cad9f67309333"
+   },
+   "docs/reviews/R-POLARIS-M9-ONE-IDENTITY-FUNNEL-RAW.md": {
+    "bytes": 42309,
+    "sha256": "fa280ab0544e8211ed9c8a38982ad073735590e3d61750398e65a795dd67b82e"
+   }
+  },
+  "method": "every file above measured this session with git show 3e764d8:<path> piped to wc -c and sha256sum; the raw measured with wc -c and sha256sum. No digest transcribed.",
+  "repairs_applied_this_session": true,
+  "f1_f21_verification_as_review2_states_it": {
+   "REPAIRED": ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16", "F17", "F18", "F19", "F20", "F21"],
+   "PARTIAL": [],
+   "NOT_REPAIRED": [],
+   "denominator": 21,
+   "note": "21 REPAIRED, 0 PARTIAL, 0 NOT REPAIRED over 21, including both blocking findings. Review 2 re-derived each repair against source rather than reading it from the packet, and swept all eleven stale phrases review 1 named, finding each only inside a dated, quotation-marked supersession note."
+  },
+  "re_derived_before_applying": {
+   "G1_record_keys": "file_bytes 93626 and file_digests_sha256 ae0ec92c... read this session: the first draft s figures at 206d775, identical to review1.reviewed_packet_bytes and review1.reviewed_packet_sha256, while file_digests_note asserted of them, live and unqualified, that they are this packet s OWN bytes. The packet at 3e764d8 is 132428 bytes with the digest tabled above.",
+   "G2_rfc2_26_continuation": "RFC-0002/rendering-vocabularies.md lines 206-210 read at source: the sentence continues past under RFC3-16(a) with the state and effect limbs and the never-covered consequence. Gate 5 s blockquote already carries the whole clause. Register sweep for the literal honored only through: 1 hit, the P-75 row, a paraphrase outside quotation marks, so no mirror was needed; denominator the whole register file.",
+   "register_recount_with_heads": "predicate ^| P- over each of the nine registers this session, each at its own head: laneb 4090f98 P-68, m2wt f2f37dd P-69, m3wt 6574600 P-70, m4wt 63b8e33 P-71, m5wt ba9ca61 P-72, m6wt 83c9f60 P-73, m8wt 4b2e8cb P-74, m9wt 3e764d8 P-75, m7wt 1803608 P-76 with 27 rows ending there. Denominator all nine worktrees. Partition unchanged: this branch 22 open + 5 acceptance-act = 27; main at a9f671e 21 + 5 = 26.",
+   "G4_q6_arms": "Q6 and the lines 35-37 framing read at source: no arm anywhere says the owner may issue a direction naming slices 1 and 2. Review 1 read Q6 as complete (Yes. Two arms plus a default); review 2 read the same arms as incomplete. Both readings recorded, neither ruled.",
+   "G6_machine_record_wording": "docs/pursuits/2026-09-13-vision-pursuit-data.json line 4956 and the -harvest.json twin at line 4548 read: Be honest about the size: this recovers ~12 KB, 2.8% of the P-63 trim, so it is a coherence move that happens to help, not the ceiling answer. The packet rendered it with the verb changed and the phrase reordered and no elision mark.",
+   "G7_timestamps": "breach body as-of 2026-09-13T02:03:33.040Z; lane-A capture as-of 2026-09-13T13:33:24.295Z; git log -1 --format=%ci 2ef68f5 gives 2026-09-13 21:29:51 +0800. The breach is about eleven hours earlier than the lane-A evaluation on the same calendar day, so the three-day interval holds only against the 2026-09-10 observation.",
+   "G8_direction_lines": "THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md line 55 is Improvement-cycle work must trace to POC-REQ-001..061 or to a recorded and line 56 is review finding. The quoted text begins at 55.",
+   "G9_upper_bound_sum": "stated upper bounds summed this session at 1 KB = 1024 bytes: 2048 + 500 + 12288 + 1024 = 15860 bytes, 15.5 KB, above 15 KB. Central estimate 1100 + 500 + 12400 + 360 = 14360 bytes, 14.4 KB at 1 KB = 1000. Review 2 publishes 15.4 KB and 14.4 KB; the 0.1 KB difference on the first is the KB convention, and the byte figures are the unambiguous form.",
+   "G10_record_governance_check": "swept the literal both files over this record: 0 hits, denominator the whole file. governance_check carries a command, a last line and a note about the 20 pre-existing WARN and needed no repair; only the packet s Gate 6 bullet 12 did.",
+   "G11_m6_collision_table": "the collision table in the M6 packet, read read-only in m6wt at 83c9f60, carries 0 in the intersection column of every sibling row: six rows, M1, M2, M3, M4, M5 and lane B, not the five the finding names. Denominator every sibling row of that table."
+  },
+  "disposition_summary": {
+   "G1": "CONFIRMED and applied (non-blocking). Repaired in this record by a same-line text append inside file_digests_note and by two sibling keys, file_bytes_note_2026_09_15 and file_digests_note_2026_09_15, because the two values are objects and cannot take text. Nothing deleted or overwritten. The current packet digest appears only in packet_measured_after_review2 below, computed last.",
+   "G2": "CONFIRMED and applied (non-blocking). Q1 s quotation now closes with an elision mark, gives the continuation and routes the reader to Gate 5 s full blockquote; Q3 s third arm reaches the clause by reference and is repaired by the same edit. No mirror was needed in the P-75 row, which paraphrases outside quotation marks.",
+   "G3": "CONFIRMED and applied (non-blocking), at six sites rather than the four the finding names: the packet s recount line, the packet s F16 disposition row, the packet s register paragraph, the register blockquote, this record s superseded p_number_forecast note and this record s review1.re_derived_before_applying.register_recount. Each stale sentence is marked in place and dated, the nine heads are named at the recount, and each site says a sibling row may land at any time. M9 keeps P-75.",
+   "G4": "CONFIRMED and applied (non-blocking). A third lawful arm was added to Q6 and mirrored in the P-75 row: the owner issues a direction naming slices 1 and 2, which authorizes them directly rather than stopping them and moots both the trace-to-findings reading and the continuation-versus-new-cycle question. The recommended answer and the default do not move. Review 1 s and review 2 s readings of whether Q6 s arms were complete are both recorded for the owner and neither is ruled.",
+   "G5": "CONFIRMED and applied (editorial). The head banner s orphaned written in the shape of clause is re-joined as a full sentence, dated at the site.",
+   "G6": "CONFIRMED and applied (editorial). The machine record s own words are quoted verbatim with both line numbers given and the slip dated. Substance and the 16-byte arithmetic unchanged.",
+   "G7": "CONFIRMED and applied (editorial). The headroom sentence is re-anchored on the 2026-09-10 observation with the superseded wording quoted and dated and the three timestamps published. Nothing downstream moves.",
+   "G8": "CONFIRMED and applied (editorial). lines 55-56, as Gate 3 s act table already has it, with the correction dated at the site.",
+   "G9": "CONFIRMED IN SUBSTANCE, with the finding s own figure re-derived, and applied (editorial). about 15 KB at both sites, with the upper-bound sum 15860 bytes and the central estimate 14360 bytes published, the KB convention named, and the superseded under 15 KB quoted and dated.",
+   "G10": "CONFIRMED IN THE PACKET and applied (editorial). after all three files were written, with the superseded wording quoted and dated and the three files named. This record s governance_check carries no both files sentence and needed no repair.",
+   "G11": "CONFIRMED IN SUBSTANCE, with the finding s row count corrected from five to six, and applied (editorial). The claim is labelled [Observed], cited to the M6 packet and the head 83c9f60 it was read at, and given its denominator. The M6 packet is named without a code span because it exists only on M6 s branch and CG-1b requires every code-span path to resolve here."
+  },
+  "recommended_answers_changed": {
+   "none": "No recommended answer changed after review 2. Its own six-question table answers Recommendation follows? Yes for all six post-repair recommendations, Q6 as Yes for the two arms it names; its only All lawful arms named? failure is Q6 s missing third arm, G4, which adds an arm without moving the recommendation or the default. G1 and G3 date or re-derive a figure; G2, G6 and G8 repair a quotation or a citation; G5 re-joins a sentence; G7 anchors an interval; G9 restates an aggregate in bytes; G10 corrects a count of files; G11 labels and cites a claim it confirms true. Q1 through Q6 keep the recommendations and the defaults they carried into this review, word for word, and no default-if-unanswered moved."
+  },
+  "q6_two_readings": {
+   "review_1": "All lawful arms named? Yes. Two arms plus a default.",
+   "review_2": "All lawful arms named? No - the question s own affirmative limb, an owner direction naming slices 1 and 2, is not offered as an arm (G4). Review 2 recorded the disagreement rather than resolving it: the arm is lawful, the owner may always issue a direction, and naming it costs one sentence.",
+   "disposition": "The arm is named. Whether Q6 was complete without it is the owner s to say; naming it changes nothing about what the packet recommends. Recorded for the owner, not ruled here."
+  },
+  "rule_10": "Review 2 binds the four digests recorded above at commit 3e764d8, not these bytes. Every edit of this pass was made after it.",
+  "gate": "at the owner gate on review 2 s CONFIRM WITH EXCEPTIONS with all eleven exceptions applied - no blocking finding, no recommended answer moved, and the review-1 repairs verified 21 REPAIRED, 0 PARTIAL and 0 NOT REPAIRED over 21; P-75 is ready to be ruled",
+  "uncovered_until": "a third independent fresh-context review, for the eleven exception repairs recorded here; all eleven post-date review 2 (verification rule 10). Its raw would be a third -RAW.md file, never an overwrite of either retained one.",
+  "register_row": "P-75, unchanged in identity; its note and row carry the review-2 entry added in this pass",
+  "governance_check_after_review2": {
+   "command": "python3 scripts/check_governance.py",
+   "last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) - counts derived, not asserted",
+   "note": "run in this worktree after all four files of this pass were written - the packet, this record, the P-75 register row and the retained review-2 raw. Read the last line, not the exit code (verification rule 4). Identical to the baseline at a9f671e and to the review-1 pass."
+  },
+  "packet_measured_after_review2": {
+   "path": "docs/design/POLARIS-M9-ONE-IDENTITY-FUNNEL.md",
+   "bytes": 154828,
+   "sha256": "cf9615b47745c48b96fba63778581cddfd3d619076acaa861e6eb8f5b1c948fc",
+   "total_lines": 1747,
+   "line_count_convention": "split on newline, trailing empty segment not counted; the convention stated once in the packet. wc -l returns one fewer.",
+   "over_78": 8,
+   "over_78_predicate": "lines outside fenced code blocks whose first non-space character is not a pipe, length greater than 78; denominator every line of the file. The eight are the title line, four ### slice headings that name their size and act, and three single unbreakable code-span paths - no prose line.",
+   "note": "computed LAST, after the final edit to the packet, and re-verified against the live bytes after every other edit of this pass, so it names the bytes that carry it. The self-referential over_78 figure was iterated to a fixed point. Verification rule 10: a review is bound to exactly these bytes and any later edit retires it."
+  }
  }
 }
