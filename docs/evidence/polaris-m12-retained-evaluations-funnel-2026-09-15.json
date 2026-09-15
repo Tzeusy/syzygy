@@ -1,0 +1,841 @@
+{
+  "record": "polaris-m12-retained-evaluations-funnel",
+  "date": "2026-09-15",
+  "status": "candidate; binds nothing; planning only; no independent review yet",
+  "bead": "syzygy-dov.12",
+  "move": "M12",
+  "commit": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
+  "commitShort": "a9f671e",
+  "branch": "agent/syzygy-dov.12",
+  "dossierAuditedAt": "f4589e2",
+  "independent_review": {
+    "count": 0,
+    "reviews": [],
+    "note": "first draft; by verification rule 10 nothing in the packet is confirmed"
+  },
+  "proposedRegisterNumber": "P-79 (not written by this packet; the row lands with review 1)",
+  "conventions": {
+    "lineNumbers": "1-based over file bytes at a9f671e unless another commit or worktree is named",
+    "lineCounts": "wc -l (physical newline-terminated lines), never the split-on-newline count"
+  },
+  "artifacts": {
+    "docs/design/POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL.md": {
+      "bytes": 136105,
+      "wc_l": 1736,
+      "sha256": "d65c7860608bf8f1520c27ff71501bd9e8861c840aeec0177e2a70e0f58ab924"
+    },
+    "docs/evidence/polaris-m12-retained-evaluations-funnel-2026-09-15.json": {
+      "bytes": null,
+      "wc_l": null,
+      "sha256": null,
+      "note": "this record cannot hash itself; the report names its post-write sha256"
+    }
+  },
+  "dossier": {
+    "files": {
+      "docs/pursuits/2026-09-13-vision-pursuit.md": {
+        "wc_l": 552,
+        "m12SectionLine": 403
+      },
+      "docs/pursuits/2026-09-13-vision-pursuit-data.json": {
+        "wc_l": 5014
+      },
+      "docs/pursuits/2026-09-13-vision-pursuit-harvest.json": {
+        "wc_l": 4596
+      }
+    },
+    "merges": [
+      "L2-M6",
+      "L2-M7",
+      "L2-M8"
+    ],
+    "evidence_findings": [
+      "L2-F4",
+      "L2-F5"
+    ],
+    "prerequisiteLine": "none for retention and delta; owner act for the note; spec amendment for dismissal",
+    "prerequisiteSurvives": false,
+    "prerequisiteVerdict": "The first clause does not survive: retention touches the continuation act's retention-posture escalation trigger by its own noun (PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md lines 150-156). Whether 'beyond' reaches a derived record is genuinely open and is published as Q1, never ruled. The second clause understates: the act in force forbids the write in terms rather than merely failing to cover it. The third clause holds.",
+    "driftCheck": {
+      "predicate": "git diff --numstat f4589e2 a9f671e restricted to the twelve M12-cited files",
+      "rows": 0,
+      "conclusion": "every M12-cited file is byte-identical between the dossier's audit commit and this baseline"
+    },
+    "lineSpanReverification": {
+      "rowCount": 14,
+      "exact": 10,
+      "narrowedByOneAtTail": 2,
+      "approximate": [
+        {
+          "cited": "materialization.ts:78-145",
+          "actual": "line 78 closes a type; the file-backed record block is 80-141"
+        }
+      ],
+      "wrongReferent": 1,
+      "wrongReferentDetail": "L2-M8 cites project-shape-model.ts:89-102 as the ChallengeState seam; 89-102 is UNKNOWN_REASON_ROUTES. The seam is lines 81-84 (comment, CHALLENGE_STATES, ChallengeState) and line 129 (the challenge field).",
+      "narrowed": [
+        {
+          "cited": "body-read-authority.ts:754-766",
+          "actual": "comment 754-756, function 757-767"
+        },
+        {
+          "cited": "walkthrough-judgment.ts:810-823",
+          "actual": "comment 810-812, function 813-824"
+        }
+      ]
+    }
+  },
+  "measurements": {
+    "observationInstant": {
+      "site": "apps/three-surface-poc/src/main.ts:134",
+      "text": "const asOf = new Date().toISOString();",
+      "enclosingFunctionDeclaredAt": 113,
+      "usedAt": [
+        148,
+        168,
+        175
+      ],
+      "buildModelCallSites": [
+        187,
+        201
+      ],
+      "predicate": "the literal buildModel() occurring in apps/three-surface-poc/src/main.ts",
+      "denominator_wc_l": 253,
+      "buildButlersPocModelNonTestCallSites": [
+        "packages/three-surface-poc-core/src/model.ts:369 (definition)",
+        "apps/three-surface-poc/src/main.ts:171",
+        "apps/three-surface-poc/src/test-model-fixture.ts:133"
+      ],
+      "buildButlersPocModelTotalOccurrences": 36
+    },
+    "stateDirWriteSweep": {
+      "predicate": "Python re word-boundary alternation writeFileSync|writeFile|appendFileSync|appendFile|mkdirSync|mkdir|authorizeWrite|createWriteStream|rmSync|unlinkSync|renameSync|openSync|chmodSync",
+      "roots": [
+        "apps/three-surface-poc/src",
+        "packages/three-surface-poc-core/src",
+        "packages/cap1-daemon/src"
+      ],
+      "denominator_ts_files": 157,
+      "denominator_non_test_ts_files": 81,
+      "matchingNonTestLines": 56,
+      "partition": {
+        "import": 11,
+        "entryPointOrFixture": 31,
+        "clearOrDelete": 2,
+        "comment": 3,
+        "governedPlaneWrite": 2,
+        "authorizeWriteCall": 1,
+        "stateDirectory": 6,
+        "other": 0
+      },
+      "stateDirectorySites": [
+        {
+          "site": "packages/cap1-daemon/src/credentials.ts:223-227",
+          "writes": "machine-credential.token",
+          "dirMode": "0o700",
+          "fileMode": "0o600"
+        },
+        {
+          "site": "packages/three-surface-poc-core/src/materialization.ts:128-134",
+          "writes": "materialization-record.json",
+          "dirMode": "0o700",
+          "fileMode": "0o600"
+        },
+        {
+          "site": "packages/three-surface-poc-core/src/test-artifact-verification.ts:73-79",
+          "writes": "the test-artifact record",
+          "dirMode": "0o700",
+          "fileMode": "0o600"
+        }
+      ],
+      "sitesWritingAnEvaluationOrClaimState": 0,
+      "retainedCaptureStateDirectory": {
+        "entries": 1,
+        "names": [
+          "machine-credential.token"
+        ],
+        "bytes": 64,
+        "fileMode": "0600",
+        "dirMode": "0700",
+        "contentsRead": false
+      }
+    },
+    "appenders": {
+      "appendEvaluation": {
+        "definition": "packages/three-surface-poc-core/src/body-read-authority.ts:757-767",
+        "headComment": "754-756",
+        "occurrences": 5,
+        "nonTestOccurrences": 1,
+        "persisted": false
+      },
+      "appendJudgmentEvaluation": {
+        "definition": "packages/three-surface-poc-core/src/walkthrough-judgment.ts:813-824",
+        "headComment": "810-812",
+        "mutationPointComment": 818,
+        "occurrences": 6,
+        "nonTestOccurrences": 1,
+        "persisted": false
+      },
+      "predicate": "literal name over every .ts file under apps/, packages/ and scripts/",
+      "reExportedFromPackageIndex": false
+    },
+    "canonicalJsonUsers": {
+      "definition": "packages/three-surface-poc-core/src/project-shape-manifest.ts:333 (head comment 331-332)",
+      "totalOccurrences": 7,
+      "digestSites": [
+        {
+          "site": "packages/three-surface-poc-core/src/project-shape-observation.ts:337",
+          "function": "resourceLimitsDigest",
+          "identifies": "the declared resource envelope"
+        },
+        {
+          "site": "packages/three-surface-poc-core/src/project-shape-observation.ts:635",
+          "function": "inline in the observation builder",
+          "identifies": "the observation digest, capture instants stripped by stripCaptureInstant at 642-650"
+        },
+        {
+          "site": "packages/three-surface-poc-core/src/walkthrough-readiness.ts:126",
+          "function": "walkthroughEvaluationIdentity",
+          "identifies": "the readiness evaluation identity, pwb-eval- plus 24 hex characters"
+        }
+      ]
+    },
+    "evaluationIdentityToday": {
+      "inputsDigestComputedAt": "packages/three-surface-poc-core/src/model.ts:381 (surfaced at 691; snapshot composed at 689)",
+      "footerSites": [
+        "apps/three-surface-poc/src/routes.ts:92",
+        "apps/three-surface-poc/src/polaris.ts:1630",
+        "apps/three-surface-poc/src/polaris-source.ts:140"
+      ],
+      "footerFields": [
+        "observed-repository revision",
+        "working-tree sha256",
+        "observer revision",
+        "inputs sha256"
+      ],
+      "renderedSnapshotChars": 262,
+      "renderedInstantChars": 24,
+      "note": "field values are described by label only; no digest value is reproduced (CG-15)",
+      "digestsNotInFooter": [
+        "the observation digest",
+        "the readiness evaluation identity"
+      ]
+    },
+    "claimPopulation": {
+      "source": "the retained /api/poc capture (5,508,208 bytes), evaluation as-of 2026-09-13T02:03:33.040Z",
+      "predicate": "every JSON object anywhere in the payload carrying both a claimId and an epistemic member, found by a recursive walk",
+      "claimObjects": 1149,
+      "distinctClaimIds": 1148,
+      "identitiesOccurringTwice": 1,
+      "duplicateIdentityPaths": [
+        "projectShape.items[].claim",
+        "proposedWork.currentAuthority.claim"
+      ],
+      "distinctEpistemicChallengeTuples": 2,
+      "tupleCounts": {
+        "Observed/report-fact/fresh/unchallenged": 1137,
+        "Unknown/excluded-content/fresh/unchallenged": 12
+      },
+      "byIdentityPrefix": {
+        "claim:source:": 278,
+        "claim:item:": 416,
+        "claim:fact:": 439,
+        "claim:class:": 9,
+        "claim:project-account:": 6,
+        "claim:project-shape": 1
+      },
+      "canonicalClaimStateMapBytes": 177031,
+      "canonicalClaimStateMapWithRoutesBytes": 203379,
+      "routesRedundancyBytes": 26348,
+      "claimIdConstructionSites": [
+        367,
+        375,
+        383,
+        403,
+        430
+      ],
+      "anyConstructionSiteInterpolatesRevision": false
+    },
+    "challengeSweep": {
+      "predicateUsed": "case-insensitive substring 'challenge'; a line excluded only when its single occurrence is the unrelated Unknown reason challenge-suspended; dist/ and node_modules excluded",
+      "denominator_ts_files": 246,
+      "matchingLines": 50,
+      "testLines": 25,
+      "nonTestLines": 25,
+      "rejectedPredicate": "\\bchallenge\\b (case-insensitive) returns 35 lines and misses CHALLENGE_STATES and ChallengeState, because _ is a word character and ChallengeState has no trailing boundary",
+      "rejectedPredicateLines": 35,
+      "producerSites": [
+        "packages/three-surface-poc-core/src/project-shape-model.ts:177"
+      ],
+      "vocabularyAndType": [
+        "packages/three-surface-poc-core/src/project-shape-model.ts:81-84",
+        "packages/three-surface-poc-core/src/project-shape-model.ts:129"
+      ],
+      "consumerSites": [
+        "apps/three-surface-poc/src/polaris.ts:301",
+        "apps/three-surface-poc/src/polaris.ts:314",
+        "apps/three-surface-poc/src/polaris.ts:358",
+        "apps/three-surface-poc/src/polaris-copy.ts:33",
+        "apps/three-surface-poc/src/polaris-copy.ts:43",
+        "apps/three-surface-poc/src/polaris-copy.ts:50",
+        "apps/three-surface-poc/src/polaris-copy.ts:51",
+        "apps/three-surface-poc/src/walkthrough-preflight.ts:216"
+      ],
+      "unrelatedSubsystemLines": {
+        "packages/cap1-core/src/drawer.ts": 10,
+        "packages/cap1-conformance/src/req-040.conformance.test.ts": 9
+      },
+      "unrelatedSameWord": "packages/three-surface-poc-core/src/project-shape-model.ts:98 (the UNKNOWN_REASON_ROUTES entry for the reason challenge-suspended)",
+      "admittedChallengeValues": 1
+    },
+    "localAndCacheAbsence": {
+      "thisRepository": {
+        "predicate": "git ls-files .syzygy, paths beginning .syzygy/local/ or .syzygy/cache/",
+        "denominator": 556,
+        "hits": 0,
+        "topLevelDirs": [
+          "governance",
+          "intent",
+          "map"
+        ],
+        "caveat": "git stores no empty directory, so this measures the tracked population"
+      },
+      "repositoryTrackedFilesTotal": 1216,
+      "governanceRecordsDirectory": {
+        "path": ".syzygy/governance/records/",
+        "exists": false,
+        "trackedFiles": 0,
+        "namedBy": "PWB-REQ-022, PWB spec line 1033"
+      },
+      "observedProject": {
+        "predicate": "distinct source paths in the retained capture's projectShape block",
+        "denominator": 278,
+        "pathsBeginningDotSyzygy": 0,
+        "pathsWithSegmentLocal": 0,
+        "topLevelSegments": 3,
+        "remainder": "[Unknown] — the observation population is the manifest's scope, not the repository; establishing more would need a read outside the consented content class"
+      }
+    },
+    "ceiling": {
+      "maxHumanResponseBytes": 2097152,
+      "maxMachineResponseBytes": 8388608,
+      "limitsDeclaredAt": "packages/three-surface-poc-core/src/project-shape-observation.ts:81-82",
+      "polarisServedTailnetAfterLaneA": 1484487,
+      "polarisServedDirectAfterLaneA": 1478637,
+      "tailnetHeadroom": 612665,
+      "directHeadroom": 618515,
+      "machineModelBytes": 5520314,
+      "machineHeadroom": 2868294,
+      "source": "docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json; the two headroom subtractions computed this session",
+      "claimTupleSpansOnRetainedPage": 699,
+      "bytesPerTupleSpan": {
+        "min": 559,
+        "max": 661,
+        "mean": 586.3,
+        "total": 409829
+      },
+      "retainedPageBytes": 2090025,
+      "retainedPageIsPreTrim": true,
+      "twoTupleRowBytes": 1172.6,
+      "rowsBeforeTailnetCeiling": 522,
+      "rowsLabel": "[Inferred] extrapolation from a measured per-tuple cost to a renderer that does not exist; the per-tuple figure is an upper bound because the capture is pre-trim"
+    },
+    "specRetentionSweep": {
+      "files": [
+        "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+        "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md"
+      ],
+      "denominatorLines": 2160,
+      "perTerm": {
+        "retain": {
+          "poc": 0,
+          "pwb": 15
+        },
+        "retention": {
+          "poc": 0,
+          "pwb": 0
+        },
+        "delta": {
+          "poc": 0,
+          "pwb": 1
+        },
+        "since(word)": {
+          "poc": 0,
+          "pwb": 0
+        },
+        "annotat": {
+          "poc": 0,
+          "pwb": 0
+        },
+        "dismiss": {
+          "poc": 0,
+          "pwb": 0
+        },
+        "expir": {
+          "poc": 0,
+          "pwb": 1
+        },
+        "note(s)": {
+          "poc": 1,
+          "pwb": 0
+        },
+        "history": {
+          "poc": 1,
+          "pwb": 5
+        },
+        "append-only": {
+          "poc": 0,
+          "pwb": 0
+        },
+        "previous": {
+          "poc": 0,
+          "pwb": 2
+        },
+        "changed": {
+          "poc": 0,
+          "pwb": 3
+        }
+      },
+      "disclosedException": "PWB-REQ-022 (spec lines 1032-1035) requires 'a retained walkthrough execution record in .syzygy/governance/records/' — human-authored, in Syzygy's governed plane, at a path that does not exist in this repository. It is a different object from a daemon-written per-evaluation claim-state store.",
+      "conclusion": "no approved requirement in either signed specification names retention of an evaluation's claim state by Syzygy, a claim-state delta, an owner note, an annotation, a dismissal or an expiry of one"
+    },
+    "specCounts": {
+      "pwb": {
+        "requirements": 17,
+        "scenarios": 31,
+        "wc_l": 1152
+      },
+      "poc": {
+        "requirements": 24,
+        "scenarios": 24,
+        "wc_l": 1008
+      },
+      "predicate": "^### Requirement and ^#### Scenario"
+    },
+    "pwbTasks": {
+      "checkboxes": 35,
+      "checked": 32,
+      "unchecked": 3,
+      "uncheckedIds": [
+        "4.6",
+        "5.2",
+        "5.3"
+      ],
+      "wc_l": 138,
+      "predicate": "^- \\[[ xX]\\] ",
+      "anyM12SliceDuplicatesAnUncheckedTask": false
+    }
+  },
+  "acts": {
+    "PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md": {
+      "implementationPlane": "lines 59-61 (sentence continues to 63)",
+      "writeProhibition": "lines 70-72",
+      "escalationTriggers": "lines 86-94"
+    },
+    "PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md": {
+      "escalationTriggers": "lines 150-156",
+      "retentionPostureTrigger": "lines 152-154",
+      "specAmendmentTrigger": "lines 151-152",
+      "registryEnvelopeTrigger": "lines 154-155"
+    },
+    "THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md": {
+      "recordedFindingLimb": "lines 55-56",
+      "itemBound": "lines 23-24"
+    },
+    "THREE-SURFACE-POC-MODE-DIRECTION.md": {
+      "humanTriggeredWork": "lines 18-19",
+      "wc_l": 43
+    },
+    "registry": {
+      "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+      "writeSurfaceLine": 125,
+      "writeSurfaceValue": [],
+      "boundBy": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md",
+      "editedByAnySlice": false
+    },
+    "secretPolicy": {
+      "path": ".syzygy/governance/policies/POLARIS-BUTLERS-SECRET-CLASSIFICATION-POLICY-CANDIDATE.json",
+      "rawBodyHandlingLines": "178-184",
+      "rawBodyHandling": {
+        "storage": "never",
+        "logging": "never",
+        "rendering": "never",
+        "machineResponse": "never",
+        "externalEgress": "never"
+      },
+      "editedByAnySlice": false
+    }
+  },
+  "doctrine": {
+    "VIS-6": {
+      "path": ".syzygy/governance/doctrine/vision.md",
+      "lines": "167-181",
+      "reverified": true
+    },
+    "VIS-2": {
+      "lines": "96-106"
+    },
+    "VIS-1": {
+      "lines": "82-94"
+    },
+    "architecture.temporalRule": {
+      "path": ".syzygy/governance/doctrine/architecture.md",
+      "lines": "221-229"
+    },
+    "architecture.observationRecord": {
+      "lines": "231-235"
+    },
+    "architecture.cacheAndLocalRows": {
+      "lines": "56-57"
+    },
+    "SEC-1": {
+      "path": ".syzygy/governance/doctrine/security.md",
+      "lines": "10-23"
+    },
+    "SEC-2": {
+      "lines": "25-37"
+    },
+    "SEC-4": {
+      "lines": "47-52"
+    },
+    "SEC-5": {
+      "lines": "54-60"
+    },
+    "RFC2-26": {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md",
+      "lines": "196-221",
+      "headingLine": 194,
+      "locatedVia": "DIRECTIVE-REGISTER.md"
+    },
+    "RFC5-11": {
+      "path": ".syzygy/governance/contracts/rfcs/RFC-0005/admission-and-boundary.md",
+      "lines": "244-252",
+      "headingLine": 242,
+      "locatedVia": "DIRECTIVE-REGISTER.md"
+    }
+  },
+  "rfc2_26_test": {
+    "denominator": 4,
+    "rows": [
+      {
+        "slice": 1,
+        "mappedRequirement": null,
+        "mappedScenario": null,
+        "limb1": "unmapped; scheduled from recorded finding L2-F5 under the improvement-cycles direction; limb 2 (reviewed N/A) judged not obviously reachable because a file on disk is independently testable; not ruled lawful or unlawful"
+      },
+      {
+        "slice": 2,
+        "mappedRequirement": "PWB-REQ-007 (PWB spec line 439), Case line 453-454, Oracle line 460-461",
+        "mappedScenario": "Missing current evidence remains explicit Unknown (PWB spec 470-474); POC-REQ-032 scenario Unknown disclosed in the narrative (POC spec 599-604); PWB-REQ-020 scenario Complete model has wire parity (PWB spec 928-933); PWB-REQ-014 scenario A project claim is supported without making Polaris authority (PWB spec 799-803)",
+        "limb1": "available; residue: no scenario WHEN limb names a rendered delta"
+      },
+      {
+        "slice": 3,
+        "mappedRequirement": "PWB-REQ-014 (PWB spec line 759), personal-view-state sentence 772-773, Case 778-782, Oracle 791-792",
+        "mappedScenario": "A project claim is supported without making Polaris authority (799-803)",
+        "limb1": "partial and inverted: the requirement constrains personal state rather than warranting a note"
+      },
+      {
+        "slice": 4,
+        "mappedRequirement": "PWB-REQ-007 (PWB spec line 439), Case line 454-456",
+        "mappedScenario": "Missing current evidence remains explicit Unknown (470-474)",
+        "limb1": "available as a constraint, unavailable as a warrant; the requirement is the reason slice 4 is an amendment"
+      }
+    ]
+  },
+  "actCorpusSweep": {
+    "predicate": "the file's repository-relative path, or its basename where that basename is unique across the repository's 1,216 tracked files, occurring in any tracked .md/.txt under .syzygy/ or any tracked file whose basename contains MANIFEST, plus docs/evidence files whose basename contains manifest",
+    "denominators": {
+      "governanceMdTxt": 538,
+      "manifestBasename": 24,
+      "evidenceManifest": 7,
+      "union": 553
+    },
+    "surfaceFiles": 15,
+    "manifestRows": 0,
+    "actRecords": 0,
+    "hits": {
+      ".syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/IMPACT-LEDGER.md": 8,
+      "docs/evidence/polaris-manifesto-example-mutation-2026-09-09.json": 1
+    },
+    "impactLedgerSelfDescription": "Candidate review input - never authority. This is the CC-REV-2 affected-consumer inventory. It performs no act and authorizes no implementation. (its own lines 3-5)",
+    "impactLedgerIsAManifestRow": false,
+    "impactLedgerManifestsSearched": [
+      "PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt",
+      "PWB-EFFECT-AMENDMENT-MANIFEST.txt"
+    ],
+    "evidenceHitKind": "a rule-6 mutation record (commit/file/old/new/exitCode/output/restored), not a digest table",
+    "nonUniqueBasenames": {
+      "main.ts": 2,
+      "index.ts": 4
+    },
+    "unknownRemainder": "whether any docs/evidence/*.json digest table beyond the seven whose basename contains 'manifest' binds these bytes"
+  },
+  "collision": {
+    "m12_surface": [
+      "apps/three-surface-poc/src/main.ts",
+      "apps/three-surface-poc/src/polaris.ts",
+      "apps/three-surface-poc/src/polaris-copy.ts",
+      "apps/three-surface-poc/src/materialize-action.ts",
+      "packages/three-surface-poc-core/src/index.ts",
+      "packages/three-surface-poc-core/src/model.ts",
+      "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+      "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+      "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+      "packages/three-surface-poc-core/src/materialization.ts",
+      "packages/cap1-daemon/src/write-guard.ts",
+      "docs/THREE-SURFACE-POC.md"
+    ],
+    "predicateA": "every code span in every .md under each sibling worktree's docs/design/, kept when it begins apps/, packages/, scripts/ or docs/ or equals package.json, resolves as a file in this worktree, and lies on M12's 15-file surface",
+    "predicateB_full": "predicate A restricted to the section from '## Gate 3 — Topology' to the line before the next '## ' heading; full paths only",
+    "predicateB_basename": "B-full plus bare code spans with no '/' equal to a surface basename that is unique across the repository's 1,216 tracked files; main.ts and index.ts are excluded from this limb and matched by full path only",
+    "rowsMovedByBasenameLimb": 7,
+    "rowsTotal": 11,
+    "falseAbsencesUnderBfull": [
+      "M1 lane B",
+      "M6"
+    ],
+    "perFileFrequencyBbasename": {
+      "apps/three-surface-poc/src/polaris.ts": 11,
+      "packages/three-surface-poc-core/src/model.ts": 7,
+      "apps/three-surface-poc/src/polaris-copy.ts": 5,
+      "packages/three-surface-poc-core/src/project-shape-model.ts": 5,
+      "packages/three-surface-poc-core/src/project-shape-observation.ts": 4,
+      "apps/three-surface-poc/src/main.ts": 3,
+      "packages/three-surface-poc-core/src/body-read-authority.ts": 2,
+      "packages/three-surface-poc-core/src/walkthrough-readiness.ts": 2,
+      "apps/three-surface-poc/src/materialize-action.ts": 1,
+      "packages/three-surface-poc-core/src/project-shape-manifest.ts": 1,
+      "packages/three-surface-poc-core/src/materialization.ts": 1,
+      "docs/THREE-SURFACE-POC.md": 1,
+      "packages/three-surface-poc-core/src/index.ts": 0,
+      "packages/three-surface-poc-core/src/walkthrough-judgment.ts": 0,
+      "packages/cap1-daemon/src/write-guard.ts": 0
+    },
+    "siblings": [
+      {
+        "name": "M1 lane B",
+        "pr": "#35",
+        "p": "P-68",
+        "worktree": "laneb",
+        "head": "4090f98",
+        "A": 0,
+        "B_full": 0,
+        "B_basename": 1
+      },
+      {
+        "name": "M2",
+        "pr": "#36",
+        "p": "P-69",
+        "worktree": "m2wt",
+        "head": "f2f37dd",
+        "A": 4,
+        "B_full": 4,
+        "B_basename": 5
+      },
+      {
+        "name": "M3",
+        "pr": "#37",
+        "p": "P-70",
+        "worktree": "m3wt",
+        "head": "6574600",
+        "A": 3,
+        "B_full": 2,
+        "B_basename": 2
+      },
+      {
+        "name": "M4",
+        "pr": "#38",
+        "p": "P-71",
+        "worktree": "m4wt",
+        "head": "63b8e33",
+        "A": 6,
+        "B_full": 5,
+        "B_basename": 5
+      },
+      {
+        "name": "M5",
+        "pr": "#39",
+        "p": "P-72",
+        "worktree": "m5wt",
+        "head": "ba9ca61",
+        "A": 4,
+        "B_full": 3,
+        "B_basename": 4
+      },
+      {
+        "name": "M6",
+        "pr": "#40",
+        "p": "P-73",
+        "worktree": "m6wt",
+        "head": "83c9f60",
+        "A": 0,
+        "B_full": 0,
+        "B_basename": 1
+      },
+      {
+        "name": "M7",
+        "pr": "#42",
+        "p": "P-76",
+        "worktree": "m7wt",
+        "head": "f97baf4",
+        "A": 2,
+        "B_full": 1,
+        "B_basename": 2
+      },
+      {
+        "name": "M8",
+        "pr": "#43",
+        "p": "P-74",
+        "worktree": "m8wt",
+        "head": "bce9039",
+        "A": 10,
+        "B_full": 7,
+        "B_basename": 9
+      },
+      {
+        "name": "M9",
+        "pr": "#41",
+        "p": "P-75",
+        "worktree": "m9wt",
+        "head": "65de02b",
+        "A": 4,
+        "B_full": 2,
+        "B_basename": 6
+      },
+      {
+        "name": "M10",
+        "pr": "#44",
+        "p": "P-77",
+        "worktree": "m10wt",
+        "head": "95f31cb",
+        "A": 4,
+        "B_full": 2,
+        "B_basename": 2
+      },
+      {
+        "name": "M11",
+        "pr": "#45",
+        "p": "P-78",
+        "worktree": "m11wt",
+        "head": "bbd6837",
+        "A": 8,
+        "B_full": 6,
+        "B_basename": 6
+      }
+    ],
+    "largestOverlap": {
+      "sibling": "M8",
+      "B_full": 7,
+      "B_basename": 9,
+      "outOf": 15
+    }
+  },
+  "ownerQuestions": {
+    "count": 6,
+    "registeredNumber": null,
+    "questions": [
+      {
+        "id": "Q1",
+        "gist": "Is a durable per-evaluation claim-state record a change to retention posture, and therefore a named escalation trigger needing an act?",
+        "recommended": "Yes - treat it as a retention-posture change and obtain an act",
+        "arms": 3,
+        "defaultIfUnanswered": "slice 1 does not ship, and slice 2 with it"
+      },
+      {
+        "id": "Q2",
+        "gist": "What may a retained evaluation record hold, and how long may it live, given VIS-6(b)'s 'immutable'?",
+        "recommended": "Claim identity plus epistemic tuple and challenge state only; unbounded, with the on-disk total rendered",
+        "arms": 4,
+        "defaultIfUnanswered": "one prior evaluation only"
+      },
+      {
+        "id": "Q3",
+        "gist": "May the delta band spend the response-ceiling headroom M1 lane A bought, and what is its cap?",
+        "recommended": "Yes, capped with the remainder disclosed as a counted Unknown",
+        "arms": 3,
+        "defaultIfUnanswered": "counts on the page, list on the machine channel"
+      },
+      {
+        "id": "Q4",
+        "gist": "May an owner note be promoted by committing it out into the observed project's governed plane, and does any act permit that write?",
+        "recommended": "Do not build promotion in this move; the question is put, not answered",
+        "arms": 4,
+        "defaultIfUnanswered": "no note ships, promoted or unpromoted"
+      },
+      {
+        "id": "Q5",
+        "gist": "Is a dismissal acting on the epistemic tuple an implementation of PWB-REQ-007 or an amendment to it?",
+        "recommended": "An amendment; CC-REV-2 plus a new act. Neither lawful nor unlawful is ruled",
+        "arms": 3,
+        "defaultIfUnanswered": "slice 4 does not ship"
+      },
+      {
+        "id": "Q6",
+        "gist": "Which evaluation does a delta claim belong to?",
+        "recommended": "A claim of the current evaluation about two evaluations, never a tuple field and never a freshness value",
+        "arms": 3,
+        "defaultIfUnanswered": "a disclosed rendering artifact under PWB-REQ-014's non-normative framing role, minting no identity"
+      }
+    ]
+  },
+  "slices": [
+    {
+      "n": 1,
+      "title": "Retained evaluation record",
+      "size": "medium",
+      "gate": "Q1, Q2",
+      "ships": true,
+      "mutants": 6
+    },
+    {
+      "n": 2,
+      "title": "Claim-state delta view",
+      "size": "medium",
+      "gate": "Q3, Q6 (machine arm also M10's Q6)",
+      "ships": true,
+      "mutants": 6
+    },
+    {
+      "n": 3,
+      "title": "Owner note",
+      "size": "large",
+      "gate": "Q4 (and Q1/Q2 for the unpromoted half)",
+      "ships": false,
+      "mutants": 5
+    },
+    {
+      "n": 4,
+      "title": "Dismissal with a live expiry",
+      "size": "large",
+      "gate": "Q5",
+      "ships": false,
+      "mutants": 5
+    }
+  ],
+  "sliceResplit": "the dossier's three slices become four; its third slice carried two different gates (an owner act and a CC-REV-2 amendment) and cannot share a Gate 3 or Gate 5 row",
+  "figuresDifferingFromDossier": [
+    "prerequisite 'none for retention and delta' does not survive (Q1)",
+    "'Depends on ... M10's stable id' does not hold: the claim identity a delta joins on already exists, carries no revision at any of its five construction sites, and is required stable by PWB-REQ-007",
+    "a tuple-difference-only band would be nearly silent: 2 distinct tuples over 1,149 claim objects; membership is the signal",
+    "'the state directory holds only the machine credential' is true of the capture and understates the code, which admits three files",
+    "the two appenders are a pattern, not a mechanism: neither is reachable outside its own test file",
+    "L2-M8's project-shape-model.ts:89-102 names UNKNOWN_REASON_ROUTES, not the challenge seam (81-84 and 129)",
+    "M11's exact-contents state-directory assertion binds the Capability 1 daemon, not the POC: 19 readdirSync sites in 8 files, exactly one asserting a state directory's contents"
+  ],
+  "notVerified": [
+    "no POC daemon was run, no repository was observed, no provider call was made",
+    "no real claim-state delta between two Butlers revisions was measured; none can exist before slice 1 does",
+    "whether the sibling branches' actual diffs stay inside the paths their Gate 3 tables name",
+    "whether any docs/evidence/*.json digest table beyond the seven whose basename contains 'manifest' binds M12's surface bytes"
+  ],
+  "governanceCheck": {
+    "command": "python3 scripts/check_governance.py",
+    "tailLine": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
+    "baselineTailLineBeforeThesePublishes": "32 OK, 20 WARN, 0 FAIL (52 checks)",
+    "note": "CG-1b failed on a first assembly because two sibling packets are cited by path and do not exist in this worktree; both citations were rewritten without code spans, as the M11 packet does. Re-run is clean."
+  }
+}
