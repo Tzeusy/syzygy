@@ -5,12 +5,12 @@
  "move": "M11",
  "date": "2026-09-15",
  "packet": "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md",
- "status": "candidate; binds nothing; planning only; no independent review yet",
+ "status": "candidate; binds nothing; planning only; one independent fresh-context review applied 2026-09-15 - review 1, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 7 non-blocking, 6 editorial, F1-F13), retained verbatim at docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-RAW.md; all thirteen exceptions re-derived against source and applied; at the owner gate, registered as P-78, with the thirteen exception repairs uncovered until a second independent fresh-context review confirms them [superseded 2026-09-15: \"no independent review yet\"]",
  "independent_review": {
-  "count": 0,
-  "raws": [],
-  "verdicts": [],
-  "note": "first draft; verification rule 10 applies \u2014 any later edit retires a review bound to these bytes"
+  "count": 1,
+  "raws": ["docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-RAW.md"],
+  "verdicts": ["CONFIRM WITH EXCEPTIONS"],
+  "note": "Review 1 landed 2026-09-15, verdict copied exactly CONFIRM WITH EXCEPTIONS (0 blocking, 7 non-blocking, 6 editorial, F1-F13), retained verbatim at the raw path above and never overwritten; see the review1 block at the end of this record. Verification rule 10: review 1 binds the bytes it names at 2c62d0b and not these, so its thirteen exception repairs are uncovered until a second fresh-context review confirms them, and that review's raw would be a second -RAW.md file, never an overwrite. [Superseded 2026-09-15: count 0, raws [], verdicts [], 'first draft; verification rule 10 applies \u2014 any later edit retires a review bound to these bytes'.]"
  },
  "labels": "Every figure below is [Observed], measured this session in a worktree at a9f671e, unless marked otherwise.",
  "commit": {
@@ -35,7 +35,7 @@
   "packages/three-surface-poc-core/src/model.ts": "c9d49c9fbfb53219ba8c8084a065d32bd09cd88075037fb3ba579029bc7c9f80",
   "docs/THREE-SURFACE-POC.md": "f24f3c114a9f66e307131f6f20041f748a9a4c4970d92ec531ff5841c85f50ff",
   "package.json": "b767c375a4e5b414e05590ed162a06fa4f203c8a371fc8c08264062efeb1c995",
-  "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md": "6f7e98bad81bb3f30a614bfe944d54b1d71091fb5608a6e7f4410827c6cf3eeb"
+  "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md": "6f7e98bad81bb3f30a614bfe944d54b1d71091fb5608a6e7f4410827c6cf3eeb", "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md_note_2026_09_15": "this digest is the first draft's, at 2c62d0b, and is the digest review 1 is bound to; it is kept unedited. The digest of the packet after the review-1 repairs is in review1.packet_measured_after_review1."
  },
  "file_bytes": {
   "apps/three-surface-poc/src/routes.ts": 12861,
@@ -52,7 +52,7 @@
   "packages/three-surface-poc-core/src/model.ts": 30845,
   "docs/THREE-SURFACE-POC.md": 4402,
   "package.json": 1881,
-  "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md": 102079
+  "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md": 102079, "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md_note_2026_09_15": "the first draft's byte count, at 2c62d0b, kept unedited; the count after the review-1 repairs is in review1.packet_measured_after_review1."
  },
  "digest_policy_note": "Digests are recorded only for implementation-plane files and for this packet's own two outputs. No act argument, manifest digest or truncated signed digest is reproduced; the one act-digest comparison made this session is reported as a boolean and the record is cited by path (CG-7e, CG-15).",
  "measurements": {
@@ -243,7 +243,7 @@
     "breachResult_at": 281
    },
    "dossier_figure_that_differs": "S7-M3's slice plan step 1 ('Add maxOutputBytes to the registry's resourceLimits schema and PwbResourceLimits type') is unnecessary: both output-side ceilings are already declared in the registry and typed into PwbResourceLimits, and ResourceLimitBreach.limit already admits them. The gap is a recording site, not a schema. This is why the dossier's prerequisite line does not bind the recommended arm.",
-   "name_collision": "the literal maxOutputBytes already occurs twice, at apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts lines 64 and 71, as an unrelated provider-call budget."
+   "name_collision": "the literal maxOutputBytes already occurs twice, at apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts lines 64 and 71, as an unrelated provider-call budget.", "name_collision_note_2026_09_15": "corrected per review 1, F4. The superseded value above carries no predicate and no denominator. Swept this session with Python re over every blob named by git ls-tree -r -z --name-only a9f671e: the literal maxOutputBytes occurs 31 times in 12 of the 1216 tracked files - 11 in packages/polaris-generation-core/src/pipeline.ts, 2 in its test file, 1 in openspec/changes/polaris-manifesto-generation/INTERFACES.md, and twice at pipeline-demo.ts lines 64 and 71, which are the only two inside the three POC source trees. The collision warning is therefore stronger: the name is held by an adopted generator interface, not only by a demo. One correction to the finding itself: review 1 publishes 38 occurrences in 14 files against a stated denominator of 1216 at a9f671e; 38/14 is the figure over the 1218 files tracked at 2c62d0b, which include this packet and this record (7 occurrences, 2 files)."
   },
   "M5_determinism_constraint": {
    "claim_label": "Observed",
@@ -277,7 +277,7 @@
    },
    "readinessPopulation_builder": {
     "file": "packages/three-surface-poc-core/src/model.ts",
-    "span": "213-221",
+    "span": "213-221", "span_note_2026_09_15": "corrected per review 1, F12: readinessPopulation's signature is at line 211 and its closing brace at line 220, its doc comment ending at 210. The superseded value 213-221 is kept unedited. Q3's separate cite of 217-219 for the input-side snapshot is inside the function and is unchanged.",
     "limitBreaches_source": "projectShape.limitBreaches.length (line 219)"
    },
    "consequence": "an eleventh arm would break the one-per-clause correspondence with PWB-REQ-021 lines 964-968, so slice 3 feeds the existing ninth arm and distinguishes the side in the finding message.",
@@ -290,8 +290,9 @@
    "lines": 253,
    "predicate": "a process.stderr.write or process.stdout.write call in that file",
    "count": 10,
-   "stderr": 6,
-   "stdout": 4,
+   "stderr": 7, "stderr_note_2026_09_15": "corrected per review 1, F1: the stderr sites are 58, 65, 89, 207, 239, 241 and 249. Superseded value: 6.",
+   "stdout": 3, "stdout_note_2026_09_15": "corrected per review 1, F1: the stdout sites are 56, 211 and 229. Superseded value: 4. The ten line numbers and the ten drops_detail verdicts below are unchanged and were re-derived this session.",
+   "four_of_seven_note_2026_09_15": "the derived sentence in the packet read 'four of the six stderr sites drop an available cause' and now reads 'four of the seven'; the four are 65, the 89-93 pair, 207 and 241.",
    "sites": [
     {
      "line": 56,
@@ -408,17 +409,19 @@
   "M9_lifecycle_absence": {
    "claim_label": "Observed",
    "reverifies": "S10-F6",
-   "predicate": "a line matching restart|systemd|upgrade|pidfile|pid file|service unit|\\.service, case-insensitive, in a tracked file under docs/, scripts/, apps/, packages/, or README.md",
+   "predicate": "a line matching restart|systemd|upgrade|pidfile|pid file|service unit|\\.service, case-insensitive, in a tracked file under docs/, scripts/, apps/, packages/, or README.md", "predicate_note_2026_09_15": "corrected per review 1, F2. This is predicate A, the substring predicate; run exactly as written with Python re over the 558 in-scope files at a9f671e it yields 29, not the 22 published beside it. The figure 22 is produced by predicate B, word-bounded: \\brestart\\b|\\bsystemd\\b|\\bupgrade\\b|\\bpidfile\\b, case-insensitive. Both are now published in the packet with the same denominator.",
    "tracked_files_total": 1216,
    "in_scope": 558,
-   "files_with_a_hit": 22,
+   "files_with_a_hit": 22, "files_with_a_hit_note_2026_09_15": "22 is predicate B's figure and is kept unedited. Predicate A's figure over the same denominator is 29; the seven files predicate B drops are apps/three-surface-poc/src/polaris.ts (367), apps/three-surface-poc/src/polaris-first-reading.test.ts (229), docs/reviews/R-POC-CYCLE-3-REVIEW.md (347), packages/cap1-daemon/src/server.test.ts (159-160), packages/polaris-generation-core/README.md (41), packages/three-surface-poc-core/src/test-artifact-verification.ts (228) and scripts/launch_gate_results.py (80).",
    "partition": {
     "evidence_or_pursuit_json": 11,
     "pursuit_or_plan_prose": 3,
     "review_records": 4,
-    "source_or_test_files": 4
+    "source_or_test_files": 4,
+    "note_2026_09_15": "this partition is predicate B's and sums to 22. Predicate A's partition, per review 1, F2, is 11 evidence or pursuit JSON + 3 pursuit or plan prose + 5 review records + 8 source or test files + packages/polaris-generation-core/README.md + scripts/launch_gate_results.py = 29; the review-records class is five under predicate A, not four."
    },
-   "operator_lifecycle_instructions": 0,
+   "operator_lifecycle_instructions": 0, "operator_lifecycle_instructions_note_2026_09_15": "0 holds on the wider denominator too: all 29 predicate-A files were read this session and none is an operator lifecycle instruction.",
+   "closest_prior_art_note_2026_09_15": "packages/cap1-daemon/src/server.test.ts line 159 opens a describe block 'RT3 - credential stability across daemon restarts' and line 160 is the test 'a restarted daemon reuses the same credential file and token'. That is the closest existing prior art to slice 4's oracle and predicate B hid it; slice 4 now cites it alongside packages/cap1-system/src/degradation.system.test.ts.",
    "the_two_source_comments": [
     "packages/cap1-daemon/src/credentials.ts line 175 \u2014 'Restart: reads and reuses the [credential]'",
     "packages/three-surface-poc-core/src/walkthrough-readiness.ts line 113 \u2014 the identity is the same after a daemon restart"
@@ -450,7 +453,7 @@
    "predicate": "case-insensitive word match in the signed specification file",
    "PWB": {
     "file": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
-    "lines": 1153,
+    "lines": 1153, "lines_note_2026_09_15": "corrected per review 1, F9: wc -l gives 1152. The superseded value 1153 is the split-on-newline count of the same newline-terminated file.",
     "requirements": 17,
     "scenarios": 31,
     "health": 0,
@@ -467,12 +470,12 @@
       407,
       665
      ],
-     "note": "all three are sink constraints, never a logging obligation"
+     "note": "all three are sink constraints, never a logging obligation", "owners_note_2026_09_15": "added per review 1, F6: the three belong to three requirements - 176 is PWB-REQ-003's Oracle, 407 is PWB-REQ-006's scenario 'Active repository content remains inert' and 665 is inside PWB-REQ-011's scenario. Requirement headings sit at 160, 340 and 632. PWB-REQ-006's own Oracle is at 394-396 and says 'complete sink-byte scans' without enumerating the sinks."
     }
    },
    "POC": {
     "file": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
-    "lines": 1009,
+    "lines": 1009, "lines_note_2026_09_15": "corrected per review 1, F9: wc -l gives 1008. The superseded value 1009 is the split-on-newline count.",
     "requirements": 24,
     "scenarios": 24,
     "health": {
@@ -543,7 +546,7 @@
   "M13_pwb_tasks": {
    "claim_label": "Observed",
    "file": "openspec/changes/polaris-project-wide-butlers-model/tasks.md",
-   "lines": 139,
+   "lines": 139, "lines_note_2026_09_15": "corrected per review 1, F9: wc -l gives 138. The superseded value 139 is the split-on-newline count.",
    "predicate": "^- \\[[ xX]\\] ",
    "boxes": 35,
    "checked": 32,
@@ -752,8 +755,9 @@
  },
  "owner_questions": {
   "count": 5,
-  "registered": false,
-  "note": "Not registered in PENDING-OWNER-DECISIONS.md: this packet writes two files and no register row, by instruction; the row lands with review 1, batched.",
+  "registered": true, "registered_note_2026_09_15": "registered as P-78 on branch agent/syzygy-dov.11 with review 1, 2026-09-15. Superseded value: false.",
+  "note": "Registered as P-78 in .syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md on branch agent/syzygy-dov.11, 2026-09-15, batched with review 1 exactly as the first draft said the row would land. On that branch the register carries 22 open rows and 5 acceptance-act rows, 27 in all, counted this session under the predicate ^| P- partitioned by the ## section each row falls under; main at a9f671e carries 21 and 5, 26 in all. [Superseded 2026-09-15: 'Not registered in PENDING-OWNER-DECISIONS.md: this packet writes two files and no register row, by instruction; the row lands with review 1, batched.']",
+  "sibling_rows_note_2026_09_15": "corrected per review 1, F5: every row below is a PROPOSAL that exists only on its own branch. None of P-68 through P-77 is on the register at a9f671e, where the predicate ^| P- returns 26 rows, the highest allocated number is P-67 and the predicate P-7[0-9] returns 0 hits. The branches and their pull requests: P-68 lane B PR #35, P-69 M2 PR #36, P-70 M3 PR #37, P-71 M4 PR #38, P-72 M5 PR #39, P-73 M6 PR #40, P-76 M7 PR #42, P-74 M8 PR #43, P-75 M9 PR #41, P-77 M10 PR #44. Each sibling register was recounted at its own head this session and each carries 27 rows: laneb 4090f98, m2wt f2f37dd, m3wt 6574600, m4wt 63b8e33, m5wt ba9ca61, m6wt 83c9f60, m7wt f97baf4, m8wt bce9039, m9wt 65de02b, m10wt 95f31cb.",
   "sibling_rows": {
    "M1": "P-67 (lane A, ruled) / P-68 (lane B)",
    "M2": "P-69",
@@ -769,7 +773,7 @@
   "questions": [
    {
     "id": "Q1",
-    "gist": "What credential class may a status disclosure carry \u2014 machine-credentialed or human-open \u2014 under SEC-1 and RFC5-3? Route existence itself is P-72's question and is not re-asked.",
+    "gist": "What credential class may a status disclosure carry \u2014 machine-credentialed or human-open \u2014 under SEC-1 and RFC5-3? Route existence itself is P-72's question and is not re-asked.", "gist_note_2026_09_15": "review 1, F13: the packet's Q1 HEADING read 'What credential class may a status disclosure carry, and may a third machine-credentialed route be minted at all?' and the second limb has been moved out of the heading into the body, where the packet already declined to ask it. The gist above was already correct and is kept unedited. Q1's recommendation, its two lawful arms and its default if unanswered are unchanged. Also per review 1, F5: P-72 is a proposal on PR #39 and is not on the register at a9f671e.",
     "recommended": "machine-credentialed for the machine form; the human form on the existing human-open pages",
     "default_if_unanswered": "slice 2's machine route does not ship"
    },
@@ -839,7 +843,7 @@
   },
   "implementation_plane": {
    "act": ".syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md",
-   "quote_span": "lines 59-63",
+   "quote_span": "lines 59-63", "quote_span_note_2026_09_15": "narrowed per review 1, F8 to lines 59-61: the quoted words end mid-line 61, which continues ', under the in-force craft policies and the vendored th-engineering standards' and runs to 63. The packet now marks the elision with an ellipsis.",
    "quote": "Code in the ordinary implementation plane only \u2014 apps/**, packages/**, tooling, root manifests \u2014 never inside openspec/** or .syzygy/**"
   },
   "continuation": {
@@ -869,11 +873,14 @@
   "prerequisite: the 'owner act for the registry resourceLimits change' does not bind the recommended arm \u2014 both response ceilings are already registry-declared and typed, and ResourceLimitBreach.limit already admits them",
   "P0-CEILING is superseded on main by the M1 lane A trim: 612,665 bytes of tailnet headroom at Butlers 2e3bac97",
   "S10-F1's route description yields 15; the computed table is 17 (it omits the two POST materialize routes)",
+  "note_2026_09_15 (review 1, F11): the sentence above uses the reading in which S10-F1 describes pocRoutes' 15 GET routes, an undercount of two. Read literally - five human surfaces, /api/poc, /api/poc/polaris and their tailnet mirrors - it enumerates 14 paths and the undercount is three: the two POST materialize routes and the /butlers-syzygy/ trailing-slash mirror of /. Both readings are now published in the packet. The sentence itself is in docs/pursuits/2026-09-13-vision-pursuit-harvest.json at .agents[S10-operability].findings[0].summary and verbatim in docs/pursuits/2026-09-13-vision-pursuit-data.json at .agents[9].findings[0].summary; it is not in docs/pursuits/2026-09-13-vision-pursuit.md, which Gate 0 names as the dossier.",
   "S10-F3 is exact at main.ts line 207, but four of the six stderr sites drop an available cause, not one",
+  "note_2026_09_15 (review 1, F1): superseded - four of the SEVEN stderr sites. The split is 7 stderr / 3 stdout, not 6 / 4.",
   "boundedResponse is at routes.ts lines 137-142 at a9f671e, not 99-151 (that span is the whole ceiling block, 98-142)",
   "S7-M3's 'same ledger' design is not available: the evaluation ledger's breaches are snapshotted into a frozen, digest-covered observation before any response exists",
   "an eleventh READINESS_ARMS entry is not available either: the list is closed at ten, one per clause of PWB-REQ-021's readiness sentence",
   "S10-M2's 'cheapest fix in the audit' understates: a log line is a new sink PWB-REQ-006 already regulates in two places, so its test set is a sentinel sweep",
+  "note_2026_09_15 (review 1, F6): superseded - the specification regulates a log sink in three places and they belong to three requirements: PWB-REQ-003's Oracle at line 176, PWB-REQ-006's scenario at 407 and PWB-REQ-011's scenario at 665. Only 407 is PWB-REQ-006's. The test-set consequence is unchanged, since slice 1's sink is inside all three populations.",
   "S10-M3's optional pidfile would fail an existing system test that asserts the state directory's contents exactly",
   "S10-M1's 'the same footer facts' presumes a function that does not exist: five inline call sites, no shared builder"
  ],
@@ -888,6 +895,7 @@
   "non_fence_lines": 1257,
   "lines": 1310,
   "bytes": 102079,
+  "first_draft_figures_note_2026_09_15": "EVERY figure in this packet_conventions block - non_fence_lines, lines, bytes, distinct_code_spans, slash_bearing_spans_not_resolving, the enumerated list of 34 and over_width_non_fence_lines_outside_tables_headings_quotes - is the FIRST DRAFT's, at commit 2c62d0b, and is kept unedited because review 1 is bound to those bytes; so are the packet digest and byte count recorded elsewhere in this record. Re-derived over the final bytes of the review-1 pass and iterated to a fixed point: 1553 non-fence lines, 1606 lines, 131795 bytes, 374 distinct code spans, 36 slash-bearing spans not resolving (the two added are the bare /butlers-syzygy/ route and the branch name agent/syzygy-dov.11), 0 odd-backtick non-fence lines and 3 over-width lines outside tables, headings and quotes. Those figures and the packet digest after the repairs are in review1.packet_measured_after_review1 at the end of this record.",
   "odd_backtick_non_fence_lines": 0,
   "distinct_code_spans": 326,
   "slash_bearing_spans_not_resolving": 34,
@@ -927,9 +935,138 @@
    "python3 scripts/check_governance.py",
    "scratchpad/capture/polaris.html"
   ],
-  "over_width_non_fence_lines_outside_tables_headings_quotes": 3,
+  "over_width_non_fence_lines_outside_tables_headings_quotes": 3, "over_width_note_2026_09_15": "corrected per review 1, F10: the count of three is right and the locations published in the packet were not. At 2c62d0b they are lines 93 (80 columns), 124 (79) and 602 (85); line 93 is in 'Decided in this packet, not put to the owner', which ends at line 100, and Gate 0 opens at line 102. The figure over the final bytes of the review-1 pass is in review1.packet_measured_after_review1.",
   "cg1b_extension_spans_unresolved": 0,
   "butlers_path_in_a_code_span": false,
   "line_number_convention": "stated once in the packet head"
+ },
+ "review1": {
+  "raw_path": "docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-RAW.md",
+  "raw_bytes": 36182,
+  "raw_sha256": "943d567120272ac97e05b6de0b61f14800d5ed973df6f353e9b052e60d3ac049",
+  "raw_digest_method": "wc -c and sha256sum this session; neither value transcribed",
+  "verdict": "CONFIRM WITH EXCEPTIONS - 0 blocking, 7 non-blocking, 6 editorial",
+  "counts": {
+   "blocking": 0,
+   "non_blocking": 7,
+   "editorial": 6,
+   "total": 13
+  },
+  "reviewed_commit": "2c62d0b",
+  "reviewed_files_at_that_commit": {
+   "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md": {
+    "bytes": 102079,
+    "sha256": "6f7e98bad81bb3f30a614bfe944d54b1d71091fb5608a6e7f4410827c6cf3eeb"
+   },
+   "docs/evidence/polaris-m11-operability-funnel-2026-09-15.json": {
+    "bytes": 39956,
+    "sha256": "3f6b239183a8939db797fbe8e5c0029d47d2d4d5f7baa299d262c859be0cb320"
+   }
+  },
+  "method": "git show 2c62d0b:<path> piped to wc -c and sha256sum, this session; both match the raw's own table",
+  "repairs_applied_this_session": true,
+  "five_question_table_as_the_raw_states_it": "All five scopes truthful; all five genuine hard human gates, Q4 'Partly' because the packet answers its first half itself and what remains for the owner is whether to want a distinct limit anyway plus the escalation-trigger consequence; every recommendation follows from its evidence and is conservatively stated; every lawful arm named and none called unlawful; every default lawful. The raw names one lawful arm the packet does not name, Q5's third: render the status line on its own route only and not on the home page. Three of the five defaults differ from their recommendation and no owner trade-off is smoothed into consensus language.",
+  "gate_5_verdict_as_the_raw_states_it": "The packet's RFC2-26 block quote is identical to .syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md lines 196-221, both paragraphs and no elision, compared programmatically after normalizing whitespace and emphasis; the test is run over all four slice rows and every cited requirement heading, scenario heading and THEN limb is exact at the line cited.",
+  "collision_verdict_as_the_raw_states_it": "Both predicates recomputed from scratch over the ten sibling worktrees at the heads the packet records: every one of the twenty cells re-derives exactly, as does every B-files list, '7 of 10 name routes.ts', 'model.ts in 6', 'M8 is the largest overlap at 9 of 16' and the four M11-only files. polaris.ts is also 6, a figure this record carries and the packet prose does not mention. The only defect in the section is F5.",
+  "recommended_answers_changed": "None. The raw's own Q1-Q5 table answers 'Recommendation follows from the evidence?' Yes for all five, and no finding moves an arm, a recommendation or a default. Q1 keeps machine-credentialed for the machine form and the human form on the existing human-open pages, its second human-open arm and its default that slice 2's machine route does not ship. Q3 keeps 'an implementation of two quoted sentences, not an amendment', its CC-REV-2 second arm and its default that slice 3 does not ship. Q4 keeps 'do not mint a new limit', keeps the minting arm as a named escalation trigger rather than as unlawful, and keeps its default. Q2 and Q5 are untouched by any finding except F3's predicate correction inside Q2's bracket.",
+  "findings_with_a_defect_of_their_own": {
+   "F4": "It publishes 38 occurrences of maxOutputBytes in 14 files against a stated denominator of 1216 tracked files at a9f671e. 38/14 is the sweep at 2c62d0b, over 1218 tracked files including this packet and this record - 7 of the 38 occurrences, in those 2 files. At a9f671e the sweep gives 31 occurrences in 12 files. The defect F4 reports is real and is applied in full, with the corrected figure."
+  },
+  "raw_citation_note": "Several of the raw's :NNN references into the packet do not resolve at 2c62d0b - :337 is line 336, :355 is 353, :31 is 33, :817-819 is 799-800, :29 is 808 and :566 is 574 - while :396-403, :35 and :27 are exact. Every finding was located by its quoted content rather than by its line number, and every quotation the raw reproduces was found where it says.",
+  "raw_notes_on_its_own_prompt": "The raw records two: the prompt said the packet asks six questions where it asks five, and the prompt's 'in particular' list named measurements belonging to M10 and not to this packet, which the reviewer swept for (ETag 0, Content-Encoding 0, gzip 0, 769 0, 914 0, 'top-level key' 0) before reviewing the thirteen measurements this packet actually makes.",
+  "unknowns": "Review 1 records no [Unknown] of its own against any finding. The only [Unknown]s it records are this packet's four, which it labels honest, and it singles out one as correctly scoped: whether any docs/evidence/*.json digest table binds the bytes slices 2 and 3 would edit is a sweep this packet did not run and hands to the implementing bead under verification rule 10. That remains Unknown and is unchanged by this pass.",
+  "dispositions": {
+   "F1": "CONFIRMED and applied (non-blocking). apps/three-surface-poc/src/main.ts swept whole with Python re over its 253 wc -l lines: 10 sites, stderr at 58, 65, 89, 207, 239, 241, 249 (7) and stdout at 56, 211, 229 (3) - exactly the split the packet's own table lists. Applied at the census summary, at the 'four of the seven' sentence, in the funnel summary and in measurements.M7_failure_detail_census.",
+   "F2": "CONFIRMED and applied (non-blocking), both limbs. Both predicates run this session with Python re over the 558 in-scope files of the 1216 tracked at a9f671e: the published substring predicate gives 29, the word-bounded one 22, and the difference is exactly the seven files the raw names - the fifth review record it could not name is docs/reviews/R-POC-CYCLE-3-REVIEW.md, line 347. All 29 read; 0 is an operator lifecycle instruction, so the conclusion survives on the wider denominator. Both predicates are now published with their literal alternations and case folding and the 29 partitioned by class. packages/cap1-daemon/src/server.test.ts line 159's RT3 describe block and line 160's test are cited in slice 4's oracle beside the existing degradation.system.test.ts cite.",
+   "F3": "CONFIRMED and applied (non-blocking). Over the PWB specification in full: log case-insensitively as a substring matches 43 lines; the word predicate matches 3, at 176, 407 and 665. Q2's bracket now names the word predicate, keeps the three lines, states the substring figure and marks the superseded wording.",
+   "F4": "CONFIRMED in substance, with the finding's own figure corrected (non-blocking). At a9f671e over all 1216 tracked files: 31 occurrences in 12 files - 11 in packages/polaris-generation-core/src/pipeline.ts, 2 in its test, 1 in openspec/changes/polaris-manifesto-generation/INTERFACES.md and 2 at pipeline-demo.ts lines 64 and 71, the only two inside the three POC source trees. Applied with the whole-repository count, its denominator and the POC-tree count separately, and the collision warning strengthened.",
+   "F5": "CONFIRMED and applied (non-blocking). At a9f671e the register carries 26 rows under the predicate ^| P- (21 open plus 5 acceptance-act), its highest allocated number is P-67 and the predicate P-7[0-9] returns 0 hits. Q1, the improvement-cycle paragraph and the funnel summary's sibling list now describe each row as a branch-only proposal with its PR number, labelled Observed. The sequencing conclusion is unchanged.",
+   "F6": "CONFIRMED and applied (non-blocking). Requirement headings read at source: 160 PWB-REQ-003, 202 -005, 340 -006, 439 -007, 632 -011, 679 -012. Line 176 is PWB-REQ-003's Oracle bullet, 407 PWB-REQ-006's 'Active repository content remains inert' scenario and 665 is inside PWB-REQ-011's scenario; PWB-REQ-006's own Oracle is at 394-396. Gate 2 now says three times with each attributed correctly, Gate 4 slice 1 attributes the sentinel-scan oracle to PWB-REQ-003 and cites 394-396 for the sink-byte scan, and the dossier-correction entry carries a dated sibling note.",
+   "F7": "CONFIRMED and applied (non-blocking). Read at source: the sentence begins on line 150 and ends on line 156. Q4's citation is now lines 150-156; the narrower cites at line 151 and lines 154-155 are exact and unchanged. This record's acts.continuation block already carried 150-156 and needed no repair.",
+   "F8": "CONFIRMED and applied (editorial), all three. PWB-REQ-021's quoted words end mid-line 977, so the span is narrowed to 975-977 and the tail marked; PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md's end mid-line 61, so the span is narrowed to 59-61 and the tail marked; S10-M3's sentence is 'Optionally add a pidfile written at startup under stateDir and a tiny restart script that reads it', so the elision is marked and the source's unbackticked stateDir disclosed.",
+   "F9": "CONFIRMED and applied (editorial). wc -l this session: PWB specification 1152, three-surface specification 1008, PWB tasks.md 138. The packet stated a line-NUMBER convention and no line-COUNT one, so a line-count convention is now stated once at its head - every published line count is the wc -l figure - and all four published denominators follow it, superseded split-on-newline figures marked in place.",
+   "F10": "CONFIRMED and applied (editorial). Re-derived at 2c62d0b: lines 93 (80 columns), 124 (79) and 602 (85); line 124 is in Gate 0, which opens at 102, and line 93 is in 'Decided in this packet, not put to the owner', which ends at 100. Gate 6 item 10 now names the three by line, column and section, re-derived last over the final bytes of this pass.",
+   "F11": "CONFIRMED and applied (editorial). grep -F of S10-F1's sentence over all three pursuit files: 1 hit in docs/pursuits/2026-09-13-vision-pursuit-data.json, 1 in docs/pursuits/2026-09-13-vision-pursuit-harvest.json, 0 in docs/pursuits/2026-09-13-vision-pursuit.md, which Gate 0 names as the dossier. The packet now cites the harvest file with its jq path and publishes both readings: literally 7 paths plus 7 mirrors = 14 and an undercount of three; read as pocRoutes' 15 GET routes, an undercount of two.",
+   "F12": "CONFIRMED and applied (editorial). In packages/three-surface-poc-core/src/model.ts the signature is at line 211 and the closing brace at 220, the doc comment ending at 210. Corrected in the slice 3 design and in this record under a dated key; Q3's separate cite of 217-219 is inside the function and is unchanged.",
+   "F13": "CONFIRMED and applied (editorial). The second limb is removed from Q1's heading and the superseded heading is quoted and dated in the body's 'the prior question is not this packet's' sentence, which already carried the disposition. The Q-table row's question text and this record's owner_questions Q1 entry carry the same note under a dated sibling key, the original value unedited. Q1's recommendation, arms and default are unchanged."
+  },
+  "register_row": {
+   "id": "P-78",
+   "file": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+   "branch": "agent/syzygy-dov.11",
+   "recount_predicate": "^| P- partitioned by the ## section each row falls under",
+   "at_a9f671e": {
+    "open": 21,
+    "acceptance_act": 5,
+    "total": 26
+   },
+   "on_this_branch": {
+    "open": 22,
+    "acceptance_act": 5,
+    "total": 27
+   },
+   "siblings": "P-68 (M1 lane B, PR #35), P-69 (M2, PR #36), P-70 (M3, PR #37), P-71 (M4, PR #38), P-72 (M5, PR #39), P-73 (M6, PR #40), P-76 (M7, PR #42), P-74 (M8, PR #43), P-75 (M9, PR #41) and P-77 (M10, PR #44) each live only on their own branch; a sibling row may land at any time.",
+   "sibling_registers_recounted": {
+    "laneb": {
+     "head": "4090f98",
+     "rows": 27
+    },
+    "m2wt": {
+     "head": "f2f37dd",
+     "rows": 27
+    },
+    "m3wt": {
+     "head": "6574600",
+     "rows": 27
+    },
+    "m4wt": {
+     "head": "63b8e33",
+     "rows": 27
+    },
+    "m5wt": {
+     "head": "ba9ca61",
+     "rows": 27
+    },
+    "m6wt": {
+     "head": "83c9f60",
+     "rows": 27
+    },
+    "m7wt": {
+     "head": "f97baf4",
+     "rows": 27
+    },
+    "m8wt": {
+     "head": "bce9039",
+     "rows": 27
+    },
+    "m9wt": {
+     "head": "65de02b",
+     "rows": 27
+    },
+    "m10wt": {
+     "head": "95f31cb",
+     "rows": 27
+    }
+   }
+  },
+  "rule_10": "Review 1 binds the two digests recorded above at commit 2c62d0b, not these bytes. Every edit of this pass was made after it.",
+  "gate": "at the owner gate on review 1's CONFIRM WITH EXCEPTIONS with all thirteen exceptions applied - no blocking finding, no recommended answer moved, all five questions found to be genuine hard gates with Q4 partly, and no lawful arm called unlawful; P-78 is ready to be ruled",
+  "uncovered_until": "a second independent fresh-context review, for the thirteen exception repairs recorded here; all thirteen post-date review 1 (verification rule 10). Its raw would be a second -RAW.md file, never an overwrite of the retained one.",
+  "packet_measured_after_review1": {
+   "bytes": 131795,
+   "sha256": "5dd76226a5ae8b7cf28a000008bafca674aa215d1bf6fc5a5651acd7449e30c4",
+   "total_lines": 1606,
+   "over_78": 8,
+   "non_fence_lines": 1553,
+   "distinct_code_spans": 374,
+   "slash_bearing_spans_not_resolving": 36,
+   "over_width_non_fence_lines_outside_tables_headings_quotes": 3,
+   "convention": "bytes: wc -c. sha256: sha256sum. total_lines: wc -l, the line-count convention this packet now states once (split on newline with the trailing empty segment dropped gives the same figure on this newline-terminated file). over_78: lines outside fenced blocks whose first non-space character is not a pipe, length > 78; denominator all total_lines. The narrower Gate 6 item 10 population, which also excludes headings and block quotes, is 3. Computed last of all in this pass, after every packet edit including the review-1 section, and iterated to a fixed point because the packet states both figures."
+  },
+  "validation_after_review1": {
+   "command": "python3 scripts/check_governance.py",
+   "tail_line": "32 OK, 20 WARN, 0 FAIL (52 checks) - counts derived, not asserted",
+   "note": "tail line read, not grep -c FAIL (verification rule 4)"
+  }
  }
 }

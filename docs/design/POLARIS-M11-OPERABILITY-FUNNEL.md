@@ -20,6 +20,12 @@ the file's bytes at `a9f671e` unless another commit or worktree is named;
 `sed -n 'Np' <file>` selects line N. The dossier's spans were taken at
 `f4589e2` and every one is re-located below.
 
+**Line-count convention, stated once** (added 2026-09-15 per review 1, F9).
+Every published line count in this packet is the `wc -l` figure — physical
+newline-terminated lines — never the split-on-newline count, which is one
+higher on every newline-terminated file cited here. Three counts published in
+the first draft used the other convention and are corrected in place below.
+
 ## The five questions for the owner
 
 Batched, each with the recommended answer first. Everything below is the
@@ -29,10 +35,10 @@ and gate only the surfaces, not the logging.
 
 | # | Question | Recommended |
 |---|---|---|
-| Q1 | **What credential class may a status disclosure carry, and may a third machine-credentialed route be minted at all?** Today the daemon dispatches **17** routes: **13** `human-open` and **4** `machine-credentialed`, and **0** whose path matches the literal alternation `status|health|live|ready` under a case-insensitive test [Observed, computed this session by importing the built `pocRoutes` and `materializeRoutes` and enumerating the returned array — the full table is in Measurements]. In this daemon `human-open` is not unauthenticated: it passes `browserRequestAllowed` (`apps/three-surface-poc/src/browser-origin.ts` lines 26–38), which requires a loopback or tailnet `Host` and an `Origin` that is absent or matches. An absent `Origin` is admitted and a non-browser agent sends none, so a `human-open` status route admits an agent on host alone. SEC-1 reads, verbatim at `.syzygy/governance/doctrine/security.md` lines 14–16: "**non-browser agent and CLI clients are admitted only through an explicit machine-client authentication mechanism**"; its violation list, lines 21–23, names "a machine client admitted on loopback location alone". A status body discloses the observer commit, the Butlers commit, the state-directory provision kind and the last breach — project metadata, not project content. | **Serve the machine form `machine-credentialed`, like the four machine routes it would sit beside; serve the human form on the existing `human-open` pages, which already disclose the evaluation identity in their footer.** This is the same answer M10 reached for its schema document and for the same clause (the M10 packet, docs/design/POLARIS-M10-MACHINE-CONTRACT-FUNNEL.md line 37, its Q3 row, read read-only in the M10 worktree and not present in this one). **The counter-argument is real:** a status route an operator must hold a credential to read is useless at the moment it is most needed — when the daemon is misbehaving and the operator is looking for a reason — and a status body names commits and a credential *provision kind*, never a credential value, so SEC-2's egress rule is not engaged. **Second lawful arm:** serve it `human-open` and record the SEC-1 reading that makes that lawful, namely that the origin check is the explicit mechanism for a body carrying no observed content. This packet does not rule which reading SEC-1 bears [Inferred]. **And the prior question is not this packet's:** whether a *third* machine-credentialed route may be minted at all is M5's Q1, already on the register as **P-72**, resting on the three-surface specification's reader note — "the 'machine answer' is the authenticated `GET /api/poc` response" (`openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` line 26, singular and definite) [Observed, read at source this session]. Slice 2's machine form holds behind P-72 exactly as M10's slice 3 does; this packet adds no sixth question for it and rules it neither way. **Default if unanswered: slice 2's machine route does not ship**; slice 2's human disclosure is ruled by Q5. |
-| Q2 | **Does the act-bound registry's `breachResult` sentence forbid a stderr line naming a response-ceiling breach?** The registry entry declares, verbatim at `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` line 281: `"breachResult": "source and input breaches retain the complete population and make dependent facts Unknown; final-output breaches emit only a bounded typed failure carrying evaluation identity, limit identity, declared value, observed value and population counts; no truncated or success-shaped model is emitted; PWB-REQ-021 readiness is false"`. Those bytes are bound: the file's current sha256 equals the digest recorded in `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md` [Observed, `sha256sum` compared this session; neither value is reproduced here, per CG-15 — the record is cited by path]. The word is **emit only**. The signed specification's own sentence is narrower — "SHALL return only a bounded typed failure envelope" (`openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md` lines 381–382) — and *return* plainly governs the HTTP response. | **No: a stderr line is not an emission to the requester, and slice 1 may log the breach.** Two readings of the registry sentence exist and the specification settles the one that matters: PWB-REQ-006's own scenario "Resource breach is bounded and explicit" says "**THEN** the evaluation names the exact limit and counts the affected population as Unknown without emitting a partial success-shaped answer" (spec lines 419–424) — the prohibition is on *success-shaped* output, not on a diagnostic. **The counter-argument, and it is why this is a question:** the registry is act-bound and says "emit only", a phrase with no *to the requester* qualifier, and the same specification treats logs as a governed sink twice over — line 407, "**THEN** no active content reaches Polaris, JSON, **logs**, caches or records", and line 665, "**AND** it stores, **logs**, caches and returns no unselected body bytes" [Observed, the only three occurrences of the string `log` in that 1,153-line file are at 176, 407 and 665, and all three are sink constraints]. An owner who reads "emit" as covering every sink may want the breach line to carry less than the 503 body does. **Second lawful arm:** log the breach with its status, method and limit identity only, omitting the population counts and the evaluation identity that the 503 body already carries. **Default if unanswered: the second arm** — the line lands without the population counts, which is the smaller claim and loses no operability. |
+| Q1 | **What credential class may a status disclosure carry?** Today the daemon dispatches **17** routes: **13** `human-open` and **4** `machine-credentialed`, and **0** whose path matches the literal alternation `status|health|live|ready` under a case-insensitive test [Observed, computed this session by importing the built `pocRoutes` and `materializeRoutes` and enumerating the returned array — the full table is in Measurements]. In this daemon `human-open` is not unauthenticated: it passes `browserRequestAllowed` (`apps/three-surface-poc/src/browser-origin.ts` lines 26–38), which requires a loopback or tailnet `Host` and an `Origin` that is absent or matches. An absent `Origin` is admitted and a non-browser agent sends none, so a `human-open` status route admits an agent on host alone. SEC-1 reads, verbatim at `.syzygy/governance/doctrine/security.md` lines 14–16: "**non-browser agent and CLI clients are admitted only through an explicit machine-client authentication mechanism**"; its violation list, lines 21–23, names "a machine client admitted on loopback location alone". A status body discloses the observer commit, the Butlers commit, the state-directory provision kind and the last breach — project metadata, not project content. | **Serve the machine form `machine-credentialed`, like the four machine routes it would sit beside; serve the human form on the existing `human-open` pages, which already disclose the evaluation identity in their footer.** This is the same answer M10 reached for its schema document and for the same clause (the M10 packet, docs/design/POLARIS-M10-MACHINE-CONTRACT-FUNNEL.md line 37, its Q3 row, read read-only in the M10 worktree and not present in this one). **The counter-argument is real:** a status route an operator must hold a credential to read is useless at the moment it is most needed — when the daemon is misbehaving and the operator is looking for a reason — and a status body names commits and a credential *provision kind*, never a credential value, so SEC-2's egress rule is not engaged. **Second lawful arm:** serve it `human-open` and record the SEC-1 reading that makes that lawful, namely that the origin check is the explicit mechanism for a body carrying no observed content. This packet does not rule which reading SEC-1 bears [Inferred]. **And the prior question is not this packet's:** whether a *third* machine-credentialed route may be minted at all is M5's Q1. That limb stood in this question's heading until 2026-09-15 and was moved here per review 1, F13 [superseded heading wording: "What credential class may a status disclosure carry, and may a third machine-credentialed route be minted at all?" — the heading invited the owner to answer M5's question inside a P-number that does not own it]. It is proposed as **P-72** in the M5 packet on PR #39 and is **not yet on the register at `a9f671e`** [Observed, re-derived this session: `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` at `a9f671e` carries **26** rows under the predicate `^| P-` (21 open plus 5 acceptance-act), its highest allocated number anywhere in the file is **P-67**, and the predicate `P-7[0-9]` returns **0** hits over it; superseded wording: "already on the register as **P-72**"]. The question rests on the three-surface specification's reader note — "the 'machine answer' is the authenticated `GET /api/poc` response" (`openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` line 26, singular and definite) [Observed, read at source this session]. Slice 2's machine form holds behind P-72 exactly as M10's slice 3 does; this packet adds no sixth question for it and rules it neither way. **Default if unanswered: slice 2's machine route does not ship**; slice 2's human disclosure is ruled by Q5. |
+| Q2 | **Does the act-bound registry's `breachResult` sentence forbid a stderr line naming a response-ceiling breach?** The registry entry declares, verbatim at `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` line 281: `"breachResult": "source and input breaches retain the complete population and make dependent facts Unknown; final-output breaches emit only a bounded typed failure carrying evaluation identity, limit identity, declared value, observed value and population counts; no truncated or success-shaped model is emitted; PWB-REQ-021 readiness is false"`. Those bytes are bound: the file's current sha256 equals the digest recorded in `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md` [Observed, `sha256sum` compared this session; neither value is reproduced here, per CG-15 — the record is cited by path]. The word is **emit only**. The signed specification's own sentence is narrower — "SHALL return only a bounded typed failure envelope" (`openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md` lines 381–382) — and *return* plainly governs the HTTP response. | **No: a stderr line is not an emission to the requester, and slice 1 may log the breach.** Two readings of the registry sentence exist and the specification settles the one that matters: PWB-REQ-006's own scenario "Resource breach is bounded and explicit" says "**THEN** the evaluation names the exact limit and counts the affected population as Unknown without emitting a partial success-shaped answer" (spec lines 419–424) — the prohibition is on *success-shaped* output, not on a diagnostic. **The counter-argument, and it is why this is a question:** the registry is act-bound and says "emit only", a phrase with no *to the requester* qualifier, and the same specification treats logs as a governed sink twice over — line 407, "**THEN** no active content reaches Polaris, JSON, **logs**, caches or records", and line 665, "**AND** it stores, **logs**, caches and returns no unselected body bytes" [Observed, the only three occurrences of the word `log` or `logs` — predicate `\blogs?\b`, case-insensitive, Python `re` — in that **1,152**-line file are at 176, 407 and 665, and all three are sink constraints. Corrected 2026-09-15 per review 1, F3 and F9; superseded wording: "the only three occurrences of the string `log` in that 1,153-line file". As a case-insensitive **substring**, `log` occurs on **43** of that file's lines — `catalog`, `topology`, `technology`-shaped tokens — so the substring reading of the claim is false, and 1,153 was the split-on-newline count. The three are owned by three different requirements: 176 is PWB-REQ-003's Oracle, 407 is PWB-REQ-006's scenario and 665 is PWB-REQ-011's scenario, per review 1, F6]. An owner who reads "emit" as covering every sink may want the breach line to carry less than the 503 body does. **Second lawful arm:** log the breach with its status, method and limit identity only, omitting the population counts and the evaluation identity that the 503 body already carries. **Default if unanswered: the second arm** — the line lands without the population counts, which is the smaller claim and loses no operability. |
 | Q3 | **Is making a final-output breach reach PWB-REQ-021 readiness an implementation of PWB-REQ-006, or an amendment to it?** Two sentences of the signed specification already require it. PWB-REQ-006, line 384: "Every breach SHALL make PWB-REQ-021 readiness false." PWB-REQ-021, lines 964–968: "Readiness SHALL be false for a missing, empty, duplicate or unrecognized answer identity; an unresolved source anchor; a surface/evaluation mismatch; any path outside Polaris or its same-evaluation exact-source route; **any PWB-REQ-006 resource breach**; or an answer whose cited current Butlers authority cannot be resolved." And PWB-REQ-006 line 378 puts the response ceilings inside that population: "Final encoded human HTML and machine JSON SHALL each have an explicit byte ceiling." Today the readiness evaluator's breach arm reads one number — `population.limitBreaches` (`packages/three-surface-poc-core/src/walkthrough-readiness.ts` lines 365–366) — sourced from the observation's phase-A/phase-B input ledger snapshot (`packages/three-surface-poc-core/src/model.ts` lines 217–219). A response-ceiling breach never enters that number: `boundedResponse` (`apps/three-surface-poc/src/routes.ts` lines 137–142) constructs a `ResponseLimitFailure` and returns it, and the string `recordBreach` occurs **0** times in `routes.ts` over its 240 lines [Observed, swept this session; all 7 non-ledger `recordBreach` call sites are input-side, in `git-object-reader.ts` and `project-shape-observation.ts`]. | **It is an implementation of two quoted sentences, not an amendment; no CC-REV-2 delta is needed for the readiness consequence itself.** The specification names the consequence, names the population and names the ceilings as members of it; wiring the evaluator to see a member it already declares is conforming code to bound text. **The counter-argument, which this packet does not resolve:** PWB-REQ-006's own oracle line separates the two — "a separately accumulated resource ledger **and** exact final encoded-byte counts decide" (line 395) — so the specification's picture may be two independent oracles rather than one ledger, and an owner may read "every breach" as every breach *the evaluation-wide ledger holds*, which is an input-side object by construction. **Second lawful arm:** rule it an amendment and route the readiness widening through CC-REV-2 (`.syzygy/governance/policies/craft-and-care/review-and-documentation.md` line 52) with a new owner act — slower, and it re-opens bytes an act bound. **Default if unanswered: slice 3 does not ship**; slices 1, 2 and 4 are unaffected. |
-| Q4 | **Must a new registry limit be minted for the output side — and does minting one cross an escalation trigger?** The dossier's S7-M3 slice plan opens "Add `maxOutputBytes` to the registry's `resourceLimits` schema and `PwbResourceLimits` type". **That step is unnecessary and this packet does not recommend it.** `PwbResourceLimits` already carries both output-side ceilings — `maxHumanResponseBytes` and `maxMachineResponseBytes` (`packages/three-surface-poc-core/src/project-shape-observation.ts` lines 71–72), declared in the registry at lines 270–271 and given their semantics at lines 279–280 — and `ResourceLimitBreach.limit` is typed `keyof PwbResourceLimits` (line 205), so a breach record naming `maxHumanResponseBytes` is **already expressible with no type, schema or registry change at all** [Observed, all four read at source this session]. | **Do not mint a new limit: record the breach against the ceiling the registry already declares.** Then slice 3 needs no registry edit, and Q4's second half does not arise. **If the owner prefers a distinct limit anyway**, that arm crosses a named escalation trigger. The continuation act reads, verbatim at `.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` lines 152–155: "Stop and return to the owner before proceeding if implementation would need any of: a change to doctrine or an accepted contract; a further amendment to the signed PWB specification beyond the 2026-09-05 package; a change to security, privacy, or retention posture beyond the 2026-09-05 approved secret-classification policy; **a change to the constraints or envelope the 2026-09-05 registry entry declares**; any observation outside the consented content class or repository; or any scope beyond the signed change." A new `resourceLimits` key is a change to the envelope that entry declares, so that arm needs a new owner act and a CC-REV-2 delta over the registry and the specification together; the registry bytes are digest-bound and **may not be edited under this packet on either arm**. **Counter-argument for minting one:** a served-response budget and an input-read budget measure different things, and overloading the two existing ceilings makes a single `ResourceLimitBreach` ambiguous about which side of the pipeline it came from unless a discriminator is added. **Default if unanswered: the recommended arm** — no new limit; slice 3, if Q3 allows it, uses the declared ceilings. |
+| Q4 | **Must a new registry limit be minted for the output side — and does minting one cross an escalation trigger?** The dossier's S7-M3 slice plan opens "Add `maxOutputBytes` to the registry's `resourceLimits` schema and `PwbResourceLimits` type". **That step is unnecessary and this packet does not recommend it.** `PwbResourceLimits` already carries both output-side ceilings — `maxHumanResponseBytes` and `maxMachineResponseBytes` (`packages/three-surface-poc-core/src/project-shape-observation.ts` lines 71–72), declared in the registry at lines 270–271 and given their semantics at lines 279–280 — and `ResourceLimitBreach.limit` is typed `keyof PwbResourceLimits` (line 205), so a breach record naming `maxHumanResponseBytes` is **already expressible with no type, schema or registry change at all** [Observed, all four read at source this session]. | **Do not mint a new limit: record the breach against the ceiling the registry already declares.** Then slice 3 needs no registry edit, and Q4's second half does not arise. **If the owner prefers a distinct limit anyway**, that arm crosses a named escalation trigger. The continuation act reads, verbatim at `.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` lines 150–156 [span corrected 2026-09-15 per review 1, F7; superseded citation: "lines 152–155". The quoted sentence begins on line 150 at "Stop" and ends on line 156 at "the signed change."; the packet's two narrower cites into the same paragraph, line 151 for the specification-amendment trigger and lines 154–155 for the registry-envelope trigger, are both exact and unchanged]: "Stop and return to the owner before proceeding if implementation would need any of: a change to doctrine or an accepted contract; a further amendment to the signed PWB specification beyond the 2026-09-05 package; a change to security, privacy, or retention posture beyond the 2026-09-05 approved secret-classification policy; **a change to the constraints or envelope the 2026-09-05 registry entry declares**; any observation outside the consented content class or repository; or any scope beyond the signed change." A new `resourceLimits` key is a change to the envelope that entry declares, so that arm needs a new owner act and a CC-REV-2 delta over the registry and the specification together; the registry bytes are digest-bound and **may not be edited under this packet on either arm**. **Counter-argument for minting one:** a served-response budget and an input-read budget measure different things, and overloading the two existing ceilings makes a single `ResourceLimitBreach` ambiguous about which side of the pipeline it came from unless a discriminator is added. **Default if unanswered: the recommended arm** — no new limit; slice 3, if Q3 allows it, uses the declared ceilings. |
 | Q5 | **May the human status disclosure ride `pageShell`, appearing once on every human page, or must it live only on its own route?** `pageShell` (`apps/three-surface-poc/src/page-shell.ts` lines 44–74) renders **one** footer slot, filled by **5** call sites that each build their own string inline: `apps/three-surface-poc/src/routes.ts` line 92, `apps/three-surface-poc/src/polaris.ts` line 1630, `apps/three-surface-poc/src/polaris-source.ts` line 140, `apps/three-surface-poc/src/trajectory.ts` lines 197–200 and `apps/three-surface-poc/src/orrery.ts` lines 162–165. **There is no function that computes the footer's facts** [Observed, swept this session; the denominator is the 45 non-test `.ts` files under the app's `src`, over which `^\s*footer:` matches exactly those 5 lines]. Three of the five are the same two evaluation fields; two are surface-specific one-liners. Adding a status line to `pageShell` therefore costs its bytes **on every human response**, including the one under the ceiling. After M1 lane A the tailnet `/polaris` headroom is **612,665** bytes and the direct headroom **618,515** (ceiling 2,097,152 against 1,484,487 and 1,478,637 served bytes at Butlers `2e3bac97`) [Observed, from `docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json`, whose `result.tailnetHeadroom.after` is that figure; the direct headroom is the subtraction, computed this session]. | **Put it in `pageShell`, above the fold, and keep it under 400 bytes.** VIS-1 ranks comprehension of the truth's presentation second only to truth itself, and a status an operator must navigate to is a status they will not read; the cost is under 0.07% of the current headroom. **The counter-argument, and it is M1's:** the headroom is not free — it is the whole subject of P-67 and P-68, lane A spent a 654,019-byte trim to buy it, and the restated Q3 target of 1.4 MB is **not yet met** on either host form (short by 78,637 direct and 84,487 tailnet, per the same record). A packet that charges that budget for a convenience is spending another move's savings. **Second lawful arm:** the status line renders only on the home page and its own route, and the other four pages keep today's footer — zero cost on `/polaris`, one more place the operator must go. **Default if unanswered: the second arm.** |
 
 ### Decided in this packet, not put to the owner
@@ -61,7 +67,12 @@ breach left no trace anywhere but that 838-byte body, and nothing in the
 code prevents the next one.
 
 **No pidfile, and this is not a preference.** S10-M3's slice plan offers
-"optionally add a pidfile written at startup under `stateDir`". An existing
+"Optionally add a pidfile written at startup under stateDir…" — the
+elision is the sentence's second half, "and a tiny restart script that reads
+it", and the source writes stateDir without a code span [quotation marked
+2026-09-15 per review 1, F8; superseded rendering: "optionally add a pidfile
+written at startup under `stateDir`", which stopped mid-sentence with no
+ellipsis]. An existing
 system test asserts the state directory's contents *exactly*:
 `packages/cap1-system/src/state-dir.system.test.ts` line 294 reads
 `expect(readdirSync(benignTarget)).toEqual(['machine-credential.token'])`
@@ -85,16 +96,23 @@ nothing. It also renders no word meaning *healthy*: the single occurrence of
 `health` across both signed specifications is a **falsifier** —
 `three-surface-poc-experience` spec line 596, "**Falsifier**: prose asserting
 verification, health, or completion for a relationship the model holds as
-Unknown" [Observed; 1 occurrence in 1,009 lines of the POC spec, 0 in the
-1,153 lines of the PWB spec].
+Unknown" [Observed; 1 occurrence in the POC specification's **1,008**
+lines, 0 in the PWB specification's **1,152**, both `wc -l` under the
+line-count convention stated at the head of this packet. Corrected 2026-09-15
+per review 1, F9; superseded figures: "1,009 lines" and "1,153 lines", the
+split-on-newline counts of the same two newline-terminated files].
 
 **The improvement-cycle tracing question is M10's, not a sixth question
 here.** The authorizing direction reads, verbatim at
 `.syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md`
 lines 55–56: "Improvement-cycle work must trace to POC-REQ-001..061 or to a
 recorded review finding." Whether a *vision-pursuit dossier* is a recorded
-review finding within that limb is already on the register as M10's Q4 under
-**P-77** (the M10 packet, docs/design/POLARIS-M10-MACHINE-CONTRACT-FUNNEL.md
+review finding within that limb is M10's Q4, proposed as **P-77** in the
+M10 packet on PR #44 and **not yet on the register at `a9f671e`** [Observed,
+the same count as Q1's: 26 rows under `^| P-`, highest allocated number P-67,
+0 hits for the predicate `P-7[0-9]`. Corrected 2026-09-15 per review 1, F5;
+superseded wording: "already on the register as M10's Q4 under **P-77**"]
+(the M10 packet, docs/design/POLARIS-M10-MACHINE-CONTRACT-FUNNEL.md
 line 38, in the M10 worktree).
 M11's answer follows whatever the owner rules there; asking it again would
 duplicate a register row.
@@ -214,11 +232,26 @@ model. Denominator: every route the app registers.
 `minimalRootRoute` exists in the daemon package (`server.ts` lines 269–282)
 and is registered by nothing: the literal `minimalRootRoute` occurs in that
 file and in its tests and in no route list [Observed]. **Two figures differ
-from the dossier here.** S10-F1 describes the population as "the five human
-surfaces, `/api/poc`, `/api/poc/polaris` and their tailnet mirrors", which
-omits the two `POST` materialize routes and undercounts the table by two;
-and it cites the complete route list at `routes.ts` lines 206–239, which is
-still exactly the `return` array at `a9f671e` [Observed, re-located]. The
+from the dossier here.** S10-F1's sentence — "the only routes are the
+five human surfaces, `/api/poc`, `/api/poc/polaris` and their tailnet
+mirrors" — lives in `docs/pursuits/2026-09-13-vision-pursuit-harvest.json`
+at the jq path `.agents["S10-operability"].findings[0].summary`, and verbatim
+in `docs/pursuits/2026-09-13-vision-pursuit-data.json` at
+`.agents[9].findings[0].summary`. It is **not** in
+`docs/pursuits/2026-09-13-vision-pursuit.md`, which is the file Gate 0 names
+as the dossier [Observed, `grep -F` of the sentence over all three this
+session: 1 hit, 1 hit, 0 hits. Citation added 2026-09-15 per review 1, F11].
+**Two readings, and this packet publishes both.** Read literally the sentence
+enumerates 7 paths plus their 7 tailnet mirrors = **14**, against which the
+computed table of 17 undercounts by **three**: the two `POST` materialize
+routes and the `/butlers-syzygy/` trailing-slash mirror of `/`. Read as
+describing `pocRoutes`' **15** `GET` routes — the reading the figure below
+uses — it undercounts by **two**, the two `POST` materialize routes
+[Observed both ways this session; superseded wording: "omits the two `POST`
+materialize routes and undercounts the table by two", which stated the second
+reading without naming it as a reading]. It also cites the complete route
+list at `routes.ts` lines 206–239, which is still exactly the `return`
+array at `a9f671e` [Observed, re-located]. The
 finding's **conclusion** — no status route exists anywhere — holds under a
 sweep with a stated denominator.
 
@@ -310,10 +343,26 @@ export interface ResourceLimitBreach {
 at lines 204–210 — so `{ limit: 'maxHumanResponseBytes', declared, observed }`
 is already a well-typed breach record that nothing constructs [Observed, all
 three read at source]. **The gap is a recording site, not a schema.** The
-literal `maxOutputBytes` does occur twice in the repository, at
+literal `maxOutputBytes` occurs **31** times in **12** of the **1,216**
+files tracked at `a9f671e` — swept this session with Python `re` over every
+blob named by `git ls-tree -r -z --name-only a9f671e`. Its principal home is
+an adopted generator interface, not a demo: **11** occurrences in
+`packages/polaris-generation-core/src/pipeline.ts`, **2** in
+`packages/polaris-generation-core/src/pipeline.test.ts` and **1** in
+`openspec/changes/polaris-manifesto-generation/INTERFACES.md`. Inside the
+three POC source trees it occurs **twice**, both at
 `apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts` lines 64 and
-71 — an unrelated provider-call budget in the generator demo, which is a name
-collision the implementing bead should avoid [Observed].
+71 — an unrelated provider-call budget in the generator demo. **The
+collision warning to the implementing bead is therefore stronger, not
+weaker:** a slice that minted `maxOutputBytes` would take a name an adopted
+generator interface and its OpenSpec `INTERFACES.md` already hold [Observed.
+Corrected 2026-09-15 per review 1, F4; superseded wording: "does occur twice
+in the repository", which carried neither predicate nor denominator. One
+correction to the finding itself: review 1 publishes **38** occurrences in
+**14** files against a stated denominator of 1,216 at `a9f671e`, but that
+figure is over the **1,218** files tracked at `2c62d0b`, which include this
+packet and its own evidence record — 7 of the 38 occurrences, in those 2
+files. Both sweeps were run this session].
 
 ### Where a served-side breach cannot go
 
@@ -333,7 +382,10 @@ record**, not a late write into the evaluation's ledger.
 
 Predicate: a `process.stderr.write` or `process.stdout.write` call in
 `apps/three-surface-poc/src/main.ts`. Denominator: the whole 253-line file.
-Count: **10** — 6 stderr, 4 stdout.
+Count: **10** — **7** stderr, at 58, 65, 89, 207, 239, 241 and 249, and
+**3** stdout, at 56, 211 and 229, which is exactly the split the table below
+lists [corrected 2026-09-15 per review 1, F1; superseded figures: "6 stderr,
+4 stdout", which contradicted the packet's own table].
 
 | Line | Sink | What it prints | Detail available and dropped? |
 |---:|---|---|---|
@@ -350,10 +402,12 @@ Count: **10** — 6 stderr, 4 stdout.
 
 **The dossier's S10-F3 is correct and narrower than the class.** It names
 line 207 and the three `DaemonStart` arms, and that is exactly right at
-`a9f671e`. What it does not say is that **four** of the six stderr sites drop
-an available cause, not one: 65, the 89–93 pair, 207 and 241. Line 58 —
-which writes a `.detail` — belongs to `parsePocCli`'s union and is neither
-evidence for nor against the finding [Observed, every site read at source].
+`a9f671e`. What it does not say is that **four** of the **seven** stderr
+sites drop an available cause, not one: 65, the 89–93 pair, 207 and 241.
+Line 58 — which writes a `.detail` — belongs to `parsePocCli`'s union and
+is neither evidence for nor against the finding [Observed, every site read at
+source; superseded wording: "four of the six stderr sites", corrected
+2026-09-15 per review 1, F1 — that class's denominator is seven].
 
 ### Every logging site in the three source trees
 
@@ -393,18 +447,51 @@ first act is to give those facts one home.
 
 ### Lifecycle: what exists, and an absence with a denominator
 
-Predicate: a line matching `restart`, `systemd`, `upgrade`, `pidfile`,
-`pid file`, `service unit` or `.service`, case-insensitively, in a tracked
-file under `docs/`, `scripts/`, `apps/`, `packages/`, or `README.md`.
-Denominator: **558** such files out of **1,216** tracked files in the
-repository. Result: **22** files carry a hit and **0** of them is an operator
-lifecycle instruction — 11 are evidence or pursuit JSON, 3 are pursuit or
-plan prose about this very gap, 4 are review records, and 4 are source or test
-files whose hits are comments: `packages/cap1-daemon/src/credentials.ts` line
-175, "Restart: reads and reuses the [credential]", and
+**Two predicates, both published**, because they give different figures
+and the first draft published one of them and ran the other [corrected
+2026-09-15 per review 1, F2; superseded wording: the first draft published
+the substring predicate below with the figure **22**, which that predicate
+does not produce, and partitioned it 11 + 3 + 4 + 4 = 22 with four review
+records where the substring predicate finds five].
+
+**Predicate A — substring.** A line matching the alternation
+`restart|systemd|upgrade|pidfile|pid file|service unit|\.service` as a
+case-insensitive substring, Python `re`, in a tracked file under `docs/`,
+`scripts/`, `apps/`, `packages/`, or `README.md`. Denominator: **558** such
+files out of **1,216** tracked at `a9f671e`. Result: **29** files carry a
+hit, partitioned 11 evidence or pursuit JSON + 3 pursuit or plan prose + **5**
+review records + 8 source or test files +
+`packages/polaris-generation-core/README.md` +
+`scripts/launch_gate_results.py` = 29.
+
+**Predicate B — word-bounded.** The same denominator, with the alternation
+`\brestart\b|\bsystemd\b|\bupgrade\b|\bpidfile\b`, case-insensitive,
+Python `re`. Result: **22** files. This is the predicate that produced the
+first draft's figure, and the seven files it silently drops are plural and
+past forms: `apps/three-surface-poc/src/polaris.ts` (line 367),
+`apps/three-surface-poc/src/polaris-first-reading.test.ts` (229),
+`docs/reviews/R-POC-CYCLE-3-REVIEW.md` (347),
+`packages/cap1-daemon/src/server.test.ts` (159–160),
+`packages/polaris-generation-core/README.md` (41),
+`packages/three-surface-poc-core/src/test-artifact-verification.ts` (228) and
+`scripts/launch_gate_results.py` (80).
+
+**The conclusion is unchanged and now carries the wider denominator: 0 of
+the 29 files is an operator lifecycle instruction** [Observed — all 29 read
+this session, the 22 of predicate B for the first draft and the seven
+predicate A adds for this pass; none of the seven is an instruction either].
+The two source comments are unchanged:
+`packages/cap1-daemon/src/credentials.ts` line 175, "Restart: reads and
+reuses the [credential]", and
 `packages/three-surface-poc-core/src/walkthrough-readiness.ts` line 113, the
-identity being "the same after a daemon restart", each with its own test file
-(11 + 3 + 4 + 4 = 22). `docs/THREE-SURFACE-POC.md`
+identity being "the same after a daemon restart", each with its own test
+file. **One of the seven is substantive to slice 4**:
+`packages/cap1-daemon/src/server.test.ts` line 159 opens a describe block
+named "RT3 — credential stability across daemon restarts" and line 160 is
+its test, "a restarted daemon reuses the same credential file and token".
+That is the closest existing prior art to slice 4's own oracle, and the first
+draft did not cite it because predicate B hid the file. It is cited in slice
+4 below. `docs/THREE-SURFACE-POC.md`
 carries **0** hits over its 89 lines; its entire lifecycle content is one
 foreground `npm ci && npm run poc` command in a fenced block, and its four
 second-level headings are "Start from a fresh Syzygy checkout", "First-slice
@@ -530,14 +617,27 @@ paragraph's "any client that is not a browser holding a session under RFC5-4
 is machine-class" is the sentence that makes Q1's recommended arm the
 conservative one.
 
-**PWB-REQ-006 treats a log as a governed sink, twice.** This is not doctrine
-but it belongs beside SEC-5: spec line 407 ("no active content reaches
-Polaris, JSON, **logs**, caches or records") and line 665 ("it stores,
-**logs**, caches and returns no unselected body bytes") put any new log line
-inside the same counterexample sweep and the same oracle the requirement
-already declares — "scan every model, cache, log, HTML, JSON and record sink
-for sentinels" (line 176). Slice 1's test obligations below are written to
-that oracle rather than to a convenience.
+**The specification treats a log as a governed sink three times, and the
+three belong to three different requirements.** This is not doctrine but it
+belongs beside SEC-5. **PWB-REQ-003's Oracle** (line 176) says "scan every
+model, cache, log, HTML, JSON and record sink for sentinels";
+**PWB-REQ-006's** scenario "Active repository content remains inert" (line
+407) says "no active content reaches Polaris, JSON, **logs**, caches or
+records"; **PWB-REQ-011's** scenario (line 665) says "it stores, **logs**,
+caches and returns no unselected body bytes". Requirement headings sit at 160
+(PWB-REQ-003), 340 (PWB-REQ-006) and 632 (PWB-REQ-011), so 176 falls under
+the first and 665 under the third [Observed, all read at source this session;
+corrected 2026-09-15 per review 1, F6. Superseded wording: "**PWB-REQ-006
+treats a log as a governed sink, twice**", which credited PWB-REQ-006 with
+lines 176 and 665. Nothing downstream moves — all three requirements are in
+force and slice 1's new sink is inside all three sink populations — but the
+packet should not be the reason a later reader looks for that list under
+PWB-REQ-006]. PWB-REQ-006's **own** Oracle is at lines 394–396 and reads
+"injected Git/read/render spies, context-independent secret scans, complete
+sink-byte scans, a separately accumulated resource ledger and exact final
+encoded-byte counts decide" — "complete sink-byte scans", without
+enumerating the sinks. Slice 1's test obligations below are written to those
+oracles rather than to a convenience.
 
 ## Gate 3 — Topology
 
@@ -571,7 +671,7 @@ column below.
 
 | Slice | Owner act needed | Named clause, and where it is | Named act and the trigger test |
 |---|---|---|---|
-| 1 Structured line | **No** | PWB-REQ-006 lines 386–398, the Case/Observable/Oracle block that already names every sink; SEC-5 for the sink's content | Rides `.syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md` lines 55–56 through the recorded-finding limb (S10-F2, S10-F3), and the implementation plane of `.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` lines 59–63: "Code in the ordinary implementation plane only — `apps/**`, `packages/**`, tooling, root manifests — never inside `openspec/**` or `.syzygy/**`". No trigger crossed: no doctrine or contract change, no spec amendment, no registry-envelope change, no observation outside the consented class. **Q2 is the disclosure question, not an act question** |
+| 1 Structured line | **No** | PWB-REQ-006 lines 386–398, the Case/Observable/Oracle block that already names every sink; SEC-5 for the sink's content | Rides `.syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md` lines 55–56 through the recorded-finding limb (S10-F2, S10-F3), and the implementation plane of `.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` lines 59–61: "Code in the ordinary implementation plane only — `apps/**`, `packages/**`, tooling, root manifests — never inside `openspec/**` or `.syzygy/**`…" [span narrowed and the elision marked 2026-09-15 per review 1, F8; superseded citation: "lines 59–63". The quoted words end mid-line 61, which continues ", under the in-force craft policies and the vendored `th-engineering` standards" and runs to line 63]. No trigger crossed: no doctrine or contract change, no spec amendment, no registry-envelope change, no observation outside the consented class. **Q2 is the disclosure question, not an act question** |
 | 2 Status surfaces | **No for the human line; the machine route is behind P-72, and its credential class is Q1** | POC-REQ-060 (spec line 927) and POC-REQ-061 (line 966) bound the human rendering; the reader note at spec line 26 is what P-72 turns on | Same direction and act. The machine route does not ride them until P-72 is ruled: minting a third machine-credentialed route is the question M5 put and this packet does not answer |
 | 3 Served-side breach reaching readiness | **No on the recommended reading of Q3; yes on its second arm** | PWB-REQ-006 line 384, "Every breach SHALL make PWB-REQ-021 readiness false"; PWB-REQ-006 line 378, the two response ceilings; PWB-REQ-021 line 967, "any PWB-REQ-006 resource breach" | Same direction and act on Q3's first arm. On Q3's second arm the trigger is "a further amendment to the signed PWB specification beyond the 2026-09-05 package" (`.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` line 151), which needs CC-REV-2 and a new act. On **Q4's minting arm** the trigger is the registry-envelope clause at lines 154–155 of the same file, quoted in Q4 |
 | 4 Restart and upgrade | **No** | none named — argued from S10-F6 and from the direction's recorded-finding limb, not from a requirement clause | Same direction and act. "Tooling" is named in the implementation-plane sentence quoted for slice 1, so a script under `scripts/` is inside it. The direction's own bound applies: each improvement item "must still alter the runnable demonstration or falsify/repair a named product finding" (`.syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md` lines 23–24) — the doc section repairs S10-F6 and the script alters the demonstration |
@@ -581,7 +681,9 @@ column below.
 of which **32** are checked and **3** are not: 4.6 (the owner cold-open
 walkthrough), 5.2 (repair recorded findings and confirm) and 5.3 ("Report the
 completed improvement cycle to the owner before any next cycle begins")
-[Observed, counted this session over a 139-line file]. **No M11 slice
+[Observed, counted this session over a **138**-line file, `wc -l`;
+corrected 2026-09-15 per review 1, F9 — superseded figure: "a 139-line
+file", the split-on-newline count]. **No M11 slice
 duplicates an unchecked task** — unlike M6, whose slices each filed against
 one — so M11 is new improvement-cycle scope rather than unfinished signed
 work. And 5.3 being unchecked means the *current* cycle has not been reported
@@ -660,10 +762,14 @@ list: `unknown-route`, `credential-refused` (the daemon's own
 `browser-origin-refused`, `handler-failure` and `response-limit-breached`.
 No header, no body, no query string, no credential, ever.
 
-**Why that shape.** PWB-REQ-006's oracle scans "every model, cache, log,
-HTML, JSON and record sink for sentinels" (spec line 176) and its scenario
-requires that "no active content reaches Polaris, JSON, logs, caches or
-records" (line 407). A log line built only from closed vocabulary and
+**Why that shape.** **PWB-REQ-003's** Oracle scans "every model, cache,
+log, HTML, JSON and record sink for sentinels" (spec line 176), and
+**PWB-REQ-006's** own Oracle, at lines 394–396, requires "complete
+sink-byte scans"; PWB-REQ-006's scenario at line 407 requires that "no active
+content reaches Polaris, JSON, logs, caches or records" [attributions
+corrected 2026-09-15 per review 1, F6; superseded wording credited line 176's
+sentinel-scan oracle to PWB-REQ-006, which owns line 407 and not 176]. A log
+line built only from closed vocabulary and
 integers satisfies that by construction rather than by filtering, which is
 the difference between a guard and a hope.
 
@@ -797,7 +903,11 @@ distinguishes the side in the finding's *message*, which is free text today
 (`walkthrough-readiness.ts` lines 365–366). `ReadinessPopulation`
 (lines 83–89) gains one more number beside `limitBreaches`, supplied by
 `readinessPopulation` (`packages/three-surface-poc-core/src/model.ts` lines
-213–221); arm 9's condition becomes the sum. The evaluator stays pure and
+**211–220** — signature at 211, closing brace at 220, its doc comment
+ending at 210) [corrected 2026-09-15 per review 1, F12; superseded citation:
+"lines 213–221". Q3's separate cite of lines 217–219 for the input-side
+snapshot is inside the function and is unchanged]; arm 9's condition becomes
+the sum. The evaluator stays pure and
 injectable and the core package gains no import from the app. **This is also
 the strongest form of Q3's recommended answer:** the arm already exists and
 its clause already names the whole of PWB-REQ-006, of which the two response
@@ -805,10 +915,15 @@ ceilings are members by line 378; what is missing is a number, not a
 concept.
 
 **What it must not do.** It must not touch the PWB-REQ-022 evaluator
-(AGENTS.md's standing seam rule and PWB-REQ-021's own lines 975–978: "These
-readiness cases belong only to PWB-REQ-021. They SHALL NOT be added to,
-substituted for or treated as invalid arms in PWB-REQ-022's owner-act and
-record-validity population"). It must not change `observationDigest` or any
+(AGENTS.md's standing seam rule and PWB-REQ-021's own lines 975–977:
+"These readiness cases belong only to PWB-REQ-021. They SHALL NOT be added
+to, substituted for or treated as invalid arms in PWB-REQ-022's owner-act and
+record-validity population…") [span narrowed and the elision marked
+2026-09-15 per review 1, F8; superseded citation: "lines 975–978". The
+quoted words end mid-line 977, which continues "; a structurally lawful run
+can be not ready, and a valid owner act can lawfully retain a negative
+judgment about it" and ends on 978]. It must not change `observationDigest`
+or any
 field under it. And it must not make the breach retroactive: a breach at
 instant T makes readiness false from T, and the record says when.
 
@@ -860,7 +975,16 @@ in "Decided in this packet" asserts the state directory holds exactly one
 entry, and a pidfile would fail it. The script never touches the observed
 repository.
 
-**Oracle.** A system-level test in the shape of
+**Oracle.** The closest existing prior art is
+`packages/cap1-daemon/src/server.test.ts` lines 159–174: a describe block
+named "RT3 — credential stability across daemon restarts" whose single test,
+"a restarted daemon reuses the same credential file and token", starts a
+daemon, closes it, starts a second against the same state directory and
+asserts `credentialProvision` is `reused`, that the credential path is
+identical and that the token bytes are unchanged [Observed, read at source
+this session; cited 2026-09-15 per review 1, F2 — the first draft's
+word-bounded lifecycle predicate hid that file, so the packet did not know
+the test existed]. Slice 4's own oracle is a system-level test in the shape of
 `packages/cap1-system/src/degradation.system.test.ts`, which already starts a
 daemon twice against one state directory (its lines 74–96): assert the second
 start reports `reused`, that the state directory still holds exactly one
@@ -1163,10 +1287,15 @@ the bytes slices 2 and 3 would edit.
    all — and corroborated a third way by the retained capture, whose
    `daemon.err` is 0 bytes after two 503s (rule 2).
 3. **The absence claims name their denominators.** 81 non-test files for the
-   logging sweep; 558 of 1,216 tracked files for the lifecycle sweep; 538
-   governance files plus 24 manifests for the act-binding sweep; 17 routes for
-   the status-route sweep; 1,153 and 1,009 spec lines for the operability
-   vocabulary sweep (rule 9).
+   logging sweep; 558 of 1,216 tracked files for the lifecycle sweep, whose
+   result is now published under both a substring and a word-bounded
+   predicate over that one denominator (29 files and 22); 538 governance
+   files plus 24 manifests for the act-binding sweep; 17 routes for the
+   status-route sweep; **1,152** and **1,008** spec lines, both `wc -l`, for
+   the operability vocabulary sweep (rule 9) [corrected 2026-09-15 per review
+   1, F9 and F2; superseded wording: "558 of 1,216 tracked files for the
+   lifecycle sweep" without its two predicates, and "1,153 and 1,009 spec
+   lines"].
 4. **Rule-6 mutants are specified per slice and per guard branch**, above;
    each names the predicate to mutate and the fixture that must then fail.
    Slice 1's are one per outcome branch, because a single mutant over a
@@ -1186,24 +1315,36 @@ the bytes slices 2 and 3 would edit.
    predicate and denominator stated in Gate 3; the four hits are in a
    self-declared non-authoritative CC-REV-2 inventory that is not a row of
    either manifest in its own directory.
-9. **Independent review.** This packet has had **none**. It is a first draft
-   and its `independent_review` count in the evidence record beside it is 0.
-   Verification rule 10: any later edit retires a review bound to these
-   bytes; superseded wording will be marked and dated in place, never
-   deleted.
+9. **Independent review.** This packet has had **one**, retained verbatim
+   and disclosed in the review-1 section below; its `independent_review`
+   count in the evidence record beside it is 1 [superseded wording,
+   2026-09-15: "This packet has had **none**. It is a first draft and its
+   `independent_review` count in the evidence record beside it is 0."].
+   Verification rule 10: review 1 is bound to the bytes at `2c62d0b` and not
+   to these, so the thirteen exception repairs are uncovered until a second
+   review; superseded wording is marked and dated in place throughout this
+   pass, never deleted.
 10. **Conventions this packet was checked against, this session.** Every
     non-fence line has an even backtick count, so no code span is broken
-    across a line break (0 of **1,257** non-fence lines). Every code span
+    across a line break (0 of **1,553** non-fence lines; superseded figure,
+    exact over the first draft at `2c62d0b`: **1,257**). Every code span
     matching CG-1b's extension set — `.md`, `.py`, `.sh`, `.yaml`, `.json`,
     `.txt` — resolves in this worktree: **0** unresolved. Spans that name a
     file this worktree does not hold are written **without** backticks for
     exactly that reason: the M10 packet, and slice 4's not-yet-written
-    script. Of **326** distinct code spans, **34** contain a `/` and do not
-    resolve as a path; each is enumerated and none is a path claim, and they
-    partition as 21 + 5 + 2 + 2 + 1 + 1 + 1 + 1 = 34. **21 are HTTP routes**:
-    the 17 method-and-path spans of the route table, the proposed
-    `GET /api/poc/status`, and the three bare forms `/polaris`, `/api/poc`
-    and `/api/poc/polaris`. **5 are write-root globs**: `.syzygy/**`,
+    script. Of **374** distinct code spans, **36** contain a `/` and
+    do not resolve as a path; each is enumerated and none is a path claim,
+    and they partition as 22 + 5 + 2 + 2 + 1 + 1 + 1 + 1 + 1 = 36
+    [re-derived 2026-09-15 over the final bytes of the review-1 pass and
+    iterated to a fixed point, since this file states the figures;
+    superseded figures, exact over the first draft at `2c62d0b`: **326**
+    distinct spans, **34** non-resolving, partitioned 21 + 5 + 2 + 2 + 1 + 1
+    + 1 + 1 = 34. The two the review-1 repairs added are the bare
+    `/butlers-syzygy/` route, which F11 names, and this packet's own branch
+    name]. **22 are HTTP routes**: the 17 method-and-path spans of the route
+    table, the proposed `GET /api/poc/status`, the three bare forms
+    `/polaris`, `/api/poc` and `/api/poc/polaris`, and the bare
+    `/butlers-syzygy/`. **5 are write-root globs**: `.syzygy/**`,
     `openspec/**`, `apps/**`, `packages/**`, `docs/**`. **2 are the RFC2-26
     quotation's own bare `decisions/` and the glob `docs/evidence/*.json`.**
     **2 are placeholder forms** used in the collision table's note:
@@ -1213,19 +1354,175 @@ the bytes slices 2 and 3 would edit.
     `scratchpad/capture/polaris.html`, outside the repository. **1 is the
     file slice 2 would create**, `apps/three-surface-poc/src/status.ts`.
     **1 is a repository-relative source path written without its `apps/`
-    prefix**, `polaris-generation/pipeline-demo-main.ts`. (`/` itself is not
-    in this population: it resolves, as the filesystem root.) **Three**
+    prefix**, `polaris-generation/pipeline-demo-main.ts`. **1 is a Git
+    branch name**, `agent/syzygy-dov.11`. (`/` itself is not in this
+    population: it resolves, as the filesystem root.) **Three**
     over-width lines remain outside fences, tables, headings and block
-    quotes, and each is a single unbreakable code-span path: the two
-    decision-record paths in Gate 0 and the impact-ledger path in Gate 3.
+    quotes, and each is a single unbreakable code-span path: line 107
+    (80 columns) in "Decided in this packet, not put to the owner",
+    which ends at line 118; line 142 (79) in Gate 0, which opens at line
+    120; and line 704 (85) in Gate 3
+    [locations corrected 2026-09-15 per review 1, F10; superseded wording:
+    "the two decision-record paths in Gate 0 and the impact-ledger path in
+    Gate 3" — only one of the two decision-record paths is in Gate 0. The
+    count of three and the unbreakable-code-span characterization both
+    survive; the line numbers are re-derived over the final bytes of this
+    pass, after every edit of it, and the broader figure over every non-fence
+    non-table line is restated in the review-1 section below].
     No observed-repository path is backticked anywhere in this file. No act
     argument, manifest digest or truncated signed digest is reproduced: the
     one digest comparison this packet made is reported as a match and the
     record is cited by path, per CG-7e and CG-15.
 
 11. **Validation.** `python3 scripts/check_governance.py` was run in this
-    worktree at the end of the drafting pass and its tail line is recorded in
-    the evidence record beside this packet.
+    worktree at the end of the drafting pass and again at the end of the
+    review-1 pass, tail line read rather than an exit code or a grep count
+    (verification rule 4); both runs are recorded in the evidence record
+    beside this packet and both end `0 FAIL`.
+
+## Review 1 and repairs (2026-09-15)
+
+An independent fresh-context review of this packet (read-only; only the
+artifact, its governing references and the acceptance criteria) is retained
+verbatim at `docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-RAW.md` (36182
+bytes, sha256
+`943d567120272ac97e05b6de0b61f14800d5ed973df6f353e9b052e60d3ac049`, both
+computed this session with `wc -c` and `sha256sum`, never transcribed). It
+reviewed commit `2c62d0b`, at which the two reviewed files hashed as follows,
+recomputed this session with `git show 2c62d0b:<path>` piped to `wc -c` and
+`sha256sum`:
+
+| File reviewed | Bytes | sha256 |
+|---|---:|---|
+| `docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md` | 102079 | `6f7e98bad81bb3f30a614bfe944d54b1d71091fb5608a6e7f4410827c6cf3eeb` |
+| `docs/evidence/polaris-m11-operability-funnel-2026-09-15.json` | 39956 | `3f6b239183a8939db797fbe8e5c0029d47d2d4d5f7baa299d262c859be0cb320` |
+
+Both match the raw's own table exactly.
+
+Its verdict word, copied exactly: **CONFIRM WITH EXCEPTIONS**. Its counts, as
+the raw states them: **blocking 0, non-blocking 7 (F1–F7), editorial 6
+(F8–F13)** — thirteen findings in all.
+
+**Its Q1–Q5 table, in one line:** all five scopes truthful, all five genuine
+hard human gates with **Q4 "Partly"** (its first half the packet answers
+itself and answers right; what remains for the owner is "do you want a
+distinct limit anyway" plus the escalation-trigger consequence if so), every
+recommendation following from its evidence and conservatively stated, every
+lawful arm named and none called unlawful, every default lawful — with one
+arm the raw says is lawful and unnamed, Q5's third: render the status line on
+the status route only and not on the home page. The raw records that three of
+the five defaults differ from their recommendation and that no owner
+trade-off is smoothed into consensus language [Observed, read from the
+retained raw].
+
+**Its Gate 5 verdict, in one line:** the packet's RFC2-26 block quote is
+**identical** to the source at
+`.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md` lines
+196–221, both paragraphs and no elision, compared programmatically after
+normalizing whitespace and emphasis; the test is run over all four slice rows
+(denominator four) and every cited requirement heading, scenario heading and
+THEN limb is exact at the line cited.
+
+**Its collision verdict, in one line:** both predicates were recomputed from
+scratch over the ten sibling worktrees at the heads the packet records, and
+**every one of the twenty cells re-derives exactly**, as does every "The B
+files" list, "7 of 10 name `routes.ts`", "`model.ts` in 6", "M8 is the
+largest overlap at 9 of 16" and the four M11-only files — with the note that
+`polaris.ts` is also 6, a figure the evidence record carries and the prose
+does not mention; the only defect in the section is F5.
+
+**Every exception was re-derived against source before being applied; none
+was applied on the review's say-so.** Twelve of the thirteen confirmed
+exactly. **F4 carries a defect of its own, corrected rather than copied:** it
+publishes 38 occurrences in 14 files against a stated denominator of 1,216
+tracked files at `a9f671e`, but 38/14 is the figure over the **1,218** files
+tracked at `2c62d0b`, which include this packet and its own evidence record —
+7 of those 38 occurrences, in those 2 files. At the `a9f671e` baseline the
+packet measures, the sweep gives **31** occurrences in **12** files. The
+defect F4 reports is real and is applied in full, with the corrected figure.
+Superseded wording is marked in place and dated throughout, never deleted.
+
+One note on the raw's own citations: several of its `:NNN` references into
+this packet do not resolve at `2c62d0b` — `:337` is line 336, `:355` is 353,
+`:31` is 33, `:817-819` is 799–800, `:29` is 808 and `:566` is 574 — while
+others (`:396-403`, `:35`, `:27`) are exact. Each finding was located by its
+quoted content, not by its line number, and every quotation the raw reproduces
+was found where it says [Observed]. The raw also records **two notes on its
+own review prompt**: that the prompt said "six questions" where this packet
+asks five, and that the prompt's "in particular" list named measurements
+belonging to M10 and not to this packet, which the reviewer swept for and
+found at zero occurrences before reviewing the thirteen measurements this
+packet actually makes.
+
+**Where review 1 records an [Unknown].** It records none of its own against
+any finding. The only [Unknown]s it records are this packet's four, which it
+labels honest, and it singles one out as correctly scoped: whether any
+`docs/evidence/*.json` digest table binds the bytes slices 2 and 3 would edit
+is a sweep this packet did not run and hands to the implementing bead under
+verification rule 10. That remains [Unknown] and is unchanged by this pass.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| F1 the stderr/stdout split is 7/3, not 6/4 | non-blocking | **CONFIRMED.** Swept `apps/three-surface-poc/src/main.ts` whole with Python `re` over its 253 `wc -l` lines: 10 sites, stderr at 58, 65, 89, 207, 239, 241, 249 (**7**) and stdout at 56, 211, 229 (**3**), exactly the split the packet's own table lists. Applied at the census summary, at the derived "four of the **seven**" sentence, in the funnel summary's dossier line and in the record's `M7_failure_detail_census` by same-line edit with a dated sibling note; superseded figures marked in place |
+| F2 the published lifecycle predicate does not produce its figure, and the predicate that does drops the one existing restart test | non-blocking | **CONFIRMED**, both limbs, both predicates run this session with Python `re` over the 558 in-scope files of the 1,216 tracked at `a9f671e` (`git ls-tree -r -z --name-only a9f671e` through the packet's own in-scope filter): the published substring predicate gives **29**, the word-bounded one **22**, and the difference is exactly the seven files the raw names — the fifth review record it could not name is `docs/reviews/R-POC-CYCLE-3-REVIEW.md` (line 347). All 29 were read; **0** is an operator lifecycle instruction, so the conclusion survives on the wider denominator. Both predicates are now published with their literal alternations and case folding, and the 29 are partitioned by class. `packages/cap1-daemon/src/server.test.ts` line 159's RT3 describe block and line 160's test are cited in slice 4's oracle paragraph beside the existing `packages/cap1-system/src/degradation.system.test.ts` cite |
+| F3 "the only three occurrences of the string `log`" is false as a substring claim | non-blocking | **CONFIRMED.** Over the PWB specification in full: `log` case-insensitively as a substring matches **43** lines; `\blogs?\b` matches **3**, at 176, 407 and 665. Q2's bracket now names the word predicate, keeps the three lines, states the substring figure and marks the superseded wording |
+| F4 `maxOutputBytes` occurs far more than twice, and the packet's own point is strengthened | non-blocking | **CONFIRMED in substance, with the finding's own figure corrected.** At `a9f671e`, over all 1,216 tracked files: **31** occurrences in **12** files — 11 in `packages/polaris-generation-core/src/pipeline.ts`, 2 in its test, 1 in `openspec/changes/polaris-manifesto-generation/INTERFACES.md` and 2 at `apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts` lines 64 and 71, which are the only two inside the three POC source trees. The raw's 38/14 is the figure at `2c62d0b`. Applied with the whole-repository count, its denominator and the POC-tree count stated separately, and the collision warning strengthened: the name is held by an adopted generator interface. Mirrored in the record under a dated key |
+| F5 P-72 and P-77 are not on the register at the packet's own baseline | non-blocking | **CONFIRMED.** At `a9f671e`, `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` carries **26** rows under the predicate `^| P-` — 21 open plus 5 acceptance-act — its highest allocated number anywhere in the file is **P-67**, and the predicate `P-7[0-9]` returns **0** hits. Q1, the improvement-cycle paragraph and the funnel summary's sibling list now describe each row as a branch-only proposal with its PR number, labelled [Observed]. The sequencing conclusion is unchanged: M5's Q1 is still the prior question either way |
+| F6 two clauses are attributed to PWB-REQ-006 that belong to PWB-REQ-003 and PWB-REQ-011 | non-blocking | **CONFIRMED.** Requirement headings read at source: 160 (PWB-REQ-003), 202 (-005), 340 (-006), 439 (-007), 632 (-011), 679 (-012). Line 176 is PWB-REQ-003's Oracle bullet, 407 is PWB-REQ-006's "Active repository content remains inert" scenario and 665 is inside PWB-REQ-011's scenario; PWB-REQ-006's own Oracle sits at 394–396 and reads "injected Git/read/render spies, context-independent secret scans, complete sink-byte scans, a separately accumulated resource ledger and exact final encoded-byte counts decide". Gate 2 now says "three times" with each attributed correctly, Gate 4's slice 1 attributes the sentinel-scan oracle to PWB-REQ-003 and cites 394–396 for the sink-byte scan, and the record's dossier-correction entry carries a dated sibling note. Nothing downstream moves |
+| F7 the continuation act's escalation paragraph is cited at the wrong lines | non-blocking | **CONFIRMED.** Read at source: the sentence begins on line **150** and ends on line **156**. Q4's citation is now "lines 150–156"; the two narrower cites, line 151 and lines 154–155, are exact and unchanged. The record's `acts.continuation` block already carried 150–156 and needed no repair |
+| F8 three quoted spans end before the span cited, with no ellipsis | editorial | **CONFIRMED**, all three, each source opened first. PWB-REQ-021's quoted words end mid-line **977** (978 continues "a structurally lawful run can be not ready…"), so the span is narrowed to 975–977 and the tail marked; `PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md`'s end mid-line **61** (which continues ", under the in-force craft policies…" to 63), so the span is narrowed to 59–61 and the tail marked; S10-M3's sentence is "Optionally add a pidfile written at startup under stateDir and a tiny restart script that reads it", so the elision is marked and the source's unbackticked `stateDir` disclosed |
+| F9 three published line-count denominators are one higher than `wc -l` | editorial | **CONFIRMED.** `wc -l` this session: PWB specification **1152**, three-surface specification **1008**, PWB `tasks.md` **138**. The packet stated a line-*number* convention and no line-*count* one, so a **line-count convention is now stated once** at the head — every published line count is the `wc -l` figure — and all four published denominators (Q2's bracket, the `health` sentence, the `tasks.md` count and Gate 6 item 3) follow it, with the superseded split-on-newline figures marked in place |
+| F10 the three over-width lines are mislocated | editorial | **CONFIRMED.** Re-derived at `2c62d0b`: lines **93** (80 columns), **124** (79) and **602** (85). Line 124 is in Gate 0, which opens at line 102; line 93 is in "Decided in this packet, not put to the owner", which ends at line 100; line 602 is the impact-ledger path in Gate 3. Gate 6 item 10 now names the three by line, column and section, re-derived **last** over the final bytes of this pass, since every edit above moved them |
+| F11 "undercounts the table by two" rests on an unstated reading, and S10-F1's words are not in the file called the dossier | editorial | **CONFIRMED.** `grep -F` of S10-F1's sentence over all three pursuit files: 1 hit in `docs/pursuits/2026-09-13-vision-pursuit-data.json`, 1 in `docs/pursuits/2026-09-13-vision-pursuit-harvest.json`, **0** in `docs/pursuits/2026-09-13-vision-pursuit.md`, which Gate 0 names as the dossier. The packet now cites the harvest file with its jq path and publishes both readings: literally the sentence names 7 paths plus 7 mirrors = 14, an undercount of **three** (the two POST materialize routes and the `/butlers-syzygy/` trailing-slash mirror of `/`); read as `pocRoutes`' 15 GET routes, which is the reading the figure uses, an undercount of **two** |
+| F12 `readinessPopulation` is cited at the wrong lines | editorial | **CONFIRMED.** In `packages/three-surface-poc-core/src/model.ts` the signature is at line **211** and the closing brace at **220**, its doc comment ending at 210. Corrected in the slice 3 design and in the record under a dated key; Q3's separate cite of 217–219 is inside the function and is unchanged |
+| F13 Q1's heading asks something the body then declines to ask | editorial | **CONFIRMED.** The second limb is removed from Q1's heading and the superseded heading is quoted and dated in the body's "the prior question is not this packet's" sentence, which already carried the disposition. The Q-table row's question text and the record's `owner_questions` Q1 entry carry the same note under a dated sibling key, the original value unedited. Q1's recommendation, its two lawful arms and its default if unanswered are unchanged |
+
+**No recommended answer changed.** Confirmed against the raw's own Q1–Q5
+table, whose "Recommendation follows from the evidence?" column answers
+**Yes** for all five, and against the thirteen findings one by one: none
+moves an arm, a recommendation or a default. **Q1** keeps
+`machine-credentialed` for the machine form and the human form on the
+existing `human-open` pages, keeps its second `human-open` arm, and keeps its
+default that slice 2's machine route does not ship — F13 moved a limb out of
+its heading and F5 relabelled P-72 as a branch-only proposal, and neither
+touches the answer. **Q3** keeps "an implementation of two quoted sentences,
+not an amendment", keeps its CC-REV-2 second arm and keeps its default that
+slice 3 does not ship; F6 corrected which requirement owns a log-sink
+sentence and left the readiness argument, which rests on PWB-REQ-006 lines
+378 and 384 and PWB-REQ-021 lines 964–968, untouched. **Q4** keeps "do not
+mint a new limit", keeps the minting arm as a named escalation trigger rather
+than as unlawful, and keeps its default; F7 moved the citation span of the
+escalation sentence it quotes and F4 strengthened its collision warning
+without changing either arm. Q2 and Q5 are untouched by any finding except
+F3's predicate correction inside Q2's bracket [Observed, both sides read this
+session].
+
+**Registered as P-78.** The five questions are registered in
+`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` on branch
+`agent/syzygy-dov.11`, as the row the first draft said would land with review
+1. P-68 through P-77 each live only on their own branch and none of them is
+on the register at `a9f671e` [Observed, counted this session: 26 rows under
+`^| P-`, highest allocated number P-67, `P-7[0-9]` 0 hits. All ten sibling
+registers were recounted at their own heads and each carries 27 rows].
+
+By verification rule 10, review 1 binds the bytes it names — the two digests
+in the table above, at commit `2c62d0b` — and not these. Every edit in this
+section and above was made after it, so **the thirteen exception repairs are
+uncovered until a second independent fresh-context review confirms them**;
+that raw will be a second `-RAW.md` file, never an overwrite of the retained
+one. Subject to that, and on review 1's confirmation of the `2c62d0b` bytes —
+CONFIRM WITH EXCEPTIONS, no blocking finding, no recommended answer moved,
+all five questions found to be genuine hard gates with Q4 partly, and no
+lawful arm called unlawful — **this packet stands at the owner gate**: P-78
+is ready to be ruled.
+
+Over-width lines after these edits, under the predicate "lines outside fenced
+code blocks whose first non-space character is not a pipe, longer than 78
+columns", denominator every line of this file: **8** [Observed,
+measured last of all in this pass, after every edit including this section,
+and iterated to a fixed point because this file states the figure. The
+narrower Gate 6 item 10 population — the same lines, excluding headings and
+block quotes as well — is **3**, unchanged].
 
 ## Funnel summary
 
@@ -1238,10 +1535,10 @@ Baseline: Syzygy a9f671e; the dossier audited at f4589e2 and every one of its tw
 - G3 Topology: apps/three-surface-poc/src + packages/cap1-daemon/src + packages/three-surface-poc-core/src + docs/ + scripts/ + package.json; no boundary crossed; no governed artifact touched; 0 of the 14 files in any act manifest over 538 governance files and 24 manifests; no M11 slice duplicates an unchecked PWB task (35 boxes, 32 checked, the 3 open ones being 4.6, 5.2 and 5.3)
 - G4 Design: one closed-vocabulary stderr line per non-2xx outcome built from the matched route, never the requested path; one status fact builder feeding both channels with two identified instants and no derived age; a per-process served-side breach record feeding the existing ninth readiness arm, NOT an eleventh arm and NOT the frozen evaluation ledger; a restart section and script with no pidfile
 - G5 Spec: no delta needed for the readiness widening on the recommended arm - PWB-REQ-006 line 378 puts the response ceilings inside PWB-REQ-006 and line 384 says every breach makes readiness false, and PWB-REQ-021's ninth arm is that clause - but PWB-REQ-006's own oracle line separates ledger from byte count, which is Q3. RFC2-26 run over all four slice rows (denominator 4): slice 3 maps to PWB-REQ-006 scenario "Resource breach is bounded and explicit" whose WHEN names the final-output ceiling; slice 2's human line maps to POC-REQ-060 and POC-REQ-032; slice 2's machine form's parity scenario is a partial match and holds behind P-72; slices 1 and 4 enumerate no RFC-0002 consequence
-- G6 Bar: computed route enumeration rather than transcription; three independent methods for the load-bearing zero; every absence claim with its denominator; rule-6 mutants per slice and per branch; a closed ten-entry list checked before a slice proposed to extend it; no act-bound byte proposed for edit; NO independent review yet - this is a first draft
+- G6 Bar: computed route enumeration rather than transcription; three independent methods for the load-bearing zero; every absence claim with its denominator; rule-6 mutants per slice and per branch; a closed ten-entry list checked before a slice proposed to extend it; no act-bound byte proposed for edit; review 1 read these two files at 2c62d0b and returned CONFIRM WITH EXCEPTIONS (0 blocking, 7 non-blocking, 6 editorial, F1-F13), retained verbatim at docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-RAW.md; all thirteen exceptions were re-derived against source before being applied, and by verification rule 10 the thirteen repairs are uncovered until a second review confirms them [superseded wording, 2026-09-15: "NO independent review yet - this is a first draft"]
 Acts: slices 1, 3 and 4 ride THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md lines 55-56 (the recorded-finding limb) inside PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md lines 59-63's implementation plane, continued by PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md; slice 2's machine route additionally holds behind P-72; Q3's second arm and Q4's minting arm each cross a named escalation trigger of the continuation act and need CC-REV-2 plus a new act
-Open questions: Q1-Q5 above, NOT yet registered in PENDING-OWNER-DECISIONS.md - this packet writes two files and no register row, by instruction, and the row lands with review 1; the siblings' rows are P-67/P-68 M1, P-69 M2, P-70 M3, P-71 M4, P-72 M5, P-73 M6, P-74 M8, P-75 M9, P-76 M7, P-77 M10
-Dossier corrections: the prerequisite's "owner act for the registry resourceLimits change" does not bind the recommended arm, because both response ceilings are ALREADY declared in the registry and typed into PwbResourceLimits and ResourceLimitBreach.limit already admits them - the gap is a recording site, not a schema; P0-CEILING is superseded on main by the M1 lane A trim (612,665 bytes of tailnet headroom); S10-F1's route enumeration undercounts by two (17 routes, not 15); S10-F3 is exact at line 207 but four of six stderr sites drop an available cause, not one; boundedResponse is at routes.ts 137-142 at this baseline, not 99-151
+Open questions: Q1-Q5 above, registered as P-78 in PENDING-OWNER-DECISIONS.md on branch agent/syzygy-dov.11, 2026-09-15 with review 1 [superseded wording: "NOT yet registered in PENDING-OWNER-DECISIONS.md - this packet writes two files and no register row, by instruction, and the row lands with review 1"]; the sibling rows are proposals that each live only on their own branch and none of them is on the register at a9f671e, whose highest allocated number is P-67 - P-67 (M1 lane A, ruled 2026-09-13 and moved to DECISION-HISTORY.md), P-68 (M1 lane B, PR #35), P-69 (M2, PR #36), P-70 (M3, PR #37), P-71 (M4, PR #38), P-72 (M5, PR #39), P-73 (M6, PR #40), P-76 (M7, PR #42), P-74 (M8, PR #43), P-75 (M9, PR #41), P-77 (M10, PR #44) [Observed, counted this session; superseded wording: "the siblings' rows are P-67/P-68 M1, ... P-77 M10", which did not say the rows are branch-only]
+Dossier corrections: the prerequisite's "owner act for the registry resourceLimits change" does not bind the recommended arm, because both response ceilings are ALREADY declared in the registry and typed into PwbResourceLimits and ResourceLimitBreach.limit already admits them - the gap is a recording site, not a schema; P0-CEILING is superseded on main by the M1 lane A trim (612,665 bytes of tailnet headroom); S10-F1's route enumeration undercounts the computed table by two read against pocRoutes' 15 GET routes and by three read literally as 14 paths (17 routes in all); S10-F3 is exact at line 207 but four of the seven stderr sites drop an available cause, not one [both corrected 2026-09-15 per review 1, F11 and F1; superseded wording: "undercounts by two (17 routes, not 15)" and "four of six stderr sites"]; boundedResponse is at routes.ts 137-142 at this baseline, not 99-151
 Sign-off: pending - the owner's
 Recommended handoff: land slice 1 now (no gate, no ceiling cost); then slice 3 once Q3 is ruled, because it is the only rank-1 change here; then slice 4; slice 2's human line after Q5 and lane B, its machine form after P-72, Q1 and M10
 ```
