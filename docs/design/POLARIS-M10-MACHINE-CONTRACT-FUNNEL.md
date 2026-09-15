@@ -32,12 +32,12 @@ together.
 
 | # | Question | Recommended |
 |---|---|---|
-| Q1 | **What is the machine channel's equality key, and is minting one an implementation of POC-REQ-004 or a new contract?** Neither candidate the dossier names works. (a) A whole-body hash is *too sensitive*: the run instant `evaluation.asOf` occurs as a substring of some string value at **1,436** places in the retained `/api/poc` body, over **25** distinct structural paths, touching **6** of the payload's **19** top-level keys [Observed, computed this session; predicate and denominator in the measurements below]. Two restarts at one Butlers revision therefore differ in 1,436 places. (b) `inputsDigest` is *too insensitive*: its preimage is six named keys (`packages/three-surface-poc-core/src/model.ts` lines 381–389) and the project shape is **not** among them — a landed, passing assertion says so in terms, `packages/three-surface-poc-core/src/model.test.ts` line 343, `expect(observed.evaluation.inputsDigest).toBe(unevaluated.evaluation.inputsDigest);`, where `observed` has `projectShape.kind === 'observed'` (line 314) and `unevaluated` has `projectShape.kind === 'not-evaluated'` (line 259). An ETag keyed on `inputsDigest` would answer 304 to a client whose copy is missing the whole project-shape block. [Observed; the file's 8 tests were run this session and all pass.] | **Mint a third value — a response-identity digest over the canonically serialized body with a declared, enumerated exclusion set — and treat it as an implementation of POC-REQ-004, not a new contract.** POC-REQ-004 already names exactly this shape: "two code-structure observations of R SHALL produce identical fact content" with the oracle "structural diff excluding declared capture-instant fields" (`openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` lines 188–191 and 199–200). The exclusion set is not invented here; it is the 25 measured paths. **The counter-argument, which this packet does not resolve:** POC-REQ-004's scope sentence quantifies over "all served code-structure facts across repeated runs at the same revision" (lines 189–191) — *code-structure* facts, one of seven requirement groups — whereas the proposed digest spans the whole payload including the project shape, which is the PWB plane. Reading a code-structure determinism requirement as warranting a whole-payload identity is a widening [Inferred]. **Second lawful arm:** rule it a new contract, route a requirement through CC-REV-2 and a new owner act, and hold slices 2, 3 and 4a behind it. **Third lawful arm:** scope the digest to the code-structure region alone, which POC-REQ-004 plainly covers and which is 27.05% of the body — honest, and useless as an ETag for the other 72.95%. **Default if unanswered: slice 1 lands; slices 2, 3 and 4a hold.** |
-| Q2 | **Does serving `Content-Encoding: gzip` change what the declared response ceiling means — and does it therefore need a new owner act?** The registry declares the ceiling's semantics, verbatim at `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` lines 279 and 280: `"maxHumanResponseBytes": "the final encoded HTTP body for each Polaris HTML response"` and `"maxMachineResponseBytes": "the final encoded HTTP body for each authenticated Polaris machine JSON response"`. Today `boundedResponse` measures `Buffer.byteLength(body, 'utf8')` (`apps/three-surface-poc/src/routes.ts` line 138) — the UTF-8 encoding of the string, which *is* the final encoded body while no content coding is in play. Measured this session: gzip level 6 takes the retained `/api/poc` body from **5,520,314** to **851,986** bytes (15.4%) and the retained `/polaris` page from **1,478,637** to **105,850** bytes (7.2%). Under a post-compression reading the 2 MB human ceiling would stop binding at any page size this project can currently produce, and the 2026-09-13 `/polaris` breach at 2,132,656 observed bytes would have been served. | **Yes, it changes the meaning, and it needs an owner act before any compression lands.** The 2026-09-05 continuation names the trigger verbatim: stop before "a change to the constraints or envelope the 2026-09-05 registry entry declares" (`.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` lines 154–155). Compression does not merely make responses smaller; on one reading of the registry's own sentence it converts a fail-closed honest breach into a success, which is the polarity VIS-2 exists to protect. **The counter-argument:** the registry sentence can be read the other way round — "final encoded HTTP body" may mean precisely the wire bytes, in which case today's pre-compression measurement is the *loose* reading and compression tightens nothing while saving 84.6% of the machine transfer. On that reading the change is conformance, not amendment. This packet does not choose; it records that the same eleven words support both readings and that only one of them is currently implemented [Inferred]. **Second lawful arm:** implement compression while keeping `boundedResponse` measuring the uncompressed string, and record in the bead that the served `Content-Length` and the checked ceiling are then deliberately different numbers. That arm is lawful and is the cheaper one; it is also the one that leaves a false sentence standing in the registry if the owner's reading is the post-compression one, and the registry is act-bound and may not be edited to say which. **Default if unanswered: slice 4b does not ship**; slice 4a (ETag only, no content coding) is unaffected. |
-| Q3 | **May the schema document be served `human-open` rather than `machine-credentialed`?** The dossier's S6-M1 slice plan says "served unauthenticated". In this daemon `human-open` is not unauthenticated in the ordinary sense: it passes `browserRequestAllowed` (`apps/three-surface-poc/src/browser-origin.ts` lines 26–38), which requires a loopback or tailnet `Host` and an `Origin` that is absent or matches. But an absent `Origin` is admitted, and a non-browser agent sends none — so a `human-open` schema route admits an agent on host alone. SEC-1 reads, verbatim at `.syzygy/governance/doctrine/security.md` lines 14–16: "**non-browser agent and CLI clients are admitted only through an explicit machine-client authentication mechanism**"; its violation list, lines 22–23, names "a machine client admitted on loopback location alone". | **Serve it `machine-credentialed`, like the two endpoints it describes.** The document's whole audience is the non-browser agent SEC-1 reserves to the credential; an agent that can reach `/api/poc` already holds the token, so credentialing the schema costs that reader nothing and costs an unauthenticated reader a document about a payload they cannot fetch. **The counter-argument is real and is the dossier's:** a schema an agent must already be admitted to read cannot be a discovery mechanism for an agent that is not yet admitted, and the schema contains no portfolio data — it is field names and types, not Butlers content, so SEC-2's egress rule is not engaged and SEC-1's concern is admission rather than confidentiality. **Second lawful arm:** serve it `human-open` and record the SEC-1 reading that makes that lawful — that a document containing no observed content is not "portfolio data" and that the origin check is the "explicit mechanism" for this class. This packet does not rule which reading SEC-1 bears [Inferred]. **Default if unanswered: slice 3 does not ship**, because the route's credential class is not a detail a delegate can pick under a doctrine rule with a violation example this close. |
-| Q4 | **Do these slices trace under the improvement-cycles direction's second limb, or do they need a direction naming them?** The direction reads, verbatim at `.syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md` lines 55–56: "Improvement-cycle work must trace to POC-REQ-001..061 or to a recorded review finding." Swept this session over the signed three-surface specification: **24** requirements and **24** scenarios; none requires an endpoint to name its siblings, none requires a schema document, none requires a cache validator, none requires a cross-revision join key [Observed; predicate `^### Requirement:` and `^#### Scenario:` over the 1,008-line file, counted this session, and each requirement's text read]. So slices 1, 3, 4a and 5 trace only through the second limb. | **They trace through the second limb, and the pursuit is the recorded review.** The direction defines a cycle's first step as "a review/audit of the runnable POC in fresh context producing evidence-cited findings" (line 34), which is exactly what the 2026-09-13 pursuit produced; S6-F1, S6-F2, S6-F4, S6-F5 and S6-F6 are those findings and every one is re-derived at source in this packet. **The counter-argument:** the same direction says repairs are "derived only from recorded findings" (line 36) and that "the agent reports each completed cycle to the owner before starting the next" (line 41) — if the owner reads the pursuit as a *new* cycle rather than a continuation, its report is owed before any slice lands. And these slices are not repairs: slice 3 adds a document that has never existed, which stretches "improvement" further than any prior cycle item. **Second lawful arm:** treat the pursuit as cycle *n*'s review, report it, and land the slices as cycle *n*'s repairs after that report. **Third lawful arm, and the cheapest affirmative one: a one-sentence direction naming M10's slices**, which moots both readings. **Default if unanswered: the slices are filed and not landed.** |
-| Q5 | **May a stable cross-revision join key be derived from a source path plus a normalized statement, and is it M10's to build or M9's?** Two clauses constrain the derivation. PWB-REQ-014 reads, verbatim at `openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md` lines 774–776: "Anchor targets SHALL use the closed classes doctrine, contract, requirement, decision, evidence and work with durable target identity; labels, file paths and coordinates SHALL never serve as anchor identity." RFC1-10 reads, verbatim at `.syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md` lines 263–267: "**Identifiers are opaque; names are labels.** For every declared class (Capability, Topology entry, Declared region, Repository, Project, Proposal): renaming the thing changes its label, never its identifier. An identifier, once minted, is never reused and never renumbered; retirement is terminal." The dossier's S6-M6 proposes "a hash of source path + normalized statement" — a path-derived value. | **Build it as a sibling *join key*, never as an anchor identity, and sequence it behind M9's packet rather than duplicating it. It is not the same change as M9's, and this packet says which is which.** M9's slice 6(b) (docs/design/POLARIS-M9-ONE-IDENTITY-FUNNEL.md lines 920–925, read read-only in that worktree at `65de02b`) makes `repository:<repo>@<rev>:<path>#<objectId>` the canonical **cross-surface** key — one string for one artifact across Polaris, Trajectory and Orrery *at one evaluation*; it still embeds the revision. M10's slice 5 is a **cross-revision** key — the same claim across two evaluations. They are different axes and neither subsumes the other, but they mint ids in the same code path, so building both independently mints two schemes for one subject. **The counter-argument:** PWB-REQ-014's prohibition is scoped by its own sentence to *anchor* identity, and a field that is explicitly not an anchor is arguably outside it — but "arguably outside a prohibition" is the reading that should be the owner's, not a delegate's, because the thing being minted is an identity and RFC1-9 reserves minting authority by class. **Second lawful arm:** fold slice 5 into M9's slice 6 and drop it from M10 entirely, so one packet owns identity. **Third lawful arm:** derive the key from the object id the source route already carries rather than from the path, which satisfies both clauses at the cost of not joining across a content change. **Default if unanswered: slice 5 does not ship**, and the gap stays recorded here. |
-| Q6 | **May the machine channel carry fields the human surfaces do not?** Slices 1, 2 and 3 each add a top-level field with no counterpart on any page. Both parity requirements are one-directional. POC-REQ-020: "Every fact a client-rendered surface presents SHALL be present, with equal value, in the machine answer for the same evaluation" (spec lines 381–382). PWB-REQ-020: "Every project-shape identity, statement, source anchor, coverage state, denominator, contradiction, body-read authority state and walkthrough-judgment state or disclosure Polaris presents SHALL be recoverable from the same evaluation in the machine answer" (PWB spec lines 906–910). Both quantify over what a *surface presents*; neither says the machine answer contains nothing more. Verified this session: the parity sweep compares named marker families as multisets and reports both denominators (**15** `compareMultisets` call sites over a 568-line file), so a new top-level machine field belongs to no family and the sweep neither guards nor breaks on it [Observed; the sweep's 43 tests were run this session and all pass]. | **Yes — the machine channel may carry more, and this packet reads the two requirements' direction as settled by their own words rather than by the sweep's silence.** A links map, a response identity and a schema document are not facts about Butlers; they are facts about the endpoint. **The counter-argument, and it is the one that makes this a question rather than a decision:** the sweep's silence is not a guarantee, it is an absence of coverage — and AGENTS.md records that PWB-REQ-020 parity is per tuple and never per id, which is a rule about not trusting a coarse invariant. A machine-only field that later acquires a human counterpart would enter no family and drift unguarded, which is the same failure shape one level up. **Second lawful arm:** rule that any new machine field must either have a human counterpart or be added to the sweep as its own family with a declared empty human denominator — which is more work and is the honest version. **Default if unanswered: slices 1, 2 and 3 hold**, because all three depend on this answer and none of them is worth landing on a reading of a requirement's direction that nobody has ruled. |
+| Q1 | **What is the machine channel's equality key, and is minting one an implementation of POC-REQ-004 or a new contract?** Neither candidate the dossier names works. (a) A whole-body hash is *too sensitive*: the run instant `evaluation.asOf` occurs as a substring of some string value at **1,436** places in the retained `/api/poc` body, over **25** distinct structural paths, touching **6** of the payload's **19** top-level keys [Observed, computed this session; predicate and denominator in the measurements below]. Two restarts at one Butlers revision therefore differ in 1,436 places. (b) `inputsDigest` is *too insensitive*: its preimage is four named inputs plus one derived digest (five keys) (`packages/three-surface-poc-core/src/model.ts` lines 381–389) [corrected 2026-09-15 after review 1, F2; this cell read "six named keys", which double-counted `mappingDigest`, and nothing in the argument turns on the count] and the project shape is **not** among them — a landed, passing assertion says so in terms, `packages/three-surface-poc-core/src/model.test.ts` line 343, `expect(observed.evaluation.inputsDigest).toBe(unevaluated.evaluation.inputsDigest);`, where `observed` has `projectShape.kind === 'observed'` (line 314) and `unevaluated` has `projectShape.kind === 'not-evaluated'` (line 259). An ETag keyed on `inputsDigest` would answer 304 to a client whose copy is missing the whole project-shape block. [Observed; the file's 8 tests were run this session and all pass.] | **Mint a third value — a response-identity digest over the canonically serialized body with a declared, enumerated exclusion set — and treat it as an implementation of POC-REQ-004, not a new contract.** POC-REQ-004 already names exactly this shape: "two code-structure observations of R SHALL produce identical fact content" with the oracle "structural diff excluding declared capture-instant fields" (`openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` lines 188–191 and 199–200). The exclusion set is not invented here; it is the 25 measured paths. **The counter-argument, which this packet does not resolve:** POC-REQ-004's scope sentence quantifies over "all served code-structure facts across repeated runs at the same revision" (lines 189–191) — *code-structure* facts, one of seven requirement groups — whereas the proposed digest spans the whole payload including the project shape, which is the PWB plane. Reading a code-structure determinism requirement as warranting a whole-payload identity is a widening [Inferred]. **Second lawful arm:** rule it a new contract, route a requirement through CC-REV-2 and a new owner act, and hold slices 2, 3 and 4a behind it. **Third lawful arm:** scope the digest to the code-structure region alone, which POC-REQ-004 plainly covers and which is 27.05% of the body — honest, and useless as an ETag for the other 72.95%. **Default if unanswered: slice 1 lands; slices 2, 3 and 4a hold.** |
+| Q2 | **Does serving `Content-Encoding: gzip` change what the declared response ceiling means — and does it therefore need a new owner act?** The registry declares the ceiling's semantics, verbatim at `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` lines 279 and 280: `"maxHumanResponseBytes": "the final encoded HTTP body for each Polaris HTML response"` and `"maxMachineResponseBytes": "the final encoded HTTP body for each authenticated Polaris machine JSON response"`. Today `boundedResponse` measures `Buffer.byteLength(body, 'utf8')` (`apps/three-surface-poc/src/routes.ts` line 138) — the UTF-8 encoding of the string, which *is* the final encoded body while no content coding is in play. Measured this session: gzip level 6 takes the retained `/api/poc` body from **5,520,314** to **851,986** bytes (15.4%) and the retained `/polaris` page from **1,478,637** to **105,850** bytes (7.2%). Under a post-compression reading the 2 MB human ceiling would stop binding at any page size this project can currently produce, and the 2026-09-13 `/polaris` breach at 2,132,656 observed bytes would have been served. | **Yes, it changes the meaning, and it needs an owner act before any compression lands.** The 2026-09-05 continuation names the trigger verbatim: stop before "a change to the constraints or envelope the 2026-09-05 registry entry declares" (`.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` lines 154–155). Compression does not merely make responses smaller; on one reading of the registry's own sentence it converts a fail-closed honest breach into a success, which is the polarity VIS-2 exists to protect. **The counter-argument:** the registry sentence can be read the other way round — "final encoded HTTP body" may mean precisely the wire bytes, in which case today's pre-compression measurement is the *loose* reading and compression tightens nothing while saving 84.6% of the machine transfer. On that reading the change is conformance, not amendment. This packet does not choose; it records that the same ten words support both readings [corrected 2026-09-15 after review 1, F10, which counted them; the sentence is ten words, and its machine twin at registry line 280 is twelve] and that only one of them is currently implemented [Inferred]. **Second lawful arm:** implement compression while keeping `boundedResponse` measuring the uncompressed string, and record in the bead that the served `Content-Length` and the checked ceiling are then deliberately different numbers. That arm is lawful and is the cheaper one; it is also the one that leaves a false sentence standing in the registry if the owner's reading is the post-compression one, and the registry is act-bound and may not be edited to say which. **Default if unanswered: slice 4b does not ship**; slice 4a (ETag only, no content coding) is unaffected. |
+| Q3 | **May the schema document be served `human-open` rather than `machine-credentialed`?** The dossier's S6-M1 slice plan says "served unauthenticated". In this daemon `human-open` is not unauthenticated in the ordinary sense: it passes `browserRequestAllowed` (`apps/three-surface-poc/src/browser-origin.ts` lines 26–38), which requires a loopback or tailnet `Host` and an `Origin` that is absent or matches. But an absent `Origin` is admitted, and a non-browser agent sends none — so a `human-open` schema route admits an agent on host alone. SEC-1 reads, verbatim at `.syzygy/governance/doctrine/security.md` lines 14–16: "**non-browser agent and CLI clients are admitted only through an explicit machine-client authentication mechanism**"; its violation list, lines 22–23, names "a machine client admitted on loopback location alone". | **Serve it `machine-credentialed`, like the two endpoints it describes.** The document's whole audience is the non-browser agent SEC-1 reserves to the credential; an agent that can reach `/api/poc` already holds the token, so credentialing the schema costs that reader nothing and costs an unauthenticated reader a document about a payload they cannot fetch. **The counter-argument is real and is the dossier's:** a schema an agent must already be admitted to read cannot be a discovery mechanism for an agent that is not yet admitted, and the schema contains no portfolio data — it is field names and types, not Butlers content, so SEC-2's egress rule is not engaged and SEC-1's concern is admission rather than confidentiality. **Second lawful arm:** serve it `human-open` and record the SEC-1 reading that makes that lawful — that a document containing no observed content is not "portfolio data" and that the origin check is the "explicit mechanism" for this class. This packet does not rule which reading SEC-1 bears [Inferred]. **Default if unanswered: slice 3 does not ship**, because the route's credential class is not a detail a delegate can pick under a doctrine rule with a violation example this close — **and that same default also covers a second, unruled question, which is why this packet adds no seventh:** whether a third machine-credentialed route may be minted at all is M5's Q1, already on the register as **P-72**, resting on the three-surface specification's reader-note definition of "the machine answer" at spec lines 25–26. Slice 3 holds behind P-72's Q1 as well as behind this question, and this packet rules neither [Inferred; added 2026-09-15 after review 1, F1. **The recommended answer on the credential class did not change** — still `machine-credentialed`; one more gate is named]. |
+| Q4 | **Do these slices trace under the improvement-cycles direction's second limb, or do they need a direction naming them?** The direction reads, verbatim at `.syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md` lines 55–56: "Improvement-cycle work must trace to POC-REQ-001..061 or to a recorded review finding." Swept this session over the signed three-surface specification: **24** requirements and **24** scenarios; none requires an endpoint to name its siblings, none requires a schema document, none requires a cache validator, none requires a cross-revision join key [Observed; predicate `^### Requirement:` and `^#### Scenario:` over the 1,008-line file, counted this session, and each requirement's text read]. So slices 1, 3, 4a and 5 trace only through the second limb. | **They trace through the second limb, and the pursuit is the recorded review.** The direction defines a cycle's first step as "a review/audit of the runnable POC in fresh context producing evidence-cited findings" (line 34), which is exactly what the 2026-09-13 pursuit produced [lines 34–35 — the quotation spans two source lines and this cell cited only 34; corrected 2026-09-15 after review 1, F8]; S6-F1, S6-F2, S6-F4, S6-F5 and S6-F6 are those findings and every one is re-derived at source in this packet. **The counter-argument:** the same direction says repairs are "derived only from recorded findings" (line 36) and that "the agent reports each completed cycle to the owner before starting the next" (lines 41–42 — corrected 2026-09-15 after review 1, F8; this cell cited only 41) — if the owner reads the pursuit as a *new* cycle rather than a continuation, its report is owed before any slice lands. And these slices are not repairs: slice 3 adds a document that has never existed, which stretches "improvement" further than any prior cycle item. **Second lawful arm:** treat the pursuit as cycle *n*'s review, report it, and land the slices as cycle *n*'s repairs after that report. **Third lawful arm, and the cheapest affirmative one: a one-sentence direction naming M10's slices**, which moots both readings. **Default if unanswered: the slices are filed and not landed.** |
+| Q5 | **May a stable cross-revision join key be derived from a source path plus a normalized statement, and is it M10's to build or M9's?** Two clauses constrain the derivation. PWB-REQ-014 reads, verbatim at `openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md` lines 774–776: "Anchor targets SHALL use the closed classes doctrine, contract, requirement, decision, evidence and work with durable target identity; labels, file paths and coordinates SHALL never serve as anchor identity." RFC1-10 reads, verbatim at `.syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md` lines 263–267: "**Identifiers are opaque; names are labels.** For every declared class (Capability, Topology entry, Declared region, Repository, Project, Proposal): renaming the thing changes its label, never its identifier. An identifier, once minted, is never reused and never renumbered; retirement is terminal." The dossier's S6-M6 proposes "a hash of source path + normalized statement" — a path-derived value. | **Build it as a sibling *join key*, never as an anchor identity, and sequence it behind M9's packet rather than duplicating it. It is not the same change as M9's, and this packet says which is which.** M9's slice 6(b) (docs/design/POLARIS-M9-ONE-IDENTITY-FUNNEL.md lines 920–925, read read-only in that worktree at `65de02b`) makes `repository:<repo>@<rev>:<path>#<objectId>` the canonical **cross-surface** key — one string for one artifact across Polaris, Trajectory and Orrery *at one evaluation*; it still embeds the revision. M10's slice 5 is a **cross-revision** key — the same claim across two evaluations. They are different axes and neither subsumes the other, but they mint ids in the same code path, so building both independently mints two schemes for one subject. **The counter-argument:** PWB-REQ-014's prohibition is scoped by its own sentence to *anchor* identity, and a field that is explicitly not an anchor is arguably outside it — but "arguably outside a prohibition" is the reading that should be the owner's, not a delegate's, because the thing being minted is an identity and RFC1-9 reserves minting authority by class. **Second lawful arm:** fold slice 5 into M9's slice 6 and drop it from M10 entirely, so one packet owns identity. **Third lawful arm:** derive the key from the object id the source route already carries rather than from the path, which satisfies both clauses at the cost of not joining across a content change — **and that arm is M9's own answer, with a failing test already designed for its negation.** M9's rule-6 mutants for slice 6(b) (packet lines 929–932, read read-only at `65de02b`) include (c): "Mint a join key from a path rather than the artifact identity; the oracle, which reads the route table from the served source route and not from the renderer, fails on the mismatch." So arm three is what M9 has built a guard *for*, and **arm one — the dossier's "hash of source path + normalized statement" — would require M9 to relax that mutant** [Observed for the mutant's words, Inferred for the consequence; added 2026-09-15 after review 1, F7. **Q5's recommended answer did not change**]. **Default if unanswered: slice 5 does not ship**, and the gap stays recorded here. |
+| Q6 | **May the machine channel carry fields the human surfaces do not?** Slices 1, 2 and 3 each add a top-level field with no counterpart on any page. Both parity requirements are one-directional. POC-REQ-020: "Every fact a client-rendered surface presents SHALL be present, with equal value, in the machine answer for the same evaluation" (spec lines 381–382). PWB-REQ-020: "Every project-shape identity, statement, source anchor, coverage state, denominator, contradiction, body-read authority state and walkthrough-judgment state or disclosure Polaris presents SHALL be recoverable from the same evaluation in the machine answer …" — the elision is marked 2026-09-15 after review 1, F9; the requirement sentence continues ", preserving multiplicity and exact provenance state." and ends on line 910 (PWB spec lines 906–910, quoted whole here). Both quantify over what a *surface presents*; neither says the machine answer contains nothing more. Verified this session: the parity sweep compares named marker families as multisets and reports both denominators (**15** `compareMultisets` call sites over a 568-line file), so a new top-level machine field belongs to no family and the sweep neither guards nor breaks on it [Observed; the sweep's 43 tests were run this session and all pass]. | **Yes — the machine channel may carry more, and this packet reads the two requirements' direction as settled by their own words rather than by the sweep's silence.** A links map, a response identity and a schema document are not facts about Butlers; they are facts about the endpoint. **The counter-argument, and it is the one that makes this a question rather than a decision:** the sweep's silence is not a guarantee, it is an absence of coverage — and AGENTS.md records that PWB-REQ-020 parity is per tuple and never per id, which is a rule about not trusting a coarse invariant. A machine-only field that later acquires a human counterpart would enter no family and drift unguarded, which is the same failure shape one level up. **Second lawful arm:** rule that any new machine field must either have a human counterpart or be added to the sweep as its own family with a declared empty human denominator — which is more work and is the honest version. **Default if unanswered: slices 1, 2 and 3 hold**, because all three depend on this answer and none of them is worth landing on a reading of a requirement's direction that nobody has ruled. |
 
 ### Decided in this packet, not put to the owner
 
@@ -53,7 +53,16 @@ is listed in Gate 5 below and scheduled nowhere.
 
 The corrections are these.
 
-1. **The dossier's "18 top-level keys" is 19.** Counted this session on both
+1. **The dossier's "18 top-level keys" is 19.** The phrase is in the
+   pursuit's machine records, not its prose. It lives in
+   `docs/pursuits/2026-09-13-vision-pursuit-data.json`
+   at jq path `.agents[5].findings[0].evidence[2]` (and again inside that
+   agent's `.markdown_report`), and its harvest twin
+   `docs/pursuits/2026-09-13-vision-pursuit-harvest.json` at
+   `.agents["S6-machine-parity"].findings[0].evidence[2]`; it occurs **0**
+   times in `docs/pursuits/2026-09-13-vision-pursuit.md` [Observed, `grep -F`
+   over all three files this session; locator added 2026-09-15 after review
+   1, F13]. Counted this session on both
    retained `/api/poc` captures: 19 keys, identical sets. The likeliest
    reading of 18 is that `materializedBeadId`, whose value is `null`, was not
    counted; this packet does not know and marks it [Unknown]. Nothing in M10
@@ -83,12 +92,31 @@ schema document's real subject is **769** distinct structural paths and
 **241** distinct field names in `/api/poc`, plus **57** paths and **48**
 names in `/api/poc/polaris`, **273** names in union. Against that, the slice
 plan's premise — "Enumerate PocModel and PolarisPresentationEnvelope field
-docs from existing TSDoc comments" — does not hold: of `PocModel`'s 19
-top-level fields, **5** carry an immediately preceding doc comment and **14**
-do not, and `PolarisPresentationEnvelope`'s **7** fields carry **0**. There is
+docs from existing TSDoc comments", which lives at jq path
+`.agents[5].moves[0].slice_plan[0]` of
+`docs/pursuits/2026-09-13-vision-pursuit-data.json` and at
+`.agents["S6-machine-parity"].moves[0].slice_plan[0]` of
+`docs/pursuits/2026-09-13-vision-pursuit-harvest.json`, and **0** times in
+`docs/pursuits/2026-09-13-vision-pursuit.md` [Observed, `grep -F` this
+session; locator added 2026-09-15 after review 1, F13] — does not hold: of
+`PocModel`'s 19 top-level fields, **5** carry an immediately preceding doc
+comment and **14** do not, and `PolarisPresentationEnvelope`'s **7** fields
+carry **0**. There is
 almost nothing to extract; the prose would be written, not enumerated. Slice 3
 is costed **large** here, against the dossier's 2 [Observed for the counts,
 Inferred for the cost class].
+
+**Slice 1's `links` field lands on `PocModel`, not on a response wrapper.**
+That is a delegate's design choice and it is made here rather than left open:
+`machineHandle` serves `JSON.stringify(model)` verbatim
+(`apps/three-surface-poc/src/routes.ts` lines 159–162), so a wrapper would
+falsify the sentence the parity sweep's independent oracle rests on
+(`apps/three-surface-poc/src/polaris-parity-sweep.test.ts` lines 5–7). The
+consequence is named rather than absorbed: the field is a POC shared-model
+change and takes the improvement-cycles direction's "WIP one for POC
+shared-model changes" queue (that direction, line 50). Whether that ceremony
+is owed is already M8's Q7 (P-74) and M9's Q6 (P-75), and neither is
+re-asked. [Decided 2026-09-15 after review 1, F6.]
 
 **S6-F3 is deliberately not a slice of this packet.** It is the dossier's own
 placement — S6-M4 sits in M10's `evidence_findings` list as S6-F3's move and
@@ -107,9 +135,18 @@ disclosure and schedules no pruning.
 | Contracts | `.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md`, `.syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md` | RFC2-26's phase rule, run over every slice in Gate 5; RFC1-9, RFC1-10, RFC1-12 for slice 5; RFC1-33, the RFC-0001 twin of RFC2-26, whose own consequence list names "API answers over graph identities" |
 | Policies | `.syzygy/governance/contracts/candidates/policy-candidates/` (CC-SPEC, CC-IMPACT, in force despite the directory name) | CC-REV-2 is the amendment path Q1's second arm and S6-M4 would need |
 
-**What binds and may not be edited.** Swept this session over 605 tracked
+**What binds and may not be edited.** Swept this session over **606** tracked
 `.md`/`.txt`/`.json`/`.yaml` files under `.syzygy/governance/decisions/`,
-`.syzygy/governance/contracts/` and `docs/evidence/`, under the predicate
+`.syzygy/governance/contracts/` and `docs/evidence/` — the denominator at
+commit `5c5ed0e`, this packet's own first commit. Over the same three trees
+*before* this packet's evidence record joined the population the figure is
+**605**, which is what this sentence said until 2026-09-15 [superseded after
+review 1, F3: the record names all five implementation paths and joined the
+corpus between measurement and commit, so every corpus figure below was short
+by exactly one — an absence figure over a population the current pass is
+still editing has to be re-derived, never read]. Both counts are [Observed,
+re-derived this session at `5c5ed0e`; predicate: `git ls-files` filtered to
+those four extensions under those three prefixes]. Under the predicate
 "contains the artifact's path in either its repository-relative or its
 act-relative form" — the second form matters, because
 `THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md` names its signed artifacts relatively
@@ -122,16 +159,19 @@ corpus has paid for before:
 | the three-surface specification | `THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md` (its digest table, line 46) | **No** |
 | the PWB specification | `POLARIS-PROJECT-WIDE-SPEC-SIGNOFF-ACT.md`, `PWB-STATE1-AMENDMENT-ACT.md`, `PWB-TRUTH-READINESS-AMENDMENT-ACT.md` and two manifests | **No** |
 | the observer registry entry | `PWB-OBSERVER-REGISTRY-ENTRY-ACT.md`, `PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md`, `ACCEPTANCE-ACT-RECORD.md` and two manifests | **No** |
-| `apps/three-surface-poc/src/routes.ts` | no act; named by 4 evidence records | yes (implementation plane) |
-| `packages/three-surface-poc-core/src/model.ts` | no act; named by 4 evidence records | yes |
-| `apps/three-surface-poc/src/polaris.ts` | no act; named by 19 evidence records | yes |
-| `apps/three-surface-poc/src/polaris-narrative.ts` | no act; named by 3 evidence records | yes |
-| `packages/cap1-daemon/src/server.ts` | no act; named by 1 evidence record | yes |
+| `apps/three-surface-poc/src/routes.ts` | no act; named by **5** evidence records at `5c5ed0e` (4 before this packet's own record landed; corrected 2026-09-15 after review 1, F3) | yes (implementation plane) |
+| `packages/three-surface-poc-core/src/model.ts` | no act; named by **5** evidence records at `5c5ed0e` (4 before this packet's own record landed; corrected 2026-09-15 after review 1, F3) | yes |
+| `apps/three-surface-poc/src/polaris.ts` | no act; named by **20** evidence records at `5c5ed0e` (19 before this packet's own record landed; corrected 2026-09-15 after review 1, F3) | yes |
+| `apps/three-surface-poc/src/polaris-narrative.ts` | no act; named by **4** evidence records at `5c5ed0e` (3 before this packet's own record landed; corrected 2026-09-15 after review 1, F3) | yes |
+| `packages/cap1-daemon/src/server.ts` | no act; named by **2** evidence records at `5c5ed0e` (1 before this packet's own record landed; corrected 2026-09-15 after review 1, F3) | yes |
 
 **No slice proposes editing a bound byte.** Separately, and it is a different
 claim: of the seven implementation files this packet's slices would touch, the
-current sha256 of **each** is cited by **0** files across the 640 tracked
-files under `docs/evidence/` and `.syzygy/governance/` [Observed, all seven
+current sha256 of **each** is cited by **0** files across the **641** tracked
+files under `docs/evidence/` and `.syzygy/governance/` at `5c5ed0e` — **640**
+over the same two trees before this packet's own record joined them
+[superseded 2026-09-15 after review 1, F3; the **0** result is unaffected and
+was recomputed at `5c5ed0e`] — [Observed, all seven
 digests computed by `hashlib` this session and searched; no digest is
 reproduced here, per CG-15 — the records are cited by path]. So editing them
 retires no currently-bound confirmation. The evidence records above name the
@@ -182,8 +222,9 @@ readiness false. AGENTS.md records what that costs: a breach "serves nothing
 and logs nothing", and the 503 body is its only trace. gzip would take the
 2026-09-13 `/polaris` breach from 2,132,656 observed bytes to roughly a
 fifteenth of that, comfortably inside the 2,097,152 ceiling — which is either
-a fix or a silent defeat of a fail-closed gate, depending on eleven words in
-an act-bound registry file. That is Q2, and it is why compression is separated
+a fix or a silent defeat of a fail-closed gate, depending on ten words in
+an act-bound registry file [ten, corrected 2026-09-15 after review 1, F10].
+That is Q2, and it is why compression is separated
 from conditional GET here instead of shipped with it.
 
 **Success criteria, per slice.** Slice 1: an agent holding one endpoint URL
@@ -411,8 +452,13 @@ Computed at lines 381–389, quoted whole:
   );
 ```
 
-and emitted at lines 688–693. Its preimage is therefore exactly five named
-keys plus one derived digest. The build input type
+and emitted at lines 688–693. Its preimage is therefore exactly **four named
+inputs plus one derived digest — five keys in all**: `repoRoot`,
+`repositoryRevision`, `observerRevision`, `artifacts` and `mappingDigest`
+[Observed, the literal quoted whole above and its keys counted this session].
+[Superseded 2026-09-15 after review 1, F2: this sentence read "exactly five
+named keys plus one derived digest", which reads as 5 + 1 = 6 and overstates
+by one on the same arithmetic as Q1's.] The build input type
 `BuildButlersPocModelInput` (lines 179–206) declares **13** members; **3** of
 them (`repoRoot`, `repositoryRevision`, `observerRevision`) are in the
 preimage and **10** are not, including `projectShape`, `walkthroughJudgment`,
@@ -517,9 +563,14 @@ this session with Python's `gzip` at level 6:
 [Observed. The level is stated because the ratio depends on it; no other level
 was run, and a different level would give a different ratio and the same
 conclusion.] The 2026-09-13 `/polaris` breach observed 2,132,656 bytes against
-a declared 2,097,152. A gzip of comparable ratio puts that body two orders of
-magnitude inside the ceiling. Whether that is a fix or a defeat is Q2, and the
-answer is not in the code: it is in eleven words at line 279 of the
+a declared 2,097,152. At this table's own measured 7.2% ratio that body
+compresses to about **153,551** bytes — roughly **14 times inside** the
+ceiling, which is the same factor Q2 states for the human page. [Superseded
+2026-09-15 after review 1, F11: this sentence read "puts that body two orders
+of magnitude inside the ceiling", which overstates by an order of magnitude;
+2,132,656 × 0.072 = 153,551.2 and 2,097,152 ÷ 153,551.2 = 13.66.]
+Whether that is a fix or a defeat is Q2, and the
+answer is not in the code: it is in ten words at line 279 of the
 act-bound observer registry entry,
 `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`
 — `"the final encoded HTTP body for each Polaris HTML response"`.
@@ -657,7 +708,7 @@ is decided by PWB-REQ-014's sentence and not by these three.
 
 | Slice | Lives in | Governed artifact touched |
 |---|---|---|
-| 1 Links map | `apps/three-surface-poc/src/routes.ts` (a `links` field built from the same array `pocRoutes()` returns at lines 206–239); a new sibling test | none |
+| 1 Links map | `apps/three-surface-poc/src/routes.ts` (a `links` field built from the same array `pocRoutes()` returns at lines 206–239); `packages/three-surface-poc-core/src/model.ts` (the `PocModel` interface, lines 98–155), because the field lands on the shared model — decided in this packet, see Gate 4's slice 1 [row completed 2026-09-15 after review 1, F6, which found it named neither of the two possible implementations]; a new sibling test | none |
 | 2 Response identity | a new module under `packages/three-surface-poc-core/src/` (canonical serialization + the declared exclusion set), consumed by `apps/three-surface-poc/src/routes.ts` at lines 159–176; `packages/three-surface-poc-core/src/model.ts` if the field lands on `PocModel` rather than on the response envelope | none |
 | 3 Schema document | a new emitter under `packages/three-surface-poc-core/src/` or `apps/three-surface-poc/src/`, its build step in `package.json`, and one new route in `apps/three-surface-poc/src/routes.ts` | none |
 | 4a Conditional GET | `packages/cap1-daemon/src/server.ts` (the `respond` path at lines 121–124 and the admission block at lines 187–210); `apps/three-surface-poc/src/routes.ts` | none |
@@ -698,7 +749,7 @@ finding."
 |---|---|---|---|
 | 1 Links map | **No**, per Q4's recommended reading | A recorded review finding (S6-F2). No requirement in either specification names endpoint self-description; swept this session over 24 three-surface requirements and 24 scenarios and 17 PWB requirements and 31 scenarios, **0** do | No trigger crossed: no doctrine or contract change, no specification amendment, no security-posture change, no registry-envelope change, no new observation. A field naming routes the daemon already serves |
 | 2 Response identity | **No on the recommended arm of Q1; yes on its second arm** | POC-REQ-004 on the recommended reading — "two code-structure observations of R SHALL produce identical fact content", spec lines 188–189, with its oracle "structural diff excluding declared capture-instant fields" at lines 199–200. On Q1's second arm, a recorded review finding only (S6-F6) | The trigger at stake is "any scope beyond the signed change". Reading a code-structure determinism requirement as warranting a whole-payload identity is the widening Q1 names [Inferred] |
-| 3 Schema document | **Yes for the route's credential class (Q3); no otherwise** | A recorded review finding (S6-F1, S6-F2). No requirement names a schema document; the literal sweep for `json-schema`, `openapi` and `schema document` over the three-surface specification returns **0** lines | If served `human-open`, the trigger is "a change to security, privacy, or retention posture" read through SEC-1. If served `machine-credentialed`, no trigger is crossed |
+| 3 Schema document | **Yes for the route's credential class (Q3); and the route's *existence* is an open owner question on the register, M5's Q1 at P-72** [the second clause read "no otherwise" until 2026-09-15; corrected after review 1, F1] | A recorded review finding (S6-F1, S6-F2). No requirement names a schema document; the literal sweep for `json-schema`, `openapi` and `schema document` over the three-surface specification returns **0** lines | If served `human-open`, the trigger is "a change to security, privacy, or retention posture" read through SEC-1. If served `machine-credentialed`, no trigger is crossed *by the credential class*. Separately, whether a third machine-credentialed route is inside the three-surface specification's reader-note definition of "the machine answer" (spec lines 25–26) is M5's Q1 on the register as P-72, and is not ruled here [added 2026-09-15 after review 1, F1] |
 | 4a Conditional GET | **No**, and it is deliberately separated from 4b for this reason | A recorded review finding (S6-F4), keyed on slice 2's identity | No trigger: an `ETag`/`If-None-Match` exchange changes no declared limit, no observation, no posture. It does change what a client may believe, which is why VIS-2 puts it behind slice 2 |
 | 4b Compression | **Yes — Q2** | A recorded review finding (S6-F4) | "A change to the constraints or envelope the 2026-09-05 registry entry declares", on the reading that `Content-Encoding` changes what "the final encoded HTTP body" names. This packet does not choose the reading; it records that the change is invisible to every test in the repository and visible only in the registry's sentence |
 | 5 Stable join key | **Yes — Q5**, and sequenced behind M9 either way | A recorded review finding (S6-F5). PWB-REQ-014's closed-class sentence (PWB spec lines 774–776) constrains the derivation; RFC1-9's minting-authority rule constrains who may mint it | "A change to doctrine or an accepted contract" is **not** crossed by adding a sibling field — but whether a path-derived value may be an identity at all is a reading of an accepted contract, which is what Q5 puts |
@@ -706,8 +757,11 @@ finding."
 | S6-M4 populate-or-prune | **Yes — a specification amendment** | PWB-REQ-014 lines 774–776 declare the six classes closed | "A further amendment to the signed PWB specification" — CC-REV-2 plus a new owner act. **Listed, not scheduled** |
 
 **What landing these slices retires.** No act binds any implementation byte a
-slice touches (Gate 0's sweep). **22** files of the 624-file governance and
-evidence corpus name at least one of the five implementation paths these
+slice touches (Gate 0's sweep). **23** files of the **625**-file governance
+and evidence corpus at `5c5ed0e` — **22** of **624** before this packet's own
+evidence record joined the corpus, which is what this sentence said until
+2026-09-15 [superseded after review 1, F3] — name at least one of the five
+implementation paths these
 slices touch, and **none** of them carries the current sha256 of any of those
 files [Observed, both sweeps run this session; predicates in the evidence
 record]. So no confirmation currently bound to
@@ -729,6 +783,29 @@ new bead.
 ```
 links: { path: string; method: 'GET'; credentialClass: 'human-open' | 'machine-credentialed'; self: boolean }[];
 ```
+
+**Where it lands, decided here.** On `PocModel`
+(`packages/three-surface-poc-core/src/model.ts`, the interface at lines
+98–155), not on a wrapper around it. `machineHandle` serves
+`JSON.stringify(model)` (`apps/three-surface-poc/src/routes.ts` lines
+159–162, quoted above), so those are the only two implementations of a new
+top-level key in that body, and the second would falsify the sentence the
+parity sweep's own production comment rests on, at
+`apps/three-surface-poc/src/polaris-parity-sweep.test.ts`
+lines 5–7: "(`/api/poc` is `JSON.stringify(model)` verbatim, so the machine
+channel here is that string parsed back)".
+
+**The consequence is ceremony, and it is stated rather than absorbed:** a
+field on `PocModel` is a POC shared-model change, and the improvement-cycles
+direction sets, verbatim at
+`.syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md`
+line 50: "WIP one for POC shared-model changes". Slice 1 therefore joins
+slice 2 (on Q1's recommended arm) in that one-at-a-time queue rather than
+being the free-standing cheapest thing. Whether that ceremony is owed at all
+for a change of this shape is already an owner question on the register —
+M8's Q7 (P-74) puts the shared-model ceremony question and M9's Q6 (P-75)
+puts the cycle-ceremony question; **this packet names them and re-asks
+neither** [added 2026-09-15 after review 1, F6].
 
 Built by mapping over the same `readonly Route[]` the function returns,
 filtering nothing, so the 15 entries in the table become 15 rows. The tailnet
@@ -820,6 +897,16 @@ reach a client before it is tested).
 comment. The dossier's slice plan — enumerate existing TSDoc — describes work
 that cannot be done, because the TSDoc is mostly absent. This slice is
 therefore **authoring**, and it is large.
+
+**The route's right to exist is not settled here.** This slice mints a third
+machine-credentialed route. The three-surface specification's reader notes,
+binding on how that file is read, define the machine answer at lines 25–26:
+"the ‘machine answer’ is the authenticated `GET /api/poc` response" —
+singular, definite article; the inner quotation marks in the source are
+straight double quotes, changed here only to keep this quotation's own marks
+unambiguous. M5's packet puts exactly that question to the owner as its Q1,
+registered as **P-72**. Slice 3 holds behind P-72's Q1 as well as behind Q3,
+and this packet rules neither [added 2026-09-15 after review 1, F1].
 
 **The shape.** A static document emitted at build time from the TypeScript
 types, checked into no source tree and served from a new route. Emission from
@@ -959,12 +1046,19 @@ scenarios). Both are act-bound and neither may be edited by any slice.
 **Slice 1 — no delta, and no requirement either.** Swept this session over
 both specifications: **0** of the 41 requirements and **0** of the 55
 scenarios name endpoint self-description, a links map, a route list or
-sibling-route discovery. A literal sweep for `self-link`, `sibling route` and
-`endpoint list` or `endpoint map` over the three-surface file returns **2**
-lines, both in POC-REQ-053 (spec lines 904 and 913), which is Orrery
-entities
-resolving to exact-table routes and not endpoint discovery — the remainder is
-enumerated rather than waved at, per verification rule 9. So slice 1 adds a
+sibling-route discovery. Two literal sweeps were run over the
+three-surface file, and the predicate matters. (i) The alternation
+`self-link|sibling route|endpoint list|endpoint map`, case-insensitive with
+Python `re` over every one of the file's 1,008 lines, returns **0** lines
+[Observed, denominator: every line of the file].
+(ii) The literal `links`, over the same denominator, returns **2** lines,
+**904** and **913**, both under POC-REQ-053, which is Orrery entities
+resolving to exact-table routes and not endpoint discovery; that is the
+predicate whose remainder is enumerated here, per verification rule 9.
+[Superseded 2026-09-15 after review 1, F4: this passage attributed the two
+lines to the four-literal alternation, which matches nothing — neither cited
+line carries any of the four literals. The conclusion is unchanged and
+strengthened, 0 ≤ 2.] So slice 1 adds a
 field no requirement asks for and no requirement forbids. That is the
 RFC2-26 question, run below, not a delta question.
 
@@ -981,12 +1075,35 @@ code-structure facts" (lines 190–191), and `codeStructure` is 27.05% of the
 body. Whether a requirement scoped to one region warrants an identity over the
 whole payload is Q1 and is not settled here.
 
-**Slice 3 — no delta; the disclosure it carries is the thing PWB-REQ-014
-already closes.** PWB-REQ-014 lines 774–776 declare the six anchor classes
+**Slice 3 — no delta for the *disclosure* it carries; the *route* is a
+separate question this packet does not settle.** [The heading read "**Slice 3
+— no delta**" without qualification until 2026-09-15, which read as a ruling
+on the whole slice; superseded after review 1, F1. The disclosure analysis
+below is unchanged.] PWB-REQ-014 lines 774–776 declare the six anchor classes
 closed. Stating which of the six are populated at an evaluation neither adds
 nor removes a member; it is a measurement of the payload printed beside the
 closed list. **Pruning** would be a delta, and that is S6-M4, listed here and
 scheduled nowhere.
+
+**But slice 3 also mints a route, and that question is open on the register.**
+The three-surface specification carries, under the heading "Reader notes,
+binding on how this file is read", a definition at lines 25–26 — quoted whole
+from those two lines, with the source's straight inner quotation marks
+rendered as single marks so this quotation's own are unambiguous:
+
+> … the ‘machine answer’ is the authenticated `GET /api/poc` response.
+
+Singular, definite article [Observed, read at source this session]. M5's
+packet — register row **P-72**, branch head `ba9ca61`, read read-only in its
+own worktree this session — puts that sentence to the owner as its Q1: does a
+new machine-credentialed route need a specification delta before it may be
+built, and if so to which specification. Slice 3 adds a **third**
+machine-credentialed route to the two that exist. **Whether a third route is
+inside that definition is not settled here**, and this packet does not rule
+it: it is a reading of a binding reader note, which is the owner's [Inferred].
+Slice 3 therefore holds behind P-72's Q1 as well as behind Q3, and Q3's
+default — slice 3 does not ship — covers both [added 2026-09-15 after review
+1, F1].
 
 **Slices 4a, 4b and 5 — no delta proposed, and two of the three need an act
 for a different reason.** 4b's gate is the registry's declared semantics, not
@@ -1158,7 +1275,13 @@ it would edit.
 zeros are not reassurance: every sibling branch is planning-only — each
 changes only files under `docs/design/`, `docs/evidence/`, `docs/reviews/` and
 `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`, and lane B
-additionally `scripts/`, `.github/` and its own amendment package. M6's head
+additionally `scripts/`, `.github/`, its own amendment package under
+`.syzygy/governance/contracts/candidates/`, `PROJECT-STATUS.md` and
+`.syzygy/governance/contracts/candidates/ACCEPTANCE-PHRASE-REGISTRY.yaml`
+[the last two added 2026-09-15 after review 1, F12, which found this
+enumeration incomplete; re-derived this session with
+`git diff --name-only a9f671e 4090f98`, which lists 22 paths. The claim that
+every sibling branch is planning-only is unchanged]. M6's head
 has advanced since its own packet recorded `e318cbd`; the head above is the
 one read this session.]
 
@@ -1169,7 +1292,20 @@ does M10 in four of its seven slices. The core model file
 is named by five (M2, M4, M5, M8, M9) plus M10;
 `packages/three-surface-poc-core/src/project-shape-model.ts` by three (M2, M4,
 M8) plus M10; `apps/three-surface-poc/src/polaris.ts` by five (M3, M4, M5, M8,
-M9) plus M10. **No file in this pursuit is uncontended.** That is a scheduling
+M9) plus M10. **Of M10's nine candidate files, seven are named by at least
+one sibling Gate 3 and two are named by none** —
+`apps/three-surface-poc/src/polaris-narrative.ts` and
+`packages/cap1-daemon/src/server.ts`, 0 sibling claims each [Observed,
+predicate B recomputed this session over all nine sibling Gate 3 sections;
+denominator: M10's nine candidate files × nine siblings]. Under the *wider*
+predicate that also admits a bare basename, lane B's Gate 3 names
+`polaris-narrative.ts` (with `polaris.ts` and
+`polaris-parity-sweep.test.ts`), so that file is claimed once and only
+`server.ts` is claimed by nobody: eight of nine. Predicate B is the
+repository-relative path, which is the form every figure in the table above
+uses. [Superseded 2026-09-15 after review 1, F5: this sentence read "**No
+file in this pursuit is uncontended.**", a zero/all claim with neither
+predicate nor denominator, and false under both.] That is a scheduling
 fact the owner should see before ruling any of the nine, and it is the reason
 this packet's handoff recommends landing order rather than parallel execution.
 
@@ -1181,7 +1317,16 @@ this packet's handoff recommends landing order rather than parallel execution.
    explicitly does not build. M10's slice 1 is a links map over the routes
    that exist; if M5's briefing route lands, it appears in that map for free,
    because the map is projected from the route array. The two are
-   complementary and the ordering is free. **No duplication.**
+   complementary in *content*, and neither duplicates the other's work.
+   **But the ordering is not free.** [Superseded 2026-09-15 after review 1,
+   F1; this read "The two are complementary and the ordering is free. **No
+   duplication.**", which is true of the links map and false of slice 3.]
+   M5's Q1, on the register as P-72, asks whether a new machine-credentialed
+   route needs a specification delta before it may be built; M10's slice 3
+   mints exactly such a route. **P-72's Q1 governs slice 3's route, and
+   slice 3 holds behind it as well as behind Q3.** Slice 1 is unaffected: it
+   adds a field, not a route, and if M5's briefing route lands it appears in
+   the map for free.
 2. **M2 (P-69, PR #36) owns the `evidence` block this move's L4-M2 slice would
    carry.** M10 carries it as slice 6 and schedules it nowhere; M2's packet
    designs it. The one coupling is stated in Gate 4: if both land, the
@@ -1199,6 +1344,12 @@ this packet's handoff recommends landing order rather than parallel execution.
    constructors, so **M10's slice 5 sequences behind M9's packet** and adds
    its field to whatever M9's slice 6 builds, rather than minting a second
    scheme.
+   M9's own rule-6 mutants make the direction concrete: mutant (c) (M9
+   packet lines 929–932) mints "a join key from a path rather than the
+   artifact identity" and requires the oracle to **fail** on it. So Q5's
+   third arm is M9's existing answer, and Q5's first arm — the dossier's
+   path-derived hash — would require M9 to relax that mutant [named
+   2026-09-15 after review 1, F7].
    If the owner prefers one packet to own identity entirely, Q5's second arm
    folds slice 5 into M9 and drops it here [Inferred — a reading of two
    packets' designs; the packets' own words are quoted above and in Gate 4].
@@ -1211,20 +1362,32 @@ session]. The collision is the file, not the region, and a rebase resolves it;
 the ordering constraint that is real is slice 5 behind M9, not behind M3 or
 M4.
 
-**Sequencing inside M10.** Slice 1 is independent of everything and is the
-cheapest thing here. Slice 2 must precede slice 4a — an ETag on the wrong
+**Sequencing inside M10.** Slice 1 is independent of every other slice's
+*design* and is the cheapest thing here, but it is **not** free of the
+shared-model queue: its field lands on `PocModel` (Gate 4, slice 1, decided
+after review 1, F6), so it and slice 2 are both POC shared-model changes
+under the improvement-cycles direction's "WIP one for POC shared-model
+changes" (that direction, line 50) and take that queue one at a time. The
+ceremony question itself is M8's Q7 (P-74) and M9's Q6 (P-75); neither is
+re-asked here. Slice 3 additionally holds behind M5's Q1 (P-72), which is
+about the route rather than the schema [added 2026-09-15 after review 1, F1
+and F6]. Slice 2 must precede slice 4a — an ETag on the wrong
 validator is worse than no ETag, which is the VIS-2 argument in Gate 2. Slice
 3 is independent of 1 and 2 but reads better after both, because a schema
 describing a `links` field and a `responseIdentity` field is a schema of the
 contract M10 is actually proposing. Slice 4b is behind Q2 and behind nothing
 else. Slice 5 is behind Q5 and behind M9.
 
-**The register.** This packet's six questions are **not** registered in
-`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md`; the register row
-lands after review 1, batched with the other repairs, and the next free number
-is **P-77** (P-68 through P-76 are held by the nine siblings, each only on its
-own branch; verified this session with the predicate `^| P-` over all ten
-worktree registers and main's).
+**The register.** This packet's six questions are registered as **P-77** in
+`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` on this branch, in
+the same pass as the review-1 repairs — the sequence the sibling packets
+settled on. [Superseded 2026-09-15: until that pass this paragraph read
+"This packet's six questions are **not** registered … the register row lands
+after review 1, batched with the other repairs, and the next free number is
+**P-77**".] P-68 through P-76 are held by the nine siblings, each only on its
+own branch, at the heads named in the collision table above [Observed,
+predicate `^| P-` over all ten worktree registers and main's, run this
+session].
 
 **Not verifiable this session.** [Unknown] Whether any sibling branch's
 eventual diff stays inside the paths its packet's Gate 3 names — none has an
@@ -1275,7 +1438,9 @@ to say which.
 8. **No act-bound byte is proposed for edit**, and that is a claim about
    *acts* specifically. The two specifications and the observer registry entry
    are act-bound and no slice touches them. The implementation files are not
-   act-bound; 22 governance and evidence files name them by path and none
+   act-bound; **23** governance and evidence files name them by path at
+   `5c5ed0e` (**22** before this packet's own evidence record joined the
+   corpus; corrected 2026-09-15 after review 1, F3) and none
    carries their current digests, so editing them retires no bound
    confirmation — but the implementing beads owe a re-run of the records that
    name the paths.
@@ -1289,14 +1454,25 @@ to say which.
    short
    name" class AGENTS.md records, and it is reported rather than silently
    fixed because the corrected predicate is what the reader should check.
-10. **Independent review.** This packet has had **none**. It is a first draft,
-    and every figure in it is uncovered until a fresh-context review confirms
-    it. Verification rule 10: any later edit to these bytes retires a review
-    bound to them, so superseded wording will be marked and dated in place,
-    never deleted.
+10. **Independent review.** This packet has had **one**, on 2026-09-15:
+    verdict **REVISE**, retained verbatim at
+    `docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md` and disposed
+    of in the review-1 section below. [Superseded 2026-09-15: this item read
+    "This packet has had **none**. It is a first draft, and every figure in
+    it is uncovered until a fresh-context review confirms it."] Verification
+    rule 10 still governs: review 1 binds the bytes it names, commit
+    `5c5ed0e`, and not these, so **the repairs made after it are uncovered
+    until a second fresh-context review confirms them**. Superseded wording
+    is marked and dated in place, never deleted.
 11. **Conventions this packet was checked against, this session.** Every
     non-fence line has an even backtick count, so no code span is broken
-    across a line break (0 of **1,328** non-fence lines). **Two** lines
+    across a line break (0 of **1,327** non-fence lines; the convention is the
+    one stated at the head of this packet, with the trailing empty segment
+    after the file's final newline not counted — counting it gives 1,328,
+    which is what this item said until 2026-09-15, superseded after review 1,
+    F14). [That denominator is the first draft's, at commit `5c5ed0e`; over
+    the bytes this pass produced both figures are restated, with their
+    predicates, at the end of the review-1 section below.] **Two** lines
     exceed 78 columns outside fences, tables, headings and block quotes, and
     each is a single unbreakable code-span path: the observer registry entry
     and the RFC-0001 filename. Of **273** distinct code spans, **57** contain
@@ -1327,6 +1503,104 @@ to say which.
     1,312 non-fence lines, 278 distinct spans and 20 non-resolving
     slash-bearing spans, and two checks then failed.
 
+## Review 1 and repairs (2026-09-15)
+
+An independent fresh-context review of this packet (read-only; only the
+artifact, its governing references and the acceptance criteria) is retained
+verbatim at `docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md`
+(**27,447** bytes, sha256
+`2cb4d80cbd86cbb2c30ec6008104452c4ef79eea9fd62da3f21c38fc80a062f6`, computed
+this session with `wc -c` and `sha256sum` and never transcribed). It reviewed
+this packet and its evidence record as they stood at commit `5c5ed0e`, the
+first draft:
+
+| File reviewed at `5c5ed0e` | Bytes | sha256 |
+|---|---:|---|
+| `docs/design/POLARIS-M10-MACHINE-CONTRACT-FUNNEL.md` | 106926 | `f4c7f164e7089c38c78f42b7d918a460fca135cfea98aa992acaf70adf663b2f` |
+| `docs/evidence/polaris-m10-machine-contract-funnel-2026-09-15.json` | 33551 | `1b1a2a470d8346ce511adf13d609eda9d9ce2e02ceac9034dfa2935a0738fdf5` |
+
+[Observed, each recomputed this session by `git show 5c5ed0e:<path>` piped to
+`wc -c` and to `sha256sum`.] Its verdict word, copied exactly: **REVISE**.
+Counts as the raw states them: **1 blocking, 6 non-blocking, 7 editorial**,
+numbered F1-F14.
+
+**Its six-question table, in one line:** scope truthful for Q1, Q2, Q4, Q5
+and Q6 and **partly** for Q3 (the route's existence question was not
+disclosed beside the credential-class question); a genuine human gate for all
+six, **borderline-but-fair** for Q4; the recommendation follows from the
+evidence for all six, with the note that Q5's third arm is M9's existing
+answer and was not identified as such; every lawful arm named for Q1, Q2, Q4,
+Q5 and Q6, and for Q3 the missing arm is not a credential arm at all but the
+unruled prior question F1 raises. No sibling packet's question is re-asked.
+
+**Every one of the fourteen findings was re-derived against source before
+being applied** - none was assumed correct. The specification's reader note
+was read at source; M5's Q1 was read read-only in its own worktree at
+`ba9ca61`; the `inputsDigest` literal's keys were counted at
+`packages/three-surface-poc-core/src/model.ts`; all five governance-corpus
+figures were recomputed twice, once over the tree at `5c5ed0e` and once over
+the same tree with this packet's own evidence record excluded; both literal
+sweeps were re-run with Python `re` over every line of the three-surface
+specification; predicate B was recomputed over all nine sibling Gate 3
+sections; M9's slice 6(b) and its rule-6 mutants were read read-only at
+`65de02b`; lane B's 22-path diff, the improvement-cycles direction's four
+cited lines, PWB-REQ-020's sentence end, the two dossier strings' jq paths,
+the ten-word count, the compression arithmetic and the non-fence line count
+were each re-run or re-read this session.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| F1 slice 3's new machine route is ruled "no delta" while P-72 has that question open | blocking | **CONFIRMED.** The three-surface specification's reader notes define the machine answer at lines 25-26, singular and definite, read at source this session; M5's packet (P-72, head `ba9ca61`, read read-only) puts exactly that to the owner as its Q1 - whether a new machine-credentialed route needs a spec delta before it may be built, and if so to which spec. The literal "machine answer" occurs on **1** line of the first-draft packet and **3** times on it, all inside Q6's row (two inside requirement quotations, one in its prose), so the definition was never carried into the prose [Observed; predicate: exact substring over the whole file, both a per-line and a per-occurrence count, because a per-line count alone understates]. Repaired in four places and mirrored in the record: Gate 5's slice-3 paragraph now quotes lines 25-26 and says plainly that this packet does not settle whether a third machine-credentialed route is inside that definition; collision 1's "the ordering is free / No duplication" is superseded in place by the coupling; Gate 3's act row and Gate 4's slice 3 carry it; and **Q3's default - slice 3 does not ship - is stated to cover the unruled route question too**, with P-72 named. **No seventh question is added and M5's is not re-asked** |
+| F2 the `inputsDigest` preimage is five keys, not six | non-blocking | **CONFIRMED.** The hashed literal at `packages/three-surface-poc-core/src/model.ts` lines 381-389 has exactly five keys - `repoRoot`, `repositoryRevision`, `observerRevision`, `artifacts`, `mappingDigest` - counted at source this session. Both sites now read "four named inputs plus one derived digest (five keys)", the superseded counts marked in place. Q1's argument is unaffected: the point is that `projectShape` is absent |
+| F3 every governance-corpus figure is one short at the commit the packet is published at | non-blocking | **CONFIRMED**, exactly and in every figure. Re-derived this session at `5c5ed0e`: **606** four-extension files under `decisions/`, `contracts/` and `docs/evidence/`; **641** tracked under `docs/evidence/` and `.syzygy/governance/`; **625** four-extension over those two trees; **23** naming at least one of the five implementation paths, per file **5, 5, 20, 4, 2**. Re-derived over the same trees with this packet's own evidence record excluded: **605 / 640 / 624 / 22** and **4, 4, 19, 3, 1** - the first draft's figures exactly. The cause is the one the review names: the record joined the population between measurement and commit and names all five paths. Both denominators are now stated with their commits at every site. **The 0-citer result stands**, recomputed at `5c5ed0e` |
+| F4 the POC-REQ-053 remainder is enumerated under a predicate that returns nothing | non-blocking | **CONFIRMED.** The alternation `self-link\|sibling route\|endpoint list\|endpoint map`, case-insensitive with Python `re` over all **1,008** lines of the three-surface specification, returns **0** lines; the literal `links` over the same denominator returns exactly **2**, lines **904** and **913**. Restated as two sweeps with their predicates named, and mirrored in the record. The conclusion is unchanged and strengthened |
+| F5 "No file in this pursuit is uncontended" is a zero/all claim with no predicate, and is false | non-blocking | **CONFIRMED**, and the predicate matters enough to state twice. Predicate B recomputed this session over all nine sibling Gate 3 sections reproduces the table exactly (0/4/1/5/3/1/2/5/3; `routes.ts` 6, `polaris.ts` 5, `model.ts` 5, `project-shape-model.ts` 3): under it **7 of M10's 9** candidate files are named by at least one sibling and two by none, `polaris-narrative.ts` and `server.ts`. Under a **wider** predicate that also admits a bare basename, lane B's Gate 3 names `polaris-narrative.ts`, so it is 8 and 1 and only `server.ts` is claimed by nobody. Both are stated, with their denominators; the zero/all sentence is superseded in place at both sites |
+| F6 slice 1's topology omits the consequence of adding a top-level field to a body that is the model verbatim | non-blocking | **CONFIRMED**, and **decided**: the field lands on `PocModel`. `machineHandle` serves `JSON.stringify(model)` (`routes.ts` lines 159-162), so the only alternative is a wrapper, which would falsify the parity sweep's own production comment at `apps/three-surface-poc/src/polaris-parity-sweep.test.ts` lines 5-7 - the sentence its independent oracle is built on. `packages/three-surface-poc-core/src/model.ts` is added to Gate 3's slice-1 row; Gate 4's slice 1 states the choice, quotes the improvement-cycles direction's line 50 ("WIP one for POC shared-model changes"), and puts slice 1 in that queue beside slice 2; the sequencing paragraph carries it. M8's Q7 (P-74) and M9's Q6 (P-75) already put the ceremony question to the owner and **neither is re-asked**. No collision figure moves: `model.ts` was already in M10's nine-file candidate surface |
+| F7 Q5 understates the M9 coupling: M9's own rule-6 mutant is designed to fail a path-derived key | non-blocking | **CONFIRMED**, with the span corrected. M9's slice 6(b) is at its packet lines 920-925 and its rule-6 mutants at **929-932** (the block opens at 927), read read-only at `65de02b`; mutant (c) is "Mint a join key from a path rather than the artifact identity; the oracle, which reads the route table from the served source route and not from the renderer, fails on the mismatch." Named in Q5's row and in collision 3: arm three is M9's own answer and arm one would require M9 to relax that mutant. **Q5's recommended answer did not change** |
+| F8 two Q4 citations name one line of a two-line quotation | editorial | **CONFIRMED.** The cycle definition spans lines **34-35** and the report sentence lines **41-42** of `.syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md`, read at source; line 36 was already right. Both spans corrected, against this packet's own stated convention |
+| F9 PWB-REQ-020 is quoted through "in the machine answer" while citing lines 906-910 | editorial | **CONFIRMED.** The requirement sentence continues ", preserving multiplicity and exact provenance state." and ends on line 910. The elision is now marked and the continuation given |
+| F10 "eleven words" for a ten-word quotation | editorial | **CONFIRMED.** "the final encoded HTTP body for each Polaris HTML response" is **ten** words, counted this session; its machine twin at registry line 280 is twelve. Corrected at all three sites |
+| F11 "two orders of magnitude inside the ceiling" overstates by an order of magnitude | editorial | **CONFIRMED.** 2,132,656 x 0.072 = **153,551.2** bytes; 2,097,152 / 153,551.2 = **13.66**, so roughly **14 times** inside - the same factor Q2 states. Restated |
+| F12 lane B's "changes only files under ..." enumeration is incomplete | editorial | **CONFIRMED.** `git diff --name-only a9f671e 4090f98` gives **22** paths this session, including `PROJECT-STATUS.md` and `.syzygy/governance/contracts/candidates/ACCEPTANCE-PHRASE-REGISTRY.yaml`. Both added; the planning-only claim is unchanged |
+| F13 the corrected dossier figures live in the dossier's machine records and the packet gives no path | editorial | **CONFIRMED.** Both strings occur **0** times in `docs/pursuits/2026-09-13-vision-pursuit.md` and live in `docs/pursuits/2026-09-13-vision-pursuit-data.json` at jq paths `.agents[5].findings[0].evidence[2]` and `.agents[5].moves[0].slice_plan[0]` (and inside that agent's `markdown_report`), with the harvest twin carrying each under `.agents["S6-machine-parity"]`. Both locators added; the dossier is not edited |
+| F14 the non-fence line count is 1,327 | editorial | **CONFIRMED.** Splitting the first draft on newlines and dropping the trailing empty segment gives **1,327** non-fence lines; **1,328** counts the trailing boundary. Corrected, with the convention stated at the site |
+
+**Recommended answers changed by this review: none.** **Q3** still recommends
+serving the schema document `machine-credentialed`; what changed is that one
+more gate is named beside it (M5's Q1 at P-72), and Q3's default covers it.
+**Q5** still recommends building the key as a sibling join key sequenced
+behind M9; F7 names M9's mutant (c) so the owner can see that arm three is
+M9's existing answer, and neither the recommendation nor the default moved.
+**Q6** is untouched by every finding and recommends what it recommended. Q1,
+Q2 and Q4 are unchanged. **No default-if-unanswered moved**, and no seventh
+question was added.
+
+**Register.** These six questions are registered as **P-77** in
+`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` on this branch, in
+the same pass as these repairs. P-68 (lane B), P-69 (M2), P-70 (M3), P-71
+(M4), P-72 (M5), P-73 (M6), P-74 (M8), P-75 (M9) and P-76 (M7) each live only
+on their own branch.
+
+**These repairs are uncovered.** Every edit in this pass was made after the
+review, so by verification rule 10 the review binds the bytes it names -
+commit `5c5ed0e` - and not these: **the repairs above are uncovered until a
+second fresh-context review confirms them**, and that review's raw would be a
+second `-RAW.md` file, never an overwrite of this one. Superseded wording is
+marked in place and dated, never deleted.
+
+**Conventions after these repairs**, re-derived over the final bytes this
+session, last of all and iterated to a fixed point: **11** lines
+exceed 78 columns (predicate: lines outside fenced blocks whose first
+non-space character is not a pipe, length > 78; denominator: all
+1,682 lines of this file); **0** non-fence lines carry an odd backtick
+count, over **1,605** non-fence lines (trailing empty segment not
+counted). Of the over-78 lines, none is a prose line this pass wrote: they
+are this file's title, **2** slice headings that name their size and act,
+**3** lines each carrying a single unbreakable code-span path, and **5**
+lines of the RFC2-26 clause block-quoted verbatim, which may not be
+rewrapped. [Observed, enumerated this session over the final bytes; 1 + 2 +
+4 + 5 = 12.]
+
 ## Funnel summary
 
 ```
@@ -1338,10 +1612,10 @@ Baseline: Syzygy a9f671e; the dossier audited at f4589e2, and every line number 
 - G3 Topology: routes.ts + a new core module + server.ts + polaris-narrative.ts + polaris.ts + package.json; no boundary crossed; no governed artifact edited; the two specifications and the registry entry are act-bound and untouched
 - G4 Design: a links map projected from the route array so it cannot drift; a contentKey over the canonical body minus a declared 25-path exclusion set, with the excludes quoted into the payload; a schema emitted from the types stating which enum members are populated without pruning the closed six; conditional GET keyed on that contentKey and nothing else; a sibling logicalId that is never an anchor identity
 - G5 Spec: no delta proposed by any slice. RFC2-26 and RFC1-33 run over 7 slice rows (denominator 7): slice 4b maps to PWB-REQ-006 and a scenario squarely on its subject; slices 2 and 4a map to POC-REQ-004 and its scenario at a narrower scope than the slice; slices 3 and 5 name PWB-REQ-014 with no scenario for their case; slice 1 enumerates no consequence of either contract; slice 6 is carried and not run. S6-M4 populate-or-prune is a spec amendment (PWB-REQ-014 closes the six classes) and is listed, never scheduled
-- G6 Bar: two methods per load-bearing zero; the central claim proved by a landed counterexample rather than a reading; rule-6 mutants per slice; 65 tests run green at this baseline; a false-absence trap in the digest sweep found and reported; NO independent review yet - this is a first draft
+- G6 Bar: two methods per load-bearing zero; the central claim proved by a landed counterexample rather than a reading; rule-6 mutants per slice; 65 tests run green at this baseline; a false-absence trap in the digest sweep found and reported; ONE independent review (2026-09-15, verdict REVISE, 1 blocking / 6 non-blocking / 7 editorial, F1-F14; all fourteen re-derived against source before being applied) - the repairs it produced are uncovered until a second review confirms them
 Acts: slices 1 and 4a ride the improvement-cycles direction's second limb ("Improvement-cycle work must trace to POC-REQ-001..061 or to a recorded review finding", lines 55-56) on Q4's recommended reading; slice 2 rides POC-REQ-004 on Q1's recommended arm and needs CC-REV-2 plus an act on its second; slice 3 needs a ruling on its credential class (Q3, SEC-1); slice 4b needs an act because the 2026-09-05 continuation stops at "a change to the constraints or envelope the 2026-09-05 registry entry declares" (lines 154-155); slice 5 needs Q5
-Open questions: Q1-Q6 above, NOT yet registered - the register row lands after review 1 and the next free number is P-77 (P-68..P-76 are held by the nine siblings, each only on its own branch)
-Collisions: 0 under the branch-diff predicate (every sibling branch is planning-only); under the Gate-3 proposed-files predicate, routes.ts is claimed by 6 of 9 siblings, model.ts by 5, polaris.ts by 5, project-shape-model.ts by 3. No file in this pursuit is uncontended
+Open questions: Q1-Q6 above, registered as P-77 in .syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md on this branch (P-68..P-76 are held by the nine siblings, each only on its own branch). Slice 3 also holds behind M5's Q1 at P-72, which asks whether a new machine-credentialed route needs a spec delta - named after review 1, F1, and not re-asked here [this line read "NOT yet registered - the register row lands after review 1 and the next free number is P-77" until 2026-09-15]
+Collisions: 0 under the branch-diff predicate (every sibling branch is planning-only); under the Gate-3 proposed-files predicate, routes.ts is claimed by 6 of 9 siblings, model.ts by 5, polaris.ts by 5, project-shape-model.ts by 3. Of M10's nine candidate files 7 are named by at least one sibling Gate 3 and 2 by none (polaris-narrative.ts, server.ts) under the repository-relative-path predicate; 8 and 1 under a basename-admitting one [corrected 2026-09-15 after review 1, F5; this line read "No file in this pursuit is uncontended"]
 Sign-off: pending - the owner's
 Recommended handoff: land slice 1 now (no gate, no schema, a few hundred bytes); rule Q1 and build slice 2; then slice 4a on slice 2's key; rule Q3 before slice 3; hold slice 4b behind Q2 and slice 5 behind Q5 and behind M9
 ```
@@ -1372,7 +1646,11 @@ follow from it. That is a coherent outcome and should be written down as one
 rather than quietly becoming a partial ETag.
 
 **If Q3 is answered as recommended:** slice 3 is served
-`machine-credentialed` and is a large piece of authoring — 273 field names
+`machine-credentialed` — and it still may not be built until M5's Q1 (P-72)
+rules whether a third machine-credentialed route needs a specification delta,
+which Q3 does not decide and this packet does not rule [added 2026-09-15
+after review 1, F1]. On that gate cleared, it is a large piece of
+authoring — 273 field names
 across the two endpoints, of which the existing TSDoc documents 5 top-level
 fields and nothing else. Budget it as authoring, not extraction. If the owner
 takes the `human-open` arm, the bead must record the SEC-1 reading that makes

@@ -7,16 +7,19 @@
   "date": "2026-09-15",
   "commit": "a9f671e",
   "branch": "agent/syzygy-dov.10",
-  "status": "candidate; binds nothing; planning only; no independent review yet",
+  "status": "candidate; binds nothing; planning only; one independent review (verdict REVISE, 1 blocking / 6 non-blocking / 7 editorial, F1-F14) applied 2026-09-15; those repairs are uncovered until a second fresh-context review confirms them; registered as P-77 on agent/syzygy-dov.10. [Superseded 2026-09-15: this field read 'candidate; binds nothing; planning only; no independent review yet'.]",
   "independent_review": {
-    "count": 0,
-    "note": "First draft. No fresh-context review has read these bytes. Verification rule 10: any later edit retires a review bound to them.",
-    "raws": []
+    "count": 1,
+    "note": "Review 1 landed 2026-09-15, verdict REVISE, retained verbatim at docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md; see the review1 block at the end of this record. Verification rule 10: review 1 binds the bytes it names (commit 5c5ed0e) and not these, so its repairs are uncovered until a second fresh-context review confirms them, and that review's raw would be a second -RAW.md file, never an overwrite. [Superseded 2026-09-15: count 0, 'First draft. No fresh-context review has read these bytes. Verification rule 10: any later edit retires a review bound to them.']",
+    "raws": ["docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md"]
   },
   "register_row": {
-    "added": false,
-    "reason": "the drafting brief directs that the register row lands after review 1, batched",
+    "added": true,
+    "reason": "added 2026-09-15 in the review-1 repair pass on branch agent/syzygy-dov.10, the sequence the sibling packets settled on. [Superseded 2026-09-15: added false, 'the drafting brief directs that the register row lands after review 1, batched'.]",
+    "row": "P-77",
     "next_free_number": "P-77",
+    "next_free_number_note_2026_09_15": "P-77 is now taken by this packet's own row; the next free number for a tenth sibling is P-78.",
+    "recount_2026_09_15": "main at a9f671e carries 26 rows under the predicate ^| P- (21 under 'Open, and only the owner can dispose' and 5 under 'The acceptance acts'); with P-77 this branch carries 22 open and 5 acceptance-act rows, 27 in all [Observed, counted this session from git show a9f671e:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md and partitioned by the ## section each row falls under].",
     "held_by_siblings": {
       "P-68": "lane B (PR #35)",
       "P-69": "M2 (PR #36)",
@@ -436,9 +439,12 @@
           "json-schema|openapi|schema document": 0,
           "etag|cache|conditional get|if-none-match|304": 0,
           "cross-revision|join key": 0,
-          "self-link|sibling route|endpoint list|endpoint map": 2
+          "self-link|sibling route|endpoint list|endpoint map": 2,
+          "self-link|sibling route|endpoint list|endpoint map_corrected_2026_09_15": 0,
+          "links_2026_09_15": 2,
+          "corrected_sweeps_note_2026_09_15": "Corrected after review 1, F4. Re-run this session with Python re, case-insensitive, over every one of the 1008 lines: the four-literal alternation returns 0 lines, not 2. The value 2 above is reproducible only under the literal predicate 'links', whose two hits are lines 904 and 913. The 2 is kept unedited and marked; the corrected alternation figure and the predicate that actually yields 2 are the two sibling keys beside it."
         },
-        "remainder_enumerated": "the 2 hits are spec lines 904 and 913, both POC-REQ-053, which is Orrery entities resolving to exact-table routes and not endpoint discovery"
+        "remainder_enumerated": "the 2 hits are spec lines 904 and 913, both POC-REQ-053, which is Orrery entities resolving to exact-table routes and not endpoint discovery [corrected 2026-09-15 after review 1, F4: those 2 lines belong to the literal sweep for 'links', not to the four-literal alternation, which returns 0; neither line carries any of the four literals. The conclusion is unchanged and strengthened, 0 <= 2.]"
       },
       "pwb": {
         "file": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
@@ -468,7 +474,8 @@
       "brief_pointer_correction": "the drafting brief directed RFC1-25 for the identity clauses; RFC1-25 (RFC-0001 lines 463-635) is the closed V0 relation vocabulary. The identity clauses are section 3.3, RFC1-9 through RFC1-13, located via DIRECTIVE-REGISTER.md. RFC1-33 is the RFC-0001 twin of RFC2-26 and its consequence list names 'API answers over graph identities' by name."
     },
     "M12_digest_binding": {
-      "corpus": "605 tracked .md/.txt/.json/.yaml files under .syzygy/governance/decisions/, .syzygy/governance/contracts/ and docs/evidence/",
+      "corpus": "605 tracked .md/.txt/.json/.yaml files under .syzygy/governance/decisions/, .syzygy/governance/contracts/ and docs/evidence/ [superseded 2026-09-15 after review 1, F3: 605 is the count over those three trees BEFORE this packet's own evidence record joined the population; at commit 5c5ed0e the same predicate gives 606. Both re-derived this session.]",
+      "corpus_corrected_2026_09_15": "606 tracked .md/.txt/.json/.yaml files under the same three trees at commit 5c5ed0e",
       "predicate": "contains the artifact path in either its repository-relative or its act-relative form",
       "act_bound_untouchable": [
         "the three-surface specification (THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md, its digest table at line 46)",
@@ -483,9 +490,19 @@
         "packages/cap1-daemon/src/server.ts": 1
       },
       "union_of_files_naming_any_of_the_five": 22,
+      "union_of_files_naming_any_of_the_five_corrected_2026_09_15": 23,
       "union_corpus": 624,
+      "union_corpus_corrected_2026_09_15": 625,
+      "implementation_files_named_by_path_corrected_2026_09_15": {
+        "apps/three-surface-poc/src/routes.ts": 5,
+        "packages/three-surface-poc-core/src/model.ts": 5,
+        "apps/three-surface-poc/src/polaris.ts": 20,
+        "apps/three-surface-poc/src/polaris-narrative.ts": 4,
+        "packages/cap1-daemon/src/server.ts": 2
+      },
+      "corrected_counts_note_2026_09_15": "Corrected after review 1, F3, which found every corpus figure short by exactly one. The original values above are the counts over the same trees BEFORE this packet's own evidence record joined the population; the _corrected_2026_09_15 values are the counts at commit 5c5ed0e, where that record is tracked and names all five implementation paths. Both sets were re-derived this session with git ls-files. Nothing above is deleted.",
       "current_digest_citers": {
-        "predicate": "the file's current sha256, computed by hashlib this session, searched over 640 tracked files under docs/evidence/ and .syzygy/governance/",
+        "predicate": "the file's current sha256, computed by hashlib this session, searched over 640 tracked files under docs/evidence/ and .syzygy/governance/ [corrected 2026-09-15 after review 1, F3: the denominator at commit 5c5ed0e is 641; 640 is the same two trees before this packet's own record joined them. The result is unaffected and was recomputed at 5c5ed0e.]",
         "result": "0 for every one of the seven implementation files checked"
       },
       "false_absence_trap": "the first sweep used repository-relative paths only and reported the three-surface specification as bound by nothing; THREE-SURFACE-POC-SPEC-SIGNOFF-ACT.md names its artifacts act-relatively (line 46 reads specs/three-surface-poc-experience/spec.md). Both forms are swept in the figures above."
@@ -684,8 +701,10 @@
     "Q1": "What is the machine channel's equality key, and is minting one an implementation of POC-REQ-004 or a new contract?",
     "Q2": "Does serving Content-Encoding: gzip change what the declared response ceiling means, and does it therefore need a new owner act?",
     "Q3": "May the schema document be served human-open rather than machine-credentialed? (SEC-1)",
+    "Q3_2026_09_15": "Unchanged as a question, and its recommended answer is unchanged (machine-credentialed). Added after review 1, F1: Q3's default - slice 3 does not ship - is now stated to cover a second, unruled question as well, namely whether a third machine-credentialed route may be minted at all. That is M5's Q1, on the register as P-72, resting on the three-surface specification's reader-note definition of 'the machine answer' at spec lines 25-26. Slice 3 holds behind P-72's Q1 as well as behind Q3. No seventh question was added and M5's question is not re-asked.",
     "Q4": "Do these slices trace under the improvement-cycles direction's second limb, or do they need a direction naming them?",
     "Q5": "May a stable cross-revision join key be derived from a source path plus a normalized statement, and is it M10's to build or M9's?",
+    "Q5_2026_09_15": "Unchanged as a question and unchanged in its recommended answer. Added after review 1, F7: Q5's third arm - derive the key from the object id the source route already carries - is M9's own answer, and M9's rule-6 mutant (c) for slice 6(b) (its packet lines 929-932 at 65de02b, read read-only) already requires the oracle to fail on 'a join key from a path rather than the artifact identity'. Q5's first arm, the dossier's path-derived hash, would therefore require M9 to relax that mutant. Named in Q5 and in collision 3.",
     "Q6": "May the machine channel carry fields the human surfaces do not?"
   },
   "dossier_deltas": [
@@ -771,5 +790,67 @@
   ],
   "packet_bytes": 106926,
   "packet_sha256": "f4c7f164e7089c38c78f42b7d918a460fca135cfea98aa992acaf70adf663b2f",
-  "packet_sha256_note": "computed by hashlib this session over the final bytes; this is the packet's own content digest and no act binds it"
+  "packet_sha256_note": "computed by hashlib this session over the final bytes; this is the packet's own content digest and no act binds it",
+  "packet_bytes_and_sha256_note_2026_09_15": "packet_bytes and packet_sha256 above are the FIRST DRAFT's values at commit 5c5ed0e - the bytes review 1 was bound to - and are kept unedited. The post-review-1 values, computed last of all in this pass, are in review1.packet_measured_after_review1 below.",
+  "review1": {
+    "raw": "docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md",
+    "bytes": 27447,
+    "sha256": "2cb4d80cbd86cbb2c30ec6008104452c4ef79eea9fd62da3f21c38fc80a062f6",
+    "verdict": "REVISE - 1 blocking, 6 non-blocking, 7 editorial, F1-F14",
+    "reviewed_commit": "5c5ed0e",
+    "reviewed_packet_bytes": 106926,
+    "reviewed_packet_sha256": "f4c7f164e7089c38c78f42b7d918a460fca135cfea98aa992acaf70adf663b2f",
+    "reviewed_record_bytes": 33551,
+    "reviewed_record_sha256": "1b1a2a470d8346ce511adf13d609eda9d9ce2e02ceac9034dfa2935a0738fdf5",
+    "six_question_table": "scope truthful for Q1, Q2, Q4, Q5 and Q6 and partly for Q3; a genuine human gate for all six, borderline-but-fair for Q4; the recommendation follows from the evidence for all six, with the note that Q5's third arm is M9's existing answer and was not identified as such; every lawful arm named for Q1, Q2, Q4, Q5 and Q6, and for Q3 the missing arm is not a credential arm but the unruled prior question F1 raises. No sibling packet's question is re-asked.",
+    "repairs_applied_this_session": true,
+    "uncovered_until_second_review": true,
+    "re_derived_before_applying": {
+      "machine_answer_definition": "three-surface spec lines 25-26 read at source: the sentence defines 'the machine answer' as the authenticated GET /api/poc response, singular and definite, under the heading 'Reader notes, binding on how this file is read'. The literal 'machine answer' occurs on 1 line of the first-draft packet and 3 times on that line, all inside Q6's row.",
+      "m5_q1": "read read-only in m5wt at ba9ca61: 'Does GET /api/poc/briefing, a new machine-credentialed route, need a spec delta before it may be built, and if so to which spec?' - register row P-72.",
+      "inputs_digest_preimage": "packages/three-surface-poc-core/src/model.ts lines 381-389 quoted whole and its keys counted: repoRoot, repositoryRevision, observerRevision, artifacts, mappingDigest - five keys, four named inputs plus one derived digest.",
+      "governance_corpus_both_ways": "re-derived twice this session with git ls-files. At commit 5c5ed0e: 606 four-extension files under decisions/, contracts/ and docs/evidence/; 641 tracked under docs/evidence/ and .syzygy/governance/; 625 four-extension over those two trees; 23 naming at least one of the five implementation paths, per file 5/5/20/4/2. Over the same trees with this packet's own evidence record excluded: 605 / 640 / 624 / 22 and 4/4/19/3/1, which are the first draft's figures exactly. The 0-citer result is unchanged at 5c5ed0e.",
+      "literal_sweeps": "Python re over all 1008 lines of the three-surface spec: the alternation self-link|sibling route|endpoint list|endpoint map, case-insensitive, returns 0 lines; the literal 'links' returns exactly 2, lines 904 and 913.",
+      "predicate_B": "recomputed over all nine sibling Gate 3 sections at the heads this record names; reproduces the table exactly (0/4/1/5/3/1/2/5/3; routes.ts 6, polaris.ts 5, model.ts 5, project-shape-model.ts 3). 7 of M10's 9 candidate files are named by at least one sibling and 2 by none - polaris-narrative.ts and server.ts. Under a wider predicate admitting a bare basename, lane B's Gate 3 names polaris-narrative.ts, so it is 8 and 1 with only server.ts unclaimed. Both stated in the packet with their denominators.",
+      "slice_1_landing": "routes.ts lines 159-162 (machineHandle serves JSON.stringify(model)) and polaris-parity-sweep.test.ts lines 5-7 (the production comment the independent oracle rests on) read at source; PocModel is the interface at model.ts lines 98-155; the improvement-cycles direction's line 50 reads 'WIP one for POC shared-model changes'.",
+      "m9_mutant_c": "M9's packet read read-only at 65de02b: slice 6(b) at its lines 920-925, the rule-6 mutant block at 927-932, mutant (c) at 929-932.",
+      "direction_spans": "the cycle definition spans lines 34-35 and the report sentence lines 41-42 of THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md; line 36 was already correct.",
+      "pwb_req_020_end": "the requirement sentence continues ', preserving multiplicity and exact provenance state.' and ends on PWB spec line 910.",
+      "word_count": "'the final encoded HTTP body for each Polaris HTML response' is ten words; the machine twin at registry line 280 is twelve.",
+      "compression_arithmetic": "2132656 * 0.072 = 153551.2; 2097152 / 153551.2 = 13.66, so roughly 14 times inside the ceiling.",
+      "lane_b_diff": "git diff --name-only a9f671e 4090f98 lists 22 paths, including PROJECT-STATUS.md and .syzygy/governance/contracts/candidates/ACCEPTANCE-PHRASE-REGISTRY.yaml.",
+      "dossier_locators": "grep -F this session: both strings occur 0 times in docs/pursuits/2026-09-13-vision-pursuit.md; '18 top-level keys' is at .agents[5].findings[0].evidence[2] of the -data.json (and inside .agents[5].markdown_report) and at .agents['S6-machine-parity'].findings[0].evidence[2] of the -harvest.json; the slice-plan sentence is at .agents[5].moves[0].slice_plan[0] and .agents['S6-machine-parity'].moves[0].slice_plan[0].",
+      "non_fence_lines": "the first draft splits into 1405 segments, 1404 lines with the trailing empty segment dropped, of which 1327 are non-fence; 1328 counts the trailing boundary.",
+      "register_recount": "git show a9f671e:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md, predicate ^| P-, partitioned by the ## section each row falls under: 26 rows, 21 open and 5 acceptance-act. With P-77 this branch carries 22 open and 5 acceptance-act, 27 in all."
+    },
+    "dispositions": {
+      "F1": "CONFIRMED, blocking. Spec lines 25-26 quoted in Gate 5's slice-3 paragraph with the statement that this packet does not settle whether a third machine-credentialed route is inside that definition; collision 1's 'the ordering is free / No duplication' superseded in place by the coupling to P-72's Q1; Gate 3's act row and Gate 4's slice 3 carry it; Q3's default is stated to cover the unruled route question and names P-72. No seventh question added; M5's question not re-asked; Q3's recommended answer did not change.",
+      "F2": "CONFIRMED. Both sites now read 'four named inputs plus one derived digest (five keys)', superseded counts marked in place.",
+      "F3": "CONFIRMED in every figure, and both denominators are now stated with their commits at every site. The 0-citer result stands.",
+      "F4": "CONFIRMED. The passage is restated as two sweeps with their predicates named: the alternation 0, the literal 'links' 2 at lines 904 and 913. Mirrored here by corrected sibling keys; the original 2 is kept unedited.",
+      "F5": "CONFIRMED. Both sites restated as 7 of 9 under predicate B with its denominator, plus the wider basename predicate's 8 and 1; the zero/all sentence is superseded in place.",
+      "F6": "CONFIRMED and DECIDED: the field lands on PocModel. model.ts added to Gate 3's slice-1 row; Gate 4's slice 1 states the choice, quotes the direction's line 50 WIP-one constraint and puts slice 1 in the shared-model queue beside slice 2; the sequencing paragraph carries it; M8's Q7 and M9's Q6 are named and neither is re-asked. No collision figure moves - model.ts was already in M10's nine-file surface. Implementation (2) is declined, so the parity sweep's production comment stays true and owes no edit.",
+      "F7": "CONFIRMED with the span corrected: M9's rule-6 mutant block is at its packet lines 927-932 and mutant (c) at 929-932. Named in Q5's row and in collision 3. Q5's recommended answer did not change.",
+      "F8": "CONFIRMED. Spans corrected to 34-35 and 41-42.",
+      "F9": "CONFIRMED. The elision is marked and the continuation given to line 910.",
+      "F10": "CONFIRMED. Ten words, corrected at all three sites.",
+      "F11": "CONFIRMED. Restated as roughly 14 times inside the ceiling, with the arithmetic shown, consistent with Q2.",
+      "F12": "CONFIRMED. PROJECT-STATUS.md and the phrase-registry YAML added to the enumeration; the planning-only claim is unchanged.",
+      "F13": "CONFIRMED. Both locators added as file plus jq path, for the data record and its harvest twin, with the 0 occurrences in the .md stated. The dossier is not edited.",
+      "F14": "CONFIRMED. 1,327 with the trailing-boundary convention stated at the site."
+    },
+    "recommended_answers_changed": [
+      "NONE. Q3 still recommends serving the schema document machine-credentialed; what changed is that one more gate is named beside it (M5's Q1 at P-72) and Q3's default covers it. Q5 still recommends a sibling join key sequenced behind M9; F7 names M9's mutant (c) so the owner can see arm three is M9's existing answer. Q6 is untouched by every finding.",
+      "Q1, Q2 and Q4 unchanged. No default-if-unanswered moved, and no seventh question was added."
+    ],
+    "register_row": "P-77, added on branch agent/syzygy-dov.10 in this pass",
+    "packet_measured_after_review1": {
+      "bytes": 135823,
+      "sha256": "c609b08666bb6907953637a3587f3294a34586ec15b69085677f646b65c6953b",
+      "total_lines": 1682,
+      "non_fence_lines": 1605,
+      "over_78": 11,
+      "predicate": "total_lines: split on newline with the trailing empty segment dropped. non_fence_lines: the same, excluding fence lines and fenced content. over_78: lines outside fenced blocks whose first non-space character is not a pipe, length > 78; denominator all total_lines. Computed last of all in this pass, after every packet edit, and iterated to a fixed point because the packet states the figure."
+    }
+  }
 }
