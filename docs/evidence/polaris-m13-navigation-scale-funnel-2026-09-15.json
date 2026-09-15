@@ -1,7 +1,7 @@
 {
  "kind": "polaris-m13-navigation-scale-funnel",
  "version": 1,
- "status": "candidate; binds nothing; planning only; no independent review yet",
+ "status": "candidate; binds nothing; planning only; one independent fresh-context review applied 2026-09-15 - review 1, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 6 non-blocking, 5 editorial, F1-F11), retained verbatim at docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md; all eleven exceptions re-derived against source and applied; at the owner gate, registered as P-80 on branch agent/syzygy-dov.13, with the eleven exception repairs uncovered until a second independent fresh-context review confirms them [superseded 2026-09-15: \"no independent review yet\"]",
  "date": "2026-09-15",
  "bead": "syzygy-dov.13",
  "move": "M13 \u2014 Navigation at population scale",
@@ -55,7 +55,7 @@
    "polaris-7478.html": {
     "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/capture/polaris-7478.html",
     "bytes_on_disk": 2090025,
-    "note": "the capture the dossier audited. The inherited posture file states 2,087,400 bytes for this file; the file on disk is 2,090,025. The 2,090,025 figure is the one used here and is the denominator for every pre-trim row."
+    "note": "the capture the dossier audited. The inherited posture file states 2,087,400 bytes for this file; the file on disk is 2,090,025. The 2,090,025 figure is the one used here and is the denominator for every pre-trim row.", "note_2026-09-15_review1": "F4's corollary, re-derived this session: 2,087,400 is that same file's CHARACTER count, to the byte - len(h) is 2087400 and len(h.encode()) is 2090025 - so the discrepancy is diagnosed and retired rather than carried as unexplained. Same character-for-byte slip as the four offsets F4 corrects."
    }
   },
   "daemon": "none started this session; the loopback daemon on port 7478 was never contacted"
@@ -86,6 +86,7 @@
      ],
      "dossier_said": "polaris.ts:1530"
     },
+    "exactTextLink_call_sites_in_polaris_ts_2026-09-15_review1": "review 1's F10: 4 call sites in polaris.ts - lines 533, 552, 836 and 1081 - over 5 lines including the helper's own definition at 377. The array below keeps its original five values unedited.",
     "exactTextLink_call_sites_in_polaris_ts": [
      377,
      533,
@@ -150,7 +151,7 @@
    "note": "the two host forms of the post-trim capture agree on every row; the tailnet form is 5,850 bytes larger from the mount prefix on internal links"
   },
   "headings": {
-   "expression": "apps/three-surface-poc/src/polaris-markdown.ts:157 \u2014 const level = Math.min(6, heading[1]!.length + 3);",
+   "expression": "apps/three-surface-poc/src/polaris-markdown.ts:157 \u2014 const level = Math.min(6, heading[1]!.length + 3);", "expression_2026-09-15_review1": "corrected under review 1's F1: the expression is line 159, not 157; line 157 is the heading regex and line 156 a closing brace, and the quoted block is lines 158-162. The original value above is unedited.",
    "total_headings_post_trim": 80,
    "adjacent_pair_skips_post_trim": {
     "count": 3,
@@ -170,8 +171,8 @@
     ]
    },
    "named_h3_to_h6_skip": {
-    "h3": "polaris-account-v1-scope 'V1 scope' at byte 88024",
-    "h6": "'Core Infrastructure' at byte 88501",
+    "h3": "polaris-account-v1-scope 'V1 scope' at byte 88024", "h3_utf8_byte_offset_2026-09-15_review1": 88131,
+    "h6": "'Core Infrastructure' at byte 88501", "h6_utf8_byte_offset_2026-09-15_review1": 88608, "offsets_note_2026-09-15_review1": "review 1's F4: the two values above are CHARACTER indices on the post-trim capture, against this packet's stated convention that a byte count is the UTF-8 length. The UTF-8 byte offsets are the two sibling keys. Original values unedited.",
     "intervening_h4_or_h5": 0
    },
    "h6_by_preceding_level": {
@@ -224,11 +225,11 @@
   },
   "tab_stops_before_catalog_h2": {
    "cut_post_trim": {
-    "byte": 281945,
+    "byte": 281945, "byte_utf8_2026-09-15_review1": 282383,
     "line": 1031
    },
    "cut_pre_trim": {
-    "byte": 912381,
+    "byte": 912381, "byte_utf8_2026-09-15_review1": 912823, "cut_offsets_note_2026-09-15_review1": "review 1's F4: both 'byte' values in this block are CHARACTER indices; the UTF-8 byte offsets are the sibling keys. The two line numbers are unchanged and were right. The pre-trim pair was inherited verbatim from the dossier's F3, which made the same slip. Original values unedited.",
     "line": 1039
    },
    "predicate_dossier": "every '<a href' + every '<details><summary>' + every 'tabindex=\"0\"' before the cut, document order",
@@ -373,7 +374,7 @@
     "keeps that button's aria-expanded in sync on toggle",
     "sets aria-current=\"location\" on the matching drawer link on scroll"
    ],
-   "without_it": "every fact, link and disclosure remains present and operable; exactly two affordances stop working \u2014 the drawer no longer opens itself on a wide screen, and the expand-all button becomes an inert control; no region renders empty",
+   "without_it": "every fact, link and disclosure remains present and operable; exactly two affordances stop working \u2014 the drawer no longer opens itself on a wide screen, and the expand-all button becomes an inert control; no region renders empty", "without_it_2026-09-15_review1": "corrected under review 1's F5: THREE affordances stop working. The third is the hash-driven guide opening at polaris.ts 1243-1258 - on click, on hashchange and at DOMContentLoaded - so without script a reader who follows any #polaris-guide- link lands on a guide whose own disclosure is still closed and must find and operate its summary; the post-trim capture carries 0 <details open> and 10 href=\"#polaris-guide- occurrences, all ten inside <nav class=\"depth-nav\">. A fourth behaviour, the aria-current=location update on scroll, is also lost but is a cue rather than an affordance. The conclusion is unchanged: nothing becomes unreachable, no region renders empty, POC-REQ-022's bar is still met. Original value unedited.",
    "constraint_sweep": {
     "pattern": "case-insensitive script|javascript|progressive|without javascript",
     "three-surface-poc-experience": {
@@ -391,7 +392,7 @@
      "hits_note": "v1.md:108 'sample-script' and vision.md:90 'progressively disclose' \u2014 neither about client-side scripting"
     },
     "decisions": {
-     "files": 67,
+     "files": 67, "files_2026-09-15_review1": 73, "predicate_2026-09-15_review1": "review 1's F9: 67 is the count of TOP-LEVEL tracked files in .syzygy/governance/decisions; the whole tree holds 73, the six extra being under decisions/launch-gate/, excluded here with no predicate stated. Re-run case-insensitively over all 73 with the Python re pattern \\b(?:script|javascript|progressive\\w*)\\b: 9 matching lines (7 over the 67 alone), all nine read, 0 of them constraining Polaris's own client-side scripting - two digest-generation sentences, a script --flag shell lesson, a round-name-in-a-script lesson, a rule-stated-only-in-a-script lesson, a progressive-disclosure history row, a progressively-disclosing surface sentence and two HISTORY notes. The conclusion below is unchanged; the original value is unedited.", "matching_lines_over_73_2026-09-15_review1": 9,
      "constraining_sentences": 0
     }
    }
@@ -597,7 +598,7 @@
   "tbody_literal": {
    "guardrail": "a hoisted attribute drops the family to a human count of 0",
    "sites": "apps/three-surface-poc/src/polaris-parity-sweep.test.ts:494 uses the bare literal '<tbody>' and '<ul class=\"item-list\"'; apps/three-surface-poc/src/polaris-reachability.test.ts:368 asserts region.inner.startsWith('<table>')",
-   "hoist_point": "tableRegion (polaris.ts:158-160) takes an attrs parameter on the region div; polaris.ts:1014 already passes ' data-source-index' through it"
+   "hoist_point": "tableRegion (polaris.ts:158-160) takes an attrs parameter on the region div; polaris.ts:1014 already passes ' data-source-index' through it", "hoist_point_2026-09-15_review1": "corrected under review 1's F10: tableRegion is polaris.ts 159-161; line 158 is the last line of its doc comment. Original value unedited.", "class_population_detector_2026-09-15_review1": "review 1's F3: polaris-parity-sweep.test.ts line 494 reads in full - if (section.inner.includes('<tbody>') || section.inner.includes('<ul class=\"item-list\"')) classesWithTables.push(section.value); - so the detector keys off the compact-list literal as well as <tbody>. The packet had quoted only the first disjunct, with no elision mark (verification rule 8). Slice 5 now carries the same AGENTS.md line 296 guardrail and a fifth rule-6 mutant over the detector. Negative check reproduced: 0 of the 409 data-polaris-item elements on the post-trim capture carries an id, so none is an href=# target and arm (a)'s nested disclosure trips no fragment-target guardrail."
   },
   "copy_oracle_substring": {
    "predicate": "polaris-copy.test.ts:308 \u2014 entry.text === row.text || entry.text.startsWith(row.text) || entry.text.includes(row.text)",
@@ -898,7 +899,7 @@
    "apps/three-surface-poc/src/polaris.ts",
    "apps/three-surface-poc/src/polaris-first-reading.test.ts"
   ],
-  "that_record": "docs/evidence/polaris-manifesto-example-mutation-2026-09-09.json (names them as mutation targets, not as bound bytes)",
+  "that_record": "docs/evidence/polaris-manifesto-example-mutation-2026-09-09.json (names them as mutation targets, not as bound bytes)", "evidence_record_paths_2026-09-15_review1": {"correction": "review 1's F2. The two figures above are the sweep over the 66 manifest-named files only - a population the packet never stated - and the single match there is caught because 'manifest' is a substring of 'manifesto': that file is a mutation record, not a manifest. The original values are unedited.", "population": "the 96 tracked files under docs/evidence/ at a9f671e, four of them PNGs that decode as no text", "predicate": "Python 'in' test for the literal apps/three-surface-poc/src/<basename> for each of the 15 surface files", "surface_files_appearing": 13, "distinct_records": 20, "per_file": {"polaris.ts": 18, "polaris-project-shape.test.ts": 9, "polaris-copy.ts": 4, "polaris-copy.test.ts": 4, "polaris-first-reading.test.ts": 4, "polaris-source.ts": 3, "polaris-accessibility.browser.test.ts": 3, "polaris-reachability.test.ts": 3, "polaris-markdown.test.ts": 2, "polaris-markdown.ts": 1, "polaris-reading.ts": 1, "design-tokens.ts": 1, "page-shell.ts": 1, "polaris-reading-plan.ts": 0, "polaris-accessibility.ts": 0}, "must_be_re_run_names_a_surface_file_at_a_mutation_target_key": ["docs/evidence/polaris-editorial-mutations-2026-09-09.json", "docs/evidence/polaris-manifesto-example-mutation-2026-09-09.json", "docs/evidence/pwb-c6-polaris-parity-mutation-run-2026-09-05.json", "docs/evidence/pwb-c7-fresh-demo-readiness-mutation-run-2026-09-05.json", "docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json", "docs/evidence/pwb-p3-5-tuple-mutation-run-2026-09-04.json", "docs/evidence/pwb-p3-6-narrative-mutation-run-2026-09-04.json", "docs/evidence/pwb-p3-7-bands-mutation-run-2026-09-04.json", "docs/evidence/pwb-p3-8-reachability-mutation-run-2026-09-04.json", "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04-parity-markers.json", "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04.json", "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-06-parity-markers.json", "docs/evidence/pwb-p4-4-accessibility-mutation-run-2026-09-04.json", "docs/evidence/pwb-recon-gen2-gate-mutation-run-2026-09-06.json", "docs/evidence/pwb-recon-gen2-reviewer-mutation-run-2026-09-06.json"], "mutation_target_keys_seen": ["mutants[].file", "mutants.mutants[].file", "mutations[].file", "mutations[].subject", "results[].file", "groups[].mutations[].file", "subject"], "target_files_named_across_those_15": {"polaris.ts": 15, "polaris-copy.ts": 2, "polaris-markdown.ts": 1, "polaris-reading.ts": 1, "polaris-source.ts": 1, "design-tokens.ts": 1, "page-shell.ts": 1}, "must_be_re_anchored_names_a_surface_file_only_as_a_test_file_code_seam_implementation_path_trim_input_or_digest_key": ["docs/evidence/polaris-generator-host-overlap-2026-09-12.json", "docs/evidence/polaris-pipeline-synthetic-verification-2026-09-13.json", "docs/evidence/polaris-source-index-reading-2026-09-09.json", "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-09-named-absent-file-dropped.json", "docs/evidence/pwb-p63-polaris-trim-measurement-2026-09-07.json"], "digest_key_note": "pwb-p4-2-mutation-sweep-2026-09-09-named-absent-file-dropped.json carries apps/three-surface-poc/src/polaris.ts and apps/three-surface-poc/src/polaris-copy.ts as KEYS of its sourceDigestsBefore and sourceDigestsAfter maps, so it stores a digest of two surface files. No digest value is reproduced here.", "acts_unaffected": "none of the 20 is an act manifest, so the act claim in this block is untouched", "unknown": "[Unknown] whether any of the 15 mutation runs would still kill after a slice lands; no suite was run this session"},
   "current_digest_citers": {
    "apps/three-surface-poc/src/polaris-reading.ts": [
     "docs/reviews/R-POLARIS-VISIBLE-DIAGRAMS-FIDELITY-2026-09-10-RAW.md",
@@ -993,7 +994,7 @@
   {
    "figure": "polaris.ts depthNav range",
    "dossier": "1510-1538",
-   "at_a9f671e": "1529-1556; sidebar call at 1629"
+   "at_a9f671e": "1529-1556; sidebar call at 1629", "at_a9f671e_2026-09-15_review1": "corrected under review 1's F10: depthNav runs 1529-1558 - 1556 is the last content line of the template, 1557 closes the <nav> and 1558 closes the function. The sidebar call at 1629 is unchanged. Original value unedited."
   },
   {
    "figure": "polaris-copy.ts label lines",
@@ -1003,7 +1004,7 @@
   {
    "figure": "polaris-markdown.ts heading expression",
    "dossier": "157-160",
-   "at_a9f671e": "157-160 \u2014 unchanged"
+   "at_a9f671e": "157-160 \u2014 unchanged", "at_a9f671e_2026-09-15_review1": "corrected under review 1's F1: dossier 157-160 -> 158-162 at a9f671e, the expression at line 159. This is the one row of this list whose re-derivation did not happen: the packet published the dossier's anchor as 'unchanged' when it was wrong in both files. Original value unedited."
   },
   {
    "figure": "pre-trim capture size",
@@ -1079,10 +1080,12 @@
  "conventions_checked": {
   "non_fence_lines": 1209,
   "odd_backtick_lines": 0,
-  "over_78_column_lines_outside_fences_tables_quotes_headings": 20,
-  "over_78_note": "each is a single unbreakable code span or quoted literal",
-  "distinct_code_spans": 232,
-  "non_resolving_slash_bearing_spans": 15,
+  "over_78_column_lines_outside_fences_tables_quotes_headings": 20, "over_78_column_lines_after_review1_2026-09-15": 19,
+  "over_78_note": "each is a single unbreakable code span or quoted literal", "over_78_note_2026-09-15_review1": "review 1's F8: the count 20 was exact at 97b37ee and the characterisation was not - line 1166 was ordinary prose at 90 columns carrying no code span, and line 1016 was prose plus a short span. Both are rewrapped. After every edit of this pass the count is the sibling key above, re-derived last of all under the predicate: lines outside fenced code blocks whose first non-space character is not |, > or #, longer than 78 columns, denominator every line of the file. Each of them is a single unbreakable code span or quoted literal; the two review 1 named as reflowable are rewrapped. Original values unedited.",
+  "distinct_code_spans": 232, "distinct_code_spans_after_review1_2026-09-15": 304,
+  "non_resolving_slash_bearing_spans": 15, "non_resolving_slash_bearing_spans_after_review1_2026-09-15": 20,
+  "non_resolving_list_after_review1_2026-09-15": [".syzygy/**", ".syzygy/local/", "/^ {0,3}(#{1,6}) +(.+?)(?: +#+)? *$/", "/polaris/source?identity=...", "</details>", "<a …>Exact text</a>", "<details class=\"source-record\"><summary …>Source record</summary>", "<h${level}>${inline(heading[2]!)}</h${level}>", "<h1>/<h2>/<h3>", "<h4>/<h5>/<h6>", "<summary…>Source record</summary>", "<td></td>", "agent/syzygy-dov.13", "apps/**", "apps/three-surface-poc/src/<basename>", "decisions/", "decisions/launch-gate/", "openspec/**", "packages/**", "python3 scripts/check_governance.py"],
+  "span_predicate_2026-09-15": "every backticked span in the file, fenced blocks included, deduplicated; resolves means os.path.exists from the worktree root. The predicate reproduces 232 and 15 exactly at 97b37ee. Original values unedited.",
   "non_resolving_list": [
    ".syzygy/**",
    ".syzygy/local/",
@@ -1104,9 +1107,10 @@
   "act_arguments_or_digests_reproduced": 0
  },
  "independent_review": {
-  "count": 0,
-  "raws": [],
-  "note": "first draft; every figure here is uncovered until a fresh-context review confirms it (verification rule 10)"
+  "count": 1,
+  "raws": ["docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md"],
+  "verdicts": ["CONFIRM WITH EXCEPTIONS"],
+  "note": "Review 1 landed 2026-09-15, verdict copied exactly CONFIRM WITH EXCEPTIONS (0 blocking, 6 non-blocking, 5 editorial, F1-F11), retained verbatim at the raw path above and never overwritten; see the review1 block at the end of this record. Verification rule 10: review 1 binds the bytes it names at 97b37ee and not these, so its eleven exception repairs are uncovered until a second fresh-context review confirms them, and that review's raw would be a second -RAW.md file, never an overwrite. [Superseded 2026-09-15: count 0, raws [], 'first draft; every figure here is uncovered until a fresh-context review confirms it (verification rule 10)'.]"
  },
  "governance_check": {
   "command": "python3 scripts/check_governance.py",
@@ -1118,8 +1122,58 @@
   "docs/design/POLARIS-M13-NAVIGATION-SCALE-FUNNEL.md": 97146
  },
  "file_digests_sha256": {
+  "note_2026-09-15_review1": "the packet digest below is the FIRST-DRAFT value, and it is the value review 1 was bound to at 97b37ee (verification rule 10). It is kept unedited for that reason. The packet's bytes after this pass are review1.packet_measured_after_review1.",
   "docs/design/POLARIS-M13-NAVIGATION-SCALE-FUNNEL.md": "5171385698b7d29f1b8ca0b1bfeda3729c888f75c07c965ebdf8765e01c8d507",
   "docs/evidence/polaris-m13-navigation-scale-funnel-2026-09-15.json": "computed after this file was written; reported in the drafter's report, not stored here (a file cannot contain its own digest)"
  },
- "git_status_at_finish": "only these two files, both untracked"
+ "git_status_at_finish": "only these two files, both untracked",
+ "review1": {
+  "raw_path": "docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md",
+  "raw_bytes": 33333,
+  "raw_sha256": "b20d823a28ae3e90cba686e4ac5a77f5da0c6a45711ab254e76cbb9551cddc31",
+  "raw_digest_method": "wc -c and sha256sum this session; neither value transcribed",
+  "verdict": "CONFIRM WITH EXCEPTIONS - 0 blocking, 6 non-blocking, 5 editorial",
+  "counts": {"blocking": 0, "non_blocking": 6, "editorial": 5, "total": 11},
+  "reviewed_commit": "97b37ee",
+  "reviewed_files_at_that_commit": {
+   "docs/design/POLARIS-M13-NAVIGATION-SCALE-FUNNEL.md": {"bytes": 97146, "sha256": "5171385698b7d29f1b8ca0b1bfeda3729c888f75c07c965ebdf8765e01c8d507"},
+   "docs/evidence/polaris-m13-navigation-scale-funnel-2026-09-15.json": {"bytes": 39197, "sha256": "1a47e98419447353d01cd75fd974aacc9c7cb8f0989e9745cf72065aca901f9c"}
+  },
+  "method": "git show 97b37ee:<path> piped to wc -c and sha256sum, this session; both match the raw's own table",
+  "repairs_applied_this_session": true,
+  "five_question_table_as_the_raw_states_it": "All five scopes truthful, with Q3 'Overstated on framing - see F11' and the rest exact; all five genuine hard human gates, Q3 called the weakest of the five and legitimate and Q1 the central one; every recommendation follows from its evidence; every lawful arm named, none called unlawful, every default lawful - with one note against Q1, that under F6 arm (c) may have more requirement cover than the packet allows. No owner trade-off is smoothed into consensus language anywhere in the five, and Q1's counter-argument is explicitly ranked above its own recommendation.",
+  "decisions_taken_not_asked_verdict_as_the_raw_states_it": "Each of the four is a delegate's to make and no owner question is hidden in them: the prerequisite correction escalates slice 5 rather than deciding it; the heading-normalization sweep re-derives exactly (0 over the 7 POC files, 0 over the 6 doctrine files, 16 over the 15 PWB files, all sixteen read and all sixteen about the Butlers source grammar); the three dossier corrections are measurement corrections and the dossier is not edited; and 'no command palette' is disclosed, reasoned, reversible and routed to Q1's arm (b) to overrule.",
+  "measurements_verdict_as_the_raw_states_it": "Every population row, every capture row, every act and contract quotation, every requirement-and-scenario anchor, the whole 13-row collision table including its B-only column, the register sweep and the 913/66 digest-binding denominators re-derive exactly; the exceptions are F1, F2, F4, F8 and F10. The raw also ran the branch-diff collision predicate the packet could not and found every one of the twelve sibling branches changing 0 files under apps/ or packages/, so today's file-level collision is empty and the packet's table measures prospective collision, which it labels correctly.",
+  "recommended_answers_changed": "None. The raw's Q1-Q5 table answers 'Recommendation follows from the evidence?' Yes for all five, and no finding moves an arm, a recommendation or a default. Q1 keeps progressive enhancement over the native disclosure, keeps all three lawful arms (no script / progressive enhancement / server-side paging by route) and keeps its default that no filter and no pagination ships; F9 corrected the denominator and predicate inside its evidence half and F6 strengthened arm (c)'s requirement cover without choosing it. Q3 keeps 'an engineering decision inside the existing act, not an RFC2-26 consequence of RFC-0002', keeps its CC-REV-2 second arm and keeps its default that slice 1 ships the suffix form; F11 repaired only the opening sentence's framing. Q2, Q4 and Q5 are untouched by any finding.",
+  "findings_with_a_defect_of_their_own": {"F1": "The raw locates the wrong anchor at 'packet lines 654 and 666, line 157 twice, including mutant (a)'. At 97b37ee the packet carries 'line 157' once in slice 2, and mutant (a) quotes the expression rather than a line number, so five sites were repaired and not six. The defect F1 reports is real and is applied in full."},
+  "raw_citation_note": "Many of the raw's :NNN references into the packet resolve exactly at 97b37ee (:43, :45, :123-131, :172, :232, :494, :658, :1174-1177) and others are low by two to twelve lines: :271 is line 280, :283 is 293-294, :351 is 332, :364 is 354, :407-414 is 405-413, :545 is 533, :694-700 is 693-702, :703 is 701. Every finding was located by its quoted content rather than by its line number, and every quotation the raw reproduces was found where its content says.",
+  "unknowns": "Review 1 records no [Unknown] of its own against any finding. This pass adds one: whether any of the 15 mutation runs that name a surface file at a mutation-target key would still kill after a slice lands is [Unknown] - no suite was run this session. The packet's four original [Unknown]s are unchanged.",
+  "dispositions": {
+   "F1": "CONFIRMED and applied (non-blocking), site list partly corrected. Read at source: the quoted block is polaris-markdown.ts 158-162, line 156 a closing brace, line 157 the heading regex, the expression line 159. Applied at Gate 1's motif paragraph, Measurement 3's quotation, Gate 3's topology row, slice 2's 'The change' sentence and the funnel summary; the raw's sixth site does not exist at 97b37ee. The record's dossier-difference row keeps its original at_a9f671e value and gains a dated sibling key.",
+   "F2": "CONFIRMED and applied (non-blocking), every figure. 913 tracked files under the four prefixes at a9f671e, 66 whose path contains 'manifest' case-insensitively, 0 of the 15 surface files as a digest row of any of them - the act claim stands. Over the 96 tracked files under docs/evidence/, 13 of 15 appear as the literal path apps/three-surface-poc/src/<basename> in 20 distinct records; polaris.ts in 18. The single match behind the published 2 is caught because 'manifest' is a substring of 'manifesto'. Applied in Gate 0(b), Gate 6 item 7 and the funnel summary, and mirrored here by dated sibling keys, with the new partition of the 20 into 15 to re-run and 5 to re-anchor.",
+   "F3": "CONFIRMED and applied (non-blocking). polaris-parity-sweep.test.ts line 494's second disjunct is section.inner.includes('<ul class=\"item-list\"'), exactly as the raw quotes it. The whole line is now quoted in a fence in slice 3 with the superseded half-quotation marked; AGENTS.md line 296 at a9f671e is confirmed and quoted at the clause; slice 5 gains the same guardrail paragraph and a fifth rule-6 mutant over the class-population detector. The raw's negative check reproduces: 0 of 409 data-polaris-item elements carries an id.",
+   "F4": "CONFIRMED and applied (non-blocking), all four offsets recomputed in UTF-8 bytes on each capture: 912823 / 282383 / 88131 / 88608 against the published 912381 / 281945 / 88024 / 88501, which are the character indices of the same positions. The two line numbers attached to the cut are unchanged and were right. The corollary reproduces exactly: the pre-trim capture is 2087400 characters and 2090025 UTF-8 bytes, so the inherited posture file's figure is that file's character count to the byte, and the discrepancy is retired.",
+   "F5": "CONFIRMED and applied (non-blocking). SECTION_NAV_SCRIPT lines 1243-1258 open a component guide's <details> when the hash names it, on click, on hashchange and at DOMContentLoaded; the post-trim capture carries 0 <details open> and 10 href=#polaris-guide- occurrences, all ten inside the depth nav. Measurement 6 now says three, names the aria-current scroll update as a fourth behaviour that is a cue rather than an affordance, and keeps the conclusion.",
+   "F6": "CONFIRMED and applied (non-blocking). The literal POC-REQ-030 occurs 0 times in the packet and 0 times in this record at 97b37ee. Read at source: requirement heading at POC spec line 496, requirement text at 500-503, Observable limb at 507, scenario at 518; the two 'paginat' hits are design.md line 25 and spec line 507. A new Gate 5 subsection reads it per slice and says what it does and does not reach for arm (c), as a reading put to the owner and not a ruling. Q1's recommendation, arms and default are unchanged; arm (c)'s standing is strengthened.",
+   "F7": "CONFIRMED and applied (editorial). Over the post-trim capture's 80 heading tags: 0 carry data-parity-field, 0 carry data-claim-id, and 51 carry an id. The 18 markdown-derived headings slice 2 retypes carry no attributes at all (4 h4, 14 h6), which is the true and sufficient claim; the sentence is scoped to them.",
+   "F8": "CONFIRMED and applied (editorial). Reproduced at 97b37ee under the packet's stated exclusions: 20, exactly. Line 1166 is ordinary prose at 90 columns with no code span and line 1016 is prose plus a short span; both rewrapped, the characterisation restated as 'all but one', and the figure re-derived last of all in this pass.",
+   "F9": "CONFIRMED and applied (editorial). The decisions directory holds 67 tracked files at top level and 73 in the whole tree, the six extra under decisions/launch-gate/. Re-run case-insensitively over all 73 with \\b(?:script|javascript|progressive\\w*)\\b: 9 matching lines (7 over the 67 alone), all nine read, 0 constraining Polaris's own scripting. Q1 now states the predicate and the nine; Gate 6 item 3 keeps Q1's filtered form.",
+   "F10": "CONFIRMED and applied (editorial), all three read at source. tableRegion is polaris.ts 159-161; depthNav runs 1529-1558; exactTextLink has 4 call sites over 5 lines. Repaired in slice 3's guardrail paragraph, Gate 1's motif sentence, Measurement 1, Measurement 4, Gate 3's topology row, slice 4 and the funnel summary.",
+   "F11": "CONFIRMED and applied (editorial). PWB-REQ-012 read in full at PWB spec line 679: it closes a set of four roles over owner-visible strings, then imposes a six-word heading limit, a twenty-word lede limit, a six-term prohibited-word list and two cardinalities. It declares no closed set of strings and does not govern POLARIS_COPY, which is polaris-copy.ts line 25 and is implementation. Q3's opening sentence is repaired; its recommendation, second arm and default are unchanged."
+  },
+  "register_row": {
+   "id": "P-80",
+   "file": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+   "branch": "agent/syzygy-dov.13",
+   "recount_predicate": "^| P- partitioned by the ## section each row falls under",
+   "at_a9f671e": {"open": 21, "acceptance_act": 5, "total": 26},
+   "on_this_branch": {"open": 22, "acceptance_act": 5, "total": 27},
+   "siblings": "P-68 through P-79 each live only on their own branch (PRs #35 through #46); none is on the register at a9f671e and this row likewise lives only here"
+  },
+  "rule_10": "Review 1 binds the two digests recorded above at commit 97b37ee, not these bytes. Every edit of this pass was made after it.",
+  "gate": "at the owner gate on review 1's CONFIRM WITH EXCEPTIONS with all eleven exceptions applied - no blocking finding, no recommended answer moved, all five questions found to be genuine hard gates, and no lawful arm called unlawful; P-80 is ready to be ruled",
+  "uncovered_until": "a second independent fresh-context review, for the eleven exception repairs recorded here; all eleven post-date review 1 (verification rule 10). Its raw would be a second -RAW.md file, never an overwrite of the retained one.",
+  "packet_measured_after_review1": {"bytes": 133570, "sha256": "5e808cfe8dfc062c0a49842f708a84258d28be486dc1ddd7227e2775d1afa8ed", "total_lines": 1631, "over_78": 19, "over_78_predicate": "lines outside fenced code blocks whose first non-space character is not |, > or #, longer than 78 columns; denominator every line of the file", "non_fence_lines": 1589, "odd_backtick_non_fence_lines": 0},
+  "validation_after_review1": {"command": "python3 scripts/check_governance.py", "tail_line": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted", "note": "tail line read, not grep -c FAIL (verification rule 4)"}
+ }
 }

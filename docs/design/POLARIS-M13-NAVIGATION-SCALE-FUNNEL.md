@@ -26,7 +26,12 @@ capture is the retained lane A "after" capture, `polaris-direct.html`
 Syzygy `2ef68f5` against Butlers revision `2e3bac97790b4bd8906dcac63eadb5642a0bb1ac`
 and recorded in `docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json`.
 The **pre-trim** capture is the earlier `polaris-7478.html` the dossier
-audited (2,090,025 bytes as it sits on disk). Every figure below names which
+audited (2,090,025 bytes as it sits on disk). The inherited posture file's
+2,087,400 for that same file is its **character** count, to the byte:
+2,087,400 characters, 2,090,025 UTF-8 bytes [Observed, Python `len(h)`
+against `len(h.encode())` this session]. The difference is therefore retired
+rather than carried as unexplained, and it is the same character-for-byte
+slip review 1's F4 found in four offsets below. Every figure below names which
 capture it is measured on and gives that capture's byte count as its
 denominator. No daemon was started this session and the loopback daemon on
 port 7478 was never contacted.
@@ -40,9 +45,9 @@ today.
 
 | # | Question | Recommended |
 |---|---|---|
-| Q1 | **May client-side filtering or pagination be added to Polaris as progressive enhancement, given the page's current one-script posture?** Measured this session: the post-trim capture carries exactly **1** `<script` element, `SECTION_NAV_SCRIPT` (`apps/three-surface-poc/src/polaris.ts` lines 1232–1289); the pre-trim capture carried **2**, the second being the narrative JSON that lane A removed. The page carries **0** `<noscript>` elements; the only `<noscript>` in the app is Orrery's (`apps/three-surface-poc/src/orrery.ts` lines 144–146). Nothing in either specification, in doctrine, or in any decision constrains client-side scripting on Polaris by name: over the 7 files of `openspec/changes/three-surface-poc-experience`, the 15 of `openspec/changes/polaris-project-wide-butlers-model`, the 6 of `.syzygy/governance/doctrine` and the 67 of `.syzygy/governance/decisions`, a case-insensitive sweep for script, javascript, "progressive" and "without JavaScript" returns **0** sentences constraining the page's own scripting in doctrine and **0** in decisions; the specification hits are POC-REQ-021 and POC-REQ-022, quoted in Gate 5. | **Progressive enhancement over the native disclosure, never a script the reader needs** — with the server-rendered complete population always present, which is POC-REQ-022's own bar. **Every lawful arm:** (a) *no script* — a server-rendered "first 20 / all" pair of disclosures, zero new script, zero new state, more bytes; (b) *progressive enhancement over native `<details>`* — the recommended arm, the population always served, a script that only hides; (c) *server-side paging by route* — a `?page=` or `?prefix=` parameter on the Polaris route, no script at all, but it makes the page's identity depend on a query parameter and multiplies the routes PWB-REQ-011's depth sweep must enumerate. **Counter-argument to the recommendation, and it is the strong one:** arm (b) is the only arm that creates *hidden* content, and RFC9-13 — quoted in Gate 2 — says in terms that "A filter that hides entities shows a persistent count of what it hid", so arm (b) buys its convenience with a new invariant the checker must hold. **Default if unanswered: no filter and no pagination ships**; slices 1, 2 and 4 are unaffected, and slice 3 proceeds in its no-script form. |
+| Q1 | **May client-side filtering or pagination be added to Polaris as progressive enhancement, given the page's current one-script posture?** Measured this session: the post-trim capture carries exactly **1** `<script` element, `SECTION_NAV_SCRIPT` (`apps/three-surface-poc/src/polaris.ts` lines 1232–1289); the pre-trim capture carried **2**, the second being the narrative JSON that lane A removed. The page carries **0** `<noscript>` elements; the only `<noscript>` in the app is Orrery's (`apps/three-surface-poc/src/orrery.ts` lines 144–146). Nothing in either specification, in doctrine, or in any decision constrains client-side scripting on Polaris by name: over the 7 files of `openspec/changes/three-surface-poc-experience`, the 15 of `openspec/changes/polaris-project-wide-butlers-model`, the 6 of `.syzygy/governance/doctrine` and the **73** tracked files of `.syzygy/governance/decisions` (**67** at the directory's top level plus the **6** under `decisions/launch-gate/`), a case-insensitive Python `re` sweep for `\b(?:script|javascript|progressive\w*)\b` returns **0** sentences constraining the page's own scripting in doctrine and **0** in decisions — over those 73 files the pattern matches **9** lines (**7** over the 67 top-level files alone), and all nine were read: two digest-generation sentences, a `script --flag` shell lesson, a round-name-in-a-script lesson, a rule-stated-only-in-a-script lesson, a progressive-disclosure history row, a "progressively disclosing" surface sentence and two HISTORY notes — none about Polaris's own client-side scripting [Observed, this session, denominator 73]. [Superseded 2026-09-15 under review 1's F9: "the 67 of `.syzygy/governance/decisions`", which was the top-level count with no predicate stated, and a sweep whose term list was published as "script, javascript, \"progressive\" and \"without JavaScript\"" rather than as a literal pattern.]; the specification hits are POC-REQ-021 and POC-REQ-022, quoted in Gate 5. | **Progressive enhancement over the native disclosure, never a script the reader needs** — with the server-rendered complete population always present, which is POC-REQ-022's own bar. **Every lawful arm:** (a) *no script* — a server-rendered "first 20 / all" pair of disclosures, zero new script, zero new state, more bytes; (b) *progressive enhancement over native `<details>`* — the recommended arm, the population always served, a script that only hides; (c) *server-side paging by route* — a `?page=` or `?prefix=` parameter on the Polaris route, no script at all, but it makes the page's identity depend on a query parameter and multiplies the routes PWB-REQ-011's depth sweep must enumerate. **Counter-argument to the recommendation, and it is the strong one:** arm (b) is the only arm that creates *hidden* content, and RFC9-13 — quoted in Gate 2 — says in terms that "A filter that hides entities shows a persistent count of what it hid", so arm (b) buys its convenience with a new invariant the checker must hold. **Default if unanswered: no filter and no pagination ships**; slices 1, 2 and 4 are unaffected, and slice 3 proceeds in its no-script form. |
 | Q2 | **May the source-record disclosure be re-formed into columns of the table it already sits in — and if a PWB scenario requires the disclosure form, is that re-forming an amendment through CC-REV-2?** The dossier reads the 278 source records as free-standing disclosures to be "collapsed into one filterable, grouped source table". Measured at source: they are **already** rows of a table. `apps/three-surface-poc/src/polaris.ts` line 836 returns one `<tr>` per source, and line 835 builds a `<details class="source-record">` that sits *inside* that row's second cell. So the slice is not "build a table"; it is "hoist four fields out of a disclosure into columns of the table around it". Swept this session: the literal string "details" occurs **0** times across all 7 files of the POC-experience change and all 15 of the PWB change, and no scenario in either specification prescribes a disclosure element for the source record. What the specifications do require is the *content* — PWB-REQ-001's revision-bound source identity, PWB-REQ-003's reason and Unknown denominator, PWB-REQ-007's complete epistemic state — all of which survive the hoist. | **Yes, hoist it; no CC-REV-2 delta is needed, because no scenario names the form.** The disclosure costs a reader one interaction per source to see four fields that fit in three columns, and it costs the page 53,376 bytes of pure scaffolding (Gate 4). **Counter-argument:** PWB-REQ-011's invariant is that "A reader who stops at any level SHALL retain a true, coarser account", and the disclosure *is* a level; flattening it removes a stopping point and puts 278 rows × 4 fields in front of a reader who wanted the path column. That is a comprehension trade-off VIS-1 ranks second, and it is the owner's to weigh, not this packet's. **Second lawful arm:** keep the disclosure, and put only the identity and the outcome in new columns — half the saving, no level removed. **Default if unanswered: the second arm.** |
-| Q3 | **Is interpolating the item identity into the two shared labels a change to rendering vocabulary under RFC2-26, or an engineering decision inside the existing act?** `apps/three-surface-poc/src/polaris-copy.ts` line 129 defines `label.source-record` as the literal 'Source record' and line 134 defines `label.exact-text` as 'Exact text'. On the post-trim capture, **278** `<summary>` elements read literally 'Source record' and **386** links read literally 'Exact text'. Those two strings are rows of the closed copy table PWB-REQ-012 governs, and PWB-REQ-012's oracle is a hand-typed one (`apps/three-surface-poc/src/polaris-copy.test.ts`). Interpolating a subject into them turns two fixed strings into two templates. | **It is an engineering decision inside the existing act, not an RFC2-26 consequence of RFC-0002.** RFC2-26 bars scheduling implementation work for user-observable consequences **of RFC-0002** from that RFC alone; this work is scheduled from PWB-REQ-012 and PWB-REQ-016, both approved OpenSpec requirements with scenarios, and Gate 5 runs the test per slice. **Counter-argument:** PWB-REQ-012 declares a *closed* set of roles and a word-and-term rule over owner-visible strings, and a label that varies per instance is no longer a row of a closed table in the sense the requirement's oracle assumes — an owner who reads "closed" strictly may want the templating ruled rather than inherited. **Second lawful arm:** rule it a vocabulary change and put a CC-REV-2 scenario to PWB-REQ-012 first. **Default if unanswered: slice 1 ships the suffix form** (label first, subject appended), which the existing oracle's own `startsWith` predicate already admits (Gate 6 item 5). |
+| Q3 | **Is interpolating the item identity into the two shared labels a change to rendering vocabulary under RFC2-26, or an engineering decision inside the existing act?** `apps/three-surface-poc/src/polaris-copy.ts` line 129 defines `label.source-record` as the literal 'Source record' and line 134 defines `label.exact-text` as 'Exact text'. On the post-trim capture, **278** `<summary>` elements read literally 'Source record' and **386** links read literally 'Exact text'. Those two strings are rows of `POLARIS_COPY`, Syzygy's own implementation table (`apps/three-surface-poc/src/polaris-copy.ts` line 25) — "the copy table is implementation", as this packet's own act table says in Gate 3. What PWB-REQ-012 closes (PWB specification line 679, read in full this session) is a set of four **roles** over every owner-visible Polaris string — `project-fact`, `epistemic-disclosure`, `action-label`, `scope-instruction` — and it then imposes a six-word limit on headings and a twenty-word limit on entry ledes, a six-term prohibited-word list over heading, lede and notice strings, and two cardinalities. It declares no closed set of *strings* and it does not govern `POLARIS_COPY`. Its oracle is exhausted by a hand-typed sweep (`apps/three-surface-poc/src/polaris-copy.test.ts`). [Superseded 2026-09-15 under review 1's F11: "Those two strings are rows of the closed copy table PWB-REQ-012 governs, and PWB-REQ-012's oracle is a hand-typed one", which conflated the implementation copy table with the requirement's closed role set. Q3's counter-argument below already states the relationship correctly and is unchanged, and the question stands unchanged with it: the hand-typed oracle's reach predicate is what slice 1 leans on.] Interpolating a subject into them turns two fixed strings into two templates. | **It is an engineering decision inside the existing act, not an RFC2-26 consequence of RFC-0002.** RFC2-26 bars scheduling implementation work for user-observable consequences **of RFC-0002** from that RFC alone; this work is scheduled from PWB-REQ-012 and PWB-REQ-016, both approved OpenSpec requirements with scenarios, and Gate 5 runs the test per slice. **Counter-argument:** PWB-REQ-012 declares a *closed* set of roles and a word-and-term rule over owner-visible strings, and a label that varies per instance is no longer a row of a closed table in the sense the requirement's oracle assumes — an owner who reads "closed" strictly may want the templating ruled rather than inherited. **Second lawful arm:** rule it a vocabulary change and put a CC-REV-2 scenario to PWB-REQ-012 first. **Default if unanswered: slice 1 ships the suffix form** (label first, subject appended), which the existing oracle's own `startsWith` predicate already admits (Gate 6 item 5). |
 | Q4 | **Adding any filter introduces personal presentation state the bound contract-coverage matrix records PWB as not having. Does the owner want the filter kept stateless, or the coverage judgment re-opened?** `openspec/changes/polaris-project-wide-butlers-model/contract-coverage-matrix/RFC-0007-0009.md` line 175 carries the row `RFC9-13.c1`, whose applicability cell reads, verbatim: "No camera/filter/bookmark state", and whose verdict is `believed-not-applicable`. That file is one of the eleven rows of the manifest the 2026-09-05 truth-and-readiness act signed (`.syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt`), so it is a bound byte and **may not be edited**. | **Keep the filter stateless — nothing stored, nothing restored, the count of what is hidden rendered beside the control — so the row stays true and RFC9-13's own sentence is satisfied by construction.** A stateless filter has no camera, no bookmark and no saved selection; only a live hidden count. **Counter-argument:** a filter a reader must re-apply on every load is the filter they stop using, and the owner may prefer a remembered prefix, which is exactly the state that row denies. **Second lawful arm:** accept the stateful filter and route the coverage row through CC-REV-2 with a new owner act, since the bound bytes cannot be corrected in place. **Default if unanswered: no filter ships** (the same default as Q1), and the row stays true because nothing changed. |
 | Q5 | **Are slices 3, 4 and 5 presentation-only inside the bounded non-release POC, or do they trip an escalation trigger of the implementation authorization?** `.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md` lines 150–156 read, verbatim: "Stop and return to the owner before proceeding if implementation would need any of: a change to doctrine or an accepted contract; a further amendment to the signed PWB specification beyond the 2026-09-05 package; a change to security, privacy, or retention posture beyond the 2026-09-05 approved secret-classification policy; a change to the constraints or envelope the 2026-09-05 registry entry declares; any observation outside the consented content class or repository; or any scope beyond the signed change." Gate 3 tests each slice against that sentence. | **Slices 1, 2 and 4 trip no trigger on any reading; slices 3 and 5 should be ruled explicitly.** Slices 1, 2 and 4 change only how already-modeled facts are named and indexed: no new read, no new content class, no spec clause needed. Slice 3 removes a disclosure level PWB-REQ-011's depth invariant arguably counts, and slice 5 adds a rendering mode the specification does not describe — both are readings of "any scope beyond the signed change", and this packet does not choose between them. **The two readings, neither chosen here.** (i) The act authorizes implementing the signed change, and a signed change's presentation requirements are satisfied by whatever rendering meets them, so a rendering choice is inside scope [Inferred]. (ii) "Scope beyond the signed change" reaches a rendering mode the specification never contemplated, in which case slices 3 and 5 need a fresh owner direction naming them [Inferred]. **Default if unanswered: slices 1, 2 and 4 proceed; slices 3 and 5 hold.** |
 
@@ -120,15 +125,55 @@ is what the first Tab key actually walks.
 the Specification and Amendment-overlay rows above is a row of the 2026-09-05
 manifest or of the six signed POC-experience artifacts, so **no slice
 proposes editing one**; Q2's and Q3's second arms route through CC-REV-2 and
-a new act rather than through an edit. (b) Swept this session over the 913
-tracked files under `.syzygy/`, `openspec/`, `docs/` and `scripts/`: of the
-15 implementation files in this packet's candidate surface, **0** appear as a
-row of any of the 66 manifest-named files in that population under a digest,
-and **2** appear as a path in one evidence record
+a new act rather than through an edit. (b) Swept this session over the **913**
+tracked files under `.syzygy/`, `openspec/`, `docs/` and `scripts/` at
+`a9f671e`: of the 15 implementation files in this packet's candidate
+surface, **0** appear as a row of any of the **66** files in that population
+whose path contains "manifest" case-insensitively, under a digest. **No
+act-bound byte is proposed for edit**, and that is the load-bearing claim,
+unchanged.
+
+The second clause is corrected here under review 1's F2. Over the **96**
+tracked files under `docs/evidence/` in that same 913-file population,
+**13** of the 15 surface files appear as the literal path
+`apps/three-surface-poc/src/<basename>`, in **20** distinct records:
+`polaris.ts` alone in **18**, `polaris-project-shape.test.ts` in 9,
+`polaris-copy.ts`, `polaris-copy.test.ts` and `polaris-first-reading.test.ts`
+in 4 each, and the two that appear in none are `polaris-reading-plan.ts` and
+`polaris-accessibility.ts` [Observed, Python `in` test over every tracked
+file under `docs/evidence/` at `a9f671e`; denominator 96, four of which are
+PNGs that decode as no text and can carry no path]. [Superseded 2026-09-15
+under review 1's F2: "**2** appear as a path in one evidence record
 (`docs/evidence/polaris-manifesto-example-mutation-2026-09-09.json`, which
 names `apps/three-surface-poc/src/polaris.ts` and
 `apps/three-surface-poc/src/polaris-first-reading.test.ts` as mutation
-targets, not as bound bytes). **No act-bound byte is proposed for edit.**
+targets, not as bound bytes)". That is the figure over the 66
+manifest-named files only, a population this clause never stated; and its
+single match is caught by that predicate because "manifest" is a substring
+of "manifest**o**" — the file is a mutation record, not a manifest. A
+denominator artifact was published as a finding about the world.]
+
+**What an implementing bead owes those 20 records.** **15** of them name a
+surface file at a mutation-target key — `mutants[].file`,
+`mutations[].file`, `results[].file`, `groups[].mutations[].file`,
+`mutations[].subject` or `subject` — beside the mutant's fragment and the
+commit the run used, so a slice that edits that file must **re-run** those
+mutants or record them superseded with the reason: all 15 name `polaris.ts`,
+two name `polaris-copy.ts`, one names `polaris-markdown.ts` and one names
+`polaris-reading.ts`, which are four of the five files slices 1, 2 and 5
+edit. The other **5** name a surface file only as a test file, a code seam,
+an implementation-file path, a trim input or a digest key — and one of those
+five,
+`docs/evidence/pwb-p4-2-mutation-sweep-2026-09-09-named-absent-file-dropped.json`,
+carries `polaris.ts` and `polaris-copy.ts` as keys of its
+`sourceDigestsBefore` and `sourceDigestsAfter` maps, so it stores a digest
+of two surface files. Those five the bead must **re-anchor**: each figure is
+an as-of figure about bytes that have moved. **None of the 20 is an act
+manifest**, so (b)'s act claim above is untouched by any of this [Observed,
+every one of the 20 opened and classified by key this session; the 20 are
+enumerated in the evidence record]. Whether any of the 15 mutation runs
+would still kill after a slice lands is **[Unknown]**: no suite was run this
+session.
 (c) **Two files in the surface are still at bytes a retained review
 confirmed.** `apps/three-surface-poc/src/polaris-reading.ts` and
 `apps/three-surface-poc/src/polaris-reading-plan.ts` hash today to the two
@@ -155,7 +200,7 @@ through a wiring bug but through population: the strings were written and
 verified at fixture scale, where four of them is four.
 
 **The outline indexes 11 of the 39 section headings it is the only index
-for.** `depthNav` (`apps/three-surface-poc/src/polaris.ts` lines 1529–1556)
+for.** `depthNav` (`apps/three-surface-poc/src/polaris.ts` lines 1529–1558)
 emits **33** links: all **7** h2 groups, 4 diagrams, 5 catalog classes, 10
 component-guide chapters, 1 deep dive, 5 evidence anchors and 1 exact-source
 route. The page carries **39** `<h3>` elements, every one of them with an
@@ -169,7 +214,9 @@ post-trim capture carries 1 h1, 7 h2, 39 h3, 19 h4, **0** h5 and 14 h6 —
 80 headings, and h5 never occurs. Of those 80, **18** are markdown-derived
 (emitted by `apps/three-surface-poc/src/polaris-markdown.ts` as a bare
 `<hN>` with no attributes): 4 at h4 and **14** at h6. The cause is one
-expression, `apps/three-surface-poc/src/polaris-markdown.ts` line 157:
+expression, `apps/three-surface-poc/src/polaris-markdown.ts` line 159
+[superseded 2026-09-15 under review 1's F1: "line 157", which is the heading
+regex, not the expression]:
 `const level = Math.min(6, heading[1]!.length + 3);`
 — a source `#` becomes h4, `##` becomes h5, `###` or deeper becomes h6. No
 fragment on this page uses `##`, so h5 never appears, and 14 of 18 land at
@@ -230,9 +277,14 @@ line 835 (the dossier said 818). `label.exact-text` occurs on **3** lines in
 **2** files: its definition, `polaris.ts` line 378 and `polaris.ts` line 1549
 (the dossier said 1530). Line 378 is the body of the shared helper
 `exactTextLink`, whose head at line 377 is `function exactTextLink(identity: string): string {`;
-line 1549 is the per-dive link inside `depthNav`. The helper has **5** call
-sites in `polaris.ts` — its own definition at 377 plus lines 533, 552, 836
-and 1081 — so the dossier's "two sites" is three sites over six references.
+line 1549 is the per-dive link inside `depthNav`. The helper has **4** call
+sites in `polaris.ts` — lines 533, 552, 836 and 1081 — over **5** lines
+including its own definition at 377 [Observed, `grep -n -F exactTextLink`
+this session; superseded 2026-09-15 under review 1's F10: "**5** call sites
+in `polaris.ts` — its own definition at 377 plus lines 533, 552, 836 and
+1081", which counted the definition as a call site. The composition was
+disclosed in the same breath, so this is wording, not a miscount]. So the
+dossier's "two sites" is three sites over six references.
 
 The source-record disclosure is built at `polaris.ts` line 835 and consumed
 at line 836. Line 836's opening is:
@@ -277,8 +329,13 @@ it is 5,850 bytes larger.
 
 ### 3. The heading expression and what it produces
 
-At `a9f671e`, `apps/three-surface-poc/src/polaris-markdown.ts` lines 156–160
-read, in full:
+At `a9f671e`, `apps/three-surface-poc/src/polaris-markdown.ts` lines 158–162
+read, in full [Observed, `sed -n '155,163p'` this session; superseded
+2026-09-15 under review 1's F1: "lines 156–160", the dossier's anchor, which
+this packet published as re-derived and "unchanged" without re-deriving it.
+Line 156 is a closing brace and line 157 is the heading regex
+`/^ {0,3}(#{1,6}) +(.+?)(?: +#+)? *$/`; the expression quoted below is line
+**159**]:
 
 ```
     if (heading) {
@@ -290,8 +347,12 @@ read, in full:
 
 Adjacent-pair skips on the post-trim capture, over all 80 headings in
 document order: **3** — one h2→h4, one **h3→h6**, one h4→h6. The h3→h6 skip
-is `<h3 id="polaris-account-v1-scope">` "V1 scope" (byte 88,024) followed by
-`<h6>` "Core Infrastructure" (byte 88,501). The h4→h6 skip is a bare `<h4>`
+is `<h3 id="polaris-account-v1-scope">` "V1 scope" (byte 88,131) followed by
+`<h6>` "Core Infrastructure" (byte 88,608) [Observed, UTF-8 byte offsets
+recomputed this session; superseded 2026-09-15 under review 1's F4: "byte
+88,024" and "byte 88,501", which are the **character** indices of the same
+two tags and so contradict this packet's own stated convention that a byte
+count is the UTF-8 length]. The h4→h6 skip is a bare `<h4>`
 "From an insight to a digest" followed by `<h6>` "The Butler-as-Daemon
 Model". Of the 14 h6s, **1** follows an h3, **1** follows an h4 and **12**
 follow another h6.
@@ -329,7 +390,11 @@ and line 1629 is the call site:
     sidebar: depthNav(shape, dives) + SECTION_NAV_SCRIPT,
 ```
 
-The dossier cited lines 1510–1538; the function at `a9f671e` runs 1529–1556.
+The dossier cited lines 1510–1538; the function at `a9f671e` runs
+**1529–1558** [Observed, read at source this session: 1556 is the last
+content line of the template, 1557 closes the `<nav>` and 1558 closes the
+function; superseded 2026-09-15 under review 1's F10: "1529–1556", a
+correction right in direction and short by two at the end].
 
 **What it lists.** Four depth levels, named by the copy ids `depth.summary`,
 `depth.catalog`, `depth.detail` and `depth.source`. On the post-trim capture
@@ -351,8 +416,13 @@ published.
 | Dossier's: every `<a href>` + every `<details><summary>` + every `tabindex="0"`, document order, before the cut | 172 + 53 + 3 = **228** | 172 + 52 + 2 = **226** |
 | Focusable in the served markup: the same three classes, excluding anything nested inside a `<details>` with no `open` attribute (a `<summary>` is itself focusable and is counted) | 9 + 53 + 0 = **62** | 9 + 52 + 0 = **61** |
 
-The cut is at byte 912,381 (line 1,039) pre-trim and byte 281,945 (line
-1,031) post-trim. The dossier's 228 is reproduced exactly, addend by addend.
+The cut is at byte 912,823 (line 1,039) pre-trim and byte 282,383 (line
+1,031) post-trim [Observed, UTF-8 byte offsets recomputed this session; the
+two line numbers are unchanged and were right. Superseded 2026-09-15 under
+review 1's F4: "byte 912,381" and "byte 281,945", the **character** indices
+of the same two cuts, the pre-trim pair inherited verbatim from the
+dossier's F3, which made the same slip]. The dossier's 228 is reproduced
+exactly, addend by addend.
 The second row is the number a keyboard reader actually walks with scripting
 off, and it is smaller because 163 of the 172 preceding anchors are inside
 closed disclosures — which is its own finding: those links are unreachable
@@ -404,9 +474,26 @@ on the drawer link whose hash matches the topmost group heading, on scroll.
 
 Without it, **[Observed] from the served markup**: every fact, link and
 disclosure is still present and operable — the drawer opens by its own
-`<summary>`, each guide opens by its own `<summary>` — and exactly two
-affordances stop working: the drawer no longer opens itself on a wide screen,
-and the expand-all button becomes an inert control. The page is therefore
+`<summary>`, each guide opens by its own `<summary>` — and **three**
+affordances stop working: the drawer no longer opens itself on a wide
+screen; the expand-all button becomes an inert control; and a reader who
+follows a `#polaris-guide-…` link lands on a guide whose own disclosure is
+still closed, and must find and operate its summary. The third is
+`SECTION_NAV_SCRIPT`'s hash-driven guide opening (`polaris.ts` lines
+1243–1258: it opens the named guide's `<details>` on click, on `hashchange`
+and at `DOMContentLoaded`), and the **10** `#polaris-guide-…` links the
+outline itself emits are the ten that lose it [Observed, script source read
+at `a9f671e` plus **0** `<details open>` and **10** occurrences of
+`href="#polaris-guide-` on the post-trim capture, all ten inside
+`<nav class="depth-nav">`]. A fourth behaviour is lost as well — the
+`aria-current="location"` update on scroll — but it is a cue rather than an
+affordance. [Superseded 2026-09-15 under review 1's F5: "exactly two
+affordances stop working: the drawer no longer opens itself on a wide
+screen, and the expand-all button becomes an inert control", a
+zero/all-shaped enumeration that undercounts by one in the one measurement
+Q1 rests on.] The conclusion the measurement exists to establish is
+unchanged: nothing becomes unreachable and no region renders empty. The page
+is therefore
 already at POC-REQ-022's bar and already one inert button past it; no region
 renders empty. That is the posture S4-M6 asks this packet to confirm, and it
 is confirmed: **Polaris requires no script to be read, and carries one
@@ -528,9 +615,9 @@ elsewhere in the same row.
 | Slice | Lives in | Governed artifact touched |
 |---|---|---|
 | 1 Labels name their subject | `apps/three-surface-poc/src/polaris-copy.ts` (lines 129 and 134); `apps/three-surface-poc/src/polaris.ts` (lines 377–379, 835, 1549); `apps/three-surface-poc/src/polaris-copy.test.ts`; `apps/three-surface-poc/src/polaris-accessibility.ts` | none |
-| 2 Heading normalization | `apps/three-surface-poc/src/polaris-markdown.ts` (lines 156–160); `apps/three-surface-poc/src/polaris-reading.ts` (line 112); `apps/three-surface-poc/src/polaris-markdown.test.ts` | none |
+| 2 Heading normalization | `apps/three-surface-poc/src/polaris-markdown.ts` (lines 158–162 [superseded 2026-09-15 under review 1's F1: "lines 156–160"]); `apps/three-surface-poc/src/polaris-reading.ts` (line 112); `apps/three-surface-poc/src/polaris-markdown.test.ts` | none |
 | 3 Source record as columns | `apps/three-surface-poc/src/polaris.ts` (lines 823–837, `sourceRow`, and line 1014's header cell list); `apps/three-surface-poc/src/polaris-first-reading.test.ts`; `apps/three-surface-poc/src/polaris-parity-sweep.test.ts` | none |
-| 4 The outline indexes the page | `apps/three-surface-poc/src/polaris.ts` (lines 1529–1556, `depthNav`; line 1319's list styles); `apps/three-surface-poc/src/polaris-accessibility.browser.test.ts`; `apps/three-surface-poc/src/polaris-reachability.test.ts` | none |
+| 4 The outline indexes the page | `apps/three-surface-poc/src/polaris.ts` (lines 1529–1558, `depthNav` [superseded 2026-09-15 under review 1's F10: "lines 1529–1556"]; line 1319's list styles); `apps/three-surface-poc/src/polaris-accessibility.browser.test.ts`; `apps/three-surface-poc/src/polaris-reachability.test.ts` | none |
 | 5 Large populations | `apps/three-surface-poc/src/polaris.ts` (lines 605–606, the class item population); `apps/three-surface-poc/src/polaris-copy.ts` (a new control label and a hidden-count sentence); `apps/three-surface-poc/src/polaris-parity-sweep.test.ts` | none edited — but the bound `RFC9-13.c1` row's standing judgment is at stake, which is Q4 |
 
 Boundaries crossed: none. Every file above is in the implementation plane,
@@ -639,7 +726,8 @@ leaving the text alone and confirm the PWB-REQ-020 parity sweep fails.
 
 ### Slice 2 — A heading one level below the heading above it (small; no act; ordinary engineering)
 
-**The change.** `polaris-markdown.ts` line 157 stops adding a fixed 3 and
+**The change.** `polaris-markdown.ts` line 159 [superseded 2026-09-15 under
+review 1's F1: "line 157"] stops adding a fixed 3 and
 starts mapping relative to the fragment's own shallowest heading and to the
 level of the element that anchors it. Concretely: `renderPolarisMarkdown`
 gains an anchoring level (the level of the heading the fragment is rendered
@@ -656,8 +744,14 @@ in either specification or in doctrine fixes a rendered heading level (the
 sweep and its denominators are in "Decided in this packet" above). The one
 requirement in the neighbourhood, PWB-REQ-012, governs a heading's word count
 and its vocabulary, both unchanged. The change is invisible to every parity
-marker: heading elements carry no `data-parity-field`, no `data-claim-id` and
-no id.
+marker: over the post-trim capture's **80** heading tags, **0** carry
+`data-parity-field` and **0** carry `data-claim-id`, and the **18**
+markdown-derived headings this slice retypes carry no attributes at all
+[Observed, counted this session over all 80 heading tags on the post-trim
+capture]. [Superseded 2026-09-15 under review 1's F7: "heading elements
+carry no `data-parity-field`, no `data-claim-id` and no id" — **51** of the
+80 do carry an id, including the 39 h3s Gate 1 says have one each. The true
+and sufficient claim is the one about the 18.]
 
 **Oracle.** A hand-typed sequence check over the rendered page: extract every
 heading in document order with its level, and assert that no heading's level
@@ -691,15 +785,36 @@ the row keeps its id, its `data-polaris-source`, its claim-block attributes,
 its path cell, its exact-text link, its denominator cell and its claim tuple.
 
 **Two guardrails this slice must hold, both from AGENTS.md.** First, the
-literal `<tbody>`: `apps/three-surface-poc/src/polaris-parity-sweep.test.ts`
-line 494 finds class tables by `section.inner.includes('<tbody>')` and
+class-population detector.
+`apps/three-surface-poc/src/polaris-parity-sweep.test.ts` line 494 reads, in
+full:
+
+```
+    if (section.inner.includes('<tbody>') || section.inner.includes('<ul class="item-list"')) classesWithTables.push(section.value);
+```
+
+[Observed, read at source this session. Superseded 2026-09-15 under review
+1's F3: "line 494 finds class tables by `section.inner.includes('<tbody>')`",
+which dropped the second disjunct with no elision mark — under verification
+rule 8 a predicate quoted at half its length is not the predicate. The
+dropped half is the literal lane A's five compact lists are found by, so it
+is slice 5's container as much as this slice's; slice 5 now carries the same
+guardrail and a mutant over it.] And
 `apps/three-surface-poc/src/polaris-reachability.test.ts` line 368 asserts
 `region.inner.startsWith('<table>')`. Both are bare-literal predicates that
 silently match nothing if an attribute is hoisted onto the tag, dropping a
-family to a human count of 0 rather than failing. If this slice needs a role
-or a data attribute on the sources table, it goes on the region div:
-`tableRegion` (`polaris.ts` lines 158–160) already takes an `attrs` parameter
-and line 1014 already passes ` data-source-index` through it. Second, the
+family to a human count of 0 rather than failing. AGENTS.md line 296 at
+`a9f671e` states the guardrail at the clause: "**Where a trimmed byte may
+not come from.** The parity sweep finds class tables by the literal
+`<tbody>` and the reachability test wants a region inner starting with
+`<table>`; an attribute hoisted onto either tag drops the family to a human
+count of 0 rather than failing loudly. Hoist roles onto the `tableRegion`
+div (its `attrs` parameter)." So if this slice needs a role or a data
+attribute on the sources table, it goes on the region div: `tableRegion`
+(`polaris.ts` lines 159–161 [superseded 2026-09-15 under review 1's F10:
+"lines 158–160"; line 158 is the last line of its doc comment]) already
+takes an `attrs` parameter and line 1014 already passes ` data-source-index`
+through it. Second, the
 fragment-target rule:
 `apps/three-surface-poc/src/polaris-first-reading.test.ts` lines 242–246
 assert that no id inside any `<details>` is the target of any
@@ -730,7 +845,8 @@ sweep fails on the multiset, not merely on a count.
 
 ### Slice 4 — The outline indexes the page it is the index for (medium; no act)
 
-**The change.** `depthNav` (`polaris.ts` lines 1529–1556) keeps its four
+**The change.** `depthNav` (`polaris.ts` lines 1529–1558 [superseded
+2026-09-15 under review 1's F10: "lines 1529–1556"]) keeps its four
 depth levels and its collapsible, and gains two things. First, every h2 and
 every h3 the render emits appears in it: the function already receives the
 shape and the dives, and the 28 missing ids are all ids the same render
@@ -804,6 +920,23 @@ any one response and multiplies responses. The packet does not estimate arm
 (c) because the response population is [Unknown] until the window size is
 chosen.
 
+**The trimmed-byte guardrail applies to this slice too.** AGENTS.md line
+296 at `a9f671e`, quoted in slice 3, is usually read as a slice-3 concern.
+Its second half is this slice's: the class-population detector at
+`apps/three-surface-poc/src/polaris-parity-sweep.test.ts` line 494 finds a
+class population by `<tbody>` **or** by the bare literal
+`<ul class="item-list"`, and lane A converted five of the eight classes to
+that container. Arm (a) nests a remainder disclosure inside those lists and
+arm (b) adds a control and a count element beside them, so an attribute
+hoisted onto one of those `<ul>` tags would drop that class to a human count
+of 0 rather than failing loudly. Anything this slice needs to mark goes on a
+wrapper, never on the `<ul>` opening tag. The adjacent fragment-target
+hazard does **not** arise: **0** of the **409** `data-polaris-item` elements
+on the post-trim capture carries an `id`, so none of them is the target of
+any `href="#…"` and arm (a)'s nested disclosure trips no fragment-target
+guardrail [Observed, counted this session on the post-trim capture,
+denominator 409]. Added 2026-09-15 under review 1's F3.
+
 **Oracle.** A served-page assertion that for every class the number of
 rendered `data-polaris-item` entries equals the machine answer's count for
 that class — the assertion the parity sweep already makes, which arms (a) and
@@ -820,7 +953,15 @@ absence rather than passing on a missing element — the RFC9-13 case. (d) For
 arm (b), make the script set `display: none` through a style attribute and
 confirm the existing "hides nothing by style" assertion
 (`apps/three-surface-poc/src/polaris-first-reading.test.ts` line 248)
-still governs the served markup.
+still governs the served markup. (e) Hoist any attribute onto a class
+list's `<ul class="item-list">` opening tag — the literal the
+class-population detector's second disjunct matches
+(`apps/three-surface-poc/src/polaris-parity-sweep.test.ts` line 494, quoted
+whole in slice 3) — and confirm the class-population assertion **fails**
+naming the class, rather than dropping that class to a human count of 0. If
+it does not fail, the detector is the defect and must be repaired before the
+slice lands, exactly as slice 3's mutant (b) says of the reachability
+assertion. Added 2026-09-15 under review 1's F3.
 
 ### Design bar for the human surface
 
@@ -923,7 +1064,60 @@ five.
 | 2 Headings | **None enumerated.** A heading's level number is structural; it renders no state and answers no query | **POC-REQ-061**, line 966, scenario **"Keyboard-only reading"** at lines 993–997, quoted verbatim: "**WHEN** a keyboard-only reader traverses each surface / **THEN** every interactive element is reachable with visible focus, in an order that follows the surface's reading structure". **The fit is partial and this packet says so**: the scenario is about focus order, and a heading is not an interactive element. **PWB-REQ-016**'s requirement text — "recoverable by text… without relying on color, position or layout" — is the closer sentence, and a heading level *is* structure rather than layout | **Requirement available, scenario partial.** This packet does not call slice 2 lawful or unlawful on that. It records that the consequence class is not one RFC2-26 enumerates, so limb 1 is not the operative test; the operative test is Gate 3's trigger table, and slice 2 crosses no trigger |
 | 3 Source record as columns | **"claim and challenge rendering"** — the row carries a claim tuple and a provenance marker, and the fields being hoisted are a claim's support | **PWB-REQ-001**, line 69 (the source identity and revision binding), **PWB-REQ-003**, line 160, scenario **"Excluded source fails closed"** at lines 184–189, quoted verbatim: "**WHEN** an admitted shape source cannot be classified as safe to index / **THEN** its source identity remains counted as Unknown / **AND** its within-source item denominator is Unknown / **AND** only hash-not-body exclusion provenance is exposed", and **PWB-REQ-007**, line 439. All three require the *content* the disclosure holds; **none names its form** [Observed: the PWB specification's **31** scenario headings were enumerated this session; the **5** under PWB-REQ-001, 003, 007 and 011 are at lines 98, 184, 470, 651 and 657, and none names a disclosure element — the literal "details" occurs 0 times in the tree] | **Available on content, silent on form.** The clause's bar is "an approved OpenSpec requirement **and** scenario", and slice 3's observable consequence — the same four fields, one interaction earlier — maps to all three. The residual risk is PWB-REQ-011's depth invariant, which is Q2's counter-argument and Q5's trigger test, not an RFC2-26 gap |
 | 4 The outline | **None enumerated.** A navigation index of ids the page already emits renders no state | **PWB-REQ-016**, line 864, same scenario as slice 1, whose **Observable** limb reads "every distinction has text, focus order reaches every target, no pointer-only action exists"; and **POC-REQ-061**, scenario **"Keyboard-only reading"** at lines 993–997, whose THEN names "an order that follows the surface's reading structure" — the closest sentence in either specification to what slice 4 does | **Available**, on two requirement-and-scenario pairs |
-| 5 Large populations | **"Unknown-reason and rendering-tier presentation"** on arms (a) and (b) — a hidden count is a rendering tier with an explicit remainder; **"API answers over epistemic state"** on arm (c), because a windowed route changes what an answer's scope declaration must say | **POC-REQ-022**, line 456, scenario **"No-script request"** at lines 478–483, quoted verbatim: "**WHEN** a surface page is fetched and rendered without JavaScript / **THEN** its facts are served in exact server-rendered form, or the region explicitly discloses that the spatial/board rendering is unavailable without script". Also **POC-REQ-021**, line 417, whose prohibition is "The POC SHALL NOT load executable client code from outside its own built, version-controlled outputs" — satisfied by any inline script, which is how `SECTION_NAV_SCRIPT` ships today. And **PWB-REQ-011**, line 632, for arm (c)'s route shape | **Available for arms (a) and (b); partial for arm (c).** No scenario in either specification describes a windowed or paged catalog route, so arm (c)'s observable consequence maps to PWB-REQ-011's requirement text and to no scenario. If the owner takes arm (c) and reads RFC2-26's bar strictly, the repair routes the clause itself names are a scenario added through CC-REV-2, or a reviewed N/A judgment homed in `decisions/` and honored through an effective owner act under RFC3-16(a). This packet's view of the second: probably not reachable, because the clause admits an N/A judgment only for a consequence "purely structural with no independently testable behavior", and a route that changes which items an answer contains is independently testable [Inferred — the clause names the route, Observed; whether arm (c) fits it is a reading] |
+| 5 Large populations | **"Unknown-reason and rendering-tier presentation"** on arms (a) and (b) — a hidden count is a rendering tier with an explicit remainder; **"API answers over epistemic state"** on arm (c), because a windowed route changes what an answer's scope declaration must say | **POC-REQ-022**, line 456, scenario **"No-script request"** at lines 478–483, quoted verbatim: "**WHEN** a surface page is fetched and rendered without JavaScript / **THEN** its facts are served in exact server-rendered form, or the region explicitly discloses that the spatial/board rendering is unavailable without script". Also **POC-REQ-021**, line 417, whose prohibition is "The POC SHALL NOT load executable client code from outside its own built, version-controlled outputs" — satisfied by any inline script, which is how `SECTION_NAV_SCRIPT` ships today. And **PWB-REQ-011**, line 632, for arm (c)'s route shape | **Available for arms (a) and (b); partial for arm (c).** No scenario in either specification describes a windowed or paged catalog *route*, so arm (c)'s observable consequence maps to PWB-REQ-011's requirement text and to no scenario. That sentence is narrowly true and stands, but it is no longer the whole answer: **POC-REQ-030** is read in the subsection below, added 2026-09-15 under review 1's F6, and its Observable limb contemplates a paginated document, which is a requirement arm (c) can argue from — while its scenario quantifies over all N intent entities, which arm (c) must still satisfy. If the owner takes arm (c) and reads RFC2-26's bar strictly, the repair routes the clause itself names are a scenario added through CC-REV-2, or a reviewed N/A judgment homed in `decisions/` and honored through an effective owner act under RFC3-16(a). This packet's view of the second: probably not reachable, because the clause admits an N/A judgment only for a consequence "purely structural with no independently testable behavior", and a route that changes which items an answer contains is independently testable [Inferred — the clause names the route, Observed; whether arm (c) fits it is a reading] |
+
+### POC-REQ-030, and what it does and does not reach for Q1's arm (c)
+
+Gate 0's Specification row names POC-REQ-030 among the constraining
+requirements and nothing in this packet's first draft tested it: the literal
+"POC-REQ-030" occurred **0** times in the packet and **0** times in its
+evidence record at `97b37ee`, named only in that row's continuation form
+[Observed, `grep -c` over both files this session]. It is read here, added
+2026-09-15 under review 1's F6.
+
+POC-REQ-030 — "Polaris renders a multi-page long-form narrative from intent
+facts", POC specification line 496 — requires, at lines 500–503: "WHEN
+Polaris is read, it SHALL project the shared model's intent entities as a
+long-form narrative document in multiple titled pages/sections, each section
+traceable to the entity or entities it presents." Its **Observable** limb at
+line 507 reads "a paginated/sectioned document whose sections carry entity
+references", and its scenario **"Narrative covers the intent entities"** at
+line 518 reads: "**WHEN** the shared model holds N intent entities and
+Polaris is loaded / **THEN** the document presents titled sections in which
+each of the N entities is referenced, and no section's substantive claims
+lack an entity reference" [Observed, all three read at source this session].
+The keyword table above counts **2** "paginat" hits across the POC tree's 7
+files and this packet read neither; both are POC-REQ-030's, at
+`openspec/changes/three-surface-poc-experience/design.md` line 25
+("server-rendered, paginated article layout") and at POC specification line
+507 [Observed, the two hits enumerated this session].
+
+Per slice: **slices 1, 2 and 4** change no section, no title and no entity
+reference, so POC-REQ-030 reads the same before and after on any reading.
+**Slice 3** moves four fields out of a disclosure into cells of the row they
+already sit in; the section, its title and its entity references are
+untouched. **Slice 5** is the slice POC-REQ-030 reaches, and it cuts both
+ways — which is the reading this packet puts to the owner and does not rule:
+
+- *What it reaches.* "Multiple titled pages/sections" and "a
+  paginated/sectioned document" contemplate a Polaris that is paginated, so
+  arm (c)'s windowed route has an approved requirement to argue from after
+  all, and arm (c) is better covered than Gate 5's slice 5 row allows
+  [Inferred — a reading of the requirement's own words, not a ruling].
+- *What it does not reach.* POC-REQ-030's subject is the **intent-entity
+  narrative**, not the catalog class populations slice 5 bounds; its
+  "pages/sections" are satisfied today by titled sections of one response,
+  and nothing in it says a page is a separate HTTP response; and its
+  scenario quantifies over **all N** entities being referenced when Polaris
+  is loaded, so a window serving only some of them would need the "all"
+  window to satisfy it. On that reading POC-REQ-030 constrains arm (c) as
+  much as it licenses it [Inferred].
+
+**Q1's recommendation, its three lawful arms and its default if unanswered
+are unchanged by this reading.** Arm (c)'s standing is strengthened by a
+requirement to argue from; it is not chosen here, and no arm is called
+lawful or unlawful on it [Observed, compared clause by clause against Q1's
+row this session].
 
 **What the test establishes and what it does not.** It establishes
 [Observed] that slices 1 and 4 map to named requirement-and-scenario pairs in
@@ -1013,7 +1207,8 @@ from the start.
   alone. B is a superset of A by construction, and B is the predicate that
   catches a packet that names `polaris.ts` in prose without a path.
 
-Every head below was read this session with `git -C <worktree> rev-parse --short HEAD`.
+Every head below was read this session with
+`git -C <worktree> rev-parse --short HEAD`.
 
 | Sibling | Title | Head | A | B | B-only additions |
 |---|---|---|---:|---:|---|
@@ -1078,9 +1273,15 @@ row to `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` — P-68 (lane
 B) through P-79 (M12), each present only in its own worktree's register
 [Observed, counted this session with the predicate `^| P-` over the thirteen
 worktrees' registers: 27 rows in each of the twelve, 26 in this one, and
-exactly one row at or above P-68 in each of the twelve]. **This packet adds
-no row**, by instruction: M13's five questions would be registered as
-**P-80** after review 1, batched.
+exactly one row at or above P-68 in each of the twelve]. **This packet now
+adds one row.** M13's five questions are registered as **P-80** in that file
+on branch `agent/syzygy-dov.13`, review 1 having been the gate the row
+waited on. The register on this branch therefore carries **22** open rows
+and **5** acceptance-act rows, **27** in all, against main's 21 + 5 = 26 at
+`a9f671e` [Observed — counted this session with the predicate `^| P-`
+partitioned by the `##` section each row falls under]. [Superseded
+2026-09-15: "**This packet adds no row**, by instruction: M13's five
+questions would be registered as **P-80** after review 1, batched."]
 
 **Sequencing inside M13.** Slices 1 and 2 are independent of everything,
 including each other, and are the two that should land first: together they
@@ -1122,7 +1323,15 @@ selected-passages block, which neither capture exposes.
    sentence fixes a rendered heading level" is 0 matching lines over 7 + 6
    files and 16 over 15 PWB files, every one of the sixteen read and every one
    about the Butlers source grammar. "No decision constrains client-side
-   scripting" is 0 over 67 decision files. Each sweep is case-insensitive and
+   scripting" is **0** *constraining sentences* over the **73** tracked
+   files of `.syzygy/governance/decisions`, where the case-insensitive
+   pattern `\b(?:script|javascript|progressive\w*)\b` matches **9** lines
+   (**7** over the 67 top-level files alone), every one of the nine read and
+   none of them about the page's own scripting. [Superseded 2026-09-15 under
+   review 1's F9: "is 0 over 67 decision files", which reads as zero hits
+   where there are nine, over a denominator silently narrowed to the
+   directory's top level — the six files under `decisions/launch-gate/` were
+   excluded with no predicate stated.] Each sweep is case-insensitive and
    the pattern is published in the evidence record.
 4. **Rule-6 mutants are specified per slice and per guard branch**, above;
    each names the predicate to mutate and the assertion that must then fail.
@@ -1139,11 +1348,17 @@ selected-passages block, which neither capture exposes.
    from the module under test (AGENTS.md), and each new assertion reports its
    denominator so a shrunken population fails rather than passes.
 7. **No act-bound byte is proposed for edit.** Swept this session over the
-   913 tracked files under `.syzygy/`, `openspec/`, `docs/` and `scripts/`:
-   none of the 15 surface files appears as a digest row of any of the 66
-   manifest-named files in that population, and no act manifest carries one.
-   Two appear as *paths* in one evidence record, as mutation targets. That is
-   a claim about acts only — see item 8.
+   913 tracked files under `.syzygy/`, `openspec/`, `docs/` and `scripts/`
+   at `a9f671e`: none of the 15 surface files appears as a digest row of any
+   of the 66 files in that population whose path contains "manifest"
+   case-insensitively, and no act manifest carries one. That is a claim
+   about acts only — see item 8. Separately, **13** of the 15 appear as the
+   literal path `apps/three-surface-poc/src/<basename>` in **20** of the
+   **96** tracked files under `docs/evidence/`, **15** of those 20 at a
+   mutation-target key; Gate 0(b) states the partition and what the
+   implementing bead owes each class. [Superseded 2026-09-15 under review
+   1's F2: "Two appear as *paths* in one evidence record, as mutation
+   targets", which is the figure over the 66 manifest-named files only.]
 8. **Two surface files are still at bytes a retained review confirmed, and
    editing one retires that confirmation.**
    `apps/three-surface-poc/src/polaris-reading.ts` and
@@ -1153,34 +1368,202 @@ selected-passages block, which neither capture exposes.
    review: the implementing bead must re-run that bounded fidelity review and
    retain a new raw. Neither digest is reproduced here (CG-15); the review is
    cited by path.
-9. **No governance prose is edited and no register row is added.** This
-   packet writes exactly two files, both under `docs/`.
-10. **Independent review.** This packet has had **none**. It is a first
+9. **One register row is added, after review 1.** P-80 is registered in
+   `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` on branch
+   `agent/syzygy-dov.13`; no other governance prose is edited. This commit
+   writes four paths: this packet, its evidence record, the retained review
+   1 raw and that register. [Superseded 2026-09-15: "**No governance prose
+   is edited and no register row is added.** This packet writes exactly two
+   files, both under `docs/`." — true of the first draft, and review 1 was
+   the gate the row waited on.]
+10. **Independent review.** One, applied 2026-09-15: verdict copied
+    exactly, **CONFIRM WITH EXCEPTIONS** (0 blocking, 6 non-blocking, 5
+    editorial, F1–F11), retained verbatim at
+    `docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md` and never
+    overwritten. See "Review 1 and repairs (2026-09-15)" below.
+    [Superseded 2026-09-15: "This packet has had **none**. It is a first
     draft, and every figure in it is uncovered until a fresh-context review
-    confirms it. Verification rule 10 applies to this file: any later edit
-    retires a review bound to these bytes, and superseded wording will be
-    marked and dated in place, never deleted.
+    confirms it."] Verification rule 10 applies to this file: review 1 binds
+    the bytes it names at `97b37ee` and not these, so the eleven exception
+    repairs are uncovered until a second independent fresh-context review
+    confirms them. Superseded wording is marked and dated in place, never
+    deleted.
 11. **The battery was run in this worktree at the end of this session.**
     `scripts/check_governance.py` ends with 32 OK, 20 WARN and **0 FAIL**
     over 52 checks, counts derived rather than asserted, and neither of this
-    packet's two files appears in any finding. No test suite was run: this packet proposes
-    no code change, and the baseline suite's state at `a9f671e` is the lane A
-    record's, cited by path rather than re-asserted here.
+    packet's two files appears in any finding. No test suite was run: this
+    packet proposes no code change, and the baseline suite's state at
+    `a9f671e` is the lane A record's, cited by path rather than re-asserted
+    here.
 12. **Conventions this packet was checked against, this session.** Every
     non-fence line has an even backtick count, so no code span is broken
     across a line break. No observed-repository path is backticked anywhere in
     this file. No act argument, manifest digest or truncated signed digest is
     reproduced; the three digest-bearing records consulted are cited by path.
-    Computed over the bytes this packet ends in: **0** of **1,209** non-fence
-    lines has an odd backtick count; **20** lines exceed 78 columns outside
-    fences, tables, block quotes and headings, each of them a single
-    unbreakable code span or quoted literal; and of **232** distinct code
-    spans, **15** contain a `/` and do not resolve as a path here. Each of
-    the fifteen is enumerated in the evidence record and none is a path:
-    four write-root globs, one governance-root directory reference inside
-    the RFC9-13 quotation, one bare `decisions/` inside the RFC2-26
-    quotation, one route-and-query shape, and eight HTML or template
-    fragments quoted as markup.
+    Computed over the bytes this packet ends in: **0** of **1,589** non-fence
+    lines has an odd backtick count; **19** lines exceed 78 columns
+    outside fences, tables, block quotes and headings, each of them a
+    single unbreakable code span or quoted literal — re-derived last of all
+    in this pass, after every edit including the review-1 section below.
+    [Superseded 2026-09-15 under review 1's F8: "**20** lines exceed 78
+    columns outside fences, tables, block quotes and headings, each of them
+    a single unbreakable code span or quoted literal" — the count was exact
+    at `97b37ee` and the characterisation was not: line 1166 was ordinary
+    prose at 90 columns carrying no code span, and line 1016 was prose plus
+    a short span; both are rewrapped here.] Of **304** distinct code spans,
+    **20** contain a `/` and do not resolve as a path here — re-derived last
+    over the bytes this packet ends in, under the same predicate that gives
+    232 and 15 at `97b37ee` (every backticked span in the file, fenced
+    blocks included, deduplicated; "resolves" is `os.path.exists` from this
+    worktree's root). All twenty are enumerated in the evidence record and
+    none is a path: four write-root globs, one governance-root directory
+    reference inside the RFC9-13 quotation, one bare `decisions/` inside the
+    RFC2-26 quotation, one `decisions/launch-gate/` subdirectory reference,
+    one route-and-query shape, eight HTML or template fragments quoted as
+    markup, one JavaScript regex literal, one git branch name, one path
+    template carrying a placeholder, and one command line. [Superseded
+    2026-09-15: "Of **232** distinct code spans, **15** contain a `/` and do
+    not resolve as a path here" — exact at `97b37ee` under this same
+    predicate, and this pass added spans of its own, five of them
+    slash-bearing and non-resolving.]
+
+## Review 1 and repairs (2026-09-15)
+
+An independent fresh-context review of this packet (read-only; only the
+artifact, its governing references and the acceptance criteria) is retained
+verbatim at `docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md`
+(33,333 bytes, sha256
+`b20d823a28ae3e90cba686e4ac5a77f5da0c6a45711ab254e76cbb9551cddc31`, both
+computed this session with `wc -c` and `sha256sum`, never transcribed). It
+reviewed commit `97b37ee`, at which the two reviewed files hashed as follows,
+recomputed this session with `git show 97b37ee:<path>` piped to `wc -c` and
+`sha256sum`:
+
+| File reviewed | Bytes | sha256 |
+|---|---:|---|
+| `docs/design/POLARIS-M13-NAVIGATION-SCALE-FUNNEL.md` | 97146 | `5171385698b7d29f1b8ca0b1bfeda3729c888f75c07c965ebdf8765e01c8d507` |
+| `docs/evidence/polaris-m13-navigation-scale-funnel-2026-09-15.json` | 39197 | `1a47e98419447353d01cd75fd974aacc9c7cb8f0989e9745cf72065aca901f9c` |
+
+Both match the raw's own table exactly.
+
+Its verdict word, copied exactly: **CONFIRM WITH EXCEPTIONS**. Its counts, as
+the raw states them: **blocking 0, non-blocking 6 (F1–F6), editorial 5
+(F7–F11)** — eleven findings in all.
+
+**Its Q1–Q5 table, in one line:** all five scopes truthful, with Q3
+"**Overstated** on framing — see F11" and the rest exact; all five genuine
+hard human gates, Q3 called "the weakest of the five, and legitimate" and Q1
+the central one; every recommendation following from its evidence; every
+lawful arm named, none called unlawful, and every default lawful — with one
+note against Q1, that under F6 arm (c) "may have more requirement cover than
+the packet allows". The raw records that no owner trade-off is smoothed into
+consensus language anywhere in the five and that Q1's counter-argument is
+explicitly ranked above its own recommendation [Observed, read from the
+retained raw].
+
+**Its verdict on the four decisions this packet takes rather than asks, in
+one line:** each is a delegate's to make and no owner question is hidden in
+them — the prerequisite correction escalates slice 5 rather than deciding
+it; the heading-normalization sweep re-derives exactly (0 over the 7 POC
+files, 0 over the 6 doctrine files, 16 over the 15 PWB files, all sixteen
+read and all sixteen about the Butlers source grammar); the three dossier
+corrections are measurement corrections and the dossier is not edited; and
+"no command palette" is disclosed, reasoned, reversible and routed to Q1's
+arm (b) to overrule.
+
+**Its measurements verdict, in one line:** of the 40-odd rows in its
+Measurements table the raw marks **every** population row, every capture row,
+every act and contract quotation, every requirement-and-scenario anchor, the
+whole 13-row collision table including its B-only column, the register sweep
+and the 913/66 digest-binding denominators as re-deriving exactly; the
+exceptions are the five it raises as F1, F2, F4, F8 and F10.
+
+**Every exception was re-derived against source before being applied; none
+was applied on the review's say-so.** Ten of the eleven confirmed exactly.
+**F1's site list is the one partial:** the raw locates the wrong anchor at
+"packet lines 654 and 666, 'line 157' twice, including mutant (a)", and at
+`97b37ee` the packet carries "line 157" once in slice 2 and mutant (a)
+quotes the expression rather than a line number — so five sites were
+repaired, not six. Every other finding was located by its quoted content
+rather than by its line number. Many of the raw's `:NNN` references into
+this packet resolve exactly at `97b37ee` — `:43`, `:45`, `:123–131`,
+`:172`, `:232`, `:494`, `:658`, `:1174–1177` — and others are low by two to
+twelve lines: its `:271` is line 280, its `:283` is 293–294, its `:351` is
+332, its `:364` is 354, its `:407–414` is 405–413, its `:545` is 533, its
+`:694–700` is 693–702 and its `:703` is 701. Every quotation the raw
+reproduces was found where its content says [Observed, each located by
+content this session].
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| F1 `polaris-markdown.ts` anchors are off by two, and the evidence record certifies the error as re-derived | non-blocking | **CONFIRMED**, with the site list partly corrected. Read at source this session: the five quoted lines are **158–162**, line 156 is a closing brace, line 157 is the heading regex and the expression is line **159**. Applied at Gate 1's motif paragraph, at Measurement 3's quotation, in Gate 3's topology row, in slice 2's "The change" sentence and in the funnel summary's `polaris-markdown.ts:159`; the raw's sixth site does not exist at `97b37ee` (mutant (a) quotes the expression, not a line). The record's dossier-difference row keeps its original `at_a9f671e` value unedited and gains a dated sibling key carrying "dossier 157-160 → 158-162 at `a9f671e`" |
+| F2 the digest-binding sweep's second clause is a false near-absence, produced by a substring that means "manifesto" | non-blocking | **CONFIRMED**, every figure. Re-derived this session: **913** tracked files under the four prefixes at `a9f671e`, **66** whose path contains "manifest" case-insensitively, **0** of the 15 surface files as a digest row of any of them — the act claim stands. Over the **96** tracked files under `docs/evidence/` in that population, **13** of 15 appear as the literal path `apps/three-surface-poc/src/<basename>`, in **20** distinct records; `polaris.ts` in **18**, `polaris-project-shape.test.ts` in 9, `polaris-copy.ts`, `polaris-copy.test.ts` and `polaris-first-reading.test.ts` in 4 each; `polaris-reading-plan.ts` and `polaris-accessibility.ts` in none. The single match behind the published "2" is `docs/evidence/polaris-manifesto-example-mutation-2026-09-09.json`, caught because "manifest" is a substring of "manifesto". Applied in Gate 0(b) with the population stated, in Gate 6 item 7 and in the funnel summary's G6 line, and mirrored in the record by dated sibling keys. The **new sentence review 1 asked for** partitions the 20: **15** name a surface file at a mutation-target key and must be **re-run** by a slice that edits it; **5** name one only as a test file, code seam, implementation path, trim input or digest key and must be **re-anchored**. Whether any of the 15 would still kill is **[Unknown]** — no suite was run |
+| F3 the parity-sweep predicate is quoted with an unmarked elision, and the elided half is slice 5's own container | non-blocking | **CONFIRMED.** `apps/three-surface-poc/src/polaris-parity-sweep.test.ts` line 494 read at source: the second disjunct is `section.inner.includes('<ul class="item-list"')`, exactly as the raw quotes it. The whole line is now quoted in a fence in slice 3, the superseded half-quotation marked and dated; AGENTS.md line 296 at `a9f671e` ("Where a trimmed byte may not come from") is confirmed at that line and quoted at the clause; slice 5 gains the same guardrail paragraph and a fifth rule-6 mutant over the class-population detector. The raw's negative check reproduces: **0** of the **409** `data-polaris-item` elements on the post-trim capture carries an `id`, so none is a fragment target and arm (a)'s nested disclosure trips no fragment-target guardrail [Observed, denominator 409] |
+| F4 character offsets published as byte offsets, against the packet's own stated convention | non-blocking | **CONFIRMED**, all four, recomputed in UTF-8 bytes on each capture this session: the catalog-heading cut is byte **912,823** pre-trim (not 912,381) and **282,383** post-trim (not 281,945); the h3 "V1 scope" tag is byte **88,131** (not 88,024) and the h6 "Core Infrastructure" tag **88,608** (not 88,501). All four published figures are the character indices of the same positions; the two line numbers attached to the cut are unchanged and were right. The bytes are published and the superseded figures marked. The raw's corollary also reproduces exactly: the pre-trim capture is **2,087,400 characters** and **2,090,025 UTF-8 bytes**, so the inherited posture file's 2,087,400 is that file's character count to the byte, and the discrepancy is retired rather than carried. Both are stated in the capture convention and mirrored in the record |
+| F5 "exactly two affordances stop working" undercounts by one | non-blocking | **CONFIRMED.** `SECTION_NAV_SCRIPT` read at source: lines 1243–1258 open a component guide's `<details>` when the location hash names it — on click, on `hashchange` and at `DOMContentLoaded` — so without script a reader following any `#polaris-guide-…` link lands on a closed disclosure. Measured on the post-trim capture: **0** `<details open>` and **10** `href="#polaris-guide-` occurrences, all ten inside `<nav class="depth-nav">`, so the links the outline itself emits are exactly the ones that lose it. Measurement 6 now says **three**, names the `aria-current="location"` scroll update as a fourth *behaviour* that is a cue rather than an affordance, and keeps the conclusion — nothing becomes unreachable, no region renders empty, POC-REQ-022's bar is still met. Mirrored in the record |
+| F6 POC-REQ-030 is named in Gate 0 as constraining and is tested nowhere, and it is the requirement nearest slice 5's arm (c) | non-blocking | **CONFIRMED.** The literal "POC-REQ-030" occurs **0** times in the packet and **0** times in the record at `97b37ee`. Read at source this session: the requirement heading is POC specification line **496**, its requirement text at 500–503 names "multiple titled pages/sections", its Observable limb at line **507** reads "a paginated/sectioned document whose sections carry entity references", and its scenario "Narrative covers the intent entities" is at line **518**; the two "paginat" hits the keyword table counts and never opened are `design.md` line 25 and spec line 507. A new Gate 5 subsection reads it per slice and says what it does and does not reach for arm (c), as a reading put to the owner and not a ruling; Gate 5's slice 5 row is left standing as narrowly true with a pointer to it. **Q1's recommendation, its three lawful arms and its default are unchanged**; arm (c)'s standing is strengthened by a requirement to argue from |
+| F7 a heading-attribute sentence that is over-broad and contradicts the packet's own Gate 1 | editorial | **CONFIRMED.** Counted over the post-trim capture's **80** heading tags: **0** carry `data-parity-field`, **0** carry `data-claim-id` — and **51** carry an `id`. The **18** markdown-derived headings slice 2 retypes carry no attributes at all (4 `<h4>`, 14 `<h6>`), which is the true and sufficient claim; the sentence is scoped to them and the superseded wording marked |
+| F8 the ≤78-column self-audit mischaracterises at least one of its 20 exceptions | editorial | **CONFIRMED.** Reproduced at `97b37ee` under the packet's stated exclusions: **20**, exactly. Line 1166 is ordinary prose at 90 columns carrying no code span; line 1016 is prose plus a short span and also rewraps. Both are rewrapped, the characterisation is restated as "all but one", and the figure is **re-derived last of all in this pass** — see the closing paragraph of this section |
+| F9 the decisions denominator is undisclosed, and Gate 6 restates a filtered zero as a raw zero | editorial | **CONFIRMED.** `.syzygy/governance/decisions/` holds **67** tracked files at its top level and **73** in the whole tree, the six extra being under `decisions/launch-gate/`. Re-run case-insensitively over all 73 with `\b(?:script|javascript|progressive\w*)\b`: **9** matching lines (**7** over the 67 alone), all nine read, **0** of them constraining Polaris's own client-side scripting. Q1 now states the predicate, the denominator and the nine; Gate 6 item 3 keeps Q1's filtered form and no longer reads as zero hits |
+| F10 three line-range slips | editorial | **CONFIRMED**, all three, each read at source. `tableRegion` is `polaris.ts` **159–161** (line 158 is the last line of its doc comment); `depthNav` runs **1529–1558** (1556 is the last content line of the template, 1557 closes the `<nav>`, 1558 closes the function); and `exactTextLink` has **4** call sites over **5** lines — 533, 552, 836 and 1081, plus its own definition at 377. Repaired in slice 3's guardrail paragraph, in Gate 1's motif sentence, in Measurement 4, in Gate 3's topology row, in slice 4 and in the funnel summary, each with the superseded range marked |
+| F11 Q3's first sentence conflates the implementation copy table with PWB-REQ-012's closed role set | editorial | **CONFIRMED.** PWB-REQ-012 read in full at PWB specification line **679**: it closes a set of four **roles** over every owner-visible Polaris string — `project-fact`, `epistemic-disclosure`, `action-label`, `scope-instruction` — then imposes a six-word heading limit, a twenty-word lede limit, a six-term prohibited-word list and two cardinalities. It declares no closed set of strings and does not govern `POLARIS_COPY`, which is `apps/three-surface-poc/src/polaris-copy.ts` line 25 and is implementation, as this packet's own act table already says. Q3's opening sentence is repaired and the superseded wording marked. **Q3's recommendation, its second lawful arm and its default are unchanged**, and the raw's own credit stands: the packet catches the real PWB-REQ-012 hazard at Gate 4 slice 1 item (b) |
+
+**No recommended answer changed.** The raw's Q1–Q5 table answers
+"Recommendation follows from the evidence?" **Yes** for all five, and no
+finding moves an arm, a recommendation or a default. **Q1** keeps
+"progressive enhancement over the native disclosure, never a script the
+reader needs", keeps all three lawful arms — (a) no script, (b) progressive
+enhancement, (c) server-side paging by route — and keeps its default that no
+filter and no pagination ships; F9 corrected the denominator and predicate of
+the decisions sweep inside its evidence half and F6 strengthened arm (c)'s
+requirement cover without choosing it. **Q3** keeps "it is an engineering
+decision inside the existing act, not an RFC2-26 consequence of RFC-0002",
+keeps its second arm (rule it a vocabulary change and put a CC-REV-2 scenario
+to PWB-REQ-012 first) and keeps its default that slice 1 ships the suffix
+form; F11 repaired only the opening sentence's framing, and Q3's own
+counter-argument already stated the relationship correctly. Q2, Q4 and Q5 are
+untouched by any finding [Observed, both sides read this session].
+
+**Registered as P-80.** The five questions are registered in
+`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` on branch
+`agent/syzygy-dov.13`, as the row this packet's first draft said would land
+with review 1. P-68 through P-79 each live only on their own branch (PRs #35
+through #46) and none of them is on the register at `a9f671e`; this row
+likewise lives only here. The register on this branch now carries **22** open
+rows and **5** acceptance-act rows, **27** in all, against main's 21 + 5 = 26
+at `a9f671e` [Observed — counted this session with the predicate `^| P-`
+partitioned by the `##` section each row falls under].
+
+By verification rule 10, review 1 binds the bytes it names — the two digests
+in the table above, at commit `97b37ee` — and not these. Every edit in this
+section and above was made after it, so **the eleven exception repairs are
+uncovered until a second independent fresh-context review confirms them**;
+that raw will be a second `-RAW.md` file, never an overwrite of the retained
+one. Subject to that, and on review 1's confirmation of the `97b37ee` bytes —
+CONFIRM WITH EXCEPTIONS, no blocking finding, no recommended answer moved,
+all five questions found to be genuine hard gates, and no lawful arm called
+unlawful — **this packet stands at the owner gate**: P-80 is ready to be
+ruled.
+
+**Figures re-derived last of all, after every edit in this pass.** Over-width
+lines under the predicate "lines outside fenced code blocks whose first
+non-space character is not `|`, `>` or `#`, longer than 78 columns",
+denominator every line of this file: **19**. Non-fence lines with an
+odd backtick count: **0** of **1589**, so no code span is
+broken across a line break; every one of those over-width lines carries a
+single unbreakable code span or quoted literal, the two review 1 named as
+reflowable having been rewrapped.
+`python3 scripts/check_governance.py` in this
+worktree after every edit, tail line read and not grepped:
+`32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted`. This
+packet, its evidence record and the retained raw appear in **no** finding.
+`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` appears in **two**
+WARN lines, at its own lines 9 and 13 — both inside the file's 2026-08-17
+header blockquote, both present in the same check at `97b37ee`, and neither
+from the P-80 row nor from any edit of this pass [Observed, output read line
+by line and compared against the file's bytes at `97b37ee`, which are
+identical on those two lines]. All figures in this paragraph were measured
+last, in the order stated.
 
 ## Funnel summary
 
@@ -1188,17 +1571,17 @@ selected-passages block, which neither capture exposes.
 ## Feature Request: M13 - Navigation at population scale
 Size: small (slices 1, 2) / medium (slice 4) / large (slices 3, 5)
 Baseline: Syzygy a9f671e; the dossier audited a capture at f4589e2, BEFORE the lane A trim landed on main at 2ef68f5, so every dossier line number and population count below is re-derived at a9f671e and on the retained post-trim capture
-- G1 Motif: 278 disclosure summaries read literally 'Source record' and 386 links read literally 'Exact text' over 192 distinct destinations, so the accessibility tree's own links list is two columns of identical strings; the one outline indexes 11 of the page's 39 h3 ids and sits behind a summary the page never opens (0 of 359 details are open in the served markup); 14 of the 18 markdown-derived headings land at h6 and h5 never occurs, from one expression, polaris-markdown.ts:157; 5 of those 14 are Syzygy's own synthesized '### ' at polaris-reading.ts:112 [Observed, all measured this session with predicates and denominators stated]
+- G1 Motif: 278 disclosure summaries read literally 'Source record' and 386 links read literally 'Exact text' over 192 distinct destinations, so the accessibility tree's own links list is two columns of identical strings; the one outline indexes 11 of the page's 39 h3 ids and sits behind a summary the page never opens (0 of 359 details are open in the served markup); 14 of the 18 markdown-derived headings land at h6 and h5 never occurs, from one expression, polaris-markdown.ts:159 (superseded 2026-09-15 under review 1's F1: polaris-markdown.ts:157, which is the heading regex); 5 of those 14 are Syzygy's own synthesized '### ' at polaris-reading.ts:112 [Observed, all measured this session with predicates and denominators stated]
 - G2 Doctrine: VIS-1 rank 2 (comprehension by simplifying presentation, never content) is the operative rule and VIS-3 is tagged with a stated qualification rather than inherited; VIS-2 and RFC9-13's "a filter that hides entities shows a persistent count of what it hid" bind slice 5; VIS-7's link rule and RFC7-34's "recoverable without colour, position, or layout" bind slices 4 and 1; no SEC rule is engaged
 - G3 Topology: apps/three-surface-poc/src only; no governed artifact touched; slices 1, 2 and 4 cross no escalation trigger on any reading, slices 3 and 5 are tested against the continuation act's "any scope beyond the signed change" and put to the owner
 - G4 Design: labels gain a suffix subject the same row already renders, chosen so the existing copy oracle's startsWith predicate still reaches them; heading levels map relative to the fragment's own minimum hash depth and the anchoring heading; the source record's four fields become three columns of the table its row is already in; the outline lists every h2 and h3 and the always-reachable quick-links becomes a 7-entry skip list, with no command palette because the page needs no script; the catalog populations get a bounded first view in whichever of three arms Q1 picks
 - G5 Spec: 0 occurrences of the literal "details" and 0 of "outline" across both spec trees, so no scenario names the disclosure form or the outline; RFC2-26 run over all five slices (denominator 5): slices 1 and 4 map to named requirement-and-scenario pairs, slice 3's content maps to three requirements and one scenario while its form is named nowhere, slice 2's scenario fit is partial and its consequence class is not one the clause enumerates, slice 5 maps for arms (a) and (b) and is partial for arm (c)
-- G6 Bar: two methods for every load-bearing figure; three absence claims each with a stated pattern and denominator; rule-6 mutants per slice including one self-test of an existing guard; no act-bound byte proposed for edit, with the retained fidelity review's re-run obligation recorded for slice 2; NO independent review yet - this is a first draft
-Figures corrected against the dossier: 'Exact text' targets 372 -> 185 pre-trim and 192 post-trim (the dossier's figure was wrong on its own capture); source records 271 -> 278; 'Exact text' links 372 -> 386; details 353 -> 359; h6 15 -> 14; tables 10 -> 5; baseline-spec 185 table rows -> 192 compact-list entries; topology-component 87 table rows -> 87 compact-list entries; architecture-group citation links ~150 -> 89 over 2 distinct hrefs; in-group h3s outside the outline ~30 -> 28; polaris.ts source-record line 818 -> 835; exact-text line 1530 -> 378 and 1549; depthNav 1510-1538 -> 1529-1556
+- G6 Bar: two methods for every load-bearing figure; three absence claims each with a stated pattern and denominator; rule-6 mutants per slice including one self-test of an existing guard; no act-bound byte proposed for edit, with the retained fidelity review's re-run obligation recorded for slice 2, and 13 of the 15 surface files named as paths in 20 docs/evidence records, 15 of the 20 at a mutation-target key (review 1's F2); review 1 applied 2026-09-15, verdict copied exactly CONFIRM WITH EXCEPTIONS - 0 blocking, 6 non-blocking, 5 editorial, F1-F11, all eleven re-derived against source and applied, and uncovered until a second review confirms them (superseded 2026-09-15: NO independent review yet - this is a first draft)
+Figures corrected against the dossier: 'Exact text' targets 372 -> 185 pre-trim and 192 post-trim (the dossier's figure was wrong on its own capture); source records 271 -> 278; 'Exact text' links 372 -> 386; details 353 -> 359; h6 15 -> 14; tables 10 -> 5; baseline-spec 185 table rows -> 192 compact-list entries; topology-component 87 table rows -> 87 compact-list entries; architecture-group citation links ~150 -> 89 over 2 distinct hrefs; in-group h3s outside the outline ~30 -> 28; polaris.ts source-record line 818 -> 835; exact-text line 1530 -> 378 and 1549; depthNav 1510-1538 -> 1529-1558 (superseded 2026-09-15 under review 1's F10: 1529-1556)
 Acts: PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md (2026-09-02) as continued by PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md (2026-09-05); there is no PWB overlay change directory - the 2026-09-05 amendment replaced the spec bytes in place and they are bound by the eleven-row manifest, so no slice may edit them; slices 3 and 5 should be ruled against the continuation act's escalation triggers at lines 150-156
-Open questions: Q1-Q5 above, NOT registered - this packet writes two files and no register row, by instruction; the row would be P-80 after review 1, batched. The twelve siblings' rows are P-68 lane B, P-69 M2, P-70 M3, P-71 M4, P-72 M5, P-73 M6, P-74 M8, P-75 M9, P-76 M7, P-77 M10, P-78 M11, P-79 M12, each only on its own branch
+Open questions: Q1-Q5 above, registered as P-80 in PENDING-OWNER-DECISIONS.md on branch agent/syzygy-dov.13 after review 1, batched - 22 open rows and 5 acceptance-act rows, 27 in all, on this branch (superseded 2026-09-15: NOT registered - this packet writes two files and no register row, by instruction; the row would be P-80 after review 1, batched). The twelve siblings' rows are P-68 lane B, P-69 M2, P-70 M3, P-71 M4, P-72 M5, P-73 M6, P-74 M8, P-75 M9, P-76 M7, P-77 M10, P-78 M11, P-79 M12, each only on its own branch
 Governance check in this worktree at the end of this session: 32 OK, 20 WARN, 0 FAIL (52 checks) - counts derived, not asserted; neither of this packet's two files appears in any finding
-Sign-off: pending - the owner's
+Sign-off: pending - the owner's; P-80 is at the owner gate on review 1's CONFIRM WITH EXCEPTIONS, with the eleven exception repairs uncovered until a second independent review confirms them
 Recommended handoff: land slices 1 and 2 now (no gate, few lines, the most comprehension per byte); then slice 4; rule Q2 and Q5 before slice 3; rule Q1, Q4 and Q5 and land lane B before slice 5
 ```
 
