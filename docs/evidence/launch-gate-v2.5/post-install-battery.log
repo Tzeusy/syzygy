@@ -1,0 +1,1645 @@
+repo root: /tmp/syzygy-v25-installed-v525bee9
+scope:     clone — 1239 file(s) examined (1239 tracked, 0 untracked-not-ignored)
+
+OK    CG-1a  markdown links resolve — 415 links examined, 0 findings
+OK    CG-1b  code-span path references resolve — 4868 references examined, 0 findings
+WARN  CG-1c  declared forward references — 42 targets examined, 0 findings — skipped by design — an owner act creates these
+        .syzygy/governance/contracts/rfcs/ACTIVE-CONTRACT-MANIFEST.txt
+        .syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md
+        .syzygy/governance/contracts/rfcs/RFC-0002/README.md
+        .syzygy/governance/contracts/rfcs/RFC-0002/challenge-lifecycle.md
+        .syzygy/governance/contracts/rfcs/RFC-0002/reconciliation-chain.md
+        .syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md
+        .syzygy/governance/contracts/rfcs/RFC-0002/snapshot-and-evaluation-core.md
+        .syzygy/governance/contracts/rfcs/RFC-0003/README.md
+        .syzygy/governance/contracts/rfcs/RFC-0003/governance-homes-and-owner-acts.md
+        .syzygy/governance/contracts/rfcs/RFC-0003/manifests-and-namespace.md
+        .syzygy/governance/contracts/rfcs/RFC-0004/README.md
+        .syzygy/governance/contracts/rfcs/RFC-0004/execution-record.md
+        .syzygy/governance/contracts/rfcs/RFC-0004/fidelity-joins-and-mappings.md
+        .syzygy/governance/contracts/rfcs/RFC-0004/general-contract.md
+        .syzygy/governance/contracts/rfcs/RFC-0004/named-adapters.md
+        .syzygy/governance/contracts/rfcs/RFC-0005/README.md
+        .syzygy/governance/contracts/rfcs/RFC-0005/admission-and-boundary.md
+        .syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md
+        .syzygy/governance/contracts/rfcs/RFC-0005/execution-profiles.md
+        .syzygy/governance/contracts/rfcs/RFC-0006-cross-surface-selection-query-drawer.md
+        .syzygy/governance/contracts/rfcs/RFC-0007/README.md
+        .syzygy/governance/contracts/rfcs/RFC-0007/narrative-contract.md
+        .syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md
+        .syzygy/governance/contracts/rfcs/RFC-0008/README.md
+        .syzygy/governance/contracts/rfcs/RFC-0008/accounting-reconciliation-and-release.md
+        .syzygy/governance/contracts/rfcs/RFC-0008/identity-authority-materialization.md
+        .syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md
+        .syzygy/governance/contracts/rfcs/RFC-0009/README.md
+        .syzygy/governance/contracts/rfcs/RFC-0009/interaction-parity-and-release.md
+        .syzygy/governance/contracts/rfcs/RFC-0009/semantic-geography.md
+        .syzygy/governance/contracts/rfcs/RFC-0009/visual-grammar-and-lenses.md
+        .syzygy/governance/contracts/rfcs/rfcs/RFC-0002/README.md
+        .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md
+        .syzygy/project.yaml
+        /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md:83
+        </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/contracts/rfcs/RFC-0003/governance-homes-and-owner-acts.md:317>
+        ACCEPTANCE-ACT-RECORD.md
+        decisions/ACCEPTANCE-ACT-RECORD.md
+        final-prespec/history/RFC-000n-history.md
+        final-prespec/matrix-rows/RFC-000n-rows.md
+        history/RFC-000n-history.md
+        rfcs/RFC-000N/README.md
+WARN  CG-1i  installed-tree path strings (P-33 shape (M)) — 39 references examined, 0 findings — candidate-tree fallback verified for every installed reference; installed modules remain non-self-contained under P-33 shape (M)
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md -> ../history/RFC-0001-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0002/README.md -> ../../CONTEXT-BUDGET-REPORT.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0002/README.md -> ../../history/RFC-0002-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0002/challenge-lifecycle.md -> ../../history/RFC-0002-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0002/reconciliation-chain.md -> ../../history/RFC-0002-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md -> ../../history/RFC-0002-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0002/snapshot-and-evaluation-core.md -> ../../history/RFC-0002-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0003/README.md -> ../../history/RFC-0003-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0003/README.md -> ../../matrix-rows/RFC-0003-rows.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0003/governance-homes-and-owner-acts.md -> ../../history/RFC-0003-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0003/manifests-and-namespace.md -> ../../history/RFC-0003-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0004/README.md -> ../../CONTEXT-BUDGET-REPORT.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0004/README.md -> ../../history/RFC-0004-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0004/execution-record.md -> ../../history/RFC-0004-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0004/fidelity-joins-and-mappings.md -> ../../history/RFC-0004-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0004/general-contract.md -> ../../history/RFC-0004-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0004/named-adapters.md -> ../../history/RFC-0004-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0005/README.md -> ../../CONTEXT-BUDGET-REPORT.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0005/README.md -> ../../history/RFC-0005-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0005/admission-and-boundary.md -> ../../history/RFC-0005-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md -> ../../history/RFC-0005-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0005/execution-profiles.md -> ../../history/RFC-0005-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0006-cross-surface-selection-query-drawer.md -> ../history/RFC-0006-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0007/README.md -> ../../CONTEXT-BUDGET-REPORT.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0007/README.md -> ../../history/RFC-0007-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0007/narrative-contract.md -> ../../history/RFC-0007-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0007/rendering-and-surface.md -> ../../history/RFC-0007-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0008/README.md -> ../../CONTEXT-BUDGET-REPORT.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0008/README.md -> ../../history/RFC-0008-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0008/accounting-reconciliation-and-release.md -> ../../history/RFC-0004-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0008/accounting-reconciliation-and-release.md -> ../../history/RFC-0008-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0008/identity-authority-materialization.md -> ../../history/RFC-0008-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0008/state-vocabulary-and-cost.md -> ../../history/RFC-0008-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0009/README.md -> ../../03-ACTIVE-CONTRACT-COMPACTION-REPORT.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0009/README.md -> ../../CONTEXT-BUDGET-REPORT.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0009/README.md -> ../../history/RFC-0009-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0009/interaction-parity-and-release.md -> ../../history/RFC-0009-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0009/semantic-geography.md -> ../../history/RFC-0009-history.md
+        [verified candidate fallback] .syzygy/governance/contracts/rfcs/RFC-0009/visual-grammar-and-lenses.md -> ../../history/RFC-0009-history.md
+WARN  CG-1d  frozen-packet references — 73 references examined, 0 findings — unresolvable in a clone by construction — the rev9 working packet lived under the git-excluded `_bootstrap/`; a dead route into `rfcs/**` from active material is CG-1g, not this bucket
+        .syzygy/governance/contracts/candidates/00-README.md -> scripts/verify_rfcs.py
+        .syzygy/governance/contracts/candidates/01-REV9-ADVERSARIAL-FINDINGS.md -> scripts/verify_rfcs.py
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> ../history/RFC-0002-history.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> ../history/RFC-0003-history.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> ../history/RFC-0004-history.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> ../history/RFC-0005-history.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> ../history/RFC-0007-history.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> ../history/RFC-0008-history.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> ../rfcs/RFC-0007-polaris-intent-surface.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> final-prespec/history/RFC-0001-history.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> final-prespec/history/RFC-0004-history.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> final-prespec/history/RFC-0006-history.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> final-prespec/history/RFC-0009-history.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> final-prespec/rfcs/RFC-0001-project-graph-identity-state-planes.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> final-prespec/rfcs/RFC-0006-cross-surface-selection-query-drawer.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> rfcs/RFC-0002-observation-evaluation-reconciliation.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/10-EXIT-REPORT.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/10-EXIT-REPORT.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/history/RFC-0008-history.md -> ../rfcs/RFC-0008-trajectory-work-surface.md
+        .syzygy/governance/contracts/candidates/history/RFC-0010-history.md -> ../rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/history/TASK-TO-CONTRACT-INDEX.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/history/TASK-TO-CONTRACT-INDEX.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0001-rows.md -> final-prespec/history/RFC-0001-history.md
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0001-rows.md -> final-prespec/rfcs/RFC-0001-project-graph-identity-state-planes.md
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0002-rows.md -> rfcs/RFC-0002-observation-evaluation-reconciliation.md
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0004-rows.md -> final-prespec/history/RFC-0004-history.md
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0006-rows.md -> final-prespec/history/RFC-0006-history.md
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0006-rows.md -> final-prespec/rfcs/RFC-0006-cross-surface-selection-query-drawer.md
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0007-rows.md -> ../rfcs/RFC-0007-polaris-intent-surface.md
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0009-rows.md -> final-prespec/history/RFC-0009-history.md
+        .syzygy/governance/contracts/candidates/reviews/rev10-confirming-review.md -> topology/BUNDLE-MANIFEST.md
+        .syzygy/governance/contracts/candidates/reviews/rev10-digestibility-review.md -> ../../history/RFC-0008-history.md
+        .syzygy/governance/contracts/candidates/reviews/rev10-digestibility-review.md -> ../../matrix-rows/RFC-0003-rows.md
+        .syzygy/governance/contracts/candidates/reviews/rev10-digestibility-review.md -> final-prespec/02-OWNER-DIRECTION-RECORD.md
+        .syzygy/governance/contracts/candidates/reviews/rev10-safety-review.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/reviews/rev10-safety-review.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/reviews/rev10-transaction-review.md -> topology/BUNDLE-MANIFEST.md
+        .syzygy/governance/contracts/candidates/round-2026-08/MISSION-CONTROL-REVIEW.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-5-context-compiler-RAW.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-6-mission-autonomy-RAW.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-6-mission-autonomy-RAW.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/round-2026-08b/matrix-parts/RFC-0007-0011.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/round-2026-08b/matrix-parts/RFC-0008-0010.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-12-budget-waiver-RAW.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-4-contract-semantics-RAW.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-4-contract-semantics-RAW.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-6-context-compiler-RAW.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-7-mission-safety-RAW.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-7-mission-safety-RAW.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/FINAL-PUBLIC-CLONE-REPORT.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/MISSION-CONTRACT-SEMANTIC-DELTA.md -> ../rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-1-mission-safety-confirming-RAW.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-4-contract-relation-RAW.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-4-contract-relation-RAW.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-5-context-selection-RAW.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-5-context-selection-RAW.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-7-public-clone-RAW.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/DISPOSITION-REGISTER.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/DISPOSITION-REGISTER.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> rfcs/RFC-0005/extra-module.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> rfcs/RFC-0006-scratch.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-CLOSURE-PREFLIGHT.md -> rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-CLOSURE-PREFLIGHT.md -> rfcs/RFC-0011-context-compiler.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-25-active-path-RAW.md -> ../reviews/07-topology-FIX-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-27-wave-b-RAW.md -> topology/BUNDLE-MANIFEST.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-27-wave-b-RAW.md -> topology/README.md
+        .syzygy/governance/decisions/OWNER-ANSWERS-2026-08-01.md -> reviews/08-map-layout-DISPOSITIONS.md
+        .syzygy/governance/decisions/OWNER-ANSWERS-2026-08-01.md -> reviews/08-map-layout-RAW.md
+        .syzygy/governance/decisions/OWNER-ANSWERS-2026-08-01.md -> reviews/09-rev7-semantic-RAW.md
+OK    CG-1g  active routes into `rfcs/**` resolve — 0 routes examined, 0 findings — no active-lane route into `rfcs/**` is dead
+WARN  CG-1h  dead-route allowlist — 2 files examined, 0 findings — active-lane files whose job is to name paths that no longer exist
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md — clause-migration provenance: every row names the frozen rev9 source a clause was migrated from, which is the record, not a route
+        scripts/check_governance.py — this checker names the shape in order to detect it
+WARN  CG-1f  frozen-lane path references — 173 references examined, 0 findings — raw reviewer output and superseded round records — never edited, so classified and printed rather than failed
+        .syzygy/governance/contracts/candidates/round-2026-08/COMPACTION-EQUIVALENCE-REPORT.md -> ../TASK-TO-CONTRACT-INDEX.md
+        .syzygy/governance/contracts/candidates/round-2026-08/FINAL-OWNER-ACCEPTANCE-RECORD.md -> ../../decisions/PENDING-OWNER-DECISIONS.md
+        .syzygy/governance/contracts/candidates/round-2026-08/FINAL-OWNER-ACCEPTANCE-RECORD.md -> ../../policies/GOVERNANCE-SUBSTRATE-LOCK.yaml
+        .syzygy/governance/contracts/candidates/round-2026-08/PUBLIC-CLONE-AUTHORITY-MATRIX.md -> ../../policies/GOVERNANCE-SUBSTRATE-LOCK.yaml
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-2-vision-doctrine-RAW.md -> ../decisions/DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-2-vision-polaris-RAW.md -> ../../PROJECT-STATUS.md
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-3-vocabulary-RAW.md -> ../governance/contracts/candidates/policy-candidates/TERM-REGISTRY.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-1-mission-safety-confirming-RAW.md -> /home/tze/GitHub/syzygy/.syzygy/governance/contracts/candidates/rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-1b-mission-safety-confirming-RAW.md -> /home/tze/GitHub/syzygy/.syzygy/governance/contracts/candidates/rfcs/RFC-0010-mission-control-autonomy.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-5-context-selection-RAW.md -> craft/engineering-bar.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-5-context-selection-RAW.md -> craft/review-and-documentation.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-5-context-selection-RAW.md -> craft/security-and-secrets.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-6-source-of-truth-RAW.md -> ../CONTRACT-DEPENDENCY-INDEX.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-6-source-of-truth-RAW.md -> ../FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-6-source-of-truth-RAW.md -> ../round-2026-08c/PUBLIC-VOCABULARY-COMPREHENSION-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-7-public-clone-RAW.md -> ../../../../../../../intent/OVERVIEW.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-7-public-clone-RAW.md -> ../FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-7-public-clone-RAW.md -> ../round-2026-08b/reviews/RC-12-budget-waiver-RAW.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-7-public-clone-RAW.md -> .claude/settings.local.json
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-10-human-view-RAW.md -> C/CONTRACT-DEPENDENCY-INDEX.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-10-human-view-RAW.md -> C/rfcs/RFC-0007/README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-10-human-view-RAW.md -> C/rfcs/RFC-0008/README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-10-human-view-RAW.md -> C/rfcs/RFC-0009/README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-11-context-packet-RAW.md -> C/rfcs/RFC-0002/rendering-vocabularies.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-11-context-packet-RAW.md -> C/rfcs/RFC-0002/snapshot-and-evaluation-core.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-11-context-packet-RAW.md -> C/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-11-context-packet-RAW.md -> C/rfcs/RFC-0011/README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-11-context-packet-RAW.md -> C/rfcs/RFC-0011/deterministic-selection-and-budget.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-11-context-packet-RAW.md -> C/rfcs/RFC-0011/packet-identity-provenance-and-memory.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-12-context-selection-RAW.md -> C/05-CONTRACT-INDEX.yaml
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-12-context-selection-RAW.md -> C/TASK-TO-CONTRACT-INDEX.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-12-context-selection-RAW.md -> C/rfcs/RFC-0011/README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-12-context-selection-RAW.md -> C/rfcs/RFC-0011/deterministic-selection-and-budget.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-12-context-selection-RAW.md -> C/scripts/build_budget_report.py
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-13-mission-prevention-RAW.md -> C/rfcs/RFC-0003/governance-homes-and-owner-acts.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-13-mission-prevention-RAW.md -> C/rfcs/RFC-0005/consent-egress-secrets.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-13-mission-prevention-RAW.md -> C/rfcs/RFC-0010/README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-14-mission-effects-RAW.md -> C/rfcs/RFC-0005/admission-and-boundary.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-14-mission-effects-RAW.md -> C/rfcs/RFC-0005/consent-egress-secrets.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-14-mission-effects-RAW.md -> C/rfcs/RFC-0005/execution-profiles.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-14-mission-effects-RAW.md -> C/rfcs/RFC-0010/README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-14-mission-effects-RAW.md -> C/rfcs/RFC-0010/budget-reservation.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-14-mission-effects-RAW.md -> C/rfcs/RFC-0010/effects-recovery-and-stop.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-14-mission-effects-RAW.md -> C/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-14-mission-effects-RAW.md -> C/rfcs/RFC-0010/portfolio-and-cross-project-consent.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-14-mission-effects-RAW.md -> C/rfcs/RFC-0010/prevention-envelope-and-attention.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md -> C/rfcs/RFC-0001-project-graph-identity-state-planes.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md -> C/rfcs/RFC-0002/README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md -> C/rfcs/RFC-0006-cross-surface-selection-query-drawer.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md -> C/rfcs/RFC-0008/README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-16-vocabulary-RAW.md -> ../round-2026-08c/PUBLIC-VOCABULARY-COMPREHENSION-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-16-vocabulary-RAW.md -> C/00-README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-16-vocabulary-RAW.md -> C/COMPACTION-CHARTER.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-16-vocabulary-RAW.md -> C/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-16-vocabulary-RAW.md -> C/README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-16-vocabulary-RAW.md -> C/policy-candidates/TERM-REGISTRY.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-16-vocabulary-RAW.md -> C/rfcs/RFC-0001-project-graph-identity-state-planes.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-16-vocabulary-RAW.md -> C/rfcs/RFC-0007/README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-16-vocabulary-RAW.md -> C/rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-16-vocabulary-RAW.md -> C/round-2026-08c/PUBLIC-VOCABULARY-COMPREHENSION-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-16-vocabulary-RAW.md -> …
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/00-README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/03-ACTIVE-CONTRACT-COMPACTION-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/05-CONTRACT-INDEX.yaml
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/06-CONTEXT-LOAD-MAP.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/10-EXIT-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/ACTIVE-CONTRACT-MANIFEST.txt
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/CONTEXT-BUDGET-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/CONTRACT-DEPENDENCY-INDEX.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/README.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/TASK-TO-CONTRACT-INDEX.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/policy-candidates/TERM-REGISTRY.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/scripts/build_active_manifest.py
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/scripts/build_budget_report.py
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/scripts/build_contract_index.py
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/scripts/build_dependency_index.py
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md -> C/scripts/verify_final_prespec.py
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-23-wave-c2-RAW.md -> fixtures/SELECTION-REPRODUCTION-CRITERION.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-9-core-authority-RAW.md -> C/rfcs/RFC-0001-project-graph-identity-state-planes.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-9-core-authority-RAW.md -> C/rfcs/RFC-0006-cross-surface-selection-query-drawer.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-25-active-path-RAW.md -> .syzygy/governance/contracts/candidates/TASK-TO-CONTRACT-INDEX.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-29-human-language-RAW.md -> ../decisions/DOCTRINE-AMENDMENT-D1-MAP-HISTORICAL.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-29-human-language-RAW.md -> ../policies/craft-and-care/INSTALL-RECORD.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-29-human-language-RAW.md -> .md/.txt/.yaml/.py/.json
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-29-human-language-RAW.md -> …
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-34-instrument-v16-RAW.md -> .md/.py/.yaml/.yml/.txt
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-34-instrument-v16-RAW.md -> .syzygy/governance/decisions/SDR-99-EXAMPLE.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-35-instrument-v17-RAW.md -> .md/.py/.yaml/.yml/.txt
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-35-instrument-v17-RAW.md -> .syzygy/governance/decisions/NO-SUCH-DECISION.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-35-instrument-v17-RAW.md -> .syzygy/governance/decisions/SDR-99-EXAMPLE.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-36-instrument-v18-RAW.md -> .md/.py/.yaml/.yml/.txt
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-36-instrument-v18-RAW.md -> .syzygy/governance/decisions/NO-SUCH-DECISION.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-36-instrument-v18-RAW.md -> .syzygy/governance/decisions/SDR-99-EXAMPLE.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-37-instrument-v19-RAW.md -> .md/.py/.yaml/.yml/.txt
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-38-instrument-v110-RAW.md -> .md/.py/.yaml/.yml/.txt
+        .syzygy/governance/contracts/candidates/round-2026-08f/reviews/DISPOSITION-REGISTER.md -> contracts/ACTIVE-CONTRACT-MANIFEST.txt
+        .syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-49-p33-install-shape-RAW.md -> contracts/ACTIVE-CONTRACT-MANIFEST.txt
+        .syzygy/governance/contracts/candidates/round-2026-08f/reviews/RD-51-spec-acceptance-and-impact-RAW.md -> .md/.py/.json/.yaml/.yml/.txt
+        .syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-54-p33-install-shape-RAW.md -> .md/.txt/.yaml/.json/.py
+        .syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-54-p33-install-shape-RAW.md -> /home/tze/GitHub/syzygy/syzygy_fable_opus_owner_spec_launch_closure_prompt.md
+        .syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-56-launch-machinery-v2.1-RAW.md -> NO/SUCH/FILE-INVENTED.md
+        .syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-56-launch-machinery-v2.1-RAW.md -> scratchpad/revert_matrix.py
+        .syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-56-launch-machinery-v2.1-RAW.md -> scratchpad/weak.json
+        .syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-62-launch-machinery-v2.2-RAW.md -> /tmp/forged-prior-outside.json
+        .syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-62-launch-machinery-v2.2-RAW.md -> NO/SUCH/FILE.md
+        .syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-62-launch-machinery-v2.2-RAW.md -> scratchpad/rd62-scratch/matrix2.py
+        .syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-62-launch-machinery-v2.2-RAW.md -> scratchpad/rd62-scratch/revert.py
+        .syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-63-p41-spec-acceptance-packet-RAW.md -> ../round-2026-08f/reviews/RD-51-spec-acceptance-and-impact-RAW.md
+        .syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-63-p41-spec-acceptance-packet-RAW.md -> ../round-2026-08g/SPEC-ACCEPTANCE-AND-IMPACT-SEMANTIC-DELTA.md
+        .syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-64-p42-impact-packet-RAW.md -> ../round-2026-08g/SHAPE-TO-SPEC-PROPAGATION-FIXTURE-2.md
+        .syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-65-launch-policy-v2.3-RAW.md -> /tmp/rd65/forged-prior.json
+        .syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-66-launch-machinery-v2.3-RAW.md -> docs/launch-gate-pre-specifications.md
+        .syzygy/governance/contracts/candidates/round-2026-08h/reviews/RD-67-launch-policy-v2.4-RAW.md -> docs/launch-gate-pre-specifications.md
+        .syzygy/governance/contracts/candidates/round-2026-08i/reviews/RD-69-p41-p42-combined-RAW.md -> .../README.md
+        .syzygy/governance/contracts/candidates/round-2026-08i/reviews/RD-69-p41-p42-combined-RAW.md -> .../testing-and-verification.md
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-INTEGRATION-READINESS-RAW.md -> /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md:63
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-INTEGRATION-READINESS-RAW.md -> /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-REVIEW-DISPOSITION.md:51
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-AUTHORITY-RAW.md -> /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/TRANSACTION-MANIFEST.txt:1
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-AUTHORITY-RAW.md -> /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md:11
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-AUTHORITY-RAW.md -> /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md:44
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-AUTHORITY-RAW.md -> /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md:74
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-AUTHORITY-RAW.md -> /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md:167
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-CHECKER-CONFIRMATION-RAW.md -> /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/scripts/build_general_trusted_bootstrap_impact_ledger.py:147
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-CHECKER-CONFIRMATION-RAW.md -> /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/scripts/build_general_trusted_bootstrap_transaction.py:95
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-CHECKER-CONFIRMATION-RAW.md -> /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/scripts/check_governance.py:2086
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-FRESH-READER-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md:29>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-FRESH-READER-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md:49>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-FRESH-READER-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md:74>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-FRESH-READER-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/README.md:120>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-FRESH-READER-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/decisions/README.md:12>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-FRESH-READER-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/PROJECT-STATUS.md:51>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-FRESH-READER-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/PROJECT-STATUS.md:55>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-FRESH-READER-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/PROJECT-STATUS.md:88>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-FRESH-READER-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/PROJECT-STATUS.md:99>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-FRESH-READER-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/README.md:183>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-FRESH-READER-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/README.md:30>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-FRESH-READER-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/apps/three-surface-poc/src/main.ts:87>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-POST-ACT-FRESH-READER-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/docs/THREE-SURFACE-POC.md:28>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-SEMANTIC-DELTA-1-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/contracts/candidates/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-SEMANTIC-DELTA.md:121>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-SEMANTIC-DELTA-1-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/contracts/candidates/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-SEMANTIC-DELTA.md:185>
+        docs/reviews/R-GENERAL-TRUSTED-BOOTSTRAP-SEMANTIC-DELTA-1-RAW.md -> </home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-general-trusted-bootstrap/.syzygy/governance/contracts/candidates/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-SEMANTIC-DELTA.md:245>
+        docs/reviews/R-POLARIS-EDITORIAL-CODE-RAW.md -> must-retain
+        docs/reviews/R-POLARIS-GENERATOR-FINAL-READINESS-2026-09-12-RAW.md -> .syzygy/governance/decisions/new-revocation.md
+        docs/reviews/R-POLARIS-GENERATOR-FINAL-READINESS-2026-09-12-RAW.md -> .syzygy/governance/doctrine/test.md
+        docs/reviews/R-POLARIS-PROJECT-WIDE-POST-CEILING-CONFIRMATION-RAW.md -> /home/tze/GitHub/syzygy/.syzygy/governance/decisions/POLARIS-POST-CEILING-CORRECTION-AUTHORIZATION.md:26
+        docs/reviews/R-POLARIS-PROJECT-WIDE-POST-CEILING-CONFIRMATION-RAW.md -> /home/tze/GitHub/syzygy/openspec/changes/polaris-project-wide-butlers-model/CAPABILITY-COVERAGE.md:14
+        docs/reviews/R-POLARIS-PROJECT-WIDE-POST-CEILING-CONFIRMATION-RAW.md -> /home/tze/GitHub/syzygy/openspec/changes/polaris-project-wide-butlers-model/design.md:113
+        docs/reviews/R-POLARIS-PROJECT-WIDE-POST-CEILING-CONFIRMATION-RAW.md -> /home/tze/GitHub/syzygy/openspec/changes/polaris-project-wide-butlers-model/design.md:137
+        docs/reviews/R-POLARIS-PROJECT-WIDE-POST-CEILING-CONFIRMATION-RAW.md -> /home/tze/GitHub/syzygy/openspec/changes/polaris-project-wide-butlers-model/proposal.md:18
+        docs/reviews/R-POLARIS-PROJECT-WIDE-POST-CEILING-CONFIRMATION-RAW.md -> /home/tze/GitHub/syzygy/openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md:202
+        docs/reviews/R-POLARIS-PROJECT-WIDE-POST-CEILING-CONFIRMATION-RAW.md -> /home/tze/GitHub/syzygy/openspec/changes/polaris-project-wide-butlers-model/tasks.md:11
+        docs/reviews/R-POLARIS-PROJECT-WIDE-SPEC-CONFIRMATION-FINAL-RAW.md -> /home/tze/GitHub/syzygy/openspec/changes/polaris-project-wide-butlers-model/design.md:134
+        docs/reviews/R-PWB-EFFECT-ACTS-OWNER-PACKET-RAW.md -> about/README.md
+        docs/reviews/R-PWB-LIVE-EXACT-HEAD-ENGINEERING-RAW.md -> about/README.md
+        docs/reviews/R-PWB-LIVE-EXACT-HEAD-ENGINEERING-RAW.md -> about/heart-and-soul/README.md
+        docs/reviews/R-PWB-LIVE-EXACT-HEAD-ENGINEERING-RAW.md -> about/heart-and-soul/v1.md
+        docs/reviews/R-PWB-LIVE-EXACT-HEAD-ENGINEERING-RAW.md -> about/spec-and-spine/README.md
+        docs/reviews/R-PWB-LIVE-EXACT-HEAD-ENGINEERING-RAW.md -> heart-and-soul/vision.md
+        docs/reviews/R-PWB-LIVE-EXACT-HEAD-TRUTH-RAW.md -> about/lay-and-land/components.md
+        docs/reviews/R-PWB-LIVE-EXACT-HEAD-TRUTH-RAW.md -> heart-and-soul/vision.md
+        docs/reviews/R-PWB-LIVE-EXACT-HEAD-TRUTH-RAW.md -> openspec/specs/switchboard-identity/spec.md
+        docs/reviews/R-PWB-LIVE-EXACT-HEAD-UX-RAW.md -> about/heart-and-soul/README.md
+        docs/reviews/R-PWB-LIVE-EXACT-HEAD-UX-RAW.md -> about/heart-and-soul/architecture.md
+        docs/reviews/R-PWB-LIVE-EXACT-HEAD-UX-RAW.md -> about/heart-and-soul/vision.md
+        docs/reviews/R-PWB-LIVE-EXACT-HEAD-UX-RAW.md -> about/lay-and-land/components.md
+        docs/reviews/R-PWB-LIVE-EXACT-HEAD-UX-RAW.md -> heart-and-soul/vision.md
+        docs/reviews/R-PWB-RECOVERY-RECONCILIATION-GEN1-RAW.md -> about/heart-and-soul/v1.md
+        docs/reviews/R-PWB-RECOVERY-RECONCILIATION-GEN1-RAW.md -> about/lay-and-land/README.md
+        docs/reviews/R-PWB-RECOVERY-RECONCILIATION-GEN1-RAW.md -> about/lay-and-land/components.md
+        docs/reviews/R-PWB-RECOVERY-RECONCILIATION-GEN1-RAW.md -> about/lay-and-land/frontend-copy-inventory.md
+        docs/reviews/R-PWB-RECOVERY-RECONCILIATION-GEN1-RAW.md -> about/lay-and-land/frontend.md
+        docs/reviews/R-PWB-RECOVERY-RECONCILIATION-GEN1-RAW.md -> roster/qa/MANIFESTO.md
+WARN  CG-1e  vendored-substrate scope gaps — 39 references examined, 0 findings — deliberately not vendored — GOVERNANCE-SUBSTRATE-LOCK.yaml th_engineering.vendored.scope_note names the boundary
+        .claude/skills/th-engineering/SKILL.md -> subskills/code-readability/SKILL.md
+        .claude/skills/th-engineering/SKILL.md -> subskills/cruft-cleanup/SKILL.md
+        .claude/skills/th-engineering/SKILL.md -> subskills/diagnosis/SKILL.md
+        .claude/skills/th-engineering/SKILL.md -> subskills/documentation/SKILL.md
+        .claude/skills/th-engineering/SKILL.md -> subskills/excalidraw-diagram/SKILL.md
+        .claude/skills/th-engineering/SKILL.md -> subskills/skill-standards/SKILL.md
+        .claude/skills/th-engineering/subskills/dependency-hygiene/SKILL.md -> ../code-readability/SKILL.md
+        .claude/skills/th-engineering/subskills/dependency-hygiene/SKILL.md -> ../cruft-cleanup/SKILL.md
+        .claude/skills/th-engineering/subskills/dependency-hygiene/SKILL.md -> ../excalidraw-diagram/SKILL.md
+        .claude/skills/th-engineering/subskills/dependency-hygiene/SKILL.md -> ./references/seams-and-dependencies.md
+        .claude/skills/th-engineering/subskills/dependency-hygiene/SKILL.md -> references/seams-and-dependencies.md
+        .claude/skills/th-engineering/subskills/engineering-bar/SKILL.md -> ../code-readability/SKILL.md
+        .claude/skills/th-engineering/subskills/engineering-bar/SKILL.md -> ../cruft-cleanup/SKILL.md
+        .claude/skills/th-engineering/subskills/engineering-bar/SKILL.md -> ../documentation/SKILL.md
+        .claude/skills/th-engineering/subskills/test-rigor/SKILL.md -> ../code-readability/SKILL.md
+        .claude/skills/th-engineering/subskills/test-rigor/SKILL.md -> ../dependency-hygiene/references/seams-and-dependencies.md
+        .claude/skills/th-engineering/subskills/test-rigor/SKILL.md -> ../diagnosis/SKILL.md
+        .claude/skills/th-engineering/subskills/test-rigor/SKILL.md -> references/condensation-classification.md
+        .claude/skills/th-engineering/subskills/test-rigor/SKILL.md -> references/suite-discipline.md
+        .codex/skills/th-engineering/SKILL.md -> subskills/code-readability/SKILL.md
+        .codex/skills/th-engineering/SKILL.md -> subskills/cruft-cleanup/SKILL.md
+        .codex/skills/th-engineering/SKILL.md -> subskills/diagnosis/SKILL.md
+        .codex/skills/th-engineering/SKILL.md -> subskills/documentation/SKILL.md
+        .codex/skills/th-engineering/SKILL.md -> subskills/excalidraw-diagram/SKILL.md
+        .codex/skills/th-engineering/SKILL.md -> subskills/skill-standards/SKILL.md
+        .codex/skills/th-engineering/subskills/dependency-hygiene/SKILL.md -> ../code-readability/SKILL.md
+        .codex/skills/th-engineering/subskills/dependency-hygiene/SKILL.md -> ../cruft-cleanup/SKILL.md
+        .codex/skills/th-engineering/subskills/dependency-hygiene/SKILL.md -> ../excalidraw-diagram/SKILL.md
+        .codex/skills/th-engineering/subskills/dependency-hygiene/SKILL.md -> ./references/seams-and-dependencies.md
+        .codex/skills/th-engineering/subskills/dependency-hygiene/SKILL.md -> references/seams-and-dependencies.md
+        .codex/skills/th-engineering/subskills/engineering-bar/SKILL.md -> ../code-readability/SKILL.md
+        .codex/skills/th-engineering/subskills/engineering-bar/SKILL.md -> ../cruft-cleanup/SKILL.md
+        .codex/skills/th-engineering/subskills/engineering-bar/SKILL.md -> ../documentation/SKILL.md
+        .codex/skills/th-engineering/subskills/test-rigor/SKILL.md -> ../code-readability/SKILL.md
+        .codex/skills/th-engineering/subskills/test-rigor/SKILL.md -> ../dependency-hygiene/references/seams-and-dependencies.md
+        .codex/skills/th-engineering/subskills/test-rigor/SKILL.md -> ../diagnosis/SKILL.md
+        .codex/skills/th-engineering/subskills/test-rigor/SKILL.md -> references/condensation-classification.md
+        .codex/skills/th-engineering/subskills/test-rigor/SKILL.md -> references/suite-discipline.md
+        .syzygy/governance/policies/craft-and-care/testing-and-verification.md -> subskills/test-rigor/references/suite-discipline.md
+OK    CG-2a  retired acceptance phrase confined — 843 files examined, 0 findings — 2 retired phrase(s) declared; 0 presented as current, 0 unmarked
+WARN  CG-2b  retired-phrase path allowlist — 54 quotations examined, 0 findings — declared files whose job is to preserve what was offered
+        .syzygy/governance/contracts/candidates/00-README.md:21 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — records the phrase as retired at rev10
+        .syzygy/governance/contracts/candidates/00-README.md:26 `ACCEPT FOUNDATIONAL RFCS` — records the phrase as retired at rev10
+        .syzygy/governance/contracts/candidates/10-EXIT-REPORT.md:126 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — records the phrase as retired at rev10
+        .syzygy/governance/contracts/candidates/10-EXIT-REPORT.md:130 `ACCEPT FOUNDATIONAL RFCS` — records the phrase as retired at rev10
+        .syzygy/governance/contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md:108 `ACCEPT FOUNDATIONAL RFCS` — the acceptance record that retires it
+        .syzygy/governance/contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md:113 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — the acceptance record that retires it
+        .syzygy/governance/contracts/candidates/history/RFC-0004-history.md:362 `ACCEPT FOUNDATIONAL RFCS` — frozen rev9 corpus and per-RFC amendment history
+        .syzygy/governance/contracts/candidates/history/RFC-0008-history.md:331 `ACCEPT FOUNDATIONAL RFCS` (quoted across a line wrap) — frozen rev9 corpus and per-RFC amendment history
+        .syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0003-project-workspace-manifests.md:363 `ACCEPT FOUNDATIONAL RFCS` — frozen rev9 corpus and per-RFC amendment history
+        .syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0004-observation-sources-evidence-adapters.md:1021 `ACCEPT FOUNDATIONAL RFCS` — frozen rev9 corpus and per-RFC amendment history
+        .syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0008-trajectory-work-surface.md:848 `ACCEPT FOUNDATIONAL RFCS` — frozen rev9 corpus and per-RFC amendment history
+        .syzygy/governance/contracts/candidates/reviews/DISPOSITIONS.md:15 `ACCEPT FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim
+        .syzygy/governance/contracts/candidates/reviews/rev10-confirming-review.md:26 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim
+        .syzygy/governance/contracts/candidates/reviews/rev10-equivalence-review.md:103 `ACCEPT FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim
+        .syzygy/governance/contracts/candidates/reviews/rev10-transaction-review.md:115 `ACCEPT FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim
+        .syzygy/governance/contracts/candidates/reviews/rev10-transaction-review.md:117 `ACCEPT FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim
+        .syzygy/governance/contracts/candidates/round-2026-08/FINAL-OWNER-ACCEPTANCE-RECORD.md:51 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/OWNER-ROUND-CHARTER.md:1215 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/OWNER-ROUND-CHARTER.md:241 `ACCEPT FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/OWNER-ROUND-CHARTER.md:242 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/REFRACTOR-PREFLIGHT-REPORT.md:74 `ACCEPT FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md:19 `ACCEPT FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md:21 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md:60 `ACCEPT FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/TERM-MIGRATION-REPORT.md:446 `ACCEPT FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/TERM-MIGRATION-REPORT.md:448 `ACCEPT FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/TERM-MIGRATION-REPORT.md:449 `ACCEPT FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-1-fresh-engineer-RAW.md:159 `ACCEPT FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-1-fresh-engineer-RAW.md:161 `ACCEPT FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-1-fresh-engineer-RAW.md:171 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-4-contract-compaction-RAW.md:131 `ACCEPT FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-4-contract-compaction-RAW.md:135 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-4-contract-compaction-RAW.md:533 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-7-evidence-security-RAW.md:198 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-7-evidence-security-RAW.md:60 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — this round's process record and delta register
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-9-public-clone-RAW.md:175 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-7-public-clone-RAW.md:134 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — same rule as its predecessor
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/DELIVERY-AND-VERDICT-REGISTER.md:57 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/DISPOSITION-REGISTER.md:387 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md:24 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md:56 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md:56 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md:56 `ACCEPT FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md:84 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-18-wave-a-RAW.md:311 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-18-wave-a-RAW.md:62 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-18-wave-a-RAW.md:66 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-19-wave-b-RAW.md:17 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-19-wave-b-RAW.md:17 `ACCEPT FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-19-wave-b-RAW.md:192 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-19-wave-b-RAW.md:192 `ACCEPT FOUNDATIONAL RFCS` — raw reviewer output, stored verbatim — a reviewer's retired-phrase sweep must be able to name the phrases it swept for
+        .syzygy/governance/decisions/OWNER-ANSWERS-2026-08-01.md:16 `ACCEPT FOUNDATIONAL RFCS` — owner ruling that the phrase was not performed
+        .syzygy/governance/decisions/OWNER-ANSWERS-2026-08-01.md:255 `ACCEPT FOUNDATIONAL RFCS` — owner ruling that the phrase was not performed
+        .syzygy/governance/decisions/PROCESS-LESSONS.md:85 `ACCEPT FOUNDATIONAL RFCS` — records the acceptance-authority migration, of which the phrase's unconditional retirement is one step
+WARN  CG-2f  retired-phrase historical markers — 25 quotations examined, 0 findings — lawful quotations — marked at the line or by the artifact's banner; printed, never silenced
+        .syzygy/governance/contracts/candidates/02-OWNER-DIRECTION-RECORD.md:96 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/09-OPEN-SPEC-READINESS-REPORT.md:30 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — SUPERSEDED/Historical banner in the first 12 lines marks the whole artifact
+        .syzygy/governance/contracts/candidates/ACCEPTANCE-PHRASE-REGISTRY.yaml:156 `ACCEPT FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/ACCEPTANCE-PHRASE-REGISTRY.yaml:159 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/ACCEPTANCE-PHRASE-REGISTRY.yaml:166 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/HISTORICAL-INDEX.md:163 `ACCEPT FOUNDATIONAL RFCS` — SUPERSEDED/Historical banner in the first 12 lines marks the whole artifact
+        .syzygy/governance/contracts/candidates/HISTORICAL-INDEX.md:164 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — SUPERSEDED/Historical banner in the first 12 lines marks the whole artifact
+        .syzygy/governance/contracts/candidates/round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md:4 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — SUPERSEDED/Historical banner in the first 12 lines marks the whole artifact
+        .syzygy/governance/contracts/candidates/round-2026-08c/FINAL-OWNER-ACCEPTANCE-PACKET.md:209 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — SUPERSEDED/Historical banner in the first 12 lines marks the whole artifact
+        .syzygy/governance/contracts/candidates/round-2026-08c/FINAL-OWNER-ACCEPTANCE-PACKET.md:4 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — SUPERSEDED/Historical banner in the first 12 lines marks the whole artifact
+        .syzygy/governance/contracts/candidates/round-2026-08d/ACCEPTANCE-WAVE-DESIGN.md:110 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/round-2026-08d/SEMANTIC-DELTA-RECORD.md:18 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-CLOSURE-PREFLIGHT.md:101 `ACCEPT FOUNDATIONAL RFCS` — SUPERSEDED/Historical banner in the first 12 lines marks the whole artifact
+        .syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-CLOSURE-PREFLIGHT.md:102 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — SUPERSEDED/Historical banner in the first 12 lines marks the whole artifact
+        .syzygy/governance/contracts/candidates/round-2026-08e/WAVE-A-SEMANTIC-DELTA.md:56 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-28-spec-authoring-RAW.md:233 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-28-spec-authoring-RAW.md:233 `ACCEPT FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-31b-wave-a-RAW.md:87 `ACCEPT FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32-wave-b-RAW.md:120 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32-wave-b-RAW.md:120 `ACCEPT FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32b-wave-b-RAW.md:171 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32b-wave-b-RAW.md:171 `ACCEPT FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32c-wave-b-RAW.md:239 `ACCEPT COMPACTED FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/round-2026-08e/reviews/RD-32c-wave-b-RAW.md:239 `ACCEPT FOUNDATIONAL RFCS` — marked historical by `retired` within 2 line(s)
+        .syzygy/governance/contracts/candidates/round-2026-08g/reviews/RD-54-p33-install-shape-RAW.md:137 `ACCEPT FOUNDATIONAL RFCS` — marked historical by `retirement` within 2 line(s)
+OK    CG-2c  `about/` absent from AGENTS/README — 2 files examined, 0 findings
+WARN  CG-2d  `about/` allowlist — 3 files examined, 0 findings — guidance and historical mentions, out of CG-2c scope
+        .claude/skills/heart-and-soul/SKILL.md — no-about/-tree guidance
+        .codex/skills/heart-and-soul/SKILL.md — no-about/-tree guidance
+        .syzygy/governance/policies/craft-and-care/README.md — historical note on the upstream pillar home
+WARN  CG-2e  wrapped act-phrase arguments current — 0 quotations examined, 0 findings — no act phrase is quoted across a line wrap — CG-7d covers the single-line population
+OK    CG-3   stale bootstrap routing absent — 813 files examined, 0 findings
+OK    CG-4a  candidate homes carry candidate banners — 13 files examined, 0 findings — plus 39 `rfcs/` module(s) covered by the directory-level marker `.syzygy/governance/contracts/candidates/README.md`
+OK    CG-4b  candidate homes claim no acceptance — 133 files examined, 0 findings
+OK    CG-5   canonical craft banners truthful — 10 files examined, 0 findings
+OK    CG-6   accepted homes created only by recorded acts — 2 homes examined, 0 findings
+        [created by recorded act] .syzygy/governance/contracts/rfcs — the owner-act record carries its creating phrase with a full argument
+OK    CG-7a  current digests valid; wave paths partition the set — 78 entries examined, 0 findings — active manifest sha256 82afd6266cba94a393343f267b763df564a6c3dcff577a98fc5954adb4977460 (package identity, no act's argument); 2 performed wave(s) checked by path only, 4 by current row digest
+OK    CG-7g  wave-manifests/ population closed — 6 files examined, 0 findings — 6 maintained manifests expected
+OK    CG-7f  wave-act module counts match the manifests — 6 rows examined, 0 findings — 2 of 6 row(s) state a comparable count
+        wave C1 — the row states no module count; 2 row(s) in the manifest, nothing to compare
+        wave C2 — the row states no module count; 1 row(s) in the manifest, nothing to compare
+        wave D1 — the row states no module count; 5 row(s) in the manifest, nothing to compare
+        wave D2 — the row states no module count; 1 row(s) in the manifest, nothing to compare
+OK    CG-7b  wave arguments match immutable/current manifests — 6 arguments examined, 0 findings — 2 performed argument(s) from .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md; 4 unperformed offer(s) from .syzygy/governance/contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md
+OK    CG-7c  acts 2/3/4 arguments match their subjects — 3 arguments examined, 0 findings
+WARN  CG-7d  act digests quoted anywhere are current or performed — 56 quotations examined, 0 findings — 19 of 21 digest-bearing subject(s) have quotations; zero: ADOPT DOCTRINE AMENDMENT: D3, SIGN OFF POLARIS NO-SIGNAL CONTRACT AMENDMENT
+        [subject] SIGN OFF PWB TRUTH-AND-READINESS AMENDMENT — 3 quotation(s), 0 finding(s), 1 performed digest(s)
+        [subject] ACCEPT FOUNDATIONAL WAVE A — 2 quotation(s), 0 finding(s), 1 performed digest(s)
+        [subject] ACCEPT FOUNDATIONAL WAVE B — 2 quotation(s), 0 finding(s), 1 performed digest(s)
+        [subject] ACCEPT FOUNDATIONAL WAVE C1 — 1 quotation(s), 0 finding(s), 0 performed digest(s)
+        [subject] ACCEPT FOUNDATIONAL WAVE C2 — 1 quotation(s), 0 finding(s), 0 performed digest(s)
+        [subject] ACCEPT FOUNDATIONAL WAVE D1 — 1 quotation(s), 0 finding(s), 0 performed digest(s)
+        [subject] ACCEPT FOUNDATIONAL WAVE D2 — 1 quotation(s), 0 finding(s), 0 performed digest(s)
+        [subject] CONFIRM CRAFT AMENDMENT: CC-TEST-2 — 1 quotation(s), 0 finding(s), 0 performed digest(s)
+        [subject] CONFIRM CRAFT AMENDMENT: CC-SPEC — 5 quotation(s), 0 finding(s), 2 performed digest(s)
+        [subject] CONFIRM CRAFT AMENDMENT: CC-IMPACT — 3 quotation(s), 0 finding(s), 1 performed digest(s)
+        [subject] ACCEPT TOPOLOGY — 1 quotation(s), 0 finding(s), 0 performed digest(s)
+        [subject] ADOPT PROJECT OVERVIEW — 1 quotation(s), 0 finding(s), 0 performed digest(s)
+        [subject] ADOPT DOCTRINE AMENDMENT: D3 — 0 quotation(s), 0 finding(s), 0 performed digest(s)
+        [subject] SIGN OFF GENERAL TRUSTED-BOOTSTRAP AUTHORIZATION TRANSACTION — 4 quotation(s), 0 finding(s), 1 performed digest(s)
+        [subject] SIGN OFF PWB STATE-(1) AMENDMENT — 3 quotation(s), 0 finding(s), 1 performed digest(s)
+        [subject] SIGN OFF POLARIS NO-SIGNAL CONTRACT AMENDMENT — 0 quotation(s), 0 finding(s), 0 performed digest(s)
+        [subject] ADOPT POLARIS GENERATOR SPECIFICATION, SCOPED APPLICABILITY AND IMPLEMENTATION — 7 quotation(s), 0 finding(s), 1 performed digest(s)
+        [subject] ADOPT POLARIS UNDERSTANDING AMENDMENT — 2 quotation(s), 0 finding(s), 1 performed digest(s)
+        [subject] CONSENT TO BUTLERS PROJECT-SHAPE OBSERVATION — 4 quotation(s), 0 finding(s), 1 performed digest(s)
+        [subject] APPROVE POLARIS BUTLERS SECRET-CLASSIFICATION POLICY — 7 quotation(s), 0 finding(s), 2 performed digest(s)
+        [subject] ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY — 7 quotation(s), 0 finding(s), 2 performed digest(s)
+OK    CG-7e  act-argument copies enumerated and current — 32 files examined, 0 findings
+        [registered] .syzygy/governance/contracts/candidates/FINAL-FOUNDATIONAL-CONTRACT-ACCEPTANCE-RECORD.md — declares 10 current and 1 performed-history act(s); 10 current, 1 historical valid
+        [registered] .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/ACT-SEMANTICS.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/CANDIDATE-TRANSACTION-REPORT.md — declares 0 current and 1 performed-history act(s); 0 current, 1 historical valid
+        [registered] .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/OWNER-SIGNOFF-PACKET.md — declares 0 current and 1 performed-history act(s); 0 current, 1 historical valid
+        [registered] .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/TRANSACTION-MANIFEST.txt — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/contracts/candidates/pwb-effect-acts/ACT-SEMANTICS.md — declares 1 current and 2 performed-history act(s); 1 current, 2 historical valid
+        [registered] .syzygy/governance/contracts/candidates/pwb-effect-acts/CANDIDATE-REPORT.md — declares 1 current and 2 performed-history act(s); 1 current, 2 historical valid
+        [registered] .syzygy/governance/contracts/candidates/pwb-effect-acts/OWNER-SIGNOFF-PACKET.md — declares 1 current and 2 performed-history act(s); 1 current, 2 historical valid
+        [registered] .syzygy/governance/contracts/candidates/pwb-effect-acts/PWB-EFFECT-ACTS-MANIFEST.txt — declares 1 current and 2 performed-history act(s); 1 current, 2 historical valid
+        [registered] .syzygy/governance/contracts/candidates/pwb-state1-amendment/CANDIDATE-REPORT.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/contracts/candidates/pwb-state1-amendment/OWNER-SIGNOFF-PACKET.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/OWNER-DECISION-PACKET.md — declares 3 current and 0 performed-history act(s); 3 current, 0 historical valid
+        [registered] .syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/PWB-EFFECT-AMENDMENT-MANIFEST.txt — declares 2 current and 0 performed-history act(s); 2 current, 0 historical valid
+        [registered] .syzygy/governance/contracts/candidates/round-2026-08e/WAVE-A-CLOSURE-REPORT.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/contracts/candidates/round-2026-08e/WAVE-B-CLOSURE-REPORT.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/contracts/candidates/round-2026-08g/FINAL-OWNER-AND-SPEC-CLOSURE-PREFLIGHT.md — declares 2 current and 0 performed-history act(s); 2 current, 0 historical valid
+        [registered] .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md — declares 12 current and 0 performed-history act(s); 12 current, 0 historical valid
+        [registered] .syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md — declares 2 current and 0 performed-history act(s); 2 current, 0 historical valid
+        [registered] .syzygy/governance/decisions/POLARIS-GENERATOR-APPLICABILITY-ACT.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/decisions/POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/decisions/POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/decisions/POLARIS-UNDERSTANDING-SPECIFICATION-ADOPTION-ACT.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-ACT.md — declares 0 current and 1 performed-history act(s); 0 current, 1 historical valid
+        [registered] .syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md — declares 0 current and 1 performed-history act(s); 0 current, 1 historical valid
+        [registered] .syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/decisions/PWB-STATE1-AMENDMENT-ACT.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+        [registered] .syzygy/governance/decisions/SPECIFICATION-ACCEPTANCE-DECISION.md — declares 0 current and 1 performed-history act(s); 0 current, 1 historical valid
+        [registered] .syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md — declares 4 current and 0 performed-history act(s); 4 current, 0 historical valid
+        [registered] docs/design/POLARIS-GENERATOR-SIGNOFF-OFFER.md — declares 1 current and 0 performed-history act(s); 1 current, 0 historical valid
+OK    CG-7h  performed bootstrap transaction subjects remain exact — 102 predicates examined, 0 findings
+        [current] .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md — .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/TRANSACTION-MANIFEST.txt 1885a323c659…
+        [current] .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md — .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md 6093dbbe519d…
+        [current] .syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md — .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/TRANSACTION-MANIFEST.txt 1885a323c659…
+        [current] .syzygy/governance/decisions/GENERAL-TRUSTED-BOOTSTRAP-AUTHORIZATION-ACT.md — .syzygy/governance/contracts/candidates/policy-candidates/SPECIFICATION-ACCEPTANCE-POLICY-CANDIDATE.md 6093dbbe519d…
+        [current] .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md — .syzygy/governance/contracts/candidates/pwb-state1-amendment/PWB-AMENDMENT-MANIFEST.txt 14a84abadf0b…
+        [current] .syzygy/governance/decisions/PWB-STATE1-AMENDMENT-ACT.md — .syzygy/governance/contracts/candidates/pwb-state1-amendment/PWB-AMENDMENT-MANIFEST.txt 14a84abadf0b…
+        [current] .syzygy/governance/decisions/ACCEPTANCE-ACT-RECORD.md — .syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt 97e3d8f833d3…
+        [current] .syzygy/governance/decisions/PWB-TRUTH-READINESS-AMENDMENT-ACT.md — .syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt 97e3d8f833d3…
+        [historical] .syzygy/governance/contracts/candidates/pwb-state1-amendment/PWB-AMENDMENT-MANIFEST.txt — 11 act-time PWB row(s) preserved for `SIGN OFF PWB STATE-(1) AMENDMENT`; current bytes are bound by .syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt
+        [historical] .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/PWB-COVERAGE-AMENDMENT-MANIFEST.txt — 5 act-time PWB row(s) preserved; current bytes are bound by .syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt
+        [population] 4 act-record predicates + 7 top-level subjects + 30 contract rows + 5 PWB rows + 30 installed/candidate mirror pairs + 4 successor act predicates + 22 successor PWB rows
+WARN  CG-8   context budgets reported — 43 artifacts examined, 16 findings — report-only — §7.3 default-load figures are printed every run; §11.4 triggers are decomposition prompts, not failures
+        README.md — 1751 w ≈ 2364 est. tokens
+        AGENTS.md — 5152 w ≈ 6955 est. tokens (4797 authored + 355 tool-managed)
+        .claude/skills/heart-and-soul/SKILL.md — 438 w ≈ 591 est. tokens
+        .syzygy/intent/OVERVIEW.md — 1832 w ≈ 2473 est. tokens
+        README.md — 1751 words, over the 1200-word root README review trigger (§11.4 trigger; review, not failure)
+        AGENTS.md — 5152 words, over the 1500-word AGENTS review trigger (§11.4 trigger; review, not failure)
+        AGENTS.md — 4797 authored words, outside the §7.1 900–1,200 target band
+        .syzygy/governance/contracts/candidates/rfcs/RFC-0001-project-graph-identity-state-planes.md — 9124 words, above 5000: §11.4 focused decomposition review
+        .syzygy/governance/contracts/candidates/rfcs/RFC-0003/governance-homes-and-owner-acts.md — 4853 words, over the 4000-word active-module trigger (§11.4)
+        .syzygy/governance/contracts/candidates/rfcs/RFC-0003/manifests-and-namespace.md — 5483 words, above 5000: §11.4 focused decomposition review
+        .syzygy/governance/contracts/candidates/rfcs/RFC-0006-cross-surface-selection-query-drawer.md — 5415 words, above 5000: §11.4 focused decomposition review
+        .syzygy/governance/contracts/candidates/rfcs/RFC-0007/narrative-contract.md — 5317 words, above 5000: §11.4 focused decomposition review
+        .syzygy/governance/contracts/candidates/rfcs/RFC-0007/rendering-and-surface.md — 4663 words, over the 4000-word active-module trigger (§11.4)
+        .syzygy/governance/contracts/candidates/rfcs/RFC-0008/state-vocabulary-and-cost.md — 4138 words, over the 4000-word active-module trigger (§11.4)
+        .syzygy/governance/contracts/candidates/rfcs/RFC-0009/semantic-geography.md — 7869 words, above 5000: §11.4 focused decomposition review
+        .syzygy/governance/contracts/candidates/rfcs/RFC-0009/visual-grammar-and-lenses.md — 6088 words, above 5000: §11.4 focused decomposition review
+OK    CG-9   duplicate authority homes absent — 16 files examined, 0 findings
+WARN  CG-10  pending register as-of reported — 1 register examined, 0 findings — reported for human currency judgement, never auto-verified
+        .syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md:9 — As-of: 2026-08-17** — refactored (convergence pass, round 2026-08i):
+        .syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md:13 — as-of chronology live in [`DECISION-HISTORY.md`](DECISION-HISTORY.md);
+OK    CG-11  cache/local git-ignored — 2 patterns examined, 0 findings
+OK    CG-12  no `_bootstrap/` cited as a required source — 55 citations examined, 0 findings
+WARN  CG-12b `_bootstrap/` citation allowlist — 84 files examined, 0 findings — derivation and archive records
+        .syzygy/governance/contracts/candidates/04-CLAUSE-MIGRATION-MATRIX.md (18 line(s)) — clause-migration provenance, cites frozen rev9 sources by construction
+        .syzygy/governance/contracts/candidates/COMPACTION-CHARTER.md (5 line(s)) — the superseded round's own working charter
+        .syzygy/governance/contracts/candidates/history/README.md (2 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/history/RFC-0001-history.md (3 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/history/RFC-0002-history.md (2 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/history/RFC-0003-history.md (3 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/history/RFC-0004-history.md (3 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/history/RFC-0005-history.md (2 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/history/RFC-0006-history.md (4 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/history/RFC-0007-history.md (3 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/history/RFC-0008-history.md (4 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/history/RFC-0009-history.md (3 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0001-project-graph-identity-state-planes.md (1 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0003-project-workspace-manifests.md (2 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0006-cross-surface-selection-query-drawer.md (2 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/history/rev9-rfcs/RFC-0009-orrery-map-surface.md (1 line(s)) — frozen rev9 corpus and amendment history
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0001-rows.md (1 line(s)) — per-RFC clause-migration provenance rows
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0002-rows.md (3 line(s)) — per-RFC clause-migration provenance rows
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0003-rows.md (2 line(s)) — per-RFC clause-migration provenance rows
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0004-rows.md (2 line(s)) — per-RFC clause-migration provenance rows
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0005-rows.md (1 line(s)) — per-RFC clause-migration provenance rows
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0006-rows.md (1 line(s)) — per-RFC clause-migration provenance rows
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0007-rows.md (3 line(s)) — per-RFC clause-migration provenance rows
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0008-rows.md (4 line(s)) — per-RFC clause-migration provenance rows
+        .syzygy/governance/contracts/candidates/matrix-rows/RFC-0009-rows.md (1 line(s)) — per-RFC clause-migration provenance rows
+        .syzygy/governance/contracts/candidates/reviews/rev10-boundary-review.md (2 line(s)) — raw reviewer output, stored verbatim
+        .syzygy/governance/contracts/candidates/reviews/rev10-confirming-review.md (1 line(s)) — raw reviewer output, stored verbatim
+        .syzygy/governance/contracts/candidates/reviews/rev10-digestibility-review.md (1 line(s)) — raw reviewer output, stored verbatim
+        .syzygy/governance/contracts/candidates/reviews/rev10-portability-review.md (2 line(s)) — raw reviewer output, stored verbatim
+        .syzygy/governance/contracts/candidates/reviews/rev10-transaction-review.md (3 line(s)) — raw reviewer output, stored verbatim
+        .syzygy/governance/contracts/candidates/round-2026-08/ARTIFACT-INVENTORY.md (1 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/contracts/candidates/round-2026-08/CONTEXT-COMPILER-FIXTURE-REPORT.md (4 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/contracts/candidates/round-2026-08/HISTORICAL-ARCHIVE-INDEX.md (2 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/contracts/candidates/round-2026-08/KNOWLEDGE-HEALTH-BRIEF.md (1 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/contracts/candidates/round-2026-08/OWNER-ROUND-CHARTER.md (7 line(s)) — owner-supplied round charter, quoted verbatim
+        .syzygy/governance/contracts/candidates/round-2026-08/PUBLIC-CLONE-AUTHORITY-MATRIX.md (2 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/contracts/candidates/round-2026-08/REFRACTOR-PREFLIGHT-REPORT.md (5 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/contracts/candidates/round-2026-08/TERM-MIGRATION-REPORT.md (5 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-1-fresh-engineer-RAW.md (9 line(s)) — raw reviewer output, stored verbatim — never edited, so a reviewer's own mention of the excluded tree (usually to record that they did not read it) is evidence, not an active citation
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-2-vision-doctrine-RAW.md (3 line(s)) — raw reviewer output, stored verbatim — never edited, so a reviewer's own mention of the excluded tree (usually to record that they did not read it) is evidence, not an active citation
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-3-anti-rot-RAW.md (7 line(s)) — raw reviewer output, stored verbatim — never edited, so a reviewer's own mention of the excluded tree (usually to record that they did not read it) is evidence, not an active citation
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-4-contract-compaction-RAW.md (8 line(s)) — raw reviewer output, stored verbatim — never edited, so a reviewer's own mention of the excluded tree (usually to record that they did not read it) is evidence, not an active citation
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-5-context-compiler-RAW.md (3 line(s)) — raw reviewer output, stored verbatim — never edited, so a reviewer's own mention of the excluded tree (usually to record that they did not read it) is evidence, not an active citation
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-6-mission-autonomy-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — never edited, so a reviewer's own mention of the excluded tree (usually to record that they did not read it) is evidence, not an active citation
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-7-evidence-security-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — never edited, so a reviewer's own mention of the excluded tree (usually to record that they did not read it) is evidence, not an active citation
+        .syzygy/governance/contracts/candidates/round-2026-08/reviews/RB-8-public-clone-RAW.md (6 line(s)) — raw reviewer output, stored verbatim — never edited, so a reviewer's own mention of the excluded tree (usually to record that they did not read it) is evidence, not an active citation
+        .syzygy/governance/contracts/candidates/round-2026-08b/PUBLIC-CLONE-VERIFICATION-REPORT.md (3 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-1-fresh-engineer-RAW.md (5 line(s)) — raw reviewer output, stored verbatim — same rule as the prior round; each round's review directory is allowlisted explicitly when opened, never by a `round-*/` glob, so opening one is a deliberate act
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-10-final-confirming-RAW.md (2 line(s)) — raw reviewer output, stored verbatim — same rule as the prior round; each round's review directory is allowlisted explicitly when opened, never by a `round-*/` glob, so opening one is a deliberate act
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-11-repair-confirming-RAW.md (4 line(s)) — raw reviewer output, stored verbatim — same rule as the prior round; each round's review directory is allowlisted explicitly when opened, never by a `round-*/` glob, so opening one is a deliberate act
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-12-budget-waiver-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — same rule as the prior round; each round's review directory is allowlisted explicitly when opened, never by a `round-*/` glob, so opening one is a deliberate act
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-2-vision-polaris-RAW.md (3 line(s)) — raw reviewer output, stored verbatim — same rule as the prior round; each round's review directory is allowlisted explicitly when opened, never by a `round-*/` glob, so opening one is a deliberate act
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-3-vocabulary-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — same rule as the prior round; each round's review directory is allowlisted explicitly when opened, never by a `round-*/` glob, so opening one is a deliberate act
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-4-contract-semantics-RAW.md (2 line(s)) — raw reviewer output, stored verbatim — same rule as the prior round; each round's review directory is allowlisted explicitly when opened, never by a `round-*/` glob, so opening one is a deliberate act
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-5-rfc-openspec-boundary-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — same rule as the prior round; each round's review directory is allowlisted explicitly when opened, never by a `round-*/` glob, so opening one is a deliberate act
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-6-context-compiler-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — same rule as the prior round; each round's review directory is allowlisted explicitly when opened, never by a `round-*/` glob, so opening one is a deliberate act
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-7-mission-safety-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — same rule as the prior round; each round's review directory is allowlisted explicitly when opened, never by a `round-*/` glob, so opening one is a deliberate act
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-8-evidence-security-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — same rule as the prior round; each round's review directory is allowlisted explicitly when opened, never by a `round-*/` glob, so opening one is a deliberate act
+        .syzygy/governance/contracts/candidates/round-2026-08b/reviews/RC-9-public-clone-RAW.md (18 line(s)) — raw reviewer output, stored verbatim — same rule as the prior round; each round's review directory is allowlisted explicitly when opened, never by a `round-*/` glob, so opening one is a deliberate act
+        .syzygy/governance/contracts/candidates/round-2026-08c/FINAL-CLOSURE-PREFLIGHT.md (2 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/contracts/candidates/round-2026-08c/FINAL-PUBLIC-CLONE-REPORT.md (1 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-6-source-of-truth-RAW.md (8 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round opened, on the same terms as its two predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-7-public-clone-RAW.md (7 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round opened, on the same terms as its two predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08c/reviews/RD-8-exact-manifest-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round opened, on the same terms as its two predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/OWNER-WORK-ORDER.md (1 line(s)) — owner-supplied work order, quoted verbatim — its `_bootstrap/` line sits inside the prohibition list it orders enforced
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/DISPOSITION-REGISTER.md (1 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/LAUNCH-GATE-ADMINISTRATION-2026-08-09-RAW.md (2 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-10-human-view-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-11-context-packet-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-12-context-selection-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-15-facets-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-16-vocabulary-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-17-validation-RAW.md (2 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-18-wave-a-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-20-wave-d1-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-21-wave-d2-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-22-wave-c1-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-23-wave-c2-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08d/reviews/RD-9-core-authority-RAW.md (1 line(s)) — raw reviewer output, stored verbatim — allowlisted explicitly when the round's review pass opened, on the same terms as its predecessors
+        .syzygy/governance/contracts/candidates/round-2026-08e/GOVERNANCE-REDUCTION-PLAN.md (1 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/contracts/candidates/round-2026-08f/FINAL-PUBLIC-CLONE-REPORT.md (2 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/decisions/LICENSE-DECISION-PACKET.md (1 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/decisions/PROCESS-LESSONS.md (5 line(s)) — file-level disclosure that these pointers are git-excluded
+        .syzygy/governance/policies/craft-and-care/INSTALL-RECORD.md (2 line(s)) — file-level disclosure that these pointers are git-excluded
+OK    CG-13  dependency edges resolve; README = module union — 185 edges examined, 0 findings
+OK    CG-14  acceptance install routes valid — 11 paths examined, 0 findings
+OK    CG-15  truncated digest quotes still current — 15 quotations examined, 0 findings
+WARN  CG-15b superseded records holding old digests — 41 files examined, 0 findings — carry a SUPERSEDED/Historical banner; their digests record what was offered, not what is
+        .syzygy/governance/contracts/candidates/09-OPEN-SPEC-READINESS-REPORT.md
+        .syzygy/governance/contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-DRAFT.md
+        .syzygy/governance/contracts/candidates/HISTORICAL-INDEX.md
+        .syzygy/governance/contracts/candidates/LEAD-SWEEP-NOTES.md
+        .syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX-REV10.md
+        .syzygy/governance/contracts/candidates/WORKER-REPORT-DIGEST.md
+        .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/CANDIDATE-TRANSACTION-REPORT.md
+        .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/OWNER-SIGNOFF-PACKET.md
+        .syzygy/governance/contracts/candidates/pwb-effect-acts/CANDIDATE-REPORT.md
+        .syzygy/governance/contracts/candidates/pwb-state1-amendment/CANDIDATE-REPORT.md
+        .syzygy/governance/contracts/candidates/pwb-state1-amendment/OWNER-SIGNOFF-PACKET.md
+        .syzygy/governance/contracts/candidates/pwb-state1-amendment/SEMANTIC-DELTA.md
+        .syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/OWNER-DECISION-PACKET.md
+        .syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/SEMANTIC-DELTA.md
+        .syzygy/governance/contracts/candidates/round-2026-08/CONTEXT-COMPILER-FIXTURE-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08/FINAL-PRE-SPECIFICATION-READINESS-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08/HISTORICAL-ARCHIVE-INDEX.md
+        .syzygy/governance/contracts/candidates/round-2026-08/PUBLIC-CLONE-VERIFICATION-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08/REFRACTOR-PREFLIGHT-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08/SEMANTIC-DELTAS-THIS-ROUND.md
+        .syzygy/governance/contracts/candidates/round-2026-08/TERM-MIGRATION-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08b/FINAL-OWNER-ACCEPTANCE-RECORD.md
+        .syzygy/governance/contracts/candidates/round-2026-08b/PUBLIC-CLONE-VERIFICATION-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/FINAL-CLOSURE-PREFLIGHT.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/FINAL-PRE-SPECIFICATION-READINESS-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/FINAL-PUBLIC-CLONE-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/FIRST-OPENSPEC-SEQUENCE.md
+        .syzygy/governance/contracts/candidates/round-2026-08c/MISSION-SAFETY-CLOSURE-REPORT-vNEXT.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/FIRST-OPENSPEC-SEQUENCE.md
+        .syzygy/governance/contracts/candidates/round-2026-08d/STRUCTURAL-CLOSURE-PREFLIGHT.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/LAUNCH-CLOSURE-PREFLIGHT.md
+        .syzygy/governance/contracts/candidates/round-2026-08e/SHAPE-TO-SPEC-PROPAGATION-FIXTURE.md
+        .syzygy/governance/contracts/candidates/round-2026-08f/CAPABILITY-1-OWNER-DECISION-PACKET.md
+        .syzygy/governance/contracts/candidates/round-2026-08f/FINAL-CAPABILITY-1-READINESS-REPORT.md
+        .syzygy/governance/contracts/candidates/round-2026-08f/FINAL-LAUNCH-CLOSURE-PREFLIGHT.md
+        .syzygy/governance/contracts/candidates/round-2026-08f/P33-SEMANTIC-INSTALL-ANALYSIS.md
+        .syzygy/governance/contracts/candidates/round-2026-08g/CAPABILITY-1-OWNER-DECISION-INDEX.md
+        .syzygy/governance/contracts/candidates/round-2026-08g/FINAL-CAPABILITY-1-READINESS-REPORT.md
+        .syzygy/governance/decisions/DECISION-HISTORY.md
+        .syzygy/governance/decisions/OWNER-ANSWERS-2026-08-01.md
+        .syzygy/governance/decisions/launch-gate/HISTORY.md
+OK    CG-16  term registry never described as accepted — 116 mentions examined, 0 findings
+OK    CG-17  surface clauses routed exactly once — 210 clauses examined, 0 findings
+OK    CG-18  context fixtures recompute — 20 measurements examined, 0 findings — 10 fixture(s) × 2 predicates (digest, word count) — the denominator is computed, never incremented per predicate found
+OK    CG-19  substrate pins complete and well-formed; drift consistent — 57 predicate evaluations examined, 0 findings
+WARN  CG-19b substrate pin population — 5 pins examined, 0 findings — report-only — a pin leaving this list is visible here even when CG-19 stays green
+        beads — version-declared, 6 field(s)
+        beads_orchestration — git-pinned, 10 field(s)
+        openspec — version-declared, 8 field(s)
+        th_engineering — git-pinned, 7 field(s)
+        th_projects — git-pinned, 10 field(s)
+OK    CG-20  routing artifacts state no measurement — 391 lines examined, 0 findings — 2 artifact(s): 06-CONTEXT-LOAD-MAP.md, README.md
+OK    CG-21  contract prose states no measurement — 39 modules examined, 0 findings
+OK    CG-22  no unqualified `status` in the active lane — 483 files examined, 0 findings
+WARN  CG-22b unqualified-`status` allowlist — 3 files examined, 0 findings — the rule's own statement and its counter-example
+        .syzygy/governance/contracts/candidates/policy-candidates/TERM-REGISTRY.md (1 hit(s)) — states the rule itself; the bare form is the thing being forbidden
+        .syzygy/governance/contracts/candidates/round-2026-08d/OWNER-WORK-ORDER.md (2 hit(s)) — owner-supplied work order, quoted verbatim — its bare `status` spans name the defect it orders fixed
+        .syzygy/governance/policies/craft-and-care/interfaces-and-dependencies.md (2 hit(s)) — quotes a violating API's own field name as the rule's worked counter-example — adopted craft text, not a Syzygy field
+WARN  CG-23  default-path vocabulary reported — 40 term-in-files examined, 0 findings — report-only — the core set is candidate, so this is the registry's own bound reported, not enforced
+        [ordinary-English use, exempt] README.md — `Claim` (T-13) 2× — "No claim of alignment, convergence, or regeneration capability" (README.md, 'What is not implemented' section; restated 2026-08-10, RD29-10 — 'is intended by this repository') — the ordinary verb-shaped noun, not the kernel's positive-status carrier. An earlier revision of this exemption misquoted the very line it exempts; review RD-3 caught it in passing, and nothing here verifies the quotation mechanically
+OK    CG-26  published battery and hosted battery are one list — 26 checks examined, 0 findings — 26 published, 26 hosted, 26 shared
+        [orientation, not compared] git tag --list 'doctrine-*'
+WARN  CG-27  default-path current-state claims are derived or bannered — 45 claims examined, 16 findings — 8 of 8 default-path file(s) read, 4 claim class(es) — rule's home is CC-KNOW-11 in the candidate knowledge-hygiene policy — advisory until P-12 is ruled
+        .syzygy/governance/decisions/README.md — `gate-version` claim with nothing to check it against: "LAUNCH-GATE-AUTHORITY-DECISION.md) | **P-34 ruled 2026-08-16** — launch-gate v2.4". Name `launch-gate-pre-specifications.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `gate-verdict` claim with nothing to check it against: "NOT READY". Name `PROJECT-STATUS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-33 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-34 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-35 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-38 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-39 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-14 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-16 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-24 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-45 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-46 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-47 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-48 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-60…P-65 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+        .syzygy/governance/decisions/README.md — `prerequisite` claim with nothing to check it against: "P-54…P-59 and P-66 ruled". Name `PENDING-OWNER-DECISIONS.md`, which owns this fact, in the paragraph or its table row, or in the file's leading banner; or carry an as-of date
+WARN  CG-24  selftest coverage reported — 27 check families examined, 1 finding — 20 of 27 check families have at least one fixture — quote this figure, never 'every check'
+        no `--selftest` fixture: CG-3, CG-5, CG-6, CG-9, CG-10, CG-11, CG-12
+OK    CG-25  every check names its authoritative rule — 27 check families examined, 0 findings — 27 of 27 attributed; 3 downgraded to WARN (2 with no written owner, 1 with a candidate one); 1 fired this run
+        [downgraded] CG-20 — rule stated only in check_governance.py — advisory until the knowledge-hygiene policy is adopted (RD-17 f11, gate C2)
+        [downgraded] CG-21 — rule stated only in check_governance.py — advisory until the knowledge-hygiene policy is adopted (RD-17 f11, gate C2)
+        [downgraded] CG-27 — rule's home is CC-KNOW-11 in the candidate knowledge-hygiene policy — advisory until P-12 is ruled
+
+32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted
+  pass  CG-13 empty corpus warns, never passes                                                                 
+  pass  CG-13 dangling edge detected                                                                           
+  pass  CG-2a unmarked retired-phrase quotation detected                                                       
+  pass  CG-2a line-wrapped retired phrase detected                                                             
+  pass  CG-2a retired phrase presented as current detected                                                     
+  pass  CG-2a marked historical quotation exempted and printed                                                 
+  pass  CG-2a superseded-bannered file exempted                                                                
+  pass  CG-2a empty phrase registry fails, never passes                                                        
+  pass  CG-2e wrapped current phrase with a stale digest detected                                              
+  pass  CG-2e wrapped current phrase with a live digest passes                                                 
+  pass  CG-2e single-line quotation left to CG-7d                                                              
+  pass  CG-4b accepted-claim banner detected                                                                   
+  pass  CG-4b negated candidate banner exempted                                                                
+  pass  CG-4b empty candidate tree warns, never passes                                                         
+  pass  CG-4b acceptance claim naming an act-bound home exempted                                               
+  pass  CG-4b acceptance claim naming an unbound home detected                                                 
+  pass  CG-4b bold-closed sentence lends no attribution                                                        
+  pass  CG-7a wave partition overlap detected                                                                  
+  pass  CG-7a wave partition gap detected                                                                      
+  pass  CG-7b stale wave argument in the record detected                                                       
+  pass  CG-7a performed-wave current amendment is lawful                                                       
+  pass  CG-7b tampered performed manifest detected                                                             
+  pass  CG-7f wave row undercounting its manifest detected                                                     
+  pass  CG-7f matching count raises nothing for that row                                                       
+  pass  CG-7f ordinal module list is not read as a count                                                       
+  pass  CG-7g stray file in wave-manifests/ detected                                                           
+  pass  CG-7g missing wave manifest detected                                                                   
+  pass  CG-7g wholly absent wave-manifests/ detected                                                           
+  pass  CG-14 nonexistent install source detected                                                              
+  pass  CG-14 act-created home that already exists detected                                                    
+  pass  CG-14 git-excluded ceremony location detected                                                          
+  pass  CG-14 disclaimed git-excluded mention exempted                                                         
+  pass  CG-14 dotted git-excluded root (.syzygy/cache) detected                                                
+  pass  CG-8 absent default-load artifact detected                                                             
+  pass  CG-8 in-band authored region raises no band finding                                                    
+  pass  CG-8 under-band authored region detected                                                               
+  pass  CG-8 tool-managed block excluded from the authored figure                                              
+  pass  raw-review lane covers a new round's reviews directory                                                 
+  pass  raw-review lane requires a whole path segment                                                          
+  pass  raw-review lane is scoped to the candidate tree                                                        
+  pass  implementation-review raw output is verbatim by suffix                                                 
+  pass  raw review is exempt from both quote-currency lanes                                                    
+  pass  CG-15 stale truncated digest detected                                                                  
+  pass  CG-15 retired-marked quote exempted                                                                    
+  pass  CG-16 'adopted term registry' detected                                                                 
+  pass  CG-16 negated claim exempted                                                                           
+  pass  CG-16 negation across intervening words exempts                                                        
+  pass  CG-16 a line naming CG-16 is quoting, not claiming                                                     
+  pass  CG-16 unnegated claim still fails after the widening                                                   
+  pass  CG-16 negator past a sentence boundary does not exempt                                                 
+  pass  CG-17 limb denied as a sub-clause is not declared                                                      
+  pass  CG-17 declared sub-clause range still enters the population                                            
+  pass  CG-17 `No lettered sub-clauses` denial still honoured                                                  
+  pass  CG-17 double-routed clause detected                                                                    
+  pass  CG-17 routed-but-undeclared clause detected                                                            
+  pass  CG-18 unparseable fixture is not silently skipped                                                      
+  pass  CG-18 falsified word count detected                                                                    
+  pass  CG-21 examines the real corpus without error                                                           
+  pass  CG-21 corpus count in prose detected                                                                   
+  pass  CG-20 corpus count behind the pointer exempted                                                         
+  pass  CG-20 stale corpus count detected                                                                      
+  pass  CG-18 unreproducible fixture detected                                                                  
+  pass  F1a CG-19 unclassified top-level key detected                                                          
+  pass  F1b CG-19 empty lock warns, never passes                                                               
+  pass  F2a CG-19 git-pin missing git_tree/relevant_paths detected                                             
+  pass  F2b CG-19 version-declared with no digest reference detected                                           
+  pass  F2c CG-19 (negative) real version-declared pin accepted                                                
+  pass  F3a CG-19 abbreviated commit detected                                                                  
+  pass  F3b CG-19 non-hex git_tree detected                                                                    
+  pass  F3c CG-19 uppercase sha256 detected                                                                    
+  pass  F3d CG-19 40-char non-hex commit detected                                                              
+  pass  F4a CG-19 listed path with no sha256 detected                                                          
+  pass  F4b CG-19 machine-local path with valid digest detected                                                
+  pass  F4c CG-19 path outside its root_path detected                                                          
+  pass  F5a CG-19 local repository with URL in prose detected                                                  
+  pass  F5b CG-19 machine-local root_path with real repo URL detected                                          
+  pass  F5c CG-19 (negative) real lock's prose `~/` mentions not flagged                                       
+  pass  F6a CG-19 one-segment repository URL detected                                                          
+  pass  F6b CG-19 tree URL as repository locator detected                                                      
+  pass  F6c CG-19 non-https scheme detected                                                                    
+  pass  F6d CG-19 host outside the forge allowlist detected                                                    
+  pass  F6e CG-19 (negative) well-formed pin to a nonexistent repo passes — the residual limit, kept executable
+  pass  F7a CG-19 private substrate detected                                                                   
+  pass  F7b CG-19 undeclared visibility detected                                                               
+  pass  F8a CG-19 undeclared drift over differing digests detected                                             
+  pass  F8b CG-19 differing path absent from changed_paths detected                                            
+  pass  F8c CG-19 materiality claimed over identical content detected                                          
+  pass  F8d CG-19 drift.detected false while commits differ detected                                           
+  pass  F8e CG-19 drift disposition read from inside the drift group                                           
+  pass  F8g CG-19 legacy ambiguous `status:` drift key detected                                                
+  pass  F8f CG-19 path present in one revision group only detected                                             
+  pass  CG-20 stale load-map figure detected                                                                   
+  pass  CG-22 bare `status` code span detected                                                                 
+  pass  CG-22 indented `status:` field detected                                                                
+  pass  CG-22 qualifier across a line wrap exempts                                                             
+  pass  CG-22 empty corpus warns, never passes                                                                 
+  pass  CG-22 allowlisted file exempted and printed                                                            
+  pass  CG-22 retirement marker in window exempts                                                              
+  pass  CG-22 retirement marker outside the window does not exempt                                             
+  pass  CG-23 advanced term on the default path detected                                                       
+  pass  CG-23 substring inside a longer word is not a hit                                                      
+  pass  CG-23 ordinary-English exemption is printed, not silent                                                
+  pass  CG-23 core-only default path raises nothing                                                            
+  pass  CG-23 stale tier split detected                                                                        
+  pass  CG-23 unparsable core table reported, not silently advanced                                            
+  pass  CG-23 unparsable registry warns over zero examined                                                     
+  pass  CG-24 uncovered check family detected                                                                  
+  pass  CG-24 F-prefixed fixture name credited                                                                 
+  pass  CG-24 a check's own name is not a fixture for it                                                       
+  pass  CG-24 fixture naming an unreported check detected                                                      
+  pass  CG-24 check name outside selftest() is not a fixture                                                   
+  pass  CG-24 res.add name inside selftest() is not a fixture                                                  
+  pass  CG-24 fixture inside selftest() is credited                                                            
+  pass  CG-24 unparsable selftest region is not silent coverage                                                
+  pass  CG-25 unattributed check family detected                                                               
+  pass  CG-25 owner entry for an unreported check reported                                                     
+  pass  CG-26 agreeing lists pass                                                                              
+  pass  CG-26 published-but-not-hosted check detected                                                          
+  pass  CG-26 hosted-but-not-published check detected                                                          
+  pass  CG-26 shell-variable shorthand expands before comparison                                               
+  pass  CG-26 nested shell shorthand expands to a fixed point                                                  
+  pass  CG-26 non-python orientation line does not fail parity                                                 
+  pass  CG-26 miscounted parity sentence detected                                                              
+  pass  CG-26 hyphenated number words parse past twenty                                                        
+  pass  CG-26 hyphenated number-word miscount detected                                                         
+  pass  CG-26 missing published block is a finding, not a skip                                                 
+  pass  CG-26 unreadable input warns rather than passing                                                       
+  pass  CG-27 stale Wave A state — unanchored claim detected                                                   
+  pass  CG-27 stale Wave A state — anchored twin raises nothing                                                
+  pass  CG-27 stale Wave B state — unanchored claim detected                                                   
+  pass  CG-27 stale Wave B state — anchored twin raises nothing                                                
+  pass  CG-27 stale launch-gate version — unanchored claim detected                                            
+  pass  CG-27 stale launch-gate version — anchored twin raises nothing                                         
+  pass  CG-27 stale first-spec prerequisite — unanchored claim detected                                        
+  pass  CG-27 stale first-spec prerequisite — anchored twin raises nothing                                     
+  pass  CG-27 stale gate verdict — unanchored claim detected                                                   
+  pass  CG-27 stale gate verdict — anchored twin raises nothing                                                
+  pass  CG-27 a sibling table row's historical marker does not exempt the current claim                        
+  pass  CG-27 pipe-less GFM data rows remain independent claim contexts                                        
+  pass  CG-27 one-column GFM table rows remain independent claim contexts                                      
+  pass  CG-27 tab-indented code does not open a fenced-code block                                              
+  pass  CG-27 a backtick in the info string prevents a fence from opening                                      
+  pass  CG-27 a tilde fence permits a backtick in its info string                                              
+  pass  CG-27 even backslashes leave a trailing boundary pipe unescaped                                        
+  pass  CG-27 a same-row historical marker exempts the table claim                                             
+  pass  CG-27 a sibling table row's owner does not satisfy the current claim                                   
+  pass  CG-27 a sibling table row's as-of date does not satisfy the current claim                              
+  pass  CG-27 same-row owner and as-of evidence satisfy table claims                                           
+  pass  CG-27 a leading owner banner satisfies a table claim                                                   
+  pass  CG-27 malformed table pipes retain paragraph semantics                                                 
+  pass  CG-27 lone pipe lines are not table rows                                                               
+  pass  CG-27 fenced table syntax retains paragraph semantics                                                  
+  pass  CG-27 tab-indented table syntax retains paragraph semantics                                            
+  pass  CG-27 multiple claims in one table row are counted independently                                       
+  pass  CG-27 correctly bannered historical statement raises nothing                                           
+  pass  CG-27 a banner naming the wrong owner does not satisfy the claim                                       
+  pass  CG-27 a precedence banner buried below the prose does not count                                        
+  pass  CG-27 zero matched claims warns, never passes                                                          
+  pass  CG-27 an unreadable default-path file is Unknown, not clean                                            
+  pass  CG-18 missing `Measured:` anchor is a finding, not a skip                                              
+  pass  CG-23 line-wrapped multi-word term detected                                                            
+  pass  CG-23 inflected term detected                                                                          
+  pass  CG-23 unlisted inflection is not a hit                                                                 
+  pass  CG-23 defined-in-place use is still reported (known limit)                                             
+  pass  CG-1g dead active-lane route into rfcs/ detected                                                       
+  pass  CG-1g dead route inside a frozen lane is classified, not failed                                        
+  pass  CG-1i valid candidate fallback is verified and disclosed                                               
+  pass  CG-1i missing candidate twin detected                                                                  
+  pass  CG-1i unresolved candidate fallback detected                                                           
+  pass  CG-7d empty subject population warns, never passes                                                     
+  pass  CG-7d zero subject denominator is disclosed                                                            
+  pass  CG-7d unperformed stale digest rejected                                                                
+  pass  CG-7d old performed digest accepted as history                                                         
+  pass  CG-7d fake Wave-A table row cannot whitelist a digest                                                  
+  pass  CG-7e examines the real act-copy population without error                                              
+  pass  CG-7e file declaring an act it does not carry detected                                                 
+  pass  CG-7e decoy old digest cannot mask mutated act-6 line                                                  
+  pass  CG-7e performed PWB act registers both record copies                                                   
+  pass  CG-7e performed PWB act requires aggregate record copy                                                 
+  pass  CG-7e performed PWB truth act registers both record copies                                             
+  pass  CG-7e performed PWB truth act requires aggregate record copy                                           
+  pass  CG-7e generator POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md copies registered                      
+  pass  CG-7e generator POLARIS-GENERATOR-SPECIFICATION-ADOPTION-ACT.md missing aggregate refused              
+  pass  CG-7e generator POLARIS-GENERATOR-APPLICABILITY-ACT.md copies registered                               
+  pass  CG-7e generator POLARIS-GENERATOR-APPLICABILITY-ACT.md missing aggregate refused                       
+  pass  CG-7e generator POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md copies registered                
+  pass  CG-7e generator POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md missing aggregate refused        
+  pass  CG-7e understanding adoption copies registered                                                         
+  pass  CG-7e understanding adoption missing aggregate refused                                                 
+  pass  CG-7e performed PWB effect act registers exactly its two copies                                        
+  pass  CG-7e performed PWB effect act requires aggregate record copy                                          
+  pass  CG-7e performed PWB effect act rejects stale dedicated copy                                            
+  pass  CG-7e amended PWB effect act pins five historical copies and two current                               
+  pass  CG-7e unperformed PWB effect amendment leaves 2026-09-02 copies current and stale                      
+  pass  CG-7e amended PWB effect act rejects stale amendment record                                            
+  pass  CG-7e amended PWB effect act rejects rewritten 2026-09-02 record                                       
+  pass  CG-7e amended PWB effect act requires the superseded digest to be performed                            
+  pass  CG-7h missing current amendment act rejected                                                           
+  pass  CG-7h mismatched current amendment act rejected                                                        
+  pass  CG-7h complete transaction population passes at 76                                                     
+  pass  CG-7h top-level transaction subject drift detected                                                     
+  pass  CG-7h nested contract row drift detected                                                               
+  pass  CG-7h nested PWB row drift detected                                                                    
+  pass  CG-7h historical PWB path population is closed                                                         
+  pass  CG-7h unsigned successor manifest grants no supersession                                               
+  pass  CG-7h one-sided successor act rejected                                                                 
+  pass  CG-7h conflicting successor act digests rejected                                                       
+  pass  CG-7h valid 11-row successor passes at 89                                                              
+  pass  CG-7h post-successor current artifact drift detected                                                   
+  pass  CG-7h successor-10 manifest rejected                                                                   
+  pass  CG-7h successor-12 manifest rejected                                                                   
+  pass  CG-7h successor-duplicate manifest rejected                                                            
+  pass  CG-7h successor-reordered manifest rejected                                                            
+  pass  CG-7h successor-escaping manifest rejected                                                             
+  pass  CG-7h valid truth-and-readiness successor passes at 102 with state-(1) rows preserved as history       
+  pass  CG-7h unsigned truth candidate grants no supersession                                                  
+  pass  CG-7h one-sided truth successor act rejected                                                           
+  pass  CG-7h conflicting truth successor digests rejected                                                     
+  pass  CG-7h post-truth-successor current artifact drift detected                                             
+  pass  CG-7h truth successor without its predecessor is a gap                                                 
+  pass  CG-7h truth-10 manifest rejected                                                                       
+  pass  CG-7h exact two-module contract successor passes at 80                                                 
+  pass  CG-7h contract successor candidate-only rejected                                                       
+  pass  CG-7h contract successor no-dedicated rejected                                                         
+  pass  CG-7h contract successor no-aggregate rejected                                                         
+  pass  CG-7h contract successor duplicate-aggregate rejected                                                  
+  pass  CG-7h contract successor duplicate-dedicated rejected                                                  
+  pass  CG-7h contract successor conflict rejected                                                             
+  pass  CG-7h contract successor invalid-predecessor rejected                                                  
+  pass  CG-7h contract successor historical-drift rejected                                                     
+  pass  CG-7h contract successor missing-body rejected                                                         
+  pass  CG-7h contract successor stale-digest rejected                                                         
+  pass  CG-7h contract successor current-drift rejected                                                        
+  pass  CG-7h contract successor mirror-drift rejected                                                         
+  pass  CG-7h contract successor missing-mirror rejected                                                       
+  pass  CG-7h contract successor third-path-drift rejected                                                     
+  pass  CG-7h contract successor duplicate-path rejected                                                       
+  pass  CG-7h contract successor reordered rejected                                                            
+  pass  CG-7h contract successor escape rejected                                                               
+  pass  CG-7h contract successor alias rejected                                                                
+  pass  CG-7h contract successor extra rejected                                                                
+  pass  CG-7h contract successor malformed rejected                                                            
+  pass  CG-7h contract successor malformed-aggregate-original rejected                                         
+  pass  CG-7h contract successor malformed-extra-dedicated rejected                                            
+  pass  CG-7h contract successor malformed-extra-aggregate rejected                                            
+  pass  CG-7h contract successor unmatched-backtick rejected                                                   
+  pass  CG-7h contract successor duplicate-quoted rejected                                                     
+  pass  CG-7h contract successor duplicate-indented rejected                                                   
+  pass  CG-7h contract successor trailing-prose rejected                                                       
+  pass  CG-21 empty module list warns, never passes                                                            
+  pass  CG-20 comma figure in the load map detected                                                            
+  pass  CG-20 spelled count in the load map detected                                                           
+  pass  CG-20 wc -w claim in the load map detected                                                             
+  pass  CG-20 pointer to the budget report exempted                                                            
+  pass  CG-20 empty load map warns, never passes                                                               
+
+255 fixtures, 0 failing — a check that cannot fail is not a check
+  pass  well-formed full-template record validates (git checks off)
+  pass  invalid verdict word rejected
+  pass  softened verdict rejected
+  pass  missing G1 rejected
+  pass  missing instrument digest rejected
+  pass  missing parameter digest rejected
+  pass  missing launch-target line rejected (RD33-06)
+  pass  missing gate verdict rejected
+  pass  READY over a Not met E row rejected
+  pass  READY with F3 not Met rejected
+  pass  duplicate question rejected
+  pass  no verdict rows rejected
+  pass  scoped A-D row with disclosure does not block READY (RD24-05 T2, lawful form)
+  pass  plain Not met in A-D still blocks READY (RD24-05 T1)
+  pass  scoped verdict outside A-D rejected
+  pass  READY over a Not met F1 rejected (RD24-09 T3)
+  pass  missing Deferred count field rejected (RD24-19)
+  pass  missing Reopened count field rejected (RD24-19)
+  pass  G1 verdict row rejected (RD24-10)
+  pass  E1 without its five sub-rows rejected (RD24-21)
+  pass  E1 Met over a Not met sub-row rejected (RD24-21)
+  pass  scoped row beside findings line 'none' rejected (RD33-01, r2)
+  pass  READY FOR over unresolved F2 rejected even with owner-deferred wording in the evidence cell (RD33-04, r4)
+  pass  plain READY FOR over a nonzero Deferred count rejected (RD33-04)
+  pass  READY-WITH-DEFERRALS satisfied by the template's own '(owner only)' label rejected (RD33-03, r3)
+  pass  READY-WITH-DEFERRALS with an owner-decision citation validates
+  pass  label wording as citation rejected (RD34-02, H3)
+  pass  all-Not-met record under READY-WITH-DEFERRALS rejected (RD34-01, H9d)
+  pass  terminal GATE VERDICT line is the one parsed (RD34-03, H6)
+  pass  nonzero Deferred count without citation rejected under any verdict (RD34-07, H4)
+  pass  placeholder findings line rejected (RD34-06, H1)
+  pass  invented question ID rejected (RD34-11, H5)
+  pass  READY-WITH-DEFERRALS with zero declared deferrals rejected
+  pass  missing question row rejected (RD33-05, p2)
+  pass  omitted E1 rollup row rejected (RD33-10, p4)
+  pass  qualified terminal verdict rejected — the terminal line must parse, never be skipped for an earlier match (RD35-02)
+  pass  quoted §5 template line as terminal GATE VERDICT rejected — '|' in a captured verdict corrupts the trend row (RD35-02)
+  pass  non-empty E3 reopen-list beside `E3 | Met` rejected (RD35-04)
+  pass  non-empty E3 reopen-list under a READY verdict rejected (RD35-04)
+  pass  deleted E3 reopen-list field rejected (RD35-04)
+  pass  decorated placeholder '(none known)' findings line rejected (RD35-05)
+  pass  decorated placeholder '-- none --' findings line rejected (RD35-05)
+  pass  VIS-2's own word 'unknown' as findings line rejected (RD35-05)
+  pass  P-n (pending queue) as deferral citation rejected (RD35-06)
+  pass  D-n (delta item) as deferral citation rejected (RD35-06)
+  pass  B-n (review-finding numbering) as deferral citation rejected (RD36-01)
+  pass  deleted non-authority banner rejected (RD35-07)
+  pass  deleted `Reviewer model family:` field rejected (RD35-07)
+  pass  deleted `Materials given:` field rejected (RD35-07)
+  pass  deleted `Operationalization notes:` field rejected (RD35-07)
+  pass  deleted `Unknowns and what would settle them:` field rejected (RD35-07)
+  pass  deleted `Reviewer's falsification notes:` field rejected (RD35-07)
+  pass  Unknown rows beside a placeholder Unknowns field rejected (RD35-07)
+  pass  EMPTY findings line beside a scoped row rejected — an empty field is absent, never the next line's text (RD36-02)
+  pass  EMPTY Unknowns field beside Unknown rows rejected (RD36-02)
+  pass  narrative line shadowing a declared Deferred count rejected (RD36-03)
+  pass  negation-phrased emptiness claim 'no defects found' as findings line rejected (RD36-04)
+  pass  negation-phrased emptiness claim 'none identified' as findings line rejected (RD36-04)
+  pass  'E3 reopen-list: none identified' is a lawful empty marker — no false rejection beside E3 Met (RD36-04)
+  pass  deleted `Reviewer:` fresh-context line rejected (RD36-05)
+  pass  negation-led ENUMERATED reopen-list beside `E3 | Met` rejected — an emptiness claim must be an empty marker, not a negation prefix (RD37-01)
+  pass  negation-led enumerated reopen-list under a READY verdict rejected (RD37-01)
+  pass  unfilled E3 template slot is not an emptiness claim — rejected beside `E3 | Met` (RD37-01, positive marker test)
+  pass  decoy E3 line above the declared field rejected — the honest enumeration must not be silently discarded (RD37-02)
+  pass  decoy Unknowns line shadowing the declared field rejected (RD37-02)
+  pass  decoy findings line shadowing the declared field rejected (RD37-02)
+  pass  agreeing duplicate declared field is not a shadow — no false rejection (RD37-02)
+  pass  disagreeing duplicate `Parameter block sha256:` line rejected — the §2 integrity anchors obey the same rule (RD37-06)
+  pass  heading that merely MENTIONS G1 does not satisfy LG-4 — the completeness-critic section itself is required (RD37-03)
+  pass  bare `### G1` heading satisfies LG-4 — the anchor rejects mentions, not lawful headings (RD37-03)
+  pass  nonexistent commit rejected (git on, LG-1)
+  pass  instrument digest mismatch rejected (git on, LG-2)
+  pass  instrument version disagreement rejected (RD33-06, LG-11)
+  pass  launch target outside the parameter block rejected (RD33-06, p5)
+  pass  fragment launch target rejected (RD34-08, H7)
+  pass  nonexistent citation path rejected (RD34-02, git on)
+  pass  existing repository path as deferral citation ACCEPTED at the named commit (RD35-01)
+  pass  full-template READY FOR record with the verbatim verdict-line target validates clean (git on, RD35-03)
+  pass  verdict line naming a target §8 never bound rejected (RD35-03)
+  pass  existing SDR-n identifier as deferral citation ACCEPTED at the named commit (RD36-06)
+  pass  unminted SDR-n identifier rejected at the named commit (RD36-06)
+  pass  directory path as deferral citation rejected — a tree is not a decision record (RD36-06)
+  pass  prior scoped → current plain Not met counts as new (RD33-02, r5)
+  pass  brand-new scoped finding counts in New-findings (RD34-04)
+  pass  non-record --prior refused; trend column says so (RD37-04)
+  pass  decoy ABOVE the declared `Launch target:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy BELOW the declared `Launch target:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy ABOVE the declared `Instrument version:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy BELOW the declared `Instrument version:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy ABOVE the declared `Instrument version: … sha256:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy BELOW the declared `Instrument version: … sha256:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy ABOVE the declared `Parameter block sha256:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy BELOW the declared `Parameter block sha256:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy ABOVE the declared `Deferred count:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy BELOW the declared `Deferred count:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy ABOVE the declared `Reopened count:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy BELOW the declared `Reopened count:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  inserted disagreeing pair for `Owner deferral decision:` rejected, order 1 (RD37-02/RD38-04 behavioral loop)
+  pass  inserted disagreeing pair for `Owner deferral decision:` rejected, order 2 (RD37-02/RD38-04 behavioral loop)
+  pass  decoy ABOVE the declared `Deferred-wave findings recorded outside launch scope:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy BELOW the declared `Deferred-wave findings recorded outside launch scope:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy ABOVE the declared `Unknowns and what would settle them:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy BELOW the declared `Unknowns and what would settle them:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy ABOVE the declared `E3 reopen-list:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  decoy BELOW the declared `E3 reopen-list:` rejected (RD37-02/RD38-04 behavioral loop)
+  pass  G1 section present only inside a fenced quotation rejects — a quotation satisfies nothing (RD38-01)
+  pass  `Reviewer model family:` present only inside a fenced quotation rejects (RD38-01)
+  pass  lawful record WITH a fenced template appendix still validates — a quotation shadows nothing (RD38-01)
+  pass  fenced example table with a duplicate A1 row does not fire the duplicate check (RD38-01)
+  pass  empty `Parameter block sha256:` with the digest on the next line is ABSENT, never borrowed (RD38-03)
+  pass  mid-line narrative mention of an instrument version is inert (RD38-03)
+  pass  `E3 reopen-list: n/a` accepted as empty (RD38-07 vocabulary)
+  pass  decorated `E3 reopen-list: **None.**` accepted as empty (RD38-07 decoration strip)
+  pass  `Owner deferral decision: none ` (trailing space) is the none marker — the declared value is whitespace-normalized (RD38-07)
+  pass  roster-complete prior with out-of-vocabulary verdicts refused (RD38-06)
+  pass  roster-complete prior with a duplicate row refused (RD38-06)
+  pass  bare roster-complete row block with lawful verdicts refused as a prior — the prior is validated as a record at its own named commit (RD39-05)
+  pass  terminal NOT READY laundered behind an unterminated fence rejected — the raw terminal line rules (RD39-01)
+  pass  a quoted verdict line AFTER the record's terminal verdict rejected as ambiguous (RD39-01)
+  pass  terminal NOT READY between four-space-indented backticks is ordinary prose and parses correctly (RD39-01/RD39-06)
+  pass  four-backtick fence not closed by three — quoted duplicate row stays stripped (RD39-06)
+  pass  `Reviewer model family:` present only inside an HTML comment rejects (RD39-02)
+  pass  G1 heading present only inside an HTML comment rejects (RD39-02)
+  pass  lawful record with an inline HTML comment still validates (RD39-02)
+  pass  blockquoted `> Materials given:` does not satisfy presence (RD39-02)
+  pass  four-space-indented label line does not satisfy presence (RD39-02)
+  pass  mid-line prose mention of `Reviewer:` does not satisfy presence (RD39-02)
+  pass  prose restatement of the non-authority banner does not satisfy the structural blockquote test (RD39-02)
+  pass  bold-wrapped `**Materials given:**` satisfies presence (RD39-07)
+  pass  `Reviewer  model family:` (two internal spaces) satisfies presence (RD39-07)
+  pass  list-marked `- Operationalization notes:` is a quotation and does NOT satisfy presence (RD40-02, reversing the v1.12 acceptance)
+  pass  `E3 reopen-list: none  identified` (internal double space) accepted as the marker (RD39-03)
+  pass  verdict line quoted after the terminal in a blockquote rejected as ambiguous (RD40-01)
+  pass  verdict line quoted after the terminal in a indented code block rejected as ambiguous (RD40-01)
+  pass  verdict line quoted after the terminal in a list item rejected as ambiguous (RD40-01)
+  pass  verdict line quoted after the terminal in a running prose rejected as ambiguous (RD40-01)
+  pass  record whose ONLY verdict line is blockquoted has no verdict — a quoted verdict is not the record's verdict (RD40-01)
+  pass  inline HTML comment on the terminal verdict line is lawful — survival is judged by raw line index (RD40-06)
+  pass  terminal NOT READY between TAB-indented backticks is ordinary prose and parses correctly (RD40-03)
+  pass  bullet-list quotation of `Materials given:` does not satisfy presence (RD40-02)
+  pass  setext-heading text `Reviewer's falsification notes:` does not satisfy presence (RD40-02)
+  pass  `<details>`-wrapped `Reviewer model family:` does not satisfy presence (RD40-02)
+  pass  nested-blockquote `> >` banner quotation does not satisfy the structural banner test (RD40-02)
+  pass  `<details>`-wrapped `## G1` heading does not satisfy LG-4 (RD40-02)
+  pass  label between a 4-backtick open and 3-backtick non-close is stripped — presence errors (RD40-05, D-4's rejection limb)
+  pass  list-item CONTINUATION lines are inside the list item, not the record's own — indented continuation (RD41-01)
+  pass  LAZY continuation of a list item — unmarked, unindented lines continuing the item — is inside it (RD41-01)
+  pass  unmarked lines under a blockquote are the record's own — §5's template form, fixtured as the limit it is (RD41-01)
+  pass  a `> ` banner quoted inside a list item does not satisfy the banner test (RD41-01)
+  pass  §5's own placeholder is not an answer — a template quoted at column 0 above the verdict declares nothing (RD41-01)
+  pass  a field declared BELOW the record's own terminal verdict declares nothing — the verdict is terminal (RD41-01)
+  pass  a lawful record whose value merely contains angle brackets is not a placeholder (RD41-01, the accepting direction)
+  pass  `E3 reopen-list:` carried only inside a `<details>` block is an absent field, not a supplied value (RD41-02)
+  pass  `E3 reopen-list:` carried only as setext-heading text is an absent field (RD41-02)
+  pass  `Deferred count:` carried only inside a `<details>` block is an absent field, not a supplied value (RD41-02)
+  pass  `Deferred count:` carried only as setext-heading text is an absent field (RD41-02)
+  pass  an `Owner deferral decision:` citation carried only inside a `<details>` block does not license a deferral (RD41-02)
+  pass  a bare `###` followed by a line beginning `G1 ` does not satisfy LG-4 — the anchor never crosses a newline (RD41-04)
+  pass  a `## G1` heading opening an EMPTY section does not satisfy LG-4 — the terminal verdict is not section content (RD41-04)
+  pass  a fenced `<details>` example does not hide the verdict (RD41-06)
+  pass  a `<details/>` in prose opens a region — HTML5 ignores the self-closing slash on a non-void element (RD43-01, measured against the renderer; withdraws a v1.15 acceptance)
+  pass  an HTML comment mentioning `<details>` is inert (RD41-06)
+  pass  a `---` on the line after the terminal verdict is a heading a reader sees, not a quotation (RD41-06)
+  pass  a non-breaking space inside `GATE VERDICT:` does not hide the record's visible terminal verdict (RD41-08)
+  pass  a TAB-indented `Materials given:` is indented code, not a declaration (RD41-10, the predicate's tab limb)
+  pass  a TAB-indented banner is indented code, not §5's banner (RD41-10 — a defence-in-depth guard, not a single-layer witness: see the v1.14 delta's disclosure)
+  pass  a 4-space-indented banner is indented code, not §5's banner (RD41-10 — a defence-in-depth guard, not a single-layer witness: see the v1.14 delta's disclosure)
+  pass  a 4-column-indented `## G1` heading does not satisfy LG-4 (RD41-10, the predicate's indent limb)
+  pass  `div` carries a declared field inside an element the record opened, so the field is not the record's own — an HTML region is a region, not a tag name (RD42-01/RD43-01)
+  pass  `p` carries a declared field inside an element the record opened, so the field is not the record's own — an HTML region is a region, not a tag name (RD42-01/RD43-01)
+  pass  `span` carries a declared field inside an element the record opened, so the field is not the record's own — an HTML region is a region, not a tag name (RD42-01/RD43-01)
+  pass  `table` carries a declared field inside an element the record opened, so the field is not the record's own — an HTML region is a region, not a tag name (RD42-01/RD43-01)
+  pass  `uppercase details` carries a declared field inside an element the record opened, so the field is not the record's own — an HTML region is a region, not a tag name (RD42-01/RD43-01)
+  pass  a carrier written on ONE line hides its field too, and the record's own verdict stays readable (RD42-01, the nesting rule; the raw-HTML-line classification is a defence-in-depth guard)
+  pass  a void element opens no HTML region — the declared field beneath `<br>` is still the record's own (RD42-01)
+  pass  a self-closing `<div/>` DOES open a region — the slash is ignored for non-void elements, so the field beneath it is carried inside a container the record opened (RD43-01, measured; withdraws a v1.15 acceptance)
+  pass  a lawful record carrying a CLOSED `<details>` appendix still validates — the region ends where the element ends (RD42-01)
+  pass  an inline code span cannot close an HTML block — the `</details>` a reader sees as text closes nothing (RD42-01)
+  pass  a closing tag never pops a block it did not open (RD42-01)
+  pass  a `READY FOR` hidden inside a collapsed HTML block below the record's visible terminal `NOT READY` is not the record's verdict (RD42-02)
+  pass  `Parameter block sha256:` hidden in an HTML block below the terminal verdict is an absent field, like the other nine declared values (RD42-03)
+  pass  a bare `## G1` in §5's own record shape opens an EMPTY section — declared trailer fields are not G1 content (RD42-07)
+  pass  an angle-bracketed value is refused with a message true of it — the shape, not a claim about §5's text (RD42-08)
+  pass  a `<details>` mentioned mid-paragraph DOES open a region — it closes the paragraph and collapses the rest (RD43-01, measured against the renderer; withdraws a v1.15 acceptance)
+  pass  a `` `<summary>` `` in an inline code span opens no HTML block (RD42-09)
+  pass  a `<details>` inside a table cell opens no HTML block (RD42-09)
+  pass  `###G1` is not a heading and does not open the G1 section (RD42-11)
+  pass  a `</details>` written as an INDENTED CODE BLOCK closes nothing — it renders as escaped text (RD43-01a)
+  pass  a backslash-escaped `\</details>` closes nothing — the escape renders it as literal text (RD43-01b)
+  pass  a MID-LINE `<div style="display:none">` opens a region — a condition-6 element closes the open paragraph wherever it appears (RD43-01c)
+  pass  an opening tag SPLIT ACROSS TWO LINES opens a region — condition 6 needs no closing `>` on the line (RD43-01d)
+  pass  a `READY FOR` hidden behind an indented-code `</details>` below the record's visible terminal `NOT READY` is not the record's verdict (RD43-02)
+  pass  a URL autolink at the start of a line opens no region — it is not a tag (RD43-03)
+  pass  an email autolink at the start of a line opens no region — it is not a tag (RD43-03)
+  pass  an angle-bracketed shorthand at the start of a line opens no region — it is not a tag (RD43-03)
+  pass  G1 content written as a bulleted list satisfies LG-4 — a section's content is what a reader sees in it (RD43-04)
+  pass  G1 content written as a numbered list satisfies LG-4 — a section's content is what a reader sees in it (RD43-04)
+  pass  G1 content written as a blockquote satisfies LG-4 — a section's content is what a reader sees in it (RD43-04)
+  pass  G1 content written as a fenced block satisfies LG-4 — a section's content is what a reader sees in it (RD43-04)
+  pass  G1 content written as indented code satisfies LG-4 — a section's content is what a reader sees in it (RD43-04)
+  pass  a `## G1` with nothing but §5's declared trailer beneath it is still EMPTY (RD43-04, the refusing direction kept)
+  pass  an inline element carrying no hiding attribute contains nothing a reader loses — `<plus the parameter block>` is prose (RD43-03, the accepting direction)
+  pass  a URL autolink ALONE on its own line — a paragraph of its own, where the inline rule cannot help — opens no region (RD43-03)
+  pass  an unclosed inline `<span hidden>` does not reach past its own paragraph — a blank line ends it, as the renderer ends it (RD43-01, the accepting direction)
+  pass  an inline `<span hidden>` DOES carry its field out of the reader's sight, blank line or not (RD43-01)
+  pass  a G1 section naming `<details>` mid-sentence is refused — the render puts the next declared field inside it (RD45-03, measured, not enumerated)
+  pass  a G1 section naming `<iframe>` mid-sentence is refused — the render puts the next declared field inside it (RD45-03, measured, not enumerated)
+  pass  a G1 section naming `<noembed>` mid-sentence is refused — the render puts the next declared field inside it (RD45-03, measured, not enumerated)
+  pass  a G1 section naming `<noframes>` mid-sentence is refused — the render puts the next declared field inside it (RD45-03, measured, not enumerated)
+  pass  a G1 section naming `<script>` mid-sentence is refused — the render puts the next declared field inside it (RD45-03, measured, not enumerated)
+  pass  a G1 section naming `<select>` mid-sentence is refused — the render puts the next declared field inside it (RD45-03, measured, not enumerated)
+  pass  a G1 section naming `<style>` mid-sentence is refused — the render puts the next declared field inside it (RD45-03, measured, not enumerated)
+  pass  a G1 section naming `<title>` mid-sentence is refused — the render puts the next declared field inside it (RD45-03, measured, not enumerated)
+  pass  a G1 section naming `<basefont>` mid-sentence is refused in the safe direction — the parser and the UA stylesheet disagree and the disagreement is disclosed (RD45-03)
+  pass  a G1 section naming `<datalist>` mid-sentence is refused in the safe direction — the parser and the UA stylesheet disagree and the disagreement is disclosed (RD45-03)
+  pass  a G1 section naming `<dialog>` mid-sentence is refused in the safe direction — the parser and the UA stylesheet disagree and the disagreement is disclosed (RD45-03)
+  pass  a G1 section naming `<head>` mid-sentence is refused in the safe direction — the parser and the UA stylesheet disagree and the disagreement is disclosed (RD45-03)
+  pass  a G1 section naming `<noscript>` mid-sentence is refused in the safe direction — the parser and the UA stylesheet disagree and the disagreement is disclosed (RD45-03)
+  pass  a G1 section naming `<rp>` mid-sentence is refused in the safe direction — the parser and the UA stylesheet disagree and the disagreement is disclosed (RD45-03)
+  pass  a G1 section naming `<template>` mid-sentence is refused in the safe direction — the parser and the UA stylesheet disagree and the disagreement is disclosed (RD45-03)
+  pass  a lawful G1 section naming `<address>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<area>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<article>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<aside>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<audio>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<base>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<blockquote>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<body>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<canvas>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<caption>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<center>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<col>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<colgroup>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<dd>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<dir>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<div>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<dl>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<dt>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<fieldset>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<figcaption>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<figure>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<footer>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<form>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<frame>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<frameset>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<h1>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<h2>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<h3>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<h4>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<h5>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<h6>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<header>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<hr>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<html>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<legend>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<li>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<link>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<main>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<map>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<menu>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<menuitem>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<meta>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<nav>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<object>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<ol>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<optgroup>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<option>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<p>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<param>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<picture>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<plaintext>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<rt>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<ruby>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<search>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<section>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<slot>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<summary>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<table>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<tbody>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<td>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<textarea>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<tfoot>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<th>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<thead>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<tr>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<track>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<ul>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<video>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  a lawful G1 section naming `<xmp>` mid-sentence is accepted — the render paints what follows it (RD44-01, RD45-03)
+  pass  the mid-line hiding set matches the measured table, name for name (RD45-06 — the fixture's expectation is not computed from the predicate under test)
+  pass  an indented `</details>` after an ATX heading is still indented code — a paragraph is not open (RD44-02)
+  pass  an indented `</details>` after a thematic break is still indented code — a paragraph is not open (RD44-02)
+  pass  an indented `</details>` after a table is still indented code — a paragraph is not open (RD44-02)
+  pass  a mid-line `<script>` takes the record out of sight — condition 1 is not condition 7 (RD44-03)
+  pass  a mid-line `<style>` takes the record out of sight — condition 1 is not condition 7 (RD44-03)
+  pass  a mid-line `<title>` takes the record out of sight — condition 1 is not condition 7 (RD44-03)
+  pass  a `</div>` written inside a `<script>` does not close the hiding div around it — nothing inside a raw-text element is a tag (RD44-03)
+  pass  a mid-line `<textarea>` is visible and opens nothing (RD44-03, the accepting direction)
+  pass  a lone pipe-delimited line is not a table row — the `display:none` div on it is read (RD44-04)
+  pass  a real table row still ends its cell — `| <details> |` under a delimiter row opens nothing (RD44-04, the accepting direction)
+  pass  an inline carrier using visibility:hidden takes the next declared field out of sight (RD44-06)
+  pass  an inline carrier using opacity:0 takes the next declared field out of sight (RD44-06)
+  pass  an inline carrier using display:none takes the next declared field out of sight (RD44-06)
+  pass  an inline carrier using the hidden attribute takes the next declared field out of sight (RD44-06)
+  pass  a plain `<span>` at the end of a field line hides nothing (RD44-06, the accepting direction)
+  pass  `<see the hidden appendix>` hides the next field — `hidden` is a global attribute, measured, and the finding that called this record lawful is declined (RD44-06)
+  pass  the same words in a code span are prose and hide nothing (RD44-06, the accepting direction the withdrawal leaves)
+  pass  LG-6 names the line that opened the region (RD44-01)
+  pass  a MID-LINE opening tag whose `style="display:none"` arrives on the next line opens the region a reader sees it open (RD45-01 — the carrier v1.17 reopened)
+  pass  the same tag at the start of its line is refused too — one rule, both positions (RD45-01)
+  pass  §5's own angle-bracket shorthand wrapped across two lines is prose — it carries no hiding attribute and the render paints what follows (RD45-01, the accepting direction)
+  pass  a wrapped opening tag carrying no hiding attribute opens no region mid-line (RD45-01, the accepting direction)
+  pass  a blank line before the `>` cancels the tag — the renderer cancels it (RD45-01, the accepting direction)
+  pass  a `>` inside a quoted attribute value does not end the tag — the `display:none` behind it is read (RD45-02)
+  pass  the same quoted `>` with no hiding attribute behind it opens no region mid-line (RD45-02, the accepting direction)
+  pass  a `</div>` written inside a `<textarea>` mid-line closes nothing — the hiding div around it stays open (RD45-04)
+  pass  a `</div>` written inside a `<textarea>` at the start of its line closes nothing — the hiding div around it stays open (RD45-04)
+  pass  a `<details>` named mid-sentence inside a blockquote does not reach past that container — the renderer closes it there (RD45-07)
+  pass  a `<details>` named mid-sentence inside a list item does not reach past that container — the renderer closes it there (RD45-07)
+  pass  a `<details>` named mid-sentence inside a list item with a sibling after it does not reach past that container — the renderer closes it there (RD45-07)
+  pass  the same `<details>` named mid-sentence at the top level DOES reach the rest of the record (RD45-07, the refusing direction kept)
+  pass  a `<details>` named in one blockquote does not reach the NEXT blockquote — a blank line ends the first (RD45-07)
+  pass  inside ONE blockquote it does reach — a `>`-marked blank line is not a blank line (RD45-07, the refusing direction)
+  pass  a `<details>` named in a list item does not reach the blockquote after it — containers are identified, not counted (RD45-07)
+  pass  `opacity:.0` hides a declared field — the same value, spelled as CSS allows (RD45-08)
+  pass  `opacity:0%` hides a declared field — the same value, spelled as CSS allows (RD45-08)
+  pass  `opacity:0.00` hides a declared field — the same value, spelled as CSS allows (RD45-08)
+  pass  `opacity:0.5` is not a hiding attribute (RD45-08, the accepting direction)
+  pass  LG-6 names the line that OPENED the region, not the last line before it (RD45-05 — expects line 64)
+329 fixtures, 0 failing — a check that cannot fail is not a check
+  pass  a lawful record validates clean (no-git)
+  pass  a lawful record validates clean against the live instrument
+  pass  LA-11 the pending-decision queue grants no deferral
+  pass  LA-11 TREND-LOG.md grants no deferral
+  pass  LA-11 HISTORY.md grants no deferral
+  pass  LA-11 LICENSE-DECISION-PACKET.md grants no deferral
+  pass  LA-11 a decisions-home file declaring its own status pending grants no deferral
+  pass  LA-11 a Beads artifact grants no deferral
+  pass  LA-11 a file outside the decisions home grants no deferral
+  pass  LA-3 a wave set differing from §8's is an error
+  pass  LA-3b the E4 routing authority is bound to §8
+  pass  LA-6 evidence citing a non-existent file is rejected
+  pass  LA-1 unknown verdict word rejected
+  pass  LA-1 a claimed final verdict is rejected, not compared
+  pass  LA-1 a missing required field is an error
+  pass  LA-1 an unknown top-level field is an error
+  pass  LA-1 a wrong type is an error
+  pass  LA-1 a malformed commit is an error
+  pass  LA-1 an empty required string is an error
+  pass  LA-4 a missing question is an error
+  pass  LA-4 a duplicate question ID is an error
+  pass  LA-4 an out-of-roster row is an error
+  pass  LA-2 a wrong instrument digest is an error
+  pass  LA-2 a wrong parameter-block digest is an error
+  pass  LA-2 a non-existent repository commit is an error
+  pass  LA-2 a wrong instrument version is an error
+  pass  LA-3 a wrong launch target is an error
+  pass  LA-3 wave lists must equal the parameter block's
+  pass  LA-5 a scoped verdict without the scoped field is an error
+  pass  LA-5 the scoped field without the scoped verdict is an error
+  pass  LA-5 a scoped verdict outside A–D is an error
+  pass  LA-6 Met with no evidence is an error
+  pass  LA-6 Not met with no counterexample is an error
+  pass  LA-6 Unknown with no settlement is an error
+  pass  LA-6 a placeholder settlement asserts emptiness
+  pass  LA-6 an Unknown field on a Met row is an error
+  pass  LA-6 a counterexample on a Met row is an error
+  pass  LA-6 a placeholder falsification attempt is an error
+  pass  LA-6 evidence anchored to another commit is an error
+  pass  LA-7 E1 cannot roll up Met over a non-Met sub-row
+  pass  LA-8 a scoped row with no deferred-wave finding is an error
+  pass  LA-8 a scoped row whose finding names another question is an error
+  pass  LA-8 a finding meeting a blocking condition cannot be scoped
+  pass  LA-8 a finding naming a non-deferred wave is an error
+  pass  LA-9 E3 Met with a non-empty reopen list is an error
+  pass  LA-9 E3 Met without the trace table is an error
+  pass  LA-9 E3 Met with an untraced concept is an error
+  pass  LA-10 a paraphrased E4 case is an error
+  pass  LA-10 a missing E4 case is an error
+  pass  LA-10 E4 Met over a routing disagreement is an error
+  pass  LA-10 unrecorded silence on a needed case is an error
+  pass  LA-10 recorded silence on a needed case validates
+  pass  LA-11 a P-n citation grants no deferral
+  pass  LA-11 a D-n citation grants no deferral
+  pass  LA-11 a B-n citation grants no deferral
+  pass  LA-11 label wording is not a citation
+  pass  LA-11 a non-existent deferral path is an error
+  pass  LA-11 a directory grants nothing
+  pass  LA-11 a deferral against a never-deferrable conjunct is an error
+  pass  LA-11 a deferral with no bounded reduction plan is an error
+  pass  a clean record computes READY FOR the target
+  pass  one Not met in A–D computes NOT READY
+  pass  a scoped row alone does not block
+  pass  a Not met E row computes NOT READY
+  pass  an Unknown F1 does not block
+  pass  a Not met F1 blocks
+  pass  a Not met F3 blocks
+  pass  a Not met F4 blocks
+  pass  a Not met F2 with no deferral blocks
+  pass  a Not met F2 with an owner-cited deferral is READY-WITH-DEFERRALS
+  pass  an Unknown F2 is deferrable on the same terms
+  pass  an SDR deferral does not resolve without git (unverifiable is unresolved)
+  pass  a non-empty reopen list blocks every pass branch
+  pass  LA-11 a deferral beside a Met verdict is an error
+  pass  a deferral beside a Met F2 does not buy a plain READY
+  pass  LA-12 a deferral on a non-F2 limb beside a Not met F2 is an error
+  pass  LA-13 a formal delta administration is an error
+  pass  LA-13 a formal administration without fresh context is an error
+  pass  LA-14 a placeholder G1 answer is an error
+  pass  LA-15 a prior record dated after this one is an error
+  pass  LA-15 a prior commit outside this history is a stale prior
+  pass  LA-16 a formal opening administration must run the pilot check
+  pass  the interpreter refuses a schema keyword it does not implement
+  pass  the interpreter refuses `additionalProperties: true`
+  pass  the committed schema uses only implemented keywords
+  pass  an object schema that stops closing is detected
+  pass  a duplicate JSON key is refused rather than silently last-wins
+  pass  a delta/formal=True record yields no formal gate result
+  pass  a full/formal=False record yields no formal gate result
+  pass  a schema other than the committed one is a validation error, not a silent substitution
+  pass  a schema that constrains nothing is a validation error, not a silent substitution
+  pass  a prior-record path escaping the repository is an error
+  pass  a deferral whose citation does not resolve yields no READY-WITH-DEFERRALS
+  pass  a zero-width space does not defeat the placeholder lexicon
+  pass  a byte-order mark does not defeat the placeholder lexicon
+  pass  a function-application character (Cf) does not defeat the placeholder lexicon
+  pass  a C1 control character (Cc) does not defeat the placeholder lexicon
+  pass  an UNREADABLE §8 parameter is an error, not a skipped check (instrument mutated, not the record)
+  pass  the scratch baseline validates clean (schema and instrument committed)
+  pass  an in-place schema edit does not admit a forbidden verdict word (committed bytes govern)
+  pass  working-tree schema drift is its own error
+  pass  a record anchored to an off-branch commit is an error, not an anchor
+  pass  a prior commit outside this history is a stale prior (ancestry, not existence)
+  pass  a committed prior at the record's commit computes new-findings as an integer
+  pass  an uncommitted prior record is not read from the working tree (committed bytes govern)
+  pass  ...and its new-findings column reads Unknown, not a forged number
+  pass  a committed prior whose own commit differs from the declared identity is refused
+  pass  the schema is read at the record's commit — a widening at HEAD does not govern an ancestor administration
+  pass  LA-3b a whitespace routing authority is an error, not a skipped check
+  pass  LA-6 a placeholder counterexample is no counterexample
+  pass  LA-14 a placeholder falsification_summary is an error
+  pass  LA-1 a trailing newline does not satisfy an anchored pattern
+  pass  LA-10 duplicate E4 case indices at the right count are an error
+  pass  no fresh context alone makes an otherwise-passing record ineligible (limb, not error count)
+  pass  --prior outside the repository is an error, not a comparison
+  pass  a declared prior that escapes the repository computes Unknown, not absence
+  pass  an unanchored schema pattern fails closed in the audit
+  pass  a validation error alone makes an otherwise-passing record ineligible
+  pass  git being unavailable alone makes an otherwise-passing record ineligible
+  pass  an ineligible administration's trend row carries no gate verdict
+  pass  an eligible administration's trend row still carries its gate result
+  pass  a declared-but-unreadable prior record computes Unknown, not absence
+  pass  the base record validates identically under the reference jsonschema implementation
+  pass  schema 2.1 accepts instrument-bound at successor commit
+  pass  schema 2.1 rejects arbitrary hex at LA-1 and both render paths
+  pass  historical schema 2.0 replays after committed successor
+
+126 fixtures, 0 failing — a check that cannot fail is not a check
+  pass  rendering is deterministic — the same record renders to the same bytes
+  pass  the report carries the generated-presentation banner
+  pass  the report names its canonical source
+  pass  the report says not to edit it
+  pass  the report carries the non-authority banner
+  pass  the computed row/formula outcome reaches the report
+  pass  an ineligible record renders no gate verdict
+  pass  every roster row is presented
+  pass  reviewer free text cannot open a heading at document level
+  pass  reviewer free text cannot forge a verdict line
+  pass  the forged text is still shown to the reader, as data
+  pass  a pipe inside evidence text does not add a column
+  pass  the trend row has exactly nine columns
+  pass  an unlawful record does produce validation errors
+  pass  an --allow-invalid render is stamped as not validating
+  pass  reviewer free text in `operationalization_notes` opens no structure at document level
+  pass  reviewer free text in `materials.deviations` opens no structure at document level
+  pass  reviewer free text in `reviewer.identity` opens no structure at document level
+  pass  reviewer free text in `e4.routing_authority` opens no structure at document level
+  pass  reviewer free text in `pilot_recurrence_check.method` opens no structure at document level
+  pass  reviewer free text in `launch_target` opens no structure at document level
+  pass  reviewer free text in `falsification_summary` opens no structure at document level
+  pass  reviewer free text in `g1.critic_answer` opens no structure at document level
+  pass  a \r-spelled forgery in `falsification_summary (quoted, \r)` opens no structure at document level
+  pass  a \r-spelled forgery in `launch_target (inline, \r)` opens no structure at document level
+  pass  a \r-spelled forgery in `evidence quote (cell, \r)` opens no structure at document level
+  pass  the forgery sweep is mechanical — every string leaf of a populated record, both spellings, opens no document structure
+  pass  the mechanical sweep reaches prior_record.path — the site the v2.3 hand-list missed (RD-66 f1)
+  pass  a forged record FILENAME opens no structure in the unrenderable report (RD-66 f5)
+wrote /tmp/tmpiw96rmff.md (612 bytes) — generated from tmpiw96rmff.json
+NOT a valid record — 2 validation error(s); the report is stamped THIS RECORD DOES NOT VALIDATE and is for inspection only
+  pass  --allow-invalid on an invalid record exits non-zero (RD-66 f6)
+  pass  an invalid record renders no READY gate verdict
+  pass  an invalid record's §6 trend row carries no READY verdict
+  pass  a newline in a rendered scalar does not split the trend row
+  pass  --allow-invalid on a record missing a required object renders a refusal, not a traceback
+  pass  --allow-invalid on a record that is not valid JSON renders a refusal, not a traceback
+  pass  --allow-invalid on a record with a duplicate key renders a refusal, not a traceback
+  pass  a report of an unverified record says so in the file, not only on stdout
+  pass  --check detects a hand-edited report
+
+38 fixtures, 0 failing — a check that cannot fail is not a check
+root: /tmp/syzygy-v25-installed-v525bee9/.syzygy/governance/contracts/candidates
+
+active corpus (RFC files): 119714 words across 39 modules
+    9124  rfcs/RFC-0001-project-graph-identity-state-planes.md
+    2158  rfcs/RFC-0002/README.md
+    2245  rfcs/RFC-0002/challenge-lifecycle.md
+    2931  rfcs/RFC-0002/reconciliation-chain.md
+    2769  rfcs/RFC-0002/rendering-vocabularies.md
+    2100  rfcs/RFC-0002/snapshot-and-evaluation-core.md
+    1063  rfcs/RFC-0003/README.md
+    4853  rfcs/RFC-0003/governance-homes-and-owner-acts.md
+    5483  rfcs/RFC-0003/manifests-and-namespace.md
+    1752  rfcs/RFC-0004/README.md
+    1839  rfcs/RFC-0004/execution-record.md
+    2050  rfcs/RFC-0004/fidelity-joins-and-mappings.md
+    1686  rfcs/RFC-0004/general-contract.md
+    3740  rfcs/RFC-0004/named-adapters.md
+    2066  rfcs/RFC-0005/README.md
+    3982  rfcs/RFC-0005/admission-and-boundary.md
+    2450  rfcs/RFC-0005/consent-egress-secrets.md
+    2224  rfcs/RFC-0005/execution-profiles.md
+    5415  rfcs/RFC-0006-cross-surface-selection-query-drawer.md
+    2493  rfcs/RFC-0007/README.md
+    5317  rfcs/RFC-0007/narrative-contract.md
+    4663  rfcs/RFC-0007/rendering-and-surface.md
+    2046  rfcs/RFC-0008/README.md
+    3797  rfcs/RFC-0008/accounting-reconciliation-and-release.md
+    2710  rfcs/RFC-0008/identity-authority-materialization.md
+    4138  rfcs/RFC-0008/state-vocabulary-and-cost.md
+    2173  rfcs/RFC-0009/README.md
+    3514  rfcs/RFC-0009/interaction-parity-and-release.md
+    7869  rfcs/RFC-0009/semantic-geography.md
+    6088  rfcs/RFC-0009/visual-grammar-and-lenses.md
+    1504  rfcs/RFC-0010/README.md
+    1627  rfcs/RFC-0010/budget-reservation.md
+    2817  rfcs/RFC-0010/effects-recovery-and-stop.md
+    1772  rfcs/RFC-0010/mission-identity-approval-and-lifecycle.md
+     684  rfcs/RFC-0010/portfolio-and-cross-project-consent.md
+    2511  rfcs/RFC-0010/prevention-envelope-and-attention.md
+    1385  rfcs/RFC-0011/README.md
+    1314  rfcs/RFC-0011/deterministic-selection-and-budget.md
+    1362  rfcs/RFC-0011/packet-identity-provenance-and-memory.md
+
+numbered clauses defined: 341
+population: 39 module(s), 11 contract(s) with a declared clause end, 11 phase-rule clause(s), 341 numbered clause identities
+note: rfcs/RFC-0001-project-graph-identity-state-planes.md: 9124 words over the 7,000 ceiling — JUSTIFIED: dictionary-shaped kernel contract: roughly a quarter of it is verbatim closed vocabularies (entity/plane/relation/four-sense tables), and its reader groups are not distinct, so no honest split exists. Two compaction passes established a floor, recorded as of their date in the historical `03-ACTIVE-CONTRACT-COMPACTION-REPORT.md`; the growth above that floor is review-ordered clause addition (the RFC1-33 phase rule and the round-2026-08e per-consequence paragraphs, per `round-2026-08e/WAVE-A-SEMANTIC-DELTA.md`), not padding
+note: rfcs/RFC-0009/semantic-geography.md: 7869 words over the 7,000 ceiling — JUSTIFIED: sat just under the ceiling before round-2026-08d and was carried over it by the owner-ordered RFC9-8(a) amendment, which homes the portfolio layout registry on RFC3-15/RFC3-16(a) — in-wave, and no longer the cross-wave RFC10-15 reliance an earlier revision of this sentence described (RFC10-15 survives as a stated citation, not a reliance). No further compaction of other clauses is available without a semantic delta to reviewed text
+note: context-selection fixtures: 10 examined × 6 required section(s)
+note: total 119714 exceeds the 35–50k target band plus new RFCs; owner-facing justification required (charter)
+
+PASS — all checks clean
+index matches regeneration — no drift over 11 contract(s), 39 of 39 module(s) carry a front-matter id, 367 clause(s), 11 implementation-boundary declaration(s)
+dependency index matches regeneration — no drift over 39 of 39 module(s) carry a front-matter id, 11 contract(s), 176 authored `depends_on` edge(s), 8 `constrains` edge(s)
+population: 10 fixture(s), 4 anchored field kind(s), 0 RFC11-4 index-digest anchor(s) present, 39 module(s) in the report
+fixture anchors and the generated report match regeneration
+current manifests match regeneration and performed wave arguments verify — 5 current manifest(s) regenerated over 39 module(s), 2 performed wave manifest(s) preserved, 6 wave path sets checked
+task router matches regeneration — 13 task classes validated
+  pass  current routes all validate
+  pass  missing routed path detected
+  pass  undefined clause detected
+  pass  fixture route mutation detected (evidence adapter loses its tier-registry module)
+  pass  deferred route without disclosure detected
+  pass  mission fixture dead-path mutation detected
+  pass  Capability 1 route: an unqueued blocking decision detected
+  pass  Capability 1 route: a clause routed to the wrong module detected
+  pass  Capability 1 route: a deferred-wave module in the load set detected
+  pass  Capability 1 route: a deferred-wave clause home detected
+  pass  Capability 1 route: an already-executed decision named as blocking detected
+  pass  Capability 1 route: a later-gate decision named as executed detected
+11 fixtures, 0 failing — a check that cannot fail is not a check
+capability 1 views match regeneration — 6 behaviour row(s), 29 clause(s), 0 blocking decision(s)
+  pass  the real charter validates against the real corpus                                      
+  pass  MUTATION missing clause: a clause absent from the contract index is refused             
+  pass  MUTATION extra deferred module: a clause homed in a deferred wave is refused            
+  pass  MUTATION missing decision: a decision the queue's open section does not carry is refused
+  pass  MUTATION wrong authority home: a clause homed outside every wave manifest is refused    
+  pass  a RESOLVED queue row named as blocking is refused (a file-wide row grep would accept it)
+  pass  a clause claimed by two behaviour rows is refused                                       
+  pass  a row mentioning `**Executed.**` in prose stays open                                    
+  pass  an `**Executed.**` disposition inside the open section disqualifies                     
+  pass  a `Resolved…` heading disqualifies without help from the marker                         
+  pass  a behaviour row naming a decision the queue does not carry is refused                   
+  pass  the capability-level blocking list refuses a resolved row on its own path               
+  pass  a later-gate decision the queue does not carry is refused                               
+  pass  a decision named as both blocking and later-gate is refused                             
+  pass  parser: an unclosed flow list is rejected                                               
+  pass  parser: an unterminated quoted scalar is rejected                                       
+  pass  parser: a comma inside a quoted flow item does not split it                             
+  pass  parser: a two-entry block sequence round-trips                                          
+  pass  parser: a mapping key before any sequence item is rejected                              
+  pass  a queue file with no open section is an error, not an empty set                         
+  pass  injection into a file with no generated markers is refused                              
+
+21 fixtures, 0 failing — a check that cannot fail is not a check
+capability 1 spec dependencies match regeneration — 42 requirement(s), 50 distinct authorities
+selftest: 13/13 fixtures behave (1 clean, 10 mutations rejected, drift + determinism hold)
+performed impact ledger frozen and valid — .syzygy/governance/contracts/candidates/general-trusted-bootstrap-authorization/IMPACT-LEDGER.md; 204 baseline files
+performed general trusted-bootstrap transaction frozen and valid — 30 contract paths, 5 historical PWB paths, 5 owner-act rows
+Polaris consequence matrix matches regeneration — 324 clauses represented
+Polaris dependencies match regeneration — 17 requirement(s)
+PWB amendment manifests match 11 behavior and 2 separate effect subjects
+three-surface POC spec dependencies match regeneration — 24 requirement(s), 85 distinct authorities
+OK: DIRECTIVE-REGISTER.md matches the tree
+ok   a heading defines
+ok   a bold run with an inline title defines
+ok   a wrapped bold run defines
+ok   a period inside the bold run separates identifier from title
+ok   a bare bold identifier is still not given the next sentence as a title
+ok   a second bold run is the title
+ok   a parenthetical origin is the title
+ok   an origin tag keeps its flag and drops the owner's rationale
+ok   a marked site with no title yields empty, not None
+ok   a leading possessive citation is NOT a definition
+ok   a mid-sentence citation is NOT a definition
+ok   a banner quote is NOT a definition
+ok   a table row is NOT a definition
+ok   NAME_MAX would reject an over-long title
+ok   a family with no files renders empty, never stale
+ok   every doctrine rule VIS-1..7 is located
+ok   every SEC-1..5 is located
+ok   CC-SPEC-1..11 are registered from policy-candidates/
+ok   CC-IMPACT-1..7 are registered from policy-candidates/
+ok   SDR-1..37 are located
+ok   no clause body reached the page (no line over 400 chars)
+
+21 checks, 0 failing — a check that cannot fail is not a check
+Row/formula outcome: NOT READY
+Formal gate result:  NONE — `formal: false`; `administration_kind: delta`; the reviewer declares no fresh context (diagnostic only)
+  [NO ] every E question Met — E1-form='Unknown', E1-home='Unknown', E1-granularity='Unknown', E1-acceptance-authority='Unknown', E1-change-process='Unknown', E1='Unknown', E2='Unknown', E3='Unknown', E4='Unknown', E5='Unknown', E6='Unknown'
+  [ok ] no plain `Not met` in launch-scope A–D — none
+  [ok ] F1 is Met or Unknown — F1='Unknown'
+  [NO ] F3 is Met — F3='Unknown'
+  [NO ] F4 is Met — F4='Unknown'
+  [ok ] E3's reopen list is empty — 0 item(s)
+  F2 limb: branch=blocked, deferrals=0
+
+record valid — the verdict above is computed from the rows
+--check: .syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.md matches the record's rendering
+doctrine-adopted-2026-07-30

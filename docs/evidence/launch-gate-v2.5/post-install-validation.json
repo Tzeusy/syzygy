@@ -1,0 +1,14 @@
+{
+  "observed_at": "2026-09-15T13:33:20.400388+00:00",
+  "installed_commit": "ff58a2080b26c6db3e8b9d1bb81b696d3b668f66",
+  "clone": "/tmp/syzygy-v25-installed-v525bee9",
+  "canonical_block_sha256": "5004c78c9fe7a8cc9803c5be5b9406213de33fd0ea8c3216708fc5dade4eb75f",
+  "battery_exit": 0,
+  "administration1_validate_exit": 0,
+  "administration1_render_check_exit": 0,
+  "logs": {
+    "post-install-battery.log": "1866aac7a78ca37c411b48aaf4fe55a3359782f4e5cc5db30e7b24f281f92ec3",
+    "post-install-administration1.log": "790ecafa30c5bc391e331d61e36ff0a18ddc10633434056cf67554e3d33e473e"
+  },
+  "scope": "Fresh-clone installed successor; canonical block includes committed dry-run validator/render pair; Administration1 pair added separately. No new administration or external access."
+}
