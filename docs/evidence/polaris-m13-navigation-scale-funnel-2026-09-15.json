@@ -1,0 +1,1179 @@
+{
+ "kind": "polaris-m13-navigation-scale-funnel",
+ "version": 1,
+ "status": "candidate; binds nothing; planning only; one independent fresh-context review applied 2026-09-15 - review 1, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 6 non-blocking, 5 editorial, F1-F11), retained verbatim at docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md; all eleven exceptions re-derived against source and applied; at the owner gate, registered as P-80 on branch agent/syzygy-dov.13, with the eleven exception repairs uncovered until a second independent fresh-context review confirms them [superseded 2026-09-15: \"no independent review yet\"]",
+ "date": "2026-09-15",
+ "bead": "syzygy-dov.13",
+ "move": "M13 \u2014 Navigation at population scale",
+ "packet": "docs/design/POLARIS-M13-NAVIGATION-SCALE-FUNNEL.md",
+ "commit": "a9f671e",
+ "dossier": {
+  "section": "### M13 in docs/pursuits/2026-09-13-vision-pursuit.md, line 420 at a9f671e",
+  "audited_at": "f4589e2 (BEFORE the lane A trim landed on main at 2ef68f5)",
+  "merges": [
+   "S2-M1",
+   "S2-M2",
+   "S2-M3",
+   "S2-M4",
+   "S4-M6"
+  ],
+  "evidence_findings": [
+   "S2-F1",
+   "S2-F2",
+   "S2-F3"
+  ],
+  "prerequisite_line": "none",
+  "prerequisite_line_survives": "partly \u2014 it survives for slices 1, 2, 3 and 4 (nothing blocks filing, and slices 1, 2 and 4 need no ruling to land); it is corrected for slice 5 (S4-M6), whose recommended shape puts a bound contract-coverage row's standing judgment at stake (Q4) and whose own slice plan asks for the no-required-JS confirmation this packet performs (Q1)"
+ },
+ "labels": "Every figure is [Observed] unless marked. [Inferred] marks a sum, an arithmetic estimate or a reading; [Unknown] marks what neither capture nor source exposes.",
+ "conventions": {
+  "line_count": "one-based index into split-on-newline segments of the file at a9f671e (the number `sed -n 'Np'` prints)",
+  "byte_count": "UTF-8 length",
+  "sweeps": "Python re throughout, never grep character classes (verification rule 1)"
+ },
+ "captures": {
+  "post_trim": {
+   "polaris-direct.html": {
+    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-direct.html",
+    "bytes": 1478637,
+    "sha256": "2fecdd01e1a2ff577567495796ea7e59ab89f1420be6033e23314d26442ea094"
+   },
+   "polaris-tailnet.html": {
+    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/m1/measure/after/polaris-tailnet.html",
+    "bytes": 1484487,
+    "sha256": "e8a04b4631dedbda159dd162d25f4e8a7ed4f9f4059a37ca1bca87b717790111"
+   },
+   "api-poc.json": {
+    "bytes": 5520314
+   },
+   "api-polaris.json": {
+    "bytes": 640592
+   },
+   "provenance": "the lane A 'after' capture; Syzygy 2ef68f5, Butlers 2e3bac97790b4bd8906dcac63eadb5642a0bb1ac; recorded in docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json"
+  },
+  "pre_trim": {
+   "polaris-7478.html": {
+    "path": "/tmp/claude-1000/-home-tze-GitHub-syzygy/6b8e9d74-3b46-4418-b725-5b74d21d660a/scratchpad/capture/polaris-7478.html",
+    "bytes_on_disk": 2090025,
+    "note": "the capture the dossier audited. The inherited posture file states 2,087,400 bytes for this file; the file on disk is 2,090,025. The 2,090,025 figure is the one used here and is the denominator for every pre-trim row.", "note_2026-09-15_review1": "F4's corollary, re-derived this session: 2,087,400 is that same file's CHARACTER count, to the byte - len(h) is 2087400 and len(h.encode()) is 2090025 - so the discrepancy is diagnosed and retired rather than carried as unexplained. Same character-for-byte slip as the four offsets F4 corrects."
+   }
+  },
+  "daemon": "none started this session; the loopback daemon on port 7478 was never contacted"
+ },
+ "measurements": {
+  "labels_at_source": {
+   "polaris-copy.ts:129": "{ id: 'label.source-record', role: 'scope-instruction', kind: 'label', text: 'Source record' }",
+   "polaris-copy.ts:134": "{ id: 'label.exact-text', role: 'action-label', kind: 'label', text: 'Exact text' }",
+   "consumer_sweep": {
+    "method": "grep -n -F over apps/three-surface-poc/src/",
+    "denominator_files": 86,
+    "label.source-record": {
+     "lines": 2,
+     "files": 2,
+     "sites": [
+      "polaris-copy.ts:129 (definition)",
+      "polaris.ts:835"
+     ],
+     "dossier_said": "polaris.ts:818"
+    },
+    "label.exact-text": {
+     "lines": 3,
+     "files": 2,
+     "sites": [
+      "polaris-copy.ts:134 (definition)",
+      "polaris.ts:378 (shared helper exactTextLink, head at 377)",
+      "polaris.ts:1549 (per-dive, inside depthNav)"
+     ],
+     "dossier_said": "polaris.ts:1530"
+    },
+    "exactTextLink_call_sites_in_polaris_ts_2026-09-15_review1": "review 1's F10: 4 call sites in polaris.ts - lines 533, 552, 836 and 1081 - over 5 lines including the helper's own definition at 377. The array below keeps its original five values unedited.",
+    "exactTextLink_call_sites_in_polaris_ts": [
+     377,
+     533,
+     552,
+     836,
+     1081
+    ]
+   },
+   "architectural_correction": "polaris.ts:836 returns one <tr> per source and the <details class=\"source-record\"> built at 835 sits inside that row's second cell \u2014 the source records are already table rows, so S2-M1 is a hoist into columns, not a table build"
+  },
+  "populations": {
+   "predicates": {
+    "details_total": "count of '<details' opening tags",
+    "source_record": "count of the literal '<details class=\"source-record\">'",
+    "summary_literal": "count of '<summary\u2026>Source record</summary>'",
+    "exact_text_link": "count of '<a \u2026>Exact text</a>'",
+    "distinct_target": "distinct href attribute values among those links; equal under percent-decoding"
+   },
+   "post_trim": {
+    "details": 359,
+    "source_record": 278,
+    "summary_literal_source_record": 278,
+    "summary_total": 359,
+    "exact_text_links": 386,
+    "distinct_source_route_targets": 192,
+    "all_hrefs": 1089,
+    "h1": 1,
+    "h2": 7,
+    "h3": 39,
+    "h4": 19,
+    "h5": 0,
+    "h6": 14,
+    "markdown_derived_bare_h4": 4,
+    "markdown_derived_bare_h6": 14,
+    "tables": 5,
+    "tbody": 5,
+    "script_elements": 1,
+    "noscript_elements": 0,
+    "details_open_in_markup": 0,
+    "tabindex0": 5,
+    "tr": 375
+   },
+   "pre_trim": {
+    "details": 353,
+    "source_record": 271,
+    "summary_literal_source_record": 271,
+    "exact_text_links": 372,
+    "distinct_source_route_targets": 185,
+    "h1": 1,
+    "h2": 7,
+    "h3": 39,
+    "h4": 19,
+    "h5": 0,
+    "h6": 15,
+    "markdown_derived_bare_h4": 4,
+    "markdown_derived_bare_h6": 15,
+    "tables": 10,
+    "tbody": 10,
+    "script_elements": 2,
+    "details_open_in_markup": 0
+   },
+   "note": "the two host forms of the post-trim capture agree on every row; the tailnet form is 5,850 bytes larger from the mount prefix on internal links"
+  },
+  "headings": {
+   "expression": "apps/three-surface-poc/src/polaris-markdown.ts:157 \u2014 const level = Math.min(6, heading[1]!.length + 3);", "expression_2026-09-15_review1": "corrected under review 1's F1: the expression is line 159, not 157; line 157 is the heading regex and line 156 a closing brace, and the quoted block is lines 158-162. The original value above is unedited.",
+   "total_headings_post_trim": 80,
+   "adjacent_pair_skips_post_trim": {
+    "count": 3,
+    "pairs": [
+     [
+      2,
+      4
+     ],
+     [
+      3,
+      6
+     ],
+     [
+      4,
+      6
+     ]
+    ]
+   },
+   "named_h3_to_h6_skip": {
+    "h3": "polaris-account-v1-scope 'V1 scope' at byte 88024", "h3_utf8_byte_offset_2026-09-15_review1": 88131,
+    "h6": "'Core Infrastructure' at byte 88501", "h6_utf8_byte_offset_2026-09-15_review1": 88608, "offsets_note_2026-09-15_review1": "review 1's F4: the two values above are CHARACTER indices on the post-trim capture, against this packet's stated convention that a byte count is the UTF-8 length. The UTF-8 byte offsets are the two sibling keys. Original values unedited.",
+    "intervening_h4_or_h5": 0
+   },
+   "h6_by_preceding_level": {
+    "3": 1,
+    "4": 1,
+    "6": 12
+   },
+   "per_fragment_minimum_hash_depth": {
+    "derivable": [
+     {
+      "fragment": "projectShape.projectAccount[4].statement (key v1-scope)",
+      "heading_lines": 9,
+      "min_hash_depth": 3,
+      "rendered_min": "h6"
+     }
+    ],
+    "denominator": "every string value in api-poc.json (5,520,314 bytes); 6 contain a markdown heading line and all six are that one statement reached by different paths",
+    "unknown": "the four diagram captions and the selected-passages block \u2014 their source markdown is exposed in neither capture [Unknown]",
+    "what_a_test_would_need": "the body string each renderPolarisMarkdown call receives: the projectReading chapter bodies and the passage text from polaris-reading-plan.ts",
+    "syzygy_owned_half": "apps/three-surface-poc/src/polaris-reading.ts:112 synthesizes '### ' for a passage heading, so 5 of the 14 h6s are Syzygy's chosen depth, not Butlers'"
+   }
+  },
+  "outline": {
+   "depthNav_head_line": 1529,
+   "depthNav_range": [
+    1529,
+    1556
+   ],
+   "sidebar_call_line": 1629,
+   "dossier_said": "1510-1538",
+   "rendered_nav_bytes_direct": 8746,
+   "rendered_nav_bytes_tailnet": 8761,
+   "anchors_total": 35,
+   "anchors_outside_collapsible": 2,
+   "anchors_inside_collapsible": 33,
+   "breakdown_inside": {
+    "h2_groups": 7,
+    "diagrams": 4,
+    "catalog_classes": 5,
+    "guide_chapters": 10,
+    "deep_dives": 1,
+    "evidence_anchors": 5,
+    "exact_source_route": 1
+   },
+   "h3_ids_on_page": 39,
+   "h3_ids_in_drawer": 11,
+   "h3_ids_not_in_drawer": 28,
+   "h2_ids_in_drawer": 7,
+   "dossier_said_h3_missing": "~30"
+  },
+  "tab_stops_before_catalog_h2": {
+   "cut_post_trim": {
+    "byte": 281945, "byte_utf8_2026-09-15_review1": 282383,
+    "line": 1031
+   },
+   "cut_pre_trim": {
+    "byte": 912381, "byte_utf8_2026-09-15_review1": 912823, "cut_offsets_note_2026-09-15_review1": "review 1's F4: both 'byte' values in this block are CHARACTER indices; the UTF-8 byte offsets are the sibling keys. The two line numbers are unchanged and were right. The pre-trim pair was inherited verbatim from the dossier's F3, which made the same slip. Original values unedited.",
+    "line": 1039
+   },
+   "predicate_dossier": "every '<a href' + every '<details><summary>' + every 'tabindex=\"0\"' before the cut, document order",
+   "dossier_predicate_pre_trim": {
+    "a": 172,
+    "summary": 53,
+    "tabindex0": 3,
+    "total": 228,
+    "matches_dossier": true
+   },
+   "dossier_predicate_post_trim": {
+    "a": 172,
+    "summary": 52,
+    "tabindex0": 2,
+    "total": 226
+   },
+   "predicate_focusable": "the same three classes, excluding anything nested inside a <details> with no 'open' attribute; a <summary> is itself focusable and is counted",
+   "focusable_pre_trim": {
+    "a": 9,
+    "summary": 53,
+    "tabindex0": 0,
+    "total": 62
+   },
+   "focusable_post_trim": {
+    "a": 9,
+    "summary": 52,
+    "tabindex0": 0,
+    "total": 61
+   },
+   "why_they_differ": "163 of the 172 preceding anchors are inside closed disclosures, and the page emits 0 <details open>"
+  },
+  "architecture_group_citations": {
+   "anchors": 89,
+   "distinct_hrefs": 2,
+   "top_href_count": 88,
+   "top_href": "#polaris-source-about-lay-and-land-components-md",
+   "identical_on_both_captures": true,
+   "dossier_said": "~150"
+  },
+  "catalog_classes": {
+   "predicate": "each id=\"polaris-class-<cls>\" bounded at the next class id or the next <h2>, whichever comes first",
+   "pre_trim": {
+    "principle": {
+     "form": "table",
+     "items": 7
+    },
+    "success-criterion": {
+     "form": "table",
+     "items": 13
+    },
+    "catalog-entry": {
+     "form": "table",
+     "items": 65
+    },
+    "topology-component": {
+     "form": "table",
+     "items": 87
+    },
+    "roster-identity": {
+     "form": "table",
+     "items": 6
+    },
+    "design-contract": {
+     "form": "table",
+     "items": 32
+    },
+    "baseline-spec": {
+     "form": "table",
+     "items": 185
+    },
+    "craft-policy": {
+     "form": "table",
+     "items": 7
+    },
+    "total_data_polaris_item": 402
+   },
+   "post_trim": {
+    "principle": {
+     "form": "table",
+     "items": 7
+    },
+    "success-criterion": {
+     "form": "table",
+     "items": 13
+    },
+    "catalog-entry": {
+     "form": "table",
+     "items": 65
+    },
+    "topology-component": {
+     "form": "compact list",
+     "items": 87
+    },
+    "roster-identity": {
+     "form": "compact list",
+     "items": 6
+    },
+    "design-contract": {
+     "form": "compact list",
+     "items": 32
+    },
+    "baseline-spec": {
+     "form": "compact list",
+     "items": 192
+    },
+    "craft-policy": {
+     "form": "compact list",
+     "items": 7
+    },
+    "total_data_polaris_item": 409
+   },
+   "tbody_still_marks_each_surviving_class_table": true,
+   "five_tables_post_trim": [
+    {
+     "at": "principle",
+     "tr": 8
+    },
+    {
+     "at": "success-criterion",
+     "tr": 14
+    },
+    {
+     "at": "catalog-entry",
+     "tr": 66
+    },
+    {
+     "at": "polaris-shape-sources",
+     "tr": 279
+    },
+    {
+     "at": "polaris-shape-root-index",
+     "tr": 8
+    }
+   ]
+  },
+  "scripting_posture": {
+   "SECTION_NAV_SCRIPT": "apps/three-surface-poc/src/polaris.ts lines 1232-1289",
+   "what_it_does": [
+    "sets the outline drawer's open from a min-width:1000px media query and closes it on link click when narrow",
+    "opens a component guide's <details> when the hash names it, on click, on hashchange and at DOMContentLoaded",
+    "wires the expand-all button (class=\"expand-declaration\", 1 instance on the page)",
+    "keeps that button's aria-expanded in sync on toggle",
+    "sets aria-current=\"location\" on the matching drawer link on scroll"
+   ],
+   "without_it": "every fact, link and disclosure remains present and operable; exactly two affordances stop working \u2014 the drawer no longer opens itself on a wide screen, and the expand-all button becomes an inert control; no region renders empty", "without_it_2026-09-15_review1": "corrected under review 1's F5: THREE affordances stop working. The third is the hash-driven guide opening at polaris.ts 1243-1258 - on click, on hashchange and at DOMContentLoaded - so without script a reader who follows any #polaris-guide- link lands on a guide whose own disclosure is still closed and must find and operate its summary; the post-trim capture carries 0 <details open> and 10 href=\"#polaris-guide- occurrences, all ten inside <nav class=\"depth-nav\">. A fourth behaviour, the aria-current=location update on scroll, is also lost but is a cue rather than an affordance. The conclusion is unchanged: nothing becomes unreachable, no region renders empty, POC-REQ-022's bar is still met. Original value unedited.",
+   "constraint_sweep": {
+    "pattern": "case-insensitive script|javascript|progressive|without javascript",
+    "three-surface-poc-experience": {
+     "files": 7,
+     "constraining_sentences": "POC-REQ-021 (no runtime fetch of external scripts) and POC-REQ-022 (script-less reading still gets honest facts)"
+    },
+    "polaris-project-wide-butlers-model": {
+     "files": 15,
+     "constraining_sentences": "PWB-REQ-006 prohibits EMITTING scripts derived from observed content; nothing constrains the page's own chrome"
+    },
+    "doctrine": {
+     "files": 6,
+     "constraining_sentences": 0,
+     "hits": 2,
+     "hits_note": "v1.md:108 'sample-script' and vision.md:90 'progressively disclose' \u2014 neither about client-side scripting"
+    },
+    "decisions": {
+     "files": 67, "files_2026-09-15_review1": 73, "predicate_2026-09-15_review1": "review 1's F9: 67 is the count of TOP-LEVEL tracked files in .syzygy/governance/decisions; the whole tree holds 73, the six extra being under decisions/launch-gate/, excluded here with no predicate stated. Re-run case-insensitively over all 73 with the Python re pattern \\b(?:script|javascript|progressive\\w*)\\b: 9 matching lines (7 over the 67 alone), all nine read, 0 of them constraining Polaris's own client-side scripting - two digest-generation sentences, a script --flag shell lesson, a round-name-in-a-script lesson, a rule-stated-only-in-a-script lesson, a progressive-disclosure history row, a progressively-disclosing surface sentence and two HISTORY notes. The conclusion below is unchanged; the original value is unedited.", "matching_lines_over_73_2026-09-15_review1": 9,
+     "constraining_sentences": 0
+    }
+   }
+  },
+  "spec_keyword_sweep": {
+   "method": "case-insensitive literal search, Python re, over every file in each tree",
+   "denominators": {
+    "three-surface-poc-experience": 7,
+    "polaris-project-wide-butlers-model": 15,
+    "doctrine": 6
+   },
+   "hits": {
+    "outline": [
+     0,
+     0,
+     0
+    ],
+    "heading": [
+     0,
+     31,
+     0
+    ],
+    "keyboard": [
+     7,
+     29,
+     1
+    ],
+    "accessible": [
+     2,
+     0,
+     1
+    ],
+    "landmark": [
+     0,
+     0,
+     0
+    ],
+    "skip link": [
+     0,
+     0,
+     0
+    ],
+    "disclosure": [
+     9,
+     42,
+     0
+    ],
+    "details": [
+     0,
+     0,
+     0
+    ],
+    "navigation": [
+     3,
+     6,
+     2
+    ],
+    "paginat": [
+     2,
+     0,
+     0
+    ],
+    "filter": [
+     4,
+     12,
+     1
+    ],
+    "label": [
+     16,
+     80,
+     7
+    ],
+    "source record": [
+     0,
+     2,
+     0
+    ],
+    "exact text": [
+     0,
+     4,
+     0
+    ]
+   },
+   "order": "[three-surface-poc-experience, polaris-project-wide-butlers-model, doctrine]"
+  },
+  "heading_level_sweep": {
+   "pattern": "(?<![A-Za-z0-9-])[Hh][1-6](?![A-Za-z0-9-])|heading level|outline, case-insensitive",
+   "three-surface-poc-experience": {
+    "files": 7,
+    "matching_lines": 0
+   },
+   "doctrine": {
+    "files": 6,
+    "matching_lines": 0
+   },
+   "polaris-project-wide-butlers-model": {
+    "files": 15,
+    "matching_lines": 16,
+    "all_sixteen": "about the Butlers source extraction grammar (design.md:98,102; spec.md:32-42,49-51 and the closed-grammar bullet list), none about a rendered heading level"
+   },
+   "conclusion": "no specification or doctrine sentence fixes a rendered heading level; the nearest is the PWB spec line 57 'Heading levels/text, top-level list depth, table column counts, one-based ordinals and literal keys are exact', inside the extraction grammar"
+  },
+  "bytes": {
+   "ceiling": 2097152,
+   "post_trim_direct": 1478637,
+   "post_trim_tailnet": 1484487,
+   "headroom_tailnet_from_lane_a_record": 612665,
+   "owner_q3_target": 1400000,
+   "tailnet_shortfall_to_target": 84487,
+   "slice_estimates_direct_form": {
+    "slice1_source_record_summaries": {
+     "sites": 278,
+     "mean_payload_bytes": 43.83,
+     "separator_bytes": 3,
+     "added": 13010
+    },
+    "slice1_exact_text_links": {
+     "sites": 386,
+     "mean_payload_bytes": 43.31,
+     "separator_bytes": 3,
+     "added": 17874
+    },
+    "slice2_headings": {
+     "added": 0
+    },
+    "slice3_source_record_columns": {
+     "removed_scaffold_bytes": 53376,
+     "scaffold_detail": "278 x (mean 182 B open-details+summary + 10 B </details>)",
+     "added_cells_estimate": 7600,
+     "net": -45800,
+     "label": "Inferred \u2014 the added-cell figure is arithmetic, not a render"
+    },
+    "slice4_jump_list": {
+     "added_links": 28,
+     "mean_bytes_per_link": 195.7,
+     "added": 5479
+    },
+    "slice5": "[Unknown] until Q1 picks an arm"
+   },
+   "net_slices_1_to_4": -9437,
+   "net_label": "Inferred \u2014 a sum of four estimates, not a render",
+   "tailnet_note": "fragment-only links and non-URL payloads cost the same on both host forms, so slice 1's and slice 4's figures are identical on the tailnet capture"
+  }
+ },
+ "acts": {
+  "authorization": ".syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md (2026-09-02), point 1 at lines 50-52",
+  "continuation": ".syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md (2026-09-05), point 3 at lines 110-114; 'What this does not authorize' at lines 125-146; escalation triggers at lines 150-156",
+  "overlay": "none \u2014 there is no PWB overlay change directory. The 2026-09-05 amendment replaced the spec bytes in place; the eleven rows of .syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt include the PWB spec, proposal, design and three contract-coverage-matrix parts, all bound",
+  "per_slice_trigger_test": {
+   "1 labels": "no trigger on any reading",
+   "2 headings": "no trigger on any reading",
+   "3 source record as columns": "tested against 'any scope beyond the signed change'; two readings stated, neither chosen \u2014 Q5",
+   "4 outline": "no trigger on any reading",
+   "5 large populations": "tested against 'any scope beyond the signed change', 'a change to doctrine or an accepted contract' (the bound RFC9-13.c1 row), and PWB-REQ-011's route shape on arm (c) \u2014 Q1, Q4, Q5"
+  },
+  "packet_rules_nothing": true
+ },
+ "rfc2_26_test": {
+  "clause": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md line 196 (per DIRECTIVE-REGISTER.md), heading at line 194, scope sentence at lines 219-220",
+  "denominator": 5,
+  "rows": {
+   "1 labels": {
+    "consequence_class": "none enumerated",
+    "requirement": "PWB-REQ-016 line 864",
+    "scenario": "Keyboard-only owner reaches exact intent, lines 885-889",
+    "also": "PWB-REQ-012 line 679, scenario Section headings name project concepts, lines 705-710",
+    "limb1": "available"
+   },
+   "2 headings": {
+    "consequence_class": "none enumerated",
+    "requirement": "POC-REQ-061 line 966 / PWB-REQ-016 line 864",
+    "scenario": "Keyboard-only reading, lines 993-997",
+    "limb1": "requirement available, scenario partial \u2014 the scenario is about interactive elements and a heading is not one"
+   },
+   "3 source record as columns": {
+    "consequence_class": "claim and challenge rendering",
+    "requirement": "PWB-REQ-001 line 69, PWB-REQ-003 line 160, PWB-REQ-007 line 439",
+    "scenario": "Excluded source fails closed, lines 184-189",
+    "limb1": "available on content, silent on form \u2014 the literal 'details' occurs 0 times in either spec tree"
+   },
+   "4 outline": {
+    "consequence_class": "none enumerated",
+    "requirement": "PWB-REQ-016 line 864, POC-REQ-061 line 966",
+    "scenario": "Keyboard-only owner reaches exact intent (885-889) and Keyboard-only reading (993-997)",
+    "limb1": "available"
+   },
+   "5 large populations": {
+    "consequence_class": "Unknown-reason and rendering-tier presentation (arms a,b); API answers over epistemic state (arm c)",
+    "requirement": "POC-REQ-022 line 456, POC-REQ-021 line 417, PWB-REQ-011 line 632",
+    "scenario": "No-script request, lines 478-483",
+    "limb1": "available for arms (a) and (b); partial for arm (c) \u2014 no scenario describes a windowed catalog route"
+   }
+  },
+  "pwb_scenario_denominator": 31,
+  "poc_scenario_denominator": 24
+ },
+ "guardrails_checked": {
+  "fragment_target_inside_details": {
+   "guardrail": "AGENTS.md line 227 at a9f671e",
+   "enforced_by": "apps/three-surface-poc/src/polaris-first-reading.test.ts lines 242-246 (no id inside any <details> is an href=\"#\u2026\" target) and lines 233-235 (id=\"polaris-shape-sources\" is inside no disclosure), inside the it() named 'keeps each item population and the exclusions complete behind a native disclosure whose control names the count, leaves the sources table open for fragment navigation, and hides nothing by style'",
+   "sweep": "38 .test.ts files under apps/three-surface-poc/src; 4 mention 'details', 7 mention 'href=\"#'; the intersection that carries the guardrail is polaris-first-reading.test.ts"
+  },
+  "tbody_literal": {
+   "guardrail": "a hoisted attribute drops the family to a human count of 0",
+   "sites": "apps/three-surface-poc/src/polaris-parity-sweep.test.ts:494 uses the bare literal '<tbody>' and '<ul class=\"item-list\"'; apps/three-surface-poc/src/polaris-reachability.test.ts:368 asserts region.inner.startsWith('<table>')",
+   "hoist_point": "tableRegion (polaris.ts:158-160) takes an attrs parameter on the region div; polaris.ts:1014 already passes ' data-source-index' through it", "hoist_point_2026-09-15_review1": "corrected under review 1's F10: tableRegion is polaris.ts 159-161; line 158 is the last line of its doc comment. Original value unedited.", "class_population_detector_2026-09-15_review1": "review 1's F3: polaris-parity-sweep.test.ts line 494 reads in full - if (section.inner.includes('<tbody>') || section.inner.includes('<ul class=\"item-list\"')) classesWithTables.push(section.value); - so the detector keys off the compact-list literal as well as <tbody>. The packet had quoted only the first disjunct, with no elision mark (verification rule 8). Slice 5 now carries the same AGENTS.md line 296 guardrail and a fifth rule-6 mutant over the detector. Negative check reproduced: 0 of the 409 data-polaris-item elements on the post-trim capture carries an id, so none is an href=# target and arm (a)'s nested disclosure trips no fragment-target guardrail."
+  },
+  "copy_oracle_substring": {
+   "predicate": "polaris-copy.test.ts:308 \u2014 entry.text === row.text || entry.text.startsWith(row.text) || entry.text.includes(row.text)",
+   "consequence": "a suffix interpolation is still 'reached'; the prohibited-term regex at line 132 only applies where frame.kind is defined, and a summary or anchor has no kind, so the implementing bead must assert the interpolated text against it explicitly"
+  },
+  "pwb_req_020_per_tuple": {
+   "carrier": "apps/three-surface-poc/src/polaris-source.ts:49-58 \u2014 sourceRouteIdentities reads the identity back off the href; the comment at 44-47 says the href is 'the one carrier of the identity; no attribute restates it'",
+   "consequence": "an interpolated label must not change the href; the same 192 identities render twice (192 exact-text links in the catalog group and 192 in the evidence group), so an id-level check would not see a divergence"
+  }
+ },
+ "collision": {
+  "surface_files": [
+   "apps/three-surface-poc/src/polaris.ts",
+   "apps/three-surface-poc/src/polaris-copy.ts",
+   "apps/three-surface-poc/src/polaris-markdown.ts",
+   "apps/three-surface-poc/src/polaris-reading.ts",
+   "apps/three-surface-poc/src/polaris-source.ts",
+   "apps/three-surface-poc/src/design-tokens.ts",
+   "apps/three-surface-poc/src/page-shell.ts",
+   "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+   "apps/three-surface-poc/src/polaris-copy.test.ts",
+   "apps/three-surface-poc/src/polaris-accessibility.ts",
+   "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts",
+   "apps/three-surface-poc/src/polaris-reachability.test.ts",
+   "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+   "apps/three-surface-poc/src/polaris-reading-plan.ts",
+   "apps/three-surface-poc/src/polaris-markdown.test.ts"
+  ],
+  "surface_size": 15,
+  "predicate_A": "backticked code span containing '/' that resolves to a FILE in this worktree, intersected with the 15-file surface",
+  "predicate_B": "the file's basename occurring anywhere in the sibling packet's bytes, in a code span or not \u2014 a superset of A, and the predicate that catches a bare-basename or continuation-form citation",
+  "predicates_disagree_on_rows": 7,
+  "rows": [
+   {
+    "sibling": "M1 lane A (main, in this worktree)",
+    "A": 0,
+    "B": 1,
+    "A_list": [],
+    "B_list": [
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_only": [
+     "apps/three-surface-poc/src/polaris.ts"
+    ]
+   },
+   {
+    "sibling": "lane B (PR #35, P-68)",
+    "A": 0,
+    "B": 1,
+    "A_list": [],
+    "B_list": [
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_only": [
+     "apps/three-surface-poc/src/polaris.ts"
+    ]
+   },
+   {
+    "sibling": "M2 (PR #36, P-69)",
+    "A": 2,
+    "B": 4,
+    "A_list": [
+     "apps/three-surface-poc/src/polaris-copy.ts",
+     "apps/three-surface-poc/src/polaris-reading.ts"
+    ],
+    "B_list": [
+     "apps/three-surface-poc/src/polaris-copy.ts",
+     "apps/three-surface-poc/src/polaris-reading-plan.ts",
+     "apps/three-surface-poc/src/polaris-reading.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_only": [
+     "apps/three-surface-poc/src/polaris-reading-plan.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ]
+   },
+   {
+    "sibling": "M3 (PR #37, P-70)",
+    "A": 6,
+    "B": 7,
+    "A_list": [
+     "apps/three-surface-poc/src/design-tokens.ts",
+     "apps/three-surface-poc/src/polaris-copy.ts",
+     "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+     "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+     "apps/three-surface-poc/src/polaris-reading.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_list": [
+     "apps/three-surface-poc/src/design-tokens.ts",
+     "apps/three-surface-poc/src/page-shell.ts",
+     "apps/three-surface-poc/src/polaris-copy.ts",
+     "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+     "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+     "apps/three-surface-poc/src/polaris-reading.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_only": [
+     "apps/three-surface-poc/src/page-shell.ts"
+    ]
+   },
+   {
+    "sibling": "M4 (PR #38, P-71)",
+    "A": 4,
+    "B": 5,
+    "A_list": [
+     "apps/three-surface-poc/src/design-tokens.ts",
+     "apps/three-surface-poc/src/polaris-copy.test.ts",
+     "apps/three-surface-poc/src/polaris-copy.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_list": [
+     "apps/three-surface-poc/src/design-tokens.ts",
+     "apps/three-surface-poc/src/polaris-copy.test.ts",
+     "apps/three-surface-poc/src/polaris-copy.ts",
+     "apps/three-surface-poc/src/polaris-reading.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_only": [
+     "apps/three-surface-poc/src/polaris-reading.ts"
+    ]
+   },
+   {
+    "sibling": "M5 (PR #39, P-72)",
+    "A": 2,
+    "B": 4,
+    "A_list": [
+     "apps/three-surface-poc/src/polaris-source.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_list": [
+     "apps/three-surface-poc/src/design-tokens.ts",
+     "apps/three-surface-poc/src/polaris-copy.ts",
+     "apps/three-surface-poc/src/polaris-source.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_only": [
+     "apps/three-surface-poc/src/design-tokens.ts",
+     "apps/three-surface-poc/src/polaris-copy.ts"
+    ]
+   },
+   {
+    "sibling": "M6 (PR #40, P-73)",
+    "A": 0,
+    "B": 0,
+    "A_list": [],
+    "B_list": [],
+    "B_only": []
+   },
+   {
+    "sibling": "M7 (PR #42, P-76)",
+    "A": 1,
+    "B": 1,
+    "A_list": [
+     "apps/three-surface-poc/src/polaris-source.ts"
+    ],
+    "B_list": [
+     "apps/three-surface-poc/src/polaris-source.ts"
+    ],
+    "B_only": []
+   },
+   {
+    "sibling": "M8 (PR #43, P-74)",
+    "A": 10,
+    "B": 10,
+    "A_list": [
+     "apps/three-surface-poc/src/design-tokens.ts",
+     "apps/three-surface-poc/src/page-shell.ts",
+     "apps/three-surface-poc/src/polaris-copy.test.ts",
+     "apps/three-surface-poc/src/polaris-copy.ts",
+     "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+     "apps/three-surface-poc/src/polaris-markdown.ts",
+     "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+     "apps/three-surface-poc/src/polaris-reading-plan.ts",
+     "apps/three-surface-poc/src/polaris-source.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_list": [
+     "apps/three-surface-poc/src/design-tokens.ts",
+     "apps/three-surface-poc/src/page-shell.ts",
+     "apps/three-surface-poc/src/polaris-copy.test.ts",
+     "apps/three-surface-poc/src/polaris-copy.ts",
+     "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+     "apps/three-surface-poc/src/polaris-markdown.ts",
+     "apps/three-surface-poc/src/polaris-project-shape.test.ts",
+     "apps/three-surface-poc/src/polaris-reading-plan.ts",
+     "apps/three-surface-poc/src/polaris-source.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_only": []
+   },
+   {
+    "sibling": "M9 (PR #41, P-75)",
+    "A": 4,
+    "B": 4,
+    "A_list": [
+     "apps/three-surface-poc/src/page-shell.ts",
+     "apps/three-surface-poc/src/polaris-copy.ts",
+     "apps/three-surface-poc/src/polaris-reachability.test.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_list": [
+     "apps/three-surface-poc/src/page-shell.ts",
+     "apps/three-surface-poc/src/polaris-copy.ts",
+     "apps/three-surface-poc/src/polaris-reachability.test.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_only": []
+   },
+   {
+    "sibling": "M10 (PR #44, P-77)",
+    "A": 1,
+    "B": 1,
+    "A_list": [
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_list": [
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_only": []
+   },
+   {
+    "sibling": "M11 (PR #45, P-78)",
+    "A": 4,
+    "B": 4,
+    "A_list": [
+     "apps/three-surface-poc/src/page-shell.ts",
+     "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+     "apps/three-surface-poc/src/polaris-source.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_list": [
+     "apps/three-surface-poc/src/page-shell.ts",
+     "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+     "apps/three-surface-poc/src/polaris-source.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_only": []
+   },
+   {
+    "sibling": "M12 (PR #46, P-79)",
+    "A": 3,
+    "B": 4,
+    "A_list": [
+     "apps/three-surface-poc/src/polaris-copy.ts",
+     "apps/three-surface-poc/src/polaris-source.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_list": [
+     "apps/three-surface-poc/src/polaris-copy.ts",
+     "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+     "apps/three-surface-poc/src/polaris-source.ts",
+     "apps/three-surface-poc/src/polaris.ts"
+    ],
+    "B_only": [
+     "apps/three-surface-poc/src/polaris-first-reading.test.ts"
+    ]
+   }
+  ],
+  "most_collided_under_B": {
+   "polaris.ts": 11,
+   "polaris-copy.ts": 7,
+   "polaris-source.ts": 5,
+   "design-tokens.ts": 4,
+   "page-shell.ts": 4,
+   "polaris-first-reading.test.ts": 4
+  },
+  "heads_read_this_session": {
+   "laneb": "4090f98",
+   "m2wt": "f2f37dd",
+   "m3wt": "6574600",
+   "m4wt": "63b8e33",
+   "m5wt": "ba9ca61",
+   "m6wt": "83c9f60",
+   "m7wt": "f97baf4",
+   "m8wt": "bce9039",
+   "m9wt": "65de02b",
+   "m10wt": "95f31cb",
+   "m11wt": "bbd6837",
+   "m12wt": "49b70bc",
+   "m13wt": "a9f671e"
+  },
+  "register_rows": {
+   "predicate": "^| P- over each worktree's PENDING-OWNER-DECISIONS.md",
+   "m13wt": 26,
+   "each_sibling": 27,
+   "one_row_at_or_above_P-68_in_each_sibling": true,
+   "this_packet_adds_none": true,
+   "would_be": "P-80 after review 1"
+  }
+ },
+ "digest_binding": {
+  "denominator": "913 tracked files under .syzygy/, openspec/, docs/ and scripts/ at a9f671e",
+  "act_bound_bytes_proposed_for_edit": 0,
+  "manifest_named_files_in_population": 66,
+  "surface_files_as_digest_rows": 0,
+  "surface_files_named_as_paths_in_an_evidence_record": [
+   "apps/three-surface-poc/src/polaris.ts",
+   "apps/three-surface-poc/src/polaris-first-reading.test.ts"
+  ],
+  "that_record": "docs/evidence/polaris-manifesto-example-mutation-2026-09-09.json (names them as mutation targets, not as bound bytes)", "evidence_record_paths_2026-09-15_review1": {"correction": "review 1's F2. The two figures above are the sweep over the 66 manifest-named files only - a population the packet never stated - and the single match there is caught because 'manifest' is a substring of 'manifesto': that file is a mutation record, not a manifest. The original values are unedited.", "population": "the 96 tracked files under docs/evidence/ at a9f671e, four of them PNGs that decode as no text", "predicate": "Python 'in' test for the literal apps/three-surface-poc/src/<basename> for each of the 15 surface files", "surface_files_appearing": 13, "distinct_records": 20, "per_file": {"polaris.ts": 18, "polaris-project-shape.test.ts": 9, "polaris-copy.ts": 4, "polaris-copy.test.ts": 4, "polaris-first-reading.test.ts": 4, "polaris-source.ts": 3, "polaris-accessibility.browser.test.ts": 3, "polaris-reachability.test.ts": 3, "polaris-markdown.test.ts": 2, "polaris-markdown.ts": 1, "polaris-reading.ts": 1, "design-tokens.ts": 1, "page-shell.ts": 1, "polaris-reading-plan.ts": 0, "polaris-accessibility.ts": 0}, "must_be_re_run_names_a_surface_file_at_a_mutation_target_key": ["docs/evidence/polaris-editorial-mutations-2026-09-09.json", "docs/evidence/polaris-manifesto-example-mutation-2026-09-09.json", "docs/evidence/pwb-c6-polaris-parity-mutation-run-2026-09-05.json", "docs/evidence/pwb-c7-fresh-demo-readiness-mutation-run-2026-09-05.json", "docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json", "docs/evidence/pwb-p3-5-tuple-mutation-run-2026-09-04.json", "docs/evidence/pwb-p3-6-narrative-mutation-run-2026-09-04.json", "docs/evidence/pwb-p3-7-bands-mutation-run-2026-09-04.json", "docs/evidence/pwb-p3-8-reachability-mutation-run-2026-09-04.json", "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04-parity-markers.json", "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-04.json", "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-06-parity-markers.json", "docs/evidence/pwb-p4-4-accessibility-mutation-run-2026-09-04.json", "docs/evidence/pwb-recon-gen2-gate-mutation-run-2026-09-06.json", "docs/evidence/pwb-recon-gen2-reviewer-mutation-run-2026-09-06.json"], "mutation_target_keys_seen": ["mutants[].file", "mutants.mutants[].file", "mutations[].file", "mutations[].subject", "results[].file", "groups[].mutations[].file", "subject"], "target_files_named_across_those_15": {"polaris.ts": 15, "polaris-copy.ts": 2, "polaris-markdown.ts": 1, "polaris-reading.ts": 1, "polaris-source.ts": 1, "design-tokens.ts": 1, "page-shell.ts": 1}, "must_be_re_anchored_names_a_surface_file_only_as_a_test_file_code_seam_implementation_path_trim_input_or_digest_key": ["docs/evidence/polaris-generator-host-overlap-2026-09-12.json", "docs/evidence/polaris-pipeline-synthetic-verification-2026-09-13.json", "docs/evidence/polaris-source-index-reading-2026-09-09.json", "docs/evidence/pwb-p4-2-mutation-sweep-2026-09-09-named-absent-file-dropped.json", "docs/evidence/pwb-p63-polaris-trim-measurement-2026-09-07.json"], "digest_key_note": "pwb-p4-2-mutation-sweep-2026-09-09-named-absent-file-dropped.json carries apps/three-surface-poc/src/polaris.ts and apps/three-surface-poc/src/polaris-copy.ts as KEYS of its sourceDigestsBefore and sourceDigestsAfter maps, so it stores a digest of two surface files. No digest value is reproduced here.", "acts_unaffected": "none of the 20 is an act manifest, so the act claim in this block is untouched", "unknown": "[Unknown] whether any of the 15 mutation runs would still kill after a slice lands; no suite was run this session"},
+  "current_digest_citers": {
+   "apps/three-surface-poc/src/polaris-reading.ts": [
+    "docs/reviews/R-POLARIS-VISIBLE-DIAGRAMS-FIDELITY-2026-09-10-RAW.md",
+    "docs/reviews/R-POLARIS-VISIBLE-DIAGRAMS-FIDELITY-CONFIRMATION-2026-09-10-RAW.md"
+   ],
+   "apps/three-surface-poc/src/polaris-reading-plan.ts": [
+    "docs/reviews/R-POLARIS-VISIBLE-DIAGRAMS-FIDELITY-2026-09-10-RAW.md",
+    "docs/reviews/R-POLARIS-VISIBLE-DIAGRAMS-FIDELITY-CONFIRMATION-2026-09-10-RAW.md"
+   ]
+  },
+  "consequence": "slice 2 edits polaris-reading.ts, which retires that PASS confirmation's binding to it (verification rule 10 applied to a raw review). The implementing bead must re-run that bounded fidelity review and retain a new -RAW.md. polaris.ts is listed in the same raw and its current bytes no longer match, which is the 'zero digest citers does not mean never bound' shape read forward.",
+  "digest_policy_note": "no digest value is reproduced in the packet or in this record's prose; the records are cited by path (CG-7e, CG-15). The capture sha256 values above are this session's own measurement of scratchpad files, not act arguments."
+ },
+ "figures_that_differ_from_the_dossier": [
+  {
+   "figure": "distinct /polaris/source?identity= targets behind the 'Exact text' links",
+   "dossier": 372,
+   "pre_trim": 185,
+   "post_trim": 192,
+   "note": "the dossier's figure was wrong on the capture it audited; the correction makes S2-F2 stronger"
+  },
+  {
+   "figure": "<details class=\"source-record\">",
+   "dossier": 271,
+   "pre_trim": 271,
+   "post_trim": 278
+  },
+  {
+   "figure": "'Exact text' links",
+   "dossier": 372,
+   "pre_trim": 372,
+   "post_trim": 386
+  },
+  {
+   "figure": "<details> total",
+   "dossier": 353,
+   "pre_trim": 353,
+   "post_trim": 359
+  },
+  {
+   "figure": "<h6>",
+   "dossier": 15,
+   "pre_trim": 15,
+   "post_trim": 14
+  },
+  {
+   "figure": "<table> on the page",
+   "dossier": 10,
+   "pre_trim": 10,
+   "post_trim": 5
+  },
+  {
+   "figure": "baseline-spec population",
+   "dossier": "185 table rows",
+   "pre_trim": "185 table rows",
+   "post_trim": "192 compact-list entries, no tbody"
+  },
+  {
+   "figure": "topology-component population",
+   "dossier": "87 table rows",
+   "pre_trim": "87 table rows",
+   "post_trim": "87 compact-list entries, no tbody"
+  },
+  {
+   "figure": "architecture-group citation links",
+   "dossier": "~150",
+   "pre_trim": "89 anchors over 2 distinct hrefs, 88 to one",
+   "post_trim": "89 anchors over 2 distinct hrefs, 88 to one"
+  },
+  {
+   "figure": "in-group h3s not in the outline",
+   "dossier": "~30",
+   "post_trim": 28
+  },
+  {
+   "figure": "tab stops before the catalog h2 under the dossier's own predicate",
+   "dossier": 228,
+   "pre_trim": 228,
+   "post_trim": 226,
+   "second_predicate": "61 post-trim / 62 pre-trim once closed-disclosure contents are excluded"
+  },
+  {
+   "figure": "polaris.ts source-record summary line",
+   "dossier": 818,
+   "at_a9f671e": 835
+  },
+  {
+   "figure": "polaris.ts exact-text link line",
+   "dossier": 1530,
+   "at_a9f671e": "378 (shared helper) and 1549 (per-dive)"
+  },
+  {
+   "figure": "polaris.ts depthNav range",
+   "dossier": "1510-1538",
+   "at_a9f671e": "1529-1556; sidebar call at 1629", "at_a9f671e_2026-09-15_review1": "corrected under review 1's F10: depthNav runs 1529-1558 - 1556 is the last content line of the template, 1557 closes the <nav> and 1558 closes the function. The sidebar call at 1629 is unchanged. Original value unedited."
+  },
+  {
+   "figure": "polaris-copy.ts label lines",
+   "dossier": "129, 134",
+   "at_a9f671e": "129, 134 \u2014 unchanged"
+  },
+  {
+   "figure": "polaris-markdown.ts heading expression",
+   "dossier": "157-160",
+   "at_a9f671e": "157-160 \u2014 unchanged", "at_a9f671e_2026-09-15_review1": "corrected under review 1's F1: dossier 157-160 -> 158-162 at a9f671e, the expression at line 159. This is the one row of this list whose re-derivation did not happen: the packet published the dossier's anchor as 'unchanged' when it was wrong in both files. Original value unedited."
+  },
+  {
+   "figure": "pre-trim capture size",
+   "posture_file": 2087400,
+   "on_disk": 2090025
+  }
+ ],
+ "owner_questions": {
+  "count": 5,
+  "registered": false,
+  "register_row_would_be": "P-80, after review 1, batched",
+  "list": [
+   {
+    "id": "Q1",
+    "gist": "May client-side filtering or pagination be added as progressive enhancement, given the page's one-script, zero-noscript posture?",
+    "recommended": "progressive enhancement over the native disclosure, complete population always served",
+    "arms": [
+     "no script (server-rendered first-20 plus a remainder disclosure)",
+     "progressive enhancement over native <details>",
+     "server-side paging by route"
+    ],
+    "default_if_unanswered": "no filter and no pagination ships"
+   },
+   {
+    "id": "Q2",
+    "gist": "May the source-record disclosure be hoisted into columns of the table its row is already in, and does any scenario require the disclosure form?",
+    "recommended": "yes, hoist it; no scenario names the form, so no CC-REV-2 delta is needed",
+    "arms": [
+     "hoist all four fields",
+     "hoist identity and outcome only, keep the disclosure"
+    ],
+    "default_if_unanswered": "the second arm"
+   },
+   {
+    "id": "Q3",
+    "gist": "Is interpolating the item identity into the two shared labels a rendering-vocabulary change under RFC2-26 or an engineering decision?",
+    "recommended": "engineering decision inside the existing act",
+    "arms": [
+     "engineering decision",
+     "vocabulary change, CC-REV-2 scenario on PWB-REQ-012 first"
+    ],
+    "default_if_unanswered": "slice 1 ships the suffix form, which the existing oracle's startsWith predicate already admits"
+   },
+   {
+    "id": "Q4",
+    "gist": "A filter introduces personal presentation state the bound RFC9-13.c1 coverage row says PWB does not have. Stateless filter, or re-open the coverage judgment?",
+    "recommended": "keep the filter stateless with a live hidden count",
+    "arms": [
+     "stateless filter",
+     "stateful filter plus a CC-REV-2 route for the bound row"
+    ],
+    "default_if_unanswered": "no filter ships and the row stays true"
+   },
+   {
+    "id": "Q5",
+    "gist": "Are slices 3, 4 and 5 presentation-only inside the bounded non-release POC, or do they trip the continuation act's escalation triggers?",
+    "recommended": "slices 1, 2 and 4 trip no trigger on any reading; slices 3 and 5 should be ruled explicitly",
+    "arms": [
+     "a rendering choice is inside the signed change",
+     "a rendering mode the specification never contemplated is scope beyond it"
+    ],
+    "default_if_unanswered": "slices 1, 2 and 4 proceed; slices 3 and 5 hold"
+   }
+  ]
+ },
+ "not_verifiable_this_session": [
+  "[Unknown] whether the sibling branches' actual diffs stay inside the paths their packets cite \u2014 the collision table is computed over packet text, not over branch diffs",
+  "[Unknown] which arm the owner takes on Q1, and therefore what slice 5 is",
+  "[Unknown] whether Butlers' baseline-spec population is still 192 at the next evaluation; it moved 185 -> 192 between the two captures",
+  "[Unknown] the per-fragment minimum hash depth of the four diagram captions and the selected-passages block",
+  "[Unknown] whether any test suite passes at a9f671e \u2014 none was run this session; the baseline is the lane A record's, cited by path"
+ ],
+ "conventions_checked": {
+  "non_fence_lines": 1209,
+  "odd_backtick_lines": 0,
+  "over_78_column_lines_outside_fences_tables_quotes_headings": 20, "over_78_column_lines_after_review1_2026-09-15": 19,
+  "over_78_note": "each is a single unbreakable code span or quoted literal", "over_78_note_2026-09-15_review1": "review 1's F8: the count 20 was exact at 97b37ee and the characterisation was not - line 1166 was ordinary prose at 90 columns carrying no code span, and line 1016 was prose plus a short span. Both are rewrapped. After every edit of this pass the count is the sibling key above, re-derived last of all under the predicate: lines outside fenced code blocks whose first non-space character is not |, > or #, longer than 78 columns, denominator every line of the file. Each of them is a single unbreakable code span or quoted literal; the two review 1 named as reflowable are rewrapped. Original values unedited.",
+  "distinct_code_spans": 232, "distinct_code_spans_after_review1_2026-09-15": 304,
+  "non_resolving_slash_bearing_spans": 15, "non_resolving_slash_bearing_spans_after_review1_2026-09-15": 20,
+  "non_resolving_list_after_review1_2026-09-15": [".syzygy/**", ".syzygy/local/", "/^ {0,3}(#{1,6}) +(.+?)(?: +#+)? *$/", "/polaris/source?identity=...", "</details>", "<a …>Exact text</a>", "<details class=\"source-record\"><summary …>Source record</summary>", "<h${level}>${inline(heading[2]!)}</h${level}>", "<h1>/<h2>/<h3>", "<h4>/<h5>/<h6>", "<summary…>Source record</summary>", "<td></td>", "agent/syzygy-dov.13", "apps/**", "apps/three-surface-poc/src/<basename>", "decisions/", "decisions/launch-gate/", "openspec/**", "packages/**", "python3 scripts/check_governance.py"],
+  "span_predicate_2026-09-15": "every backticked span in the file, fenced blocks included, deduplicated; resolves means os.path.exists from the worktree root. The predicate reproduces 232 and 15 exactly at 97b37ee. Original values unedited.",
+  "non_resolving_list": [
+   ".syzygy/**",
+   ".syzygy/local/",
+   "/polaris/source?identity=...",
+   "</details>",
+   "<a \u2026>Exact text</a>",
+   "<details class=\"source-record\"><summary \u2026>Source record</summary>",
+   "<h${level}>${inline(heading[2]!)}</h${level}>",
+   "<h1>/<h2>/<h3>",
+   "<h4>/<h5>/<h6>",
+   "<summary\u2026>Source record</summary>",
+   "<td></td>",
+   "apps/**",
+   "decisions/",
+   "openspec/**",
+   "packages/**"
+  ],
+  "backticked_observed_repository_paths": 0,
+  "act_arguments_or_digests_reproduced": 0
+ },
+ "independent_review": {
+  "count": 1,
+  "raws": ["docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md"],
+  "verdicts": ["CONFIRM WITH EXCEPTIONS"],
+  "note": "Review 1 landed 2026-09-15, verdict copied exactly CONFIRM WITH EXCEPTIONS (0 blocking, 6 non-blocking, 5 editorial, F1-F11), retained verbatim at the raw path above and never overwritten; see the review1 block at the end of this record. Verification rule 10: review 1 binds the bytes it names at 97b37ee and not these, so its eleven exception repairs are uncovered until a second fresh-context review confirms them, and that review's raw would be a second -RAW.md file, never an overwrite. [Superseded 2026-09-15: count 0, raws [], 'first draft; every figure here is uncovered until a fresh-context review confirms it (verification rule 10)'.]"
+ },
+ "governance_check": {
+  "command": "python3 scripts/check_governance.py",
+  "worktree": "m13wt at a9f671e plus these two untracked files",
+  "last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) \u2014 counts derived, not asserted",
+  "packet_files_in_findings": 0
+ },
+ "file_bytes": {
+  "docs/design/POLARIS-M13-NAVIGATION-SCALE-FUNNEL.md": 97146
+ },
+ "file_digests_sha256": {
+  "note_2026-09-15_review1": "the packet digest below is the FIRST-DRAFT value, and it is the value review 1 was bound to at 97b37ee (verification rule 10). It is kept unedited for that reason. The packet's bytes after this pass are review1.packet_measured_after_review1.",
+  "docs/design/POLARIS-M13-NAVIGATION-SCALE-FUNNEL.md": "5171385698b7d29f1b8ca0b1bfeda3729c888f75c07c965ebdf8765e01c8d507",
+  "docs/evidence/polaris-m13-navigation-scale-funnel-2026-09-15.json": "computed after this file was written; reported in the drafter's report, not stored here (a file cannot contain its own digest)"
+ },
+ "git_status_at_finish": "only these two files, both untracked",
+ "review1": {
+  "raw_path": "docs/reviews/R-POLARIS-M13-NAVIGATION-SCALE-FUNNEL-RAW.md",
+  "raw_bytes": 33333,
+  "raw_sha256": "b20d823a28ae3e90cba686e4ac5a77f5da0c6a45711ab254e76cbb9551cddc31",
+  "raw_digest_method": "wc -c and sha256sum this session; neither value transcribed",
+  "verdict": "CONFIRM WITH EXCEPTIONS - 0 blocking, 6 non-blocking, 5 editorial",
+  "counts": {"blocking": 0, "non_blocking": 6, "editorial": 5, "total": 11},
+  "reviewed_commit": "97b37ee",
+  "reviewed_files_at_that_commit": {
+   "docs/design/POLARIS-M13-NAVIGATION-SCALE-FUNNEL.md": {"bytes": 97146, "sha256": "5171385698b7d29f1b8ca0b1bfeda3729c888f75c07c965ebdf8765e01c8d507"},
+   "docs/evidence/polaris-m13-navigation-scale-funnel-2026-09-15.json": {"bytes": 39197, "sha256": "1a47e98419447353d01cd75fd974aacc9c7cb8f0989e9745cf72065aca901f9c"}
+  },
+  "method": "git show 97b37ee:<path> piped to wc -c and sha256sum, this session; both match the raw's own table",
+  "repairs_applied_this_session": true,
+  "five_question_table_as_the_raw_states_it": "All five scopes truthful, with Q3 'Overstated on framing - see F11' and the rest exact; all five genuine hard human gates, Q3 called the weakest of the five and legitimate and Q1 the central one; every recommendation follows from its evidence; every lawful arm named, none called unlawful, every default lawful - with one note against Q1, that under F6 arm (c) may have more requirement cover than the packet allows. No owner trade-off is smoothed into consensus language anywhere in the five, and Q1's counter-argument is explicitly ranked above its own recommendation.",
+  "decisions_taken_not_asked_verdict_as_the_raw_states_it": "Each of the four is a delegate's to make and no owner question is hidden in them: the prerequisite correction escalates slice 5 rather than deciding it; the heading-normalization sweep re-derives exactly (0 over the 7 POC files, 0 over the 6 doctrine files, 16 over the 15 PWB files, all sixteen read and all sixteen about the Butlers source grammar); the three dossier corrections are measurement corrections and the dossier is not edited; and 'no command palette' is disclosed, reasoned, reversible and routed to Q1's arm (b) to overrule.",
+  "measurements_verdict_as_the_raw_states_it": "Every population row, every capture row, every act and contract quotation, every requirement-and-scenario anchor, the whole 13-row collision table including its B-only column, the register sweep and the 913/66 digest-binding denominators re-derive exactly; the exceptions are F1, F2, F4, F8 and F10. The raw also ran the branch-diff collision predicate the packet could not and found every one of the twelve sibling branches changing 0 files under apps/ or packages/, so today's file-level collision is empty and the packet's table measures prospective collision, which it labels correctly.",
+  "recommended_answers_changed": "None. The raw's Q1-Q5 table answers 'Recommendation follows from the evidence?' Yes for all five, and no finding moves an arm, a recommendation or a default. Q1 keeps progressive enhancement over the native disclosure, keeps all three lawful arms (no script / progressive enhancement / server-side paging by route) and keeps its default that no filter and no pagination ships; F9 corrected the denominator and predicate inside its evidence half and F6 strengthened arm (c)'s requirement cover without choosing it. Q3 keeps 'an engineering decision inside the existing act, not an RFC2-26 consequence of RFC-0002', keeps its CC-REV-2 second arm and keeps its default that slice 1 ships the suffix form; F11 repaired only the opening sentence's framing. Q2, Q4 and Q5 are untouched by any finding.",
+  "findings_with_a_defect_of_their_own": {"F1": "The raw locates the wrong anchor at 'packet lines 654 and 666, line 157 twice, including mutant (a)'. At 97b37ee the packet carries 'line 157' once in slice 2, and mutant (a) quotes the expression rather than a line number, so five sites were repaired and not six. The defect F1 reports is real and is applied in full."},
+  "raw_citation_note": "Many of the raw's :NNN references into the packet resolve exactly at 97b37ee (:43, :45, :123-131, :172, :232, :494, :658, :1174-1177) and others are low by two to twelve lines: :271 is line 280, :283 is 293-294, :351 is 332, :364 is 354, :407-414 is 405-413, :545 is 533, :694-700 is 693-702, :703 is 701. Every finding was located by its quoted content rather than by its line number, and every quotation the raw reproduces was found where its content says.",
+  "unknowns": "Review 1 records no [Unknown] of its own against any finding. This pass adds one: whether any of the 15 mutation runs that name a surface file at a mutation-target key would still kill after a slice lands is [Unknown] - no suite was run this session. The packet's four original [Unknown]s are unchanged.",
+  "dispositions": {
+   "F1": "CONFIRMED and applied (non-blocking), site list partly corrected. Read at source: the quoted block is polaris-markdown.ts 158-162, line 156 a closing brace, line 157 the heading regex, the expression line 159. Applied at Gate 1's motif paragraph, Measurement 3's quotation, Gate 3's topology row, slice 2's 'The change' sentence and the funnel summary; the raw's sixth site does not exist at 97b37ee. The record's dossier-difference row keeps its original at_a9f671e value and gains a dated sibling key.",
+   "F2": "CONFIRMED and applied (non-blocking), every figure. 913 tracked files under the four prefixes at a9f671e, 66 whose path contains 'manifest' case-insensitively, 0 of the 15 surface files as a digest row of any of them - the act claim stands. Over the 96 tracked files under docs/evidence/, 13 of 15 appear as the literal path apps/three-surface-poc/src/<basename> in 20 distinct records; polaris.ts in 18. The single match behind the published 2 is caught because 'manifest' is a substring of 'manifesto'. Applied in Gate 0(b), Gate 6 item 7 and the funnel summary, and mirrored here by dated sibling keys, with the new partition of the 20 into 15 to re-run and 5 to re-anchor.",
+   "F3": "CONFIRMED and applied (non-blocking). polaris-parity-sweep.test.ts line 494's second disjunct is section.inner.includes('<ul class=\"item-list\"'), exactly as the raw quotes it. The whole line is now quoted in a fence in slice 3 with the superseded half-quotation marked; AGENTS.md line 296 at a9f671e is confirmed and quoted at the clause; slice 5 gains the same guardrail paragraph and a fifth rule-6 mutant over the class-population detector. The raw's negative check reproduces: 0 of 409 data-polaris-item elements carries an id.",
+   "F4": "CONFIRMED and applied (non-blocking), all four offsets recomputed in UTF-8 bytes on each capture: 912823 / 282383 / 88131 / 88608 against the published 912381 / 281945 / 88024 / 88501, which are the character indices of the same positions. The two line numbers attached to the cut are unchanged and were right. The corollary reproduces exactly: the pre-trim capture is 2087400 characters and 2090025 UTF-8 bytes, so the inherited posture file's figure is that file's character count to the byte, and the discrepancy is retired.",
+   "F5": "CONFIRMED and applied (non-blocking). SECTION_NAV_SCRIPT lines 1243-1258 open a component guide's <details> when the hash names it, on click, on hashchange and at DOMContentLoaded; the post-trim capture carries 0 <details open> and 10 href=#polaris-guide- occurrences, all ten inside the depth nav. Measurement 6 now says three, names the aria-current scroll update as a fourth behaviour that is a cue rather than an affordance, and keeps the conclusion.",
+   "F6": "CONFIRMED and applied (non-blocking). The literal POC-REQ-030 occurs 0 times in the packet and 0 times in this record at 97b37ee. Read at source: requirement heading at POC spec line 496, requirement text at 500-503, Observable limb at 507, scenario at 518; the two 'paginat' hits are design.md line 25 and spec line 507. A new Gate 5 subsection reads it per slice and says what it does and does not reach for arm (c), as a reading put to the owner and not a ruling. Q1's recommendation, arms and default are unchanged; arm (c)'s standing is strengthened.",
+   "F7": "CONFIRMED and applied (editorial). Over the post-trim capture's 80 heading tags: 0 carry data-parity-field, 0 carry data-claim-id, and 51 carry an id. The 18 markdown-derived headings slice 2 retypes carry no attributes at all (4 h4, 14 h6), which is the true and sufficient claim; the sentence is scoped to them.",
+   "F8": "CONFIRMED and applied (editorial). Reproduced at 97b37ee under the packet's stated exclusions: 20, exactly. Line 1166 is ordinary prose at 90 columns with no code span and line 1016 is prose plus a short span; both rewrapped, the characterisation restated as 'all but one', and the figure re-derived last of all in this pass.",
+   "F9": "CONFIRMED and applied (editorial). The decisions directory holds 67 tracked files at top level and 73 in the whole tree, the six extra under decisions/launch-gate/. Re-run case-insensitively over all 73 with \\b(?:script|javascript|progressive\\w*)\\b: 9 matching lines (7 over the 67 alone), all nine read, 0 constraining Polaris's own scripting. Q1 now states the predicate and the nine; Gate 6 item 3 keeps Q1's filtered form.",
+   "F10": "CONFIRMED and applied (editorial), all three read at source. tableRegion is polaris.ts 159-161; depthNav runs 1529-1558; exactTextLink has 4 call sites over 5 lines. Repaired in slice 3's guardrail paragraph, Gate 1's motif sentence, Measurement 1, Measurement 4, Gate 3's topology row, slice 4 and the funnel summary.",
+   "F11": "CONFIRMED and applied (editorial). PWB-REQ-012 read in full at PWB spec line 679: it closes a set of four roles over owner-visible strings, then imposes a six-word heading limit, a twenty-word lede limit, a six-term prohibited-word list and two cardinalities. It declares no closed set of strings and does not govern POLARIS_COPY, which is polaris-copy.ts line 25 and is implementation. Q3's opening sentence is repaired; its recommendation, second arm and default are unchanged."
+  },
+  "register_row": {
+   "id": "P-80",
+   "file": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+   "branch": "agent/syzygy-dov.13",
+   "recount_predicate": "^| P- partitioned by the ## section each row falls under",
+   "at_a9f671e": {"open": 21, "acceptance_act": 5, "total": 26},
+   "on_this_branch": {"open": 22, "acceptance_act": 5, "total": 27},
+   "siblings": "P-68 through P-79 each live only on their own branch (PRs #35 through #46); none is on the register at a9f671e and this row likewise lives only here"
+  },
+  "rule_10": "Review 1 binds the two digests recorded above at commit 97b37ee, not these bytes. Every edit of this pass was made after it.",
+  "gate": "at the owner gate on review 1's CONFIRM WITH EXCEPTIONS with all eleven exceptions applied - no blocking finding, no recommended answer moved, all five questions found to be genuine hard gates, and no lawful arm called unlawful; P-80 is ready to be ruled",
+  "uncovered_until": "a second independent fresh-context review, for the eleven exception repairs recorded here; all eleven post-date review 1 (verification rule 10). Its raw would be a second -RAW.md file, never an overwrite of the retained one.",
+  "packet_measured_after_review1": {"bytes": 133570, "sha256": "5e808cfe8dfc062c0a49842f708a84258d28be486dc1ddd7227e2775d1afa8ed", "total_lines": 1631, "over_78": 19, "over_78_predicate": "lines outside fenced code blocks whose first non-space character is not |, > or #, longer than 78 columns; denominator every line of the file", "non_fence_lines": 1589, "odd_backtick_non_fence_lines": 0},
+  "validation_after_review1": {"command": "python3 scripts/check_governance.py", "tail_line": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted", "note": "tail line read, not grep -c FAIL (verification rule 4)"}
+ }
+}
