@@ -99,8 +99,13 @@ turns on.
 
 ### Decided in this packet, not put to the owner
 
-**The dossier's prerequisite line does not survive as written, and the half
-that fails is the first half.** The dossier's line, quoted whole from
+**The dossier's prerequisite line cannot be read off as written: its
+first clause cannot be asserted without ruling Q1.** [This sentence read
+"The dossier's prerequisite line does not survive as written, and the
+half that fails is the first half" until 2026-09-15 — a form that
+asserts Q1's own recommended answer as decided, inside a section headed
+"not put to the owner"; review 2's G1. Superseded in place, not
+deleted.] The dossier's line, quoted whole from
 `docs/pursuits/2026-09-13-vision-pursuit.md` lines 415–416 at `a9f671e`:
 
 > - **Prerequisite.** None for retention and delta; owner act for the note
@@ -108,12 +113,27 @@ that fails is the first half.** The dossier's line, quoted whole from
 
 The second and third clauses hold — and the second is weaker than the act
 text, which forbids the write outright rather than merely failing to cover it
-(Q4). The **first clause does not**: retention is the one part of this move
-that touches a *named* escalation trigger by its own noun. The continuation
-act's trigger list says "a change to security, privacy, or **retention**
-posture beyond the 2026-09-05 approved secret-classification policy" (lines
-150–156, quoted whole in Q1), and slice 1 is a proposal to retain something
-the daemon has never retained.
+(Q4). **The first clause cannot be asserted without ruling Q1**, because
+retention is the one part of this move that touches a *named* escalation
+trigger by its own noun. The continuation act's trigger list says "a change
+to security, privacy, or **retention** posture beyond the 2026-09-05
+approved secret-classification policy" (lines 150–156, quoted whole in Q1),
+and slice 1 is a proposal to retain something the daemon has never retained.
+Whether "beyond" reaches slice 1's derived claim-state record is exactly
+what Q1 asks — and on Q1's second and third lawful arms, which rule the
+record inside the existing authorization on the same-posture reading or on
+the narrower disclosure-limited one, the dossier's first clause stands. This
+packet does not rule which reading the trigger bears [Inferred].
+
+[This paragraph read "The **first clause does not**: retention is the one
+part of this move that touches a *named* escalation trigger by its own
+noun" until 2026-09-15. Review 2's G1: that wording asserts Q1's own
+recommended answer as decided, in the section that says it is not put to
+the owner, and Q1's second and third arms both leave the dossier's first
+clause standing. Re-cast above as what Q1 asks; superseded wording marked
+in place, not deleted. **Q1 itself is untouched** — same question, same
+recommended answer, same three lawful arms, same default if unanswered,
+byte for byte against `git show 4d61b73:` of this file.]
 
 **What the evidence supports, stated exactly.** The dossier did read
 retention posture into this move: it named the retention-posture trigger by
@@ -359,8 +379,13 @@ kept*. **Neither exception is implemented at all.**
 minted once per model build and never stored: `main.ts` line 134 is
 `const asOf = new Date().toISOString();`, inside a `buildModel()` closure
 declared at line 113 and called at exactly **two** sites — line 187 at
-startup and line 201 in `onMaterialized` [Observed, the only two
-occurrences of the literal `buildModel()` in the file; the underlying
+startup and line 201 in `onMaterialized` [Observed; predicate: the literal
+`buildModel()` in that file **excluding its own declaration at line 113**.
+The raw literal occurs at **3** lines — 113, 187 and 201 — because the
+declaration line contains it; **2** is the call-site count. This bracket
+read "the only two occurrences of the literal `buildModel()` in the file"
+until 2026-09-15, which is not a predicate that yields 2 — review 2's G2,
+re-counted at source this session]. The underlying
 `buildButlersPocModel(` has **3** non-test call sites across all trees, the
 definition at `packages/three-surface-poc-core/src/model.ts` line 369, the
 one production call at `main.ts` line 171 and one in
@@ -435,8 +460,14 @@ and `evaluation:pwb-walkthrough-judgment:${asOf}` (line 168) [Observed, all
 four read at source].
 
 `buildModel()` is called at exactly **2** sites, under the predicate "the
-literal `buildModel()` occurring in `apps/three-surface-poc/src/main.ts`",
-denominator that file's **253** lines:
+literal `buildModel()` occurring in `apps/three-surface-poc/src/main.ts`,
+**excluding the declaration at line 113**", denominator that file's
+**253** lines. Without the exclusion the same literal occurs at **3**
+lines — 113, 187 and 201 [Observed, `grep -n -F` this session; denominator
+those 253 lines]. [The predicate was published without its exclusion
+clause until 2026-09-15, so as written it returned 3 rather than the 2
+stated; review 2's G2. The two call sites, and everything that rests on
+them, are unchanged.]
 
 | Line | Occasion | What the instant becomes |
 |---|---|---|
@@ -885,7 +916,8 @@ grant, and the act in force independently forbids the write (Q4). The
 existing human-triggered materialize action is the nearest precedent — it
 creates a Bead in the observed project through `bd`, attributed by the fixed
 constant `MATERIALIZE_ATTRIBUTION`, declared at `materialize-action.ts` lines
-28–29 under its head comment at line 27 —
+28–29 under its head comment at lines **26–27** [read "line 27" until
+2026-09-15; review 2's G4] —
 and the 2026-08-29 direction's own success list names "human-triggered work"
 as something the experiment "must demonstrate"
 (`.syzygy/governance/decisions/THREE-SURFACE-POC-MODE-DIRECTION.md` lines
@@ -1244,11 +1276,14 @@ the load-bearing part — **a distinct declaration class in the observation**
 so a promoted note is never counted as one of the project's own
 declarations. The materialize action is the proven precedent for the route
 shape and for attribution (`MATERIALIZE_ATTRIBUTION`, declared at
-`materialize-action.ts` lines 28-29 under its head comment at line **27**,
-"Fixed, never user-supplied — this action is human-triggered but not
-human-identified"). [The quoted words were attributed to lines 28-29 until
-2026-09-15; they are at line 27, and 28-29 are the declaration the comment
-describes — review 1's F11.]
+`materialize-action.ts` lines 28-29 under its head comment at lines
+**26-27**, "Fixed, never user-supplied — this action is human-triggered but
+not human-identified"). [The quoted words were attributed to lines 28-29
+until 2026-09-15; 28-29 are the declaration the comment describes — review
+1's F11. The comment's own span then read "line 27" until 2026-09-15:
+read at source, line 26 carries "Fixed, never user-supplied —" and line 27
+"this action is human-triggered but not human-identified", so the quoted
+sentence spans **26-27** — review 2's G4.]
 
 **Rule-6 mutants, for whenever it is built.** (a) Let an unpromoted note
 change any epistemic tuple; the PWB-REQ-014 injection oracle must fail. (b)
@@ -1803,15 +1838,26 @@ digest tables beyond the seven whose basename contains `manifest`. It ran
 `python3 scripts/check_governance.py` in the worktree and read the tail
 line.
 
-**Independent review status: one, retained.** Review 1 (2026-09-15, verdict
-**REVISE**) read the bytes at commit `a55fe3a` and is retained verbatim at
-`docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-RAW.md`; its twelve
-findings are dispositioned in "Review 1 and repairs (2026-09-15)" below. By
-verification rule 10 that review binds the bytes it read and not these, so
-the repairs are uncovered until a second review confirms them. The figures
-above are valid for `a9f671e` and for the sibling heads named. [This paragraph
-read "**Independent review status: none.** This is a first draft. By
-verification rule 10 nothing in it is confirmed" until 2026-09-15.]
+**Independent review status: two, both retained.** Review 1 (2026-09-15,
+verdict **REVISE**) read the bytes at commit `a55fe3a` and is retained
+verbatim at
+`docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-RAW.md`;
+its twelve findings are dispositioned in "Review 1 and repairs
+(2026-09-15)" below. Review 2 (2026-09-15, verdict **CONFIRM WITH
+EXCEPTIONS**) read the bytes at commit `4d61b73` and is retained verbatim
+at
+`docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-2-RAW.md`;
+its five findings are dispositioned in "Review 2 and repairs
+(2026-09-15)" below. By verification rule 10 each review binds the bytes
+it read and not these, so the review-1 repairs were uncovered until a
+second review confirmed them (which has since happened — review 2,
+2026-09-15; re-tensed 2026-09-15) and the review-2 exception repairs are
+uncovered until a third does. The figures above are valid for `a9f671e`
+and for the sibling heads named. [This paragraph read "**Independent
+review status: one, retained.** … the repairs are uncovered until a
+second review confirms them" until 2026-09-15, and "**Independent review
+status: none.** This is a first draft. By verification rule 10 nothing in
+it is confirmed" until 2026-09-15 before that.]
 
 ## Review 1 and repairs (2026-09-15)
 
@@ -1846,9 +1892,14 @@ properly a delegate's and one a hidden owner question — that one is **F1**,
 and the ruling it names is withdrawn above.
 
 **Every one of the twelve findings was re-derived against source before being
-applied.** None was applied on the review's say-so; eleven re-derived exactly
-and one (F3) re-derived only in part, with the part that did not confirm
-recorded at the site rather than copied. The dossier's prerequisite line was
+applied.** None was applied on the review's say-so; **ten** re-derived
+exactly and **two** only in part — F3, with the part that did not confirm
+recorded at the site rather than copied, and F11, whose comment anchor this
+pass took from review 1's raw as "line 27" where a re-derivation would have
+produced **26-27** (review 2's G4; corrected in the F11 row below).
+10 + 2 = 12. [This sentence read "eleven re-derived exactly and one (F3)
+re-derived only in part" until 2026-09-15; superseded in place after review
+2's G4 made F11 the second partial.]
 read at `a9f671e`; the prefix census was re-run over the retained `/api/poc`
 capture both by distinct identity and by claim object; `EXTRACTION_CLASSES`
 and `PROJECT_ACCOUNT_KEYS` were read at source and their members matched
@@ -1862,7 +1913,7 @@ import, M10's packet lines 35–36, `MATERIALIZE_ATTRIBUTION`'s comment,
 
 | Finding | Severity | Disposition |
 |---|---|---|
-| F1 the dossier's prerequisite line is misquoted, and the elided words are the evidence against the packet's own ruling | blocking | **CONFIRMED.** `docs/pursuits/2026-09-13-vision-pursuit.md` lines 415–416 at `a9f671e` read "**Prerequisite.** None for retention and delta; owner act for the note (retention posture); spec amendment for dismissal"; the literal `retention posture` occurs **1** time in the dossier, **0** times in the packet's two quotations of that line and **0** times in the evidence record's `dossier.prerequisiteLine` [Observed; predicate `grep -n -F 'retention posture'` over all three files, and `grep -n -F 'owner act for the note'` to locate the quotation sites — 1 in the packet at its "does not survive" paragraph, 1 in the re-split paragraph, 1 in the record]. Repaired at all three: the full line is now block-quoted with the parenthetical, the re-split paragraph carries it, and the record gains a dated sibling key. The correction is restated as what the evidence supports — the dossier attached the retention-posture trigger to the note's owner act and gave "none" for retention and delta; whether that trigger reaches slice 1's derived record is Q1. **The "reached without the trigger list being read" ruling is withdrawn** at all four places it appeared (the decided-in-this-packet paragraph, the funnel summary's dossier-corrections line, the recommended handoff, and by implication the record's `prerequisiteVerdict`, which gains a dated sibling). **Q1 is unchanged**: same question, same recommended answer, same three arms, same default |
+| F1 the dossier's prerequisite line is misquoted, and the elided words are the evidence against the packet's own ruling | blocking | **CONFIRMED.** `docs/pursuits/2026-09-13-vision-pursuit.md` lines 415–416 at `a9f671e` read "**Prerequisite.** None for retention and delta; owner act for the note (retention posture); spec amendment for dismissal"; the literal `retention posture` occurs **1** time in the dossier, **0** times in the packet's two quotations of that line and **0** times in the evidence record's `dossier.prerequisiteLine` [Observed; predicate `grep -n -F 'retention posture'` over all three files, and `grep -n -F 'owner act for the note'` to locate the quotation sites — 1 in the packet at its "does not survive" paragraph (that paragraph was re-cast 2026-09-15 under review 2's G1 and now opens "cannot be read off as written"), 1 in the re-split paragraph, 1 in the record]. Repaired at all three: the full line is now block-quoted with the parenthetical, the re-split paragraph carries it, and the record gains a dated sibling key. The correction is restated as what the evidence supports — the dossier attached the retention-posture trigger to the note's owner act and gave "none" for retention and delta; whether that trigger reaches slice 1's derived record is Q1. **The "reached without the trigger list being read" ruling is withdrawn** at all four places it appeared (the decided-in-this-packet paragraph, the funnel summary's dossier-corrections line, the recommended handoff, and by implication the record's `prerequisiteVerdict`, which gains a dated sibling). **Q1 is unchanged**: same question, same recommended answer, same three arms, same default |
 | F2 the `claim:item:` prefix figure is a tuple count published as an identity count | non-blocking | **CONFIRMED, exactly.** Re-run this session over the retained `/api/poc` capture with the packet's own recursive-walk predicate: distinct identities 278 / **415** / 439 / 9 / 6 / 1 = **1,148**; claim objects 278 / **416** / 439 / 9 / 6 / 1 = **1,149**. Both rows are now published, in the Measurements and in the record's `byIdentityPrefix` (the 416 kept, marked, beside a dated tuple-instance sibling) |
 | F3 "all five `claimId` sites" under-enumerates | non-blocking | **CONFIRMED IN PART.** The six interpolating sites re-derive exactly — 367, 375, 383, 403, 430 and **447**, the last the Unknown arm of `projectAccountOf` — and 447 was missing from the packet and from the record's array; repaired at both, and in the funnel summary. **Not confirmed:** the raw's incidental count of "twelve `claimId:` lines" of which "the remaining six are the fixed literal". The literal `claimId:` returns **13** lines in that file, of which **4** carry `'claim:project-shape'` (345, 457, 611, 659), **2** are interface declarations (123, 157) and **1** is a pass-through (173) [Observed, enumerated this session]. The corrected denominator is published at the site; the conclusion — no site interpolates a revision — is unchanged |
 | F4 "1,148 … interpolated from observed-project text … exactly 1 is a fixed literal" overstates | non-blocking | **CONFIRMED, and quantified exactly.** The 1,148 partition **1,117** observed-derived (278 source paths + 415 item keys + their 415 `claim:fact:item:` twins + 9 catalog headings) / **30** closed-vocabulary / **1** fixed literal. The 30 are 9 `claim:class:` and 9 `claim:fact:count:` whose suffixes are all members of `EXTRACTION_CLASSES` (nine values, `project-shape-manifest.ts` lines 58–68) and 6 `claim:project-account:` and 6 `claim:fact:project-account:` whose suffixes are all members of `PROJECT_ACCOUNT_KEYS` (six values, `project-shape-extraction.ts` line 46) [Observed, both constants read at source and every suffix matched against them this session]. Q1's sentence now carries the split with the constants named, and the record mirrors it. **Q1's recommendation, arms and default do not change** |
@@ -1872,7 +1923,7 @@ import, M10's packet lines 35–36, `MATERIALIZE_ATTRIBUTION`'s comment,
 | F8 the twelve-file drift claim's denominator is under-specified | non-blocking | **CONFIRMED.** `git diff --name-only f4589e2 a9f671e` prints **146** paths this session; **0** of the twelve distinct files of the "Line numbers re-verified at `a9f671e`" table appear in it, and `apps/three-surface-poc/src/polaris.ts` — which the Measurements cite and which is not one of the twelve — **does** appear [Observed, each of the twelve tested by exact whole-line match against the 146]. The twelve are now named one by one, the claim is scoped to them, and `polaris.ts` is called out. Mirrored in the record |
 | F9 `canonicalJson` import site mis-cited | editorial | **CONFIRMED.** `grep -n -F 'canonicalJson' packages/three-surface-poc-core/src/project-shape-observation.ts` returns lines **36** (the import member), 337 and 635 (the two digest sites) this session; line 336 is inside `resourceLimitsDigest`. Corrected to 36, superseded value marked |
 | F10 the M10 cross-reference contradicts itself | editorial | **CONFIRMED.** Read read-only at `95f31cb`: the M10 packet's line 35 is its **Q1**, which is where the `inputsDigest` insensitivity is established, and line 36 is its Q2, on `Content-Encoding: gzip` and the response ceiling. The first clause now says Q1 and names what Q2 actually asks |
-| F11 `MATERIALIZE_ATTRIBUTION` comment anchored one line late | editorial | **CONFIRMED at the site that quotes it.** The words "Fixed, never user-supplied — this action is human-triggered but not human-identified" are at `apps/three-surface-poc/src/materialize-action.ts` line **27**; lines 28–29 are the `export const MATERIALIZE_ATTRIBUTION = …` declaration. The quoting site is corrected. The other site cites 28–29 for the *constant* and not for the comment, so it was already accurate; it is made explicit rather than changed |
+| F11 `MATERIALIZE_ATTRIBUTION` comment anchored one line late | editorial | **CONFIRMED at the site that quotes it.** The words "Fixed, never user-supplied — this action is human-triggered but not human-identified" are at `apps/three-surface-poc/src/materialize-action.ts` lines **26–27** [this row read "line **27**" until 2026-09-15, copied from review 1's raw rather than re-derived; read at source this session, line 26 carries "Fixed, never user-supplied —" and line 27 "this action is human-triggered but not human-identified", so the quoted sentence spans 26–27 — review 2's G4, a dated correction and not a deletion]; lines 28–29 are the `export const MATERIALIZE_ATTRIBUTION = …` declaration. The quoting site is corrected. The other site cites 28–29 for the *constant* and not for the comment, so it was already accurate; it is made explicit rather than changed |
 | F12 `vision.md`:176-179 is called "the expiry sentence" and marked "exact" | editorial | **CONFIRMED, and the same overrun is in the row's third span.** Read at source: the expiry parenthetical runs **175–177**, exception (a) ends on **177**, and 178–179 are exception (b)'s first two lines. So L2-M6's 176–179 opens mid-sentence and overruns by two lines, and L2-M8's 170–179 overruns by the same two. The verdict cell now reads "exact for 167-181; approximate for the other two", with both overruns stated and with the note that these are the dossier's spans, not the packet's, which cites 175–177 in Q5 |
 
 **Recommended answers changed by this review: none.** **Q1** still recommends
@@ -1900,8 +1951,11 @@ lives only on this one.
 review, so by verification rule 10 the review binds the bytes it names —
 commit `a55fe3a`, the two digests tabled above — and not these: **the twelve
 repairs above are uncovered until a second independent fresh-context review
-confirms them**, and that review's raw would be a second `-RAW.md` file, never
-an overwrite of this one. Superseded wording is marked in place and dated,
+confirms them** (which has since happened — review 2, 2026-09-15, retained
+at `docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-2-RAW.md`;
+re-tensed 2026-09-15), and that review's raw would be a second `-RAW.md`
+file, never an overwrite of this one. Superseded wording is marked in
+place and dated, never deleted.
 never deleted. One limitation is worth stating plainly, because no reader can
 check it from the artifact: the claim that each finding was re-derived
 *before* being applied asserts an ordering inside this session. The results
@@ -1922,11 +1976,155 @@ resolve as a path in this worktree. Those 32 partition
 fragments, **4** command lines, **1** gitignored build artifact, **1** path
 inside the Polaris generation kit and **5** spans that are prose or code
 rather than paths (an epistemic tuple string, a footer form, a source
-comment): 4 + 3 + 6 + 2 + 2 + 4 + 4 + 1 + 1 + 5 = 32. Every one of
-the 8 over-78 lines is a line an unbreakable code span forces, and
-**0** non-fence line breaks a code span [Observed, every figure enumerated
+comment): 4 + 3 + 6 + 2 + 2 + 4 + 4 + 1 + 1 + 5 = 32. Of those 8 over-78
+lines **4** are forced by a single code span wider than 78 columns with its
+delimiters — lines **57** (span 102), **236** (148), **342** (79) and
+**1009** (85) — and the other **4** are wrapping choices rather than forced:
+**430** (line 79 columns, longest span 64), **547** (92, the
+double-backtick span **65** with its delimiters — review 2 reports 64, a
+one-column difference in how the double delimiters are counted, immaterial
+either way), **1350** (88, longest span 29) and **1794** (79,
+longest span 32), each of which would fit inside 78 columns if the line were
+wrapped before its span without breaking it. **0** non-fence line breaks a
+code span [Observed, every figure enumerated
 over the bytes this paragraph is part of and iterated to a fixed point, so
-the figures are true of the bytes that carry them].
+the figures are true of the bytes that carry them]. [The sentence above read
+"Every one of the 8 over-78 lines is a line an unbreakable code span
+forces" until 2026-09-15 — an "every" claim that fails on half its own
+population; review 2's G5, re-measured span by span this session. Every
+figure in this paragraph is true of the bytes at commit `4d61b73`, the bytes
+review 2 read; the same conventions over the bytes this close-out produced,
+with the over-78 lines enumerated by number, are re-derived at the end of
+the review-2 section below.]
+`python3 scripts/check_governance.py` was re-run after these edits and its
+tail line read, not grepped.
+
+## Review 2 and repairs (2026-09-15)
+
+A second independent fresh-context review of the once-repaired packet
+(read-only; only the artifact, its governing references and the acceptance
+criteria) is retained verbatim at
+`docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-2-RAW.md` (**33,703**
+bytes, sha256
+`f75576d0f18c180df785af338a6c718b617bd5180a3150b15746449351e9ebba`, computed
+this session with `wc -c` and `sha256sum` and never transcribed). It reviewed
+commit `4d61b73`, at which the four files it names hashed as follows —
+recomputed this session with `git show 4d61b73:<path>` piped to `wc -c` and
+to `sha256sum`:
+
+| File reviewed at `4d61b73` | Bytes | sha256 |
+|---|---:|---|
+| `docs/design/POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL.md` | 166846 | `528f8eb8fa1cc90e504a689e2f91f0925fd7beda55b694713ca096cf58468ba0` |
+| `docs/evidence/polaris-m12-retained-evaluations-funnel-2026-09-15.json` | 50409 | `70a1c880dd1af410d744ffd6b6d04fedf74134dac7197646ae7b7c07ecb0de8a` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 34027 | `8dc39326a8d39f7e5cb8f0167126163a4ddeca18b2839ee74ae6e8ba36e90c34` |
+| `docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-RAW.md` | 34220 | `549b38f1654b0bc33fc6329aae8b9747fb91260e63405ac6c393cf9ca84e2605` |
+
+Its verdict word, copied exactly: **CONFIRM WITH EXCEPTIONS**. Its counts, as
+the raw states them: **blocking 0 · non-blocking 2 · editorial 3** —
+five findings, G1–G5, non-blocking G1–G2 and editorial G3–G5.
+
+**Its verification of the review-1 repairs, in the raw's own verdict strings
+for each row.** Ten of the twelve are verified repaired outright: F2
+**REPAIRED**; F3 **REPAIRED, and the repair worker is right against the
+raw**; F4 **REPAIRED, and the partition re-derives to the identity**; F5
+**REPAIRED, all five predicates reproduce**; F6 **REPAIRED, on both host
+forms**; F7 **REPAIRED, and the enumeration is exact**; F8 **REPAIRED**; F9
+**REPAIRED**; F10 **REPAIRED**; F12 **REPAIRED** (one consequence missed,
+G3). The blocking **F1** is **REPAIRED** (one residual, G1) — the residual
+being the Q1 ruling still standing in "Decided in this packet, not put to
+the owner", which G1 re-casts as what Q1 asks. **F11** is **PARTIAL** — see
+G4: the declaration's own citation (lines 28-29) is right at both sites, but
+the quoted comment spans lines 26-27 and the review-1 repair moved it to 27,
+one line short at the head. So: **10 REPAIRED, 1 REPAIRED with a residual
+(F1) and 1 PARTIAL (F11) over 12**, and the residue of each is the exception
+named beside it.
+
+**Review 2 confirms the packet's own correction of review 1 on F3.** The
+literal `claimId:` returns **13** lines in
+`packages/three-surface-poc-core/src/project-shape-model.ts`, not the twelve
+review 1's raw asserted — 6 interpolating (367, 375, 383, 403, 430, 447),
+4 fixed literal (345, 457, 611, 659), 2 interface declarations (123, 157)
+and 1 pass-through (173); 6 + 4 + 2 + 1 = 13 [Observed, re-counted this
+session with `grep -c -F 'claimId:'`, denominator that file]. The packet
+recorded the raw's figure as not confirmed rather than copying it, and
+review 2 calls that right.
+
+**Every exception was re-derived against source before being applied; none
+was applied on the review's say-so, and all five confirmed.** What no reader
+can check from the bytes is the *ordering* — that the re-derivation came
+first — which is an assertion about this session, not about the artifact
+[Observed for the results, Unknown for the ordering]. The same limitation
+applies to the claim that the convention figures below were computed last.
+
+| Finding | Severity | Re-derivation | Disposition |
+|---|---|---|---|
+| G1 a ruling on Q1 survives in "Decided in this packet, not put to the owner" | non-blocking | **CONFIRMED.** Read this session: the section's first item opened "**The dossier's prerequisite line does not survive as written, and the half that fails is the first half**" and argued that "The **first clause does not**". The dossier's first clause is "None for retention and delta"; whether a prerequisite is required for retention is exactly Q1, and Q1's second arm (rule it inside the existing authorization on the same-posture reading) and third arm (rule it inside on the narrower disclosure-limited ground) each leave that clause standing — so the unqualified form asserted Q1's own recommended answer inside a section headed "not put to the owner" [Observed, the Q1 row and the Q1 section both re-read this session] | Applied as the raw recommends. The lead sentence and the argument are re-cast as what Q1 asks — "the first clause cannot be asserted without ruling Q1, because retention is the one part of this move that touches a named escalation trigger by its own noun" — with the superseded wording quoted and dated at both sites, and the same change made in the funnel summary's opening dossier clause. The live-occurrence sweep for "does not survive" / "does NOT survive" over the packet, the record and the register **as they stood at `4d61b73`** (predicate: exact substring, counted both line-wise and over the whitespace-flattened text; denominator all three whole files) found **3** in the packet, **2** in the record and **0** in the register: all five are handled — two re-cast, three now inside dated supersession or historical-locator brackets — and over the bytes this close-out produced **0** of the surviving occurrences is a live assertion — every one is inside a quotation, a dated supersession bracket or a locator note [Observed, re-swept this session both ways over all three files]. Mirrored in the record by dated sibling keys beside the existing `dossier` entry. **Q1's question, recommended answer, three lawful arms and default are unchanged**, byte for byte against `git show 4d61b73:` of this file |
+| G2 the `buildModel()` count does not reproduce under its own published predicate | non-blocking | **CONFIRMED.** `grep -n -F 'buildModel()' apps/three-surface-poc/src/main.ts` returns **3** lines this session — **113** (the declaration `function buildModel(): ReturnType<typeof buildButlersPocModel> {`), **187** and **201** — over that file's **253** lines by `wc -l`. The packet named line 113 as the declaration in the same sentence, so the substantive claim (two call sites) was never wrong; the published predicate was [Observed] | Applied at both sites. Each now states the predicate as the literal excluding the declaration at line 113 and publishes **3** as the raw count beside the **2** call sites, with the superseded bracket and predicate quoted and dated. Mirrored in the record by a dated sibling key beside `measurements.evaluationInstant.predicate`. No figure that rests on the two call sites moves |
+| G3 the re-verification tally was not updated by F12 | editorial | **CONFIRMED.** The verdict column of the table was re-read row by row this session: **9** wholly exact (the `main.ts`, `project-shape-manifest.ts`, `project-shape-observation.ts`/`walkthrough-readiness.ts`, `project-shape-model.ts`:84/:129, `project-shape-model.ts`:120-131, `architecture.md`:56-57, `architecture.md`:221-229, `materialize-action.ts`:17-30 and PWB-spec:439 rows), **2** narrowed by one at the tail, **1** approximate, **1** wrong referent and **1** mixed — the `vision.md` row, whose verdict F12 changed to "exact for 167-181; approximate for the other two" while the tally kept counting it among the exact. 9 + 2 + 1 + 1 + 1 = 14 [Observed; denominator the table's 14 rows] | Applied in the funnel summary: the tally publishes 9 exact, 2 narrowed, 1 approximate, 1 wrong referent and 1 mixed, with the superseded tally quoted and dated at the site. Mirrored in the record by a dated sibling key beside `lineSpanReverification.exact` |
+| G4 F11's own line anchor is one line short, and was applied rather than re-derived | editorial | **CONFIRMED.** `apps/three-surface-poc/src/materialize-action.ts` read at source this session: line **26** ends "... Fixed, never user-supplied —", line **27** is "this action is human-triggered but not human-identified.", and lines **28-29** are the `MATERIALIZE_ATTRIBUTION` declaration. The quoted sentence therefore spans **26-27**, and review 1's raw said "line 27" in the same words, so the finding was applied rather than re-derived [Observed, lines 24-29 read] | Applied at four places: the quoting site and the earlier precedent sentence now cite lines **26-27**; the F11 disposition row carries a dated correction rather than a deletion; and the review-1 section's "eleven re-derived exactly" sentence is superseded in place to name F11 as the second partial beside F3 (10 + 2 = 12). Mirrored in the record by dated sibling keys beside the `review1` block's `dispositions.F11` and `re_derived_before_applying.editorial_spans`, neither of which is edited |
+| G5 the "unbreakable code span" explanation of the 8 over-78 lines does not hold for 4 of them | editorial | **CONFIRMED, span by span.** Measured this session over the `4d61b73` bytes, longest code span per line including delimiters: **57** span 102, **236** span 148, **342** span 79 and **1009** span 85 are genuinely forced; **430** (line 79, longest span 64), **547** (92, the double-backtick span 65 here and 64 in the raw, a one-column difference in counting the double delimiters), **1350** (88, longest span 29) and **1794** (79, longest span 32) are not, and each would fit inside 78 columns if wrapped before its span. The count of 8 is exact; the "every" attached to it failed on half the population [Observed; denominator the 8 over-78 lines] | Applied by **annotating rather than reflowing** — the choice this pass made, because a reflow would move lines review 2 read for a cosmetic reason and risks breaking a span. The review-1 conventions paragraph now names the 4 forced lines with their span widths and states the other 4 as wrapping choices, with the superseded "every" sentence quoted and dated, and the paragraph pinned to the `4d61b73` bytes it describes. The same conventions over the bytes this close-out produced — where the line numbers have moved — are re-derived at the end of this section, computed last and iterated to a fixed point |
+
+**Recommended answers changed after review 2: none, stated explicitly.**
+Review 2's own six-question table answers "Recommendation follows?" **Yes**
+for all six and "All lawful arms named?" **Yes** for all six; its "Genuine
+hard human gate?" column is **Yes** for five and **Partly** for Q3, in the
+same terms review 1 used, and it calls no arm and no default unlawful. It
+records the defaults as all six stated and all six failing closed, and finds
+no place where a trade-off is smoothed into consensus language [Observed,
+read from the retained raw]. **Q1 through Q6 keep the recommendations, the
+lawful arms and the defaults they carried into this review, word for word**;
+no default-if-unanswered moved, no seventh question was added, and no
+sibling packet's question is re-asked. All five exceptions are
+presentational or evidentiary: G1 re-casts an assertion as the question it
+belongs to, G2 repairs a predicate, G3 an arithmetic tally, G4 a line
+anchor, G5 an "every" claim about line wrapping.
+
+**What review 2 recorded for the owner rather than resolving.** Review 2
+attaches no `[Unknown]` label of its own. It records **one** hidden owner
+question in the packet — G1, the residue of F1 — and says every other item
+under "Decided in this packet" is a measurement-backed correction a delegate
+may properly make. It records one further non-material observation: the Q1
+quotation of the continuation act's trigger paragraph adds bold emphasis
+that the packet's "verbatim" framing does not flag. Both are carried here
+unresolved rather than argued away; the first is applied above as G1, and
+the second is left as the review states it [Observed, read from the raw].
+
+By verification rule 10, review 2 binds the bytes it names — the four
+digests tabled above, at commit `4d61b73` — and not these. Every edit in
+this section and above it was made after that review, so **the five
+exception repairs are uncovered until a third independent fresh-context
+review confirms them**; that raw would be a third `-RAW.md` file, never an
+overwrite of either retained one. Subject to that, and on review 2's
+confirmation of the `4d61b73` bytes — CONFIRM WITH EXCEPTIONS, no blocking
+finding, no recommended answer moved, and the review-1 repairs verified 10
+REPAIRED, 1 REPAIRED with a residual and 1 PARTIAL over 12 — **this packet
+stands at the owner gate**: P-79 is ready to be ruled.
+
+**Conventions after the review-2 repairs**, re-derived over the final bytes
+of this pass, last of all and iterated to a fixed point: **8** lines
+exceed 78 columns (predicate: lines outside fenced code blocks whose first
+non-space character is not a pipe, length > 78; denominator: all
+**2,217** lines of this file); **0** non-fence lines carry an odd
+backtick count, over **2,129** non-fence lines (trailing empty
+segment not counted); the non-fence lines carry **420** distinct code
+spans, of which **110** contain a `/` and **33** of those do
+not resolve as a path in this worktree.
+
+Enumerated by line number, the over-78 lines are **57**, **256**, **362**,
+**455**, **578**, **1041**, **1385**, **1829**. Of them **4** are forced by a
+single code span wider than 78 columns with its delimiters (57 span 102; 256
+span 148; 362 span 79; 1041 span 85) and **4** are wrapping choices annotated
+rather than reflowed, which is G5's disposition (455 line 79 longest span 64;
+578 line 92 longest span 65; 1385 line 88 longest span 29; 1829 line 79
+longest span 32).
+
+**0** non-fence line breaks a code span. The rise against review 1's
+401 / 108 / 32 is this section's own prose; the **1**
+added non-resolving span is the command line
+`grep -n -F 'buildModel()' apps/three-surface-poc/src/main.ts`, quoted in
+G2's re-derivation [Observed, every figure enumerated over the bytes this
+paragraph is itself part of and iterated to a fixed point, so the figures
+are true of the bytes that carry them].
 `python3 scripts/check_governance.py` was re-run after these edits and its
 tail line read, not grepped.
 
@@ -1935,16 +2133,16 @@ tail line read, not grepped.
 ```
 ## Feature Request: M12 - Retained evaluations, a rendered claim-state delta, and the owner's note
 Size: medium (slices 1, 2) / large (slices 3, 4 - neither ships in the default)
-Baseline: Syzygy a9f671e; the dossier audited at f4589e2 and all twelve distinct files of the "Line numbers re-verified at a9f671e" table - each named one by one at the head of this packet - are byte-identical between the two (git diff --name-only f4589e2 a9f671e prints 146 paths and 0 of the twelve is among them; polaris.ts IS among the 146 and is NOT one of the twelve) [the clause read "all twelve M12-cited files ... (git diff --numstat over the twelve: 0 rows)" until 2026-09-15; review 1's F8]. Of the 14 rows in the re-verification table, 10 re-locate exactly, 2 are narrowed by one line at the tail, 1 is approximate, and 1 names the wrong construct (L2-M8's project-shape-model.ts:89-102 is UNKNOWN_REASON_ROUTES, not the challenge seam, which is 81-84 and 129)
+Baseline: Syzygy a9f671e; the dossier audited at f4589e2 and all twelve distinct files of the "Line numbers re-verified at a9f671e" table - each named one by one at the head of this packet - are byte-identical between the two (git diff --name-only f4589e2 a9f671e prints 146 paths and 0 of the twelve is among them; polaris.ts IS among the 146 and is NOT one of the twelve) [the clause read "all twelve M12-cited files ... (git diff --numstat over the twelve: 0 rows)" until 2026-09-15; review 1's F8]. Of the 14 rows in the re-verification table, 9 re-locate exactly, 2 are narrowed by one line at the tail, 1 is approximate, 1 names the wrong construct (L2-M8's project-shape-model.ts:89-102 is UNKNOWN_REASON_ROUTES, not the challenge seam, which is 81-84 and 129) and 1 is mixed - the vision.md row, exact for 167-181 and approximate for the other two spans; 9+2+1+1+1 = 14 [the tally read "10 re-locate exactly, 2 are narrowed by one line at the tail, 1 is approximate, and 1 names the wrong construct" until 2026-09-15, when review 2's G3 found that F12 had changed the vision.md row's verdict without the tally following it; the table's verdict column re-read row by row this session, denominator its 14 rows]
 - G1 Motif: VIS-6's two closed exceptions are both wholly unimplemented - one observation instant minted at main.ts:134, two build sites (187, 201), three state-directory write sites across 157 .ts files (credential, materialization record, test-artifact record) and 0 that write an evaluation; the retained capture's state directory holds one 64-byte file; the two append-only appenders exist, are byte-identical in shape, and are reachable only from their own tests (11 sites, 2 definitions, 9 in *.test.ts, 0 in the package index) [Observed, every figure measured this session with predicate and denominator]
 - G2 Doctrine: VIS-6 quoted entire as the warrant, (b) for slice 1 and (a)'s five constraints for slices 3-4; VIS-2 for the no-history-is-not-no-change rule and the capped band; architecture.md's temporal rule 221-229 for what a delta may claim; VIS-1's ordering; SEC-4 and SEC-5 for the note and the new store; SEC-1/2/3 swept and not engaged; RFC5-11 quoted at its defined clause, putting a dismissal on the claims side of the acts/claims line so VIS-6a's expiry rule applies without qualification
 - G3 Topology: apps/three-surface-poc/src + packages/three-surface-poc-core/src + packages/cap1-daemon/src (read only) + docs/; slices 1 and 2 cross no boundary and touch no governed artifact; slices 3 and 4 cannot be built without a bound byte changing, which is why neither ships; 0 act records and 0 manifest rows name any of the 15 surface files over 553 governance/manifest/evidence files, the only hits being a candidate CC-REV-2 inventory that says of itself it authorizes nothing and one rule-6 mutation record; no M12 slice duplicates an unchecked PWB task (35 boxes, 32 checked, open: 4.6, 5.2, 5.3)
 - G4 Design: one record per evaluation named by inputsDigest, written after both buildModel() sites, 0700/0600, three-state loader (present/absent/unreadable); a pure claimStateDelta over two claim-state maps reporting added/removed/tupleChanged/unchanged against one denominator - membership first, because the retained capture has 2 distinct tuples over 1,149 objects; the note and the dismissal sketched with their gates named and neither built; 22 rule-6 mutants
 - G5 Spec: the retention sweep over 2,160 lines of approved requirement text, twelve terms, per-term counts - 0 for retention, dismiss, annotat, since and append-only across both spec.md files, with PWB-REQ-022's retained walkthrough execution record disclosed in full as the one retained record that IS specified (human-authored, governed plane, at a path that does not exist). RFC2-26 run over all four slice rows (denominator 4): slice 2 maps to PWB-REQ-007, whose Case line names "two evaluations of the same semantic subjects" and whose Oracle line requires stable identity across them, plus POC-REQ-032, PWB-REQ-020 and PWB-REQ-014; slice 1 maps to NOTHING and the packet says so rather than reaching; slices 3 and 4 map to requirements that constrain them rather than warrant them
-- G6 Bar: three predicates tested rather than assumed (the challenge word-boundary trap, basename non-uniqueness on the collision surface, the retention absence that PWB-REQ-022 falsifies); every absence claim with its denominator; both collision predicates published from the start with both columns; no act-bound byte proposed for edit; ONE independent review retained (2026-09-15, verdict REVISE - 1 blocking, 7 non-blocking, 4 editorial, F1-F12; all twelve re-derived against source before being applied, eleven confirmed and one confirmed only in part, and no recommended answer moved), and by verification rule 10 the repairs it prompted are uncovered until a second review confirms them [this line read "NO independent review yet - this is a first draft, and by verification rule 10 nothing here is confirmed" until 2026-09-15]
+- G6 Bar: three predicates tested rather than assumed (the challenge word-boundary trap, basename non-uniqueness on the collision surface, the retention absence that PWB-REQ-022 falsifies); every absence claim with its denominator; both collision predicates published from the start with both columns; no act-bound byte proposed for edit; TWO independent reviews retained - review 1 (2026-09-15, verdict REVISE - 1 blocking, 7 non-blocking, 4 editorial, F1-F12; all twelve re-derived against source before being applied, ten confirmed exactly and two only in part, and no recommended answer moved) and review 2 (2026-09-15, verdict copied exactly: CONFIRM WITH EXCEPTIONS - blocking 0, non-blocking 2, editorial 3, G1-G5; it verified the review-1 repairs as 10 REPAIRED, 1 REPAIRED with a residual (F1) and 1 PARTIAL (F11) over 12, and moved no recommended answer), all five exceptions applied, and by verification rule 10 those five exception repairs are uncovered until a third review confirms them [this line read "NO independent review yet - this is a first draft, and by verification rule 10 nothing here is confirmed" until 2026-09-15, then "ONE independent review retained ... uncovered until a second review confirms them" until 2026-09-15, when review 2 landed; the "eleven confirmed and one confirmed only in part" clause is superseded by review 2 G4 to ten and two]
 Acts: slices 1 and 2 ride THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md lines 55-56 (the recorded-finding limb, L2-F4 and L2-F5) inside PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md lines 59-61's implementation plane, continued by PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md - but slice 1 touches the continuation act's retention-posture trigger by its own noun (lines 152-154), which is Q1. Slice 3's promotion is forbidden in terms by PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md lines 70-72 and bounded by a digest-bound registry declaring an empty write surface; slice 4 crosses the spec-amendment trigger at lines 151-152 and needs CC-REV-2 plus a new act
 Open questions: Q1-Q6 above, registered as P-79 in PENDING-OWNER-DECISIONS.md on this branch, in the same pass as the review-1 repairs. Main's register at a9f671e carries 26 rows under ^| P- (21 open + 5 acceptance-act), its highest number anywhere is P-67, and P-7[0-9] returns 0 hits there; with P-79 this branch carries 22 open and 5 acceptance-act, 27 in all. The sibling rows P-68..P-78 each live only on their own branch [this line read "NOT yet registered ... It would take P-79" until 2026-09-15, when review 1 landed and the row with it]
-Dossier corrections: the prerequisite's "none for retention and delta" does NOT survive - retention is the one part of this move that touches a named escalation trigger by its own noun, while the dossier's full line attaches the retention-posture trigger to the note's owner act and gives "none" for retention and delta - whether that trigger reaches slice 1's derived record is Q1, not a ruling [this clause read "and the dossier reached 'none' without the trigger list being read" until 2026-09-15; review 1's F1, ruling withdrawn]; "Depends on ... M10's stable id" does not hold - M10's logicalId is a narrative-anchor sibling, while the claim identity a delta joins on already exists, carries no revision at any of its six construction sites [five until 2026-09-15; site 447 was omitted, review 1's F3], and is required stable by PWB-REQ-007's own Case and Oracle lines; L2-M6's "only claims whose tuple differs" band would be nearly silent, because the retained capture holds 2 distinct tuples over 1,149 claim objects while 278 of its 1,148 identities are repository paths that churn with any commit - membership is the signal; "the state directory holds only the machine credential" is true of the capture and understates the code, which admits three files; L2-M7's "the appendEvaluation pattern already written twice" is a pattern and not a mechanism, since neither appender is reachable outside its own test
+Dossier corrections: the prerequisite's "none for retention and delta" cannot be asserted without ruling Q1 - retention is the one part of this move that touches a named escalation trigger by its own noun, while the dossier's full line attaches the retention-posture trigger to the note's owner act and gives "none" for retention and delta - whether that trigger reaches slice 1's derived record is Q1, and on Q1's second and third lawful arms the clause stands [this clause read "and the dossier reached 'none' without the trigger list being read" until 2026-09-15; review 1's F1, ruling withdrawn. It then read "does NOT survive" until 2026-09-15, when review 2's G1 re-cast it as what Q1 asks rather than what this packet concludes]; "Depends on ... M10's stable id" does not hold - M10's logicalId is a narrative-anchor sibling, while the claim identity a delta joins on already exists, carries no revision at any of its six construction sites [five until 2026-09-15; site 447 was omitted, review 1's F3], and is required stable by PWB-REQ-007's own Case and Oracle lines; L2-M6's "only claims whose tuple differs" band would be nearly silent, because the retained capture holds 2 distinct tuples over 1,149 claim objects while 278 of its 1,148 identities are repository paths that churn with any commit - membership is the signal; "the state directory holds only the machine credential" is true of the capture and understates the code, which admits three files; L2-M7's "the appendEvaluation pattern already written twice" is a pattern and not a mechanism, since neither appender is reachable outside its own test
 Sign-off: pending - the owner's
 Recommended handoff: rule Q1 first, because slice 1 gates everything and Q1 gates slice 1; then slice 1; then slice 2 in whichever of Q3's three forms the owner takes; slices 3 and 4 only after Q4 and Q5, and slice 3's record class behind M4
 ```
