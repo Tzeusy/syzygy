@@ -1,7 +1,7 @@
 {
   "record": "polaris-m12-retained-evaluations-funnel",
   "date": "2026-09-15",
-  "status": "candidate; binds nothing; planning only; no independent review yet",
+  "status": "candidate; binds nothing; planning only; one independent review retained (review 1, 2026-09-15, verdict REVISE) and its repairs applied; by verification rule 10 those repairs are uncovered until a second review confirms them [superseded 2026-09-15: 'candidate; binds nothing; planning only; no independent review yet']",
   "bead": "syzygy-dov.12",
   "move": "M12",
   "commit": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
@@ -9,11 +9,17 @@
   "branch": "agent/syzygy-dov.12",
   "dossierAuditedAt": "f4589e2",
   "independent_review": {
-    "count": 0,
-    "reviews": [],
-    "note": "first draft; by verification rule 10 nothing in the packet is confirmed"
+    "count": 1,
+    "reviews": [
+      "docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-RAW.md"
+    ],
+    "verdicts": [
+      "REVISE"
+    ],
+    "note": "Review 1 landed 2026-09-15, verdict REVISE (blocking 1, non-blocking 7, editorial 4, F1-F12), retained verbatim at docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-RAW.md; see the review1 block at the end of this record. Verification rule 10: review 1 binds the bytes it names (commit a55fe3a) and not these, so its repairs are uncovered until a second fresh-context review confirms them, and that review's raw would be a second -RAW.md file, never an overwrite. [Superseded 2026-09-15: count 0, 'first draft; by verification rule 10 nothing in the packet is confirmed'.]"
   },
   "proposedRegisterNumber": "P-79 (not written by this packet; the row lands with review 1)",
+  "registerNumber_2026_09_15": "P-79, written on branch agent/syzygy-dov.12 in the review-1 pass. Main at a9f671e carries 26 rows under ^| P- (21 open + 5 acceptance-act); with P-79 this branch carries 22 open and 5 acceptance-act, 27 in all.",
   "conventions": {
     "lineNumbers": "1-based over file bytes at a9f671e unless another commit or worktree is named",
     "lineCounts": "wc -l (physical newline-terminated lines), never the split-on-newline count"
@@ -54,10 +60,13 @@
       "L2-F5"
     ],
     "prerequisiteLine": "none for retention and delta; owner act for the note; spec amendment for dismissal",
+    "prerequisiteLine_note_2026-09-15": "The value above elides two words of the dossier's line with no ellipsis and is kept unedited only as the record of what was published. The full line, docs/pursuits/2026-09-13-vision-pursuit.md lines 415-416 at a9f671e: '**Prerequisite.** None for retention and delta; owner act for the note (retention posture); spec amendment for dismissal.' The elided '(retention posture)' is the dossier naming the continuation act's retention-posture trigger by the trigger's own noun and attaching it to the note's owner act. Review 1's F1, blocking.",
     "prerequisiteSurvives": false,
     "prerequisiteVerdict": "The first clause does not survive: retention touches the continuation act's retention-posture escalation trigger by its own noun (PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md lines 150-156). Whether 'beyond' reaches a derived record is genuinely open and is published as Q1, never ruled. The second clause understates: the act in force forbids the write in terms rather than merely failing to cover it. The third clause holds.",
+    "prerequisiteVerdict_note_2026-09-15": "Restated after review 1 F1. What the evidence supports: the dossier attached the retention-posture trigger to the note's owner act and gave 'none' for retention and delta; whether that trigger reaches slice 1's derived claim-state record is Q1 and is not ruled here. Any reading of what the dossier's author did or did not read is withdrawn from the packet and is not restated in this record. Q1's recommended answer, its three arms and its default are unchanged.",
     "driftCheck": {
       "predicate": "git diff --numstat f4589e2 a9f671e restricted to the twelve M12-cited files",
+      "predicate_2026-09-15": "git diff --name-only f4589e2 a9f671e prints 146 paths; 0 of the twelve distinct files of the packet's 'Line numbers re-verified at a9f671e' table appear among them, tested by exact whole-line match. The twelve are apps/three-surface-poc/src/main.ts, apps/three-surface-poc/src/materialize-action.ts, packages/three-surface-poc-core/src/body-read-authority.ts, packages/three-surface-poc-core/src/walkthrough-judgment.ts, packages/three-surface-poc-core/src/walkthrough-readiness.ts, packages/three-surface-poc-core/src/project-shape-manifest.ts, packages/three-surface-poc-core/src/project-shape-observation.ts, packages/three-surface-poc-core/src/project-shape-model.ts, packages/three-surface-poc-core/src/materialization.ts, .syzygy/governance/doctrine/vision.md, .syzygy/governance/doctrine/architecture.md and the PWB spec.md. apps/three-surface-poc/src/polaris.ts IS in the 146 and is NOT one of the twelve. Review 1's F8; the earlier prose denominator ('the nine implementation files and three governance files named in Gate 0 and the Measurements') identified no set and is superseded in the packet.",
       "rows": 0,
       "conclusion": "every M12-cited file is byte-identical between the dossier's audit commit and this baseline"
     },
@@ -244,6 +253,41 @@
         "claim:project-account:": 6,
         "claim:project-shape": 1
       },
+      "byIdentityPrefix_note_2026-09-15": "The block above is a count of claim OBJECTS (tuple instances), not of distinct identities, and its six values sum to 1149 rather than to the 1148 the packet claimed; kept unedited as the record of what was published. Review 1's F2.",
+      "byIdentityPrefix_distinctIdentities_2026-09-15": {
+        "claim:source:": 278,
+        "claim:item:": 415,
+        "claim:fact:": 439,
+        "claim:class:": 9,
+        "claim:project-account:": 6,
+        "claim:project-shape": 1,
+        "sum": 1148
+      },
+      "byIdentityPrefix_tupleInstances_2026-09-15": {
+        "claim:source:": 278,
+        "claim:item:": 416,
+        "claim:fact:": 439,
+        "claim:class:": 9,
+        "claim:project-account:": 6,
+        "claim:project-shape": 1,
+        "sum": 1149
+      },
+      "claimFactDecomposition_2026-09-15": {
+        "item:": 415,
+        "count:": 9,
+        "catalog-count:": 9,
+        "project-account:": 6,
+        "sum": 439
+      },
+      "observedDerivedVsClosedVocabulary_2026-09-15": {
+        "observedDerived": 1117,
+        "observedDerivedParts": "278 source paths + 415 item class-and-key pairs + 415 claim:fact:item: twins + 9 catalog headings",
+        "closedVocabulary": 30,
+        "closedVocabularyParts": "9 claim:class: and 9 claim:fact:count: from EXTRACTION_CLASSES (nine values, packages/three-surface-poc-core/src/project-shape-manifest.ts lines 58-68); 6 claim:project-account: and 6 claim:fact:project-account: from PROJECT_ACCOUNT_KEYS (six values, packages/three-surface-poc-core/src/project-shape-extraction.ts line 46)",
+        "fixedLiteral": 1,
+        "sum": 1148,
+        "note": "Review 1's F4. The packet published 1148 as interpolated from observed-project text against exactly 1 fixed literal; 30 of the 1148 carry no observed text at all. Q1's recommendation, arms and default do not change."
+      },
       "canonicalClaimStateMapBytes": 177031,
       "canonicalClaimStateMapWithRoutesBytes": 203379,
       "routesRedundancyBytes": 26348,
@@ -254,6 +298,15 @@
         403,
         430
       ],
+      "claimIdConstructionSites_2026-09-15": [
+        367,
+        375,
+        383,
+        403,
+        430,
+        447
+      ],
+      "claimIdConstructionSites_note_2026-09-15": "Review 1's F3: line 447, the Unknown arm of projectAccountOf, interpolates the same closed-vocabulary account key as 430 and was missing from the array above, which is kept unedited. Re-derived this session: the literal 'claimId:' returns 13 lines in packages/three-surface-poc-core/src/project-shape-model.ts - the six interpolating sites, 4 carrying the fixed literal 'claim:project-shape' (345, 457, 611, 659), 2 interface declarations (123, 157) and 1 pass-through (173). The raw's incidental 'twelve claimId: lines, the remaining six the fixed literal' does not confirm and is not carried. No site interpolates a revision.",
       "anyConstructionSiteInterpolatesRevision": false
     },
     "challengeSweep": {
@@ -263,6 +316,16 @@
       "testLines": 25,
       "nonTestLines": 25,
       "rejectedPredicate": "\\bchallenge\\b (case-insensitive) returns 35 lines and misses CHALLENGE_STATES and ChallengeState, because _ is a word character and ChallengeState has no trailing boundary",
+      "rejectedPredicate_2026-09-15": "\\bchallenge\\b is CASE-SENSITIVE at 35 lines, not case-insensitive; the value above is kept unedited. Re-derived four ways over the same 246 .ts files this session: case-sensitive with the challenge-suspended exclusion 35, case-insensitive with it 36, case-sensitive without it 43, case-insensitive without it 44. Review 1's F5.",
+      "rejectedPredicateDifference_2026-09-15": {
+        "lines": 15,
+        "nonTest": 7,
+        "test": 8,
+        "nonTestLines": "packages/cap1-core/src/drawer.ts 59, 60, 114, 138, 174; packages/three-surface-poc-core/src/project-shape-model.ts 83, 84",
+        "testLines": "polaris-epistemic-tuples.test.ts 42; polaris-first-reading.test.ts 88; req-040.conformance.test.ts 163, 196, 225, 227; project-shape-model.test.ts 19, 351",
+        "insideTheSeam": 2,
+        "note": "The packet said the 15-line difference was entirely in the non-test population; it splits 7/8, and only 2 of the 15 - CHALLENGE_STATES at line 83 and ChallengeState at line 84 - lie inside the seam L2-M8 proposes to extend. Review 1's F5. The substantive point (the word-boundary predicate misses the constant and the type) survives."
+      },
       "rejectedPredicateLines": 35,
       "producerSites": [
         "packages/three-surface-poc-core/src/project-shape-model.ts:177"
@@ -338,7 +401,18 @@
       "retainedPageIsPreTrim": true,
       "twoTupleRowBytes": 1172.6,
       "rowsBeforeTailnetCeiling": 522,
-      "rowsLabel": "[Inferred] extrapolation from a measured per-tuple cost to a renderer that does not exist; the per-tuple figure is an upper bound because the capture is pre-trim"
+      "rowsLabel": "[Inferred] extrapolation from a measured per-tuple cost to a renderer that does not exist; the per-tuple figure is an upper bound because the capture is pre-trim",
+      "claimTupleSpansPostTrim_2026-09-15": 713,
+      "bytesPerTupleSpanPostTrim_2026-09-15": {
+        "min": 559,
+        "max": 661,
+        "mean": 586.4,
+        "total": 418122,
+        "measuredOn": "the lane A after-captures, both host forms, 1478637 direct and 1484487 tailnet; identical figures on both"
+      },
+      "twoTupleRowBytesPostTrim_2026-09-15": 1172.8,
+      "rowsBeforeTailnetCeilingPostTrim_2026-09-15": 522,
+      "rowsLabel_2026-09-15": "[Inferred] extrapolation from a measured per-tuple cost to a renderer that does not exist. The 'upper bound' gloss above is withdrawn: the per-tuple cost is STABLE across the lane A trim, 586.3 pre-trim and 586.4 post-trim, because the trim removed narrative JSON and list markup rather than tuple spans. 612665 / 1172.8 = 522.4, so the 522 does not move. Review 1's F6; the superseded values above are kept unedited."
     },
     "specRetentionSweep": {
       "files": [
@@ -736,7 +810,7 @@
   },
   "ownerQuestions": {
     "count": 6,
-    "registeredNumber": null,
+    "registeredNumber": "P-79 (written on branch agent/syzygy-dov.12 in the review-1 pass, 2026-09-15; null until then)",
     "questions": [
       {
         "id": "Q1",
@@ -818,8 +892,8 @@
   ],
   "sliceResplit": "the dossier's three slices become four; its third slice carried two different gates (an owner act and a CC-REV-2 amendment) and cannot share a Gate 3 or Gate 5 row",
   "figuresDifferingFromDossier": [
-    "prerequisite 'none for retention and delta' does not survive (Q1)",
-    "'Depends on ... M10's stable id' does not hold: the claim identity a delta joins on already exists, carries no revision at any of its five construction sites, and is required stable by PWB-REQ-007",
+    "prerequisite 'none for retention and delta' does not survive (Q1) [restated 2026-09-15 after review 1 F1: the dossier's full line attaches the retention-posture trigger to the note's owner act and gives 'none' for retention and delta; whether that trigger reaches slice 1's derived record is Q1 and is not ruled]",
+    "'Depends on ... M10's stable id' does not hold: the claim identity a delta joins on already exists, carries no revision at any of its six construction sites (five until 2026-09-15; site 447 was omitted, review 1's F3), and is required stable by PWB-REQ-007",
     "a tuple-difference-only band would be nearly silent: 2 distinct tuples over 1,149 claim objects; membership is the signal",
     "'the state directory holds only the machine credential' is true of the capture and understates the code, which admits three files",
     "the two appenders are a pattern, not a mechanism: neither is reachable outside its own test file",
@@ -837,5 +911,61 @@
     "tailLine": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted",
     "baselineTailLineBeforeThesePublishes": "32 OK, 20 WARN, 0 FAIL (52 checks)",
     "note": "CG-1b failed on a first assembly because two sibling packets are cited by path and do not exist in this worktree; both citations were rewritten without code spans, as the M11 packet does. Re-run is clean."
+  },
+  "review1": {
+    "raw": "docs/reviews/R-POLARIS-M12-RETAINED-EVALUATIONS-FUNNEL-RAW.md",
+    "bytes": 34220,
+    "sha256": "549b38f1654b0bc33fc6329aae8b9747fb91260e63405ac6c393cf9ca84e2605",
+    "verdict": "REVISE - blocking 1, non-blocking 7, editorial 4, F1-F12",
+    "reviewed_commit": "a55fe3a",
+    "reviewed_packet_bytes": 136105,
+    "reviewed_packet_sha256": "d65c7860608bf8f1520c27ff71501bd9e8861c840aeec0177e2a70e0f58ab924",
+    "reviewed_record_bytes": 31585,
+    "reviewed_record_sha256": "9765554e546c159b676df90b702984211cd9e7c2ac5c1361c52222cb3b28485f",
+    "six_question_table": "Six genuine hard human gates (Q3 'partly', its honesty constraint being settled rather than open); scope truthful on all six, with Q1's dossier comparison qualified by F1 and Q3's per-tuple limiting sentence by F6; the recommendation follows from the evidence on all six; every lawful arm named on all six rows; no lawful arm called unlawful anywhere; all six defaults stated and all six fail closed. Eight of the nine items under 'Decided in this packet, not put to the owner' are properly a delegate's; the ninth is the hidden owner question F1 names.",
+    "repairs_applied_this_session": true,
+    "uncovered_until_second_review": true,
+    "re_derived_before_applying": {
+      "dossier_prerequisite_line": "docs/pursuits/2026-09-13-vision-pursuit.md lines 415-416 read at a9f671e: '- **Prerequisite.** None for retention and delta; owner act for the note (retention posture); spec amendment for dismissal.' grep -n -F 'retention posture' counts: dossier 1, packet 2 (both the packet's own prose about the trigger, neither a quotation of the dossier line), record 1 (Q1's gist). grep -n -F 'owner act for the note': packet 1 line, record 1 line - the two quotation sites, plus the re-split paragraph's partial quotation.",
+      "prefix_census": "recursive walk over the retained /api/poc capture for every object carrying both claimId and epistemic: 1149 objects, 1148 distinct identities. Distinct by prefix 278/415/439/9/6/1 = 1148; objects by prefix 278/416/439/9/6/1 = 1149.",
+      "claim_fact_decomposition": "claim:fact: 439 = 415 item: + 9 count: + 9 catalog-count: + 6 project-account:.",
+      "closed_vocabularies": "EXTRACTION_CLASSES read at packages/three-surface-poc-core/src/project-shape-manifest.ts lines 58-68, nine members; PROJECT_ACCOUNT_KEYS read at packages/three-surface-poc-core/src/project-shape-extraction.ts line 46, six members. Every claim:class: and claim:fact:count: suffix matched against the first, every claim:project-account: and claim:fact:project-account: suffix against the second: all matched. 1117 observed-derived + 30 closed-vocabulary + 1 fixed literal = 1148.",
+      "claimId_sites": "the literal 'claimId:' over packages/three-surface-poc-core/src/project-shape-model.ts returns 13 lines: 6 interpolating (367, 375, 383, 403, 430, 447), 4 fixed literal 'claim:project-shape' (345, 457, 611, 659), 2 interface declarations (123, 157), 1 pass-through (173). 447 is the Unknown arm of projectAccountOf.",
+      "challenge_sweep": "246 .ts files under apps/ and packages/ excluding dist/ and node_modules. Accepted substring predicate 50 lines = 25 test + 25 non-test. Rejected predicate \\bchallenge\\b four ways: case-sensitive with the challenge-suspended exclusion 35, case-insensitive with it 36, case-sensitive without it 43, case-insensitive without it 44. Difference set 15 lines = 7 non-test (drawer.ts 59, 60, 114, 138, 174; project-shape-model.ts 83, 84) + 8 test (polaris-epistemic-tuples.test.ts 42; polaris-first-reading.test.ts 88; req-040.conformance.test.ts 163, 196, 225, 227; project-shape-model.test.ts 19, 351).",
+      "tuple_span_measurement": "span predicate '<span class=\"claim-tuple\".*?</span>' with DOTALL over three files: the pre-trim retained capture 699 spans / 409829 bytes / mean 586.3 / min 559 / max 661; each lane A after-capture 713 / 418122 / 586.4 / 559 / 661, identical direct and tailnet. 612665 / (2 x 586.4) = 522.4.",
+      "surface_enumeration": "all 15 paths of collision.m12_surface tested with os.path.exists in this worktree: 15 of 15 resolve. Gate 3's topology table's four data rows yield 12 code spans that resolve as files; 2 of the 12 are off-surface (polaris-parity-sweep.test.ts, walkthrough-preflight.ts) and 5 of the 15 are not among the 12 (project-shape-observation.ts and walkthrough-readiness.ts in the 'Not touched by any slice' prose, body-read-authority.ts as a bare basename inside the slice-1 row, walkthrough-judgment.ts and write-guard.ts nowhere in the Gate 3 section).",
+      "drift_diff": "git diff --name-only f4589e2 a9f671e: 146 paths. Each of the twelve re-verification-table files tested by exact whole-line match: 0 hits. apps/three-surface-poc/src/polaris.ts: 1 hit.",
+      "editorial_spans": "canonicalJson in project-shape-observation.ts at lines 36 (import member), 337 and 635; M10's packet at 95f31cb line 35 is Q1 and line 36 is Q2; materialize-action.ts line 27 carries the comment and 28-29 the MATERIALIZE_ATTRIBUTION declaration; vision.md's expiry parenthetical spans 175-177, exception (a) ends on 177, and 178-179 are exception (b).",
+      "register_recount": "git show a9f671e:.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md, predicate ^| P- partitioned by the ## section each row falls under: 26 rows, 21 open and 5 acceptance-act. With P-79 this branch carries 22 open and 5 acceptance-act, 27 in all."
+    },
+    "dispositions": {
+      "F1": "CONFIRMED, blocking. The full dossier line is now block-quoted with '(retention posture)' at both packet sites and noted in this record by a dated sibling key. The correction is restated as what the evidence supports; the 'reached without the trigger list being read' ruling is WITHDRAWN at all four places it appeared. Q1's question, recommended answer, three arms and default are unchanged.",
+      "F2": "CONFIRMED exactly. Both rows published - distinct identities summing to 1148 and tuple instances summing to 1149 - in the packet and by dated sibling keys here; the original 416 block is kept unedited and marked.",
+      "F3": "CONFIRMED IN PART. The six interpolating sites and the omission of 447 confirm and are repaired in the packet, the funnel summary and this record. The raw's incidental 'twelve claimId: lines / the remaining six are the fixed literal' does NOT confirm: the count is 13 and the fixed-literal sites are 4. Recorded rather than copied.",
+      "F4": "CONFIRMED and quantified: 1117 observed-derived / 30 closed-vocabulary / 1 fixed literal = 1148, with both constants named and their arities read at source. Q1's recommendation, arms and default do not change.",
+      "F5": "CONFIRMED in every figure: 35 / 36 / 43 / 44 four ways, 50 = 25 + 25 accepted, and the 15-line difference splitting 7 non-test / 8 test with only 2 inside the seam. Repaired in the Measurements and in Gate 6 item (1), and mirrored here.",
+      "F6": "CONFIRMED on both host forms: 713 spans / 418122 bytes / mean 586.4 post-trim against 699 / 409829 / 586.3 pre-trim. 'Upper bound' is replaced by 'stable across the trim'; 612665 / 1172.8 = 522.4 and the 522-row figure with its [Inferred] label survives.",
+      "F7": "CONFIRMED. The 15 are enumerated in the packet and all 15 resolve; the prose no longer calls them Gate 3's existing-file set and states how the two sets differ in both directions. No collision cell is recomputed and none moves.",
+      "F8": "CONFIRMED. The twelve are named one by one, the claim is scoped to the re-verification table, and polaris.ts is called out as present in the 146-row diff and absent from the twelve.",
+      "F9": "CONFIRMED. The import is at line 36; corrected with the superseded 336 marked.",
+      "F10": "CONFIRMED. M10's line 35 is its Q1; the first clause now says Q1 and names what M10's Q2 actually asks.",
+      "F11": "CONFIRMED at the quoting site: the comment is at line 27 and 28-29 are the declaration. The other site cites 28-29 for the constant, which was already accurate, and is made explicit rather than changed.",
+      "F12": "CONFIRMED, and the same two-line overrun is in the row's third span. The verdict cell now reads 'exact for 167-181; approximate for the other two', with both overruns stated and with the note that these are the dossier's spans, not the packet's."
+    },
+    "recommended_answers_changed": [
+      "NONE. Q1 still recommends treating a durable per-evaluation claim-state record as a retention-posture change and obtaining an owner act before slice 1 lands; F1 changed the dossier comparison beside it and withdrew a ruling, F2/F3/F4 corrected the figures inside it, and the question, the three lawful arms and the default are word for word what they were.",
+      "Q3 still recommends the capped band with the remainder disclosed as a counted, routed Unknown; F6 replaced a claimed upper bound with a measured figure and the 522 rows did not move, so neither the recommendation nor the default changed.",
+      "Q2, Q4, Q5 and Q6 are untouched by every finding. No default-if-unanswered moved, and no seventh question was added."
+    ],
+    "register_row": "P-79, added on branch agent/syzygy-dov.12 in this pass",
+    "not_checkable_from_the_artifact": "The claim that each finding was re-derived BEFORE being applied, and that the packet_measured_after_review1 figures were computed last, assert an ordering inside this session that no reader can verify from the bytes. The results are checkable; the ordering is not [Observed for the results, Unknown for the ordering].",
+    "packet_measured_after_review1": {
+      "bytes": 166846,
+      "sha256": "528f8eb8fa1cc90e504a689e2f91f0925fd7beda55b694713ca096cf58468ba0",
+      "total_lines": 2019,
+      "non_fence_lines": 1931,
+      "over_78": 8,
+      "predicate": "total_lines: split on newline with the trailing empty segment dropped (equals wc -l on this newline-terminated file). non_fence_lines: the same, excluding fence lines and fenced content. over_78: lines outside fenced blocks whose first non-space character is not a pipe, length > 78; denominator all total_lines. Computed last of all in this pass, after every packet edit, and iterated to a fixed point because the packet states the figures."
+    }
   }
 }
