@@ -116,7 +116,10 @@ consequence is named rather than absorbed: the field is a POC shared-model
 change and takes the improvement-cycles direction's "WIP one for POC
 shared-model changes" queue (that direction, line 50). Whether that ceremony
 is owed is already M8's Q7 (P-74) and M9's Q6 (P-75), and neither is
-re-asked. [Decided 2026-09-15 after review 1, F6.]
+re-asked. [Decided 2026-09-15 after review 1, F6. Extended 2026-09-15 after
+review 2, G2: the same argument decides slice 2's `responseIdentity` the same
+way — it too is a new top-level key in that same body — so Gate 3's slice-2
+row is unconditional as well. No recommended answer and no default changes.]
 
 **S6-F3 is deliberately not a slice of this packet.** It is the dossier's own
 placement — S6-M4 sits in M10's `evidence_findings` list as S6-F3's move and
@@ -650,7 +653,10 @@ to the machine consumer the north star names as first-class [Inferred — a
 reading of VIS-3's scope, stated rather than resolved; the dossier's M10 entry
 tags VIS-3 without this qualification].
 
-**VIS-4 — Humans steer the vision; agents shape within it.** Lines 122–140.
+**VIS-4 — Humans steer the vision; agents shape within it.** Lines 122–139
+[the clause ends on line 139, "…treating RFC acceptance alone as opening the
+gate.", and line 140 is blank; this citation read "Lines 122–140" until
+2026-09-15, superseded after review 2, G4, re-read at source].
 This packet drafts and adopts nothing. Q1's second arm and S6-M4 both route
 through CC-REV-2 precisely because VIS-4 puts normative data contracts in the
 always-human-gated class.
@@ -709,7 +715,7 @@ is decided by PWB-REQ-014's sentence and not by these three.
 | Slice | Lives in | Governed artifact touched |
 |---|---|---|
 | 1 Links map | `apps/three-surface-poc/src/routes.ts` (a `links` field built from the same array `pocRoutes()` returns at lines 206–239); `packages/three-surface-poc-core/src/model.ts` (the `PocModel` interface, lines 98–155), because the field lands on the shared model — decided in this packet, see Gate 4's slice 1 [row completed 2026-09-15 after review 1, F6, which found it named neither of the two possible implementations]; a new sibling test | none |
-| 2 Response identity | a new module under `packages/three-surface-poc-core/src/` (canonical serialization + the declared exclusion set), consumed by `apps/three-surface-poc/src/routes.ts` at lines 159–176; `packages/three-surface-poc-core/src/model.ts` if the field lands on `PocModel` rather than on the response envelope | none |
+| 2 Response identity | a new module under `packages/three-surface-poc-core/src/` (canonical serialization + the declared exclusion set), consumed by `apps/three-surface-poc/src/routes.ts` at lines 159–176; `packages/three-surface-poc-core/src/model.ts` (the `PocModel` interface, lines 98–155), because the F6 argument decides this row the same way it decides slice 1's: `machineHandle` serves `JSON.stringify(model)` verbatim, so a new top-level key in that body is either a member of `PocModel` or a wrapper, and the wrapper falsifies the parity sweep's production comment — so `model.ts` is unconditional on this row [row completed 2026-09-15 after review 2, G2; this cell read "`packages/three-surface-poc-core/src/model.ts` if the field lands on `PocModel` rather than on the response envelope", leaving conditional the very proposition Gate 4's slice 1 and the sequencing paragraph already relied on] | none |
 | 3 Schema document | a new emitter under `packages/three-surface-poc-core/src/` or `apps/three-surface-poc/src/`, its build step in `package.json`, and one new route in `apps/three-surface-poc/src/routes.ts` | none |
 | 4a Conditional GET | `packages/cap1-daemon/src/server.ts` (the `respond` path at lines 121–124 and the admission block at lines 187–210); `apps/three-surface-poc/src/routes.ts` | none |
 | 4b Compression | the same two files, plus `node:zlib` | **none edited**, but the meaning of `resourceLimitSemantics` lines 279–280 is what Q2 asks about, and that file is act-bound |
@@ -843,6 +849,15 @@ S6-M5 proposes documenting the equality contract, and the measurement says the
 contract as it stands cannot be documented truthfully, because neither
 candidate key is correct.
 
+**Where the field lands is not open either.** `responseIdentity` is a new
+top-level key in the same `JSON.stringify(model)` body, so the F6 argument
+that decided slice 1 decides this slice identically: the field lands on
+`PocModel`, not on a response envelope, and Gate 3's slice-2 row now says so
+unconditionally. That is what lets the sequencing paragraph call slice 1 and
+slice 2 both POC shared-model changes [stated 2026-09-15 after review 2, G2,
+which found the topology row still conditional while two other sites already
+relied on the answer. No recommendation and no default moves].
+
 **The field.**
 
 ```
@@ -949,9 +964,16 @@ repository (then it is not derived from the types that are compiled).
 `ETag: "<contentKey>"` on both machine routes; `If-None-Match` handled in the
 daemon's admission path so a match returns 304 with no body. Credential
 admission runs **first**, unchanged: a refused credential must never learn
-that its cached copy is current, which is the RFC5-3 posture
-`packages/cap1-daemon/src/server.ts` lines 188–200 already implements and this
-slice must not weaken.
+that its cached copy is current. RFC5-3 is the clause, defined at
+`.syzygy/governance/contracts/rfcs/RFC-0005/admission-and-boundary.md` lines
+101–107: every request is classified as exactly one of two client classes,
+and line 102 says how — "**by credential presented, never by network location
+or header heuristics**". `packages/cap1-daemon/src/server.ts` lines 188–200
+already implement it for the machine-credentialed routes: admission runs
+before the handler, consults the presented credential alone, and on refusal
+serves nothing but the named refusal body. This slice must not weaken that.
+[The identifier was named with no path, no quotation and no line number until
+2026-09-15; anchored and quoted after review 2, G6, per verification rule 8.]
 
 **Oracle.** A served-daemon test: GET, capture the ETag, GET again with
 `If-None-Match` → 304 and zero body bytes; restart the daemon at the same
@@ -1077,9 +1099,15 @@ whole payload is Q1 and is not settled here.
 
 **Slice 3 — no delta for the *disclosure* it carries; the *route* is a
 separate question this packet does not settle.** [The heading read "**Slice 3
-— no delta**" without qualification until 2026-09-15, which read as a ruling
-on the whole slice; superseded after review 1, F1. The disclosure analysis
-below is unchanged.] PWB-REQ-014 lines 774–776 declare the six anchor classes
+— no delta; the disclosure it carries is the thing PWB-REQ-014 already
+closes.**" until 2026-09-15, which read as a ruling on the whole slice;
+superseded after review 1, F1. The disclosure analysis below is unchanged.
+This bracket itself read "**Slice 3 — no delta**" "without qualification"
+until 2026-09-15, shortening the superseded heading inside quotation marks
+and mischaracterising it — it did carry a qualification, just not the one
+about the route; corrected 2026-09-15 after review 2, G5, against the
+first draft's bytes at
+`5c5ed0e`.] PWB-REQ-014 lines 774–776 declare the six anchor classes
 closed. Stating which of the six are populated at an evaluation neither adds
 nor removes a member; it is a measurement of the payload printed beside the
 closed list. **Pruning** would be a delta, and that is S6-M4, listed here and
@@ -1433,8 +1461,16 @@ to say which.
    `apps/three-surface-poc/src/polaris-parity-sweep.test.ts` 43 passing;
    `apps/three-surface-poc/src/response-limits.test.ts` 12 passing;
    `apps/three-surface-poc/src/polaris-presentation-route.test.ts` 2 passing —
-   57 tests over 3 files in the second run, 8 in the first. A short git
-   status in the worktree names only this packet's two files.
+   57 tests over 3 files in the second run, 8 in the first. At the review-2
+   close-out the working tree is clean and the branch's diff against
+   `a9f671e` carries **5** files: this packet, its evidence record,
+   `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` and the two
+   retained review raws [Observed, `git diff --name-only a9f671e HEAD` run
+   this session at this branch's head; denominator every path that diff
+   prints. The sentence read "A short git status in the worktree names only
+   this packet's two files" until 2026-09-15, superseded after review 2, G8,
+   whose own count of three was itself short by the review-1 raw that the
+   diff at `2b56220` already carried].
 8. **No act-bound byte is proposed for edit**, and that is a claim about
    *acts* specifically. The two specifications and the observer registry entry
    are act-bound and no slice touches them. The implementation files are not
@@ -1454,15 +1490,23 @@ to say which.
    short
    name" class AGENTS.md records, and it is reported rather than silently
    fixed because the corrected predicate is what the reader should check.
-10. **Independent review.** This packet has had **one**, on 2026-09-15:
-    verdict **REVISE**, retained verbatim at
+10. **Independent review.** This packet has had **two**, both on
+    2026-09-15: review 1, verdict **REVISE**, retained verbatim at
     `docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md` and disposed
-    of in the review-1 section below. [Superseded 2026-09-15: this item read
+    of in the review-1 section below, and review 2, verdict **CONFIRM WITH
+    EXCEPTIONS**, retained verbatim at
+    `docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-2-RAW.md` and
+    disposed of in the review-2 section below [this item read "This packet
+    has had **one**, on 2026-09-15" until 2026-09-15, updated in the
+    review-2 close-out]. [Superseded 2026-09-15: this item read
     "This packet has had **none**. It is a first draft, and every figure in
     it is uncovered until a fresh-context review confirms it."] Verification
     rule 10 still governs: review 1 binds the bytes it names, commit
-    `5c5ed0e`, and not these, so **the repairs made after it are uncovered
-    until a second fresh-context review confirms them**. Superseded wording
+    `5c5ed0e`, review 2 binds `2b56220`, and neither binds these, so **the
+    repairs made after review 2 are uncovered until a third fresh-context
+    review confirms them** [this sentence read "the repairs made after it are
+    uncovered until a second fresh-context review confirms them" until
+    2026-09-15, re-tensed in the review-2 close-out]. Superseded wording
     is marked and dated in place, never deleted.
 11. **Conventions this packet was checked against, this session.** Every
     non-fence line has an even backtick count, so no code span is broken
@@ -1472,22 +1516,38 @@ to say which.
     which is what this item said until 2026-09-15, superseded after review 1,
     F14). [That denominator is the first draft's, at commit `5c5ed0e`; over
     the bytes this pass produced both figures are restated, with their
-    predicates, at the end of the review-1 section below.] **Two** lines
+    predicates, at the end of the review-1 section below.] **3** lines
     exceed 78 columns outside fences, tables, headings and block quotes, and
-    each is a single unbreakable code-span path: the observer registry entry
-    and the RFC-0001 filename. Of **273** distinct code spans, **57** contain
-    a `/` and **13** of those do not resolve as a path in this worktree; each
-    is enumerated here and none is a path in it. They are: four write-root
+    each is a single unbreakable code-span path: the observer registry entry,
+    the improvement-cycles direction's filename and the RFC-0001 filename. Of
+    **313** distinct code spans, **67** contain
+    a `/` and **15** of those do not resolve as a path in this
+    worktree; each is enumerated here and none is a path in it. They are:
+    four write-root
     globs (`.syzygy/**`, `openspec/**`, `apps/**`, `packages/**`); four
     served route forms (`/api/poc`, `/api/poc/polaris`, `/polaris`, and M5's
     proposed `GET /api/poc/briefing?for=<selector>`, which is a route plus a
-    query and not a file); RFC2-26's own bare `decisions/`; the model's
+    query and not a file); the quoted request form `GET /api/poc`, a method
+    plus a route and not a file; RFC2-26's own bare `decisions/` and the bare
+    `contracts/` naming a governance tree; the model's
     version label `syzygy-three-surface-poc/v1`; this worktree's branch name
     `agent/syzygy-dov.10`; the act-relative form
     `specs/three-surface-poc-experience/spec.md`, quoted because the
     false-absence trap in item 9 turns on exactly that spelling; and the
     command `python3 scripts/check_governance.py`, whose script half does
-    resolve while the command as written is not a path. The six
+    resolve while the command as written is not a path.
+    [The four figures above read "**Two**", "**273**", "**57**" and "**13**"
+    until 2026-09-15, and the enumeration carried thirteen spans rather than
+    15; superseded after review 2, G1, which found them carried
+    forward from the first draft while this item asserted they had been
+    re-derived over these bytes. The two spans the old enumeration did not
+    carry were both introduced by the review-1 repair pass: the quoted
+    request form `GET /api/poc` from the F1 reader-note quotation, and the
+    bare `contracts/` in the F3 disposition row. Because these are
+    self-referential figures over bytes this pass is itself editing, they
+    were computed **last**, after every other edit of the review-2 pass
+    including the review-2 section below, and iterated to a fixed point, so
+    they are true of the bytes that carry them.] The six
     retained-capture paths and the two sibling packets' paths are named
     **without** code spans, because they resolve in the session scratch
     directory and on other branches rather than in this worktree. No
@@ -1498,7 +1558,9 @@ to say which.
     reads as a truncated digest quote. `python3 scripts/check_governance.py`
     was run in this worktree after the final edit and its last line reads
     **32 OK, 20 WARN, 0 FAIL (52 checks)**. Every figure here was re-derived
-    over these bytes rather than carried forward from an earlier draft; the
+    over these bytes rather than carried forward from an earlier draft — true
+    again as of 2026-09-15, and false of the four figures above between
+    review 1 and review 2, which is what review 2's G1 found; the
     first draft's figures, before the code-span and ellipsis repairs, were
     1,312 non-fence lines, 278 distinct spans and 20 non-resolving
     slash-bearing spans, and two checks then failed.
@@ -1584,7 +1646,10 @@ on their own branch.
 **These repairs are uncovered.** Every edit in this pass was made after the
 review, so by verification rule 10 the review binds the bytes it names -
 commit `5c5ed0e` - and not these: **the repairs above are uncovered until a
-second fresh-context review confirms them**, and that review's raw would be a
+second fresh-context review confirms them** (which has since happened —
+review 2, 2026-09-15, retained at
+`docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-2-RAW.md`; re-tensed
+2026-09-15), and that review's raw would be a
 second `-RAW.md` file, never an overwrite of this one. Superseded wording is
 marked in place and dated, never deleted.
 
@@ -1598,8 +1663,120 @@ counted). Of the over-78 lines, none is a prose line this pass wrote: they
 are this file's title, **2** slice headings that name their size and act,
 **3** lines each carrying a single unbreakable code-span path, and **5**
 lines of the RFC2-26 clause block-quoted verbatim, which may not be
-rewrapped. [Observed, enumerated this session over the final bytes; 1 + 2 +
-4 + 5 = 12.]
+rewrapped. [Observed, enumerated this session over the final bytes;
+1 + 2 + 3 + 5 = 11. That arithmetic read "1 + 2 + 4 + 5 = 12" until
+2026-09-15, wrong in both the addend and the sum, and it is the one part of
+the sentence a reader would use to check it; superseded after review 2, G3.
+Every figure in this paragraph is true of the bytes at commit `2b56220`, the
+bytes review 2 read; the same figures over the bytes the review-2 pass
+produced, with the over-78 lines enumerated by number, are re-derived at the
+end of the review-2 section below.]
+
+## Review 2 and repairs (2026-09-15)
+
+A second independent fresh-context review of the once-repaired packet
+(read-only; only the artifact, its governing references and the acceptance
+criteria) is retained verbatim at
+`docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-2-RAW.md` (**31,651**
+bytes, sha256
+`d33b4cdc37c69e40a94f3c6fb72c8e7a29707180461464a5b98169d3d0483c8a`,
+computed by `wc -c` and `sha256sum` this session, never transcribed). It
+reviewed commit `2b56220`, at which the four files it names hashed as
+follows — recomputed this session with `git show 2b56220:<path>` piped to
+`wc -c` and to `sha256sum`:
+
+| File reviewed at `2b56220` | Bytes | sha256 |
+|---|---:|---|
+| `docs/design/POLARIS-M10-MACHINE-CONTRACT-FUNNEL.md` | 135823 | `c609b08666bb6907953637a3587f3294a34586ec15b69085677f646b65c6953b` |
+| `docs/evidence/polaris-m10-machine-contract-funnel-2026-09-15.json` | 48446 | `1e4e31d96a8ef9df80305d1d2c6ddccc6476eb4eb0400aac9ca193b9aa1ec0d1` |
+| `.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` | 33684 | `8b34705e86969438f107bd4d400b4ac38355107076148172d7bf62325f6573ba` |
+| `docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md` | 27447 | `2cb4d80cbd86cbb2c30ec6008104452c4ef79eea9fd62da3f21c38fc80a062f6` |
+
+Its verdict word, copied exactly: **CONFIRM WITH EXCEPTIONS**. Its counts, as
+the raw states them: **0 blocking, 2 non-blocking, 6 editorial** — eight
+findings, G1–G8, non-blocking G1–G2 and editorial G3–G8.
+
+**Its verification of the review-1 repairs, carried here as it states them:
+14 REPAIRED, 0 PARTIAL and 0 NOT REPAIRED over 14.** Every one of F1–F14 is
+verified REPAIRED, the blocking F1 more thoroughly than its own disposition
+claimed — review 2 found slice 3 shown as holding behind P-72's Q1 at six
+sites rather than the four the disposition names. F6 is verified REPAIRED
+for the slice it names, and the row it left conditional is G2 below; F14 is
+verified REPAIRED at the site review 1 named, and the same class of figure
+one Gate above it is G1.
+
+Every exception was re-derived this session against source before being
+applied; none was applied on the review's say-so. **Eight of eight were
+confirmed**, one of them with a figure of the finding's own corrected rather
+than copied: **G8** names three files in the branch's diff against `a9f671e`
+where that diff already carried four at `2b56220` — the review-1 raw is the
+fourth — and carries 5 at this close-out. Superseded wording is
+marked in place and dated, never deleted.
+
+| Finding | Severity | Re-derivation | Disposition |
+|---|---|---|---|
+| G1 Gate 6 item 11's four convention figures are stale at the repaired bytes, under an item that asserts they were re-derived over exactly those bytes | non-blocking | **CONFIRMED, every figure.** Re-derived this session over the committed bytes at `2b56220` under item 11's own predicates — over-78 outside fences, tables, headings and block quotes; distinct code spans over non-fence lines; those containing a `/`; those of them that do not resolve as a path in this worktree. The results are **3 / 301 / 65 / 15** against the item's stated **2 / 273 / 57 / 13**; the third over-78 line is 801, the improvement-cycles direction's filename, which the F6 repair added to Gate 4's slice 1, and the two unenumerated non-resolving spans are the quoted request form `GET /api/poc` (lines 904 and 1094, from the F1 reader-note quotation) and the bare `contracts/` in the F3 disposition row (line 1555) [Observed; denominator all 1,682 lines and every code span on a non-fence line] | Applied in item 11: the four figures are restated, the superseded values quoted in a dated bracket at the site, the enumeration extended with the two added spans, and the item's closing "re-derived over these bytes" sentence marked as false of those four figures between review 1 and review 2. Because the figures are self-referential over bytes this pass is itself editing, they were computed **last**, after every other edit including this section, and iterated to a fixed point |
+| G2 the F6 decision closes slice 1's landing question and leaves the identical one open for slice 2, while Gate 4 and the sequencing paragraph already rely on it being closed | non-blocking | **CONFIRMED at all three sites.** Read this session: Gate 3's slice-2 row still read "`packages/three-surface-poc-core/src/model.ts` if the field lands on `PocModel` rather than on the response envelope"; Gate 4's slice 1 reads "Slice 1 therefore joins slice 2 (on Q1's recommended arm) in that one-at-a-time queue"; and the sequencing paragraph reads "it and slice 2 are both POC shared-model changes". `machineHandle` at `apps/three-surface-poc/src/routes.ts` lines 159–162 serves `JSON.stringify(model)`, re-read at source, so the F6 disjunction — member of `PocModel` or wrapper, and the wrapper falsifies the parity sweep's production comment — reaches slice 2's `responseIdentity` unchanged [Observed for the three sites and the source; Inferred that the argument settles slice 2, which is the same reading F6 made for slice 1] | Applied in the recommended shape at three sites: Gate 3's slice-2 row states that the F6 argument decides it the same way and names `model.ts` unconditionally, with the conditional wording quoted in a dated bracket; Gate 4's slice 2 gains one paragraph saying so; and the F6 entry under "Decided in this packet, not put to the owner" is extended with a dated note. **No recommendation, no default and no owner question changes** — review 2 says as much: nothing an owner must rule turns on it |
+| G3 the conventions paragraph's arithmetic contradicts its own enumeration | editorial | **CONFIRMED.** The paragraph states 11 over-78 lines and enumerates them as the title, 2 slice headings, 3 single-code-span lines and 5 block-quoted RFC2-26 lines, then closes "1 + 2 + 4 + 5 = 12" — wrong in the addend and in the sum. Re-derived this session over the `2b56220` bytes under the paragraph's own predicate: **11** lines, at 2, 575, 778, 801, 839, 1131, 1132, 1137, 1139, 1143 and 1150, which partition 1 + 2 + 3 + 5 exactly [Observed; denominator all 1,682 lines] | Applied: "1 + 2 + 3 + 5 = 11", with the superseded arithmetic quoted and dated, and the paragraph marked as true of the `2b56220` bytes. The same figures over this pass's bytes, with the lines enumerated by number, are re-derived at the end of this section |
+| G4 VIS-4 is cited as vision.md lines 122–140; the clause ends at 139 | editorial | **CONFIRMED.** Read at source this session: `.syzygy/governance/doctrine/vision.md` line 122 opens the clause, line 139 ends it with "…treating RFC acceptance alone as opening the gate." and line 140 is blank [Observed] | Applied at the packet's VIS-4 paragraph and in the evidence record's `measurements.M11_spec_sweeps.anchors_used`, in both cases by a dated same-line correction that keeps the superseded span quoted. Nothing else cites the span |
+| G5 the Gate 5 supersession note misquotes the heading it supersedes | editorial | **CONFIRMED.** At `5c5ed0e` the heading read "**Slice 3 — no delta; the disclosure it carries is the thing PWB-REQ-014 already closes.**", read this session from the first draft's bytes; the bracket rendered it as "**Slice 3 — no delta**" "without qualification", which both shortens it inside quotation marks and mischaracterises it [Observed] | Applied: the bracket now quotes the superseded heading exactly, says what the old bracket said, and dates the correction. The disclosure analysis it introduces is unchanged |
+| G6 RFC5-3 is named in Gate 4 with no path, no quotation and no Gate 0 entry | editorial | **CONFIRMED, and the clause says what the sentence claims, so it is anchored rather than dropped.** RFC5-3 is located through `DIRECTIVE-REGISTER.md`, which gives `.syzygy/governance/contracts/rfcs/RFC-0005/admission-and-boundary.md`:101; read at source, the clause runs 101–107 and line 102 reads "**by credential presented, never by network location or header heuristics**". `packages/cap1-daemon/src/server.ts` lines 188–200 read at source: for a `machine-credentialed` route the admission block runs before the handler, verifies the presented credential alone, and on refusal responds with the named refusal body and returns [Observed, both] | Applied: the sentence now anchors the identifier at its defined clause with path and line span, quotes line 102, and describes what the daemon lines do, per verification rule 8. The design point is unchanged; it did not rest on the identifier |
+| G7 the funnel summary's G6 Bar line was rewritten without a supersession marker, unlike its two neighbours | editorial | **CONFIRMED.** At `5c5ed0e` the line ended "NO independent review yet - this is a first draft"; at `2b56220` it read "ONE independent review …" with no bracket, while the Open questions and Collisions lines immediately below both carry "[this line read …]" brackets [Observed, the two drafts compared this session] | Applied twice over: the line now states two retained reviews with review 2's verdict and counts, and its bracket carries **both** superseded wordings in the shape its two neighbours use — the first draft's and the review-1 wording |
+| G8 Gate 6 item 7's working-tree sentence is stale | editorial | **CONFIRMED IN SUBSTANCE, with the finding's own count corrected.** The sentence claimed the working tree named "only this packet's two files". `git diff --name-only a9f671e 2b56220` run this session prints **four** paths, not the three review 2 names: the packet, the evidence record, the register and `docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md`, which the same pass retained. At this close-out the same diff prints **5**, the review-2 raw being the fifth [Observed; denominator every path the diff prints] | Applied: item 7 now names the branch's diff against `a9f671e` at this head, with its count, its files and its predicate, the superseded sentence quoted and dated, and review 2's own count of three noted as short by the review-1 raw |
+
+**Recommended answers changed after review 2: none, stated explicitly.**
+Review 2's own six-question table answers "Recommendation follows from the
+evidence?" **Yes** for all six post-repair recommendations — Q1, Q2, Q3, Q4
+("Borderline-but-fair, unchanged" on the human-gate column, "Yes" on this
+one), Q5 and Q6 — and its "Every lawful arm named?" column carries no
+failure: Q3's prior gap is recorded closed, and it calls no arm unlawful and
+no default unlawful [Observed, read from the retained raw]. All eight
+exceptions are presentational or evidentiary: G1 and G3 re-derive a figure
+the pass's own edits had moved; G2 closes a topology row on an argument the
+packet had already made; G4, G5 and G7 repair a citation, a quotation and a
+supersession marker; G6 anchors an identifier; G8 restates a working-tree
+sentence. **Q1 through Q6 keep the recommendations and the defaults they
+carried into this review, word for word**, and no default-if-unanswered
+moved. No seventh question is added and no sibling packet's question is
+re-asked.
+
+**Two claims review 2 could not verify from bytes, recorded for the owner
+rather than resolved.** The review-1 section asserts that "every one of the
+fourteen findings was re-derived against source before being applied" and
+that the convention figures were "computed last of all in this pass". Both
+assert an **ordering inside the repairing session**, which no reader can
+check from the artifact: review 2 records each finding as correct *now*,
+which it says is all the bytes can show [Unknown for the ordering, Observed
+for the results]. The same limitation applies to every such sentence in this
+section, including this pass's own claim to have re-derived G1–G8 before
+applying them and to have computed the figures below last. The honest
+statement is that the results are checkable and the ordering is not.
+
+By verification rule 10, review 2 binds the bytes it names — the four
+digests tabled above, at commit `2b56220` — and not these. Every edit in
+this section and above was made after it, so the eight exception repairs are
+**uncovered until a third review confirms them**; that raw would be a third
+`-RAW.md` file, never an overwrite of either retained one. Subject to that,
+and on review 2's confirmation of the `2b56220` bytes — CONFIRM WITH
+EXCEPTIONS, no blocking finding, no recommended answer moved, and the
+review-1 repairs verified 14 REPAIRED, 0 PARTIAL and 0 NOT REPAIRED over 14
+— **this packet stands at the owner gate**: P-77 is ready to be ruled.
+
+**Conventions after the review-2 repairs**, re-derived over the final bytes
+of this pass, last of all and iterated to a fixed point:
+**11** lines exceed 78 columns (predicate: lines outside fenced code blocks
+whose first non-space character is not a pipe, length > 78; denominator: all
+1,859 lines of this file); **0** non-fence lines carry an odd backtick
+count, over **1,782** non-fence lines (trailing empty segment not counted).
+They are this file's title, **2** slice headings that name their size and
+act, **3** lines each carrying a single unbreakable code-span path, and
+**5** lines of the RFC2-26 clause block-quoted verbatim, which may not be
+rewrapped — no prose line this pass wrote. Enumerated by line number: 2,
+578, 784, 807, 845, 1159, 1160, 1165, 1167, 1171, 1178. [Observed,
+enumerated over the bytes this section is itself part of and iterated to a
+fixed point, so the figures are true of the bytes that carry them.] Gate 6
+item 11's narrower predicate, which also excludes headings and block quotes,
+gives **3** over the same denominator.
 
 ## Funnel summary
 
@@ -1612,7 +1789,7 @@ Baseline: Syzygy a9f671e; the dossier audited at f4589e2, and every line number 
 - G3 Topology: routes.ts + a new core module + server.ts + polaris-narrative.ts + polaris.ts + package.json; no boundary crossed; no governed artifact edited; the two specifications and the registry entry are act-bound and untouched
 - G4 Design: a links map projected from the route array so it cannot drift; a contentKey over the canonical body minus a declared 25-path exclusion set, with the excludes quoted into the payload; a schema emitted from the types stating which enum members are populated without pruning the closed six; conditional GET keyed on that contentKey and nothing else; a sibling logicalId that is never an anchor identity
 - G5 Spec: no delta proposed by any slice. RFC2-26 and RFC1-33 run over 7 slice rows (denominator 7): slice 4b maps to PWB-REQ-006 and a scenario squarely on its subject; slices 2 and 4a map to POC-REQ-004 and its scenario at a narrower scope than the slice; slices 3 and 5 name PWB-REQ-014 with no scenario for their case; slice 1 enumerates no consequence of either contract; slice 6 is carried and not run. S6-M4 populate-or-prune is a spec amendment (PWB-REQ-014 closes the six classes) and is listed, never scheduled
-- G6 Bar: two methods per load-bearing zero; the central claim proved by a landed counterexample rather than a reading; rule-6 mutants per slice; 65 tests run green at this baseline; a false-absence trap in the digest sweep found and reported; ONE independent review (2026-09-15, verdict REVISE, 1 blocking / 6 non-blocking / 7 editorial, F1-F14; all fourteen re-derived against source before being applied) - the repairs it produced are uncovered until a second review confirms them
+- G6 Bar: two methods per load-bearing zero; the central claim proved by a landed counterexample rather than a reading; rule-6 mutants per slice; 65 tests run green at this baseline; a false-absence trap in the digest sweep found and reported; TWO independent reviews, both retained (review 1: 2026-09-15, verdict REVISE, 1 blocking / 6 non-blocking / 7 editorial, F1-F14, all fourteen re-derived against source before being applied and all fourteen verified REPAIRED by review 2; review 2: 2026-09-15, verdict CONFIRM WITH EXCEPTIONS, 0 blocking / 2 non-blocking / 6 editorial, G1-G8, all eight re-derived against source before being applied) - the eight exception repairs are uncovered until a third review confirms them [this line read "NO independent review yet - this is a first draft" until 2026-09-15, and then "ONE independent review (2026-09-15, verdict REVISE, 1 blocking / 6 non-blocking / 7 editorial, F1-F14; all fourteen re-derived against source before being applied) - the repairs it produced are uncovered until a second review confirms them" until later the same day]
 Acts: slices 1 and 4a ride the improvement-cycles direction's second limb ("Improvement-cycle work must trace to POC-REQ-001..061 or to a recorded review finding", lines 55-56) on Q4's recommended reading; slice 2 rides POC-REQ-004 on Q1's recommended arm and needs CC-REV-2 plus an act on its second; slice 3 needs a ruling on its credential class (Q3, SEC-1); slice 4b needs an act because the 2026-09-05 continuation stops at "a change to the constraints or envelope the 2026-09-05 registry entry declares" (lines 154-155); slice 5 needs Q5
 Open questions: Q1-Q6 above, registered as P-77 in .syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md on this branch (P-68..P-76 are held by the nine siblings, each only on its own branch). Slice 3 also holds behind M5's Q1 at P-72, which asks whether a new machine-credentialed route needs a spec delta - named after review 1, F1, and not re-asked here [this line read "NOT yet registered - the register row lands after review 1 and the next free number is P-77" until 2026-09-15]
 Collisions: 0 under the branch-diff predicate (every sibling branch is planning-only); under the Gate-3 proposed-files predicate, routes.ts is claimed by 6 of 9 siblings, model.ts by 5, polaris.ts by 5, project-shape-model.ts by 3. Of M10's nine candidate files 7 are named by at least one sibling Gate 3 and 2 by none (polaris-narrative.ts, server.ts) under the repository-relative-path predicate; 8 and 1 under a basename-admitting one [corrected 2026-09-15 after review 1, F5; this line read "No file in this pursuit is uncontended"]

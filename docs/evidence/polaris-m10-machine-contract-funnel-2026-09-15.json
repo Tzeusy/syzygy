@@ -7,11 +7,11 @@
   "date": "2026-09-15",
   "commit": "a9f671e",
   "branch": "agent/syzygy-dov.10",
-  "status": "candidate; binds nothing; planning only; one independent review (verdict REVISE, 1 blocking / 6 non-blocking / 7 editorial, F1-F14) applied 2026-09-15; those repairs are uncovered until a second fresh-context review confirms them; registered as P-77 on agent/syzygy-dov.10. [Superseded 2026-09-15: this field read 'candidate; binds nothing; planning only; no independent review yet'.]",
+  "status": "candidate; binds nothing; planning only; one independent review (verdict REVISE, 1 blocking / 6 non-blocking / 7 editorial, F1-F14) applied 2026-09-15; those repairs are uncovered until a second fresh-context review confirms them - which has since happened (review 2, 2026-09-15, verdict CONFIRM WITH EXCEPTIONS, 0 blocking / 2 non-blocking / 6 editorial, G1-G8, retained at docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-2-RAW.md; re-tensed 2026-09-15), and it verified those review-1 repairs as 14 REPAIRED, 0 PARTIAL and 0 NOT REPAIRED over 14; all eight review-2 exceptions applied 2026-09-15 and themselves uncovered until a third review; at the owner gate; registered as P-77 on agent/syzygy-dov.10. [Superseded 2026-09-15: this field read 'candidate; binds nothing; planning only; no independent review yet'.]",
   "independent_review": {
-    "count": 1,
-    "note": "Review 1 landed 2026-09-15, verdict REVISE, retained verbatim at docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md; see the review1 block at the end of this record. Verification rule 10: review 1 binds the bytes it names (commit 5c5ed0e) and not these, so its repairs are uncovered until a second fresh-context review confirms them, and that review's raw would be a second -RAW.md file, never an overwrite. [Superseded 2026-09-15: count 0, 'First draft. No fresh-context review has read these bytes. Verification rule 10: any later edit retires a review bound to them.']",
-    "raws": ["docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md"]
+    "count": 2,
+    "note": "Review 1 landed 2026-09-15, verdict REVISE, retained verbatim at docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md; see the review1 block at the end of this record. Verification rule 10: review 1 binds the bytes it names (commit 5c5ed0e) and not these, so its repairs are uncovered until a second fresh-context review confirms them, and that review's raw would be a second -RAW.md file, never an overwrite - which has since happened (re-tensed 2026-09-15): review 2 landed 2026-09-15, verdict CONFIRM WITH EXCEPTIONS, retained verbatim as that second -RAW.md file, and its own eight exception repairs are in turn uncovered until a third review; see the review2 block at the end of this record. [Superseded 2026-09-15: count 0, 'First draft. No fresh-context review has read these bytes. Verification rule 10: any later edit retires a review bound to them.']",
+    "raws": ["docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md", "docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-2-RAW.md"]
   },
   "register_row": {
     "added": true,
@@ -465,7 +465,7 @@
         "VIS-1": "vision.md 82-94",
         "VIS-2": "vision.md 96-106",
         "VIS-3": "vision.md 108-120",
-        "VIS-4": "vision.md 122-140",
+        "VIS-4": "vision.md 122-139 [read 122-140 until 2026-09-15; the clause ends on line 139 and line 140 is blank, re-read at source and corrected after review 2, G4]",
         "VIS-5": "vision.md 141-165",
         "VIS-7": "vision.md 183-193",
         "SEC-1": "security.md 10-23",
@@ -852,5 +852,86 @@
       "over_78": 11,
       "predicate": "total_lines: split on newline with the trailing empty segment dropped. non_fence_lines: the same, excluding fence lines and fenced content. over_78: lines outside fenced blocks whose first non-space character is not a pipe, length > 78; denominator all total_lines. Computed last of all in this pass, after every packet edit, and iterated to a fixed point because the packet states the figure."
     }
+  },
+  "review2": {
+   "raw": "docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-2-RAW.md",
+   "bytes": 31651,
+   "sha256": "d33b4cdc37c69e40a94f3c6fb72c8e7a29707180461464a5b98169d3d0483c8a",
+   "verdict": "CONFIRM WITH EXCEPTIONS - 0 blocking, 2 non-blocking, 6 editorial, G1-G8",
+   "reviewed_commit": "2b56220",
+   "reviewed_files_at_that_commit": {
+    "docs/design/POLARIS-M10-MACHINE-CONTRACT-FUNNEL.md": {
+     "bytes": 135823,
+     "sha256": "c609b08666bb6907953637a3587f3294a34586ec15b69085677f646b65c6953b"
+    },
+    "docs/evidence/polaris-m10-machine-contract-funnel-2026-09-15.json": {
+     "bytes": 48446,
+     "sha256": "1e4e31d96a8ef9df80305d1d2c6ddccc6476eb4eb0400aac9ca193b9aa1ec0d1"
+    },
+    ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+     "bytes": 33684,
+     "sha256": "8b34705e86969438f107bd4d400b4ac38355107076148172d7bf62325f6573ba"
+    },
+    "docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md": {
+     "bytes": 27447,
+     "sha256": "2cb4d80cbd86cbb2c30ec6008104452c4ef79eea9fd62da3f21c38fc80a062f6"
+    }
+   },
+   "method": "every file above measured this session with git show 2b56220:<path> piped to wc -c and to sha256sum; the raw measured with wc -c and sha256sum. No digest transcribed.",
+   "repairs_applied_this_session": true,
+   "f1_f14_verification_as_review2_states_it": {
+    "REPAIRED": ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14"],
+    "PARTIAL": [],
+    "NOT_REPAIRED": [],
+    "denominator": 14,
+    "note": "14 REPAIRED, 0 PARTIAL, 0 NOT REPAIRED over 14, including the blocking F1, which review 2 found repaired at six sites rather than the four its own disposition claimed. F6 is REPAIRED for the slice it names and the row it left conditional is G2; F14 is REPAIRED at the site review 1 named and the same class of figure one Gate above it is G1. Review 2 checked each against the current bytes and against source, not against the disposition's own words."
+   },
+   "re_derived_before_applying": {
+    "G1_item_11_figures": "re-derived over the committed bytes at 2b56220 under item 11's own predicates: over-78 outside fences, tables, headings and block quotes = 3 (lines 575, 801 and 1150, the 801 line being the improvement-cycles direction's filename added by the F6 repair), distinct code spans on non-fence lines = 301, of them slash-bearing = 65, of those non-resolving in this worktree = 15. The item stated 2 / 273 / 57 / 13. The two non-resolving spans the enumeration did not carry were both introduced by the review-1 pass: the quoted request form GET /api/poc at lines 904 and 1094, and the bare contracts/ in the F3 disposition row at line 1555. Denominator all 1682 lines and every code span on a non-fence line.",
+    "G2_slice_2_landing": "three sites read this session: Gate 3's slice-2 row carried the conditional 'if the field lands on PocModel rather than on the response envelope'; Gate 4's slice 1 reads 'Slice 1 therefore joins slice 2 (on Q1's recommended arm) in that one-at-a-time queue'; the sequencing paragraph reads 'it and slice 2 are both POC shared-model changes'. routes.ts lines 159-162 re-read at source: machineHandle serves JSON.stringify(model), so the F6 disjunction reaches slice 2's responseIdentity unchanged.",
+    "G3_conventions_arithmetic": "re-derived over the 2b56220 bytes under the paragraph's own predicate: 11 over-78 lines at 2, 575, 778, 801, 839, 1131, 1132, 1137, 1139, 1143 and 1150, partitioning 1 title + 2 slice headings + 3 single-code-span lines + 5 block-quoted RFC2-26 lines = 11. The paragraph's arithmetic line read 1 + 2 + 4 + 5 = 12, wrong in the addend and in the sum. Denominator all 1682 lines.",
+    "G4_vis_4_span": ".syzygy/governance/doctrine/vision.md read at source: the clause opens on line 122 and ends on line 139 with 'treating RFC acceptance alone as opening the gate.'; line 140 is blank.",
+    "G5_superseded_heading": "the first draft's bytes at 5c5ed0e read this session: the slice-3 heading was 'Slice 3 - no delta; the disclosure it carries is the thing PWB-REQ-014 already closes.' The supersession bracket rendered it as 'Slice 3 - no delta' 'without qualification', shortening it inside quotation marks and mischaracterising it.",
+    "G6_rfc5_3": "located through DIRECTIVE-REGISTER.md, which gives .syzygy/governance/contracts/rfcs/RFC-0005/admission-and-boundary.md:101. Read at source: the clause runs 101-107 and line 102 reads 'by credential presented, never by network location or header heuristics'. packages/cap1-daemon/src/server.ts lines 188-200 read at source: for a machine-credentialed route the admission block runs before the handler, verifies the presented credential alone, and on refusal responds with the named refusal body and returns. The clause says what the sentence claimed, so it is anchored and quoted rather than dropped.",
+    "G7_bar_line": "the two drafts compared this session: at 5c5ed0e the funnel summary's G6 Bar line ended 'NO independent review yet - this is a first draft'; at 2b56220 it read 'ONE independent review ...' with no supersession bracket, while the Open questions and Collisions lines below it both carry one.",
+    "G8_branch_diff": "git diff --name-only a9f671e 2b56220 run this session prints four paths - the packet, this record, the register and docs/reviews/R-POLARIS-M10-MACHINE-CONTRACT-FUNNEL-RAW.md - not the three review 2 names; the review-1 raw is the fourth. At this close-out the same diff prints 5, the review-2 raw being the fifth. Denominator every path the diff prints.",
+    "register_recount_with_heads": "predicate ^| P- over each register this session, partitioned by the ## section each row falls under: this branch 22 open + 5 acceptance-act = 27; main at a9f671e 21 + 5 = 26; unchanged by this pass, which adds no row. The nine siblings recounted at their own heads: laneb 4090f98 P-68, m2wt f2f37dd P-69, m3wt 6574600 P-70, m4wt 63b8e33 P-71, m5wt ba9ca61 P-72, m6wt 83c9f60 P-73, m7wt f97baf4 P-76, m8wt bce9039 P-74, m9wt 65de02b P-75 - each register 27 rows. Denominator all nine worktrees."
+   },
+   "disposition_summary": {
+    "G1": "CONFIRMED in every figure and applied (non-blocking). Item 11's four figures are restated as 3 / 301 / 65 / 15 with the superseded values quoted in a dated bracket at the site, the enumeration extended with the quoted request form GET /api/poc and the bare contracts/, and the item's closing 're-derived over these bytes' sentence marked as false of those four figures between review 1 and review 2. Computed LAST, after every other edit of this pass including the packet's review-2 section, and iterated to a fixed point.",
+    "G2": "CONFIRMED at all three sites and applied (non-blocking), in the recommended shape: Gate 3's slice-2 row now names model.ts unconditionally on the F6 argument with the conditional wording quoted and dated; Gate 4's slice 2 gains one paragraph saying so; the F6 entry under 'Decided in this packet, not put to the owner' is extended with a dated note. No recommendation, no default and no owner question changes.",
+    "G3": "CONFIRMED and applied (editorial). '1 + 2 + 3 + 5 = 11', with the superseded arithmetic quoted and dated and the paragraph marked as true of the 2b56220 bytes; the same figures over this pass's bytes, with the over-78 lines enumerated by number, are re-derived at the end of the packet's review-2 section.",
+    "G4": "CONFIRMED and applied (editorial), in the packet's VIS-4 paragraph and in this record's measurements.M11_spec_sweeps.anchors_used, both by a dated same-line correction that keeps the superseded span quoted.",
+    "G5": "CONFIRMED and applied (editorial). The Gate 5 bracket now quotes the superseded heading exactly, records what the old bracket said, and dates the correction. The disclosure analysis it introduces is unchanged.",
+    "G6": "CONFIRMED and applied (editorial) by ANCHORING rather than dropping, because the clause says what the sentence claimed: the sentence now gives the path and the 101-107 span, quotes line 102, and describes what server.ts lines 188-200 do. Verification rule 8 satisfied at the site.",
+    "G7": "CONFIRMED and applied (editorial). The funnel summary's G6 Bar line now states two retained reviews with review 2's verdict and counts, and its bracket carries both superseded wordings - the first draft's and the review-1 wording - in the shape its two neighbours use.",
+    "G8": "CONFIRMED IN SUBSTANCE and applied (editorial), with the finding's own count corrected from three to four at 2b56220. Item 7 now names the branch's diff against a9f671e at this head, its count, its files and its predicate, with the superseded sentence quoted and dated and review 2's count noted as short by the review-1 raw."
+   },
+   "recommended_answers_changed": {
+    "none": "No recommended answer changed after review 2. Its own six-question table answers 'Recommendation follows from the evidence?' Yes for all six post-repair recommendations, and its 'Every lawful arm named?' column carries no failure; it calls no arm and no default unlawful. All eight exceptions are presentational or evidentiary: G1 and G3 re-derive a figure the pass's own edits had moved; G2 closes a topology row on an argument the packet had already made; G4, G5 and G7 repair a citation, a quotation and a supersession marker; G6 anchors an identifier; G8 restates a working-tree sentence. Q1 through Q6 keep the recommendations and the defaults they carried into this review, word for word, no default-if-unanswered moved, no seventh question was added and no sibling packet's question is re-asked."
+   },
+   "unknowns_recorded_for_the_owner": {
+    "ordering_not_verifiable_from_bytes": "Review 2 records two claims it could not verify: 'every one of the fourteen findings was re-derived against source before being applied' and 'computed last of all in this pass'. Both assert an ordering inside the repairing session, which no reader can check from the artifact; review 2 records each finding as correct now, which it says is all the bytes can show. [Unknown for the ordering, Observed for the results.] The same limitation applies to this pass's own claims to have re-derived G1-G8 before applying them and to have computed the self-referential figures last.",
+    "g8_count_in_the_raw": "Review 2's G8 states three files in the branch diff where the diff at 2b56220 already carried four. The finding's substance holds; its figure is corrected here rather than copied."
+   },
+   "rule_10": "Review 2 binds the four digests recorded above at commit 2b56220, not these bytes. Every edit of this pass was made after it, so the eight exception repairs are uncovered until a third review confirms them.",
+   "gate": "at the owner gate on review 2's CONFIRM WITH EXCEPTIONS with all eight exceptions applied - no blocking finding, no recommended answer moved, and the review-1 repairs verified 14 REPAIRED, 0 PARTIAL and 0 NOT REPAIRED over 14; P-77 is ready to be ruled",
+   "uncovered_until": "a third independent fresh-context review, for the eight exception repairs recorded here; all eight post-date review 2 (verification rule 10). Its raw would be a third -RAW.md file, never an overwrite of either retained one.",
+   "register_row": "P-77, unchanged in identity; its note and row carry the review-2 entry added in this pass. The recount is unchanged at 22 open + 5 acceptance-act = 27 on this branch and 21 + 5 = 26 at a9f671e, re-verified this session.",
+   "governance_check_after_review2": {
+    "command": "python3 scripts/check_governance.py",
+    "last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) - counts derived, not asserted",
+    "note": "run in this worktree after all four files of this pass were written - the packet, this record, the P-77 register row and the retained review-2 raw. Read the last line, not the exit code (verification rule 4)."
+   },
+   "packet_measured_after_review2": {
+    "path": "docs/design/POLARIS-M10-MACHINE-CONTRACT-FUNNEL.md",
+    "bytes": 155597,
+    "sha256": "39e3c638ad471419ed45acff26e07f40c83bb2529845860aee2b243a32a7c082",
+    "total_lines": 1859,
+    "non_fence_lines": 1782,
+    "over_78": 11,
+    "predicate": "total_lines: split on newline with the trailing empty segment dropped. non_fence_lines: the same, excluding fence lines and fenced content. over_78: lines outside fenced code blocks whose first non-space character is not a pipe, length > 78; denominator all total_lines. Gate 6 item 11's narrower predicate, which also excludes headings and block quotes, gives 3.",
+    "note": "computed LAST, after the final edit to the packet, and iterated to a fixed point because the packet states the figures, so these name the bytes that carry them and match the committed packet exactly. Verification rule 10: a review is bound to exactly these bytes and any later edit retires it."
+   }
   }
 }
