@@ -1,0 +1,130 @@
+  pass  a lawful record validates clean (no-git)
+  pass  a lawful record validates clean against the live instrument
+  pass  LA-11 the pending-decision queue grants no deferral
+  pass  LA-11 TREND-LOG.md grants no deferral
+  pass  LA-11 HISTORY.md grants no deferral
+  pass  LA-11 LICENSE-DECISION-PACKET.md grants no deferral
+  pass  LA-11 a decisions-home file declaring its own status pending grants no deferral
+  pass  LA-11 a Beads artifact grants no deferral
+  pass  LA-11 a file outside the decisions home grants no deferral
+  pass  LA-3 a wave set differing from §8's is an error
+  pass  LA-3b the E4 routing authority is bound to §8
+  pass  LA-6 evidence citing a non-existent file is rejected
+  pass  LA-1 unknown verdict word rejected
+  pass  LA-1 a claimed final verdict is rejected, not compared
+  pass  LA-1 a missing required field is an error
+  pass  LA-1 an unknown top-level field is an error
+  pass  LA-1 a wrong type is an error
+  pass  LA-1 a malformed commit is an error
+  pass  LA-1 an empty required string is an error
+  pass  LA-4 a missing question is an error
+  pass  LA-4 a duplicate question ID is an error
+  pass  LA-4 an out-of-roster row is an error
+  pass  LA-2 a wrong instrument digest is an error
+  pass  LA-2 a wrong parameter-block digest is an error
+  pass  LA-2 a non-existent repository commit is an error
+  pass  LA-2 a wrong instrument version is an error
+  pass  LA-3 a wrong launch target is an error
+  pass  LA-3 wave lists must equal the parameter block's
+  pass  LA-5 a scoped verdict without the scoped field is an error
+  pass  LA-5 the scoped field without the scoped verdict is an error
+  pass  LA-5 a scoped verdict outside A–D is an error
+  pass  LA-6 Met with no evidence is an error
+  pass  LA-6 Not met with no counterexample is an error
+  pass  LA-6 Unknown with no settlement is an error
+  pass  LA-6 a placeholder settlement asserts emptiness
+  pass  LA-6 an Unknown field on a Met row is an error
+  pass  LA-6 a counterexample on a Met row is an error
+  pass  LA-6 a placeholder falsification attempt is an error
+  pass  LA-6 evidence anchored to another commit is an error
+  pass  LA-7 E1 cannot roll up Met over a non-Met sub-row
+  pass  LA-8 a scoped row with no deferred-wave finding is an error
+  pass  LA-8 a scoped row whose finding names another question is an error
+  pass  LA-8 a finding meeting a blocking condition cannot be scoped
+  pass  LA-8 a finding naming a non-deferred wave is an error
+  pass  LA-9 E3 Met with a non-empty reopen list is an error
+  pass  LA-9 E3 Met without the trace table is an error
+  pass  LA-9 E3 Met with an untraced concept is an error
+  pass  LA-10 a paraphrased E4 case is an error
+  pass  LA-10 a missing E4 case is an error
+  pass  LA-10 E4 Met over a routing disagreement is an error
+  pass  LA-10 unrecorded silence on a needed case is an error
+  pass  LA-10 recorded silence on a needed case validates
+  pass  LA-11 a P-n citation grants no deferral
+  pass  LA-11 a D-n citation grants no deferral
+  pass  LA-11 a B-n citation grants no deferral
+  pass  LA-11 label wording is not a citation
+  pass  LA-11 a non-existent deferral path is an error
+  pass  LA-11 a directory grants nothing
+  pass  LA-11 a deferral against a never-deferrable conjunct is an error
+  pass  LA-11 a deferral with no bounded reduction plan is an error
+  pass  a clean record computes READY FOR the target
+  pass  one Not met in A–D computes NOT READY
+  pass  a scoped row alone does not block
+  pass  a Not met E row computes NOT READY
+  pass  an Unknown F1 does not block
+  pass  a Not met F1 blocks
+  pass  a Not met F3 blocks
+  pass  a Not met F4 blocks
+  pass  a Not met F2 with no deferral blocks
+  pass  a Not met F2 with an owner-cited deferral is READY-WITH-DEFERRALS
+  pass  an Unknown F2 is deferrable on the same terms
+  pass  an SDR deferral does not resolve without git (unverifiable is unresolved)
+  pass  a non-empty reopen list blocks every pass branch
+  pass  LA-11 a deferral beside a Met verdict is an error
+  pass  a deferral beside a Met F2 does not buy a plain READY
+  pass  LA-12 a deferral on a non-F2 limb beside a Not met F2 is an error
+  pass  LA-13 a formal delta administration is an error
+  pass  LA-13 a formal administration without fresh context is an error
+  pass  LA-14 a placeholder G1 answer is an error
+  pass  LA-15 a prior record dated after this one is an error
+  pass  LA-15 a prior commit outside this history is a stale prior
+  pass  LA-16 a formal opening administration must run the pilot check
+  pass  the interpreter refuses a schema keyword it does not implement
+  pass  the interpreter refuses `additionalProperties: true`
+  pass  the committed schema uses only implemented keywords
+  pass  an object schema that stops closing is detected
+  pass  a duplicate JSON key is refused rather than silently last-wins
+  pass  a delta/formal=True record yields no formal gate result
+  pass  a full/formal=False record yields no formal gate result
+  pass  a schema other than the committed one is a validation error, not a silent substitution
+  pass  a schema that constrains nothing is a validation error, not a silent substitution
+  pass  a prior-record path escaping the repository is an error
+  pass  a deferral whose citation does not resolve yields no READY-WITH-DEFERRALS
+  pass  a zero-width space does not defeat the placeholder lexicon
+  pass  a byte-order mark does not defeat the placeholder lexicon
+  pass  a function-application character (Cf) does not defeat the placeholder lexicon
+  pass  a C1 control character (Cc) does not defeat the placeholder lexicon
+  pass  an UNREADABLE §8 parameter is an error, not a skipped check (instrument mutated, not the record)
+  pass  the scratch baseline validates clean (schema and instrument committed)
+  pass  an in-place schema edit does not admit a forbidden verdict word (committed bytes govern)
+  pass  working-tree schema drift is its own error
+  pass  a record anchored to an off-branch commit is an error, not an anchor
+  pass  a prior commit outside this history is a stale prior (ancestry, not existence)
+  pass  a committed prior at the record's commit computes new-findings as an integer
+  pass  an uncommitted prior record is not read from the working tree (committed bytes govern)
+  pass  ...and its new-findings column reads Unknown, not a forged number
+  pass  a committed prior whose own commit differs from the declared identity is refused
+  pass  the schema is read at the record's commit — a widening at HEAD does not govern an ancestor administration
+  pass  LA-3b a whitespace routing authority is an error, not a skipped check
+  pass  LA-6 a placeholder counterexample is no counterexample
+  pass  LA-14 a placeholder falsification_summary is an error
+  pass  LA-1 a trailing newline does not satisfy an anchored pattern
+  pass  LA-10 duplicate E4 case indices at the right count are an error
+  pass  no fresh context alone makes an otherwise-passing record ineligible (limb, not error count)
+  pass  --prior outside the repository is an error, not a comparison
+  pass  a declared prior that escapes the repository computes Unknown, not absence
+  pass  an unanchored schema pattern fails closed in the audit
+  pass  a validation error alone makes an otherwise-passing record ineligible
+  pass  git being unavailable alone makes an otherwise-passing record ineligible
+  pass  an ineligible administration's trend row carries no gate verdict
+  pass  an eligible administration's trend row still carries its gate result
+  pass  a declared-but-unreadable prior record computes Unknown, not absence
+  pass  the base record validates identically under the reference jsonschema implementation
+  pass  schema 2.1 accepts instrument-bound at successor commit
+  pass  schema 2.1 rejects arbitrary hex at LA-1 and both render paths
+  pass  historical schema 2.0 replays after committed successor
+
+126 fixtures, 0 failing — a check that cannot fail is not a check
+
+exit=0

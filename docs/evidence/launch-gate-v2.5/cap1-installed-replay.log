@@ -1,0 +1,13 @@
+Row/formula outcome: NOT READY
+Formal gate result:  NOT READY
+  [ok ] every E question Met — all Met
+  [NO ] no plain `Not met` in launch-scope A–D — B4, C3, C7, D1, D2, D4
+  [ok ] F1 is Met or Unknown — F1='Unknown'
+  [NO ] F3 is Met — F3='Not met'
+  [NO ] F4 is Met — F4='Not met'
+  [ok ] E3's reopen list is empty — 0 item(s)
+  F2 limb: branch=blocked, deferrals=0
+
+record valid — the verdict above is computed from the rows
+
+exit=0

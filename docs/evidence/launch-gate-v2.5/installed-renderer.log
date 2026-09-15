@@ -1,0 +1,44 @@
+  pass  rendering is deterministic — the same record renders to the same bytes
+  pass  the report carries the generated-presentation banner
+  pass  the report names its canonical source
+  pass  the report says not to edit it
+  pass  the report carries the non-authority banner
+  pass  the computed row/formula outcome reaches the report
+  pass  an ineligible record renders no gate verdict
+  pass  every roster row is presented
+  pass  reviewer free text cannot open a heading at document level
+  pass  reviewer free text cannot forge a verdict line
+  pass  the forged text is still shown to the reader, as data
+  pass  a pipe inside evidence text does not add a column
+  pass  the trend row has exactly nine columns
+  pass  an unlawful record does produce validation errors
+  pass  an --allow-invalid render is stamped as not validating
+  pass  reviewer free text in `operationalization_notes` opens no structure at document level
+  pass  reviewer free text in `materials.deviations` opens no structure at document level
+  pass  reviewer free text in `reviewer.identity` opens no structure at document level
+  pass  reviewer free text in `e4.routing_authority` opens no structure at document level
+  pass  reviewer free text in `pilot_recurrence_check.method` opens no structure at document level
+  pass  reviewer free text in `launch_target` opens no structure at document level
+  pass  reviewer free text in `falsification_summary` opens no structure at document level
+  pass  reviewer free text in `g1.critic_answer` opens no structure at document level
+  pass  a \r-spelled forgery in `falsification_summary (quoted, \r)` opens no structure at document level
+  pass  a \r-spelled forgery in `launch_target (inline, \r)` opens no structure at document level
+  pass  a \r-spelled forgery in `evidence quote (cell, \r)` opens no structure at document level
+  pass  the forgery sweep is mechanical — every string leaf of a populated record, both spellings, opens no document structure
+  pass  the mechanical sweep reaches prior_record.path — the site the v2.3 hand-list missed (RD-66 f1)
+  pass  a forged record FILENAME opens no structure in the unrenderable report (RD-66 f5)
+wrote /tmp/tmpu6eaan7t.md (612 bytes) — generated from tmpu6eaan7t.json
+NOT a valid record — 2 validation error(s); the report is stamped THIS RECORD DOES NOT VALIDATE and is for inspection only
+  pass  --allow-invalid on an invalid record exits non-zero (RD-66 f6)
+  pass  an invalid record renders no READY gate verdict
+  pass  an invalid record's §6 trend row carries no READY verdict
+  pass  a newline in a rendered scalar does not split the trend row
+  pass  --allow-invalid on a record missing a required object renders a refusal, not a traceback
+  pass  --allow-invalid on a record that is not valid JSON renders a refusal, not a traceback
+  pass  --allow-invalid on a record with a duplicate key renders a refusal, not a traceback
+  pass  a report of an unverified record says so in the file, not only on stdout
+  pass  --check detects a hand-edited report
+
+38 fixtures, 0 failing — a check that cannot fail is not a check
+
+exit=0

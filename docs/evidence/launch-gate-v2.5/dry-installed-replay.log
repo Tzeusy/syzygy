@@ -1,0 +1,13 @@
+Row/formula outcome: NOT READY
+Formal gate result:  NONE — `formal: false`; `administration_kind: delta`; the reviewer declares no fresh context (diagnostic only)
+  [NO ] every E question Met — E1-form='Unknown', E1-home='Unknown', E1-granularity='Unknown', E1-acceptance-authority='Unknown', E1-change-process='Unknown', E1='Unknown', E2='Unknown', E3='Unknown', E4='Unknown', E5='Unknown', E6='Unknown'
+  [ok ] no plain `Not met` in launch-scope A–D — none
+  [ok ] F1 is Met or Unknown — F1='Unknown'
+  [NO ] F3 is Met — F3='Unknown'
+  [NO ] F4 is Met — F4='Unknown'
+  [ok ] E3's reopen list is empty — 0 item(s)
+  F2 limb: branch=blocked, deferrals=0
+
+record valid — the verdict above is computed from the rows
+
+exit=0

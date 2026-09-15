@@ -1,0 +1,63 @@
+--- predecessor/launch-gate-pre-specifications.md
++++ successor/launch-gate-pre-specifications.md
+@@ -4,7 +4,7 @@
+ status: candidate process policy — owner approval pending, see
+   .syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md
+ owner: the project owner (VIS-4 — no verdict here performs an owner act)
+-effective_version: v2.4 (candidate; v1.3 was the pilot-administered version)
++effective_version: v2.5 (candidate; v1.3 was the pilot-administered version)
+ governs: how pre-specification readiness is evaluated — the question set,
+   administration protocol, verdict vocabulary, verdict formula, the
+   launch-scope parameters (§8), the structured administration source record
+@@ -951,7 +951,7 @@
+ | `ENTRY_DOCUMENT` | `.syzygy/intent/OVERVIEW.md` (governed presentation, never authority) |
+ | `CURRENT_STATE` | `PROJECT-STATUS.md` |
+ | `SHAPE_CORPUS` | `.syzygy/governance/contracts/candidates/` — **withheld from question derivation; readable for answering** |
+-| `SPEC_MEDIUM` | OpenSpec (`openspec/` — does not exist yet; its absence is correct pre-gate) |
++| `SPEC_MEDIUM` | OpenSpec (`openspec/`) |
+ | `FIRST_SPEC_CANDIDATE` | `.syzygy/governance/contracts/candidates/FIRST-OPENSPEC-SEQUENCE.md` (revision 3, which declares itself "the single current first-spec document"). If that file is absent at the administered commit, E2 is `Not met` (nothing identified), never `Unknown` |
+ | `HUMAN_DECIDER` | the owner; owner acts per the acceptance record; VIS-4 governs delegation |
+ | `EPISTEMIC_LABELS` | Observed / Inferred / Unknown (doctrine trust-and-evidence) |
+@@ -1047,6 +1047,17 @@
+ ---
+ 
+ ## 9. Changelog
++
++- **v2.5** (candidate, 2026-09-14; RD-56 f11 and P-53) — schema 2.1
++  restricts `question_digest` to `instrument-bound`; the unchecked per-question
++  hash alternative is removed. The `SPEC_MEDIUM` row names OpenSpec without an
++  existence assertion. Questions, verdict formula and F5 posture are unchanged;
++  other parameter rows are unchanged. Validator support separates record-commit
++  schema selection from worktree-versus-HEAD drift. Historical replay coverage
++  is limited to the existing full-commit Administration 1 and committed dry-run
++  records; RD-67 abbreviated-commit and RD-68 invisible-character findings remain
++  disclosed and outside this amendment. Final exact-byte owner approval is
++  required before this successor takes effect.
+ 
+ - **v2.4** (2026-08-16, repair pass — the two v2.3 reviews, RD-65 and
+   RD-66, both `REVISE`; the fourth consecutive `REVISE` pair, and the round
+
+--- predecessor/launch-gate-administration.schema.json
++++ successor/launch-gate-administration.schema.json
+@@ -33,7 +33,7 @@
+   "properties": {
+     "schema_version": {
+       "description": "The version of THIS schema the record was authored against. A record naming a version the validator does not implement is rejected, never read on a best-effort basis.",
+-      "const": "2.0"
++      "const": "2.1"
+     },
+     "date": {
+       "description": "Administration date, ISO 8601 (YYYY-MM-DD).",
+@@ -391,9 +391,9 @@
+           "pattern": "^(A[1-6]|B[1-5]|C[1-7]|D[1-4]|E1|E1-(form|home|granularity|acceptance-authority|change-process)|E[2-6]|F[1-6])$"
+         },
+         "question_digest": {
+-          "description": "sha256 of the question's verbatim text as administered, or the literal `instrument-bound` when the record binds identity through the instrument digest instead. A verdict rendered against a paraphrased question is void (instrument section 2).",
+-          "type": "string",
+-          "pattern": "^([0-9a-f]{64}|instrument-bound)$"
++          "description": "The literal `instrument-bound`: question identity is bound through the instrument digest and checked under LA-2. An unchecked per-question hash is not accepted. A verdict rendered against a paraphrased question is void (instrument section 2).",
++          "type": "string",
++          "const": "instrument-bound"
+         },
+         "verdict": {
+           "description": "The closed vocabulary. `Unknown` carries its reason in unknown_reason; the rendered form is Unknown(reason). Nothing else is lawful — no `Partially met`, no `Met with caveats`.",

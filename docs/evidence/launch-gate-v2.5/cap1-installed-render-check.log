@@ -1,0 +1,3 @@
+--check: .syzygy/governance/decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.md matches the record's rendering
+
+exit=0

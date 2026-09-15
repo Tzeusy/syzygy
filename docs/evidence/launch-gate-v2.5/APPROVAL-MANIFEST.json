@@ -1,0 +1,88 @@
+{
+  "kind": "candidate successor approval manifest; not an act",
+  "prepared_at": "2026-09-14T15:42:10.136008+00:00",
+  "baseline_commit": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
+  "supporting_code_commit": "6262be154c2e501f55d11885fbe3e47746e854c0",
+  "install_subjects": [
+    {
+      "source": ".syzygy/governance/contracts/candidates/launch-gate-v2.5/launch-gate-pre-specifications.md",
+      "target": "launch-gate-pre-specifications.md",
+      "kind": "normative successor",
+      "sha256": "a5b50cba97707ce7caa4f30386c32f98643600eb434af6a2c432d04258ae06c6"
+    },
+    {
+      "source": ".syzygy/governance/contracts/candidates/launch-gate-v2.5/launch-gate-administration.schema.json",
+      "target": "launch-gate-administration.schema.json",
+      "kind": "normative successor",
+      "sha256": "925955a025adf0b2cb92a7c1454a872f465f1ceb93dd36b74e6fec58ebc7d359"
+    },
+    {
+      "source": "scripts/validate_launch_administration.py",
+      "target": "scripts/validate_launch_administration.py",
+      "kind": "supporting implementation",
+      "sha256": "623005464b4c50795c5184a78f90f1b0f7656c8732a34a2bfd3c646213291cf0"
+    }
+  ],
+  "review_subjects": [
+    {
+      "path": ".syzygy/governance/contracts/candidates/launch-gate-v2.5/BASELINE.json",
+      "sha256": "a6ddc0731d2179b44f7c091c871e7808bc0cbb5158167ed6a452136a112bf176"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/launch-gate-v2.5/OWNER-PACKET.md",
+      "sha256": "10843cf69a035eefe29dceae66d0d0df6fc8004499db16db709d9c4a36f7b211"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/launch-gate-v2.5/SCOPE-PROOF.json",
+      "sha256": "cd3484cf500687710e8c7c61bea1df44346670af3fa7b7ef8d916454e7e2f5ac"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/launch-gate-v2.5/SEMANTIC-DELTA.md",
+      "sha256": "82efa84140453247cd264694c23a416c67d099b7f8b0009ab01c8e4c58aeb8da"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/launch-gate-v2.5/launch-gate-administration.schema.json",
+      "sha256": "925955a025adf0b2cb92a7c1454a872f465f1ceb93dd36b74e6fec58ebc7d359"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/launch-gate-v2.5/launch-gate-pre-specifications.md",
+      "sha256": "a5b50cba97707ce7caa4f30386c32f98643600eb434af6a2c432d04258ae06c6"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/launch-gate-v2.5/successor.diff",
+      "sha256": "8ef2d8f7427b4afa50538a8f48da3bf34e60503e28c7c8fa2cdc9843ffbc3619"
+    },
+    {
+      "path": "scripts/validate_launch_administration.py",
+      "sha256": "623005464b4c50795c5184a78f90f1b0f7656c8732a34a2bfd3c646213291cf0"
+    },
+    {
+      "path": "scripts/render_launch_administration.py",
+      "sha256": "96032a80f345a7e363ddd6b2bcf9f59efc35f3728f62e63999e299fb73eaa18b"
+    }
+  ],
+  "reviews": [
+    {
+      "path": ".syzygy/local/s9q-evidence/policy-review-2-RAW.md",
+      "sha256": "e867404903b5c3743f48c6c6dccba0b4c5d995779c934b798fd098fa96e82198",
+      "verdict": "CONFIRM"
+    },
+    {
+      "path": ".syzygy/local/s9q-evidence/record-review-RAW.md",
+      "sha256": "3528a2037546d95fdefb8f2df88c42fc2fcebc7be0f214d33d3c0ec804062fe2",
+      "verdict": "CONFIRM"
+    }
+  ],
+  "verification": {
+    "validator_fixtures": 126,
+    "renderer_fixtures": 38,
+    "mutation": "restoring unchecked hexadecimal admission makes rejection fixture fail",
+    "historical_records": "Administration 1 and committed full-commit dry run validate and render-check identically after disposable candidate installation",
+    "canonical_battery": "fresh clone of supporting-code commit, exit 0; approved predecessor root policy/schema retained in that battery"
+  },
+  "residuals": [
+    "RD-67 abbreviated-commit schema selection",
+    "RD-68 invisible-character false-READY path"
+  ],
+  "boundary": "Proposed exact successor approval and local installation of named subjects plus recording the owner decision/current-state routing; no remote publication, merge, launch, release or deployment is proposed."
+}

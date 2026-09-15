@@ -721,8 +721,8 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
     # guarantees HEAD is the later of the two, so a committed enum widening
     # at HEAD governed a record at any ancestor commit. The schema now binds
     # exactly as the instrument does — to the commit the record names — and a
-    # working-tree copy that differs from the bytes that judged the record is
-    # its own error.
+    # working-tree copy that differs from HEAD is its own error. A committed
+    # successor at HEAD must not invalidate replay of an ancestor record.
     schema_src = None
     default_schema = _default_schema()
     if schema_path is not None:
@@ -747,13 +747,17 @@ def validate(record_path, schema_path=None, prior_path=None, _git=None):
         else:
             schema_src = blob.decode("utf-8", errors="replace")
             try:
-                wt = default_schema.read_text()
+                wt = default_schema.read_bytes()
             except OSError:
                 wt = None
-            if wt is not None and wt != schema_src:
+            head_schema = _git_show("HEAD", SCHEMA_NAME)
+            if head_schema is None:
+                errors.append(f"LA-1: {SCHEMA_NAME} is not committed at HEAD "
+                              "— working-tree integrity cannot be established")
+            elif wt != head_schema:
                 errors.append(
                     f"LA-1: the working-tree {SCHEMA_NAME} differs from the "
-                    "schema committed at the record's commit — validation ran "
+                    "schema committed at the current HEAD — validation ran "
                     "against the committed bytes; restore or commit the "
                     "working tree before citing this record (RD-61 f1)")
     elif _git:
@@ -1622,7 +1626,8 @@ def _base_record(git_bound):
         r["evidence"] = [dict(e, commit=commit) for e in row["evidence"]]
         rows.append(r)
     return {
-        "schema_version": "2.0",
+        "schema_version": json.loads(_default_schema().read_text())[
+            "properties"]["schema_version"]["const"],
         "date": "2026-08-11",
         "administration_kind": "full",
         "formal": False,
@@ -2473,7 +2478,7 @@ def _selftest():
                        errs, "is outside the")
                 _scase("working-tree schema drift is its own error",
                        errs, "differs from the schema committed at the "
-                       "record's commit")
+                       "current HEAD")
                 (d / SCHEMA_NAME).write_text(schema_bytes)
 
                 # Off-branch commit: exists, same tree, reachable from no
@@ -2869,6 +2874,100 @@ def _selftest():
         print("  note  jsonschema is not installed — the second-method "
               "cross-check did not run (it is never required: hosted CI "
               "installs no packages)")
+
+    # RD-56 f11 successor: exercise committed schema selection through both
+    # command-line consumers. Only scratch repositories install the synthetic successor.
+    if git_on:
+        import shutil
+        with tempfile.TemporaryDirectory() as td:
+            d = Path(td)
+            (d / "scripts").mkdir()
+            for name in ("validate_launch_administration.py",
+                         "render_launch_administration.py"):
+                shutil.copyfile(REPO / "scripts" / name, d / "scripts" / name)
+            for name in (SCHEMA_NAME, INSTRUMENT_NAME):
+                (d / name).write_bytes(_git_show("HEAD", name))
+            predecessor = json.loads((d / SCHEMA_NAME).read_text())
+            predecessor["properties"]["schema_version"] = {"const": "2.0"}
+            (d / SCHEMA_NAME).write_text(json.dumps(predecessor))
+            (d / "README.md").write_text("scratch evidence\n")
+            env = dict(os.environ, GIT_AUTHOR_NAME="fixture",
+                       GIT_AUTHOR_EMAIL="fixture@example.invalid",
+                       GIT_COMMITTER_NAME="fixture",
+                       GIT_COMMITTER_EMAIL="fixture@example.invalid")
+
+            def commit_fixture():
+                for args in (("add", "."), ("commit", "-qm", "fixture")):
+                    subprocess.run(["git", "-C", str(d), *args], env=env,
+                                   check=True, capture_output=True)
+
+            def bound_record(version):
+                global REPO
+                saved, REPO = REPO, d
+                try:
+                    record = _base_record(True)
+                finally:
+                    REPO = saved
+                record["schema_version"] = version
+                return record
+
+            def command(script, *args):
+                result = subprocess.run(
+                    [sys.executable, str(d / "scripts" / script), *map(str, args)],
+                    capture_output=True, text=True)
+                return result.returncode, result.stdout + result.stderr
+
+            def successor_case(name, ok, detail):
+                n_cases[0] += 1
+                print(f"  {'pass' if ok else 'FAIL'}  {name}")
+                if not ok:
+                    failures.append((name, "specified CLI behavior", detail))
+
+            subprocess.run(["git", "init", "-q", str(d)], env=env,
+                           check=True, capture_output=True)
+            commit_fixture()
+            historical = bound_record("2.0")
+            # Synthetic successor fixture: expected contract literals are
+            # explicit, independent of any unadopted candidate path.
+            schema = json.loads((d / SCHEMA_NAME).read_text())
+            schema["properties"]["schema_version"] = {"const": "2.1"}
+            schema["$defs"]["question_result"]["properties"]["question_digest"] = {
+                "type": "string", "const": "instrument-bound"}
+            (d / SCHEMA_NAME).write_text(json.dumps(schema))
+            commit_fixture()
+            current = bound_record("2.1")
+            record_path = d / "record.json"
+            record_path.write_text(json.dumps(current))
+            rc, output = command("validate_launch_administration.py", record_path)
+            successor_case("schema 2.1 accepts instrument-bound at successor commit",
+                           rc == 0 and "record valid" in output, output)
+
+            current["question_results"][0]["question_digest"] = "a" * 64
+            record_path.write_text(json.dumps(current))
+            rc, output = command("validate_launch_administration.py", record_path)
+            report = d / "report.md"
+            render_rc, render_output = command(
+                "render_launch_administration.py", record_path, "-o", report)
+            inspect_rc, inspect_output = command(
+                "render_launch_administration.py", record_path, "-o", report,
+                "--allow-invalid")
+            rendered = report.read_text() if report.exists() else ""
+            successor_case("schema 2.1 rejects arbitrary hex at LA-1 and both render paths",
+                           rc == 1 and "LA-1:" in output
+                           and "question_digest" in output
+                           and "Formal gate result:" not in output
+                           and render_rc == 1 and "refusing to render" in render_output
+                           and inspect_rc == 1 and "READY" not in rendered
+                           and bool(rendered),
+                           output + render_output + inspect_output + rendered)
+
+            record_path.write_text(json.dumps(historical))
+            rc, output = command("validate_launch_administration.py", record_path)
+            successor_case("historical schema 2.0 replays after committed successor",
+                           rc == 0 and "record valid" in output, output)
+    else:
+        n_git_skipped[0] += 3
+        print("  SKIP  three successor fixtures (need git)")
 
     print(f"\n{n_cases[0]} fixtures, {len(failures)} failing — a check that "
           "cannot fail is not a check")

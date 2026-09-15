@@ -1,0 +1,24 @@
+{
+  "method": "Exact section-body comparisons for sections 1-7; section8 differs only by complete SPEC_MEDIUM row substitution; parsed schema recursive key/value delta independently enumerated beside successor.diff.",
+  "unchanged_sections": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "section8_before": "| `SPEC_MEDIUM` | OpenSpec (`openspec/` \u2014 does not exist yet; its absence is correct pre-gate) |",
+  "section8_after": "| `SPEC_MEDIUM` | OpenSpec (`openspec/`) |",
+  "schema_changed_paths": [
+    "$.$defs.question_result.properties.question_digest.const",
+    "$.$defs.question_result.properties.question_digest.description",
+    "$.$defs.question_result.properties.question_digest.pattern",
+    "$.properties.schema_version.const"
+  ],
+  "candidate_source_digests": {
+    "launch-gate-pre-specifications.md": "a5b50cba97707ce7caa4f30386c32f98643600eb434af6a2c432d04258ae06c6",
+    "launch-gate-administration.schema.json": "925955a025adf0b2cb92a7c1454a872f465f1ceb93dd36b74e6fec58ebc7d359"
+  }
+}

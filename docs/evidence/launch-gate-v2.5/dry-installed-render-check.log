@@ -1,0 +1,3 @@
+--check: .syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.md matches the record's rendering
+
+exit=0

@@ -1,0 +1,25 @@
+{
+  "baseline_commit": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
+  "protected": [
+    {
+      "path": "launch-gate-pre-specifications.md",
+      "sha256": "1852c2c3d31eff3afa0924b6b72e855481ab2516ba8fde5eda7b2ae8772f01e8"
+    },
+    {
+      "path": "launch-gate-administration.schema.json",
+      "sha256": "e0167fb8af6a903c527d402d56c4fb85ebdfed9608de1a485f4f1563aa6a69fb"
+    },
+    {
+      "path": ".syzygy/governance/decisions/LAUNCH-GATE-AUTHORITY-DECISION.md",
+      "sha256": "7757da473e100f6f57c23e7a9a5ba947450bba518aac0a2cf671e1fb10567fc2"
+    },
+    {
+      "path": ".syzygy/governance/decisions/launch-gate/ADMINISTRATION-2026-08-18-CAPABILITY-1.json",
+      "sha256": "3a7a038293b56f9f6c47cd4c202eeb5d68bd6017f75056119fcd2739bc8bcd75"
+    },
+    {
+      "path": ".syzygy/governance/contracts/candidates/round-2026-08f/fixtures/DRY-RUN-ADMINISTRATION.json",
+      "sha256": "ef6f111a9a4af779b835953e999ddfef7d3addb9cd4c6e84aa357f3c9bbb3714"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "observed_at": "2026-09-14T15:39:19.022808+00:00",
+  "kind": "supporting-code-only fresh-clone battery",
+  "head": "6262be154c2e501f55d11885fbe3e47746e854c0",
+  "clone": "/tmp/syzygy-s9q-battery-97ftun8m",
+  "command_source": "PROJECT-STATUS.md How to verify this page shell block, executed unchanged under set -e",
+  "command_sha256": "5004c78c9fe7a8cc9803c5be5b9406213de33fd0ea8c3216708fc5dade4eb75f",
+  "exit_code": 0,
+  "log_sha256": "4e6d35e495c36d78661fc6edef030d81f01ddd9fa0e999e4b36a556751f6eb9f",
+  "boundary": "Root instrument/schema remain approved predecessor. Exact candidate integration/install simulation and historical replay are separate evidence; no candidate normative bytes committed in this branch."
+}

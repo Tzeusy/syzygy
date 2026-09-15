@@ -1,0 +1,361 @@
+MUTATION: '"type": "string", "const": "instrument-bound"}' -> '"type": "string", "pattern": "^(instrument-bound|[0-9a-f]{64})$"}'
+  pass  a lawful record validates clean (no-git)
+  pass  a lawful record validates clean against the live instrument
+  pass  LA-11 the pending-decision queue grants no deferral
+  pass  LA-11 TREND-LOG.md grants no deferral
+  pass  LA-11 HISTORY.md grants no deferral
+  pass  LA-11 LICENSE-DECISION-PACKET.md grants no deferral
+  pass  LA-11 a decisions-home file declaring its own status pending grants no deferral
+  pass  LA-11 a Beads artifact grants no deferral
+  pass  LA-11 a file outside the decisions home grants no deferral
+  pass  LA-3 a wave set differing from §8's is an error
+  pass  LA-3b the E4 routing authority is bound to §8
+  pass  LA-6 evidence citing a non-existent file is rejected
+  pass  LA-1 unknown verdict word rejected
+  pass  LA-1 a claimed final verdict is rejected, not compared
+  pass  LA-1 a missing required field is an error
+  pass  LA-1 an unknown top-level field is an error
+  pass  LA-1 a wrong type is an error
+  pass  LA-1 a malformed commit is an error
+  pass  LA-1 an empty required string is an error
+  pass  LA-4 a missing question is an error
+  pass  LA-4 a duplicate question ID is an error
+  pass  LA-4 an out-of-roster row is an error
+  pass  LA-2 a wrong instrument digest is an error
+  pass  LA-2 a wrong parameter-block digest is an error
+  pass  LA-2 a non-existent repository commit is an error
+  pass  LA-2 a wrong instrument version is an error
+  pass  LA-3 a wrong launch target is an error
+  pass  LA-3 wave lists must equal the parameter block's
+  pass  LA-5 a scoped verdict without the scoped field is an error
+  pass  LA-5 the scoped field without the scoped verdict is an error
+  pass  LA-5 a scoped verdict outside A–D is an error
+  pass  LA-6 Met with no evidence is an error
+  pass  LA-6 Not met with no counterexample is an error
+  pass  LA-6 Unknown with no settlement is an error
+  pass  LA-6 a placeholder settlement asserts emptiness
+  pass  LA-6 an Unknown field on a Met row is an error
+  pass  LA-6 a counterexample on a Met row is an error
+  pass  LA-6 a placeholder falsification attempt is an error
+  pass  LA-6 evidence anchored to another commit is an error
+  pass  LA-7 E1 cannot roll up Met over a non-Met sub-row
+  pass  LA-8 a scoped row with no deferred-wave finding is an error
+  pass  LA-8 a scoped row whose finding names another question is an error
+  pass  LA-8 a finding meeting a blocking condition cannot be scoped
+  pass  LA-8 a finding naming a non-deferred wave is an error
+  pass  LA-9 E3 Met with a non-empty reopen list is an error
+  pass  LA-9 E3 Met without the trace table is an error
+  pass  LA-9 E3 Met with an untraced concept is an error
+  pass  LA-10 a paraphrased E4 case is an error
+  pass  LA-10 a missing E4 case is an error
+  pass  LA-10 E4 Met over a routing disagreement is an error
+  pass  LA-10 unrecorded silence on a needed case is an error
+  pass  LA-10 recorded silence on a needed case validates
+  pass  LA-11 a P-n citation grants no deferral
+  pass  LA-11 a D-n citation grants no deferral
+  pass  LA-11 a B-n citation grants no deferral
+  pass  LA-11 label wording is not a citation
+  pass  LA-11 a non-existent deferral path is an error
+  pass  LA-11 a directory grants nothing
+  pass  LA-11 a deferral against a never-deferrable conjunct is an error
+  pass  LA-11 a deferral with no bounded reduction plan is an error
+  pass  a clean record computes READY FOR the target
+  pass  one Not met in A–D computes NOT READY
+  pass  a scoped row alone does not block
+  pass  a Not met E row computes NOT READY
+  pass  an Unknown F1 does not block
+  pass  a Not met F1 blocks
+  pass  a Not met F3 blocks
+  pass  a Not met F4 blocks
+  pass  a Not met F2 with no deferral blocks
+  pass  a Not met F2 with an owner-cited deferral is READY-WITH-DEFERRALS
+  pass  an Unknown F2 is deferrable on the same terms
+  pass  an SDR deferral does not resolve without git (unverifiable is unresolved)
+  pass  a non-empty reopen list blocks every pass branch
+  pass  LA-11 a deferral beside a Met verdict is an error
+  pass  a deferral beside a Met F2 does not buy a plain READY
+  pass  LA-12 a deferral on a non-F2 limb beside a Not met F2 is an error
+  pass  LA-13 a formal delta administration is an error
+  pass  LA-13 a formal administration without fresh context is an error
+  pass  LA-14 a placeholder G1 answer is an error
+  pass  LA-15 a prior record dated after this one is an error
+  pass  LA-15 a prior commit outside this history is a stale prior
+  pass  LA-16 a formal opening administration must run the pilot check
+  pass  the interpreter refuses a schema keyword it does not implement
+  pass  the interpreter refuses `additionalProperties: true`
+  pass  the committed schema uses only implemented keywords
+  pass  an object schema that stops closing is detected
+  pass  a duplicate JSON key is refused rather than silently last-wins
+  pass  a delta/formal=True record yields no formal gate result
+  pass  a full/formal=False record yields no formal gate result
+  pass  a schema other than the committed one is a validation error, not a silent substitution
+  pass  a schema that constrains nothing is a validation error, not a silent substitution
+  pass  a prior-record path escaping the repository is an error
+  pass  a deferral whose citation does not resolve yields no READY-WITH-DEFERRALS
+  pass  a zero-width space does not defeat the placeholder lexicon
+  pass  a byte-order mark does not defeat the placeholder lexicon
+  pass  a function-application character (Cf) does not defeat the placeholder lexicon
+  pass  a C1 control character (Cc) does not defeat the placeholder lexicon
+  pass  an UNREADABLE §8 parameter is an error, not a skipped check (instrument mutated, not the record)
+  pass  the scratch baseline validates clean (schema and instrument committed)
+  pass  an in-place schema edit does not admit a forbidden verdict word (committed bytes govern)
+  pass  working-tree schema drift is its own error
+  pass  a record anchored to an off-branch commit is an error, not an anchor
+  pass  a prior commit outside this history is a stale prior (ancestry, not existence)
+  pass  a committed prior at the record's commit computes new-findings as an integer
+  pass  an uncommitted prior record is not read from the working tree (committed bytes govern)
+  pass  ...and its new-findings column reads Unknown, not a forged number
+  pass  a committed prior whose own commit differs from the declared identity is refused
+  pass  the schema is read at the record's commit — a widening at HEAD does not govern an ancestor administration
+  pass  LA-3b a whitespace routing authority is an error, not a skipped check
+  pass  LA-6 a placeholder counterexample is no counterexample
+  pass  LA-14 a placeholder falsification_summary is an error
+  pass  LA-1 a trailing newline does not satisfy an anchored pattern
+  pass  LA-10 duplicate E4 case indices at the right count are an error
+  pass  no fresh context alone makes an otherwise-passing record ineligible (limb, not error count)
+  pass  --prior outside the repository is an error, not a comparison
+  pass  a declared prior that escapes the repository computes Unknown, not absence
+  pass  an unanchored schema pattern fails closed in the audit
+  pass  a validation error alone makes an otherwise-passing record ineligible
+  pass  git being unavailable alone makes an otherwise-passing record ineligible
+  pass  an ineligible administration's trend row carries no gate verdict
+  pass  an eligible administration's trend row still carries its gate result
+  pass  a declared-but-unreadable prior record computes Unknown, not absence
+  pass  the base record validates identically under the reference jsonschema implementation
+  pass  schema 2.1 accepts instrument-bound at successor commit
+  FAIL  schema 2.1 rejects arbitrary hex at LA-1 and both render paths
+  pass  historical schema 2.0 replays after committed successor
+
+126 fixtures, 1 failing — a check that cannot fail is not a check
+  FAILED schema 2.1 rejects arbitrary hex at LA-1 and both render paths
+    wanted: specified CLI behavior
+    got: Row/formula outcome: READY FOR Capability 1 — Project registration and honest shape visibility
+Formal gate result:  NONE — `formal: false` (diagnostic only)
+  [ok ] every E question Met — all Met
+  [ok ] no plain `Not met` in launch-scope A–D — none
+  [ok ] F1 is Met or Unknown — F1='Met'
+  [ok ] F3 is Met — F3='Met'
+  [ok ] F4 is Met — F4='Met'
+  [ok ] E3's reopen list is empty — 0 item(s)
+  F2 limb: branch=plain, deferrals=0
+
+record valid — the verdict above is computed from the rows
+wrote /tmp/tmpmkvey_am/report.md (8847 bytes) — generated from record.json
+wrote /tmp/tmpmkvey_am/report.md (8847 bytes) — generated from record.json
+# Launch-gate administration — 2026-08-11, commit `4fa833a`
+
+> **Generated presentation.**
+> Canonical source: `record.json`
+> Do not edit this file. Edit the record and regenerate.
+>
+> This administration record is evidence, never an owner act; its verdict
+> authorizes nothing (instrument preamble; VIS-4).
+
+## Identity
+
+- Instrument: `launch-gate-pre-specifications.md` v2.4
+- Instrument sha256: `1852c2c3d31eff3afa0924b6b72e855481ab2516ba8fde5eda7b2ae8772f01e8`
+- Parameter block sha256: `01209c0f052971f794e1f35827a002aa8d80420aad471d10fde000abb6366ff6`
+- Repository commit: `4fa833a60b84a4a90a59f44ee8d883eda20e88c9`
+- Launch target: Capability 1 — Project registration and honest shape visibility
+- Required waves: A, B
+- Deferred waves: C1, C2, D1, D2
+- Administration: full, not formal (steering only)
+
+## Reviewer
+
+- Identity: fixture
+- Model: fixture
+- Model family: fixture
+- Fresh context: yes
+- Not the corpus authors' model family.
+
+## Materials
+
+Given:
+- the instrument
+
+Withheld:
+- prior administrations
+
+Deviations from the fixed materials list: none recorded
+
+## Operationalization notes
+
+None recorded.
+
+## Verdicts
+
+| Q | Verdict | Evidence / counterexample |
+|---|---------|---------------------------|
+| A1 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| A2 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| A3 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| A4 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| A5 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| A6 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| B1 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| B2 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| B3 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| B4 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| B5 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| C1 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| C2 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| C3 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| C4 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| C5 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| C6 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| C7 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| D1 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| D2 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| D3 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| D4 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| E1-form | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| E1-home | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| E1-granularity | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| E1-acceptance-authority | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| E1-change-process | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| E1 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| E2 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| E3 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| E4 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| E5 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| E6 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| F1 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| F2 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| F3 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| F4 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| F5 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+| F6 | Met | `README.md` @4fa833a (line 1): “Syzygy” |
+
+## E3 — reopen analysis
+
+Central concepts of the first specification, traced to the shape artifact that would govern each:
+
+| Concept | Governing artifact | Note |
+|---------|--------------------|------|
+| registration | RFC-0002 | clause 4 |
+
+E3 reopen-list: **empty**, arrived at through the trace table above.
+
+## E4 — fixed cases
+
+Routing authority: `.syzygy/governance/contracts/candidates/SURFACE-CLAUSE-ROUTING-MATRIX.md`
+
+| # | Case | Reviewer | Routing authority | Agreement | Needed by the launch target |
+|---|------|----------|-------------------|-----------|----------------------|
+| 1 | Every registered project has exactly one graph identity, and a rename does not mint a new one. | shape | shape | agree | no |
+| 2 | When a repository is registered, a human can see in the product that registration succeeded, what was registered, and what was not. | shape | shape | agree | no |
+| 3 | A region with no evidence renders visibly as Unknown — never green, never zero. | shape | shape | agree | no |
+| 4 | Every specification change receives an independent fresh-context review before adoption. | shape | shape | agree | no |
+| 5 | A machine client can query any project answer a human can see, and receives the same facts with the same epistemic labels. | shape | shape | agree | no |
+| 6 | When a shape artifact changes, every affected specification is enumerated and amended in the same logical change, or the disagreement is rendered rather than hidden. | shape | shape | agree | no |
+
+## Findings outside launch scope (deferred waves)
+
+None recorded.
+
+## Owner deferrals
+
+None. No conjunct of the verdict rests on a deferral.
+
+## Reopened findings
+
+None. A nonzero count here would indict the resolution process, not just the finding.
+
+## Pilot-recurrence check (§8 `PILOT_RECURRENCE_CHECK`)
+
+- Performed: yes
+- Method: swept the retired phrases
+- Findings: none
+
+## Unknowns and what would settle them
+
+None. Every question carries a verdict with evidence or a counterexample.
+
+## Falsification
+
+> attempted to break each Met
+
+| Q | What was tried |
+|---|----------------|
+| A1 | tried to find a contradicting artifact |
+| A2 | tried to find a contradicting artifact |
+| A3 | tried to find a contradicting artifact |
+| A4 | tried to find a contradicting artifact |
+| A5 | tried to find a contradicting artifact |
+| A6 | tried to find a contradicting artifact |
+| B1 | tried to find a contradicting artifact |
+| B2 | tried to find a contradicting artifact |
+| B3 | tried to find a contradicting artifact |
+| B4 | tried to find a contradicting artifact |
+| B5 | tried to find a contradicting artifact |
+| C1 | tried to find a contradicting artifact |
+| C2 | tried to find a contradicting artifact |
+| C3 | tried to find a contradicting artifact |
+| C4 | tried to find a contradicting artifact |
+| C5 | tried to find a contradicting artifact |
+| C6 | tried to find a contradicting artifact |
+| C7 | tried to find a contradicting artifact |
+| D1 | tried to find a contradicting artifact |
+| D2 | tried to find a contradicting artifact |
+| D3 | tried to find a contradicting artifact |
+| D4 | tried to find a contradicting artifact |
+| E1-form | tried to find a contradicting artifact |
+| E1-home | tried to find a contradicting artifact |
+| E1-granularity | tried to find a contradicting artifact |
+| E1-acceptance-authority | tried to find a contradicting artifact |
+| E1-change-process | tried to find a contradicting artifact |
+| E1 | tried to find a contradicting artifact |
+| E2 | tried to find a contradicting artifact |
+| E3 | tried to find a contradicting artifact |
+| E4 | tried to find a contradicting artifact |
+| E5 | tried to find a contradicting artifact |
+| E6 | tried to find a contradicting artifact |
+| F1 | tried to find a contradicting artifact |
+| F2 | tried to find a contradicting artifact |
+| F3 | tried to find a contradicting artifact |
+| F4 | tried to find a contradicting artifact |
+| F5 | tried to find a contradicting artifact |
+| F6 | tried to find a contradicting artifact |
+
+## G1 — completeness critic
+
+*G1 yields no Met/Not-met verdict and never blocks; an administration missing it is incomplete.*
+
+> whether the gate itself is captured
+
+No missing question proposed.
+
+## Computed figures
+
+*Every figure below is computed from the record by `validate_launch_administration.py`; none is transcribed.*
+
+- Not met (plain): 0
+- Not met (out of launch scope): 0
+- Unknown: 0
+- Deferred: 0
+- Reopened: 0
+- New findings vs prior: n/a (this record declares no prior — it opens the log)
+
+Conjuncts of the §4 formula:
+
+- [x] every E question Met — all Met
+- [x] no plain `Not met` in launch-scope A–D — none
+- [x] F1 is Met or Unknown — F1='Met'
+- [x] F3 is Met — F3='Met'
+- [x] F4 is Met — F4='Met'
+- [x] E3's reopen list is empty — 0 item(s)
+
+Trend row (§6):
+
+| Date | Commit | Not-met | Scoped | Unknown | Deferred | Reopened | New findings vs prior | Gate verdict |
+|------|--------|---------|--------|---------|----------|----------|----------------------|--------------|
+| 2026-08-11 | 4fa833a | 0 | 0 | 0 | 0 | 0 | n/a (no prior record) | NONE — `formal: false`; row outcome was READY FOR Capability 1 — Project registration and honest shape visibility |
+
+ROW/FORMULA OUTCOME: READY FOR Capability 1 — Project registration and honest shape visibility
+
+GATE VERDICT: NONE — `formal: false` — not eligible to be cited as launch evidence; the outcome above is diagnostic.
+
+
+exit= 1
