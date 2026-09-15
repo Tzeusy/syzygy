@@ -5,12 +5,12 @@
  "move": "M11",
  "date": "2026-09-15",
  "packet": "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md",
- "status": "candidate; binds nothing; planning only; one independent fresh-context review applied 2026-09-15 - review 1, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 7 non-blocking, 6 editorial, F1-F13), retained verbatim at docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-RAW.md; all thirteen exceptions re-derived against source and applied; at the owner gate, registered as P-78, with the thirteen exception repairs uncovered until a second independent fresh-context review confirms them [superseded 2026-09-15: \"no independent review yet\"]",
+ "status": "candidate; binds nothing; planning only; TWO independent fresh-context reviews applied 2026-09-15; review 2 (verdict copied exactly: CONFIRM WITH EXCEPTIONS - 0 blocking, 4 non-blocking, 4 editorial, G1-G8) verified the review-1 repairs as eleven REPAIRED with F7 'REPAIRED (the span), PARTIAL (the exactness claim about one sub-cite)' and F11 'REPAIRED for S10-F1; the defect class survives elsewhere', moved no recommended answer, and its eight exceptions are all applied - so the EIGHT review-2 exception repairs are now uncovered until a THIRD review (verification rule 10). Review 1, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 7 non-blocking, 6 editorial, F1-F13), retained verbatim at docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-RAW.md; all thirteen exceptions re-derived against source and applied; at the owner gate, registered as P-78, with the thirteen exception repairs uncovered until a second independent fresh-context review confirms them - which has since happened (re-tensed 2026-09-15; review 2 retained at docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-2-RAW.md) [superseded 2026-09-15: \"no independent review yet\"]",
  "independent_review": {
-  "count": 1,
-  "raws": ["docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-RAW.md"],
-  "verdicts": ["CONFIRM WITH EXCEPTIONS"],
-  "note": "Review 1 landed 2026-09-15, verdict copied exactly CONFIRM WITH EXCEPTIONS (0 blocking, 7 non-blocking, 6 editorial, F1-F13), retained verbatim at the raw path above and never overwritten; see the review1 block at the end of this record. Verification rule 10: review 1 binds the bytes it names at 2c62d0b and not these, so its thirteen exception repairs are uncovered until a second fresh-context review confirms them, and that review's raw would be a second -RAW.md file, never an overwrite. [Superseded 2026-09-15: count 0, raws [], verdicts [], 'first draft; verification rule 10 applies \u2014 any later edit retires a review bound to these bytes'.]"
+  "count": 2,
+  "raws": ["docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-RAW.md", "docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-2-RAW.md"],
+  "verdicts": ["CONFIRM WITH EXCEPTIONS", "CONFIRM WITH EXCEPTIONS"],
+  "note": "Review 1 landed 2026-09-15, verdict copied exactly CONFIRM WITH EXCEPTIONS (0 blocking, 7 non-blocking, 6 editorial, F1-F13), retained verbatim at the raw path above and never overwritten; see the review1 block at the end of this record. Verification rule 10: review 1 binds the bytes it names at 2c62d0b and not these, so its thirteen exception repairs are uncovered until a second fresh-context review confirms them - which has since happened (re-tensed 2026-09-15): review 2 landed 2026-09-15 at docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-2-RAW.md, verdict copied exactly CONFIRM WITH EXCEPTIONS (0 blocking, 4 non-blocking, 4 editorial, G1-G8), bound by rule 10 to the 9cfb31b bytes and not to these, so the eight review-2 exception repairs are in turn uncovered until a third review, whose raw would be a third -RAW.md file and never an overwrite of either retained one. See the review2 block at the end of this record. [Superseded 2026-09-15: count 0, raws [], verdicts [], 'first draft; verification rule 10 applies \u2014 any later edit retires a review bound to these bytes'.]"
  },
  "labels": "Every figure below is [Observed], measured this session in a worktree at a9f671e, unless marked otherwise.",
  "commit": {
@@ -123,7 +123,8 @@
      "hits": 0
     }
    },
-   "non_test_denominator_total": 81,
+   "all_in_main_entry_points_note_2026_09_15": "Corrected per review 2, G3. The prose predicate published in the packet read '*-main.ts', a glob that requires a literal hyphen and that apps/three-surface-poc/src/main.ts does not match - tested this session with Python fnmatch against the full path - while that one file supplies 10 of the 37 hits, more than any other. The true predicate is a command-line entry point: main.ts or a *-main.ts file, i.e. the glob *main.ts. Per-file counts re-derived this session: main.ts 10, pwb-mutation-run-main.ts 6, pwb-mutation-sweep-main.ts 6, capture-test-artifact-main.ts 5, polaris-accessibility-main.ts 4, fresh-checkout-demo-main.ts 3, polaris-generation/pipeline-demo-main.ts 3 = 37, over the same 45/27/9 non-test denominators. The boolean above stays true under the corrected predicate and is not edited; the conclusion is unaffected because main.ts is a command-line entry point and not a request handler, and handleRequest still has 0 on all four branches.",
+  "non_test_denominator_total": 81,
    "ts_denominator_total": 157,
    "handleRequest_outcome_branches_with_a_log_call": 0,
    "handleRequest_span": "packages/cap1-daemon/src/server.ts lines 169-224; branches at 178 (unknown-route 404), 196 (refusal 401), 214 (handler response, any status) and 218 (handler-failure 500)",
@@ -742,6 +743,30 @@
    "apps/three-surface-poc/src/materialize-action.ts"
   ],
   "largest_overlap": "M8 at 9 of 16",
+  "predicate_B_basename_2026_09_15": "Added per review 2, G1; no value above is edited. Predicate B as published sees FULL PATHS ONLY (spans beginning apps/ packages/ scripts/ docs/ or equal to package.json), so it drops every continuation-form mention - a bare basename after one full path in the same cell - and its figures are a lower bound. B-basename is predicate B plus one admission: a bare basename with no / in it, counted when it equals the basename of a file on the 16-file m11_surface above, whose sixteen basenames are distinct. Re-derived this session over the ten sibling Gate 3 sections at the heads in rows[]: every B-full cell, every head and every gate3_files list above reproduces exactly.",
+  "gate3_intersection_basename_2026_09_15": {
+   "M1 lane B": 2, "M2": 5, "M3": 1, "M4": 6, "M5": 5,
+   "M6": 1, "M7": 4, "M8": 10, "M9": 8, "M10": 5,
+   "rows_that_move": 5,
+   "moves": "M1 lane B 0->2 (polaris.ts, routes.ts), M2 4->5 (polaris.ts), M5 4->5 (project-shape-model.ts), M8 9->10 (project-shape-observation.ts), M9 4->8 (orrery.ts, page-shell.ts, materialize-action.ts, project-shape-model.ts). M3, M4, M6, M7 and M10 do not move.",
+   "review2_figures_corrected_not_copied": "Review 2's G1 states a move on 8 of 10 rows, adding M3 1->2, M6 1->3 and M7 4->5, and states routes.ts at 10 of 10 and polaris.ts at 10 of 10. Re-derived this session those three rows do not move - M3's Gate 3 names apps/three-surface-poc/src/polaris.ts in full and no bare surface basename, M6's names none of the sixteen under either predicate, M7's names routes.ts and polaris-source.ts in full and no bare one - and routes.ts is 7 of 10 under B-full and 8 under B-basename, polaris.ts 6 and 8. Corrected here rather than copied."
+  },
+  "most_cited_basename_2026_09_15": {
+   "apps/three-surface-poc/src/routes.ts": 8,
+   "packages/three-surface-poc-core/src/model.ts": 6,
+   "apps/three-surface-poc/src/polaris.ts": 8,
+   "note": "under B-basename; the most_cited block above is B-full and is not edited."
+  },
+  "m11_only_corrected_2026_09_15": {
+   "survives": ["docs/THREE-SURFACE-POC.md"],
+   "struck": {
+    "packages/three-surface-poc-core/src/resource-ledger.ts": "0 of 10 among the siblings, but it does not occur in M11's OWN Gate 3 section either, so 'M11 is the only packet naming it in its Gate 3' was never true of M11. Predicate: the substring resource-ledger over the section from the '## Gate 3 - Topology' heading at packet line 642 to the line before the next '## ' heading at 739 - 0 occurrences; over the whole packet at 9cfb31b it occurs 4 times, at lines 287, 296, 510 and 1234, none of them Gate 3. The file is on the 16-file surface because slice 3 reads its types; it is not in the Gate 3 table.",
+    "apps/three-surface-poc/src/page-shell.ts": "M9's Gate 3 names page-shell.ts on two rows, in continuation form. 0 of 10 under B-full, 1 of 10 under B-basename.",
+    "apps/three-surface-poc/src/materialize-action.ts": "M9's Gate 3 names materialize-action.ts on the same two rows and for the same reason. The prose never listed this one; this record did. 0 of 10 under B-full, 1 of 10 under B-basename."
+   },
+   "note": "Added per review 2, G1; the m11_only array above is left exactly as it was."
+  },
+  "largest_overlap_basename_2026_09_15": "M8 at 10 of 16 under B-basename, against M9's 8; M8 is the largest overlap under BOTH predicates, so the packet's claim survives.",
   "named_collisions": {
    "M10 P-77 PR #44": "owns the machine contract, response headers and inputsDigest; slice 2's machine form mints nothing on that channel until M10 lands",
    "M5 P-72 PR #39": "owns machine-channel route existence; slice 2's machine form holds behind P-72 exactly as M10's slice 3 does",
@@ -799,7 +824,8 @@
     "id": "Q5",
     "gist": "May the human status line ride pageShell \u2014 appearing on every human page and charging the M1 ceiling headroom \u2014 or only its own route and the home page?",
     "recommended": "pageShell, under 400 bytes, ~0.07% of the 612,665-byte tailnet headroom",
-    "default_if_unanswered": "the second arm: home page and its own route only"
+    "default_if_unanswered": "the second arm: home page and its own route only",
+    "third_arm_2026_09_15": "Added per review 2, G4; no value above is edited. Review 1's Q1-Q5 table found a third lawful arm named nowhere the owner reads: render the status line ON THE STATUS ROUTE ONLY and not on the home page. It is materially different from the second arm because it is the only arm that spends ZERO bytes on any existing page, the home page included - which is itself 38,706 bytes in the retained capture's home.html, measured this session with Python. It is now named in Q5's Q-table row, in Gate 4's slice-2 human-form paragraph, in the recommended-handoff paragraph and in the P-78 register row. The recommendation (pageShell, under 400 bytes) and the default if unanswered (the home page and its own route) are UNCHANGED by it, stated explicitly at each site."
    }
   ]
  },
@@ -967,6 +993,7 @@
   "repairs_applied_this_session": true,
   "five_question_table_as_the_raw_states_it": "All five scopes truthful; all five genuine hard human gates, Q4 'Partly' because the packet answers its first half itself and what remains for the owner is whether to want a distinct limit anyway plus the escalation-trigger consequence; every recommendation follows from its evidence and is conservatively stated; every lawful arm named and none called unlawful; every default lawful. The raw names one lawful arm the packet does not name, Q5's third: render the status line on its own route only and not on the home page. Three of the five defaults differ from their recommendation and no owner trade-off is smoothed into consensus language.",
   "gate_5_verdict_as_the_raw_states_it": "The packet's RFC2-26 block quote is identical to .syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md lines 196-221, both paragraphs and no elision, compared programmatically after normalizing whitespace and emphasis; the test is run over all four slice rows and every cited requirement heading, scenario heading and THEN limb is exact at the line cited.",
+  "collision_verdict_note_2026_09_15": "Read with review 2's G1. Every figure review 1 verified here is still exact and re-derives again in this pass - but they are the figures of predicate B as published, which sees FULL PATHS ONLY. The same sweep admitting continuation-form basenames gives routes.ts in 8 of ten and polaris.ts in 8, moves the column on 5 of the 10 rows, and falsifies two of the section's own claims. See collision.predicate_B_basename_2026_09_15. The value below is preserved unedited.",
   "collision_verdict_as_the_raw_states_it": "Both predicates recomputed from scratch over the ten sibling worktrees at the heads the packet records: every one of the twenty cells re-derives exactly, as does every B-files list, '7 of 10 name routes.ts', 'model.ts in 6', 'M8 is the largest overlap at 9 of 16' and the four M11-only files. polaris.ts is also 6, a figure this record carries and the packet prose does not mention. The only defect in the section is F5.",
   "recommended_answers_changed": "None. The raw's own Q1-Q5 table answers 'Recommendation follows from the evidence?' Yes for all five, and no finding moves an arm, a recommendation or a default. Q1 keeps machine-credentialed for the machine form and the human form on the existing human-open pages, its second human-open arm and its default that slice 2's machine route does not ship. Q3 keeps 'an implementation of two quoted sentences, not an amendment', its CC-REV-2 second arm and its default that slice 3 does not ship. Q4 keeps 'do not mint a new limit', keeps the minting arm as a named escalation trigger rather than as unlawful, and keeps its default. Q2 and Q5 are untouched by any finding except F3's predicate correction inside Q2's bracket.",
   "findings_with_a_defect_of_their_own": {
@@ -1051,6 +1078,7 @@
   },
   "rule_10": "Review 1 binds the two digests recorded above at commit 2c62d0b, not these bytes. Every edit of this pass was made after it.",
   "gate": "at the owner gate on review 1's CONFIRM WITH EXCEPTIONS with all thirteen exceptions applied - no blocking finding, no recommended answer moved, all five questions found to be genuine hard gates with Q4 partly, and no lawful arm called unlawful; P-78 is ready to be ruled",
+  "uncovered_until_note_2026_09_15": "Discharged: review 2 landed 2026-09-15 at docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-2-RAW.md and confirmed the 9cfb31b bytes. The value below is preserved unedited as the statement review 1's close-out made. The thirteen repairs are now covered; the EIGHT review-2 exception repairs are not, and are uncovered until a third review - see review2.uncovered_until.",
   "uncovered_until": "a second independent fresh-context review, for the thirteen exception repairs recorded here; all thirteen post-date review 1 (verification rule 10). Its raw would be a second -RAW.md file, never an overwrite of the retained one.",
   "packet_measured_after_review1": {
    "bytes": 131795,
@@ -1067,6 +1095,92 @@
    "command": "python3 scripts/check_governance.py",
    "tail_line": "32 OK, 20 WARN, 0 FAIL (52 checks) - counts derived, not asserted",
    "note": "tail line read, not grep -c FAIL (verification rule 4)"
+  }
+ },
+ "review2": {
+  "raw": "docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-2-RAW.md",
+  "bytes": 38651,
+  "sha256": "360c4fc850f645b3d6837eb57069a515bec84c5f8b6e260778dae745e60e98f6",
+  "raw_digest_method": "wc -c and sha256sum this session; no digest transcribed",
+  "verdict": "CONFIRM WITH EXCEPTIONS - 0 blocking, 4 non-blocking, 4 editorial, G1-G8",
+  "counts": {"blocking": 0, "non_blocking": 4, "editorial": 4, "total": 8},
+  "reviewed_commit": "9cfb31b",
+  "reviewed_files_at_that_commit": {
+   "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md": {"bytes": 131795, "sha256": "5dd76226a5ae8b7cf28a000008bafca674aa215d1bf6fc5a5651acd7449e30c4"},
+   "docs/evidence/polaris-m11-operability-funnel-2026-09-15.json": {"bytes": 65059, "sha256": "dffda0512d3b22f825d4fe6aaeb6ecdd5653a46091b4ca83b4f8a818092a89b5"},
+   ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {"bytes": 34833, "sha256": "2a31628fd886132538716355275f5ff0fb3df538c011374a70a4cc624d3eb230"},
+   "docs/reviews/R-POLARIS-M11-OPERABILITY-FUNNEL-RAW.md": {"bytes": 36182, "sha256": "943d567120272ac97e05b6de0b61f14800d5ed973df6f353e9b052e60d3ac049"}
+  },
+  "method": "every file above measured this session with git show 9cfb31b:<path> piped to wc -c and to sha256sum; the raw measured with wc -c and sha256sum. No digest transcribed. All four match the raw's own header table exactly.",
+  "repairs_applied_this_session": true,
+  "f1_f13_verification_as_review2_states_it": {
+   "REPAIRED": ["F1", "F2", "F3", "F4", "F5", "F6", "F8", "F9", "F10", "F12", "F13"],
+   "PARTIAL": {
+    "F7": "REPAIRED (the span), PARTIAL (the exactness claim about one sub-cite)",
+    "F11": "REPAIRED for S10-F1; the defect class survives elsewhere"
+   },
+   "NOT_REPAIRED": [],
+   "denominator": 13,
+   "note": "Eleven of thirteen verified REPAIRED; the two verdict strings above are copied exactly from the raw. F7's residue is G5 - the specification-amendment sub-cite spans continuation act 151-152, not line 151 - and is applied at every site including the F7 disposition row itself, which takes a dated correction and not a deletion. F11's residue is G6 - four further 'the dossier' quotations living only in the two pursuit JSON records - and is applied by widening 'the dossier' once, at the head, to the three-file record set, with all five sentences located by file and jq path."
+  },
+  "re_derived_before_applying": {
+   "G1_collision_predicate": "Both predicates recomputed from scratch this session over the ten sibling Gate 3 sections at the heads in collision.rows, against collision.m11_surface: all twenty B-full cells, all ten heads and every gate3_files list reproduce exactly. Under B-basename the column moves on 5 of 10 rows, not the 8 review 2 states; routes.ts is 7 then 8 of ten and polaris.ts 6 then 8, not 10 and 10. laneb's Gate 3 does name polaris.ts and routes.ts in continuation form, so its absence cell was false. resource-ledger occurs 0 times in M11's own Gate 3 section (packet lines 642-738) and 4 times elsewhere in the packet. M9's Gate 3 names page-shell.ts and materialize-action.ts on two rows each. See collision.predicate_B_basename_2026_09_15 and its siblings.",
+   "G2_relocation_tally": "The re-location table parsed row by row this session: 12 rows, verdict column 9 exact, 2 narrowed, 1 'off by one, immaterial'. The funnel summary's '10 exact, 2 narrowed' silently promoted the twelfth row and still summed to twelve. Denominator all 12 rows.",
+   "G3_main_ts_glob": "Tested this session with Python fnmatch: apps/three-surface-poc/src/main.ts does not match *-main.ts (which needs a literal hyphen) and does match *main.ts. Per-file hit counts re-derived: 10 + 6 + 6 + 5 + 4 + 3 + 3 = 37 over the 45/27/9 non-test denominators, 81 of 157 .ts files, with 0 in core and 0 in the daemon package. handleRequest at packages/cap1-daemon/src/server.ts 169-224 has 0 on all four branches.",
+   "G4_third_arm": "Review 1's Q1-Q5 table records for Q5 'a third - render on the status route only and not on the home page - is lawful and unnamed'; the packet's review-1 section carries the sentence and Q5's own row and the P-78 register row each named two arms. The arm's cost was measured, not asserted: the retained capture's home.html is 38,706 bytes, read this session with Python. No observed-repository path is reproduced.",
+   "G5_wrapped_quotation_spans": "Each verified with grep -n -F at source this session: the byte-ceiling sentence spans PWB spec 378-379; 'any PWB-REQ-006 resource breach' spans 967-968; the reader note's quoted words span POC spec 25-26; POC-REQ-032's falsifier spans 596-597; the specification-amendment trigger spans continuation act 151-152 while the registry-envelope sub-cite at 154-155 is exact; ResourceLedgerSummary's seven fields are 83-89, line 82 being a comment, the interface opening at 81 and closing at 90. One site review 2 does not name - the second 'line 26' cite, in Gate 3's slice-2 act row - was found by sweeping the literal this session and repaired with the rest.",
+   "G6_dossier_attribution": "grep -F over the three pursuit files this session, order .md / -data.json / -harvest.json: pidfile sentence 0/1/1; prerequisite value 0/1/0; maxOutputBytes slice-plan sentence 0/1/1; 'the cheapest fix in the audit' 0/1/1. docs/pursuits/2026-09-13-vision-pursuit.md is 552 wc -l lines and does carry an '### M11' section and the identifiers, which is why the attribution read as sound. Review 2 labels the third sentence S10-M3; it is S7-M3, per Q4 and per its .agents[6] / S7-pwb-pipeline-core jq paths - corrected here rather than copied.",
+   "G7_pidfile_invariant": "packages/cap1-system/src/state-dir.system.test.ts line 294 and packages/cap1-daemon/src/server.ts lines 28-30 both read at source this session. Act-corpus sweep re-run for server.ts specifically over the same denominator - 538 tracked .md/.txt files under .syzygy/ plus 24 files whose basename contains MANIFEST, enumerated from git ls-tree -r -z --name-only a9f671e - with 0 hits for the full path and 0 for the bare basename. The invariant is asserted by a system test and a source comment and bound by no act.",
+   "G8_cg1b_predicate": "At the 9cfb31b bytes the plain reading - every distinct code span on a non-fence line ending in .md, .py, .sh, .yaml, .json or .txt, tested with os.path.exists from the worktree root - gives 47 candidates and 15 non-resolving, exactly as review 2 states. Over THIS pass's final bytes it gives 50 and 17, the added spans being this packet's own new code spans; the figure published in Gate 6 item 10 is the one over these bytes, computed last and iterated to a fixed point."
+  },
+  "disposition_summary": {
+   "G1": "CONFIRMED in substance and applied (non-blocking), with three of the finding's own figures corrected rather than copied. Both predicates and both figure columns are published, the superseded single-column wording quoted and dated; the lane B absence cell is corrected; resource-ledger.ts is struck from the M11-only list, page-shell.ts and materialize-action.ts moved out of it naming M9, docs/THREE-SURFACE-POC.md surviving. M8 remains the largest overlap under both predicates. Mirrored here by appended dated keys only.",
+   "G2": "CONFIRMED and applied (non-blocking): '(9 exact, 2 narrowed, 1 off by one)' in the funnel summary, superseded tally quoted and dated.",
+   "G3": "CONFIRMED and applied (non-blocking) at the Gate 1 predicate and the Gate 4 column heading, both superseded wordings quoted and dated, the per-file partition published. Mirrored in measurements.M2_logging_sink_sweep by a dated sibling key. The conclusion is unaffected.",
+   "G4": "CONFIRMED and applied (non-blocking) in Q5's Q-table row, Gate 4's slice-2 human-form paragraph, the recommended-handoff paragraph and the P-78 register row, each naming the arm, its zero-byte cost on any existing page and - explicitly - that Q5's recommendation and default do not change. Mirrored in owner_questions Q5 by a dated sibling key.",
+   "G5": "CONFIRMED and applied (editorial) at every site the raw lists and at one it does not. The F7 disposition's 'both are exact' sentence takes a dated correction beneath it, not a deletion.",
+   "G6": "CONFIRMED and applied (editorial) by the second repair the raw offers - widening 'the dossier' ONCE, at the head, to the three-file record set - chosen over per-site citation so one definition governs every later use; the same paragraph locates all five sentences by file and jq path and discloses the code-span normalization of 'maxOutputBytes', resourceLimits and PwbResourceLimits.",
+   "G7": "CONFIRMED and applied (editorial): a new paragraph stating the invariant's status - asserted by a system test and a source comment, bound by no act, unchanged by this packet on purpose - with the superseded heading and the 'not a preference' wording quoted in place and dated.",
+   "G8": "CONFIRMED and applied (editorial): Gate 6 item 10 now names the path-candidate rule and the denominator and lists the non-resolving spans by class, the superseded one-sentence claim quoted and dated. Computed LAST over this pass's bytes and iterated to a fixed point."
+  },
+  "recommended_answers_changed": {
+   "none": "No recommended answer changed after review 2. Its five-question table answers 'Recommendation follows?' Yes for all five post-repair recommendations and calls no arm and no default unlawful. Q1 through Q5 keep the recommendations, the second arms and the defaults they carried into it, word for word. G4 adds a THIRD lawful arm to Q5 and moves neither its recommendation (pageShell, under 400 bytes) nor its default if unanswered (the home page and its own route) - stated explicitly at every site. The other seven exceptions are presentational or evidentiary. No sixth question was added and no sibling packet's question is re-asked."
+  },
+  "unknowns_recorded_for_the_owner": {
+   "evidence_digest_sweep": "[Unknown] Whether any docs/evidence/*.json digest table binds bytes slices 2 and 3 would edit. The packet hands that sweep to the implementing bead under verification rule 10; review 2 did not run it either.",
+   "sibling_diffs": "[Unknown] Whether the sibling branches' actual diffs stay inside the paths their Gate 3 tables name. Both predicates measure what each packet SAYS.",
+   "owner_arms": "[Unknown] Which arm the owner takes on any of the five questions.",
+   "ordering_not_verifiable_from_bytes": "A fourth limitation in the same spirit: review 2 can check that a result is correct NOW and cannot check the ORDERING inside a repairing session, so this pass's own claim to have re-derived G1-G8 before applying them, and to have computed the self-referential figures last, is checkable only in its results. [Unknown for the ordering, Observed for the results.]"
+  },
+  "figures_corrected_rather_than_copied": {
+   "G1_rows_that_move": "review 2 states 8 of 10; re-derived, 5 of 10 (M3, M6 and M7 do not move)",
+   "G1_most_cited": "review 2 states routes.ts 10 of 10 and polaris.ts 10 of 10; re-derived, 7 then 8 and 6 then 8",
+   "G6_identifier": "review 2 labels the maxOutputBytes slice-plan sentence S10-M3; it is S7-M3",
+   "G6_pursuit_md_line_count": "review 2 states docs/pursuits/2026-09-13-vision-pursuit.md is 553 lines; wc -l this session gives 552"
+  },
+  "rule_10": "Review 2 binds the four digests recorded above at commit 9cfb31b, not these bytes. Every edit of this pass was made after it, so the eight exception repairs are uncovered until a third review confirms them.",
+  "gate": "at the owner gate on review 2's CONFIRM WITH EXCEPTIONS with all eight exceptions applied - no blocking finding, no recommended answer moved, and the review-1 repairs verified eleven REPAIRED over thirteen with F7 and F11 partial on residue that G5 and G6 now close; P-78 is ready to be ruled",
+  "uncovered_until": "a third independent fresh-context review, for the eight exception repairs recorded here; all eight post-date review 2 (verification rule 10). Its raw would be a third -RAW.md file, never an overwrite of either retained one.",
+  "register_row": "P-78, unchanged in identity; its note and row carry the review-2 entry added in this pass, and the note's 'uncovered until a second' clause is re-tensed in place. The recount is unchanged at 22 open + 5 acceptance-act = 27 on this branch and 21 + 5 = 26 at a9f671e, re-verified this session under the predicate ^| P- with the ten sibling heads re-read.",
+  "governance_check_after_review2": {
+   "command": "python3 scripts/check_governance.py",
+   "last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) - counts derived, not asserted",
+   "note": "run in this worktree after all four files of this pass were written - the packet, this record, the P-78 register row and note, and the retained review-2 raw. Read the last line, not the exit code (verification rule 4)."
+  },
+  "packet_measured_after_review2": {
+   "path": "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md",
+   "bytes": 166205,
+   "sha256": "c7caab02cab998a43e75f798f758feed52efb77d077b3538d0973400daecbb6c",
+   "total_lines": 1912,
+   "non_fence_lines": 1859,
+   "over_78": 8,
+   "predicate": "total_lines: split on newline with the trailing empty segment dropped (the wc -l convention this packet states at its head). non_fence_lines: the same, excluding fence lines and fenced content. over_78: lines outside fenced code blocks whose first non-space character is not a pipe, length > 78; denominator all total_lines. Gate 6 item 10's narrower predicate, which also excludes headings and block quotes, gives 3 - the same three unbreakable code-span path lines, at 161, 196, 773.",
+   "distinct_code_spans": 416,
+   "slash_bearing_non_resolving": 36,
+   "cg1b_extension_candidates": 50,
+   "cg1b_extension_candidates_non_resolving": 17,
+   "odd_backtick_non_fence_lines": 0,
+   "note": "computed LAST, after the final edit to the packet, and iterated to a fixed point because the packet states the figures, so these name the bytes that carry them and match the committed packet exactly. Verification rule 10: a review is bound to exactly these bytes and any later edit retires it."
   }
  }
 }
