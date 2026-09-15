@@ -5,10 +5,10 @@
  "bead": "syzygy-dov.8",
  "packet": "docs/design/POLARIS-M8-PORTABILITY-FUNNEL.md",
  "date": "2026-09-15",
- "status": "candidate; binds nothing; planning only; one independent review applied 2026-09-15 - review 1, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 11 non-blocking, 5 editorial); at the owner gate, with the sixteen exception repairs uncovered until a second review confirms them [this field read 'no independent review yet' until 2026-09-15]",
+ "status": "candidate; binds nothing; planning only; two independent reviews applied 2026-09-15 - review 1, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 11 non-blocking, 5 editorial), and review 2, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 6 non-blocking, 2 editorial, G1-G8), which verified the review-1 repairs as 14 REPAIRED, 2 PARTIAL and 0 NOT REPAIRED over 16; at the owner gate, with the eight review-2 exception repairs uncovered until a third review confirms them [superseded 2026-09-15 after review 2: 'one independent review applied 2026-09-15 - review 1 ... with the sixteen exception repairs uncovered until a second review confirms them'; this field read 'no independent review yet' until 2026-09-15]",
  "independent_review": {
-  "count": 1,
-  "note": "One independent fresh-context review, retained verbatim at docs/reviews/R-POLARIS-M8-PORTABILITY-FUNNEL-RAW.md (verdict CONFIRM WITH EXCEPTIONS). Its sixteen findings F1-F16 were each re-derived against source and applied 2026-09-15; see review1 below. Verification rule 10: review 1 binds the bytes it names at 8035c8f, not these, and the sixteen exception repairs are uncovered until a second review confirms them. [This field read count 0 and 'This packet has had no independent review' until 2026-09-15.] Superseded text follows: every figure and quotation in the packet is bound to its bytes at commit a9f671e, and any later edit retires a review bound to them."
+  "count": 2,
+  "note": "Two independent fresh-context reviews, each retained verbatim and neither overwriting the other: docs/reviews/R-POLARIS-M8-PORTABILITY-FUNNEL-RAW.md (review 1, verdict CONFIRM WITH EXCEPTIONS) and docs/reviews/R-POLARIS-M8-PORTABILITY-FUNNEL-2-RAW.md (review 2, verdict CONFIRM WITH EXCEPTIONS). Review 1's sixteen findings F1-F16 were each re-derived against source and applied 2026-09-15; see review1 below. Review 2 verified those repairs as 14 REPAIRED, 2 PARTIAL and 0 NOT REPAIRED over 16 and filed eight exceptions G1-G8, each re-derived against source and applied 2026-09-15; see review2 below. Verification rule 10: review 1 binds the bytes it names at 8035c8f and review 2 the bytes at 4b2e8cb, neither of them these, and the eight review-2 exception repairs are uncovered until a third review confirms them. [Superseded 2026-09-15 after review 2: 'One independent fresh-context review ... the sixteen exception repairs are uncovered until a second review confirms them.' This field read count 0 and 'This packet has had no independent review' until 2026-09-15.] Superseded text follows: every figure and quotation in the packet is bound to its bytes at commit a9f671e, and any later edit retires a review bound to them."
  },
  "commit": {
   "baseline": "a9f671e",
@@ -23,9 +23,11 @@
  "file_bytes": {
   "docs/design/POLARIS-M8-PORTABILITY-FUNNEL.md": 110515
  },
+ "file_bytes_note_2026_09_15": "These are the first draft bytes of the packet, at commit 8035c8f, not the packet as it now stands. Superseded 2026-09-15 after review 2, G1, which found the pair undated, unqualified and naming no commit. They are kept, not overwritten: the value above is exactly what review1.reviewed_files_at_that_commit records for 8035c8f. A record cannot carry its own subject post-repair digest, because the packet and this record land in one commit; the packet bytes measured after the review-2 repairs are in review2.packet_measured_after_review2, computed last.",
  "file_digests_sha256": {
   "docs/design/POLARIS-M8-PORTABILITY-FUNNEL.md": "62ee454380619164b23e9e5bb896da5c1eb9f1cc6717c7c70b4d02c12ca15782"
  },
+ "file_digests_note_2026_09_15": "These are the first draft bytes of the packet, at commit 8035c8f, not the packet as it now stands. Superseded 2026-09-15 after review 2, G1, which found the pair undated, unqualified and naming no commit. They are kept, not overwritten: the value above is exactly what review1.reviewed_files_at_that_commit records for 8035c8f. A record cannot carry its own subject post-repair digest, because the packet and this record land in one commit; the packet bytes measured after the review-2 repairs are in review2.packet_measured_after_review2, computed last.",
  "digest_policy_note": "No act argument, manifest digest or truncated signed digest is reproduced in the packet or in this record. Four digest comparisons were run this session (the adapter-registry entry, the PWB specification, the Three-Surface POC specification and the consent record) and each is reported below as a match/no-match with the governing record cited by path, per CG-7e and CG-15.",
  "digest_comparisons": [
   {
@@ -612,7 +614,7 @@
    "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
    "packages/three-surface-poc-core/src/project-shape-observation.ts"
   ],
-  "m8_surface_size": 31, "m8_surface_predicate_2026_09_15": "Gate 3's topology table carries 30 code spans, 25 file-shaped and distinct; 20 resolve as written and 5 resolve under the tree slice 5's row names, giving 25 existing files, of which 2 are the governed artifacts the third column names, leaving 23 implementation-plane files. The 8 tests below supply the rest. 23 + 8 = 31, all resolving. Restated per review 1, F7.",
+  "m8_surface_size": 31, "m8_surface_predicate_2026_09_15": "Gate 3's topology table carries 30 code spans, 25 file-shaped and distinct; 20 resolve as written and 5 resolve under the tree slice 5's row names, giving 25 existing files, of which 2 are the governed artifacts the third column names, leaving 23 implementation-plane files. The 8 tests below supply the rest. 23 + 8 = 31, all resolving. Restated per review 1, F7.", "m8_surface_predicate_note_2026_09_15_after_review_2": "The three intermediates above (30 code spans, 25 file-shaped and distinct, 20 resolving as written) are exact over the 8035c8f bytes review 1 read and are superseded 2026-09-15 after review 2, G4, over the bytes that now carry them: the F7 repair itself added two spans to Gate 3's slice-6 row, so the table carries 32 code spans, 27 file-shaped and distinct of which one is the directory span packages/three-surface-poc-core/src/, leaving 26, and 21 resolve as written. The derived chain does not move: those 21 and the 5 bare basenames resolving under the slice-5 tree name one file twice (project-shape-model.ts, bare in slice 5 and by full path in slice 6), so they deduplicate to 25 distinct existing files, less the 2 governed artifacts is 23, plus the 8 tests is 31, all resolving. Observed, recomputed this session; denominator the seven slice rows of Gate 3's topology table.",
   "m8_by_slice": {
    "S1": [
     "apps/three-surface-poc/src/polaris-copy.test.ts"
@@ -1054,6 +1056,7 @@
       "F5": "CONFIRMED and applied (non-blocking), reproduced both ways. See ugrep_wrapper_reproduction below.",
       "F6": "CONFIRMED and applied (editorial in effect, non-blocking as filed). The proving case's name occurs exactly once in apps/three-surface-poc/src/polaris-copy.test.ts, on line 267, asserting one heading string; the second group heading occurs nowhere in the file.",
       "F7": "CONFIRMED and applied (non-blocking), both limbs. Gate 3's topology table names 23 distinct existing implementation-plane files (30 code spans, 25 file-shaped and distinct, 20 resolving as written plus 5 under the tree slice 5's row names, less the 2 governed artifacts); m8_surface supplies the 8 test files; 23 + 8 = 31. On the second limb the packet is right and this record is wrong: slice 6 edits no existing module, so m8_by_slice.S6 below is marked in place as exercised-never-edited.",
+      "F7_note_2026_09_15_after_review_2": "Review 2, G4 confirmed this entry's derived figures and superseded its three intermediates over the current bytes: 32 code spans, 26 file-shaped and distinct less the one directory span, 21 resolving as written; 21 + 5 deduplicates to 25 distinct files because project-shape-model.ts is named both bare and by full path; 25 - 2 = 23 and 23 + 8 = 31 are unchanged. Review 2 verified F7 as PARTIAL for exactly this reason and G4 completes it. The value above is left as review 1's pass wrote it.",
       "F8": "CONFIRMED and applied (non-blocking). M7 at 0c4b4a9 and M9 at 206d775 computed with the packet's own predicate after validating it against M4's published 26/22/9; rows added below. One correction to the finding: M9's packet does code-span orrery.ts as a bare basename, so its basename-tolerant intersection is 8.",
       "F9": "CONFIRMED and applied (non-blocking). The capture is NOT copied into the repository - it is a rendered page of a consented observation of the proving case and retaining it here is a content decision no act in force covers. Size and full sha256 recorded below instead; the two capture-only figures are relabelled Observed-at-the-capture / Unknown-without-it; Gate 6 item 10's predicate widened.",
       "F10": "CONFIRMED and applied (non-blocking). Q1's default now names slice 3 explicitly and consistently with Q4's default and the prose handoff section; the summary handoff line is reordered to put 'rule Q1' first. No recommendation changes.",
@@ -1123,6 +1126,7 @@
     "m7_m9_rows": [
       {
         "sibling": "M7 (PR #41, no register row yet)",
+        "sibling_note_2026_09_15_after_review_2": "True of the head this row names, 0c4b4a9, and superseded at M7's current head: at 1803608 that branch carries one register row, P-76. Corrected per review 2, G3; a sibling row may land at any time. Observed, recounted this session with the predicate caret-pipe-P-dash over all nine sibling registers at their own heads.",
         "head": "0c4b4a9",
         "implementation_plane_spans": 31,
         "resolve_any": 29,
@@ -1158,6 +1162,7 @@
       },
       {
         "sibling": "M9 (PR #42, no register row yet)",
+        "sibling_note_2026_09_15_after_review_2": "True of the head this row names, 206d775, and superseded at M9's current head: at 65de02b that branch carries one register row, P-75. Corrected per review 2, G3; a sibling row may land at any time. Observed, recounted this session with the predicate caret-pipe-P-dash over all nine sibling registers at their own heads.",
         "head": "206d775",
         "implementation_plane_spans": 21,
         "resolve_any": 19,
@@ -1218,10 +1223,89 @@
       "at_a9f671e": {"open": 21, "acceptance_act": 5, "total": 26},
       "on_this_branch": {"open": 22, "acceptance_act": 5, "total": 27},
       "siblings": "P-68 (lane B), P-69 (M2), P-70 (M3), P-71 (M4), P-72 (M5) and P-73 (M6) each live only on their own branch; M7 and M9 carry no register row yet",
+      "siblings_note_2026_09_15_after_review_2": "The clause M7 and M9 carry no register row yet is superseded 2026-09-15 after review 2, G3: at 1803608 M7 carries P-76 and at 65de02b M9 carries P-75, each only on its own branch, and a sibling row may land at any time. Recounted this session with the predicate caret-pipe-P-dash over all nine sibling registers at their own heads: 4090f98 P-68, f2f37dd P-69, 6574600 P-70, 63b8e33 P-71, ba9ca61 P-72, 83c9f60 P-73, 4b2e8cb P-74, 65de02b P-75, 1803608 P-76; denominator all nine worktrees. The value above is left as review 1's pass wrote it.",
       "claim_label": "Observed, counted this session"
     },
     "rule_10": "Review 1 binds the two digests recorded above at commit 8035c8f, not these bytes. Every edit of this pass was made after it.",
     "gate": "at the owner gate on review 1's CONFIRM WITH EXCEPTIONS with all sixteen exceptions applied - no blocking finding, no recommended answer moved, all seven questions found to be genuine gates and no lawful arm called unlawful; P-74 is ready to be ruled",
     "uncovered_until": "a second independent fresh-context review, for the sixteen exception repairs recorded here; all sixteen post-date review 1 (verification rule 10). Its raw would be a second -RAW.md file, never an overwrite of the retained one."
+  },
+ "review2": {
+  "raw_path": "docs/reviews/R-POLARIS-M8-PORTABILITY-FUNNEL-2-RAW.md",
+  "raw_bytes": 40166,
+  "raw_sha256": "864b338b2439369edd3c454ec666f9418aad4bdfa6c6cb3bc5224f9053982f49",
+  "raw_digest_method": "wc -c and sha256sum this session; neither value transcribed",
+  "verdict": "CONFIRM WITH EXCEPTIONS - 0 blocking, 6 non-blocking, 2 editorial, G1-G8",
+  "counts": {"blocking": 0, "non_blocking": 6, "editorial": 2, "total": 8},
+  "reviewed_commit": "4b2e8cb",
+  "reviewed_files_at_that_commit": {
+   "docs/design/POLARIS-M8-PORTABILITY-FUNNEL.md": {
+    "bytes": 146362,
+    "sha256": "6a94a115a48f0ff8d8f9c834ae104dad0b55dc36f4568f4e7b66a6fa3d46ae2b"
+   },
+   "docs/evidence/polaris-m8-portability-funnel-2026-09-15.json": {
+    "bytes": 64220,
+    "sha256": "c983836e25479262a7dd3c1702dd9d3b574982aa8b32ac23807b2febad0b81bc"
+   },
+   ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+    "bytes": 35499,
+    "sha256": "7964d61c00a27af84fad2002cde98ec3598f01b38e5f6f970d63a4f5e9b3f282"
+   },
+   "docs/reviews/R-POLARIS-M8-PORTABILITY-FUNNEL-RAW.md": {
+    "bytes": 32375,
+    "sha256": "85fcffa1db2f48e1b73df0689d37c154a445fe1c956f948936609b30e3c9b38d"
+   }
+  },
+  "method": "every file above measured this session with git show 4b2e8cb:<path> piped to wc -c and sha256sum; the raw measured with wc -c and sha256sum. No digest transcribed.",
+  "repairs_applied_this_session": true,
+  "f1_f16_verification_as_review2_states_it": {
+   "REPAIRED": ["F1", "F2", "F3", "F4", "F5", "F6", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15"],
+   "PARTIAL": ["F7", "F16"],
+   "NOT_REPAIRED": [],
+   "denominator": 16,
+   "note": "14 REPAIRED, 2 PARTIAL, 0 NOT REPAIRED over 16. Both partials are the same shape - the finding's own site is repaired and the sites that carry its figure are not. Review 2's G4 completes F7 and its G6 completes F16, and both are applied in this pass, so neither is left open."
+  },
+  "re_derived_before_applying": {
+   "G1_record_keys": "file_bytes 110515 and file_digests_sha256 62ee4543... read this session: the first draft's figures at 8035c8f, identical to review1.reviewed_files_at_that_commit and correctly labelled only there, while the top-level pair carries no date, qualification or commit. The packet at 4b2e8cb is 146362 bytes with the digest tabled in reviewed_files_at_that_commit above.",
+   "G2_sibling_branch_diffs": "git diff --name-only a9f671e <head> run this session in all eight sibling worktrees, heads by git -C <wt> rev-parse --short HEAD. laneb 4090f98 names scripts/build_pwb_scoped_attributes_amendment.py, scripts/check_governance.py, scripts/estimate_pwb_scoped_attributes_saving.py and .github/workflows/governance-docs.yml among its governance files; m2wt f2f37dd, m3wt 6574600, m4wt 63b8e33, m5wt ba9ca61, m6wt 83c9f60, m7wt 1803608 and m9wt 65de02b each name only files under docs/ and the register. Denominator eight branches.",
+   "register_recount_with_heads": "predicate caret-pipe-P-dash over each of the nine sibling registers this session, each at its own head: laneb 4090f98 P-68, m2wt f2f37dd P-69, m3wt 6574600 P-70, m4wt 63b8e33 P-71, m5wt ba9ca61 P-72, m6wt 83c9f60 P-73, m8wt 4b2e8cb P-74, m9wt 65de02b P-75, m7wt 1803608 P-76. Each adds exactly that one row against a9f671e and no other; main tops at P-53, so there is no collision. Denominator all nine worktrees. Partition unchanged and re-verified: this branch 22 open + 5 acceptance-act = 27; main at a9f671e 21 + 5 = 26.",
+   "G4_gate3_table": "recomputed this session over the current bytes under the packet's own predicate: 32 code spans in the seven slice rows, 27 file-shaped and distinct of which one is the directory span packages/three-surface-poc-core/src/, leaving 26, and 21 resolving as written. 21 and the 5 bare basenames resolving under the slice-5 tree name one file twice - project-shape-model.ts, bare in slice 5's row and by full path in slice 6's - so they deduplicate to 25 distinct existing files; less the 2 governed artifacts is 23, plus the record's 8 tests is 31, all resolving as files. The finding's 32 / 26 / 21 are exact; its 25 is exact as a deduplication and not as a sum, and that is stated at both repaired sites.",
+   "G5_extension_bound": "item 10's resolution predicate re-run this session over the same span population at extension bounds of 3, 4, 5, 6 and 7 and unbounded: filename-shaped 137, 141, 142, 145, 146 and 149. The published 145 / 48 / 36 / 9 re-derive only at a bound of six characters or fewer; unbounded the figures are 149 / 52 / 40 / 13, of which 11 are dotted identifiers. The four spans the bound excludes are shell.heading, group.overview, group.architecture and evidence.relationships. The load-bearing 1, polaris-7478.html, is the same under both readings.",
+   "G6_polaris_ts_classes": "the fourteen non-comment lines of apps/three-surface-poc/src/polaris.ts that name the proving case re-derived this session under the comment-blanking predicate: 419, 423, 425, 427, 432, 441, 583, 671, 673, 675, 677, 679, 681, 683 - six remediation sentences, seven pillar routes and one ordering constant. The three use sites were byte-compared against git show 8035c8f: and were unchanged from the first draft. Denominator the fourteen lines.",
+   "G7_quotation_stops": "security.md line 59 continues the SEC-5 sentence with a parenthetical citation to trust-and-evidence.md floor bullet 4 before its Violation example; vision.md line 139 continues VIS-4's Violation list with a fourth item about treating RFC acceptance alone as opening the gate. Both opened at source this session.",
+   "G8_over_width": "the first draft's six-lines sentence, with its unbreakable-code-span clause, occurs 0 times in the current bytes (git show 8035c8f: compared against the current file; denominator the whole file), and the current figure carried no supersession note. Both re-derive over these bytes under their own predicates: 16 under the stated one and 7 under review 1's. The seventh under review 1's predicate was ordinary breakable prose at 79 columns and is rewrapped in this pass."
+  },
+  "disposition_summary": {
+   "G1": "CONFIRMED and applied (non-blocking). Repaired in this record by two sibling keys, file_bytes_note_2026_09_15 and file_digests_note_2026_09_15, immediately after each superseded key, because the two values are objects and cannot take text. Nothing deleted or overwritten. The current packet digest appears only in packet_measured_after_review2 below, computed last.",
+   "G2": "CONFIRMED and applied (non-blocking), at both packet sites. Seven documentation sibling branches - M2, M3, M4, M5, M6, M7 and M9 - name only files under docs/ and the register; lane B is the exception and also edits files under scripts/ and .github/; the denominator is eight branches, and the eight heads are named at the collision section. Superseded wording quoted in place and dated at both.",
+   "G3": "CONFIRMED and applied (non-blocking), at ten sites rather than the five the finding names: the packet's two collision-table cells, its F12 disposition row, its Registered-as-P-74 paragraph, its funnel-summary register line, a new dated note under the collision table, the register blockquote and the P-74 row, and three places in this record. The two record sites inside review1 and the m7_m9_rows entries take dated sibling keys rather than edits. Each site is marked in place and dated, the nine heads are named at the recount, and each says a sibling row may land at any time. P-74 is unaffected.",
+   "G4": "CONFIRMED and applied (non-blocking), with one intermediate of the finding's own restated rather than copied - the 25 is a deduplication, not a sum. Applied at the collision method's bracketed restatement and at the F7 disposition row, with the superseded figures quoted and dated, and both re-derived last over the final bytes of this pass and iterated to a fixed point. Completes F7, which review 2 verified PARTIAL.",
+   "G5": "CONFIRMED and applied (non-blocking), exactly as the finding states it. The predicate now carries the six-character extension bound, names the four spans the bound excludes, and publishes the unbounded figures beside the bounded ones; the load-bearing 1 is shown unchanged under both readings.",
+   "G6": "CONFIRMED and applied (non-blocking), at all three use sites. Slice 2's What names the three classes; the rule-6 mutant names six remediation sentences; S3 names the classes rather than one count and adds the ordering constant as a profile input. Superseded wording quoted in place and dated at each. Completes F16, which review 2 verified PARTIAL.",
+   "G7": "CONFIRMED and applied (editorial). Both terminal stops marked with an elision, each continuation quoted with its source line, and the marks dated.",
+   "G8": "CONFIRMED and applied (editorial). The superseded figure and its predicate are quoted in place and dated; the unbreakable-span clause is explicitly not restated, with the reason; the one breakable over-width line is rewrapped; and the over-78 count is re-derived last and iterated to a fixed point."
+  },
+  "recommended_answers_changed": {
+   "none": "No recommended answer changed after review 2. Its own seven-question table answers Scope truthful? Yes for all seven with Q4's review-1 mostly discharged, Genuine hard gate? Yes for six with Q4 borderline for the reasons review 1 gave, Recommendation follows? Yes for all seven, and All lawful arms named? for all seven, with RFC2-26's reviewed-N/A arm named for every slice that could reach it and no lawful arm called unlawful anywhere. All eight exceptions are presentational or evidentiary: G1 dates two record keys; G2 and G3 rebind a sibling claim to its heads; G4 and G5 restate a self-referential figure or name its predicate's bound; G6 carries a completed correction to its use sites; G7 marks two quotation stops; G8 marks a superseded figure and rewraps one line. Q1 through Q7 keep the recommendations, second arms and defaults they carried into this review, word for word, and no default-if-unanswered moved."
+  },
+  "register_row": "P-74, unchanged in identity; its note and row carry the review-2 entry added in this pass, and the note's stale M7-and-M9 clause is marked and corrected in place",
+  "rule_10": "Review 2 binds the four digests recorded above at commit 4b2e8cb, not these bytes. Every edit of this pass was made after it.",
+  "gate": "at the owner gate on review 2's CONFIRM WITH EXCEPTIONS with all eight exceptions applied - no blocking finding, no recommended answer moved, and the review-1 repairs verified 14 REPAIRED, 2 PARTIAL and 0 NOT REPAIRED over 16 with both partials completed here; P-74 is ready to be ruled",
+  "uncovered_until": "a third independent fresh-context review, for the eight exception repairs recorded here; all eight post-date review 2 (verification rule 10). Its raw would be a third -RAW.md file, never an overwrite of either retained one.",
+  "governance_check_after_review2": {
+   "command": "python3 scripts/check_governance.py",
+   "note": "run in this worktree after all four files of this pass were written - the packet, this record, the P-74 register row and the retained review-2 raw. Read the last line, not the exit code (verification rule 4).",
+   "last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted"
+  },
+  "packet_measured_after_review2": {
+   "path": "docs/design/POLARIS-M8-PORTABILITY-FUNNEL.md",
+   "bytes": 168888,
+   "sha256": "577b9b952df24240a1e2071f55364c37e7b150dd1b4b9c1fae0a1e54d434aee1",
+   "total_lines": 1912,
+   "line_count_convention": "split on newline, trailing empty segment not counted; the convention stated once in the packet. wc -l returns one fewer.",
+   "over_78": 15,
+   "over_78_predicate": "lines outside fenced code blocks whose first non-space character is not a pipe, length greater than 78; denominator every line of the file.",
+   "note": "computed LAST, after the final edit to the packet, so it names the bytes that carry it. The self-referential over_78 and code-span figures in the packet were iterated to a fixed point. Verification rule 10: a review is bound to exactly these bytes and any later edit retires it."
   }
+ }
 }
