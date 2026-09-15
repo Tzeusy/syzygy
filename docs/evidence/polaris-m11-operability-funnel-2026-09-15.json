@@ -1,0 +1,935 @@
+{
+ "kind": "polaris-m11-operability-funnel-evidence",
+ "version": 1,
+ "bead": "syzygy-dov.11",
+ "move": "M11",
+ "date": "2026-09-15",
+ "packet": "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md",
+ "status": "candidate; binds nothing; planning only; no independent review yet",
+ "independent_review": {
+  "count": 0,
+  "raws": [],
+  "verdicts": [],
+  "note": "first draft; verification rule 10 applies \u2014 any later edit retires a review bound to these bytes"
+ },
+ "labels": "Every figure below is [Observed], measured this session in a worktree at a9f671e, unless marked otherwise.",
+ "commit": {
+  "baseline": "a9f671e",
+  "branch": "agent/syzygy-dov.11",
+  "dossier_syzygy_audited_at": "f4589e2",
+  "note": "Every measurement was taken in this worktree at a9f671e. The dossier's spans were taken at f4589e2 and all twelve are re-located in the packet."
+ },
+ "line_number_convention": "1-based over the file's bytes at a9f671e unless another commit or worktree is named.",
+ "file_digests_sha256": {
+  "apps/three-surface-poc/src/routes.ts": "73712a3cd4957c55eabeac29b5da5dd0af8750586dcee3fa254b85d04a585c9e",
+  "apps/three-surface-poc/src/main.ts": "9dc33dd454d8b4695110b4f267c7e1f355b747ddd12ecfc6d735649fd5ff64fe",
+  "apps/three-surface-poc/src/page-shell.ts": "c969d2442c5f16cf9c6906a817bc28dcb2073e382fe1a24a9418f9565c662da4",
+  "apps/three-surface-poc/src/browser-origin.ts": "5b1d5e238e86382e5858e8b9041efed0e19f753ef99bd9b5dd0e84d3871718d8",
+  "apps/three-surface-poc/src/launcher.ts": "9683c4bf18a9aa0c19639b4204b0cb60db5e70adcf90148b693f02ebe6df4b75",
+  "apps/three-surface-poc/src/fresh-checkout-verdict.ts": "d930fe2b9205b400b2dbc492cd1f84a949ea00009ae9ea95639faa9b79507dc9",
+  "packages/cap1-daemon/src/server.ts": "316a884502f10ef7ef218cfed4c3ab2718f06d01c5faa28860c3cf06311eee02",
+  "packages/cap1-daemon/src/credentials.ts": "17d70fc863ecc8855a550e306a7af823d884edca10b131629b21f98c2f27b6b2",
+  "packages/three-surface-poc-core/src/resource-ledger.ts": "b7d86ed585b5c0cc965fa826802942b214198aa526d4690400b683672bc31f3c",
+  "packages/three-surface-poc-core/src/project-shape-observation.ts": "a946ae5ebc9ade430566a894ea81584919890bd0381208b9c1d6663d54c9d7ac",
+  "packages/three-surface-poc-core/src/walkthrough-readiness.ts": "e9fcc3c3ec2761f83e29aad04e2b330c75f66e2bdd2b87a6666b32f2d64e51b4",
+  "packages/three-surface-poc-core/src/model.ts": "c9d49c9fbfb53219ba8c8084a065d32bd09cd88075037fb3ba579029bc7c9f80",
+  "docs/THREE-SURFACE-POC.md": "f24f3c114a9f66e307131f6f20041f748a9a4c4970d92ec531ff5841c85f50ff",
+  "package.json": "b767c375a4e5b414e05590ed162a06fa4f203c8a371fc8c08264062efeb1c995",
+  "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md": "6f7e98bad81bb3f30a614bfe944d54b1d71091fb5608a6e7f4410827c6cf3eeb"
+ },
+ "file_bytes": {
+  "apps/three-surface-poc/src/routes.ts": 12861,
+  "apps/three-surface-poc/src/main.ts": 11078,
+  "apps/three-surface-poc/src/page-shell.ts": 3457,
+  "apps/three-surface-poc/src/browser-origin.ts": 1487,
+  "apps/three-surface-poc/src/launcher.ts": 836,
+  "apps/three-surface-poc/src/fresh-checkout-verdict.ts": 6514,
+  "packages/cap1-daemon/src/server.ts": 11111,
+  "packages/cap1-daemon/src/credentials.ts": 10427,
+  "packages/three-surface-poc-core/src/resource-ledger.ts": 9052,
+  "packages/three-surface-poc-core/src/project-shape-observation.ts": 29446,
+  "packages/three-surface-poc-core/src/walkthrough-readiness.ts": 16821,
+  "packages/three-surface-poc-core/src/model.ts": 30845,
+  "docs/THREE-SURFACE-POC.md": 4402,
+  "package.json": 1881,
+  "docs/design/POLARIS-M11-OPERABILITY-FUNNEL.md": 102079
+ },
+ "digest_policy_note": "Digests are recorded only for implementation-plane files and for this packet's own two outputs. No act argument, manifest digest or truncated signed digest is reproduced; the one act-digest comparison made this session is reported as a boolean and the record is cited by path (CG-7e, CG-15).",
+ "measurements": {
+  "M1_route_table": {
+   "claim_label": "Observed",
+   "reverifies": "S10-F1",
+   "method": "npm run build:poc, then `node --input-type=module` importing pocRoutes from apps/three-surface-poc/dist/routes.js and materializeRoutes from apps/three-surface-poc/dist/materialize-action.js against a stub model; the returned arrays are enumerated. Computed, not transcribed (verification rule 3).",
+   "denominator": "every route the app registers",
+   "total": 17,
+   "pocRoutes": 15,
+   "materializeRoutes": 2,
+   "by_credential_class": {
+    "human-open": 13,
+    "machine-credentialed": 4
+   },
+   "routes": [
+    "GET /",
+    "GET /butlers-syzygy",
+    "GET /butlers-syzygy/",
+    "GET /polaris",
+    "GET /butlers-syzygy/polaris",
+    "GET /polaris/source",
+    "GET /butlers-syzygy/polaris/source",
+    "GET /trajectory",
+    "GET /butlers-syzygy/trajectory",
+    "GET /orrery",
+    "GET /butlers-syzygy/orrery",
+    "GET /api/poc",
+    "GET /butlers-syzygy/api/poc",
+    "GET /api/poc/polaris",
+    "GET /butlers-syzygy/api/poc/polaris",
+    "POST /trajectory/materialize",
+    "POST /butlers-syzygy/trajectory/materialize"
+   ],
+   "matching_status_health_live_ready_case_insensitive": 0,
+   "minimalRootRoute": "declared at packages/cap1-daemon/src/server.ts lines 269-282; registered by no route list",
+   "dossier_figure_that_differs": "S10-F1 describes the population as 'the five human surfaces, /api/poc, /api/poc/polaris and their tailnet mirrors', which yields 15 and omits the two POST materialize routes. The finding's conclusion (no status route exists) holds.",
+   "dossier_span_check": "S10-F1 cites routes.ts:206-239 for the complete route list; that is exactly the return array at a9f671e."
+  },
+  "M2_logging_sink_sweep": {
+   "claim_label": "Observed",
+   "predicate": "a line matching process.stderr, process.stdout, console., logger or log( in a non-test .ts file",
+   "trees": {
+    "apps/three-surface-poc/src": {
+     "ts_files": 86,
+     "non_test": 45,
+     "hits": 37,
+     "files_with_hit": 7,
+     "all_in_main_entry_points": true,
+     "files": [
+      "main.ts",
+      "capture-test-artifact-main.ts",
+      "fresh-checkout-demo-main.ts",
+      "polaris-accessibility-main.ts",
+      "pwb-mutation-run-main.ts",
+      "pwb-mutation-sweep-main.ts",
+      "polaris-generation/pipeline-demo-main.ts"
+     ]
+    },
+    "packages/three-surface-poc-core/src": {
+     "ts_files": 53,
+     "non_test": 27,
+     "hits": 0
+    },
+    "packages/cap1-daemon/src": {
+     "ts_files": 18,
+     "non_test": 9,
+     "hits": 0
+    }
+   },
+   "non_test_denominator_total": 81,
+   "ts_denominator_total": 157,
+   "handleRequest_outcome_branches_with_a_log_call": 0,
+   "handleRequest_span": "packages/cap1-daemon/src/server.ts lines 169-224; branches at 178 (unknown-route 404), 196 (refusal 401), 214 (handler response, any status) and 218 (handler-failure 500)",
+   "dossier_span_check": "S10-F2 cites server.ts:165-224; 165-167 is createServer and the handler body is 169-224 \u2014 narrowed, not wrong."
+  },
+  "M3_breach_reaches_nothing": {
+   "claim_label": "Observed",
+   "reverifies": [
+    "P0-CEILING",
+    "S7-F3"
+   ],
+   "predicate": "a non-test source line in the three trees that conveys a response-ceiling breach to any sink other than the HTTP response (process.stderr, process.stdout, console., logger, log(, or ResourceLedger.recordBreach)",
+   "denominator": "81 non-test .ts files",
+   "result": 0,
+   "corroboration_1": "recordBreach has 12 non-test occurrences: 5 in resource-ledger.ts (declaration and closure) and 7 call sites, all input-side \u2014 git-object-reader.ts:307,328,351 and project-shape-observation.ts:412,427,545,548. Zero in routes.ts.",
+   "corroboration_2": "routes.ts imports no ResourceLedger (0 occurrences of the identifier in the file; its import list is lines 1-11), so no ledger is in scope at the breach site.",
+   "corroboration_3": "the retained capture: run.sh issued 7 requests, 2 of them the two /polaris forms, both answered 503; daemon.err is 0 bytes and daemon.log is the startup banner alone.",
+   "boundedResponse_at_a9f671e": {
+    "function": "137-142",
+    "export_line": 137,
+    "breach_branch_line": 141,
+    "ceiling_block": "98-142",
+    "dossier_span": "99-151 at f4589e2 \u2014 the whole block; narrowed here"
+   },
+   "served_503_body": {
+    "source": "session scratchpad capture/polaris.html",
+    "bytes": 838,
+    "declared": 2097152,
+    "observed": 2132656,
+    "limit": "maxHumanResponseBytes",
+    "population": {
+     "kind": "counted",
+     "sources": 278,
+     "items": 415,
+     "facts": 439,
+     "exclusions": 9
+    },
+    "readiness": false,
+    "note": "captured at Syzygy f4589e2 / Butlers 7c8743f63; readiness:false is a literal of the ResponseLimitFailure type (routes.ts line 123), true of that response only."
+   }
+  },
+  "M4_ledger_and_limits": {
+   "claim_label": "Observed",
+   "reverifies": "S7-F3",
+   "resource_ledger_file": "packages/three-surface-poc-core/src/resource-ledger.ts",
+   "lines": 207,
+   "ResourceLedgerSummary": {
+    "span": "81-90",
+    "fields": [
+     "bodiesCounted",
+     "totalBytes",
+     "parsePasses",
+     "passesByIdentity",
+     "sourcesTraversed",
+     "maxPassesOnOneSource",
+     "breaches"
+    ],
+    "count": 7,
+    "output_side": 0
+   },
+   "ResourceLedger": {
+    "span": "92-121",
+    "members": [
+     "limits",
+     "breaches",
+     "recordBreach",
+     "projectBody",
+     "chargeBody",
+     "counted",
+     "totalBytes",
+     "chargePass",
+     "passesFor",
+     "chargeFor",
+     "remember",
+     "recall",
+     "release",
+     "summary"
+    ],
+    "count": 14,
+    "output_side": 0
+   },
+   "dossier_span_check": "S7-F3 and the M11 dossier entry both cite resource-ledger.ts:81-121; exact at a9f671e.",
+   "PwbResourceLimits": {
+    "file": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+    "span": "65-73",
+    "fields": [
+     "maxSources",
+     "maxBytesPerSource",
+     "maxTotalBytes",
+     "maxIndexDepth",
+     "maxParsePassesPerSource",
+     "maxHumanResponseBytes",
+     "maxMachineResponseBytes"
+    ],
+    "count": 7,
+    "output_side": 2
+   },
+   "PWB_RESOURCE_LIMITS": {
+    "span": "75-83",
+    "maxHumanResponseBytes": 2097152,
+    "maxMachineResponseBytes": 8388608
+   },
+   "ResourceLimitBreach": {
+    "span": "204-210",
+    "limit_type": "keyof PwbResourceLimits",
+    "consequence": "a breach naming maxHumanResponseBytes is already well-typed; nothing constructs one"
+   },
+   "registry_declaration": {
+    "file": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+    "resourceLimits_at": 264,
+    "maxHumanResponseBytes_at": 270,
+    "maxMachineResponseBytes_at": 271,
+    "semantics_at": [
+     279,
+     280
+    ],
+    "breachResult_at": 281
+   },
+   "dossier_figure_that_differs": "S7-M3's slice plan step 1 ('Add maxOutputBytes to the registry's resourceLimits schema and PwbResourceLimits type') is unnecessary: both output-side ceilings are already declared in the registry and typed into PwbResourceLimits, and ResourceLimitBreach.limit already admits them. The gap is a recording site, not a schema. This is why the dossier's prerequisite line does not bind the recommended arm.",
+   "name_collision": "the literal maxOutputBytes already occurs twice, at apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts lines 64 and 71, as an unrelated provider-call budget."
+  },
+  "M5_determinism_constraint": {
+   "claim_label": "Observed",
+   "finding": "the evaluation ledger cannot take a served-side breach",
+   "evidence": [
+    "packages/three-surface-poc-core/src/project-shape-observation.ts line 630 snapshots limitBreaches: [...ledger.breaches] into the observation body",
+    "line 635 computes observationDigest over that body",
+    "line 636 deepFreezes the result",
+    "packages/three-surface-poc-core/src/project-shape-model.ts line 640 takes the second, phase-B-inclusive snapshot the model carries",
+    "the digest comment at lines 288-289: 'sha256 over the canonical JSON of every field above except capturedAt (and this digest): same exact inputs, same digest'"
+   ],
+   "consequence": "a post-response write is either impossible (frozen) or invisible to the digest; slice 3 therefore uses a separate per-process served-side record."
+  },
+  "M6_readiness_arms": {
+   "claim_label": "Observed",
+   "READINESS_ARMS": {
+    "span": "47-58",
+    "count": 10,
+    "doc_comment_span": "45-46",
+    "doc_comment": "The ten readiness arms, one per clause of the requirement's readiness sentence. Each makes readiness false; none is an act-validity case.",
+    "ninth_arm": "resource-breach (line 56)"
+   },
+   "ReadinessPopulation": {
+    "span": "83-89",
+    "limitBreaches_at": 87
+   },
+   "arm_9": {
+    "span": "364-367",
+    "condition_line": 365,
+    "finding_line": 366
+   },
+   "readinessPopulation_builder": {
+    "file": "packages/three-surface-poc-core/src/model.ts",
+    "span": "213-221",
+    "limitBreaches_source": "projectShape.limitBreaches.length (line 219)"
+   },
+   "consequence": "an eleventh arm would break the one-per-clause correspondence with PWB-REQ-021 lines 964-968, so slice 3 feeds the existing ninth arm and distinguishes the side in the finding message.",
+   "second_blind_consumer": "apps/three-surface-poc/src/fresh-checkout-verdict.ts line 130, check('limit-breaches', inputs.limitBreaches === 0), fed from fresh-checkout-demo-main.ts lines 313 and 485 \u2014 the same input-side count."
+  },
+  "M7_failure_detail_census": {
+   "claim_label": "Observed",
+   "reverifies": "S10-F3",
+   "file": "apps/three-surface-poc/src/main.ts",
+   "lines": 253,
+   "predicate": "a process.stderr.write or process.stdout.write call in that file",
+   "count": 10,
+   "stderr": 6,
+   "stdout": 4,
+   "sites": [
+    {
+     "line": 56,
+     "sink": "stdout",
+     "prints": "usage",
+     "drops_detail": null
+    },
+    {
+     "line": 58,
+     "sink": "stderr",
+     "prints": "parsed.detail plus usage",
+     "drops_detail": false,
+     "note": "the parsePocCli union, not DaemonStart; its detail IS printed"
+    },
+    {
+     "line": 65,
+     "sink": "stderr",
+     "prints": "fixed sentence",
+     "drops_detail": true,
+     "note": "the caught realpathSync error is discarded whole"
+    },
+    {
+     "line": "89-93",
+     "sink": "stderr",
+     "prints": "one of two fixed sentences",
+     "drops_detail": true,
+     "note": "cause.message is compared against 'observer-checkout-dirty' and otherwise never printed"
+    },
+    {
+     "line": 207,
+     "sink": "stderr",
+     "prints": "start.failure.kind only",
+     "drops_detail": true,
+     "note": "all three DaemonStart arms carry .detail (server.ts 112-114); bind-failed's is Node's listen error (server.ts 231)"
+    },
+    {
+     "line": 211,
+     "sink": "stdout",
+     "prints": "startup banner",
+     "drops_detail": null
+    },
+    {
+     "line": 229,
+     "sink": "stdout",
+     "prints": "shutdown line",
+     "drops_detail": null
+    },
+    {
+     "line": 239,
+     "sink": "stderr",
+     "prints": "cause.kind plus artifactPath",
+     "drops_detail": false,
+     "note": "PocObservationError's message is exactly kind: artifactPath (model.ts 222-232)"
+    },
+    {
+     "line": 241,
+     "sink": "stderr",
+     "prints": "fixed sentence",
+     "drops_detail": true,
+     "note": "cause discarded entirely, stack included"
+    },
+    {
+     "line": 249,
+     "sink": "stderr",
+     "prints": "launch.reason",
+     "drops_detail": false,
+     "note": "the rejected arm carries only reason (launcher.ts line 4)"
+    }
+   ],
+   "dossier_check": "S10-F3 names line 207 and the three DaemonStart arms and is exact at a9f671e. It is narrower than the class: FOUR of the six stderr sites drop an available cause (65, the 89-93 pair, 207, 241), not one. The prompt's hint that line 58 writes parsed.detail is true and belongs to a different union; it neither supports nor contradicts the finding."
+  },
+  "M8_footer_facts": {
+   "claim_label": "Observed",
+   "finding": "no function computes the human page footer's facts",
+   "pageShell": {
+    "file": "apps/three-surface-poc/src/page-shell.ts",
+    "footer_field_line": 36,
+    "render_line": 70,
+    "function_span": "44-74"
+   },
+   "predicate": "^\\s*footer: in a non-test .ts file under apps/three-surface-poc/src",
+   "denominator": "45 non-test .ts files",
+   "count": 5,
+   "call_sites": [
+    {
+     "file": "apps/three-surface-poc/src/routes.ts",
+     "line": 92
+    },
+    {
+     "file": "apps/three-surface-poc/src/polaris.ts",
+     "line": 1630
+    },
+    {
+     "file": "apps/three-surface-poc/src/polaris-source.ts",
+     "line": 140
+    },
+    {
+     "file": "apps/three-surface-poc/src/trajectory.ts",
+     "line": "197-200"
+    },
+    {
+     "file": "apps/three-surface-poc/src/orrery.ts",
+     "line": "162-165"
+    }
+   ],
+   "evaluation_identity_composition": {
+    "file": "apps/three-surface-poc/src/main.ts",
+    "span": "101-105",
+    "form": "butlers:<revision>|working-tree:<digest>|observer:<revision>",
+    "asOf_line": 134
+   },
+   "consequence": "the observer revision an operator wants is already inside the snapshot string and is labelled as such on no surface."
+  },
+  "M9_lifecycle_absence": {
+   "claim_label": "Observed",
+   "reverifies": "S10-F6",
+   "predicate": "a line matching restart|systemd|upgrade|pidfile|pid file|service unit|\\.service, case-insensitive, in a tracked file under docs/, scripts/, apps/, packages/, or README.md",
+   "tracked_files_total": 1216,
+   "in_scope": 558,
+   "files_with_a_hit": 22,
+   "partition": {
+    "evidence_or_pursuit_json": 11,
+    "pursuit_or_plan_prose": 3,
+    "review_records": 4,
+    "source_or_test_files": 4
+   },
+   "operator_lifecycle_instructions": 0,
+   "the_two_source_comments": [
+    "packages/cap1-daemon/src/credentials.ts line 175 \u2014 'Restart: reads and reuses the [credential]'",
+    "packages/three-surface-poc-core/src/walkthrough-readiness.ts line 113 \u2014 the identity is the same after a daemon restart"
+   ],
+   "docs_THREE_SURFACE_POC": {
+    "lines": 89,
+    "hits": 0,
+    "h2_headings": [
+     "Start from a fresh Syzygy checkout",
+     "First-slice walkthrough",
+     "Capturing test-run evidence",
+     "Deliberately absent in this slice"
+    ],
+    "dossier_span": "S10-F6 cites lines 1-90; the file is 89 lines"
+   },
+   "package_json": {
+    "scripts": 13,
+    "span": "12-24",
+    "that_stop_restart_or_upgrade": 0
+   },
+   "scripts_dir": {
+    "python_files": 20,
+    "shell_files": 0
+   },
+   "state_dir_write_set": "packages/cap1-system/src/state-dir.system.test.ts line 294 asserts readdirSync(target) equals exactly ['machine-credential.token']; a pidfile would fail it. packages/cap1-daemon/src/server.ts lines 28-30 states the same invariant in prose."
+  },
+  "M10_spec_operability_vocabulary": {
+   "claim_label": "Observed",
+   "predicate": "case-insensitive word match in the signed specification file",
+   "PWB": {
+    "file": "openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md",
+    "lines": 1153,
+    "requirements": 17,
+    "scenarios": 31,
+    "health": 0,
+    "status route": 0,
+    "uptime": 0,
+    "stderr": 0,
+    "operator": 0,
+    "restart": 0,
+    "liveness": 0,
+    "log": {
+     "count": 3,
+     "lines": [
+      176,
+      407,
+      665
+     ],
+     "note": "all three are sink constraints, never a logging obligation"
+    }
+   },
+   "POC": {
+    "file": "openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md",
+    "lines": 1009,
+    "requirements": 24,
+    "scenarios": 24,
+    "health": {
+     "count": 1,
+     "line": 596,
+     "text": "Falsifier: prose asserting verification, health, or completion for a relationship the model holds as Unknown",
+     "requirement": "POC-REQ-032"
+    },
+    "status route": 0,
+    "uptime": 0,
+    "stderr": 0,
+    "log": 0,
+    "operator": 0,
+    "restart": 0,
+    "liveness": 0
+   },
+   "consequence": "the only occurrence of 'health' in either specification is a falsifier against asserting it; the only occurrences of 'log' are sink constraints."
+  },
+  "M11_ceiling_headroom": {
+   "claim_label": "Observed",
+   "source": "docs/evidence/pwb-m1-polaris-lane-a-measurement-2026-09-13.json",
+   "ceiling": 2097152,
+   "after_lane_A": {
+    "commit": "2ef68f5",
+    "butlers": "2e3bac97790b4bd8906dcac63eadb5642a0bb1ac",
+    "polaris_direct_bytes": 1478637,
+    "polaris_tailnet_bytes": 1484487
+   },
+   "headroom": {
+    "tailnet": 612665,
+    "direct": 618515,
+    "tailnet_source": "result.tailnetHeadroom.after in that record",
+    "direct_source": "computed this session as 2097152 - 1478637"
+   },
+   "q3_target_shortfall": {
+    "direct": 78637,
+    "tailnet": 84487
+   },
+   "consequence": "P0-CEILING is superseded on main; slice 2's pageShell line charges this headroom, which lane B (P-68) is still open over."
+  },
+  "M12_act_binding_sweep": {
+   "claim_label": "Observed",
+   "predicate": "the file's repository-relative path, or its basename where distinctive, occurring in any tracked .md or .txt file under .syzygy/ or in any tracked file whose basename contains MANIFEST",
+   "denominator": {
+    "governance_md_txt": 538,
+    "manifest_files": 24
+   },
+   "files_checked": 14,
+   "act_manifest_rows": 0,
+   "act_records_naming_them": 0,
+   "hits": {
+    ".syzygy/governance/contracts/candidates/pwb-truth-policy-amendment/IMPACT-LEDGER.md": [
+     "apps/three-surface-poc/src/main.ts (line 66)",
+     "apps/three-surface-poc/src/routes.ts (line 67)",
+     "apps/three-surface-poc/src/polaris.ts (line 69)",
+     "packages/three-surface-poc-core/src/model.ts (line 61)"
+    ]
+   },
+   "hit_classification": "that ledger's own lines 3-5 read 'Candidate review input \u2014 never authority. This is the CC-REV-2 affected-consumer inventory. It performs no act and authorizes no implementation.' It is NOT a row of either manifest in its own directory (PWB-BEHAVIOR-AMENDMENT-MANIFEST.txt and PWB-EFFECT-AMENDMENT-MANIFEST.txt both searched for its basename: 0 hits), so unlike the general-trusted-bootstrap case its classifications bind nothing.",
+   "registry_digest_check": {
+    "file": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+    "act": ".syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md",
+    "current_bytes_match_act_digest": true,
+    "note": "reported as a boolean; neither value reproduced, per CG-15"
+   },
+   "unknown": "whether any docs/evidence/*.json digest table binds the bytes slices 2 and 3 would edit \u2014 not swept by this packet."
+  },
+  "M13_pwb_tasks": {
+   "claim_label": "Observed",
+   "file": "openspec/changes/polaris-project-wide-butlers-model/tasks.md",
+   "lines": 139,
+   "predicate": "^- \\[[ xX]\\] ",
+   "boxes": 35,
+   "checked": 32,
+   "unchecked": 3,
+   "unchecked_ids": [
+    "4.6 Perform the RFC7-30 owner cold-open walkthrough and record the \u2026",
+    "5.2 Repair only recorded findings, then confirm them against the exact repaired head",
+    "5.3 Report the completed improvement cycle to the owner before any next cycle begins"
+   ],
+   "consequence": "no M11 slice duplicates an unchecked task, so M11 is new improvement-cycle scope; 5.3 being unchecked is a sequencing fact shared by all ten sibling packets."
+  }
+ },
+ "collision": {
+  "m11_surface": [
+   "apps/three-surface-poc/src/routes.ts",
+   "apps/three-surface-poc/src/main.ts",
+   "apps/three-surface-poc/src/page-shell.ts",
+   "apps/three-surface-poc/src/polaris.ts",
+   "apps/three-surface-poc/src/trajectory.ts",
+   "apps/three-surface-poc/src/orrery.ts",
+   "apps/three-surface-poc/src/polaris-source.ts",
+   "apps/three-surface-poc/src/materialize-action.ts",
+   "packages/cap1-daemon/src/server.ts",
+   "packages/three-surface-poc-core/src/resource-ledger.ts",
+   "packages/three-surface-poc-core/src/project-shape-observation.ts",
+   "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+   "packages/three-surface-poc-core/src/model.ts",
+   "packages/three-surface-poc-core/src/project-shape-model.ts",
+   "docs/THREE-SURFACE-POC.md",
+   "package.json"
+  ],
+  "m11_surface_size": 16,
+  "predicate_A": "every code span in every .md under the sibling worktree's docs/design/, kept if it begins apps/ packages/ scripts/ docs/ or equals package.json, kept if it resolves as a FILE in the M11 worktree, intersected with the 16-file surface",
+  "predicate_B": "the same extraction restricted to the packet's '## Gate 3 \u2014 Topology' section \u2014 what the packet says it would touch (verification rule 5: a citation is not a proposal)",
+  "rows": [
+   {
+    "sibling": "M1 lane B",
+    "worktree": "laneb",
+    "head": "4090f98",
+    "pr": "PR #35",
+    "pending": "P-68",
+    "citation_intersection": 1,
+    "gate3_intersection": 0,
+    "gate3_files": []
+   },
+   {
+    "sibling": "M2",
+    "worktree": "m2wt",
+    "head": "f2f37dd",
+    "pr": "PR #36",
+    "pending": "P-69",
+    "citation_intersection": 4,
+    "gate3_intersection": 4,
+    "gate3_files": [
+     "apps/three-surface-poc/src/main.ts",
+     "apps/three-surface-poc/src/routes.ts",
+     "packages/three-surface-poc-core/src/model.ts",
+     "packages/three-surface-poc-core/src/project-shape-model.ts"
+    ]
+   },
+   {
+    "sibling": "M3",
+    "worktree": "m3wt",
+    "head": "6574600",
+    "pr": "PR #37",
+    "pending": "P-70",
+    "citation_intersection": 3,
+    "gate3_intersection": 1,
+    "gate3_files": [
+     "apps/three-surface-poc/src/polaris.ts"
+    ]
+   },
+   {
+    "sibling": "M4",
+    "worktree": "m4wt",
+    "head": "63b8e33",
+    "pr": "PR #38",
+    "pending": "P-71",
+    "citation_intersection": 7,
+    "gate3_intersection": 6,
+    "gate3_files": [
+     "apps/three-surface-poc/src/orrery.ts",
+     "apps/three-surface-poc/src/polaris.ts",
+     "apps/three-surface-poc/src/routes.ts",
+     "apps/three-surface-poc/src/trajectory.ts",
+     "packages/three-surface-poc-core/src/model.ts",
+     "packages/three-surface-poc-core/src/project-shape-model.ts"
+    ]
+   },
+   {
+    "sibling": "M5",
+    "worktree": "m5wt",
+    "head": "ba9ca61",
+    "pr": "PR #39",
+    "pending": "P-72",
+    "citation_intersection": 6,
+    "gate3_intersection": 4,
+    "gate3_files": [
+     "apps/three-surface-poc/src/polaris.ts",
+     "apps/three-surface-poc/src/routes.ts",
+     "packages/three-surface-poc-core/src/model.ts",
+     "packages/three-surface-poc-core/src/project-shape-observation.ts"
+    ]
+   },
+   {
+    "sibling": "M6",
+    "worktree": "m6wt",
+    "head": "83c9f60",
+    "pr": "PR #40",
+    "pending": "P-73",
+    "citation_intersection": 2,
+    "gate3_intersection": 1,
+    "gate3_files": [
+     "package.json"
+    ]
+   },
+   {
+    "sibling": "M7",
+    "worktree": "m7wt",
+    "head": "f97baf4",
+    "pr": "PR #42",
+    "pending": "P-76",
+    "citation_intersection": 5,
+    "gate3_intersection": 4,
+    "gate3_files": [
+     "apps/three-surface-poc/src/polaris-source.ts",
+     "apps/three-surface-poc/src/routes.ts",
+     "package.json",
+     "packages/three-surface-poc-core/src/project-shape-observation.ts"
+    ]
+   },
+   {
+    "sibling": "M8",
+    "worktree": "m8wt",
+    "head": "bce9039",
+    "pr": "PR #43",
+    "pending": "P-74",
+    "citation_intersection": 14,
+    "gate3_intersection": 9,
+    "gate3_files": [
+     "apps/three-surface-poc/src/main.ts",
+     "apps/three-surface-poc/src/orrery.ts",
+     "apps/three-surface-poc/src/polaris-source.ts",
+     "apps/three-surface-poc/src/polaris.ts",
+     "apps/three-surface-poc/src/routes.ts",
+     "apps/three-surface-poc/src/trajectory.ts",
+     "packages/three-surface-poc-core/src/model.ts",
+     "packages/three-surface-poc-core/src/project-shape-model.ts",
+     "packages/three-surface-poc-core/src/walkthrough-readiness.ts"
+    ]
+   },
+   {
+    "sibling": "M9",
+    "worktree": "m9wt",
+    "head": "65de02b",
+    "pr": "PR #41",
+    "pending": "P-75",
+    "citation_intersection": 8,
+    "gate3_intersection": 4,
+    "gate3_files": [
+     "apps/three-surface-poc/src/polaris.ts",
+     "apps/three-surface-poc/src/routes.ts",
+     "apps/three-surface-poc/src/trajectory.ts",
+     "packages/three-surface-poc-core/src/model.ts"
+    ]
+   },
+   {
+    "sibling": "M10",
+    "worktree": "m10wt",
+    "head": "95f31cb",
+    "pr": "PR #44",
+    "pending": "P-77",
+    "citation_intersection": 7,
+    "gate3_intersection": 5,
+    "gate3_files": [
+     "apps/three-surface-poc/src/polaris.ts",
+     "apps/three-surface-poc/src/routes.ts",
+     "package.json",
+     "packages/cap1-daemon/src/server.ts",
+     "packages/three-surface-poc-core/src/model.ts"
+    ]
+   }
+  ],
+  "most_cited": {
+   "apps/three-surface-poc/src/routes.ts": 7,
+   "packages/three-surface-poc-core/src/model.ts": 6,
+   "apps/three-surface-poc/src/polaris.ts": 6
+  },
+  "m11_only": [
+   "packages/three-surface-poc-core/src/resource-ledger.ts",
+   "apps/three-surface-poc/src/page-shell.ts",
+   "docs/THREE-SURFACE-POC.md",
+   "apps/three-surface-poc/src/materialize-action.ts"
+  ],
+  "largest_overlap": "M8 at 9 of 16",
+  "named_collisions": {
+   "M10 P-77 PR #44": "owns the machine contract, response headers and inputsDigest; slice 2's machine form mints nothing on that channel until M10 lands",
+   "M5 P-72 PR #39": "owns machine-channel route existence; slice 2's machine form holds behind P-72 exactly as M10's slice 3 does",
+   "M1 lane A P-67 (main) and lane B P-68 PR #35": "own the ceiling headroom slice 2's pageShell line charges; Q5 rules it and the bead must re-measure",
+   "M6 P-73 PR #40": "owns generator honesty and the generator's own stderr lines at apps/three-surface-poc/src/polaris-generation/pipeline-demo-main.ts lines 35-36; slice 1's logger is daemon-side and does not touch them",
+   "M4 P-71 PR #38": "owns the owner loop's evidence records; slice 2's lastResponseLimitFailure is deliberately not retained \u2014 one in-memory slot, no file"
+  },
+  "unknown": [
+   "whether the sibling branches' actual diffs stay inside the paths their Gate 3 tables name, until they land \u2014 predicate B measures what each packet says"
+  ]
+ },
+ "owner_questions": {
+  "count": 5,
+  "registered": false,
+  "note": "Not registered in PENDING-OWNER-DECISIONS.md: this packet writes two files and no register row, by instruction; the row lands with review 1, batched.",
+  "sibling_rows": {
+   "M1": "P-67 (lane A, ruled) / P-68 (lane B)",
+   "M2": "P-69",
+   "M3": "P-70",
+   "M4": "P-71",
+   "M5": "P-72",
+   "M6": "P-73",
+   "M7": "P-76",
+   "M8": "P-74",
+   "M9": "P-75",
+   "M10": "P-77"
+  },
+  "questions": [
+   {
+    "id": "Q1",
+    "gist": "What credential class may a status disclosure carry \u2014 machine-credentialed or human-open \u2014 under SEC-1 and RFC5-3? Route existence itself is P-72's question and is not re-asked.",
+    "recommended": "machine-credentialed for the machine form; the human form on the existing human-open pages",
+    "default_if_unanswered": "slice 2's machine route does not ship"
+   },
+   {
+    "id": "Q2",
+    "gist": "Does the act-bound registry breachResult sentence ('final-output breaches emit only a bounded typed failure\u2026') forbid a structured stderr line naming the breach?",
+    "recommended": "no \u2014 'return only' in the specification governs the response; a stderr line is not returned",
+    "default_if_unanswered": "the second arm: the line lands without the population counts"
+   },
+   {
+    "id": "Q3",
+    "gist": "Is making a final-output breach reach PWB-REQ-021 readiness an implementation of PWB-REQ-006 lines 378/384, or an amendment through CC-REV-2?",
+    "recommended": "an implementation of two quoted sentences; no delta needed",
+    "default_if_unanswered": "slice 3 does not ship"
+   },
+   {
+    "id": "Q4",
+    "gist": "Must a new registry limit (maxOutputBytes) be minted for the output side, and does minting one cross the continuation act's registry-envelope escalation trigger?",
+    "recommended": "do not mint one \u2014 record against the two ceilings the registry already declares; the minting arm needs a new owner act and a CC-REV-2 delta",
+    "default_if_unanswered": "the recommended arm: no new limit"
+   },
+   {
+    "id": "Q5",
+    "gist": "May the human status line ride pageShell \u2014 appearing on every human page and charging the M1 ceiling headroom \u2014 or only its own route and the home page?",
+    "recommended": "pageShell, under 400 bytes, ~0.07% of the 612,665-byte tailnet headroom",
+    "default_if_unanswered": "the second arm: home page and its own route only"
+   }
+  ]
+ },
+ "rfc2_26_test": {
+  "denominator": 4,
+  "clause": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md lines 196-221 (heading at 194), located through DIRECTIVE-REGISTER.md",
+  "rows": [
+   {
+    "slice": "1 Structured line",
+    "consequence_class": "none enumerated",
+    "mapped": "n/a for RFC2-26; the governing obligation is PWB-REQ-006 (spec line 340) via scenario 'Active repository content remains inert' at spec lines 404-408",
+    "limb1": "not engaged"
+   },
+   {
+    "slice": "2 Status surfaces",
+    "consequence_class": "evaluation and snapshot displays; API answers over epistemic state",
+    "mapped": "POC-REQ-060 (spec line 927); POC-REQ-032 (spec line 574) scenario 'Unknown disclosed in the narrative' (spec line 599); PWB-REQ-020 (spec line 902) scenario 'Complete model has wire parity' (spec lines 928-933)",
+    "limb1": "available for the human line; PARTIAL for the machine form \u2014 PWB-REQ-020's scenario speaks of a project-wide evaluation Polaris renders, and a status body is not one"
+   },
+   {
+    "slice": "3 Readiness widening",
+    "consequence_class": "API answers over epistemic state; arguably Unknown-reason presentation",
+    "mapped": "PWB-REQ-006 (spec line 340) scenario 'Resource breach is bounded and explicit' (spec lines 419-426), whose WHEN names the final-output ceiling and whose AND limb names cold-open readiness false; also PWB-REQ-021 (spec line 946) scenario 'Lawful run can remain not ready' (spec lines 1009-1015)",
+    "limb1": "available \u2014 the closest possible match"
+   },
+   {
+    "slice": "4 Restart and upgrade",
+    "consequence_class": "none enumerated",
+    "mapped": "n/a",
+    "limb1": "not engaged"
+   }
+  ],
+  "establishes": "slice 3 maps to a requirement-and-scenario pair whose WHEN names its exact trigger; slice 2's human line maps to two POC requirements and its machine form's parity scenario is a partial match; slices 1 and 4 enumerate no RFC-0002 consequence",
+  "does_not_establish": "that any slice is lawful \u2014 that is the owner's"
+ },
+ "acts": {
+  "authorizing": {
+   "direction": ".syzygy/governance/decisions/THREE-SURFACE-POC-IMPROVEMENT-CYCLES-DIRECTION.md",
+   "limb": "lines 55-56, 'Improvement-cycle work must trace to POC-REQ-001..061 or to a recorded review finding.'",
+   "bound": "lines 23-24, each item 'must still alter the runnable demonstration or falsify/repair a named product finding'"
+  },
+  "implementation_plane": {
+   "act": ".syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md",
+   "quote_span": "lines 59-63",
+   "quote": "Code in the ordinary implementation plane only \u2014 apps/**, packages/**, tooling, root manifests \u2014 never inside openspec/** or .syzygy/**"
+  },
+  "continuation": {
+   "act": ".syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md",
+   "escalation_span": "lines 150-156",
+   "registry_trigger_span": "lines 154-155",
+   "spec_trigger_span": "line 151"
+  },
+  "not_applicable": {
+   ".syzygy/governance/decisions/POLARIS-POST-CEILING-CORRECTION-AUTHORIZATION.md": "concerns the 2026-08-31 reconciliation-review ceiling and authorizes one edit to a design document's data-flow item (lines 19-22); nothing to do with the response-byte ceiling"
+  },
+  "improvement_cycle_tracing_question": "routed to M10's Q4 under P-77; not re-asked here"
+ },
+ "doctrine": {
+  "VIS-1": "vision.md lines 82-94",
+  "VIS-2": "vision.md lines 96-106",
+  "VIS-4": "vision.md lines 122-140",
+  "VIS-5": "vision.md lines 141-160",
+  "SEC-1": "security.md lines 10-23",
+  "SEC-5": "security.md lines 54-60",
+  "SEC-2_SEC-3_SEC-4": "swept and not engaged: no egress (the daemon binds 127.0.0.1 only, server.ts line 34, and no slice adds a client), no observed-code execution, no write into the observed repository",
+  "RFC5-3": ".syzygy/governance/contracts/rfcs/RFC-0005/admission-and-boundary.md lines 101-107, heading '3.2 Client classes' at line 99; exhaustiveness at lines 109-117",
+  "CC-REV-2": ".syzygy/governance/policies/craft-and-care/review-and-documentation.md line 52",
+  "VIS-2_reading_note": "the dossier reads VIS-2 as applying to the operator; this packet adopts that reading and labels it [Inferred] \u2014 VIS-2's literal subject is a project's status. Slice 3 is the one slice VIS-2 reaches without construction, because PWB-REQ-021 readiness is a rendered project claim."
+ },
+ "dossier_corrections": [
+  "prerequisite: the 'owner act for the registry resourceLimits change' does not bind the recommended arm \u2014 both response ceilings are already registry-declared and typed, and ResourceLimitBreach.limit already admits them",
+  "P0-CEILING is superseded on main by the M1 lane A trim: 612,665 bytes of tailnet headroom at Butlers 2e3bac97",
+  "S10-F1's route description yields 15; the computed table is 17 (it omits the two POST materialize routes)",
+  "S10-F3 is exact at main.ts line 207, but four of the six stderr sites drop an available cause, not one",
+  "boundedResponse is at routes.ts lines 137-142 at a9f671e, not 99-151 (that span is the whole ceiling block, 98-142)",
+  "S7-M3's 'same ledger' design is not available: the evaluation ledger's breaches are snapshotted into a frozen, digest-covered observation before any response exists",
+  "an eleventh READINESS_ARMS entry is not available either: the list is closed at ten, one per clause of PWB-REQ-021's readiness sentence",
+  "S10-M2's 'cheapest fix in the audit' understates: a log line is a new sink PWB-REQ-006 already regulates in two places, so its test set is a sentinel sweep",
+  "S10-M3's optional pidfile would fail an existing system test that asserts the state directory's contents exactly",
+  "S10-M1's 'the same footer facts' presumes a function that does not exist: five inline call sites, no shared builder"
+ ],
+ "validation": {
+  "command": "python3 scripts/check_governance.py",
+  "cwd": "the M11 worktree at a9f671e plus this packet's two files",
+  "tail_line": "32 OK, 20 WARN, 0 FAIL (52 checks) \u2014 counts derived, not asserted",
+  "exit_code": 0,
+  "note": "read the output's tail line, not the exit code (verification rule 4)"
+ },
+ "packet_conventions": {
+  "non_fence_lines": 1257,
+  "lines": 1310,
+  "bytes": 102079,
+  "odd_backtick_non_fence_lines": 0,
+  "distinct_code_spans": 326,
+  "slash_bearing_spans_not_resolving": 34,
+  "enumerated": [
+   ".syzygy/**",
+   "/api/poc",
+   "/api/poc/polaris",
+   "/polaris",
+   "GET /",
+   "GET /api/poc",
+   "GET /api/poc/polaris",
+   "GET /api/poc/status",
+   "GET /butlers-syzygy",
+   "GET /butlers-syzygy/",
+   "GET /butlers-syzygy/api/poc",
+   "GET /butlers-syzygy/api/poc/polaris",
+   "GET /butlers-syzygy/orrery",
+   "GET /butlers-syzygy/polaris",
+   "GET /butlers-syzygy/polaris/source",
+   "GET /butlers-syzygy/trajectory",
+   "GET /orrery",
+   "GET /polaris",
+   "GET /polaris/source",
+   "GET /trajectory",
+   "POST /butlers-syzygy/trajectory/materialize",
+   "POST /trajectory/materialize",
+   "apps/**",
+   "apps/three-surface-poc/src/<name>",
+   "apps/three-surface-poc/src/status.ts",
+   "decisions/",
+   "docs/**",
+   "docs/evidence/*.json",
+   "openspec/**",
+   "packages/**",
+   "packages/three-surface-poc-core/src/<name>",
+   "polaris-generation/pipeline-demo-main.ts",
+   "python3 scripts/check_governance.py",
+   "scratchpad/capture/polaris.html"
+  ],
+  "over_width_non_fence_lines_outside_tables_headings_quotes": 3,
+  "cg1b_extension_spans_unresolved": 0,
+  "butlers_path_in_a_code_span": false,
+  "line_number_convention": "stated once in the packet head"
+ }
+}
