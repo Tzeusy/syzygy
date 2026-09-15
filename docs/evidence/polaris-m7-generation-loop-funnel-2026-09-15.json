@@ -1,0 +1,1061 @@
+{
+ "kind": "polaris-m7-generation-loop-funnel-evidence",
+ "status": "candidate; binds nothing; planning only; two independent reviews applied 2026-09-15 - review 1, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 9 non-blocking, 3 editorial, F1-F12), and review 2, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 10 non-blocking, 6 editorial, G1-G16), which verified the review-1 repairs as eleven REPAIRED over twelve with F10 item 3's non-application confirmed correct; at the owner gate, with the sixteen review-2 exception repairs uncovered until a third review confirms them [superseded 2026-09-15 after review 2: 'one independent review applied 2026-09-15 - review 1 ... uncovered until a second review confirms them'; this field read 'no independent review yet' until 2026-09-15]",
+ "move": "M7",
+ "bead": "syzygy-dov.7",
+ "packet": "docs/design/POLARIS-M7-GENERATION-LOOP-FUNNEL.md",
+ "commit": "a9f671e",
+ "commit_full": "a9f671e9d69e1a20c89c7f6ed0c6d9e58a644c1d",
+ "dossier": {
+  "prose": "docs/pursuits/2026-09-13-vision-pursuit.md",
+  "data": "docs/pursuits/2026-09-13-vision-pursuit-data.json",
+  "syzygy_audited_at_recorded_in_dossier": "f4589e2",
+  "tree_the_L3_agent_actually_read": "1932f74",
+  "merges": [
+   "L3-M4",
+   "L3-M5",
+   "L3-M6",
+   "L3-M7",
+   "L3-M9",
+   "L3-M8"
+  ],
+  "evidence_findings": [
+   "L3-F3",
+   "L3-F5",
+   "L3-F6",
+   "L3-F7",
+   "L3-F8"
+  ],
+  "prerequisite_line": "none; owner act for egress",
+  "prerequisite_line_survives": "yes, for filing; corrected in two respects — the route carries a prerequisite the line does not name (Q3), and the self-corpus read may need a ruling before any egress question arises (Q2)"
+ },
+ "independent_review": {
+  "count": 2,
+  "raws": ["docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-RAW.md", "docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-2-RAW.md"],
+  "verdicts": ["CONFIRM WITH EXCEPTIONS", "CONFIRM WITH EXCEPTIONS"],
+  "note": "One independent fresh-context review, retained verbatim at docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-RAW.md (verdict copied exactly: CONFIRM WITH EXCEPTIONS). Its twelve findings F1-F12 were each re-derived against source 2026-09-15; eleven were confirmed and applied and one (F10 item 3) was NOT confirmed and not applied; see review1 below. Review 2 is retained verbatim at docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-2-RAW.md (verdict copied exactly: CONFIRM WITH EXCEPTIONS); it verified those repairs as eleven REPAIRED over twelve with F10 item 3's non-application confirmed correct, and filed sixteen exceptions G1-G16, each re-derived against source and applied 2026-09-15; see review2 below. Verification rule 10: review 1 binds the bytes it names at 0c4b4a9 and review 2 the bytes at 1803608, neither of them these, and the sixteen review-2 exception repairs are uncovered until a third review confirms them. [Superseded 2026-09-15 after review 2: 'Verification rule 10: review 1 binds the bytes it names at 0c4b4a9, not these, and the eleven applied exception repairs, together with the recorded decision not to apply the twelfth, are uncovered until a second review confirms them.' This field read count 0 and 'first draft; by verification rule 10 nothing in the packet is covered until a fresh-context review reads these exact bytes' until 2026-09-15.]"
+ },
+ "owner_questions": [
+  {
+   "id": "Q1",
+   "gist": "Does the observer registry's git-tree-entry source identity satisfy RFC7-10's five closed anchor classes, or does citing a project source file need a sixth class?",
+   "slices": [
+    1
+   ],
+   "recommended": "admit it as RFC7-10's evidence-artifact-with-integrity-digest class, in a recorded ruling",
+   "default_if_unanswered": "third arm — ship the identity fields and record REQ-003's anchor sentence as unsatisfied",
+   "lawful_arms": 3
+  },
+  {
+   "id": "Q2",
+   "gist": "Is running the generator over Syzygy's own governed corpus a 'real-project read' the implementation act reserves, or the observing project reading its own tree?",
+   "slices": [
+    3
+   ],
+   "recommended": "the observing project reading its own tree; no consent record, registry entry or act — ruling recorded",
+   "default_if_unanswered": "slice 3 does not ship",
+   "lawful_arms": 2
+  },
+  {
+   "id": "Q3",
+   "gist": "Slice 4's machine-credentialed draft route fails P-72's 'derived read-only machine view' membership test by construction; extend that category, mint a second, or serve no route?",
+   "slices": [
+    4
+   ],
+   "recommended": "fold into P-72 as a second declared category, 'generated editorial draft view', ruled with P-72's Q1 and Q2",
+   "default_if_unanswered": "second arm — no route; the drafted-act limb is independent",
+   "lawful_arms": 2,
+   "sibling_question": "P-72 Q1/Q2"
+  },
+  {
+   "id": "Q4",
+   "gist": "Slice 4's drafted act is an RFC7-21 per-block authorship act over Syzygy's own draft; does it ride P-71's Q3 ruling, or is it a different subject?",
+   "slices": [
+    4
+   ],
+   "recommended": "take P-71's arm (b) — a pure drafter returning packet data, writing no file",
+   "default_if_unanswered": "arm (b)",
+   "lawful_arms": 2,
+   "sibling_question": "P-71 Q3"
+  },
+  {
+   "id": "Q5",
+   "gist": "Is replacing the admit port's 'an already-dispatched identity MUST refuse' with reserve/complete an implementation of REQ-008, or a change to a reviewed effect-boundary safety property?",
+   "slices": [
+    6
+   ],
+   "recommended": "implementation of REQ-008, conditional on retaining the replay prohibition for in-flight and uncertain identities",
+   "default_if_unanswered": "second arm — caller-side cache; REQ-008's 'Resume valid work' scenario stays unimplemented",
+   "lawful_arms": 2
+  }
+ ],
+ "slices": [
+  {
+   "n": 1,
+   "title": "Observation-typed sources and durable citations",
+   "source_move": "L3-M5",
+   "size": "large",
+   "act": "POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md",
+   "clause": "REQ-polaris-generation-003, base line 98",
+   "clause_origin": "predecessor text",
+   "phase": "A",
+   "task": "2.2 (tasks.md line 22)",
+   "question": "Q1 (conformance claim only)"
+  },
+  {
+   "n": 2,
+   "title": "Structural independence: per-stage routes, fidelity envelope without the plan",
+   "source_move": "L3-M4",
+   "size": "medium",
+   "act": "same",
+   "clause": "REQ-polaris-generation-006, base 302 / overlay 180",
+   "clause_origin": "predecessor text, identical in both files",
+   "phase": "A",
+   "task": "2.4 (tasks.md line 24)",
+   "question": null
+  },
+  {
+   "n": 3,
+   "title": "Self-corpus proof with a scripted responder",
+   "source_move": "L3-M6",
+   "size": "medium",
+   "act": "same",
+   "clause": "REQ-polaris-generation-014, base 755 / overlay 367",
+   "clause_origin": "predecessor text, identical in both files",
+   "phase": "A",
+   "task": "3.3 (tasks.md line 47), as preparation and never as its discharge",
+   "question": "Q2"
+  },
+  {
+   "n": 4,
+   "title": "Draft route and a drafted per-block authorship act",
+   "source_move": "L3-M7",
+   "size": "large",
+   "act": "same",
+   "clause": "REQ-polaris-generation-020, base 1083 (Phase B) and REQ-polaris-generation-010, base 528 (Phase A)",
+   "clause_origin": "predecessor text",
+   "phase": "B for the route and control; A for the authorship gate",
+   "task": "2.8 (tasks.md line 31)",
+   "question": "Q3 and Q4"
+  },
+  {
+   "n": 5,
+   "title": "Name the egress act and what it buys",
+   "source_move": "L3-M9",
+   "size": "small",
+   "act": "same",
+   "clause": "argued from SEC-2 directly",
+   "clause_origin": "n/a",
+   "phase": "n/a",
+   "task": "none precisely; kit guidance plus a status correction",
+   "question": null
+  },
+  {
+   "n": 6,
+   "title": "Stage-scoped inputs and resumable attempts",
+   "source_move": "L3-M8 limbs (a) and (b)",
+   "size": "medium",
+   "act": "same",
+   "clause": "REQ-polaris-generation-008, base line 400",
+   "clause_origin": "predecessor text",
+   "phase": "A",
+   "task": "2.3 (tasks.md line 23)",
+   "question": "Q5 for limb (b)"
+  },
+  {
+   "n": 7,
+   "title": "Drift band (deferred)",
+   "source_move": "L3-M8 limb (c)",
+   "size": "not sized",
+   "act": "not evaluated",
+   "clause": "REQ-polaris-generation-009, overlay line 243",
+   "clause_origin": "amended requirement; not swept",
+   "phase": "not evaluated",
+   "task": "not evaluated",
+   "question": null
+  }
+ ],
+ "measurements": {
+  "plane_disjointness": {
+   "predicate": "literal occurrences of 'three-surface-poc-core', 'PocModel' and 'projectShape'",
+   "denominator": "the 20 tracked files of packages/polaris-generation-core and apps/three-surface-poc/src/polaris-generation [corrected 2026-09-15, review 1 F1; it read 'the 20 files of packages/polaris-generation-core/src and apps/three-surface-poc/src/polaris-generation', which is 17 tracked files. Both sweeps re-run over both sets this session: 0 on each]",
+   "denominator_count": 20,
+   "hits": 0,
+   "method": "recursive grep this session; corroborated by the source-schema type census below (verification rule 2)"
+  },
+  "route_table": {
+   "file": "apps/three-surface-poc/src/routes.ts",
+   "wc_l": 240,
+   "route_array_lines": "206-239",
+   "entries": 15,
+   "distinct_paths": 15,
+   "human_open": 11,
+   "machine_credentialed": 4,
+   "machine_logical_routes": 2,
+   "method": "pocRoutes() called on the built module this session",
+   "generation_or_draft_literals": {
+    "predicate": "case-insensitive 'generation' and 'draft'",
+    "denominator": "the whole 240-line file",
+    "hits": 0
+   }
+  },
+  "stage_envelopes": {
+   "method": "a sentinel string placed in one source text - specifically in the garden fixture's mechanism source [named 2026-09-15, review 2 G14: 1/2/2/4/4 = 13 re-derives only with the sentinel in mechanism; with it in purpose the counts are 1/2/2/3/3 = 11, because the shipped fixture repeats the mechanism text twice inside the draft and the purpose text once. Both reproduced this session against the built package, locally, with no provider call]; each stage's encoded envelope parsed at the generate port this session",
+   "denominator": "every stage the shipped synthetic fixture admits (5; no repair cycle)",
+   "rows": [
+    {
+     "stage": "inventory",
+     "input_keys": [
+      "readerQuestions",
+      "sources"
+     ],
+     "sentinel_occurrences": 1
+    },
+    {
+     "stage": "plan",
+     "input_keys": [
+      "inventory",
+      "readerQuestions",
+      "sources"
+     ],
+     "sentinel_occurrences": 2
+    },
+    {
+     "stage": "author",
+     "input_keys": [
+      "inventory",
+      "plan",
+      "readerQuestions",
+      "sources"
+     ],
+     "sentinel_occurrences": 2
+    },
+    {
+     "stage": "edit",
+     "input_keys": [
+      "draft",
+      "inventory",
+      "plan",
+      "readerQuestions",
+      "sources"
+     ],
+     "sentinel_occurrences": 4
+    },
+    {
+     "stage": "fidelity",
+     "input_keys": [
+      "draft",
+      "inventory",
+      "plan",
+      "readerQuestions",
+      "sources"
+     ],
+     "sentinel_occurrences": 4
+    }
+   ],
+   "sentinel_total": 13,
+   "finding": "sources is a key of all five envelopes; fidelity carries plan and inventory does not"
+  },
+  "input_bytes_per_stage": {
+   "method": "unchanged runGenerationPipeline over the shipped synthetic fixture with a capturing admit port recording AttemptInput.inputBytes",
+   "rows": [
+    {
+     "stage": "inventory",
+     "ordinal": 0,
+     "inputBytes": 3422
+    },
+    {
+     "stage": "plan",
+     "ordinal": 1,
+     "inputBytes": 4297
+    },
+    {
+     "stage": "author",
+     "ordinal": 2,
+     "inputBytes": 7971
+    },
+    {
+     "stage": "edit",
+     "ordinal": 3,
+     "inputBytes": 8807
+    },
+    {
+     "stage": "fidelity",
+     "ordinal": 4,
+     "inputBytes": 6283
+    }
+   ],
+   "total": 30780,
+   "source_bytes_json_stringify": 439,
+   "ratio_total_over_corpus": 70.11,
+   "marginal_slope": {
+    "runs": [
+     [
+      439,
+      30780
+     ],
+     [
+      3439,
+      65780
+     ],
+     [
+      6439,
+      100780
+     ]
+    ],
+    "bytes_billed_per_source_byte": 11.67,
+    "scope": "fixture-dependent: this fixture echoes each source's text into an inventory statement and a draft paragraph. The structural part — the corpus encoded once per stage — is 5 in a no-repair run and 7 with one repair cycle (pipeline.ts 259-269)"
+   }
+  },
+  "prompt_and_schema_bytes": {
+   "method": "promptForStage and stageSchema called on the built module this session",
+   "system_bytes": {
+    "inventory": 1971,
+    "plan": 2371,
+    "author": 2459,
+    "edit": 1968,
+    "fidelity": 2515,
+    "repair": 1847
+   },
+   "schema_bytes": {
+    "inventory": 750,
+    "plan": 641,
+    "author": 3961,
+    "edit": 3961,
+    "fidelity": 881,
+    "repair": 3961
+   },
+   "system_total_all_six": 13131,
+   "system_total_no_repair_five": 11284,
+   "schema_total_all_six": 14155,
+   "correction_to_L3_F7": "the prompt is transmitted twice (envelope line 176 and the separate system argument at line 219) and billed once (the charge at lines 177-179 is Buffer.byteLength(encoded), the envelope alone)"
+  },
+  "self_corpus": {
+   "predicate": "every tracked .md under .syzygy/governance/doctrine (6), every tracked .md under .syzygy/governance/decisions at any directory level (71: 67 top-level and 4 under launch-gate/), and every tracked .md one directory below .syzygy/governance/contracts/rfcs — the accepted RFC modules (28). The two accepted RFCs that are single files rather than directories, RFC-0001-project-graph-identity-state-planes.md and RFC-0006-cross-surface-selection-query-drawer.md, are out of scope of the module form; including them gives 107 files / 1369266 bytes / 1360678 characters / 0 over the cap / largest 63903. [Corrected 2026-09-15, review 1 F2; it read 'every tracked .md under .syzygy/governance/doctrine, every top-level tracked .md under .syzygy/governance/decisions, and every tracked .md under .syzygy/governance/contracts/rfcs'. Run as written that is 107; read strictly as top-level for decisions it is 101; the published figures re-derive exactly under the corrected wording and under nothing else. Both re-derivations run this session]",
+   "files": 105,
+   "raw_bytes": 1266454,
+   "characters": 1258724,
+   "over_100000_char_per_source_cap": 0,
+   "largest_source_characters": 55836,
+   "inventory_envelope_encoded_bytes": "about 1290000 (approximate; see review1.f3_reproduction) [this field read the exact integer 1294284 until 2026-09-15; twelve reproductions of the stated method give 1294094-1300688 and none gives 1294284 - review 1, F3]",
+   "encode_limit_probe": {
+    "1000000": "rejected: byte-limit",
+    "2000000": "accepted",
+    "4000000": "accepted",
+    "8000000": "accepted",
+    "16000000": "accepted"
+   },
+   "cumulative_floor_for_a_no_repair_run": 6471420,
+   "cumulative_floor_label": "Inferred — 5 x the measured envelope, from the stage-input construction traced at pipeline.ts 259-269; no such run has been executed"
+  },
+  "landed_caps": {
+   "per_source_max_characters": 100000,
+   "source_list_max_items": 200,
+   "site": "packages/polaris-generation-core/src/provider-draft.ts lines 15 and 109",
+   "butlers_capture": {
+    "sources": 278,
+    "bodies": 86,
+    "body_bytes": 1120065,
+    "source": "the retained machine capture's projectShape.counts and projectShape.resourceUse",
+    "consequence": "86 bodies fit the 200-item cap; 278 sources do not. The cap binds the population, not the body count"
+   }
+  },
+  "clause_origin_sweep": {
+   "method": "Python re over both specification files this session",
+   "denominator": "the two files (predecessor 1719 lines, overlay 637 lines by wc -l)",
+   "sentences": [
+    {
+     "clause": "REQ-003 anchor / RFC7-10",
+     "base_lines": [
+      98
+     ],
+     "overlay_lines": []
+    },
+    {
+     "clause": "REQ-006 reviewers-without-the-authoring-conversation",
+     "base_lines": [
+      302
+     ],
+     "overlay_lines": [
+      180
+     ]
+    },
+    {
+     "clause": "REQ-006 authoring stage shall not narrow its own denominator",
+     "base_lines": [
+      302
+     ],
+     "overlay_lines": [
+      180
+     ]
+    },
+    {
+     "clause": "REQ-014 two substantively different real project domains",
+     "base_lines": [
+      755
+     ],
+     "overlay_lines": [
+      367
+     ]
+    },
+    {
+     "clause": "REQ-014 synthetic tests remain explicitly limited evidence",
+     "base_lines": [
+      755
+     ],
+     "overlay_lines": [
+      367
+     ]
+    },
+    {
+     "clause": "REQ-010 editorial-draft until an attributed per-block authorship act",
+     "base_lines": [
+      528
+     ],
+     "overlay_lines": []
+    },
+    {
+     "clause": "REQ-020 guided start without manually assembling records",
+     "base_lines": [
+      1083
+     ],
+     "overlay_lines": []
+    },
+    {
+     "clause": "REQ-008 resumed run reuses only verified checkpoints",
+     "base_lines": [
+      400
+     ],
+     "overlay_lines": []
+    },
+    {
+     "clause": "REQ-008 duplicate starts shall not duplicate provider effects",
+     "base_lines": [
+      400
+     ],
+     "overlay_lines": []
+    },
+    {
+     "clause": "REQ-003 human HTML and machine presentation derive from the same bundle",
+     "base_lines": [
+      98
+     ],
+     "overlay_lines": []
+    }
+   ],
+   "result": "every M7 clause is predecessor text; none is overlay-only, so the arm of P-73's Q6 that gates M6 slice 4 reaches no M7 slice"
+  },
+  "tasks_md": {
+   "predicate": "^- \\[[ xX]\\] ",
+   "denominator": "the whole file, 51 lines by wc -l",
+   "boxes": 24,
+   "checked": 0
+  },
+  "bound_bytes": {
+   "act_manifest_sweep": {
+    "predicate": "each of the 15 paths named in Gate 3's topology table, searched in every tracked *-MANIFEST.txt, every tracked docs/evidence/*manifest*.json, and ACCEPTANCE-ACT-RECORD.md",
+    "manifest_population": 21,
+    "hits_per_path": 0,
+    "paths": [
+     "packages/polaris-generation-core/src/pipeline.ts",
+     "packages/polaris-generation-core/src/provider-draft.ts",
+     "packages/polaris-generation-core/src/prompts.ts",
+     "packages/polaris-generation-core/src/index.ts",
+     "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+     "apps/three-surface-poc/src/polaris-generation/pipeline-demo.ts",
+     "apps/three-surface-poc/src/polaris-generation/pipeline-demo-main.ts",
+     "apps/three-surface-poc/src/routes.ts",
+     "docs/polaris-generation/README.md",
+     "package.json",
+     "PROJECT-STATUS.md",
+     "packages/three-surface-poc-core/src/project-shape-observation.ts",
+     "apps/three-surface-poc/src/polaris-source.ts",
+     "packages/polaris-generation-core/src/pipeline.test.ts",
+     "packages/polaris-generation-core/README.md"
+    ],
+    "path_count": 15
+   },
+   "generator_scope_record": {
+    "path": "docs/evidence/polaris-generator-current-scope-2026-09-12.json",
+    "rows": 21,
+    "all_under": "openspec/changes/polaris-manifesto-generation/",
+    "implementation_paths": 0,
+    "note": "the acts bind an immutable offer by its own SHA-256, not this record; it is cited as the enumeration of the package's governed files"
+   },
+   "synthetic_verification_record": {
+    "path": "docs/evidence/polaris-pipeline-synthetic-verification-2026-09-13.json",
+    "rows": 17,
+    "rows_matching_current_bytes": 17,
+    "rows_mismatching": 0,
+    "method": "sha256 recomputed for each row this session and compared; no value reproduced, per CG-15",
+    "consequence": "slices 1, 2, 4 and 6 rewrite five of those rows and retire the record's binding to them; the re-run should happen once, after M6 and M7 both land"
+   },
+   "registry_entry": {
+    "path": ".syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json",
+    "bound_by": [
+     "PWB-OBSERVER-REGISTRY-ENTRY-ACT.md",
+     "PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md"
+    ],
+    "git_tree_entry_literal_occurrences": 1,
+    "sweep_denominator": "every tracked file under .syzygy/ and openspec/",
+    "identity_scheme": "repository-id-plus-revision-plus-repository-relative-path-plus-object-id",
+    "read_never_edited": true
+   }
+  },
+  "egress_surface": {
+   "predicate": "the literals 'fetch(', 'node:http', 'node:https', 'undici', 'axios', 'XMLHttpRequest' and 'https://'",
+   "denominator": "the 20 tracked files of packages/polaris-generation-core and apps/three-surface-poc/src/polaris-generation [corrected 2026-09-15, review 1 F1; it read 'the 20 files of the generation surface'. Re-run over that set and over the 17-file src-only set this session: 0 network primitives and the same 3 https:// test hits on each]",
+   "network_primitives": 0,
+   "https_literal_hits": 3,
+   "https_literal_note": "all three are escaping fixtures inside tests",
+   "second_method": "packages/polaris-generation-core/README.md lines 38-39, 'It has no default network client' (verification rule 2)"
+  },
+  "baseline_diffs": {
+   "f4589e2_to_a9f671e_over_the_m7_paths": {
+    "rows": 22,
+    "added": 20,
+    "modified": 2,
+    "modified_paths": [
+     "docs/polaris-generation/README.md",
+     "package.json"
+    ],
+    "routes_ts_in_any_row": false,
+    "paths": [
+     "packages/polaris-generation-core",
+     "docs/polaris-generation",
+     "apps/three-surface-poc/src/polaris-generation",
+     "package.json",
+     "apps/three-surface-poc/src/routes.ts"
+    ]
+   },
+   "1932f74_to_a9f671e_over_the_same": {
+    "rows": 0
+   }
+  },
+  "file_set_intersection": {
+   "predicate": "[SUPERSEDED 2026-09-15, review 2 G9; see superseded_2026_09_15 immediately below and review1.f7_collision_recomputed for the repaired predicate, touch-set and nine rows] code spans in each sibling's packet file that begin apps/, packages/, scripts/, docs/polaris-generation/ or package.json AND resolve as a file (os.path.isfile) in this worktree, intersected with M7's 24-file candidate surface",
+   "superseded_2026_09_15": "This whole file_set_intersection block is the first draft's measurement: the predicate keeps the prefix filter, m7_surface_size is 24, and rows holds seven entries with no 27-file column and no M8 or M9 row. The repaired predicate, the 27-file touch-set and all nine rows live in review1.f7_collision_recomputed. Marked in place 2026-09-15 after review 2 G9, as measurements.plane_disjointness and measurements.egress_surface were marked after review 1; nothing here is deleted or overwritten.",
+   "m7_surface_size": 24,
+   "m7_surface": "everything under packages/polaris-generation-core/src and apps/three-surface-poc/src/polaris-generation, everything under docs/polaris-generation, plus apps/three-surface-poc/src/routes.ts, packages/polaris-generation-core/README.md and package.json",
+   "rows": [
+    {
+     "sibling": "M1 (lane A, on main)",
+     "head": "a9f671e",
+     "impl_spans": 3,
+     "resolving_files": 1,
+     "intersection": [
+      "apps/three-surface-poc/src/routes.ts"
+     ],
+     "note": "its own text says routes.ts is not touched (lines 143-144), so this is a citation, not a claim"
+    },
+    {
+     "sibling": "lane B, PR #35, P-68",
+     "head": "4090f98",
+     "impl_spans": 2,
+     "resolving_files": 0,
+     "intersection": [],
+     "second_predicate": "git diff --name-only a9f671e HEAD in its worktree names 3 implementation-plane files: scripts/check_governance.py and two scripts existing only on that branch",
+     "intersection_under_second_predicate": []
+    },
+    {
+     "sibling": "M2, PR #36, P-69",
+     "head": "f2f37dd",
+     "impl_spans": 19,
+     "resolving_files": 11,
+     "intersection": [
+      "apps/three-surface-poc/src/routes.ts"
+     ],
+     "note": "its Gate 3 puts routes.ts in slice 3's Lives-in column"
+    },
+    {
+     "sibling": "M3, PR #37, P-70",
+     "head": "6574600",
+     "impl_spans": 15,
+     "resolving_files": 13,
+     "intersection": []
+    },
+    {
+     "sibling": "M4, PR #38, P-71",
+     "head": "63b8e33",
+     "impl_spans": 31,
+     "resolving_files": 22,
+     "intersection": [
+      "apps/three-surface-poc/src/routes.ts"
+     ],
+     "note": "its Gate 3 puts routes.ts in slice 5's Lives-in column"
+    },
+    {
+     "sibling": "M5, PR #39, P-72",
+     "head": "ba9ca61",
+     "impl_spans": 11,
+     "resolving_files": 9,
+     "intersection": [
+      "apps/three-surface-poc/src/routes.ts"
+     ],
+     "note": "its Gate 3 puts routes.ts in slices 1 and 3's Lives-in columns; slice 3 adds a route and a ResponseLimitIdentity, as M7 slice 4 would"
+    },
+    {
+     "sibling": "M6, PR #40, P-73",
+     "head": "83c9f60",
+     "impl_spans": 26,
+     "resolving_files": 13,
+     "intersection": [
+      "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+      "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md",
+      "docs/polaris-generation/AUTHORING.md",
+      "docs/polaris-generation/README.md",
+      "docs/polaris-generation/example.json",
+      "package.json",
+      "packages/polaris-generation-core/README.md",
+      "packages/polaris-generation-core/src/index.ts",
+      "packages/polaris-generation-core/src/prompts.ts",
+      "packages/polaris-generation-core/src/provider-draft.test.ts",
+      "packages/polaris-generation-core/src/provider-draft.ts"
+     ],
+     "count": 11,
+     "floor_note": "11 is a floor. packages/polaris-generation-core/src/pipeline.ts is a twelfth shared file the predicate misses: M6 cites it 10 times as the bare span `pipeline.ts` and 0 times at its full path [both counted this session]"
+    }
+   ],
+   "shared_governance_file": {
+    "path": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+    "touched_by": [
+     "lane B (P-68)",
+     "M2 (P-69)",
+     "M3 (P-70)",
+     "M4 (P-71)",
+     "M5 (P-72)",
+     "M6 (P-73)",
+     "M8 (P-74)",
+     "M9 (P-75)"
+    ],
+    "touched_by_note_2026_09_15": "M8 (P-74) and M9 (P-75) added 2026-09-15 after review 2 G10; this array listed six siblings and it is eight. All nine sibling registers were recounted this session at their own heads under the predicate ^| P- partitioned by the ## section each row falls under: laneb 4090f98 P-68, m2wt f2f37dd P-69, m3wt 6574600 P-70, m4wt 63b8e33 P-71, m5wt ba9ca61 P-72, m6wt 83c9f60 P-73, m8wt bce9039 P-74, m9wt 65de02b P-75, m7wt this branch P-76. Every one holds 27 rows (22 open + 5 acceptance-act) and carries exactly one row above P-53. Denominator all nine worktrees.",
+    "touched_by_M7": true,
+    "touched_by_M7_note_2026_09_15": "set true 2026-09-15 after review 2 G10; it read false, which this packet's own P-76 register commit falsified.",
+    "predicate": "^| P- over each worktree's register",
+    "disclosure": "This packet writes exactly two files and no register row, by instruction: the row lands after review 1, batched. [FALSE since 2026-09-15; marked 2026-09-15 after review 2 G10: the commit that carries this record writes four files, the P-76 register row among them.] This worktree's register ends at P-53, as do M8's and M9's. [FALSE since 2026-09-15; marked after review 2 G10: this branch ends at P-76, M8 at P-74 and M9 at P-75. Recounted this session at every current head under the predicate ^| P- partitioned by the ## section: laneb 4090f98 P-68, m2wt f2f37dd P-69, m3wt 6574600 P-70, m4wt 63b8e33 P-71, m5wt ba9ca61 P-72, m6wt 83c9f60 P-73, m8wt bce9039 P-74, m9wt 65de02b P-75, m7wt this branch P-76; all nine hold 27 rows and each carries exactly one row above P-53.] The next free number at the time of writing is P-74; whoever files it should re-derive it, because M8 and M9 are being drafted in parallel and may file first. [FALSE since 2026-09-15; marked after review 2 G10: M8 filed P-74 and M9 P-75, and this packet's number, re-derived rather than trusted from this sentence, is P-76. The instruction to re-derive was right.]"
+   },
+   "parallel_packets_unknown": {
+    "M8": "portability — the profile as a loaded, digest-bound registry input",
+    "M9": "one identity, one epistemic shape, one vocabulary across the surfaces",
+    "state": "RESOLVED 2026-09-15: both have committed. M8 at 4b2e8cb intersects M7's 24 at 4 and the 27-file touch-set at 6; M9 at 3e764d8 intersects at 2 and 3. The named overlap stands - M8 carries L1-M5, the observer self-profile, which slice 3 should share rather than duplicate. [This field read 'both worktrees at a9f671e with no commits; content [Unknown] to this session; disjoint from M7 by design, with one named overlap...' until 2026-09-15; the disjointness half was an unlabeled substantive claim and is false as a file-set claim - review 1, F8]"
+   }
+  },
+  "rfc2_26_test": {
+   "clause_quoted_from": ".syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md lines 196-221, heading at 194",
+   "denominator": 7,
+   "rows": [
+    {
+     "slice": 1,
+     "consequence_class": "claim and challenge rendering; Unknown-reason and rendering-tier presentation",
+     "requirement": "REQ-polaris-generation-003, base 98",
+     "scenarios": [
+      "Aligned human and machine views, base 105-109",
+      "Unsupported or surplus anchor, base 111-115"
+     ],
+     "limb1": "available"
+    },
+    {
+     "slice": 2,
+     "consequence_class": "none enumerated with confidence [Inferred]",
+     "requirement": "REQ-polaris-generation-006, overlay 180 / base 302",
+     "scenarios": [
+      "nearest: Source trade-off omitted entirely, overlay 199-203",
+      "nearest: Omitted material qualification, overlay 205-212",
+      "nearest anywhere: REQ-014 Shared model blind spot, overlay 409-414"
+     ],
+     "limb1": "requirement available, scenario partial",
+     "scenario_headings_read": "all five REQ-006 scenario headings, overlay 187, 193, 199, 205, 214; none states the envelope-contents case",
+     "repair_routes": [
+      "a scenario added through CC-REV-2",
+      "a reviewed N/A judgment homed in decisions/ and honored only through an effective owner act under RFC3-16(a) — probably reachable here [Inferred]"
+     ]
+    },
+    {
+     "slice": 3,
+     "consequence_class": "none enumerated",
+     "requirement": "REQ-polaris-generation-014, overlay 367 / base 755",
+     "scenarios": [
+      "Narrow evidence offered as completion, overlay 380-384",
+      "Unfamiliarity without project-specific patching, overlay 392-399"
+     ],
+     "limb1": "available; the first scenario bounds the slice's claim rather than authorizing it"
+    },
+    {
+     "slice": 4,
+     "consequence_class": "API answers over epistemic state; claim and challenge rendering",
+     "requirement": "REQ-polaris-generation-020, base 1083; REQ-polaris-generation-010, base 528",
+     "scenarios": [
+      "First request needs approval, base 1089-1093",
+      "Valid act, base 535-539",
+      "Invalid or partial act, base 541-545"
+     ],
+     "limb1": "available on both requirements"
+    },
+    {
+     "slice": 5,
+     "consequence_class": "none enumerated",
+     "requirement": null,
+     "scenarios": [],
+     "limb1": "n/a; argued from SEC-2 directly"
+    },
+    {
+     "slice": 6,
+     "consequence_class": "none enumerated",
+     "requirement": "REQ-polaris-generation-008, base 400",
+     "scenarios": [
+      "Resume valid work, base 407-411",
+      "Duplicate or ambiguous dispatch, base 413-417"
+     ],
+     "limb1": "available; the first scenario is the one the landed port contract cannot satisfy"
+    },
+    {
+     "slice": 7,
+     "consequence_class": "[Unknown] — not designed",
+     "requirement": "REQ-polaris-generation-009, overlay 243",
+     "scenarios": [
+      "Changed source, overlay 250-254"
+     ],
+     "limb1": "deferred, not run"
+    }
+   ]
+  }
+ },
+ "figures_that_differ_from_the_dossier": [
+  "L3-F7's 'the prompt is billed twice per call' — it is transmitted twice and billed once; the charge at pipeline.ts 177-179 is the envelope alone",
+  "L3-F7's 200-source cap framing — the cap binds the source population, not the body count. Butlers' 86 bodies fit it; its 278 sources do not",
+  "L3-F5's routes.ts:220 and routes.ts:21-22 anchors do not carry the claim — 220 is the Polaris human-surface registration and 21-22 are the presentation-path constants; the absence is a whole-file sweep",
+  "the dossier's slice 2, 'fidelity envelope built from the draft alone', contradicts REQ-006's two sentences requiring the reviewer to verify the inventory against the owning admitted sources; corrected to {sources, inventory, draft, acceptanceCriteria}",
+  "L3-M6's 'publish the resulting draft preview as the second project' — REQ-014's own 'Narrow evidence offered as completion' scenario marks synthetic provider runs unproven for exactly that obligation",
+  "a defect the dossier does not name: the inventory stage is already structurally independent (two envelope keys, neither a draft nor a plan), so slice 2 narrows four envelopes, not six, and the package already contains the pattern it needs to copy [population named 2026-09-15, review 1 F5: the four are the envelopes carrying the plan today - author, edit, fidelity and repair - of which slice 2 changes exactly two, fidelity and repair]"
+ ],
+ "could_not_verify": [
+  "[Unknown] whether the sibling branches' actual diffs stay inside the paths their packets cite; seven of the eight have committed no implementation file at all, lane B being the one that has [recount 2026-09-15, review 2 G7: this read 'five of the six', counted when the collision table had seven rows. The table now has nine, so the sibling branches are eight - laneb, M2, M3, M4, M5, M6, M8, M9 - and git diff --name-only a9f671e HEAD run in each this session names only the register, that packet's own docs/design file, its docs/evidence record and its retained raws, lane B excepted. Denominator eight]",
+  "[Unknown] which arm the owner takes on P-72's Q1, on which slice 4's route depends entirely",
+  "[Unknown] M8's and M9's content, and whether either will claim a file in M7's 24 [RESOLVED 2026-09-15; see review1.could_not_verify_resolved]",
+  "[Unknown] whether a real provider run over the self-corpus would reproduce the measured envelope sizes; no provider has ever been called and slice 3 does not call one"
+ ],
+ "governance_check": {
+  "command": "python3 scripts/check_governance.py",
+  "run": "in this worktree at the end of the session",
+  "last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) — counts derived, not asserted"
+ },
+ "packet_measured": {
+  "path": "docs/design/POLARIS-M7-GENERATION-LOOP-FUNNEL.md",
+  "bytes": 109383,
+  "sha256": "9465bf5934b91f5d12bd067fc55bbc26511610fb780b97b67dbe81dfb5f12d0f",
+  "lines_wc_l": 1312,
+  "lines_split_on_newline": 1313,
+  "non_fence_lines": 1276,
+  "odd_backtick_non_fence_lines": 0,
+  "over_width_predicate": "lines outside fenced code blocks whose first non-space character is not a pipe, a hash or a '>' and which exceed 78 columns",
+  "over_width_predicate_note_2026_09_15": "review 2 G12: this is a THIRD spelling of the over-width predicate and it describes the 0c4b4a9 figures above it, so it is left unedited. review1.post_repair_measurements and review2.packet_measured_after_review2 both use the pipe-only spelling (first non-space character not a pipe), which is the predicate the published counts are taken under and the one Gate 6 item 11 now names. Gate 6 item 11 previously named a FOURTH spelling ('outside fences, tables, block quotes and headings'), under which the current figure is 4 rather than 10; both were run over the file 2026-09-15.",
+  "over_width_lines": [
+   205,
+   889
+  ],
+  "over_width_note": "each is a single unbreakable code span",
+  "distinct_code_spans": 264,
+  "slash_bearing_spans_not_resolving_as_a_file": 35,
+  "slash_bearing_spans_not_resolving_as_a_file_list": [
+   ".syzygy/",
+   ".syzygy/**",
+   ".syzygy/governance/contracts/candidates/policy-candidates/",
+   ".syzygy/governance/contracts/rfcs/",
+   ".syzygy/governance/decisions/",
+   ".syzygy/governance/doctrine/",
+   "/",
+   "/api/poc",
+   "/api/poc/briefing",
+   "/api/poc/polaris",
+   "/polaris/draft/<runId>",
+   "GET /polaris/draft/<runId>",
+   "agent/syzygy-dov.4",
+   "agent/syzygy-dov.5",
+   "apps/",
+   "apps/**",
+   "apps/three-surface-poc/src/polaris-generation",
+   "apps/three-surface-poc/src/polaris-generation/",
+   "decisions/",
+   "decisions/README.md [REMOVED from the packet 2026-09-15, review 1 F11: it is written in full as .syzygy/governance/decisions/README.md, which resolves; this entry and the note above record what the list held at 0c4b4a9]",
+   "docs/**",
+   "docs/evidence/",
+   "docs/evidence/**",
+   "docs/evidence/*manifest*.json",
+   "docs/polaris-generation",
+   "docs/polaris-generation/",
+   "https://",
+   "openspec/",
+   "openspec/**",
+   "openspec/changes/polaris-manifesto-generation/",
+   "packages/",
+   "packages/**",
+   "packages/polaris-generation-core",
+   "packages/polaris-generation-core/src",
+   "scripts/"
+  ],
+  "slash_bearing_note": "every entry EXCEPT decisions/README.md is a directory, a write-root glob, a route or URL literal, a quoted regex predicate, or the RFC2-26 quotation's own bare decisions/. decisions/README.md WAS a file path this packet cited, at slice 5; it is written in full as .syzygy/governance/decisions/README.md from 2026-09-15 and is no longer in this list. [This note read 'none is a file path this packet cites' until 2026-09-15 - review 1, F11.] All figures in this packet_measured block describe the reviewed bytes at 0c4b4a9; post-repair figures are in review1.post_repair_measurements",
+  "measured": "after every other edit in this pass, so the figures are true of the bytes they describe [QUALIFIED 2026-09-15, review 2 G11: the assertion of currency holds only of the bytes at 0c4b4a9, which is what every value in this packet_measured block describes. The post-repair census is in review1.post_repair_measurements and the post-review-2 census in review2.packet_measured_after_review2. Values left unchanged.]", "describes_commit": "0c4b4a9",
+  "record_own_sha_absent": "this record cannot hash itself; the record's sha256 is reported in the drafter's handoff report"
+ },
+ "review1": {
+  "raw_path": "docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-RAW.md",
+  "raw_bytes": 33233,
+  "raw_sha256": "93aabafeaf50933c8ff03cfe448bbd5b13a7f289bad872d75a819485f8e85943",
+  "raw_digest_method": "wc -c and sha256sum this session; neither value transcribed",
+  "verdict": "CONFIRM WITH EXCEPTIONS - 0 blocking, 9 non-blocking, 3 editorial",
+  "counts": {"blocking": 0, "non_blocking": 9, "editorial": 3, "total": 12},
+  "reviewed_commit": "0c4b4a9",
+  "reviewed_files_at_that_commit": {
+   "docs/design/POLARIS-M7-GENERATION-LOOP-FUNNEL.md": {
+    "bytes": 109383,
+    "sha256": "9465bf5934b91f5d12bd067fc55bbc26511610fb780b97b67dbe81dfb5f12d0f"
+   },
+   "docs/evidence/polaris-m7-generation-loop-funnel-2026-09-15.json": {
+    "bytes": 28824,
+    "sha256": "f44d2f3024784ac4a511ca0576bdd97dbafe2f42c4a5baa385fb79c22632ef57"
+   }
+  },
+  "method": "git show 0c4b4a9:<path> piped to wc -c and sha256sum, this session",
+  "repairs_applied_this_session": true,
+  "five_question_table_as_the_raw_states_it": "All five are genuine hard gates, Q2 called the weakest of the five and Q4 weakest as a gate with the raw's reasons given; scope truthful for all five; every recommendation follows from the evidence; every lawful arm named for Q2-Q5; no lawful arm called unlawful anywhere; no owner trade-off smoothed; every question carries a default-if-unanswered and four of the five default to not shipping; no P-71, P-72 or P-73 question re-asked.",
+  "raw_observations_outside_f1_f12_not_applied": [
+   "Q1 carries a fourth lawful arm the raw names and this packet does not: rule RFC7-10 not engaged, on the reading that REQ-003's 'source anchors' are the bundle's anchors into governed artifacts and a provider-side source record is not an anchor in RFC7's sense. Not applied: adding a lawful arm changes what is put to the owner. Carried in the packet's review-1 section and in the P-76 row.",
+   "Q1's default is the only one of the five that ships rather than holds, and the packet does not flag it as its least conservative default. Not applied for the same reason; carried in both places."
+  ],
+  "raw_observations_outside_f1_f12_not_applied_third_2026_09_15": "A third observation of review 1's, from its measurements table rather than its five-question table, carried unapplied 2026-09-15 after review 2 G14: the sentinel figure 1/2/2/4/4 = 13 re-derives only with the sentinel in the mechanism source; with it in purpose the counts are 1/2/2/3/3 = 11. Reproduced this session against the built package with no provider call. It moves no arm - sources is a key of all five envelopes either way - and measurements.stage_envelopes.method now names mechanism. Appended as a dated sibling key; the array above is review 1's and is not edited.",
+  "recommended_answers_changed": "None. The raw's own five-question table answers 'Recommendation follows from the evidence?' Yes for all five, and no finding moves an arm, a recommendation or a default's substance. F6 sharpens how Q1 reads by splitting an [Observed] label into its observed and inferred halves; Q1's recommended arm, its three named arms and its default are unchanged.",
+  "disposition_summary": {
+   "F1": "CONFIRMED and applied (non-blocking). git ls-files this session: the src-only spelling is 17 tracked files (11 + 6), the package spelling 20 (14 + 6). Both sweeps re-run over both sets: 3 plane literals 0 on each, 6 network primitives 0 on each, 3 https:// hits the same test fixtures on each. Denominator rewritten at 7 packet sites and both record fields.",
+   "F2": "CONFIRMED in substance with the finding's own reading corrected, and applied (non-blocking). Record predicate read literally gives 101 files / 1206681 bytes; the review's reading gives 107 / 1369266; the module form gives 105 / 1266454 / 1258724 chars / 0 over cap / largest 55836, which are the six published figures exactly. Module form stated; the four launch-gate/ files named; RFC-0001 and RFC-0006 named as out of scope with the 107-file alternative published.",
+   "F3": "CONFIRMED and applied (non-blocking). Twelve reproductions; see f3_reproduction. None equals 1294284. Table row restated as approximate; the x5 floor restated on it; the limit probe re-derives under all twelve. [COUNT CORRECTED 2026-09-15, review 2 G3: eighteen, not twelve - f3_reproduction.bytes_by_scheme carries nine sourceId schemes each with a demo_3 and an empty array, and the packet prints eighteen values beside the sentence. Review 2 reproduced all eighteen byte for byte. The superseded word is kept here; the packet now says eighteen at all four of its sites.]",
+   "F4": "CONFIRMED and applied (non-blocking), anchor tightened. The understanding act's Scope paragraph spans lines 28-32 and the sentence naming the seven amended requirements spans 29-30; it names 009. 'and 009' struck from Gate 5's not-amended list; REQ-009 placed with the overlay-cited half. The packet's REQ-009 citations already point at the overlay and both resolve (heading 241, text 243).",
+   "F5": "CONFIRMED and applied (non-blocking). The four are the envelopes carrying the plan today - author, edit, fidelity and repair, the last because pipeline.ts line 267 hands repair the accumulated context. Population named and reconciled with Gate 4's 'exactly two envelopes change'.",
+   "F6": "CONFIRMED and applied (non-blocking), split rather than merely relabelled. Observed: RFC7-10 names five target classes and names no class for a file inside an observed repository. Inferred: that such a file therefore falls outside all five. Mirrored in the P-76 row.",
+   "F7": "CONFIRMED and applied (non-blocking). Whole table recomputed at current heads; touch-set restated as 27; prefix filter replaced by membership because no prefix reaches PROJECT-STATUS.md. Over the 27: M1 1, lane B 1 under its diff predicate and 0 by code span, M2 1, M3 0, M4 2, M5 3, M6 11. Lane B's PROJECT-STATUS.md hunks are at lines 252 and 263; M7 slice 5's target paragraph is at 38-44. The 24-file figures kept as the first draft's surface.",
+   "F8": "CONFIRMED and applied (non-blocking), at heads later than the review read. M8 at 4b2e8cb: 4 against the 24, 6 against the 27. M9 at 3e764d8: 2 against the 24, 3 against the 27. The unlabeled 'disjoint from M7 by design' sentence replaced by the measured rows, superseded wording kept. routes.ts claimant count restated four -> six (M2, M4, M5, M7, M8, M9), each read in its own Gate 3 table.",
+   "F9": "CONFIRMED and applied (non-blocking). security.md lines 25-37 name two of the five fields - providers and content classes. Refusal-on-withdrawal is REQ-001's at base line 12. Route and retention attributed to this packet's own proposal and labelled [Inferred]. 'Field for field' wording marked superseded.",
+   "F10": "FOUR CONFIRMED AND APPLIED, ONE NOT CONFIRMED AND NOT APPLIED (editorial). (1) identityScheme on registry line 54, class literal on 53 - corrected at both sites. (2) EXECUTION-PHASES.md's sentence begins on line 13 - corrected at both citations. (3) NOT CONFIRMED: boundedResponse is declared on line 137 under its comment at 136 and closes at 142, so the packet's 'lines 137-142' was already exact and the review is off by one in both directions; the packet is left unchanged. (4) the dropped [index+1]</a> restored to the draft-preview.ts line 23 quotation. (5) REQ-008's capital An marked [a]n.",
+   "F11": "CONFIRMED and applied (editorial). decisions/README.md resolves only as .syzygy/governance/decisions/README.md, which exists here; written in full at slice 5 and the record's note corrected rather than left false for that one entry.",
+   "F12": "CONFIRMED and applied (editorial). tasks.md section 3 carries seven boxes: 3.1, 3.2, 3.3, 3.4, 3.4a (line 49), 3.5, 3.6. 3.4a named on the buys side and the partition stated as over all seven."
+  },
+  "f3_reproduction": {
+   "method": "encodeCanonicalJson over the envelope pipeline.ts line 176 constructs {promptVersion, system, responseSchemaVersion, responseSchema, inputs:{sources, readerQuestions}}, with promptForStage('inventory') and stageSchema('inventory') from the built package, over the same 105-file corpus, varying only the two free inputs the published method omitted",
+   "reader_questions_demo_3": ["Why does it exist?", "How do the main pieces connect?", "What remains a human judgment?"],
+   "reader_questions_empty": [],
+   "bytes_by_scheme": {
+    "repository-relative-path": {"demo_3": 1300688, "empty": 1300601},
+    "basename": {"demo_3": 1297209, "empty": 1297122},
+    "basename-stem": {"demo_3": 1296894, "empty": 1296807},
+    "path-without-.syzygy/governance/-prefix": {"demo_3": 1298693, "empty": 1298606},
+    "source-N-one-based": {"demo_3": 1294916, "empty": 1294829},
+    "source-N-zero-based": {"demo_3": 1294914, "empty": 1294827},
+    "src-N-one-based": {"demo_3": 1294601, "empty": 1294514},
+    "s-N-one-based": {"demo_3": 1294391, "empty": 1294304},
+    "bare-ordinal-one-based": {"demo_3": 1294181, "empty": 1294094}
+   },
+   "target_reproduced": false,
+   "target": 1294284,
+   "nearest": 1294304,
+   "nearest_distance_bytes": 20,
+   "restated_as": "about 1.29 MB, plus or minus the id and question bytes",
+   "what_re_derives_under_all_twelve": "the limit probe (1000000 rejected with byte-limit, 2000000 accepted) and the x5 stage-input arithmetic",
+   "label": "Observed, twelve encodings run 2026-09-15 in this worktree against the built package"
+  },
+  "f7_collision_recomputed": {
+   "predicate": "code spans in each sibling's packet file that resolve as a file in this worktree (os.path.isfile), intersected with M7's 27-file touch-set; the first draft's prefix filter (apps/, packages/, scripts/, docs/polaris-generation/, package.json) is dropped because no prefix reaches PROJECT-STATUS.md",
+   "touch_set_size": 27,
+   "three_additions": ["PROJECT-STATUS.md", "packages/three-surface-poc-core/src/project-shape-observation.ts", "apps/three-surface-poc/src/polaris-source.ts"],
+   "rows": [
+    {"sibling": "M1 (lane A, on main)", "head": "a9f671e", "i24": 1, "i27": 1},
+    {"sibling": "lane B, PR #35, P-68", "head": "4090f98", "i24": 0, "i27_code_span": 0, "i27_diff_predicate": 1, "diff_file": "PROJECT-STATUS.md", "diff_hunks": "lines 252 and 263; M7 slice 5's target paragraph is at 38-44"},
+    {"sibling": "M2, PR #36, P-69", "head": "f2f37dd", "i24": 1, "i27": 1},
+    {"sibling": "M3, PR #37, P-70", "head": "6574600", "i24": 0, "i27": 0},
+    {"sibling": "M4, PR #38, P-71", "head": "63b8e33", "i24": 1, "i27": 2},
+    {"sibling": "M5, PR #39, P-72", "head": "ba9ca61", "i24": 1, "i27": 3},
+    {"sibling": "M6, PR #40, P-73", "head": "83c9f60", "i24": 11, "i27": 11},
+    {"sibling": "M8, PR #41, P-74", "head": "4b2e8cb", "i24": 4, "i27": 6},
+    {"sibling": "M9, PR #43, P-75", "head": "3e764d8", "i24": 2, "i27": 3}
+   ],
+   "routes_ts_claimants": {"superseded": 4, "current": 6, "packets": ["M2", "M4", "M5", "M7", "M8", "M9"], "note": "M1's row is a citation, not a claim; its packet says routes.ts is not touched"},
+   "label": "Observed, every row recomputed 2026-09-15 at the head named, read-only in that sibling's own worktree"
+  },
+  "could_not_verify_resolved": {
+   "entry": "[Unknown] M8's and M9's content, and whether either will claim a file in M7's 24",
+   "resolved": "2026-09-15. M8 at 4b2e8cb claims 4 of M7's 24 and 6 of the 27; M9 at 3e764d8 claims 2 and 3. Both measured; see f7_collision_recomputed."
+  },
+  "f2_predicate_variants": {
+   "as_written_top_level_decisions_plus_all_rfc_md": {"files": 101, "bytes": 1206681, "characters": 1199458, "over_cap": 0, "largest": 55836},
+   "as_written_top_level_decisions_plus_all_rfc_md_MISNAMED_note_2026_09_15": "review 2 G4: this key is misnamed and its figures are not the literal reading. 101 / 1206681 is 6 doctrine + 67 top-level decisions + the 28 RFC MODULES - the strict reading of the decisions half combined with the corrected reading of the rfcs half. The literal reading takes every tracked .md under rfcs/, which is 30 at a9f671e, and is the sibling key below. Key name and values left unedited (review1 is never overwritten).",
+   "literal_top_level_decisions_plus_all_rfc_md_2026_09_15": {"files": 103, "bytes": 1309493, "characters": 1301412, "over_cap": 0, "largest": 63903},
+   "literal_reading_label_2026_09_15": "Observed, recomputed at a9f671e from git ls-tree blobs 2026-09-15, review 2 G4. All four compositions run in the same sweep: 101 / 1206681, 103 / 1309493, 105 / 1266454 and 107 / 1369266. The adopted 105-file figures are unaffected and the conclusion that both halves of the superseded record phrase were wrong stands.",
+   "reviews_reading_recursive_decisions_plus_all_rfc_md": {"files": 107, "bytes": 1369266, "characters": 1360678, "over_cap": 0, "largest": 63903},
+   "module_form_recursive_decisions_plus_rfc_modules": {"files": 105, "bytes": 1266454, "characters": 1258724, "over_cap": 0, "largest": 55836},
+   "adopted": "module form",
+   "excluded_single_file_rfcs": [".syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md", ".syzygy/governance/contracts/rfcs/RFC-0006-cross-surface-selection-query-drawer.md"],
+   "label": "Observed, all three run 2026-09-15"
+  },
+  "not_confirmed": {
+   "F10_item_3": "boundedResponse: the review says declared at 138, closes at 143, and the packet's 'lines 137-142' ends one line short. Read at source this session, apps/three-surface-poc/src/routes.ts carries the comment on 136, the export function declaration on 137 and the closing brace on 142. The packet was already exact; not applied."
+  },
+  "register_row": {
+   "id": "P-76",
+   "file": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+   "branch": "agent/syzygy-dov.7",
+   "recount_predicate": "^| P- partitioned by the ## section each row falls under",
+   "at_a9f671e": {"open": 21, "acceptance_act": 5, "total": 26},
+   "on_this_branch": {"open": 22, "acceptance_act": 5, "total": 27},
+   "siblings": "P-68 (lane B), P-69 (M2), P-70 (M3), P-71 (M4), P-72 (M5), P-73 (M6), P-74 (M8) and P-75 (M9) each live only on their own branch; this packet sequences behind M6's P-73",
+   "claim_label": "Observed, counted this session against both trees"
+  },
+  "post_repair_measurements": {
+   "note": "the packet_measured block above describes the reviewed bytes at 0c4b4a9; these describe the bytes this pass leaves",
+   "over_width_predicate": "lines outside fenced code blocks whose first non-space character is not a pipe, length > 78; denominator every line of the file",
+   "over_width_lines": [1, 6, 205, 266, 652, 717, 806, 848, 975, 986],
+   "over_width_count": 10,
+   "odd_backtick_non_fence_lines": 0,
+   "lines_wc_l": 1584,
+   "bytes": 139264,
+   "distinct_code_spans": 298,
+   "slash_bearing_spans": 78,
+   "slash_bearing_spans_not_resolving": 19,
+   "slash_bearing_not_resolving_list": [".syzygy/**", "openspec/**", "apps/**", "packages/**", "docs/**", "/api/poc", "/api/poc/polaris", "/api/poc/briefing", "/polaris/draft/<runId>", "GET /polaris/draft/<runId>", "decisions/", "launch-gate/", "rfcs/", "docs/evidence/**", "docs/evidence/*manifest*.json", "agent/syzygy-dov.4", "agent/syzygy-dov.5", "https://", "the draft-preview.ts line 23 HTML fragment"],
+   "slash_bearing_note": "none is a path this packet cites; decisions/README.md, the one entry review 1 F11 found that was, is written in full at slice 5 and is no longer in this list",
+   "measured": "after every other edit of this pass",
+   "describes_commit_2026_09_15": "1803608 - the bytes review 1's pass left, which review 2 reviewed. Added 2026-09-15 after review 2: the repairs of review 2's pass have since changed every figure in this block. The current census is review2.packet_measured_after_review2, computed last. Values here left unedited."
+  },
+  "rule_10": "Review 1 binds the two digests recorded above at commit 0c4b4a9, not these bytes. Every edit of this pass was made after it.",
+  "gate": "at the owner gate on review 1's CONFIRM WITH EXCEPTIONS with eleven of the twelve exceptions applied and one (F10 item 3) not confirmed and not applied - no blocking finding, no recommended answer moved, all five questions found to be genuine gates and no lawful arm called unlawful; P-76 is ready to be ruled, with the raw's two unapplied Q1 observations open in front of it",
+  "uncovered_until": "a second independent fresh-context review, for the eleven applied exception repairs recorded here and for the recorded decision not to apply the twelfth (F10 item 3); all of them post-date review 1 (verification rule 10). Its raw would be a second -RAW.md file, never an overwrite of the retained one."
+ },
+ "review2": {
+  "raw_path": "docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-2-RAW.md",
+  "raw_bytes": 42736,
+  "raw_sha256": "772c61f08f4d8b73dfbd040ee140d6371b3e28fc027cd482428bd228ccf29f84",
+  "raw_digest_method": "wc -c and sha256sum this session; neither value transcribed",
+  "verdict": "CONFIRM WITH EXCEPTIONS - 0 blocking, 10 non-blocking, 6 editorial, G1-G16",
+  "counts": {
+   "blocking": 0,
+   "non_blocking": 10,
+   "editorial": 6,
+   "total": 16
+  },
+  "reviewed_commit": "1803608",
+  "reviewed_files_at_that_commit": {
+   "docs/design/POLARIS-M7-GENERATION-LOOP-FUNNEL.md": {
+    "bytes": 139264,
+    "sha256": "c45d12c01be340321fbe6286e316cbf1eee4fb9c0129f0b32851dad5008c33bc"
+   },
+   "docs/evidence/polaris-m7-generation-loop-funnel-2026-09-15.json": {
+    "bytes": 46936,
+    "sha256": "668b14a5cd00cceb694fec35f11c3a643c8a5bec4dd5bc306058401d22754e5d"
+   },
+   ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md": {
+    "bytes": 34761,
+    "sha256": "4ba0e3624d8c68bb5b7200dd6166a48ebeddc743b9b98bdb672b8115ceced5eb"
+   },
+   "docs/reviews/R-POLARIS-M7-GENERATION-LOOP-FUNNEL-RAW.md": {
+    "bytes": 33233,
+    "sha256": "93aabafeaf50933c8ff03cfe448bbd5b13a7f289bad872d75a819485f8e85943"
+   }
+  },
+  "method": "every file above measured this session with git show 1803608:<path> piped to wc -c and sha256sum; the raw measured with wc -c and sha256sum. No digest transcribed.",
+  "repairs_applied_this_session": true,
+  "f1_f12_verification_as_review2_states_it": {
+   "REPAIRED": ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F11", "F12"],
+   "F10": "four of five REPAIRED; item 3 correctly NOT applied, and review 2 opened routes.ts itself and confirms the packet is exact (comment 136, declaration 137, closing brace 142)",
+   "NOT_REPAIRED": [],
+   "denominator": 12,
+   "note": "Eleven REPAIRED over twelve, with F10 item 3's non-application confirmed correct. Three of the eleven were incomplete rather than wrong and all three are completed in this pass: F7 left its two method columns under the dropped prefix filter (review 2 G8) and its evidence-record measurement block untouched (G9); F8 left a resolved [Unknown] in the prose (G6), two sibling counts stale (G7) and its six-packet restatement out of the funnel summary (G1); F9's superseded wording was reinstated unmarked in the funnel summary (G2)."
+  },
+  "re_derived_before_applying": {
+   "G1_routes_ts_claimants": "all six re-verified at source this session in each sibling's Gate 3 Lives-in column at its current head: M2 f2f37dd slice 3, M4 63b8e33 slice 5, M5 ba9ca61 slices 1 and 3, M7 this branch slice 4, M8 bce9039 slice 2, M9 65de02b slices 2, 4a and 6. M1 and M3 and M6 name routes.ts in no Gate 3 Lives-in row. Denominator the nine collision rows.",
+   "G2_sec2_fields": "security.md lines 30-32 read: Onboarding consent must name the providers permitted for a governed project and the content classes that may be sent. Two of slice 5s five fields; opened at source this session.",
+   "G3_reproduction_count": "review1.f3_reproduction.bytes_by_scheme carries 9 scheme keys, each with a demo_3 and an empty array: 9 x 2 = 18 encodings, and the packet prints eighteen values. Denominator the nine scheme keys. Record parsed this session.",
+   "G4_literal_corpus_reading": "recomputed at a9f671e from git ls-tree blobs this session. 6 doctrine + 67 top-level decisions + 30 tracked .md under rfcs/ = 103 files / 1309493 bytes / 1301412 characters / 0 over the cap / largest 63903. The published 101 / 1206681 / 1199458 / 0 / 55836 is 6 + 67 + the 28 RFC modules. The other two compositions in the same sweep: module form 105 / 1266454 / 1258724 / 0 / 55836 and the reviews reading 107 / 1369266 / 1360678 / 0 / 63903. The adopted 105-file figures are unaffected.",
+   "G5a_git_tree_entry_sweep": "literal git-tree-entry over every tracked file under .syzygy/ and openspec/, run with Python at both revisions this session: 1 occurrence at a9f671e (adapter-registry entry line 53) and 3 at 1803608 (the same line 53 plus PENDING-OWNER-DECISIONS.md lines 114 and 221, the P-76 blockquote and row this branch adds). Denominator 619 tracked files at each revision.",
+   "G5b_self_corpus_currency": "the 105-file corpus measured at both revisions this session from git ls-tree blobs: a9f671e gives 105 / 1266454 bytes / 1258724 characters / 0 over cap / largest 55836, and 1803608 gives 105 / 1277862 / 1270122 / 0 / 55836. The difference is 11408 bytes, the P-76 register row. The register row itself repeats none of these figures - the whole register was swept for 105, 1,266,454, 1,258,724 and the one-time git-tree-entry clause this session and the P-76 row carries none - so nothing there needed anchoring.",
+   "G6_resolved_unknown": "packet line 1289's [Unknown] is answered at 1256-1269 by measured rows (M8 4 of the 24 and 6 of the 27; M9 2 and 3), and the record's twin entry already carried [RESOLVED 2026-09-15]. Both sites read this session.",
+   "G7_sibling_branch_diffs": "git diff --name-only a9f671e HEAD run this session in all eight sibling worktrees, heads by git -C <wt> rev-parse --short HEAD: laneb 4090f98 names .github/workflows/governance-docs.yml and three files under scripts/ among its governance files; m2wt f2f37dd, m3wt 6574600, m4wt 63b8e33, m5wt ba9ca61, m6wt 83c9f60, m8wt bce9039 and m9wt 65de02b each name only the register, their own docs/design packet, their own docs/evidence record and their own retained raws; M1 is on main at a9f671e and has no diff. So the other eight siblings have committed 0 implementation-plane files and seven of the eight sibling branches have committed no implementation file at all. Denominator eight.",
+   "G8_collision_predicates": "both sweeps re-run this session over all nine siblings. Prefix predicate (span begins apps/, packages/, scripts/, docs/polaris-generation/ or is package.json, AND resolves as a file here): prefixed spans 3/2/19/15/31/11/26/61/22 and resolving 1/0/11/13/22/9/13/51/13 - the published span columns, which reproduce under this predicate and no other. Membership predicate (resolves as a file here, no prefix filter): 4/9/25/28/39/20/30/74/37 at the heads the rows name, M8 75 at its current head bce9039 and M9 37 at both 3e764d8 and 65de02b. Intersections under membership at the heads the rows name: M1 1/1, laneB 0/0 by span, M2 1/1, M3 0/0, M4 1/2, M5 1/3, M6 11/11, M8 4/6, M9 2/3 - identical at the current heads. Under the prefix filter the 24-column is identical for all nine and the 27-column reads M4 1 and M9 2, because no prefix reaches PROJECT-STATUS.md; review 2s parenthetical that the filter changes no intersection is restated here rather than copied.",
+   "G9_record_block": "measurements.file_set_intersection read this session: predicate still the prefix-filtered 24-file one, m7_surface_size 24, rows 7, no 27-file column, no M8 or M9 row, and no pointer to review1.f7_collision_recomputed, while measurements.plane_disjointness and measurements.egress_surface both carry an inline dated correction.",
+   "G10_register_recount": "predicate ^| P- partitioned by the ## section, run over each of the nine sibling registers at its own head this session: laneb 4090f98 P-68, m2wt f2f37dd P-69, m3wt 6574600 P-70, m4wt 63b8e33 P-71, m5wt ba9ca61 P-72, m6wt 83c9f60 P-73, m8wt bce9039 P-74, m9wt 65de02b P-75, m7wt 1803608 P-76. Every register holds 27 rows (22 open + 5 acceptance-act) and carries exactly one row above P-53; main at a9f671e gives 21 open + 5 acceptance-act = 26. Denominator all nine worktrees. This commit also modifies the register, so touched_by_M7 is true and touched_by is eight.",
+   "G11_packet_measured_currency": "packet_measured carries the first draft's figures at 0c4b4a9 - 109383 bytes, 1312 lines by wc -l, 264 distinct spans, 35 not resolving, over-width [205, 889] - while measured asserts the figures are true of the bytes they describe and the 0c4b4a9 disclaimer sits at the end of slash_bearing_note. Record parsed this session.",
+   "G12_over_width_predicates": "both predicates run over the packet this session. Gate 6 item 11's words (outside fences, tables, block quotes and headings) give 4: lines 205, 266, 975, 986. The pipe-only predicate gives the published 10, adding the H1 title at line 1 (162 columns) and a banner block-quote line at 6 (79). packet_measured.over_width_predicate is a third spelling (not a pipe, a hash or a >) and describes the 0c4b4a9 figures.",
+   "G13_network_literals": "all six literals re-run this session over both denominators. fetch(, node:http, node:https, undici, axios and XMLHttpRequest occur 0 times over the 17-file src-only set and 0 times over the 20-file package set; https:// occurs 3 times on each, the same three test fixtures. Denominators 17 and 20 tracked files by git ls-files.",
+   "G14_sentinel_source": "reproduced this session by driving the built package over the shipped garden fixture and counting the sentinel in each stage encoded envelope, locally and with no provider call: sentinel in mechanism gives 1/2/2/4/4 = 13, sentinel in purpose gives 1/2/2/3/3 = 11. The fixture repeats the mechanism text twice inside the draft (the how-section paragraph and the deep dive) and the purpose text once (the introduction).",
+   "G15_register_qualifiers": "the raw's gate column answers Q2 'Yes, but the weakest of the five' and Q4 'Weakest as a gate ... The gate is real only on the file-writing limb'; the packet's review-1 section carries both verbatim and the register blockquote and P-76 row carried neither. All three sites read this session.",
+   "G16_q1_fourth_arm": "the Q1 row names three lawful arms and a default; the fourth arm (RFC7-10 not engaged) and the ship-by-default disclosure appear only in the packet's review-1 section and in the P-76 row, both faithfully and unsmoothed. All three sites read this session."
+  },
+  "disposition_summary": {
+   "G1": "CONFIRMED and applied (non-blocking), at the funnel summary line. Restated as six packets, naming M2, M4, M5, M7, M8 and M9; the superseded four is quoted in place and dated, as the neighbouring fence lines already do.",
+   "G2": "CONFIRMED and applied (non-blocking), at the funnel summary line, with the raw's suggested phrase: SEC-2 naming two of slice 5's five fields, the other three attributed at the site. The superseded five words are quoted in place and dated.",
+   "G3": "CONFIRMED and applied (non-blocking), at all four packet sites and in the record. The record site is a same-line append inside review1.disposition_summary.F3 that keeps the superseded word and marks it; f3_reproduction values are not edited.",
+   "G4": "CONFIRMED exactly and applied (non-blocking), at the review-1 prose and the F2 disposition row, restated as 103 / 1309493 / 1301412 / largest 63903 with the superseded attribution quoted and dated. In the record it is applied by two dated sibling keys rather than a rename, because review1 values are never overwritten: a MISNAMED note on the existing key and a literal_..._2026_09_15 variant carrying the true reading.",
+   "G5": "CONFIRMED and applied (non-blocking), both limbs. Q1's clause is anchored at the site (1 at a9f671e; 3 at this commit, the two additions being this packet's own register row) and the corpus byte figures are anchored at Q2, at the corpus table, at slice 3's corpus paragraph, at its oracle and at scenario S6. The P-76 register row repeats none of the figures - swept this session - so nothing there needed mirroring.",
+   "G6": "CONFIRMED and applied (non-blocking). The prose sentence is marked resolved in place, dated, with the measured figures restated and the rows pointed at.",
+   "G7": "CONFIRMED and applied (non-blocking), at both packet sites and in the record. The other eight siblings have committed 0 implementation-plane files and seven of the eight sibling branches have committed no implementation file at all; both superseded counts are quoted in place and dated.",
+   "G8": "CONFIRMED and applied (non-blocking), with one sub-claim of the finding's own restated rather than copied: the intersections are identical under both predicates for the 24-file column at all nine siblings and NOT for the 27-file column, which reads M4 1 and M9 2 under the prefix filter, because no prefix reaches PROJECT-STATUS.md. Applied at the method paragraph, the supersession note, the table header, every span cell and the F7 disposition row.",
+   "G9": "CONFIRMED and applied (non-blocking). The predicate is marked in place with a dated bracket and a superseded_2026_09_15 sibling key is added, both routing the reader to review1.f7_collision_recomputed, as measurements.plane_disjointness and measurements.egress_surface are marked. Nothing deleted.",
+   "G10": "CONFIRMED in all four respects and applied (non-blocking). touched_by_M7 set true and touched_by extended to eight, each with a dated note key recording what it read; the three false disclosure sentences are marked in place and dated with the nine-register recount and its heads beside them.",
+   "G11": "CONFIRMED and applied (editorial). describes_commit 0c4b4a9 added as a sibling key on the same line and a dated clause appended inside measured; every value in packet_measured is left unchanged.",
+   "G12": "CONFIRMED and applied (editorial). Gate 6 item 11 now names the pipe-only predicate with its denominator, superseded wording quoted and dated, and packet_measured.over_width_predicate takes a dated sibling key recording that it is a third spelling of the 0c4b4a9 figures.",
+   "G13": "CONFIRMED and applied (editorial). XMLHttpRequest added to the Gate 2 enumeration with the reason and both denominators; all six literals are 0 over both sets.",
+   "G14": "CONFIRMED and applied (editorial), reproduced without a provider call. measurements.stage_envelopes.method now names mechanism by a dated append, and the observation is carried as a third unapplied review-1 observation in the packet and by a dated sibling key beside review1.raw_observations_outside_f1_f12_not_applied, which is not edited.",
+   "G15": "CONFIRMED and applied (editorial), at the register blockquote and the P-76 row in the register's own shape: Q2 called the weakest of the five, Q4 weakest as a gate, the recommended arm dissolving Q4 except on its file-writing limb. Superseded phrase quoted and dated at each.",
+   "G16": "CONFIRMED and applied (editorial). One clause in Q1's recommended cell points at the review-1 section and the register row and says why the arm is deliberately not folded in. The fourth arm is NOT added to the question table; that decision stands and is the owner's."
+  },
+  "recommended_answers_changed": {
+   "none": "No recommended answer changed after review 2. Its own five-question table answers Scope truthful? Yes for all five, Genuine hard human gate? Yes for four with Q4 qualified for the reason review 1 gave and this packet carries (the recommended arm needs no act on anyone's reading, so the gate is real only on the file-writing limb), Recommendation follows? Yes for all five, and Every lawful arm named? for all five, with Q1's fourth arm disclosed in the review-1 section and the register row rather than in its own row. No lawful arm is called unlawful anywhere, no owner trade-off is smoothed, every question states a default-if-unanswered and four of the five default to not shipping, and no P-71, P-72 or P-73 question is re-asked. All sixteen exceptions are presentational or evidentiary. Q1 through Q5 keep the recommendations, named arms and defaults they carried into this review, word for word, and no default-if-unanswered moved."
+  },
+  "observations_carried_unapplied": [
+   "Q1 carries a fourth lawful arm this packet does not offer: rule RFC7-10 not engaged, on the reading that REQ-003s source anchors are the bundles anchors into governed artifacts and a provider-side source record is not an anchor in RFC7s sense. Not applied - adding a lawful arm changes what is put to the owner. Carried in the packet review-1 section, in the packet review-2 section and in the P-76 row.",
+   "Q1's default is the only one of the five that ships rather than holds, and the question does not flag it as the least conservative default the packet carries. Not applied for the same reason; carried in the same three places.",
+   "The sentinel figure 1/2/2/4/4 = 13 re-derives only with the sentinel in the mechanism source; with it in purpose the counts are 1/2/2/3/3 = 11. Review 1 recorded it in its measurements table and the close-out neither applied nor carried it; review 2 G14 found that. Now named in measurements.stage_envelopes.method and carried in both packet review sections."
+  ],
+  "register_row": "P-76, unchanged in identity; its blockquote and row carry the review-2 entry added in this pass, G15s two gate qualifiers, and the re-tensed uncovered-until-a-second-review clause. The recount is unchanged and re-verified this session: 22 open + 5 acceptance-act = 27 on this branch, 21 + 5 = 26 at a9f671e, with the nine sibling heads named at the site.",
+  "rule_10": "Review 2 binds the four digests recorded above at commit 1803608, not these bytes. Every edit of this pass was made after it.",
+  "gate": "at the owner gate on review 2's CONFIRM WITH EXCEPTIONS with all sixteen exceptions applied - no blocking finding, no recommended answer moved, and the review-1 dispositions verified as eleven REPAIRED over twelve with F10 item 3's non-application confirmed correct and all three incomplete repairs completed here; P-76 is ready to be ruled, with the three unapplied review-1 observations open in front of it",
+  "uncovered_until": "a third independent fresh-context review, for the sixteen exception repairs recorded here; all sixteen post-date review 2 (verification rule 10). Its raw would be a third -RAW.md file, never an overwrite of either retained one.",
+  "governance_check_after_review2": {
+   "command": "python3 scripts/check_governance.py",
+   "note": "run in this worktree after all four files of this pass were written - the packet, this record, the P-76 register blockquote and row, and the retained review-2 raw. Read the last line, not the exit code (verification rule 4).",
+   "last_line": "32 OK, 20 WARN, 0 FAIL (52 checks) \u2014 counts derived, not asserted"
+  },
+  "packet_measured_after_review2": {
+   "path": "docs/design/POLARIS-M7-GENERATION-LOOP-FUNNEL.md",
+   "bytes": 170321,
+   "sha256": "22ea25c374e1a4f51d7ad6b701a83dd1e291069f72d3fb7e62208f9f920827d2",
+   "total_lines": 1826,
+   "line_count_convention": "split on newline, trailing empty segment not counted; wc -l returns the same figure for this file because it ends in a newline.",
+   "over_78": 10,
+   "over_78_lines": [1, 6, 205, 266, 677, 742, 833, 875, 1002, 1013],
+   "over_78_predicate": "lines outside fenced code blocks whose first non-space character is not a pipe, length greater than 78; denominator every line of the file.",
+   "odd_backtick_non_fence_lines": 0,
+   "distinct_code_spans": 346,
+   "slash_bearing_spans": 82,
+   "slash_bearing_spans_not_resolving": 19,
+   "slash_bearing_not_resolving_list": [
+    ".syzygy/**",
+    "/api/poc",
+    "/api/poc/briefing",
+    "/api/poc/polaris",
+    "/polaris/draft/<runId>",
+    "<a href=\"#source-${index}\" aria-label=\"Read source ${index + 1}\">[${index + 1}]</a>",
+    "GET /polaris/draft/<runId>",
+    "agent/syzygy-dov.4",
+    "agent/syzygy-dov.5",
+    "apps/**",
+    "decisions/",
+    "docs/**",
+    "docs/evidence/**",
+    "docs/evidence/*manifest*.json",
+    "https://",
+    "launch-gate/",
+    "openspec/**",
+    "packages/**",
+    "rfcs/"
+   ],
+   "note": "computed LAST, after the final edit to the packet, so it names the bytes that carry it. The self-referential over_78 figure was iterated to a fixed point. Verification rule 10: a review is bound to exactly these bytes and any later edit retires it."
+  }
+ }
+}
