@@ -5,10 +5,10 @@
  "bead": "syzygy-dov.8",
  "packet": "docs/design/POLARIS-M8-PORTABILITY-FUNNEL.md",
  "date": "2026-09-15",
- "status": "candidate; binds nothing; planning only; no independent review yet",
+ "status": "candidate; binds nothing; planning only; one independent review applied 2026-09-15 - review 1, verdict copied exactly: CONFIRM WITH EXCEPTIONS (0 blocking, 11 non-blocking, 5 editorial); at the owner gate, with the sixteen exception repairs uncovered until a second review confirms them [this field read 'no independent review yet' until 2026-09-15]",
  "independent_review": {
-  "count": 0,
-  "note": "This packet has had no independent review. Verification rule 10: every figure and quotation in the packet is bound to its bytes at commit a9f671e, and any later edit retires a review bound to them."
+  "count": 1,
+  "note": "One independent fresh-context review, retained verbatim at docs/reviews/R-POLARIS-M8-PORTABILITY-FUNNEL-RAW.md (verdict CONFIRM WITH EXCEPTIONS). Its sixteen findings F1-F16 were each re-derived against source and applied 2026-09-15; see review1 below. Verification rule 10: review 1 binds the bytes it names at 8035c8f, not these, and the sixteen exception repairs are uncovered until a second review confirms them. [This field read count 0 and 'This packet has had no independent review' until 2026-09-15.] Superseded text follows: every figure and quotation in the packet is bound to its bytes at commit a9f671e, and any later edit retires a review bound to them."
  },
  "commit": {
   "baseline": "a9f671e",
@@ -63,9 +63,9 @@
    "test_denominator": 64,
    "nontest_denominator": 69,
    "second_method": {
-    "tool": "ugrep -il over the same 133 paths",
+    "tool": "ugrep -il over the same 133 paths, THROUGH THIS ENVIRONMENT'S grep WRAPPER [corrected 2026-09-15 per review 1, F5; see review1.ugrep_wrapper_reproduction: bare ugrep and /bin/grep both give 74 over the same 133 paths]",
     "result": 73,
-    "divergence": "packages/three-surface-poc-core/src/project-shape-coverage.test.ts contains one literal NUL byte at byte offset 13811 (line 305, inside a template-string separator); ugrep classifies the file as binary so -l omits it. grep -ail lists it and grep -aic counts 44 matches in it. Verification rule 1/2: the tool returned a smaller TRUE answer without erroring.",
+    "divergence": "packages/three-surface-poc-core/src/project-shape-coverage.test.ts contains one literal NUL byte at byte offset 13811 (line 305, inside a template-string separator); ugrep classifies the file as binary so -l omits it. [SUPERSEDED 2026-09-15 per review 1, F5: that cause is wrong. Run directly, ugrep does NOT omit the file - it exits 0, prints the path, and -ic prints 44. The omission comes from the -I (ignore-binary-files) flag this environment's grep wrapper injects ahead of every invocation; the exact invocation that produced 73 is recorded at review1.ugrep_wrapper_reproduction. Bare ugrep and system /bin/grep both give 74, and -a overrides -I, so the instruction below is unaffected.] grep -ail lists it and grep -aic counts 44 matches in it. Verification rule 1/2: the tool returned a smaller TRUE answer without erroring.",
     "consequence": "Any future sweep over these trees must pass -a or use Python."
    },
    "recursive_denominator": 139,
@@ -362,7 +362,7 @@
   },
   "capture": {
    "file": "scratchpad/capture/polaris-7478.html (retained lane A capture, Butlers 66ed58f / observer a121591, as-of 2026-09-10)",
-   "exact_proper_noun_occurrences": 96,
+   "exact_proper_noun_occurrences": 96, "capture_bytes": 2090025, "capture_sha256": "0bff1adfc43b1d5f8595e3a5c13bc56f54a27fb5ca0175fa838be04eb3a36305", "capture_tracked_here": false, "capture_claim_label_2026_09_15": "Observed at the retained capture; [Unknown] to a reader without that file - relabelled per review 1, F9, from a bare Observed. The capture is NOT copied into this repository: it is a rendered page of a consented observation of the proving case and retaining it here is a content decision no act in force covers. Size and digest computed this session with wc -c and sha256sum.",
    "h1": "<h1 data-copy-role=\"project-fact\" data-claim-role=\"non-normative-framing\" data-presentation-artifact data-non-citable>Butlers</h1>",
    "note": "Cited for what the renderer emits. Every source row it is cited against was re-read at a9f671e and is unchanged.",
    "claim_label": "Observed"
@@ -457,7 +457,7 @@
     "apps/three-surface-poc/src/polaris-project-shape.test.ts",
     "apps/three-surface-poc/src/walkthrough-preflight.test.ts"
    ],
-   "group_headings": [
+   "group_headings_note": "corrected 2026-09-15 per review 1, F6: line 267 asserts ONE of the two group headings, inside a clean-fragment expectation. The proving case's name occurs exactly once in that whole file, on line 267; the second group heading occurs nowhere in it.", "group_headings": [
     "apps/three-surface-poc/src/polaris-copy.test.ts:267"
    ],
    "locator_constant": [
@@ -487,8 +487,8 @@
   "spec_portability_sweep": {
    "predicate": "Python re, case-insensitive, over each adopted specification file in full",
    "denominator": {
-    "pwb_lines": 1153,
-    "poc_lines": 1009
+    "pwb_lines": 1153, "pwb_lines_corrected_2026_09_15": 1152, "line_count_method": "wc -l, physical lines; the 1153 and 1009 above are split-on-newline counts, each one too high on a newline-terminated file - superseded per review 1, F3. No sweep result below moves.",
+    "poc_lines": 1009, "poc_lines_corrected_2026_09_15": 1008
    },
    "results": {
     "second repositor": {
@@ -548,9 +548,9 @@
    "claim_label": "Observed"
   },
   "conventions_checked": {
-   "non_fence_lines": 1344,
+   "non_fence_lines": 1344, "non_fence_lines_note": "SUPERSEDED 2026-09-15 per review 1, F3: the first draft carried 1343 non-fence lines, not 1344; the current figure is re-derived after every edit of the review-1 pass and published in the packet's Gate 6, item 10. The 0 odd-backtick result is unchanged under either denominator.",
    "odd_backtick_lines": 0,
-   "over_width_lines": [
+   "over_width_lines_note": "SUPERSEDED 2026-09-15: these six line numbers are the first draft's, at 8035c8f, and the review-1 edits moved them. The current count is re-derived last and published in the packet's review-1 section and Gate 6, item 10.", "over_width_lines": [
     141,
     329,
     337,
@@ -559,7 +559,7 @@
     523
    ],
    "over_width_note": "each is a single unbreakable code span: four repository paths, one quoted HTML element and one path inside a sentence",
-   "distinct_code_spans": 250,
+   "distinct_code_spans": 250, "resolution_predicate_widened_2026_09_15": "per review 1, F9 - see review1.widened_resolution_predicate. The eleven slash-bearing spans below are unchanged; the widened predicate adds 33 slash-free filename-shaped spans that do not resolve, of which 25 are bare basenames resolving under a tree named in the same sentence and 8 resolve nowhere - seven dotted identifiers and polaris-7478.html.",
    "non_resolving_slash_spans": [
     ".syzygy/**",
     "/<h1[^>]*>Butlers<\\/h1>/",
@@ -578,7 +578,7 @@
   }
  },
  "collision": {
-  "predicate": "every code span of each sibling packet; keep implementation-plane paths (apps/, packages/, scripts/, docs/polaris-generation/, package.json); resolve against this worktree at a9f671e under os.path.exists and os.path.isfile; intersect the file-resolving set with M8's 31-file candidate surface",
+  "predicate": "every code span of each sibling packet; keep implementation-plane paths (apps/, packages/, scripts/, docs/polaris-generation/, package.json); resolve against this worktree at a9f671e under os.path.exists and os.path.isfile; intersect the file-resolving set with M8's 31-file candidate surface (the surface is Gate 3's 23 existing implementation-plane files plus the 8 test files m8_surface enumerates; predicate restated 2026-09-15 per review 1, F7)",
   "m8_surface": [
    "apps/three-surface-poc/src/git-observation.test.ts",
    "apps/three-surface-poc/src/git-observation.ts",
@@ -612,7 +612,7 @@
    "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
    "packages/three-surface-poc-core/src/project-shape-observation.ts"
   ],
-  "m8_surface_size": 31,
+  "m8_surface_size": 31, "m8_surface_predicate_2026_09_15": "Gate 3's topology table carries 30 code spans, 25 file-shaped and distinct; 20 resolve as written and 5 resolve under the tree slice 5's row names, giving 25 existing files, of which 2 are the governed artifacts the third column names, leaving 23 implementation-plane files. The 8 tests below supply the rest. 23 + 8 = 31, all resolving. Restated per review 1, F7.",
   "m8_by_slice": {
    "S1": [
     "apps/three-surface-poc/src/polaris-copy.test.ts"
@@ -652,6 +652,7 @@
     "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
     "packages/three-surface-poc-core/src/project-shape-manifest.test.ts"
    ],
+   "S6_marked_2026_09_15": "Slice 6 EXERCISES the module below through the pipeline and never edits it. Slice 6's own design authors a conformance module and a profile fixture and changes no existing source module, which is what Gate 3's slice 6 row and Gate 4's 'No existing source module changes' say. Marked per review 1, F7; the existing value is kept unedited.",
    "S6": [
     "packages/three-surface-poc-core/src/project-shape-model.ts"
    ],
@@ -864,13 +865,13 @@
   "sibling_branch_diff_note": "git diff --name-only a9f671e in each of the six worktrees names only docs/design/, docs/evidence/, docs/reviews/ and PENDING-OWNER-DECISIONS.md",
   "parallel_p2_packets": {
    "M7": {
-    "content": "Unknown — not read this session",
+    "content": "Unknown — not read this session [SUPERSEDED 2026-09-15 per review 1, F8: M7 was read this session at 0c4b4a9 and its row is at review1.m7_m9_rows - 31 implementation-plane spans, 29/21, intersection 7. The dossier-based inference below is falsified: M7's actual packet also spans slice 2's polaris-source.ts, slice 3's git-observation.ts and slice 5's project-shape-observation.ts and project-shape-model.ts]",
     "dossier_cited_overlap": [
      "apps/three-surface-poc/src/routes.ts"
     ]
    },
    "M9": {
-    "content": "Unknown — not read this session",
+    "content": "Unknown — not read this session [SUPERSEDED 2026-09-15 per review 1, F8: M9 was read this session at 206d775 and its row is at review1.m7_m9_rows - 21 implementation-plane spans, 19/12, intersection 6, or 8 under a basename-tolerant predicate. Three of the four files below are confirmed in M9's own code spans; orrery.ts appears there only as a bare basename]",
     "dossier_cited_overlap": [
      "apps/three-surface-poc/src/polaris.ts",
      "packages/three-surface-poc-core/src/model.ts",
@@ -1022,5 +1023,205 @@
   "Which arm the owner takes on Q1, and therefore whether slices 2 and 5 are implementation or an amendment. [Unknown]",
   "Whether slice 6's self-profile would produce mostly honest Unknowns or a crash: it was designed and not run. [Unknown]",
   "Whether the owner reads Syzygy observing its own tracked tree as a 'second repository'. The packet states the two unqualified sentences and rules neither. [Unknown]"
- ]
+ ],
+  "review1": {
+    "raw_path": "docs/reviews/R-POLARIS-M8-PORTABILITY-FUNNEL-RAW.md",
+    "raw_bytes": 32375,
+    "raw_sha256": "85fcffa1db2f48e1b73df0689d37c154a445fe1c956f948936609b30e3c9b38d",
+    "raw_digest_method": "wc -c and sha256sum this session; neither value transcribed",
+    "verdict": "CONFIRM WITH EXCEPTIONS - 0 blocking, 11 non-blocking, 5 editorial",
+    "counts": {"blocking": 0, "non_blocking": 11, "editorial": 5, "total": 16},
+    "reviewed_commit": "8035c8f",
+    "reviewed_files_at_that_commit": {
+      "docs/design/POLARIS-M8-PORTABILITY-FUNNEL.md": {
+        "bytes": 110515,
+        "sha256": "62ee454380619164b23e9e5bb896da5c1eb9f1cc6717c7c70b4d02c12ca15782"
+      },
+      "docs/evidence/polaris-m8-portability-funnel-2026-09-15.json": {
+        "bytes": 42655,
+        "sha256": "49b6f4dcbc4382645c4ca198bbc26af1fa530c45dbe042dd51228f4fe15e19d8"
+      }
+    },
+    "method": "git show 8035c8f:<path> piped to wc -c and sha256sum, this session",
+    "repairs_applied_this_session": true,
+    "seven_question_table_as_the_raw_states_it": "All seven are genuine hard gates, Q4 borderline with its reason stated; scope truthful for all seven with Q4 'mostly' pending F1's anchor; every recommendation follows; every lawful arm named; no lawful arm called unlawful anywhere; every question carries a counter-argument against its own recommendation.",
+    "recommended_answers_changed": "None. The raw's own seven-question table answers 'Recommendation follows?' Yes for all seven, and no finding moves an arm, a recommendation or a default's substance.",
+    "disposition_summary": {
+      "F1": "CONFIRMED and applied (non-blocking). RFC1-2's clause opens at line 121 and the quoted sentence spans 126-128; lines 27-28 are the RFC's front matter. Corrected at both sites, Q4's cell and Gate 2, superseded citation quoted and dated.",
+      "F2": "CONFIRMED and applied (non-blocking), all three anchors read at source: registry-envelope trigger 91-92, 'any scope beyond the signed change' 93-94, RFC1-10 263-265.",
+      "F3": "CONFIRMED and applied (non-blocking). wc -l gives 1152 and 1008; split-on-newline gives 1153 and 1009; the packet's first draft carried 1343 non-fence lines against the 1344 claimed. The counting rule is stated once at the line-count convention and all four sites corrected; the packet's own figure is re-derived last.",
+      "F4": "CONFIRMED and applied (non-blocking). grep -F and Python re over the PWB specification in full return lines 85 and 95 only; line 76 carries 'deterministic evaluation inputs'.",
+      "F5": "CONFIRMED and applied (non-blocking), reproduced both ways. See ugrep_wrapper_reproduction below.",
+      "F6": "CONFIRMED and applied (editorial in effect, non-blocking as filed). The proving case's name occurs exactly once in apps/three-surface-poc/src/polaris-copy.test.ts, on line 267, asserting one heading string; the second group heading occurs nowhere in the file.",
+      "F7": "CONFIRMED and applied (non-blocking), both limbs. Gate 3's topology table names 23 distinct existing implementation-plane files (30 code spans, 25 file-shaped and distinct, 20 resolving as written plus 5 under the tree slice 5's row names, less the 2 governed artifacts); m8_surface supplies the 8 test files; 23 + 8 = 31. On the second limb the packet is right and this record is wrong: slice 6 edits no existing module, so m8_by_slice.S6 below is marked in place as exercised-never-edited.",
+      "F8": "CONFIRMED and applied (non-blocking). M7 at 0c4b4a9 and M9 at 206d775 computed with the packet's own predicate after validating it against M4's published 26/22/9; rows added below. One correction to the finding: M9's packet does code-span orrery.ts as a bare basename, so its basename-tolerant intersection is 8.",
+      "F9": "CONFIRMED and applied (non-blocking). The capture is NOT copied into the repository - it is a rendered page of a consented observation of the proving case and retaining it here is a content decision no act in force covers. Size and full sha256 recorded below instead; the two capture-only figures are relabelled Observed-at-the-capture / Unknown-without-it; Gate 6 item 10's predicate widened.",
+      "F10": "CONFIRMED and applied (non-blocking). Q1's default now names slice 3 explicitly and consistently with Q4's default and the prose handoff section; the summary handoff line is reordered to put 'rule Q1' first. No recommendation changes.",
+      "F11": "CONFIRMED in substance and applied (non-blocking), with the finding's own counts corrected: VIS-4 occurred 1 time in the first draft and SEC-5 2, not twice and three times. VIS-4 is now quoted at vision.md lines 122-139 and applied to Q2's and Q3's four acts and to Q1's spec-level-versus-shape-level contest; SEC-5 at security.md lines 54-60 and applied to slice 6's detector run and Q3's policy extension.",
+      "F12": "CONFIRMED and applied (editorial). The sentence enumerated six rows and called them five.",
+      "F13": "CONFIRMED and applied (editorial). apps/three-surface-poc/src/test-project-shape-fixture.ts carries 3 of the 51 lines, at 19, 28 and 54.",
+      "F14": "CONFIRMED and applied (editorial). The mutation record carries seven keys: commit, file, old, new, exitCode, output, restored.",
+      "F15": "CONFIRMED and applied (editorial), all three. Curly quotes reproduced at PWB line 248; the REQ-014 anchor-set quotation extended to 766-768; the POC-REQ-050 quotation extended to 777-780. The extend arm was taken over the ellipsis arm at both, because the continuations are load-bearing.",
+      "F16": "CONFIRMED and applied (editorial). The fourteenth non-comment line is polaris.ts line 583, the capability-guide sort key const practicalOrder = ['Butlers', 'Staffers', 'Dashboard', 'Connectors'], which renders no text of its own."
+    },
+    "findings_with_a_defect_of_their_own": {
+      "F11": "Its occurrence counts do not re-derive: VIS-4 occurred 1 time and SEC-5 2 in the first draft, not 2 and 3. The defect it reports is real and is applied in full; the counts are corrected rather than copied.",
+      "F8": "Its parenthetical that M9's packet does not code-span orrery.ts holds only under the full-path predicate; M9's topology table writes that file as a bare basename, the same predicate artifact F7 found on this packet's own side."
+    },
+    "ugrep_wrapper_reproduction": {
+      "command_v_ugrep": "empty - no ugrep binary on PATH; ugrep here is the Claude Code CLI binary invoked with argv[0] set to ugrep",
+      "type_grep": "a shell function defined in the session's shell snapshot",
+      "injected_flags": "-G --ignore-files --hidden -I plus --exclude-dir for .git .svn .hg .bzr .jj .sl, placed ahead of every caller argument",
+      "cause": "-I is ignore-binary-files; it is the whole cause of the 73",
+      "invocation_that_produced_73": "ugrep -G --ignore-files --hidden -I --exclude-dir=.git -il butler <the 133 paths> | wc -l",
+      "bare_ugrep_over_133": 74,
+      "system_bin_grep_il_over_133": 74,
+      "bare_ugrep_on_the_divergent_file": "exit 0, prints the path; -ic prints 44",
+      "wrapper_plus_a_over_133": 74,
+      "wrapper_plus_aic_on_the_divergent_file": 44,
+      "claim_label": "Observed - six invocations run this session"
+    },
+    "capture": {
+      "path_outside_this_repository": "a scratchpad capture directory; the file is polaris-7478.html",
+      "bytes": 2090025,
+      "sha256": "0bff1adfc43b1d5f8595e3a5c13bc56f54a27fb5ca0175fa838be04eb3a36305",
+      "tracked_here": false,
+      "whole_tree_walk_matches": 0,
+      "retained_into_docs_evidence": false,
+      "why_not": "it is a rendered page of a consented observation of the proving case; copying it into this tree is a content decision no act in force covers",
+      "figures_relabelled": "the 96 occurrences of the exact proper noun and the verbatim h1 element are now labelled Observed at the retained capture and Unknown to a reader without it",
+      "claim_label": "Observed for the size and digest, computed this session"
+    },
+    "widened_resolution_predicate": {
+      "at_8035c8f": {
+        "distinct_code_spans": 250,
+        "filename_shaped": 133,
+        "not_resolving_from_the_worktree_root": 44,
+        "slash_bearing_not_resolving": 11,
+        "slash_free_resolving_as_a_tracked_basename": 25,
+        "slash_free_resolving_nowhere": 8,
+        "of_those_dotted_identifiers": 7,
+        "of_those_naming_a_real_file_outside_this_repository": 1
+      },
+      "after_the_review_1_repairs": {
+        "distinct_code_spans": 297,
+        "filename_shaped": 145,
+        "not_resolving_from_the_worktree_root": 48,
+        "slash_bearing_not_resolving": 12,
+        "slash_free_not_resolving": 36,
+        "slash_free_resolving_as_a_tracked_basename": 27,
+        "slash_free_resolving_nowhere": 9,
+        "of_those_dotted_identifiers": 7,
+        "of_those_a_filename_suffix_convention": 1,
+        "of_those_naming_a_real_file_outside_this_repository": 1
+      },
+      "the_one": "polaris-7478.html",
+      "twelfth_slash_bearing_span": "/bin/grep -il, added by the F5 repair; the other eleven are the set measurements.conventions_checked.non_resolving_slash_spans enumerates",
+      "note": "Both populations are published because the figure is self-referential: the review-1 section adds code spans of its own. The packet publishes the second set, resolved by a final pass after every other edit of this pass.",
+      "claim_label": "Observed, both predicates run this session over both byte ranges"
+    },
+    "m7_m9_rows": [
+      {
+        "sibling": "M7 (PR #41, no register row yet)",
+        "head": "0c4b4a9",
+        "implementation_plane_spans": 31,
+        "resolve_any": 29,
+        "resolve_file": 21,
+        "intersection_count": 7,
+        "intersection": [
+          "apps/three-surface-poc/src/git-observation.ts",
+          "apps/three-surface-poc/src/polaris-source.ts",
+          "apps/three-surface-poc/src/routes.ts",
+          "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md",
+          "docs/polaris-generation/README.md",
+          "packages/three-surface-poc-core/src/project-shape-model.ts",
+          "packages/three-surface-poc-core/src/project-shape-observation.ts"
+        ],
+        "m7_slices": {
+          "apps/three-surface-poc/src/polaris-source.ts": "M7 slice 1",
+          "apps/three-surface-poc/src/routes.ts": "M7 slice 4",
+          "packages/three-surface-poc-core/src/project-shape-observation.ts": "M7 slice 4",
+          "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md": "M7 slice 5",
+          "docs/polaris-generation/README.md": "M7 slice 5",
+          "apps/three-surface-poc/src/git-observation.ts": "named in M7's measurement prose; claimed by no M7 slice row",
+          "packages/three-surface-poc-core/src/project-shape-model.ts": "cited as a read type reference; claimed by no M7 slice row"
+        },
+        "m8_slices": {
+          "apps/three-surface-poc/src/polaris-source.ts": ["S2"],
+          "apps/three-surface-poc/src/routes.ts": ["S2"],
+          "apps/three-surface-poc/src/git-observation.ts": ["S3"],
+          "packages/three-surface-poc-core/src/project-shape-observation.ts": ["S5"],
+          "packages/three-surface-poc-core/src/project-shape-model.ts": ["S5"],
+          "docs/polaris-generation/ARTIFACTS-AND-TOOLS.md": ["S4"],
+          "docs/polaris-generation/README.md": ["S4"]
+        }
+      },
+      {
+        "sibling": "M9 (PR #42, no register row yet)",
+        "head": "206d775",
+        "implementation_plane_spans": 21,
+        "resolve_any": 19,
+        "resolve_file": 12,
+        "intersection_count": 6,
+        "intersection": [
+          "apps/three-surface-poc/src/polaris-copy.ts",
+          "apps/three-surface-poc/src/polaris.ts",
+          "apps/three-surface-poc/src/routes.ts",
+          "apps/three-surface-poc/src/trajectory.ts",
+          "packages/three-surface-poc-core/src/model.ts",
+          "packages/three-surface-poc-core/src/project-shape-model.ts"
+        ],
+        "m9_slices": {
+          "apps/three-surface-poc/src/polaris-copy.ts": "M9 slices 2 and 5",
+          "apps/three-surface-poc/src/polaris.ts": "M9 slices 1, 2, 4a, 5 and 7",
+          "apps/three-surface-poc/src/routes.ts": "M9 slices 2, 4a and 6",
+          "apps/three-surface-poc/src/trajectory.ts": "M9 slices 1, 2 and 6",
+          "packages/three-surface-poc-core/src/model.ts": "M9 slices 2, 4a, 4b and 8",
+          "packages/three-surface-poc-core/src/project-shape-model.ts": "M9 slice 4a"
+        },
+        "m8_slices": {
+          "apps/three-surface-poc/src/polaris-copy.ts": ["S2"],
+          "apps/three-surface-poc/src/polaris.ts": ["S2"],
+          "apps/three-surface-poc/src/routes.ts": ["S2"],
+          "apps/three-surface-poc/src/trajectory.ts": ["S2", "S7"],
+          "packages/three-surface-poc-core/src/model.ts": ["S7"],
+          "packages/three-surface-poc-core/src/project-shape-model.ts": ["S5"]
+        },
+        "basename_tolerant_intersection": 8,
+        "basename_tolerant_extras": [
+          "apps/three-surface-poc/src/orrery.ts",
+          "packages/three-surface-poc-core/src/body-read-authority.ts"
+        ],
+        "note": "M9's topology table writes those two as bare basenames beside full-path siblings, so the full-path predicate cannot see them. Both figures are published; 6 is the one the table's stated predicate yields."
+      }
+    ],
+    "collision_denominator_restated": {
+      "superseded": "M8 intersects five of the six",
+      "current": "M8 intersects eight of the nine sibling packets - every one but lane B",
+      "denominator": "the nine sibling funnel packets in this set: M1 (lane A, on main), lane B, M2, M3, M4, M5, M6, M7, M9",
+      "intersections": {"M4": 9, "M2": 7, "M7": 7, "M3": 6, "M9": 6, "M5": 5, "M6": 2, "M1": 1, "lane_B": 0},
+      "method_validated_by": "reproducing M4's published 26 / 22 / 9 exactly before either new row was taken",
+      "claim_label": "Observed, all figures computed this session"
+    },
+    "m8_by_slice_S6_marked": "m8_by_slice.S6 above lists packages/three-surface-poc-core/src/project-shape-model.ts. Marked 2026-09-15 per review 1, F7: slice 6 EXERCISES that module through the pipeline and never edits it. Slice 6's own design authors a conformance module and a profile fixture and changes no existing source module, which is what Gate 3's slice 6 row and Gate 4's 'No existing source module changes' say. The existing value is kept unedited; this key is the correction.",
+    "line_denominators_corrected": {
+      "pwb_specification": {"superseded": 1153, "current": 1152, "method": "wc -l; split-on-newline gives 1153 on a newline-terminated file"},
+      "three_surface_poc_specification": {"superseded": 1009, "current": 1008, "method": "wc -l"},
+      "packet_non_fence_first_draft": {"superseded": 1344, "current": 1343, "note": "the first draft's own population; the current figure is re-derived after every edit of this pass and published in Gate 6 item 10"},
+      "sweeps_unchanged": "the 0-occurrence specification sweep, the 37/29/2 proving-case counts and the 0-odd-backtick result re-derive exactly under either denominator"
+    },
+    "register_row": {
+      "id": "P-74",
+      "file": ".syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md",
+      "branch": "agent/syzygy-dov.8",
+      "recount_predicate": "^| P- partitioned by the ## section each row falls under",
+      "at_a9f671e": {"open": 21, "acceptance_act": 5, "total": 26},
+      "on_this_branch": {"open": 22, "acceptance_act": 5, "total": 27},
+      "siblings": "P-68 (lane B), P-69 (M2), P-70 (M3), P-71 (M4), P-72 (M5) and P-73 (M6) each live only on their own branch; M7 and M9 carry no register row yet",
+      "claim_label": "Observed, counted this session"
+    },
+    "rule_10": "Review 1 binds the two digests recorded above at commit 8035c8f, not these bytes. Every edit of this pass was made after it.",
+    "gate": "at the owner gate on review 1's CONFIRM WITH EXCEPTIONS with all sixteen exceptions applied - no blocking finding, no recommended answer moved, all seven questions found to be genuine gates and no lawful arm called unlawful; P-74 is ready to be ruled",
+    "uncovered_until": "a second independent fresh-context review, for the sixteen exception repairs recorded here; all sixteen post-date review 1 (verification rule 10). Its raw would be a second -RAW.md file, never an overwrite of the retained one."
+  }
 }

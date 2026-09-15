@@ -20,7 +20,16 @@ pipeline and renderer, not the generator package.
 1-based over that file's bytes at `a9f671e`. Where a sentence wraps, the
 cited line is the one the quoted words **begin** on, and a span that
 genuinely crosses a line break is written `L–L`. Counts of "lines" are
-counts of physical lines, never of sentences.
+counts of physical lines, never of sentences — for a newline-terminated
+file that is `wc -l`, equivalently `len(bytes.split(b"\n")) - 1`, and it
+is the rule every line denominator in this packet is stated under
+[rule stated 2026-09-15 per review 1, F3. The first draft's three line
+denominators — 1,153, 1,009 and 1,344 — were each one too high, because
+`len(text.split('\n'))` counts a phantom trailing element on a
+newline-terminated file; all three are corrected in place below, both
+methods re-run this session over all three files. No sweep result moves:
+the 0-occurrence specification sweep, the 37/29/2 proving-case counts and
+the 0-odd-backtick result re-derive exactly under either denominator].
 
 ## The seven questions for the owner
 
@@ -31,11 +40,11 @@ Q2, Q3 and Q5 are narrower gates inside particular slices.
 
 | # | Question | Recommended |
 |---|---|---|
-| Q1 | **M8's subject — portability — is named by no approved requirement in either adopted specification. Does M8 ride the existing PWB implementation authorization as implementation of requirements already in force, or does a slice with a rendered consequence need a specification amendment naming portability first?** Swept this session with Python `re` over both adopted specification files, denominator the two files in full: the PWB specification carries **37** case-insensitive occurrences of the proving case's name (**29** of them the exact proper noun) over 1,153 lines, the Three-Surface POC specification **2** over 1,009; and the literals *second repositor*, *second project*, *portab*, *generaliz* and *locator* occur **0** times in each, case-insensitively. PWB-REQ-001's own normative sentence opens "WHEN the POC observes Butlers" (line 73). The Three-Surface POC specification's binding reader note fixes the subject: "'The configured project' is the single Butlers repository the 2026-08-29 direction bounds the POC to" (lines 23–24) [all Observed, swept and read at source this session]. | **Ride the existing act for slices 1, 3, 4, 6 and 7; hold slices 2 and 5 until this is ruled.** The five have no rendered consequence that changes what a reader is told about the project (slice 1 is a test, slice 4 is one page of the kit, slice 3 changes only where an already-bound value is read from, slice 6 is a conformance fixture, slice 7's visible change is Trajectory and Orrery going honestly Unknown instead of silently seeded — a VIS-2 repair, not a new claim). Slices 2 and 5 change what the page asserts and what the observation digest covers. **Counter-argument, and it is strong:** "no requirement names portability" is equally an argument that *none of it* may be scheduled from the product goal alone, and Q1's recommended split is a judgment about which consequences are *new* rather than a rule the specification states [Inferred]. **Second lawful arm:** hold every slice and route a portability requirement through CC-REV-2 first — slower, and it front-loads a specification amendment before any measurement exists to write it against. **Third lawful arm:** rule that the amended PWB requirement set already covers derivation-from-the-model, in which case slice 2 proceeds with slices 1, 3, 4, 6 and 7. **Default if unanswered: slices 1, 4 and 6's design work proceed to review; nothing lands.** |
+| Q1 | **M8's subject — portability — is named by no approved requirement in either adopted specification. Does M8 ride the existing PWB implementation authorization as implementation of requirements already in force, or does a slice with a rendered consequence need a specification amendment naming portability first?** Swept this session with Python `re` over both adopted specification files, denominator the two files in full: the PWB specification carries **37** case-insensitive occurrences of the proving case's name (**29** of them the exact proper noun) over 1,152 lines, the Three-Surface POC specification **2** over 1,008 (physical lines, `wc -l`; corrected 2026-09-15 per review 1, F3, from the first draft's 1,153 and 1,009 — the sweep results are unchanged); and the literals *second repositor*, *second project*, *portab*, *generaliz* and *locator* occur **0** times in each, case-insensitively. PWB-REQ-001's own normative sentence opens "WHEN the POC observes Butlers" (line 73). The Three-Surface POC specification's binding reader note fixes the subject: "'The configured project' is the single Butlers repository the 2026-08-29 direction bounds the POC to" (lines 23–24) [all Observed, swept and read at source this session]. | **Ride the existing act for slices 1, 3, 4, 6 and 7; hold slices 2 and 5 until this is ruled.** The five have no rendered consequence that changes what a reader is told about the project (slice 1 is a test, slice 4 is one page of the kit, slice 3 changes only where an already-bound value is read from, slice 6 is a conformance fixture, slice 7's visible change is Trajectory and Orrery going honestly Unknown instead of silently seeded — a VIS-2 repair, not a new claim). Slices 2 and 5 change what the page asserts and what the observation digest covers. **Counter-argument, and it is strong:** "no requirement names portability" is equally an argument that *none of it* may be scheduled from the product goal alone, and Q1's recommended split is a judgment about which consequences are *new* rather than a rule the specification states [Inferred]. **Second lawful arm:** hold every slice and route a portability requirement through CC-REV-2 first — slower, and it front-loads a specification amendment before any measurement exists to write it against. **Third lawful arm:** rule that the amended PWB requirement set already covers derivation-from-the-model, in which case slice 2 proceeds with slices 1, 3, 4, 6 and 7. **Default if unanswered: slices 1, 3, 4 and 6's design work proceeds to review; nothing lands.** Slice 3 is named explicitly because Q4's own default is its recommended arm — which needs no amendment and changes no refusal semantics — and because the recommended handoff lands slice 3 first *once Q1 is answered*; unanswered, slice 3 is designed and reviewed like the other three and lands no more than they do [slice 3 added to this default 2026-09-15 per review 1, F10; superseded wording: "slices 1, 4 and 6's design work proceed to review; nothing lands", which left an owner who answers nothing three different statuses for slice 3 — unmentioned here, proceeding under Q4, and first to land in the handoff. No recommendation changes: Q1's recommended arm already held slice 3 in the ride-the-act set]. |
 | Q2 | **Slice 5 loads the observation grammar from the adapter-registry entry, which today does not carry the source grammar the code holds. Does the owner perform a third registry-entry amendment act adding those fields?** The entry at `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` is digest-bound by `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md`, whose Effect closes: "An edit to the artifact breaks this act's digest binding; changes travel as a new act" (lines 76–77). Its current bytes hash to the digest that act names [Observed, `sha256sum` this session compared against the record; neither value is reproduced here, per CG-15 — the record is cited by path]. Its `observationGrammar` carries six keys — `factFamilies`, `fixedCatalogKeys`, `fixedClassKeys`, `fixedProjectAccountKeys`, `precedence`, `rootSummary` — and **no** per-source extraction bindings, heading literals, root index path or tree-population rules [Observed, keys enumerated from the JSON this session]. | **Yes: one amendment act adding the missing source-grammar fields, performed before slice 5's final limb.** Slice 5's first four limbs thread a profile parameter with the current constants as the default and need no act; only the last limb — deleting the constants and loading from the entry — needs it. **Counter-argument:** enlarging what the digest binds makes every future grammar repair an owner ceremony rather than a code change, which is a real recurring cost the owner pays forever, and the proving case's grammar is still moving (three of its four known data quirks were only ruled 2026-09-07). **Second lawful arm:** keep the profile as a separate, unbound implementation-plane JSON file validated against a schema, and leave the registry entry as the checksum it is — cheaper, and it forfeits exactly the property M8 exists to buy, that a governance act rather than a rebuild changes the project. **Default if unanswered: slice 5's first four limbs are designed and none lands.** |
 | Q3 | **Slice 6 runs the pipeline against the Syzygy repository itself. Which acts must exist first, and does the owner want them?** **None exists today** [Observed, swept this session]: the only observation consent is `.syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md`, whose Subject line reads `(project:syzygy, repository:butlers-configured-poc)` (line 15); the only adapter-registry entry names `observedRepository` as `repository:butlers-configured-poc`; and `.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` line 73 excludes, verbatim, "No second repository, no wider content class, no reading of Butlers content the secret-classification policy excludes or cannot classify." The continuation direction restates the same exclusion in the owner's own question, quoted verbatim in the record at lines 69–71: "with every original exclusion retained: no release, deployment, Butlers write, second repository, wider content class, egress, observed-code execution, mission or multi-user authority". RFC1-3 settles that the governance root is not exempt: "Every observed repository — **governance root or not** — requires a recorded **Consent record** (SEC-4). No consent means no observation, and therefore **Unknown**" (`.syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md` lines 130–133) [Observed, quoted at the clause]. | **Perform three acts scoped to a test-only self-observation: a consent record for the pair (`project:syzygy`, `repository:syzygy`) over a `declared-project-shape-text` content class, a second adapter-registry entry naming that pair, and an extension of the existing secret-classification policy to the observing project's own tree — then slice 6 proceeds.** This packet designs slice 6 and **does not run it**; without those acts it stays a design. **Counter-argument:** three ceremonies to obtain a *negative* result (the expectation is that most stages go honestly Unknown) is an expensive way to learn something the code comments already assert, and the owner may prefer to spend the ceremony on a real second project instead. **Second lawful arm:** rule that a conformance fixture reading Syzygy's own tracked tree at a fixed revision — bytes the daemon already reads for governance inputs, through `apps/three-surface-poc/src/governance-inputs.ts` — is not an "observed repository" within RFC1-3, because the fixture emits no rendered claim and serves no surface. This packet does **not** call that arm lawful or unlawful; RFC1-3's sentence is unqualified and the implementation act's exclusion is unqualified, and reading either narrowly is the owner's [Inferred]. **Default if unanswered: slice 6 is designed, its profile is written, and it is not run.** |
-| Q4 | **The consent record already carries the approved locator. Should slice 3 read it as configuration after the authority evaluation admits it, or make it a validated consent field inside that evaluation?** `.syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md` line 17 opens "Current locator:" and gives the path, followed on lines 17–18 by the parenthetical "(configuration, not repository identity)" — a two-line sentence [Observed, read at source]. PWB-REQ-005 fixes the size of the authority evaluation's failure population: "The closed invalid-case population SHALL contain exactly 195 independently decided cases" (line 231), and its table's consent row admits exactly three fields — "For observing project, configured repository and observation content class: missing, malformed and wrong but present. \| 9" (line 245), totalled "Every case above, no 'other invalid' bucket. \| **195**" (line 248). | **Read it as configuration after admission. The 195 stays closed and no specification amendment is needed.** The record's own parenthetical says the locator is configuration; RFC1-2 says the same in general terms — "Repository identity is a declared identity in the project declaration, never a remote URL or path — URLs and default branches change; identity must not" (`.syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md` lines 27–28). The bytes are already digest-verified before the parse runs, so the locator is transitively bound without being an RFC3-16(b) field. **Counter-argument:** a malformed locator line then fails at Git resolution with a resolution error rather than inside the authority evaluation with a typed refusal, which is a worse failure surface for the one input that decides *which repository is read at all* — and that is the input a security reviewer would most want inside the closed population. **Second lawful arm:** add three consent-specific cases (locator missing, malformed, wrong but present), making the population 198. That contradicts line 231's exact number over bytes an act bound, so it is a CC-REV-2 amendment and a new owner act, not an implementation choice. **Default if unanswered: the recommended arm**, because it needs no amendment and the refusal semantics are unchanged. |
-| Q5 | **Slice 2 derives the page's project name from the model. Does the `h1` also change claim role from non-normative framing to an anchored project fact — and is that an implementation of PWB-REQ-014 or an amendment to it?** Today the rendered element is `<h1 data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>` [Observed, verbatim from the retained capture]. The default is set in source: `DEFAULT_CLAIM_ROLE` maps `project-fact` to `non-normative-framing` (`apps/three-surface-poc/src/polaris-copy.ts` lines 260–265), with the comment "everything else is non-normative framing unless a renderer marks the unit as an anchored project fact" (lines 257–259). PWB-REQ-014 closes the role set at three: "exactly one claim role: anchored project fact, explicitly non-normative framing, or epistemically labeled claim" (lines 764–765), and every anchored claim block "SHALL have a typed, revision-bound anchor set that covers all its claims, contains no unused anchors" (lines 766–767). | **Derive the name; leave the claim role as non-normative framing in slice 2, and file the anchored-fact promotion separately.** A derived name has no anchor to carry: the project identity comes from the consent record and the registry entry, which are Syzygy governance artifacts, and REQ-014 closes anchor targets at "doctrine, contract, requirement, decision, evidence and work" (line 774) — a consent record is a decision, so the anchor exists, but minting it is a second change with its own oracle. **Counter-argument:** shipping a *derived* name that still renders as non-normative framing means the page's most prominent element is a fact the model produced and the page disclaims, which is a new kind of dishonesty rather than the old one, and the owner may prefer one change that does both. **Second lawful arm:** promote it in slice 2, with the decision anchor and the covering/minimality oracle REQ-014 requires. **Default if unanswered: the name is not derived and nothing changes.** |
+| Q4 | **The consent record already carries the approved locator. Should slice 3 read it as configuration after the authority evaluation admits it, or make it a validated consent field inside that evaluation?** `.syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md` line 17 opens "Current locator:" and gives the path, followed on lines 17–18 by the parenthetical "(configuration, not repository identity)" — a two-line sentence [Observed, read at source]. PWB-REQ-005 fixes the size of the authority evaluation's failure population: "The closed invalid-case population SHALL contain exactly 195 independently decided cases" (line 231), and its table's consent row admits exactly three fields — "For observing project, configured repository and observation content class: missing, malformed and wrong but present. \| 9" (line 245), totalled “Every case above, no “other invalid” bucket. \| **195**” (line 248 — the source uses curly quotes around *other invalid* and they are reproduced here as of 2026-09-15 per review 1, F15; the first draft rendered them straight). | **Read it as configuration after admission. The 195 stays closed and no specification amendment is needed.** The record's own parenthetical says the locator is configuration; RFC1-2 says the same in general terms — "Repository identity is a declared identity in the project declaration, never a remote URL or path — URLs and default branches change; identity must not" (`.syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md` lines 126–128, the clause itself opening at line 121) [anchor corrected 2026-09-15 per review 1, F1; superseded citation: "lines 27–28", which at this baseline are the RFC's own front matter — "SDR §5 questions 1–3." and the "Rationale, amendment history, and rejected alternatives" line. The identifier and the quoted words were exact; only the anchor was wrong, by ninety-nine lines. Re-read at source this session]. The bytes are already digest-verified before the parse runs, so the locator is transitively bound without being an RFC3-16(b) field. **Counter-argument:** a malformed locator line then fails at Git resolution with a resolution error rather than inside the authority evaluation with a typed refusal, which is a worse failure surface for the one input that decides *which repository is read at all* — and that is the input a security reviewer would most want inside the closed population. **Second lawful arm:** add three consent-specific cases (locator missing, malformed, wrong but present), making the population 198. That contradicts line 231's exact number over bytes an act bound, so it is a CC-REV-2 amendment and a new owner act, not an implementation choice. **Default if unanswered: the recommended arm**, because it needs no amendment and the refusal semantics are unchanged. |
+| Q5 | **Slice 2 derives the page's project name from the model. Does the `h1` also change claim role from non-normative framing to an anchored project fact — and is that an implementation of PWB-REQ-014 or an amendment to it?** Today the rendered element is `<h1 data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>` [Observed, verbatim from the retained capture]. The default is set in source: `DEFAULT_CLAIM_ROLE` maps `project-fact` to `non-normative-framing` (`apps/three-surface-poc/src/polaris-copy.ts` lines 260–265), with the comment "everything else is non-normative framing unless a renderer marks the unit as an anchored project fact" (lines 257–259). PWB-REQ-014 closes the role set at three: "exactly one claim role: anchored project fact, explicitly non-normative framing, or epistemically labeled claim" (lines 764–765), and every anchored claim block "SHALL have a typed, revision-bound anchor set that covers all its claims, contains no unused anchors and is small enough for a reader to identify which anchor supports which claim" (lines 766–768 — the quotation is extended to the sentence's end 2026-09-15 per review 1, F15, which found it stopping at "no unused anchors" with no ellipsis marking the stop; the citation was lines 766–767). | **Derive the name; leave the claim role as non-normative framing in slice 2, and file the anchored-fact promotion separately.** A derived name has no anchor to carry: the project identity comes from the consent record and the registry entry, which are Syzygy governance artifacts, and REQ-014 closes anchor targets at "doctrine, contract, requirement, decision, evidence and work" (line 774) — a consent record is a decision, so the anchor exists, but minting it is a second change with its own oracle. **Counter-argument:** shipping a *derived* name that still renders as non-normative framing means the page's most prominent element is a fact the model produced and the page disclaims, which is a new kind of dishonesty rather than the old one, and the owner may prefer one change that does both. **Second lawful arm:** promote it in slice 2, with the decision anchor and the covering/minimality oracle REQ-014 requires. **Default if unanswered: the name is not derived and nothing changes.** |
 | Q6 | **The lede. `shell.lede` carries the observed project's own tagline as a `scope-instruction` with no anchor. Delete it, or make it profile-supplied owner framing with an explicit disclosure?** The row is `apps/three-surface-poc/src/polaris-copy.ts` line 27 and it renders on the page immediately beneath the `h1`, with `data-copy-role="scope-instruction" data-claim-role="non-normative-framing"` [Observed, source and capture]. It is the one identity leak no proper-noun predicate can catch: the census below finds **4** of the copy table's **191** rows carrying a Butlers-domain proper noun and this row is **not** one of them, because it contains none [Observed, computed this session]. | **Delete it. Render nothing in that slot until a profile supplies an owner-declared framing line with its disclosure.** VIS-2's polarity applies: an absent framing line is honest, a borrowed one is a confident statement about a project the model never observed. **Counter-argument:** it is the page's only warm sentence, PWB-REQ-012 explicitly budgets for it ("At most one entry `scope-instruction` may state the POC bound", line 688), and deleting it costs comprehension — VIS-1's rank 2 — to buy portability, which VIS-1 does not rank at all. **Second lawful arm:** keep it, sourced from the profile, rendered with a disclosure naming it owner-supplied framing rather than observation. **Default if unanswered: it stays exactly as it is, unanchored**, and this packet records that as the outcome. |
 | Q7 | **Slice 7 rewrites the shared `PocModel` type. Does that trigger the improvement-cycle ceremony the owner's direction sets — work-in-progress one, review → repair → confirm → owner report before the next cycle?** `packages/three-surface-poc-core/src/model.ts` line 113 types the project name as the **literal type** `'Butlers'`, not as `string`, and line 118 types `capabilityId` as the literal `'capability:whatsapp-transport-identity'` [Observed, read at source]. Six top-level test files and four non-test modules name `buildButlersPocModel` [Observed, enumerated this session]. All three surfaces read one instance of that model. | **Yes — treat slice 7 as one shared-model change under that direction, with WIP one, and schedule nothing else against the model while it is open.** The literal type means a second project cannot be *typed*, let alone rendered, so the change is not local to a seed constant. **Counter-argument:** the ceremony's cost is a full review-and-confirm cycle for what is, in its first limb, a pure extraction with a byte-identical `GET /api/poc` as its oracle — and that limb could land as ordinary engineering. **This is a process question the owner set the rule for, so it is put rather than decided** [Inferred — a judgment about who owns the rule, not about lawfulness]. **Second lawful arm:** rule the first limb ordinary engineering and apply the ceremony only from the second limb, where the seeds become a parameter and the empty case renders. **Default if unanswered: slice 7 does not start**, because starting it without the ceiling would consume the shared-model WIP slot the other packets also need. |
 
@@ -95,7 +104,7 @@ its mapping done, so the gap is recorded rather than dropped.
 |---|---|---|
 | Doctrine | `.syzygy/governance/doctrine/vision.md`, `.syzygy/governance/doctrine/security.md` | VIS-1, VIS-2, VIS-4, VIS-5, VIS-7; SEC-1 (quoted in Gate 2, with what it does and does not reach), SEC-5 |
 | Decisions | `.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md`, `.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-CONTINUATION-ACT.md`, `.syzygy/governance/decisions/PWB-BUTLERS-OBSERVATION-CONSENT-ACT.md`, `.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-ENTRY-AMENDMENT-ACT.md`, `.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md`, `.syzygy/governance/decisions/POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md` | the first two are the implementation grant and its continuation, quoted per slice in Gate 3; the last governs slice 4's plane only |
-| Specification | `openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md` (1,153 lines, 17 requirements) and `openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` (1,009 lines, 24 requirements) | both adopted; neither names portability, a second project or a locator — the Q1 sweep |
+| Specification | `openspec/changes/polaris-project-wide-butlers-model/specs/polaris-project-wide-butlers-model/spec.md` (1,152 lines, 17 requirements) and `openspec/changes/three-surface-poc-experience/specs/three-surface-poc-experience/spec.md` (1,008 lines, 24 requirements) | both adopted; neither names portability, a second project or a locator — the Q1 sweep |
 | Governed inputs | `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json`, `.syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md` | both digest-bound; slice 3 reads one, slice 5 proposes amending the other through a new act |
 | Contracts | `.syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md`, `.syzygy/governance/contracts/rfcs/RFC-0002/rendering-vocabularies.md` | RFC1-2 and RFC1-3 on repository identity and consent; RFC1-10 on opaque identifiers; RFC2-26's phase rule, run in Gate 5 |
 | Policies | `.syzygy/governance/policies/craft-and-care/` and the two in-force craft policies under `.syzygy/governance/contracts/candidates/policy-candidates/` | CC-REV-2 is the amendment path Q1's second arm and Q4's second arm would need |
@@ -215,15 +224,46 @@ not, against denominators of 64 test and 69 non-test files [Observed,
 computed this session]. The dossier's L1-F11 figure reproduces exactly.
 
 **Second method, and it disagrees by one — this is the interesting part.**
-`grep -il butler` over the same 133 paths returns **73**. The missing file is
+`grep -il butler` over the same 133 paths returns **73** *through this
+environment's `grep` wrapper*, and **74** through every other invocation
+tried. The divergent file is
 `packages/three-surface-poc-core/src/project-shape-coverage.test.ts`, which
 contains a literal NUL byte at byte offset 13,811 — inside a template-string
 separator on line 305, `` `${i.class}\0${i.key}` `` written as a raw control
-character. ugrep classifies the file as binary, and `-l` silently omits it;
-`grep -ail` lists it and `grep -aic` counts 44 matches in it [Observed, all
-four invocations run this session]. Verification rule 1's class, in a new
-costume: the tool did not error, it returned a smaller true answer. **Any
-future sweep over these trees must pass `-a` or use Python.**
+character. Verification rule 1's class, in a new costume: the tool did not
+error, it returned a smaller true answer. **Any future sweep over these trees
+must pass `-a` or use Python.**
+
+**Where the 73 actually comes from, reproduced both ways this session**
+[cause re-attributed 2026-09-15 per review 1, F5. Superseded wording: "ugrep
+classifies the file as binary, and `-l` silently omits it". Bare ugrep does
+not omit it; the interactive shell's `grep` does, and the difference is a
+flag the shell injects]. In this environment `grep` is not a binary:
+`type grep` reports a shell function defined in the session's shell
+snapshot, and `command -v ugrep` finds nothing on `PATH` — ugrep here is the
+Claude Code
+CLI binary invoked with `argv[0]` set to `ugrep`. The function execs that
+binary with six flags **ahead of** every argument the caller passes:
+`-G --ignore-files --hidden -I` plus `--exclude-dir` entries for the six
+version-control directories. `-I` is ignore-binary-files, and it is the whole
+cause.
+
+- The exact invocation that produced **73**, reproduced this session — the
+  wrapper's injected flag set, then `-il butler`, then the 133-path argument
+  list:
+  `ugrep -G --ignore-files --hidden -I --exclude-dir=.git -il butler <paths>`
+  piped to `wc -l`.
+- Bare ugrep, the same 133 paths, no injected flags: **74**.
+- System `/bin/grep -il`, the same 133 paths: **74**.
+- On the divergent file alone, bare ugrep `-il` exits 0 and prints the path,
+  and `-ic` prints 44.
+- Under the wrapper's flags, adding `-a` restores both figures: `-ail` over
+  the 133 gives 74 and `-aic` on that file gives 44, so `-a` overrides `-I`
+  and the practical instruction above is unaffected.
+
+[All six invocations run this session, Observed.] Both figures are real and
+the headline — 74 of 133 — is the correct one; what a later reader needs is
+the invocation each came from, which is what this section now records.
 
 **The remainder, enumerated by two mechanical partitions.** The 59
 non-matching files are **27** test files and **32** non-test, and
@@ -271,7 +311,11 @@ concentration is where the dossier said it would be:
 `packages/three-surface-poc-core/src/project-shape-extraction.ts` 5,
 `apps/three-surface-poc/src/polaris-copy.ts` 4 and
 `packages/three-surface-poc-core/src/worker-change-observation.ts` 3; the
-remaining 13 spread one or two each over
+remaining 13 spread one to three each over — one to two for twelve of them
+and **3** for `apps/three-surface-poc/src/test-project-shape-fixture.ts`, at
+lines 19, 28 and 54 [corrected 2026-09-15 per review 1, F13; superseded
+wording: "one or two each". Re-derived this session under the same
+comment-blanking predicate]:
 `apps/three-surface-poc/src/routes.ts`,
 `apps/three-surface-poc/src/orrery.ts`,
 `apps/three-surface-poc/src/trajectory.ts`,
@@ -323,13 +367,32 @@ earlier tree than this packet's baseline. It is cited for **what the
 renderer emits**, and every source row it is cited against was re-read at
 `a9f671e` and is unchanged [Observed].
 
-- The exact proper noun occurs **96** times in the capture [Observed,
-  Python `re` over the file this session; the dossier's figure reproduces].
+**Where it is, and why it is not here** [provenance added 2026-09-15 per
+review 1, F9]. The capture is **2,090,025 bytes**, sha256
+`0bff1adfc43b1d5f8595e3a5c13bc56f54a27fb5ca0175fa838be04eb3a36305`
+(`wc -c` and `sha256sum` this session, neither transcribed). It is **not in
+this repository**: `git ls-files` and a whole-tree walk return 0 matches,
+and it is not proposed for retention under `docs/evidence/` here, because it
+is a rendered page of a consented observation of the proving case and
+copying it into this tree is a content decision no act in force covers. The
+consequence is stated rather than softened: **the two figures below are
+checkable only by a reader holding that byte range, and this packet's own
+resolution predicate structurally cannot see the span that names it** — see
+Gate 6, item 10, whose predicate is widened for exactly this reason. The
+compensating evidence is that every *source* row cited against the capture
+was re-read at `a9f671e` and is unchanged.
+
+- The exact proper noun occurs **96** times in the capture
+  [Observed at the retained capture, Python `re` over the file this session,
+  and the dossier's figure reproduces; **[Unknown] to a reader without that
+  file** — relabelled 2026-09-15 per review 1, F9, from a bare `[Observed]`].
 - The page's first heading is, verbatim:
   `<h1 data-copy-role="project-fact" data-claim-role="non-normative-framing" data-presentation-artifact data-non-citable>Butlers</h1>`
   and the element immediately following it is the lede paragraph carrying
   the tagline with `data-copy-role="scope-instruction"` and the same
-  `non-normative-framing` claim role [Observed, read from the capture].
+  `non-normative-framing` claim role [Observed at the retained capture, read
+  from it this session; **[Unknown] to a reader without that file** —
+  relabelled 2026-09-15 per review 1, F9, from a bare `[Observed]`].
 
 ### The registry entry, and why slice 5 needs an act
 
@@ -414,8 +477,13 @@ line 62, `/<h1[^>]*>Butlers<\/h1>/`); **3** assert a remediation sentence
 naming the observed repository verbatim (`polaris-first-reading.test.ts`,
 `apps/three-surface-poc/src/polaris-project-shape.test.ts`,
 `apps/three-surface-poc/src/walkthrough-preflight.test.ts`); **1** asserts
-the two section headings (`apps/three-surface-poc/src/polaris-copy.test.ts`
-line 267); **1** names the locator constant
+one of the two section headings
+(`apps/three-surface-poc/src/polaris-copy.test.ts` line 267) [corrected
+2026-09-15 per review 1, F6; superseded wording: "asserts the two section
+headings". Line 267 asserts one heading string inside a clean-fragment
+expectation, and the proving case's name occurs exactly once in that whole
+file, on line 267; the second group heading occurs nowhere in it — whole
+file swept this session, Observed]; **1** names the locator constant
 (`apps/three-surface-poc/src/git-observation.test.ts`); **6** name the model
 builder [all Observed, swept this session].
 
@@ -428,7 +496,13 @@ mutation over `apps/three-surface-poc/src/polaris.ts` at commit
 `escapeHtml(example.key)`, `exitCode` 1 and `restored` true. That record
 carries **no** sha256 field, so it binds no bytes — it is a mutation run,
 valid for the commit it names (verification rule 7), not a digest binding
-[Observed, the record's five scalar fields read this session]. The guarded
+[Observed, the record read this session: it carries **seven** keys —
+`commit`, `file`, `old`, `new`, `exitCode`, `output` and `restored` —
+and this packet reads five of them and quotes `restored` in the sentence
+above, which is the sixth (corrected 2026-09-15 per review 1, F14;
+superseded wording: "the record's five scalar fields"). Every substantive
+claim about the record verifies: `exitCode` 1, `restored` true and no
+`sha256` field]. The guarded
 fragment is still present in the current file, exactly once [Observed]. Slice
 2 edits that file. **If a slice's edit moves or rewrites that fragment, the
 mutation target must be updated in the same change**, per the AGENTS.md
@@ -445,7 +519,7 @@ listed here verified exactly.
 | # | Dossier | At `a9f671e` |
 |---|---|---|
 | 1 | L1-M1 cites `packages/three-surface-poc-core/src/project-shape-coverage.ts` line 85 | Line 85 is blank. `CLASS_ROWS` is declared at line **86** and `FACT_FAMILIES` at line **78** |
-| 2 | L1-F3 and L1-M3 cite `apps/three-surface-poc/src/polaris.ts` lines 420, 424 and 428 as remediation sentences | All three are off by one or more: 420 is a closing brace, 424 is `case 'active-content':` and 428 is `case 'denied-path':`. The remediation sentences are at **419, 423, 425, 427, 432 and 441**, and the pillar routes at **671, 673, 675, 677, 679, 681 and 683** |
+| 2 | L1-F3 and L1-M3 cite `apps/three-surface-poc/src/polaris.ts` lines 420, 424 and 428 as remediation sentences | All three are off by one or more: 420 is a closing brace, 424 is `case 'active-content':` and 428 is `case 'denied-path':`. The remediation sentences are at **419, 423, 425, 427, 432 and 441**, and the pillar routes at **671, 673, 675, 677, 679, 681 and 683**. That is thirteen of the fourteen non-comment lines in the file that name the proving case; the fourteenth is line **583**, and it is not a sentence at all — it is the capability-guide sort key `const practicalOrder = ['Butlers', 'Staffers', 'Dashboard', 'Connectors'];`, which ranks the guide's capability-context groups by a hard-coded list of the proving case's own capability contexts and renders no text of its own. So "the fourteen renderer-built sentences" is thirteen renderer-built sentences and one ordering constant, and slice 2 must carry the constant too or the guide silently keeps the wrong project's ordering [added 2026-09-15 per review 1, F16, which found line 583 named nowhere; all fourteen re-derived this session under the comment-blanking predicate] |
 | 3 | L1-M5 cites `apps/three-surface-poc/src/governance-inputs.ts` line 113 | Line 113 declares the `LoadGovernanceInputsOptions` interface. The authority loader's `load` closure is at lines **314–331** |
 | 4 | L1-F11's note says the two methods agree | They agree on the non-test half (37 and 37) and disagree on the whole: Python gives **74**, `ugrep -il` gives **73**, over a NUL byte. The headline figure, 74 of 133, is exact |
 | 5 | L1-F10 cites the seeded values in `packages/three-surface-poc-core/src/model.ts` | Those verify, and they understate: line **113** types the project name as the literal **type** `'Butlers'`, so a second project cannot be typed at all |
@@ -501,6 +575,51 @@ the *label* stops meaning what its legend says: an element marked
 an encoding that misreports, whatever its claim-role attribute says
 alongside.
 
+**VIS-4 — Humans steer the vision; agents shape within it.** Quoted at the
+clause, `.syzygy/governance/doctrine/vision.md` lines 122–139: "Shape-defining
+deltas — heart-and-soul doctrine, craft-and-care standards, topology, and RFC
+acceptance — require owner sign-off, every time; Syzygy and its agents may
+draft them, never adopt them… One class is always human-gated, gate open or
+not: spec changes touching security posture, privacy or retention
+obligations, or normative data contracts. Classification of a change as
+spec-level or shape-level is contested by default and is never made by the
+agent performing the change… *Violation:* … an agent editing a spec to match
+code it just wrote." This is the clause that makes Q2 and Q3 questions rather
+than decisions: between them they ask the owner to perform four acts — a
+registry-entry amendment, a consent record, a second registry entry and a
+policy extension — and VIS-4 reserves every one of them to owner sign-off,
+every time. It also names the trap in Q1's own shape: whether portability is
+spec-level or shape-level is "contested by default and is never made by the
+agent performing the change", which is precisely why this packet puts Q1
+rather than ruling it. **This packet adopts nothing and labels nothing
+accepted** [clause added 2026-09-15 per review 1, F11, which found VIS-4
+named in Gate 0's row and never quoted or applied anywhere in the packet;
+re-swept this session, VIS-4 occurred exactly **1** time in the first draft,
+in Gate 0's table, and SEC-5 exactly **2**, in Gate 0's table and in the SEC
+enumeration below — neither at a clause. The review's own occurrence counts,
+"twice" and "three times", do not re-derive and are corrected here rather
+than copied].
+
+**SEC-5 — Secrets are never indexed.** Quoted at the clause,
+`.syzygy/governance/doctrine/security.md` lines 54–60: "Observation applies a
+declared secret-detection policy (`.syzygy/governance/`); content matching it
+is excluded and the exclusion is rendered; content that cannot be classified
+is excluded, not indexed — unclassifiable fails closed. A secret reproduced
+in any Syzygy surface, store, or endpoint is a trust-floor violation." This
+is live for slice 6 and for nothing else in the packet. Slice 6 proposes to
+run the phase-A and phase-B pipeline — the unchanged secret detectors and
+active-content scan included — over **this repository's own tracked tree**,
+and the approved secret-classification policy in force names the proving
+case's repository, not this one. So SEC-5's fail-closed limb decides what
+slice 6 does with every Syzygy file it cannot classify: exclude it, not index
+it, and render the exclusion. That is the third of the three acts Q3 asks for
+— the policy extension — and SEC-5 is why it is an act and not a fixture
+detail. Slice 6's oracle already requires stage outcomes with no expected
+values on the first run, so an unclassifiable-heavy first result is a
+recorded honest Unknown rather than a failure [clause added 2026-09-15 per
+review 1, F11; no recommendation changes — Q3 already asked for the policy
+extension as one of its three acts].
+
 **SEC-1 — Authenticated by default, quoted because the dossier tags it for
 the locator, and it does not reach it.** `.syzygy/governance/doctrine/security.md`
 lines 10–23, verbatim at the load-bearing sentences: "Syzygy's endpoints and
@@ -521,7 +640,14 @@ the finding].
 "Repository identity is a declared identity in the project declaration, never
 a remote URL or path — URLs and default branches change; identity must not"
 (`.syzygy/governance/contracts/rfcs/RFC-0001-project-graph-identity-state-planes.md`
-lines 27–28). The implementation already honours the *identity* half: the
+lines 126–128; RFC1-2's clause opens at line 121) [anchor corrected
+2026-09-15 per review 1, F1. Superseded citation: "lines 27–28", which at
+this baseline are the RFC's own front matter — the line reading "SDR §5
+questions 1–3." and the "Rationale, amendment history, and rejected
+alternatives" line. The quoted words and the identifier were exact; the
+anchor was wrong by ninety-nine lines, and this is the clause Q4's
+recommended arm rests on. Re-read at source this session, Observed].
+The implementation already honours the *identity* half: the
 registry's identity scheme is
 `opaque-repository-id-plus-normalized-approved-locator` and the subject is an
 opaque repository id. What it does not honour is where the *configuration*
@@ -538,7 +664,10 @@ therefore **Unknown** — never an empty graph read as absence." The phrase
 "governance root or not" is the reason Q3 exists rather than being decided
 here.
 
-**RFC1-10 governs slice 7's rename.** Lines 263–266: "Identifiers are opaque;
+**RFC1-10 governs slice 7's rename.** Lines 263–265 [anchor corrected
+2026-09-15 per review 1, F2: the quoted sentence spans 263–265 and line 266
+belongs to the next sentence; superseded citation "lines 263–266"]:
+"Identifiers are opaque;
 names are labels. For every declared class (Capability, Topology entry,
 Declared region, Repository, Project, Proposal): renaming the thing changes
 its label, never its identifier." Slice 7 must therefore change the *label*
@@ -554,7 +683,7 @@ must not re-key existing entities by the new label.
 | 3 Locator from consent | `apps/three-surface-poc/src/git-observation.ts`, `apps/three-surface-poc/src/governance-inputs.ts`, `packages/three-surface-poc-core/src/body-read-authority.ts` and two test files | **read, never edited**: `.syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md` line 17 |
 | 4 One profile schema | `docs/polaris-generation/ARTIFACTS-AND-TOOLS.md`, `docs/polaris-generation/README.md` | none |
 | 5 Registry-loaded profile | a new `packages/three-surface-poc-core/src/` profile module plus `project-shape-observation.ts`, `project-shape-manifest.ts`, `project-shape-extraction.ts`, `project-shape-coverage.ts`, `project-shape-model.ts` in that tree, and `apps/three-surface-poc/src/governance-inputs.ts` | **edited, under a new act**: `.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json` — Q2 |
-| 6 Self-profile proof | a new conformance module in `packages/three-surface-poc-core/src/`, plus a Syzygy profile fixture | **none edited**; it *reads* this repository's own tracked tree, which is what Q3 gates |
+| 6 Self-profile proof | a new conformance module in `packages/three-surface-poc-core/src/`, plus a Syzygy profile fixture | **none edited**; it *reads* this repository's own tracked tree, which is what Q3 gates. This row and Gate 4's "No existing source module changes" are the correct statement of slice 6, re-read at source 2026-09-15 per review 1, F7: slice 6's design authors a profile and a conformance module and edits no existing module. The evidence record's `m8_by_slice` assigns `packages/three-surface-poc-core/src/project-shape-model.ts` to S6, and the collision list below annotates that file "(S5, S6)"; both are marked in place as *exercised by slice 6, never edited by it*, because the collision table's other annotations mean "claimed for edit" |
 | 7 Seeded entities out of the model | `packages/three-surface-poc-core/src/model.ts`, a new seed module beside it, `apps/three-surface-poc/src/main.ts`, `apps/three-surface-poc/src/walkthrough-inputs.ts`, `apps/three-surface-poc/src/test-model-fixture.ts`, `apps/three-surface-poc/src/trajectory.ts`, `apps/three-surface-poc/src/orrery.ts` and their tests | none |
 
 Boundaries crossed: **one**, deliberately. Slice 5's last limb writes into
@@ -583,10 +712,10 @@ instead records whether the clause is one the slice *implements* or one it
 | Slice | Owner act needed | Named clause | Named act and the trigger test |
 |---|---|---|---|
 | 1 Predicate | **No** | **None named.** A test that renders nothing enumerates no observable consequence | Rides `.syzygy/governance/decisions/PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` (2026-09-02) as continued 2026-09-05. Its point 3 authorizes "Code in the ordinary implementation plane only — `apps/**`, `packages/**`, tooling, root manifests" (lines 59–61). No escalation trigger crossed: the act's triggers are doctrine or contract change, specification amendment, security/privacy/retention posture, registry envelope, observation outside the consented class or repository, or scope beyond the signed change (lines 88–94); a reporting-only sweep is none of them |
-| 2 Identity | **Ruled by Q1; and Q5 if the claim role changes** | **None names project-identity derivation.** PWB-REQ-012 (line 683) governs the copy table's *roles*, word limits and prohibited terms and says nothing about where a string comes from; PWB-REQ-014 (lines 764–765) closes the *claim roles* and is what Q5 engages | Same act on Q1's recommended reading, which holds this slice. The trigger at issue is "any scope beyond the signed change" (line 94): a page that names the project it observed is arguably within PWB-REQ-001's "Every emitted project-shape fact SHALL carry its source identity" (line 78), and arguably a new consequence. This packet does not rule it |
+| 2 Identity | **Ruled by Q1; and Q5 if the claim role changes** | **None names project-identity derivation.** PWB-REQ-012 (line 683) governs the copy table's *roles*, word limits and prohibited terms and says nothing about where a string comes from; PWB-REQ-014 (lines 764–765) closes the *claim roles* and is what Q5 engages | Same act on Q1's recommended reading, which holds this slice. The trigger at issue is "any scope beyond the signed change" (lines 93–94) [anchor corrected 2026-09-15 per review 1, F2: the words begin on line 93 and end on 94; superseded citation "line 94"]: a page that names the project it observed is arguably within PWB-REQ-001's "Every emitted project-shape fact SHALL carry its source identity" (line 78), and arguably a new consequence. This packet does not rule it |
 | 3 Locator | **No**, on Q4's recommended arm | **PWB-REQ-005**, line 245's consent-specific field row and line 231's "exactly 195 independently decided cases". The slice is designed **not** to change either | Same act. No trigger crossed *on the recommended arm*: the artifact is read, not edited; the content class is unchanged; the repository is unchanged; the 195 is unchanged. On Q4's second arm the trigger is "an amendment to the signed PWB specification" (lines 89–90), which needs CC-REV-2 and a new act |
 | 4 One profile schema | **No** | **None named.** One page of authoring guidance, argued from the kit's own stated bar at `docs/polaris-generation/ARTIFACTS-AND-TOOLS.md` lines 94–95 | Rides `.syzygy/governance/decisions/POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md` (2026-09-12), whose line 42 authorizes "the full EXECUTION-PHASES.md implementation goal, including protected effect host, complete owner experience, **two-project** and changed-source proof obligations", with the reservation "Real-project reads, provider egress and destination writes remain separately admitted". A coordination page is none of the reserved three |
-| 5 Registry profile | **Yes — a third registry-entry amendment act (Q2)**, for its last limb only | **None names a loaded profile.** The clause the slice must not break is PWB-REQ-001's determinism sentence, lines 74–76: the observation "SHALL bind the consent record, secret-policy version, source-discovery version and observer/parser version as deterministic evaluation inputs" — so the loaded profile's digest must join that set | Same PWB act for limbs 1–4. Limb 5 crosses the trigger "a change to the constraints or envelope the registry entry declares" (lines 92–93) explicitly, which is what the 2026-09-05 continuation direction exists to show the shape of: the owner continued authorization *after* the registry amendment, not before it |
+| 5 Registry profile | **Yes — a third registry-entry amendment act (Q2)**, for its last limb only | **None names a loaded profile.** The clause the slice must not break is PWB-REQ-001's determinism sentence, lines 74–76: the observation "SHALL bind the consent record, secret-policy version, source-discovery version and observer/parser version as deterministic evaluation inputs" — so the loaded profile's digest must join that set | Same PWB act for limbs 1–4. Limb 5 crosses the trigger "a change to the constraints or envelope the registry entry declares" (lines 91–92) explicitly [anchor corrected 2026-09-15 per review 1, F2: under this packet's own "begins on" convention the quoted words begin on line 91 and end on 92; superseded citation "lines 92–93". Read at source this session], which is what the 2026-09-05 continuation direction exists to show the shape of: the owner continued authorization *after* the registry amendment, not before it |
 | 6 Self-profile proof | **Yes — a consent record, a registry entry and a policy extension for this repository (Q3)** | **PWB-REQ-005** line 206, the prohibition itself, and **RFC1-3** lines 130–133. Both are quoted in Q3 | No existing act covers it. `PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md` line 73 excludes "No second repository" and the continuation restates it. **This packet does not rule whether Syzygy observing its own tracked tree is a "second repository"; it states that no act names the pair and that RFC1-3's sentence is unqualified** |
 | 7 Seeded entities | **No for the code; Q7 for the ceremony** | **POC-REQ-050** (line 777) requires Orrery's regions to "derive from the directory structure and declared capability-to-path mappings", with the falsifier "a rendered region backed by no observed directory or declared mapping" (lines 791–793). Seeded entities from the wrong project are that falsifier | Same PWB act; the change is implementation-plane only and repairs a requirement rather than extending one. Q7 is about the owner's improvement-cycle ceremony, not about authority |
 
@@ -604,8 +733,12 @@ and each must keep its expected values as hard-coded literals rather than
 importing them from the module under test.
 
 All seven slices run under `syzygy-dov.8`, the pursuit bead; no new bead is
-filed by this packet, and no register row is added here — the owner questions
-are registered after review 1, batched with the siblings'.
+filed by this packet. The owner questions are registered as **P-74** in
+`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` on this branch,
+after review 1, batched with the siblings' [superseded 2026-09-15: "no
+register row is added here — the owner questions are registered after review
+1, batched with the siblings'", true of the first draft and not of these
+bytes].
 
 ## Gate 4 — Design sketch, per slice
 
@@ -946,7 +1079,9 @@ read at source this session.
 
 **The measurement first, because it is the whole argument.** Swept this
 session with Python `re` over both specification files in full — denominator
-the two files, 1,153 and 1,009 lines — the literals *second repositor*,
+the two files, 1,152 and 1,008 physical lines (`wc -l`; corrected
+2026-09-15 per review 1, F3, from the first draft's 1,153 and 1,009)
+— the literals *second repositor*,
 *second project*, *portab*, *generaliz* and *locator* occur **0** times in
 each, case-insensitively. The word *profile* occurs **once** in the PWB
 specification, at line 357, where it means a UTF-8 line-oriented text profile
@@ -1025,9 +1160,9 @@ table]. The test is run over all seven.
 | 2 Identity | "claim and challenge rendering" (the page's first heading is a claim about which project the reader is looking at); "API answers over epistemic state" (the project name is a field of the machine answer) | **Requirement partial, scenario absent.** **PWB-REQ-012**, line 683, governs the copy table but constrains only role, word count and prohibited terms; its scenario "Section headings name project concepts" (lines 705–710) reads "**WHEN** Polaris renders the project-level entry / **THEN** its headings name concepts such as purpose, boundaries, architecture, V1 scope, capabilities, evidence or gaps / **AND** no heading describes a document movement or reading stage" — which the current literal heading already satisfies and would continue to satisfy if it named the wrong project. **PWB-REQ-001** line 78 requires "Every emitted project-shape fact SHALL carry its source identity, scope, capture instant and observer identity/version", which reaches the *facts* and not the page's own heading. **No scenario in either adopted specification states the case of a rendered project name that the model did not observe.** Denominator: **55** scenarios — 31 in the PWB specification and 24 in the Three-Surface POC specification — each swept over its heading and its WHEN/THEN bullets, bounded at the `yaml` fence, for *project name*, *display name*, *project identity*, *names the project*, *which project* or *heading names*; **0** match [Observed, Python `re` this session, the denominator counted from the same pass] | **Not available.** This packet does **not** call slice 2 lawful or unlawful. It records the two repair routes the clause itself allows: a requirement-and-scenario pair added through CC-REV-2 and a new owner act, or the reviewed N/A judgment the clause names — "a recorded owner judgment homed in `decisions/` (RFC3-15)", honored only through an effective owner act under RFC3-16(a). This packet's view of the second: **not reachable here**, because the clause admits an N/A judgment only for a consequence "purely structural with no independently testable behavior", and a heading that names a project is independently testable by reading it [Inferred — the routes are Observed in the clause; whether slice 2 fits the second is a reading] |
 | 3 Locator | **None enumerated on the recommended arm.** The one rendered change is a new refusal reason, and refusal reasons already render under PWB-REQ-005's disclosure requirement (lines 220–222) | **PWB-REQ-005**, line 206, with scenario **"Missing observation consent blocks content reads"** at lines 296–300, quoted verbatim: "**WHEN** no effective Butlers observation-consent act exists / **THEN** the project-shape observer performs zero body reads / **AND** the project model reports Unknown with the consent reason" | **Available.** The new refusal is the same shape the scenario already requires: zero reads, Unknown, reason rendered |
 | 4 One profile schema | **None enumerated.** Two sentences in two unbound kit files; nothing rendered, nothing queried | n/a | n/a. Argued from the kit's own bar |
-| 5 Registry profile | "API answers over epistemic state" — the deterministic-input set the machine answer exposes gains the profile digest; **and** "evaluation and snapshot displays", since the human surface exposes the same identities | **Requirement available, scenario partial.** **PWB-REQ-001**, line 73, whose normative text requires the observation to "bind the consent record, secret-policy version, source-discovery version and observer/parser version as deterministic evaluation inputs" (lines 74–76) and that "Human and machine readers SHALL receive those identities" (lines 76–77). Its scenario **"Source population is complete at one revision"** (lines 98–102) reads "**WHEN** Butlers is observed at revision R / **THEN** every admitted project-shape source resolves at R / **AND** the human and machine views expose the same complete source set" — which is about the *source set*, not about the input identity set. **No scenario states the case of a deterministic input being added.** PWB-REQ-001 carries exactly **one** scenario, the one quoted [Observed, counted this session over the 31 scenarios in that file]; the phrase "deterministic input" occurs at lines 76, 85 and 95, all inside the requirement's own prose and its falsifier, never inside a scenario | **Requirement available, scenario not.** Same two routes as slice 2, same reading on the second. The requirement's own sentence enumerates four deterministic inputs by name and a loaded profile is a fifth, so a strict reader may hold that adding one **contradicts** a closed list rather than implementing an open one — that reading is not this packet's to take, and it is the sharpest form of Q1 |
+| 5 Registry profile | "API answers over epistemic state" — the deterministic-input set the machine answer exposes gains the profile digest; **and** "evaluation and snapshot displays", since the human surface exposes the same identities | **Requirement available, scenario partial.** **PWB-REQ-001**, line 73, whose normative text requires the observation to "bind the consent record, secret-policy version, source-discovery version and observer/parser version as deterministic evaluation inputs" (lines 74–76) and that "Human and machine readers SHALL receive those identities" (lines 76–77). Its scenario **"Source population is complete at one revision"** (lines 98–102) reads "**WHEN** Butlers is observed at revision R / **THEN** every admitted project-shape source resolves at R / **AND** the human and machine views expose the same complete source set" — which is about the *source set*, not about the input identity set. **No scenario states the case of a deterministic input being added.** PWB-REQ-001 carries exactly **one** scenario, the one quoted [Observed, counted this session over the 31 scenarios in that file]; the phrase "deterministic input" occurs **twice**, at lines 85 and 95; line 76 carries the variant "deterministic **evaluation** inputs". Both hits and the variant sit inside the requirement's own prose and its falsifier, never inside a scenario, so the conclusion is unchanged [corrected 2026-09-15 per review 1, F4; superseded wording: "occurs at lines 76, 85 and 95". `grep -F` and Python `re` over the PWB specification in full, run this session] | **Requirement available, scenario not.** Same two routes as slice 2, same reading on the second. The requirement's own sentence enumerates four deterministic inputs by name and a loaded profile is a fifth, so a strict reader may hold that adding one **contradicts** a closed list rather than implementing an open one — that reading is not this packet's to take, and it is the sharpest form of Q1 |
 | 6 Self-profile proof | **None enumerated.** The render happens inside a test and reaches no surface | **PWB-REQ-005** line 206 and **RFC1-3** lines 130–133 are gates on whether the slice may run, not coverage of a consequence. No approved requirement names a self-observation [Observed, the 0-occurrence sweep above] | n/a for RFC2-26; **blocked by Q3**, which is the stronger gate |
-| 7 Seeded entities | "evaluation and snapshot displays" — in the no-seeds case Trajectory and Orrery change what they show | **Available.** **POC-REQ-050**, line 777, "WHEN Orrery is read, it SHALL render a spatial projection of the observed code structure in which regions derive from the directory structure and declared capability-to-path mappings", with falsifier "a rendered region backed by no observed directory or declared mapping" (lines 791–793); scenario **"Stable city over one observation"** at lines 795–799, verbatim: "**WHEN** Orrery renders the same code-structure observation twice / **THEN** every region's position and extent is identical, and every region resolves to an observed path or declared mapping". Also **POC-REQ-051** — "Unmapped code is a visible Unknown region with a denominator" (line 812) — for the empty case | **Available.** The scenario's THEN, "every region resolves to an observed path or declared mapping", is exactly what a seeded region from the wrong project fails. Slice 7 implements a requirement the current code does not satisfy in the case the requirement covers |
+| 7 Seeded entities | "evaluation and snapshot displays" — in the no-seeds case Trajectory and Orrery change what they show | **Available.** **POC-REQ-050**, line 777, "WHEN Orrery is read, it SHALL render a spatial projection of the observed code structure in which regions derive from the directory structure and declared capability-to-path mappings, with a deterministic layout per observation" (lines 777–780; the quotation is extended to the sentence's end 2026-09-15 per review 1, F15, which found it stopping at "capability-to-path mappings" with no ellipsis marking the stop), with falsifier "a rendered region backed by no observed directory or declared mapping" (lines 791–793); scenario **"Stable city over one observation"** at lines 795–799, verbatim: "**WHEN** Orrery renders the same code-structure observation twice / **THEN** every region's position and extent is identical, and every region resolves to an observed path or declared mapping". Also **POC-REQ-051** — "Unmapped code is a visible Unknown region with a denominator" (line 812) — for the empty case | **Available.** The scenario's THEN, "every region resolves to an observed path or declared mapping", is exactly what a seeded region from the wrong project fails. Slice 7 implements a requirement the current code does not satisfy in the case the requirement covers |
 
 **What the test establishes and what it does not.** It establishes
 [Observed] that slices 3 and 7 map to named requirement-and-scenario pairs;
@@ -1104,9 +1239,28 @@ are implementation-plane paths (`apps/`, `packages/`, `scripts/`,
 worktree at `a9f671e` under two predicates — **resolves to anything**
 (`os.path.exists`, so a directory span counts) and **resolves to a file**
 (`os.path.isfile`); intersect the file-resolving set with M8's own **31-file**
-candidate surface, which is every existing file named in Gate 3's topology
-table [Observed, all counts computed this session; every one of the 31
-resolves].
+candidate surface, which is **every existing implementation-plane file named
+in Gate 3's topology table, plus the eight test files the evidence record's
+`m8_surface` enumerates** [predicate restated 2026-09-15 per review 1, F7;
+superseded wording: "every existing file named in Gate 3's topology table",
+which no reader of the packet alone could re-derive. Re-enumerated this
+session: Gate 3's topology table carries 30 code spans, 25 of them
+file-shaped and distinct; 20 resolve as written and the five written as bare
+basenames in slice 5's row resolve under the tree that row names, giving 25
+existing files; two of the 25 are the governed artifacts the table's third
+column names — the consent record and the registry entry — which are not
+implementation-plane surface, leaving **23**. The record's `m8_surface`
+supplies the other **8**, all tests:
+`apps/three-surface-poc/src/polaris-first-reading.test.ts`,
+`apps/three-surface-poc/src/polaris-project-shape.test.ts`,
+`apps/three-surface-poc/src/walkthrough-preflight.test.ts`,
+`apps/three-surface-poc/src/git-observation.test.ts`,
+`packages/three-surface-poc-core/src/body-read-authority.test.ts`,
+`packages/three-surface-poc-core/src/model.test.ts`,
+`packages/three-surface-poc-core/src/project-shape-manifest.test.ts` and
+`packages/three-surface-poc-core/src/project-shape-observation.test.ts`.
+23 + 8 = 31, and every one of the 31 resolves as a file; Observed, both
+sides enumerated this session].
 
 | Sibling | Head read this session | Resolving spans (any path) | Resolving spans (files only) | Intersection with M8's 31 |
 |---|---|---:|---:|---:|
@@ -1116,10 +1270,31 @@ resolves].
 | M4, PR #38, P-71 | `63b8e33` | 26 | 22 | **9** |
 | M5, PR #39, P-72 | `ba9ca61` | 11 | 9 | **5** |
 | M6, PR #40, P-73 | `83c9f60` | 24 | 13 | **2** |
+| M7, PR #41, no register row yet | `0c4b4a9` | 29 | 21 | **7** |
+| M9, PR #42, no register row yet | `206d775` | 19 | 12 | **6** |
 | lane B, PR #35, P-68 | `4090f98` | not computed — see below | | |
 
+The M7 and M9 rows were added 2026-09-15 per review 1, F8, which recomputed
+both and found the first draft's headline resting on six of the eight
+sibling branches. They are computed with the predicate and the 31-file
+surface stated above, in each sibling's own worktree at the head the row
+names, and the method was validated first by reproducing M4's published
+26 / 22 / 9 exactly before either new row was taken [Observed, all figures
+computed this session].
+
 **M8 is the collision-heavy packet in this set, and that is the finding.**
-Where M6 reported zero against every sibling, M8 intersects five of the six.
+Where M6 reported zero against every sibling, **M8 intersects eight of the
+nine sibling packets — every one but lane B** [restated 2026-09-15 per
+review 1, F8. Superseded wording: "M8 intersects five of the six", written
+when only six rows had been computed and M7 and M9 were recorded as
+[Unknown]. Denominator, stated: the nine sibling funnel packets in this
+set — M1 (lane A, on main), lane B, M2, M3, M4, M5, M6, M7 and M9, of which
+eight sit on their own branches and M1 is on main. Intersections with M8's
+31-file surface, computed this session: M4 **9**, M2 **7**, M7 **7**,
+M3 **6**, M9 **6**, M5 **5**, M6 **2**, M1 **1**, lane B **0** by
+construction. "Collision-heavy" survives the widened denominator and is
+strengthened by it: the two packets the first draft could not see carry the
+equal-largest and the joint-fourth-largest intersections in the set].
 The overlapping files, with the M8 slice that claims each: M4 at
 `apps/three-surface-poc/src/governance-inputs.ts` (S3, S5),
 `apps/three-surface-poc/src/orrery.ts` (S2, S7),
@@ -1129,20 +1304,22 @@ The overlapping files, with the M8 slice that claims each: M4 at
 `apps/three-surface-poc/src/routes.ts` (S2),
 `apps/three-surface-poc/src/trajectory.ts` (S2, S7),
 `packages/three-surface-poc-core/src/model.ts` (S7) and
-`packages/three-surface-poc-core/src/project-shape-model.ts` (S5, S6). M2 at
+`packages/three-surface-poc-core/src/project-shape-model.ts` (S5; and
+exercised, never edited, by S6 — see Gate 3's slice 6 row, marked 2026-09-15
+per review 1, F7, where the first draft read "(S5, S6)"). M2 at
 `apps/three-surface-poc/src/git-observation.ts` (S3),
 `apps/three-surface-poc/src/main.ts` (S7),
 `apps/three-surface-poc/src/polaris-copy.ts`,
 `apps/three-surface-poc/src/routes.ts`,
 `apps/three-surface-poc/src/walkthrough-preflight.ts` (all S2),
 `packages/three-surface-poc-core/src/model.ts` (S7) and
-`project-shape-model.ts` (S5, S6). M3 at
+`project-shape-model.ts` (S5; exercised, not edited, by S6). M3 at
 `apps/three-surface-poc/src/polaris-copy.ts`,
 `apps/three-surface-poc/src/polaris-first-reading.test.ts`,
 `apps/three-surface-poc/src/polaris.ts`,
 `apps/three-surface-poc/src/walkthrough-preflight.ts` (S2),
 `apps/three-surface-poc/src/polaris-project-shape.test.ts` (S2) and
-`project-shape-model.ts` (S5, S6). M5 at
+`project-shape-model.ts` (S5; exercised, not edited, by S6). M5 at
 `apps/three-surface-poc/src/polaris-source.ts`,
 `apps/three-surface-poc/src/polaris.ts`,
 `apps/three-surface-poc/src/routes.ts` (S2),
@@ -1150,8 +1327,38 @@ The overlapping files, with the M8 slice that claims each: M4 at
 `packages/three-surface-poc-core/src/project-shape-observation.ts` (S5). M1
 at `apps/three-surface-poc/src/routes.ts` (S2). M6 at
 `docs/polaris-generation/ARTIFACTS-AND-TOOLS.md` and
-`docs/polaris-generation/README.md` (S4) [all Observed, computed this
-session].
+`docs/polaris-generation/README.md` (S4). **M7** at
+`apps/three-surface-poc/src/polaris-source.ts` (S2 here; M7 slice 1),
+`apps/three-surface-poc/src/routes.ts` (S2 here; M7 slice 4),
+`apps/three-surface-poc/src/git-observation.ts` (S3 here; named in M7's
+measurement prose and claimed by no M7 slice row),
+`packages/three-surface-poc-core/src/project-shape-observation.ts` (S5 here;
+M7 slice 4), `packages/three-surface-poc-core/src/project-shape-model.ts`
+(S5 here; cited by M7 as a read type reference, claimed by no M7 slice row),
+`docs/polaris-generation/ARTIFACTS-AND-TOOLS.md` and
+`docs/polaris-generation/README.md` (both S4 here; M7 slice 5). **M9** at
+`apps/three-surface-poc/src/polaris-copy.ts` (S2 here; M9 slices 2 and 5),
+`apps/three-surface-poc/src/polaris.ts` (S2 here; M9 slices 1, 2, 4a, 5
+and 7), `apps/three-surface-poc/src/routes.ts` (S2 here; M9 slices 2, 4a
+and 6), `apps/three-surface-poc/src/trajectory.ts` (S2 and S7 here; M9
+slices 1, 2 and 6), `packages/three-surface-poc-core/src/model.ts` (S7
+here; M9 slices 2, 4a, 4b and 8) and
+`packages/three-surface-poc-core/src/project-shape-model.ts` (S5 here; M9
+slice 4a) [all Observed, computed this session].
+
+**One predicate artifact, disclosed rather than absorbed.** The method keeps
+only spans that begin `apps/`, `packages/`, `scripts/` or
+`docs/polaris-generation/`, so a sibling row that writes a file as a bare
+basename is invisible to it — the same gap F7 found on this packet's own
+side. Swept this session over the two new siblings: M7 carries four such
+bare spans, all already counted through their full-path forms elsewhere in
+that packet; **M9 carries two that are not** —
+`apps/three-surface-poc/src/orrery.ts` and
+`packages/three-surface-poc-core/src/body-read-authority.ts`, both written
+in M9's topology table as bare basenames beside full-path siblings. Under a
+basename-tolerant predicate M9's intersection is **8**, not 6. Both figures
+are published; the 6 is the one the table's stated predicate yields
+[Observed, both computed this session].
 
 **The intersection is between *proposed* surfaces, not landed diffs.** Every
 one of the six sibling branches is a documentation branch: a name-only diff
@@ -1174,24 +1381,43 @@ so the intersection is 0 by construction of M8's surface [Observed, the
 two files must pass — so the order is: lane B lands, then this packet's check
 is re-run before merge.
 
-**The two other P2 packets drafted in parallel — M7 and M9.** Their content
-is **[Unknown]** to this session; neither was read, and neither worktree was
-opened. They are described as disjoint by design in files. That description
-is **not** what the dossier's own evidence lists say, and the discrepancy is
-recorded rather than smoothed: M9's dossier entry cites
+**The two other P2 packets drafted in parallel — M7 and M9.** [Superseded
+2026-09-15 per review 1, F8. The first draft opened this paragraph "Their
+content is **[Unknown]** to this session; neither was read, and neither
+worktree was opened" — an honest statement of what the first draft did, and
+no longer true: both worktrees were opened read-only this session, both
+packets were read, and both rows are now in the table above. The
+dossier-derived inferences that follow are kept, with what the actual
+packets show marked against each.] They are described as disjoint by design
+in files. That description is **not** what the dossier's own evidence lists
+say, and the discrepancy is recorded rather than smoothed: M9's dossier entry
+cites
 `apps/three-surface-poc/src/polaris.ts`,
 `packages/three-surface-poc-core/src/model.ts`,
 `apps/three-surface-poc/src/trajectory.ts` and
 `apps/three-surface-poc/src/orrery.ts` — four files that are all in M8's
 31-file surface — and M9's own subject, one identity and one vocabulary
 across the surfaces, is adjacent to slice 2's [Observed, the M9 dossier entry
-read at source this session; **whether M9's packet actually claims those
-files is Unknown**]. M7's dossier entry cites the generator package and
+read at source this session. **Confirmed at the packet 2026-09-15**: M9's own
+code spans reach three of those four under the full-path predicate —
+`polaris.ts`, `model.ts` and `trajectory.ts` — and reach `orrery.ts` only as
+a bare basename, which is the predicate artifact disclosed above. The
+superseded clause "**whether M9's packet actually claims those files is
+Unknown**" is no longer true and is kept here as the first draft's honest
+statement of what it had]. M7's dossier entry cites the generator package and
 `apps/three-surface-poc/src/routes.ts`; the first is disjoint from every M8
-slice but 4, and `routes.ts` is in slice 2's surface [Observed, same source,
-same Unknown]. **The owner should expect M8 and M9 to need explicit
-sequencing**, and this packet does not propose one for a packet it has not
-read.
+slice but 4, and `routes.ts` is in slice 2's surface [**Falsified at the
+packet 2026-09-15 per review 1, F8, and marked rather than removed.** The
+dossier-based inference is wrong in its first half: M7's actual packet spans
+slice 2's `polaris-source.ts` and `routes.ts`, slice 3's
+`git-observation.ts` and slice 5's `project-shape-observation.ts` and
+`project-shape-model.ts` as well as slice 4's two kit pages, so it is
+disjoint from no M8 slice but 1, 6 and 7. Its intersection of **7** exceeds
+every measured sibling but M4's 9. Observed, computed this session at
+`0c4b4a9`]. **The owner should expect M8 and M9 to need explicit
+sequencing**, and — now that both were computed — M7 as well; this packet
+still proposes no ordering between them, because their own slice sequencing
+is theirs to state.
 
 **Sequencing inside M8.** Slice 1 and slice 4 are independent of everything
 and of each other; either may land first. Slice 3 is independent of all
@@ -1257,28 +1483,156 @@ not run it.
    no act argument, manifest digest or truncated signed digest is reproduced
    — the four digest comparisons this packet ran are reported as
    match/no-match with the record cited by path, per CG-7e and CG-15.
-9. **Independent review.** This packet has had **none**. It is a first draft.
-   Verification rule 10: every figure and every quotation above is bound to
-   these bytes and to `a9f671e`, and any later edit retires a review bound to
-   them.
+9. **Independent review.** **One**, retained verbatim at
+   `docs/reviews/R-POLARIS-M8-PORTABILITY-FUNNEL-RAW.md`, verdict copied
+   exactly: **CONFIRM WITH EXCEPTIONS** — 0 blocking, 11 non-blocking, 5
+   editorial. Its sixteen exceptions were each re-derived against source
+   before being applied; see "Review 1 and repairs (2026-09-15)" below
+   [updated 2026-09-15; superseded wording: "This packet has had **none**.
+   It is a first draft."]. Verification rule 10: review 1 binds the bytes it
+   names, at `8035c8f`, and not these; every figure and every quotation above
+   is bound to the current bytes and to `a9f671e`, and any later edit retires
+   a review bound to them.
 10. **Conventions this packet was checked against, this session, over the
     bytes these figures now sit in.** Every non-fence line has an even
-    backtick count — 0 of **1344** — so no code span is broken across a line
-    break; four were, in the first draft, and each was rewritten rather than
-    left. **6** lines exceed 78 columns outside fences, tables, block quotes
-    and headings, and every one is a single unbreakable code span: four
-    repository paths, one quoted HTML element and one path inside a sentence.
-    Of **250** distinct code spans, **11** contain a `/` and do not resolve as
-    a path here; each is enumerated in the evidence record and none is a
-    path: five write-root and glob patterns, one regular expression, one HTML
-    element, one HTTP route, one branch name, one bare `decisions/` inside
-    the RFC2-26 quotation, and one change-directory name given without its
-    parent — 5 + 1 + 1 + 1 + 1 + 1 + 1 = 11. **No observed-repository path is
-    backticked anywhere in this file.**
+    backtick count — 0 of **1697** — so no code span is broken across
+    a line break; four were, in the first draft, and each was rewritten rather
+    than left. **16** lines exceed 78 columns under the predicate
+    "outside fenced code blocks, first non-space character not a pipe, length
+    over 78", denominator every line of this file. Both figures are
+    self-referential — the sentence reporting them is one of the lines being
+    counted — so both were written as placeholder tokens and resolved by a
+    final pass after every other edit of this session, and they are true of
+    the bytes that carry them [method adopted 2026-09-15; the first draft's
+    non-fence denominator read 1344, which review 1, F3 showed was one too
+    high under this packet's own physical-line rule].
+
+    **The resolution predicate, widened** [widened 2026-09-15 per review 1,
+    F9; superseded predicate: code spans that "contain a `/`", under which the
+    one span naming a file that exists nowhere in this tree was structurally
+    invisible]. A span is filename-shaped if it contains a `/` or if it is a
+    bare name of the form *stem*-dot-*extension*. Of **297** distinct
+    code spans, **145** are filename-shaped and **48** of
+    those do not resolve as a path from this worktree's root: **12**
+    contain a `/` — write-root and glob patterns, a regular expression, an HTML
+    element, an HTTP route, a command invocation, a branch name, a bare
+    `decisions/` inside the RFC2-26 quotation, and a change-directory name
+    given without its parent, each enumerated in the evidence record — and
+    **36** do not. Of the slash-free set, **27** are bare
+    basenames that resolve as a tracked basename under a tree named in the
+    same sentence, and **9** resolve nowhere. All but one of those
+    are not filenames at all: dotted identifiers (`os.path.exists`,
+    `os.path.isfile`, `re.search`, `shell.lede`, `capability.scope`,
+    `PocModel.project.name`, `syzygy-dov.8`) and the retained-raw filename
+    suffix. The exception is `polaris-7478.html`, the retained capture, which
+    names a real file outside this repository and is the one span the narrow
+    predicate could not see. **1**, then, is the count of filename-shaped
+    spans naming a file that neither resolves here nor is an identifier or a
+    convention [Observed, both predicates run this session over these bytes;
+    denominator the 297 distinct spans. These six figures are
+    self-referential — the sentence carrying them adds code spans of its own —
+    so they were written as placeholder tokens and resolved by the same final
+    pass as the two above].
+    **No observed-repository path is backticked anywhere in this file.**
 11. **What this packet does not claim.** It does not claim the pipeline is
     portable; it claims the portability debt is measurable and measures it.
     It does not claim any slice is lawful. It does not claim the self-profile
     would pass, or fail, because it was not run.
+
+## Review 1 and repairs (2026-09-15)
+
+An independent fresh-context review of this packet (read-only; only the
+artifact, its governing references and the acceptance criteria) is retained
+verbatim at `docs/reviews/R-POLARIS-M8-PORTABILITY-FUNNEL-RAW.md` (32375
+bytes, sha256
+`85fcffa1db2f48e1b73df0689d37c154a445fe1c956f948936609b30e3c9b38d`, computed
+by `wc -c` and `sha256sum` this session, never transcribed). It reviewed
+commit `8035c8f`, at which the two reviewed files hashed as follows —
+recomputed this session with `git show 8035c8f:<path>` piped to `wc -c` and
+`sha256sum`:
+
+| File reviewed | Bytes | sha256 |
+|---|---:|---|
+| `docs/design/POLARIS-M8-PORTABILITY-FUNNEL.md` | 110515 | `62ee454380619164b23e9e5bb896da5c1eb9f1cc6717c7c70b4d02c12ca15782` |
+| `docs/evidence/polaris-m8-portability-funnel-2026-09-15.json` | 42655 | `49b6f4dcbc4382645c4ca198bbc26af1fa530c45dbe042dd51228f4fe15e19d8` |
+
+Its verdict word, copied exactly: **CONFIRM WITH EXCEPTIONS**. Its counts, as
+the raw states them: **0 blocking, 11 non-blocking, 5 editorial** — sixteen
+findings, F1–F16.
+
+**Its seven-question table, in one line:** all seven are genuine hard gates —
+Q4 **borderline**, and the raw says why (by the packet's own reasoning its
+recommended arm needs no act and its default proceeds; what makes it owner
+material is the second arm, which contradicts an act-bound "exactly 195", and
+the security-surface trade-off the counter-argument states) — scope truthful
+for all seven with Q4 "mostly" pending F1's anchor, every recommendation
+following from its evidence, every lawful arm named, **no lawful arm called
+unlawful anywhere**, and every question carrying a counter-argument that
+argues against its own recommendation [Observed, read from the retained raw].
+
+**No recommended answer changed.** Confirmed against the raw's own
+seven-question table, whose "Recommendation follows?" column answers **Yes**
+for all seven, and against the sixteen findings: F1, F2 and F15 correct
+citation anchors and quotation spans; F3 corrects three line denominators;
+F4, F5, F6, F13, F14 and F16 correct or complete a measurement; F7 restates a
+predicate; F8 widens a denominator that strengthens the ordering the packet
+already recommends; F9 relabels two capture-only figures and widens a
+resolution predicate; F10 makes a default consistent with two statements that
+already held slice 3; F11 quotes and applies two doctrine clauses Gate 0
+already named; F12 corrects five to six. None moves an arm, a recommendation
+or a default's substance [Observed, both sides read this session].
+
+**Every exception was re-derived against source before being applied; none
+was applied on the review's say-so.** Fourteen of sixteen confirmed exactly.
+Two carry a defect of their own, corrected rather than copied: **F11**'s
+occurrence counts ("VIS-4 occurs twice, SEC-5 three times") do not re-derive —
+the first draft carried VIS-4 once and SEC-5 twice — while the defect F11
+reports is real and is applied in full; and **F8**'s parenthetical that "M9's
+packet does not code-span `orrery.ts`" holds only under the full-path
+predicate, since M9's topology table writes that file as a bare basename,
+which is the same predicate artifact F7 found on this packet's own side.
+Both corrections are recorded at their sites above. Superseded wording is
+marked in place and dated, never deleted.
+
+| Finding | Severity | Disposition |
+|---|---|---|
+| F1 RFC1-2 cited at the wrong lines, twice | non-blocking | **CONFIRMED.** Opened at source: RFC1-2's clause opens at line 121 and the quoted sentence spans 126–128, beginning at "Repository" on 126; lines 27–28 are the RFC's front matter. Applied at both sites, Q4's cell and Gate 2, with the superseded citation quoted and dated |
+| F2 three further anchors miss the packet's own "begins on" convention | non-blocking | **CONFIRMED**, all three, read at source: the registry-envelope trigger begins on line 91 (91–92), "any scope beyond the signed change" on 93 (93–94), and RFC1-10's quoted sentence spans 263–265 with 266 belonging to the next sentence. All three corrected in place with their superseded citations kept |
+| F3 a systematic +1 in three stated line denominators | non-blocking | **CONFIRMED**, both methods run this session: the PWB specification is 1,152 physical lines and the Three-Surface POC specification 1,008 (`wc -l`; `len(bytes.split(b"\n"))` gives 1,153 and 1,009 on both, newline-terminated), and this packet's first draft carried 1,343 non-fence lines against the 1344 it claimed. The counting rule is now stated once at the line-count convention and all four sites are corrected; the packet's own figure is re-derived last, after every edit of this pass |
+| F4 "deterministic input" does not occur at line 76 | non-blocking | **CONFIRMED.** `grep -F` and Python `re` over the PWB specification in full return two lines, 85 and 95; line 76 carries "deterministic **evaluation** inputs". Reworded as the raw specifies; the conclusion the sentence draws survives under either reading |
+| F5 the 73-vs-74 divergence is attributed to the wrong cause | non-blocking | **CONFIRMED**, and reproduced both ways this session. `command -v ugrep` finds nothing — ugrep here is the Claude Code CLI binary invoked with `argv[0]` set to `ugrep` — and `type grep` reports a shell function that injects `-G --ignore-files --hidden -I` plus six `--exclude-dir` entries ahead of every argument. Through those flags the 133-path sweep gives **73**; bare ugrep gives **74**, `/bin/grep -il` gives **74**, bare ugrep on the divergent file alone exits 0 and prints it with `-ic` 44, and adding `-a` under the wrapper restores 74 and 44. Six invocations run; the exact one that produced 73 is now recorded in the packet and in the evidence record, and the `-a`-or-Python instruction is kept |
+| F6 "asserts the two section headings" overstates line 267 | non-blocking | **CONFIRMED.** Whole file swept: the proving case's name occurs exactly once in `apps/three-surface-poc/src/polaris-copy.test.ts`, on line 267, inside one clean-fragment expectation asserting one heading string; the second group heading occurs nowhere in the file. Reworded to "one of the two section headings" |
+| F7 the 31-file surface's stated predicate does not re-derive | non-blocking | **CONFIRMED**, both limbs, re-enumerated this session. Gate 3's topology table carries 30 code spans, 25 file-shaped and distinct; 20 resolve as written and five resolve under the tree slice 5's row names, giving 25, of which 2 are the governed artifacts named in the third column, leaving **23** implementation-plane files — the record's `m8_surface` supplies the other **8**, all tests, and 23 + 8 = 31. The predicate is restated at the collision method and the eight are named there. On the second limb the packet is right and the record is wrong: slice 6's own design authors a conformance module and a profile fixture and edits no existing module, so Gate 3's "none edited" and Gate 4's "No existing source module changes" stand, and the record's `m8_by_slice` S6 entry and the three "(S5, S6)" collision annotations are marked in place as *exercised, never edited* |
+| F8 the collision denominator omits the two largest unmeasured intersections | non-blocking | **CONFIRMED**, and both rows recomputed independently. The method was validated first by reproducing M4's published 26 / 22 / 9 exactly, then run in each sibling worktree: **M7** at `0c4b4a9` — 31 implementation-plane spans, 29 resolving to anything, 21 to a file, intersection **7**; **M9** at `206d775` — 21 / 19 / 12, intersection **6**. Both rows are in the table, the shared files are enumerated with the M7 and M9 slices they belong to, "five of the six" is restated as **eight of the nine** with its denominator, and the falsified dossier-based inference about M7 is marked in place and dated. One correction to the finding: M9's packet *does* code-span `orrery.ts`, as a bare basename, so the widened figure is 8 and both are published |
+| F9 the retained capture is unreachable and escapes the packet's own predicate | non-blocking | **CONFIRMED**, and the capture is deliberately **not** copied into the repository: it is a rendered page of a consented observation of the proving case, and retaining it here is a content decision no act in force covers. Its size (2,090,025 bytes) and full sha256 are recorded in the packet and the record instead, its absence from this tree is stated with its method, and the two capture-only figures are relabelled "[Observed at the retained capture; [Unknown] to a reader without it]". Gate 6 item 10's predicate is widened to every filename-shaped span: **133** such spans of the 250, **44** not resolving here — 11 slash-bearing (the enumerated set, unchanged), 25 bare basenames resolving under a tree named in the same sentence, and **8** resolving nowhere, of which seven are dotted identifiers and the eighth is the capture. Both figures are stated |
+| F10 the default-if-unanswered set contradicts itself on slice 3 | non-blocking | **CONFIRMED**, all three sites read. Q1's default named slices 1, 4 and 6 and not slice 3; Q4's default is "the recommended arm", under which slice 3 proceeds; the summary's handoff line landed slice 3, 1 and 4 before "rule Q1". Q1's default now names slice 3 explicitly and says why, and the summary's handoff line is reordered to put "rule Q1" first, matching the prose handoff section, which always carried the condition. No recommendation changes |
+| F11 Gate 0 names two doctrine constraints the packet never applies | non-blocking | **CONFIRMED in substance, with the finding's own counts corrected.** Swept this session over the first draft: VIS-4 occurred **1** time and SEC-5 **2**, both only in enumerations, neither at a clause — not the "twice" and "three times" the raw states. The defect is real and the quoting arm was taken over the drop arm: VIS-4 is now quoted at `vision.md` lines 122–139 and applied to Q2's and Q3's four acts and to Q1's own spec-level-versus-shape-level contest, and SEC-5 at `security.md` lines 54–60 and applied to slice 6's detector run over this repository's tree and to the policy extension Q3 already asks for. No recommendation changes |
+| F12 six rows called five | editorial | **CONFIRMED.** The sentence enumerated P-68 through P-73, which is six. Corrected, with the superseded "five" quoted; the six assignments are exact and M7 and M9 carry no register row yet |
+| F13 "one or two each" is wrong for one of the thirteen | editorial | **CONFIRMED.** Re-derived under the same comment-blanking predicate: `apps/three-surface-poc/src/test-project-shape-fixture.ts` carries **3** of the 51 lines, at 19, 28 and 54. Corrected to "one to three each", naming the file and its three lines |
+| F14 the mutation record has seven keys, not five | editorial | **CONFIRMED.** The record carries `commit`, `file`, `old`, `new`, `exitCode`, `output` and `restored`. Corrected in place, keeping the raw's own observation that the packet reads five and then quotes `restored`, the sixth. Every substantive claim about the record verifies: `exitCode` 1, `restored` true, no `sha256` field |
+| F15 three quotation-fidelity slips | editorial | **CONFIRMED**, all three, opened at source. Line 248 uses curly quotes around *other invalid* and they are now reproduced; PWB-REQ-014's anchor-set sentence continues "and is small enough for a reader to identify which anchor supports which claim" (766–768) and the quotation is extended; POC-REQ-050's sentence continues ", with a deterministic layout per observation" (777–780) and that quotation is extended too. The extend arm was taken over the ellipsis arm at both, because the continuations are load-bearing for the claims around them |
+| F16 one of the fourteen `polaris.ts` lines is never accounted for | editorial | **CONFIRMED**, and the fourteenth identified. Re-derived: the fourteen non-comment lines are 419, 423, 425, 427, 432, 441, **583**, and 671–683 odd. Line 583 is `const practicalOrder = ['Butlers', 'Staffers', 'Dashboard', 'Connectors'];`, the capability-guide sort key — it ranks the guide's capability-context groups and renders no text of its own, so "the fourteen renderer-built sentences" is thirteen sentences and one ordering constant. Named, with what it does and the consequence for slice 2 |
+
+**Registered as P-74.** The seven questions are registered in
+`.syzygy/governance/decisions/PENDING-OWNER-DECISIONS.md` on this branch, as
+the row the first draft said would land after review 1; P-68 through P-73
+each live only on their own branch, and M7 and M9 have no row yet.
+
+By verification rule 10, review 1 binds the bytes it names — the two digests
+in the table above, at commit `8035c8f` — and not these. Every edit in this
+section and above was made after it, so **the sixteen exception repairs are
+uncovered until a second independent fresh-context review confirms them**;
+that raw will be a second `-RAW.md` file, never an overwrite of the retained
+one. Subject to that, and on review 1's confirmation of the `8035c8f` bytes —
+CONFIRM WITH EXCEPTIONS, no blocking finding, no recommended answer moved,
+all seven questions found to be genuine gates and no lawful arm called
+unlawful — **this packet stands at the owner gate**: P-74 is ready to be
+ruled.
+
+Over-width lines after these edits, under the predicate "lines outside fenced
+code blocks whose first non-space character is not a pipe, longer than 78
+columns", denominator every line of this file: **16** [Observed,
+measured after all of the edits above].
 
 ## Funnel summary
 
@@ -1291,11 +1645,11 @@ Baseline: Syzygy a9f671e; the dossier's syzygy_audited_at is f4589e2 and every l
 - G3 Topology: apps/three-surface-poc/src + packages/three-surface-poc-core/src + docs/polaris-generation; one boundary crossed, deliberately, by slice 5's last limb into the act-bound registry entry; every other slice implementation-plane only
 - G4 Design: a reporting-only portability predicate with its blind spot named; a model-derived project identity leaving the claim role alone; the locator parsed out of already-digest-verified consent bytes after admission, so PWB-REQ-005's closed 195 is untouched; one coordination page; a five-limb profile where only the last needs an act; a self-profile designed and not run; the seeds out of the shared model with an Unknown empty case
 - G5 Spec: 0 occurrences of second repositor / second project / portab / generaliz / locator in either adopted specification, denominator both files in full; both files are act-bound bytes so a portability requirement is a CC-REV-2 delta and a new act. RFC2-26 run over all seven slice rows (denominator 7): slices 3 and 7 map to named requirement-and-scenario pairs; slice 5's requirement is named and its scenario is not; slice 2's requirement is partial and its scenario absent; slices 1, 4 and 6 enumerate no RFC-0002 consequence
-- G6 Bar: two methods for the load-bearing count and they disagreed by one file over a NUL byte, reported with the divergence; the copy denominator checked twice and the first attempt's two missing rows named; rule-6 mutants per slice, deferred honestly for slice 6; 4 of 33 named files appear in the digest-binding corpus and only one is proposed for edit, through the act its binding act names; NO independent review yet - this is a first draft
+- G6 Bar: two methods for the load-bearing count and they disagreed by one file over a NUL byte, reported with the divergence; the copy denominator checked twice and the first attempt's two missing rows named; rule-6 mutants per slice, deferred honestly for slice 6; 4 of 33 named files appear in the digest-binding corpus and only one is proposed for edit, through the act its binding act names; ONE independent review, retained verbatim, verdict copied exactly: CONFIRM WITH EXCEPTIONS - 0 blocking, 11 non-blocking, 5 editorial, all sixteen re-derived against source and applied, and uncovered until a second review confirms them (superseded 2026-09-15: "NO independent review yet - this is a first draft")
 Acts: slices 1, 3, 4, 6 and 7 are argued to ride PWB-IMPLEMENTATION-AUTHORIZATION-ACT.md (2026-09-02) as continued 2026-09-05, whose grant and exclusions are quoted in Q1 and Q3; slice 4 rides POLARIS-GENERATOR-IMPLEMENTATION-AUTHORIZATION-ACT.md (2026-09-12) instead; slice 5's last limb needs a third registry-entry amendment act (Q2); slice 6 needs a consent record, a registry entry and a policy extension naming this repository, none of which exists (Q3); slices 2 and 5 are held pending Q1
-Open questions: Q1-Q7 above. NOT registered in PENDING-OWNER-DECISIONS.md - the register row lands after review 1, batched with the siblings'; the five siblings' existing rows are P-68 lane B, P-69 M2, P-70 M3, P-71 M4, P-72 M5 and P-73 M6, each only on its own branch
-Sign-off: pending - the owner's
-Recommended handoff: land slice 3 first (smallest, no act, no rendered claim), then slice 1 reporting-only and slice 4; rule Q1; then slice 7 under Q7's ceremony; slice 2 after Q1 and Q5; slice 5's limbs 1-4 any time and limb 5 after Q2; slice 6 only after Q3
+Open questions: Q1-Q7 above. Registered as P-74 in PENDING-OWNER-DECISIONS.md on this branch, after review 1, batched with the siblings' (superseded 2026-09-15: "NOT registered in PENDING-OWNER-DECISIONS.md - the register row lands after review 1"); the six siblings' existing rows are P-68 lane B, P-69 M2, P-70 M3, P-71 M4, P-72 M5 and P-73 M6, each only on its own branch (corrected 2026-09-15 per review 1, F12, from "the five siblings' existing rows", which then enumerated six; the six assignments are exact, each sibling branch adding exactly that one row against a9f671e and no other, and M7 and M9 carry no register row yet)
+Sign-off: pending - the owner's; at the owner gate on review 1's CONFIRM WITH EXCEPTIONS over the 8035c8f bytes
+Recommended handoff: rule Q1 first - nothing lands until it is answered (corrected 2026-09-15 per review 1, F10, which found this line reading "land slice 3 first ... then slice 1 reporting-only and slice 4; rule Q1", i.e. three slices landing ahead of the ruling Q1's own default says nothing lands before; the prose handoff section below always carried the condition, and this line had dropped it); then land slice 3 first (smallest, no act, no rendered claim), then slice 1 reporting-only and slice 4; then slice 7 under Q7's ceremony; slice 2 after Q1 and Q5; slice 5's limbs 1-4 any time and limb 5 after Q2; slice 6 only after Q3
 ```
 
 ## Recommended handoff
